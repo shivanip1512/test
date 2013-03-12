@@ -31,15 +31,15 @@
                             </div>
                             <div class="setting_details box detail fl">
                                 <div>
-                                    <c:if test="${settingsBean.settings[setting.extra].status ne 'ALWAYS_SET'}">
-                                        <form:select cssClass="f_setUnsetSelect" path="settings['${setting.extra}'].status">
-                                            <form:option value="SET"><i:inline key="yukon.common.enabled"/></form:option>
-                                            <form:option value="UNSET"><i:inline key="yukon.common.disabled"/></form:option>
+                                    <c:if test="${setting.extra.usesEnabledField}">
+                                        <form:select cssClass="f_setUnsetSelect" path="settings['${setting.extra}'].enabled">
+                                            <form:option value="true"><i:inline key="yukon.common.enabled"/></form:option>
+                                            <form:option value="false"><i:inline key="yukon.common.disabled"/></form:option>
                                         </form:select>
-                                        <form:errors path="settings['${setting.extra}'].status" cssClass="errorMessage" element="span"/>
+                                        <form:errors path="settings['${setting.extra}'].enabled" cssClass="errorMessage" element="span"/>
                                     </c:if>
-                                    <c:if test="${settingsBean.settings[setting.extra].status eq 'ALWAYS_SET'}">
-                                        <form:hidden path="settings['${setting.extra}'].status"/>
+                                    <c:if test="${!setting.extra.usesEnabledField}">
+                                        <form:hidden path="settings['${setting.extra}'].enabled"/>
                                     </c:if>
                                     <tags:simpleInputType id="${setting.extra}" input="${setting.valueType}" path="${setting.path}"/>
                                     <span class="detail updated fr">

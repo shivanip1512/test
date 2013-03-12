@@ -223,7 +223,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
 
     @Override
     public Set<Integer> getAppCatEnergyCompanyIds(YukonEnergyCompany yukonEnergyCompany) {
-        boolean inheritParentAppCats = energyCompanySettingDao.checkSetting(EnergyCompanySettingType.INHERIT_PARENT_APP_CATS, yukonEnergyCompany.getEnergyCompanyId());
+        boolean inheritParentAppCats = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.INHERIT_PARENT_APP_CATS, yukonEnergyCompany.getEnergyCompanyId());
         if (inheritParentAppCats) {
             return ecMappingDao.getParentEnergyCompanyIds(yukonEnergyCompany.getEnergyCompanyId());
         } else {

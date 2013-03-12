@@ -135,7 +135,7 @@ public class SelectionListServiceImpl implements SelectionListService {
 
     private boolean showAdditionalProtocols(LiteStarsEnergyCompany energyCompany) {
         String optionalProductDevStr = energyCompanySettingDao.getString(EnergyCompanySettingType.OPTIONAL_PRODUCT_DEV, energyCompany.getEnergyCompanyId());
-        boolean isEnabled = energyCompanySettingDao.isSet(EnergyCompanySettingType.OPTIONAL_PRODUCT_DEV, energyCompany.getEnergyCompanyId());
+        boolean isEnabled = energyCompanySettingDao.isEnabled(EnergyCompanySettingType.OPTIONAL_PRODUCT_DEV, energyCompany.getEnergyCompanyId());
         if (!isEnabled || StringUtils.isEmpty(optionalProductDevStr)) {
             return false;
         }

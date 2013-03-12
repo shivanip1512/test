@@ -185,7 +185,7 @@ public class EmailServiceImpl implements EmailService {
             String password = authentication.getPassword();
 
             String host = getRequiredGlobalSettingsString(GlobalSettingType.SMTP_HOST);
-            Integer portNum = globalSettingDao.getInteger(GlobalSettingType.SMTP_PORT);
+            Integer portNum = globalSettingDao.getNullableInteger(GlobalSettingType.SMTP_PORT);
             if (portNum != null) {
                 transport.connect(host, portNum, username, password);
             } else {
@@ -210,7 +210,7 @@ public class EmailServiceImpl implements EmailService {
         String smtpHost = getRequiredGlobalSettingsString(GlobalSettingType.SMTP_HOST);
         properties.put("mail.smtp.host", smtpHost);
         
-        Integer smtpPort = globalSettingDao.getInteger(GlobalSettingType.SMTP_PORT);
+        Integer smtpPort = globalSettingDao.getNullableInteger(GlobalSettingType.SMTP_PORT);
         if (smtpPort != null) {
             properties.put("mail.smtp.port", smtpPort.toString());
         }

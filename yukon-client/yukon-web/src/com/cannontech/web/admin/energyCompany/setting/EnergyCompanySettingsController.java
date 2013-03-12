@@ -35,7 +35,6 @@ import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompanySetting;
 import com.cannontech.stars.energyCompany.model.SettingCategory;
-import com.cannontech.stars.energyCompany.model.SettingStatus;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFragment;
@@ -62,7 +61,7 @@ public class EnergyCompanySettingsController {
             new SimpleValidator<SettingsBean>(SettingsBean.class) {
                 @Override
                 public void doValidation(SettingsBean settingsBean, Errors errors) {
-                   
+                    
                     EnergyCompanySetting currentSetting;
                     for (EnergyCompanySetting newSetting : settingsBean.getSettings().values()) {
                         // Comments have to be 1000 chars or less
@@ -75,22 +74,13 @@ public class EnergyCompanySettingsController {
                         
                         currentSetting = energyCompanySettingDao.getSetting(newSetting.getType(), settingsBean.getEcId());
 
-                        if (newSetting.getStatus() == SettingStatus.UNSET){
-                            if (!ObjectUtils.equals(currentSetting.getValue(), newSetting.getValue())) {
-                                errors.rejectValue("settings["+newSetting.getType()+"].value", "yukon.web.modules.adminSetup.energyCompanySettings.disabledInput");
-                            }
+                        if (!newSetting.getEnabled() && !ObjectUtils.equals(currentSetting.getValue(), newSetting.getValue())) {
+                            errors.rejectValue("settings["+newSetting.getType()+"].value", "yukon.web.modules.adminSetup.energyCompanySettings.disabledInput");
                         }
-
-                        // ALWAYS_SET values cannot be UNSET
-                        if (newSetting.getType().getDefaultStatus() == SettingStatus.ALWAYS_SET
-                                && newSetting.getStatus() != SettingStatus.ALWAYS_SET) {
-                            errors.rejectValue("settings["+newSetting.getType()+"].value", "yukon.web.modules.adminSetup.energyCompanySettings.cannotDisable");
-                        }
-                        
                     }
                 }
             };
-    
+            
     @RequestMapping
     public String view(YukonUserContext context, ModelMap model, int ecId, EnergyCompanyInfoFragment fragment) {
         
@@ -142,7 +132,7 @@ public class EnergyCompanySettingsController {
             setting = energyCompanySettingDao.getSetting(changedSetting.getType(), ecId);
             setting.setComments(changedSetting.getComments());
             setting.setValue(changedSetting.getValue());
-            setting.setStatus(changedSetting.getStatus());
+            setting.setEnabled(changedSetting.getEnabled());
             energyCompanySettingDao.updateSetting(setting, context.getYukonUser(), ecId);
         }
 

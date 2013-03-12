@@ -15,7 +15,7 @@ public interface EnergyCompanySettingDao {
      * 
      * @return true if this setting is ENABLED || ALWAYS_ENBALED
      */
-    public boolean isSet(EnergyCompanySettingType setting, int ecId);
+    public boolean isEnabled(EnergyCompanySettingType setting, int ecId);
     
     /**
      * Returns the setting value of the specified setting as a String.
@@ -31,20 +31,6 @@ public interface EnergyCompanySettingDao {
     public String getString(EnergyCompanySettingType setting, int ecId);
     
     /**
-     * Returns the setting value of the specified EC setting as a Boolean.
-     * 
-     * Undefined values are returned null. 
-     * 
-     * This method may only be called with properties thaEnergyCompanySettingType have a type return type 
-     * thaEnergyCompanySettingType can be casEnergyCompanySettingType to Boolean.
-     * 
-     * @param setting - any EnergyCompanySettingType setting with a Boolean return type
-     * 
-     * @return value of property or null if undefined
-     */
-    public Boolean getBoolean(EnergyCompanySettingType setting, int ecId);
-    
-    /**
      * Returns the setting value of the specified EC setting as a Integer.
      * 
      * Undefined values are returned null. 
@@ -56,7 +42,7 @@ public interface EnergyCompanySettingDao {
      * 
      * @return value of property or null if undefined
      */
-    public Integer getInteger(EnergyCompanySettingType setting, int ecId);
+    public int getInteger(EnergyCompanySettingType setting, int ecId);
     
     /**
      * Returns the setting value of the specified EC setting as an enum.
@@ -81,7 +67,7 @@ public interface EnergyCompanySettingDao {
 
      * @return the value of the setting, false if undefined
      */
-    public boolean checkSetting(EnergyCompanySettingType setting, int ecId);
+    public boolean getBoolean(EnergyCompanySettingType setting, int ecId);
     
     /**
      * This method returns the value of a EnergyCOmpany Setting. Unlike getSettingBooleanValue,
@@ -94,8 +80,7 @@ public interface EnergyCompanySettingDao {
      * 
      * @return the value of the setting, false if undefined
      */
-    public boolean checkFalseSetting(EnergyCompanySettingType setting, int ecId);
-
+    public boolean getFalseBoolean(EnergyCompanySettingType setting, int ecId);
     
     /**
      * 

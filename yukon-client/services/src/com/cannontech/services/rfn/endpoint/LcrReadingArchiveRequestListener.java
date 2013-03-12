@@ -103,7 +103,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 if (!activeEnrollments.isEmpty()) {
                     /** Send config if auto-config is enabled */
                     YukonEnergyCompany yec = yecService.getEnergyCompanyByInventoryId(inventoryId);
-                    boolean autoConfig = energyCompanySettingDao.checkSetting(EnergyCompanySettingType.AUTOMATIC_CONFIGURATION, yec.getEnergyCompanyId());
+                    boolean autoConfig = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.AUTOMATIC_CONFIGURATION, yec.getEnergyCompanyId());
                     if (autoConfig) {
                         LiteLmHardwareBase lmhb = inventoryBaseDao.getHardwareByInventoryId(inventoryId);
                         LmHardwareCommand lmhc = new LmHardwareCommand();

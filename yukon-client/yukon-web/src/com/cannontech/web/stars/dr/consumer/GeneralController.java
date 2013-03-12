@@ -48,7 +48,7 @@ public class GeneralController extends AbstractConsumerController {
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             YukonUserContext yukonUserContext, ModelMap map) {
         
-        List<DisplayableProgram> displayablePrograms = 
+        List<DisplayableProgram> displayablePrograms =
             displayableProgramDao.getControlHistorySummary(
                                       customerAccount.getAccountId(),
                                       yukonUserContext,
@@ -69,19 +69,19 @@ public class GeneralController extends AbstractConsumerController {
 	                map.addAttribute("optOutDisabledKey", "optOutsDisabledWarning");
 	            }
 	        }
-        }else if(!optOutEnabled.isCommunicationEnabled()){
+        } else if(!optOutEnabled.isCommunicationEnabled()){
         	map.addAttribute("optOutDisabledKey", "communcationDisabledWarning");
         }
         
         //See if we need to prompt for an email address. step 1: Can we recover passwords?
-        if(globalSettingDao.checkSetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY)){
+        if(globalSettingDao.getBoolean(GlobalSettingType.ENABLE_PASSWORD_RECOVERY)){
         	//Step 2: Can this user edit their password and access the contacts page?
         	if(rolePropertyDao.checkAllProperties(yukonUserContext.getYukonUser(), 
         											YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_PASSWORD, 
         											YukonRoleProperty.RESIDENTIAL_CONTACTS_ACCESS)){
         		//This user should be prompted unless they have a valid email address
         		promptForEmail = true;
-        		
+                
         		//Step 3: Does this user have an email address?
         		LiteContact primaryContact = contactDao.getPrimaryContactForAccount(customerAccount.getAccountId());
                 LiteContactNotification emailNotification = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.EMAIL);
@@ -89,13 +89,13 @@ public class GeneralController extends AbstractConsumerController {
                 if(emailNotification != null){
                 	promptForEmail = false;
                 }
-                
+
                 map.addAttribute("contactId", primaryContact.getContactID());
         	}
         }
         
         map.addAttribute("promptForEmail", promptForEmail);
-        
+
         if (isNotEnrolled) return viewName; // if there are no programs enrolled there is nothing more to show
         
         int accountId = customerAccount.getAccountId();
@@ -104,7 +104,7 @@ public class GeneralController extends AbstractConsumerController {
         
         // Get primary contact's first email address (used for odds for control)
         LiteContact primaryContact = contactDao.getPrimaryContactForAccount(accountId);
-        LiteContactNotification emailNotification = 
+        LiteContactNotification emailNotification =
         	contactNotificationDao.getFirstNotificationForContactByType(
         			primaryContact, ContactNotificationType.EMAIL);
         
@@ -137,7 +137,7 @@ public class GeneralController extends AbstractConsumerController {
     		@ModelAttribute("customerAccount") CustomerAccount customerAccount,
     		String oddsForControlEmail, HttpServletRequest request, 
     		YukonUserContext yukonUserContext) {
-    	
+        
     	int accountId = customerAccount.getAccountId();
     	LiteContact primaryContact = contactDao.getPrimaryContactForAccount(accountId);
         LiteContactNotification emailNotification = 
@@ -156,7 +156,7 @@ public class GeneralController extends AbstractConsumerController {
         				YukonListEntryTypes.YUK_ENTRY_ID_EMAIL, 
         				disabled, 
         				oddsForControlEmail);
-        	
+            
         } else {
         	emailNotification.setDisableFlag(disabled);
         	if(!StringUtils.isBlank(oddsForControlEmail)) {
@@ -165,7 +165,7 @@ public class GeneralController extends AbstractConsumerController {
         }
         
         contactNotificationDao.saveNotification(emailNotification);
-    	
+        
     	return "redirect:/stars/consumer/general";
     }
 }

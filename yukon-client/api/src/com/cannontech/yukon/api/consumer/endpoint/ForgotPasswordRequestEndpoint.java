@@ -24,9 +24,9 @@ import com.cannontech.yukon.api.util.XmlVersionUtils;
 
 @Endpoint
 public class ForgotPasswordRequestEndpoint {
-    private Namespace ns = YukonXml.getYukonNamespace();
-    private Logger log = YukonLogManager.getLogger(RunThermostatProgramEndpoint.class);
-    
+    private final Namespace ns = YukonXml.getYukonNamespace();
+    private final Logger log = YukonLogManager.getLogger(RunThermostatProgramEndpoint.class);
+
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
 
@@ -34,31 +34,31 @@ public class ForgotPasswordRequestEndpoint {
     public Element invoke(Element forgotPasswordRequest) throws Exception {
         XmlVersionUtils.verifyYukonMessageVersion(forgotPasswordRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(forgotPasswordRequest);
-        
+
         //build response
         Element response = new Element("forgotPasswordResponse", ns);
         XmlVersionUtils.addVersionAttribute(response, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-        
+
         try {
             //see if resetting the password even makes sense.  this assumes that the authentication
             //for the user is done through the corresponding UserLoginRequest webservice
-            if(!globalSettingDao.checkSetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY)){
+            if(!globalSettingDao.getBoolean(GlobalSettingType.ENABLE_PASSWORD_RECOVERY)){
                 throw new NotAuthorizedException("Password recovery is not available.");
             }
-            
+
             String userName = requestTemplate.evaluateAsString("//y:username");
             String email = requestTemplate.evaluateAsString("//y:email");
             String fName = requestTemplate.evaluateAsString("//y:firstName");
             String lName = requestTemplate.evaluateAsString("//y:lastName");
-            String accNum = requestTemplate.evaluateAsString("//y:accountNumber");      
+            String accNum = requestTemplate.evaluateAsString("//y:accountNumber");
             String notes = requestTemplate.evaluateAsString("//y:notes");
             String energyComp = requestTemplate.evaluateAsString("//y:energyProvider");
-            
+
             //try to recover the password
             StarsRequestPword reqPword = new StarsRequestPword(userName, email, fName, lName, accNum, starsCustAccountInformationDao);
             reqPword.setNotes(notes);
             reqPword.setEnergyCompany(energyComp);
-            
+
             if(!reqPword.isValidParams()){
                 //not enough info, return error
                 throw new NotFoundException("Not enough information.");
@@ -80,7 +80,7 @@ public class ForgotPasswordRequestEndpoint {
             response.addContent(fe);
             log.error(e.getMessage(), e);
         }
-        
+
         return response;
     }
 }

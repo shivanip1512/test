@@ -64,7 +64,7 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 		LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
 		
 		OptOutCountsTemporaryOverride rolePropSetting = new OptOutCountsTemporaryOverride();
-		if(globalSettingDao.checkSetting(GlobalSettingType.OPT_OUTS_COUNT)) {
+		if(globalSettingDao.getBoolean(GlobalSettingType.OPT_OUTS_COUNT)) {
 		    rolePropSetting.setCounting(OptOutCounts.COUNT);
 		} else {
 		    rolePropSetting.setCounting(OptOutCounts.DONT_COUNT);

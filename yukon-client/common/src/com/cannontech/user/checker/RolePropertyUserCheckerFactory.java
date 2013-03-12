@@ -46,7 +46,7 @@ public class RolePropertyUserCheckerFactory {
         UserCheckerBase checker = new UserCheckerBase() {
             @Override
             public boolean check(LiteYukonUser user) {
-                return energyCompanSettingDao.checkSetting(setting, yecService.getEnergyCompanyByOperator(user).getEnergyCompanyId());
+                return energyCompanSettingDao.getBoolean(setting, yecService.getEnergyCompanyByOperator(user).getEnergyCompanyId());
             };
             
             @Override
@@ -79,7 +79,7 @@ public class RolePropertyUserCheckerFactory {
         UserCheckerBase checker = new UserCheckerBase() {
             @Override
             public boolean check(LiteYukonUser user) {
-                return energyCompanSettingDao.checkFalseSetting(setting, yecService.getEnergyCompanyByOperator(user).getEnergyCompanyId());
+                return energyCompanSettingDao.getFalseBoolean(setting, yecService.getEnergyCompanyByOperator(user).getEnergyCompanyId());
             };
             
             @Override

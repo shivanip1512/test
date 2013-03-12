@@ -108,7 +108,7 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                                                                getStartDate(),
                                                                getStopDate());
         
-        boolean inheritCategories = energyCompanySettingDao.checkSetting(EnergyCompanySettingType.INHERIT_PARENT_APP_CATS, energyCompanyId);
+        boolean inheritCategories = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.INHERIT_PARENT_APP_CATS, energyCompanyId);
         List<ProgramLoadGroup> ecPrograms;
         if(inheritCategories) {
             ecPrograms = applianceAndProgramDao.getAllProgramsForAnECAndParentEC(energyCompanyId);

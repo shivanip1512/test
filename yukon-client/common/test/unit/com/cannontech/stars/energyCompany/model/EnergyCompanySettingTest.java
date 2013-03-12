@@ -41,24 +41,35 @@ public class EnergyCompanySettingTest {
     public void test_isChanged_Enabled() {
         EnergyCompanySetting setting1 = new EnergyCompanySetting();
         EnergyCompanySetting setting2 = new EnergyCompanySetting();
-        setting1.setType(EnergyCompanySettingType.ENERGY_COMPANY_DEFAULT_TIME_ZONE);
-        setting2.setType(EnergyCompanySettingType.ENERGY_COMPANY_DEFAULT_TIME_ZONE);
-        
+        // Two settings which use the enabled column
+        setting1.setType(EnergyCompanySettingType.BROADCAST_OPT_OUT_CANCEL_SPID);
+        setting2.setType(EnergyCompanySettingType.BROADCAST_OPT_OUT_CANCEL_SPID);
+
+        assertFalse(setting1.isChanged(setting2));
+        assertFalse(setting2.isChanged(setting1));
+
+        //TODO
+        setting1.setEnabled(false);
         assertFalse(setting1.isChanged(setting2));
         assertFalse(setting2.isChanged(setting1));
         
-        
-        setting1.setStatus(SettingStatus.ALWAYS_SET);
+        setting2.setEnabled(true);
         assertTrue(setting1.isChanged(setting2));
         assertTrue(setting2.isChanged(setting1));
         
-        setting2.setStatus(SettingStatus.ALWAYS_SET);
+        setting1.setEnabled(true);
         assertFalse(setting1.isChanged(setting2));
         assertFalse(setting2.isChanged(setting1));
-        
-        setting2.setStatus(SettingStatus.SET);
-        assertTrue(setting1.isChanged(setting2));
-        assertTrue(setting2.isChanged(setting1));
+    }
+    
+    @Test
+    public void test_isEnabled() {
+        EnergyCompanySetting setting1 = new EnergyCompanySetting();
+        EnergyCompanySetting setting2 = new EnergyCompanySetting();
+        // Two settings which use the enabled column
+        setting1.setType(EnergyCompanySettingType.BROADCAST_OPT_OUT_CANCEL_SPID);
+        setting2.setType(EnergyCompanySettingType.BROADCAST_OPT_OUT_CANCEL_SPID);
+
     }
     
     @Test
@@ -103,7 +114,7 @@ public class EnergyCompanySettingTest {
         assertFalse(setting1.isValueChanged(setting2));
         assertFalse(setting2.isValueChanged(setting1));
         
-        setting1.setStatus(SettingStatus.UNSET);
+        setting1.setEnabled(false);
         assertFalse(setting1.isValueChanged(setting2));
         assertFalse(setting2.isValueChanged(setting1));
         

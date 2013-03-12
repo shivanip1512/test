@@ -14,22 +14,17 @@ public class GlobalSettingDaoAdapter implements GlobalSettingDao {
     }
 
     @Override
-    public Boolean getBoolean(GlobalSettingType setting) {
+    public boolean getBoolean(GlobalSettingType setting) {
         throw new MethodNotImplementedException();
     }
 
     @Override
-    public Integer getInteger(GlobalSettingType setting) {
+    public int getInteger(GlobalSettingType setting) {
         throw new MethodNotImplementedException();
     }
 
     @Override
     public <E extends Enum<E>> E getEnum(GlobalSettingType setting, Class<E> enumClass) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public boolean checkSetting(GlobalSettingType setting) {
         throw new MethodNotImplementedException();
     }
 
@@ -45,6 +40,11 @@ public class GlobalSettingDaoAdapter implements GlobalSettingDao {
 
     @Override
     public void valueChanged() {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public Integer getNullableInteger(GlobalSettingType type) {
         throw new MethodNotImplementedException();
     }
 }

@@ -7,7 +7,7 @@ import com.cannontech.system.model.GlobalSetting;
 
 /**
  * This DAO is used to access Yukon system settings (Previously Yukon Grp role properties)
- * 
+ *
  */
 public interface GlobalSettingDao {
     
@@ -32,23 +32,36 @@ public interface GlobalSettingDao {
      * that can be cast to Boolean.
      * 
      * @param setting - any GlobalSetting setting with a Boolean return type
-     * @return 
+     * @return
      */
-    public Boolean getBoolean(GlobalSettingType setting);
-    
-    /**
-     * Returns the setting value of the specified Yukon setting as a Integer.
+    public boolean getBoolean(GlobalSettingType setting);
+
+    /** 
+     * Returns the setting value of the specified Yukon setting as a Integer. 
      * 
-     * Undefined values are returned null. 
+     * NOTE: Undefined (null) values are returned 0. 
      * 
      * This method may only be called with properties that have a type return type 
+     * that can be cast to Integer. 
+     * 
+     * @param setting - any GlobalSetting setting with a Integer return type 
+     * @return value of property or 0 if undefined 
+     */
+    public int getInteger(GlobalSettingType setting);
+    
+    /** 
+     * Returns the setting value of the specified Yukon setting as a Integer. 
+     * 
+     * NOTE: Undefined values are returned null. 
+     *  
+     * This method may only be called with properties that have a type return type
      * that can be cast to Integer.
      * 
      * @param setting - any GlobalSetting setting with a Integer return type
-     * @return value of property or null if undefined
+     * @return value of property or 0 if undefined
      */
-    public Integer getInteger(GlobalSettingType setting);
-    
+    public Integer getNullableInteger(GlobalSettingType type);
+
     /**
      * Returns the setting value of the specified Yukon setting as an enum.
      * 
@@ -62,17 +75,6 @@ public interface GlobalSettingDao {
      * @return
      */
     public <E extends Enum<E>> E getEnum(GlobalSettingType setting, Class<E> enumClass);
-    
-    /**
-     * This method returns the value of a Yukon Setting. Unlike getSettingBooleanValue,
-     * this method will return false if undefined.
-     * 
-     * This method may only be called with properties that have a type return type 
-     * that can be cast to Boolean.
-     * @param setting
-     * @return the value of the setting, false if undefined
-     */
-    public boolean checkSetting(GlobalSettingType setting);
     
     /**
      * 

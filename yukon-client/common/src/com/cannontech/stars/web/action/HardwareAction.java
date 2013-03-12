@@ -390,7 +390,7 @@ public class HardwareAction {
         boolean disabled = false;
     
         EnergyCompanySettingDao energyCompanySettingDao = YukonSpringHook.getBean("energyCompanySettingDao", EnergyCompanySettingDao.class);
-        boolean useHardwareAddressing = energyCompanySettingDao.checkSetting(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, energyCompany.getEnergyCompanyId());
+        boolean useHardwareAddressing = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, energyCompany.getEnergyCompanyId());
     
         for (int i = 0; i < hwsToConfig.size(); i++) {
             LiteLmHardwareBase lHw = hwsToConfig.get(i);

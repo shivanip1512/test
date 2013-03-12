@@ -20,16 +20,18 @@ public class CheckGlobalSetting extends BodyTagSupport {
 	/**
 	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	 */
-	public int doStartTag() throws JspException {
-	    boolean isSettingSet = YukonSpringHook.getBean(GlobalSettingDao.class).checkSetting(globalSetting);
+	@Override
+    public int doStartTag() throws JspException {
+	    boolean isSettingSet = YukonSpringHook.getBean(GlobalSettingDao.class).getBoolean(globalSetting);
 		return (isSettingSet) ? EVAL_BODY_INCLUDE : SKIP_BODY;
 	}
-	
+    
 	/**
 	 * Fix for JRun3.1 tags
 	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
 	 */
-	public int doEndTag() throws JspException {		
+	@Override
+    public int doEndTag() throws JspException {
 		try {
 			if(bodyContent != null) {
 				pageContext.getOut().print(bodyContent.getString());

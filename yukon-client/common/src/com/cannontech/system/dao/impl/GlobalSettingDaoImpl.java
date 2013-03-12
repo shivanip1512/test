@@ -19,7 +19,7 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.system.model.GlobalSetting;
 
 /**
- * The class handles Yukon System wide settings. 
+ * The class handles Yukon System wide settings.
  * 
  * These were previously associated with Yukon Grp role properties.
  * 
@@ -61,29 +61,40 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
     }
 
     @Override
-    public Boolean getBoolean(GlobalSettingType type) {
-        return getConvertedValue(type, Boolean.class);
-    }
-
-    @Override
-    public boolean checkSetting(GlobalSettingType type) {
-        Boolean value = getBoolean(type);
+    public boolean getBoolean(GlobalSettingType type) {
+        Boolean value = getNullableBoolean(type);
         if (value == null) {
             return false;
         }
         return value;
     }
 
-    @Override
-    public void verifySetting(GlobalSettingType type) throws NotAuthorizedException {
-        if (!checkSetting(type)) throw new NotAuthorizedException("User not authorized to view this page.");
+    private Boolean getNullableBoolean(GlobalSettingType setting) {
+        return getConvertedValue(setting, Boolean.class);
     }
 
     @Override
-    public Integer getInteger(GlobalSettingType type) {
+    public void verifySetting(GlobalSettingType type) throws NotAuthorizedException {
+        if (!getBoolean(type)) {
+            throw new NotAuthorizedException("User not authorized to view this page.");
+        }
+    }
+
+    @Override
+    public Integer getNullableInteger(GlobalSettingType type) {
         return getConvertedValue(type, Integer.class);
     }
 
+    @Override
+    public int getInteger(GlobalSettingType type) {
+        Integer convertedValue = getNullableInteger(type);
+        if (convertedValue == null) {
+            return 0;
+        } else {
+            return convertedValue;
+        }
+    }
+    
     @Override
     public <E extends Enum<E>> E getEnum(GlobalSettingType type, Class<E> enumClass) {
         return getConvertedValue(type, enumClass);
@@ -144,7 +155,7 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
         log.debug("Removing " +  cache.size() + " values from the Global Settings Cache");
         cache.clear();
     }
-  
+    
     private final YukonRowMapper<GlobalSetting> settingMapper = new YukonRowMapper<GlobalSetting>() {
         @Override
         public GlobalSetting mapRow(YukonResultSet rs) throws SQLException {
@@ -164,5 +175,4 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
             return setting;
         }
     };
-    
 }

@@ -42,7 +42,7 @@ public class ContactServiceImpl implements ContactService {
 	public LiteContact createAdditionalContact(String firstName, String lastName, LiteCustomer customer) {
 	    LiteYukonUser user = null;
         LiteStarsEnergyCompany energyCompany =  starsDatabaseCache.getEnergyCompany(customer.getEnergyCompanyID());
-	    boolean autoCreateLogin = energyCompanySettingDao.checkSetting(EnergyCompanySettingType.AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS, energyCompany.getEnergyCompanyId());
+	    boolean autoCreateLogin = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS, energyCompany.getEnergyCompanyId());
 
 	    if(autoCreateLogin) {
 	        List<LiteUserGroup> custUserGroups = ecMappingDao.getResidentialUserGroups(customer.getEnergyCompanyID());

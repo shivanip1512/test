@@ -97,7 +97,7 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
                 // We have to update the schedule mode for Utility Pro thermostats every
                 // time we update the schedule if 5-2 mode is enabled
 
-                boolean mode52Enabled = energyCompanySettingDao.checkSetting(EnergyCompanySettingType.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND, ecId);
+                boolean mode52Enabled = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND, ecId);
                 
                 if (mode52Enabled) {
                     String serialString = " serial " + stat.getSerialNumber();

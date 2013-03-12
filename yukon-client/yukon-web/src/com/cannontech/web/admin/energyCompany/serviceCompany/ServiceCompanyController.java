@@ -227,7 +227,7 @@ public class ServiceCompanyController {
     
     @ModelAttribute ("canEditDesignationCodes")
     public boolean getEditDesignationCodes(YukonUserContext userContext, int ecId) {
-        return energyCompanySettingDao.checkSetting(EnergyCompanySettingType.ADMIN_ALLOW_DESIGNATION_CODE, ecId);
+        return energyCompanySettingDao.getBoolean(EnergyCompanySettingType.ADMIN_ALLOW_DESIGNATION_CODE, ecId);
     }
     
     @ModelAttribute ("canViewDesignationCodes")

@@ -297,7 +297,7 @@ public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
             starsDatabaseCache.addWebConfiguration(liteCfg);
         }
         
-        boolean useAlternateEnrollment = energyCompanySettingDao.checkSetting(EnergyCompanySettingType.ALTERNATE_PROGRAM_ENROLLMENT, lsec.getEnergyCompanyId());
+        boolean useAlternateEnrollment = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.ALTERNATE_PROGRAM_ENROLLMENT, lsec.getEnergyCompanyId());
 
         if (useAlternateEnrollment) {
             Integer altProgramId = ap.getAlternateProgramId();

@@ -74,7 +74,7 @@ public class CustomerPointTypeLookup {
     public Set<String> getPointTypeGroups(LiteEnergyCompany energyCompany) {
 
         String property = energyCompanySettingDao.getString(EnergyCompanySettingType.APPLICABLE_POINT_TYPE_KEY, energyCompany.getEnergyCompanyID());
-        boolean propertyEnabled = energyCompanySettingDao.isSet(EnergyCompanySettingType.APPLICABLE_POINT_TYPE_KEY, energyCompany.getEnergyCompanyID());
+        boolean propertyEnabled = energyCompanySettingDao.isEnabled(EnergyCompanySettingType.APPLICABLE_POINT_TYPE_KEY, energyCompany.getEnergyCompanyID());
         
         if (!propertyEnabled || StringUtils.isBlank(property)) {
             return Collections.emptySet();

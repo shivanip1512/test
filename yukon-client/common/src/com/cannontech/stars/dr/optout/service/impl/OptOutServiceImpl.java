@@ -514,7 +514,7 @@ public class OptOutServiceImpl implements OptOutService {
 		List<OptOutEvent> currentOptOuts = optOutEventDao.getAllCurrentOptOuts((LiteStarsEnergyCompany) energyCompany);
 
 		boolean broadCastSpidEnabled 
-		= energyCompanySettingDao.isSet(EnergyCompanySettingType.BROADCAST_OPT_OUT_CANCEL_SPID, energyCompany.getEnergyCompanyId());
+		= energyCompanySettingDao.isEnabled(EnergyCompanySettingType.BROADCAST_OPT_OUT_CANCEL_SPID, energyCompany.getEnergyCompanyId());
 
 		boolean validSpid;
 		int broadcastSpid = 0;

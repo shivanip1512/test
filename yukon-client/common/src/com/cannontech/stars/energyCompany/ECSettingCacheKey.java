@@ -4,15 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A composite key used for the EnergyCompanySettingDao cache. 
- * 
+ * A composite key used for the EnergyCompanySettingDao cache.
+ *
  * A key consists of EnergyCompnaySettingType and ecId. The keys generated are cached.
  */
 public class ECSettingCacheKey {
     private static final Map<Integer, Map<EnergyCompanySettingType, ECSettingCacheKey>> cacheCache = new HashMap<>();
 
-    final int ecId;
-    final EnergyCompanySettingType type;
+    final private int ecId;
+    final private EnergyCompanySettingType type;
 
     public ECSettingCacheKey(EnergyCompanySettingType type, int ecId) {
         this.ecId = ecId;

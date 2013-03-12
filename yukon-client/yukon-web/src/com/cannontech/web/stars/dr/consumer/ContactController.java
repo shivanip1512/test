@@ -116,7 +116,7 @@ public class ContactController extends AbstractConsumerController {
      */
     @RequestMapping(value="/consumer/contacts/view", method = RequestMethod.GET)
     public String viewContact(int contactId, YukonUserContext user, ModelMap map) {
-    	
+        
         setupPageMode(user, map, PageEditMode.VIEW, contactId, true);
     	return "consumer/contacts/edit.jsp";
     }
@@ -140,7 +140,7 @@ public class ContactController extends AbstractConsumerController {
     							YukonUserContext user,
     							FlashScope flashScope,
     							ModelMap map) {
-    	
+        
     	int userId = user.getYukonUser().getUserID();
         LiteCustomer customer = customerDao.getCustomerForUser(userId);
         
@@ -166,7 +166,7 @@ public class ContactController extends AbstractConsumerController {
     						  int contactId,
     						  YukonUserContext user,
     						  ModelMap map) {
-    	
+        
     	if(checkPrimaryContact(customerAccount, contactId)){
     		map.put("primaryContact", true);
     	}
@@ -183,12 +183,12 @@ public class ContactController extends AbstractConsumerController {
     							YukonUserContext user, 
     							FlashScope flashScope, 
     							ModelMap map) {
-    	
+        
     	//check permissions for this user and contact
     	accountCheckerService.checkContact(user.getYukonUser(), contact.getContactID());
-    	
+        
     	CustomerAccount account = customerAccountDao.getAccountByContactId(contact.getContactID());
-    	
+        
     	//validate contact and notifications
     	liteContactValidator.validate(contact, bindingResult);
     	if(bindingResult.hasErrors()){
@@ -204,9 +204,9 @@ public class ContactController extends AbstractConsumerController {
 
     	// If Auto Create Login is true AND this is not the primary contact AND there is no login for this contact, create one.
     	YukonEnergyCompany energyCompany =  yukonEnergyCompanyService.getEnergyCompanyByAccountId(account.getAccountId());
-    	boolean autoCreateLogin = energyCompanySettingDao.checkSetting(EnergyCompanySettingType.AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS, energyCompany.getEnergyCompanyId());
+    	boolean autoCreateLogin = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS, energyCompany.getEnergyCompanyId());
         
-        if (autoCreateLogin && !contactDao.isPrimaryContact(contact.getContactID()) 
+        if (autoCreateLogin && !contactDao.isPrimaryContact(contact.getContactID())
                 && contact.getLoginID() == UserUtils.USER_DEFAULT_ID) {
             List<LiteUserGroup> custUserGroups =  ecMappingDao.getResidentialUserGroups(energyCompany.getEnergyCompanyId());
             LiteYukonUser login = yukonUserDao.createLoginForAdditionalContact(contact.getContFirstName(), contact.getContLastName(), custUserGroups.get(0));
@@ -215,7 +215,7 @@ public class ContactController extends AbstractConsumerController {
         
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.consumer.contacts.contactSaved"));
         contactDao.saveContact(contact);
-    	
+        
     	return "redirect:/stars/consumer/contacts";
     }
     
@@ -228,13 +228,13 @@ public class ContactController extends AbstractConsumerController {
     							ModelMap map) {
     	//check permissions for this user and contact
     	accountCheckerService.checkContact(user.getYukonUser(), contact.getContactID());
-    	
+        
     	//check that they are not trying to delete the primary contact
         if(checkPrimaryContact(customerAccount, contact.getContactID())) {
         	flashScope.setError(new YukonMessageSourceResolvable("yukon.dr.consumer.contacts.cannotDeletePrimaryContact"));
         	return "redirect:/stars/consumer/contacts";
         }
-    	
+        
     	contactDao.deleteContact(contact.getContactID());
         //clean-up user login, if exists
         if (contact.getLoginID() > 0) {
@@ -258,10 +258,10 @@ public class ContactController extends AbstractConsumerController {
     }
     
     private void setupPageMode(YukonUserContext user, ModelMap map, PageEditMode mode, Integer contactId, Boolean fetchContact) {
-    	
+        
     	//set the page mode
     	map.addAttribute("mode", mode);
-    	
+        
     	if(fetchContact) {
 	    	if(contactId != null) {
 	    		map.addAttribute("contact", contactDao.getContact(contactId));
@@ -272,7 +272,7 @@ public class ContactController extends AbstractConsumerController {
 	    		contactId = contact.getContactID();
 	    	}
     	}
-    	
+        
     	switch(mode) {
     	case VIEW:
     		break;
@@ -292,7 +292,7 @@ public class ContactController extends AbstractConsumerController {
     			"N",
     			"");
     	map.addAttribute("notificationTemplate", notification);
-    	
+        
     	// add the notification types for select fields
     	MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(user);
     	Map<Integer,String> referenceData = new HashMap<Integer, String>();
@@ -305,14 +305,14 @@ public class ContactController extends AbstractConsumerController {
     private void promptForEmail(ModelMap map, LiteYukonUser user, int accountId){
     	boolean promptForEmail = false;
     	//See if we need to prompt for an email address. step 1: Can we recover passwords?
-        if(globalSettingsDao.checkSetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY)){
+        if(globalSettingsDao.getBoolean(GlobalSettingType.ENABLE_PASSWORD_RECOVERY)){
         	//Step 2: Can this user edit their password and access the contacts page?
         	if(rolePropertyDao.checkAllProperties(user, 
         											YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_PASSWORD, 
         											YukonRoleProperty.RESIDENTIAL_CONTACTS_ACCESS)){
         		//This user should be prompted unless they have a valid email address
         		promptForEmail = true;
-        		
+                
         		//Step 3: Does this user have an email address?
         		LiteContact primaryContact = contactDao.getPrimaryContactForAccount(accountId);
                 LiteContactNotification emailNotification = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.EMAIL);
@@ -322,7 +322,7 @@ public class ContactController extends AbstractConsumerController {
                 }
         	}
         }
-        
+
         map.addAttribute("promptForEmail", promptForEmail);
     }
 }

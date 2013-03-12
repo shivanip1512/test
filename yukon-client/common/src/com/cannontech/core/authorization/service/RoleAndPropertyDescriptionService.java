@@ -31,32 +31,36 @@ public class RoleAndPropertyDescriptionService {
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
 
     /**
-     * This will check that the user has the given roles, categories, has a 
+     * This will check that the user has the given roles, categories, has a
      * true value for the given role properties, or a true GlobalSetting value.
      * Categories, roles and properties are specified as a comma-separated
-     * list of enum names. 
-     * 
+     * list of enum names.
+     *
      * This works in an OR fashion. If the user passes any
      * of the role or property checks a boolean value of
      * true is returned.
-     * 
+     *
      * Specific categories or roles can be not'd by prepending a !. Properties
      * can be checked with the False Checks by prepending a !.
      */
-    public boolean checkIfAtLeaseOneExists(final String rolePropDescription, 
+    public boolean checkIfAtLeaseOneExists(final String rolePropDescription,
             final LiteYukonUser user) {
         return compile(rolePropDescription).check(user);
     }
-    
+
     public UserChecker compile(final String rolePropDescription) {
-        if (rolePropDescription.equals("*")) return NullUserChecker.getInstance();
+        if (rolePropDescription.equals("*")) {
+            return NullUserChecker.getInstance();
+        }
 
         List<UserChecker> checkers = Lists.newArrayListWithExpectedSize(5);
         // split value
         String[] valueArray = rolePropDescription.split("[\\s,\\n]+");
         for (String someEnumName : valueArray) {
             someEnumName = someEnumName.trim();
-            if (someEnumName.isEmpty()) continue;
+            if (someEnumName.isEmpty()) {
+                continue;
+            }
 
             // check if it is inverted
             boolean inverted = false;
@@ -73,11 +77,11 @@ public class RoleAndPropertyDescriptionService {
                 }
                 checkers.add(categoryChecker);
                 continue;
-                
+
             } catch (IllegalArgumentException e) {
             }
-            
-            
+
+
             // see if it is a role
             try {
                 YukonRole role = YukonRole.valueOf(someEnumName);
@@ -104,11 +108,11 @@ public class RoleAndPropertyDescriptionService {
                 continue;
 
             } catch (IllegalArgumentException ignore) { }
-            
-            // see if it is a supported system setting 
+
+            // see if it is a supported system setting
             try {
 
-                boolean bool = globalSettingDao.checkSetting(GlobalSettingType.valueOf(someEnumName));
+                boolean bool = globalSettingDao.getBoolean(GlobalSettingType.valueOf(someEnumName));
 
                 UserChecker propertyChecker = bool ? UserCheckerBase.TRUE : UserCheckerBase.FALSE;
                 if (inverted) {
@@ -119,7 +123,7 @@ public class RoleAndPropertyDescriptionService {
 
             } catch (IllegalArgumentException ignore) { }
 
-            // see if it is a supported energy company setting 
+            // see if it is a supported energy company setting
             try {
                 EnergyCompanySettingType setting = EnergyCompanySettingType.valueOf(someEnumName);
                 UserChecker settingChecker;
@@ -153,8 +157,8 @@ public class RoleAndPropertyDescriptionService {
         }
         // if we get here, nothing matched
         AggregateOrUserChecker userChecker = new AggregateOrUserChecker(checkers);
-        return userChecker;  
+        return userChecker;
     }
-        
+
 
 }

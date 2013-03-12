@@ -2,8 +2,8 @@ package com.cannontech.servlet;
 
 /**
  * Sends password requests to the requestors EnergyCompany
- * 
- * @author: neuharthr 
+ *
+ * @author: neuharthr
  */
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +21,7 @@ public class PWordRequest extends javax.servlet.http.HttpServlet
 	private static final String INVALID_URI = "/login/forgotPassword?failedMsg=";
 	private static final String SUCCESS_URI = "/login/forgotPassword?success=true";
 
-	
+    
 	/**
 	 * Handles password request operation
 	 * 
@@ -37,7 +37,7 @@ public class PWordRequest extends javax.servlet.http.HttpServlet
 		String email = ServletUtil.getParameter( req, "EMAIL");
 		String fName = ServletUtil.getParameter( req, "FIRST_NAME");
 		String lName = ServletUtil.getParameter( req, "LAST_NAME");
-		String accNum = ServletUtil.getParameter( req, "ACCOUNT_NUM");		
+        String accNum = ServletUtil.getParameter( req, "ACCOUNT_NUM");      
 		String notes = ServletUtil.getParameter( req, "NOTES");
         String energyComp = ServletUtil.getParameter( req, "ENERGY_COMPANY");
 
@@ -50,7 +50,7 @@ public class PWordRequest extends javax.servlet.http.HttpServlet
         reqPword.setEnergyCompany( energyComp );
 
 		String returnURI = "";
-		boolean authorized = YukonSpringHook.getBean(GlobalSettingDao.class).checkSetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
+		boolean authorized = YukonSpringHook.getBean(GlobalSettingDao.class).getBoolean(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
 		if(!authorized) {
 		    throw new NotAuthorizedException("Missing a required role or property to use this page.");
         }
@@ -59,22 +59,22 @@ public class PWordRequest extends javax.servlet.http.HttpServlet
 			//not enough info, return error
 			returnURI = INVALID_URI + "MORE_INFO";
 		}
-		else
-		{
-			//do the work
-			reqPword.doRequest();
-			
-			//decide where we need to go next
-			if( reqPword.getState() == RequestPword.RET_SUCCESS )
-				returnURI = SUCCESS_URI;
-			else
-				returnURI = INVALID_URI + reqPword.getResultString();
-		}
-		
-		
-		resp.sendRedirect( req.getContextPath() + returnURI );		
+        else
+        {
+            //do the work
+            reqPword.doRequest();
+            
+            //decide where we need to go next
+            if( reqPword.getState() == RequestPword.RET_SUCCESS )
+                returnURI = SUCCESS_URI;
+            else
+                returnURI = INVALID_URI + reqPword.getResultString();
+        }
+
+
+		resp.sendRedirect( req.getContextPath() + returnURI );
 	}
-	
+    
 
 	protected RequestPword createRequest( HttpServletRequest req_,
 			String userName_, String email_, String fName_, String lName_, String accNum_ )
@@ -88,6 +88,6 @@ public class PWordRequest extends javax.servlet.http.HttpServlet
 
 		return reqPword;
 	}
-	
+    
 
 }

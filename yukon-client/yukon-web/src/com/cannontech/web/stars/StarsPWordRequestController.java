@@ -20,13 +20,14 @@ public class StarsPWordRequestController implements Controller {
     private static final String SUCCESS_URI = "/login/forgotPassword?success=true";
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     
+    @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         String userName = ServletUtil.getParameter( request, "USERNAME");
         String email = ServletUtil.getParameter( request, "EMAIL");
         String fName = ServletUtil.getParameter( request, "FIRST_NAME");
         String lName = ServletUtil.getParameter( request, "LAST_NAME");
-        String accNum = ServletUtil.getParameter( request, "ACCOUNT_NUM");      
+        String accNum = ServletUtil.getParameter( request, "ACCOUNT_NUM");
         String notes = ServletUtil.getParameter( request, "NOTES");
         String energyComp = ServletUtil.getParameter( request, "ENERGY_COMPANY");
 
@@ -39,7 +40,7 @@ public class StarsPWordRequestController implements Controller {
         reqPword.setEnergyCompany( energyComp );
 
         String returnURI = "";
-        boolean authorized = YukonSpringHook.getBean(GlobalSettingDao.class).checkSetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
+        boolean authorized = YukonSpringHook.getBean(GlobalSettingDao.class).getBoolean(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
         if(!authorized) {
             throw new NotAuthorizedException("Missing a required role or property to use this page.");
         }
@@ -61,7 +62,7 @@ public class StarsPWordRequestController implements Controller {
         }
         
         
-        response.sendRedirect( request.getContextPath() + returnURI );      
+        response.sendRedirect( request.getContextPath() + returnURI );
         return null;
     }
     

@@ -8,12 +8,12 @@ import org.joda.time.Instant;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 
 public class EnergyCompanySetting {
-    
+
     private Integer id;
     private Integer energyCompanyId;
     private EnergyCompanySettingType type;
     private Object value;
-    private SettingStatus status;
+    private boolean enabled;
     private String comments;
     private Instant lastChanged;
     
@@ -24,7 +24,7 @@ public class EnergyCompanySetting {
         this.lastChanged = other.getLastChanged();
         this.type = other.getType();
         this.value = other.getValue();
-        this.status = other.getStatus();
+        this.enabled = other.getEnabled();
     }
 
     public EnergyCompanySetting() {
@@ -38,7 +38,7 @@ public class EnergyCompanySetting {
     public void setEnergyCompanyId(Integer energyCompanyId) {
         this.energyCompanyId = energyCompanyId;
     }
-    
+
     public EnergyCompanySettingType getType() {
         return type;
     }
@@ -54,7 +54,7 @@ public class EnergyCompanySetting {
     public void setValue(Object obj) {
         this.value = obj;// InputTypeFactory.convertPropertyValue(value, type.getType());
     }
-    
+
     public String getComments() {
         return comments;
     }
@@ -78,12 +78,16 @@ public class EnergyCompanySetting {
         return !value.equals(type.getDefaultValue());
     }
 
-    public SettingStatus getStatus() {
-        return status;
+    public boolean getEnabled() {
+        if (type.isUsesEnabledField()) {
+            return enabled;
+        } else {
+            return true;
+        }
     }
 
-    public void setStatus(SettingStatus status) {
-        this.status = status;
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
     
     public void setId(Integer id) {
@@ -103,7 +107,7 @@ public class EnergyCompanySetting {
         boolean changed = false;
         changed |= isValueChanged(other);
         changed |= StringUtils.isBlank(other.getComments()) ? !StringUtils.isBlank(comments) : !other.getComments().equals(comments);
-        changed |= other.getStatus() == null ? status !=null : !other.getStatus().equals(status);
+        changed |= getEnabled() != other.getEnabled();
         return changed;
     }
 
@@ -123,7 +127,8 @@ public class EnergyCompanySetting {
         EnergyCompanySetting defaultSetting = new EnergyCompanySetting();
         defaultSetting.setEnergyCompanyId(ecId);
         defaultSetting.setType(type);
-        defaultSetting.setStatus(type.getDefaultStatus());
+        // if this setting uses enabled field, default is false, else its true
+        defaultSetting.setEnabled(!type.isUsesEnabledField());
         defaultSetting.setValue(type.getDefaultValue());
         return defaultSetting;
     }

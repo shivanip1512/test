@@ -426,7 +426,7 @@ public class ApplianceCategoryController {
         model.addAttribute("isEditable", isEditable);
                 
         if(!bean.isMultiple()) {
-            boolean showAlternateEnrollment = energyCompanySettingDao.checkSetting(EnergyCompanySettingType.ALTERNATE_PROGRAM_ENROLLMENT, yec.getEnergyCompanyId());
+            boolean showAlternateEnrollment = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.ALTERNATE_PROGRAM_ENROLLMENT, yec.getEnergyCompanyId());
             if (showAlternateEnrollment) {
                 /*
                  * Programs that should be excluded from Alternate Enrollment picker

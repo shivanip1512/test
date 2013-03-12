@@ -30,7 +30,7 @@ public class CheckEnergyCompanySettingTag extends TagSupport {
         boolean isSet = false;
         try {
             EnergyCompanySettingType type = EnergyCompanySettingType.valueOf(EnergyCompanySettingType.class, value);
-            isSet = energyCompanySettingDao.checkSetting(type, energyCompanyId);
+            isSet = energyCompanySettingDao.getBoolean(type, energyCompanyId);
         } catch (IllegalArgumentException ignore) {
             throw new IllegalArgumentException("Can't use '" + value + "', check that it is a valid EnergyCompanySetting");
         }

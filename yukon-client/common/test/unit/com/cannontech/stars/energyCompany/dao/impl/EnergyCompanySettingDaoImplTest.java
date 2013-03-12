@@ -34,7 +34,6 @@ import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.model.EnergyCompanySetting;
-import com.cannontech.stars.energyCompany.model.SettingStatus;
 
 public class EnergyCompanySettingDaoImplTest {
 
@@ -132,7 +131,7 @@ public class EnergyCompanySettingDaoImplTest {
 
         EnergyCompanySetting settingInDb1 = new EnergyCompanySetting() {{
             setComments("i'm in the database");
-            setStatus(SettingStatus.UNSET);
+            setEnabled(false);
             setEnergyCompanyId(99);
             setId(100);
             setType(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY);
@@ -142,7 +141,7 @@ public class EnergyCompanySettingDaoImplTest {
 
         EnergyCompanySetting settingInDb2 = new EnergyCompanySetting() {{
             setComments("i'm also in the database");
-            setStatus(SettingStatus.SET);
+            setEnabled(true);
             setEnergyCompanyId(100);
             setId(101);
             setType(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT);
@@ -251,7 +250,9 @@ public class EnergyCompanySettingDaoImplTest {
         mockDatabase.addSetting(setting_valueNull);
 
         assertEquals(false, impl.getBoolean(settingType, setting_valueBoolean.getEnergyCompanyId()));
-        assertEquals(null, impl.getBoolean(settingType, setting_valueNull.getEnergyCompanyId()));
+        
+        // Null values return false
+        assertEquals(false, impl.getBoolean(settingType, setting_valueNull.getEnergyCompanyId()));
 
         // Testing a default
         assertEquals(true, impl.getBoolean(EnergyCompanySettingType.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_ALL, 9999));
@@ -278,11 +279,13 @@ public class EnergyCompanySettingDaoImplTest {
         mockDatabase.addSetting(setting_valueInteger);
         mockDatabase.addSetting(setting_valueNull);
 
-        assertEquals(Integer.valueOf(10), impl.getInteger(settingType, setting_valueInteger.getEnergyCompanyId()));
-        assertEquals(null, impl.getInteger(settingType, setting_valueNull.getEnergyCompanyId()));
+        assertEquals(10, impl.getInteger(settingType, setting_valueInteger.getEnergyCompanyId()));
+
+        // Null values return 0
+        assertEquals(0, impl.getInteger(settingType, setting_valueNull.getEnergyCompanyId()));
 
         // Testing a default
-        assertEquals(Integer.valueOf(0), impl.getInteger(EnergyCompanySettingType.ROTATION_DIGIT_LENGTH, 9999));
+        assertEquals(0, impl.getInteger(EnergyCompanySettingType.ROTATION_DIGIT_LENGTH, 9999));
     }
 
     @Test
@@ -291,7 +294,7 @@ public class EnergyCompanySettingDaoImplTest {
 
         // type is stringType()
         final EnergyCompanySettingType settingType = EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION;
-        
+
         EnergyCompanySetting setting_valueEnum = new EnergyCompanySetting() {{
             setEnergyCompanyId(2);
             setType(settingType);
@@ -334,14 +337,14 @@ public class EnergyCompanySettingDaoImplTest {
         mockDatabase.addSetting(setting_valueBoolean);
         mockDatabase.addSetting(setting_valueNull);
 
-        assertEquals(false, impl.checkSetting(settingType, setting_valueBoolean.getEnergyCompanyId()));
+        assertEquals(false, impl.getBoolean(settingType, setting_valueBoolean.getEnergyCompanyId()));
         // null here should return false
-        assertEquals(false, impl.checkSetting(settingType, setting_valueNull.getEnergyCompanyId()));
+        assertEquals(false, impl.getBoolean(settingType, setting_valueNull.getEnergyCompanyId()));
 
         // Testing a default
-        assertEquals(true, impl.checkSetting(EnergyCompanySettingType.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_ALL, 9999));
+        assertEquals(true, impl.getBoolean(EnergyCompanySettingType.ADMIN_ALLOW_THERMOSTAT_SCHEDULE_ALL, 9999));
     }
-    
+
     @Test
     public void test_verifyUpdate() {
         mockDatabase.clearAll();
@@ -405,7 +408,7 @@ public class EnergyCompanySettingDaoImplTest {
      * Helper assert two energyCompanySetting's are equal
      */
     private void assertEqualSetting(EnergyCompanySetting s1, EnergyCompanySetting s2) {
-        assertEquals(s1.getStatus(), s2.getStatus());
+        assertEquals(s1.getEnabled(), s2.getEnabled());
         assertEquals(s1.getComments(), s2.getComments());
         assertEquals(s1.getEnergyCompanyId(), s2.getEnergyCompanyId());
         assertEquals(s1.getId(), s2.getId());

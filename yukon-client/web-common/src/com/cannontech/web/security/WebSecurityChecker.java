@@ -64,7 +64,7 @@ public class WebSecurityChecker {
     public void checkGlobalSetting(GlobalSettingType setting) {
         final LiteYukonUser user = getYukonUser();
         
-        if (!globalSettingDao.checkSetting(setting)) {
+        if (!globalSettingDao.getBoolean(setting)) {
             throw new NotAuthorizedException("User " + user + " is not authorized to access this page.");
         }
     }
@@ -93,7 +93,7 @@ public class WebSecurityChecker {
         final LiteYukonUser user = getYukonUser();
         YukonEnergyCompany yec = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
         
-        if (yec == null || !energyCompanySettingDao.checkSetting(setting, yec.getEnergyCompanyId())) {
+        if (yec == null || !energyCompanySettingDao.getBoolean(setting, yec.getEnergyCompanyId())) {
             throw new NotAuthorizedException("User " + user + " is not authorized to access this page.");
         }
     }

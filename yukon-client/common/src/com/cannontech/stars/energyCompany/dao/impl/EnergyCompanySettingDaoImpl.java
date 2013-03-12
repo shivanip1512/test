@@ -23,6 +23,7 @@ import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -36,7 +37,6 @@ import com.cannontech.stars.energyCompany.ECSettingCacheKey;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompanySetting;
-import com.cannontech.stars.energyCompany.model.SettingStatus;
 import com.cannontech.user.UserUtils;
 
 public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
@@ -57,7 +57,7 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
             parameterHolder.addValue("Name", setting.getType());
             parameterHolder.addValue("EnergyCompanyId", setting.getEnergyCompanyId());
             parameterHolder.addValue("Name", setting.getType());
-            parameterHolder.addValue("Status", setting.getStatus());
+            parameterHolder.addValue("Enabled", YNBoolean.valueOf(setting.getEnabled()));
             parameterHolder.addValue("Value", setting.getValue());
             parameterHolder.addValue("Comments", setting.getComments());
             parameterHolder.addValue("LastChangedDate", setting.getLastChanged());
@@ -107,13 +107,13 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
     }
 
     @Override
-    public Boolean getBoolean(EnergyCompanySettingType setting, int ecId) {
-        return getConvertedValue(setting, ecId, Boolean.class);
-    }
-
-    @Override
-    public Integer getInteger(EnergyCompanySettingType setting, int ecId) {
-        return getConvertedValue(setting, ecId, Integer.class);
+    public int getInteger(EnergyCompanySettingType setting, int ecId) {
+        Integer convertedValue = getConvertedValue(setting, ecId, Integer.class);
+        if (convertedValue == null) {
+            return 0;
+        } else {
+            return convertedValue;
+        }
     }
 
     @Override
@@ -122,27 +122,34 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
     }
 
     @Override
-    public boolean checkSetting(EnergyCompanySettingType setting, int ecId) {
-        Boolean value = getBoolean(setting, ecId);
+    public boolean getBoolean(EnergyCompanySettingType setting, int ecId) {
+        Boolean value = getNullableBoolean(setting, ecId);
         if (value == null) {
             return false;
+        } else {
+            return value;
         }
-        return value;
     }
 
     @Override
-    public boolean checkFalseSetting(EnergyCompanySettingType setting, int ecId) {
-        Boolean value = getBoolean(setting, ecId);
+    public boolean getFalseBoolean(EnergyCompanySettingType setting, int ecId) {
+        Boolean value = getNullableBoolean(setting, ecId);
         if (value == null) {
             return false;
         }
         return !value.booleanValue();
     }
-    
+
+    private Boolean getNullableBoolean(EnergyCompanySettingType setting, int ecId) {
+        return getConvertedValue(setting, ecId, Boolean.class);
+    }
+
     @Override
     public void verifySetting(EnergyCompanySettingType setting, int ecId)
             throws NotAuthorizedException {
-        if (!checkSetting(setting, ecId)) throw new NotAuthorizedException("User not authorized to view this page.");
+        if (!getBoolean(setting, ecId)) {
+            throw new NotAuthorizedException("User not authorized to view this page.");
+        }
     }
 
     @Override
@@ -153,7 +160,7 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
 
     private EnergyCompanySetting findSetting(EnergyCompanySettingType setting, int ecId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EnergyCompanySettingId, EnergyCompanyId, Name, Value, Status, Comments, LastChangedDate");
+        sql.append("SELECT EnergyCompanySettingId, EnergyCompanyId, Name, Value, Enabled, Comments, LastChangedDate");
         sql.append("FROM EnergyCompanySetting");
         sql.append("WHERE Name").eq(setting.name());
         sql.append("AND EnergyCompanyId").eq(ecId);
@@ -186,7 +193,7 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
             setting.setValue(value);
             setting.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
             setting.setId(rs.getInt("EnergyCompanySettingId"));
-            setting.setStatus(rs.getEnum(("Status"), SettingStatus.class));
+            setting.setEnabled(rs.getEnum(("Enabled"), YNBoolean.class).getBoolean());
             setting.setComments(rs.getString("Comments"));
             setting.setLastChanged(rs.getInstant("LastChangedDate"));
 
@@ -220,13 +227,13 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
 
             if (insertTemplate.saveWillUpdate(setting)) {
                 insertTemplate.save(setting);
-                dbChangeManager.processDbChange(DbChangeType.UPDATE, 
-                                                DbChangeCategory.ENERGY_COMPANY_SETTING, 
+                dbChangeManager.processDbChange(DbChangeType.UPDATE,
+                                                DbChangeCategory.ENERGY_COMPANY_SETTING,
                                                 setting.getEnergyCompanyId());
             } else {
                 insertTemplate.save(setting);
-                dbChangeManager.processDbChange(DbChangeType.ADD, 
-                                                DbChangeCategory.ENERGY_COMPANY_SETTING, 
+                dbChangeManager.processDbChange(DbChangeType.ADD,
+                                                DbChangeCategory.ENERGY_COMPANY_SETTING,
                                                 setting.getEnergyCompanyId());
             }
             
@@ -234,7 +241,9 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
             Object currentValue = currentSetting.getValue();
             String comments = setting.getComments();
             log.debug(setting.getType() + " updated. Previous value (" + currentValue + ") current value (" + value + "). Comments: (" + comments + ")");
-            if (user == null) user = UserUtils.getYukonUser();
+            if (user == null) {
+                user = UserUtils.getYukonUser();
+            }
             starsEventLogService.energyCompanySettingUpdated(user, setting.getType(), ecId, value == null ? "" : value.toString());
             valueChanged();
         }
@@ -254,7 +263,7 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
         setting.setValue(value);
         updateSetting(setting, user, ecId);
     }
-    
+
     @Override
     public List<EnergyCompanySetting> getAllSettings(int ecId) {
         List<EnergyCompanySetting> settings = new ArrayList<>();
@@ -267,8 +276,8 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
     }
 
     @Override
-    public boolean isSet(EnergyCompanySettingType setting, int ecId) {
-        return getSetting(setting, ecId).getStatus() != SettingStatus.UNSET;
+    public boolean isEnabled(EnergyCompanySettingType setting, int ecId) {
+        return getSetting(setting, ecId).getEnabled();
     }
     
     @PostConstruct

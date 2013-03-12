@@ -726,7 +726,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
      * if it is a single energy company system), ordered alphabetically.
      */
     public List<LiteYukonPAObject> getAllRoutes() {
-        if (energyCompanySettingDao.checkSetting(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, this.getEnergyCompanyId())) {
+        if (energyCompanySettingDao.getBoolean(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, this.getEnergyCompanyId())) {
             List<LiteYukonPAObject> result = IterableUtils.safeList(paoDao.getAllLiteRoutes());
             return result; 
         }
