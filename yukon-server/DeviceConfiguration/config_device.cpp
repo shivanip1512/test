@@ -143,5 +143,20 @@ double DeviceConfig::getFloatValueFromKey(std::string key)
     return retVal;
 }
 
+bool DeviceConfig::getBoolValue(std::string key, bool &value)
+{
+    static const string TrueString("true");
+    string strValue;
+
+    if ( !getValue(key, strValue) )
+    {
+        return false;
+    }
+
+    value = ciStringEqual(strValue, TrueString);
+
+    return true;
+}
+
 }
 }

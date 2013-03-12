@@ -576,6 +576,21 @@ void DlcBaseDevice::fillOutMessage(OUTMESS &OutMessage, DlcCommand::request_t &r
 }
 
 
+bool DlcBaseDevice::tryExecuteCommand(OUTMESS &OutMessage, DlcCommandSPtr command, OutMessageList &outList)
+{
+    bool success = false;
+    std::auto_ptr<OUTMESS> commandOutMessage(new OUTMESS(OutMessage));
+
+    if( tryExecuteCommand(*commandOutMessage, command) )
+    {
+        outList.push_back(commandOutMessage.release());
+
+        success = true;
+    }
+
+    return success;
+}
+
 bool DlcBaseDevice::tryExecuteCommand(OUTMESS &OutMessage, DlcCommandSPtr command)
 {
     DlcCommand::request_ptr request = command->execute(CtiTime());

@@ -2297,7 +2297,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
     static const boost::regex  re_group_address("group (enable|disable)");
     static const boost::regex  re_address("address ((uniq(ue)? [0-9]+)|(gold [0-9]+ silver [0-9]+)|(bronze [0-9]+)|(lead meter [0-9]+ load [0-9]+))");
     static const boost::regex  re_mct410_meter_parameters("(centron|parameters)( ratio [0-9]+)?( display( [0-9]x[0-9]+)( test [0-9]+s?)( errors (en|dis)able))");
-    static const boost::regex  re_mct420_meter_parameters("parameters( ratio [0-9]+)? lcd cycle time [0-9]+( lcd display digits [456]x1)?");
+    static const boost::regex  re_mct420_meter_parameters("parameters( ratio [0-9]+)? lcd cycle time [0-9]+ disconnect display (en|dis)able( lcd display digits [456]x1)?");
     static const boost::regex  re_centron_reading("centron reading [0-9]+( [0-9]+)?");
 
     static const boost::regex  re_loadlimit(CtiString("load limit ") + str_floatnum + CtiString(" ") + str_num);
@@ -2571,7 +2571,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                 cmdtok(); // go past "duration"
 
                 _cmd["phaseloss_duration_threshold"] = CtiParseValue( cmdtok() );
-        }
+            }
         }
         if(CmdStr.contains(" centron") ||
            CmdStr.contains(" parameters"))
@@ -2595,6 +2595,17 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                 cmdtok();        // move past "time"
 
                 _cmd["lcd_cycle_time"] = atoi(cmdtok().c_str());
+
+                cmdtok(); // move past "disconnect"
+                cmdtok(); // move past "display"
+
+                temp = cmdtok(); // grab enable/disable value.
+
+                // We want the value that will be used in the command, hence the "negative" check.
+                if( !temp.compareTo("disable") )
+                {
+                    _cmd["disconnect_display_disabled"] = true;
+                }
 
                 if( cmdtok() == "lcd" )
                 {

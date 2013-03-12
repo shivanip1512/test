@@ -2,6 +2,7 @@
 
 #include "dev_mct420.h"
 #include "config_device.h"
+#include "config_data_mct.h"
 
 #include "dev_mct420_commands.h"
 
@@ -9,6 +10,7 @@
 
 using namespace Cti::Devices::Commands;
 using namespace Cti::Protocols;
+using namespace Cti::Config;
 using std::string;
 using std::endl;
 using std::list;
@@ -28,7 +30,8 @@ const Mct420Device::CommandSet       Mct420Device::_commandStore = boost::assign
 
 
 const Mct420Device::ConfigPartsList  Mct420Device::_config_parts = boost::assign::list_of
-    (PutConfigPart_display);
+    (PutConfigPart_display)
+    (PutConfigPart_meter_parameters);
 
 
 const Mct420Device::FunctionReadValueMappings Mct420Device::_readValueMaps = boost::assign::map_list_of
@@ -90,7 +93,8 @@ const Mct420Device::FunctionReadValueMappings Mct420Device::_readValueMaps = boo
         ( 2, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate))
         (10, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset)))
     (0x1f3, boost::assign::map_list_of
-        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters)))
+        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters))
+        ( 1, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_TransformerRatio)))
     (0x1f6, boost::assign::map_list_of
         ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric01))
         ( 1, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric02))
@@ -248,24 +252,20 @@ int Mct420Device::executePutConfig( CtiRequestMsg        *pReq,
 
     if( parse.isKeyValid("lcd_cycle_time") )
     {
-        unsigned char meter_parameters = 0x00;  //  default, see sspec for details
+        OutMessage->Sequence = EmetconProtocol::PutConfig_Parameters;
 
-        OutMessage->Buffer.BSt.Function = FuncWrite_MeterParametersPos;
-        OutMessage->Buffer.BSt.Length   = FuncWrite_MeterParametersLen;
-        OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Write;
-
-        OutMessage->Sequence            = EmetconProtocol::PutConfig_Parameters;
-
-        OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
-
+        // These two are here for sure.
         const unsigned cycle_time = parse.getiValue("lcd_cycle_time");
+        bool disconnect_display_disabled = parse.isKeyValid("disconnect_display_disabled");
 
-        if( cycle_time > 15 )
+        // Optionals
+        boost::optional<std::string> displayDigitsStr;
+        boost::optional<unsigned char> dynamicValue;
+        boost::optional<unsigned> transformer_ratio;
+
+        if( parse.isKeyValid("transformer_ratio") )
         {
-            returnErrorMessage(BADPARAM, OutMessage, retList,
-                               "Invalid LCD cycle time (" + CtiNumStr(cycle_time) + "), must be 0-15");
-
-            return ExecutionComplete;
+            transformer_ratio = parse.getiValue("transformer_ratio");
         }
 
         if( ! isSupported(Feature_LcdDisplayDigitConfiguration) )
@@ -277,71 +277,24 @@ int Mct420Device::executePutConfig( CtiRequestMsg        *pReq,
 
                 return ExecutionComplete;
             }
+
+            return executeMeterParametersCommand(pReq, parse, OutMessage, vgList, retList, outList, false, cycle_time, disconnect_display_disabled, transformer_ratio);
         }
         else
         {
-            unsigned char display_digits;
-
             if( parse.isKeyValid("lcd display digits") )
             {
-                const std::map<std::string, unsigned char> digit_mapping = boost::assign::map_list_of
-                    ("4x1", 0x20)
-                    ("5x1", 0x00)
-                    ("6x1", 0x10);
-
-                std::map<std::string, unsigned char>::const_iterator itr =
-                    digit_mapping.find(parse.getsValue("lcd display digits"));
-
-                if( itr == digit_mapping.end() )
-                {
-                    returnErrorMessage(BADPARAM, OutMessage, retList,
-                                       "Invalid LCD display digit configuration specified");
-
-                    return ExecutionComplete;
-                }
-
-                display_digits = itr->second;
+                displayDigitsStr = parse.getsValue("lcd display digits");
             }
-            else
+            else if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters) )
             {
-                if( ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters) )
-                {
-                    returnErrorMessage(MISPARAM, OutMessage, retList,
-                                       "LCD display digit configuration must be specified manually if not yet retrieved");
-
-                    return ExecutionComplete;
-                }
-
                 //  mask out just the three bits
-                display_digits = 0x70 & getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters);
+                dynamicValue = 0x70 & getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters);
             }
 
-            OutMessage->Buffer.BSt.Message[0] |= display_digits;
+            return executeMeterParametersCommand(pReq, parse, OutMessage, vgList, retList, outList, false, cycle_time, disconnect_display_disabled,
+                                                 transformer_ratio, displayDigitsStr, dynamicValue);
         }
-
-        OutMessage->Buffer.BSt.Message[1] = cycle_time;
-
-        if( parse.isKeyValid("transformer_ratio") )
-        {
-            int transformer_ratio = parse.getiValue("transformer_ratio");
-
-            if( transformer_ratio > 0 && transformer_ratio <= 255 )
-            {
-                OutMessage->Buffer.BSt.Message[2] = parse.getiValue("transformer_ratio");
-            }
-            else
-            {
-                returnErrorMessage(BADPARAM, OutMessage, retList,
-                                   "Invalid transformer ratio (" + CtiNumStr(transformer_ratio) + "), must be 1-255");
-            }
-        }
-        else
-        {
-            //  omit the multiplier ratio
-            OutMessage->Buffer.BSt.Length--;
-        }
-
-        return ExecutionComplete;
     }
     else if( parse.isKeyValid("channel_2_configuration") )
     {
@@ -462,18 +415,157 @@ int Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiCommandParser &
 
     DlcCommandSPtr lcdConfiguration(new Mct420LcdConfigurationCommand(display_metrics, readsOnly));
 
-    if( ! tryExecuteCommand(*OutMessage, lcdConfiguration) )
-    {
-        return NoMethod;
-    }
-
-    outList.push_back(OutMessage);
-
-    OutMessage = NULL;
-
-    return NoError;
+    return tryExecuteCommand(*OutMessage, lcdConfiguration, outList) ? NoError : NoMethod;
 }
 
+int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq, 
+                                                  CtiCommandParser &parse, 
+                                                  OUTMESS *&OutMessage, 
+                                                  CtiMessageList &vgList, 
+                                                  CtiMessageList &retList, 
+                                                  OutMessageList &outList, 
+                                                  bool readsOnly)
+{
+    Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
+    if( !deviceConfig )
+    {
+        return NoConfigData;
+    }
+
+    long cycleTime, paoInfo_displayParams, paoInfo_cycleTime;
+    bool disconnectDisplayDisabled, paoInfo_displayDisabled;
+    boost::optional<unsigned char> display_digits, paoInfo_displayDigits;
+
+    boost::optional<unsigned> transformerRatio;
+
+    bool displayDigitsSupported = isSupported(Feature_LcdDisplayDigitConfiguration);
+
+    if( ! readsOnly )
+    {
+        if( !deviceConfig->getLongValue(MCTStrings::LcdCycleTime, cycleTime) )
+        {
+            if( getMCTDebugLevel(DebugLevel_Configs) )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Device \"" << getName() << "\" - invalid value (" 
+                     << deviceConfig->getValueFromKey(MCTStrings::LcdCycleTime) << ") for config key \"" 
+                     << MCTStrings::LcdCycleTime << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            return NoConfigData;
+        }
+
+        if( displayDigitsSupported )
+        {
+            long configDigits;
+            if( !deviceConfig->getLongValue(MCTStrings::DisplayDigits, configDigits) )
+            {
+                if( getMCTDebugLevel(DebugLevel_Configs) )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Device \"" << getName() << "\" - invalid value (" 
+                         << deviceConfig->getValueFromKey(MCTStrings::DisplayDigits) << ") for config key \"" 
+                         << MCTStrings::DisplayDigits << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                return NoConfigData;
+            }
+
+            display_digits = 0x70 & configDigits;
+        }
+        else
+        {
+            display_digits = 0x00;
+        }
+
+        if( !deviceConfig->getBoolValue(MCTStrings::DisconnectDisplayDisabled, disconnectDisplayDisabled) )
+        {
+            if( getMCTDebugLevel(DebugLevel_Configs) )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Device \"" << getName() << "\" - invalid value (" 
+                     << deviceConfig->getValueFromKey(MCTStrings::DisconnectDisplayDisabled) << ") for config key \"" 
+                     << MCTStrings::DisconnectDisplayDisabled << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            return NoConfigData;
+        }
+
+        // Grab the transformer ratio value if possible.
+        if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TransformerRatio) )
+        {
+            transformerRatio = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TransformerRatio);
+        }
+
+        // Get DynamicPaoInfo for verification.
+        getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters, paoInfo_displayParams);
+
+        paoInfo_displayDisabled = paoInfo_displayParams & 0x80;
+        paoInfo_displayDigits   = paoInfo_displayParams & 0x70;
+        paoInfo_cycleTime       = paoInfo_displayParams & 0x0f;
+
+        if( paoInfo_displayDisabled == disconnectDisplayDisabled && paoInfo_cycleTime == cycleTime )
+        {
+            if( displayDigitsSupported )
+            {
+                if( paoInfo_displayDigits == display_digits )
+                {
+                    if( ! parse.isKeyValid("force") )
+                    {
+                        return ConfigCurrent;
+                    }
+                }
+                else if( parse.isKeyValid("verify") )
+                {
+                    return ConfigNotCurrent;
+                }
+            }
+            else if( ! parse.isKeyValid("force") )
+            {
+                return ConfigCurrent;
+            }
+        }
+        else
+        {
+            if( parse.isKeyValid("verify") )
+            {
+                return ConfigNotCurrent;
+            }
+        }
+    }
+
+    return executeMeterParametersCommand(pReq, parse, OutMessage, vgList, retList, outList, readsOnly, 
+                                         cycleTime, disconnectDisplayDisabled, transformerRatio, boost::none, display_digits);
+}
+
+int Mct420Device::executeMeterParametersCommand(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly, 
+                                                unsigned cycleTime, bool disconnectDisplayDisabled, boost::optional<unsigned> transformerRatio)
+{
+    DlcCommandSPtr meterParameterConfiguration(
+        new Mct420MeterParametersCommand(
+            cycleTime, 
+            disconnectDisplayDisabled, 
+            transformerRatio,
+            readsOnly));
+
+    return tryExecuteCommand(*OutMessage, meterParameterConfiguration, outList) ? NoError : NoMethod;
+}
+
+int Mct420Device::executeMeterParametersCommand(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly, 
+                                                unsigned cycleTime, bool disconnectDisplayDisabled, boost::optional<unsigned> transformerRatio, 
+                                                boost::optional<std::string> displayDigitsStr, boost::optional<unsigned char> paoInfoValue)
+{
+    DlcCommandSPtr meterParameterConfiguration(
+        new Mct420MeterParametersDisplayDigitsCommand(
+            cycleTime, 
+            disconnectDisplayDisabled, 
+            transformerRatio,
+            displayDigitsStr,
+            paoInfoValue,
+            readsOnly));
+
+    return tryExecuteCommand(*OutMessage, meterParameterConfiguration, outList) ? NoError : NoMethod;
+}
 
 int Mct420Device::executeGetConfig( CtiRequestMsg        *pReq,
                                     CtiCommandParser     &parse,

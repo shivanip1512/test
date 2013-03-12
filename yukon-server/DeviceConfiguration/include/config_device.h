@@ -41,6 +41,7 @@ public:
     bool getLongValue(std::string key, long& value);
     long getLongValueFromKey(std::string key);
     double getFloatValueFromKey(std::string key);
+    bool getBoolValue(std::string key, bool &value);
 };
 
 typedef boost::shared_ptr< DeviceConfig > DeviceConfigSPtr;

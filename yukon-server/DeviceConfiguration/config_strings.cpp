@@ -219,6 +219,10 @@ const string MCTStrings::PhaseLossDuration  = "phase loss duration";
 
 const string MCTStrings::EnableDST          = "enable dst";
 
+const string MCTStrings::LcdCycleTime = "lcd cycle time";
+const string MCTStrings::DisconnectDisplayDisabled = "disconnect display disabled";
+const string MCTStrings::DisplayDigits = "display digits";
+
 //CBC
 
 const string CBCStrings::ActiveSettings = "active setting";

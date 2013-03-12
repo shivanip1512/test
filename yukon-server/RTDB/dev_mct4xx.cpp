@@ -50,6 +50,7 @@ const char *Mct4xxDevice::PutConfigPart_centron         = "centron";
 const char *Mct4xxDevice::PutConfigPart_dnp             = "dnp";
 const char *Mct4xxDevice::PutConfigPart_display         = "display";
 const char *Mct4xxDevice::PutConfigPart_phaseloss       = "phaseloss";
+const char *Mct4xxDevice::PutConfigPart_meter_parameters = "meterparameters";
 
 
 const std::string Mct4xxDevice::ErrorText_OutOfRange = "Requested interval outside of valid range";
@@ -2094,6 +2095,10 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
     {
         nRet = executePutConfigInstallDST(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
     }
+    else if (installValue == PutConfigPart_meter_parameters)
+    {
+        nRet = executePutConfigMeterParameters(pReq,parse,OutMessage,vgList,retList,outList,readsOnly);
+    }
     else
     {   //Not sure if this is correct, this could just return NoMethod. This is here
         //just in case anyone wants to use a putconfig install  for anything but configs.
@@ -2416,6 +2421,11 @@ int Mct4xxDevice::executePutConfigInstallAddressing (CtiRequestMsg *pReq, CtiCom
 }
 
 int Mct4xxDevice::executePutConfigInstallDST (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
+{
+    return NoMethod;
+}
+
+int Mct4xxDevice::executePutConfigMeterParameters(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
     return NoMethod;
 }
