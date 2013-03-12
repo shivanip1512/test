@@ -2,23 +2,17 @@ package com.cannontech.yukon.api.consumer.endpoint;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
-import org.apache.log4j.Logger;
 import org.jdom.Attribute;
 import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
-import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -41,10 +35,6 @@ public class DeleteThermostatScheduleEndpoint {
     @Autowired private RolePropertyDao rolePropertyDao;
 
     private Namespace ns = YukonXml.getYukonNamespace();
-    private Logger log = YukonLogManager.getLogger(DeleteThermostatScheduleEndpoint.class);
-    
-    @PostConstruct
-    public void initialize() throws JDOMException {}
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="deleteThermostatScheduleRequest")
     public Element invoke(Element deleteThermostatSchedule, YukonUserContext userContext) throws Exception {
@@ -82,13 +72,12 @@ public class DeleteThermostatScheduleEndpoint {
         } catch (Exception e) {
             Element fe = XMLFailureGenerator.generateFailure(deleteThermostatSchedule, e, "OtherException", "An exception has been caught.");
             resp.addContent(fe);
-            log.error(e.getMessage(), e);
             return resp;
         }
         
         // build response
-        resp.addContent(XmlUtils.createStringElement("success", ns, ""));
-        
+        resp.addContent(new Element("success", ns));
+
         return resp;
     }
 }

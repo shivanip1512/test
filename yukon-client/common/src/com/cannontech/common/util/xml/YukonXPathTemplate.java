@@ -46,7 +46,7 @@ public class YukonXPathTemplate extends SimpleXPathTemplate {
         }
 
         try {
-            return XmlUtils.convertXmlRepresentionToEnum(enumString, enumClass);
+            return XmlUtils.toEnum(enumString, enumClass);
         } catch (IllegalArgumentException e) {
             throw new XPathException(enumString + " is not a legal representation");
         }

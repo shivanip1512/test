@@ -10,14 +10,14 @@ public class XmlUtilsTest {
     
     @Test
     public void convertEnumToXmlRepresentionTest() {
-        String xmlRepresention = XmlUtils.convertEnumToXmlRepresention(SchedulableThermostatType.UTILITY_PRO_G2);
+        String xmlRepresention = XmlUtils.toXmlRepresentation(SchedulableThermostatType.UTILITY_PRO_G2);
         
         Assert.assertEquals("UtilityPRO G2", xmlRepresention);
     }
     
     @Test
     public void convertEnumToXmlRepresentionTest_NoneXMLRepresentationEnum() {
-        String xmlRepresention = XmlUtils.convertEnumToXmlRepresention(PasswordPolicyError.MAX_PASSWORD_LENGTH_EXCEEDED);
+        String xmlRepresention = XmlUtils.toXmlRepresentation(PasswordPolicyError.MAX_PASSWORD_LENGTH_EXCEEDED);
         
         Assert.assertEquals("Max Password Length Exceeded", xmlRepresention);
     }

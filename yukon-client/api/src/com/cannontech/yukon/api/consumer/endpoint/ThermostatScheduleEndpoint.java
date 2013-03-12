@@ -4,25 +4,19 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 
-import javax.annotation.PostConstruct;
-
-import org.apache.log4j.Logger;
 import org.jdom.Attribute;
 import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.stars.core.service.AccountCheckerService;
@@ -45,10 +39,6 @@ public class ThermostatScheduleEndpoint {
     @Autowired private RolePropertyDao rolePropertyDao;
 
     private Namespace ns = YukonXml.getYukonNamespace();
-    private Logger log = YukonLogManager.getLogger(ThermostatScheduleEndpoint.class);
-    
-    @PostConstruct
-    public void initialize() throws JDOMException {}
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="thermostatScheduleRequest")
     public Element invoke(Element thermostatSchedule, YukonUserContext userContext) throws Exception {
@@ -86,31 +76,30 @@ public class ThermostatScheduleEndpoint {
         } catch (Exception e) {
             Element fe = XMLFailureGenerator.generateFailure(thermostatSchedule, e, "OtherException", "An exception has been caught.");
             resp.addContent(fe);
-            log.error(e.getMessage(), e);
             return resp;
         }
         
         // build response
-        resp.addContent(XmlUtils.createStringElement("success", ns, ""));
-        
+        resp.addContent(new Element("success", ns));
+
         return resp;
     }
 
     /**
-     * 
+     * This method generates an xml account thermostat schedule.
      */
     private Element buildResponseForAccountThermostatSchedule(CustomerAccount customerAccount, AccountThermostatSchedule accountThermostatSchedule) {
         Element thermostatScheduleElem = new Element("thermostatSchedule", ns);
         thermostatScheduleElem.setAttribute("accountNumber", customerAccount.getAccountNumber(), ns);
-        thermostatScheduleElem.setAttribute("thermostatType", XmlUtils.convertEnumToXmlRepresention(accountThermostatSchedule.getThermostatType()), ns);
-        thermostatScheduleElem.setAttribute("thermostatScheduleMode", XmlUtils.convertEnumToXmlRepresention(accountThermostatSchedule.getThermostatScheduleMode()), ns);
+        thermostatScheduleElem.setAttribute("thermostatType", XmlUtils.toXmlRepresentation(accountThermostatSchedule.getThermostatType()), ns);
+        thermostatScheduleElem.setAttribute("thermostatScheduleMode", XmlUtils.toXmlRepresentation(accountThermostatSchedule.getThermostatScheduleMode()), ns);
 
         Element scheduleNameElem = XmlUtils.createStringElement("scheduleName", ns, accountThermostatSchedule.getScheduleName());
         thermostatScheduleElem.addContent(scheduleNameElem);
 
         for (Entry<TimeOfWeek, Collection<AccountThermostatScheduleEntry>> timeOfWeekEntriesEntry : accountThermostatSchedule.getEntriesByTimeOfWeekMultimapAsMap().entrySet()) {
             Element schedulePeriodElem = new Element("schedulePeriod", ns);
-            schedulePeriodElem.setAttribute("timeOfWeek", XmlUtils.convertEnumToXmlRepresention(timeOfWeekEntriesEntry.getKey()));
+            schedulePeriodElem.setAttribute("timeOfWeek", XmlUtils.toXmlRepresentation(timeOfWeekEntriesEntry.getKey()));
             
             for (AccountThermostatScheduleEntry accountThermostatScheduleEntry : timeOfWeekEntriesEntry.getValue()) {
                 Element thermostatSchedulePeriodElem = new Element("thermostatSchedulePeriod", ns);
@@ -123,7 +112,7 @@ public class ThermostatScheduleEndpoint {
                 thermostatSchedulePeriodElem.addContent(coolTempElem);
 
                 Element heatTempElem = XmlUtils.createDoubleElement("heatTemp", ns, accountThermostatScheduleEntry.getHeatTemp().toFahrenheit().getValue());
-                heatTempElem.setAttribute("unit", XmlUtils.convertEnumToXmlRepresention(TemperatureUnit.FAHRENHEIT));
+                heatTempElem.setAttribute("unit", XmlUtils.toXmlRepresentation(TemperatureUnit.FAHRENHEIT));
                 thermostatSchedulePeriodElem.addContent(heatTempElem);
                 
                 schedulePeriodElem.addContent(thermostatSchedulePeriodElem);

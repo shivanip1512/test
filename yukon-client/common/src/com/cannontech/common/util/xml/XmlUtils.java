@@ -155,7 +155,7 @@ public class XmlUtils {
      * 
      * @throws IllegalArgumentException the enumString is not a valid representation of the enum class.
      */
-    public static <E extends Enum<E>> E  convertXmlRepresentionToEnum(String enumString, Class<E> enumClass) throws IllegalArgumentException {
+    public static <E extends Enum<E>> E  toEnum(String enumString, Class<E> enumClass) throws IllegalArgumentException {
         
         // Try getting the value from the enum
         try {
@@ -174,10 +174,8 @@ public class XmlUtils {
     
     /**
      * This method translates the supplied enumString into the enum supplied
-     * 
-     * @throws IllegalArgumentException the enumString is not a valid representation of the enum class.
      */
-    public static <E extends Enum<E>> String convertEnumToXmlRepresention(E enumValue) throws IllegalArgumentException{
+    public static <E extends Enum<E>> String toXmlRepresentation(E enumValue) {
         
         // See if there is an xmlRepresentation of this value.
         String enumStr = findXmlRepresentation(enumValue);
@@ -224,8 +222,7 @@ public class XmlUtils {
         try {
             xmlRepresentation = enumObj.getClass().getField(enumObj.name()).getAnnotation(XmlRepresentation.class);
         } catch (NoSuchFieldException | SecurityException e) {
-            // Because of the way were getting these variables there is absolutely no way for these exceptions to be thrown.
-            e.printStackTrace();
+            throw new RuntimeException("Because of the way were getting these variables there is absolutely no way for these exceptions to be thrown", e);
         }
 
         if (xmlRepresentation == null) {
