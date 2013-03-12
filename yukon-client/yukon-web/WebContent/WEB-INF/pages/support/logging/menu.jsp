@@ -37,7 +37,8 @@
             <tags:sectionContainer title="${logSection.key}">
                 <ul>
                     <c:forEach var="fileName" items="${logSection.value}">
-                        <li><a href="tail?file=${file}${fileName}" >${fileName}</a></li>
+                        <cti:url value="tail" var="url"><cti:param name="file" value="${file}${fileName}"></cti:param></cti:url>
+                        <li><a href="${url}">${fileName}</a></li>
                     </c:forEach>
                 </ul>
             </tags:sectionContainer>
