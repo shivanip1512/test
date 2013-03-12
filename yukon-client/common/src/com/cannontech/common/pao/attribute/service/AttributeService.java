@@ -161,6 +161,15 @@ public interface AttributeService {
      * @return
      */
     public List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute);
+    
+    /**
+     * Returns a list of all the devices in a given DeviceGroup that support ANY of the passed in Attributes.
+     * This method works recursively on each child group of the requested group.
+     * @param group
+     * @param attribute
+     * @return
+     */
+    public Set<SimpleDevice> getDevicesInGroupThatSupportAnyAttributes(DeviceGroup group, Set<? extends Attribute> attributes);
 
     /**
      * Reverse lookup of BuiltInAttribute based on Pao and Point Identifier from set of possible attributes.

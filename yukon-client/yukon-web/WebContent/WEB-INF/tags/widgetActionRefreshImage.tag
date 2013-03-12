@@ -1,6 +1,7 @@
 <%@ attribute name="method" required="true" type="java.lang.String"%>
 <%@ attribute name="nameKey" required="true" type="java.lang.String"%>
 <%@ attribute name="arguments" required="false" type="java.lang.String"%>
+<%@ attribute name="btnClass" required="false" type="java.lang.String"%>
 <%@ attribute name="showConfirm" required="false" type="java.lang.String"%>
 <%@ attribute name="disableInputs" required="false" type="java.lang.Boolean" description="Should the refresh action disable all inputs while waiting for the asynchronous response"%>
 
@@ -53,7 +54,7 @@
 </script>
 
 <span id="${thisId}">
-    <cti:button nameKey="${nameKey}" id="linkImg_${uniqueId}" renderMode="image" arguments="${arguments}" onclick="widgetActionRefreshImageConfirm_${uniqueId}();"/>
+    <cti:button nameKey="${nameKey}" id="linkImg_${uniqueId}" renderMode="image" arguments="${arguments}" onclick="widgetActionRefreshImageConfirm_${uniqueId}();" styleClass="${btnClass}"/>
     <span class="widgetAction_waiting" style="display:none">
         <img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="<cti:msg2 key="yukon.web.components.waiting"/>">
     </span>

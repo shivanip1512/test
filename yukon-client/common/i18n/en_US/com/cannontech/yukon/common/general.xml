@@ -14,9 +14,12 @@
 <entry key="yukon.common.enabled">Enabled</entry>
 <entry key="yukon.common.cancel">Cancel</entry>
 <entry key="yukon.common.save">Save</entry>
+<entry key="yukon.common.help">Help</entry>
 <entry key="yukon.common.historyTooltip">Click to view history</entry>
 
 <entry key="yukon.common.to">to</entry>
+
+<entry key="yukon.common.warning">Warning</entry>
 
 <entry key="yukon.common.loginStatus.ENABLED">Enabled</entry>
 <entry key="yukon.common.loginStatus.DISABLED">Disabled</entry>

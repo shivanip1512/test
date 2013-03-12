@@ -232,6 +232,16 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
+    public Set<SimpleDevice> getDevicesInGroupThatSupportAnyAttributes(DeviceGroup group, Set<? extends Attribute> attributes) {
+        Set<SimpleDevice> allSupportedDevices = Sets.newHashSet();
+        for (Attribute attribute: attributes) {
+            List<SimpleDevice> supportedDevices = getDevicesInGroupThatSupportAttribute(group, attribute);
+            allSupportedDevices.addAll(supportedDevices);
+        }
+        return allSupportedDevices;
+    }
+
+    @Override
     public List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute) {
         Multimap<PaoType, Attribute> allDefinedAttributes = paoDefinitionDao.getPaoTypeAttributesMultiMap();
         Multimap<Attribute, PaoType> dest = HashMultimap.create();

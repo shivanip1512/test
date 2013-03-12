@@ -184,6 +184,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/amr/meterEventsReport</value>
                 <value>classpath:com/cannontech/yukon/web/modules/amr/tamperFlagProcessing</value>
                 <value>classpath:com/cannontech/yukon/web/modules/amr/statusPointMonitoring</value>
+                <value>classpath:com/cannontech/yukon/web/modules/amr/deviceDataMonitor</value>
                 <value>classpath:com/cannontech/yukon/web/modules/amr/porterResponseMonitor</value>
                 <value>classpath:com/cannontech/yukon/web/modules/amr/porterResponseMonitorsWidget</value>
                 <value>classpath:com/cannontech/yukon/web/modules/amr/waterLeakReport</value>
@@ -318,6 +319,10 @@
          provides.  Yes, this is wrong (but functional) and needs to be cleaned up.  See YUK-11769. -->
     <bean id="webServerServiceProxyQueue" class="org.apache.activemq.command.ActiveMQQueue">
         <constructor-arg value="com.cannontech.activemq.queue.webServerServiceProxy"/>
+    </bean>
+
+    <bean id="serviceProxyQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="com.cannontech.activemq.queue.serviceProxy"/>
     </bean>
 
     <bean id="encryptedRouteDao" class="com.cannontech.encryption.impl.EncryptedRouteDaoImpl"/>

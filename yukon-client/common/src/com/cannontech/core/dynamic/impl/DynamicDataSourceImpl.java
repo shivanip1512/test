@@ -1,6 +1,11 @@
 package com.cannontech.core.dynamic.impl;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
@@ -8,6 +13,8 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /**
  * Implementation of DynamicDataSource
@@ -21,6 +28,7 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
     DispatchProxy dispatchProxy;
     PointDao pointDao;
     
+    @Override
     public void putValue(PointData pointData) {
         dispatchProxy.putPointData(pointData);
         dynamicDataCache.handleIncoming(pointData);
@@ -34,6 +42,7 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
         }
     }
 
+    @Override
     public void putValue(int pointId, double value) {
         PointData pointData = new PointData();
         pointData.setId(pointId);
@@ -41,6 +50,7 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
         putValue(pointData);
     }    
     
+    @Override
     public PointData getPointData(int pointId) {
         PointData pointData = dynamicDataCache.getPointData(pointId);
         if(pointData == null) {
@@ -49,6 +59,7 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
         return pointData;
     }
 
+    @Override
     public Set<PointData> getPointData(Set<Integer> pointIds) {
         Set<Integer> notCachedPointIds = 
             new HashSet<Integer>(pointIds);
@@ -66,14 +77,18 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
         
         // Request to dispatch for the rest
         if(notCachedPointIds.size() > 0) {
-            Set<PointData> retrievedPointData = 
-                dispatchProxy.getPointData(notCachedPointIds);
-            pointData.addAll(retrievedPointData);            
+            // break the request into partitions of 1000 so we reduce the risk of the request timing out
+            List<List<Integer>> notCachedPointIdsPartitioned = Lists.partition(Lists.newArrayList(notCachedPointIds), 1000);
+            for (List<Integer> notCachedPointIdsPartition: notCachedPointIdsPartitioned) {
+                Set<PointData> retrievedPointData = dispatchProxy.getPointData(Sets.newHashSet(notCachedPointIdsPartition));
+                pointData.addAll(retrievedPointData);
+            }
         }
                
         return pointData;       
     }
 
+    @Override
     public Set<Signal> getSignals(int pointId) {
         Set<Signal> signals = dynamicDataCache.getSignals(pointId);
         if(signals == null) {
@@ -83,6 +98,7 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
         return new HashSet<Signal>(signals);
     }
 
+    @Override
     public Map<Integer, Set<Signal>> getSignals(Set<Integer> pointIds) {
         Set<Integer> notCachedPointIds = new HashSet<Integer>(pointIds);
         Map<Integer, Set<Signal>> signals = new HashMap<Integer, Set<Signal>>((int)(pointIds.size()/0.75f)+1);
@@ -109,6 +125,7 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
         return signals;
     }
     
+    @Override
     public Set<Signal> getSignalsByCategory(int alarmCategoryId) {
         Set<Signal> signals = dynamicDataCache.getSignalForCategory(alarmCategoryId);
         if(signals == null) {
@@ -121,10 +138,12 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
         return signals;
     }
 
+    @Override
     public Integer getTags(int pointId) {
         return (int)getPointData(pointId).getTags();
     }
     
+    @Override
     public Set<Integer> getTags(Set<Integer> pointIds) {
         Set<PointData> pointData = getPointData(pointIds);
         Set<Integer> tags = new HashSet<Integer>((int)(pointIds.size()/0.75f)+1);
@@ -146,10 +165,12 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
         this.pointDao = pointDao;
     }
 
+    @Override
     public PointValueQualityHolder getPointValue(int pointId) throws DynamicDataAccessException {
         return getPointData(pointId);
     }
     
+    @Override
     public Set<? extends PointValueQualityHolder> getPointValue(Set<Integer> pointIds) throws DynamicDataAccessException {
         return getPointData(pointIds);
     }

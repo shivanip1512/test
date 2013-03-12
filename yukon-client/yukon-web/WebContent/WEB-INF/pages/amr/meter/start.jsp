@@ -13,6 +13,8 @@
 		
 				<td class="widgetColumnCell first">
 				
+				    <ct:widget bean="deviceDataMonitorsWidget"/>
+				
 					<%-- OUTAGE MONITORS WIDGET --%>
 					<ct:widget bean="outageMonitorsWidget"/>
 					

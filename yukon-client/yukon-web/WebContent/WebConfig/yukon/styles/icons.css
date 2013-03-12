@@ -18,6 +18,8 @@ a.icon {margin: 0 5px 0 0;}
 
 /* ICON BACKGROUNDS HERE */
 .access_point {background-image: url(../Icons/32/access_point.png);}
+.add {background-image: url(../Icons/add.png);}
+.add:hover {background-image: url(../Icons/add_over.png);}
 .arrow_bidirectional {background-image: url(../Icons/32/arrow_bidirectional.png);}
 
 .calculator {background-image: url(../Icons/32/calculator.png);}

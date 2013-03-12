@@ -206,8 +206,8 @@ Yukon.ui = {
         }
     },
     
-    block: function(element){
-       var blockElement = jQuery(element).closest(".f_block_this");
+    block: function(event){
+       var blockElement = jQuery(event.target).closest(".f_block_this");
        if(blockElement[0]){
            Yukon.uiUtils.elementGlass.show(blockElement[0]);
        }else{

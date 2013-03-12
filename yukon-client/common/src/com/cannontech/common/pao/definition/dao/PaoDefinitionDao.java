@@ -35,7 +35,7 @@ public interface PaoDefinitionDao {
     
     public Map<PaoType, Map<Attribute, AttributeDefinition>> getPaoAttributeAttrDefinitionMap();
     
-    public abstract AttributeDefinition getAttributeLookup(PaoType paoType, BuiltInAttribute attribute) throws IllegalUseOfAttribute;
+    public abstract <T extends Attribute> AttributeDefinition getAttributeLookup(PaoType paoType, T attribute) throws IllegalUseOfAttribute;
     
     /**
      * Returns the BuiltInAttribute for the pao type and point template or null if no attribute is 

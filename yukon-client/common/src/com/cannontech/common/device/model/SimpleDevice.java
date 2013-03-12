@@ -9,6 +9,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
+import com.google.common.base.Function;
 
 public final class SimpleDevice implements YukonDevice {
     private int deviceId;
@@ -88,4 +89,19 @@ public final class SimpleDevice implements YukonDevice {
         return new HashCodeBuilder().append(getDeviceId()).append(getDeviceType()).toHashCode();
     }
 
+    public static Function<SimpleDevice, PaoIdentifier> PAO_IDENTIFIER_FUNCTION =
+        new Function<SimpleDevice, PaoIdentifier>() {
+            @Override
+            public PaoIdentifier apply(SimpleDevice simpleDevice) {
+                return simpleDevice.getPaoIdentifier();
+            }
+        };
+
+    public static Function<SimpleDevice, Integer> PAO_ID_FUNCITON =
+        new Function<SimpleDevice, Integer>() {
+            @Override
+            public Integer apply(SimpleDevice simpleDevice) {
+                return simpleDevice.getPaoIdentifier().getPaoId();
+            }
+        };
 }

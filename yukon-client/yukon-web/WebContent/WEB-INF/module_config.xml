@@ -337,6 +337,22 @@
                         </page>
                     </pages>
                 </page>
+                <page name="deviceDataProcessing" type="BASIC">
+                    <menu>meters</menu>
+                    <pages>
+                        <page name="deviceDataMonitor.VIEW" type="DETAIL">
+                            <menu>meters</menu>
+                            <labelArgument>${monitor.name}</labelArgument>
+                        </page>
+                        <page name="deviceDataMonitor.EDIT" type="DETAIL">
+                            <menu>meters</menu>
+                            <labelArgument>${monitor.name}</labelArgument>
+                        </page>
+                        <page name="deviceDataMonitor.CREATE" type="BASIC">
+                            <menu>meters</menu>
+                        </page>
+                    </pages>
+                </page>
                 <page name="porterResponseProcessing" type="BASIC">
                     <menu>meters</menu>
                     <pages>
@@ -353,7 +369,7 @@
                             <labelArgument>${monitorDto.name}</labelArgument>
                         </page>
                     </pages>
-                </page>    
+                </page>
                 <page name="validationProcessing" type="BASIC">
                     <menu>meters</menu>
                     <pages>

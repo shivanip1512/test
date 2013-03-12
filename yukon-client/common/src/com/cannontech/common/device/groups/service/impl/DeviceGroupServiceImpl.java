@@ -33,6 +33,7 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
     private DeviceGroupProviderDao deviceGroupDao;
     private Logger log = YukonLogManager.getLogger(DeviceGroupServiceImpl.class);
     
+    @Override
     public SqlFragmentSource getDeviceGroupSqlWhereClause(Collection<? extends DeviceGroup> groups, String identifier) {
 
         if (groups.isEmpty()) {
@@ -63,6 +64,7 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
         return result;
     }
 
+    @Override
     public Set<Integer> getDeviceIds(Collection<? extends DeviceGroup> groups) {
         if (groups.isEmpty()) {
             return Collections.emptySet();
@@ -79,6 +81,7 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
         }        
     }
 
+    @Override
     public Set<SimpleDevice> getDevices(Collection<? extends DeviceGroup> groups) {
         if (groups.isEmpty()) {
             return Collections.emptySet();
@@ -97,6 +100,7 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
         }
     }
     
+    @Override
     public Set<SimpleDevice> getDevices(Collection<? extends DeviceGroup> groups, int maxSize) {
         
         if (groups.isEmpty()) {
@@ -134,6 +138,7 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
         }
     }
 
+    @Override
     public DeviceGroup resolveGroupName(String groupName) {
         Validate.notNull(groupName, "groupName must not be null");
         Validate.isTrue(groupName.startsWith("/"), "Group name isn't valid, must start with '/': " + groupName);
@@ -149,6 +154,7 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
 
     }
     
+    @Override
     public DeviceGroup findGroupName(String groupName) {
         
         try {
@@ -160,6 +166,7 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
         }
     }
     
+    @Override
     public Set<? extends DeviceGroup> resolveGroupNames(Collection<String> groupNames) throws NotFoundException {
         Collection<DeviceGroup> result = new ArrayList<DeviceGroup>(groupNames.size());
         for (String groupName : groupNames) {
@@ -190,6 +197,7 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
         return getRelativeGroup(childGroup, names);
     }
     
+    @Override
     public DeviceGroup getRootGroup() {
         return deviceGroupDao.getRootGroup();
     }

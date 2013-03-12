@@ -1,12 +1,19 @@
 package com.cannontech.common.pao;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 import org.apache.commons.lang.Validate;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Ordering;
 
 public final class PaoIdentifier implements YukonPao, Serializable {
 
     private static final long serialVersionUID = -592760481960580100L;
+
+    public static final Comparator<PaoIdentifier> COMPARATOR;
+
     private int paoId;
     private PaoType paoType;
 
@@ -33,6 +40,24 @@ public final class PaoIdentifier implements YukonPao, Serializable {
     @Override
     public String toString() {
         return paoType + ":" + paoId;
+    }
+
+    static {
+        Ordering<Integer> intComparer = Ordering.natural();
+        Ordering<PaoIdentifier> paoIdOrdering = intComparer.onResultOf(new Function<PaoIdentifier, Integer>() {
+            @Override
+            public Integer apply(PaoIdentifier from) {
+                return from.getPaoId();
+            }
+        });
+        Ordering<PaoType> paoTypeComparer = Ordering.natural();
+        Ordering<PaoIdentifier> paoTypeOrdering = paoTypeComparer.onResultOf(new Function<PaoIdentifier, PaoType>() {
+            @Override
+            public PaoType apply(PaoIdentifier from) {
+                return from.getPaoType();
+            }
+        });
+        COMPARATOR = paoIdOrdering.compound(paoTypeOrdering);
     }
 
     @Override

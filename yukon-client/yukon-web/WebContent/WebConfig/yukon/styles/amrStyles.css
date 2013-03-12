@@ -221,3 +221,7 @@ div.attributeSetupContainer {
     display: inline-block !important;
     margin: 1px 0 0 0;
 }
+
+.device_data_processors select {
+	width: 140px;
+}

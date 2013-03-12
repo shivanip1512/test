@@ -19,5 +19,5 @@
 
 <tr class="undoRow" style="display: none;">
     <td colspan="${columnSpan - 1}">${willBeRemovedMsg}</td>
-    <td class="actions"><span class="undoRemoveBtn">${undoMsg}</span></td>
+    <td class="actions"><a href="javascript:void(0);" class="undoRemoveBtn">${undoMsg}</a></td>
 </tr>

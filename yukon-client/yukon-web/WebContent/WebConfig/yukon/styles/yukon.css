@@ -138,6 +138,7 @@ div.progressBarInnerFailure {
 /* LISTS */
 .buttonStack li {margin-bottom: 5px;}
 .labeledImageStack li {padding-bottom: 23px;}
+ul.disc li {list-style-type: disc; margin-left: 25px;}
 
 /* CONTAINERS */
 .toggle-title {cursor: pointer; background: white url(../Icons/icon_blockexpanded.png) no-repeat scroll 0 8px; padding-left: 14px; display: inline;}

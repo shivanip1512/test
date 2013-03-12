@@ -607,6 +607,15 @@
         </property>
     </bean>
     
+    <bean id="deviceDataMonitorsWidget" class="com.cannontech.web.widget.DeviceDataMonitorsWidget">
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="roleAndPropertiesChecker">
+            <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="DEVICE_DATA_MONITORING"/>
+            </bean>
+        </property>
+    </bean>
+
     <bean id="porterResponseMonitorsWidget" class="com.cannontech.web.widget.PorterResponseMonitorsWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="roleAndPropertiesChecker">
@@ -717,6 +726,9 @@
                 </entry>
                 <entry key="STATUS_POINT_MONITORING">
                     <ref local="statusPointMonitorBackingService"/>
+                </entry>
+                <entry key="DEVICE_DATA_MONITOR">
+                    <ref local="deviceDataMonitorBackingService"/>
                 </entry>
                 <entry key="VALIDATION_PROCESSING">
                     <ref local="validationMonitorBackingService"/>
@@ -914,6 +926,11 @@
     <bean id="statusPointMonitorBackingService" class="com.cannontech.web.updater.statusPointMonitoring.StatusPointMonitorBackingService">
     </bean>
     <bean id="monitoringCountStatusPointProcessingUpdaterHandler" class="com.cannontech.web.updater.statusPointMonitoring.handler.MonitoringCountStatusPointProcessingUpdaterHandler"/>
+    
+    <!-- device data monitor -->
+    <bean id="deviceDataMonitorBackingService" class="com.cannontech.web.updater.deviceDataMonitor.DeviceDataMonitorBackingService"/>
+    <bean id="deviceDataMonitorMonitoringCountUpdaterHandler" class="com.cannontech.web.updater.deviceDataMonitor.handler.MonitoringCountUpdaterHandler"/>
+    <bean id="deviceDataMonitorViolationsCountUpdaterHandler" class="com.cannontech.web.updater.deviceDataMonitor.handler.ViolationsCountUpdaterHandler"/>
     
     <!-- validation -->
     <bean id="validationMonitorBackingService" class="com.cannontech.web.updater.validationProcessing.ValidationMonitorBackingService">

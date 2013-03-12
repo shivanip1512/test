@@ -40,4 +40,6 @@ public interface MeteringRole {
     public static final int METER_EVENTS = OperatorRoleDefs.METERING_PROPERTYID_BASE - 19; // -20219
     /** Controls ability to send disconnects and reconnects to meters */
     public static final int ALLOW_DISCONNECT_CONTROL = OperatorRoleDefs.METERING_PROPERTYID_BASE - 20; // -20220
+    /** Access to Device Data Monitoring */
+    public static final int DEVICE_DATA_MONITORING = OperatorRoleDefs.METERING_PROPERTYID_BASE - 21; // -20221
 }

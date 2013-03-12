@@ -1,5 +1,7 @@
 package com.cannontech.common.pao.service;
 
+import java.util.List;
+
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.PreviousReadings;
 import com.cannontech.common.pao.YukonPao;
@@ -36,6 +38,22 @@ public interface PointService {
     
     public PreviousReadings getPreviousReadings(LitePoint lp);
     
+    /**
+     * Returns the count of devices in the passed in DeviceGroup that have an existing point matching Attribute AND state group
+     * @param group
+     * @param attribute
+     * @param stateGroup
+     * @return
+     */
     public int getCountOfGroupAttributeStateGroup(DeviceGroup group, Attribute attribute, LiteStateGroup stateGroup);
+
+    /**
+     * Returns the paoIds of all devices in the passed in DeviceGroup that have an existing point matching Attribute AND state group 
+     * @param group
+     * @param attribute
+     * @param stateGroup
+     * @return
+     */
+    public List<Integer> getPaoIdsForGroupAttributeStateGroup(DeviceGroup group, Attribute attribute, LiteStateGroup stateGroup);
 
 }

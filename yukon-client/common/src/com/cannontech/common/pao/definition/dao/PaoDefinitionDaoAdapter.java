@@ -33,7 +33,7 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
 	}
 	
 	@Override
-	public AttributeDefinition getAttributeLookup(PaoType paoType, BuiltInAttribute attribute) {
+	public <T extends Attribute> AttributeDefinition getAttributeLookup(PaoType paoType, T attribute) {
 	    throw new UnsupportedOperationException("not implemented");
 	}
 

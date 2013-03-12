@@ -5,11 +5,11 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.spring.YukonSpringHook;
+import com.google.common.collect.Lists;
 
 public class PointDaoIntTest extends TestCase {
     private PointDao pointDao = (PointDao) YukonSpringHook.getBean("pointDao");
@@ -20,7 +20,7 @@ public class PointDaoIntTest extends TestCase {
     }
 
     public void testGetLitePoints() {
-        List<LitePoint> p = pointDao.getLitePoints(new Integer[] { 0, -100, 100 });
+        List<LitePoint> p = pointDao.getLitePoints(Lists.newArrayList(0, -100, 100 ));
         assertTrue("Failed to load system points", p.size()>=2);
     }
 
@@ -41,7 +41,7 @@ public class PointDaoIntTest extends TestCase {
     }
 
     public void testGetLitePointsByNumStates() {
-        List<LitePoint> p = pointDao.getLitePointsByNumStates(2);
+        pointDao.getLitePointsByNumStates(2);
     }
     
     public void testGetLitePointsByPaObjectId() {
@@ -73,11 +73,11 @@ public class PointDaoIntTest extends TestCase {
     }
 
     public void testGetPointIDByDeviceID_Offset_PointType() {
-        int id = pointDao.getPointIDByDeviceID_Offset_PointType(0, 0, PointTypes.SYSTEM_POINT);
+        pointDao.getPointIDByDeviceID_Offset_PointType(0, 0, PointTypes.SYSTEM_POINT);
     }
  
     public void testGetPointData() {
-        List<LiteRawPointHistory> lrphList = pointDao.getPointData(0,null,null);
+        pointDao.getPointData(0,null,null);
     }
 
     public void testGetCapBankMonitorPoints() { 

@@ -345,6 +345,7 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
                 setRoleProperty(group, YukonRoleProperty.VALIDATION_ENGINE,true);
                 setRoleProperty(group, YukonRoleProperty.STATUS_POINT_MONITORING,true);
                 setRoleProperty(group, YukonRoleProperty.PORTER_RESPONSE_MONITORING,true);
+                setRoleProperty(group, YukonRoleProperty.DEVICE_DATA_MONITORING,true);
                 setRoleProperty(group, YukonRoleProperty.METER_EVENTS,true);
                 results.put(YukonRole.METERING, true);
             } else {

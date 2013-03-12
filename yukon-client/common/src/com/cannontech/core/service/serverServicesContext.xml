@@ -14,19 +14,10 @@
   <context:annotation-config/>
   <aop:aspectj-autoproxy/>
   
-  <bean class="com.cannontech.services.YukonServiceManagerImpl" />
-      
   <bean id="emailService" class="com.cannontech.tools.email.impl.EmailServiceImpl"/>
  
   <bean id="loadProfileService" class="com.cannontech.core.service.impl.LoadProfileServiceImpl" init-method="initialize">
     <property name="executor" ref="globalScheduledExecutor"/>
     <property name="porterConnection" ref="porterConnection"/>
   </bean>
-
-  <bean id="generalAlarmPointMonitorProcessor" class="com.cannontech.amr.monitors.impl.GeneralAlarmPointMonitorProcessorFactory"/>
-  
-  <bean id="outagePointMonitorProcessor" class="com.cannontech.amr.monitors.impl.OutagePointMonitorProcessorFactory"/>
-    
-  <bean id="statusPointMonitorProcessor" class="com.cannontech.amr.monitors.impl.StatusPointMonitorProcessorFactory"/>
-  
 </beans>

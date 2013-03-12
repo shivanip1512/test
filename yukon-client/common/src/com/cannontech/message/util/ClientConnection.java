@@ -277,6 +277,14 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
         return isValid;
     }
 
+    public void waitForValidConnection() throws InterruptedException {
+        while (!isValid()) {
+            logger.info("No connection available for " + connectionName + ". Waiting 10 seconds then trying again...");
+            // sleep for 10 seconds, then try again
+            Thread.sleep(10000);
+        }
+    }
+
     /**
      * read blocks until an object is available in the in queue and
      * then returns a reference to it.

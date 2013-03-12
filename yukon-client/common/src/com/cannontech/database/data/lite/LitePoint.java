@@ -4,6 +4,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
+import com.google.common.base.Function;
 
 /*
  */
@@ -31,6 +32,15 @@ public class LitePoint extends LiteBase
 
 	public final static long POINT_UOFM_GRAPH = 0x00000001;  //KW, KVAR, MVAR...
 	public final static long POINT_UOFM_USAGE = 0x00000002;	 //KWH, KVAH, KVARH...
+	
+
+    public static Function<LitePoint, Integer> POINT_ID_FUNCTION =
+        new Function<LitePoint, Integer>() {
+            @Override
+            public Integer apply(LitePoint litePoint) {
+                return litePoint.getPointID();
+            }
+        };
 
 	//ADD NEW TAG VALUES HERE
 /**
@@ -344,6 +354,7 @@ public void setTags(long newtags)
 /**
  * This method was created by Cannon Technologies Inc.
  */
+@Override
 public String toString()
 {
 	if (showPointOffsets)

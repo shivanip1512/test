@@ -51,7 +51,7 @@ public class MockPointDao implements PointDao {
     }
 
     @Override
-    public List<LitePoint> getLitePoints(Integer[] pointIds) {
+    public List<LitePoint> getLitePoints(Iterable<Integer> pointIds) {
         return null;
     }
 
@@ -236,6 +236,11 @@ public class MockPointDao implements PointDao {
 
     @Override
     public Map<Integer, PointInfo> getPointInfoByPointIds(Iterable<Integer> pointIds) {
+        return null;
+    }
+
+    @Override
+    public Map<LitePoint, PaoPointIdentifier> getLitePointsForPaoPointIdentifiers(Iterable<PaoPointIdentifier> paoPointIdentifiers) {
         return null;
     }
 }

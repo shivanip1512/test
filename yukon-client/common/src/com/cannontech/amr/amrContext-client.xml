@@ -95,7 +95,7 @@
     
     <!-- StatusPoint monitor Service -->
     <bean id="statusPointMonitorService" class="com.cannontech.amr.statusPointMonitoring.service.impl.StatusPointMonitorServiceImpl"/>
-    
+
     <!-- Porter Response Monitor Service -->
     <bean id="porterResponseMonitorService" class="com.cannontech.amr.porterResponseMonitor.service.impl.PorterResponseMonitorServiceImpl"/>
 
@@ -143,4 +143,6 @@
     </bean>
 
     <bean class="com.cannontech.amr.profileCollection.service.impl.ProfileCollectionServiceImpl"/>
+
+    <bean class="com.cannontech.amr.monitors.impl.DeviceDataMonitorCacheServiceImpl"/>
 </beans>

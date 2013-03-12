@@ -190,8 +190,8 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     // ATTRIBUTES
     //============================================
     @Override
-    public AttributeDefinition getAttributeLookup(PaoType paoType,
-            BuiltInAttribute attribute) throws IllegalUseOfAttribute {
+    public <T extends Attribute> AttributeDefinition getAttributeLookup(PaoType paoType, T attribute)
+            throws IllegalUseOfAttribute {
         Map<Attribute, AttributeDefinition> attributeLookupsForPao = paoAttributeAttrDefinitionMap.get(paoType);
         if (attributeLookupsForPao == null) {
             throw new IllegalUseOfAttribute("No AttributeLookups exist for " + paoType);

@@ -24,7 +24,12 @@ public interface PointDao {
 
     public PaoPointIdentifier getPaoPointIdentifier(int pointId);
 
-    public List<LitePoint> getLitePoints(Integer[] pointIds);
+    public List<LitePoint> getLitePoints(Iterable<Integer> pointIds);
+
+    /**
+     * Returns a list of LitePoints to corresponding PaoPointIdentifiers
+     */
+    public Map<LitePoint, PaoPointIdentifier> getLitePointsForPaoPointIdentifiers(Iterable<PaoPointIdentifier> paoPointIdentifiers);
     
     public List<PointBase> getPointsForPao(int paoId);
 

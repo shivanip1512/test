@@ -26,6 +26,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
+import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -69,7 +70,7 @@ import com.google.common.collect.Maps;
  * Creation date: (7/01/2006 9:40:33 AM)
  * @author: alauinger
  */
-public final class PointDaoImpl implements PointDao {
+public class PointDaoImpl implements PointDao {
 
     private static final String litePointSql = 
         "SELECT P.POINTID, POINTNAME, POINTTYPE, PAOBJECTID, POINTOFFSET, STATEGROUPID, UM.FORMULA, UM.UOMID" +
@@ -184,12 +185,53 @@ public final class PointDaoImpl implements PointDao {
     }
     
     @Override
-    public List<LitePoint> getLitePoints(Integer[] pointIds) {
-        StringBuilder sql = new StringBuilder(litePointSql);
-        SqlUtil.buildInClause("where", "p", "pointid", pointIds, sql);
-        List<LitePoint> points = 
-            jdbcOps.query(sql.toString(), PointDaoImpl.litePointRowMapper);
-        return points;
+    public List<LitePoint> getLitePoints(Iterable<Integer> pointIds) {
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append(litePointSql);
+                sql.append("where p.pointid").in(subList);
+                return sql;
+            }
+        };
+        return template.query(sqlGenerator, pointIds, litePointRowMapper);
+    }
+
+    @Override
+    public Map<LitePoint, PaoPointIdentifier> getLitePointsForPaoPointIdentifiers(Iterable<PaoPointIdentifier> paoPointIdentifiers) {
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+        Map<LitePoint, PaoPointIdentifier> retVal = Maps.newHashMap();
+
+        ImmutableMultimap<PointIdentifier, PaoIdentifier> paoPointIdentifiersMap =
+            PaoUtils.mapPaoPointIdentifiers(paoPointIdentifiers);
+        for (final PointIdentifier pointIdentifier : paoPointIdentifiersMap.keySet()) {
+            ImmutableCollection<PaoIdentifier> paoIdentifiers =
+                paoPointIdentifiersMap.get(pointIdentifier);
+
+            SqlFragmentGenerator<Integer> sqlGenerator =
+                new SqlFragmentGenerator<Integer>() {
+                    @Override
+                    public SqlFragmentSource generate(List<Integer> subList) {
+                        SqlStatementBuilder sql = new SqlStatementBuilder();
+                        sql.append(litePointPaoSql);
+                        sql.append("WHERE P.PointType").eq_k(pointIdentifier.getPointType());
+                        sql.append(  "AND P.PointOffset").eq_k(pointIdentifier.getOffset());
+                        sql.append(  "AND P.PaobjectId").in(subList);
+                        return sql;
+                    }
+                };
+
+            final Function<PaoIdentifier, Integer> paoIdFunction = PaoUtils.getPaoIdFunction();
+            Map<PaoIdentifier, LitePoint> litePointsForPoint =
+                template.mappedQuery(sqlGenerator, paoIdentifiers, new PointIdToLitePointRowMapper(), paoIdFunction);
+
+            for (Map.Entry<PaoIdentifier, LitePoint> entry : litePointsForPoint.entrySet()) {
+                retVal.put(entry.getValue(), new PaoPointIdentifier(entry.getKey(), pointIdentifier));
+            }
+        }
+        return retVal;
     }
     
     @Override
@@ -372,6 +414,18 @@ public final class PointDaoImpl implements PointDao {
             int pointId = rs.getInt("PointId");
             PointInfo pointInfo = createPointInfo(alreadyCreated, rs);
             return Maps.immutableEntry(pointId, pointInfo);
+        }
+    }
+    
+    private static class PointIdToLitePointRowMapper implements YukonRowMapper<Map.Entry<Integer, LitePoint>> {
+        private Map<LitePoint, LitePoint> alreadyCreated = Maps.newHashMap();
+
+        @Override
+        public Map.Entry<Integer, LitePoint> mapRow(YukonResultSet rs)
+                throws SQLException {
+            int paoId = rs.getInt("PaobjectId");
+            LitePoint litePoint = createLitePoint(alreadyCreated, rs);
+            return Maps.immutableEntry(paoId, litePoint);
         }
     }
 
@@ -782,6 +836,16 @@ public final class PointDaoImpl implements PointDao {
     @Autowired
     public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
         this.paoDefinitionDao = paoDefinitionDao;
+    }
+
+    private static LitePoint createLitePoint(Map<LitePoint, LitePoint> alreadyCreated, YukonResultSet rset) throws SQLException {
+        LitePoint litePoint = createLitePoint(rset);
+        LitePoint retVal = alreadyCreated.get(litePoint);
+        if (retVal == null) {
+            alreadyCreated.put(litePoint, litePoint);
+            retVal = litePoint;
+        }
+        return retVal;
     }
 
     private static LitePoint createLitePoint(YukonResultSet rset) throws SQLException {

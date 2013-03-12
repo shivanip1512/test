@@ -80,17 +80,13 @@
 	<c:when test="${not pageScope.linkGroupName}">
         <a id="deviceGroupName_${uniqueId}" href="javascript:void(0);"
            title="${selectDeviceGroupChooseText}" 
-           class="chooseGroupIcon_${uniqueId} fl simpleLink leftOfImageLabel">
-           ${pageScope.fieldValue}
-        </a>
+           class="chooseGroupIcon_${uniqueId} fl simpleLink leftOfImageLabel">${pageScope.fieldValue}&nbsp;</a>
 	</c:when>
 
 	<%-- LINKED GROUP NAME --%>
 	<c:otherwise>
 		<a id="deviceGroupName_${uniqueId}" href="javascript:void(0);" 
-            class="deviceGroupLink_${uniqueId} fl leftOfImageLabel">
-            ${pageScope.fieldValue}
-        </a>
+            class="deviceGroupLink_${uniqueId} fl leftOfImageLabel">${pageScope.fieldValue}&nbsp;</a>
 	</c:otherwise>
 </c:choose>
 <%-- EDIT FOLDER --%>

@@ -29,6 +29,7 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
     private CountDownLatch shutdownLatch = new CountDownLatch(1);
     private List<ConfigurableApplicationContext> contexts = Lists.newArrayList();
     
+    @Override
     @PostConstruct
     public void loadCustomServices() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -70,7 +71,7 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
 
         // try as context file
         try {
-            ConfigurableApplicationContext context2 = new YukonBaseXmlApplicationContext(applicationContext, "classpath:com/cannontech/services/server/serviceManagerContext.xml", serviceName);
+            ConfigurableApplicationContext context2 = new YukonBaseXmlApplicationContext(applicationContext, "classpath:com/cannontech/services/server/sharedServiceManagerContext.xml", serviceName);
             log.debug("loaded as context: " + context2);
             contexts.add(context2);
             return true;

@@ -1,7 +1,7 @@
 package com.cannontech.common.device.groups.dao;
 
 /**
- * Emnum value to determine if a Device Group is editable and/or modifible, or not.
+ * Enum value to determine if a Device Group is editable and/or modifiable, or not.
  * @author m_peterson
  *
  */

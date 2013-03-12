@@ -151,6 +151,8 @@
 
   <bean id="statusPointMonitorDao" class="com.cannontech.amr.statusPointMonitoring.dao.impl.StatusPointMonitorDaoImpl"/>
   
+  <bean class="com.cannontech.amr.deviceDataMonitor.dao.impl.DeviceDataMonitorDaoImpl"/>
+
   <bean id="porterResponseMonitorDao" class="com.cannontech.amr.porterResponseMonitor.dao.impl.PorterResponseMonitorDaoImpl"/>
 
   <bean id="persistedSystemValueDaoImpl" class="com.cannontech.core.dao.impl.PersistedSystemValueDaoImpl"/>

@@ -5,6 +5,7 @@ import java.util.List;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
+import com.google.common.collect.Lists;
 
 /**
  * This type was created in VisualAge.
@@ -182,6 +183,7 @@ private javax.swing.JLabel getUsedPointNumberLabel() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
+@Override
 public Object getValue(Object val) 
 {
 	com.cannontech.database.data.multi.MultiDBPersistent objectsToAdd = (com.cannontech.database.data.multi.MultiDBPersistent)val;
@@ -300,6 +302,7 @@ private void initialize() {
  * This method was created in VisualAge.
  * @return boolean
  */
+@Override
 public boolean isInputValid() 
 {
 	if( getUsedPointNumberLabel().getText().equalsIgnoreCase("IDs Already Assigned in Range") )
@@ -315,6 +318,7 @@ public boolean isInputValid()
  * Creation date: (12/8/00 11:51:12 AM)
  * @param ev java.awt.event.KeyEvent
  */
+@Override
 public void keyPressed(java.awt.event.KeyEvent ev) 
 {
 }
@@ -323,6 +327,7 @@ public void keyPressed(java.awt.event.KeyEvent ev)
  * Creation date: (12/8/00 11:51:12 AM)
  * @param ev java.awt.event.KeyEvent
  */
+@Override
 public void keyReleased(java.awt.event.KeyEvent ev) 
 {
 
@@ -335,6 +340,7 @@ public void keyReleased(java.awt.event.KeyEvent ev)
  * Creation date: (12/8/00 11:51:12 AM)
  * @param ev java.awt.event.KeyEvent
  */
+@Override
 public void keyTyped(java.awt.event.KeyEvent ev) 
 {
 }
@@ -350,7 +356,8 @@ public static void main(java.lang.String[] args) {
 		frame.add("Center", aDeviceCopyPointPanel);
 		frame.setSize(aDeviceCopyPointPanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -390,7 +397,7 @@ public void pointNumberSpinner_ValueChanged(com.klg.jclass.util.value.JCValueEve
         ids[i] = startingPointNumber+i; 
     }
     
-    List<LitePoint> pointsInRange = DaoFactory.getPointDao().getLitePoints(ids);
+    List<LitePoint> pointsInRange = DaoFactory.getPointDao().getLitePoints(Lists.newArrayList(ids));
     if(pointsInRange.size() > 0) {
         getUsedPointNumberLabel().setText("IDs Already Assigned in Range");
     }
@@ -404,6 +411,7 @@ public void pointNumberSpinner_ValueChanged(com.klg.jclass.util.value.JCValueEve
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val) {
 
     PointDao pointDao = DaoFactory.getPointDao();
@@ -418,6 +426,7 @@ public void setValue(Object val) {
  * @param arg1 com.klg.jclass.util.value.JCValueEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) {
 	// user code begin {1}
 	// user code end
@@ -431,6 +440,7 @@ public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) {
  * @param arg1 com.klg.jclass.util.value.JCValueEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1) {
 	// user code begin {1}
 	// user code end

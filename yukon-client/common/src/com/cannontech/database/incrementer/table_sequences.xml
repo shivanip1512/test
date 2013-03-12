@@ -195,6 +195,10 @@
         <table name="PorterResponseMonitorRule" identitycolumn="RuleId" initsequence="true"/>
         <table name="PorterResponseMonitorErrorCode" identitycolumn="ErrorCodeId" initsequence="true"/>
       </sequence>
+      <sequence name="DeviceDataMonitor">
+        <table name="DeviceDataMonitor" identitycolumn="MonitorId" initsequence="true"/>
+        <table name="DeviceDataMonitorProcessor" identitycolumn="ProcessorId" initsequence="true"/>
+      </sequence>
       <sequence name="CRE">
         <table name="CommandRequestExec" identitycolumn="CommandRequestExecId"/>
         <table name="CommandRequestExecResult" identitycolumn="CommandRequestExecResultId"/>

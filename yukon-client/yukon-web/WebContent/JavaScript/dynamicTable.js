@@ -289,9 +289,9 @@ DynamicTable.prototype = {
         var rowHeight = row.getHeight();
         var undoRowHeight = undoRow.getHeight();
         if (undoRowHeight < rowHeight) {
-            undoRow.setStyle("height: " + rowHeight + "px;")
+            undoRow.setStyle("height: " + rowHeight + "px;");
         } else if (rowHeight > undoRowHeight) {
-            row.setStyle("height: " + undoRowHeight + "px;")
+            row.setStyle("height: " + undoRowHeight + "px;");
         }
     },
 
@@ -344,7 +344,7 @@ DynamicTable.prototype = {
             tableRow.down('.moveDownBtn').show();
         }
     }
-}
+};
 
 /**
  * Find the correct instance of DynamicTable for a given element and call the given method on it.
@@ -356,14 +356,25 @@ function callOnDynamicTable(event, method) {
     dynamicTableInstance[method].apply(dynamicTableInstance, [event]);
 }
 
-YEvent.observeSelectorClick('div.dynamicTableWrapper .moveUpBtn',
-        function(event) { callOnDynamicTable(event, 'moveItemUp') });
-YEvent.observeSelectorClick('div.dynamicTableWrapper .moveDownBtn',
-        function(event) { callOnDynamicTable(event, 'moveItemDown') });
-YEvent.observeSelectorClick('div.dynamicTableWrapper .removeBtn',
-        function(event) { callOnDynamicTable(event, 'removeItem') });
-YEvent.observeSelectorClick('div.dynamicTableWrapper .undoRemoveBtn',
-        function(event) { callOnDynamicTable(event, 'undoRemoveItem') });
-
-YEvent.observeSelectorClick('div.dynamicTableWrapper .addItem',
-        function(event) { callOnDynamicTable(event, 'addItem') });
+jQuery(function() {
+    jQuery(document).on('click', 'div.dynamicTableWrapper .moveUpBtn',
+            function(event) {
+                callOnDynamicTable(event, 'moveItemUp');
+            });
+    jQuery(document).on('click', 'div.dynamicTableWrapper .moveDownBtn',
+            function(event) {
+                callOnDynamicTable(event, 'moveItemDown');
+            });
+    jQuery(document).on('click', 'div.dynamicTableWrapper .removeBtn',
+            function(event) {
+                callOnDynamicTable(event, 'removeItem');
+            });
+    jQuery(document).on('click', 'div.dynamicTableWrapper .undoRemoveBtn',
+            function(event) {
+                callOnDynamicTable(event, 'undoRemoveItem');
+            });
+    jQuery(document).on('click', 'div.dynamicTableWrapper .addItem',
+            function(event) {
+                callOnDynamicTable(event, 'addItem');
+            });
+});
