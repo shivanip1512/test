@@ -165,7 +165,6 @@ ALTER TABLE DeviceDataMonitorProcessor
 ALTER TABLE DeviceDataMonitorProcessor
     ADD CONSTRAINT FK_DevDataMonProc_StateGroup FOREIGN KEY (StateGroupId)
         REFERENCES StateGroup (StateGroupId);
-GO
 
 INSERT INTO YukonRoleProperty VALUES (-20221, -202, 'Device Data Monitor', 'false', 'Controls access to the Device Data Monitor.');
 /* End YUK-11906 */
