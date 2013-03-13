@@ -54,7 +54,7 @@ jQuery(function(){
             </thead>
             <tbody>
                 <c:forEach var="historyItem" items="${eventHistoryList}">
-                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                    <tr>
                         <!-- Thermostat -->
                         <c:if test="${multipleThermostatsSelected}">
                             <td>

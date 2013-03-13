@@ -5,8 +5,8 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:tabbedContentSelector>
-    <cti:msg2 key=".deviceStatusHistory.tab" var="status"/>
-    <cti:tabbedContentSelectorContent selectorName="${status}">
+    <cti:msg2 key=".deviceStatusHistory.tab" var="statusTitle"/>
+    <cti:tabbedContentSelectorContent selectorName="${statusTitle}">
         <c:choose>
             <c:when test="${empty deviceStatusHistory}">
                 <i:inline key=".deviceStatusHistory.none"/>
@@ -37,8 +37,8 @@
         </c:choose>
     </cti:tabbedContentSelectorContent>
     
-    <cti:msg2 key=".hardwareHistory.tab" var="hardware"/>
-    <cti:tabbedContentSelectorContent selectorName="${hardware}">
+    <cti:msg2 key=".hardwareHistory.tab" var="hardwareTitle"/>
+    <cti:tabbedContentSelectorContent selectorName="${hardwareTitle}">
             <c:choose>
                 <c:when test="${empty hardwareHistory}">
                     <i:inline key=".hardwareHistory.none"/>
@@ -68,8 +68,8 @@
     </cti:tabbedContentSelectorContent>
 
     <c:if test="${showThermostatHistory}">
-        <cti:msg2 key=".commandHistory.tab" var="command"/>
-        <cti:tabbedContentSelectorContent selectorName="${command}">
+        <cti:msg2 key=".commandHistory.tab" var="commandTitle"/>
+        <cti:tabbedContentSelectorContent selectorName="${commandTitle}">
             <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/history/commandHistory.jsp" />
         </cti:tabbedContentSelectorContent>
     </c:if>
