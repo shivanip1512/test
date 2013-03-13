@@ -241,7 +241,7 @@ CREATE TABLE FileExportHistory  (
     FileName             VARCHAR(100)                   NOT NULL,
     FileExportType       VARCHAR(50)                    NOT NULL,
     Initiator            VARCHAR(100)                   NOT NULL,
-    Date                 DATETIME                       NOT NULL,
+    ExportDate           DATETIME                       NOT NULL,
     ExportPath           VARCHAR(300)                   NOT NULL,
     CONSTRAINT PK_FileExportHistory PRIMARY KEY (EntryId)
 );

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/12/2013 9:24:31 AM                         */
+/* Created on:     3/13/2013 4:14:04 PM                         */
 /*==============================================================*/
 
 
@@ -4823,7 +4823,7 @@ create table FileExportHistory  (
    FileName             VARCHAR2(100)                   not null,
    FileExportType       VARCHAR2(50)                    not null,
    Initiator            VARCHAR2(100)                   not null,
-   "Date"               DATE                            not null,
+   ExportDate           DATE                            not null,
    ExportPath           VARCHAR2(300)                   not null,
    constraint PK_FileExportHistory primary key (EntryId)
 );
