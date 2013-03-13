@@ -8,7 +8,7 @@
 		
 	<select name="${status.expression}">
 		<c:forEach var="option" items="${input.type.optionList}">
-			<option value="${option.value}" <c:if test="${status.value == option.value}">selected</c:if>><cti:msg2 key="${option.text}"/></option>
+			<option value="${option.value}" <c:if test="${status.value == option.value}">selected</c:if>><cti:msg2 key="${option}"/></option>
 		</c:forEach>
 	</select>
 </spring:bind>
