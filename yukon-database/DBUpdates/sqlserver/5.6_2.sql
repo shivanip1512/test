@@ -213,6 +213,7 @@ INSERT INTO CCStrategyTargetSettings(StrategyId, SettingName, SettingValue, Sett
 /* Start YUK-11913 */
 ALTER TABLE ArchiveValuesExportFormat
 ADD FormatType VARCHAR(40);
+GO
 
 UPDATE ArchiveValuesExportFormat
 SET FormatType = 'FIXED_ATTRIBUTE';
