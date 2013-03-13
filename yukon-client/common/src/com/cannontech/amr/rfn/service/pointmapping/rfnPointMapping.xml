@@ -1,14 +1,206 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pointMappings>
-    <pointGroup><!-- TOU PEAK DEMAND POINT MAPPINGS -->
-        <paoType value="RFN410FX"/>
-        <paoType value="RFN410FD"/>
-        <paoType value="RFN420FX"/>
-        <paoType value="RFN420FD"/>
+<!--  TODO: REMOVE from paoDefinitions.xml + DATABASE DELETE -->
+<!--  these 3 weren't specified in Word, but already exist in XML:  -->
+<!-- existed for ALL + requested by NONE + not found on any test device -->
+<!-- existed for ALL + requested by NONE + not found on any test device --><!--
+        <point name="Received kW"> 
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered Pulse"> 
+            <uom>Pulse</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+ --><!-- existed for A's, FX, FD + requested by NONE --><!--
+        <point name="Sum kWh (Rate E kWh)">
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate E</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+--><!-- OTHER TO DELETE --><!--
+        <point name="Sum kW">
+        <point name="Net kW">
+-->
+
+
+
+
+
+    <pointGroup><!--  COMMON MAPPINGS -->
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
+        <paoType value="RFN410FX"/>
+        <paoType value="RFN410FD"/>
+        <paoType value="RFN410FL"/>
+        <paoType value="RFN420FX"/>
+        <paoType value="RFN420FD"/>
+        <paoType value="RFN420FL"/>
+        <paoType value="RFN430A3D"/>
+        <paoType value="RFN430A3T"/>
+        <paoType value="RFN430A3K"/>
+        <paoType value="RFN430A3R"/>
         <paoType value="RFN430KV"/>
-        <paoType value="RFN430A3"/>
+<!-- existed for all + requested for ALL -->
+        <point name="Delivered kWh">
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Received kWh">
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+            </modifiers>
+        </point>
+        <point name="Sum kWh">
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+
+<!-- existed for ALL + requested for all EXCEPT Elster (but exists on A3R checked). NOTE: C*, F* also want Peak's timestamp -->
+        <point name="Peak kW"> 
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+
+<!-- existed for all EXCEPT CD/CL + requested for ALL -->
+        <point name="Net kWh">
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Net Flow</modifier>
+            </modifiers>
+        </point>
+
+<!-- existed for all + requested by NONE -->
+        <point name="Outage Count">
+            <uom>Outage Count</uom>
+            <modifiers match="equal"/> 
+        </point>
+        <point name="Outage Restore Count">
+            <uom>Restore Count</uom>
+            <modifiers match="equal"/> 
+        </point>
+        <point name="Blink Count">
+            <uom>Outage Blink Count</uom>
+            <modifiers match="equal"/> 
+        </point>
+        <point name="Blink Restore Count">
+            <uom>Restore Blink Count</uom>
+            <modifiers match="equal"/> 
+        </point>
+
+
+    <!-- DEMAND RESET POINT MAPPING -->
+<!--  existed for 420's, 430A3 + requested for NONE  -->
+        <point name="RF Demand Reset Status">
+            <uom>Demand Reset</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal"/>
+        </point>
+    </pointGroup><!--  ************** END COMMON POINT GROUP ************** -->
+
+
+
+    <pointGroup><!--  ALL *EXCEPT* A3D MAPPINGS -->
+        <paoType value="RFN420CL"/>
+        <paoType value="RFN420CD"/>
+        <paoType value="RFN410FX"/>
+        <paoType value="RFN410FD"/>
+        <paoType value="RFN410FL"/>
+        <paoType value="RFN420FX"/>
+        <paoType value="RFN420FD"/>
+        <paoType value="RFN420FL"/>
+        <paoType value="RFN430A3T"/>
+        <paoType value="RFN430A3K"/>
+        <paoType value="RFN430A3R"/>
+        <paoType value="RFN430KV"/>
+
+<!-- existed for all EXCEPT FL (CD/CL diff def'ns) + requested by all EXCEPT A3D -->
+        <point name="Rate A kWh">
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate A</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Rate B kWh">
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate B</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Rate C kWh">
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate C</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Rate D kWh">
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate D</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+
+<!-- existed for all EXCEPT FL + requested by all EXCEPT A3D.  NOTE: C's & F's want timestamp, A's requested date & time separately -->
         <point name="Peak kW (Rate A kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
@@ -53,444 +245,9 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Peak kW (Rate E kW)">
-            <uom>W</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Max</modifier>
-                <modifier>TOU Rate E</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-    </pointGroup>
-    
-    <pointGroup><!-- FOCUS AND ELSTER TOU POINT MAPPINGS -->
-        <paoType value="RFN410FX"/>
-        <paoType value="RFN410FD"/>
-        <paoType value="RFN420FX"/>
-        <paoType value="RFN420FD"/>
-        <paoType value="RFN430A3"/>
-        <paoType value="RFN430KV"/>
-        <!-- These guys catch the tou data for devices that send us quad 1 and 4 (focus/elster devices) -->
-        <point name="Rate A kWh">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate A</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate B kWh">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate B</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate C kWh">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate C</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate D kWh">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate D</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate E kWh">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate E</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Sum kWh (Rate A kWh)">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate A</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Sum kWh (Rate B kWh)">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate B</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Sum kWh (Rate C kWh)">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate C</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Sum kWh (Rate D kWh)">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate D</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Sum kWh (Rate E kWh)">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate E</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        
-        <point name="Received kWh (Rate A kWh)">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate A</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-            </modifiers>
-        </point>
-        <point name="Received kWh (Rate B kWh)">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate B</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-            </modifiers>
-        </point>
-        <point name="Received kWh (Rate C kWh)">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate C</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-            </modifiers>
-        </point>
-        <point name="Received kWh (Rate D kWh)">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate D</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-            </modifiers>
-        </point>
-        <point name="Received kWh (Rate E kWh)">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate E</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-            </modifiers>
-        </point>
-    </pointGroup>
-    
-    <pointGroup><!-- ITRON TOU POINT MAPPINGS -->
-        <paoType value="RFN420CL"/>
-        <paoType value="RFN420CD"/>
-        
-        <!-- This guy catches the tou data for devices that DON'T send us quad 1 and 4 (Itron c2sx devices) -->
-        <point name="Rate A kWh">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate A</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate B kWh">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate B</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate C kWh">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate C</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate D kWh">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate D</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate E kWh">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate E</modifier>
-            </modifiers>
-        </point>
-    </pointGroup>
-    
-    <pointGroup><!-- BASIC VOLTAGE POINT MAPPINGS -->
-        <paoType value="RFN420CL"/>
-        <paoType value="RFN420CD"/>
-        <paoType value="RFN420ELO"/>
-        <point name="Voltage">
-            <uom>V</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal"></modifiers>
-        </point>
-    </pointGroup>
-    
-    <pointGroup><!-- TWO POINT VOLTAGE POINT MAPPINGS -->
-        <paoType value="RFN410FL"/>
-        <paoType value="RFN420FL"/>
-        <point name="Voltage Primary">
-            <uom>V</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Primary</modifier>
-            </modifiers>
-        </point>
-        <point name="Voltage Secondary">
-            <uom>V</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Secondary</modifier>
-            </modifiers>
-        </point>
-    </pointGroup>
-    
-    <pointGroup><!-- THREE PHASE POINT MAPPINGS -->
-        <paoType value="RFN410FX"/>
-        <paoType value="RFN410FD"/>
-        <paoType value="RFN420FX"/>
-        <paoType value="RFN420FD"/>
-        <paoType value="RFN430A3"/>
-        <paoType value="RFN430KV"/>
-        
-        <point name="Min Volts Phase A">
-            <uom>V</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase A</modifier>
-                <modifier>Min</modifier>
-            </modifiers>
-        </point>
-        <point name="Min Volts Phase B">
-            <uom>V</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase B</modifier>
-                <modifier>Min</modifier>
-            </modifiers>
-        </point>
-        <point name="Min Volts Phase C">
-            <uom>V</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase C</modifier>
-                <modifier>Min</modifier>
-            </modifiers>
-        </point>
-        
-        <point name="Avg Volts Phase A">
-            <uom>V</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase A</modifier>
-                <modifier>Avg</modifier>
-            </modifiers>
-        </point>
-        <point name="Avg Volts Phase B">
-            <uom>V</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase B</modifier>
-                <modifier>Avg</modifier>
-            </modifiers>
-        </point>
-        <point name="Avg Volts Phase C">
-            <uom>V</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase C</modifier>
-                <modifier>Avg</modifier>
-            </modifiers>
-        </point>
-        
-        <point name="Max Volts Phase A">
-            <uom>V</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase A</modifier>
-                <modifier>Max</modifier>
-            </modifiers>
-        </point>
-        <point name="Max Volts Phase B">
-            <uom>V</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase B</modifier>
-                <modifier>Max</modifier>
-            </modifiers>
-        </point>
-        <point name="Max Volts Phase C">
-            <uom>V</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase C</modifier>
-                <modifier>Max</modifier>
-            </modifiers>
-        </point>
-        
-        <point name="Volts Phase A">
-            <uom>V</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase A</modifier>
-            </modifiers>
-        </point>
-        <point name="Volts Phase B">
-            <uom>V</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase B</modifier>
-            </modifiers>
-        </point>
-        <point name="Volts Phase C">
-            <uom>V</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase C</modifier>
-            </modifiers>
-        </point>
-        <point name="Volt Degrees Phase A">
-            <uom>V degree</uom>
-			<multiplier value="0.1"/>	<!-- V degree - Volt angle (tenths of degree) -->
-            <modifiers match="equal">
-                <modifier>Phase A</modifier>
-            </modifiers>
-        </point>
-        <point name="Volt Degrees Phase B">
-            <uom>V degree</uom>
-			<multiplier value="0.1"/>	<!-- V degree - Volt angle (tenths of degree) -->
-            <modifiers match="equal">
-                <modifier>Phase B</modifier>
-            </modifiers>
-        </point>
-        <point name="Volt Degrees Phase C">
-            <uom>V degree</uom>
-            <multiplier value="0.1"/>	<!-- V degree - Volt angle (tenths of degree) -->
-            <modifiers match="equal">
-                <modifier>Phase C</modifier>
-            </modifiers>
-        </point>
-        <point name="Power Factor Degrees Phase A">
-            <uom>PF degree</uom>
-			<multiplier value="0.1"/>	<!-- PF degree - Power Factor angle (tenths of degree) -->
-            <modifiers match="equal">
-                <modifier>Phase A</modifier>
-            </modifiers>
-        </point>
-        <point name="Power Factor Degrees Phase B">
-            <uom>PF degree</uom>
-			<multiplier value="0.1"/>	<!-- PF degree - Power Factor angle (tenths of degree) -->
-            <modifiers match="equal">
-                <modifier>Phase B</modifier>
-            </modifiers>
-        </point>
-        <point name="Power Factor Degrees Phase C">
-            <uom>PF degree</uom>
-			<multiplier value="0.1"/>	<!-- PF degree - Power Factor angle (tenths of degree) -->
-            <modifiers match="equal">
-                <modifier>Phase C</modifier>
-            </modifiers>
-        </point>
-    </pointGroup>
-    
-    <pointGroup><!-- NET KWH MAPPING -->
-        <paoType value="RFN410FL"/>
-        <paoType value="RFN410FX"/>
-        <paoType value="RFN410FD"/>
-        <paoType value="RFN420FL"/>
-        <paoType value="RFN420FX"/>
-        <paoType value="RFN420FD"/>
-        <paoType value="RFN430KV"/>
-        <paoType value="RFN430A3"/>
-        <point name="Net kWh">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-                <modifier>Net Flow</modifier>
-            </modifiers>
-        </point>
-    </pointGroup>
-    <pointGroup><!-- NET KWH TOU MAPPINGS -->
-        <paoType value="RFN410FX"/>
-        <paoType value="RFN410FD"/>
-        <paoType value="RFN420FX"/>
-        <paoType value="RFN420FD"/>
-        <paoType value="RFN430KV"/>
-        <paoType value="RFN430A3"/>
+
+
+<!-- existed for A's, FX, FD + requested ONLY by CD, CL, FX, FD, FL -->
         <point name="Net kWh (Rate A kWh)">
             <uom>Wh</uom>
             <multiplier value=".001"/>
@@ -543,22 +300,10 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Net kWh (Rate E kWh)">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-                <modifier>Net Flow</modifier>
-                <modifier>TOU Rate E</modifier>
-            </modifiers>
-        </point>
-    </pointGroup>
-    
-    <pointGroup><!-- COMMON POINT MAPPINGS -->
+    </pointGroup><!--  ************** END: ALL *EXCEPT* A3D MAPPINGS  ************** -->
+
+
+    <pointGroup>
         <paoType value="RFN410FL"/>
         <paoType value="RFN410FX"/>
         <paoType value="RFN410FD"/>
@@ -567,10 +312,9 @@
         <paoType value="RFN420FD"/>
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
-        <paoType value="RFN430KV"/>
-        <paoType value="RFN430A3"/>
-        <point name="Delivered kWh">
-            <uom>Wh</uom>
+<!-- existed for ALL + requested for all EXCEPT Elster; NOTE: they also want Peak's timestamp -->
+        <point name="Delivered kW"> 
+            <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
@@ -578,92 +322,109 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Received kWh">
+<!-- existed for A's, FX, FD + requested ONLY by CD, CL, FX, FD, FL -->
+        <point name="Received kWh (Rate A kWh)">
             <uom>Wh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-            </modifiers>
-        </point>
-        <point name="Sum kWh">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Delivered kVArh"> 
-            <uom>Varh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-            </modifiers>
-        </point>
-        <point name="Received kVArh">
-            <uom>Varh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Delivered Rate A kVArh"> 
-            <uom>Varh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
                 <modifier>TOU Rate A</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Rate B kVArh"> 
-            <uom>Varh</uom>
+        <point name="Received kWh (Rate B kWh)">
+            <uom>Wh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
                 <modifier>TOU Rate B</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Rate C kVArh"> 
-            <uom>Varh</uom>
+        <point name="Received kWh (Rate C kWh)">
+            <uom>Wh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
                 <modifier>TOU Rate C</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Rate D kVArh"> 
-            <uom>Varh</uom>
+        <point name="Received kWh (Rate D kWh)">
+            <uom>Wh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
                 <modifier>TOU Rate D</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Pulse"> 
-            <uom>Pulse</uom>
+        <point name="Sum kWh (Rate A kWh)">
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
+                <modifier>TOU Rate A</modifier>
                 <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
+        <point name="Sum kWh (Rate B kWh)">
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate B</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Sum kWh (Rate C kWh)">
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate C</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Sum kWh (Rate D kWh)">
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate D</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+    </pointGroup>
+
+    <pointGroup>
+        <paoType value="RFN410FX"/>
+        <paoType value="RFN410FD"/>
+        <paoType value="RFN420FX"/>
+        <paoType value="RFN420FD"/>
+        <paoType value="RFN430A3D"/>
+        <paoType value="RFN430A3T"/>
+        <paoType value="RFN430A3K"/>
+        <paoType value="RFN430A3R"/>
+        <paoType value="RFN430KV"/>
+
+<!-- existed for ALL + requested for A's, FX, FD -->
         <point name="Amps Phase A"> 
             <uom>A</uom>
             <parseSiPrefix/>
@@ -685,157 +446,69 @@
                 <modifier>Phase C</modifier>
             </modifiers>
         </point>
-        <point name="Min Volts">
+
+<!-- existed for A's, FX, FD + requested for A's, FX, FD -->
+        <point name="Volts Phase A">
             <uom>V</uom>
             <parseSiPrefix/>
             <modifiers match="equal">
-                <modifier>Min</modifier>
+                <modifier>Phase A</modifier>
             </modifiers>
         </point>
-        <point name="Max Volts">
+        <point name="Volts Phase B">
             <uom>V</uom>
             <parseSiPrefix/>
             <modifiers match="equal">
-                <modifier>Max</modifier>
+                <modifier>Phase B</modifier>
             </modifiers>
         </point>
-        <point name="Outage Count">
-            <uom>Outage Count</uom>
-            <modifiers match="equal"/> 
-        </point>
-        <point name="Outage Restore Count">
-            <uom>Restore Count</uom>
-            <modifiers match="equal"/> 
-        </point>
-        <point name="Blink Count">
-            <uom>Outage Blink Count</uom>
-            <modifiers match="equal"/> 
-        </point>
-        <point name="Blink Restore Count">
-            <uom>Restore Blink Count</uom>
-            <modifiers match="equal"/> 
-        </point>
-        <point name="Delivered kW"> 
-            <uom>W</uom>
-            <multiplier value=".001"/>
+        <point name="Volts Phase C">
+            <uom>V</uom>
             <parseSiPrefix/>
             <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
+                <modifier>Phase C</modifier>
             </modifiers>
         </point>
-        <point name="Peak kW"> 
-            <uom>W</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
+<!-- existed for A's, FX, FD + requested for NONE + exists for A3K? test device -->
+        <point name="Power Factor Degrees Phase A">
+            <uom>PF degree</uom>
+			<multiplier value="0.1"/>	<!-- PF degree - Power Factor angle (tenths of degree) -->
             <modifiers match="equal">
-                <modifier>Max</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
+                <modifier>Phase A</modifier>
             </modifiers>
         </point>
-        <point name="Received kW"> 
-            <uom>W</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
+        <point name="Power Factor Degrees Phase B">
+            <uom>PF degree</uom>
+			<multiplier value="0.1"/>	<!-- PF degree - Power Factor angle (tenths of degree) -->
             <modifiers match="equal">
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
+                <modifier>Phase B</modifier>
+            </modifiers>
+        </point>
+        <point name="Power Factor Degrees Phase C">
+            <uom>PF degree</uom>
+			<multiplier value="0.1"/>	<!-- PF degree - Power Factor angle (tenths of degree) -->
+            <modifiers match="equal">
+                <modifier>Phase C</modifier>
             </modifiers>
         </point>
     </pointGroup>
-    
-    <!-- RFN_ELSTER_A3_ONLY -->
-    <pointGroup>
-        <paoType value="RFN430A3"/>
-        
-        <point name="Phase A Power Factor">
-            <uom>PF</uom>
-            <multiplier value="1.0"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase A</modifier>
-            </modifiers>
-        </point>
-        <point name="Phase B Power Factor">
-            <uom>PF</uom>
-            <multiplier value="1.0"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase B</modifier>
-            </modifiers>
-        </point>
-        <point name="Phase C Power Factor">
-            <uom>PF</uom>
-            <multiplier value="1.0"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase C</modifier>
-            </modifiers>
-        </point>
-        
-        <point name="Rate A Avg Power Factor">
-            <uom>PF</uom>
-            <multiplier value="1.0"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate A</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate B Avg Power Factor">
-            <uom>PF</uom>
-            <multiplier value="1.0"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate B</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate C Avg Power Factor">
-            <uom>PF</uom>
-            <multiplier value="1.0"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate C</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate D Avg Power Factor">
-            <uom>PF</uom>
-            <multiplier value="1.0"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate D</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        
-        <point name="Avg Power Factor">
-            <uom>PF</uom>
-            <multiplier value="1.0"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        
-        <!-- COINCIDENT VALUES POINT MAPPING -->
-        <point name="Coincident kVAr">
-            <uom>Var</uom>
+
+    <pointGroup><!-- RFN_L2_ELSTER_ALL -->
+        <paoType value="RFN430A3D"/>
+        <paoType value="RFN430A3T"/>
+        <paoType value="RFN430A3K"/>
+        <paoType value="RFN430A3R"/>
+        <paoType value="RFN430KV"/>
+        <point name="Total Cumulative Peak kW">
+            <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
-            <modifiers match="equal"></modifiers>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>Cumulative</modifier>
+            </modifiers>
             <baseUom>W</baseUom>
             <baseModifiers match="equal">
                 <modifier>Max</modifier>
@@ -843,357 +516,41 @@
                 <modifier>Quadrant 4</modifier>
             </baseModifiers>
         </point>
-        <point name="Coincident kVA">
-            <uom>VA</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal"></modifiers>
-            <baseUom>W</baseUom>
-            <baseModifiers match="equal">
-                <modifier>Max</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-            </baseModifiers>
-        </point>        
-        <point name="Coincident Power Factor">
-            <uom>PF</uom>
-            <multiplier value="1.0"/>
-            <parseSiPrefix/>
-            <modifiers match="equal"></modifiers>
-            <baseUom>W</baseUom>
-            <baseModifiers match="equal">
-                <modifier>Max</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-            </baseModifiers>
-        </point>
-        
-        <point name="Rate A Coincident Power Factor">
-            <uom>PF</uom>
-            <multiplier value="1.0"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Coincident</modifier>
-                <modifier>TOU Rate A</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate B Coincident Power Factor">
-            <uom>PF</uom>
-            <multiplier value="1.0"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Coincident</modifier>
-                <modifier>TOU Rate B</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate C Coincident Power Factor">
-            <uom>PF</uom>
-            <multiplier value="1.0"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Coincident</modifier>
-                <modifier>TOU Rate C</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate D Coincident Power Factor">
-            <uom>PF</uom>
-            <multiplier value="1.0"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Coincident</modifier>
-                <modifier>TOU Rate D</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate A Coincident kW">
+
+
+<!-- existed for A's + requested for A's -->
+        <point name="Phase A kW">
             <uom>W</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Coincident</modifier>
-                <modifier>TOU Rate A</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate B Coincident kW">
-            <uom>W</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Coincident</modifier>
-                <modifier>TOU Rate B</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate C Coincident kW">
-            <uom>W</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Coincident</modifier>
-                <modifier>TOU Rate C</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate D Coincident kW">
-            <uom>W</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Coincident</modifier>
-                <modifier>TOU Rate D</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Coincident Peak kW"> 
-            <uom>W</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Coincident</modifier>
-                <modifier>Max</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        
-        <!-- kVA POINT MAPPING -->
-        <point name="Phase A kVA">
-            <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Phase A</modifier>
             </modifiers>
         </point>
-        <point name="Phase B kVA">
-            <uom>VA</uom>
+        <point name="Phase B kW">
+            <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Phase B</modifier>
             </modifiers>
         </point>
-        <point name="Phase C kVA">
-            <uom>VA</uom>
+        <point name="Phase C kW">
+            <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Phase C</modifier>
             </modifiers>
         </point>
-        
-        <point name="Peak kVA">
-            <uom>VA</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-                <modifier>Max</modifier>
-                <modifier>Harmonic</modifier>
-            </modifiers>
-        </point>
-        
-        <point name="Rate A Peak kVA">
-            <uom>VA</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate A</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-                <modifier>Max</modifier>
-                <modifier>Harmonic</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate B Peak kVA">
-            <uom>VA</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate B</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-                <modifier>Max</modifier>
-                <modifier>Harmonic</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate C Peak kVA">
-            <uom>VA</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate C</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-                <modifier>Max</modifier>
-                <modifier>Harmonic</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate D Peak kVA">
-            <uom>VA</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate D</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-                <modifier>Max</modifier>
-                <modifier>Harmonic</modifier>
-            </modifiers>
-        </point>
-        
-        <!-- kVAh POINT MAPPING -->
-        <point name="kVAh Delivered">
-            <uom>VAh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-            </modifiers>
-        </point>
-        <point name="kVAh Received">
-            <uom>VAh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="kVAh Sum">
-            <uom>VAh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        
-        <!-- kVAr POINT MAPPING -->
-        <point name="Phase A kVAr">
-            <uom>Var</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase A</modifier>
-            </modifiers>
-        </point>
-        <point name="Phase B kVAr">
-            <uom>Var</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase B</modifier>
-            </modifiers>
-        </point>
-        <point name="Phase C kVAr">
-            <uom>Var</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Phase C</modifier>
-            </modifiers>
-        </point>
-        <point name="Peak kVAr">
-            <uom>Var</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Max</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate A Peak kVAr">
-            <uom>Var</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate A</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Max</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate B Peak kVAr">
-            <uom>Var</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-            <modifier>TOU Rate B</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Max</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate C Peak kVAr">
-            <uom>Var</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate C</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Max</modifier>
-            </modifiers>
-        </point>
-        <point name="Rate D Peak kVAr">
-            <uom>Var</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate D</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Max</modifier>
-            </modifiers>
-        </point>
-        
-        <!-- kVAr POINT MAPPING -->
-        <point name="Sum kVArh">
-            <uom>Varh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Net kVArh">
-            <uom>Varh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-                <modifier>Net Flow</modifier>
-            </modifiers>
-        </point>
+    </pointGroup>
+
+
+    <pointGroup><!-- Added from: Yukon Point Mapping ICD v2 -->
+        <paoType value="RFN430A3T"/>
+        <paoType value="RFN430A3K"/>
+        <paoType value="RFN430A3R"/>
+        <paoType value="RFN430KV"/>
         
         <!-- MORE KW POINTS -->
         <point name="Rate A Cumulative Peak kW">
@@ -1272,15 +629,127 @@
                 <modifier>TOU Rate D</modifier>
             </baseModifiers>
         </point>
-        <point name="Total Cumulative Peak kW">
-            <uom>W</uom>
+    </pointGroup>
+
+    
+
+    <pointGroup>
+        <paoType value="RFN430A3K"/>
+        <paoType value="RFN430A3R"/>
+        <paoType value="RFN430KV"/>
+
+        <point name="Peak kVA">
+            <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
                 <modifier>Max</modifier>
-                <modifier>Cumulative</modifier>
+                <modifier>Harmonic</modifier>
+            </modifiers>
+        </point>
+        
+        <point name="Rate A Peak kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate A</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>Harmonic</modifier>
+            </modifiers>
+        </point>
+        <point name="Rate B Peak kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate B</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>Harmonic</modifier>
+            </modifiers>
+        </point>
+        <point name="Rate C Peak kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate C</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>Harmonic</modifier>
+            </modifiers>
+        </point>
+        <point name="Rate D Peak kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate D</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>Harmonic</modifier>
+            </modifiers>
+        </point>
+
+<!-- existed for A3 + requested ONLY for A3K, A3R -->
+        <point name="kVAh Delivered">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Harmonic</modifier>
+            </modifiers>
+        </point>
+        <point name="kVAh Received">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Harmonic</modifier>
+            </modifiers>
+        </point>
+        <point name="kVAh Sum">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Harmonic</modifier>
+            </modifiers>
+        </point>
+        <point name="Avg Power Factor">
+            <uom>PF</uom>
+            <multiplier value="1.0"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Coincident Power Factor"><!--  EXISTING but REVISED definition  -->
+            <uom>PF</uom>
+            <multiplier value="1.0"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
             </modifiers>
             <baseUom>W</baseUom>
             <baseModifiers match="equal">
@@ -1289,24 +758,193 @@
                 <modifier>Quadrant 4</modifier>
             </baseModifiers>
         </point>
-        <point name="Phase A kW">
-            <uom>W</uom>
+        <point name="Rate A Avg Power Factor">
+            <uom>PF</uom>
+            <multiplier value="1.0"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate A</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Rate B Avg Power Factor">
+            <uom>PF</uom>
+            <multiplier value="1.0"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate B</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Rate C Avg Power Factor">
+            <uom>PF</uom>
+            <multiplier value="1.0"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate C</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Rate D Avg Power Factor">
+            <uom>PF</uom>
+            <multiplier value="1.0"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate D</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Rate A Coincident Power Factor">        <!-- Existing, but modified: "Coincident Power Factor Rate A"-->
+            <uom>PF</uom>
+            <multiplier value="1.0"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate A</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+            <baseUom>W</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate A</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Rate B Coincident Power Factor">        <!-- Existing, but modified: "Coincident Power Factor Rate B"-->
+            <uom>PF</uom>
+            <multiplier value="1.0"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate B</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+            <baseUom>W</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate B</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Rate C Coincident Power Factor">        <!-- Existing, but modified: "Coincident Power Factor Rate C"-->
+            <uom>PF</uom>
+            <multiplier value="1.0"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate C</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+            <baseUom>W</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate C</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Rate D Coincident Power Factor">        <!-- Existing, but modified: "Coincident Power Factor Rate D"-->
+            <uom>PF</uom>
+            <multiplier value="1.0"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate D</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+            <baseUom>W</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate D</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </baseModifiers>
+        </point>
+
+        <point name="Phase A Power Factor">
+            <uom>PF</uom>
+            <multiplier value="1.0"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase A</modifier>
+            </modifiers>
+        </point>
+        <point name="Phase B Power Factor">
+            <uom>PF</uom>
+            <multiplier value="1.0"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase B</modifier>
+            </modifiers>
+        </point>
+        <point name="Phase C Power Factor">
+            <uom>PF</uom>
+            <multiplier value="1.0"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase C</modifier>
+            </modifiers>
+        </point>
+        <point name="Phase A kVAr">
+            <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Phase A</modifier>
             </modifiers>
         </point>
-        <point name="Phase B kW">
-            <uom>W</uom>
+        <point name="Phase B kVAr">
+            <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Phase B</modifier>
             </modifiers>
         </point>
-        <point name="Phase C kW">
-            <uom>W</uom>
+        <point name="Phase C kVAr">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase C</modifier>
+            </modifiers>
+        </point>
+        <point name="Phase A kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase A</modifier>
+            </modifiers>
+        </point>
+        <point name="Phase B kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase B</modifier>
+            </modifiers>
+        </point>
+        <point name="Phase C kVA">
+            <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
@@ -1314,7 +952,576 @@
             </modifiers>
         </point>
     </pointGroup>
-    
+
+    <pointGroup>
+        <paoType value="RFN430A3R"/>
+        <paoType value="RFN430KV"/>
+<!-- existed for ALL + requested ONLY for A3R + BUT found on device...? -->
+        <point name="Delivered kVArh"> 
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </modifiers>
+        </point>
+        <point name="Received kVArh">
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+
+<!-- existed for A3 + requested for A3R -->
+        <!-- kVAr POINT MAPPING -->
+        <point name="Sum kVArh">
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Net kVArh">
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Net Flow</modifier>
+            </modifiers>
+        </point>
+
+<!-- existed for all + requested by NONE + found on A3R device -->
+        <point name="Delivered Rate A kVArh">
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>TOU Rate A</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered Rate B kVArh"> 
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>TOU Rate B</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered Rate C kVArh"> 
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>TOU Rate C</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered Rate D kVArh"> 
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>TOU Rate D</modifier>
+            </modifiers>
+        </point>
+<!--  These 4 are new per ICD #2 -->
+        <point name="Received Rate A kVArh">
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate A</modifier>
+            </modifiers>
+        </point>
+        <point name="Received Rate B kVArh"> 
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate B</modifier>
+            </modifiers>
+        </point>
+        <point name="Received Rate C kVArh"> 
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate C</modifier>
+            </modifiers>
+        </point>
+        <point name="Received Rate D kVArh"> 
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate D</modifier>
+            </modifiers>
+        </point>
+
+        <point name="Coincident Peak kVAr">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </modifiers>
+            <baseUom>W</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Peak kVAr">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </modifiers>
+        </point>
+        <point name="Coincident Cumulative Peak kVAr">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Cumulative</modifier>
+            </modifiers>
+            <baseUom>Var</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Rate A Peak kVAr">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate A</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </modifiers>
+        </point>
+        <point name="Coincident Peak kVAr (Rate A kVAr)">			<!--  "Coincident Peak Var Rate A" -->
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate A</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </modifiers>
+            <baseUom>W</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate A</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Coincident Cumulative Peak kVAr (Rate A kVAr)">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate A</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Cumulative</modifier>
+            </modifiers>
+            <baseUom>Var</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate A</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Rate B Peak kVAr">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate B</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </modifiers>
+        </point>
+        <point name="Coincident Peak kVAr (Rate B kVAr)">			<!--  "Coincident Peak Var Rate B" -->
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate B</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </modifiers>
+            <baseUom>W</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate B</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Coincident Cumulative Peak kVAr (Rate B kVAr)">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate B</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Cumulative</modifier>
+            </modifiers>
+            <baseUom>Var</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate B</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Rate C Peak kVAr">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate C</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </modifiers>
+        </point>
+        <point name="Coincident Peak kVAr (Rate C kVAr)">			<!--  "Coincident Peak Var Rate C" -->
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate C</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </modifiers>
+            <baseUom>W</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate C</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Coincident Cumulative Peak kVAr (Rate C kVAr)">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate C</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Cumulative</modifier>
+            </modifiers>
+            <baseUom>Var</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate C</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Rate D Peak kVAr">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate D</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </modifiers>
+        </point>
+        <point name="Coincident Peak kVAr (Rate D kVAr)">			<!--  "Coincident Peak Var Rate D" -->
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate D</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </modifiers>
+            <baseUom>W</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate D</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Coincident Cumulative Peak kVAr (Rate D kVAr)">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate D</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Cumulative</modifier>
+            </modifiers>
+            <baseUom>Var</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate D</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </baseModifiers>
+        </point>
+    </pointGroup><!-- ENDS GROUP: A3R, KV -->
+
+
+    <pointGroup><!--  FX, FD -->
+        <paoType value="RFN410FX"/>
+        <paoType value="RFN410FD"/>
+        <paoType value="RFN420FX"/>
+        <paoType value="RFN420FD"/>
+<!-- existed for all EXCEPT FL + requested by NONE = add to FL + keep the rest -->
+        <point name="Peak kW (Rate E kW)">
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate E</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Net kWh (Rate E kWh)">
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Net Flow</modifier>
+                <modifier>TOU Rate E</modifier>
+            </modifiers>
+        </point>
+
+<!-- existed for all EXCEPT FL (and CD/CL had diff def'n) + requested by NONE -->
+        <point name="Rate E kWh">
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate E</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+<!-- existed for A's, FX, FD + requested by NONE -->
+        <point name="Received kWh (Rate E kWh)">
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate E</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+            </modifiers>
+        </point>
+
+<!-- existed for A's, FX, FD + requested ONLY for FX, FD -->
+        <point name="Avg Volts Phase A">
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase A</modifier>
+                <modifier>Avg</modifier>
+            </modifiers>
+        </point>
+        <point name="Avg Volts Phase B">
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase B</modifier>
+                <modifier>Avg</modifier>
+            </modifiers>
+        </point>
+        <point name="Avg Volts Phase C">
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase C</modifier>
+                <modifier>Avg</modifier>
+            </modifiers>
+        </point>
+        <point name="Min Volts Phase A">
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase A</modifier>
+                <modifier>Min</modifier>
+            </modifiers>
+        </point>
+        <point name="Min Volts Phase B">
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase B</modifier>
+                <modifier>Min</modifier>
+            </modifiers>
+        </point>
+        <point name="Min Volts Phase C">
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase C</modifier>
+                <modifier>Min</modifier>
+            </modifiers>
+        </point>
+        <point name="Max Volts Phase A">
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase A</modifier>
+                <modifier>Max</modifier>
+            </modifiers>
+        </point>
+        <point name="Max Volts Phase B">
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase B</modifier>
+                <modifier>Max</modifier>
+            </modifiers>
+        </point>
+        <point name="Max Volts Phase C">
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase C</modifier>
+                <modifier>Max</modifier>
+            </modifiers>
+        </point>
+        <point name="Volt Degrees Phase A">
+            <uom>V degree</uom>
+			<multiplier value="0.1"/>	<!-- V degree - Volt angle (tenths of degree) -->
+            <modifiers match="equal">
+                <modifier>Phase A</modifier>
+            </modifiers>
+        </point>
+        <point name="Volt Degrees Phase B">
+            <uom>V degree</uom>
+			<multiplier value="0.1"/>	<!-- V degree - Volt angle (tenths of degree) -->
+            <modifiers match="equal">
+                <modifier>Phase B</modifier>
+            </modifiers>
+        </point>
+        <point name="Volt Degrees Phase C">
+            <uom>V degree</uom>
+            <multiplier value="0.1"/>	<!-- V degree - Volt angle (tenths of degree) -->
+            <modifiers match="equal">
+                <modifier>Phase C</modifier>
+            </modifiers>
+        </point>
+    </pointGroup>
+
+    <pointGroup><!-- TWO POINT VOLTAGE POINT MAPPINGS -->
+        <paoType value="RFN410FL"/>
+        <paoType value="RFN420FL"/>
+<!-- existed for FL + requested for FL -->
+        <point name="Voltage Primary">
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Primary</modifier>
+            </modifiers>
+        </point>
+        <point name="Voltage Secondary">
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Secondary</modifier>
+            </modifiers>
+        </point>
+    </pointGroup>
+
+    <pointGroup><!-- BASIC VOLTAGE POINT MAPPINGS -->
+        <paoType value="RFN420CL"/>
+        <paoType value="RFN420CD"/>
+<!-- existed for CD, CL + requested for CD, CL -->
+        <point name="Voltage">
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal"></modifiers>
+        </point>
+
+<!-- existed for ALL + requested for CD, CL, NOTE: THEY WANT THE TIMESTAMP TOO -->
+        <point name="Min Volts">
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Min</modifier>
+            </modifiers>
+        </point>
+        <point name="Max Volts">
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+            </modifiers>
+        </point>
+    </pointGroup>
+
+
+<!--  ################################################  START: Non-Standard RFN Mappings  ################################################  -->
     <!-- WATER NODES POINT MAPPING -->
     <pointGroup>
         <paoType value="RFWMETER"/>
@@ -1338,8 +1545,14 @@
             <parseSiPrefix/>
             <modifiers match="equal"/>
         </point>
-      </pointGroup>
+    </pointGroup>
       
+      
+      
+      
+      
+<!--  ***********************************************  START ELO  ***************************************** -->
+
     <!-- ELO POINT MAPPING -->
     <pointGroup>
         <paoType value="RFN420ELO"/>
@@ -1521,17 +1734,12 @@
         </point>
     </pointGroup>
 
-    <!-- DEMAND RESET POINT MAPPING -->
-    <pointGroup>
-        <paoType value="RFN420FX"/>
-        <paoType value="RFN420FD"/>
-        <paoType value="RFN420CL"/>
-        <paoType value="RFN420CD"/>
-        <paoType value="RFN430A3"/>
-        <point name="RF Demand Reset Status">
-            <uom>Demand Reset</uom>
+    <pointGroup><!-- BASIC VOLTAGE POINT MAPPINGS: REPEAT to separate-out ELO -->
+        <paoType value="RFN420ELO"/>
+        <point name="Voltage">
+            <uom>V</uom>
             <parseSiPrefix/>
-            <modifiers match="equal"/>
+            <modifiers match="equal"></modifiers>
         </point>
-      </pointGroup>
+    </pointGroup>
 </pointMappings>
