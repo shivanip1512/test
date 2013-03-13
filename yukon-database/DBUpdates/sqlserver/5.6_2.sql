@@ -300,6 +300,36 @@ DEALLOCATE tableNames;
 DROP TABLE temp_PointTableNames;
 /* End YUK-11953 */
 
+/* Start YUK-11954 */
+UPDATE YukonPaobject 
+SET Type = 'RFN-430A3R' 
+FROM YukonPaobject ypao
+LEFT JOIN RFNAddress rfna ON rfna.DeviceId = ypao.PAObjectID
+WHERE rfna.Model = 'A3R'
+   OR ypao.PAOName like '%EE_A3R';
+
+UPDATE YukonPaobject 
+SET Type = 'RFN-430A3D' 
+FROM YukonPaobject ypao
+LEFT JOIN RFNAddress rfna ON rfna.DeviceId = ypao.PAObjectID
+WHERE rfna.Model = 'A3D'
+   OR ypao.PAOName like '%EE_A3D';
+
+UPDATE YukonPaobject 
+SET Type = 'RFN-430A3T' 
+FROM YukonPaobject ypao
+LEFT JOIN RFNAddress rfna ON rfna.DeviceId = ypao.PAObjectID
+WHERE rfna.Model = 'A3T'
+   OR ypao.PAOName like '%EE_A3T';
+
+UPDATE YukonPaobject 
+SET Type = 'RFN-430A3K' 
+FROM YukonPaobject ypao
+LEFT JOIN RFNAddress rfna ON rfna.DeviceId = ypao.PAObjectID
+WHERE rfna.Model = 'A3K'
+   OR ypao.PAOName like '%EE_A3K';
+/* End YUK-11954 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

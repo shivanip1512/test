@@ -312,6 +312,36 @@ END;
 DROP TABLE temp_PointTableNames;
 /* End YUK-11953 */
 
+/* Start YUK-11954 */
+UPDATE YukonPAObject ypao
+SET ypao.Type = 'RFN-430A3R'
+WHERE ypao.PAOName like '%EE_A3R' 
+   OR ypao.PAOBjectId IN (SELECT rfna.DeviceId
+                          FROM RFNAddress rfna
+                          WHERE Model = 'A3R');
+
+UPDATE YukonPAObject ypao
+SET ypao.Type = 'RFN-430A3D'
+WHERE ypao.PAOName like '%EE_A3D'
+   OR ypao.PAOBjectId IN (SELECT rfna.DeviceId
+                          FROM RFNAddress rfna
+                          WHERE Model = 'A3D');
+
+UPDATE YukonPAObject ypao
+SET ypao.Type = 'RFN-430A3T'
+WHERE ypao.PAOName like '%EE_A3T'
+   OR ypao.PAOBjectId IN (SELECT rfna.DeviceId
+                          FROM RFNAddress rfna
+                          WHERE Model = 'A3T');
+
+UPDATE YukonPAObject ypao
+SET ypao.Type = 'RFN-430A3K'
+WHERE ypao.PAOName like '%EE_A3K'
+   OR ypao.PAOBjectId IN (SELECT rfna.DeviceId
+                          FROM RFNAddress rfna
+                          WHERE Model = 'A3K');
+/* End YUK-11954 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
