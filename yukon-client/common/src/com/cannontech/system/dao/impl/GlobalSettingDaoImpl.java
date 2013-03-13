@@ -54,6 +54,7 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
     public String getString(GlobalSettingType type) {
         Object convertedValue = getConvertedValue(type, Object.class);
         if (convertedValue == null) {
+            log.debug("Null setting found for  " + type + " using empty string.");
             return "";
         } else {
             return convertedValue.toString();
@@ -64,6 +65,7 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
     public boolean getBoolean(GlobalSettingType type) {
         Boolean value = getNullableBoolean(type);
         if (value == null) {
+            log.debug("Null or empty setting found for  " + type + " using false.");
             return false;
         }
         return value;
@@ -89,6 +91,7 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
     public int getInteger(GlobalSettingType type) {
         Integer convertedValue = getNullableInteger(type);
         if (convertedValue == null) {
+            log.debug("Null or empty setting found for  " + type + " using 0.");
             return 0;
         } else {
             return convertedValue;

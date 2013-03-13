@@ -44,9 +44,8 @@ public class InputTypeFactory {
                 T[] enumConstants = enumClass.getEnumConstants();
                 for (T entry : enumConstants) {
                     InputOption inputOption = new InputOption();
-                    inputOption.setText(entry.name());
+                    inputOption.setEnum(entry);
                     inputOption.setValue(entry.name());
-                    inputOption.setObj(entry);
                     builder.add(inputOption);
                 }
                 optionList = builder.build();

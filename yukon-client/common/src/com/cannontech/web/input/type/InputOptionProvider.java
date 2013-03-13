@@ -1,13 +1,7 @@
 package com.cannontech.web.input.type;
 
-public interface InputOptionProvider {
-    public String getValue();
-    public String getText();
+import com.cannontech.common.i18n.Displayable;
 
-    /*
-     * Gets the actual enum representing this option.
-     * 
-     * This is useful to provide a cti:msg or i:inline tag an i18n version.
-     */
-    public Object getObj();
+public interface InputOptionProvider extends Displayable {
+    public String getValue();
 }

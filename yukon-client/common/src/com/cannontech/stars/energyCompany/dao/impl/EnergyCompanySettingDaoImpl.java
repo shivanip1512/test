@@ -57,7 +57,7 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
             parameterHolder.addValue("Name", setting.getType());
             parameterHolder.addValue("EnergyCompanyId", setting.getEnergyCompanyId());
             parameterHolder.addValue("Name", setting.getType());
-            parameterHolder.addValue("Enabled", YNBoolean.valueOf(setting.getEnabled()));
+            parameterHolder.addValue("Enabled", YNBoolean.valueOf(setting.isEnabled()));
             parameterHolder.addValue("Value", setting.getValue());
             parameterHolder.addValue("Comments", setting.getComments());
             parameterHolder.addValue("LastChangedDate", setting.getLastChanged());
@@ -100,6 +100,7 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
     public String getString(EnergyCompanySettingType setting, int ecId) {
         Object convertedValue = getConvertedValue(setting, ecId, Object.class);
         if (convertedValue == null) {
+            log.debug("Null setting found for  " + setting + " using empty string");
             return "";
         } else {
             return convertedValue.toString();
@@ -110,6 +111,7 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
     public int getInteger(EnergyCompanySettingType setting, int ecId) {
         Integer convertedValue = getConvertedValue(setting, ecId, Integer.class);
         if (convertedValue == null) {
+            log.debug("Null or empty setting found for  " + setting + " using 0");
             return 0;
         } else {
             return convertedValue;
@@ -125,6 +127,7 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
     public boolean getBoolean(EnergyCompanySettingType setting, int ecId) {
         Boolean value = getNullableBoolean(setting, ecId);
         if (value == null) {
+            log.debug("Null or empty setting found for  " + setting + " using false");
             return false;
         } else {
             return value;
@@ -135,6 +138,7 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
     public boolean getFalseBoolean(EnergyCompanySettingType setting, int ecId) {
         Boolean value = getNullableBoolean(setting, ecId);
         if (value == null) {
+            log.debug("Null or empty setting found for  " + setting + " using false");
             return false;
         }
         return !value.booleanValue();
@@ -277,7 +281,7 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
 
     @Override
     public boolean isEnabled(EnergyCompanySettingType setting, int ecId) {
-        return getSetting(setting, ecId).getEnabled();
+        return getSetting(setting, ecId).isEnabled();
     }
     
     @PostConstruct

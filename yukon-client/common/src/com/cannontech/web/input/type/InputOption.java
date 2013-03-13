@@ -1,26 +1,36 @@
 package com.cannontech.web.input.type;
 
+import org.springframework.context.MessageSourceResolvable;
+
+import com.cannontech.common.i18n.Displayable;
+import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
+
 /**
  * Class which represents an input option to be used with a drop down box
  */
 public class InputOption implements InputOptionProvider {
 
     private String value = null;
-    private String text = null;
-    private Object obj = null;
+    private MessageSourceResolvable messageSourceResolvable;
 
     @Override
-    public String getText() {
-        // You can specify a value only and the value will be used as the text
-        // also
-        if (text == null) {
-            return value;
-        }
-        return text;
+    public MessageSourceResolvable getMessage() {
+        return messageSourceResolvable;
     }
 
     public void setText(String text) {
-        this.text = text;
+        messageSourceResolvable = YukonMessageSourceResolvable.createDefaultWithoutCode(text);
+    }
+
+    public void setEnum(Enum<?> e) {
+        if (e instanceof Displayable) {
+            messageSourceResolvable = ((Displayable) e).getMessage();
+        } else if (e instanceof DisplayableEnum) {
+            messageSourceResolvable = new YukonMessageSourceResolvable(((DisplayableEnum) e).getFormatKey());
+        } else {
+            setText(e.name());
+        }
     }
 
     @Override
@@ -30,14 +40,5 @@ public class InputOption implements InputOptionProvider {
 
     public void setValue(String value) {
         this.value = value;
-    }
-
-    public void setObj(Object obj) {
-        this.obj = obj;
-    }
-
-    @Override
-    public Object getObj() {
-        return obj;
     }
 }

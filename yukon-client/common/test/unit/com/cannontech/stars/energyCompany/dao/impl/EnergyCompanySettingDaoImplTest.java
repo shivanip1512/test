@@ -408,7 +408,7 @@ public class EnergyCompanySettingDaoImplTest {
      * Helper assert two energyCompanySetting's are equal
      */
     private void assertEqualSetting(EnergyCompanySetting s1, EnergyCompanySetting s2) {
-        assertEquals(s1.getEnabled(), s2.getEnabled());
+        assertEquals(s1.isEnabled(), s2.isEnabled());
         assertEquals(s1.getComments(), s2.getComments());
         assertEquals(s1.getEnergyCompanyId(), s2.getEnergyCompanyId());
         assertEquals(s1.getId(), s2.getId());

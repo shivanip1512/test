@@ -1,5 +1,8 @@
 package com.cannontech.common.device.config.model;
 
+import org.springframework.context.MessageSourceResolvable;
+
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.input.type.InputOptionProvider;
 
 public enum ElectronicMeter implements InputOptionProvider {
@@ -31,12 +34,7 @@ public enum ElectronicMeter implements InputOptionProvider {
     }
 
     @Override
-    public String getText() {
-        return text;
-    }
-
-    @Override
-    public Object getObj() {
-        return this;
+    public MessageSourceResolvable getMessage() {
+        return YukonMessageSourceResolvable.createDefaultWithoutCode(text);
     }
 }

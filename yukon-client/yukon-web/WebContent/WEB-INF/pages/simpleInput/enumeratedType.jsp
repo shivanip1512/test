@@ -5,14 +5,6 @@
 
 <select name="${status.expression}">
 	<c:forEach var="option" items="${inputType.optionList}">
-        <cti:msg2 var="text" key="${option.obj}" blankIfMissing="true"/>
-        <c:choose>
-            <c:when test="${empty text}">
-                <option value="${option.value}" <c:if test="${status.value == option.value}">selected</c:if>>${option.text}</option>
-            </c:when>
-            <c:otherwise>
-                <option value="${option.value}" <c:if test="${status.value == option.value}">selected</c:if>>${text}</option>
-            </c:otherwise>
-        </c:choose>
+        <option value="${option.value}" <c:if test="${status.value == option.value}">selected</c:if>><cti:msg2 key="${option}"/></option>
 	</c:forEach>
 </select>

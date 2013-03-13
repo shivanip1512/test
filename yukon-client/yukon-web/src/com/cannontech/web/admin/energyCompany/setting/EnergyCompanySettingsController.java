@@ -74,7 +74,7 @@ public class EnergyCompanySettingsController {
                         
                         currentSetting = energyCompanySettingDao.getSetting(newSetting.getType(), settingsBean.getEcId());
 
-                        if (!newSetting.getEnabled() && !ObjectUtils.equals(currentSetting.getValue(), newSetting.getValue())) {
+                        if (!newSetting.isEnabled() && !ObjectUtils.equals(currentSetting.getValue(), newSetting.getValue())) {
                             errors.rejectValue("settings["+newSetting.getType()+"].value", "yukon.web.modules.adminSetup.energyCompanySettings.disabledInput");
                         }
                     }
@@ -132,7 +132,7 @@ public class EnergyCompanySettingsController {
             setting = energyCompanySettingDao.getSetting(changedSetting.getType(), ecId);
             setting.setComments(changedSetting.getComments());
             setting.setValue(changedSetting.getValue());
-            setting.setEnabled(changedSetting.getEnabled());
+            setting.setEnabled(changedSetting.isEnabled());
             energyCompanySettingDao.updateSetting(setting, context.getYukonUser(), ecId);
         }
 
@@ -140,8 +140,7 @@ public class EnergyCompanySettingsController {
         return "redirect:view";
     }
 
-    private String energyCompanySettingsView(YukonUserContext context, ModelMap model, int ecId, EnergyCompanyInfoFragment fragment,
-                                             @ModelAttribute("settingsBean") SettingsBean settingsBean) {
+    private String energyCompanySettingsView(YukonUserContext context, ModelMap model, int ecId, EnergyCompanyInfoFragment fragment, SettingsBean settingsBean) {
         model.addAttribute("ecId", ecId);
 
         model.addAttribute("settingsBean", settingsBean);

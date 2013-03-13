@@ -24,7 +24,7 @@ public class EnergyCompanySetting {
         this.lastChanged = other.getLastChanged();
         this.type = other.getType();
         this.value = other.getValue();
-        this.enabled = other.getEnabled();
+        this.enabled = other.isEnabled();
     }
 
     public EnergyCompanySetting() {
@@ -78,7 +78,7 @@ public class EnergyCompanySetting {
         return !value.equals(type.getDefaultValue());
     }
 
-    public boolean getEnabled() {
+    public boolean isEnabled() {
         if (type.isUsesEnabledField()) {
             return enabled;
         } else {
@@ -107,7 +107,7 @@ public class EnergyCompanySetting {
         boolean changed = false;
         changed |= isValueChanged(other);
         changed |= StringUtils.isBlank(other.getComments()) ? !StringUtils.isBlank(comments) : !other.getComments().equals(comments);
-        changed |= getEnabled() != other.getEnabled();
+        changed |= isEnabled() != other.isEnabled();
         return changed;
     }
 

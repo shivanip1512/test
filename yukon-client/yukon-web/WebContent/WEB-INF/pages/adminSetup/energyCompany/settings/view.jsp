@@ -8,6 +8,15 @@
 
 <cti:standardPage module="adminSetup" page="energyCompanySettings">
 
+<script>
+jQuery(function() {
+    jQuery(".f_addCommentBtn").click(function() {
+        jQuery(this).hide();
+        jQuery(this).siblings(".commentTextArea").show(200).focus();
+    });
+});
+</script>
+
 <div class="leftContainer twoThirds box dashboard">
     <form:form commandName="settingsBean" action="save" id="settingsForm" method="post">
         <form:hidden path="ecId"/>
@@ -33,8 +42,8 @@
                                 <div>
                                     <c:if test="${setting.extra.usesEnabledField}">
                                         <form:select cssClass="f_setUnsetSelect" path="settings['${setting.extra}'].enabled">
-                                            <form:option value="true"><i:inline key="yukon.common.enabled"/></form:option>
-                                            <form:option value="false"><i:inline key="yukon.common.disabled"/></form:option>
+                                            <form:option value="true"><cti:msg2 key="yukon.common.enabled"/></form:option>
+                                            <form:option value="false"><cti:msg2 key="yukon.common.disabled"/></form:option>
                                         </form:select>
                                         <form:errors path="settings['${setting.extra}'].enabled" cssClass="errorMessage" element="span"/>
                                     </c:if>
@@ -52,7 +61,7 @@
                                     <form:errors path="${setting.path}" cssClass="errorMessage" element="div"/>
                                     <c:if test="${settingsBean.settings[setting.extra].nonDefault}">
                                         <span class="detail">
-                                            <div class="default"></em><i:inline key=".default"/>:&nbsp;(${fn:escapeXml(setting.extra.defaultValue)})</div>
+                                            <div class="default"><i:inline key=".default"/>:&nbsp;(${fn:escapeXml(setting.extra.defaultValue)})</div>
                                         </span>
                                      </c:if>
                                     <span class="detail"><i:inline key="yukon.common.energyCompanySetting.${setting.extra}.description"/></span>
@@ -85,14 +94,4 @@
         </div>
     </form:form>
 </div>
-<script>
-jQuery(function() {
-    jQuery(".f_addCommentBtn").click(function() {
-        jQuery(this).hide();
-        jQuery(this).siblings(".commentTextArea").show(200).focus();
-    });
-});
-
-</script>
-        
 </cti:standardPage>
