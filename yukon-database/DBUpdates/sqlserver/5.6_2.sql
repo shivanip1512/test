@@ -49,7 +49,7 @@ CREATE TABLE EnergyCompanySetting (
 CREATE TABLE RolePropToSetting_Temp (
     RolePropertyId NUMERIC      NOT NULL,
     RoleName       VARCHAR(100) NOT NULL,
-    Status         VARCHAR(100) NOT NULL,
+    Enabled        VARCHAR(100) NOT NULL,
     CONSTRAINT PK_RolePropToSetting_Temp PRIMARY KEY (RolePropertyId)
 );
 
