@@ -40,7 +40,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
             PAOGroups.SENTINEL, PAOGroups.FOCUS, PAOGroups.ALPHA_A3, PAOGroups.FAULT_CI, PAOGroups.NEUTRAL_MONITOR, PAOGroups.LCR3102, PAOGroups.LCR6200_RFN, PAOGroups.LCR6600_RFN,
             PAOGroups.RFN410FL, PAOGroups.RFN410FX, PAOGroups.RFN410FD, PAOGroups.RFN420FL, PAOGroups.RFN420FX, PAOGroups.RFN420FD,
             PAOGroups.RFN420CL, PAOGroups.RFN420CD,
-            PAOGroups.RFN430KV, PAOGroups.RFN430A3, PAOGroups.RDS_TERMINAL, 
+            PAOGroups.RFN430KV, PAOGroups.RFN430A3D, PAOGroups.RFN430A3T, PAOGroups.RFN430A3K, PAOGroups.RFN430A3R, PAOGroups.RDS_TERMINAL, 
             PAOGroups.MCT420FL, PAOGroups.MCT420FD, PAOGroups.MCT420CL, PAOGroups.MCT420CD,
             PAOGroups.MCT440_2131B, PAOGroups.MCT440_2133B,  
             PAOGroups.RFWMETER,
@@ -59,7 +59,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
             PAOGroups.SENTINEL, PAOGroups.FOCUS, PAOGroups.ALPHA_A3, PAOGroups.LCR3102,
             PAOGroups.RFN410FL, PAOGroups.RFN410FX, PAOGroups.RFN410FD, PAOGroups.RFN420FL, PAOGroups.RFN420FX, PAOGroups.RFN420FD,
             PAOGroups.RFN420CL, PAOGroups.RFN420CD,
-            PAOGroups.RFN430KV, PAOGroups.RFN430A3, 
+            PAOGroups.RFN430KV, PAOGroups.RFN430A3D, PAOGroups.RFN430A3T, PAOGroups.RFN430A3K, PAOGroups.RFN430A3R, 
             PAOGroups.MCT420FL, PAOGroups.MCT420FD, PAOGroups.MCT420CL, PAOGroups.MCT420CD,
             PAOGroups.MCT440_2131B, PAOGroups.MCT440_2133B,
             PAOGroups.RFWMETER,
@@ -168,6 +168,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
  *   Object[0] is a DataInputPanel
  *   Object[1] is a String (Tab Name)
  */
+@Override
 public Object[] createNewPanel(int panelIndex)
 {
 	Object[] objs = new Object[2];
@@ -266,6 +267,7 @@ public Object[] createNewPanel(int panelIndex)
  * This method was created in VisualAge.
  * @return DataInputPanel[]
  */
+@Override
 public DataInputPanel[] getInputPanels() {
 	return this.inputPanels;
 }
@@ -275,6 +277,7 @@ public DataInputPanel[] getInputPanels() {
  * This method was created in VisualAge.
  * @return java.awt.Dimension
  */
+@Override
 public java.awt.Dimension getPreferredSize() {
 	return new java.awt.Dimension( 400, 450 );
 }
@@ -284,10 +287,12 @@ public java.awt.Dimension getPreferredSize() {
  * This method was created in VisualAge.
  * @return java.lang.String[]
  */
+@Override
 public String[] getTabNames() {
 	return this.inputPanelTabNames;
 }
 
+@Override
 public Object getValue(Object o) {
     try {
         o = super.getValue(o);
@@ -309,6 +314,7 @@ public Object getValue(Object o) {
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val) {
 
 	//Vector to hold the panels temporarily
@@ -359,6 +365,7 @@ public void setValue(Object val) {
  * This method was created in VisualAge.
  * @return java.lang.String
  */
+@Override
 public String toString() {
 	return "Device Editor";
 }

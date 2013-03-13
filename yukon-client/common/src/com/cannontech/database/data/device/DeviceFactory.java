@@ -146,7 +146,10 @@ public final class DeviceFactory {
         case RFN420FD:
         case RFN420CL:
         case RFN420CD:
-        case RFN430A3:
+        case RFN430A3D:
+        case RFN430A3T:
+        case RFN430A3K:
+        case RFN430A3R:
         case RFN430KV:
         case RFN420ELO:
         case RFN430ELO:

@@ -4,9 +4,10 @@ import com.cannontech.common.pao.PaoType;
 
 public enum DevRfnTemplateMeter {
 
-    RFN_TEMPLATE_EE_A3R(PaoType.RFN430A3, "*RfnTemplate_EE_A3R"),
-    RFN_TEMPLATE_EE_A3D(PaoType.RFN430A3, "*RfnTemplate_EE_A3D"),
-    RFN_TEMPLATE_EE_A3T(PaoType.RFN430A3, "*RfnTemplate_EE_A3T"),
+    RFN_TEMPLATE_EE_A3D(PaoType.RFN430A3D, "*RfnTemplate_EE_A3D"),
+    RFN_TEMPLATE_EE_A3T(PaoType.RFN430A3T, "*RfnTemplate_EE_A3T"),
+    RFN_TEMPLATE_EE_A3K(PaoType.RFN430A3K, "*RfnTemplate_EE_A3K"),
+    RFN_TEMPLATE_EE_A3R(PaoType.RFN430A3R, "*RfnTemplate_EE_A3R"),
     RFN_TEMPLATE_EKA_WATER_SENSOR(PaoType.RFWMETER, "*RfnTemplate_Eka_water_sensor"),
     RFN_TEMPLATE_EKA_WATER_NODE(PaoType.RFWMETER, "*RfnTemplate_Eka_water_node"),
     RFN_TEMPLATE_LGYR_FOCUS_KWH(PaoType.RFN420FL, "*RfnTemplate_LGYR_FocuskWh"),

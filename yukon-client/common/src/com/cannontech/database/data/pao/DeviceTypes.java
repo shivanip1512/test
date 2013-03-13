@@ -4,10 +4,10 @@ package com.cannontech.database.data.pao;
 /**
  * Insert the type's description here.
  * Creation date: (10/2/2001 1:45:23 PM)
- * @author: 
+ * @author:
  */
 public interface DeviceTypes extends TypeBase
-{	 
+{
 	public final static int CCU710A       = DEVICE_OFFSET + 1;
 	public final static int CCU711        = DEVICE_OFFSET + 2;
 	public final static int TCU5000       = DEVICE_OFFSET + 3;
@@ -15,7 +15,7 @@ public interface DeviceTypes extends TypeBase
 	public final static int LCU415        = DEVICE_OFFSET + 5;
 	public final static int LCULG         = DEVICE_OFFSET + 6;
 	public final static int LCU_ER        = DEVICE_OFFSET + 7;
-	public final static int LCU_T3026     = DEVICE_OFFSET + 8;	
+	public final static int LCU_T3026     = DEVICE_OFFSET + 8;
 	public final static int ALPHA_PPLUS   = DEVICE_OFFSET + 9; //replaced ALPHA
 	public final static int FULCRUM       = DEVICE_OFFSET + 10;  // replaces SCHLUMBERGER
 	public final static int VECTRON       = DEVICE_OFFSET + 11;	// is a type of SCHLUMBERGER
@@ -35,12 +35,12 @@ public interface DeviceTypes extends TypeBase
 	public final static int MCT250        = DEVICE_OFFSET + 25;
 	public final static int MCT210        = DEVICE_OFFSET + 26;
 	public final static int REPEATER      = DEVICE_OFFSET + 27;
-	public final static int LMT_2         = DEVICE_OFFSET + 28;	
+	public final static int LMT_2         = DEVICE_OFFSET + 28;
 	public final static int RTUILEX       = DEVICE_OFFSET + 29;
 	public final static int RTUWELCO      = DEVICE_OFFSET + 30;
 	public final static int DCT_501       = DEVICE_OFFSET + 31;
    public final static int RTU_DNP       = DEVICE_OFFSET + 32;
-   		
+
 	public final static int TAPTERMINAL    = DEVICE_OFFSET + 33;
 	public final static int MCT310ID       = DEVICE_OFFSET + 34;
 	public final static int MCT310IL       = DEVICE_OFFSET + 35;
@@ -58,12 +58,12 @@ public interface DeviceTypes extends TypeBase
 	public final static int LM_CURTAIL_PROGRAM           = DEVICE_OFFSET + 46;
 	public final static int LM_CONTROL_AREA              = DEVICE_OFFSET + 47;
 	public final static int LM_ENERGY_EXCHANGE_PROGRAM   = DEVICE_OFFSET + 48;
-	public final static int MACRO_GROUP                  = DEVICE_OFFSET + 49;	
+	public final static int MACRO_GROUP                  = DEVICE_OFFSET + 49;
 	public final static int CAPBANK                      = DEVICE_OFFSET + 50;
 	public final static int CAPBANKCONTROLLER            = DEVICE_OFFSET + 51;
 	public final static int VIRTUAL_SYSTEM               = DEVICE_OFFSET + 52;
 	public final static int CBC_FP_2800                  = DEVICE_OFFSET + 53;
-	public final static int LM_GROUP_POINT               = DEVICE_OFFSET + 54;		
+	public final static int LM_GROUP_POINT               = DEVICE_OFFSET + 54;
    public final static int DNP_CBC_6510                 = DEVICE_OFFSET + 55;
 	public final static int SYSTEM                       = DEVICE_OFFSET + 56;
 	public final static int EDITABLEVERSACOMSERIAL       = DEVICE_OFFSET + 57;
@@ -75,76 +75,76 @@ public interface DeviceTypes extends TypeBase
    public final static int RTU_DART                     = DEVICE_OFFSET + 62;
    public final static int MCT310IDL                    = DEVICE_OFFSET + 63;
 	public final static int LM_GROUP_MCT					  = DEVICE_OFFSET + 64;
-	
+
 	public final static int MCT410IL	 			= DEVICE_OFFSET + 65;
 	public final static int TRANSDATA_MARKV   		= DEVICE_OFFSET + 66;
-	
+
 	public final static int LM_GROUP_SA305			= DEVICE_OFFSET + 67;
 	public final static int LM_GROUP_SA205			= DEVICE_OFFSET + 68;
 	public final static int LM_GROUP_SADIGITAL		= DEVICE_OFFSET + 69;
 	public final static int LM_GROUP_GOLAY			= DEVICE_OFFSET + 70;
-	
+
 	public final static int SERIES_5_LMI			= DEVICE_OFFSET + 71;
 	public final static int RTC						= DEVICE_OFFSET + 72;
-	
+
 	//not actually a device, but useful to throw it in here
 	public final static int LM_SCENARIO				= DEVICE_OFFSET + 73;
-	
+
 	public final static int KV 						= DEVICE_OFFSET + 74;
 	public final static int KVII					= DEVICE_OFFSET + 75;
-	
+
 	public final static int RTM						= DEVICE_OFFSET + 76;
-	
+
 	public final static int CBC_EXPRESSCOM			= DEVICE_OFFSET + 77;
-	
+
 	public final static int SENTINEL				= DEVICE_OFFSET + 78;
 	public final static int ALPHA_A3				= DEVICE_OFFSET + 79;
 	public final static int MCT470					= DEVICE_OFFSET + 80;
 	public final static int MCT410CL	 			= DEVICE_OFFSET + 81;
-	
+
 	public final static int CBC_7010				= DEVICE_OFFSET + 82;
 	public final static int CBC_7020				= DEVICE_OFFSET + 83;
-	
-	
-    
+
+
+
     public final static int SNPP_TERMINAL			= DEVICE_OFFSET + 84;
 	public final static int RTU_MODBUS				= DEVICE_OFFSET + 85;
     public final static int MCT430A                  = DEVICE_OFFSET + 86;
     public final static int MCT430S4                  = DEVICE_OFFSET + 87;
-	
-	
+
+
     public final static int CBC_7022                = DEVICE_OFFSET + 88;
     public final static int CBC_7023                = DEVICE_OFFSET + 89;
     public final static int CBC_7024                = DEVICE_OFFSET + 90;
-    
+
     public final static int CBC_7011                = DEVICE_OFFSET + 91;
     public final static int CBC_7012                = DEVICE_OFFSET + 92;
     public final static int REPEATER_801        = DEVICE_OFFSET + 93;
     public final static int REPEATER_921        = DEVICE_OFFSET + 94;
-    
+
     public final static int MCT410FL                = DEVICE_OFFSET + 95;
     public final static int MCT410GL                = DEVICE_OFFSET + 96;
-    
+
     public final static int MCT430SL                  = DEVICE_OFFSET + 97;
-    
+
     public final static int CCU721                  = DEVICE_OFFSET + 98;
 
     public final static int SIMPLE_SCHEDULE                = DEVICE_OFFSET + 99;
     public final static int SCRIPT                        = DEVICE_OFFSET + 100;
-    
+
     public final static int REPEATER_902      = DEVICE_OFFSET + 101;
     public final static int FAULT_CI          = DEVICE_OFFSET + 102;
     public final static int NEUTRAL_MONITOR   = DEVICE_OFFSET + 103;
     public final static int CBC_DNP           = DEVICE_OFFSET + 104;
 
     public final static int MCT430A3                  = DEVICE_OFFSET + 107;
-    
+
     public final static int LCR3102                 = DEVICE_OFFSET + 108;
     public final static int TNPP_TERMINAL    = DEVICE_OFFSET + 109;
     public final static int FOCUS    		 = DEVICE_OFFSET + 110;
     public final static int REPEATER_850     = DEVICE_OFFSET + 111;
 
-    
+
     //public final static int RFN_AX    = DEVICE_OFFSET + 112;
     //public final static int RFN_AL    = DEVICE_OFFSET + 113;
     public final static int RDS_TERMINAL    = DEVICE_OFFSET + 114;
@@ -156,43 +156,48 @@ public interface DeviceTypes extends TypeBase
     public final static int RFN410FL = DEVICE_OFFSET + 120;
     public final static int RFN410FX = DEVICE_OFFSET + 121;
     public final static int RFN410FD = DEVICE_OFFSET + 122;
-    public final static int RFN430A3 = DEVICE_OFFSET + 123;
+    public final static int RFN430A3D = DEVICE_OFFSET + 123;
     public final static int RFN430KV = DEVICE_OFFSET + 124;
-    
+
     public final static int ZIGBEE_ENDPOINT = DEVICE_OFFSET + 125;
     public final static int DIGI_GATEWAY = DEVICE_OFFSET + 126;
     public final static int LM_SEP_PROGRAM = DEVICE_OFFSET + 127;
     public final static int LM_GROUP_DIGI_SEP  = DEVICE_OFFSET + 128;
-    
+
     public final static int RFWMETER = DEVICE_OFFSET + 129;
-    
+
     public final static int CBC_8020 = DEVICE_OFFSET + 130;
     public final static int CBC_8024 = DEVICE_OFFSET + 131;
-    
+
     public final static int RFN420FL = DEVICE_OFFSET + 132;
     public final static int RFN420FX = DEVICE_OFFSET + 133;
     public final static int RFN420FD = DEVICE_OFFSET + 134;
     public final static int RFN420CL = DEVICE_OFFSET + 135;
     public final static int RFN420CD = DEVICE_OFFSET + 136;
-    
+
     public final static int IPC430S4E = DEVICE_OFFSET + 137;
     public final static int IPC430SL = DEVICE_OFFSET + 138;
     public final static int IPC420FD = DEVICE_OFFSET + 139;
     public final static int IPC410FL = DEVICE_OFFSET + 140;
     public final static int LCR6200_RFN = DEVICE_OFFSET + 141;
     public final static int LCR6600_RFN = DEVICE_OFFSET + 142;
-    
+
     public final static int RFN420ELO = DEVICE_OFFSET + 143;
     public final static int RFN430ELO = DEVICE_OFFSET + 144;
-    
+
     public final static int LM_GROUP_RFN_EXPRESSCOMM = DEVICE_OFFSET +145;
-    
+
     public final static int MCT440_2131B = DEVICE_OFFSET + 146;
     public final static int MCT440_2133B = DEVICE_OFFSET + 147;
-    
+
+    // RFN430A3D is above (offset + 123);
+    public final static int RFN430A3K = DEVICE_OFFSET + 148;
+    public final static int RFN430A3T = DEVICE_OFFSET + 149;
+    public final static int RFN430A3R = DEVICE_OFFSET + 150;
+
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
-	public static final String[] STRING_CCU_710 = {"CCU-710A", "CCU710A"};	
+	public static final String[] STRING_CCU_710 = {"CCU-710A", "CCU710A"};
 	public static final String[] STRING_CCU_711 = {"CCU-711", "CCU711"};
 	public static final String[] STRING_CCU_721 = {"CCU-721"};
 	public static final String[] STRING_TCU_5000 = {"TCU-5000", "TCU5000"};
@@ -215,18 +220,18 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_MCT_318L = {"MCT-318L", "MCT318L"};
 	public static final String[] STRING_MCT_310ID = {"MCT-310ID", "MCT310ID"};
 	public static final String[] STRING_MCT_310IDL = {"MCT-310IDL", "MCT310IDL"};
-	public static final String[] STRING_MCT_310IL = {"MCT-310IL", "MCT310IL"};   
+	public static final String[] STRING_MCT_310IL = {"MCT-310IL", "MCT310IL"};
    	public static final String[] STRING_MCT_310CT = {"MCT-310CT", "MCT310CT"};
-   	public static final String[] STRING_MCT_310IM = {"MCT-310IM", "MCT310IM"};   
+   	public static final String[] STRING_MCT_310IM = {"MCT-310IM", "MCT310IM"};
 	public static final String[] STRING_MCT_310 = {"MCT-310", "MCT310"};
 	public static final String[] STRING_MCT_410IL = {"MCT-410iL", "MCT410IL", "MCT-410iLE", "MCT-410 kWh Only"};
 	public static final String[] STRING_MCT_410CL = {"MCT-410cL", "MCT410CL"};
 	public static final String[] STRING_MCT_410FL = {"MCT-410fL"};
 	public static final String[] STRING_MCT_410GL = {"MCT-410gL"};
-	
+
 	public static final String[] STRING_MCT_440_2131B = {"MCT-440-2131B"};
 	public static final String[] STRING_MCT_440_2133B= {"MCT-440-2133B"};
-	
+
 	public static final String[] STRING_MCT_470 = {"MCT-470", "MCT470"};
     public static final String[] STRING_MCT_430A = {"MCT-430A"};
     public static final String[] STRING_MCT_430S4 = {"MCT-430S4"};
@@ -241,13 +246,13 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_MCT_210 = {"MCT-210", "MCT210"};
 	public static final String[] STRING_MCT_213 = {"MCT-213", "MCT213"};
 	public static final String[] STRING_MCT_BROADCAST = {"MCT Broadcast", "MCT-Broadcast", "MCT_Broadcast", "MCT_Broadcast"};
-	
+
 	public static final String[] STRING_LCR_3102 = {"LCR-3102"};
 	public static final String[] STRING_LCR_6200_RFN = {"LCR-6200 RFN"};
 	public static final String[] STRING_LCR_6600_RFN = {"LCR-6600 RFN"};
-	
-	public static final String[] STRING_REPEATER = {"REPEATER", "REPEATER 900"};   
-	public static final String[] STRING_REPEATER_902 = {"REPEATER 902"};   
+
+	public static final String[] STRING_REPEATER = {"REPEATER", "REPEATER 900"};
+	public static final String[] STRING_REPEATER_902 = {"REPEATER 902"};
 	public static final String[] STRING_RTU_ILEX = {"RTU-ILEX", "RTUILEX"};
    	public static final String[] STRING_RTU_DNP = {"RTU-DNP", "RTUDNP"};
 	public static final String[] STRING_RTU_MODBUS = {"RTU-MODBUS", "RTUMODBUS"};
@@ -255,13 +260,13 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_RTU_WELCO = {"RTU-WELCO", "RTUWELCO"};
     //general RTU - used by point picker to get status point for ANY RTU
     public static final String[] STRING_RTU_X = {
-                                                    STRING_RTU_WELCO[0],STRING_RTU_WELCO[1], 
+                                                    STRING_RTU_WELCO[0],STRING_RTU_WELCO[1],
                                                     STRING_RTU_DART[0],STRING_RTU_DART[1],
                                                     STRING_RTU_MODBUS[0],STRING_RTU_MODBUS[1],
                                                     STRING_RTU_DNP[0],STRING_RTU_DNP[1],
                                                     STRING_RTU_ILEX[0],STRING_RTU_ILEX [1]
                                                 };
-	
+
     public static final String[] STRING_TAP_TERMINAL = {"TAP TERMINAL", "TAPTERMINAL", "PAGING TAP TERMINAL"};
     public static final String[] STRING_TNPP_TERMINAL = {"TNPP TERMINAL"};
 	public static final String[] STRING_WCTP_TERMINAL = {"WCTP TERMINAL"};
@@ -307,7 +312,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_SERIES_5_LMI = {"RTU-LMI", "RTU LMI"};
 	public static final String[] STRING_RTC = {"RTC"};
 	public static final String[] STRING_RTM = {"RTM"};
-	public static final String[] STRING_SENTINEL = {"SENTINEL"};	
+	public static final String[] STRING_SENTINEL = {"SENTINEL"};
 	public static final String[] STRING_FOCUS = {"FOCUS"};
 	public static final String[] STRING_ALPHA_A3 = {"ALPHA A3"};
 	public static final String[] STRING_CBC_7010 = {"CBC 7010", "CBC 7011", "CBC 7012"};
@@ -325,5 +330,5 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_IPC_410FL = {"IPC-410fL"};
     public static final String[] STRING_RFN_420ELO = {"RFN-420ELO"};
     public static final String[] STRING_RFN_430ELO = {"RFN-430ELO"};
-    
+
 }

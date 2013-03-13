@@ -10,9 +10,10 @@ public enum RfnManufacturerModel {
     RFN_LCR_6200(PaoType.LCR6200_RFN, "CPS", "RFN-LCR6200"),
     RFN_LCR_6600(PaoType.LCR6600_RFN, "CPS", "RFN-LCR6600"),
     
-    RFN_430A3R(PaoType.RFN430A3, "EE", "A3R"),
-    RFN_430A3D(PaoType.RFN430A3, "EE", "A3D"),
-    RFN_430A3T(PaoType.RFN430A3, "EE", "A3T"),
+    RFN_430A3D(PaoType.RFN430A3D, "EE", "A3D"),
+    RFN_430A3T(PaoType.RFN430A3T, "EE", "A3T"),
+    RFN_430A3K(PaoType.RFN430A3K, "EE", "A3K"),
+    RFN_430A3R(PaoType.RFN430A3R, "EE", "A3R"),
 
     RFN_WATER_SENSOR(PaoType.RFWMETER, "Eka", "water_sensor"),
     RFN_WATER_NODE(PaoType.RFWMETER, "Eka", "water_node"),
