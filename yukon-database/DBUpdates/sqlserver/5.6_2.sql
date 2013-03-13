@@ -301,30 +301,30 @@ DROP TABLE temp_PointTableNames;
 /* End YUK-11953 */
 
 /* Start YUK-11954 */
-UPDATE YukonPaobject 
+UPDATE YukonPAObject 
 SET Type = 'RFN-430A3R' 
-FROM YukonPaobject ypao
+FROM YukonPAObject ypao
 LEFT JOIN RFNAddress rfna ON rfna.DeviceId = ypao.PAObjectID
 WHERE rfna.Model = 'A3R'
    OR ypao.PAOName like '%EE_A3R';
 
-UPDATE YukonPaobject 
+UPDATE YukonPAObject 
 SET Type = 'RFN-430A3D' 
-FROM YukonPaobject ypao
+FROM YukonPAObject ypao
 LEFT JOIN RFNAddress rfna ON rfna.DeviceId = ypao.PAObjectID
 WHERE rfna.Model = 'A3D'
    OR ypao.PAOName like '%EE_A3D';
 
-UPDATE YukonPaobject 
+UPDATE YukonPAObject 
 SET Type = 'RFN-430A3T' 
-FROM YukonPaobject ypao
+FROM YukonPAObject ypao
 LEFT JOIN RFNAddress rfna ON rfna.DeviceId = ypao.PAObjectID
 WHERE rfna.Model = 'A3T'
    OR ypao.PAOName like '%EE_A3T';
 
-UPDATE YukonPaobject 
+UPDATE YukonPAObject 
 SET Type = 'RFN-430A3K' 
-FROM YukonPaobject ypao
+FROM YukonPAObject ypao
 LEFT JOIN RFNAddress rfna ON rfna.DeviceId = ypao.PAObjectID
 WHERE rfna.Model = 'A3K'
    OR ypao.PAOName like '%EE_A3K';
