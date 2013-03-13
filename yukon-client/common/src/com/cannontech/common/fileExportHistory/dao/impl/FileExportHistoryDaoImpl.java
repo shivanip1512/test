@@ -33,7 +33,7 @@ public class FileExportHistoryDaoImpl implements FileExportHistoryDao {
 		sink.addValue("FileName", fileName);
 		sink.addValue("FileExportType", type);
 		sink.addValue("Initiator", initiator);
-		sink.addValue("Date", Instant.now());
+		sink.addValue("ExportDate", Instant.now());
 		sink.addValue("ExportPath", exportPath);
 		
 		yukonJdbcTemplate.update(sql);
@@ -84,13 +84,13 @@ public class FileExportHistoryDaoImpl implements FileExportHistoryDao {
 		
 		int rowsAffected = yukonJdbcTemplate.update(sql);
 		
-		return rowsAffected > 0 ? true : false;
+		return rowsAffected > 0;
 	}
 	
 
 	private SqlStatementBuilder getBaseSelectSql() {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT EntryId, OriginalFileName, FileName, FileExportType, Initiator, Date, ExportPath");
+		sql.append("SELECT EntryId, OriginalFileName, FileName, FileExportType, Initiator, ExportDate, ExportPath");
 		sql.append("FROM FileExportHistory");
 		return sql;
 	}
@@ -103,7 +103,7 @@ public class FileExportHistoryDaoImpl implements FileExportHistoryDao {
 			String fileName = rs.getString("FileName");
 			FileExportType type = rs.getEnum("FileExportType", FileExportType.class);
 			String initiator = rs.getString("Initiator");
-			Instant date = rs.getInstant("Date");
+			Instant date = rs.getInstant("ExportDate");
 			String exportPath = rs.getString("ExportPath");
 			
 			ExportHistoryEntry entry = new ExportHistoryEntry(entryId, originalFileName, fileName, type, initiator, date, exportPath);

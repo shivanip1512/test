@@ -142,125 +142,125 @@
             });
         });
     </script>
+	<div class="colmask one-third-left clearfix">
+    <div class="colleft">
+        <div class="col1">
+		<!-- Create/edit -->
+		    <tags:boxContainer2 nameKey="generateReport" styleClass="stacked">
+		        <form:form id="exporterForm" commandName="archivedValuesExporter" action="${action}">
+			        <form:hidden path="archivedValuesExportFormatType"/>
+			        <cti:deviceCollection deviceCollection="${archivedValuesExporter.deviceCollection}" />
+			
+			        <div class="smallBoldLabel notesSection stacked">
+			            <c:choose>
+			                <c:when test="${empty archivedValuesExporter.deviceCollection}">
+			                    <i:inline key=".noSelectedDevice" />
+			                </c:when>
+			                <c:otherwise>
+			                    <div class="fl">
+			                        <tags:selectedDevices id="deviceColletion" deviceCollection="${archivedValuesExporter.deviceCollection}" />
+			                    </div>
+			                    <a href="javascript:void();" class="icon icon_folder_edit selectDevices fl" title="<i:inline key=".iconFolderEditDeviceGroup"/>"><i:inline key=".iconFolderEditDeviceGroup"/></a>
+			                </c:otherwise>
+			            </c:choose>
+			            &nbsp; &nbsp;
+			            <c:if test="${empty deviceCollection}">
+			                <cti:button id="selectDevicesBtn1" nameKey="selectDevices" />
+			            </c:if>
+			        </div>
+			        <br>
+			            
+		            <tags:nameValueContainer2 id="formatContainer" tableClass="stacked clear">
+		                <tags:nameValue2 nameKey=".formatType">
+		                    <select id="formatType">
+		                        <c:forEach var="formatType" items="${formatTypes}">
+		                            <option value="${formatType}"><i:inline key="${formatType}" /></option>
+		                        </c:forEach>
+		                    </select>
+		                    <cti:button nameKey="create" href="create" styleClass="create"/>
+		                </tags:nameValue2>
+		                <tags:nameValue2 nameKey=".existingFormat">
+		                    <c:if test="${not empty allFormats}">
+		                        <form:select path="formatId" cssClass="fl" cssStyle="margin-right:5px;">
+		                            <form:options items="${allFormats}" itemValue="formatId" title="formatName" itemLabel="formatName" />
+		                        </form:select>
+		                        <cti:button nameKey="edit" href="edit" styleClass="edit" />
+		                        <cti:button nameKey="copy" href="copy" styleClass="copy" />
+		                    </c:if>
+		                </tags:nameValue2>
+		                
+		                <tags:selectNameValue  rowId="attributeRow" nameKey=".attribute" path="attribute" items="${groupedAttributes}" itemLabel="message" itemValue="key" groupItems="true"/>
+		            </tags:nameValueContainer2>
+		
+		            <c:if test="${not empty allFormats}">
+						<c:choose>
+		                    <c:when test="${empty deviceCollection}">
+		                        <cti:button id="runButton" nameKey="run" disabled="true"/> <cti:button id="scheduleButton" nameKey="schedule" disabled="true"/>
+		                    </c:when>
+		                    <c:otherwise>
+		                        <cti:button id="runButton" nameKey="run"/> <cti:button id="scheduleButton" nameKey="schedule"/>
+		                    </c:otherwise>
+		                </c:choose>
+		            </c:if>
+	            </form:form>
+			</tags:boxContainer2>
+		</div>
+		
+		<div class="col2">
 	
-	<div style="overflow: hidden">
-	<div style="float: left; padding-right: 10px;">
-	    <form:form id="exporterForm" commandName="archivedValuesExporter" action="${action}">
-	        <form:hidden path="archivedValuesExportFormatType"/>
-	        <cti:deviceCollection deviceCollection="${archivedValuesExporter.deviceCollection}" />
-	
-	        <div class="smallBoldLabel notesSection stacked">
-	            <c:choose>
-	                <c:when test="${empty archivedValuesExporter.deviceCollection}">
-	                    <i:inline key=".noSelectedDevice" />
-	                </c:when>
-	                <c:otherwise>
-	                    <div class="fl">
-	                        <tags:selectedDevices id="deviceColletion" deviceCollection="${archivedValuesExporter.deviceCollection}" />
-	                    </div>
-	                    <a href="javascript:void();" class="icon icon_folder_edit selectDevices fl" title="<i:inline key=".iconFolderEditDeviceGroup"/>"><i:inline key=".iconFolderEditDeviceGroup"/></a>
-	                </c:otherwise>
-	            </c:choose>
-	            &nbsp &nbsp
-	            <c:if test="${empty deviceCollection}">
-	                <cti:button id="selectDevicesBtn1" nameKey="selectDevices" />
-	            </c:if>
-	        </div>
-	        <br>
-	
-	        <tags:boxContainer2 nameKey="generateReport" styleClass="stacked">
-	            <tags:nameValueContainer2 id="formatContainer" tableClass="stacked clear">
-	                <tags:nameValue2 nameKey=".formatType">
-	                    <select id="formatType">
-	                        <c:forEach var="formatType" items="${formatTypes}">
-	                            <option value="${formatType}"><i:inline key="${formatType}" /></option>
-	                        </c:forEach>
-	                    </select>
-	                    <cti:button nameKey="create" href="create" styleClass="create"/>
-	                </tags:nameValue2>
-	                <tags:nameValue2 nameKey=".existingFormat">
-	                    <c:if test="${not empty allFormats}">
-	                        <form:select path="formatId" cssClass="fl" cssStyle="margin-right:5px;">
-	                            <form:options items="${allFormats}" itemValue="formatId" title="formatName" itemLabel="formatName" />
-	                        </form:select>
-	                        <cti:button nameKey="edit" href="edit" styleClass="edit" />
-	                        <cti:button nameKey="copy" href="copy" styleClass="copy" />
-	                    </c:if>
-	                </tags:nameValue2>
-	                
-	                <tags:selectNameValue  rowId="attributeRow" nameKey=".attribute" path="attribute" items="${groupedAttributes}" itemLabel="message" itemValue="key" groupItems="true"/>
-	            </tags:nameValueContainer2>
-	
-	            <c:if test="${not empty allFormats}">
-	
-	                <c:choose>
-	                    <c:when test="${empty deviceCollection}">
-	                        <cti:button id="runButton" nameKey="run" disabled="true"/> <cti:button id="scheduleButton" nameKey="schedule" disabled="true"/>
-	                    </c:when>
-	                    <c:otherwise>
-	                        <cti:button id="runButton" nameKey="run"/> <cti:button id="scheduleButton" nameKey="schedule"/>
-	                    </c:otherwise>
-	                </c:choose>
-	                
-	            </c:if>
-	        </tags:boxContainer2>
-	    </form:form>
-	</div>
-	
-	<%-- Jobs  --%>
-	<div style="overflow: hidden;">
-		<tags:pagedBox2 nameKey="jobsBox" searchResult="${filterResult}" baseUrl="jobs">
-			<div style="overflow-y:auto;max-height:110px;">
-			<table id="jobsTable" class="compactResultsTable">
-				<thead>
-					<th><i:inline key=".nameHeader"/></th>
-					<th><i:inline key=".scheduleHeader"/></th>
-					<th><i:inline key=".nextRunHeader"/></th>
-					<th><i:inline key=".actionsHeader"/></th>
-				</thead>
-				<tfoot></tfoot>
-				<tbody>
-					<c:forEach var="job" items="${filterResult.resultList}">
-						<tr>
-							<td>
-								${fn:escapeXml(job.name)}
-							</td>
-							<td>
-								${job.cronString}
-							</td>
-							<td>
-								<cti:dataUpdaterValue type="JOB" identifier="${job.id}/NEXT_RUN_DATE"/>
-							</td>
-							<td>
-								<cti:url var="editUrl" value="scheduleReport">
-									<cti:param name="jobId" value="${job.id}"/>
-								</cti:url>
-								<cti:button nameKey="edit" renderMode="image" href="${editUrl}"/>
-								
-								<cti:url var="historyUrl" value="/support/fileExportHistory/list">
-									<cti:param name="initiator" value="Archived Data Export Schedule: ${job.name}"/>
-								</cti:url>
-								<cti:button nameKey="history" renderMode="image" href="${historyUrl}"/>
-								
-								<cti:url var="deleteUrl" value="deleteJob">
-									<cti:param name="jobId" value="${job.id}"/>
-								</cti:url>
-								<cti:button nameKey="delete" renderMode="image" href="${deleteUrl}"/>
-							</td>
-						</tr>
-					</c:forEach>
-					<c:if test="${fn:length(filterResult.resultList) == 0}">
-						<tr>
-							<td class="noResults subtle" colspan="3">
-								<i:inline key=".noJobs"/>
-							</td>
-						</tr>
-					</c:if>
-				</tbody>
-			</table>
-			</div>
-		</tags:pagedBox2>
-	</div>
+		<%-- Jobs  --%>
+			<tags:pagedBox2 nameKey="jobsBox" searchResult="${filterResult}" baseUrl="view">
+				<div class="scrollingContainer_small">
+					<table id="jobsTable" class="compactResultsTable">
+						<thead>
+							<th><i:inline key=".nameHeader"/></th>
+							<th><i:inline key=".scheduleHeader"/></th>
+							<th><i:inline key=".nextRunHeader"/></th>
+							<th><i:inline key=".actionsHeader"/></th>
+						</thead>
+						<tfoot></tfoot>
+						<tbody>
+							<c:forEach var="job" items="${filterResult.resultList}">
+								<tr>
+									<td>
+										${fn:escapeXml(job.name)}
+									</td>
+									<td>
+										${job.cronString}
+									</td>
+									<td>
+										<cti:dataUpdaterValue type="JOB" identifier="${job.id}/NEXT_RUN_DATE"/>
+									</td>
+									<td>
+										<cti:url var="editUrl" value="scheduleReport">
+											<cti:param name="jobId" value="${job.id}"/>
+										</cti:url>
+										<cti:button nameKey="edit" renderMode="image" href="${editUrl}"/>
+										
+										<cti:url var="historyUrl" value="/support/fileExportHistory/list">
+											<cti:param name="initiator" value="Archived Data Export Schedule: ${job.name}"/>
+										</cti:url>
+										<cti:button nameKey="history" renderMode="image" href="${historyUrl}"/>
+										
+										<cti:url var="deleteUrl" value="deleteJob">
+											<cti:param name="jobId" value="${job.id}"/>
+										</cti:url>
+										<cti:button nameKey="delete" renderMode="image" href="${deleteUrl}"/>
+									</td>
+								</tr>
+							</c:forEach>
+							<c:if test="${fn:length(filterResult.resultList) == 0}">
+								<tr>
+									<td class="noResults subtle" colspan="3">
+										<i:inline key=".noJobs"/>
+									</td>
+								</tr>
+							</c:if>
+						</tbody>
+					</table>
+				</div>
+			</tags:pagedBox2>
+		</div>
 	</div>
 	
     <div id="runDialog" >
@@ -282,7 +282,7 @@
     </div>
 
     <c:if test="${not empty allFormats}">
-        <tags:boxContainer2 nameKey="preview" styleClass="stacked">
+        <tags:boxContainer2 nameKey="preview" styleClass="stacked clear">
             <div class="code">
             <!-- Please do not format this code -->
 <pre><c:forEach var="previewEntry" items="${preview}">${previewEntry}

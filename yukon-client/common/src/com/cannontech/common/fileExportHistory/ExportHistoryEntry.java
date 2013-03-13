@@ -7,7 +7,7 @@ import org.joda.time.Instant;
 /**
  * Represents information related to a single occurrence of a file export.
  */
-public class ExportHistoryEntry implements Comparable<ExportHistoryEntry>{
+public final class ExportHistoryEntry implements Comparable<ExportHistoryEntry>{
 	private static final MimetypesFileTypeMap fileTypeMap = new MimetypesFileTypeMap();
 	
 	private final int entryId;

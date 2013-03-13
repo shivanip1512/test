@@ -17,6 +17,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -55,30 +56,18 @@ public class ScheduledBillingFileExportController {
 	
 	@RequestMapping
 	public String showForm(ModelMap model, YukonUserContext userContext, HttpServletRequest request,
-			@ModelAttribute("exportData") ScheduledFileExportData exportData, Integer jobId) 
+			@ModelAttribute("exportData") ScheduledFileExportData exportData, Integer jobId, String[] billGroup, Integer fileFormat, 
+			Integer demandDays, Integer energyDays, @RequestParam(defaultValue="false") boolean removeMultiplier) 
 			throws ServletRequestBindingException {
 		
-		String[] billGroup = {};
-		int fileFormat;
-		int demandDays;
-		int energyDays;
-		boolean removeMultiplier;
 		CronExpressionTagState cronExpressionTagState = new CronExpressionTagState();
 		
-		if(jobId == null) {
-			//new schedule
-			billGroup = ServletRequestUtils.getRequiredStringParameters(request, "billGroup");
-			fileFormat = ServletRequestUtils.getRequiredIntParameter(request, "fileFormat");
-			demandDays = ServletRequestUtils.getRequiredIntParameter(request, "demandDays");
-			energyDays = ServletRequestUtils.getRequiredIntParameter(request, "energyDays");
-			removeMultiplier = ServletRequestUtils.getBooleanParameter(request, "removeMultiplier", false);
-		} else {
+		if(jobId != null) {
 			//edit existing schedule
-			model.addAttribute("jobId", jobId);
 			ScheduledRepeatingJob job = jobManager.getRepeatingJob(jobId);
 			ScheduledBillingFileExportTask task = (ScheduledBillingFileExportTask) jobManager.instantiateTask(job);
 			
-			billGroup = task.getDeviceGroupNames().toArray(billGroup);
+			billGroup = task.getDeviceGroupNames().toArray(new String[task.getDeviceGroupNames().size()]);
 			fileFormat = task.getFileFormatId();
 			demandDays = task.getDemandDays();
 			energyDays = task.getEnergyDays();
@@ -91,6 +80,7 @@ public class ScheduledBillingFileExportController {
 			
 			exportData.setNotificationEmailAddresses(task.getNotificationEmailAddresses());
 			cronExpressionTagState = cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
+			model.addAttribute("jobId", jobId);
 		}
 		
 		model.addAttribute("deviceGroups", billGroup);
@@ -145,26 +135,25 @@ public class ScheduledBillingFileExportController {
     		model.addAttribute("removeMultiplier", removeMultiplier);
             model.addAttribute("jobId", jobId);
             return "redirect:showForm";
-		} else {
-			if(jobId == null) {
-				//new schedule
-				scheduledFileExportService.scheduleFileExport(exportData, userContext);
-			} else {
-				//edit schedule
-				scheduledFileExportService.updateFileExport(exportData, userContext, jobId);
-			}
-			flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.jobCreated", exportData.getScheduleName()));
-			return "redirect:jobs";
 		}
+		
+		if(jobId == null) {
+			//new schedule
+			scheduledFileExportService.scheduleFileExport(exportData, userContext);
+		} else {
+			//edit schedule
+			scheduledFileExportService.updateFileExport(exportData, userContext, jobId);
+		}
+		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.jobCreated", exportData.getScheduleName()));
+		return "redirect:jobs";
 	}
 	
 	@RequestMapping
-	public String jobs(ModelMap model, HttpServletRequest request) {
+	public String jobs(ModelMap model, @RequestParam(defaultValue="25") int itemsPerPage,
+			@RequestParam(defaultValue="1") int page) {
 		List<ScheduledRepeatingJob> billingExportJobs = scheduledFileExportService.getBillingExportJobs();
 		List<ScheduledBillingJobData> jobDataObjects = Lists.newArrayListWithCapacity(billingExportJobs.size());
 		
-		int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 25);
-		int page = ServletRequestUtils.getIntParameter(request, "page", 1);
 		int startIndex = (page -1) * itemsPerPage;
 		
 		for(ScheduledRepeatingJob job : billingExportJobs) {

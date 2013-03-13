@@ -67,9 +67,8 @@ public class ScheduledFileExportData {
 		if(notificationEmailAddresses != null) {
 			String[] emailArray = notificationEmailAddresses.split(",");
 			return Arrays.asList(emailArray);
-		} else {
-			return Lists.newArrayList();
 		}
+		return Lists.newArrayList();
 	}
 	
 	public ScheduledExportType getExportType() {

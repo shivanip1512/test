@@ -19,7 +19,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.scheduledFileExport.ExportFileGenerationParameters;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
-import com.cannontech.i18n.WebMessageSourceResolvable;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.support.YukonTaskBase;
 import com.cannontech.tools.email.DefaultEmailMessage;
@@ -49,7 +49,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 	private Logger log = YukonLogManager.getLogger(ScheduledFileExportTask.class);
 	
 	protected static final String DEFAULT_FILE_EXTENSION = ".csv";
-	private static final String HISTORY_URL_PART = "/fileExportHistory/list.jsp?entryId=";
+	private static final String HISTORY_URL_PART = "/support/fileExportHistory/list?entryId=";
 	
 	
 	@Override
@@ -106,7 +106,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 	 */
 	protected void sendNotificationEmails(ExportHistoryEntry historyEntry) {
 		List<EmailMessageHolder> messages = Lists.newArrayList();
-		String subject = getMessage(getSubjectKey(historyEntry.getType()));
+		String subject = getMessage(getSubjectKey(historyEntry.getType()), historyEntry.getOriginalFileName());
 		String body = getNotificationBody(historyEntry);
 		
 		notificationEmailAddresses = StringUtils.trimAllWhitespace(notificationEmailAddresses);
@@ -117,6 +117,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 			message.setRecipient(emailAddress);
 			message.setSubject(subject);
 			message.setHtmlBody(body);
+			messages.add(message);
 		}
 		
 		for(EmailMessageHolder message : messages) {
@@ -174,23 +175,15 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 			return "yukon.web.modules.amr.scheduledFileExport.notification.billingSubject";
 		} else if(type == FileExportType.ARCHIVED_DATA_EXPORT) {
 			return "yukon.web.modules.amr.scheduledFileExport.notification.adeSubject";
-		} else {
-			throw new IllegalArgumentException("No email subject found for file export type " + type);
 		}
+		throw new IllegalArgumentException("No email subject found for file export type " + type);
 	}
 	
-	//Gets the message String for a resolvable.
-	private String getMessage(boolean escaped, String key, Object... args) {
-		WebMessageSourceResolvable resolvable = new WebMessageSourceResolvable(key, args);
-		resolvable.setHtmlEscape(escaped);
-		MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(getUserContext());
-		String message = messageSourceAccessor.getMessage(resolvable);
-		return message;
-	}
-	
-	//Gets the message String for a resolvable.
+	//Gets the message String for an i18n key.
 	private String getMessage(String key, Object... args) {
-		return getMessage(true, key, args);
+		YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable(key, args);
+		MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(getUserContext());
+		return messageSourceAccessor.getMessage(resolvable);
 	}
 	
 	/*
@@ -201,7 +194,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 		int historyId = historyEntry == null ? 0 : historyEntry.getId();
 		String baseUrl = getMessage("yukon.web.modules.amr.scheduledFileExport.notification.yukonBaseUrl");
 		String historyLink = baseUrl + HISTORY_URL_PART + historyId;
-		String body = getMessage(false, "yukon.web.modules.amr.scheduledFileExport.notification.body", name, historyLink);
+		String body = getMessage("yukon.web.modules.amr.scheduledFileExport.notification.body", name, historyLink);
 		return body;
 	}
 }

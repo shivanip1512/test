@@ -2,11 +2,10 @@ package com.cannontech.web.input.type;
 
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorSupport;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-
-import com.google.common.collect.Lists;
 
 /**
  * Input type representing a list of strings
@@ -33,11 +32,8 @@ public class StringListType extends DefaultValidatedType<List> {
     	PropertyEditor stringPropEditor = new PropertyEditorSupport() {
     		@Override
     		public void setAsText(String text) throws IllegalArgumentException {
-    			String[] split = StringUtils.split(text, ",");
-    			List<String> result = Lists.newArrayList();
-    			for(String fragment : split) {
-    				result.add(fragment);
-    			}
+    			String[] stringArray = StringUtils.split(text, ",");
+    			List<String> result = Arrays.asList(stringArray);
     			setValue(result);
     		}
     		@Override

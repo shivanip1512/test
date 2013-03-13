@@ -15,8 +15,8 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
 import com.cannontech.common.fileExportHistory.service.FileExportHistoryService;
@@ -37,9 +37,9 @@ public class FileExportHistoryController {
 	
 	@RequestMapping
 	public String list(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
-			FlashScope flashScope, String name, String initiator, Integer entryId) {
-		int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 25);
-		int page = ServletRequestUtils.getIntParameter(request, "page", 1);
+			FlashScope flashScope, String name, String initiator, Integer entryId,
+			@RequestParam(defaultValue="25") int itemsPerPage, @RequestParam(defaultValue="1") int page) {
+
 		int startIndex = (page -1) * itemsPerPage;
 		
 		List<ExportHistoryEntry> entries;
@@ -76,7 +76,7 @@ public class FileExportHistoryController {
 		){
 			//set up the response
 			response.setContentType(historyEntry.getFileMimeType());
-	        response.setHeader("Content-Type", "application/force-download");
+	        
 	        String fileName = ServletUtil.makeWindowsSafeFileName(historyEntry.getOriginalFileName());
 	        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName +"\"");
 			//pull data from the file and push it to the browser

@@ -281,6 +281,16 @@ input.error {background: pink;border-color:#D14836;}
     width:21%; /* right column content width (right column width minus left and right padding) */
     left:31%; /* (right column width) plus (left column left and right padding) plus (right column left padding) */
 }
+/* 2 Columns (col1 one third, col2 two thirds) settings */
+.one-third-left .colleft {right:25%; /* right column width */}
+.one-third-left .col1 {
+    width:37%; /* left column content width (left column width minus left and right padding) */
+    left:25%; /* (right column width) plus (left column left padding) */
+}
+.one-third-left .col2 {
+    width:61%; /* right column content width (right column width minus left and right padding) */
+    left:27%; /* (right column width) plus (left column left and right padding) plus (right column left padding) */
+}
 
  /* Use these for blocks that need to sit horizontally adjacent */
 .leftChildren { float: left; clear: both; }

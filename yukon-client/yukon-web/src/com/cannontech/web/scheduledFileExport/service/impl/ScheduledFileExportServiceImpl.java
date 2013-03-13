@@ -107,9 +107,7 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
 	}
 	
 	private void logSchedulingAction(ScheduledFileExportData data, boolean isUpdate) {
-		String action;
-		if(isUpdate) action = "Updated";
-		else action = "Scheduled";
+		String action = isUpdate ? "Updated" : "Scheduled";
 		
 		log.debug(action + " new file export job.");
 		log.debug("Name: " + data.getScheduleName());

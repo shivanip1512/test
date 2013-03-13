@@ -64,6 +64,6 @@ public class FileExportHistoryServiceImpl implements FileExportHistoryService {
 	
 	private File getArchivePath() {
 		String base = CtiUtilities.getYukonBase();
-		return new File(base + "\\ExportArchive");
+		return new File(base + File.separator + "ExportArchive");
 	}
 }

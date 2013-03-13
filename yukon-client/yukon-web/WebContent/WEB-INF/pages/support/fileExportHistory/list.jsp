@@ -8,7 +8,7 @@
 	
 	<i:simplePopup titleKey=".search.title" id="searchPopup" styleClass="smallSimplePopup">
 		<form action="list">
-			<input type="hidden" name="itemsPerPage" value="${itemsPerPage}">
+			<input type="hidden" name="itemsPerPage" value="${empty itemsPerPage ? 25 : itemsPerPage}">
 			<tags:nameValueContainer2>
 				<tags:nameValue2 nameKey=".search.name">
 					<input type="text" name="name" value="${searchName}">
@@ -19,7 +19,7 @@
 				</tags:nameValue2>
 			</tags:nameValueContainer2>
 			<div class="actionArea">
-				<cti:button nameKey="searchButton" type="submit" styleClass="f_blocker"/>
+				<cti:button nameKey="searchButton" type="submit"/>
 			</div>
 		</form>
 	</i:simplePopup>
