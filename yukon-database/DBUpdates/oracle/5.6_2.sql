@@ -255,6 +255,63 @@ ALTER TABLE RawPointHistoryDependentJob
         REFERENCES Job (JobId);
 /* End YUK-11951 */
 
+/* Start YUK-11953 */
+CREATE TABLE temp_PointTableNames (
+    tableName VARCHAR2(30)
+);
+
+INSERT ALL
+    INTO temp_PointTableNames VALUES ('SystemLog')
+    INTO temp_PointTableNames VALUES ('RawPointHistory')
+    INTO temp_PointTableNames VALUES ('PointAnalog')
+    INTO temp_PointTableNames VALUES ('PointUnit')
+    INTO temp_PointTableNames VALUES ('PointLimits')
+    INTO temp_PointTableNames VALUES ('PointPropertyValue')
+    INTO temp_PointTableNames VALUES ('FDRTranslation')
+    INTO temp_PointTableNames VALUES ('DynamicPointDispatch')
+    INTO temp_PointTableNames VALUES ('DynamicAccumulator')
+    INTO temp_PointTableNames VALUES ('GraphDataSeries')
+    INTO temp_PointTableNames VALUES ('DynamicPointAlarming')
+    INTO temp_PointTableNames VALUES ('CalcComponent')
+    INTO temp_PointTableNames VALUES ('TagLog')
+    INTO temp_PointTableNames VALUES ('DynamicTags')
+    INTO temp_PointTableNames VALUES ('Display2WayData')
+    INTO temp_PointTableNames VALUES ('CCEventLog')
+    INTO temp_PointTableNames VALUES ('PointAlarming')
+    INTO temp_PointTableNames VALUES ('Point')
+SELECT 1 FROM DUAL;
+
+/* @start-block */
+DECLARE 
+    v_pointOffsetsToDelete VARCHAR2(255);
+    v_deleteCommand VARCHAR2(1000);
+    v_currentTable VARCHAR2(30);
+    CURSOR curs_tableNames IS (SELECT tableName 
+                               FROM temp_PointTableNames);
+BEGIN
+    v_pointOffsetsToDelete := '(30, 102, 103, 104, 106, 107, 124, 172, 173, 174, 175, 179)';
+    OPEN curs_tableNames;
+    LOOP
+        FETCH curs_tableNames INTO v_currentTable;
+        EXIT WHEN curs_tableNames%NOTFOUND;
+        v_deleteCommand := CONCAT('DELETE FROM ', v_currentTable);
+        v_deleteCommand := CONCAT(v_deleteCommand, ' WHERE PointId IN (');
+        v_deleteCommand := CONCAT(v_deleteCommand, ' SELECT PointId FROM Point p ');
+        v_deleteCommand := CONCAT(v_deleteCommand, ' JOIN YukonPAObject yp ON yp.PAObjectID = p.PAObjectID ');
+        v_deleteCommand := CONCAT(v_deleteCommand, ' WHERE p.PointType = ''Analog'' ');
+        v_deleteCommand := CONCAT(v_deleteCommand, ' AND p.PointOffset IN ');
+        v_deleteCommand := CONCAT(v_deleteCommand, v_pointOffsetsToDelete);
+        v_deleteCommand := CONCAT(v_deleteCommand, ' AND yp.Type LIKE ''RFN%'')');
+        DBMS_OUTPUT.PUT_LINE(CONCAT('Executing: ', v_deleteCommand));
+        EXECUTE IMMEDIATE v_deleteCommand;
+     END LOOP;
+    CLOSE curs_tableNames;
+END;
+/
+/* @end-block */
+DROP TABLE temp_PointTableNames;
+/* End YUK-11953 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

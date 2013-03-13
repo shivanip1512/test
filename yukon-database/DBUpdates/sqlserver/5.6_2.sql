@@ -260,6 +260,46 @@ ALTER TABLE RawPointHistoryDependentJob
 GO
 /* End YUK-11951 */
 
+/* Start YUK-11953 */
+CREATE TABLE temp_PointTableNames (
+    tableName VARCHAR(30)
+);
+
+INSERT INTO temp_PointTableNames VALUES 
+    ('SystemLog'), ('RawPointHistory'), ('PointAnalog'), ('PointUnit'), ('PointLimits'),
+    ('PointPropertyValue'), ('FDRTranslation'), ('DynamicPointDispatch'), ('DynamicAccumulator'),
+    ('GraphDataSeries'), ('DynamicPointAlarming'), ('CalcComponent'), ('TagLog'), ('DynamicTags'),
+    ('Display2WayData'), ('CCEventLog'), ('PointAlarming'), ('Point');
+
+/* @start-block */
+DECLARE @pointOffsetsToDelete VARCHAR(255) = '(30, 102, 103, 104, 106, 107, 124, 172, 173, 174, 175, 179)';
+
+DECLARE @deleteCommand VARCHAR(MAX);
+DECLARE @currentTable VARCHAR(30);
+DECLARE tableNames CURSOR FOR (SELECT tableName 
+                               FROM temp_PointTableNames);
+OPEN tableNames;
+FETCH NEXT FROM tableNames INTO @currentTable;
+WHILE @@FETCH_STATUS = 0
+BEGIN
+    SET @deleteCommand = 
+        'DELETE FROM ' + @currentTable + ' WHERE PointId IN (
+             SELECT PointId FROM Point p
+             JOIN YukonPAObject yp ON yp.PAObjectID = p.PAObjectID
+             WHERE p.PointType = ''Analog''
+               AND p.PointOffset IN ' + @pointOffsetsToDelete
+           + ' AND yp.Type LIKE ''RFN%'');';
+    PRINT ('Executing: ' + @deleteCommand);
+    EXECUTE (@deleteCommand);
+    FETCH NEXT FROM tableNames INTO @currentTable;
+END;
+
+CLOSE tableNames;
+DEALLOCATE tableNames;
+/* @end-block */
+DROP TABLE temp_PointTableNames;
+/* End YUK-11953 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
