@@ -102,7 +102,7 @@ public class OptOutControllerHelper {
                     + optOutBackingBean.getDurationInDays() + " calculated duration in hours:"
                     + duration.toStandardHours().getHours());
  
-        optOutRequest.setDurationInHours(duration.toPeriod().getHours());
+        optOutRequest.setDurationInHours(duration.toStandardHours().getHours());
         boolean isSameDay = today.isEqual(optOutBackingBean.getStartDate());
         if (isSameDay) {
             optOutRequest.setStartDate(null); // Same day OptOut's have null start dates
