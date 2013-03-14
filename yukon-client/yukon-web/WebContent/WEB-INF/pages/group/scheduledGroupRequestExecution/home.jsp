@@ -25,17 +25,7 @@
 <cti:msg var="disableJobButtonText" key="yukon.common.device.scheduledGroupRequestExecution.home.disableJobButton" />
 <cti:msg var="disableAndDeleteJobButtonText" key="yukon.common.device.scheduledGroupRequestExecution.home.disableAndDeleteJobButton" />
 
-<c:choose>
-	<c:when test="${!editMode}">
-		<c:set var="pageTitle" value="${normalPageTitle}"/>
-	</c:when>
-	<c:otherwise>
-		<c:set var="pageTitle" value="${editModePageTitle}"/>
-	</c:otherwise>
-</c:choose>
-
-<cti:standardPage page="scheduledGroupRequestHome" module="amr">
-        
+<cti:standardPage page="scheduledGroupRequestHome.${mode}" module="amr">
         <%-- JAVASCRIPT --%>
         <script type="text/javascript">
         </script>

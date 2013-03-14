@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-    <!-- breadcrumb placeholder -->
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestProcessing.pageName">Scheduled Group Request Processing</entry>
 
     <!-- ScheduledGroupRequestExecutionWidget render.jsp -->
     <!-- ================================================================================================================================================= -->
@@ -31,8 +29,14 @@
     <!-- ScheduledGroupRequestExecutionController home.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestHome.pageName">Scheduled Group Request Processing</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestHome.pageDescription">Create Schedule</entry>
+    <!-- breadcrumb placeholder -->
+    <entry key="yukon.web.modules.amr.scheduledGroupRequestProcessing.pageName">Scheduled Group Request Processing</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequestHome.CREATE.pageName">Scheduled Group Request</entry>
+  	<entry key="yukon.web.modules.amr.scheduledGroupRequestHome.CREATE.pageDescription">Create Schedule</entry>
+
+    <entry key="yukon.web.modules.amr.scheduledGroupRequestHome.EDIT.pageName">Edit Schedule</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequestHome.EDIT.pageDescription">{0}</entry>
+    
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.pageTitle">Create Schedule</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.pageTitle.editMode">Edit Schedule</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.requestType">Request Type</entry>

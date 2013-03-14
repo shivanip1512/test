@@ -45,6 +45,7 @@ import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.PageEditMode;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.input.InputRoot;
@@ -55,17 +56,17 @@ import com.cannontech.web.util.AttributeSelectorHelperService;
 @CheckRoleProperty(YukonRoleProperty.MANAGE_SCHEDULES)
 public class ScheduledGroupRequestExecutionController extends MultiActionController implements InitializingBean {
 
-	private CommandDao commandDao;
-	private ScheduledGroupRequestExecutionService scheduledGroupRequestExecutionService;
-	private RolePropertyDao rolePropertyDao;
-	private PaoCommandAuthorizationService paoCommandAuthorizationService;
+    @Autowired private CommandDao commandDao;
+    @Autowired private ScheduledGroupRequestExecutionService scheduledGroupRequestExecutionService;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private PaoCommandAuthorizationService paoCommandAuthorizationService;
 	private JobManager jobManager;
 	private YukonJobDefinition<ScheduledGroupRequestExecutionTask> scheduledGroupRequestExecutionJobDefinition;
-	private CronExpressionTagService cronExpressionTagService;
-	private AttributeSelectorHelperService attributeSelectorHelperService;
-	private AttributeService attributeService;
-	private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
-	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
+	@Autowired private CronExpressionTagService cronExpressionTagService;
+	@Autowired private AttributeSelectorHelperService attributeSelectorHelperService;
+	@Autowired private AttributeService attributeService;
+	@Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
+	@Autowired private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
 	
 	private List<LiteCommand> meterCommands;
 	
@@ -158,11 +159,14 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		}
 		
 		mav.addObject("editJobId", editJobId);
+		PageEditMode pageEditMode = PageEditMode.CREATE;
 		if (editMode) {
+		    pageEditMode = PageEditMode.EDIT;
 		    mav.addObject("disabled", existingJob.isDisabled());
 		    mav.addObject("status", scheduledGroupRequestExecutionDao.getStatusByJobId(existingJob.getId()));
 		}
 		mav.addObject("editMode", editMode);
+		mav.addObject("mode", pageEditMode);
 		mav.addObject("errorMsg", errorMsg);
 		mav.addObject("requestType", requestType);
 		mav.addObject("selectedAttributes", selectedAttributes);
@@ -506,7 +510,8 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
     }
 	
 	// INIT
-	public void afterPropertiesSet() {
+	@Override
+    public void afterPropertiesSet() {
         
         this.meterCommands = new ArrayList<LiteCommand>();
         
@@ -518,26 +523,6 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
         }
     }
 	
-	@Autowired
-	public void setCommandDao(CommandDao commandDao) {
-		this.commandDao = commandDao;
-	}
-	
-	@Autowired
-	public void setScheduledGroupRequestExecutionService(ScheduledGroupRequestExecutionService scheduledGroupRequestExecutionService) {
-		this.scheduledGroupRequestExecutionService = scheduledGroupRequestExecutionService;
-	}
-	
-	@Autowired
-	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
-	
-	@Autowired
-	public void setPaoCommandAuthorizationService(PaoCommandAuthorizationService paoCommandAuthorizationService) {
-		this.paoCommandAuthorizationService = paoCommandAuthorizationService;
-	}
-	
 	@Resource(name="jobManager")
 	public void setJobManager(JobManager jobManager) {
 		this.jobManager = jobManager;
@@ -547,30 +532,5 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 	public void setScheduledGroupRequestExecutionjobDefinition(
 			YukonJobDefinition<ScheduledGroupRequestExecutionTask> scheduledGroupRequestExecutionJobDefinition) {
 		this.scheduledGroupRequestExecutionJobDefinition = scheduledGroupRequestExecutionJobDefinition;
-	}
-	
-	@Autowired
-	public void setCronExpressionTagService(CronExpressionTagService cronExpressionTagService) {
-        this.cronExpressionTagService = cronExpressionTagService;
-    }
-	
-	@Autowired
-	public void setAttributeSelectorHelperService(AttributeSelectorHelperService attributeSelectorHelperService) {
-        this.attributeSelectorHelperService = attributeSelectorHelperService;
-    }
-	
-	@Autowired
-	public void setScheduledRepeatingJobDao(ScheduledRepeatingJobDao scheduledRepeatingJobDao) {
-        this.scheduledRepeatingJobDao = scheduledRepeatingJobDao;
-    }
-	
-	@Autowired
-	public void setScheduledGroupRequestExecutionDao(ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao) {
-		this.scheduledGroupRequestExecutionDao = scheduledGroupRequestExecutionDao;
-	}
-	
-	@Autowired
-	public void setAttributeService(AttributeService attributeService) {
-		this.attributeService = attributeService;
 	}
 }

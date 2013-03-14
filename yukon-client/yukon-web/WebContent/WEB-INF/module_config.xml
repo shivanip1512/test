@@ -385,8 +385,12 @@
                 <page name="scheduledGroupRequestProcessing" type="BASIC">
                     <menu>commandRequestExecution</menu>
                     <pages>
-                        <page name="scheduledGroupRequestHome" type="DETAIL">
+                        <page name="scheduledGroupRequestHome.CREATE" type="DETAIL">
                             <menu>commandRequestExecution|createSchedule</menu>
+                        </page>
+                        <page name="scheduledGroupRequestHome.EDIT" type="DETAIL">
+                            <menu>commandRequestExecution</menu>
+                            <labelArgument>${scheduleName}</labelArgument>
                         </page>
                         <page name="scheduledGroupRequestAllJobs">
                             <menu>commandRequestExecution|scheduleLogs</menu>
