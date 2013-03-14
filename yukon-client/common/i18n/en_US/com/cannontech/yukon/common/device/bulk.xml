@@ -76,8 +76,8 @@
     <entry key="yukon.common.device.bulk.deviceSelection.selectDataFileType">Type of data</entry>
     <entry key="yukon.common.device.bulk.deviceSelection.selectDataFile">Data file</entry>
 
-    <entry key="yukon.common.device.bulk.deviceSelection.startOfRangeLabel">Start of Range:</entry>
-    <entry key="yukon.common.device.bulk.deviceSelection.endOfRangeLabel">End of Range:</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.startOfRangeLabel">Start of Range</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.endOfRangeLabel">End of Range</entry>
 
     <entry key="yukon.common.device.bulk.deviceSelection.dataFileNote.address">Note: The file must contain 1 valid Physical Address per line.</entry>
     <entry key="yukon.common.device.bulk.deviceSelection.dataFileNote.paoName">Note: The file must contain 1 valid Device Name per line.</entry>
