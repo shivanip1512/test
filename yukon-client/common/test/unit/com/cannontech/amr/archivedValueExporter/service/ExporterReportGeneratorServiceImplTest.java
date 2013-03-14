@@ -197,6 +197,21 @@ public class ExporterReportGeneratorServiceImplTest {
     }
 
     @Test
+    public void getValue_Null_Meter_Test() {
+        Meter meter = meterDao.getForMeterNumber("Null Valued Meter");
+        
+        ExportField meterExportFieldAddress = getExportField(0, ADDRESS);
+        String addressValue = exporterReportGeneratorService.getValue(meterExportFieldAddress, meter, null, pointValueQualityHolder, userContextOne);
+
+        Assert.assertEquals("", addressValue);
+        
+        ExportField meterExportFieldRoute = getExportField(0, ROUTE);
+        String routeValue = exporterReportGeneratorService.getValue(meterExportFieldRoute, meter, null, pointValueQualityHolder, userContextOne);
+
+        Assert.assertEquals( "", routeValue);
+    }
+
+    @Test
     public void getValue_Plain_Test() {
         ExportField exportField = getExportField(0, PLAIN_TEXT, "This is plain text");
         String plainTextValue = exporterReportGeneratorService.getValue(exportField, null, null, pointValueQualityHolder, userContextOne);

@@ -33,8 +33,16 @@ public class MockMeterDaoImpl extends MeterDaoImpl {
         METER_TWO.setRoute("Route A");
         METER_TWO.setRouteId(1);
     };
+
+    public static final Meter NULL_VALUED_METER = new Meter();
+    static {
+        NULL_VALUED_METER.setDisabled(false);
+        NULL_VALUED_METER.setMeterNumber("Null Valued Meter");
+        NULL_VALUED_METER.setName("MCT410IL 3");
+        NULL_VALUED_METER.setPaoIdentifier(new PaoIdentifier(13, MCT410IL));
+    };
     
-    private List<Meter> meters = Lists.newArrayList(METER_ONE, METER_TWO);
+    private List<Meter> meters = Lists.newArrayList(METER_ONE, METER_TWO, NULL_VALUED_METER);
     private Map<String, Meter> meterNumberToMeter;
     {
         meterNumberToMeter =
