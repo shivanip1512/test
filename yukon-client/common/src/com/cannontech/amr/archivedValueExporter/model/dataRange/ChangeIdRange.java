@@ -1,6 +1,6 @@
 package com.cannontech.amr.archivedValueExporter.model.dataRange;
 
-public class SinceLastChangeId {
+public class ChangeIdRange {
     private long firstChangeId;
     private long lastChangeId;
     

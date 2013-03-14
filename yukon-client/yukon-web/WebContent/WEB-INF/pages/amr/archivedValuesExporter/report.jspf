@@ -1,5 +1,8 @@
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+
 <div id="endDateDiv" class="END_DATE">
-    <form:radiobutton path="dataRange.dataRangeType" label="End Date" value="END_DATE" /> <br>
+	<cti:msg2 key=".endDate" var="endDate" />
+    <form:radiobutton path="dataRange.dataRangeType" label="${endDate}" value="END_DATE" /> <br>
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".endDate"> <dt:date path="dataRange.endDate" /> </tags:nameValue2>
     </tags:nameValueContainer2>
@@ -7,16 +10,18 @@
 </div>
 
 <div id="dateRangeDiv" class="DATE_RANGE">
-    <form:radiobutton path="dataRange.dataRangeType" label="Date Range" value="DATE_RANGE" /> <br>
+	<cti:msg2 key=".dateRange" var="dateRange"/>
+    <form:radiobutton path="dataRange.dataRangeType" label="${dateRange}" value="DATE_RANGE" /> <br>
     <tags:nameValueContainer2>
-        <tags:nameValue2 nameKey=".startDate"> <dt:date path="dataRange.dateRange.startDate" /> </tags:nameValue2>
-        <tags:nameValue2 nameKey=".endDate"> <dt:date path="dataRange.dateRange.endDate" /> </tags:nameValue2>
+        <tags:nameValue2 nameKey=".startDate"> <dt:date path="dataRange.localDateRange.startDate" /> </tags:nameValue2>
+        <tags:nameValue2 nameKey=".endDate"> <dt:date path="dataRange.localDateRange.endDate" /> </tags:nameValue2>
     </tags:nameValueContainer2>
     <br>
 </div>
 
 <div id="daysPreviousDiv" class="DAYS_PREVIOUS">
-    <form:radiobutton path="dataRange.dataRangeType" label="Previous Days" value="DAYS_PREVIOUS" /> <br>
+ 	<cti:msg2 key=".previousDays" var="daysPrevious"  />
+    <form:radiobutton path="dataRange.dataRangeType" label="${daysPrevious}" value="DAYS_PREVIOUS" /> <br>
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".daysPrevious"> <form:input path="dataRange.daysPrevious" /> </tags:nameValue2>
     </tags:nameValueContainer2>
@@ -24,5 +29,6 @@
 </div>
 
 <div id="sinceLastChangeIdDiv" class="SINCE_LAST_CHANGE_ID">
-    <form:radiobutton path="dataRange.dataRangeType" label="Since Last Change" value="SINCE_LAST_CHANGE_ID" /> <br>
+    <cti:msg2 key=".sinceLastChange" var="sinceLastChange" />
+    <form:radiobutton path="dataRange.dataRangeType" label="${sinceLastChange}" value="SINCE_LAST_CHANGE_ID" /> <br>
 </div>

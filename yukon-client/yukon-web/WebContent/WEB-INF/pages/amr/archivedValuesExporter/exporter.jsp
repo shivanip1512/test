@@ -341,30 +341,34 @@
             <tags:boxContainer2 nameKey="attributeSetup" id="attributes" styleClass="stacked attributeSetupContainer">
                 <c:set var="attributes" value="${backingBean.format.attributes}"/>
                 <table class="compactResultsTable nowrap">
-                    <tr>
-                        <th><i:inline key=".attribute" /></th>
-                        <th><i:inline key=".dataSelection" /></th>
-                        <th><i:inline key=".daysPrevious" /></th>
-                        <th><i:inline key=".actions" /></th>
-                    </tr>
-    
-                    <c:forEach var="attribute" items="${attributes}" varStatus="row">
-                        <tr data-row-index="${row.index}">
-                            <td><tags:hidden path="format.attributes[${row.index}].attributeId" /> <tags:hidden path="format.attributes[${row.index}].formatId" /> <tags:hidden
-                                    path="format.attributes[${row.index}].attribute" /> <tags:hidden path="format.attributes[${row.index}].dataSelection" /> <tags:hidden
-                                    path="format.attributes[${row.index}].daysPrevious" /> <i:inline key="${attribute.attribute}" /></td>
-                            <td><cti:msg2 key="${attribute.dataSelection}" />
-                            </td>
-                            <td>${fn:escapeXml(attribute.daysPrevious)}</td>
-                            <td><cti:button nameKey="edit" styleClass="editAttributeBtn f_blocker" renderMode="image" /> <cti:button nameKey="remove"
-                                    styleClass="removeAttributeBtn f_blocker" renderMode="image" />
+                    <thead>
+                        <tr>
+                            <th><i:inline key=".attribute" /></th>
+                            <th><i:inline key=".dataSelection" /></th>
+                            <th><i:inline key=".daysPrevious" /></th>
+                            <th><i:inline key=".actions" /></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="attribute" items="${attributes}" varStatus="row">
+                            <tr data-row-index="${row.index}">
+                                <td><tags:hidden path="format.attributes[${row.index}].attributeId" /> <tags:hidden path="format.attributes[${row.index}].formatId" /> <tags:hidden
+                                        path="format.attributes[${row.index}].attribute" /> <tags:hidden path="format.attributes[${row.index}].dataSelection" /> <tags:hidden
+                                        path="format.attributes[${row.index}].daysPrevious" /> <i:inline key="${attribute.attribute}" /></td>
+                                <td><cti:msg2 key="${attribute.dataSelection}" />
+                                </td>
+                                <td>${fn:escapeXml(attribute.daysPrevious)}</td>
+                                <td><cti:button nameKey="edit" styleClass="editAttributeBtn f_blocker" renderMode="image" /> <cti:button nameKey="remove"
+                                        styleClass="removeAttributeBtn f_blocker" renderMode="image" />
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        <tr>
+                            <td align="right" colspan="4"><br> <cti:button id="addAttributeBtn" nameKey="add" styleClass="f_blocker" />
                             </td>
                         </tr>
-                    </c:forEach>
-                    <tr>
-                        <td align="right" colspan="4"><br> <cti:button id="addAttributeBtn" nameKey="add" styleClass="f_blocker" />
-                        </td>
-                    </tr>
+                    </tbody>
+                    <tfoot></tfoot>
                 </table>
             </tags:boxContainer2>
         </c:if>
@@ -372,77 +376,81 @@
         <tags:boxContainer2 nameKey="fieldSetup" id="selectedFields" styleClass="stacked">
             <c:set var="fields" value="${backingBean.format.fields}"/>
             <table class="compactResultsTable nowrap">
-                <tr>
-                    <th><i:inline key=".field" /></th>
-                    <th><i:inline key=".dataType" /></th>
-                    <th><i:inline key=".dataSelection" /></th>
-                    <th><i:inline key=".daysPrevious" /></th>
-                    <th><i:inline key=".missingValue" /></th>
-                    <th><i:inline key=".rounding" /></th>
-                    <th><i:inline key=".pattern" /></th>
-                    <th><i:inline key=".fieldSize" /></th>
-                    <th><i:inline key=".padding" /></th>
-                    <th><i:inline key=".actions" /></th>
-                    <th></th>
-                </tr>
-                <c:forEach var="field" items="${fields}" varStatus="row">
-                    <tr data-row-index="${row.index}" class="<tags:alternateRow odd="" even="altRow"/>">
-                        <td><spring:escapeBody htmlEscape="true"><i:inline key="${field}" /></spring:escapeBody></td>
-                        <td><spring:escapeBody htmlEscape="true"><i:inline key="${field.attributeField}" /></spring:escapeBody></td>
-                        <td><spring:escapeBody htmlEscape="true"><i:inline key="${field.attribute.dataSelection}" /></spring:escapeBody></td>
-                        <td><spring:escapeBody htmlEscape="true"><c:if test="${not empty field.attributeField}">${field.attribute.daysPrevious}</c:if></spring:escapeBody></td>
-                        <td><i:inline key="${field.missingAttribute}" />&nbsp&nbsp<spring:escapeBody htmlEscape="true">${field.missingAttributeValue}</spring:escapeBody></td>
-                        <td><spring:escapeBody htmlEscape="true"><i:inline key="${field.roundingMode}" /></spring:escapeBody></td>
-                        <td><spring:escapeBody htmlEscape="true">${field.pattern}</spring:escapeBody></td>
-                        <td><c:choose>
-                                <c:when test="${field.maxLength == 0}">
-                                    <i:inline key=".noMax" />
-                                </c:when>
-                                <c:otherwise>
-                                    <spring:escapeBody htmlEscape="true">${field.maxLength}</spring:escapeBody>
-                                </c:otherwise>
-                            </c:choose></td>
-                        <td><cti:msg2 key="${field.padSide}" />&nbsp&nbsp${field.padChar}</td>
-                        <td>
-                            <c:choose>
-                                <c:when test="${row.first}">
-                                    <cti:button nameKey="up.disabled" renderMode="image" disabled="true"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <cti:button nameKey="up" styleClass="upFieldBtn f_blocker" renderMode="image" />
-                                </c:otherwise>
-                            </c:choose> 
-                            <c:choose>
-                                <c:when test="${row.last}">
-                                    <cti:button nameKey="down.disabled" renderMode="image" disabled="true"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <cti:button nameKey="down" styleClass="downFieldBtn f_blocker" renderMode="image" />
-                                </c:otherwise>
-                            </c:choose>
-                            <cti:button nameKey="edit" styleClass="editFieldBtn f_blocker" renderMode="image" />
-                            <cti:button nameKey="remove" styleClass="removeFieldBtn f_blocker" renderMode="image" />
-                        </td>
-                        <tags:hidden path="format.fields[${row.index}].fieldId" />
-                        <tags:hidden path="format.fields[${row.index}].attribute.attributeId" />
-                        <tags:hidden path="format.fields[${row.index}].attribute.formatId" />
-                        <tags:hidden path="format.fields[${row.index}].attribute.attribute" />
-                        <tags:hidden path="format.fields[${row.index}].attribute.dataSelection" />
-                        <tags:hidden path="format.fields[${row.index}].attribute.daysPrevious" />
-                        <tags:hidden path="format.fields[${row.index}].fieldType" />
-                        <tags:hidden path="format.fields[${row.index}].attributeField" />
-                        <tags:hidden path="format.fields[${row.index}].pattern" />
-                        <tags:hidden path="format.fields[${row.index}].maxLength" />
-                        <tags:hidden path="format.fields[${row.index}].padChar" />
-                        <tags:hidden path="format.fields[${row.index}].padSide" />
-                        <tags:hidden path="format.fields[${row.index}].roundingMode" />
-                        <tags:hidden path="format.fields[${row.index}].missingAttribute" />
-                        <tags:hidden path="format.fields[${row.index}].missingAttributeValue" />
+                <thead>
+                    <tr>
+                        <th><i:inline key=".field" /></th>
+                        <th><i:inline key=".dataType" /></th>
+                        <th><i:inline key=".dataSelection" /></th>
+                        <th><i:inline key=".daysPrevious" /></th>
+                        <th><i:inline key=".missingValue" /></th>
+                        <th><i:inline key=".rounding" /></th>
+                        <th><i:inline key=".pattern" /></th>
+                        <th><i:inline key=".fieldSize" /></th>
+                        <th><i:inline key=".padding" /></th>
+                        <th><i:inline key=".actions" /></th>
+                        <th></th>
                     </tr>
-                </c:forEach>
-                <tr>
-                    <td align="right" colspan="10"><br> <cti:button id="addFieldBtn" nameKey="add" styleClass="f_blocker" /></td>
-                </tr>
+                </thead>
+                <tbody>
+                    <c:forEach var="field" items="${fields}" varStatus="row">
+                        <tr data-row-index="${row.index}" class="<tags:alternateRow odd="" even="altRow"/>">
+                            <td><spring:escapeBody htmlEscape="true"><i:inline key="${field}" /></spring:escapeBody></td>
+                            <td><spring:escapeBody htmlEscape="true"><i:inline key="${field.attributeField}" /></spring:escapeBody></td>
+                            <td><spring:escapeBody htmlEscape="true"><i:inline key="${field.attribute.dataSelection}" /></spring:escapeBody></td>
+                            <td><spring:escapeBody htmlEscape="true"><c:if test="${not empty field.attributeField}">${field.attribute.daysPrevious}</c:if></spring:escapeBody></td>
+                            <td><i:inline key="${field.missingAttribute}" />&nbsp&nbsp<spring:escapeBody htmlEscape="true">${field.missingAttributeValue}</spring:escapeBody></td>
+                            <td><spring:escapeBody htmlEscape="true"><i:inline key="${field.roundingMode}" /></spring:escapeBody></td>
+                            <td><spring:escapeBody htmlEscape="true">${field.pattern}</spring:escapeBody></td>
+                            <td><c:choose>
+                                    <c:when test="${field.maxLength == 0}">
+                                        <i:inline key=".noMax" />
+                                    </c:when>
+                                    <c:otherwise>
+                                        <spring:escapeBody htmlEscape="true">${field.maxLength}</spring:escapeBody>
+                                    </c:otherwise>
+                                </c:choose></td>
+                            <td><cti:msg2 key="${field.padSide}" />&nbsp&nbsp${field.padChar}</td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${row.first}">
+                                        <cti:button nameKey="up.disabled" renderMode="image" disabled="true"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <cti:button nameKey="up" styleClass="upFieldBtn f_blocker" renderMode="image" />
+                                    </c:otherwise>
+                                </c:choose> 
+                                <c:choose>
+                                    <c:when test="${row.last}">
+                                        <cti:button nameKey="down.disabled" renderMode="image" disabled="true"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <cti:button nameKey="down" styleClass="downFieldBtn f_blocker" renderMode="image" />
+                                    </c:otherwise>
+                                </c:choose>
+                                <cti:button nameKey="edit" styleClass="editFieldBtn f_blocker" renderMode="image" />
+                                <cti:button nameKey="remove" styleClass="removeFieldBtn f_blocker" renderMode="image" />
+                            </td>
+                            <tags:hidden path="format.fields[${row.index}].fieldId" />
+                            <tags:hidden path="format.fields[${row.index}].attribute.attributeId" />
+                            <tags:hidden path="format.fields[${row.index}].attribute.formatId" />
+                            <tags:hidden path="format.fields[${row.index}].attribute.attribute" />
+                            <tags:hidden path="format.fields[${row.index}].attribute.dataSelection" />
+                            <tags:hidden path="format.fields[${row.index}].attribute.daysPrevious" />
+                            <tags:hidden path="format.fields[${row.index}].fieldType" />
+                            <tags:hidden path="format.fields[${row.index}].attributeField" />
+                            <tags:hidden path="format.fields[${row.index}].pattern" />
+                            <tags:hidden path="format.fields[${row.index}].maxLength" />
+                            <tags:hidden path="format.fields[${row.index}].padChar" />
+                            <tags:hidden path="format.fields[${row.index}].padSide" />
+                            <tags:hidden path="format.fields[${row.index}].roundingMode" />
+                            <tags:hidden path="format.fields[${row.index}].missingAttribute" />
+                            <tags:hidden path="format.fields[${row.index}].missingAttributeValue" />
+                        </tr>
+                    </c:forEach>
+                    <tr>
+                        <td align="right" colspan="10"><br> <cti:button id="addFieldBtn" nameKey="add" styleClass="f_blocker" /></td>
+                    </tr>
+                </tbody>
             </table>
         </tags:boxContainer2>
         

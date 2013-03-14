@@ -30,9 +30,7 @@ import java.util.Locale;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Assert;
@@ -45,11 +43,11 @@ import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
 import com.cannontech.amr.archivedValueExporter.model.ExportField;
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
 import com.cannontech.amr.archivedValueExporter.model.FieldType;
+import com.cannontech.amr.archivedValueExporter.model.dataRange.ChangeIdRange;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRangeType;
-import com.cannontech.amr.archivedValueExporter.model.dataRange.DateRange;
-import com.cannontech.amr.archivedValueExporter.model.dataRange.SinceLastChangeId;
-import com.cannontech.amr.archivedValueExporter.service.impl.ExportReportGeneratorImpl;
+import com.cannontech.amr.archivedValueExporter.model.dataRange.LocalDateRange;
+import com.cannontech.amr.archivedValueExporter.service.impl.ExportReportGeneratorServiceImpl;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.dao.MockMeterDaoImpl;
 import com.cannontech.amr.meter.model.Meter;
@@ -86,7 +84,7 @@ public class ExporterReportGeneratorServiceImplTest {
         messageSourceResolver.setMessageSource(messageSource);
     }
     
-    ExportReportGeneratorImpl exporterReportGeneratorService = new ExportReportGeneratorImpl(); 
+    ExportReportGeneratorServiceImpl exporterReportGeneratorService = new ExportReportGeneratorServiceImpl(); 
     {
         ReflectionTestUtils.setField(exporterReportGeneratorService, "attributeService", attributeService);
         ReflectionTestUtils.setField(exporterReportGeneratorService, "messageSourceResolver", messageSourceResolver);
@@ -250,10 +248,10 @@ public class ExporterReportGeneratorServiceImplTest {
         
         DataRange dataRange = new DataRange();
         dataRange.setDataRangeType(DataRangeType.DATE_RANGE);
-        DateRange dateRange = new DateRange();
-        dateRange.setStartDate(dateTimeFormatter.parseLocalDate("07/13/2012"));
-        dateRange.setEndDate(dateTimeFormatter.parseLocalDate("07/18/2012"));
-        dataRange.setDateRange(dateRange);
+        LocalDateRange localDateRange = new LocalDateRange();
+        localDateRange.setStartDate(dateTimeFormatter.parseLocalDate("07/13/2012"));
+        localDateRange.setEndDate(dateTimeFormatter.parseLocalDate("07/18/2012"));
+        dataRange.setLocalDateRange(localDateRange);
         
         List<String> previewReportRows = exporterReportGeneratorService.generateReport(meters, basicDyanamicFormatExport, dataRange, userContextOne);
 
@@ -269,10 +267,10 @@ public class ExporterReportGeneratorServiceImplTest {
         
         DataRange dataRange = new DataRange();
         dataRange.setDataRangeType(DataRangeType.DATE_RANGE);
-        DateRange dateRange = new DateRange();
-        dateRange.setStartDate(dateTimeFormatter.parseLocalDate("07/15/2012"));
-        dateRange.setEndDate(dateTimeFormatter.parseLocalDate("07/18/2012"));
-        dataRange.setDateRange(dateRange);
+        LocalDateRange localDateRange = new LocalDateRange();
+        localDateRange.setStartDate(dateTimeFormatter.parseLocalDate("07/15/2012"));
+        localDateRange.setEndDate(dateTimeFormatter.parseLocalDate("07/18/2012"));
+        dataRange.setLocalDateRange(localDateRange);
         
         List<String> previewReportRows = exporterReportGeneratorService.generateReport(meters, basicDyanamicFormatExport, dataRange, userContextOne, USAGE, DEMAND);
 
@@ -301,10 +299,10 @@ public class ExporterReportGeneratorServiceImplTest {
         
         DataRange dataRange = new DataRange();
         dataRange.setDataRangeType(DataRangeType.SINCE_LAST_CHANGE_ID);
-        SinceLastChangeId sinceLastChangeId = new SinceLastChangeId();
-        sinceLastChangeId.setFirstChangeId(5);
-        sinceLastChangeId.setLastChangeId(12);
-        dataRange.setSinceLastChangeId(sinceLastChangeId);
+        ChangeIdRange changeIdRange = new ChangeIdRange();
+        changeIdRange.setFirstChangeId(5);
+        changeIdRange.setLastChangeId(12);
+        dataRange.setChangeIdRange(changeIdRange);
         
         List<String> previewReportRows = exporterReportGeneratorService.generateReport(meters, basicDyanamicFormatExport, dataRange, userContextOne, USAGE, DEMAND);
 

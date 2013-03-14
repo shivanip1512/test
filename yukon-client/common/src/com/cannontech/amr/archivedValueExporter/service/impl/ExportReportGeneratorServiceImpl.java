@@ -34,7 +34,6 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dao.RawPointHistoryDao.OrderBy;
 import com.cannontech.core.dao.UnitMeasureDao;
@@ -46,9 +45,8 @@ import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
 
-public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
+public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorService {
 
     @Autowired private AttributeService attributeService;
     @Autowired private PointDao pointDao;
@@ -85,10 +83,10 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
 
         if (format.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE) {
             Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> fieldIdToAttributeData = getFixedPreviewAttributeData(format, previewMeter);
-            preview.addAll(generateFixedBody(Collections.singletonList(previewMeter), format, fieldIdToAttributeData, userContext));
+            generateFixedBody(preview, Collections.singletonList(previewMeter), format, fieldIdToAttributeData, userContext);
         } else {
             ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeData = getDynamicPreviewAttributeData(format, previewMeter);
-            preview.addAll(generateDynamicBody(Collections.singletonList(previewMeter), format, userContext, BuiltInAttribute.USAGE, attributeData));
+            generateDynamicBody(preview, Collections.singletonList(previewMeter), format, userContext, BuiltInAttribute.USAGE, attributeData);
         }
         
         addFooter(format, preview);
@@ -109,46 +107,46 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
                 for (ExportField field : format.getFields()) {
                     if (field.getFieldType() == FieldType.ATTRIBUTE) {
                         DateTime startDate = getStartDate(field.getAttribute(), endOfDay);
-                        Range<Instant> dateRange = Clusivity.EXCLUSIVE_INCLUSIVE.makeRange(startDate.toInstant(), endOfDay.toInstant());
+                        Range<Instant> dateRange = Range.exclusiveInclusive(startDate.toInstant(), endOfDay.toInstant());
                         ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeData = getFixedAttributeData(meters, field.getAttribute(), dateRange);
                         
                         endDateAttributeData.put(field.getFieldId(), attributeData);
                     }
                 }
 
-                reportResults.addAll(generateFixedBody(meters, format, endDateAttributeData, userContext));
+                generateFixedBody(reportResults, meters, format, endDateAttributeData, userContext);
                 break;
 
             case DATE_RANGE:
-                Range<Instant> dateRange = dataRange.getDateRange().getInstantDateRange(userContext);
+                Range<Instant> dateRange = dataRange.getLocalDateRange().getInstantDateRange(userContext);
                 for (Attribute attribute : attributes) {
                     ListMultimap<PaoIdentifier, PointValueQualityHolder> dateRangeAttributeData =
                             getDynamicAttributeData(meters, attribute, dateRange, null);
-                    reportResults.addAll(generateDynamicBody(meters, format, userContext, attribute, dateRangeAttributeData));
+                    generateDynamicBody(reportResults, meters, format, userContext, attribute, dateRangeAttributeData);
                 }
 
                 break;
             case DAYS_PREVIOUS:
                 Instant now = Instant.now();
                 Instant start = now.minus(Duration.standardDays(dataRange.getDaysPrevious()));
-                Range<Instant> previousDaysDateRange = Clusivity.EXCLUSIVE_INCLUSIVE.makeRange(start, now);
+                Range<Instant> previousDaysDateRange = Range.exclusiveInclusive(start, now);
 
                 for (Attribute attribute : attributes) {
                     ListMultimap<PaoIdentifier, PointValueQualityHolder> previousDaysAttributeData = 
                             getDynamicAttributeData(meters, attribute, previousDaysDateRange, null);
-                    reportResults.addAll(generateDynamicBody(meters, format, userContext, attribute, previousDaysAttributeData));
+                    generateDynamicBody(reportResults, meters, format, userContext, attribute, previousDaysAttributeData);
                 }
 
                 break;
             case SINCE_LAST_CHANGE_ID:
-                long firstChangeId = dataRange.getSinceLastChangeId().getFirstChangeId();
-                long lastChangeId = dataRange.getSinceLastChangeId().getLastChangeId();
-                Range<Long> changeIdRange = Clusivity.EXCLUSIVE_INCLUSIVE.makeRange(firstChangeId, lastChangeId);
+                long firstChangeId = dataRange.getChangeIdRange().getFirstChangeId();
+                long lastChangeId = dataRange.getChangeIdRange().getLastChangeId();
+                Range<Long> changeIdRange = Range.exclusiveInclusive(firstChangeId, lastChangeId);
 
                 for (Attribute attribute : attributes) {
                     ListMultimap<PaoIdentifier, PointValueQualityHolder> sinceLastChangeIdAttributeData =
                             getDynamicAttributeData(meters, attribute, null, changeIdRange);
-                    reportResults.addAll(generateDynamicBody(meters, format, userContext, attribute, sinceLastChangeIdAttributeData));
+                    generateDynamicBody(reportResults, meters, format, userContext, attribute, sinceLastChangeIdAttributeData);
                 }
                 
                 break;
@@ -183,27 +181,23 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
     /**
      * Builds and returns a list of strings each representing one row of data for the report.
      */
-    private List<String> generateFixedBody(List<Meter> meters, ExportFormat format, 
+    private void generateFixedBody(List<String> reportRows, List<Meter> meters, ExportFormat format, 
             Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData, YukonUserContext userContext) {
 
-        List<String> report = Lists.newArrayList();
         for (Meter meter : meters) {
             String dataRow = getDataRow(format, meter, userContext, attributeData);
             if (!dataRow.equals(SKIP_RECORD)) {
-                report.add(dataRow);
+                reportRows.add(dataRow);
             }
         }
-
-        return report;
     }
 
     /**
      * Builds and returns a list of strings each representing one row of data for the report.
      */
-    private List<String> generateDynamicBody(List<Meter> meters, ExportFormat format, YukonUserContext userContext, Attribute attribute,
-                                         ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeData) {
+    private void generateDynamicBody(List<String> reportRows, List<Meter> meters, ExportFormat format, YukonUserContext userContext, 
+                                             Attribute attribute, ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeData) {
         
-        List<String> reportRows = new ArrayList<>();
         for (Meter meter : meters) {
             List<PointValueQualityHolder> pointData = attributeData.get(meter.getPaoIdentifier());
             for (PointValueQualityHolder pointValueQualityHolder : pointData) {
@@ -213,8 +207,6 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
                 }
             }
         }
-
-        return reportRows;
     }
     
     /**

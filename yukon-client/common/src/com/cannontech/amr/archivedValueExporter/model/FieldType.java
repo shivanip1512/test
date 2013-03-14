@@ -6,7 +6,7 @@ import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.i18n.Displayable;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableSet;
 
 public enum FieldType implements Displayable{
     METER_NUMBER("Meter Number"),
@@ -30,9 +30,9 @@ public enum FieldType implements Displayable{
      */
     
     public static final Set<FieldType> FIXED_ATTRIBUTE_FIELD_TYPES = 
-            Sets.newHashSet(ADDRESS, ATTRIBUTE, DEVICE_NAME, METER_NUMBER, PLAIN_TEXT, ROUTE); 
+            ImmutableSet.of(ADDRESS, ATTRIBUTE, DEVICE_NAME, METER_NUMBER, PLAIN_TEXT, ROUTE); 
     public static final Set<FieldType> DYNAMIC_ATTRIBUTE_FIELD_TYPES = 
-            Sets.newHashSet(ADDRESS, ATTRIBUTE_NAME, DEVICE_NAME, METER_NUMBER, PLAIN_TEXT, POINT_NAME, ROUTE, POINT_TIMESTAMP, UNIT_OF_MEASURE, POINT_VALUE, POINT_QUALITY); 
+            ImmutableSet.of(ADDRESS, ATTRIBUTE_NAME, DEVICE_NAME, METER_NUMBER, PLAIN_TEXT, POINT_NAME, ROUTE, POINT_TIMESTAMP, UNIT_OF_MEASURE, POINT_VALUE, POINT_QUALITY); 
     
     private final static String keyPrefix = "yukon.web.modules.amr.archivedValueExporter.fieldType.";
     

@@ -5,10 +5,9 @@ import org.joda.time.LocalDate;
 import org.joda.time.Period;
 
 import com.cannontech.common.util.Range;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.user.YukonUserContext;
 
-public class DateRange {
+public class LocalDateRange {
     private LocalDate startDate = LocalDate.now().minus(Period.days(2));
     private LocalDate endDate = LocalDate.now();
     
@@ -30,6 +29,6 @@ public class DateRange {
         Instant startDate = this.startDate.toDateMidnight(userContext.getJodaTimeZone()).toInstant();
         Instant stopDate = this.endDate.toDateMidnight(userContext.getJodaTimeZone()).toInstant();
         
-        return Clusivity.EXCLUSIVE_INCLUSIVE.makeRange(startDate, stopDate);
+        return Range.exclusiveInclusive(startDate, stopDate);
     }
 }

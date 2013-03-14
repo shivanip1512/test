@@ -4,10 +4,10 @@ import org.joda.time.LocalDate;
 
 public class DataRange {
     private DataRangeType dataRangeType;
-    private DateRange dateRange;
+    private LocalDateRange localDateRange;
     private LocalDate endDate = LocalDate.now();
     private int daysPrevious;
-    private SinceLastChangeId sinceLastChangeId;
+    private ChangeIdRange changeIdRange;
     
     public DataRangeType getDataRangeType() {
         return dataRangeType;
@@ -15,12 +15,12 @@ public class DataRange {
     public void setDataRangeType(DataRangeType dataRangeType) {
         this.dataRangeType = dataRangeType;
     }
-    
-    public DateRange getDateRange() {
-        return dateRange;
+
+    public LocalDateRange getLocalDateRange() {
+        return localDateRange;
     }
-    public void setDateRange(DateRange dateRange) {
-        this.dateRange = dateRange;
+    public void setLocalDateRange(LocalDateRange localDateRange) {
+        this.localDateRange = localDateRange;
     }
 
     public LocalDate getEndDate() {
@@ -37,10 +37,10 @@ public class DataRange {
         this.daysPrevious = daysPrevious;
     }
     
-    public SinceLastChangeId getSinceLastChangeId() {
-        return sinceLastChangeId;
+    public ChangeIdRange getChangeIdRange() {
+        return changeIdRange;
     }
-    public void setSinceLastChangeId(SinceLastChangeId sinceLastChangeId) {
-        this.sinceLastChangeId = sinceLastChangeId;
+    public void setChangeIdRange(ChangeIdRange changeIdRange) {
+        this.changeIdRange = changeIdRange;
     }
 }

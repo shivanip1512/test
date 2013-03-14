@@ -352,7 +352,7 @@
     
     <bean class="com.cannontech.common.scheduledFileExport.dao.impl.ScheduledFileExportDaoImpl"/>
     
-    <bean id="exportReportGeneratorService" class="com.cannontech.amr.archivedValueExporter.service.impl.ExportReportGeneratorImpl"/>
+    <bean id="exportReportGeneratorService" class="com.cannontech.amr.archivedValueExporter.service.impl.ExportReportGeneratorServiceImpl"/>
     <bean id="archiveValuesExportFormatDao" class="com.cannontech.amr.archivedValueExporter.dao.impl.ArchiveValuesExportFormatDaoImpl"/>
     <bean id="archiveValuesExportAttributeDao" class="com.cannontech.amr.archivedValueExporter.dao.impl.ArchiveValuesExportAttributeDaoImpl"/>
     <bean id="archiveValuesExportFieldDao" class="com.cannontech.amr.archivedValueExporter.dao.impl.ArchiveValuesExportFieldDaoImpl"/>

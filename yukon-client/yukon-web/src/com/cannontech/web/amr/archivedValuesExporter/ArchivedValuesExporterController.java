@@ -48,7 +48,7 @@ import com.cannontech.amr.archivedValueExporter.model.PadSide;
 import com.cannontech.amr.archivedValueExporter.model.YukonRoundingMode;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRangeType;
-import com.cannontech.amr.archivedValueExporter.model.dataRange.DateRange;
+import com.cannontech.amr.archivedValueExporter.model.dataRange.LocalDateRange;
 import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
@@ -62,9 +62,6 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.jobs.model.ScheduledRepeatingJob;
-import com.cannontech.jobs.model.YukonJob;
-import com.cannontech.jobs.service.JobManager;
 import com.cannontech.common.scheduledFileExport.ArchivedDataExportFileGenerationParameters;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
 import com.cannontech.common.search.SearchResult;
@@ -73,6 +70,9 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.jobs.model.ScheduledRepeatingJob;
+import com.cannontech.jobs.model.YukonJob;
+import com.cannontech.jobs.service.JobManager;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
@@ -419,8 +419,8 @@ public class ArchivedValuesExporterController {
         PropertyEditor dayStartDateEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext, BlankMode.CURRENT);
         PropertyEditor dayEndDateEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext, BlankMode.CURRENT);
 
-        binder.registerCustomEditor(LocalDate.class, "dataRange.dateRange.startDate", dayStartDateEditor);
-        binder.registerCustomEditor(LocalDate.class, "dataRange.dateRange.endDate", dayEndDateEditor);
+        binder.registerCustomEditor(LocalDate.class, "dataRange.localDateRange.startDate", dayStartDateEditor);
+        binder.registerCustomEditor(LocalDate.class, "dataRange.localDateRange.endDate", dayEndDateEditor);
     }
 
     @RequestMapping
@@ -436,9 +436,9 @@ public class ArchivedValuesExporterController {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setError(messages);
             
-            return "redirect:view";
+            return view(model, request, userContext, archivedValuesExporter);
         }
-            
+
         List<SimpleDevice> deviceList = archivedValuesExporter.getDeviceCollection().getDeviceList();
         DataRange dataRange = archivedValuesExporter.getDataRange();
         List<Meter> meters = meterDao.getMetersForYukonPaos(deviceList);
@@ -541,12 +541,12 @@ public class ArchivedValuesExporterController {
     	dataRange.setDataRangeType(DataRangeType.valueOf(dataRangeTypeString));
     	
     	if(dataRange.getDataRangeType() == DataRangeType.DATE_RANGE) {
-    		DateRange dateRange = new DateRange();
+    		LocalDateRange localDateRange = new LocalDateRange();
     		LocalDate startDate = LocalDate.parse(ServletRequestUtils.getStringParameter(request, "dataRange.dateRange.startDate"));
     		LocalDate endDate = LocalDate.parse(ServletRequestUtils.getStringParameter(request, "dataRange.dateRange.endDate"));
-    		dateRange.setStartDate(startDate);
-    		dateRange.setEndDate(endDate);
-    		dataRange.setDateRange(dateRange);
+    		localDateRange.setStartDate(startDate);
+    		localDateRange.setEndDate(endDate);
+    		dataRange.setLocalDateRange(localDateRange);
     	} else if(dataRange.getDataRangeType() == DataRangeType.DAYS_PREVIOUS) {
     		int daysPrevious = ServletRequestUtils.getIntParameter(request, "dataRange.daysPrevious");
     		dataRange.setDaysPrevious(daysPrevious);

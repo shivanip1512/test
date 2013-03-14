@@ -16,10 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFormatDao;
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
+import com.cannontech.amr.archivedValueExporter.model.dataRange.ChangeIdRange;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRangeType;
-import com.cannontech.amr.archivedValueExporter.model.dataRange.DateRange;
-import com.cannontech.amr.archivedValueExporter.model.dataRange.SinceLastChangeId;
+import com.cannontech.amr.archivedValueExporter.model.dataRange.LocalDateRange;
 import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
@@ -69,7 +69,7 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 		
 		//If using SINCE_LAST_CHANGE_ID, update last id for this job
 		if(dataRange.getDataRangeType() == DataRangeType.SINCE_LAST_CHANGE_ID) {
-			scheduledFileExportDao.setRphIdForJob(this.getJobContext().getJob().getId(), dataRange.getSinceLastChangeId().getLastChangeId());
+			scheduledFileExportDao.setRphIdForJob(this.getJobContext().getJob().getId(), dataRange.getChangeIdRange().getLastChangeId());
 		}
 		
 		//Write the file
@@ -118,10 +118,10 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 		} else if(dataRange.getDataRangeType() == DataRangeType.SINCE_LAST_CHANGE_ID) {
 			long firstChangeId = scheduledFileExportDao.getLastRphIdByJobId(this.getJobContext().getJob().getId());
 			long lastChangeId = rawPointHistoryDao.getMaxChangeId();
-			SinceLastChangeId sinceLastChangeId = new SinceLastChangeId();
-			sinceLastChangeId.setFirstChangeId(firstChangeId);
-			sinceLastChangeId.setLastChangeId(lastChangeId);
-			dataRange.setSinceLastChangeId(sinceLastChangeId);
+			ChangeIdRange changeIdRange = new ChangeIdRange();
+			changeIdRange.setFirstChangeId(firstChangeId);
+			changeIdRange.setLastChangeId(lastChangeId);
+			dataRange.setChangeIdRange(changeIdRange);
 		}
 	}
 	
@@ -171,59 +171,59 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 	}
 	
 	public long getDataRangeSinceLastChangeIdFirst() {
-		if(dataRange.getSinceLastChangeId() == null) {
-			dataRange.setSinceLastChangeId(new SinceLastChangeId());
+		if(dataRange.getChangeIdRange() == null) {
+			dataRange.setChangeIdRange(new ChangeIdRange());
 		}
-		return dataRange.getSinceLastChangeId().getFirstChangeId();
+		return dataRange.getChangeIdRange().getFirstChangeId();
 	}
 	
 	public void setDataRangeSinceLastChangeIdFirst(long firstChangeId) {
-		if(dataRange.getSinceLastChangeId() == null) {
-			dataRange.setSinceLastChangeId(new SinceLastChangeId());
+		if(dataRange.getChangeIdRange() == null) {
+			dataRange.setChangeIdRange(new ChangeIdRange());
 		}
-		dataRange.getSinceLastChangeId().setFirstChangeId(firstChangeId);
+		dataRange.getChangeIdRange().setFirstChangeId(firstChangeId);
 	}
 	
 	public long getDataRangeSinceLastChangeIdLast() {
-		if(dataRange.getSinceLastChangeId() == null) {
-			dataRange.setSinceLastChangeId(new SinceLastChangeId());
+		if(dataRange.getChangeIdRange() == null) {
+			dataRange.setChangeIdRange(new ChangeIdRange());
 		}
-		return dataRange.getSinceLastChangeId().getLastChangeId();
+		return dataRange.getChangeIdRange().getLastChangeId();
 	}
 	
 	public void setDataRangeSinceLastChangeIdLast(long lastChangeId) {
-		if(dataRange.getSinceLastChangeId() == null) {
-			dataRange.setSinceLastChangeId(new SinceLastChangeId());
+		if(dataRange.getChangeIdRange() == null) {
+			dataRange.setChangeIdRange(new ChangeIdRange());
 		}
-		dataRange.getSinceLastChangeId().setLastChangeId(lastChangeId);
+		dataRange.getChangeIdRange().setLastChangeId(lastChangeId);
 	}
 	
 	public Date getDataRangeDateRangeStart() {
-		if(dataRange.getDateRange() == null) {
-			dataRange.setDateRange(new DateRange());
+		if(dataRange.getLocalDateRange() == null) {
+			dataRange.setLocalDateRange(new LocalDateRange());
 		}
-		return dataRange.getDateRange().getStartDate().toDate();
+		return dataRange.getLocalDateRange().getStartDate().toDate();
 	}
 	
 	public void setDataRangeDateRangeStart(Date startDate) {
-		if(dataRange.getDateRange() == null) {
-			dataRange.setDateRange(new DateRange());
+		if(dataRange.getLocalDateRange() == null) {
+			dataRange.setLocalDateRange(new LocalDateRange());
 		}
-		dataRange.getDateRange().setStartDate(new LocalDate(startDate));
+		dataRange.getLocalDateRange().setStartDate(new LocalDate(startDate));
 	}
 	
 	public Date getDataRangeDateRangeEnd() {
-		if(dataRange.getDateRange() == null) {
-			dataRange.setDateRange(new DateRange());
+		if(dataRange.getLocalDateRange() == null) {
+			dataRange.setLocalDateRange(new LocalDateRange());
 		}
-		return dataRange.getDateRange().getEndDate().toDate();
+		return dataRange.getLocalDateRange().getEndDate().toDate();
 	}
 	
 	public void setDataRangeDateRangeEnd(Date endDate) {
-		if(dataRange.getDateRange() == null) {
-			dataRange.setDateRange(new DateRange());
+		if(dataRange.getLocalDateRange() == null) {
+			dataRange.setLocalDateRange(new LocalDateRange());
 		}
-		dataRange.getDateRange().setEndDate(new LocalDate(endDate));
+		dataRange.getLocalDateRange().setEndDate(new LocalDate(endDate));
 	}
 	
 	public DataRange getDataRange() {

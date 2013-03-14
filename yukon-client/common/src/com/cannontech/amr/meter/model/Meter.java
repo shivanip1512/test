@@ -4,17 +4,13 @@ import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.common.pao.PaoType;
 
-
 /** 
  * This is the "PLC" meter.
  */
 public class Meter extends YukonMeter { 
-    private String route;
+    private String route = "";
     private int routeId;
-    private String address;
-
-    public Meter() {
-    }
+    private String address = "";
 
     /**
      * @return the address or "" if none is assigned
@@ -22,9 +18,8 @@ public class Meter extends YukonMeter {
     public String getAddress() {
         return address;
     }
-
     public void setAddress(String address) {
-        this.address = address;
+        this.address = address == null ? "" : address;
     }
 
     /**
@@ -33,15 +28,13 @@ public class Meter extends YukonMeter {
     public String getRoute() {
         return route;
     }
-
     public void setRoute(String route) {
-        this.route = route;
+        this.route = route == null ? "" : route;
     }
 
     public int getRouteId() {
         return routeId;
     }
-
     public void setRouteId(int routeId) {
         this.routeId = routeId;
     }

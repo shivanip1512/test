@@ -14,7 +14,7 @@ import com.google.common.collect.Maps;
 
 public class MockMeterDaoImpl extends MeterDaoImpl {
     public static final Meter METER_ONE = new Meter();
-    {
+    static {
         METER_ONE.setAddress("Address A");
         METER_ONE.setDisabled(false);
         METER_ONE.setMeterNumber("Meter Number 1");
@@ -24,7 +24,7 @@ public class MockMeterDaoImpl extends MeterDaoImpl {
         METER_ONE.setRouteId(1);
     };
     public static final Meter METER_TWO = new Meter();
-    {
+    static {
         METER_TWO.setAddress("Address B");
         METER_TWO.setDisabled(false);
         METER_TWO.setMeterNumber("Meter Number 2");

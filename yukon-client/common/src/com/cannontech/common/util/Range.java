@@ -130,6 +130,34 @@ public class Range<T extends Comparable<? super T>> {
 	    return new Range<U>(translator.apply(min), includesMinValue, translator.apply(max), includesMaxValue);
 	}
 
+	/**
+	 * Creates a Range where the min and max values are both included.
+	 */
+    public static <U extends Comparable<? super U>> Range<U> inclusive(U min, U max) {
+        return new Range<U>(min, true, max, true);
+    }
+
+    /**
+     * Creates a Range where the min and max values are both not included.
+     */
+    public static <U extends Comparable<? super U>> Range<U> exclusive(U min, U max) {
+        return new Range<U>(min, false, max, false);
+    }
+
+    /**
+     * Creates a Range where the min value is included, but the max value is not.
+     */
+    public static <U extends Comparable<? super U>> Range<U> inclusiveExclusive(U min, U max) {
+        return new Range<U>(min, true, max, false);
+    }
+
+    /**
+     * Creates a Range where the max value is included, but the min value is not.
+     */
+    public static <U extends Comparable<? super U>> Range<U> exclusiveInclusive(U min, U max) {
+        return new Range<U>(min, false, max, true);
+    }
+
 	@Override
     public String toString() {
         return min + " " + (includesMinValue ? "inclusive" : "exclusive")
