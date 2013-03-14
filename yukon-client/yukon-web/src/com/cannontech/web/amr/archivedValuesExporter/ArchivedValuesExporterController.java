@@ -392,8 +392,11 @@ public class ArchivedValuesExporterController {
     public String deleteFormat(ModelMap model, HttpServletRequest request, YukonUserContext userContext, FlashScope flashScope,
                                @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
 
-        archiveValuesExportFormatDao.delete(backingBean.getFormat().getFormatId());
-
+        int formatId = backingBean.getFormat().getFormatId();
+    	archiveValuesExportFormatDao.delete(backingBean.getFormat().getFormatId());
+        //delete any jobs using this format
+        scheduledFileExportService.deleteAdeJobsByFormatId(formatId);
+        
         flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey+"deletedFormat", backingBean.getFormat().getFormatName()));
         return "redirect:view";
     }
@@ -525,11 +528,11 @@ public class ArchivedValuesExporterController {
     	
     	if(jobId == null) {
     		scheduledFileExportService.scheduleFileExport(exportData, userContext);
+    		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.archivedValueExporterScheduleSetup.scheduleSuccess", exportData.getScheduleName()));
     	} else {
     		scheduledFileExportService.updateFileExport(exportData, userContext, jobId);
+    		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.archivedValueExporterScheduleSetup.updateSuccess", exportData.getScheduleName()));
     	}
-		
-    	flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.archivedValueExporterScheduleSetup.scheduleSuccess", exportData.getScheduleName()));
     	
     	return "redirect:view";
     }

@@ -83,6 +83,34 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
 	}
 	
 	@Override
+	public int deleteAdeJobsByFormatId(int formatId) {
+		int count = 0;
+		List<ScheduledRepeatingJob> jobs = getArchivedDataExportJobs();
+        for(ScheduledRepeatingJob job : jobs) {
+        	ScheduledArchivedDataFileExportTask task = (ScheduledArchivedDataFileExportTask) jobManager.instantiateTask(job);
+        	if(task.getFormatId() == formatId) {
+        		jobManager.deleteJob(job);
+        		count++;
+        	}
+        }
+        return count;
+	}
+	
+	@Override
+	public int deleteBillingJobsByFormatId(int formatId) {
+		int count = 0;
+		List<ScheduledRepeatingJob> jobs = getBillingExportJobs();
+		for(ScheduledRepeatingJob job : jobs) {
+			ScheduledBillingFileExportTask task = (ScheduledBillingFileExportTask) jobManager.instantiateTask(job);
+			if(task.getFileFormatId() == formatId) {
+				jobManager.deleteJob(job);
+				count++;
+			}
+		}
+		return count;
+	}
+	
+	@Override
 	public ScheduledBillingJobData getBillingJobData(ScheduledRepeatingJob job) {
 		return new ScheduledBillingJobDataImpl(job);
 	}

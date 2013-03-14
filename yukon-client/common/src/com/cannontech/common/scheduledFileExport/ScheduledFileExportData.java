@@ -19,7 +19,7 @@ public class ScheduledFileExportData {
 	private String exportPath;
 	private String exportFileName;
 	private boolean appendDateToFileName;
-	private String notificationEmailAddresses = ""; //optional
+	private String notificationEmailAddresses; //optional
 	
 	public ScheduledFileExportData() {
 	}
@@ -100,6 +100,11 @@ public class ScheduledFileExportData {
 	}
 	
 	public void setNotificationEmailAddresses(String notificationEmailAddresses) {
-		this.notificationEmailAddresses = StringUtils.trimAllWhitespace(notificationEmailAddresses);
+		String input = StringUtils.trimAllWhitespace(notificationEmailAddresses);
+		if(org.apache.commons.lang.StringUtils.isNotBlank(input)) {
+			this.notificationEmailAddresses = notificationEmailAddresses;
+		} else {
+			notificationEmailAddresses = null;
+		}
 	}
 }

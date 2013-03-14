@@ -37,6 +37,18 @@ public interface ScheduledFileExportService {
 	public List<ScheduledRepeatingJob> getArchivedDataExportJobs();
 	
 	/**
+	 * Delete all Archived Data Export jobs that use the specified formatId.
+	 * @return the number of jobs deleted.
+	 */
+	public int deleteAdeJobsByFormatId(int formatId);
+	
+	/**
+	 * Delete all billing jobs that use the specified formatIdl
+	 * @return the number of jobs deleted.
+	 */
+	public int deleteBillingJobsByFormatId(int formatId);
+	
+	/**
 	 * Creates a billing job data object for the specified job.
 	 */
 	public ScheduledBillingJobData getBillingJobData(ScheduledRepeatingJob job);

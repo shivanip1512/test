@@ -56,9 +56,11 @@ public class ScheduledBillingFileExportController {
 	
 	@RequestMapping
 	public String showForm(ModelMap model, YukonUserContext userContext, HttpServletRequest request,
-			@ModelAttribute("exportData") ScheduledFileExportData exportData, Integer jobId, String[] billGroup, Integer fileFormat, 
-			Integer demandDays, Integer energyDays, @RequestParam(defaultValue="false") boolean removeMultiplier) 
-			throws ServletRequestBindingException {
+			@ModelAttribute("exportData") ScheduledFileExportData exportData, Integer jobId, Integer fileFormat, 
+			Integer demandDays, Integer energyDays, @RequestParam(defaultValue="false") boolean removeMultiplier,
+			@RequestParam(defaultValue="null") String[] billGroup) throws ServletRequestBindingException {
+		
+		if(billGroup == null) billGroup = new String[0];
 		
 		CronExpressionTagState cronExpressionTagState = new CronExpressionTagState();
 		
@@ -140,11 +142,13 @@ public class ScheduledBillingFileExportController {
 		if(jobId == null) {
 			//new schedule
 			scheduledFileExportService.scheduleFileExport(exportData, userContext);
+			flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.jobCreated", exportData.getScheduleName()));
 		} else {
 			//edit schedule
 			scheduledFileExportService.updateFileExport(exportData, userContext, jobId);
+			flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.jobUpdated", exportData.getScheduleName()));
 		}
-		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.jobCreated", exportData.getScheduleName()));
+		
 		return "redirect:jobs";
 	}
 	

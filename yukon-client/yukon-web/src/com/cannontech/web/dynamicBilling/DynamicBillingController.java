@@ -41,6 +41,7 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
@@ -51,7 +52,8 @@ public class DynamicBillingController {
     @Autowired private DynamicBillingFormatter dynamicFormatter;
     @Autowired private DynamicBillingFileDao dynamicBillingFileDao;
 	@Autowired private GlobalSettingDao globalSettingDao;
-
+	@Autowired private ScheduledFileExportService scheduledFileExportService;
+	
     @RequestMapping
     public String overview(ModelMap model) {
         List<DynamicFormat> allRows = dynamicBillingFileDao.retrieveAll();
@@ -94,6 +96,8 @@ public class DynamicBillingController {
     public String delete(int availableFormat, ModelMap model) {
         // delete the selected format
         dynamicBillingFileDao.delete(availableFormat);
+        //delete jobs using this format
+        scheduledFileExportService.deleteBillingJobsByFormatId(availableFormat);
         
         // retrieve the new list of format names after deletion
         List<DynamicFormat> allRows = dynamicBillingFileDao.retrieveAll();
