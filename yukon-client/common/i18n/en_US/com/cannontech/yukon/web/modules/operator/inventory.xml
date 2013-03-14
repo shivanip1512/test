@@ -385,10 +385,10 @@
     <entry key="yukon.web.modules.operator.controlAudit.uncontrolledCollectionDescription">LM Control Audit Uncontrolled List</entry>
     <entry key="yukon.web.modules.operator.controlAudit.unknownCollectionDescription">LM Control Audit Unknown List</entry>
     <entry key="yukon.web.modules.operator.controlAudit.unsupportedCollectionDescription">LM Control Audit Unsupported List</entry>
-    <entry key="yukon.web.modules.operator.controlAudit.from.error.required">The ''From'' date is a required field.</entry>
-    <entry key="yukon.web.modules.operator.controlAudit.range.error.fromAfterTo">The ''From'' date cannot be after the ''to'' date.</entry>
-    <entry key="yukon.web.modules.operator.controlAudit.from.error.future">The ''From'' date cannot occur in the future.</entry>
-    <entry key="yukon.web.modules.operator.controlAudit.to.error.required">The ''to'' date is a required field.</entry>
-    <entry key="yukon.web.modules.operator.controlAudit.to.error.future">The ''to'' date cannot occur in the future.</entry>
+    <entry key="yukon.web.modules.operator.controlAudit.from.error.required">The 'From' date is a required field.</entry>
+    <entry key="yukon.web.modules.operator.controlAudit.range.error.fromAfterTo">The 'From' date cannot be after the ''to'' date.</entry>
+    <entry key="yukon.web.modules.operator.controlAudit.from.error.future">The 'From' date cannot occur in the future.</entry>
+    <entry key="yukon.web.modules.operator.controlAudit.to.error.required">The 'to' date is a required field.</entry>
+    <entry key="yukon.web.modules.operator.controlAudit.to.error.future">The 'to' date cannot occur in the future.</entry>
     
 </properties>

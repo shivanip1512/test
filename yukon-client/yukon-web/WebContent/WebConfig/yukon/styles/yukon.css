@@ -264,12 +264,12 @@ input.error {background: pink;border-color:#D14836;}
 /* 2 Column (double page) settings */
 .doublepage .colleft {right:50%; /* right column width */}
 .doublepage .col1 {
-    width:46%; /* left column content width (column width minus left and right padding) */
-    left:52%; /* right column width plus left column left padding */
+    width:49%; /* left column content width (column width minus left and right padding) */
+    left:50%; /* right column width plus left column left padding */
 }
 .doublepage .col2 {
-    width:46%; /* right column content width (column width minus left and right padding) */
-    left:56%; /* (right column width) plus (left column left and right padding) plus (right column left padding) */
+    width:49%; /* right column content width (column width minus left and right padding) */
+    left:52%; /* (right column width) plus (left column left and right padding) plus (right column left padding) */
 }
 /* 2 Column (right menu) settings */
 .rightmenu .colleft {right:25%; /* right column width */}
