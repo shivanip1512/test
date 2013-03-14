@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   config_device
-*
-* Date:   8/25/2005
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_device.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2007/12/03 21:15:54 $
-*
-* Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "config_device.h"
@@ -21,7 +8,7 @@ using std::string;
 namespace Cti       {
 namespace Config    {
 
-const string DeviceConfig::TrueString = "true";
+const string TrueString = "true";
 
 DeviceConfig::DeviceConfig(long ID, string& name, string& type) :
 _id(ID), _name(name), _type(type)

@@ -491,13 +491,12 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
             }
 
             /* 
-             * Lookups for keys other than 4 or 6 will return a default value of 0, which
-             * is exactly what we want for the default value. This works for the key of
-             * 5 as well, which maps to 0x00, so it doesn't need to be present in the map
+             * Lookups for keys other than 4, 5, or 6 will return a default value of 0, which
+             * is exactly what we want for the default value anyway.
              */
-            std::map<long, unsigned> digitLookup = boost::assign::map_list_of (4, 0x20)(6, 0x10);
+            std::map<long, unsigned> digitLookup = boost::assign::map_list_of (4, 0x20)(5, 0x00)(6, 0x10);
 
-            display_digits = 0x70 & digitLookup[numDigits];
+            display_digits = digitLookup[numDigits];
         }
         else
         {
@@ -570,7 +569,8 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
     else 
     {
         // Read command.
-        meterParameterCommand.reset(new Mct420MeterParametersDisplayDigitsCommand());
+        meterParameterCommand.reset(
+            new Mct420MeterParametersDisplayDigitsCommand());
     }
 
     return tryExecuteCommand(*OutMessage, meterParameterCommand, outList) 
