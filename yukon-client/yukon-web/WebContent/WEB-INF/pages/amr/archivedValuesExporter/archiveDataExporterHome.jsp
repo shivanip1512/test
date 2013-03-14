@@ -174,20 +174,20 @@
 		                <tags:nameValue2 nameKey=".formatType">
 		                    <select id="formatType">
 		                        <c:forEach var="formatType" items="${formatTypes}">
-		                            <option value="${formatType}"><i:inline key="${formatType}" /></option>
+		                            <option value="${formatType}"><cti:msg2 key="${formatType}" /></option>
 		                        </c:forEach>
 		                    </select>
 		                    <cti:button nameKey="create" href="create" styleClass="create"/>
 		                </tags:nameValue2>
-		                <tags:nameValue2 nameKey=".existingFormat">
-		                    <c:if test="${not empty allFormats}">
+	                    <c:if test="${not empty allFormats}">
+		                    <tags:nameValue2 nameKey=".existingFormat">
 		                        <form:select path="formatId" cssClass="fl" cssStyle="margin-right:5px;">
 		                            <form:options items="${allFormats}" itemValue="formatId" title="formatName" itemLabel="formatName" />
 		                        </form:select>
 		                        <cti:button nameKey="edit" href="edit" styleClass="edit" />
 		                        <cti:button nameKey="copy" href="copy" styleClass="copy" />
-		                    </c:if>
-		                </tags:nameValue2>
+		                  </tags:nameValue2>
+	                    </c:if>
 		                
 		                <tags:selectNameValue  rowId="attributeRow" nameKey=".attribute" path="attribute" items="${groupedAttributes}" itemLabel="message" itemValue="key" groupItems="true"/>
 		            </tags:nameValueContainer2>
