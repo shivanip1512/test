@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigStringKeysEnum;
 import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.fileExportHistory.service.FileExportHistoryService;
@@ -39,6 +41,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 	@Autowired protected EmailService emailService;
 	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 	@Autowired private DateFormattingService dateFormattingService;
+	@Autowired private ConfigurationSource configurationSource;
 	
 	protected String name;
 	protected boolean appendDateToFileName;
@@ -191,8 +194,9 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 	 * related File Export History page.
 	 */
 	private String getNotificationBody(ExportHistoryEntry historyEntry) {
+		String baseUrl = configurationSource.getString(MasterConfigStringKeysEnum.YUKON_EXTERNAL_URL, "");
+		
 		int historyId = historyEntry == null ? 0 : historyEntry.getId();
-		String baseUrl = getMessage("yukon.web.modules.amr.scheduledFileExport.notification.yukonBaseUrl");
 		String historyLink = baseUrl + HISTORY_URL_PART + historyId;
 		String body = getMessage("yukon.web.modules.amr.scheduledFileExport.notification.body", name, historyLink);
 		return body;

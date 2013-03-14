@@ -10,6 +10,4 @@
 		<br><br>
 		More information is available on the <a href="{1}">File Export History</a> page.
 	]]></entry>
-	
-	<entry key="yukon.web.modules.amr.scheduledFileExport.notification.yukonBaseUrl">YUKON_SERVER_ADDRESS</entry>
 </properties>
