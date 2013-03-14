@@ -27,12 +27,15 @@ class IM_EX_DEVDB Mct420MeterParametersDisplayDigitsCommand : public Mct420Meter
 protected:
 
     virtual unsigned char getDisplayParametersByte();
-    virtual void validateParameters();
 
 public:
 
+    // Write constructor
     Mct420MeterParametersDisplayDigitsCommand(const unsigned cycleTime, bool disconnectDisplayDisabled, boost::optional<unsigned> transformerRatio, boost::optional<std::string> parseStr, 
-                                              boost::optional<unsigned char> dynamicValue, bool readsOnly);
+                                              boost::optional<unsigned char> dynamicValue);
+
+    // Read constructor
+    Mct420MeterParametersDisplayDigitsCommand();
 };
 
 }

@@ -2601,8 +2601,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
 
                 temp = cmdtok(); // grab enable/disable value.
 
-                // We want the value that will be used in the command, hence the "negative" check.
-                if( !temp.compareTo("disable") )
+                if( ! temp.compareTo("disable") )
                 {
                     _cmd["disconnect_display_disabled"] = true;
                 }

@@ -25,6 +25,8 @@ protected:
     //virtual bool setProtectedValueWithKey(const string &value, const int key);
 
 private:
+    static const std::string TrueString;
+
     typedef std::map<CtiHashKey, std::string> ConfigValueMap;
     ConfigValueMap _configurationValues;
 

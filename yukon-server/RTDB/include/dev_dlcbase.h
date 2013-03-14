@@ -77,8 +77,8 @@ protected:
     virtual INT executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList ) {  return NoMethod;  };
     virtual INT executePutStatus( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList ) {  return NoMethod;  };
 
-    bool tryExecuteCommand(OUTMESS &OutMessage, DlcCommandSPtr command, OutMessageList &outList); // deprecated
-    bool tryExecuteCommand(OUTMESS &OutMessage, DlcCommandSPtr command);
+    bool tryExecuteCommand(OUTMESS &OutMessage, DlcCommandSPtr command, OutMessageList &outList);
+    bool tryExecuteCommand(OUTMESS &OutMessage, DlcCommandSPtr command); // deprecated
 
     int decodeCommand(const INMESS &InMessage, CtiTime TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 

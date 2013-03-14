@@ -20,7 +20,6 @@ protected:
 
     state_t _executionState;
 
-    request_ptr preRead();
     request_ptr read();
     request_ptr write();
     request_ptr done();
@@ -28,11 +27,14 @@ protected:
     request_ptr doCommand();
 
     virtual unsigned char getDisplayParametersByte();
-    virtual void validateParameters();
 
 public:
 
-    Mct420MeterParametersCommand(const unsigned cycleTime, bool disconnectDisplayDisabled, boost::optional<unsigned> transformerRatio, bool readsOnly);
+    // Write constructor
+    Mct420MeterParametersCommand(const unsigned cycleTime, bool disconnectDisplayDisabled, boost::optional<unsigned> transformerRatio);
+
+    // Read constructor
+    Mct420MeterParametersCommand();
 
     enum
     {
@@ -44,7 +46,6 @@ public:
 
     virtual request_ptr execute(const CtiTime now);
     virtual request_ptr decode (const CtiTime now, const unsigned function, const payload_t &payload, std::string &description, std::vector<point_data> &points);
-    virtual request_ptr error  (const CtiTime now, const int error_code, std::string &description);
 };
 
 }

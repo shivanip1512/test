@@ -21,6 +21,8 @@ using std::string;
 namespace Cti       {
 namespace Config    {
 
+const string DeviceConfig::TrueString = "true";
+
 DeviceConfig::DeviceConfig(long ID, string& name, string& type) :
 _id(ID), _name(name), _type(type)
 {
@@ -145,7 +147,6 @@ double DeviceConfig::getFloatValueFromKey(std::string key)
 
 bool DeviceConfig::getBoolValue(std::string key, bool &value)
 {
-    static const string TrueString("true");
     string strValue;
 
     if ( !getValue(key, strValue) )

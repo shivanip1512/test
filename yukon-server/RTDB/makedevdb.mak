@@ -43,6 +43,7 @@ INCLPATHS+= \
 YUKONDEVDLLOBJS=\
 cmd_dlc.obj \
 cmd_mct410_hourlyread.obj \
+cmd_mct420.obj \
 cmd_mct420_hourlyread.obj \
 cmd_mct420_LcdConfiguration.obj \
 cmd_mct420_MeterParameters.obj \

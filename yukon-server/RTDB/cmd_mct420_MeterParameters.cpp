@@ -6,50 +6,41 @@ namespace Cti {
 namespace Devices {
 namespace Commands {
 
-Mct420MeterParametersCommand::Mct420MeterParametersCommand(const unsigned cycleTime, bool disconnectDisplayDisabled, boost::optional<unsigned> transformerRatio, bool readsOnly) :
+Mct420MeterParametersCommand::Mct420MeterParametersCommand(const unsigned cycleTime, bool disconnectDisplayDisabled, boost::optional<unsigned> transformerRatio) :
     _cycleTime(cycleTime),
     _disconnectDisplayDisabled(disconnectDisplayDisabled),
     _transformerRatio(transformerRatio),
-    _executionState(readsOnly ? &Mct420MeterParametersCommand::read : &Mct420MeterParametersCommand::write)
+    _executionState(&Mct420MeterParametersCommand::write)
+{
+    if( !_cycleTime || _cycleTime > 15 )
+    {
+        throw CommandException(BADPARAM, "Invalid LCD cycle time (" + CtiNumStr(_cycleTime) + "), must be 1-15");
+    }
+
+    if( _transformerRatio && (!*_transformerRatio || *_transformerRatio > 255) )
+    {
+        throw CommandException(BADPARAM, "Invalid transformer ratio (" + CtiNumStr(*_transformerRatio) + "), must be 1-255");
+    }
+}
+
+Mct420MeterParametersCommand::Mct420MeterParametersCommand() :
+    // Default values here, we're a read anyway, so these values will be ignored.
+    _cycleTime(8),
+    _disconnectDisplayDisabled(false),
+    _transformerRatio(boost::none),
+    _executionState(&Mct420MeterParametersCommand::read)
 {
 }
 
 DlcCommand::request_ptr Mct420MeterParametersCommand::execute(const CtiTime now)
 {
-    // Make sure everything jives.
-    validateParameters();
-
     return doCommand();
-}
-
-//  throws CommandException
-void Mct420MeterParametersCommand::validateParameters()
-{
-    if( _executionState == &Mct420MeterParametersCommand::write )
-    {
-        if( !_cycleTime || _cycleTime > 15 )
-        {
-            throw CommandException(BADPARAM, "Invalid LCD cycle time (" + CtiNumStr(_cycleTime) + "), must be 1-15");
-        }
-
-        if( _transformerRatio && (!*_transformerRatio || *_transformerRatio > 255) )
-        {
-            throw CommandException(BADPARAM, "Invalid transformer ratio (" + CtiNumStr(*_transformerRatio) + "), must be 1-255");
-        }
-    }
 }
 
 DlcCommand::request_ptr Mct420MeterParametersCommand::decode(const CtiTime now, const unsigned function, const payload_t &payload, std::string &description, std::vector<point_data> &points)
 {
     // Nothing to decode for this message.
     return doCommand();
-}
-
-//  throws CommandException
-DlcCommand::request_ptr Mct420MeterParametersCommand::error(const CtiTime now, const int error_code, std::string &description)
-{
-    //  This should probably be the default for all commands unless otherwise specified.
-    throw CommandException(error_code, GetError(error_code));
 }
 
 DlcCommand::request_ptr Mct420MeterParametersCommand::doCommand()
@@ -73,8 +64,10 @@ unsigned char Mct420MeterParametersCommand::getDisplayParametersByte()
 
 DlcCommand::request_ptr Mct420MeterParametersCommand::write()
 {
+    std::vector<unsigned char> payload;
+
     // Byte 0 - SPID
-    std::vector<unsigned char> payload(1, gMCT400SeriesSPID);
+    payload.push_back(gMCT400SeriesSPID);
 
     // Byte 1 - Display Parameters
     payload.push_back(getDisplayParametersByte());
