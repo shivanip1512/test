@@ -2,26 +2,25 @@ package com.cannontech.web.stars.dr.consumer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.joda.time.Interval;
 import org.joda.time.LocalDate;
-import org.joda.time.Period;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.NoSuchMessageException;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.survey.model.Result;
 import com.cannontech.common.survey.model.ResultAnswer;
-import com.cannontech.common.util.TimeUtil;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
@@ -46,7 +45,9 @@ public class OptOutControllerHelper {
     private InventoryBaseDao inventoryBaseDao;
     private OptOutService optOutService;
     private OptOutEventDao optOutEventDao;
-
+    
+    private final Logger logger = YukonLogManager.getLogger(OptOutControllerHelper.class);
+    
     public List<String> getConfirmQuestions(YukonUserContextMessageSourceResolver messageSourceResolver, 
             YukonUserContext yukonUserContext, String keyPrefix) {
         
@@ -93,11 +94,15 @@ public class OptOutControllerHelper {
         optOutRequest.setSurveyResults(surveyResults);
         optOutRequest.setSurveyIdsByInventoryId(surveyIdsByInventoryId);
         LocalDate today = new LocalDate(userContext.getJodaTimeZone());
-        int durationInHours =
-            optOutService.calculateDurationInHours(optOutBackingBean.getStartDate(),
+        Duration duration =
+            optOutService.calculateDuration(optOutBackingBean.getStartDate(),
                                              optOutBackingBean.getDurationInDays(),
                                              userContext);
-        optOutRequest.setDurationInHours(durationInHours);
+        logger.info("Start date:" + today.toString("MM/dd/yy") + "  Duration in days:"
+                    + optOutBackingBean.getDurationInDays() + " calculated duration in hours:"
+                    + duration.toStandardHours().getHours());
+ 
+        optOutRequest.setDurationInHours(duration.toPeriod().getHours());
         boolean isSameDay = today.isEqual(optOutBackingBean.getStartDate());
         if (isSameDay) {
             optOutRequest.setStartDate(null); // Same day OptOut's have null start dates

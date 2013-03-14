@@ -408,14 +408,17 @@ public class OptOutServiceImpl implements OptOutService {
 		    CustomerAccount customerAccount = customerAccountDao.getById(customerAccountId);
 			
 			OptOutEvent lastEvent = optOutEventDao.findLastEvent(inventoryId);
-			DateTime now = new DateTime();
+			DateTime now = new DateTime(userContext.getJodaTimeZone());
 			Interval optOutInterval = new Interval(now, lastEvent.getStopDate());
 			// Add today (1 day)
 			int durationInDays = optOutInterval.toPeriod().toStandardDays().getDays()+1;
-			int durationInHours = calculateDurationInHours(new LocalDate(now), durationInDays, userContext);
+			LocalDate startDate = new LocalDate(now);
+			Duration duration = calculateDuration(startDate, durationInDays, userContext);
+            logger.info("Start date:" + startDate.toString("MM/dd/yy") + "  Duration in days:" + durationInDays
+                        + " calculated duration in hours:" + duration.toStandardHours().getHours());
 
 			// Send command out to the field
-			sendOptOutRequest(inventory, durationInHours, user);
+			sendOptOutRequest(inventory, duration.toStandardHours().getHours(), user);
 			
 			// Log this repeat event request
 			accountEventLogService.optOutResent(user, customerAccount.getAccountNumber(), 
@@ -1317,35 +1320,28 @@ public class OptOutServiceImpl implements OptOutService {
     }
     
     @Override
-    public int calculateDurationInHours(LocalDate startDate, int durationInDays, YukonUserContext userContext){
-         
-         int durationInHours = 0;
-         LocalDate today = new LocalDate(userContext.getJodaTimeZone());
-         boolean isSameDay = today.isEqual(startDate);
-         if (isSameDay) {
-             int extraHours = 0;
-             // If durationInDays is 1 that means the rest of today only
-             if (durationInDays > 1) {
-                 // Today counts as the first day
-                 extraHours = (durationInDays - 1) * 24;
-             }
-
-             Date now = new Date();
-             int hoursRemainingInDay = TimeUtil.getHoursTillMidnight(now, userContext.getTimeZone());
-             durationInHours = hoursRemainingInDay + extraHours;
-             
-         } else {
-             DateTime startDateTime = startDate.toDateTimeAtStartOfDay(userContext.getJodaTimeZone());
-             Period optOutPeriod = Period.days(durationInDays);
-             Interval optOutInterval = new Interval(startDateTime, optOutPeriod);
-             durationInHours = optOutInterval.toDuration() .toPeriod()
-                                                            .toStandardHours()
-                                                            .getHours();
-         }
-         logger.info("Start date:"+startDate.toString("MM/dd/yy")+"  Duration in days:"+durationInDays+" calculated duration in hours:"+durationInHours);
-         return durationInHours;
+    public Duration calculateDuration(LocalDate startDate, int durationInDays, YukonUserContext userContext){
+        
+        Duration duration;
+        LocalDate today = new LocalDate(userContext.getJodaTimeZone());
+        boolean isSameDay = today.isEqual(startDate);
+        if (isSameDay) {
+            //duration to midnight
+            duration =
+                new Duration(startDate.toDateTimeAtCurrentTime(), startDate.plusDays(1).toDateTimeAtStartOfDay());
+            if (durationInDays > 1) {
+                DateTime startDateTime = startDate.toDateTimeAtStartOfDay(userContext.getJodaTimeZone());
+                DateTime endDate = startDateTime.plusDays(durationInDays - 1);
+                duration = duration.plus(new Duration(startDateTime, endDate));
+            }
+        } else {
+            DateTime startDateTime = startDate.toDateTimeAtStartOfDay(userContext.getJodaTimeZone());
+            DateTime endDate = startDateTime.plusDays(durationInDays);
+            duration = new Duration(startDateTime, endDate);
+        }
+        return duration;
      }
-
+    
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;

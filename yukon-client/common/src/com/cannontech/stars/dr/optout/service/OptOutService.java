@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTimeZone;
+import org.joda.time.Duration;
 import org.joda.time.LocalDate;
 import org.joda.time.ReadableInstant;
 
@@ -285,12 +286,8 @@ public interface OptOutService {
     public OpenInterval findOptOutLimitInterval(ReadableInstant intersectingInstant, DateTimeZone dateTimeZone, LiteYukonGroup residentialGroup);
 
     /**
-     * This method calculates duration in hours based on start date and duration in days
+     * This method calculates duration based on start date and duration in days
      * 
-     * @param startDate
-     * @param durationInDays
-     * @param userContext
-     * @return - Duration in hours
      */
-    public int calculateDurationInHours(LocalDate startDate, int durationInDays, YukonUserContext userContext);   
+    public Duration calculateDuration(LocalDate startDate, int durationInDays, YukonUserContext userContext);   
 }   
