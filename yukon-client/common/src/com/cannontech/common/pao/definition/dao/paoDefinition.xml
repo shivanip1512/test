@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="paoDefinition.xsl"?>
-
+<!--  LAST EXISTING OFFSET=213 @ 2013-03-15F -->
 <!--
     This file contains default pao and point information for all of the pao's in Yukon.
     
@@ -7141,6 +7141,61 @@
                 <decimalplaces value="4"/>
             </point>
 
+            <point type="Analog" offset="179">
+                <name>Coincident Peak kW</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="206">
+                <name>Rate A Coincident Peak kW</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="207">
+                <name>Rate B Coincident Peak kW</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="208">
+                <name>Rate C Coincident Peak kW</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="209">
+                <name>Rate D Coincident Peak kW</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="210">
+                <name>Rate A Coincident kVA</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVA"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="211">
+                <name>Rate B Coincident kVA</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVA"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="212">
+                <name>Rate C Coincident kVA</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVA"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="213">
+                <name>Rate D Coincident kVA</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVA"/>
+                <decimalplaces value="4"/>
+            </point>
+
             <point type="Analog" offset="150">
                 <name>kVAh Delivered</name>
                 <multiplier value="1.0"/>
@@ -7373,46 +7428,61 @@
                 <decimalplaces value="3"/>
             </point>
 
+            <point type="Analog" offset="106">
+                <init>false</init>
+                <name>Coincident kVAr</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVAr"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="107">
+                <init>false</init>
+                <name>Coincident kVA</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVA"/>
+                <decimalplaces value="3"/>
+            </point>
+
             <!-- ALL THE FOLLOWING ARE NEW per ICD (#2) received 2013 Mar 11M -->
 			<point type="Analog" offset="193">
-				<name>Coincident Peak kVAr</name>
+				<name>Rate A Coincident kVAr</name>
 				<multiplier value="1.0"/>
 				<unitofmeasure value="kVAr"/>
 				<decimalplaces value="3"/>
 			</point>
 			<point type="Analog" offset="194">
-				<name>Coincident Cumulative Peak kVAr</name>
+				<name>Rate B Coincident kVAr</name>
 				<multiplier value="1.0"/>
 				<unitofmeasure value="kVAr"/>
 				<decimalplaces value="3"/>
 			</point>
-
 			<point type="Analog" offset="195">
-				<name>Coincident Peak kVAr (Rate A kVAr)</name>
+				<name>Rate C Coincident kVAr</name>
 				<multiplier value="1.0"/>
 				<unitofmeasure value="kVAr"/>
 				<decimalplaces value="3"/>
 			</point>
 			<point type="Analog" offset="196">
-				<name>Coincident Cumulative Peak kVAr (Rate A kVAr)</name>
+				<name>Rate D Coincident kVAr</name>
 				<multiplier value="1.0"/>
 				<unitofmeasure value="kVAr"/>
 				<decimalplaces value="3"/>
 			</point>
+
 			<point type="Analog" offset="197">
-				<name>Coincident Peak kVAr (Rate B kVAr)</name>
+				<name>Coincident Cumulative Peak kVAr</name>
 				<multiplier value="1.0"/>
 				<unitofmeasure value="kVAr"/>
 				<decimalplaces value="3"/>
 			</point>
 			<point type="Analog" offset="198">
-				<name>Coincident Cumulative Peak kVAr (Rate B kVAr)</name>
+				<name>Coincident Cumulative Peak kVAr (Rate A kVAr)</name>
 				<multiplier value="1.0"/>
 				<unitofmeasure value="kVAr"/>
 				<decimalplaces value="3"/>
 			</point>
 			<point type="Analog" offset="199">
-				<name>Coincident Peak kVAr (Rate C kVAr)</name>
+				<name>Coincident Cumulative Peak kVAr (Rate B kVAr)</name>
 				<multiplier value="1.0"/>
 				<unitofmeasure value="kVAr"/>
 				<decimalplaces value="3"/>
@@ -7424,36 +7494,30 @@
 				<decimalplaces value="3"/>
 			</point>
 			<point type="Analog" offset="201">
-				<name>Coincident Peak kVAr (Rate D kVAr)</name>
-				<multiplier value="1.0"/>
-				<unitofmeasure value="kVAr"/>
-				<decimalplaces value="3"/>
-			</point>
-			<point type="Analog" offset="202">
 				<name>Coincident Cumulative Peak kVAr (Rate D kVAr)</name>
 				<multiplier value="1.0"/>
 				<unitofmeasure value="kVAr"/>
 				<decimalplaces value="3"/>
 			</point>
-            <point type="Analog" offset="203">
+            <point type="Analog" offset="202">
                 <name>Received Rate A kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="204">
+            <point type="Analog" offset="203">
                 <name>Received Rate B kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="205">
+            <point type="Analog" offset="204">
                 <name>Received Rate C kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="206">
+            <point type="Analog" offset="205">
                 <name>Received Rate D kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
@@ -7490,11 +7554,11 @@
     <!-- ITRON RFN METERS -->
     <pao id="RFN420CL"  inherits="RFN_L3_CENTRON					, SUPPORTS_RFN_DEMAND_RESET_TAG">
     	<displayName>RFN-420cL</displayName></pao>
-    <pao id="RFN420CD"  inherits="RFN420CL,     RFN_DISCONNECT">
+    <pao id="RFN420CD"  inherits="RFN420CL, RFN_DISCONNECT">
     	<displayName>RFN-420cD</displayName></pao>
 
     <!-- ELSTER RFN METERS -->
-    <pao id="RFN430A3D" inherits="RFN_L2_ELSTER_ALL, RFN_DISCONNECT, SUPPORTS_RFN_DEMAND_RESET_TAG">
+    <pao id="RFN430A3D" inherits="RFN_L2_ELSTER_ALL, SUPPORTS_RFN_DEMAND_RESET_TAG">
     	<displayName>RFN-430A3D</displayName></pao>
     <pao id="RFN430A3T" inherits="RFN_L3_ELSTER_TKRV, SUPPORTS_RFN_DEMAND_RESET_TAG">
     	<displayName>RFN-430A3T</displayName></pao>
