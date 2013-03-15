@@ -5,12 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.EnergyCompanyNotFoundException;
 import com.cannontech.database.RowMapper;
@@ -182,6 +180,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         return null;
     }
 
+    @Override
     public boolean isPrimaryOperator(int operatorLoginId){
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(EnergyCompanyId)");

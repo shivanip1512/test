@@ -326,8 +326,18 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         UserCheckerBase checker = new UserCheckerBase() {
             @Override
             public boolean check(LiteYukonUser user) {
-                YukonEnergyCompany yec = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-                return canEditEnergyCompany(user, yec.getEnergyCompanyId());
+                
+                boolean isOperator = yukonEnergyCompanyService.isEnergyCompanyOperator(user);
+
+                if (isOperator) {
+                    YukonEnergyCompany yec = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+                    return canEditEnergyCompany(user, yec.getEnergyCompanyId());
+                } else {
+                    boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
+                    boolean edit = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY, user);
+
+                    return superUser || edit;
+                }
             }
         };
         return checker;
