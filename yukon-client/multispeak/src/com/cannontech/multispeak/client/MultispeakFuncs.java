@@ -431,9 +431,11 @@ public class MultispeakFuncs
             if (isRfnDisconnect) {
                 RfnDisconnectStatusState pointState = PointStateHelper.decodeRawState(RfnDisconnectStatusState.class, pointValueHolder.getValue());
                 mspLoadActionCode = MspLoadActionCode.getForRfnState(pointState);
+                log.debug("returning loadActionCode for RFN: " + mspLoadActionCode);
             } else {    //assume everything else is PLC
                 Disconnect410State pointState = PointStateHelper.decodeRawState(Disconnect410State.class, pointValueHolder.getValue());
                 mspLoadActionCode = MspLoadActionCode.getForPlcState(pointState);
+                log.debug("returning loadActionCode for PLC: " + mspLoadActionCode);
             }
         } catch (IllegalArgumentException e) {
             // we were unable to decode the rawState

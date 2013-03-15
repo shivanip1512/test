@@ -201,8 +201,9 @@ public class CD_ServerImpl implements CD_ServerSoap_PortType
             PointValueQualityHolder pointValueQualityHolder = dynamicDataSource.getPointValue(litePoint.getPointID());
             
             // dispatch cache could potentially give us an Uninit value
-            if( pointValueQualityHolder != null && 
-                    pointValueQualityHolder.getPointQuality() != PointQuality.Uninitialized) {
+            if( pointValueQualityHolder == null ||  
+                    pointValueQualityHolder.getPointQuality() == PointQuality.Uninitialized) {
+                log.debug("pointvalueQualityHolder null or pointQuality uninitialized, returning Unknown");
                 return LoadActionCode.Unknown;
             }
             return multispeakFuncs.getLoadActionCode(meter, pointValueQualityHolder);
