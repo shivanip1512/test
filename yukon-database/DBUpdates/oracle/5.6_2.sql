@@ -288,7 +288,7 @@ DECLARE
     CURSOR curs_tableNames IS (SELECT tableName 
                                FROM temp_PointTableNames);
 BEGIN
-    v_pointOffsetsToDelete := '(30, 102, 103, 104, 106, 107, 124, 172, 173, 174, 175, 179)';
+    v_pointOffsetsToDelete := '(30, 102, 103, 104, 124, 172, 173, 174, 175)';
     OPEN curs_tableNames;
     LOOP
         FETCH curs_tableNames INTO v_currentTable;

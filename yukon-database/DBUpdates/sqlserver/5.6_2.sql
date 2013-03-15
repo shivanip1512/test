@@ -273,7 +273,7 @@ INSERT INTO temp_PointTableNames VALUES
     ('Display2WayData'), ('CCEventLog'), ('PointAlarming'), ('Point');
 
 /* @start-block */
-DECLARE @pointOffsetsToDelete VARCHAR(255) = '(30, 102, 103, 104, 106, 107, 124, 172, 173, 174, 175, 179)';
+DECLARE @pointOffsetsToDelete VARCHAR(255) = '(30, 102, 103, 104, 124, 172, 173, 174, 175)';
 
 DECLARE @deleteCommand VARCHAR(MAX);
 DECLARE @currentTable VARCHAR(30);
