@@ -16,6 +16,9 @@ public class InputOption implements InputOptionProvider {
 
     @Override
     public MessageSourceResolvable getMessage() {
+        if (messageSourceResolvable == null) {
+            return YukonMessageSourceResolvable.createDefaultWithoutCode(value);
+        }
         return messageSourceResolvable;
     }
 
