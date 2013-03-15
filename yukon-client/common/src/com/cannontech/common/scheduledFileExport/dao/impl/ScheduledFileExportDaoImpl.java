@@ -36,6 +36,7 @@ public class ScheduledFileExportDaoImpl implements ScheduledFileExportDao {
 		
 		sink.addValue("JobId", jobId);
 		sink.addValue("RawPointHistoryId", rphId);
+		sql.append("WHERE JobId").eq(jobId);
 		
 		yukonJdbcTemplate.update(sql);
 	}

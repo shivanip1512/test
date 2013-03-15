@@ -122,8 +122,6 @@
     <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.appendDateToFileName">Append Date to File Name</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.scheduleCronString">Schedule</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.notificationEmailAddresses">Notification Email Addresses</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.cancelButton.label">Cancel</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.submitButton.label">Submit</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.scheduleSuccess">File export "{0}" scheduled successfully.</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.updateSuccess">File export "{0}" updated successfully.</entry>
     

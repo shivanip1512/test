@@ -1,6 +1,5 @@
 package com.cannontech.web.scheduledFileExport.service.impl;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +13,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
-import com.cannontech.web.scheduledFileExport.ScheduledBillingJobData;
+import com.cannontech.web.scheduledFileExport.ScheduledFileExportJobData;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledArchivedDataFileExportTask;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledBillingFileExportTask;
@@ -23,7 +22,6 @@ import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
-import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Maps;
@@ -111,8 +109,8 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
 	}
 	
 	@Override
-	public ScheduledBillingJobData getBillingJobData(ScheduledRepeatingJob job) {
-		return new ScheduledBillingJobDataImpl(job);
+	public ScheduledFileExportJobData getBillingJobData(ScheduledRepeatingJob job) {
+		return new ScheduledFileExportJobDataImpl(job);
 	}
 	
 	public YukonJobDefinition<? extends ScheduledFileExportTask> getJobDefinition(ScheduledFileExportData data) {
@@ -146,22 +144,15 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
 		log.debug("Generation parameters: " + data.getParameters());
 	}
 	
-	private class ScheduledBillingJobDataImpl implements ScheduledBillingJobData {
+	private class ScheduledFileExportJobDataImpl implements ScheduledFileExportJobData {
 		private int jobId;
 		private String name;
 		private String cronString;
-		private Date nextRun = null;
 		
-		public ScheduledBillingJobDataImpl(ScheduledRepeatingJob job) {
+		public ScheduledFileExportJobDataImpl(ScheduledRepeatingJob job) {
 			jobId = job.getId();
 			
 			cronString = cronExpressionTagService.getDescription(job.getCronString(), job.getUserContext());
-			
-			try {
-				nextRun = jobManager.getNextRuntime(job, new Date());
-			} catch(ScheduleException e) { 
-				//just leave null
-			}
 			
 			ScheduledFileExportTask task = (ScheduledFileExportTask) jobManager.instantiateTask(job);
 			this.name = task.getName();
@@ -183,12 +174,7 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
 		}
 		
 		@Override
-		public Date getNextRun() {
-			return nextRun;
-		}
-		
-		@Override
-		public int compareTo(ScheduledBillingJobData other) {
+		public int compareTo(ScheduledFileExportJobData other) {
 			return this.name.compareTo(other.getName());
 		}
 	}

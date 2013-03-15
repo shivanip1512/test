@@ -3,7 +3,6 @@ package com.cannontech.common.fileExportHistory.service.impl;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,21 +15,6 @@ import com.google.common.io.Files;
 
 public class FileExportHistoryServiceImpl implements FileExportHistoryService {
 	@Autowired public FileExportHistoryDao fileExportHistoryDao;
-	
-	@Override
-	public ExportHistoryEntry getEntry(int entryId) {
-		return fileExportHistoryDao.getEntry(entryId);
-	}
-	
-	@Override
-	public List<ExportHistoryEntry> getAllEntries() {
-		return fileExportHistoryDao.getAllEntries();
-	}
-	
-	@Override
-	public List<ExportHistoryEntry> getFilteredEntries(String nameFragment, String initiatorFragment) {
-		return fileExportHistoryDao.getFilteredEntries(nameFragment, initiatorFragment);
-	}
 	
 	@Override
 	public File getArchivedFile(int exportHistoryEntryId) throws FileNotFoundException {

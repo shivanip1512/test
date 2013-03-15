@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
+import com.cannontech.common.fileExportHistory.dao.FileExportHistoryDao;
 import com.cannontech.common.fileExportHistory.service.FileExportHistoryService;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.i18n.WebMessageSourceResolvable;
@@ -34,6 +35,7 @@ import com.google.common.collect.Lists;
 public class FileExportHistoryController {
 	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 	@Autowired private FileExportHistoryService fileExportHistoryService;
+	@Autowired private FileExportHistoryDao fileExportHistoryDao;
 	
 	@RequestMapping
 	public String list(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
@@ -44,14 +46,14 @@ public class FileExportHistoryController {
 		
 		List<ExportHistoryEntry> entries;
 		if(entryId != null) {
-			ExportHistoryEntry entry = fileExportHistoryService.getEntry(entryId);
+			ExportHistoryEntry entry = fileExportHistoryDao.getEntry(entryId);
 			entries = Lists.newArrayList(entry);
 			
 			WebMessageSourceResolvable resolvable = new WebMessageSourceResolvable("yukon.web.modules.support.fileExportHistory.singleEntry", entry.getInitiator());
 			resolvable.setHtmlEscape(false);
 			flashScope.setWarning(resolvable);
 		} else {
-			entries = fileExportHistoryService.getFilteredEntries(name, initiator);
+			entries = fileExportHistoryDao.getFilteredEntries(name, initiator);
 		}
 		Collections.sort(entries);
 		int endIndex = startIndex + itemsPerPage > entries.size() ? entries.size() : startIndex + itemsPerPage;
@@ -68,7 +70,7 @@ public class FileExportHistoryController {
 	
 	@RequestMapping
 	public String downloadArchivedCopy(ModelMap model, HttpServletResponse response, FlashScope flashScope, int entryId) {
-		ExportHistoryEntry historyEntry = fileExportHistoryService.getEntry(entryId);
+		ExportHistoryEntry historyEntry = fileExportHistoryDao.getEntry(entryId);
 		
 		try (
 				OutputStream output = response.getOutputStream();

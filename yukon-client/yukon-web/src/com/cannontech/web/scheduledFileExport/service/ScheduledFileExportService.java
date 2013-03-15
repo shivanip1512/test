@@ -6,7 +6,7 @@ import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.scheduledFileExport.ScheduledBillingJobData;
+import com.cannontech.web.scheduledFileExport.ScheduledFileExportJobData;
 
 /**
  * Service for scheduling multiple types of file export and retrieving
@@ -51,5 +51,5 @@ public interface ScheduledFileExportService {
 	/**
 	 * Creates a billing job data object for the specified job.
 	 */
-	public ScheduledBillingJobData getBillingJobData(ScheduledRepeatingJob job);
+	public ScheduledFileExportJobData getBillingJobData(ScheduledRepeatingJob job);
 }

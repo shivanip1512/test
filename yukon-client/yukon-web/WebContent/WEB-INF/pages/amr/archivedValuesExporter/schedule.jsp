@@ -58,8 +58,8 @@
 			</tags:nameValueContainer2>
 		</tags:boxContainer2>
 		
-		<cti:button nameKey="cancelButton" href="view"/>
-		<cti:button nameKey="submitButton" type="submit"/>
+		<cti:button nameKey="cancel" href="view"/>
+		<cti:button nameKey="submit" type="submit"/>
 	</form:form>
 
 </cti:standardPage>

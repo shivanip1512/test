@@ -14,7 +14,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -156,7 +155,7 @@ public class ScheduledBillingFileExportController {
 	public String jobs(ModelMap model, @RequestParam(defaultValue="25") int itemsPerPage,
 			@RequestParam(defaultValue="1") int page) {
 		List<ScheduledRepeatingJob> billingExportJobs = scheduledFileExportService.getBillingExportJobs();
-		List<ScheduledBillingJobData> jobDataObjects = Lists.newArrayListWithCapacity(billingExportJobs.size());
+		List<ScheduledFileExportJobData> jobDataObjects = Lists.newArrayListWithCapacity(billingExportJobs.size());
 		
 		int startIndex = (page -1) * itemsPerPage;
 		
@@ -167,7 +166,7 @@ public class ScheduledBillingFileExportController {
 		int endIndex = startIndex + itemsPerPage > billingExportJobs.size() ? billingExportJobs.size() : startIndex + itemsPerPage;
 		jobDataObjects = jobDataObjects.subList(startIndex, endIndex);
 		
-		SearchResult<ScheduledBillingJobData> filterResult = new SearchResult<ScheduledBillingJobData>();
+		SearchResult<ScheduledFileExportJobData> filterResult = new SearchResult<ScheduledFileExportJobData>();
 	    filterResult.setBounds(startIndex, itemsPerPage, billingExportJobs.size());
 		filterResult.setResultList(jobDataObjects);
         model.addAttribute("filterResult", filterResult);

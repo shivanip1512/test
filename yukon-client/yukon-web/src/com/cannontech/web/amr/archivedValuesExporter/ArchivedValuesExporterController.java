@@ -90,7 +90,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.EnumPropertyEditor;
-import com.cannontech.web.scheduledFileExport.ScheduledBillingJobData;
+import com.cannontech.web.scheduledFileExport.ScheduledFileExportJobData;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledArchivedDataFileExportTask;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledFileExportTask;
@@ -161,7 +161,7 @@ public class ArchivedValuesExporterController {
         
         //Jobs List Prep
         List<ScheduledRepeatingJob> adeExportJobs = scheduledFileExportService.getArchivedDataExportJobs();
-        List<ScheduledBillingJobData> jobDataObjects = Lists.newArrayListWithCapacity(adeExportJobs.size());
+        List<ScheduledFileExportJobData> jobDataObjects = Lists.newArrayListWithCapacity(adeExportJobs.size());
         
         int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 25);
         int page = ServletRequestUtils.getIntParameter(request, "page", 1);
@@ -174,7 +174,7 @@ public class ArchivedValuesExporterController {
         int endIndex = startIndex + itemsPerPage > adeExportJobs.size() ? adeExportJobs.size() : startIndex + itemsPerPage;
         jobDataObjects = jobDataObjects.subList(startIndex, endIndex);
         
-        SearchResult<ScheduledBillingJobData> filterResult = new SearchResult<ScheduledBillingJobData>();
+        SearchResult<ScheduledFileExportJobData> filterResult = new SearchResult<ScheduledFileExportJobData>();
         filterResult.setBounds(startIndex, itemsPerPage, adeExportJobs.size());
         filterResult.setResultList(jobDataObjects);
         model.addAttribute("filterResult", filterResult);
