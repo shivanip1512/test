@@ -5,7 +5,9 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
+<cti:includeScript link="/JavaScript/dropdown_actions.js"/>
 <cti:includeCss link="/WebConfig/yukon/styles/yukon.css"/>
+
     <div>
         <table>
             <tr>
