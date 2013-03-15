@@ -129,8 +129,13 @@ END;
 /* @end-block */
 
 ALTER TABLE EnergyCompanySetting
-   ADD CONSTRAINT AK_ECSetting_ECId_Name UNIQUE (EnergyCompanyId, Name);
-   
+    ADD CONSTRAINT AK_ECSetting_ECId_Name UNIQUE (EnergyCompanyId, Name);
+
+ALTER TABLE EnergyCompanySetting
+    ADD CONSTRAINT FK_EC_EnergyCompanySetting FOREIGN KEY (EnergyCompanyId)
+        REFERENCES EnergyCompany (EnergyCompanyID)
+            ON DELETE CASCADE;
+
 DELETE FROM YukonGroupRole    WHERE RoleID = -2;
 DELETE FROM YukonRoleProperty WHERE RoleID = -2;
 DELETE FROM YukonRole         WHERE RoleID = -2;
