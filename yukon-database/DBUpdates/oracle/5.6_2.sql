@@ -79,11 +79,11 @@ DECLARE
     v_energyCompanySettingId NUMBER; 
 BEGIN
     SELECT NVL(MAX(EnergyCompanySettingId)+1,0) INTO v_energyCompanySettingId
-    FROM EnergyCompanySetting ecs; 
+    FROM EnergyCompanySetting ECS; 
 
     INSERT INTO EnergyCompanySetting (EnergyCompanySettingId, EnergyCompanyId, Name, Value, Enabled)
         SELECT 
-            v_energyCompanySettingId + ROW_NUMBER() OVER (ORDER BY ygr.RoleId, ygr.RolePropertyId), 
+            v_energyCompanySettingId + ROW_NUMBER() OVER (ORDER BY YGR.RoleId, YGR.RolePropertyId), 
             EnergyCompanyId,
             RoleName, 
             CASE
@@ -93,17 +93,17 @@ BEGIN
                 ELSE value
             END,
             CASE
-                WHEN rpts.Enabled = 'NA' THEN 'Y'
+                WHEN RPTS.Enabled = 'NA' THEN 'Y'
                 WHEN LTRIM(RTRIM(value)) IS NULL THEN 'N'
                 WHEN value = '(none)' THEN 'N'
                 ELSE 'Y'
             END
-        FROM EnergyCompany ec 
-        JOIN YukonUser yu ON yu.UserID = ec.UserID 
-        JOIN UserGroupToYukonGroupMapping ugyg ON ugyg.UserGroupId = yu.UserGroupId
-        JOIN YukonGroupRole ygr ON ygr.GroupID = ugyg.GroupID
-        JOIN YukonRoleProperty yrp ON ygr.RolePropertyID = yrp.RolePropertyID
-        JOIN RolePropToSetting_Temp rpts ON rpts.RolePropertyId = ygr.RolePropertyId
+        FROM EnergyCompany EC
+        JOIN YukonUser YU ON YU.UserID = EC.UserID 
+        JOIN UserGroupToYukonGroupMapping UGYG ON UGYG.UserGroupId = YU.UserGroupId
+        JOIN YukonGroupRole YGR ON YGR.GroupID = UGYG.GroupID
+        JOIN YukonRoleProperty YRP ON YGR.RolePropertyID = YRP.RolePropertyID
+        JOIN RolePropToSetting_Temp RPTS ON RPTS.RolePropertyId = YGR.RolePropertyId
         WHERE ygr.RoleID = -2;
 END;
 /
@@ -117,8 +117,8 @@ BEGIN
     FROM 
        (SELECT COUNT(EnergyCompanySettingId) AS DuplicateCount, EnergyCompanyId, Name
         FROM EnergyCompanySetting
-        GROUP BY EnergyCompanyId, Name) t
-    WHERE t.DuplicateCount > 1;
+        GROUP BY EnergyCompanyId, Name) T
+    WHERE T.DuplicateCount > 1;
     
     IF 0 < v_count THEN
         RAISE_APPLICATION_ERROR(-20001, 'There was a problem converting energy company role properties for one or more energy companies. Multiple role groups contained the Energy Company role for an energy company''s primary operator user group, which is not a legal configuration. Please see YUK-11876 for instructions on how to resolve the problem.');
@@ -300,12 +300,12 @@ BEGIN
         EXIT WHEN curs_tableNames%NOTFOUND;
         v_deleteCommand := CONCAT('DELETE FROM ', v_currentTable);
         v_deleteCommand := CONCAT(v_deleteCommand, ' WHERE PointId IN (');
-        v_deleteCommand := CONCAT(v_deleteCommand, ' SELECT PointId FROM Point p ');
-        v_deleteCommand := CONCAT(v_deleteCommand, ' JOIN YukonPAObject yp ON yp.PAObjectID = p.PAObjectID ');
-        v_deleteCommand := CONCAT(v_deleteCommand, ' WHERE p.PointType = ''Analog'' ');
-        v_deleteCommand := CONCAT(v_deleteCommand, ' AND p.PointOffset IN ');
+        v_deleteCommand := CONCAT(v_deleteCommand, ' SELECT PointId FROM Point P ');
+        v_deleteCommand := CONCAT(v_deleteCommand, ' JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID ');
+        v_deleteCommand := CONCAT(v_deleteCommand, ' WHERE P.PointType = ''Analog'' ');
+        v_deleteCommand := CONCAT(v_deleteCommand, ' AND P.PointOffset IN ');
         v_deleteCommand := CONCAT(v_deleteCommand, v_pointOffsetsToDelete);
-        v_deleteCommand := CONCAT(v_deleteCommand, ' AND yp.Type LIKE ''RFN%'')');
+        v_deleteCommand := CONCAT(v_deleteCommand, ' AND YP.Type LIKE ''RFN%'')');
         DBMS_OUTPUT.PUT_LINE(CONCAT('Executing: ', v_deleteCommand));
         EXECUTE IMMEDIATE v_deleteCommand;
      END LOOP;
@@ -317,32 +317,32 @@ DROP TABLE temp_PointTableNames;
 /* End YUK-11953 */
 
 /* Start YUK-11954 */
-UPDATE YukonPAObject ypao
-SET ypao.Type = 'RFN-430A3R'
-WHERE ypao.PAOName like '%EE_A3R' 
-   OR ypao.PAOBjectId IN (SELECT rfna.DeviceId
-                          FROM RFNAddress rfna
+UPDATE YukonPAObject YPAO
+SET YPAO.Type = 'RFN-430A3R'
+WHERE YPAO.PAOName LIKE '%EE_A3R' 
+   OR YPAO.PAOBjectId IN (SELECT RFNA.DeviceId
+                          FROM RFNAddress RFNA
                           WHERE Model = 'A3R');
 
-UPDATE YukonPAObject ypao
-SET ypao.Type = 'RFN-430A3D'
-WHERE ypao.PAOName like '%EE_A3D'
-   OR ypao.PAOBjectId IN (SELECT rfna.DeviceId
-                          FROM RFNAddress rfna
+UPDATE YukonPAObject YPAO
+SET YPAO.Type = 'RFN-430A3D'
+WHERE YPAO.PAOName LIKE '%EE_A3D'
+   OR YPAO.PAOBjectId IN (SELECT RFNA.DeviceId
+                          FROM RFNAddress RFNA
                           WHERE Model = 'A3D');
 
-UPDATE YukonPAObject ypao
-SET ypao.Type = 'RFN-430A3T'
-WHERE ypao.PAOName like '%EE_A3T'
-   OR ypao.PAOBjectId IN (SELECT rfna.DeviceId
-                          FROM RFNAddress rfna
+UPDATE YukonPAObject YPAO
+SET YPAO.Type = 'RFN-430A3T'
+WHERE YPAO.PAOName LIKE '%EE_A3T'
+   OR YPAO.PAOBjectId IN (SELECT RFNA.DeviceId
+                          FROM RFNAddress RFNA
                           WHERE Model = 'A3T');
 
-UPDATE YukonPAObject ypao
-SET ypao.Type = 'RFN-430A3K'
-WHERE ypao.PAOName like '%EE_A3K'
-   OR ypao.PAOBjectId IN (SELECT rfna.DeviceId
-                          FROM RFNAddress rfna
+UPDATE YukonPAObject YPAO
+SET YPAO.Type = 'RFN-430A3K'
+WHERE YPAO.PAOName LIKE '%EE_A3K'
+   OR YPAO.PAOBjectId IN (SELECT RFNA.DeviceId
+                          FROM RFNAddress RFNA
                           WHERE Model = 'A3K');
 /* End YUK-11954 */
 
