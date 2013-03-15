@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTimeZone;
+import org.joda.time.Duration;
 import org.joda.time.LocalDate;
 import org.joda.time.ReadableInstant;
 
@@ -183,7 +184,7 @@ public class OptOutServiceAdapter implements OptOutService {
     }
 
     @Override
-    public int calculateDurationInHours(LocalDate startDate, int durationInDays,
+    public Duration calculateDuration(LocalDate startDate, int durationInDays,
                                         YukonUserContext userContext) {
         throw new UnsupportedOperationException("not implemented");
     }
