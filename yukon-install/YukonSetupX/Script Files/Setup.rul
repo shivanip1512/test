@@ -150,7 +150,12 @@ begin
     	sProg = TARGETDIR ^ "\\Client\\bin\\DBToolsFrame.bat";
 		LaunchAppAndWait(sProg, "", LAAW_OPTION_WAIT);
     endif;
-    
+
+	// This will fail on most first installs but the failure will not get logged anywhere.
+	// It is needed when we are upgrading from a < 5.6.2 though and often an upgrade is done
+	// by uninstalling and then re-installing.
+	EncryptPlainTextPasswords();
+
     Dialog_StartServices:
 	//only give the option to start services if services were installed
 	//and only if a restart is not necessary
@@ -373,10 +378,10 @@ end;
 function OnUpdateUIAfter()
 number nResult, nNewVersion, nVMajor, nVMinor, nVBuild;
 string sCMD, sProg, sVTemp;
-BOOL bOpt, bOptYes, bOptNo, needsPasswordEncryption;
+BOOL bOpt, bOptYes, bOptNo, bNeedsPasswordEncryption;
 begin
 	//We need to check if encryption is needed before the installed version changes.
-	needsPasswordEncryption = NeedsPasswordEncryption();
+	bNeedsPasswordEncryption = NeedsPasswordEncryption();
 
 	//get the DWORD representing the new version number
 	VerProductStrToNum (nNewVersion, IFX_PRODUCT_VERSION);
@@ -426,16 +431,8 @@ begin
     endif;
     Enable(BACKBUTTON);
 
-	if(needsPasswordEncryption) then
-		//Encrypt plain text passwords.
-
-		SdShowMsg("Checking for and encrypting plain text passwords (if any). This may take a moment.", TRUE);
-		sProg = TARGETDIR ^ "\\Client\\bin\\EncryptPlainPasswords.bat";
-		LaunchApplication(sProg, "", "", SW_HIDE, INFINITE, LAAW_OPTION_WAIT);
-		// Reset parameters that LaunchApplication messes with.
-		LAAW_PARAMETERS.nTimeOut = 0;
-		LAAW_STARTUPINFO.wShowWindow = SW_NORMAL;
-    	SdShowMsg("", FALSE); 
+	if(bNeedsPasswordEncryption) then
+		EncryptPlainTextPasswords();
 	endif;
 
 	Dialog_StartServices:
