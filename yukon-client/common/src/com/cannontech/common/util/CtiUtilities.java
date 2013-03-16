@@ -66,7 +66,7 @@ public final class CtiUtilities {
     public static final String CELSIUS_CHARACTER = "C";
     public static final String FAHRENHEIT_CHARACTER = "F";
 
-    public static final String COPYRIGHT = "Copyright (C)1999-2012 Cooper Industries plc.";
+    public static final String COPYRIGHT = "Copyright (C)1999-2013 Cooper Industries plc.";
 
     public static final String USER_DIR = System.getProperty("user.home")
                                           + System.getProperty("file.separator");
@@ -493,7 +493,7 @@ public final class CtiUtilities {
             }
             Collections.sort(retVals, LiteComparators.liteNameComparator);
             availableIDs = new String[retVals.size()];
-            timeZones = (String[]) retVals.toArray(availableIDs);
+            timeZones = retVals.toArray(availableIDs);
         }
         return timeZones;
     }
