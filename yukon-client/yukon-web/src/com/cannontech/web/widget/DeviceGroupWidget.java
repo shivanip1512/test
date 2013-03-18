@@ -25,10 +25,10 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
-import com.cannontech.common.device.groups.service.AnyDeviceGroupPredicate;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupUiService;
-import com.cannontech.common.device.groups.service.ModifiableDeviceGroupPredicate;
+import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
+import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -79,8 +79,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         final List<DeviceGroup> currentGroups = getCurrentGroups(meter);
 
         DeviceGroupHierarchy groupHierarchy =
-            deviceGroupUiService.getDeviceGroupHierarchy(deviceGroupService.getRootGroup(),
-                                                         new AnyDeviceGroupPredicate());
+            deviceGroupUiService.getDeviceGroupHierarchy(deviceGroupService.getRootGroup(), new NonHiddenDeviceGroupPredicate());
         
         final Map<DeviceGroup,DeviceGroup> groupsToExpand = getGroupsToExpand(currentGroups);
         DeviceGroupHierarchy hierarchyCurrentGroups = getCurrentGroupsHierarchy(groupHierarchy, groupsToExpand);
@@ -137,13 +136,16 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         final Map<DeviceGroup,DeviceGroup> groupsToExpand = getGroupsToExpand(currentGroups);
         
         DeviceGroupHierarchy hierarchyAllGroups =
-            deviceGroupUiService.getDeviceGroupHierarchy(deviceGroupService.getRootGroup(),
-                                                         new ModifiableDeviceGroupPredicate());
-        
+            deviceGroupUiService.getDeviceGroupHierarchy(deviceGroupService.getRootGroup(),  new Predicate<DeviceGroup>() {
+                public boolean evaluate(DeviceGroup deviceGroup) {
+                    return deviceGroup.isModifiable() && !deviceGroup.isHidden();
+                }
+            });
+
         class ExpandAndSelectCurrentGroups implements NodeAttributeSettingCallback<DeviceGroup> {
             
             public void setAdditionalAttributes(JsTreeNode node, DeviceGroup deviceGroup) {
-
+                
                 String groupId = String.valueOf(((StoredDeviceGroup) deviceGroup).getId());
                 JsTreeNode.addToNodeInfo(node, "groupId", groupId);
                 

@@ -105,7 +105,9 @@ public class GroupEditorController extends MultiActionController {
         Map<DeviceGroup,String> subGroupMap = new TreeMap<>();
         
         for (DeviceGroup childGroup : childGroups) {
-            subGroupMap.put(childGroup, childGroup.getFullName(userContext));
+            if(!childGroup.isHidden()){
+                subGroupMap.put(childGroup, childGroup.getFullName(userContext));
+            }
         }
         
         mav.addObject("subGroupMap",subGroupMap);
