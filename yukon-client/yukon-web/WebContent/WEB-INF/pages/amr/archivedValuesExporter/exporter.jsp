@@ -215,10 +215,6 @@
             var rowIndex = jQuery(event.currentTarget).closest('tr').attr('data-row-index');
             ajaxSubmitForm(rowIndex, 'ajaxEditField', '#fieldDialog');
         });
-        jQuery('.editFieldBtn').click(function(event) {
-            var rowIndex = jQuery(event.currentTarget).closest('tr').attr('data-row-index');
-            ajaxSubmitForm(rowIndex, 'ajaxEditField', '#fieldDialog');
-        });
         jQuery('.removeAttributeBtn').click(function(event) {
             var rowIndex = jQuery(event.currentTarget).closest('tr').attr('data-row-index');
             submitForm(rowIndex, 'removeAttribute');

@@ -25,8 +25,6 @@ public class ArchivedValuesExporterBackingBean{
     private int selectedFieldId;
     private int selectedAttributeId;
 
-    private List<Field> fieldSelect = Lists.newArrayList();
-
     private ExportFormat format = new ExportFormat();
     private ExportAttribute exportAttribute = new ExportAttribute();
     private ExportField exportField = new ExportField();
@@ -168,6 +166,7 @@ public class ArchivedValuesExporterBackingBean{
     }
 
     public List<Field> getFieldSelect() {
+        List<Field> fieldSelect = Lists.newArrayList();
         int id = 0;
         
         List<FieldType> fieldTypes = null;
