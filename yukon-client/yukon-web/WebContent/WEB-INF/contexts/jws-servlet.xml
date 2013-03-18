@@ -217,6 +217,7 @@
         <property name="jars">
             <set>
                 <value>esub.jar</value>
+                <value>dbeditor.jar</value>
             </set>
         </property>
     </bean>
