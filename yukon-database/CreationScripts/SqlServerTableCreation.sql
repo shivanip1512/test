@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/13/2013 4:12:56 PM                         */
+/* Created on:     3/18/2013 3:52:47 PM                         */
 /*==============================================================*/
 
 
@@ -4644,8 +4644,6 @@ create table ECToGenericMapping (
    constraint PK_ECTOGENERICMAPPING primary key (EnergyCompanyID, ItemID, MappingCategory)
 )
 go
-
-INSERT INTO ECToGenericMapping VALUES(-1,-1,'LMThermostatSchedule');
 
 /*==============================================================*/
 /* Table: ECToInventoryMapping                                  */

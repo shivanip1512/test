@@ -340,6 +340,13 @@ WHERE RFNA.Model = 'A3K'
        AND YPAO.Type = 'RFN-430A3');
 /* End YUK-11954 */
 
+/* Start YUK-11975 */
+DELETE FROM ECToGenericMapping 
+WHERE EnergyCompanyID = -1
+  AND ItemID = -1
+  AND MappingCategory = 'LMThermostatSchedule';
+/* End YUK-11975 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

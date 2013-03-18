@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/13/2013 4:14:04 PM                         */
+/* Created on:     3/18/2013 3:41:40 PM                         */
 /*==============================================================*/
 
 
@@ -4422,8 +4422,6 @@ create table ECToGenericMapping  (
    MappingCategory      VARCHAR2(40)                    not null,
    constraint PK_ECTOGENERICMAPPING primary key (EnergyCompanyID, ItemID, MappingCategory)
 );
-
-INSERT INTO ECToGenericMapping VALUES(-1,-1,'LMThermostatSchedule');
 
 /*==============================================================*/
 /* Table: ECToInventoryMapping                                  */
