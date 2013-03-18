@@ -5685,47 +5685,6 @@
         <displayName>SIXNET</displayName>
 	</pao>
 
-<!--
-	<pao id="RFN_DELETE_THESE" abstract="true">
-        <points>
-            <point type="Analog" offset="103">
-                <init>false</init>
-                <name>Sum kW</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="104">
-                <init>false</init>
-                <name>Net kW</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="102">
-                <init>false</init>
-                <name>Received kW</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="30">
-                <init>true</init>
-                <name>Delivered Pulse</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Counts"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="124">
-                <name>Sum kWh (Rate E kWh)</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kWH"/>
-                <decimalplaces value="4"/>
-            </point>
-        </points>
-    </pao>
--->
-
     <pao id="RFN_DISCONNECT" abstract="true">
         <points>
             <point type="Status" offset="1">
