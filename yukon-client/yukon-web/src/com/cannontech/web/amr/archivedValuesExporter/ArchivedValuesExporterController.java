@@ -93,6 +93,7 @@ import com.cannontech.web.scheduledFileExport.ScheduledFileExportJobData;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledArchivedDataFileExportTask;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledFileExportTask;
+import com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
 
@@ -124,6 +125,7 @@ public class ArchivedValuesExporterController {
     @Autowired private ScheduledFileExportService scheduledFileExportService;
     @Autowired private JobManager jobManager;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    @Autowired private ScheduledFileExportValidator scheduledFileExportValidator;
     
     @RequestMapping
     public String view(ModelMap model, HttpServletRequest request, YukonUserContext userContext, 
@@ -517,7 +519,7 @@ public class ArchivedValuesExporterController {
     }
     
     @RequestMapping
-    public String doSchedule(ModelMap model, @ModelAttribute ScheduledFileExportData exportData, HttpServletRequest request,
+    public String doSchedule(ModelMap model, @ModelAttribute ScheduledFileExportData exportData, BindingResult bindingResult, HttpServletRequest request,
     		int formatId, String attribute, Integer jobId, YukonUserContext userContext, FlashScope flashScope) 
     		throws ServletRequestBindingException, IllegalArgumentException, ParseException {
     	
@@ -530,6 +532,20 @@ public class ArchivedValuesExporterController {
     	String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
     	exportData.setScheduleCronString(scheduleCronString);
     	exportData.setParameters(parameters);
+    	
+    	scheduledFileExportValidator.validate(exportData, bindingResult);
+		if(bindingResult.hasErrors()) {
+			List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setError(messages);
+            model.addAttribute("exportFormat", archiveValuesExportFormatDao.getByFormatId(formatId));
+	        model.addAttribute("attribute", attributeService.resolveAttributeName(attribute));
+	        model.addAttribute("dataRange", dataRange);
+	        model.addAttribute("deviceCollection", deviceCollection);
+	        model.addAttribute("exportData", exportData);
+	        model.addAttribute("cronExpressionTagState", ServletRequestUtils.getStringParameter(request, "scheduleCronString"));
+            model.addAttribute("jobId", jobId);
+            return "archivedValuesExporter/schedule.jsp";
+		}
     	
     	if(jobId == null) {
     		scheduledFileExportService.scheduleFileExport(exportData, userContext);

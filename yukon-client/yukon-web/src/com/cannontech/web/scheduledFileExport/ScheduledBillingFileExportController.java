@@ -37,7 +37,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledBillingFileExportTask;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledFileExportTask;
-import com.cannontech.web.scheduledFileExport.validator.ScheduledBillingFileExportValidator;
+import com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.collect.Lists;
 
@@ -48,7 +48,7 @@ public class ScheduledBillingFileExportController {
 	@Autowired JobManager jobManager;
 	@Autowired ScheduledFileExportService scheduledFileExportService;
 	@Autowired DeviceGroupService deviceGroupService;
-	@Autowired ScheduledBillingFileExportValidator scheduledBillingFileExportValidator;
+	@Autowired ScheduledFileExportValidator scheduledFileExportValidator;
 	@Autowired private CronExpressionTagService cronExpressionTagService;
 	
 	private static final int MAX_GROUPS_DISPLAYED = 2;
@@ -84,6 +84,7 @@ public class ScheduledBillingFileExportController {
 			model.addAttribute("jobId", jobId);
 		}
 		
+		model.addAttribute("exportData", exportData);
 		model.addAttribute("deviceGroups", billGroup);
 		model.addAttribute("fileFormat", fileFormat);
 		model.addAttribute("demandDays", demandDays);
@@ -112,6 +113,7 @@ public class ScheduledBillingFileExportController {
 		} catch(Exception e) {
 			flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.schedule.invalidCron"));
 			if(jobId == null) {
+				model.addAttribute("exportData", exportData);
 				repopulateScheduleModel(model, deviceGroups, fileFormat, demandDays, energyDays, removeMultiplier);
 			} else {
 				model.addAttribute("jobId", jobId);
@@ -125,16 +127,16 @@ public class ScheduledBillingFileExportController {
 		BillingFileExportGenerationParameters billingParameters = new BillingFileExportGenerationParameters(fileFormat, fullDeviceGroups, demandDays, energyDays, removeMultiplier);
 		exportData.setParameters(billingParameters);
 		
-		scheduledBillingFileExportValidator.validate(exportData, bindingResult);
+		scheduledFileExportValidator.validate(exportData, bindingResult);
 		if(bindingResult.hasErrors()) {
 			List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setError(messages);
-            model.addAttribute("deviceGroups", deviceGroups);
-    		model.addAttribute("fileFormat", fileFormat);
-    		model.addAttribute("demandDays", demandDays);
-    		model.addAttribute("energyDays", energyDays);
-    		model.addAttribute("removeMultiplier", removeMultiplier);
-            model.addAttribute("jobId", jobId);
+            if(jobId == null) {
+				model.addAttribute("exportData", exportData);
+            	repopulateScheduleModel(model, deviceGroups, fileFormat, demandDays, energyDays, removeMultiplier);
+			} else {
+				model.addAttribute("jobId", jobId);
+			}
             return "redirect:showForm";
 		}
 		

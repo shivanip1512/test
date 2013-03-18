@@ -111,11 +111,14 @@
     <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.pageName">Scheduled Archive Data Export</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.pageTitle">Scheduled Archive Data File Export Editor</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.adeParameters.title">Archive Data Export Parameters</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.devices">Devices</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.formatName">Format Name</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.formatType">Format Type</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.attribute">Attribute</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.dataRange">Data Range</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.exportParameters.title">Schedule Parameters</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.exportPathInfo">The location where the file will be generated. This should be a complete, valid file path that does not include the file name. For example, 'C:\Exports\Test'</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.exportFileNameInfo">A valid file name, with no file extension. May only contain alphanumeric characters.</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.scheduleName">Schedule Name</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.exportPath">Export Path</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporterScheduleSetup.exportFileName">Export File Name</entry>

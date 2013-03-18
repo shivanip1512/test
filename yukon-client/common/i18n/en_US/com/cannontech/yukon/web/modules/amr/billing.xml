@@ -7,7 +7,7 @@
 	<entry key="yukon.web.modules.amr.billing.schedule.pageTitle">Scheduled Billing File Export Editor</entry>
 	<entry key="yukon.web.modules.amr.billing.schedule.billingParameters.title">Billing Parameters</entry>
 	<entry key="yukon.web.modules.amr.billing.schedule.deviceGroups">Device Groups</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.exportParameters.title">Export Parameters</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.exportParameters.title">Schedule Parameters</entry>
 	<entry key="yukon.web.modules.amr.billing.schedule.scheduleName">Schedule Name</entry>
 	<entry key="yukon.web.modules.amr.billing.schedule.exportPath">Export Path</entry>
 	<entry key="yukon.web.modules.amr.billing.schedule.exportFileName">Export File Name</entry>
@@ -18,13 +18,16 @@
 	<entry key="yukon.web.modules.amr.billing.schedule.submitButton">Schedule</entry>
 	<entry key="yukon.web.modules.amr.billing.schedule.updateButton">Update</entry>
 	<entry key="yukon.web.modules.amr.billing.schedule.invalidCron">Invalid schedule or cron string.</entry>
-
+	<entry key="yukon.web.modules.amr.billing.schedule.exportPathInfo">The location where the file will be generated. This should be a complete, valid file path that does not include the file name. For example, 'C:\Exports\Test'</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.exportFileNameInfo">A valid file name, with no file extension. May only contain alphanumeric characters.</entry>
+	
 <!-- scheduled billing validation -->
 	<entry key="yukon.web.modules.amr.billing.schedule.validation.invalidName">Invalid name.</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.validation.invalidExportPath">Invalid export path.</entry>
-	<entry key="yukon.web.modules.amr.billing.schedule.validation.invalidFileName">Invalid file name.</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.validation.invalidExportPath">Export path cannot be empty.</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.validation.invalidFileName">File name cannot be empty.</entry>
 	<entry key="yukon.web.modules.amr.billing.schedule.validation.invalidEmailAddress">The email address {0} is invalid.</entry>
-
+	<entry key="yukon.web.modules.amr.billing.schedule.validation.badCharacters">The file name contains invalid characters.</entry>
+	
 <!-- scheduled billing jobs list -->
 	<entry key="yukon.web.modules.amr.billing.jobs.title">Schedules</entry>
 	<entry key="yukon.web.modules.amr.billing.jobs.jobCreated">Scheduled Billing Export "{0}" successfully created.</entry>

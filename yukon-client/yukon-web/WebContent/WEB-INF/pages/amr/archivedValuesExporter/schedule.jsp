@@ -16,6 +16,10 @@
 				<input type="hidden" name="formatId" value="${exportFormat.formatId}">
 				<input type="hidden" name="attribute" value="${attribute}">
 				<cti:deviceCollection deviceCollection="${deviceCollection}"/>
+				
+				<tags:nameValue2 nameKey=".devices">
+					<tags:selectedDevices id="deviceCollection" deviceCollection="${deviceCollection}" />
+				</tags:nameValue2>
 				<tags:nameValue2 nameKey=".formatName">
 					${fn:escapeXml(exportFormat.formatName)}
 				</tags:nameValue2>
@@ -40,9 +44,12 @@
 				</tags:nameValue2>
 				<tags:nameValue2 nameKey=".exportPath">
 					<form:input path="exportPath" />
+					<cti:url var="infoImg" value="/WebConfig/yukon/Icons/information.gif"/>
+                    <img src="${infoImg}" title="<cti:msg2 key=".exportPathInfo"/>"/>
 				</tags:nameValue2>
 				<tags:nameValue2 nameKey=".exportFileName">
 					<form:input path="exportFileName" />
+					<img src="${infoImg}" title="<cti:msg2 key=".exportFileNameInfo"/>"/>
 				</tags:nameValue2>
 				<tags:nameValue2 nameKey=".appendDateToFileName" excludeColon="true">
 					<form:checkbox path="appendDateToFileName" />

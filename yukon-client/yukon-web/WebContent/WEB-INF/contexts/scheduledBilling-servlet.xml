@@ -18,6 +18,4 @@
         <property name="prefix" value="/WEB-INF/pages/amr/scheduledBilling/"/>
     </bean>
     
-    <bean class="com.cannontech.web.scheduledFileExport.validator.ScheduledBillingFileExportValidator" />
-
 </beans>

@@ -2162,5 +2162,6 @@
     <bean class="com.cannontech.web.common.chart.service.impl.FlotChartServiceImpl"/>
 	
 	<bean class="com.cannontech.web.scheduledFileExport.service.impl.ScheduledFileExportServiceImpl"/>
+	<bean class="com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator" />
 	
 </beans>
