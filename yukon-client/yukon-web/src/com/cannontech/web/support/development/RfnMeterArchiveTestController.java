@@ -5,9 +5,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.jms.ConnectionFactory;
+
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.WebDataBinder;
@@ -17,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
+import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.service.RfnEventTestingService;
@@ -36,6 +41,8 @@ public class RfnMeterArchiveTestController {
 
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private RfnEventTestingService rfnEventTestingService;
+    
+    private JmsTemplate jmsTemplate;
 
     @RequestMapping
     public String viewBase() {
@@ -72,7 +79,7 @@ public class RfnMeterArchiveTestController {
     }
 
     @RequestMapping("sendMeterArchiveRequest")
-    public String send(int serialFrom, int serialTo, String manufacturer, String model, Double value, boolean random, String uom, 
+    public String send(int serialFrom, int serialTo, String manufacturer, String model, Double value, RfnMeterReadingType type, boolean random, String uom, 
                        boolean quad1, boolean quad2, boolean quad3, boolean quad4, boolean max, boolean min, boolean avg,
                        boolean phaseA, boolean phaseB, boolean phaseC, boolean touRateA, boolean touRateB, boolean touRateC,
                        boolean touRateD, boolean touRateE, boolean netFlow, boolean coincident, boolean harmonic, boolean cumulative) {
@@ -81,6 +88,7 @@ public class RfnMeterArchiveTestController {
                                                         manufacturer,
                                                         model,
                                                         value,
+                                                        type,
                                                         random,
                                                         uom,
                                                         quad1,
@@ -132,6 +140,17 @@ public class RfnMeterArchiveTestController {
         return setupEventAlarmAttributes(model, event);
     }
     
+    @RequestMapping
+    public void calcStressTest() {
+        rfnEventTestingService.calculationStressTest();
+    }
+    
+    @RequestMapping
+    public void resendStartup() {
+        RfnArchiveStartupNotification notif = new RfnArchiveStartupNotification();
+        jmsTemplate.convertAndSend("yukon.notif.obj.common.rfn.ArchiveStartupNotification", notif);
+    }
+    
     @InitBinder
     public void setupBinder(WebDataBinder binder, YukonUserContext userContext) {
         EnumPropertyEditor.register(binder, RfnConditionType.class);
@@ -141,6 +160,13 @@ public class RfnMeterArchiveTestController {
                                                                    userContext,
                                                                    BlankMode.ERROR);
             binder.registerCustomEditor(Instant.class, instantEditor);
+    }
+    
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setExplicitQosEnabled(true);
+        jmsTemplate.setDeliveryPersistent(false);
     }
     
 }

@@ -4,12 +4,47 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="support" page="rfnTest">
-    <tags:boxContainer2 nameKey="tests" styleClass="rfnTestContainer">
-        <div class="rfnTests">
-            <cti:button nameKey="meterReadArchiveRequest" href="viewMeterReadArchiveRequest" />
-            <cti:button nameKey="eventArchiveRequest" href="viewEventArchiveRequest"/>
-            <cti:button nameKey="lcrArchiveRequest" href="viewLcrArchiveRequest"/>
-            <cti:button nameKey="lcrReadArchiveRequest" href="viewLcrReadArchiveRequest"/>
+
+<script type="text/javascript">
+jQuery(function() {
+   jQuery('#startupNotif').click(function(event) {
+       jQuery.ajax({
+           url: '/support/development/rfn/resendStartup',
+           type: "POST"
+       });
+   });
+   jQuery('#calcStressTest').click(function(event) {
+       jQuery.ajax({
+           url: '/support/development/rfn/calcStressTest',
+           type: "POST"
+       });
+   });
+   jQuery('#clearCache').click(function(event) {
+       jQuery.ajax({
+           url: '/support/development/rfn/clearCache',
+           type: "POST"
+       });
+   });
+});
+</script>
+
+<div class="colmask one-third-left clearfix">
+    <div class="colleft">
+        <div class="col1">
+            <tags:sectionContainer2 nameKey="tests" styleClass="rfnTestContainer">
+                <div><a href="viewMeterReadArchiveRequest"><i:inline key=".meterReadArchiveRequest.label"/></a></div>
+                <div><a href="viewEventArchiveRequest"><i:inline key=".eventArchiveRequest.label"/></a></div>
+                <div><a href="viewLcrArchiveRequest"><i:inline key=".lcrArchiveRequest.label"/></a></div>
+                <div><a href="viewLcrReadArchiveRequest"><i:inline key=".lcrReadArchiveRequest.label"/></a></div>
+            </tags:sectionContainer2>
         </div>
-    </tags:boxContainer2>
+        <div class="col2">
+            <tags:sectionContainer title="Actions">
+                <div><button id="startupNotif">Resend Startup Notif</button></div>
+                <div><button id="calcStressTest" class="danger">Calc Stress Test</button><span class="error">DO NOT CLICK</span></div>
+                <div><button id="clearCache">Clear Cache</button></div>
+            </tags:sectionContainer>
+        </div>
+    </div>
+</div>
 </cti:standardPage>

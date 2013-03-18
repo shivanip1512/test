@@ -111,6 +111,15 @@ function useRandom() {
                     <label><input type="checkbox" id="random" name="random" onclick="useRandom()">Random</label>
                 </tags:nameValue>
                 
+                <tags:nameValue name="Type">
+                    <select name="type">
+                        <option value="INTERVAL">Interval</option>
+                        <option value="BILLING">Billing</option>
+                        <option value="CURRENT">Current (on demand)</option>
+                        <option value="STATUS">Status</option>
+                    </select>
+                </tags:nameValue>
+                
             </tags:nameValueContainer>
             <div clas="actionArea"><cti:button nameKey="send" type="submit" styleClass="f_blocker"/></div>
         </form>

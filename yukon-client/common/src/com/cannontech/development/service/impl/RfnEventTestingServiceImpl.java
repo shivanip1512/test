@@ -1,6 +1,8 @@
 package com.cannontech.development.service.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -9,6 +11,8 @@ import javax.jms.ConnectionFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -72,12 +76,69 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     }
     
     @Override
-    public int sendMeterArchiveRequests(int serialFrom, int serialTo, String manufacturer, String model, Double value, boolean random, String uom, 
+    public void calculationStressTest() {
+        
+        List<RfnMeterReadingArchiveRequest> messages = new ArrayList<>();
+
+        for (int i = 10000; i < 10100; i++) {
+            
+            DateTime now = new DateTime().withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0);
+            
+            for (int j = 0; j < 1000; j++) {
+                RfnMeterReadingArchiveRequest message = new RfnMeterReadingArchiveRequest();
+                
+                RfnMeterReadingData data = new RfnMeterReadingData();
+                data.setTimeStamp(now.getMillis());
+                
+                RfnIdentifier meterIdentifier = new RfnIdentifier(Integer.toString(i), "EE", "A3R");
+                data.setRfnIdentifier(meterIdentifier);
+                
+                List<ChannelData> dataList = Lists.newArrayList();
+                ChannelData channelData = new ChannelData();
+                channelData.setChannelNumber(1);
+                channelData.setStatus(ChannelDataStatus.OK);
+                
+                channelData.setUnitOfMeasure("Wh");
+                Set<String> modifiers = Sets.newHashSet();
+                
+                modifiers.add("Quadrant 1");
+                modifiers.add("Quadrant 4");
+    
+                channelData.setValue(Math.random() * 1000);
+                dataList.add(channelData);
+                data.setChannelDataList(dataList);
+                data.setRecordInterval(3600);
+    
+                message.setData(data);
+                message.setDataPointId(1);
+                message.setReadingType(RfnMeterReadingType.INTERVAL);
+                
+                channelData.setUnitOfMeasureModifiers(modifiers);
+                messages.add(message);
+                
+                now = now.minus(Duration.standardHours(1));
+            }
+            
+        }
+        
+        Collections.shuffle(messages);
+        
+        for (RfnMeterReadingArchiveRequest message : messages) {
+            sendArchiveRequest(meterReadingArchiveRequestQueueName, message);
+        }
+    }
+    
+    @Override
+    public int sendMeterArchiveRequests(int serialFrom, int serialTo, String manufacturer, String model, Double value, RfnMeterReadingType type, boolean random, String uom, 
                        boolean quad1, boolean quad2, boolean quad3, boolean quad4, boolean max, boolean min, boolean avg,
                        boolean phaseA, boolean phaseB, boolean phaseC, boolean touRateA, boolean touRateB, boolean touRateC,
                        boolean touRateD, boolean touRateE, boolean netFlow, boolean coincident, boolean harmonic, boolean cumulative) {
+        
+        type = type == null ? RfnMeterReadingType.INTERVAL : type;
+        
         int numSent = 0;
         for (int i = serialFrom; i <= serialTo; i++) {
+            
             RfnMeterReadingArchiveRequest message = new RfnMeterReadingArchiveRequest();
             
             RfnMeterReadingData data = new RfnMeterReadingData();
@@ -132,8 +193,6 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             if (model.contains("water")) {
                 message.setReadingType(RfnMeterReadingType.INTERVAL);
                 modifiers.add("Kilo");
-            } else {
-                message.setReadingType(RfnMeterReadingType.CURRENT);
             }
             channelData.setUnitOfMeasureModifiers(modifiers);
             

@@ -81,16 +81,6 @@ textarea.xml {
     background-color: #FAFAFA;
 }
 
-.rfnTestContainer {
-    width: 30%;
-}
-
-.rfnTests button {
-    width: 190px;
-    margin-bottom: 5px;
-    display: block;
-}
-
 .rfnConditionTypes {
     width: 200px;
 }

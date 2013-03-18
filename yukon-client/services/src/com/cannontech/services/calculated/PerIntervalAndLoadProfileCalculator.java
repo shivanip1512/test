@@ -102,6 +102,7 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
         PointValueQualityHolder pvqh = data.getPaoPointValue().getPointValueQualityHolder();
         Date timestamp = pvqh.getPointDataTimeStamp();
         CacheKey currentKey = CacheKey.of(pvqh.getId(), timestamp.getTime());
+        CacheValue currentValue = recentReadings.getIfPresent(currentKey);
         
         LitePoint perIntervalPoint = findPoint(perInterval, pao);
         LitePoint loadProfilePoint = findPoint(loadProfile, pao);
@@ -141,7 +142,7 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
                 foundPrevious = true;
                 log.debug(String.format("Found previous interval from Dispatch: %s", previousDispatch));
             } else {
-                // try getting it from rph?
+                // try getting it from rph
                 try {
                     PointValueQualityHolder previousRph = rphDao.getSpecificValue(pvqh.getId(), previousInterval.getMillis());
                     previous = previousRph.getValue();
@@ -170,6 +171,12 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
                         previousValue.setNext(true);
                     }
                 }
+                
+                if (currentValue.isNext()) {
+                    recentReadings.invalidate(currentKey);
+                } else {
+                    currentValue.setPrevious(true);
+                }
             }
             
             /* next interval's per interval value */
@@ -181,8 +188,12 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
                 nextPerIntervalValue = nextValue.getValue() - pvqh.getValue();
                 addPointData(perIntervalPoint, nextPerIntervalValue, nextInterval.toDate(), pointData);
                 
-                // previous and next intervals of the current interval have been handled
-                recentReadings.invalidate(currentKey);
+                if (currentValue.isPrevious()) {
+                    // previous and next intervals of the current interval have been handled
+                    recentReadings.invalidate(currentKey);
+                } else {
+                    currentValue.setNext(true);
+                }
                 
                 if (nextValue.isNext()) {
                     // previous and next intervals of the next interval have been handled
@@ -192,9 +203,6 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
                     nextValue.setPrevious(true);
                 }
                 
-            } else {
-                // set the current intervals 'previous' as handled
-                recentReadings.put(currentKey, CacheValue.of(pvqh.getValue(), interval, true, false));
             }
         }
         

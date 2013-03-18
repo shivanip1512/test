@@ -41,7 +41,14 @@ button:disabled:not(.naked), input[type=submit]:disabled:not(.naked), input[type
 button .hoverableImage, button.image img {margin-top:-2px; top: 2px; margin-right: 5px; position:relative;}
 button.image {padding: 0; width: 16px; height: 16px;}
 
-button.danger {color:white;background:#D14836 linear-gradient(#EE5F5B, #BD362F); text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25); border-color:#802D2D;}
+button.danger {color:white; background-color:#D14836; text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25); border-color:#802D2D;}
+button.danger {
+    background-image: -webkit-linear-gradient(top, #EE5F5B, #BD362F); /* Chrome10+, Safari5.1+ */
+    background-image:    -moz-linear-gradient(top, #EE5F5B, #BD362F); /* FF3.6+ */
+    background-image:     -ms-linear-gradient(top, #EE5F5B, #BD362F); /* IE10+ */
+    background-image:      -o-linear-gradient(top, #EE5F5B, #BD362F); /* Opera 11.10+ */
+    background-image:         linear-gradient(top, #EE5F5B, #BD362F); /* W3C */
+}
 button.danger:hover {background:#BD362F; border-color:#802D2D;box-shadow:0 0 5px #D14836;}
 button.danger:active {background:#F55656;}
 
