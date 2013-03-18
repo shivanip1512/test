@@ -1970,7 +1970,7 @@
     <bean id="exportFormatValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ExportFormatValidator"/>
     <bean id="exportAttributeValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ExportAttributeValidator"/>
     <bean id="exportFieldValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ExportFieldValidator"/>
-    <bean id="archiveValuesExporterValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ArchiveValuesExporterValidator"/>
+    <bean id="dataRangeValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.DataRangeValidator"/>
     
     <bean id="widgetHelper" class="com.cannontech.web.widget.AttributeReadingWidgetHelper"/>
     
