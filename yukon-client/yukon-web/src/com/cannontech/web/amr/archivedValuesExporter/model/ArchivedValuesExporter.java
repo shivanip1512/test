@@ -11,7 +11,8 @@ public class ArchivedValuesExporter {
     private ArchivedValuesExportFormatType archivedValuesExportFormatType;
     private DeviceCollection deviceCollection;
     private Attribute attribute;
-    private DataRange dataRange;
+    private DataRange runDataRange;
+    private DataRange scheduleDataRange;
     
     public int getFormatId() {
         return formatId;
@@ -41,10 +42,17 @@ public class ArchivedValuesExporter {
         this.attribute = attribute;
     }
 
-    public DataRange getDataRange() {
-        return dataRange;
+    public DataRange getRunDataRange() {
+        return runDataRange;
     }
-    public void setDataRange(DataRange dataRange) {
-        this.dataRange = dataRange;
+    public void setRunDataRange(DataRange runDataRange) {
+        this.runDataRange = runDataRange;
+    }
+    
+    public DataRange getScheduleDataRange() {
+        return scheduleDataRange;
+    }
+    public void setScheduleDataRange(DataRange scheduleDataRange) {
+        this.scheduleDataRange = scheduleDataRange;
     }
 }

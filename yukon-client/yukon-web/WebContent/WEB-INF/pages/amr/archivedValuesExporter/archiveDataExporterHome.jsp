@@ -85,7 +85,7 @@
         	for (var i = 0;  i < dataRangeTypes.size(); i++) {
         		var dataRangeType = dataRangeTypes[i];
         		var dataRangeTypeDiv= dialogId+' .'+dataRangeType;
-        		var dataRangeTypeInput = dataRangeTypeDiv + ' [name = \'dataRange.dataRangeType\'] ';
+        		var dataRangeTypeInput = dataRangeTypeDiv + ' [name $= \'DataRange.dataRangeType\'] ';
 
         		if (archivedValuesExporterFormat == 'FIXED_ATTRIBUTE' &&
         			jQuery.inArray(dataRangeType, fixedDataRangeTypes) != -1 ) {
@@ -267,7 +267,38 @@
          <cti:flashScopeMessages />
          <form:form id="runForm" commandName="archivedValuesExporter" >
              <div id="runInputsDiv">
-                 <%@ include file="report.jspf" %>
+                <div id="endDateDiv" class="END_DATE">
+                    <cti:msg2 key=".endDate" var="endDate" />
+                    <form:radiobutton path="runDataRange.dataRangeType" label="${endDate}" value="END_DATE" /> <br>
+                    <tags:nameValueContainer2>
+                        <tags:nameValue2 nameKey=".endDate"> <dt:date path="runDataRange.endDate" /> </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                    <br>
+                </div>
+                
+                <div id="dateRangeDiv" class="DATE_RANGE">
+                    <cti:msg2 key=".dateRange" var="dateRange"/>
+                    <form:radiobutton path="runDataRange.dataRangeType" label="${dateRange}" value="DATE_RANGE" /> <br>
+                    <tags:nameValueContainer2>
+                        <tags:nameValue2 nameKey=".startDate"> <dt:date path="runDataRange.localDateRange.startDate" /> </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".endDate"> <dt:date path="runDataRange.localDateRange.endDate" /> </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                    <br>
+                </div>
+                
+                <div id="daysPreviousDiv" class="DAYS_PREVIOUS">
+                    <cti:msg2 key=".previousDays" var="daysPrevious"  />
+                    <form:radiobutton path="runDataRange.dataRangeType" label="${daysPrevious}" value="DAYS_PREVIOUS" /> <br>
+                    <tags:nameValueContainer2>
+                        <tags:nameValue2 nameKey=".daysPrevious"> <form:input  path="runDataRange.daysPrevious"/> </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                   <br>
+                </div>
+                
+                <div id="sinceLastChangeIdDiv" class="SINCE_LAST_CHANGE_ID">
+                    <cti:msg2 key=".sinceLastChange" var="sinceLastChange" />
+                    <form:radiobutton path="runDataRange.dataRangeType" label="${sinceLastChange}" value="SINCE_LAST_CHANGE_ID" /> <br>
+                </div>
              </div>
          </form:form>
     </div>
@@ -276,7 +307,38 @@
          <cti:flashScopeMessages />
          <form:form id="scheduleForm" commandName="archivedValuesExporter" >
              <div id="scheduleInputsDiv">
-                 <%@ include file="report.jspf" %>
+                <div id="endDateDiv" class="END_DATE">
+                    <cti:msg2 key=".endDate" var="endDate" />
+                    <form:radiobutton path="scheduleDataRange.dataRangeType" label="${endDate}" value="END_DATE" /> <br>
+                    <tags:nameValueContainer2>
+                        <tags:nameValue2 nameKey=".endDate"> <dt:date path="scheduleDataRange.endDate" /> </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                    <br>
+                </div>
+                
+                <div id="dateRangeDiv" class="DATE_RANGE">
+                    <cti:msg2 key=".dateRange" var="dateRange"/>
+                    <form:radiobutton path="scheduleDataRange.dataRangeType" label="${dateRange}" value="DATE_RANGE" /> <br>
+                    <tags:nameValueContainer2>
+                        <tags:nameValue2 nameKey=".startDate"> <dt:date path="scheduleDataRange.localDateRange.startDate" /> </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".endDate"> <dt:date path="scheduleDataRange.localDateRange.endDate" /> </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                    <br>
+                </div>
+                
+                <div id="daysPreviousDiv" class="DAYS_PREVIOUS">
+                    <cti:msg2 key=".previousDays" var="daysPrevious"  />
+                    <form:radiobutton path="scheduleDataRange.dataRangeType" label="${daysPrevious}" value="DAYS_PREVIOUS" /> <br>
+                    <tags:nameValueContainer2>
+                        <tags:nameValue2 nameKey=".daysPrevious"> <form:input  path="scheduleDataRange.daysPrevious"/> </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                   <br>
+                </div>
+                
+                <div id="sinceLastChangeIdDiv" class="SINCE_LAST_CHANGE_ID">
+                    <cti:msg2 key=".sinceLastChange" var="sinceLastChange" />
+                    <form:radiobutton path="scheduleDataRange.dataRangeType" label="${sinceLastChange}" value="SINCE_LAST_CHANGE_ID" /> <br>
+                </div>
              </div>
          </form:form>
     </div>

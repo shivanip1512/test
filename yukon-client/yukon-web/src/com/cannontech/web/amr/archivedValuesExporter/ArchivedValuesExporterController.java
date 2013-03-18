@@ -80,7 +80,7 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.amr.archivedValuesExporter.model.ArchivedValuesExporter;
 import com.cannontech.web.amr.archivedValuesExporter.model.ArchivedValuesExporterBackingBean;
-import com.cannontech.web.amr.archivedValuesExporter.validator.ArchiveValuesExporterValidator;
+import com.cannontech.web.amr.archivedValuesExporter.validator.DataRangeValidator;
 import com.cannontech.web.amr.archivedValuesExporter.validator.ExportAttributeValidator;
 import com.cannontech.web.amr.archivedValuesExporter.validator.ExportFieldValidator;
 import com.cannontech.web.amr.archivedValuesExporter.validator.ExportFormatValidator;
@@ -88,7 +88,6 @@ import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.DatePropertyEditorFactory;
-import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.scheduledFileExport.ScheduledFileExportJobData;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
@@ -109,7 +108,7 @@ public class ArchivedValuesExporterController {
     private static DataRangeType[] DYNAMIC_RUN_DATA_RANGE_TYPES = {DataRangeType.DATE_RANGE, DataRangeType.DAYS_PREVIOUS};
     private static DataRangeType[] DYNAMIC_SCHEDULE_DATA_RANGE_TYPES = {DataRangeType.DAYS_PREVIOUS, DataRangeType.SINCE_LAST_CHANGE_ID};
     
-    @Autowired private ArchiveValuesExporterValidator archiveValuesExporterValidator;
+    @Autowired private DataRangeValidator dataRangeValidator;
     @Autowired private ArchiveValuesExportFormatDao archiveValuesExportFormatDao;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
@@ -416,14 +415,18 @@ public class ArchivedValuesExporterController {
         binder.registerCustomEditor(YukonRoundingMode.class, new EnumPropertyEditor<>(YukonRoundingMode.class));
         binder.registerCustomEditor(DataRangeType.class, new EnumPropertyEditor<>(DataRangeType.class));
         
-        PropertyEditor localDatePropertyEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext, BlankMode.CURRENT);
-        binder.registerCustomEditor(LocalDate.class, "dataRange.endDate", localDatePropertyEditor);
+        PropertyEditor localDatePropertyEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext);
+        binder.registerCustomEditor(LocalDate.class, "runDataRange.endDate", localDatePropertyEditor);
+        binder.registerCustomEditor(LocalDate.class, "scheduleDataRange.endDate", localDatePropertyEditor);
         
-        PropertyEditor dayStartDateEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext, BlankMode.CURRENT);
-        PropertyEditor dayEndDateEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext, BlankMode.CURRENT);
+        PropertyEditor dayStartDateEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext);
+        PropertyEditor dayEndDateEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext);
 
-        binder.registerCustomEditor(LocalDate.class, "dataRange.localDateRange.startDate", dayStartDateEditor);
-        binder.registerCustomEditor(LocalDate.class, "dataRange.localDateRange.endDate", dayEndDateEditor);
+        binder.registerCustomEditor(LocalDate.class, "runDataRange.localDateRange.startDate", dayStartDateEditor);
+        binder.registerCustomEditor(LocalDate.class, "runDataRange.localDateRange.endDate", dayEndDateEditor);
+
+        binder.registerCustomEditor(LocalDate.class, "scheduleDataRange.localDateRange.startDate", dayStartDateEditor);
+        binder.registerCustomEditor(LocalDate.class, "scheduleDataRange.localDateRange.endDate", dayEndDateEditor);
     }
 
     @RequestMapping
@@ -434,7 +437,9 @@ public class ArchivedValuesExporterController {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         archivedValuesExporter.setDeviceCollection(deviceCollection); // TODO It would be awesome if we could just bind this, but we don't have a way just yet.
 
-        archiveValuesExporterValidator.validate(archivedValuesExporter, bindingResult);
+        bindingResult.pushNestedPath("runDataRange");
+        dataRangeValidator.validate(archivedValuesExporter.getRunDataRange(), bindingResult);
+        bindingResult.popNestedPath();
         if (bindingResult.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setError(messages);
@@ -443,7 +448,7 @@ public class ArchivedValuesExporterController {
         }
 
         List<SimpleDevice> deviceList = archivedValuesExporter.getDeviceCollection().getDeviceList();
-        DataRange dataRange = archivedValuesExporter.getDataRange();
+        DataRange dataRange = archivedValuesExporter.getRunDataRange();
         List<Meter> meters = meterDao.getMetersForYukonPaos(deviceList);
         ExportFormat format = archiveValuesExportFormatDao.getByFormatId(archivedValuesExporter.getFormatId());
         List<String> report = exportReportGeneratorService.generateReport(meters, format, dataRange, userContext, archivedValuesExporter.getAttribute());
@@ -487,7 +492,7 @@ public class ArchivedValuesExporterController {
     		deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
             archivedValuesExporter.setDeviceCollection(deviceCollection);
             
-            archiveValuesExporterValidator.validate(archivedValuesExporter, bindingResult);
+            dataRangeValidator.validate(archivedValuesExporter.getScheduleDataRange(), bindingResult);
             if (bindingResult.hasErrors()) {
                 List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
                 flashScope.setError(messages);
@@ -496,7 +501,7 @@ public class ArchivedValuesExporterController {
             }
             format = archiveValuesExportFormatDao.getByFormatId(archivedValuesExporter.getFormatId());
             attribute = archivedValuesExporter.getAttribute();
-            dataRange = archivedValuesExporter.getDataRange();
+            dataRange = archivedValuesExporter.getScheduleDataRange();
             exportData = new ScheduledFileExportData();
             cronTagState = new CronExpressionTagState();
     	}
@@ -540,18 +545,18 @@ public class ArchivedValuesExporterController {
     private DataRange getDataRangeFromRequest(HttpServletRequest request) throws ServletRequestBindingException {
     	DataRange dataRange = new DataRange();
     	
-    	String dataRangeTypeString = ServletRequestUtils.getStringParameter(request, "dataRange.dataRangeType");
+    	String dataRangeTypeString = ServletRequestUtils.getStringParameter(request, "scheduleDataRange.dataRangeType");
     	dataRange.setDataRangeType(DataRangeType.valueOf(dataRangeTypeString));
     	
     	if(dataRange.getDataRangeType() == DataRangeType.DATE_RANGE) {
     		LocalDateRange localDateRange = new LocalDateRange();
-    		LocalDate startDate = LocalDate.parse(ServletRequestUtils.getStringParameter(request, "dataRange.dateRange.startDate"));
-    		LocalDate endDate = LocalDate.parse(ServletRequestUtils.getStringParameter(request, "dataRange.dateRange.endDate"));
+    		LocalDate startDate = LocalDate.parse(ServletRequestUtils.getStringParameter(request, "scheduleDataRange.dateRange.startDate"));
+    		LocalDate endDate = LocalDate.parse(ServletRequestUtils.getStringParameter(request, "scheduleDataRange.dateRange.endDate"));
     		localDateRange.setStartDate(startDate);
     		localDateRange.setEndDate(endDate);
     		dataRange.setLocalDateRange(localDateRange);
     	} else if(dataRange.getDataRangeType() == DataRangeType.DAYS_PREVIOUS) {
-    		int daysPrevious = ServletRequestUtils.getIntParameter(request, "dataRange.daysPrevious");
+    		int daysPrevious = ServletRequestUtils.getIntParameter(request, "scheduleDataRange.daysPrevious");
     		dataRange.setDaysPrevious(daysPrevious);
     	} else if(dataRange.getDataRangeType() == DataRangeType.END_DATE) {
     		//don't worry about this, task will set it when run
