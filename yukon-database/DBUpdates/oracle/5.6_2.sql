@@ -319,28 +319,28 @@ DROP TABLE temp_PointTableNames;
 /* Start YUK-11954 */
 UPDATE YukonPAObject YPAO
 SET YPAO.Type = 'RFN-430A3R'
-WHERE YPAO.PAOName LIKE '%EE_A3R' 
+WHERE (YPAO.PAOName LIKE '%EE_A3R' AND YPAO.Type = 'RFN-430A3') 
    OR YPAO.PAOBjectId IN (SELECT RFNA.DeviceId
                           FROM RFNAddress RFNA
                           WHERE Model = 'A3R');
 
 UPDATE YukonPAObject YPAO
 SET YPAO.Type = 'RFN-430A3D'
-WHERE YPAO.PAOName LIKE '%EE_A3D'
+WHERE (YPAO.PAOName LIKE '%EE_A3D' AND YPAO.Type = 'RFN-430A3')
    OR YPAO.PAOBjectId IN (SELECT RFNA.DeviceId
                           FROM RFNAddress RFNA
                           WHERE Model = 'A3D');
 
 UPDATE YukonPAObject YPAO
 SET YPAO.Type = 'RFN-430A3T'
-WHERE YPAO.PAOName LIKE '%EE_A3T'
+WHERE (YPAO.PAOName LIKE '%EE_A3T' AND YPAO.Type = 'RFN-430A3')
    OR YPAO.PAOBjectId IN (SELECT RFNA.DeviceId
                           FROM RFNAddress RFNA
                           WHERE Model = 'A3T');
 
 UPDATE YukonPAObject YPAO
 SET YPAO.Type = 'RFN-430A3K'
-WHERE YPAO.PAOName LIKE '%EE_A3K'
+WHERE (YPAO.PAOName LIKE '%EE_A3K' AND YPAO.Type = 'RFN-430A3')
    OR YPAO.PAOBjectId IN (SELECT RFNA.DeviceId
                           FROM RFNAddress RFNA
                           WHERE Model = 'A3K');

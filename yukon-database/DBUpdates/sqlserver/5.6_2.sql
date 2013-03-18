@@ -312,28 +312,32 @@ SET Type = 'RFN-430A3R'
 FROM YukonPAObject YPAO
 LEFT JOIN RFNAddress RFNA ON RFNA.DeviceId = YPAO.PAObjectID
 WHERE RFNA.Model = 'A3R'
-   OR YPAO.PAOName LIKE '%EE_A3R';
+   OR (YPAO.PAOName LIKE '%EE_A3R'
+       AND YPAO.Type = 'RFN-430A3');
 
 UPDATE YukonPAObject 
 SET Type = 'RFN-430A3D' 
 FROM YukonPAObject YPAO
 LEFT JOIN RFNAddress RFNA ON RFNA.DeviceId = YPAO.PAObjectID
 WHERE RFNA.Model = 'A3D'
-   OR YPAO.PAOName LIKE '%EE_A3D';
+   OR (YPAO.PAOName LIKE '%EE_A3D'
+       AND YPAO.Type = 'RFN-430A3');
 
 UPDATE YukonPAObject 
 SET Type = 'RFN-430A3T' 
 FROM YukonPAObject YPAO
 LEFT JOIN RFNAddress RFNA ON RFNA.DeviceId = YPAO.PAObjectID
 WHERE RFNA.Model = 'A3T'
-   OR YPAO.PAOName LIKE '%EE_A3T';
+   OR (YPAO.PAOName LIKE '%EE_A3T'
+       AND YPAO.Type = 'RFN-430A3');
 
 UPDATE YukonPAObject 
 SET Type = 'RFN-430A3K' 
 FROM YukonPAObject YPAO
 LEFT JOIN RFNAddress RFNA ON RFNA.DeviceId = YPAO.PAObjectID
 WHERE RFNA.Model = 'A3K'
-   OR YPAO.PAOName LIKE '%EE_A3K';
+   OR (YPAO.PAOName LIKE '%EE_A3K'
+       AND YPAO.Type = 'RFN-430A3');
 /* End YUK-11954 */
 
 /**************************************************************/
