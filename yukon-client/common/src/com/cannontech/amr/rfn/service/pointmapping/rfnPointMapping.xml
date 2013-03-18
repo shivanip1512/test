@@ -1,47 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pointMappings>
-<!--  TODO: REMOVE from paoDefinitions.xml + DATABASE DELETE -->
-<!--  these 3 weren't specified in Word, but already exist in XML:  -->
-<!-- existed for ALL + requested by NONE + not found on any test device -->
-<!-- existed for ALL + requested by NONE + not found on any test device --><!--
-        <point name="Received kW"> 
-            <uom>W</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-            </modifiers>
-        </point>
-        <point name="Delivered Pulse"> 
-            <uom>Pulse</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
- --><!-- existed for A's, FX, FD + requested by NONE --><!--
-        <point name="Sum kWh (Rate E kWh)">
-            <uom>Wh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>TOU Rate E</modifier>
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
---><!-- OTHER TO DELETE --><!--
-        <point name="Sum kW">
-        <point name="Net kW">
--->
-
-
-
-
 
     <pointGroup><!--  COMMON MAPPINGS -->
         <paoType value="RFN420CL"/>
