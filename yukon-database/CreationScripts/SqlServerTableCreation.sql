@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/18/2013 3:52:47 PM                         */
+/* Created on:     3/19/2013 9:53:47 AM                         */
 /*==============================================================*/
 
 
@@ -2958,7 +2958,7 @@ go
 /*==============================================================*/
 /* Index: Indx_DeviceDataMon_Name_UNQ                           */
 /*==============================================================*/
-create index Indx_DeviceDataMon_Name_UNQ on DeviceDataMonitor (
+create unique index Indx_DeviceDataMon_Name_UNQ on DeviceDataMonitor (
 Name ASC
 )
 go

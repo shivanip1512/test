@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/18/2013 3:41:40 PM                         */
+/* Created on:     3/19/2013 10:09:02 AM                        */
 /*==============================================================*/
 
 
@@ -2780,7 +2780,7 @@ create table DeviceDataMonitor  (
 /*==============================================================*/
 /* Index: Indx_DeviceDataMon_Name_UNQ                           */
 /*==============================================================*/
-create index Indx_DeviceDataMon_Name_UNQ on DeviceDataMonitor (
+create unique index Indx_DeviceDataMon_Name_UNQ on DeviceDataMonitor (
    Name ASC
 );
 
