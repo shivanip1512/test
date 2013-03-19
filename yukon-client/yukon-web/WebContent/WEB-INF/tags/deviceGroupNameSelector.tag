@@ -34,7 +34,7 @@
 <script>
     jQuery(document).on('click', '#viewSelectedDevices_${uniqueId}', function() {
         var url = '<cti:url value="/bulk/selectedDevicesTableForGroupName"/>' + '?groupName=' + encodeURIComponent($('${fieldName}').value);
-        showSelectedDevices(this, 'showSelectedDevices_${uniqueId}', 'showSelectedDevices_innerDiv_${uniqueId}', url);
+        showSelectedDevices('#viewSelectedDevices_${uniqueId}', 'showSelectedDevices_${uniqueId}', url);
     });
     
     jQuery(document).on('click', '.deviceGroupLink_${uniqueId}', function() {
@@ -99,11 +99,7 @@
 	<cti:msg var="warning" key="yukon.common.device.bulk.selectedDevicesPopup.warning" />
 	<span id="viewDevicesIconSpan_${uniqueId}" <c:if test="${empty pageScope.fieldValue}">style="display:none;"</c:if>>
 		<a id="viewSelectedDevices_${uniqueId}" href="javascript:void(0);" title="${popupTitle}" class="icon magnifier"></a>
-		<tags:simplePopup id="showSelectedDevices_${uniqueId}" title="${popupTitle}">
-		    <div style="height:300px;overflow:auto;">
-                <div class="smallBoldLabel" id="showSelectedDevices_innerDiv_${uniqueId}" style="text-align:left;"></div>
-		    </div>
-		</tags:simplePopup>
+		<div id="showSelectedDevices_${uniqueId}" title="${popupTitle}" class="dn"></div>
 	</span>
 </c:if>
 

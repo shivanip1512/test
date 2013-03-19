@@ -23,6 +23,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
+import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -65,6 +66,17 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private MeterDao meterDao;
+    
+    public static final YukonRowMapper<SimpleDevice> SIMPLE_DEVICE_MAPPER = new YukonRowMapper<SimpleDevice>() {
+        @Override
+        public SimpleDevice mapRow(YukonResultSet rs) throws SQLException {
+            int deviceId = rs.getInt("paobjectid");
+            String typeStr = rs.getString("type");
+            PaoType paoType = PaoType.getForDbString(typeStr);
+            return new SimpleDevice(deviceId, paoType);
+        }
+        
+    };
 
     /**
      * PointFuncs constructor comment.
@@ -129,22 +141,21 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
 
     @Override
     public List<SimpleDevice> getYukonDeviceObjectByIds(Iterable<Integer> ids) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ypo.PAObjectID, ypo.Type");
-        sql.append("FROM YukonPaObject ypo");
-        sql.append("WHERE ypo.PAObjectID").in(ids);
         
-        List<SimpleDevice> device = yukonJdbcTemplate.query(sql, new YukonRowMapper<SimpleDevice>() {
-            @Override
-            public SimpleDevice mapRow(YukonResultSet rs) throws SQLException {
-                int deviceId = rs.getInt("paobjectid");
-                String typeStr = rs.getString("type");
-                PaoType paoType = PaoType.getForDbString(typeStr);
-                return new SimpleDevice(deviceId, paoType);
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
+        
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT ypo.PAObjectID, ypo.Type");
+                sql.append("FROM YukonPaObject ypo");
+                sql.append("WHERE ypo.PAObjectID").in(subList);
+               return sql;
             }
-            
-        });
-        return device;
+        };
+        
+        List<SimpleDevice> devices = template.query(sqlGenerator, ids, SIMPLE_DEVICE_MAPPER);
+        return devices;
     }
     
     /**
