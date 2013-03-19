@@ -322,7 +322,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     }
     
     private <R extends RfnIdentifyingMessage> void sendArchiveRequest(String queueName, R archiveRequest) {
-        log.info("Sending archive request: " + archiveRequest.getRfnIdentifier().getCombinedIdentifier() + " on queue " + queueName);
+        log.debug("Sending archive request: " + archiveRequest.getRfnIdentifier().getCombinedIdentifier() + " on queue " + queueName);
         JmsTemplate jmsTemplate;
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setExplicitQosEnabled(false);
