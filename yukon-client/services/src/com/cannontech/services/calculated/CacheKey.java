@@ -41,4 +41,10 @@ public final class CacheKey {
             return false;
         return true;
     }
+    
+    @Override
+    public String toString() {
+        return String.format("CacheKey [pointId=%s, timestamp=%s]", pointId, timestamp);
+    }
+    
 }

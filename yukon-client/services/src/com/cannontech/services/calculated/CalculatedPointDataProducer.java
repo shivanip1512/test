@@ -8,8 +8,6 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
-import org.joda.time.Duration;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -77,22 +75,9 @@ public class CalculatedPointDataProducer {
      */
     public void updateCache(List<CalculationData> data) {
         for (CalculationData newValue : data) {
-            boolean previous = false;
-            boolean next = false;
             PointValueQualityHolder pvqh = newValue.getPaoPointValue().getPointValueQualityHolder();
             CacheKey currentKey = CacheKey.of(pvqh.getId(), pvqh.getPointDataTimeStamp().getTime());
-            CacheKey previousKey = CacheKey.of(pvqh.getId(), new Instant(pvqh.getPointDataTimeStamp()).minus(Duration.standardMinutes(newValue.getInterval())).getMillis());
-            CacheKey nextKey = CacheKey.of(pvqh.getId(), new Instant(pvqh.getPointDataTimeStamp()).plus(Duration.standardMinutes(newValue.getInterval())).getMillis());
-            
-            CacheValue previousValue = recentReadings.getIfPresent(previousKey);
-            if (previousValue != null) {
-                previous = previousValue.isNext();
-            }
-            CacheValue nextValue = recentReadings.getIfPresent(nextKey);
-            if (nextValue != null) {
-                next = nextValue.isPrevious();
-            }
-            CacheValue value = CacheValue.of(pvqh.getValue(), newValue.getInterval(), previous, next);
+            CacheValue value = CacheValue.of(pvqh.getValue(), newValue.getInterval(), false, false);
             recentReadings.put(currentKey, value);
             log.debug("Recent readings cache size (approximate): " + recentReadings.size());
         }

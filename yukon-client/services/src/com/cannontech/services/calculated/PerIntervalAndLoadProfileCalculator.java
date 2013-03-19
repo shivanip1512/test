@@ -37,7 +37,7 @@ import com.google.common.collect.ImmutableSet.Builder;
  * Calculator class for calculators the produce the per interval value and
  * load profile value based on some {@link CalculationData} consisting of a current interval value.
  * 
- * Point calcuations can be done for attribute based data for now since
+ * Point calculations can be done for attribute based data for now since
  * these attributes will only be mapping to one point definition, 
  * unlike {@link BuiltInAttribute#USAGE} which sometimes maps to a 'Sum kWh' points
  * and sometimes maps to a 'Delivered kWh' point.
@@ -68,7 +68,7 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
     
     /**
      * The attribute representing the load profile data this calculator produces.
-     * Will be null if load profile calcuation is not supported (like Water Usage).
+     * Will be null if load profile calculation is not supported (like Water Usage).
      */
     public void setLoadProfile(BuiltInAttribute loadProfile) {
         this.loadProfile = loadProfile;
@@ -113,6 +113,7 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
         }
         
         double previous = 0;
+        double next = 0;
         double previousPerIntervalValue = 0;
         double nextPerIntervalValue = 0;
         boolean foundPrevious = false;
@@ -135,22 +136,32 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
             foundPrevious = true;
             log.debug(String.format("Found previous interval from Cache: %s", previousValue));
         } else {
-            // Didn't cache it, ask dispatch, this is really just a hope that it hasn't gotten blown away yet by the archiving thread
-            PointValueQualityHolder previousDispatch = dds.getPointValue(pvqh.getId());
-            if (previousDispatch.getPointDataTimeStamp().equals(previousInterval.toDate())) {
-                previous = previousDispatch.getValue();
+            // try getting it from rph
+            try {
+                PointValueQualityHolder previousRph = rphDao.getSpecificValue(pvqh.getId(), previousInterval.getMillis());
+                previous = previousRph.getValue();
                 foundPrevious = true;
-                log.debug(String.format("Found previous interval from Dispatch: %s", previousDispatch));
-            } else {
-                // try getting it from rph
-                try {
-                    PointValueQualityHolder previousRph = rphDao.getSpecificValue(pvqh.getId(), previousInterval.getMillis());
-                    previous = previousRph.getValue();
-                    foundPrevious = true;
-                    log.debug(String.format("Found previous interval from RPH: %s", previousRph));
-                } catch (NotFoundException e) {
-                    /* No point found in RPH, this could be caused by an outage or a change in recording interval. */
-                }
+                log.debug(String.format("Found previous interval from RPH: %s", previousRph));
+            } catch (NotFoundException e) {
+                /* No point found in RPH, this could be caused by an outage or a change in recording interval. */
+            }
+        }
+        
+        CacheKey nextKey = CacheKey.of(pvqh.getId(), nextInterval.getMillis());
+        CacheValue nextValue = recentReadings.getIfPresent(nextKey);
+        if (nextValue != null && nextValue.getInterval() == interval) {
+            next = nextValue.getValue();
+            foundNext = true;
+            log.debug(String.format("Found next interval from Cache: %s", nextValue));
+        } else {
+            // try getting it from rph
+            try {
+                PointValueQualityHolder nextRph = rphDao.getSpecificValue(pvqh.getId(), nextInterval.getMillis());
+                next = nextRph.getValue();
+                foundNext = true;
+                log.debug(String.format("Found next interval from RPH: %s", nextRph));
+            } catch (NotFoundException e) {
+                /* No point found in RPH, probably haven't gotten it yet. */
             }
         }
         
@@ -171,38 +182,31 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
                         previousValue.setNext(true);
                     }
                 }
-                
-                if (currentValue.isNext()) {
-                    recentReadings.invalidate(currentKey);
-                } else {
-                    currentValue.setPrevious(true);
-                }
+                currentValue.setPrevious(true);
             }
             
-            /* next interval's per interval value */
-            CacheKey nextKey = CacheKey.of(pvqh.getId(), nextInterval.getMillis());
-            CacheValue nextValue = recentReadings.getIfPresent(nextKey);
-            
-            if (nextValue != null) {
-                foundNext = true;
-                nextPerIntervalValue = nextValue.getValue() - pvqh.getValue();
+            if (foundNext) {
+                
+                nextPerIntervalValue = next - pvqh.getValue();
                 addPointData(perIntervalPoint, nextPerIntervalValue, nextInterval.toDate(), pointData);
                 
-                if (currentValue.isPrevious()) {
-                    // previous and next intervals of the current interval have been handled
-                    recentReadings.invalidate(currentKey);
-                } else {
-                    currentValue.setNext(true);
+                if (nextValue != null) {
+                    
+                    if (currentValue.isPrevious()) {
+                        // previous and next intervals of the current interval have been handled
+                        recentReadings.invalidate(currentKey);
+                    } else {
+                        currentValue.setNext(true);
+                    }
+                    
+                    if (nextValue.isNext()) {
+                        // previous and next intervals of the next interval have been handled
+                        recentReadings.invalidate(nextKey);
+                    } else {
+                        // set the previous interval of the next interval as handled
+                        nextValue.setPrevious(true);
+                    }
                 }
-                
-                if (nextValue.isNext()) {
-                    // previous and next intervals of the next interval have been handled
-                    recentReadings.invalidate(nextKey);
-                } else {
-                    // set the previous interval of the next interval as handled
-                    nextValue.setPrevious(true);
-                }
-                
             }
         }
         

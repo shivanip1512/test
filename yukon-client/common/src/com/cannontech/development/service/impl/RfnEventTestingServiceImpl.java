@@ -80,11 +80,11 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         
         List<RfnMeterReadingArchiveRequest> messages = new ArrayList<>();
 
-        for (int i = 10000; i < 10100; i++) {
+        for (int i = 10000; i < 11000; i++) {
             
             DateTime now = new DateTime().withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0);
             
-            for (int j = 0; j < 1000; j++) {
+            for (int j = 0; j < 100; j++) {
                 RfnMeterReadingArchiveRequest message = new RfnMeterReadingArchiveRequest();
                 
                 RfnMeterReadingData data = new RfnMeterReadingData();

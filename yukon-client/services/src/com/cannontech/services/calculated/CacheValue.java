@@ -66,4 +66,14 @@ public class CacheValue {
             return false;
         return true;
     }
+    
+    @Override
+    public String toString() {
+        return String.format("CacheValue [value=%s, interval=%s, previous=%s, next=%s]",
+                             value,
+                             interval,
+                             previous,
+                             next);
+    }
+
 }
