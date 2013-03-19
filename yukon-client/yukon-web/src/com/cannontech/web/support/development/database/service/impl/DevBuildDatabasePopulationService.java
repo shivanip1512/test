@@ -52,7 +52,8 @@ public class DevBuildDatabasePopulationService {
             insertMeterUsagePointData();
             insertWaterUsagePointData();
         } catch (Exception e) {
-            log.warn("An Exception was thrown during database population. Database population may not have successfully finished. ",e);
+            log.error("An Exception was thrown during database population. Database population may not have successfully finished. ", e);
+            System.exit(1);
         } finally {
             YukonSpringHook.shutdownContext();
             System.exit(0);

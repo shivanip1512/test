@@ -80,7 +80,7 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
                 pointData.setTagsPointMustArchive(bulkInjection.isArchive());
                 pointData.setType(litePoint.getPointTypeEnum().getPointTypeId());
                 dynamicDataSource.putValue(pointData);
-                log.info("point data sent from bulk injector: " + pointData);
+                log.debug("point data sent from bulk injector: " + pointData);
                 bulkInjection.incrementInjectionCount();
             }
             Duration duration = bulkInjection.getPeriod().toStandardDuration();
@@ -99,13 +99,13 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
                                                                        bulkInjection.getAttribute());
             int deviceCount = 0;
             for(SimpleDevice device: supportedDevices){
-                log.info("[Bulk injector] #" + ++deviceCount + " Device " + device.getPaoIdentifier());
+                log.debug("[Bulk injector] #" + ++deviceCount + " Device " + device.getPaoIdentifier());
                 LitePoint point = getLitePointsFromSimpleDevicesWithAttribute(device, bulkInjection.getAttribute());
                 List<LitePoint> litePoints = Lists.newArrayList(point);
                 List<PointData> data = getPointData(bulkInjection, litePoints);
                 dynamicDataSource.putValues(data);
                 bulkInjection.setInjectionCount(bulkInjection.getInjectionCount() + data.size());
-                log.info("[Bulk injector] Points injected "+ data.size());
+                log.debug("[Bulk injector] Points injected "+ data.size());
             }
         }
         log.info("[Bulk injector] ----------Total points injected " + bulkInjection.getInjectionCount()+" ----------");
@@ -157,7 +157,7 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
     
     private double getRoundedValue(double value, int decimalPlaces) {
         double scaler = Math.pow(10, decimalPlaces);
-        double roundedValue = (double)Math.round(value * scaler) / scaler;
+        double roundedValue = Math.round(value * scaler) / scaler;
         return roundedValue;
     }
 
