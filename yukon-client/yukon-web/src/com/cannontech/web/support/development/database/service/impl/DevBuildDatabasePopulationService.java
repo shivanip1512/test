@@ -115,7 +115,7 @@ public class DevBuildDatabasePopulationService {
                 rfnTestEvent.setCleared(cleared);
 
                 counter = counter + numMeters + 1;
-                log.info("Sending events. On event " + counter + "/" + numToSend);
+                log.debug("Sending events. On event " + counter + "/" + numToSend);
 
                 rfnEventTestingService.sendEventsAndAlarms(rfnTestEvent);
             }
