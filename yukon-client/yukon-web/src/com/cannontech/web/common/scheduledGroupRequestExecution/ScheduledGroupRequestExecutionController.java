@@ -89,6 +89,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		String nonQueuedRetryCount = ServletRequestUtils.getStringParameter(request, "nonQueuedRetryCount", null);
 		String maxTotalRunTimeHours = ServletRequestUtils.getStringParameter(request, "maxTotalRunTimeHours", null);
 		String deviceGroupName = ServletRequestUtils.getStringParameter(request, "deviceGroupName", null);
+		PageEditMode pageEditMode = PageEditMode.CREATE;
 		
 		// edit existing job
 		int editJobId = ServletRequestUtils.getIntParameter(request, "editJobId", 0);
@@ -159,13 +160,11 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		}
 		
 		mav.addObject("editJobId", editJobId);
-		PageEditMode pageEditMode = PageEditMode.CREATE;
 		if (editMode) {
 		    pageEditMode = PageEditMode.EDIT;
 		    mav.addObject("disabled", existingJob.isDisabled());
 		    mav.addObject("status", scheduledGroupRequestExecutionDao.getStatusByJobId(existingJob.getId()));
 		}
-		mav.addObject("editMode", editMode);
 		mav.addObject("mode", pageEditMode);
 		mav.addObject("errorMsg", errorMsg);
 		mav.addObject("requestType", requestType);

@@ -37,8 +37,6 @@
     <entry key="yukon.web.modules.amr.scheduledGroupRequestHome.EDIT.pageName">Edit Schedule</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequestHome.EDIT.pageDescription">{0}</entry>
     
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.pageTitle">Create Schedule</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.pageTitle.editMode">Edit Schedule</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.requestType">Request Type</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.requestType.attribute">Attribute</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.requestType.command">Command</entry>

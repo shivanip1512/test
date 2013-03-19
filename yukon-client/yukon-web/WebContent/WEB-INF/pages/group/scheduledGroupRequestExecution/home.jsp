@@ -4,8 +4,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 
-<cti:msg var="normalPageTitle" key="yukon.common.device.scheduledGroupRequestExecution.home.pageTitle"/>
-<cti:msg var="editModePageTitle" key="yukon.common.device.scheduledGroupRequestExecution.home.pageTitle.editMode"/>
 <cti:msg var="requestTypeLabel" key="yukon.common.device.scheduledGroupRequestExecution.home.requestType"/>
 <cti:msg var="attibuteRequestTypeLabel" key="yukon.common.device.scheduledGroupRequestExecution.home.requestType.attribute"/>
 <cti:msg var="commandRequestTypeLabel" key="yukon.common.device.scheduledGroupRequestExecution.home.requestType.command"/>
@@ -67,6 +65,7 @@
         		 	
         		 	<cti:uniqueIdentifier var="cronTagId_attr" prefix="cronTagIdAttr_" />
         		 	<input type="hidden" name="cronTagId" value="${cronTagId_attr}">
+                    <tags:setFormEditMode mode="${mode}" />
         		 
         		 	<tags:nameValueContainer>
         		 	
@@ -99,43 +98,40 @@
         		 			<tags:requestRetryOptions retryCheckbox="${retryCheckbox}" queuedRetryCount="${queuedRetryCount}" nonQueuedRetryCount="${nonQueuedRetryCount}" maxTotalRunTimeHours="${maxTotalRunTimeHours}" />
         		 		</tags:nameValue>
         		 		
-        		 		<c:if test="${editMode}">
+        		 		<cti:displayForPageEditModes modes="EDIT">
 	        		 		<tags:nameValue name="${scheduleStateLabel}">
 	        		 			<cti:msg key="yukon.common.device.scheduledGroupRequestExecution.state.${status}"/>
 	        		 		</tags:nameValue>
-	        		 	</c:if>
+	        		 	</cti:displayForPageEditModes>
         		 		
         			</tags:nameValueContainer>
         			
         		</form>
         			
        			<br>
-		        <c:choose>
-		       	 	<%-- SCHDULE MODE --%>
-					<c:when test="${!editMode}">
-						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_attr" labelBusy="${scheduleButtonText}" label="${scheduleButtonText}" />
-					</c:when>
+	
+				<cti:displayForPageEditModes modes="CREATE">
+					<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_attr" labelBusy="${scheduleButtonText}" label="${scheduleButtonText}" />
+				</cti:displayForPageEditModes>
+				
+				<cti:displayForPageEditModes modes="EDIT">
 					
-					<%-- EDIT MODE --%>
-					<c:otherwise>
-						
-						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_attr" labelBusy="${updateButtonText}" label="${updateButtonText}" />
-						
-						<c:if test="${status ne 'RUNNING'}">
-						<c:choose>
-							<c:when test="${disabled}">
-								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${enableJobButtonText}" label="${enableJobButtonText}" />
-							</c:when>
-							<c:otherwise>
-								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${disableJobButtonText}" label="${disableJobButtonText}" />
-							</c:otherwise>
-						</c:choose>
-						</c:if>
-						
-						<tags:slowInput myFormId="disabledAndDeleteJobForm" labelBusy="${disableAndDeleteJobButtonText}" label="${disableAndDeleteJobButtonText}" />
-						
-					</c:otherwise>
-				</c:choose>
+					<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_attr" labelBusy="${updateButtonText}" label="${updateButtonText}" />
+					
+					<c:if test="${status ne 'RUNNING'}">
+					<c:choose>
+						<c:when test="${disabled}">
+							<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${enableJobButtonText}" label="${enableJobButtonText}" />
+						</c:when>
+						<c:otherwise>
+							<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${disableJobButtonText}" label="${disableJobButtonText}" />
+						</c:otherwise>
+					</c:choose>
+					</c:if>
+					
+					<tags:slowInput myFormId="disabledAndDeleteJobForm" labelBusy="${disableAndDeleteJobButtonText}" label="${disableAndDeleteJobButtonText}" />
+					
+				</cti:displayForPageEditModes>
         	
         	</cti:tabbedContentSelectorContent>
         	
@@ -181,43 +177,40 @@
         		 			<tags:requestRetryOptions retryCheckbox="${retryCheckbox}" queuedRetryCount="${queuedRetryCount}" nonQueuedRetryCount="${nonQueuedRetryCount}" maxTotalRunTimeHours="${maxTotalRunTimeHours}" />
         		 		</tags:nameValue>
         		 		
-        		 		<c:if test="${editMode}">
+        		 		<cti:displayForPageEditModes modes="EDIT">
 	        		 		<tags:nameValue name="${scheduleStateLabel}">
 	        		 			<cti:msg key="yukon.common.device.scheduledGroupRequestExecution.state.${status}"/>
 	        		 		</tags:nameValue>
-	        		 	</c:if>
+	        		 	</cti:displayForPageEditModes>
         		 		
         			</tags:nameValueContainer>
         			
         		</form>
         			
        			<br>
-		        <c:choose>
-		       	 	<%-- SCHDULE MODE --%>
-					<c:when test="${!editMode}">
-						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_cmd" labelBusy="${scheduleButtonText}" label="${scheduleButtonText}" />
-					</c:when>
+                
+				<cti:displayForPageEditModes modes="CREATE">
+					<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_cmd" labelBusy="${scheduleButtonText}" label="${scheduleButtonText}" />
+				</cti:displayForPageEditModes>
 					
-					<%-- EDIT MODE --%>
-					<c:otherwise>
-	
-						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_cmd" labelBusy="${updateButtonText}" label="${updateButtonText}" />
-						
-						<c:if test="${status ne 'RUNNING'}">
-						<c:choose>
-							<c:when test="${disabled}">
-								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${enableJobButtonText}" label="${enableJobButtonText}" />
-							</c:when>
-							<c:otherwise>
-								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${disableJobButtonText}" label="${disableJobButtonText}" />
-							</c:otherwise>
-						</c:choose>
-						</c:if>
-						
-						<tags:slowInput myFormId="disabledAndDeleteJobForm" labelBusy="${disableAndDeleteJobButtonText}" label="${disableAndDeleteJobButtonText}" />
-	
-					</c:otherwise>
-				</c:choose>
+				<cti:displayForPageEditModes modes="EDIT">
+
+					<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_cmd" labelBusy="${updateButtonText}" label="${updateButtonText}" />
+					
+					<c:if test="${status ne 'RUNNING'}">
+					<c:choose>
+						<c:when test="${disabled}">
+							<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${enableJobButtonText}" label="${enableJobButtonText}" />
+						</c:when>
+						<c:otherwise>
+							<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${disableJobButtonText}" label="${disableJobButtonText}" />
+						</c:otherwise>
+					</c:choose>
+					</c:if>
+					
+					<tags:slowInput myFormId="disabledAndDeleteJobForm" labelBusy="${disableAndDeleteJobButtonText}" label="${disableAndDeleteJobButtonText}" />
+
+			     </cti:displayForPageEditModes>
         	
         	</cti:tabbedContentSelectorContent>
         
