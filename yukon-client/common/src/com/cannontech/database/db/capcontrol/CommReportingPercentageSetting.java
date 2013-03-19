@@ -1,16 +1,16 @@
 package com.cannontech.database.db.capcontrol;
 
-public class MinCommunicationPercentageSetting {
+public class CommReportingPercentageSetting {
     private double banksReportingRatio =
-        MinCommunicationPercentageSettingType.IVVC_BANKS_REPORTING_RATIO.getDefaultValue();
+        CommReportingPercentageSettingType.CAPBANK.getDefaultValue();
     private double regulatorReportingRatio =
-        MinCommunicationPercentageSettingType.IVVC_REGULATOR_REPORTING_RATIO.getDefaultValue();
+        CommReportingPercentageSettingType.REGULATOR.getDefaultValue();
     private double voltageMonitorReportingRatio =
-        MinCommunicationPercentageSettingType.IVVC_VOLTAGEMONITOR_REPORTING_RATIO.getDefaultValue();
+        CommReportingPercentageSettingType.VOLTAGE_MONITOR.getDefaultValue();
 
-    public MinCommunicationPercentageSetting() {}
+    public CommReportingPercentageSetting() {}
 
-    public MinCommunicationPercentageSetting(double banksReportingRatio,
+    public CommReportingPercentageSetting(double banksReportingRatio,
                                               double regulatorReportingRatio,
                                               double voltageMonitorReportingRatio) {
         this.banksReportingRatio = banksReportingRatio;

@@ -2,13 +2,13 @@ package com.cannontech.database.db.capcontrol;
 
 import com.cannontech.common.util.DatabaseRepresentationSource;
 
-public enum MinCommunicationPercentageSettingName implements DatabaseRepresentationSource {
-    MIN_COMM_PERCENTAGE("Mininum Communication Percentage"),
+public enum CommReportingPercentageSettingName implements DatabaseRepresentationSource {
+    COMM_REPORTING_PERCENTAGE("Comm Reporting Percentage"),
     ;
 
     private final String displayName;
 
-    private MinCommunicationPercentageSettingName(String displayName) {
+    private CommReportingPercentageSettingName(String displayName) {
         this.displayName = displayName;
     }
 

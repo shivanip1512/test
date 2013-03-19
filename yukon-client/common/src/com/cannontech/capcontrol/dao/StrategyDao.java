@@ -6,7 +6,7 @@ import com.cannontech.capcontrol.model.StrategyLimitsHolder;
 import com.cannontech.capcontrol.model.ViewableStrategy;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
-import com.cannontech.database.db.capcontrol.MinCommunicationPercentageSetting;
+import com.cannontech.database.db.capcontrol.CommReportingPercentageSetting;
 import com.cannontech.database.db.capcontrol.PeakTargetSetting;
 import com.cannontech.database.db.capcontrol.PowerFactorCorrectionSetting;
 import com.cannontech.database.db.capcontrol.VoltageViolationSetting;
@@ -48,7 +48,7 @@ public interface StrategyDao {
      * these values won't exist in the database, so we will return the default settings. This is so that the values are there
      * if the user changes the Control Algorithm to IVVC in the UI.
      */
-    public MinCommunicationPercentageSetting getMinCommunicationPercentageSetting(CapControlStrategy strategy);
+    public CommReportingPercentageSetting getMinCommunicationPercentageSetting(CapControlStrategy strategy);
     
     /**
      * Get our List<VoltageViolationSetting> object's from the database. If this strategy is not an IVVC strategy, then

@@ -324,7 +324,7 @@
             
             <x:htmlTag value="fieldset" styleClass="fieldSet" rendered="#{capControlForm.strategy.ivvc}">
                 <x:htmlTag value="legend">
-                    <x:outputText value="Minimum Communication Percetages"/>
+                    <x:outputText value="Minimum Communication Percentages"/>
                 </x:htmlTag>
 
                 <x:panelGrid columns="2">

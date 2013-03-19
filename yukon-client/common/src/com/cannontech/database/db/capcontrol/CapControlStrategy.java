@@ -42,7 +42,7 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
     private List<PeakTargetSetting> targetSettings = StrategyPeakSettingsHelper.getSettingDefaults(ControlAlgorithm.KVAR);
     private List<VoltageViolationSetting> voltageViolationSettings = VoltageViolationSettingsHelper.getVoltageViolationDefaults();
     private PowerFactorCorrectionSetting powerFactorCorrectionSetting = new PowerFactorCorrectionSetting();
-    private MinCommunicationPercentageSetting minCommunicationPercentageSetting = new MinCommunicationPercentageSetting();
+    private CommReportingPercentageSetting minCommunicationPercentageSetting = new CommReportingPercentageSetting();
     
 	public static final String SETTER_COLUMNS[] = { 
 		"StrategyName", "ControlMethod", "MaxDailyOperation",
@@ -340,11 +340,11 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
         this.powerFactorCorrectionSetting = powerFactorCorrectionSetting;
     }
 
-    public MinCommunicationPercentageSetting getMinCommunicationPercentageSetting() {
+    public CommReportingPercentageSetting getMinCommunicationPercentageSetting() {
         return minCommunicationPercentageSetting;
     }
 
-    public void setMinCommunicationPercentageSetting(MinCommunicationPercentageSetting minCommunicationPercentageSetting) {
+    public void setMinCommunicationPercentageSetting(CommReportingPercentageSetting minCommunicationPercentageSetting) {
         this.minCommunicationPercentageSetting = minCommunicationPercentageSetting;
     }
 
