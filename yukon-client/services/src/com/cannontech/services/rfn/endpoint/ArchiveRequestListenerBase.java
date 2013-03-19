@@ -223,14 +223,14 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
     @PreDestroy
     protected abstract void shutdown();
 
-    public void handleArchiveRequest(T archiveRequest) {
+    public void handleArchiveRequest(T request) {
         // determine which worker will handle the request by hashing the serial number
-        int hashCode = archiveRequest.getRfnIdentifier().getSensorSerialNumber().hashCode();
-        List<? extends ConverterBase> archivers = getConverters();
-        int archiverIndex = Math.abs(hashCode) % archivers.size();
-        ConverterBase archiver = archivers.get(archiverIndex);
+        int hashCode = request.getRfnIdentifier().getSensorSerialNumber().hashCode();
+        List<? extends ConverterBase> converters = getConverters();
+        int converterIndex = Math.abs(hashCode) % converters.size();
+        ConverterBase converter = converters.get(converterIndex);
         try {
-            archiver.queue(archiveRequest);
+            converter.queue(request);
         } catch (InterruptedException e) {
             log.warn("interrupted while queuing archive request", e);
             Thread.currentThread().interrupt();
