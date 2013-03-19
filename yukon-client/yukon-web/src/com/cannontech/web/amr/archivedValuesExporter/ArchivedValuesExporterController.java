@@ -561,18 +561,18 @@ public class ArchivedValuesExporterController {
     private DataRange getDataRangeFromRequest(HttpServletRequest request) throws ServletRequestBindingException {
     	DataRange dataRange = new DataRange();
     	
-    	String dataRangeTypeString = ServletRequestUtils.getStringParameter(request, "scheduleDataRange.dataRangeType");
+    	String dataRangeTypeString = ServletRequestUtils.getStringParameter(request, "dataRange.dataRangeType");
     	dataRange.setDataRangeType(DataRangeType.valueOf(dataRangeTypeString));
     	
     	if(dataRange.getDataRangeType() == DataRangeType.DATE_RANGE) {
     		LocalDateRange localDateRange = new LocalDateRange();
-    		LocalDate startDate = LocalDate.parse(ServletRequestUtils.getStringParameter(request, "scheduleDataRange.dateRange.startDate"));
-    		LocalDate endDate = LocalDate.parse(ServletRequestUtils.getStringParameter(request, "scheduleDataRange.dateRange.endDate"));
+    		LocalDate startDate = LocalDate.parse(ServletRequestUtils.getStringParameter(request, "dataRange.dateRange.startDate"));
+    		LocalDate endDate = LocalDate.parse(ServletRequestUtils.getStringParameter(request, "dataRange.dateRange.endDate"));
     		localDateRange.setStartDate(startDate);
     		localDateRange.setEndDate(endDate);
     		dataRange.setLocalDateRange(localDateRange);
     	} else if(dataRange.getDataRangeType() == DataRangeType.DAYS_PREVIOUS) {
-    		int daysPrevious = ServletRequestUtils.getIntParameter(request, "scheduleDataRange.daysPrevious");
+    		int daysPrevious = ServletRequestUtils.getIntParameter(request, "dataRange.daysPrevious");
     		dataRange.setDaysPrevious(daysPrevious);
     	} else if(dataRange.getDataRangeType() == DataRangeType.END_DATE) {
     		//don't worry about this, task will set it when run
