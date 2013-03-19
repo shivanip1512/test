@@ -59807,7 +59807,7 @@
                   <i__tableName>DEVICEDATAMONITOR</i__tableName>
                   <i__ordinalPosition>1</i__ordinalPosition>
                   <i__columnName>NAME</i__columnName>
-                  <i__nonNonUnique>true</i__nonNonUnique>
+                  <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
               <indexName>INDX_DEVICEDATAMON_NAME_UNQ</indexName>
