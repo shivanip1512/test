@@ -386,8 +386,8 @@ function makeFirstSelectedFilterValueVisible() {
 	              <table width="100%" border="0" cellspacing="0" cellpadding="0">
 				    <tr>
 					  <td class="main">
-						<input <%=(!supportPdf ? " disabled='disabled' " : "")%> type="radio" name="ext" value="pdf" <%=(supportPdf ? " checked='checked' " : "")%>><cti:msg key="yukon.web.pdf"/><BR>
-  						<input <%=(!supportPdf ? " checked='checked' " : "")%>type="radio" name="ext" value="csv"><cti:msg key="yukon.web.csv"/>
+  						<input type="radio" name="ext" value="csv" checked="checked"><cti:msg key="yukon.web.csv"/><BR>
+						<input <%=(!supportPdf ? " disabled='disabled' " : "")%> type="radio" name="ext" value="pdf"><cti:msg key="yukon.web.pdf"/>
 					  </td>
 					  <td class="main">
 					    <button id="Generate" name="Generate" border="0" alt="Generate" align="middle" <%=(model == null ? "DISABLED style='cursor:default'":"")%> onclick='document.reportForm.ACTION.value="DownloadReport"; return true;'>
