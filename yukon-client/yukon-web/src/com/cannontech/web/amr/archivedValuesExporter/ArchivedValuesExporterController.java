@@ -494,7 +494,9 @@ public class ArchivedValuesExporterController {
     		deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
             archivedValuesExporter.setDeviceCollection(deviceCollection);
             
+            bindingResult.pushNestedPath("scheduleDataRange");
             dataRangeValidator.validate(archivedValuesExporter.getScheduleDataRange(), bindingResult);
+            bindingResult.popNestedPath();
             if (bindingResult.hasErrors()) {
                 List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
                 flashScope.setError(messages);
