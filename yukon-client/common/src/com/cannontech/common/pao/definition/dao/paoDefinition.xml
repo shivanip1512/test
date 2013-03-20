@@ -6697,6 +6697,9 @@
                 <basicLookup point="Peak kW (Rate D kW)"/>
             </attribute>
 		</attributes>
+    	<tags>
+        	<tag name="TOU"/>
+        </tags>
 	</pao>
 
     <pao id="RFN_L2_CENTRON_AND_FOCUS" abstract="true" inherits="RFN_COMMON, RFN_PTCALC__CENTRON_AND_FOCUS, RFN_TOU_FOR_ALL_EXCEPT_A3D">
@@ -7008,6 +7011,9 @@
                 <basicLookup point="Volts Phase C" />
             </attribute>
         </attributes>
+        <tags>
+            <tag name="THREE_PHASE_VOLTAGE"/>
+        </tags>
     </pao>
 		<pao id="RFN_L2_ELSTER_ALL" abstract="true" inherits="RFN_COMMON, RFN_L1_ELSTER_AND_FX_FD">
         <points>
