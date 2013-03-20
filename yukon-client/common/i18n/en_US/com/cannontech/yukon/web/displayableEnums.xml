@@ -336,7 +336,7 @@
     <entry key="yukon.common.energyCompanySetting.INHERIT_PARENT_APP_CATS">Inherit Parent App Categories</entry>
     <entry key="yukon.common.energyCompanySetting.INHERIT_PARENT_APP_CATS.description">If part of a member structure, should appliance categories be inherited from the parent.</entry>
     <entry key="yukon.common.energyCompanySetting.OPTOUT_NOTIFICATION_RECIPIENTS">Opt Out Notification Recipients</entry>
-    <entry key="yukon.common.energyCompanySetting.OPTOUT_NOTIFICATION_RECIPIENTS.description">Comma separated list of email addresses. Recipients of the opt out notification email.</entry>
+    <entry key="yukon.common.energyCompanySetting.OPTOUT_NOTIFICATION_RECIPIENTS.description">Comma separated list of email addresses. Recipients of the Opt Out notification email.</entry>
     <entry key="yukon.common.energyCompanySetting.SERIAL_NUMBER_VALIDATION">Serial Number Validation</entry>
     <entry key="yukon.common.energyCompanySetting.SERIAL_NUMBER_VALIDATION.description">Treat serial numbers as numeric or alpha-numberic. Possible values (Numeric, Alphanumeric)</entry>
     <entry key="yukon.common.energyCompanySetting.SINGLE_ENERGY_COMPANY">Single Energy Company</entry>
