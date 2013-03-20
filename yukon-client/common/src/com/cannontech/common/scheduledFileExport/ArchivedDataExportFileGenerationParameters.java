@@ -1,5 +1,7 @@
 package com.cannontech.common.scheduledFileExport;
 
+import java.util.Set;
+
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -7,13 +9,13 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 public class ArchivedDataExportFileGenerationParameters implements ExportFileGenerationParameters {
 	private final DeviceCollection deviceCollection;
 	private final int formatId;
-	private final Attribute attribute;
+	private final Set<Attribute> attributes;
 	private final DataRange dataRange;
 	
-	public ArchivedDataExportFileGenerationParameters(DeviceCollection deviceCollection, int formatId, Attribute attribute, DataRange dataRange) {
+	public ArchivedDataExportFileGenerationParameters(DeviceCollection deviceCollection, int formatId, Set<Attribute> attributes, DataRange dataRange) {
 		this.deviceCollection = deviceCollection;
 		this.formatId = formatId;
-		this.attribute = attribute;
+		this.attributes = attributes;
 		this.dataRange = dataRange;
 	}
 	
@@ -30,8 +32,8 @@ public class ArchivedDataExportFileGenerationParameters implements ExportFileGen
 		return formatId;
 	}
 
-	public Attribute getAttribute() {
-		return attribute;
+	public Set<Attribute> getAttributes() {
+		return attributes;
 	}
 
 	public DataRange getDataRange() {
@@ -39,10 +41,12 @@ public class ArchivedDataExportFileGenerationParameters implements ExportFileGen
 	}
 
 	public String toString() {
-		return "[FormatId: " + formatId 
-				+ ", Device Collection: " + deviceCollection.toString() 
-				+ ", Attribute: " + attribute.getMessage()
-				+ ", DataRange: " + dataRange
-				+ "]";
+		String returnString = "[FormatId: " + formatId + ", Device Collection: " + deviceCollection.toString() + ", ";
+		for(Attribute attribute : attributes) {
+			returnString += attribute.getMessage() + ", ";
+		}
+		returnString += " DataRange: " + dataRange + "]";
+		
+		return returnString;
 	}
 }

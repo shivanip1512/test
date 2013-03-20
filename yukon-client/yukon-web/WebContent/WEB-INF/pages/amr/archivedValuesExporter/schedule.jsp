@@ -14,7 +14,6 @@
 					<input type="hidden" name="jobId" value="${jobId}">
 				</c:if>
 				<input type="hidden" name="formatId" value="${exportFormat.formatId}">
-				<input type="hidden" name="attribute" value="${attribute}">
 				<cti:deviceCollection deviceCollection="${deviceCollection}"/>
 				
 				<tags:nameValue2 nameKey=".devices">
@@ -26,9 +25,14 @@
 				<tags:nameValue2 nameKey=".formatType">
 					<i:inline key="${exportFormat.formatType.formatKey}"/>
 				</tags:nameValue2>
-				<c:if test="${not empty attribute}">
+				<c:if test="${not empty attributes}">
+					<c:forEach var="attribute" items="${attributes}">
+						<input type="hidden" name="attributes" value="${attribute}">
+					</c:forEach>
 					<tags:nameValue2 nameKey=".attribute">
-						<i:inline key="${attribute}"/>
+						<c:forEach var="attribute" items="${attributes}" varStatus="status">
+							<i:inline key="${attribute}"/><c:if test="${not status.last}">, </c:if>
+						</c:forEach>
 					</tags:nameValue2>
 				</c:if>
 				<tags:nameValue2 nameKey=".dataRange">

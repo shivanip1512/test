@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -96,6 +97,7 @@ import com.cannontech.web.scheduledFileExport.tasks.ScheduledFileExportTask;
 import com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @Controller
 @RequestMapping("/archivedValuesExporter/*")
@@ -454,7 +456,7 @@ public class ArchivedValuesExporterController {
         DataRange dataRange = archivedValuesExporter.getRunDataRange();
         List<Meter> meters = meterDao.getMetersForYukonPaos(deviceList);
         ExportFormat format = archiveValuesExportFormatDao.getByFormatId(archivedValuesExporter.getFormatId());
-        List<String> report = exportReportGeneratorService.generateReport(meters, format, dataRange, userContext, archivedValuesExporter.getAttribute());
+        List<String> report = exportReportGeneratorService.generateReport(meters, format, dataRange, userContext, archivedValuesExporter.getAttributesArray());
         String fileName = getFileName(Instant.now().toDate(), format.getFormatName());
         setupResponse(response, fileName);
         createReportFile(response, report);
@@ -468,7 +470,7 @@ public class ArchivedValuesExporterController {
     	
     	DeviceCollection deviceCollection;
     	ExportFormat format;
-    	Attribute attribute;
+    	Set<Attribute> attributes = null;
     	DataRange dataRange;
     	ScheduledFileExportData exportData;
     	CronExpressionTagState cronTagState;
@@ -481,7 +483,7 @@ public class ArchivedValuesExporterController {
     		
     		deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(task.getDeviceGroup());
     		format = archiveValuesExportFormatDao.getByFormatId(task.getFormatId());
-    		attribute = task.getAttribute();
+    		attributes = task.getAttributes();
     		dataRange = task.getDataRange();
     		cronTagState = cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
     		exportData = new ScheduledFileExportData();
@@ -505,14 +507,16 @@ public class ArchivedValuesExporterController {
                 return "redirect:view";
             }
             format = archiveValuesExportFormatDao.getByFormatId(archivedValuesExporter.getFormatId());
-            attribute = archivedValuesExporter.getAttribute();
+            if(archivedValuesExporter.getArchivedValuesExportFormatType() == ArchivedValuesExportFormatType.DYNAMIC_ATTRIBUTE) {
+            	attributes = archivedValuesExporter.getAttributes();
+            }
             dataRange = archivedValuesExporter.getScheduleDataRange();
             exportData = new ScheduledFileExportData();
             cronTagState = new CronExpressionTagState();
     	}
     	
     	model.addAttribute("exportFormat", format);
-        model.addAttribute("attribute", attribute);
+        model.addAttribute("attributes", attributes);
         model.addAttribute("dataRange", dataRange);
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("exportData", exportData);
@@ -523,14 +527,20 @@ public class ArchivedValuesExporterController {
     
     @RequestMapping
     public String doSchedule(ModelMap model, @ModelAttribute ScheduledFileExportData exportData, BindingResult bindingResult, HttpServletRequest request,
-    		int formatId, String attribute, Integer jobId, YukonUserContext userContext, FlashScope flashScope) 
+    		int formatId, String[] attributes, Integer jobId, YukonUserContext userContext, FlashScope flashScope) 
     		throws ServletRequestBindingException, IllegalArgumentException, ParseException {
     	
     	//Build parameters
     	DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
     	DataRange dataRange = getDataRangeFromRequest(request);
-    	Attribute attributeObject = attributeService.resolveAttributeName(attribute);
-    	ArchivedDataExportFileGenerationParameters parameters = new ArchivedDataExportFileGenerationParameters(deviceCollection, formatId, attributeObject, dataRange);
+    	
+    	Set<Attribute> attributeSet = Sets.newHashSet();
+    	if(attributes != null) {
+    		for(String attribute : attributes) {
+    			attributeSet.add(attributeService.resolveAttributeName(attribute));
+    		}
+    	}
+    	ArchivedDataExportFileGenerationParameters parameters = new ArchivedDataExportFileGenerationParameters(deviceCollection, formatId, attributeSet, dataRange);
     	
     	String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
     	exportData.setScheduleCronString(scheduleCronString);
@@ -541,7 +551,7 @@ public class ArchivedValuesExporterController {
 			List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setError(messages);
             model.addAttribute("exportFormat", archiveValuesExportFormatDao.getByFormatId(formatId));
-	        model.addAttribute("attribute", attributeService.resolveAttributeName(attribute));
+	        model.addAttribute("attributes", attributes);
 	        model.addAttribute("dataRange", dataRange);
 	        model.addAttribute("deviceCollection", deviceCollection);
 	        model.addAttribute("exportData", exportData);

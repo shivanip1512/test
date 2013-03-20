@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -53,7 +54,7 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 	private String uniqueIdentifier = CtiUtilities.getUuidString();
 	private List<SimpleDevice> deviceList;
 	private int formatId;
-	private Attribute attribute;
+	private Set<Attribute> attributes;
 	private DataRange dataRange = new DataRange();
 	
 	private Logger log = YukonLogManager.getLogger(ScheduledArchivedDataFileExportTask.class);
@@ -65,7 +66,8 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 		populateDataRange();
 		
 		//Get the report data
-		List<String> report = exportReportGeneratorService.generateReport(meters, format, dataRange, getUserContext(), attribute);
+		Attribute[] attributesArray = attributes.toArray(new Attribute[attributes.size()]);
+		List<String> report = exportReportGeneratorService.generateReport(meters, format, dataRange, getUserContext(), attributesArray);
 		
 		//If using SINCE_LAST_CHANGE_ID, update last id for this job
 		if(dataRange.getDataRangeType() == DataRangeType.SINCE_LAST_CHANGE_ID) {
@@ -103,7 +105,7 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 		ArchivedDataExportFileGenerationParameters adeParameters = (ArchivedDataExportFileGenerationParameters) parameters;
 		deviceList = adeParameters.getDeviceCollection().getDeviceList();
 		formatId = adeParameters.getFormatId();
-		attribute = adeParameters.getAttribute();
+		attributes = adeParameters.getAttributes();
 		dataRange = adeParameters.getDataRange();
 		
 		//Store device list in a device group so that it can persist when the server is shut down.
@@ -146,12 +148,12 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 		this.formatId = formatId;
 	}
 
-	public Attribute getAttribute() {
-		return attribute;
+	public Set<Attribute> getAttributes() {
+		return attributes;
 	}
 
-	public void setAttribute(Attribute attribute) {
-		this.attribute = attribute;
+	public void setAttributes(Set<Attribute> attributes) {
+		this.attributes = attributes;
 	}
 	
 	public String getDataRangeType() {

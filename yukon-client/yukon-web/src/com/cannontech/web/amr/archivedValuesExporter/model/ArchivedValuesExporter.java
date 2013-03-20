@@ -1,5 +1,7 @@
 package com.cannontech.web.amr.archivedValuesExporter.model;
 
+import java.util.Set;
+
 import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
@@ -10,7 +12,7 @@ public class ArchivedValuesExporter {
     private int formatId;
     private ArchivedValuesExportFormatType archivedValuesExportFormatType;
     private DeviceCollection deviceCollection;
-    private Attribute attribute;
+    private Set<Attribute> attributes;
     private DataRange runDataRange;
     private DataRange scheduleDataRange;
     
@@ -35,11 +37,16 @@ public class ArchivedValuesExporter {
         this.deviceCollection = deviceCollection;
     }
 
-    public Attribute getAttribute() {
-        return attribute;
+    public Set<Attribute> getAttributes() {
+        return attributes;
     }
-    public void setAttribute(Attribute attribute) {
-        this.attribute = attribute;
+    
+    public Attribute[] getAttributesArray() {
+    	return attributes == null? new Attribute[0] : attributes.toArray(new Attribute[attributes.size()]);
+    }
+    
+    public void setAttribute(Set<Attribute> attributes) {
+        this.attributes = attributes;
     }
 
     public DataRange getRunDataRange() {

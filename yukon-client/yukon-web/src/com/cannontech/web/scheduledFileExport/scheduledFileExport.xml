@@ -154,10 +154,10 @@
                         	</property>
                         </bean>
                         <bean class="com.cannontech.web.input.InputBase">
-                        	<property name="field" value="attribute"/>
-                        	<property name="displayName" value="Attribute"/>
+                        	<property name="field" value="attributes"/>
+                        	<property name="displayName" value="Attributes"/>
                         	<property name="type">
-                        		<bean class="com.cannontech.web.input.type.AttributeType"/>
+                        		<bean class="com.cannontech.web.input.type.AttributeSetType"/>
                         	</property>
                         </bean>
                         <bean class="com.cannontech.web.input.InputBase">
