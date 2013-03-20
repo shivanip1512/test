@@ -24,7 +24,7 @@ initiateCannonLogUpdate("${updateUrl}" ,2);
 <form id="newLinesForm" class="stacked">
     <input type="hidden" id="file" name="file" value="${file}" size=5>
     <span id="numTail"><i:inline key=".numberOfLinesTailed"/>&nbsp;<input onchange="$('newLinesForm').action = 'tail?file=${file}'; submit();" id="numLines" name="numLines" value=${numLines} size=5 ></span>
-    <span class="button_container">
+    <span class="button-container">
         <cti:button id="submitLines" onclick="$('newLinesForm').action = 'tail?file=${file}'; submit();" nameKey="change"/>
         <cti:button id="pauseButton" onclick="startOrPauseUpdate();" type="button" nameKey="pause"/>
         <cti:button id="downloadButton" onclick="$('newLinesForm').action = 'download?file=${file}'; submit();" nameKey="download"/>

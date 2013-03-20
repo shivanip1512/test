@@ -38,7 +38,7 @@ button, input[type=submit], input[type=button] {color:#333;border:solid 1px #888
 button:hover, input[type=submit]:hover, input[type=button]:hover {color:black; background:linear-gradient(#efefef, #bbbbbb);text-shadow:1px 1px 0 #eeeeee;}
 button:active, input[type=submit]:active, input[type=button]:active {color:black; background:#cccccc;text-shadow:1px 1px 0 #eeeeee;}
 button:disabled:not(.naked), input[type=submit]:disabled:not(.naked), input[type=button]:disabled:not(.naked) {color: #999; border:solid 1px #CCC !important; background:linear-gradient(#efefef, #DEDEDE); text-shadow: 1px 1px 0 white;box-shadow:none;cursor:not-allowed;}
-button .hoverableImage, button.image img {margin-top:-2px; top: 2px; margin-right: 5px; position:relative;}
+button .hoverableImage, button.image img {margin-top:-3px; top: 3px; margin-right: 5px; position:relative;}
 button.image {padding: 0; width: 16px; height: 16px;}
 
 button.danger {color:white; background-color:#D14836; text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25); border-color:#802D2D;}
@@ -52,8 +52,19 @@ button.danger {
 button.danger:hover {background:#BD362F; border-color:#802D2D;box-shadow:0 0 5px #D14836;}
 button.danger:active {background:#F55656;}
 
+button.primary {color:white; background-color:#06C; text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25); border-color:#06C;}
+button.primary {
+    background-image: -webkit-linear-gradient(top, #17D, #06C); /* Chrome10+, Safari5.1+ */
+    background-image:    -moz-linear-gradient(top, #17D, #06C); /* FF3.6+ */
+    background-image:     -ms-linear-gradient(top, #17D, #06C); /* IE10+ */
+    background-image:      -o-linear-gradient(top, #17D, #06C); /* Opera 11.10+ */
+    background-image:         linear-gradient(top, #17D, #06C); /* W3C */
+}
+button.primary:hover {background:#06C; border-color:#06C;box-shadow:0 0 5px #06C;}
+button.primary:active {background:#06C;}
+
 button.naked, button.naked:hover {border:none; background:transparent; box-shadow:none;}
-.button_container button {margin-right: 4px;}
+.button-container button {margin-right: 4px;}
 
 input:not([type="submit"]):not([type="radio"]):not([type="checkbox"]) { -webkit-background-clip: padding-box; background-clip: padding-box; -webkit-transition: border .2s ease-in-out,background-color .2s ease-in-out; -moz-transition: border .2s ease-in-out,background-color .2s ease-in-out; -ms-transition: border .2s ease-in-out,background-color .2s ease-in-out; -o-transition: border .2s ease-in-out,background-color .2s ease-in-out; transition: border .2s ease-in-out,background-color .2s ease-in-out; }
 /* containing block may need to float left or clear, should be variable width for these to work */
@@ -159,7 +170,9 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 .content, .pagedBox > .content {padding-bottom: 10px;}
 .pagedBox > .title, .pagedBox > .footer, .boxContainer_titleBar, .resultsTable th, .boxContainerFooter {background-color:#efefef;} /* .titledContainer > .titleBar, */
 .titledContainer > .content, .pagedBox > .content, .pagedBox > .footer, .sectionContainer > .content, .sectionContainer > .footer {border-top: solid 1px #ccc;}
-.titledContainer > .titleBar, .pagedBox > .title, .pagedBox > .footer, .ui-dialog .ui-dialog-title {text-shadow:1px 1px 0 white;border-radius: 3px 3px 0 0;}
+.titledContainer > .titleBar, .pagedBox > .title, .pagedBox > .footer, .ui-dialog .ui-dialog-title {text-shadow:1px 1px 0 white;}
+.titledContainer > .titleBar, .pagedBox > .title, .ui-dialog .ui-dialog-title {border-radius: 3px 3px 0 0;}
+.pagedBox > .footer, .sectionContainer > .footer {border-radius: 0 0 3px 3px;}
 .titledContainer > .titleBar h3, .pagedBox > .title h3, .pagedBox > .footer h3, .ui-dialog .ui-dialog-title h3 {display: inline-block;}
 .actionArea {text-align:right; margin-top: 20px;}
 .pageActionArea {margin: 20px 0;}

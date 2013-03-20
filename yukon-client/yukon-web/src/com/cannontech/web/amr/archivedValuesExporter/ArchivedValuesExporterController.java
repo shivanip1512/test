@@ -144,7 +144,8 @@ public class ArchivedValuesExporterController {
         model.addAttribute("groupedAttributes", groupedAttributes);
         
         model.addAttribute("allFormats", allFormats);
-        model.addAttribute("formatTypes", ArchivedValuesExportFormatType.values());
+        model.addAttribute("fixedAttribute", ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
+        model.addAttribute("dynamicAttribute", ArchivedValuesExportFormatType.DYNAMIC_ATTRIBUTE);
         model.addAttribute("preview", generatePreview);
         
         model.addAttribute("dataRangeTypes", createJSONArray(DataRangeType.values()));

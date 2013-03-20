@@ -19,6 +19,7 @@ import com.cannontech.web.taglib.YukonTagSupport;
 public class ButtonTag extends YukonTagSupport {
     
     protected String id = null;
+    protected String title = null;
     protected String nameKey = null;
     protected String arguments = null;
     protected String href = null;
@@ -44,6 +45,10 @@ public class ButtonTag extends YukonTagSupport {
 
     public void setId(String id) {
         this.id = id;
+    }
+    
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public void setNameKey(String nameKey) {
@@ -175,6 +180,13 @@ public class ButtonTag extends YukonTagSupport {
             out.write("<button id=\"");
             out.write(id);
             out.write("\"");
+            
+            /* Title */
+            if (title != null) {
+                out.write(" title=\"");
+                out.write(title);
+                out.write("\"");
+            }
 
             /* Type */
             out.write(" type=\"");

@@ -1,7 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 
 <cti:msg var="pageTitle" key="yukon.common.device.groupMeterRead.home.pageTitle"/>
 <cti:msg var="selectAttributeLabel" key="yukon.common.device.groupMeterRead.home.selectAttributeLabel"/>
@@ -37,7 +36,7 @@
 	   		<cti:deviceCollection deviceCollection="${deviceCollection}" />
 	   		
 	        <div class="largeBoldLabel">${selectAttributeLabel}:</div>
-	        <amr:attributeSelector attributes="${allGroupedReadableAttributes}" fieldName="attribute" 
+	        <tags:attributeSelector attributes="${allGroupedReadableAttributes}" fieldName="attribute" 
                 selectedAttributes="${selectedAttributes}" multipleSize="8" groupItems="true"/>
 	   		<%-- READ BUTTON --%>
 			<tags:slowInput myFormId="groupMeterReadForm" labelBusy="${readButtonText}" label="${readButtonText}"/>

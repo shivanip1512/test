@@ -3,6 +3,7 @@ package com.cannontech.amr.archivedValueExporter.model;
 import com.cannontech.common.i18n.DisplayableEnum;
 
 public enum ArchivedValuesExportFormatType implements DisplayableEnum {
+    
     FIXED_ATTRIBUTE,
     DYNAMIC_ATTRIBUTE;
 
@@ -12,4 +13,9 @@ public enum ArchivedValuesExportFormatType implements DisplayableEnum {
     public String getFormatKey() {
         return baseKey + name();
     }
+    
+    public String getDescription() {
+        return baseKey + name() + ".description";
+    }
+    
 }

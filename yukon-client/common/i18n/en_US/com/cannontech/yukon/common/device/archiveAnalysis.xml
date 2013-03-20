@@ -133,8 +133,6 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.scheduleHeader">Schedule</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.nextRunHeader">Next Run</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.actionsHeader">Actions</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.edit.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.edit.hoverText">Edit this schedule</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.history.imageUrl">/WebConfig/yukon/Icons/script.gif</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.history.hoverText">View export history</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.delete.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
@@ -164,7 +162,11 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.CREATE.pageDescription">Create</entry>
 
     <entry key="yukon.web.modules.amr.archivedValueExporter.formatType">Format Type</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.existingFormat">Existing Format</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.existingFormat">Format</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.chooseDevices.tooltip">Click to select devices</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.noDevices.tooltip">Select some devices</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.selectFormatType">Select Format Type</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.createNewFormat.title">Create New Format</entry>
 
     <entry key="yukon.web.modules.amr.archivedValueExporter.createdFormat">Created the format {0}</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.updatedFormat">Updated the format {0}</entry>
@@ -192,7 +194,7 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.pattern">Pattern</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.fieldSize">Field Size</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.padding">Padding</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.preview.title">Preview:</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.preview.title">Preview</entry>
     
     <entry key="yukon.web.modules.amr.archivedValueExporter.editAttribute.title">Edit Attribute</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.addAttribute.title">Add Attribute</entry>
@@ -213,7 +215,7 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.field">Field</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.unsupportedField">Unsupported Field</entry>
     
-    <entry key="yukon.web.modules.amr.archivedValueExporter.generateReport.title">Report:</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.generateReport.title">Report</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.fieldSelection.title">Field Selection</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.defineLayout.title">Define Layout</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.otherOptions.title">Other Options</entry>
@@ -280,6 +282,8 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.attributeFieldOption">{0} ({1}, {2})</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.formatType.FIXED_ATTRIBUTE">Fixed Attribute</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.formatType.DYNAMIC_ATTRIBUTE">Dynamic Attribute</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.formatType.FIXED_ATTRIBUTE.description">This format supports multiple attribute selection as part of the format definition. Results will contain at most one row per device. Commonly used for exporting most recent reading for one or more devices.</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.formatType.DYNAMIC_ATTRIBUTE.description">This format supports multiple attribute selection as part of the inputs to running the export. Results may contain multiple rows per device and attribute. Commonly used for exporting multiple readings over a given date range for one or more devices.</entry>
 
     <!-- archivedValueExporter validation -->
     <entry key="yukon.web.modules.amr.archivedValueExporter.formatError.formatNameRequired">The name of format cannot be blank.</entry>
