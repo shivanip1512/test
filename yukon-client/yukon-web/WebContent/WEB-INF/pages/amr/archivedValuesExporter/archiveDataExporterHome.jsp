@@ -246,7 +246,7 @@ jQuery(function() {
 										<cti:url var="deleteUrl" value="deleteJob">
 											<cti:param name="jobId" value="${job.id}"/>
 										</cti:url>
-										<cti:button nameKey="delete" renderMode="image" href="${deleteUrl}"/>
+										<cti:button nameKey="remove" renderMode="image" href="${deleteUrl}"/>
 									</td>
 								</tr>
 							</c:forEach>

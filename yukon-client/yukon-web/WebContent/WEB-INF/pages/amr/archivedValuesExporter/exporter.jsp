@@ -162,10 +162,11 @@
                 <cti:msg2 var="cancelBtnMsg" key=".cancel"/>
             </cti:msgScope>
             var buttons = [];
-            var okButton = {'text' : '${okBtnMsg}'};
+            var okButton = {'text' : '${okBtnMsg}', 'class': 'primary'};
             okButton.click = function() { jQuery('#attributeDialog').trigger('editAttributeOkPressed'); };
             buttons.push(okButton);
             buttons.push({'text' : '${cancelBtnMsg}', 'click' : function() { jQuery(this).dialog('close'); }});
+            
             var dialogOpts = {
                       'title' : '${titleMsg}',
                       'position' : 'center',
@@ -182,7 +183,7 @@
                <cti:msg2 var="cancelBtnMsg" key=".cancel"/>
              </cti:msgScope>
              var buttons = [];
-             var okButton = {'text' : '${okBtnMsg}'};
+             var okButton = {'text' : '${okBtnMsg}', 'class': 'primary'};
              okButton.click = function() { jQuery('#fieldDialog').trigger('editFieldOkPressed'); };
              buttons.push(okButton);
              buttons.push({'text' : '${cancelBtnMsg}', 'click' : function() { jQuery(this).dialog('close'); }});
@@ -345,6 +346,7 @@
                             <th><i:inline key=".actions" /></th>
                         </tr>
                     </thead>
+                    <tfoot></tfoot>
                     <tbody>
                         <c:forEach var="attribute" items="${attributes}" varStatus="row">
                             <tr data-row-index="${row.index}">
@@ -359,13 +361,11 @@
                                 </td>
                             </tr>
                         </c:forEach>
-                        <tr>
-                            <td align="right" colspan="4"><br> <cti:button id="addAttributeBtn" nameKey="add" styleClass="f_blocker" />
-                            </td>
-                        </tr>
                     </tbody>
-                    <tfoot></tfoot>
                 </table>
+                <div class="actionArea">
+                    <cti:button id="addAttributeBtn" nameKey="add" styleClass="f_blocker" />
+                </div>
             </tags:boxContainer2>
         </c:if>
 
@@ -443,11 +443,11 @@
                             <tags:hidden path="format.fields[${row.index}].missingAttributeValue" />
                         </tr>
                     </c:forEach>
-                    <tr>
-                        <td align="right" colspan="10"><br> <cti:button id="addFieldBtn" nameKey="add" styleClass="f_blocker" /></td>
-                    </tr>
                 </tbody>
             </table>
+            <div class="actionArea">
+                <cti:button id="addFieldBtn" nameKey="add" styleClass="f_blocker" />
+            </div>
         </tags:boxContainer2>
         
         <c:if test="${not empty backingBean.format.fields}">
@@ -467,7 +467,6 @@
             </c:if>
 
             <cti:button nameKey="cancel" href="view" />
-            <br>
         </div>
     </form:form>
 </cti:standardPage>

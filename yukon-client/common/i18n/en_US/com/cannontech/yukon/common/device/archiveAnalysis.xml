@@ -135,8 +135,7 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.actionsHeader">Actions</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.history.imageUrl">/WebConfig/yukon/Icons/script.gif</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.history.hoverText">View export history</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.delete.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.delete.hoverText">Delete this schedule</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.remove.hoverText">Delete this schedule</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.noJobs">No scheduled archived data exports exist.</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.deletedJobSuccess">Job "{0}" successfully deleted.</entry>
 

@@ -52,9 +52,10 @@ jQuery(document).ready(function() {
     var dialogDiv = jQuery('#${id}');
     var buttons = [];
     <c:if test="${okEvent != 'none'}">
-        var okButton = {'text' : '${okBtnMsg}'};
-        okButton.click = function() { dialogDiv.trigger('${okEvent}'); }
+        var okButton = {'text' : '${okBtnMsg}', 'click': function() { dialogDiv.trigger('${okEvent}'); }, 'class': 'primary'};
+        var cancelButton = {'text' : '${cancelBtnMsg}', 'click' : function() { jQuery(this).dialog('close'); }};
         buttons.push(okButton);
+        buttons.push(cancelButton);
     </c:if>
     <c:if test="${okEvent == 'none'}">
         buttons.push({'text' : '${closeBtnMsg}', 'click' : function() { jQuery(this).dialog('close'); }});
