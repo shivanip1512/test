@@ -9,15 +9,22 @@
 <%@ attribute name="helpText" required="false" type="java.lang.String"%>
 <%@ attribute name="escapeTitle" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="hideEnabled" required="false" type="java.lang.Boolean" %>
+<%@ attribute name="hideInitially" required="false" type="java.lang.Boolean" %>
 
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
 <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
 
-<c:if test="${hideEnabled}"><c:set var="h3Class" value="toggle-title"/></c:if>
+<c:if test="${hideEnabled}">
+    <c:set var="h3Class" value="toggle-title"/>
+</c:if>
+<c:if test="${hideEnabled and hideInitially}">
+    <c:set var="collapsed" value="collapsed"/>
+    <c:set var="hideMe" value="dn"/>
+</c:if>
 
 <cti:uniqueIdentifier prefix="sectionContainer_" var="thisId"/>
 
-<div class="titledContainer sectionContainer ${pageScope.styleClass}" <c:if test="${not empty pageScope.id}">id="${pageScope.id}"</c:if>>
+<div class="titledContainer sectionContainer ${collapsed} ${pageScope.styleClass}" <c:if test="${not empty pageScope.id}">id="${pageScope.id}"</c:if>>
     
     <div class="titleBar sectionContainer_titleBar">
         <div class="titleBar sectionContainer_title">
@@ -41,7 +48,7 @@
     </div>
     
     <%-- BODY --%>
-    <div id="${thisId}_content" class="content sectionContainer sectionContainer_content">
+    <div id="${thisId}_content" class="content sectionContainer sectionContainer_content ${hideMe}">
         <jsp:doBody/>
     </div>    
 

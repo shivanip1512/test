@@ -2,7 +2,7 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
     <!-- breadcrumb placeholder -->
-    <entry key="yukon.web.modules.amr.deviceDataProcessing.pageName">Device Data Processing</entry>
+    <entry key="yukon.web.modules.amr.deviceDataProcessing.pageName">Device Data Monitor</entry>
 
 	<!-- DeviceDataMonitorWidget render.jsp -->
     <entry key="yukon.web.widgetClasses.DeviceDataMonitorsWidget.noMonitors">No Monitors</entry>
@@ -33,8 +33,6 @@
     <entry key="yukon.web.modules.amr.deviceDataMonitor.supportedDevices">Supported Count</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.supportedDevices.help"><![CDATA[The number of devices within the monitoring device group (and all it's child groups) that support having <strong>all</strong> of the assigned processors. Because of this there can be more missing points than supported]]></entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.supportedDevicesMessage"><![CDATA[missing required {0,choice,1#point|1<points} [{1}]]]></entry>
-    <entry key="yukon.web.modules.amr.deviceDataMonitor.popupInfo.deviceGroup">Device Group</entry>
-    <entry key="yukon.web.modules.amr.deviceDataMonitor.popupInfo.deviceGroup.title">Device Group</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.monitoring">Monitoring</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.monitoring.help">Whether or not this monitor is enabled or disabled. Note: when a monitor is disabled any violating devices are cleared out</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.enabledtrue">Enabled</entry>
@@ -45,37 +43,23 @@
     <entry key="yukon.web.modules.amr.deviceDataMonitor.processors.title">Processors</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.settings.helpDialog.title">Monitor Settings Help</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.processors.helpDialog.title">Monitor Processors Help</entry>
-    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingPoints.helpDialog.title">Monitor Missing Points Help</entry>
-    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingPoints.helpDialog.whatDoesThisMeanTitle">What does this mean?</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingPoints.helpDialog.whatDoesThisMean.title">What does this mean?</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.missingPoints.helpDialog.whatDoesThisMeanBody"><![CDATA[
-        Points contained in this list either do not have the point created for a given device or the point is created, however it has a different state group than what is assigned in your monitor's processor.
-        
-        For example, say the following is displayed in your list:
-        
+        Points contained in this list either do not have the point created for a given device or the point is created, however it has a different state group than what is assigned in your monitor's processor.  For example, say the following is displayed in your list:
         <br><br>
-        <span style="margin-left: 20px; background-color: #f2f2f2; border: 1px dashed #aaa; padding: 5px">
-        Current Loss (TrueFalse - default: Event Status) : <span class="errorMessage">247</span>
-        </span>
+        <span style="margin-left: 20px; background-color: #f2f2f2; border: 1px dashed #aaa; padding: 5px">Current Loss (TrueFalse - default: Event Status) : <span class="errorMessage">247</span></span>
         <br><br>
-        
-        This means that 247 of your total supported monitoring devices either
-        <br>
-        1) Are missing the "Current Loss" point (with a State Group of "TrueFalse")
-        <br>
-        or
-        <br>
-        2) Have the "Current Loss" point, but have a State Group other than "TrueFalse" assigned
+        This means that 247 of your total supported monitoring devices either:
+        <br><br>
+        1: Are missing the "Current Loss" point (with a State Group of "TrueFalse").
+        <br><br>or<br><br>
+        2: Have the "Current Loss" point, but have a State Group other than "TrueFalse" assigned.
         <br><br>
         The "default: Event Status" is simply to let you know that the default State Group for the "Current Loss" point is "Event Status" (meaning there is a good chance "Event Status" is the 
-        State Group that your monitoring devices would have and not "TrueFalse")
+        State Group that your monitoring devices would have and not "TrueFalse").
     ]]></entry>
-    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingPoints.helpDialog.addPointsTitle">What does Add Points do?</entry>
-    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingPoints.helpDialog.addPointsBody"><![CDATA[
-        Clicking on "Add Points" will bring you to a different page that will let you add supported points to your monitoring devices.
-        This page does not have the ability to change the State Group of existing points, however. So, in the example above, this
-        page would not be helpful if your 247 devices already had the "Current Loss" point, but had a different State Group than "TrueFalse". 
-        To remedy that situation you would need to change them individually using Database Editor.
-    ]]></entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingPoints.helpDialog.addPoints.title">What does Add Points do?</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingPoints.helpDialog.addPointsBody">Clicking on "Add Points" will bring you to a different page that will let you add supported points to your monitoring devices.  This page does not have the ability to change the State Group of existing points, however. So, in the example above, this page would not be helpful if your 247 devices already had the "Current Loss" point, but had a different State Group than "TrueFalse".  To remedy that situation you would need to change them individually using Database Editor.</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.processors.helpDialog.findingViolations.title">Finding Violating Devices</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.processors.helpDialog.findingViolations.body">These processors are what this monitor will use for finding devices that have points with matching current values to these (aka violating devices). The monitor will add a device to the violation group when one or more processors match the devices current value. In order for a processor to match a device the device must have an assigned point with a matching attribute, state group, and state to that of the processor.</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.processors.helpDialog.addingRemoving.title">Adding and removing from the Violations Group</entry>
@@ -100,7 +84,8 @@
     <entry key="yukon.web.modules.amr.deviceDataMonitor.areYouSureMissing">There are missing points on this monitor's supported devices. It is advised (for performance reasons) that these missing points are added prior to {0} your monitor.</entry>
     
     <!-- DeviceDataMonitorController edit.jsp (create) -->
-    <entry key="yukon.web.modules.amr.deviceDataMonitor.CREATE.pageName">New Device Data Monitor</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.CREATE.pageName">Create Monitor</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.CREATE.contextualPageName">Create</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.CREATE.setup.title">Setup</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.CREATE.areYouSureTitleVerb">create</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.CREATE.areYouSureMsgVerb">creating</entry>

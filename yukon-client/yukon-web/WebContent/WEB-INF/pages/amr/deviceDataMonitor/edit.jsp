@@ -41,15 +41,11 @@
 							<tags:inputNameValue nameKey=".name" path="name" size="50" maxlength="50" />
 							
 			                <%-- device group --%>
-			                <cti:msg2 var="deviceGroupTitle" key=".popupInfo.deviceGroup.title"/>
 			                <tags:nameValue2 nameKey=".deviceGroup">
 			                    <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
 			                    <tags:deviceGroupNameSelector fieldName="groupName"
 			                        fieldValue="${monitor.groupName}" dataJson="${groupDataJson}"
 			                        linkGroupName="true" submitCallback="DeviceDataMonitor._device_group_changed();"/>
-			                    <tags:helpInfoPopup title="${deviceGroupTitle}">
-			                        <cti:msg2 key=".popupInfo.deviceGroup"/>
-			                    </tags:helpInfoPopup>
 			                </tags:nameValue2>
 
 							<tags:nameValue2 nameKey=".deviceGroupCount">
@@ -185,8 +181,8 @@
         </div>
 	</form:form>
 
-	<cti:msg2 var="updateCreateTitleVerb" key=".areYouSureTitleVerb" />
-	<cti:msg2 var="updateCreateMsgVerb" key=".areYouSureMsgVerb" />
+	<cti:msg2 var="updateCreateTitleVerb" key=".${mode}.areYouSureTitleVerb"/>
+	<cti:msg2 var="updateCreateMsgVerb" key=".${mode}.areYouSureMsgVerb"/>
 	<c:set var="errorHeader">
         <h2 class="errorMessage standardPageHeading"><i:inline key="yukon.common.warning"/></h2>
     </c:set>

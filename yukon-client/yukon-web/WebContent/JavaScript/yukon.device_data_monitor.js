@@ -35,6 +35,7 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
         _missing_or_no_group_text:       ".f_missing_or_no_stategroup_text",
         _are_missing_points_text:        ".f_are_missing_points_text",
         _view_details_text:              ".f_view_details_text",
+        _add_points_text:              ".f_add_points_text",
 
         // "are you sure" update dialog
         _update_dialog_ids:              "#update_loading_dialog, #update_missing_dialog",
@@ -69,8 +70,8 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
             }
 
             // add our help icons next to the two column titles (Settings and Processors)
-            jQuery('.f_settings_section .sectionContainer_title, .f_settings_section h3').addClass('labeled_icon icon_help f_open_settings_help');
-            jQuery('.f_processors_section .sectionContainer_title').addClass('labeled_icon icon_help f_open_processors_help');
+            jQuery('.f_settings_section .formElementContainer_title h3').addClass('labeled_icon_right icon_help f_open_settings_help');
+            jQuery('.f_processors_section .sectionContainer_title h3').addClass('labeled_icon_right icon_help f_open_processors_help');
 
             this._initialized = true;
         },
@@ -112,13 +113,15 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
         },
         
         _supported_details_toggle: function(e) {
-            jQuery(e.target).closest(DeviceDataMonitor._supported_count).next().toggle();
+            var opts = {width: 500, height: "auto"};
+            jQuery(DeviceDataMonitor._supported_count_details).dialog(opts);
         },
         
         _device_group_changed: function() {
             // show the loading element and hide the count
             jQuery(DeviceDataMonitor._device_group_count).prev().show();
             jQuery(DeviceDataMonitor._device_group_count).hide();
+            var groupName = jQuery('#groupName').val();
 
             // check to see if we have a pending request that we need to cancel
             if (DeviceDataMonitor._group_count_xhr && DeviceDataMonitor._group_count_xhr !== 'undefined') {
@@ -126,7 +129,7 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
             }
             DeviceDataMonitor._group_count_xhr = jQuery.ajax({
                 url: DeviceDataMonitor._url_device_group_count,
-                data: {'groupName': jQuery('#groupName').val()},
+                data: {'groupName': groupName},
                 success: function(data) {
                     jQuery(DeviceDataMonitor._device_group_count).text(data.count);
                     jQuery(DeviceDataMonitor._device_group_count).prev().hide();
@@ -134,6 +137,8 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
                 }
             });
             DeviceDataMonitor._get_supported_counts();
+            
+            jQuery(".f_add_points_btn").attr('href', '/bulk/addPoints/home?collectionType=group&group.name=' + encodeURIComponent(groupName));
         },
         
         _get_supported_counts: function(params) {
@@ -188,7 +193,7 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
                 return;
             }
             
-            var missing_ul = '<h5 class="labeled_icon icon_help fn f_open_missing_help" style="margin: 5px 0;">' + jQuery(DeviceDataMonitor._missing_or_no_group_text).val() + '</h5><ul class="disc liteContainer" style="margin: 7px 0;">';
+            var missing_ul = '<ul class="disc" style="margin: 7px 0;">';
             for (var i=0; i< data.missingPointList.length; i++) {
                 missing_ul += '<li>' + data.missingPointList[i] + '</li>';
             }

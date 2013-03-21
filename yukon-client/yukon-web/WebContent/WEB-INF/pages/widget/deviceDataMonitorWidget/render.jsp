@@ -19,7 +19,7 @@
 		<table class="compactResultsTable">
             <thead>
 				<tr>
-					<th></th>
+					<th style="width:20px;">&nbsp;</th>
 					<th><i:inline key=".name"/></th>
 					<th><i:inline key=".violations"/></th>
 					<th><i:inline key=".monitoring"/></th>

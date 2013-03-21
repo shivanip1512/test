@@ -5,12 +5,13 @@
 <%@ attribute name="id" required="false" type="java.lang.String"%>
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 <%@ attribute name="hideEnabled" required="false" type="java.lang.Boolean" %>
+<%@ attribute name="hideInitially" required="false" type="java.lang.Boolean" %>
 
 <cti:msgScope paths=".${nameKey},">
 	<cti:msg2 var="title" key=".title"/>
 	<cti:msg2 var="helpText" key=".helpText" blankIfMissing="true"/>
 </cti:msgScope>
 
-<tags:sectionContainer title="${pageScope.title}" id="${pageScope.id}" styleClass="${pageScope.styleClass}" helpText="${pageScope.helpText}" hideEnabled="${pageScope.hideEnabled}">
+<tags:sectionContainer title="${pageScope.title}" id="${pageScope.id}" styleClass="${pageScope.styleClass}" helpText="${pageScope.helpText}" hideEnabled="${pageScope.hideEnabled}" hideInitially="${pageScope.hideInitially}">
 	<jsp:doBody/>
 </tags:sectionContainer>

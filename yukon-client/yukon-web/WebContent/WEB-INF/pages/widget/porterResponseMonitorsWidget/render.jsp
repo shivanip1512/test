@@ -17,50 +17,54 @@
 <c:choose>
 	<c:when test="${fn:length(monitors) > 0}">
 		<table class="compactResultsTable">
-			<tr>
-				<th style="width: 20px;">&nbsp;</th>
-				<th><i:inline key=".name"/></th>
-				<th style="text-align: right; width: 80px;"><i:inline key=".enabled"/></th>
-			</tr>
-
-			<c:forEach var="monitor" items="${monitors}">
-				<c:set var="tdClass" value="" />
-				<c:if test="${monitor.evaluatorStatus == 'DISABLED'}">
-					<c:set var="tdClass" value="subtle" />
-				</c:if>
-
-				<tr>
-					<cti:url var="viewMonitorUrl" value="/amr/porterResponseMonitor/viewPage">
-						<cti:param name="monitorId" value="${monitor.monitorId}" />
-					</cti:url>
-
-					<%-- action icons --%>
-					<td>
-                        <cti:button nameKey="edit" renderMode="image" href="${viewMonitorUrl}" arguments="${monitor.name}"/>
-					</td>
-
-					<%-- monitor name --%>
-					<td class="${tdClass}">
-						<a href="${viewMonitorUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${monitor.name}"/>">${fn:escapeXml(monitor.name)}</a>
-					</td>
-
-					<%-- enable/disable --%>
-					<td class="${tdClass}" style="text-align: right;">
-						<c:choose>
-							<c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
-								<tags:widgetActionRefreshImage method="toggleEnabled"
-									nameKey="disable" arguments="${monitor.name}"
-									monitorId="${monitor.monitorId}"/>
-							</c:when>
-							<c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
-								<tags:widgetActionRefreshImage method="toggleEnabled"
-									nameKey="enable" arguments="${monitor.name}"
-									monitorId="${monitor.monitorId}" checked="false"/>
-							</c:when>
-						</c:choose>
-					</td>
-				</tr>
-			</c:forEach>
+            <thead>
+    			<tr>
+    				<th style="width: 20px;">&nbsp;</th>
+    				<th><i:inline key=".name"/></th>
+    				<th style="text-align: right; width: 80px;"><i:inline key=".enabled"/></th>
+    			</tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+    			<c:forEach var="monitor" items="${monitors}">
+    				<c:set var="tdClass" value="" />
+    				<c:if test="${monitor.evaluatorStatus == 'DISABLED'}">
+    					<c:set var="tdClass" value="subtle" />
+    				</c:if>
+    
+    				<tr>
+    					<cti:url var="viewMonitorUrl" value="/amr/porterResponseMonitor/viewPage">
+    						<cti:param name="monitorId" value="${monitor.monitorId}" />
+    					</cti:url>
+    
+    					<%-- action icons --%>
+    					<td>
+                            <cti:button nameKey="edit" renderMode="image" href="${viewMonitorUrl}" arguments="${monitor.name}"/>
+    					</td>
+    
+    					<%-- monitor name --%>
+    					<td class="${tdClass}">
+    						<a href="${viewMonitorUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${monitor.name}"/>">${fn:escapeXml(monitor.name)}</a>
+    					</td>
+    
+    					<%-- enable/disable --%>
+    					<td class="${tdClass}" style="text-align: right;">
+    						<c:choose>
+    							<c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
+    								<tags:widgetActionRefreshImage method="toggleEnabled"
+    									nameKey="disable" arguments="${monitor.name}"
+    									monitorId="${monitor.monitorId}"/>
+    							</c:when>
+    							<c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
+    								<tags:widgetActionRefreshImage method="toggleEnabled"
+    									nameKey="enable" arguments="${monitor.name}"
+    									monitorId="${monitor.monitorId}" checked="false"/>
+    							</c:when>
+    						</c:choose>
+    					</td>
+    				</tr>
+    			</c:forEach>
+            </tbody>
 		</table>
 	</c:when>
 	<c:otherwise>
