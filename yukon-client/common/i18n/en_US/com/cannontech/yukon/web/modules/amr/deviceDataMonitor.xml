@@ -81,7 +81,7 @@
     
     <entry key="yukon.web.modules.amr.deviceDataMonitor.areYouSureUpdateOrCreateDialog.title">Are you sure you want to {0} this monitor?</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.areYouSureLoading">The number of supported devices for this monitor are still being calculated. It is advised (for performance reasons) that any missing points are added prior to {0} your monitor.</entry>
-    <entry key="yukon.web.modules.amr.deviceDataMonitor.areYouSureMissing">There are missing points on this monitor's supported devices. It is advised (for performance reasons) that these missing points are added prior to {0} your monitor.</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.areYouSureMissing">There are missing points on this monitor''s supported devices. It is advised (for performance reasons) that these missing points are added prior to {0} your monitor.</entry>
     
     <!-- DeviceDataMonitorController edit.jsp (create) -->
     <entry key="yukon.web.modules.amr.deviceDataMonitor.CREATE.pageName">Create Monitor</entry>
