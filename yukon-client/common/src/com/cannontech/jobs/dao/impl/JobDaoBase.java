@@ -12,6 +12,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -95,7 +96,7 @@ public class JobDaoBase implements InitializingBean {
             int jobPropertyId = nextValueHelper.getNextValue("JobProperty");
             int jobId = job.getId();
             String name = jobProperty.getKey();
-            String value = jobProperty.getValue();
+            String value = SqlUtils.convertStringToDbValue(jobProperty.getValue());
             yukonJdbcTemplate.update(insertSql.toString(), jobPropertyId, jobId, name, value);
         }
     }

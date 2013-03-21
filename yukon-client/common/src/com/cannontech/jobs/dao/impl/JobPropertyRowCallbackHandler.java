@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.springframework.jdbc.core.RowCallbackHandler;
 
+import com.cannontech.database.SqlUtils;
+
 class JobPropertyRowCallbackHandler implements RowCallbackHandler {
     private final Map<String, String> propertyMap;
 
@@ -15,7 +17,7 @@ class JobPropertyRowCallbackHandler implements RowCallbackHandler {
 
     public void processRow(ResultSet rs) throws SQLException {
         String name = rs.getString("name");
-        String value = rs.getString("value");
+        String value = SqlUtils.convertDbValueToString(rs, "value");
         propertyMap.put(name, value);
     }
 }
