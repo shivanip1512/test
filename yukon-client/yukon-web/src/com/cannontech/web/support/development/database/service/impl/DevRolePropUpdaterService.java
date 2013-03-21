@@ -187,6 +187,7 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
                 setRoleProperty(group, YukonRoleProperty.ALLOW_SUBBUS_CONTROLS,true);
                 setRoleProperty(group, YukonRoleProperty.ALLOW_FEEDER_CONTROLS,true);
                 setRoleProperty(group, YukonRoleProperty.ALLOW_CAPBANK_CONTROLS,true);
+                setRoleProperty(group, YukonRoleProperty.CAP_CONTROL_IMPORTER, true);
                 results.put(YukonRole.CBC_SETTINGS, true);
             } else {
                 results.put(YukonRole.CBC_SETTINGS, false);
@@ -222,6 +223,7 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
                 setRoleProperty(group, YukonRoleProperty.LOAD_GROUP_CONTROL_STATISTICS,true);
                 setRoleProperty(group, YukonRoleProperty.LOAD_GROUP_REDUCTION,true);
                 setRoleProperty(group, YukonRoleProperty.LOAD_GROUP_LOAD_CAPACITY,true);
+                setRoleProperty(group, YukonRoleProperty.IGNORE_PER_PAO_PERMISSIONS, true);
                 results.put(YukonRole.LM_DIRECT_LOADCONTROL, true);
             } else {
                 results.put(YukonRole.LM_DIRECT_LOADCONTROL, false);
