@@ -11,7 +11,7 @@ import com.google.common.collect.ImmutableSet;
 public enum FieldType implements Displayable{
     METER_NUMBER("Meter Number"),
     DEVICE_NAME("Device Name"),
-    ADDRESS("Address"),
+    ADDRESS("Address/Serial Number"),
     ROUTE("Route"),
     PLAIN_TEXT("Plain Text"),
     ATTRIBUTE("Attribute"),

@@ -19,7 +19,7 @@ public class MockAttributeServiceImpl extends AttributeServiceImpl {
     private static final Map<YukonPao, Map<Attribute, LitePoint>> paoToAttributeToPoints = new HashMap<>();
     static {
         Map<Attribute, LitePoint> meterOneAttributeToPoints = new HashMap<>();
-        paoToAttributeToPoints.put(METER_ONE, meterOneAttributeToPoints);
+        paoToAttributeToPoints.put(METER_MCT410FL, meterOneAttributeToPoints);
         meterOneAttributeToPoints.put(USAGE, USAGE_POINT_ONE);
         meterOneAttributeToPoints.put(PEAK_DEMAND, PEAK_DEMAND_POINT_ONE);
         meterOneAttributeToPoints.put(PEAK_KVAR, PEAK_KVAR_POINT_ONE);

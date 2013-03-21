@@ -13,25 +13,33 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class MockMeterDaoImpl extends MeterDaoImpl {
-    public static final Meter METER_ONE = new Meter();
+    public static final Meter METER_MCT410FL = new Meter();
     static {
-        METER_ONE.setAddress("Address A");
-        METER_ONE.setDisabled(false);
-        METER_ONE.setMeterNumber("Meter Number 1");
-        METER_ONE.setName("MCT410FL 1");
-        METER_ONE.setPaoIdentifier(new PaoIdentifier(11, MCT410FL));
-        METER_ONE.setRoute("Route A");
-        METER_ONE.setRouteId(1);
+        METER_MCT410FL.setAddress("Address A");
+        METER_MCT410FL.setDisabled(false);
+        METER_MCT410FL.setMeterNumber("Meter Number 1");
+        METER_MCT410FL.setName("MCT410FL 1");
+        METER_MCT410FL.setPaoIdentifier(new PaoIdentifier(11, MCT410FL));
+        METER_MCT410FL.setRoute("Route A");
+        METER_MCT410FL.setRouteId(1);
     };
-    public static final Meter METER_TWO = new Meter();
+    public static final Meter METER_MCT410IL = new Meter();
     static {
-        METER_TWO.setAddress("Address B");
-        METER_TWO.setDisabled(false);
-        METER_TWO.setMeterNumber("Meter Number 2");
-        METER_TWO.setName("MCT410IL 2");
-        METER_TWO.setPaoIdentifier(new PaoIdentifier(12, MCT410IL));
-        METER_TWO.setRoute("Route A");
-        METER_TWO.setRouteId(1);
+        METER_MCT410IL.setAddress("Address B");
+        METER_MCT410IL.setDisabled(false);
+        METER_MCT410IL.setMeterNumber("Meter Number 2");
+        METER_MCT410IL.setName("MCT410IL 2");
+        METER_MCT410IL.setPaoIdentifier(new PaoIdentifier(12, MCT410IL));
+        METER_MCT410IL.setRoute("Route A");
+        METER_MCT410IL.setRouteId(1);
+    };
+
+    public static final Meter METER_RFN410FL = new Meter();
+    static {
+        METER_RFN410FL.setDisabled(false);
+        METER_RFN410FL.setMeterNumber("Meter Number 3");
+        METER_RFN410FL.setName("RFN410FL 3");
+        METER_RFN410FL.setPaoIdentifier(new PaoIdentifier(13, RFN410FL));
     };
 
     public static final Meter NULL_VALUED_METER = new Meter();
@@ -42,7 +50,7 @@ public class MockMeterDaoImpl extends MeterDaoImpl {
         NULL_VALUED_METER.setPaoIdentifier(new PaoIdentifier(13, MCT410IL));
     };
     
-    private List<Meter> meters = Lists.newArrayList(METER_ONE, METER_TWO, NULL_VALUED_METER);
+    private List<Meter> meters = Lists.newArrayList(METER_MCT410FL, METER_MCT410IL, METER_RFN410FL, NULL_VALUED_METER);
     private Map<String, Meter> meterNumberToMeter;
     {
         meterNumberToMeter =

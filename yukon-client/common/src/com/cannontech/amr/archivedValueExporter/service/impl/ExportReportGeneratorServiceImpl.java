@@ -23,6 +23,7 @@ import com.cannontech.amr.archivedValueExporter.model.FieldType;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
 import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorService;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -31,6 +32,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
@@ -51,6 +53,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     @Autowired private AttributeService attributeService;
     @Autowired private PointDao pointDao;
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private UnitMeasureDao unitMeasureDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
@@ -250,6 +253,13 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             case DEVICE_NAME:
                 return meter.getName();
             case ADDRESS:
+                if (StringUtils.isEmpty(meter.getAddress())) {
+                    if (meter.getPaoType().isRfn()) {
+                        RfnDevice rfnDevice = rfnDeviceDao.getDevice(meter);
+                        return rfnDevice.getRfnIdentifier().getSensorSerialNumber();
+                    }
+                }
+                
                 return meter.getAddress();
             case PLAIN_TEXT:
                 return field.getPattern();
@@ -379,6 +389,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             if (StringUtils.isEmpty(value)) {
                 switch (field.getMissingAttribute()) {
                     case LEAVE_BLANK:
+                        value = "";
                         break;
                     case FIXED_VALUE:
                         // User have selected a missing attribute value to display in case value was not found

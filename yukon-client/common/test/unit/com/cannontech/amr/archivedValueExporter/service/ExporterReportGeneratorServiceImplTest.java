@@ -51,6 +51,8 @@ import com.cannontech.amr.archivedValueExporter.service.impl.ExportReportGenerat
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.dao.MockMeterDaoImpl;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.rfn.dao.MockRfnDeviceDaoImpl;
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.MockAttributeServiceImpl;
 import com.cannontech.core.dao.MockRawPointHistoryDaoImpl;
@@ -67,8 +69,9 @@ import com.google.common.collect.Lists;
 public class ExporterReportGeneratorServiceImplTest {
     private AttributeService attributeService = new MockAttributeServiceImpl();
     private MeterDao meterDao = new MockMeterDaoImpl();
-    private UnitMeasureDao unitMeasureDao = new MockUnitMeasureDaoImpl();
+    private RfnDeviceDao rfnDeviceDao = new MockRfnDeviceDaoImpl();
     private RawPointHistoryDao rawPointHistoryDao = new MockRawPointHistoryDaoImpl();
+    private UnitMeasureDao unitMeasureDao = new MockUnitMeasureDaoImpl();
     
     StaticMessageSource messageSource = new StaticMessageSource();
     {
@@ -89,6 +92,7 @@ public class ExporterReportGeneratorServiceImplTest {
         ReflectionTestUtils.setField(exporterReportGeneratorService, "attributeService", attributeService);
         ReflectionTestUtils.setField(exporterReportGeneratorService, "messageSourceResolver", messageSourceResolver);
         ReflectionTestUtils.setField(exporterReportGeneratorService, "rawPointHistoryDao", rawPointHistoryDao);
+        ReflectionTestUtils.setField(exporterReportGeneratorService, "rfnDeviceDao", rfnDeviceDao);
         ReflectionTestUtils.setField(exporterReportGeneratorService, "unitMeasureDao", unitMeasureDao);
     }
 
@@ -189,6 +193,11 @@ public class ExporterReportGeneratorServiceImplTest {
         String addressValue = exporterReportGeneratorService.getValue(meterExportFieldAddress, meter, null, pointValueQualityHolder, userContextOne);
 
         Assert.assertEquals(addressValue, "Address A");
+
+        Meter rfnMeter = meterDao.getForMeterNumber("Meter Number 3");
+        String rfnSerialNumberValue = exporterReportGeneratorService.getValue(meterExportFieldAddress, rfnMeter, null, pointValueQualityHolder, userContextOne);
+
+        Assert.assertEquals("410987654", rfnSerialNumberValue);
         
         ExportField meterExportFieldRoute = getExportField(0, ROUTE);
         String routeValue = exporterReportGeneratorService.getValue(meterExportFieldRoute, meter, null, pointValueQualityHolder, userContextOne);
