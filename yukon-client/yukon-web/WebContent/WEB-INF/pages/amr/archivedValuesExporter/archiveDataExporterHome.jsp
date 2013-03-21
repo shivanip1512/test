@@ -156,6 +156,9 @@ jQuery(function() {
         <div class="col1">
             <!-- Create/edit -->
 		    <tags:boxContainer2 nameKey="generateReport" styleClass="stacked">
+                <c:if test="${empty allFormats}">
+                    <span class="empty-list"><i:inline key=".noFormatsCreated"/></span>
+                </c:if>
 		        <form:form id="exporterForm" commandName="archivedValuesExporter" action="${action}">
 			        <form:hidden path="archivedValuesExportFormatType"/>
 			        <cti:deviceCollection deviceCollection="${archivedValuesExporter.deviceCollection}" />
@@ -208,8 +211,10 @@ jQuery(function() {
                         <cti:button id="runButton" nameKey="run" title="${runScheduleTitle}" disabled="${disableRunSchedule}" styleClass="fl" />
                         <cti:button id="scheduleButton" nameKey="schedule" title="${runScheduleTitle}" disabled="${disableRunSchedule}" styleClass="fl"/>
                     </c:if>
-                    <cti:button nameKey="edit" href="edit" styleClass="edit fl"/>
-                    <cti:button nameKey="copy" href="copy" styleClass="copy fl"/>
+                    <c:if test="${not empty allFormats}">
+                        <cti:button nameKey="edit" href="edit" styleClass="edit fl"/>
+                        <cti:button nameKey="copy" href="copy" styleClass="copy fl"/>
+                    </c:if>
                     <cti:button nameKey="create" id="create-format-button"/>
                 </div>
 			</tags:boxContainer2>

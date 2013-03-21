@@ -136,7 +136,7 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.history.imageUrl">/WebConfig/yukon/Icons/script.gif</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.history.hoverText">View export history</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.remove.hoverText">Delete this schedule</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.noJobs">No scheduled archived data exports exist.</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.noJobs">No archived data exports have been scheduled.</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.deletedJobSuccess">Job "{0}" successfully deleted.</entry>
 
     <entry key="yukon.web.modules.amr.archivedValueExporter.endDate">End Date</entry>
@@ -267,6 +267,7 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.colon">Colon ( : )</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.custom">Custom</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.noFormat">No Format</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.noFormatsCreated">No formats have been created.</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.#####">#####</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.###.###">###.###</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.####.##">####.##</entry>
