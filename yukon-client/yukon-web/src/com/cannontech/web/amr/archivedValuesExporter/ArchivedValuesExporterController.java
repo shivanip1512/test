@@ -601,19 +601,18 @@ public class ArchivedValuesExporterController {
         jsonArray .addAll(Arrays.asList(objectArray));
         return jsonArray;
     }
-
     
     private String getFileName(Date endDate, String formatName) {
         SimpleDateFormat fileNameDateFormat = new SimpleDateFormat("MMddyyyy");
         String fileNameDateFormatString = fileNameDateFormat.format(endDate);
-        String fileName = ServletUtil.makeWindowsSafeFileName(formatName + fileNameDateFormatString) + ".txt";
+        String fileName = ServletUtil.makeWindowsSafeFileName(formatName + fileNameDateFormatString) + ".csv";
         return fileName;
     }
 
     private void setupResponse(HttpServletResponse response, String fileName) {
         response.setDateHeader("Expires", 0); // prevents caching at the proxy server
         response.setContentType("text/x-comma-separated-values");
-        response.addHeader("Content-Disposition", "attachment;filename=" + fileName.toString());
+        response.addHeader("Content-Disposition", "attachment;filename=\"" + fileName.toString() + "\"");
     }
 
     private void createReportFile(HttpServletResponse response, List<String> report)
