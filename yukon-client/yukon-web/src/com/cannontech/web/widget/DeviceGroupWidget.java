@@ -27,8 +27,8 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupUiService;
+import com.cannontech.common.device.groups.service.ModifiableDeviceGroupPredicate;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
-import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -136,11 +136,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         final Map<DeviceGroup,DeviceGroup> groupsToExpand = getGroupsToExpand(currentGroups);
         
         DeviceGroupHierarchy hierarchyAllGroups =
-            deviceGroupUiService.getDeviceGroupHierarchy(deviceGroupService.getRootGroup(),  new Predicate<DeviceGroup>() {
-                public boolean evaluate(DeviceGroup deviceGroup) {
-                    return deviceGroup.isModifiable() && !deviceGroup.isHidden();
-                }
-            });
+            deviceGroupUiService.getDeviceGroupHierarchy(deviceGroupService.getRootGroup(), new ModifiableDeviceGroupPredicate());
 
         class ExpandAndSelectCurrentGroups implements NodeAttributeSettingCallback<DeviceGroup> {
             
