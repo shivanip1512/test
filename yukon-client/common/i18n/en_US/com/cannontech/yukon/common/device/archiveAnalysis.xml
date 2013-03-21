@@ -281,8 +281,8 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.attributeFieldOption">{0} ({1}, {2})</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.formatType.FIXED_ATTRIBUTE">Fixed Attribute</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.formatType.DYNAMIC_ATTRIBUTE">Dynamic Attribute</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.formatType.FIXED_ATTRIBUTE.description">This format supports multiple attribute selection as part of the format definition. Results will contain at most one row per device. Commonly used for exporting most recent reading for one or more devices.</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.formatType.DYNAMIC_ATTRIBUTE.description">This format supports multiple attribute selection as part of the inputs to running the export. Results may contain multiple rows per device and attribute. Commonly used for exporting multiple readings over a given date range for one or more devices.</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.formatType.FIXED_ATTRIBUTE.description">Results will contain at most one row per device. Data points (attributes) defined as columns within the format. Commonly used for exporting most recent reading for one or more devices.</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.formatType.DYNAMIC_ATTRIBUTE.description">Results may contain multiple rows per device and attribute. Data points (attributes) are selected at run time. Commonly used for exporting multiple readings over a given date range for one or more devices.</entry>
 
     <!-- archivedValueExporter validation -->
     <entry key="yukon.web.modules.amr.archivedValueExporter.formatError.formatNameRequired">The name of format cannot be blank.</entry>

@@ -67,7 +67,7 @@
 				</c:forEach>
 				<c:if test="${fn:length(searchResult.resultList) == 0}">
 					<tr>
-						<td class="noResults subtle" colspan="5">
+						<td class="empty-list" colspan="5">
 		                	<i:inline key=".noExports"/>
 						</td>
 					</tr>

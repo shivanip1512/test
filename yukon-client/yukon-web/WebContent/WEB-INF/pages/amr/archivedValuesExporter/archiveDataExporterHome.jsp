@@ -170,7 +170,7 @@ jQuery(function() {
                             <tags:nameValue2 nameKey="yukon.web.defaults.devices">
                                 <a href="javascript:void(0);" class="selectDevices labeled_icon_right icon_folder_edit" title="<cti:msg2 key=".chooseDevices.tooltip"/>">
                                     <c:if test="${empty archivedValuesExporter.deviceCollection.deviceCount}">
-                                        <span class="list-none"><i:inline key="yukon.web.defaults.noDevices"/></span>
+                                        <span class="empty-list"><i:inline key="yukon.web.defaults.noDevices"/></span>
                                     </c:if>
                                     <c:if test="${not empty archivedValuesExporter.deviceCollection.deviceCount}">
                                         <i:inline key="${archivedValuesExporter.deviceCollection.description}"/>
@@ -220,43 +220,43 @@ jQuery(function() {
 		<%-- Jobs  --%>
 			<tags:boxContainer2 nameKey="jobsBox">
 				<div class="scrollingContainer_small" style="max-height: 249px;">
-					<table id="jobsTable" class="compactResultsTable">
-						<thead>
-							<th><i:inline key=".nameHeader"/></th>
-							<th><i:inline key=".scheduleHeader"/></th>
-							<th><i:inline key=".nextRunHeader"/></th>
-							<th><i:inline key=".actionsHeader"/></th>
-						</thead>
-						<tfoot></tfoot>
-						<tbody>
-							<c:forEach var="job" items="${filterResult.resultList}">
-								<tr>
-									<td>${fn:escapeXml(job.name)}</td>
-									<td>${job.cronString}</td>
-									<td><cti:dataUpdaterValue type="JOB" identifier="${job.id}/NEXT_RUN_DATE"/></td>
-									<td>
-										<cti:url var="editUrl" value="scheduleReport">
-											<cti:param name="jobId" value="${job.id}"/>
-										</cti:url>
-										<cti:button nameKey="edit" renderMode="image" href="${editUrl}"/>
-										<cti:url var="historyUrl" value="/support/fileExportHistory/list">
-											<cti:param name="initiator" value="Archived Data Export Schedule: ${job.name}"/>
-										</cti:url>
-										<cti:button nameKey="history" renderMode="image" href="${historyUrl}"/>
-										<cti:url var="deleteUrl" value="deleteJob">
-											<cti:param name="jobId" value="${job.id}"/>
-										</cti:url>
-										<cti:button nameKey="remove" renderMode="image" href="${deleteUrl}"/>
-									</td>
-								</tr>
-							</c:forEach>
-							<c:if test="${fn:length(filterResult.resultList) == 0}">
-								<tr>
-									<td class="noResults subtle" colspan="3"><i:inline key=".noJobs"/></td>
-								</tr>
-							</c:if>
-						</tbody>
-					</table>
+                    <c:if test="${fn:length(filterResult.resultList) > 0}">
+    					<table id="jobsTable" class="compactResultsTable">
+    						<thead>
+    							<th><i:inline key=".nameHeader"/></th>
+    							<th><i:inline key=".scheduleHeader"/></th>
+    							<th><i:inline key=".nextRunHeader"/></th>
+    							<th><i:inline key=".actionsHeader"/></th>
+    						</thead>
+    						<tfoot></tfoot>
+    						<tbody>
+    							<c:forEach var="job" items="${filterResult.resultList}">
+    								<tr>
+    									<td>${fn:escapeXml(job.name)}</td>
+    									<td>${job.cronString}</td>
+    									<td><cti:dataUpdaterValue type="JOB" identifier="${job.id}/NEXT_RUN_DATE"/></td>
+    									<td>
+    										<cti:url var="editUrl" value="scheduleReport">
+    											<cti:param name="jobId" value="${job.id}"/>
+    										</cti:url>
+    										<cti:button nameKey="edit" renderMode="image" href="${editUrl}"/>
+    										<cti:url var="historyUrl" value="/support/fileExportHistory/list">
+    											<cti:param name="initiator" value="Archived Data Export Schedule: ${job.name}"/>
+    										</cti:url>
+    										<cti:button nameKey="history" renderMode="image" href="${historyUrl}"/>
+    										<cti:url var="deleteUrl" value="deleteJob">
+    											<cti:param name="jobId" value="${job.id}"/>
+    										</cti:url>
+    										<cti:button nameKey="remove" renderMode="image" href="${deleteUrl}"/>
+    									</td>
+    								</tr>
+    							</c:forEach>
+    						</tbody>
+    					</table>
+                    </c:if>
+					<c:if test="${fn:length(filterResult.resultList) == 0}">
+                        <span class="empty-list" colspan="3"><i:inline key=".noJobs"/></span>
+					</c:if>
 				</div>
 			</tags:boxContainer2>
 		</div>

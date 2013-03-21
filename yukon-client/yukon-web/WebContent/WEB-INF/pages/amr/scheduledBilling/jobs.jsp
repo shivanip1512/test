@@ -59,7 +59,7 @@
 			</c:forEach>
 			<c:if test="${fn:length(filterResult.resultList) == 0}">
 				<tr>
-					<td class="noResults subtle" colspan="3">
+					<td class="empty-list" colspan="3">
 						<i:inline key=".noJobs"/>
 					</td>
 				</tr>

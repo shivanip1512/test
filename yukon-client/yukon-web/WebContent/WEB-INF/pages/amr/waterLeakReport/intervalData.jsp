@@ -93,7 +93,7 @@
 
 			<c:if test="${fn:length(filterResult.resultList) == 0}">
 				<tr>
-					<td class="noResults subtle" colspan="6"><i:inline key=".noUsage" /></td>
+					<td class="empty-list" colspan="6"><i:inline key=".noUsage" /></td>
 				</tr>
 			</c:if>
 		</table>

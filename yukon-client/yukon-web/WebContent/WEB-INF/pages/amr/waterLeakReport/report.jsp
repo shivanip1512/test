@@ -264,7 +264,7 @@
                 </c:when>
                 <c:otherwise>
 					<tr>
-						<td class="noResults" colspan="6">
+						<td class="empty-list" colspan="6">
 	                        <i:inline key=".noLeaks"/>
 	                    </td>
 					</tr>

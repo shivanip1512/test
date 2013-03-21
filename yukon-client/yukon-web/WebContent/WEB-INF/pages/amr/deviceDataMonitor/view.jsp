@@ -59,7 +59,7 @@
 				            <tbody>
 				                <c:if test="${fn:length(monitor.processors) == 0}">
 				                    <tr>
-										<td class="noResults" colspan="3">
+										<td class="empty-list" colspan="3">
 				                            <i:inline key=".noProcessors" />
 										</td>
 									</tr>

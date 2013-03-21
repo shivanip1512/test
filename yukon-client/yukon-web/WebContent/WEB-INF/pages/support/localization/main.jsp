@@ -44,7 +44,7 @@
                     <div>${entryResult}</div>
                 </c:forEach>
                 <c:if test="${empty result}">
-                    <div class="list-none">
+                    <div class="empty-list">
                         <i:inline key=".noResults" />
                     </div>
                 </c:if>
@@ -54,7 +54,7 @@
 
     <c:if test="${compareSets}">
         <c:if test="${empty compareResults}">
-            <div class="list-none">
+            <div class="empty-list">
                 <i:inline key=".noResults" />
             </div>
         </c:if>

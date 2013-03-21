@@ -16,7 +16,7 @@
 <tags:boxContainer2 nameKey="available">
     <c:choose>
         <c:when test="${empty available}">
-            <span class="list-none"><i:inline key=".available.none"/></span>
+            <span class="empty-list"><i:inline key=".available.none"/></span>
         </c:when>
         <c:otherwise>
             <c:set var="multiple" value="${fn:length(available) > 1 ? true : false}"/>
@@ -64,7 +64,7 @@
 <tags:boxContainer2 nameKey="active">
     <c:choose>
         <c:when test="${empty active}">
-            <span class="list-none"><i:inline key=".active.none"/></span>
+            <span class="empty-list"><i:inline key=".active.none"/></span>
         </c:when>
         <c:otherwise>
             <c:set var="multiple" value="${fn:length(active) > 1 ? true : false}"/>

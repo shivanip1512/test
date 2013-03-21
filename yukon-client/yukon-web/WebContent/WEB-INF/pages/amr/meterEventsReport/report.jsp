@@ -324,7 +324,7 @@
                 
     			<c:if test="${fn:length(filterResult.resultList) == 0}">
     				<tr>
-    					<td class="noResults subtle" colspan="7">
+    					<td class="empty-list" colspan="7">
     						<i:inline key=".noEvents"/>
     					</td>
     				</tr>

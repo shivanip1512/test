@@ -216,7 +216,7 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 .boxContainer.with_footer {border-radius: 3px 3px 0 0;margin-bottom: 0;}
 .boxContainerFooter {border:1px solid #ccc;border-radius: 0 0 3px 3px;border-top: none;}
 .flyover, .tooltip {background-color: white; padding: 2px; border: 2px solid #666;box-shadow: 9px;}
-.list-none {font-style: italic;}
+.empty-list {font-style: italic; color: #676767;}
 
 .i18nInline {outline: red dotted thin;}
 .i18nInline .i18nInlineDebug {display: none;}
