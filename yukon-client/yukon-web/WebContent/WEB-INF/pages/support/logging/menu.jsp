@@ -30,20 +30,16 @@
     </h3>
 </div>
 
-<!-- Display and link to the local log files -->
-<cti:dataGrid cols="4" tableClasses="stacked clear">
+<div class="clear">
     <c:forEach var="logSection" items="${localLogList}">
-        <cti:dataGridCell>
-            <tags:sectionContainer title="${logSection.key}">
-                <ul>
-                    <c:forEach var="fileName" items="${logSection.value}">
-                        <cti:url value="tail" var="url"><cti:param name="file" value="${file}${fileName}"></cti:param></cti:url>
-                        <li><a href="${url}">${fileName}</a></li>
-                    </c:forEach>
-                </ul>
-            </tags:sectionContainer>
-        </cti:dataGridCell>
+        <tags:sectionContainer title="${logSection.key}" styleClass="dib vat">
+            <ul>
+                <c:forEach var="fileName" items="${logSection.value}">
+                    <cti:url value="tail" var="url"><cti:param name="file" value="${file}${fileName}"></cti:param></cti:url>
+                    <li><a href="${url}">${fileName}</a></li>
+                </c:forEach>
+            </ul>
+        </tags:sectionContainer>
     </c:forEach>
-    
-</cti:dataGrid>
+</div>
 </cti:standardPage>
