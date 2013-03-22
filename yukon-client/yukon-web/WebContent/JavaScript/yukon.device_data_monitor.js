@@ -70,8 +70,8 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
             }
 
             // add our help icons next to the two column titles (Settings and Processors)
-            jQuery('.f_settings_section .formElementContainer_title h3').addClass('labeled_icon_right icon_help f_open_settings_help');
-            jQuery('.f_processors_section .sectionContainer_title h3').addClass('labeled_icon_right icon_help f_open_processors_help');
+            jQuery('.f_settings_section .titleBar h3').addClass('labeled_icon_right icon_help f_open_settings_help');
+            jQuery('.f_processors_section .titleBar h3').addClass('labeled_icon_right icon_help f_open_processors_help');
 
             this._initialized = true;
         },
