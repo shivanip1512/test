@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
+import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -53,8 +55,11 @@ public class TemporaryDeviceGroupServiceImpl implements TemporaryDeviceGroupServ
             groupName = UUID.randomUUID().toString();
         }
         
-        String fullGroupName = SystemGroupEnum.TEMPORARYGROUPS.getFullPath() + groupName;
-        final StoredDeviceGroup group = deviceGroupEditorDao.getStoredGroup(fullGroupName, true);
+        StoredDeviceGroup temporaryParent = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.TEMPORARYGROUPS);
+        final StoredDeviceGroup group = deviceGroupEditorDao.addGroup(temporaryParent, 
+                                                                      DeviceGroupType.STATIC, 
+                                                                      groupName, 
+                                                                      DeviceGroupPermission.HIDDEN);
         
         return group;
     }

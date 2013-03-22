@@ -351,13 +351,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     @Override
     @Transactional(propagation=Propagation.REQUIRED, noRollbackFor={DuplicateException.class})
     public StoredDeviceGroup addGroup(StoredDeviceGroup parentGroup, DeviceGroupType type, String groupName) throws IllegalGroupNameException {
-        DeviceGroupPermission permission = null;
-        /*Temporary groups should have permission "HIDDEN*/
-        if ((parentGroup.getFullName() + "/").equals(SystemGroupEnum.TEMPORARYGROUPS.getFullPath())) {
-            permission = DeviceGroupPermission.HIDDEN;
-        }else{
-            permission = type.equals(DeviceGroupType.STATIC) ? DeviceGroupPermission.EDIT_MOD : DeviceGroupPermission.EDIT_NOMOD;
-        }
+        DeviceGroupPermission permission = type.equals(DeviceGroupType.STATIC) ? DeviceGroupPermission.EDIT_MOD : DeviceGroupPermission.EDIT_NOMOD;
         return addGroup(parentGroup, type, groupName, permission);
     }
     
