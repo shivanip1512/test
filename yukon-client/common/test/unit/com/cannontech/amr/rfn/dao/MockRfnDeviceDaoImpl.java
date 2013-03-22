@@ -14,6 +14,7 @@ import com.cannontech.core.dao.NotFoundException;
 public class MockRfnDeviceDaoImpl extends RfnDeviceDaoImpl {
     private Object[][] paoToRfnDeviceData  = 
         {
+         // {YukonPAO , sensorSerialNumber, sensorManufacturer, sensorModel}
             {METER_RFN410FL, "410987654", "LGYR", "FocuskWh"}
         
         };
