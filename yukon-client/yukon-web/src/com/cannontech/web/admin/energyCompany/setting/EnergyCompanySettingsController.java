@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections.FactoryUtils;
 import org.apache.commons.collections.map.LazyMap;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -23,7 +24,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -65,6 +68,7 @@ public class EnergyCompanySettingsController {
                     EnergyCompanySetting currentSetting;
                     for (EnergyCompanySetting newSetting : settingsBean.getSettings().values()) {
                         // Comments have to be 1000 chars or less
+
                         YukonValidationUtils.checkExceedsMaxLength(errors, "settings["+newSetting.getType()+"].comments" , newSetting.getComments(), 1000);
                         
                         // validate the correct ecId for each setting
@@ -76,6 +80,30 @@ public class EnergyCompanySettingsController {
 
                         if (!newSetting.isEnabled() && !ObjectUtils.equals(currentSetting.getValue(), newSetting.getValue())) {
                             errors.rejectValue("settings["+newSetting.getType()+"].value", "yukon.web.modules.adminSetup.energyCompanySettings.disabledInput");
+                        }else{
+                            switch (newSetting.getType()) {
+                            case ADMIN_EMAIL_ADDRESS:
+                                if (StringUtils.isNotBlank((String)newSetting.getValue()) && !com.cannontech.util.Validator.isEmailAddress((String)newSetting.getValue())) {
+                                    errors.rejectValue("settings["+newSetting.getType()+"].value", "yukon.web.modules.adminSetup.energyCompanySettings.email.invalid");
+                                }
+                                break;
+                            case BROADCAST_OPT_OUT_CANCEL_SPID:
+                                YukonValidationUtils.checkRange(errors, "settings["+newSetting.getType()+"].value", (Integer)newSetting.getValue(), 0, 65635, false);
+                                break;
+                            case ENERGY_COMPANY_DEFAULT_TIME_ZONE:
+                                if (StringUtils.isNotBlank((String)newSetting.getValue())){
+                                    try{
+                                        CtiUtilities.getValidTimeZone((String)newSetting.getValue());
+                                    }
+                                    catch (BadConfigurationException e) {
+                                        errors.rejectValue("settings["+newSetting.getType()+"].value", "yukon.web.modules.adminSetup.energyCompanySettings.timezone.invalid");
+                                    }
+                                }
+                                break;
+                            default:
+                                break;
+        
+                            }
                         }
                     }
                 }
