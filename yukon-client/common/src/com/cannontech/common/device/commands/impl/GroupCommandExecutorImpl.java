@@ -76,8 +76,8 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
         }
 
         // create temporary groups
-        final StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
-        final StoredDeviceGroup failureGroup = temporaryDeviceGroupService.createTempGroup(null);
+        final StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup();
+        final StoredDeviceGroup failureGroup = temporaryDeviceGroupService.createTempGroup();
 
         final GroupCommandResult groupCommandResult = new GroupCommandResult();
 

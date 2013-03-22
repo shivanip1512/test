@@ -302,7 +302,7 @@ public abstract class BaseBulkService {
 
         // CALLBACK
         String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
-        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
+        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup();
         
         ImportUpdateCallbackResult callbackResult = new ImportUpdateCallbackResult(backgroundProcessType,
 																        		updateBulkFieldColumnHeaders,

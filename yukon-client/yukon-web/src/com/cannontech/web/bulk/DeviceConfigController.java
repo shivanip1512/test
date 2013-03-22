@@ -87,8 +87,8 @@ public class DeviceConfigController {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         // CALLBACK
         String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
-        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
-        StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
+        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup();
+        StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup();
         
         ConfigurationCallbackResult callbackResult = 
                 new ConfigurationCallbackResult(resultsId,
@@ -148,8 +148,8 @@ public class DeviceConfigController {
         String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
         
         // CALLBACK
-        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
-        StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
+        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup();
+        StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup();
         
         ConfigurationCallbackResult callbackResult = 
                 new ConfigurationCallbackResult(resultsId,
@@ -254,9 +254,9 @@ public class DeviceConfigController {
         
         // DO VERIFY
         VerifyConfigCommandResult result = deviceConfigService.verifyConfigs(deviceCollection, user);
-        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
-        StoredDeviceGroup failureGroup = temporaryDeviceGroupService.createTempGroup(null);
-        StoredDeviceGroup unsupportedGroup = temporaryDeviceGroupService.createTempGroup(null);
+        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup();
+        StoredDeviceGroup failureGroup = temporaryDeviceGroupService.createTempGroup();
+        StoredDeviceGroup unsupportedGroup = temporaryDeviceGroupService.createTempGroup();
         deviceGroupMemberEditorDao.addDevices(successGroup, result.getSuccessList());
         deviceGroupMemberEditorDao.addDevices(failureGroup, result.getFailureList());
         deviceGroupMemberEditorDao.addDevices(unsupportedGroup, result.getUnsupportedList());

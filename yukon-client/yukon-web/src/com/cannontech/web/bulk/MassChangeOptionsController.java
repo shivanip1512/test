@@ -118,8 +118,8 @@ public class MassChangeOptionsController extends InputFormController {
 
         // CALLBACK
         String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
-        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
-        StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
+        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup();
+        StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup();
         
         MassChangeCallbackResult callbackResult = new MassChangeCallbackResult(bulkFieldColumnHeader,
 														        		resultsId,

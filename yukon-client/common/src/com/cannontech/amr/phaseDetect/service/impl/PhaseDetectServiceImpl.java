@@ -330,7 +330,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
         phaseDetectResult = new PhaseDetectResult();
         Map<Phase, StoredDeviceGroup> phaseToGroupMap = phaseDetectResult.getPhaseToGroupMap();
         for(Phase phase : Phase.values()){
-            StoredDeviceGroup group = temporaryDeviceGroupService.createTempGroup(null);
+            StoredDeviceGroup group = temporaryDeviceGroupService.createTempGroup();
             phaseToGroupMap.put(phase, group);
         }
     }

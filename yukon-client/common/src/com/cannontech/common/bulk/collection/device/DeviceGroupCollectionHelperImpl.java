@@ -118,7 +118,7 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
     public DeviceCollection createDeviceGroupCollection(Iterator<? extends YukonDevice> devices, String descriptionHint) {
         
         // step 1, create a new group with random name (will delete itself in 24 hours)
-        final StoredDeviceGroup group = temporaryDeviceGroupService.createTempGroup(null);
+        final StoredDeviceGroup group = temporaryDeviceGroupService.createTempGroup();
         
         // step 2, add new devices
         deviceGroupMemberEditorDao.addDevices(group, devices);

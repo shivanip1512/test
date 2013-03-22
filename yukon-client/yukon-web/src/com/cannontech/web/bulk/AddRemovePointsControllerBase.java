@@ -94,8 +94,8 @@ public abstract class AddRemovePointsControllerBase {
         
         // CALLBACK
     	String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
-    	StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
-        StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
+    	StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup();
+        StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup();
         
         AddRemovePointsCallbackResult callbackResult = new AddRemovePointsCallbackResult(backgroundProcessType,
 																					resultsId,
@@ -145,7 +145,7 @@ public abstract class AddRemovePointsControllerBase {
         for (PaoType paoType : paoTypeSet) {
         	
         	List<SimpleDevice> devicesOfType = new ArrayList<SimpleDevice>();
-        	StoredDeviceGroup typeGroup = temporaryDeviceGroupService.createTempGroup(null);
+        	StoredDeviceGroup typeGroup = temporaryDeviceGroupService.createTempGroup();
         	for (SimpleDevice device : devices) {
         		
         		if (device.getDeviceType().equals(paoType)) {

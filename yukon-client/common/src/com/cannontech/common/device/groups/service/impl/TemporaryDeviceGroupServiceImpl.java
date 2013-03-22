@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -29,32 +28,10 @@ public class TemporaryDeviceGroupServiceImpl implements TemporaryDeviceGroupServ
     private ScheduledExecutor scheduledExecutor = null;
     
     private Logger log = YukonLogManager.getLogger(TemporaryDeviceGroupServiceImpl.class);
-    
-    @Override
-    public StoredDeviceGroup createTempGroup(String groupName, int deleteDelay, TimeUnit deleteDelayUnit) {
         
-        StoredDeviceGroup group = doCreateTempGroup(groupName);
-        return group;
-    }
-    
-    @Override
-    public StoredDeviceGroup createTempGroup(String groupName) {
-        
-        StoredDeviceGroup group = doCreateTempGroup(groupName);
-        return group;
-    }
-
     @Override
     public StoredDeviceGroup createTempGroup() {
-        return createTempGroup(null);
-    }    
-
-    private StoredDeviceGroup doCreateTempGroup(String groupName) {
-        
-        if (StringUtils.isBlank(groupName)) {
-            groupName = UUID.randomUUID().toString();
-        }
-        
+        String groupName = UUID.randomUUID().toString();
         StoredDeviceGroup temporaryParent = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.TEMPORARYGROUPS);
         final StoredDeviceGroup group = deviceGroupEditorDao.addGroup(temporaryParent, 
                                                                       DeviceGroupType.STATIC, 
@@ -63,7 +40,8 @@ public class TemporaryDeviceGroupServiceImpl implements TemporaryDeviceGroupServ
         
         return group;
     }
-        
+       
+    @Override
     public void scheduleTempGroupsDeletion() {
        scheduledExecutor.scheduleAtFixedRate(new Runnable() {
             public void run() {

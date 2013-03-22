@@ -177,7 +177,7 @@ public class BulkController {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
         
-        StoredDeviceGroup tempDeviceGroup = temporaryDeviceGroupService.createTempGroup(null);
+        StoredDeviceGroup tempDeviceGroup = temporaryDeviceGroupService.createTempGroup();
         deviceGroupMemberEditorDao.addDevices(tempDeviceGroup, deviceCollection.getDeviceList());
         
         model.addAttribute("tempDeviceGroup", tempDeviceGroup);

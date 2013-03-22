@@ -145,8 +145,8 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
         
         List<CommandRequestDevice> requests = getProfileRequests(analysis, data);
         
-        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
-        StoredDeviceGroup failureGroup = temporaryDeviceGroupService.createTempGroup(null);
+        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup();
+        StoredDeviceGroup failureGroup = temporaryDeviceGroupService.createTempGroup();
         final ArchiveAnalysisProfileReadResult result = new ArchiveAnalysisProfileReadResult(deviceGroupMemberEditorDao, 
                                                                                              deviceGroupCollectionHelper, 
                                                                                              successGroup, 

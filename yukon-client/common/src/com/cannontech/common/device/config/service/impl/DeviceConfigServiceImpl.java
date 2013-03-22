@@ -70,8 +70,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         	}
         }
         
-        StoredDeviceGroup unsupportedGroup = temporaryDeviceGroupService.createTempGroup(null);
-        StoredDeviceGroup supportedGroup = temporaryDeviceGroupService.createTempGroup(null);
+        StoredDeviceGroup unsupportedGroup = temporaryDeviceGroupService.createTempGroup();
+        StoredDeviceGroup supportedGroup = temporaryDeviceGroupService.createTempGroup();
         deviceGroupMemberEditorDao.addDevices(unsupportedGroup, unsupportedDevices);
         deviceGroupMemberEditorDao.addDevices(supportedGroup, supportedDevices);
         DeviceCollection unsupportedCollection = deviceGroupCollectionHelper.buildDeviceCollection(unsupportedGroup);

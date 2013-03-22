@@ -75,7 +75,7 @@ public class MassDeleteController {
         
         // CALLBACK
     	String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
-        StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
+        StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup();
         
         MassDeleteCallbackResult callbackResult = new MassDeleteCallbackResult(resultsId,
 																		deviceCollection, 

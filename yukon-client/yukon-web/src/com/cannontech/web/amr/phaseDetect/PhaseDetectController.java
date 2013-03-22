@@ -453,12 +453,12 @@ public class PhaseDetectController {
         DeviceCollection phaseCCollection = deviceGroupCollectionHelper.buildDeviceCollection(resultCopy.getPhaseToGroupMap().get(Phase.C));
         model.addAttribute("phaseCCollection", phaseCCollection);
         
-        StoredDeviceGroup failureGroup = temporaryDeviceGroupService.createTempGroup(null);
+        StoredDeviceGroup failureGroup = temporaryDeviceGroupService.createTempGroup();
         deviceGroupMemberEditorDao.addDevices(failureGroup, failureMetersMap.keySet());
         DeviceCollection failureCollection = deviceGroupCollectionHelper.buildDeviceCollection(failureGroup);
         model.addAttribute("failureCollection", failureCollection);
         
-        StoredDeviceGroup undefinedGroup = temporaryDeviceGroupService.createTempGroup(null);
+        StoredDeviceGroup undefinedGroup = temporaryDeviceGroupService.createTempGroup();
         deviceGroupMemberEditorDao.addDevices(undefinedGroup, undefinedMeters);
         DeviceCollection undefinedCollection = deviceGroupCollectionHelper.buildDeviceCollection(undefinedGroup);
         model.addAttribute("undefinedCollection", undefinedCollection);

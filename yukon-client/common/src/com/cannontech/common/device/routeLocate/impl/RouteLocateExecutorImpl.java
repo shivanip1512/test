@@ -42,8 +42,8 @@ public class RouteLocateExecutorImpl implements RouteLocateExecutor {
         routeLocateResult.setDeviceCollection(deviceCollection);
         routeLocateResult.setRouteIds(routeIds);
         routeLocateResult.setAutoUpdateRoute(autoUpdateRoute);
-        routeLocateResult.setSuccessGroup(temporaryDeviceGroupService.createTempGroup(null));
-        routeLocateResult.setFailureGroup(temporaryDeviceGroupService.createTempGroup(null));
+        routeLocateResult.setSuccessGroup(temporaryDeviceGroupService.createTempGroup());
+        routeLocateResult.setFailureGroup(temporaryDeviceGroupService.createTempGroup());
 
         for (final SimpleDevice device : deviceCollection) {
 

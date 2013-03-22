@@ -200,7 +200,7 @@ public class CommandRequestExecutionResultsController extends MultiActionControl
 			throw new IllegalArgumentException("Invalid commandRequestExecutionUpdaterType parameter: " + commandRequestExecutionUpdaterTypeStr);
 		}
 		
-		StoredDeviceGroup tempGroup = temporaryDeviceGroupService.createTempGroup(null);
+		StoredDeviceGroup tempGroup = temporaryDeviceGroupService.createTempGroup();
 		ImmutableList<YukonDevice> deviceList = PaoUtils.asDeviceList(paoIdentifiers);
 		deviceGroupMemberEditorDao.addDevices(tempGroup, deviceList);
 		
