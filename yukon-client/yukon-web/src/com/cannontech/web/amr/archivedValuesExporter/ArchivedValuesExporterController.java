@@ -526,7 +526,7 @@ public class ArchivedValuesExporterController {
     }
     
     @RequestMapping
-    public String doSchedule(ModelMap model, @ModelAttribute ScheduledFileExportData exportData, BindingResult bindingResult, HttpServletRequest request,
+    public String doSchedule(ModelMap model, @ModelAttribute("exportData") ScheduledFileExportData exportData, BindingResult bindingResult, HttpServletRequest request,
     		int formatId, String[] attributes, Integer jobId, YukonUserContext userContext, FlashScope flashScope) 
     		throws ServletRequestBindingException, IllegalArgumentException, ParseException {
     	
@@ -554,7 +554,6 @@ public class ArchivedValuesExporterController {
 	        model.addAttribute("attributes", attributes);
 	        model.addAttribute("dataRange", dataRange);
 	        model.addAttribute("deviceCollection", deviceCollection);
-	        model.addAttribute("exportData", exportData);
 	        model.addAttribute("cronExpressionTagState", cronExpressionTagService.parse(scheduleCronString, userContext));
             model.addAttribute("jobId", jobId);
             return "archivedValuesExporter/schedule.jsp";

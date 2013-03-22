@@ -1,5 +1,6 @@
 package com.cannontech.web.scheduledFileExport;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -105,21 +106,10 @@ public class ScheduledBillingFileExportController {
 	@RequestMapping
 	public String scheduleExport(ModelMap model, YukonUserContext userContext, HttpServletRequest request, FlashScope flashScope,
 			@ModelAttribute("exportData") ScheduledFileExportData exportData, BindingResult bindingResult,
-			String[] deviceGroups, int fileFormat, int demandDays, int energyDays, boolean removeMultiplier, Integer jobId) {
+			String[] deviceGroups, int fileFormat, int demandDays, int energyDays, boolean removeMultiplier, Integer jobId)
+			throws ParseException, ServletRequestBindingException {
 		
-		String scheduleCronString = null;
-		try {
-			scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
-		} catch(Exception e) {
-			flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.schedule.invalidCron"));
-			if(jobId == null) {
-				model.addAttribute("exportData", exportData);
-				repopulateScheduleModel(model, deviceGroups, fileFormat, demandDays, energyDays, removeMultiplier);
-			} else {
-				model.addAttribute("jobId", jobId);
-			}
-			return "redirect:showForm";
-		}
+		String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
 		exportData.setScheduleCronString(scheduleCronString);
 		
 		Set<? extends DeviceGroup> fullDeviceGroups = deviceGroupService.resolveGroupNames(Arrays.asList(deviceGroups));
@@ -131,13 +121,17 @@ public class ScheduledBillingFileExportController {
 		if(bindingResult.hasErrors()) {
 			List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setError(messages);
-            if(jobId == null) {
-				model.addAttribute("exportData", exportData);
-            	repopulateScheduleModel(model, deviceGroups, fileFormat, demandDays, energyDays, removeMultiplier);
-			} else {
+        	Set<? extends DeviceGroup> deviceGroupsSet = deviceGroupService.resolveGroupNames(Arrays.asList(deviceGroups));
+    		String groupNames = getGroupNamesString(deviceGroupsSet, userContext);
+    		model.addAttribute("groupNames", groupNames);
+    		model.addAttribute("deviceGroups", deviceGroups);
+    		model.addAttribute("formatName", FileFormatTypes.getFormatType(fileFormat));
+    		model.addAttribute("cronExpressionTagState", cronExpressionTagService.parse(scheduleCronString, userContext));
+    		repopulateScheduleModel(model, deviceGroups, fileFormat, demandDays, energyDays, removeMultiplier);
+			if(jobId != null) {
 				model.addAttribute("jobId", jobId);
 			}
-            return "redirect:showForm";
+            return "schedule.jsp";
 		}
 		
 		if(jobId == null) {

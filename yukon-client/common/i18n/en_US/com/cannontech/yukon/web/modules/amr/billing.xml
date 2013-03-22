@@ -22,7 +22,7 @@
 	<entry key="yukon.web.modules.amr.billing.schedule.exportFileNameInfo">A valid file name, with no file extension. May only contain alphanumeric characters.</entry>
 	
 <!-- scheduled billing validation -->
-	<entry key="yukon.web.modules.amr.billing.schedule.validation.invalidName">Invalid name.</entry>
+	<entry key="yukon.web.modules.amr.billing.schedule.validation.invalidName">Schedule name cannot be empty.</entry>
 	<entry key="yukon.web.modules.amr.billing.schedule.validation.invalidExportPath">Export path cannot be empty.</entry>
 	<entry key="yukon.web.modules.amr.billing.schedule.validation.invalidFileName">File name cannot be empty.</entry>
 	<entry key="yukon.web.modules.amr.billing.schedule.validation.invalidEmailAddress">The email address {0} is invalid.</entry>
