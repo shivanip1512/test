@@ -555,7 +555,7 @@ public class ArchivedValuesExporterController {
 	        model.addAttribute("dataRange", dataRange);
 	        model.addAttribute("deviceCollection", deviceCollection);
 	        model.addAttribute("exportData", exportData);
-	        model.addAttribute("cronExpressionTagState", ServletRequestUtils.getStringParameter(request, "scheduleCronString"));
+	        model.addAttribute("cronExpressionTagState", cronExpressionTagService.parse(scheduleCronString, userContext));
             model.addAttribute("jobId", jobId);
             return "archivedValuesExporter/schedule.jsp";
 		}
