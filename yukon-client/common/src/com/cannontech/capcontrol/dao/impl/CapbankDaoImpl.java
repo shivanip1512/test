@@ -82,10 +82,10 @@ public class CapbankDaoImpl implements CapbankDao {
         sql.append("    LEFT OUTER JOIN DeviceDirectCommSettings D ON PAO.PAObjectID = D.DeviceID");
         sql.append("    LEFT OUTER JOIN DeviceCarrierSettings DCS ON PAO.PAObjectID = DCS.DeviceID"); 
         sql.append("    LEFT OUTER JOIN DeviceRoutes DR ON PAO.PAObjectID = DR.DeviceID");
-        sql.append("    JOIN CapControlSubStationBus SB ON PAO.PAObjectID = SB.SubstationBusID");
+        sql.append("    JOIN CAPBANK CB ON PAO.PAObjectID = CB.DEVICEID");
         sql.append("WHERE PAO.PAObjectID NOT IN");
-        sql.append(   "(SELECT SubstationBusID");
-        sql.append(   " FROM CCSubstationSubBusList)");
+        sql.append(   "(SELECT DEVICEID");
+        sql.append(   " FROM CCFeederBankList)");
         
         List<LiteYukonPAObject> banks = yukonJdbcTemplate.query(sql, new LitePaoRowMapper());
         

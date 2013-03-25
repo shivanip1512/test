@@ -48,10 +48,10 @@ public class FeederDaoImpl implements FeederDao {
         sql.append("    LEFT OUTER JOIN DeviceDirectCommSettings D ON PAO.PAObjectID = D.DeviceID");
         sql.append("    LEFT OUTER JOIN DeviceCarrierSettings DCS ON PAO.PAObjectID = DCS.DeviceID"); 
         sql.append("    LEFT OUTER JOIN DeviceRoutes DR ON PAO.PAObjectID = DR.DeviceID");
-        sql.append("    JOIN CapControlSubStationBus SB ON PAO.PAObjectID = SB.SubstationBusID");
+        sql.append("    JOIN CapControlFeeder CCF ON PAO.PAObjectID = CCF.FeederID");
         sql.append("WHERE PAO.PAObjectID NOT IN");
-        sql.append(   "(SELECT SubstationBusID");
-        sql.append(   " FROM CCSubstationSubBusList)");
+        sql.append(   "(SELECT FeederId");
+        sql.append(   " FROM CCFeederSubAssignment)");
         
         List<LiteYukonPAObject> feeders = yukonJdbcTemplate.query(sql, new LitePaoRowMapper());
         
