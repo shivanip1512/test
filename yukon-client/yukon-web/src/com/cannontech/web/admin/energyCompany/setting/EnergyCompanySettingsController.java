@@ -88,7 +88,7 @@ public class EnergyCompanySettingsController {
                                 }
                                 break;
                             case BROADCAST_OPT_OUT_CANCEL_SPID:
-                                YukonValidationUtils.checkRange(errors, "settings["+newSetting.getType()+"].value", (Integer)newSetting.getValue(), 0, 65635, false);
+                                YukonValidationUtils.checkRange(errors, "settings["+newSetting.getType()+"].value", (Integer)newSetting.getValue(), 1, 65534, false);        
                                 break;
                             case ENERGY_COMPANY_DEFAULT_TIME_ZONE:
                                 if (StringUtils.isNotBlank((String)newSetting.getValue())){
