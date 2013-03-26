@@ -57,11 +57,11 @@ import com.cannontech.stars.database.data.lite.LiteLMProgramWebPublishing;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteServiceCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteSubstation;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.database.db.ECToGenericMapping;
 import com.cannontech.stars.database.db.report.ServiceCompanyDesignationCode;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
+import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -195,7 +195,7 @@ public class StarsAdminUtil {
 		}
 	}
 	
-	public static LiteSubstation createSubstation(String subName, LiteStarsEnergyCompany energyCompany)
+/*	public static LiteSubstation createSubstation(String subName, LiteStarsEnergyCompany energyCompany)
 		throws TransactionException
 	{
 		com.cannontech.stars.database.data.Substation sub = new com.cannontech.stars.database.data.Substation();
@@ -235,7 +235,7 @@ public class StarsAdminUtil {
 			deleteSubstation( liteSub.getSubstationID(), energyCompany );
 		}
 	}
-
+*/
 	private static String getReferenceColumn(String listName) {
 		if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE))
 			return "VoltageID";
@@ -355,7 +355,8 @@ public class StarsAdminUtil {
 			return new String[] {
 				"LMProgramWebPublishing",
 				"ApplianceCategoryID IN (SELECT ItemID FROM ECToGenericMapping " +
-					"WHERE MappingCategory = 'ApplianceCategory' AND EnergyCompanyID = ?)"
+					"WHERE MappingCategory = '" + EcMappingCategory.APPLIANCE_CATEGORY.getDatabaseRepresentation() + "' " +
+					"AND EnergyCompanyID = ?)"
 			};
 		else if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_RESIDENCE_TYPE)
 			|| listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_CONSTRUCTION_MATERIAL)
@@ -573,13 +574,9 @@ public class StarsAdminUtil {
 	            }
 	        }
 	    }
+	    ECMappingDao ecMappingDao = YukonSpringHook.getBean("ecMappingDao", ECMappingDao.class);
+	    ecMappingDao.deleteECToRouteMapping(energyCompany.getEnergyCompanyId(), routeId);
 
-	    ECToGenericMapping map = new ECToGenericMapping();
-	    map.setEnergyCompanyID(energyCompany.getEnergyCompanyId());
-	    map.setItemID(routeId);
-	    map.setMappingCategory(ECToGenericMapping.MAPPING_CATEGORY_ROUTE);
-	    dbPersistentDao.performDBChangeWithNoMsg(map, TransactionType.DELETE);
-	    
 	    DbChangeManager dbChangeManager = YukonSpringHook.getBean(DbChangeManager.class);
 	    dbChangeManager.processDbChange(DbChangeType.DELETE, 
 	                                    DbChangeCategory.ENERGY_COMPANY_ROUTE, 
@@ -590,12 +587,12 @@ public class StarsAdminUtil {
 		ECToGenericMapping map = new ECToGenericMapping();
 		map.setEnergyCompanyID(energyCompany.getEnergyCompanyId());
 		map.setItemID(member.getEnergyCompanyId());
-		map.setMappingCategory(ECToGenericMapping.MAPPING_CATEGORY_MEMBER);
+		map.setMappingCategory(EcMappingCategory.MEMBER);
 		Transaction.createTransaction(Transaction.INSERT, map).execute();
 
 		if (loginID != -1) {
 			map.setItemID(new Integer(loginID));
-			map.setMappingCategory(ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN);
+			map.setMappingCategory(EcMappingCategory.MEMBER_LOGIN);
 			Transaction.createTransaction(Transaction.INSERT, map).execute();
 		}
 
@@ -636,7 +633,7 @@ public class StarsAdminUtil {
 			ECToGenericMapping map = new ECToGenericMapping();
 			map.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
 			map.setItemID( member.getEnergyCompanyId() );
-			map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER );
+			map.setMappingCategory(EcMappingCategory.MEMBER);
 			Transaction.createTransaction( Transaction.DELETE, map ).execute();
 			
 			member.clearHierarchy();
@@ -647,7 +644,7 @@ public class StarsAdminUtil {
 				
 				if (DaoFactory.getEnergyCompanyDao().getEnergyCompany( liteUser ).getEnergyCompanyID() == member.getLiteID()) {
 					map.setItemID( loginID );
-					map.setMappingCategory( ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
+					map.setMappingCategory(EcMappingCategory.MEMBER_LOGIN);
 					Transaction.createTransaction( Transaction.DELETE, map ).execute();
 					break;
 				}

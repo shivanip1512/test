@@ -20,7 +20,7 @@ import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.db.ECToGenericMapping;
+import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -97,7 +97,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EnergyCompanyId, ItemId");
         sql.append("FROM ECToGenericMapping");
-        sql.append("WHERE MappingCategory").eq_k(ECToGenericMapping.MAPPING_CATEGORY_MEMBER);
+        sql.append("WHERE MappingCategory").eq_k(EcMappingCategory.MEMBER);
         
         final Map<Integer, Integer> childToParentMap = Maps.newHashMap();
         yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
@@ -154,7 +154,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ItemId");
         sql.append("FROM ECToGenericMapping");
-        sql.append("WHERE MappingCategory").eq_k(ECToGenericMapping.MAPPING_CATEGORY_MEMBER);
+        sql.append("WHERE MappingCategory").eq_k(EcMappingCategory.MEMBER);
         sql.append(  "AND EnergyCompanyId").eq(energyCompanyId);
         
         return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
@@ -165,7 +165,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EnergyCompanyId");
         sql.append("FROM ECToGenericMapping");
-        sql.append("WHERE MappingCategory").eq_k(ECToGenericMapping.MAPPING_CATEGORY_MEMBER);
+        sql.append("WHERE MappingCategory").eq_k(EcMappingCategory.MEMBER);
         sql.append(  "AND ItemId").eq(energyCompanyId);
 
         return yukonJdbcTemplate.queryForInt(sql);

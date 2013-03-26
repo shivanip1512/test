@@ -10,6 +10,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.ECToAccountMapping;
+import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 /**
@@ -242,4 +243,11 @@ public interface ECMappingDao {
      */
     public boolean isOperatorInOperatorUserGroup(int operatorLoginId);
 
+    /**
+     * Returns list of ItemIds for given energyCompanyId and EcMappingCategory.
+     * @param energycompanyId
+     * @param category
+     * @return ItemIds
+     */
+    public List<Integer> getItemIdsForEnergyCompanyAndCategory(int energycompanyId, EcMappingCategory category);
 }

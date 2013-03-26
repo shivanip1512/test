@@ -31,6 +31,7 @@ import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.dao.ProgramRowMapper;
 import com.cannontech.stars.dr.program.model.Program;
+import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -182,8 +183,7 @@ public class ProgramDaoImpl implements ProgramDao {
         
         final SqlStatementBuilder programQuery = new SqlStatementBuilder();
         programQuery.append(selectSQLHeader);
-        programQuery.append("INNER JOIN ECToGenericMapping ECTGM ON (ECTGM.itemId = LMPWP.applianceCategoryId");
-        programQuery.append("                                        AND ECTGM.mappingCategory = 'ApplianceCategory')");
+        programQuery.append("JOIN ECToGenericMapping ECTGM ON ECTGM.itemId = LMPWP.applianceCategoryId AND ECTGM.mappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY);
         programQuery.append("WHERE PAO.paoClass").eq_k(PaoClass.LOADMANAGEMENT);
         programQuery.append("AND PAO.category").eq_k(PaoCategory.LOADMANAGEMENT);
         programQuery.append("AND PAO.paoName").eq(programName);
@@ -205,8 +205,7 @@ public class ProgramDaoImpl implements ProgramDao {
         
         final SqlStatementBuilder programQuery = new SqlStatementBuilder();
         programQuery.append(selectSQLHeader);
-        programQuery.append("INNER JOIN ECToGenericMapping ECTGM ON (ECTGM.itemId = LMPWP.applianceCategoryId");
-        programQuery.append("                                        AND ECTGM.mappingCategory = 'ApplianceCategory')");
+        programQuery.append("JOIN ECToGenericMapping ECTGM ON ECTGM.itemId = LMPWP.applianceCategoryId AND ECTGM.mappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY);
         programQuery.append("WHERE ((PAO.paobjectId > 0 ");
         programQuery.append("        AND PAO.paoClass").eq_k(PaoClass.LOADMANAGEMENT);
         programQuery.append("        AND PAO.category").eq_k(PaoCategory.LOADMANAGEMENT).append(")");

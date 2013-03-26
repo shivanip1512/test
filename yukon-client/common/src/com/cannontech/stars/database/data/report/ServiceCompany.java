@@ -5,10 +5,11 @@ import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.stars.database.db.report.ServiceCompanyDesignationCode;
-import com.cannontech.stars.database.db.ECToGenericMapping;
+import com.cannontech.stars.energyCompany.EcMappingCategory;
 
 
 /**
@@ -46,6 +47,7 @@ public class ServiceCompany extends DBPersistent {
         getServiceCompany().setPrimaryContactID(newID);
         getPrimaryContact().setContactID(newID);
     }
+    @Override
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
         getServiceCompany().setDbConnection(conn);
@@ -53,11 +55,12 @@ public class ServiceCompany extends DBPersistent {
         getPrimaryContact().setDbConnection(conn);
     }
 
+    @Override
     public void delete() throws java.sql.SQLException {
     	// delete from mapping table
     	delete("ECToGenericMapping",
 				new String[] {"ItemID", "MappingCategory"},
-				new Object[] {getServiceCompany().getCompanyID(), "ServiceCompany"});
+				new Object[] {getServiceCompany().getCompanyID(), EcMappingCategory.SERVICE_COMPANY.getDatabaseRepresentation()});
     	
     	ServiceCompanyDesignationCode.deleteDesignationCode(getServiceCompany().getCompanyID().intValue(), getDbConnection()); 
     	
@@ -70,6 +73,7 @@ public class ServiceCompany extends DBPersistent {
     	getAddress().delete();        
     }
 
+    @Override
     public void add() throws java.sql.SQLException {
     	if (getEnergyCompanyID() == null)
     		throw new java.sql.SQLException("Add: setEnergyCompanyID() must be called before this function");
@@ -85,11 +89,12 @@ public class ServiceCompany extends DBPersistent {
     	Object[] addValues = {
     		getEnergyCompanyID(),
     		getServiceCompany().getCompanyID(),
-    		com.cannontech.stars.database.db.report.ServiceCompany.TABLE_NAME
+    		EcMappingCategory.SERVICE_COMPANY.getDatabaseRepresentation()
     	};
     	add("ECToGenericMapping", addValues);
     }
 
+    @Override
     public void update() throws java.sql.SQLException {
         getServiceCompany().update();
         
@@ -100,6 +105,7 @@ public class ServiceCompany extends DBPersistent {
         getPrimaryContact().update();
     }
 
+    @Override
     public void retrieve() throws java.sql.SQLException {
         getServiceCompany().retrieve();
         
@@ -185,19 +191,24 @@ public class ServiceCompany extends DBPersistent {
 	}
 
 	public static ServiceCompany[] retrieveAllServiceCompanies(Integer energyCompanyID) {
-    	ECToGenericMapping[] items = ECToGenericMapping.getAllMappingItems( energyCompanyID, com.cannontech.stars.database.db.report.ServiceCompany.TABLE_NAME );
-    	if (items == null || items.length == 0)
-    		return new ServiceCompany[0];
-    			
-    	StringBuffer sql = new StringBuffer( "SELECT * FROM " + com.cannontech.stars.database.db.report.ServiceCompany.TABLE_NAME + " WHERE CompanyID = " + items[0].getItemID().toString() );
-    	for (int i = 1; i < items.length; i++)
-    		sql.append( " OR CompanyID = " ).append( items[i].getItemID() );
-    			   
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT * FROM ServiceCompany");
+
+        SqlStatementBuilder inClause = new SqlStatementBuilder();
+        inClause.append("SELECT ectgm.ItemId FROM EcToGenericMapping ectgm");
+        inClause.append("WHERE ectgm.MappingCategory").eq_k(EcMappingCategory.SERVICE_COMPANY);
+        inClause.append("AND ectgm.EnergyCompanyId").eq(energyCompanyID);
+        
+        sql.append("WHERE CompanyId").in(inClause);
+
     	SqlStatement stmt = new SqlStatement( sql.toString(), CtiUtilities.getDatabaseAlias() );
     			
     	try {
     		stmt.execute();
     		ServiceCompany[] companies = new ServiceCompany[ stmt.getRowCount() ];
+    		if (companies.length <= 0) {
+    		    return new ServiceCompany[0];
+    		}
     		
     		for (int i = 0; i < stmt.getRowCount(); i++) {
     			Object[] row = stmt.getRow(i);

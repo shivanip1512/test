@@ -26,25 +26,27 @@ public class Substation extends DBPersistent {
         getSubstation().setSubstationID(newID);
     }
 
+    @Override
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
         getSubstation().setDbConnection(conn);
     }
 
+    @Override
     public void delete() throws java.sql.SQLException {
     	// delete from mapping table
     	String[] constraintColumns = {
     		"ItemID", "MappingCategory"
     	};
     	Object[] constraintValues = {
-    		getSubstation().getSubstationID(),
-    		com.cannontech.stars.database.db.Substation.TABLE_NAME
+    		getSubstation().getSubstationID()
     	};
-    	delete("ECToGenericMapping", constraintColumns, constraintValues);
+    	delete("ECToSubstationMapping", constraintColumns, constraintValues);
     	
         getSubstation().delete();
     }
 
+    @Override
     public void add() throws java.sql.SQLException {
     	if (getEnergyCompanyID() == null)
     		throw new java.sql.SQLException("Add: setEnergyCompanyID() must be called before this function");
@@ -54,16 +56,17 @@ public class Substation extends DBPersistent {
     	// Add to mapping table
     	Object[] addValues = {
     		getEnergyCompanyID(),
-    		getSubstation().getSubstationID(),
-    		com.cannontech.stars.database.db.Substation.TABLE_NAME
+    		getSubstation().getSubstationID()
     	};
-    	add("ECToGenericMapping", addValues);
+    	add("ECToSubstationMapping", addValues);
     }
 
+    @Override
     public void update() throws java.sql.SQLException {
         getSubstation().update();
     }
 
+    @Override
     public void retrieve() throws java.sql.SQLException {
         getSubstation().retrieve();
     }

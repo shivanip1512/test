@@ -131,12 +131,11 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 		sql.append(    "JOIN YukonWebConfiguration YWC ON LPWP.WebSettingsId = YWC.ConfigurationId");
 		sql.append(    "JOIN YukonPaobject PAO ON PAO.PaobjectId = LPWP.DeviceId");
 		sql.append(    "JOIN ApplianceCategory AC ON AC.ApplianceCategoryId = LPWP.ApplianceCategoryId");
-		sql.append(    "JOIN EcToGenericMapping GM ON GM.ItemId = AC.ApplianceCategoryId");
+		sql.append(    "JOIN EcToGenericMapping GM ON GM.ItemId = AC.ApplianceCategoryId AND GM.MappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY);
 		sql.append(    "JOIN EcToAccountMapping AM ON AM.EnergyCompanyId = GM.EnergyCompanyId");
 		sql.append(    "JOIN CustomerAccount CA ON CA.AccountId = AM.AccountId");
 		sql.append(    "JOIN EnergyCompany EC ON EC.EnergyCompanyId = GM.EnergyCompanyId");
 		sql.append("WHERE PAO.PaobjectId").eq(getPaoIDs()[0]);
-		sql.append(    "AND GM.MappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY);
 
 		if( getEnergyCompanyID() != null) {
 			sql.append("AND EC.EnergyCompanyId").eq(getEnergyCompanyID());
@@ -197,7 +196,8 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getTitleString()
 	 */
-	public String getTitleString()
+	@Override
+    public String getTitleString()
 	{
 		return title;
 	}
@@ -205,7 +205,8 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
-	public Object getAttribute(int columnIndex, Object o)
+	@Override
+    public Object getAttribute(int columnIndex, Object o)
 	{
 		if( o instanceof ProgramDetail)
 		{
@@ -245,7 +246,8 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnNames()
 	 */
-	public String[] getColumnNames()
+	@Override
+    public String[] getColumnNames()
 	{
 		if( columnNames == null)
 		{
@@ -263,7 +265,8 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
 	 */
-	public Class<?>[] getColumnTypes()
+	@Override
+    public Class<?>[] getColumnTypes()
 	{
 		if( columnTypes == null)
 		{
@@ -282,7 +285,8 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnProperties()
 	 */
-	public ColumnProperties[] getColumnProperties()
+	@Override
+    public ColumnProperties[] getColumnProperties()
 	{
 		if(columnProperties == null)
 		{
@@ -299,7 +303,8 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 	}
 
 
-	public String getHTMLOptionsTable() {
+	@Override
+    public String getHTMLOptionsTable() {
         String html = "<span style='font-weight: bold;'> * You must select only one program.</span>";
         return html;
     }

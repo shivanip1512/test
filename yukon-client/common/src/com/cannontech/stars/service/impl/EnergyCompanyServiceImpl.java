@@ -65,7 +65,6 @@ import com.cannontech.stars.database.data.lite.LiteServiceCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompanyFactory;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
-import com.cannontech.stars.database.db.ECToGenericMapping;
 import com.cannontech.stars.database.db.hardware.Warehouse;
 import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
@@ -365,7 +364,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
 
         deleteAllDefaultThermostatSchedules(energyCompany);
 
-        deleteAllSubstations(energyCompany);
+        removeAllSubstationsFromEnergyCompany(energyCompany);
 
         deleteAllWarehouses(energyCompany);
 
@@ -552,21 +551,14 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     }
 
     /**
+     * Removes all links between energyCompany and substationIds 
      * @param energyCompany
      */
-    private void deleteAllSubstations(LiteStarsEnergyCompany energyCompany) {
+    private void removeAllSubstationsFromEnergyCompany(LiteStarsEnergyCompany energyCompany) {
         // Delete all substations, CANNOT cancel the operation from now on
-        ECToGenericMapping[] substations = ECToGenericMapping.getAllMappingItems(
-                energyCompany.getEnergyCompanyId(), com.cannontech.stars.database.db.Substation.TABLE_NAME );
-        if (substations != null) {
-            for (int i = 0; i < substations.length; i++) {
-                com.cannontech.stars.database.data.Substation substation =
-                        new com.cannontech.stars.database.data.Substation();
-                substation.setSubstationID(substations[i].getItemID());
-                log.info("Deleting Substation id# " + substations[i].getItemID());
-                dbPersistentDao.performDBChange(substation, TransactionType.DELETE);
-                
-            }
+        List<Integer> substationIds = ecMappingDao.getSubstationIdsForEnergyCompanyId(energyCompany.getEnergyCompanyId());
+        for (Integer substationId : substationIds) {
+            removeSubstationFromEnergyCompany(energyCompany.getEnergyCompanyId(), substationId);
         }
     }
 

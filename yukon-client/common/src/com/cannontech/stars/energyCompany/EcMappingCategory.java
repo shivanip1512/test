@@ -6,7 +6,8 @@ public enum EcMappingCategory implements DatabaseRepresentationSource {
     APPLIANCE_CATEGORY("ApplianceCategory"),
     MEMBER("Member"),
     MEMBER_LOGIN("MemberLogin"),
-    SERVICE_COMPANY("ServiceCompany");
+    SERVICE_COMPANY("ServiceCompany"),
+    ;
 
     private String dbString;
 

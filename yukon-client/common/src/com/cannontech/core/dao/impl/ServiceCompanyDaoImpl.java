@@ -135,6 +135,7 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao, InitializingBea
         return serviceCompany;
     }
     
+    @Override
     public List<ServiceCompanyDto> getAllServiceCompanies() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(selectBase);
@@ -172,7 +173,7 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao, InitializingBea
         //add to mapping table
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("INSERT INTO ectogenericmapping");
-        sql.values(energyCompanyId, serviceCompany.getCompanyId(), "ServiceCompany");
+        sql.values(energyCompanyId, serviceCompany.getCompanyId(), EcMappingCategory.SERVICE_COMPANY.getDatabaseRepresentation());
         
         yukonJdbcTemplate.update(sql);
     }
@@ -195,7 +196,7 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao, InitializingBea
         SqlStatementBuilder sql2 = new SqlStatementBuilder();
         sql2.append("DELETE FROM ectogenericmapping");
         sql2.append("WHERE ItemID").eq(serviceCompanyId);
-        sql2.append("AND MappingCategory").eq("'ServiceCompany'");
+        sql2.append("AND MappingCategory").eq_k(EcMappingCategory.SERVICE_COMPANY);
         
         yukonJdbcTemplate.update(sql2);
     }

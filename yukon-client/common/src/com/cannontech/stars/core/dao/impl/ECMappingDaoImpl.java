@@ -27,9 +27,9 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.db.ECToGenericMapping;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.ECToAccountMapping;
+import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ECUtils;
 import com.google.common.collect.Collections2;
@@ -474,7 +474,7 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
         sql.append("FROM ECToGenericMapping gm");
         sql.append(  "JOIN EnergyCompanyOperatorLoginList ll ON ll.OperatorLoginId = gm.ItemId");
         sql.append(  "JOIN YukonUser yu ON yu.UserId = gm.ItemId");
-        sql.append("WHERE gm.MappingCategory").eq(ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN);
+        sql.append("WHERE gm.MappingCategory").eq_k(EcMappingCategory.MEMBER_LOGIN);
         sql.append(  "AND ll.EnergyCompanyId").eq(childEnergyCompanyId);
         
         try {
@@ -493,7 +493,7 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql = new SqlStatementBuilder();
         sql.append("INSERT INTO ECToGenericMapping");
-        sql.values(parentEcId, parentLogin, ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN);
+        sql.values(parentEcId, parentLogin, EcMappingCategory.MEMBER_LOGIN);
         yukonJdbcTemplate.update(sql);
     }
     
@@ -503,9 +503,21 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM ECToGenericMapping");
         sql.append("WHERE ItemId").in(childOperatorLoginIds);
-        sql.append(  "AND MappingCategory").eq(ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN);
+        sql.append(  "AND MappingCategory").eq_k(EcMappingCategory.MEMBER_LOGIN);
         sql.append(  "AND EnergyCompanyId").eq(parentEcId);
         yukonJdbcTemplate.update(sql);
+    }
+ 
+    @Override
+    public List<Integer> getItemIdsForEnergyCompanyAndCategory(int energycompanyId, EcMappingCategory category) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ItemId ");
+        sql.append("FROM ECToGenericMapping");
+        sql.append("WHERE EnergyCompanyId").eq(energycompanyId);
+        sql.append("AND MappingCategory").eq_k(category);
+
+        return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
     }
     
     // DI Setters

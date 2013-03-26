@@ -68,11 +68,11 @@ import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.db.ECToGenericMapping;
 import com.cannontech.stars.database.db.LMProgramWebPublishing;
 import com.cannontech.stars.database.db.appliance.ApplianceCategory;
 import com.cannontech.stars.database.db.customer.CustomerAccount;
 import com.cannontech.stars.database.db.hardware.Warehouse;
+import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
@@ -1562,10 +1562,8 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         ech.children.addAll(childEnergyCompanies);
 
         // Getting member logins
-        ECToGenericMapping[] items = ECToGenericMapping.getAllMappingItems(energyCompanyId, ECToGenericMapping.MAPPING_CATEGORY_MEMBER_LOGIN );
-        for (ECToGenericMapping item : items) {
-            ech.memberLoginIDs.add( item.getItemID() );
-        }
+        List<Integer> loginIds = ecMappingDao.getItemIdsForEnergyCompanyAndCategory(energyCompanyId, EcMappingCategory.MEMBER_LOGIN);
+        ech.memberLoginIDs.addAll(loginIds);
         
         CTILogger.info( "Energy company hierarchy loaded for energy company #" + energyCompanyId);
         

@@ -31,10 +31,10 @@ import com.cannontech.stars.database.data.appliance.ApplianceBase;
 import com.cannontech.stars.database.data.customer.AccountSite;
 import com.cannontech.stars.database.data.customer.CustomerAccount;
 import com.cannontech.stars.database.data.hardware.MeterHardwareBase;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteApplianceCategory;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
-import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.database.data.report.ServiceCompany;
@@ -49,6 +49,7 @@ import com.cannontech.stars.database.db.integration.FailureCRSToSAM_PremMeterChg
 import com.cannontech.stars.database.db.integration.Failure_SwitchReplacement;
 import com.cannontech.stars.database.db.integration.SwitchReplacement;
 import com.cannontech.stars.database.db.report.ServiceCompanyDesignationCode;
+import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventory;
@@ -303,7 +304,7 @@ public class YukonToCRSFuncs
         									ServiceCompanyDesignationCode.TABLE_NAME + " SCDC, " +
         									ECToGenericMapping.TABLE_NAME + " MAP " +
         									" WHERE SC.COMPANYID = SCDC.SERVICECOMPANYID " +
-        									" AND MAP.MAPPINGCATEGORY = '" + com.cannontech.stars.database.db.report.ServiceCompany.TABLE_NAME + "' " +
+        									" AND MAP.MAPPINGCATEGORY = '" + EcMappingCategory.SERVICE_COMPANY.getDatabaseRepresentation() + "' " +
         									" AND SC.COMPANYID = MAP.ITEMID " + 
         									" AND DESIGNATIONCODEVALUE = '" + code + "'", CtiUtilities.getDatabaseAlias());
         try

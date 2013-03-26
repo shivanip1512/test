@@ -30,6 +30,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
@@ -111,9 +112,9 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         energyCompanyIds.addAll(getParentEnergyCompanyIds(energyCompanyId));
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select sc.CompanyID companyId, sc.CompanyName companyName from ServiceCompany sc");
-        sql.append("join ECToGenericMapping ecgm on ecgm.ItemID = sc.CompanyID");
+        sql.append("join ECToGenericMapping ecgm on ecgm.ItemID = sc.CompanyID and ecgm.MappingCategory").eq_k(EcMappingCategory.SERVICE_COMPANY);
         sql.append("where ecgm.EnergyCompanyID in (").appendArgumentList(energyCompanyIds).append(")");
-        sql.append("and ecgm.MappingCategory = 'ServiceCompany'");
+        
 
         return yukonJdbcTemplate.query(sql.getSql(),
             new RowMapper<DisplayableServiceCompany>() {
@@ -137,7 +138,7 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select EnergyCompanyId");
         sql.append("from ECToGenericMapping");
-        sql.append("where MappingCategory = 'Member'");
+        sql.append("where MappingCategory").eq_k(EcMappingCategory.MEMBER);
         sql.append("and ItemId = ").appendArgument(energyCompanyId);
 
         try {

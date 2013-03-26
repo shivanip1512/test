@@ -23,18 +23,22 @@ import com.cannontech.message.dispatch.message.DbChangeType;
  */
 public class PointDeviceIndexManager extends AbstractIndexManager {
 
+    @Override
     public String getIndexName() {
         return "pointPicker";
     }
 
+    @Override
     protected int getIndexVersion() {
         return 3;
     }
 
+    @Override
     protected Analyzer getAnalyzer() {
         return new YukonObjectAnalyzer();
     }
 
+    @Override
     protected String getDocumentQuery() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select *");
@@ -43,6 +47,7 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
         return sql.getSql();
     }
 
+    @Override
     protected String getDocumentCountQuery() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select count(*)");
@@ -56,7 +61,7 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
         sql.append("join yukonpaobject ypo on (ypo.paobjectid = p.paobjectid)");
         sql.append("join device d on (d.deviceid = ypo.paobjectid)");
         sql.append("left join pointunit pu on p.pointid = pu.pointid");
-        sql.append("where ypo.category").eq_k(PaoCategory.DEVICE.getDbString());
+        sql.append("where ypo.category").eq_k(PaoCategory.DEVICE);
         return sql;
     }
     
@@ -64,6 +69,7 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
         return new SqlStatementBuilder("order by p.pointname, p.pointid");
     }
 
+    @Override
     protected Document createDocument(ResultSet rs) throws SQLException {
 
         Document doc = new Document();
@@ -102,6 +108,7 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
         return doc;
     }
 
+    @Override
     protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category, String type) {
         if (database == DBChangeMsg.CHANGE_PAO_DB && PAOGroups.STRING_CAT_DEVICE.equalsIgnoreCase(category)) {
             // Device change msg

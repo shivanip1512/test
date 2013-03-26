@@ -5,6 +5,7 @@ import java.util.Set;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.stars.energyCompany.EcMappingCategory;
 
 public class LmProgramForEnergyCompanyIdFilter implements SqlFilter {
     
@@ -20,7 +21,8 @@ public class LmProgramForEnergyCompanyIdFilter implements SqlFilter {
         SqlStatementBuilder retVal = new SqlStatementBuilder();
         retVal.append("paobjectId IN (SELECT deviceId");
         retVal.append("				  FROM LMProgramWebPublishing LMPWP");
-        retVal.append("               INNER JOIN ECToGenericMapping ECTGM ON (ECTGM.itemId = LMPWP.applianceCategoryId AND ECTGM.mappingCategory = 'ApplianceCategory')");
+        retVal.append("               JOIN ECToGenericMapping ECTGM ON ");
+        retVal.append("                 ECTGM.itemId = LMPWP.applianceCategoryId AND ECTGM.mappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY);
         retVal.append("               WHERE ECTGM.energyCompanyId").in(energyCompanyIds);
         retVal.append("               )");
         retVal.append("AND paobjectId IN (SELECT lmProgramDeviceId FROM lmControlAreaProgram)");

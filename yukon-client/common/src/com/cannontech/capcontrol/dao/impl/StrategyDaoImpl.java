@@ -31,10 +31,10 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.YukonRowMapperAdapter;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
-import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
 import com.cannontech.database.db.capcontrol.CommReportingPercentageSetting;
 import com.cannontech.database.db.capcontrol.CommReportingPercentageSettingName;
 import com.cannontech.database.db.capcontrol.CommReportingPercentageSettingType;
+import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
 import com.cannontech.database.db.capcontrol.PeakTargetSetting;
 import com.cannontech.database.db.capcontrol.PeaksTargetType;
 import com.cannontech.database.db.capcontrol.PowerFactorCorrectionSetting;
@@ -384,7 +384,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM CCStrategyTargetSettings WHERE strategyId").eq(strategyId);
-        sql.append("AND SettingName").eq_k(PowerFactorCorrectionSettingName.POWER_FACTOR_CORRECTION.getDisplayName());
+        sql.append("AND SettingName").eq_k(PowerFactorCorrectionSettingName.POWER_FACTOR_CORRECTION);
         yukonJdbcTemplate.update(sql.getSql(), sql.getArguments());
         
         if (!strategy.isIvvc()) return; // Don't save these IVVC-only settings if we aren't going to use them
@@ -428,7 +428,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM CCStrategyTargetSettings WHERE strategyId").eq(strategyId);
-        sql.append("AND SettingName").eq_k(CommReportingPercentageSettingName.COMM_REPORTING_PERCENTAGE.getDisplayName());
+        sql.append("AND SettingName").eq_k(CommReportingPercentageSettingName.COMM_REPORTING_PERCENTAGE);
         yukonJdbcTemplate.update(sql.getSql(), sql.getArguments());
         
         if (!strategy.isIvvc()) return; // Don't save these IVVC-only settings if we aren't going to use them
@@ -500,7 +500,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         sql.append("FROM CCStrategyTargetSettings bw, CCStrategyTargetSettings cost, CCStrategyTargetSettings maxCost");
         sql.append("WHERE bw.SettingName = cost.SettingName");
         sql.append("  AND bw.SettingName = maxCost.SettingName");
-        sql.append("  AND bw.SettingName").eq_k(PowerFactorCorrectionSettingName.POWER_FACTOR_CORRECTION.getDisplayName());
+        sql.append("  AND bw.SettingName").eq_k(PowerFactorCorrectionSettingName.POWER_FACTOR_CORRECTION);
         sql.append("  AND bw.strategyid = cost.strategyid");
         sql.append("  AND bw.strategyid = maxCost.strategyid");
         sql.append("  AND bw.strategyid").eq(strategy.getStrategyID());
@@ -522,7 +522,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         sql.append("FROM CCStrategyTargetSettings banks, CCStrategyTargetSettings regulator, CCStrategyTargetSettings voltageMonitor");
         sql.append("WHERE banks.SettingName = regulator.SettingName");
         sql.append("  AND banks.SettingName = voltageMonitor.SettingName");
-        sql.append("  AND banks.SettingName").eq_k(PowerFactorCorrectionSettingName.POWER_FACTOR_CORRECTION.getDisplayName());
+        sql.append("  AND banks.SettingName").eq_k(PowerFactorCorrectionSettingName.POWER_FACTOR_CORRECTION);
         sql.append("  AND banks.strategyid = regulator.strategyid");
         sql.append("  AND banks.strategyid = voltageMonitor.strategyid");
         sql.append("  AND banks.strategyid").eq(strategy.getStrategyID());

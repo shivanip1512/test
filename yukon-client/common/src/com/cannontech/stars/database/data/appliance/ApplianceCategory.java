@@ -6,6 +6,7 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeHelper;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.stars.energyCompany.EcMappingCategory;
 
 
 /**
@@ -32,17 +33,19 @@ public class ApplianceCategory extends DBPersistent implements CTIDbChange {
         getApplianceCategory().setApplianceCategoryID(newID);
     }
 
+    @Override
     public void setDbConnection(java.sql.Connection conn) {
         super.setDbConnection(conn);
         getApplianceCategory().setDbConnection(conn);
         getWebConfiguration().setDbConnection(conn);
     }
 
+    @Override
     public void delete() throws java.sql.SQLException {
     	// Delete from mapping table
         delete( "ECToGenericMapping",
         		new String[] {"ItemID", "MappingCategory"},
-        		new Object[] {getApplianceCategory().getApplianceCategoryID(), "ApplianceCategory"} );
+        		new Object[] {getApplianceCategory().getApplianceCategoryID(), EcMappingCategory.APPLIANCE_CATEGORY.getDatabaseRepresentation()} );
         
         getApplianceCategory().delete();
         
@@ -51,6 +54,7 @@ public class ApplianceCategory extends DBPersistent implements CTIDbChange {
         getWebConfiguration().delete();
     }
 
+    @Override
     public void add() throws java.sql.SQLException {
     	if (getEnergyCompanyID() == null)
     		throw new java.sql.SQLException( "setEnergyCompanyID() must be called before this function" );
@@ -65,11 +69,12 @@ public class ApplianceCategory extends DBPersistent implements CTIDbChange {
         Object[] addValues = {
             getEnergyCompanyID(),
             getApplianceCategory().getApplianceCategoryID(),
-            "ApplianceCategory"
+            EcMappingCategory.APPLIANCE_CATEGORY.getDatabaseRepresentation()
         };
         add( "ECToGenericMapping", addValues );
     }
 
+    @Override
     public void update() throws java.sql.SQLException {
         getApplianceCategory().update();
         
@@ -78,6 +83,7 @@ public class ApplianceCategory extends DBPersistent implements CTIDbChange {
         getWebConfiguration().update();
     }
 
+    @Override
     public void retrieve() throws java.sql.SQLException {
         getApplianceCategory().retrieve();
         

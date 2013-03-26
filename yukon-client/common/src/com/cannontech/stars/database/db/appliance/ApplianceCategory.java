@@ -2,8 +2,10 @@ package com.cannontech.stars.database.db.appliance;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.energyCompany.EcMappingCategory;
 
 
 /**
@@ -91,15 +93,16 @@ public class ApplianceCategory extends DBPersistent {
     }
     
     public static ApplianceCategory[] getAllApplianceCategories(Integer energyCompanyID) {
-    	com.cannontech.stars.database.db.ECToGenericMapping[] items =
-    			com.cannontech.stars.database.db.ECToGenericMapping.getAllMappingItems( energyCompanyID, TABLE_NAME );
-    	if (items == null || items.length == 0)
-    		return new ApplianceCategory[0];
-    			
-    	StringBuffer sql = new StringBuffer( "SELECT * FROM " + TABLE_NAME + " WHERE ApplianceCategoryID = " + items[0].getItemID().toString() );
-    	for (int i = 1; i < items.length; i++)
-    		sql.append( " OR ApplianceCategoryID = " ).append( items[i].getItemID() );
-    	sql.append( " ORDER BY ApplianceCategoryID" );
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT * FROM ApplianceCategory");
+
+    	SqlStatementBuilder inClause = new SqlStatementBuilder();
+    	inClause.append("SELECT ectgm.ItemId FROM EcToGenericMapping ectgm");
+    	inClause.append("WHERE ectgm.MappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY);
+    	inClause.append("AND ectgm.EnergyCompanyId").eq(energyCompanyID);
+    	
+    	sql.append("WHERE ApplianceCategoryId").in(inClause);
+    	sql.append("ORDER BY ApplianceCategoryID");
     	
     	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
     			sql.toString(), com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
@@ -107,6 +110,9 @@ public class ApplianceCategory extends DBPersistent {
         try {
         	stmt.execute();
         	ApplianceCategory[] appCats = new ApplianceCategory[ stmt.getRowCount() ];
+            if (appCats.length <= 0) {
+                return new ApplianceCategory[0];
+            }
 
             for (int i = 0; i < appCats.length; i++) {
             	Object[] row = stmt.getRow(i);

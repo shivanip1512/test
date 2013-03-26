@@ -2,10 +2,8 @@ package com.cannontech.stars.database.db;
 
 import java.sql.SQLException;
 
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.stars.energyCompany.EcMappingCategory;
 
 /**
  * @author yao
@@ -16,14 +14,10 @@ import com.cannontech.database.db.DBPersistent;
  * Window>Preferences>Java>Code Generation.
  */
 public class ECToGenericMapping extends DBPersistent {
-	
-	public static final String MAPPING_CATEGORY_ROUTE = "Route";
-	public static final String MAPPING_CATEGORY_MEMBER = "Member";
-	public static final String MAPPING_CATEGORY_MEMBER_LOGIN = "MemberLogin";
-	
+
 	private Integer energyCompanyID = null;
 	private Integer itemID = null;
-	private String mappingCategory = null;
+	private EcMappingCategory mappingCategory = null;
 	
 	public static final String[] SETTER_COLUMNS = {};
 	
@@ -36,9 +30,10 @@ public class ECToGenericMapping extends DBPersistent {
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
-	public void add() throws SQLException {
+	@Override
+    public void add() throws SQLException {
         Object[] addValues = {
-        	getEnergyCompanyID(), getItemID(), getMappingCategory()
+        	getEnergyCompanyID(), getItemID(), getMappingCategory().getDatabaseRepresentation()
         };
 
         add( TABLE_NAME, addValues );
@@ -47,9 +42,10 @@ public class ECToGenericMapping extends DBPersistent {
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#delete()
 	 */
-	public void delete() throws SQLException {
+	@Override
+    public void delete() throws SQLException {
         Object[] constraintValues = {
-        	getEnergyCompanyID(), getItemID(), getMappingCategory()
+        	getEnergyCompanyID(), getItemID(), getMappingCategory().getDatabaseRepresentation()
         };
 
         delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
@@ -58,68 +54,17 @@ public class ECToGenericMapping extends DBPersistent {
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#retrieve()
 	 */
-	public void retrieve() throws SQLException {
+	@Override
+    public void retrieve() throws SQLException {
 		throw new RuntimeException( "This method is not supported" );
 	}
 
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#update()
 	 */
-	public void update() throws SQLException {
+	@Override
+    public void update() throws SQLException {
 		throw new RuntimeException( "This method is not supported" );
-	}
-	
-	public static ECToGenericMapping[] getAllMappingItems(Integer energyCompanyID) {
-		String sql = "SELECT * FROM " + TABLE_NAME + " WHERE EnergyCompanyID = " + energyCompanyID.toString();
-		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-		
-		try {
-			stmt.execute();
-			ECToGenericMapping[] items = new ECToGenericMapping[ stmt.getRowCount() ];
-			
-			for (int i = 0; i < items.length; i++) {
-				Object[] row = stmt.getRow(i);
-				items[i] = new ECToGenericMapping();
-				
-				items[i].setEnergyCompanyID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
-				items[i].setItemID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
-				items[i].setMappingCategory( (String) row[2] );
-			}
-			
-			return items;
-		}
-		catch (Exception e) {
-			CTILogger.error( e.getMessage(), e );
-		}
-		
-		return null;
-	}
-	
-	public static ECToGenericMapping[] getAllMappingItems(Integer energyCompanyID, String category) {
-		String sql = "SELECT * FROM " + TABLE_NAME + " WHERE EnergyCompanyID = " + energyCompanyID.toString()
-				   + " AND MappingCategory LIKE '" + category + "%'";
-		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-		
-		try {
-			stmt.execute();
-			ECToGenericMapping[] items = new ECToGenericMapping[ stmt.getRowCount() ];
-			
-			for (int i = 0; i < items.length; i++) {
-				Object[] row = stmt.getRow(i);
-				items[i] = new ECToGenericMapping();
-				
-				items[i].setEnergyCompanyID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
-				items[i].setItemID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
-				items[i].setMappingCategory( (String) row[2] );
-			}
-			
-			return items;
-		}
-		catch (Exception e) {
-			CTILogger.error( e.getMessage(), e );
-		}
-		
-		return null;
 	}
 
 	/**
@@ -140,9 +85,9 @@ public class ECToGenericMapping extends DBPersistent {
 
 	/**
 	 * Returns the mappingCategory.
-	 * @return String
+	 * @return EcMappingCategory
 	 */
-	public String getMappingCategory() {
+	public EcMappingCategory getMappingCategory() {
 		return mappingCategory;
 	}
 
@@ -166,7 +111,7 @@ public class ECToGenericMapping extends DBPersistent {
 	 * Sets the mappingCategory.
 	 * @param mappingCategory The mappingCategory to set
 	 */
-	public void setMappingCategory(String mappingCategory) {
+	public void setMappingCategory(EcMappingCategory mappingCategory) {
 		this.mappingCategory = mappingCategory;
 	}
 
