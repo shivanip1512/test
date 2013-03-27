@@ -1,8 +1,13 @@
 package com.cannontech.stars.database.db.appliance;
 
-import com.cannontech.clientutils.CTILogger;
+import java.sql.SQLException;
+import java.util.List;
+
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
@@ -92,7 +97,9 @@ public class ApplianceCategory extends DBPersistent {
         return nextValueId;
     }
     
-    public static ApplianceCategory[] getAllApplianceCategories(Integer energyCompanyID) {
+    public static List<ApplianceCategory> getAllApplianceCategories(Integer energyCompanyID) {
+        YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append("SELECT * FROM ApplianceCategory");
 
@@ -104,34 +111,20 @@ public class ApplianceCategory extends DBPersistent {
     	sql.append("WHERE ApplianceCategoryId").in(inClause);
     	sql.append("ORDER BY ApplianceCategoryID");
     	
-    	com.cannontech.database.SqlStatement stmt = new com.cannontech.database.SqlStatement(
-    			sql.toString(), com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    	List<ApplianceCategory> retList = yukonJdbcTemplate.query(sql, new YukonRowMapper<ApplianceCategory>() {
 
-        try {
-        	stmt.execute();
-        	ApplianceCategory[] appCats = new ApplianceCategory[ stmt.getRowCount() ];
-            if (appCats.length <= 0) {
-                return new ApplianceCategory[0];
+            @Override
+            public ApplianceCategory mapRow(YukonResultSet rs) throws SQLException {
+                ApplianceCategory applianceCategory = new ApplianceCategory();
+                applianceCategory.setApplianceCategoryID(rs.getInt("ApplianceCategoryId"));
+                applianceCategory.setDescription(rs.getString("Description"));
+                applianceCategory.setCategoryID(rs.getInt("CategoryId"));
+                applianceCategory.setWebConfigurationID(rs.getInt("WebConfigurationId"));
+                applianceCategory.setConsumerSelectable(Boolean.valueOf(rs.getString("ConsumerSelectable")));
+                return applianceCategory;
             }
-
-            for (int i = 0; i < appCats.length; i++) {
-            	Object[] row = stmt.getRow(i);
-            	appCats[i] = new ApplianceCategory();
-            	
-            	appCats[i].setApplianceCategoryID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
-            	appCats[i].setDescription( (String) row[1] );
-            	appCats[i].setCategoryID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
-            	appCats[i].setWebConfigurationID( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
-            }
-            
-            return appCats;
-        }
-        catch(Exception e)
-        {
-            CTILogger.error( e.getMessage(), e );
-        }
-
-        return null;
+        });
+    	return retList;
     }
 
     public Integer getApplianceCategoryID() {

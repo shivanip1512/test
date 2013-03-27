@@ -558,13 +558,13 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
 
     public synchronized List<LiteServiceCompany> getServiceCompanies() {
         if (serviceCompanies == null) {
-            com.cannontech.stars.database.data.report.ServiceCompany[] companies =
+            List<com.cannontech.stars.database.data.report.ServiceCompany> companies =
                     com.cannontech.stars.database.data.report.ServiceCompany.retrieveAllServiceCompanies( getEnergyCompanyId() );
             
             serviceCompanies = new ArrayList<LiteServiceCompany>();
 
-            for (int i=0; i<companies.length; i++) {
-                serviceCompanies.add( (LiteServiceCompany)StarsLiteFactory.createLite(companies[i]) );
+            for (com.cannontech.stars.database.data.report.ServiceCompany serviceCompany : companies) {
+                serviceCompanies.add((LiteServiceCompany)StarsLiteFactory.createLite(serviceCompany));
             }
             
             CTILogger.info( "All service companies loaded for energy company #" + getEnergyCompanyId() );
@@ -1818,7 +1818,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     
     private void initApplianceCategories(){
 
-    	ApplianceCategory[] appCats = ApplianceCategory.getAllApplianceCategories(getEnergyCompanyId());
+    	List<ApplianceCategory> appCats = ApplianceCategory.getAllApplianceCategories(getEnergyCompanyId());
                 
         for (ApplianceCategory category : appCats) {
             LiteApplianceCategory appCat = 

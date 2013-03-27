@@ -1,5 +1,6 @@
 package com.cannontech.stars.database.data.report;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,11 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlStatement;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.db.report.ServiceCompanyDesignationCode;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
 
@@ -190,7 +195,10 @@ public class ServiceCompany extends DBPersistent {
 		this.energyCompanyID = energyCompanyID;
 	}
 
-	public static ServiceCompany[] retrieveAllServiceCompanies(Integer energyCompanyID) {
+	public static List<ServiceCompany> retrieveAllServiceCompanies(final Integer energyCompanyID) {
+	    
+	    YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
+
     	SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT * FROM ServiceCompany");
 
@@ -201,37 +209,24 @@ public class ServiceCompany extends DBPersistent {
         
         sql.append("WHERE CompanyId").in(inClause);
 
-    	SqlStatement stmt = new SqlStatement( sql.toString(), CtiUtilities.getDatabaseAlias() );
-    			
-    	try {
-    		stmt.execute();
-    		ServiceCompany[] companies = new ServiceCompany[ stmt.getRowCount() ];
-    		if (companies.length <= 0) {
-    		    return new ServiceCompany[0];
-    		}
-    		
-    		for (int i = 0; i < stmt.getRowCount(); i++) {
-    			Object[] row = stmt.getRow(i);
-    			companies[i] = new ServiceCompany();
-    			
-    			Integer companyID = new Integer(((java.math.BigDecimal) row[0]).intValue()) ;
-    			companies[i].setCompanyID( companyID);
-    			companies[i].getServiceCompany().setCompanyName( (String) row[1] );
-    			companies[i].getServiceCompany().setAddressID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
-    			companies[i].getServiceCompany().setMainPhoneNumber( (String) row[3] );
-    			companies[i].getServiceCompany().setMainFaxNumber( (String) row[4] );
-    			companies[i].getServiceCompany().setPrimaryContactID( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
-    			companies[i].getServiceCompany().setHIType( (String) row[6] );
-    			companies[i].setEnergyCompanyID(energyCompanyID);
-    			companies[i].setDesignationCodes(ServiceCompanyDesignationCode.getServiceCompanyDesignationCodes(companyID.intValue()));
-    		}
-    		return companies;
-    	}
-    	catch (Exception e) {
-    		CTILogger.error( e.getMessage(), e );
-    	}
-    	
-    	return null;
+        List<ServiceCompany> retList = yukonJdbcTemplate.query(sql, new YukonRowMapper<ServiceCompany>() {
+
+            @Override
+            public ServiceCompany mapRow(YukonResultSet rs) throws SQLException {
+                ServiceCompany serviceCompany = new ServiceCompany();
+                serviceCompany.setCompanyID(rs.getInt("CompanyId"));
+                serviceCompany.getServiceCompany().setCompanyName(rs.getString("CompanyName"));
+                serviceCompany.getServiceCompany().setAddressID(rs.getInt("AddressId"));
+                serviceCompany.getServiceCompany().setMainPhoneNumber(rs.getString("MainPhoneNumber"));
+                serviceCompany.getServiceCompany().setMainFaxNumber(rs.getString("MainFaxNumber"));
+                serviceCompany.getServiceCompany().setPrimaryContactID(rs.getInt("PrimaryContactId"));
+                serviceCompany.getServiceCompany().setHIType(rs.getString("HiType"));
+                serviceCompany.setEnergyCompanyID(energyCompanyID);
+                serviceCompany.setDesignationCodes(ServiceCompanyDesignationCode.getServiceCompanyDesignationCodes(serviceCompany.getServiceCompany().getCompanyID()));
+                return serviceCompany;
+            }
+        });
+    	return retList;
     }
 	
 	/** 

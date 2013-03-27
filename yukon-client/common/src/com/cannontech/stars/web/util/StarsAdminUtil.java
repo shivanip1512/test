@@ -194,48 +194,7 @@ public class StarsAdminUtil {
 			deleteServiceCompany( liteCompany.getCompanyID(), energyCompany );
 		}
 	}
-	
-/*	public static LiteSubstation createSubstation(String subName, LiteStarsEnergyCompany energyCompany)
-		throws TransactionException
-	{
-		com.cannontech.stars.database.data.Substation sub = new com.cannontech.stars.database.data.Substation();
-		com.cannontech.stars.database.db.Substation subDB = sub.getSubstation();
-		
-		subDB.setSubstationName( subName );
-		sub.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
-		
-		sub = Transaction.createTransaction( Transaction.INSERT, sub ).execute();
-		
-		LiteSubstation liteSub = (LiteSubstation) StarsLiteFactory.createLite( subDB );
-		energyCompany.addSubstation( liteSub );
-		return liteSub;
-	}
-	
-	public static void deleteSubstation(int subID, LiteStarsEnergyCompany energyCompany)
-		throws TransactionException
-	{
-		// set SubstationID = 0 for all sites using this substation
-		com.cannontech.stars.database.db.customer.SiteInformation.resetSubstation( subID );
-		
-		LiteSubstation liteSub = energyCompany.getSubstation( subID );
-		
-		com.cannontech.stars.database.data.Substation sub = new com.cannontech.stars.database.data.Substation();
-		StarsLiteFactory.setSubstation( sub.getSubstation(), liteSub );
-		Transaction.createTransaction( Transaction.DELETE, sub ).execute();
-		
-		energyCompany.deleteSubstation( subID );
-	}
-	
-	public static void deleteAllSubstations(LiteStarsEnergyCompany energyCompany)
-		throws TransactionException
-	{
-        List<LiteSubstation> substations = energyCompany.getSubstations();
-		for (int i = substations.size() - 1; i >= 0; i--) {
-			LiteSubstation liteSub = substations.get(i);
-			deleteSubstation( liteSub.getSubstationID(), energyCompany );
-		}
-	}
-*/
+
 	private static String getReferenceColumn(String listName) {
 		if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_VOLTAGE))
 			return "VoltageID";

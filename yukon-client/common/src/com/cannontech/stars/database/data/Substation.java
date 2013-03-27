@@ -36,7 +36,7 @@ public class Substation extends DBPersistent {
     public void delete() throws java.sql.SQLException {
     	// delete from mapping table
     	String[] constraintColumns = {
-    		"ItemID", "MappingCategory"
+    		"ItemID"
     	};
     	Object[] constraintValues = {
     		getSubstation().getSubstationID()

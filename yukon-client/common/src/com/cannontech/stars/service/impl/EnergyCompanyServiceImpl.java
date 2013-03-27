@@ -364,8 +364,6 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
 
         deleteAllDefaultThermostatSchedules(energyCompany);
 
-        removeAllSubstationsFromEnergyCompany(energyCompany);
-
         deleteAllWarehouses(energyCompany);
 
         deleteAllServiceCompanies(energyCompany);
@@ -547,18 +545,6 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             log.info("Deleting service company id# " + liteCompany.getCompanyID());
             dbPersistentDao.performDBChange(company, TransactionType.DELETE);
 
-        }
-    }
-
-    /**
-     * Removes all links between energyCompany and substationIds 
-     * @param energyCompany
-     */
-    private void removeAllSubstationsFromEnergyCompany(LiteStarsEnergyCompany energyCompany) {
-        // Delete all substations, CANNOT cancel the operation from now on
-        List<Integer> substationIds = ecMappingDao.getSubstationIdsForEnergyCompanyId(energyCompany.getEnergyCompanyId());
-        for (Integer substationId : substationIds) {
-            removeSubstationFromEnergyCompany(energyCompany.getEnergyCompanyId(), substationId);
         }
     }
 
