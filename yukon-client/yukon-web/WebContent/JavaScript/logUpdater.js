@@ -3,36 +3,29 @@ function initiateCannonLogUpdate(url, periodSecs) {
 	var fileLength = 0;
     var processResponseCallback = function(transport) {
     
-        // retrieves the callback information and sets them
-    	// to local instance variables
+        // retrieves the callback information and sets them to local instance variables
         var content = transport.responseText;
         var responseStruc = content.evalJSON();
         var logContentsJSON = responseStruc.logContent;
         var logLastMod = responseStruc.fileDateMod;
-        var numLines = responseStruc.numLines;
-		fileLength = responseStruc.fileLength;
-		
-		if((logContentsJSON != null) && (logContentsJSON != "")){
-			/* This part of the function updates the log last modified 
-			 * field shown on the screen
-			 */
-			 
-			 if((logLastMod != null) && 
-			   (logLastMod != "") &&
-			   (logLastMod != jQuery('#lastMod')[0].innerHTML)){
-				$('lastMod')[0].innerHTML = logLastMod;
-				var tempFileLength = (fileLength/1024).toString();
-				jQuery('#fileLength')[0].innerHTML = (tempFileLength.split(".")[0]);
+		newFileLength = responseStruc.fileLength;
+
+		if (logContentsJSON != null && logContentsJSON != "") {
+			// This part of the function updates the log last modified field shown on the screen
+			if (newFileLength !== fileLength) {
+				fileLength = newFileLength;
+				jQuery('#lastMod')[0].innerHTML = logLastMod;
+				var fileLengthInKB = ((newFileLength/1024).toString().split(".")[0]);
+				jQuery('#fileLength')[0].innerHTML = fileLengthInKB;
 				jQuery("#lastMod, #fileLength").flashColor({color: "#FF8", duration: 1000});
-			}		
-		
-			/* This part of the function updates the log contents shown
-			 * on the screen
-			 */
+			}
+
+			// This part of the function updates the log contents shown on the screen
 			logContentsJSON.each(function(newLogLine) {
 				appendLogEntry(newLogLine);
 			});
         }
+		
         setTimeout(doUpdate, periodSecs * 1000);   
 	};
     
@@ -52,12 +45,10 @@ function initiateCannonLogUpdate(url, periodSecs) {
     };
     
     var doUpdate = function() {
-    	if(updatePaused){
+    	if (updatePaused) {
     		setTimeout(doUpdate, periodSecs * 1000);
-    	}else{
-    
-	        // if none exist on this page, get out
-	        // build up JS object to be used for request
+    	} else {
+	        // if none exist on this page, get out build up JS object to be used for request
 	        var requestData = $H({
 	            'fileLength': fileLength,
 	            'numLines': $('numLines').value,
@@ -78,32 +69,33 @@ function initiateCannonLogUpdate(url, periodSecs) {
         	updatableElements = null;
         }
     };
+    
     setTimeout(doUpdate, periodSecs * 1000);
 }
 
-function pauseUpdate(){
+function pauseUpdate() {
 	updatePaused = true;
 	$('pauseButton').innerHTML = "Start";
 }
 
-function startUpdate(){
+function startUpdate() {
 	updatePaused = false;
 	$('pauseButton').innerHTML = "Pause";
 }
 
-function startOrPauseUpdate(){
-	if(updatePaused){
+function startOrPauseUpdate() {
+	if (updatePaused) {
 		startUpdate();
-	}else{
+	} else {
 		pauseUpdate();
 	}
 }
 
 function cannonLogUpdateRegistration(identifier, callback) {
-  // callback will include the formatted string as its one argument
-  var theData = [];
-  theData.identifier = identifier;
-  theData.callback = callback;
-  cannonLogUpdateRegistrations.push(theData);
+	// callback will include the formatted string as its one argument
+	var theData = [];
+	theData.identifier = identifier;
+	theData.callback = callback;
+    cannonLogUpdateRegistrations.push(theData);
 }
 

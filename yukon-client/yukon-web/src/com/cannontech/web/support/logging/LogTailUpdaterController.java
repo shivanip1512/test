@@ -9,8 +9,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.jsonOLD.JSONArray;
-import net.sf.jsonOLD.JSONObject;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
@@ -45,48 +45,43 @@ public class LogTailUpdaterController extends LogController {
         StringWriter jsonDataWriter = new StringWriter();
         FileCopyUtils.copy(request.getReader(), jsonDataWriter);
         String jsonStr = jsonDataWriter.toString();
-        JSONObject data = JSONObject.fromString(jsonStr);
-        long oldFileLength = data.getLong("fileLength");
-
-        int linesPerUpdate = 50;
-        linesPerUpdate = data.getInt("numLines");
+        JSONObject data = JSONObject.fromObject(jsonStr);
+        final long oldFileLength = data.getLong("fileLength");
+        final int linesPerUpdate = data.getInt("numLines");
         
         // takes the data and checks to see if the log file has changed        
         JSONObject jsonUpdates = new JSONObject();
         JSONArray jsonLogLines = new JSONArray();
-        jsonUpdates.put("logContent",jsonLogLines);
         jsonUpdates.put("numLines", linesPerUpdate);
         
         File logFile = getLogFile(request);
         Validate.isTrue(logFile.isFile());
         
-        if((logFile!= null) && (logFile.canRead())){
+        if (logFile!= null && logFile.canRead()) {
             // Setting up the last modified variable for the JSON
-        	long lastModL = logFile.lastModified();
+        	final long lastModL = logFile.lastModified();
             Date lastMod = new Date(lastModL);
             String lastModStr = dateFormattingService.format(lastMod, DateFormattingService.DateFormatEnum.BOTH, userContext);
             jsonUpdates.put("fileDateMod", lastModStr);
             
             // Setting up the file length variable for the JSON
-            long fileLengthL = logFile.length();
+            final long fileLengthL = logFile.length();
             jsonUpdates.put("fileLength", String.valueOf(fileLengthL));
             
-            /* These sets of lines gathering all the new lines from the file and sets up 
-             * the logLines variable that contains them.
-             */
+            // These sets of lines gathering all the new lines from the file and sets up the logLines variable that contains them.
         	List<String> logLines = FileUtil.readLines(logFile, linesPerUpdate, oldFileLength);
-        	if ((logLines != null) && 
-        		(fileLengthL != oldFileLength)) {
-                
-                for(int i = 0; i < logLines.size();i++){
-        			if(logLines.get(i) != null){
-                        jsonLogLines.put(logLines.get(i));
+        	if (logLines != null && fileLengthL != oldFileLength) {
+        		for (String logLine : logLines) {
+        			if (logLine != null) {
+                        jsonLogLines.add(logLine);
         			}
         		}
         	}
         } else {
             logger.warn("Could not read log file: " + logFile);
         }
+        
+        jsonUpdates.put("logContent", jsonLogLines);
         
         // The writing of the response and sending the response
         PrintWriter writer = response.getWriter();
