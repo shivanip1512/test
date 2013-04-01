@@ -5,7 +5,7 @@
 
 BOOST_AUTO_TEST_SUITE( test_mccmd )
 
-BOOST_AUTO_TEST_CASE( test_isEscapeCommand )
+BOOST_AUTO_TEST_CASE( test_BuildCommandString )
 {
     {
         char *argv[] = {"this", "is", "a", "test"};

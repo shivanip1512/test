@@ -61,10 +61,24 @@ string CtiInterpreter::escapeQuotationMarks(const string &command)
 
 bool CtiInterpreter::isEscapeCommand(const string &command)
 {
-    size_t start_pos = command.find_first_not_of(" \t");
-    size_t end_pos   = command.find_first_of(" \t", start_pos);
+    const size_t start_pos = command.find_first_not_of(" \t");
 
-    const string strCmd = command.substr(start_pos, end_pos - start_pos);
+    //  No non-whitespace characters found.
+    if( start_pos == string::npos )
+    {
+        return false;
+    }
+
+    const size_t end_pos = command.find_first_of(" \t", start_pos);
+
+    size_t count = string::npos;
+
+    if( end_pos != string::npos )
+    {
+        count = end_pos - start_pos;
+    }
+
+    const string strCmd = command.substr(start_pos, count);
 
     return _macsCommands.find(strCmd) != _macsCommands.end();
 }

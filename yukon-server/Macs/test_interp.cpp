@@ -33,6 +33,9 @@ BOOST_AUTO_TEST_CASE( test_isEscapeCommand )
 {
     test_CtiInterpreter interp(commandsToEscape);
 
+    BOOST_REQUIRE(!interp.isEscapeCommand(""));
+    BOOST_REQUIRE(!interp.isEscapeCommand(" "));
+    BOOST_REQUIRE(!interp.isEscapeCommand("\t"));
     BOOST_REQUIRE( interp.isEscapeCommand("jack is a surgeon"));
     BOOST_REQUIRE(!interp.isEscapeCommand("Jack is a surgeon"));      // case-sensitive
     BOOST_REQUIRE( interp.isEscapeCommand(" kate is a thief"));
