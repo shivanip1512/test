@@ -70,10 +70,10 @@
     <entry key="yukon.common.systemGroupEnum.SYSTEMMETERS">/System/Meters/</entry>
     <entry key="yukon.common.systemGroupEnum.SYSTEMMETERSDISABLED">/System/Meters/Disabled/</entry>
     <entry key="yukon.common.systemGroupEnum.DEVICETAGS">/System/Device Tags/</entry>
-    <entry key="yukon.common.systemGroupEnum.METER_MONITORS">/Meters/Monitors/</entry>
-    <entry key="yukon.common.systemGroupEnum.OUTAGE_PROCESSING">/Meters/Monitors/Outage/</entry>
-    <entry key="yukon.common.systemGroupEnum.DEVICE_DATA_MONITOR_PROCESSING">/Meters/Monitors/DeviceData/</entry>
-    <entry key="yukon.common.systemGroupEnum.TAMPER_FLAG_PROCESSING">/Meters/Monitors/Tamper Flag/</entry>
+    <entry key="yukon.common.systemGroupEnum.MONITORS">/Monitors/</entry>
+    <entry key="yukon.common.systemGroupEnum.OUTAGE_PROCESSING">/Monitors/Outage/</entry>
+    <entry key="yukon.common.systemGroupEnum.DEVICE_DATA_MONITOR_PROCESSING">/Monitors/DeviceData/</entry>
+    <entry key="yukon.common.systemGroupEnum.TAMPER_FLAG_PROCESSING">/Monitors/Tamper Flag/</entry>
     <entry key="yukon.common.systemGroupEnum.SYSTEMMETERS_DISCONNECT">/System/Meters/Disconnect/</entry>
     <entry key="yukon.common.systemGroupEnum.SUBSTATION_NAME">/Meters/CIS Substation/</entry>
     <entry key="yukon.common.systemGroupEnum.PHASE_DETECT_LAST_RESULTS_A">/System/Meters/Phase Detect/Last Results/A</entry>

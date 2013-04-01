@@ -287,7 +287,7 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
 
         } else {
             if (shouldUpdateViolationsGroupNameBeforeSave(updatedMonitor, existingMonitor)) {
-                // get existing /Meters/Monitors/DeviceData/_monitor_name group
+                // get existing /Monitors/DeviceData/_monitor_name group
                 DeviceGroup existingViolationGroup = deviceGroupService.resolveGroupName(existingMonitor.getViolationsDeviceGroupPath());
                 StoredDeviceGroup existingViolationStoredGroup = deviceGroupEditorDao.getStoredGroup(existingViolationGroup);
                 
