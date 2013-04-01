@@ -8,7 +8,7 @@ function initiateCannonLogUpdate(url, periodSecs) {
         var responseStruc = content.evalJSON();
         var logContentsJSON = responseStruc.logContent;
         var logLastMod = responseStruc.fileDateMod;
-		newFileLength = responseStruc.fileLength;
+		var newFileLength = responseStruc.fileLength;
 
 		if (logContentsJSON != null && logContentsJSON != "") {
 			// This part of the function updates the log last modified field shown on the screen
