@@ -135,16 +135,29 @@ public class EmailMessage {
 		getAttachmentNames().add(fileName);	
 	}
 	
-	public String toString() {
+	@Override
+    public String toString() {
 		String message= "EmailMessage - TO: "+ getTo() + "  FROM: " + getFrom() + "  SMTPSERVER: " + getSmtpServer();										    
 		return message;
 	}
 
+	/**
+	 * If null, will set to empty string
+	 */
 	public String getTo_BCC() {
+	    if (to_BCC == null) {
+	        to_BCC = "";
+	    }
 		return to_BCC;
 	}
 
+	/**
+     * If null, will set to empty string
+     */
 	public String getTo_CC() {
+	    if (to_CC == null) {
+	        to_CC = "";
+	    }
 		return to_CC;
 	}
 
