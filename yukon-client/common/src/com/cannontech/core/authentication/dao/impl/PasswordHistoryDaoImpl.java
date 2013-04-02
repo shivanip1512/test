@@ -16,6 +16,7 @@ import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 public class PasswordHistoryDaoImpl implements PasswordHistoryDao, InitializingBean { 
@@ -53,9 +54,7 @@ public class PasswordHistoryDaoImpl implements PasswordHistoryDao, InitializingB
         passwordHistoryTemplate.setPrimaryKeyValidOver(0);
     }
 
-    //Row Mappers
-    private static class PasswordHistoryRowMapper implements YukonRowMapper<PasswordHistory> {
-
+    private final static YukonRowMapper<PasswordHistory> passwordHistoryRowMapper = new YukonRowMapper<PasswordHistory>() {
         @Override
         public PasswordHistory mapRow(YukonResultSet rs) throws SQLException {
             PasswordHistory passwordHistory = new PasswordHistory();
@@ -68,41 +67,49 @@ public class PasswordHistoryDaoImpl implements PasswordHistoryDao, InitializingB
             
             return passwordHistory;
         }
-    }
-    
+    };
+
     @Override
     public void create(final PasswordHistory passwordHistory) {
         passwordHistoryTemplate.save(passwordHistory);
     }
 
     @Override
-    public void update(PasswordHistory passwordHistory) {
-        passwordHistoryTemplate.save(passwordHistory);
-    }
-
-    @Override
     public void delete(PasswordHistory passwordHistory) {
-        delete(passwordHistory.getPasswordHistoryId());
-    }
-
-    @Override
-    public void delete(int passwordHistoryId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM PasswordHistory");
-        sql.append("WHERE PasswordHistoryId").eq(passwordHistoryId);
+        sql.append("WHERE PasswordHistoryId").eq(passwordHistory.getPasswordHistoryId());
         
         yukonJdbcTemplate.update(sql);
     }
-    
+
     @Override
-    public List<PasswordHistory> getPasswordHistory(int userId) {
+    public PasswordHistory getPasswordHistory(int passwordHistoryId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT *");
+        sql.append("SELECT PasswordHistoryId, UserId, Password, AuthType, PasswordChangedDate");
+        sql.append("FROM PasswordHistory WHERE PasswordHistoryId").eq(passwordHistoryId);
+        PasswordHistory passwordHistory = yukonJdbcTemplate.queryForObject(sql, passwordHistoryRowMapper);
+        return passwordHistory;
+    }
+
+    @Override
+    public void updateWithEncryptedPassword(PasswordHistory passwordHistory) {
+        SqlStatementBuilder updateSql = new SqlStatementBuilder();
+        updateSql.append("UPDATE PasswordHistory");
+        updateSql.set("AuthType", passwordHistory.getAuthType(), "Password", passwordHistory.getPassword());
+        updateSql.append("WHERE PasswordHistoryId").eq(passwordHistory.getPasswordHistoryId());
+        yukonJdbcTemplate.update(updateSql);
+    }
+
+    @Override
+    public List<PasswordHistory> getPasswordHistory(LiteYukonUser user) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PasswordHistoryId, UserId, Password, AuthType, PasswordChangedDate");
         sql.append("FROM PasswordHistory");
-        sql.append("WHERE UserId").eq(userId);
+        sql.append("WHERE UserId").eq(user.getUserID());
         sql.append("ORDER BY PasswordChangedDate DESC");
-        
-        List<PasswordHistory> passwordHistories = yukonJdbcTemplate.query(sql, new PasswordHistoryRowMapper());
+
+        List<PasswordHistory> passwordHistories = yukonJdbcTemplate.query(sql, passwordHistoryRowMapper);
         return passwordHistories;
     }
 }

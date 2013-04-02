@@ -9,6 +9,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -26,6 +27,7 @@ import com.cannontech.core.authentication.model.PasswordPolicy;
 import com.cannontech.core.authentication.service.AuthenticationProvider;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authentication.service.AuthenticationThrottleService;
+import com.cannontech.core.authentication.service.PasswordEncrypter;
 import com.cannontech.core.authentication.service.PasswordPolicyService;
 import com.cannontech.core.authentication.service.PasswordSetProvider;
 import com.cannontech.core.dao.YukonUserDao;
@@ -81,13 +83,21 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
         }
 
         UserAuthenticationInfo authenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
-        AuthenticationProvider provider = providerMap.get(authenticationInfo.getAuthType());
+        AuthType authType = authenticationInfo.getAuthType();
+        if (authType == AuthType.PLAIN) {
+            // This is an old plain text password.   Service manager will eventually encrypt this if we leave it
+            // alone unless someone updated the database manually like this (which we want to support):
+            //   UPDATE yukonUser SET password = 'myNewPassword', authType = 'PLAIN' where username = 'me'
+            encryptPlainTextPassword(user);
+            authenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
+            authType = authenticationInfo.getAuthType();
+        }
+        AuthenticationProvider provider = providerMap.get(authType);
         if (provider == null) {
-            throw new RuntimeException("Unknown AuthType: userid=" + user.getUserID()
-                + ", authtype=" + authenticationInfo.getAuthType());
+            throw new RuntimeException("Unknown AuthType: userid=" + user.getUserID() + ", authtype=" + authType);
         }
 
-        // attempt login; remove auth throttle if login successful
+        // Attempt login; remove throttle if login successful.
         if (provider.login(user, password)) {
             log.debug("Authentication succeeded: username=" + username);
             authenticationThrottleService.loginSucceeded(username);
@@ -154,39 +164,55 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
     }
 
     @Override
-    public boolean isPasswordBeingReused(LiteYukonUser yukonUser, String newPassword, int numberOfPasswordsToCheck) {
-        if (yukonUser == null) {
+    @Transactional
+    public boolean isPasswordBeingReused(LiteYukonUser user, String newPassword, int numberOfPasswordsToCheck) {
+        if (user == null) {
             return false;
         }
-        
-        // Update to the current authentication type when password is changed.
-        AuthType authType = getDefaultAuthType();
-        boolean supportsSetPassword = supportsPasswordSet(authType);
+
+        // Verify we can change the password.
+        AuthType defaultAuthType = getDefaultAuthType();
+        boolean supportsSetPassword = supportsPasswordSet(defaultAuthType);
         if (!supportsSetPassword) {
-            throw new UnsupportedOperationException("setPassword not supported for type: " + authType);
+            throw new UnsupportedOperationException("setPassword not supported for type: " + defaultAuthType);
         }
 
-        // Check the passwords to see if any of them are attempting to be reused
-        List<PasswordHistory> passwordHistories = passwordHistoryDao.getPasswordHistory(yukonUser.getUserID());
+        // Do the check to see if this password has been used recently.
+        List<PasswordHistory> passwordHistories = passwordHistoryDao.getPasswordHistory(user);
         for (int i = 0; i < numberOfPasswordsToCheck && i < passwordHistories.size(); i++) {
             PasswordHistory passwordHistory = passwordHistories.get(i);
-            String previousPassword = passwordHistory.getPassword(); 
-            AuthType passwordAuthType = passwordHistory.getAuthType();
-            
-            // Uses the old authtype to check if the submitted password is being reused.
-            PasswordSetProvider provider = (PasswordSetProvider) providerMap.get(passwordAuthType);
-            boolean isPasswordBeingReused = provider.comparePassword(yukonUser, newPassword, previousPassword);
-            if (isPasswordBeingReused){
-                return true;
+            String historicDigest = passwordHistory.getPassword(); 
+            AuthType historicAuthType = passwordHistory.getAuthType();
+            if (historicAuthType == AuthType.PLAIN) {
+                // Service manager will eventually encrypt this so we don't need to here.
+                if (newPassword.equals(passwordHistory.getPassword())) {
+                    return true;
+                }
+            } else {
+                PasswordSetProvider historicProvider = (PasswordSetProvider) providerMap.get(historicAuthType);
+                boolean passwordReused = historicProvider.comparePassword(user, newPassword, historicDigest);
+                if (passwordReused) {
+                    return true;
+                }
             }
         }
-        
+
         return false;
     }
     
     @Override
     public void expireAllPasswords(int groupId) {
         yukonUserDao.updateForceResetByGroupId(groupId, true);
+    }
+
+    @Override
+    @Transactional
+    public void encryptPlainTextPassword(LiteYukonUser user) {
+        String password = yukonUserPasswordDao.getDigest(user);
+        AuthType encryptedAuthType = AuthenticationCategory.ENCRYPTED.getSupportingAuthType();
+        PasswordEncrypter provider = (PasswordEncrypter) providerMap.get(encryptedAuthType);
+        String newDigest = provider.encryptPassword(password);
+        yukonUserPasswordDao.setPasswordWithoutHistory(user, AuthType.HASH_SHA_V2, newDigest);
     }
 
     @Override

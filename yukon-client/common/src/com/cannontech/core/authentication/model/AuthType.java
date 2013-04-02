@@ -14,7 +14,13 @@ public enum AuthType implements DisplayableEnum {
     RADIUS,
     NONE,
     AD,
-    LDAP;
+    LDAP,
+
+    /**
+     * This is only here for backward compatibility.  Whenever a plain text password is encountered, it should
+     * be encrypted immediately.  A process runs in Yukon Service Manager which looks for these and encrypts them.
+     */
+    PLAIN;
 
     @Override
     public String getFormatKey() {

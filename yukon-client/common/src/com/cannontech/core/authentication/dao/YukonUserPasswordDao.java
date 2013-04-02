@@ -27,6 +27,13 @@ public interface YukonUserPasswordDao {
     boolean setPassword(LiteYukonUser user, AuthType authType, String newDigest);
 
     /**
+     * This updates the stored password and authentication type for the user without updating password history.
+     * 
+     * IMPORTANT:  This should ONLY be used for encrypting old plain text passwords.
+     */
+    void setPasswordWithoutHistory(LiteYukonUser user, AuthType authType, String newDigest);
+
+    /**
      * Updates the database, setting the AuthType, LastChangedDate for the user and clearing the password field.
      * This method should ONLY be used for authentication types that don't support passwords.}
      */

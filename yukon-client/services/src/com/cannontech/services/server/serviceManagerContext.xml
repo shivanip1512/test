@@ -18,4 +18,6 @@
     <bean id="statusPointMonitorProcessor" class="com.cannontech.amr.monitors.impl.StatusPointMonitorProcessorFactory"/>
 
     <bean id="deviceDataMonitorProcessor" class="com.cannontech.amr.monitors.impl.DeviceDataMonitorProcessorFactoryImpl"/>
+
+    <bean class="com.cannontech.services.password.impl.EncryptPlainTextPasswordsServiceImpl"/>
 </beans>

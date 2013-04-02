@@ -18,6 +18,11 @@ final class MockYukonUserPasswordDao implements YukonUserPasswordDao {
     }
 
     @Override
+    public void setPasswordWithoutHistory(LiteYukonUser user, AuthType authType, String newDigest) {
+        digest = newDigest;
+    }
+
+    @Override
     public String getDigest(LiteYukonUser user) throws IllegalArgumentException {
         return digest;
     }

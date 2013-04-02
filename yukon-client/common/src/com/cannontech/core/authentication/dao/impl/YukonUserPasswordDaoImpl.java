@@ -42,6 +42,14 @@ public class YukonUserPasswordDaoImpl implements YukonUserPasswordDao {
     }
 
     @Override
+    public void setPasswordWithoutHistory(LiteYukonUser user, AuthType authType, String newDigest) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE YukonUser").set("Password", newDigest, "AuthType", authType);
+        sql.append("WHERE UserId").eq(user.getUserID());
+        jdbcTemplate.update(sql);
+    }
+
+    @Override
     public void setAuthType(LiteYukonUser user, AuthType authType) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE YukonUser").set("Password", " ", "AuthType", authType, "LastChangedDate", new Instant(),

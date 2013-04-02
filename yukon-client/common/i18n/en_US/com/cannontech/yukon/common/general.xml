@@ -30,6 +30,7 @@
 <entry key="yukon.common.authType.NONE">No Login</entry>
 <entry key="yukon.common.authType.AD">Active Directory</entry>
 <entry key="yukon.common.authType.LDAP">LDAP</entry>
+<entry key="yukon.common.authType.PLAIN">PLAIN</entry>
 
 <entry key="yukon.common.authenticationCategory.AD">Active Directory</entry>
 <entry key="yukon.common.authenticationCategory.ENCRYPTED">Encrypted</entry>

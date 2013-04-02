@@ -2,6 +2,7 @@ package com.cannontech.core.authentication.service;
 
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
+import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.model.AuthenticationThrottleDto;
@@ -121,4 +122,10 @@ public interface AuthenticationService {
      * reset their password when they login.
      */
     void expireAllPasswords(int groupId);
+
+    /**
+     * Encrypt the password for the given user.  Returns an updated version of the authentication info.
+     * (Because {@link UserAuthenticationInfo} is read-only, we return a copy.)
+     */
+    void encryptPlainTextPassword(LiteYukonUser user);
 }
