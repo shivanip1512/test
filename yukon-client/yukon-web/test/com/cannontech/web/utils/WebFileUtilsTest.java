@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -54,6 +55,31 @@ public class WebFileUtilsTest {
         List<String[]> data = readCSVData(response);
         assertThat(data.size(), is(equalTo(dataRows.size() + 1)));
         assertThat(data.get(0).length, is(equalTo(headerRow.size())));
+    }
+    
+    @Test
+    public void validateFileNames() {
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename(""));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename(" "));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename("\\"));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename("/"));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename(":"));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename("*"));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename("\""));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename("<"));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename(">"));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename("|"));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename("contains*oneinvalid char"));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename("contains*two*invalid chars"));
+        Assert.assertFalse(WebFileUtils.isValidWindowsFilename(" start with space"));
+        
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("."));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename(". "));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("My Filename"));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("my_filename"));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("my fav filename"));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("mine%"));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("mi$e"));
     }
 
     private void expectThatCsvDownloadHeaderIsSetProperly(MockHttpServletResponse response, String fileName) {

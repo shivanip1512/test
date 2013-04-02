@@ -1,7 +1,5 @@
 package com.cannontech.web.scheduledFileExport.validator;
 
-import java.util.regex.Pattern;
-
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
@@ -10,6 +8,7 @@ import org.springframework.validation.Errors;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.web.util.WebFileUtils;
 
 public class ScheduledFileExportValidator extends SimpleValidator<ScheduledFileExportData>{
 
@@ -26,8 +25,9 @@ public class ScheduledFileExportValidator extends SimpleValidator<ScheduledFileE
 		
 		YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "exportFileName", "yukon.web.modules.amr.billing.schedule.validation.invalidFileName");
 		YukonValidationUtils.checkExceedsMaxLength(errors, "exportFileName", target.getScheduleName(), 100);
-		boolean validCharacters = Pattern.matches("[A-Za-z0-9]*", target.getExportFileName());
-		if(!validCharacters) {
+
+		boolean isValidFileName = WebFileUtils.isValidWindowsFilename(target.getExportFileName());
+		if(!isValidFileName) {
 			errors.rejectValue("exportFileName", "yukon.web.modules.amr.billing.schedule.validation.badCharacters");
 		}
 		

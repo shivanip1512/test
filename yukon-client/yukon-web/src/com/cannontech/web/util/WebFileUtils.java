@@ -10,6 +10,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -25,6 +27,8 @@ import com.cannontech.web.exceptions.NoImportFileException;
 
 public class WebFileUtils {
 
+    private static final Pattern PATTERN_WINDOWS_FILENAME = Pattern.compile("[^/\\\\:*?\"<>|]+");
+    
 	public static File convertToTempFile(MultipartFile multipartFile, String prefix, String suffix) throws IOException{
         
         File tempFile = File.createTempFile(prefix, suffix);
@@ -122,5 +126,19 @@ public class WebFileUtils {
     
     public interface CSVDataWriter {
         public void writeData(CSVWriter csvWriter);
+    }
+    
+    /**
+     * Validates filename, without extension, against Windows basic filename excluded character set: / \ : * ? " < > |
+     * Blank/empty or whitespace only file names are also invalid.
+     * Filename cannot start with an empty string. 
+     */
+    public static boolean isValidWindowsFilename(String filename) {
+        if (filename.startsWith(" ")) {
+            return false;
+        }
+        
+        Matcher matcher = PATTERN_WINDOWS_FILENAME.matcher(StringUtils.trim(filename));
+        return matcher.matches();
     }
 }
