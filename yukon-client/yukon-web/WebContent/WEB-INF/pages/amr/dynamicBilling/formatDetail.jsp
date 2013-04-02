@@ -305,11 +305,8 @@ BILLING_ERRORS = {
     </div>
         <br>
         
-        
-        
-        
         <%--  FORMAT PREVIEW --%>        
-        <ct:sectionContainer2 nameKey=".previewAndSave" id="dbgFormatPreview">
+        <ct:sectionContainer2 nameKey=".previewAndSave" id="dbgFormatPreview" styleClass="clear">
             <div id="preview"></div>
             <script type="text/javascript"> 
                 updatePreview();
