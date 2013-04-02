@@ -45,4 +45,4 @@ WHERE name = 'deviceGroup'
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/* INSERT INTO CTIDatabase VALUES ('5.6', '03-MAY-2013', 'Latest Update', 3, SYSDATE); */
+INSERT INTO CTIDatabase VALUES ('5.6', '03-APR-2013', 'Latest Update', 3, SYSDATE);
