@@ -113,7 +113,7 @@ public class ArchivedValuesRequestEndpoint {
                 lastValueIdElement = new Element("lastValueId", ns);
                 response.addContent(lastValueIdElement);
                 long maxValueId = rawPointHistoryDao.getMaxChangeId();
-                lastValueIdElement.setAttribute("lastValueId", Long.toString(maxValueId));
+                lastValueIdElement.setAttribute("value", Long.toString(maxValueId));
             }
             log.debug("building PAO Elements");
             buildPaoElements(responseData, response);
@@ -155,7 +155,8 @@ public class ArchivedValuesRequestEndpoint {
 
         Set<ResponseDescriptor> responseTypes = new HashSet<ResponseDescriptor>();
         for (Node node : responseTypeNodes) {
-            ResponseDescriptor rt = ResponseDescriptor.getByElementName(node.getNodeName());
+            //ResponseDescriptor rt = ResponseDescriptor.getByElementName(node.getNodeName());
+            ResponseDescriptor rt = ResponseDescriptor.getByElementName(node.getLocalName());
             if (rt == null) {
                 throw new XmlValidationException("invalid response type " + node.getNodeName());
             }
