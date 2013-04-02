@@ -24,14 +24,14 @@ public interface AuthenticationService {
      * 
      * @see AuthType
      */
-    public AuthType getDefaultAuthType();
+    AuthType getDefaultAuthType();
 
     /**
      * Get the default user authentication type.  This return the abstracted "user authentication".
      * 
      * @see AuthenticationCategory
      */
-    public AuthenticationCategory getDefaultAuthenticationCategory();
+    AuthenticationCategory getDefaultAuthenticationCategory();
 
     /**
      * Attempt to login to Yukon. How the username/password is authenticated
@@ -43,13 +43,14 @@ public interface AuthenticationService {
      * @throws BadAuthenticationException
      * @throws PasswordExpiredException 
      */
-    public LiteYukonUser login(String username, String password) throws BadAuthenticationException, PasswordExpiredException;
+    LiteYukonUser login(String username, String password) throws BadAuthenticationException, PasswordExpiredException;
 
     /**
-     * This method checks to see if the user's login is expired.  This can be done by an operator forcing a login's password to be expired
-     * or for the login's password age to be longer that the password policy's allowed age.
+     * This method checks to see if the user's login is expired. This can be done by an operator
+     * forcing a login's password to be expired or for the login's password age to be longer that
+     * the password policy's allowed age.
      */
-    public boolean isPasswordExpired(LiteYukonUser user);
+    boolean isPasswordExpired(LiteYukonUser user);
 
     /**
      * Indicates if the underlying authentication method for the user
@@ -57,7 +58,7 @@ public interface AuthenticationService {
      * and RADIUS do not support this.
      * @return true if supported
      */
-    public boolean supportsPasswordSet(AuthenticationCategory authenticationCategory);
+    boolean supportsPasswordSet(AuthenticationCategory authenticationCategory);
 
     /**
      * Indicates if the underlying authentication method for the user
@@ -67,25 +68,25 @@ public interface AuthenticationService {
      * @deprecated Use {@link #supportsPasswordSet(AuthenticationCategory)}
      */
     @Deprecated
-    public boolean supportsPasswordSet(AuthType type);
+    boolean supportsPasswordSet(AuthType type);
 
     /**
      * Sets the authentication category for a user. This method should only be used for
-     * authentication categories
-     * for which the password cannot be changed by Yukon. If Yukon can change the password,
-     * {@link #setPassword(LiteYukonUser, AuthenticationCategory, String) should be used instead.}
+     * authentication categories for which the password cannot be changed by Yukon. If Yukon can
+     * change the password, {@link #setPassword(LiteYukonUser, AuthenticationCategory, String)
+     * should be used instead.}
      */
-    public void setAuthenticationCategory(LiteYukonUser user, AuthenticationCategory authenticationCategory);
+    void setAuthenticationCategory(LiteYukonUser user, AuthenticationCategory authenticationCategory);
 
     /**
-     * Encrypts the password according to the specified authentication category and updates the database.  This
-     * should only be used when a specific authentication category (other than the default) is desired.  The normal
-     * case is to call {@link #setPassword(LiteYukonUser, String)}.
+     * Encrypts the password according to the specified authentication category and updates the
+     * database. This should only be used when a specific authentication category (other than the
+     * default) is desired. The normal case is to call {@link #setPassword(LiteYukonUser, String)}.
      * 
-     * @throws UnsupportedOperationException If the specified authentication category does not support password sets
-     *             via Yukon.
+     * @throws UnsupportedOperationException If the specified authentication category does not
+     *             support password sets via Yukon.
      */
-    public void setPassword(LiteYukonUser user, AuthenticationCategory authenticationCategory, String newPassword);
+    void setPassword(LiteYukonUser user, AuthenticationCategory authenticationCategory, String newPassword);
 
     /**
      * Encrypts the password according to the specified authentication category and updates the database.
@@ -95,29 +96,29 @@ public interface AuthenticationService {
      * @throws UnsupportedOperationException If the authentication category specified by the global setting does not
      *             support password sets via Yukon.
      */
-    public void setPassword(LiteYukonUser user, String newPassword);
+    void setPassword(LiteYukonUser user, String newPassword);
 
     /**
      * Get AuthenticationThrottleDto data for the username.
      * @return AuthenticationThrottleDto data
      */
-    public AuthenticationThrottleDto getAuthenticationThrottleData(
-            String username);
+    AuthenticationThrottleDto getAuthenticationThrottleData(String username);
 
     /**
      * Remove AuthenticationThrottle for the username, upon manual override by
      * an operator
      */
-    public void removeAuthenticationThrottle(String username);
+    void removeAuthenticationThrottle(String username);
 
     /**
-     * This method checks to see if the supplied password is being reused before it is valid to reuse it.  If the password is
-     * being used before it's allows this method will return true.
+     * This method checks to see if the supplied password is being reused before it is valid to
+     * reuse it. If the password is being used before it's allows this method will return true.
      */
-    public boolean isPasswordBeingReused(LiteYukonUser yukonUser, String newPassword, int numberOfPasswordsToCheck);
+    boolean isPasswordBeingReused(LiteYukonUser yukonUser, String newPassword, int numberOfPasswordsToCheck);
 
     /**
-     * This method expires all the passwords for a given group.  This will then force the users to reset their password when they login.
+     * This method expires all the passwords for a given group. This will then force the users to
+     * reset their password when they login.
      */
-    public void expireAllPasswords(int groupId);
+    void expireAllPasswords(int groupId);
 }
