@@ -99,7 +99,8 @@ protected:
     enum Features
     {
         Feature_HourlyKwh,
-        Feature_DisconnectCollar
+        Feature_DisconnectCollar,
+        Feature_OutageUnits
     };
 
     virtual bool isSupported(const Mct4xxDevice::Features f) const;

@@ -280,12 +280,12 @@ int Mct420Device::executePutConfig( CtiRequestMsg        *pReq,
 
             DlcCommandSPtr meterParameterConfiguration(
                 new Mct420MeterParametersCommand(
-                    cycleTime, 
-                    disconnectDisplayDisabled, 
+                    cycleTime,
+                    disconnectDisplayDisabled,
                     transformerRatio));
 
-            return tryExecuteCommand(*OutMessage, meterParameterConfiguration, outList) 
-                ? NoError 
+            return tryExecuteCommand(*OutMessage, meterParameterConfiguration, outList)
+                ? NoError
                 : NoMethod;
         }
         else
@@ -302,14 +302,14 @@ int Mct420Device::executePutConfig( CtiRequestMsg        *pReq,
 
             DlcCommandSPtr meterParameterConfiguration(
                 new Mct420MeterParametersDisplayDigitsCommand(
-                    cycleTime, 
-                    disconnectDisplayDisabled, 
+                    cycleTime,
+                    disconnectDisplayDisabled,
                     transformerRatio,
                     displayDigitsStr,
                     paoInfoValue));
 
-            return tryExecuteCommand(*OutMessage, meterParameterConfiguration, outList) 
-                ? NoError 
+            return tryExecuteCommand(*OutMessage, meterParameterConfiguration, outList)
+                ? NoError
                 : NoMethod;
         }
     }
@@ -435,12 +435,12 @@ int Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiCommandParser &
     return tryExecuteCommand(*OutMessage, lcdConfiguration, outList) ? NoError : NoMethod;
 }
 
-int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq, 
-                                                  CtiCommandParser &parse, 
-                                                  OUTMESS *&OutMessage, 
-                                                  CtiMessageList &vgList, 
-                                                  CtiMessageList &retList, 
-                                                  OutMessageList &outList, 
+int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
+                                                  CtiCommandParser &parse,
+                                                  OUTMESS *&OutMessage,
+                                                  CtiMessageList &vgList,
+                                                  CtiMessageList &retList,
+                                                  OutMessageList &outList,
                                                   bool readsOnly)
 {
     Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
@@ -466,8 +466,8 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
             if( getMCTDebugLevel(DebugLevel_Configs) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - invalid value (" 
-                     << deviceConfig->getValueFromKey(MCTStrings::LcdCycleTime) << ") for config key \"" 
+                dout << CtiTime() << " Device \"" << getName() << "\" - invalid value ("
+                     << deviceConfig->getValueFromKey(MCTStrings::LcdCycleTime) << ") for config key \""
                      << MCTStrings::LcdCycleTime << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
@@ -482,15 +482,15 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
                 if( getMCTDebugLevel(DebugLevel_Configs) )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device \"" << getName() << "\" - invalid value (" 
-                         << deviceConfig->getValueFromKey(MCTStrings::DisplayDigits) << ") for config key \"" 
+                    dout << CtiTime() << " Device \"" << getName() << "\" - invalid value ("
+                         << deviceConfig->getValueFromKey(MCTStrings::DisplayDigits) << ") for config key \""
                          << MCTStrings::DisplayDigits << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 return NoConfigData;
             }
 
-            /* 
+            /*
              * Lookups for keys other than 4, 5, or 6 will return a default value of 0, which
              * is exactly what we want for the default value anyway.
              */
@@ -508,8 +508,8 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
             if( getMCTDebugLevel(DebugLevel_Configs) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - invalid value (" 
-                     << deviceConfig->getValueFromKey(MCTStrings::DisconnectDisplayDisabled) << ") for config key \"" 
+                dout << CtiTime() << " Device \"" << getName() << "\" - invalid value ("
+                     << deviceConfig->getValueFromKey(MCTStrings::DisconnectDisplayDisabled) << ") for config key \""
                      << MCTStrings::DisconnectDisplayDisabled << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
@@ -560,21 +560,21 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
 
         meterParameterCommand.reset(
             new Mct420MeterParametersDisplayDigitsCommand(
-                cycleTime, 
-                disconnectDisplayDisabled, 
+                cycleTime,
+                disconnectDisplayDisabled,
                 transformerRatio,
                 boost::none,
                 display_digits));
-    } 
-    else 
+    }
+    else
     {
         // Read command.
         meterParameterCommand.reset(
             new Mct420MeterParametersDisplayDigitsCommand());
     }
 
-    return tryExecuteCommand(*OutMessage, meterParameterCommand, outList) 
-               ? NoError 
+    return tryExecuteCommand(*OutMessage, meterParameterCommand, outList)
+               ? NoError
                : NoMethod;
 }
 
@@ -1006,6 +1006,7 @@ bool Mct420Device::isSupported(const Mct410Device::Features feature) const
 {
     switch( feature )
     {
+        case Feature_OutageUnits:
         case Feature_HourlyKwh:
         {
             return true;

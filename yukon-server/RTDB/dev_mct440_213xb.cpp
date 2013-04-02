@@ -455,6 +455,10 @@ bool Mct440_213xBDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 */
 bool Mct440_213xBDevice::isSupported(const Mct410Device::Features feature) const
 {
+    if (feature == Feature_OutageUnits)
+    {
+        return true;
+    }
     if (feature == Feature_DisconnectCollar)
     {
         return false;
@@ -750,8 +754,7 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
 */
 bool Mct440_213xBDevice::sspecValid(const unsigned sspec, const unsigned rev) const
 {
-    //FIXME: check for revision possibilities
-    return (sspec == Mct440_213xBDevice::Sspec);
+    return sspec == Mct440_213xBDevice::Sspec;
 }
 
 

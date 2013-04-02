@@ -50,22 +50,14 @@ struct test_Mct440_213xBDevice : Cti::Devices::Mct440_213xBDevice
     using Mct440_213xBDevice::executePutStatus;
     using Mct440_213xBDevice::decodeGetStatusDisconnect;
 
-    enum test_Features
-    {
-        test_Feature_DisconnectCollar,
-        test_Feature_HourlyKwh
-    };
+    bool test_isSupported_Mct410Feature_OutageUnits()
+    {  return isSupported(Feature_OutageUnits);  }
 
-    bool test_isSupported(test_Features f)
-    {
-        switch(f)
-        {
-            case test_Feature_DisconnectCollar: return isSupported(Feature_DisconnectCollar);
-            case test_Feature_HourlyKwh:        return isSupported(Feature_HourlyKwh);
-        }
+    bool test_isSupported_Mct410Feature_DisconnectCollar()
+    {  return isSupported(Feature_DisconnectCollar);  }
 
-        return false;
-    }
+    bool test_isSupported_Mct410Feature_HourlyKwh()
+    {  return isSupported(Feature_HourlyKwh);  }
 
     typedef std::map<int, CtiPointSPtr>              PointOffsetMap;
     typedef std::map<CtiPointType_t, PointOffsetMap> PointTypeOffsetMap;
@@ -159,7 +151,17 @@ BOOST_AUTO_TEST_SUITE( test_dev_mct440_213xb )
 
 BOOST_AUTO_TEST_CASE(test_isSupported_DisconnectCollar)
 {
-    BOOST_CHECK_EQUAL(false,  test_Mct440_213xB().test_isSupported(test_Mct440_213xBDevice::test_Feature_DisconnectCollar));
+    BOOST_CHECK_EQUAL(false, test_Mct440_213xB().test_isSupported_Mct410Feature_DisconnectCollar());
+}
+
+BOOST_AUTO_TEST_CASE(test_isSupported_OutageUnits)
+{
+    BOOST_CHECK_EQUAL(true,  test_Mct440_213xB().test_isSupported_Mct410Feature_OutageUnits());
+}
+
+BOOST_AUTO_TEST_CASE(test_isSupported_HourlyKwh)
+{
+    BOOST_CHECK_EQUAL(false, test_Mct440_213xB().test_isSupported_Mct410Feature_HourlyKwh());
 }
 
 BOOST_AUTO_TEST_CASE(test_decodeDisconnectConfig)
@@ -1537,20 +1539,20 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
 
                     BOOST_REQUIRE( pdata );
 
-                    BOOST_CHECK_CLOSE( pdata->getValue(), 17.15, 0.001 );
+                    BOOST_CHECK_CLOSE( pdata->getValue(), 1029, 0.001 );
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime(), CtiTime(CtiDate(14,  7, 2012), 0, 22, 11) );
-                    BOOST_CHECK_EQUAL( pdata->getString(), "Test MCT-440-213xB / Outage 1 : 07/14/2012 00:22:11 for 00:00:17.150");
+                    BOOST_CHECK_EQUAL( pdata->getString(), "Test MCT-440-213xB / Outage 1 : 07/14/2012 00:22:11 for 00:17:09");
                 }
                 {
                     const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[1]);
 
                     BOOST_REQUIRE( pdata );
 
-                    BOOST_CHECK_CLOSE( pdata->getValue(), 42.85, 0.001 );
+                    BOOST_CHECK_CLOSE( pdata->getValue(), 2571, 0.001 );
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime(), CtiTime(CtiDate(18,  7, 2012), 14, 01, 29) );
-                    BOOST_CHECK_EQUAL( pdata->getString(), "Test MCT-440-213xB / Outage 2 : 07/18/2012 14:01:29 for 00:00:42.850");
+                    BOOST_CHECK_EQUAL( pdata->getString(), "Test MCT-440-213xB / Outage 2 : 07/18/2012 14:01:29 for 00:42:51");
                 }
             }
         }

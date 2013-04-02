@@ -3186,7 +3186,7 @@ INT Mct410Device::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, Cti
 
             pointString = getName() + " / Outage " + CtiNumStr(outagenum + i) + " : " + timeString + " for ";
 
-            if( sspecAtLeast(SspecRev_NewOutage_Min) )
+            if( isSupported(Feature_OutageUnits) )
             {
                 /*
                 Units of outage:
@@ -4830,6 +4830,10 @@ bool Mct410Device::isSupported(const Features feature) const
         {
             //  all MCT-410s support the disconnect collar
             return true;
+        }
+        case Feature_OutageUnits:
+        {
+            return sspecAtLeast(SspecRev_NewOutage_Min);
         }
         default:
         {

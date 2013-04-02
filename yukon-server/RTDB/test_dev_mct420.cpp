@@ -1389,7 +1389,8 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
     BOOST_AUTO_TEST_CASE(test_dev_mct420_getvalue_outage)
     {
         mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         10291);
-        mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 40);  //  set the device to SSPEC revision 4.0
+        //  SSPEC revision does not matter for the MCT-420 outage decode
+        //mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 17);  //  set the device to SSPEC revision 1.7
 
         {
             CtiCommandParser parse( "getvalue outage 1" );

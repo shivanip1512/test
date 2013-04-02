@@ -28,7 +28,7 @@ class IM_EX_DEVDB Mct440_213xBDevice : public Mct420Device
 
     enum SspecInformation
     {
-        Sspec                                   = 1030,
+        Sspec                                   = 10300,
     };
 
     struct PutConfigPending_t
