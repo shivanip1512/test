@@ -15,7 +15,6 @@ a.icon {margin: 0 5px 0 0;}
 .labeled_icon,.labeled_icon_right {background-repeat: no-repeat; padding: 0 0 0 20px; overflow: hidden; float: left; line-height: 16px; /*since the 'icon' will be positioned top left*/ min-height: 16px; /*don't cut off the 'icon'*/ cursor: pointer;}
 .labeled_icon_right,.labeled_icon_right:hover {background-position: top right !important; padding: 0 20px 0 0;}
 
-
 /* ICON BACKGROUNDS HERE */
 .access_point {background-image: url(../Icons/32/access_point.png);}
 .add {background-image: url(../Icons/add.png);}

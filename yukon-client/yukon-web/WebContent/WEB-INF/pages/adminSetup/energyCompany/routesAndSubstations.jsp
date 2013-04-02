@@ -12,12 +12,10 @@
 
     <tags:setFormEditMode mode="${mode}"/>
     
-    
     <cti:url value="edit" var="editUrl" />
 
-    <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
-      <c:if test="${routeAccess}">
-          <cti:dataGridCell>
+    <div class="fl" style="min-width: 380px; margin-right: 20px;">
+        <c:if test="${routeAccess}">
             <tags:boxContainer2 nameKey="routes">
                 <form action="${editUrl}" method="post">
                     
@@ -28,35 +26,38 @@
                             <div><i:inline key=".noRoutes"/></div>
                         </c:when>
                         <c:otherwise>
-                            <div class="membersContainer">
+                            <div class="membersContainer scrollingContainer_large">
                                 <table class="compactResultsTable">
-                                    <tr>
-                                        <th><i:inline key=".route"/></th>
-                                        <c:if test="${not isSingleEnergyCompany}">
-                                            <th class="removeColumn"><i:inline key=".remove"/></th>
-                                        </c:if>
-                                    </tr>
-                                    
-                                    <c:forEach items="${ecRoutes}" var="route" >
+                                    <thead>
                                         <tr>
-                                            <td><spring:escapeBody htmlEscape="true">${route.key.paoName}</spring:escapeBody></td>
+                                            <th><i:inline key=".route"/></th>
                                             <c:if test="${not isSingleEnergyCompany}">
-                                                <c:if test="${not route.value.deletable}">
-                                                    <td class="removeColumn">
-                                                        <i:inline key="${route.value}" />
-                                                    </td>
-                                                </c:if>
-                                                <c:if test="${route.value.deletable}">
-                                                    <td class="removeColumn">
-                                                        <div class="dib">
-                                                            <input type="submit" class="pointer icon icon_remove" name="removeRoute" value="${route.key.yukonID}">
-                                                        </div>
-                                                    </td>
-                                                </c:if>
+                                                <th class="removeColumn"><i:inline key=".remove"/></th>
                                             </c:if>
                                         </tr>
-                                    </c:forEach>
-    
+                                    </thead>
+                                    <tfoot></tfoot>
+                                    <tbody>
+                                        <c:forEach items="${ecRoutes}" var="route" >
+                                            <tr>
+                                                <td><spring:escapeBody htmlEscape="true">${route.key.paoName}</spring:escapeBody></td>
+                                                <c:if test="${not isSingleEnergyCompany}">
+                                                    <c:if test="${not route.value.deletable}">
+                                                        <td class="removeColumn">
+                                                            <i:inline key="${route.value}" />
+                                                        </td>
+                                                    </c:if>
+                                                    <c:if test="${route.value.deletable}">
+                                                        <td class="removeColumn">
+                                                            <div class="dib">
+                                                                <cti:button nameKey="remove" name="removeRoute" value="${route.key.yukonID}" type="submit" renderMode="image"/>
+                                                            </div>
+                                                        </td>
+                                                    </c:if>
+                                                </c:if>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
                                 </table>
                             </div>
                         </c:otherwise>
@@ -76,11 +77,10 @@
                     </div>
                 </form>
             </tags:boxContainer2>
-        
-            <br>
-          </cti:dataGridCell>
-      </c:if>
-      <cti:dataGridCell>
+        </c:if>
+    </div>
+      
+    <div class="fl" style="min-width: 380px;">
         <tags:boxContainer2 nameKey="substations">
 
             <form action="${editUrl}" method="post">
@@ -142,7 +142,5 @@
             
             
         </tags:boxContainer2>
-      </cti:dataGridCell>
-    </cti:dataGrid>
-    
+    </div>    
 </cti:standardPage>

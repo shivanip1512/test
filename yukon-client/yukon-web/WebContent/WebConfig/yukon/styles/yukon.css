@@ -367,6 +367,7 @@ html[xmlns] .clearfix {display: block;}
 .no_padding {padding:0;}
 .no_margin {margin:0;}
 .full_width {width: 100%}
+.half_width {width: 50%}
 .clear_both {clear:both;}
 .stacked {margin-bottom: 10px;} /*  Soley for spacing vertically stacked elements */
 .wall_of_text .value {max-width: 300px;}

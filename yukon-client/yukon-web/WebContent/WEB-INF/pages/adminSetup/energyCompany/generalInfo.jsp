@@ -130,25 +130,21 @@ Event.observe(window, "load", function() {
                                 </c:otherwise>
                             </c:choose>
                             
-                            <div>
+                            <div class="actionArea clearfix full_width" style="min-width: 380px;">
                                 <c:if test="${canCreateMembers}">
-                                    <span style="float: left;margin-top: 15px;"><cti:button nameKey="create" type="submit" name="create"/></span>
+                                    <cti:button nameKey="create" type="submit" name="create" styleClass="fl"/>
                                 </c:if>
                                 <c:if test="${canManageMembers && !empty memberCandidates}">
-                                    <span class="actionArea" style="float: right;">
-                                        <select name="newMemberId">
-                                            <c:forEach items="${memberCandidates}" var="member">
-                                                <option value="${member.energyCompanyId}">${member.name}</option>
-                                            </c:forEach>
-                                        </select>
-                                        <cti:button nameKey="add" type="submit" name="add"/>
-                                    </span>
+                                    <cti:button nameKey="add" type="submit" name="add" styleClass="fr"/>
+                                    <select name="newMemberId" class="fr" style="margin: 3px 3px 0 0;">
+                                        <c:forEach items="${memberCandidates}" var="member">
+                                            <option value="${member.energyCompanyId}">${member.name}</option>
+                                        </c:forEach>
+                                    </select>
                                 </c:if>
                             </div>
                         </form>
                     </tags:boxContainer2>
-                    
-                    <br>
                     
                     <tags:boxContainer2 nameKey="userGroupsContainer">
                         <form action="updateOperatorGroups" id="operatorUserGroupsForm" method="post">

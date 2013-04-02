@@ -46,8 +46,7 @@
         
     </script>
 
-    <h2>${pageTitle}</h2>
-    <br>
+    <h2 class="standardPageHeading">${pageTitle}</h2>
                 
     <tags:bulkActionContainer key="yukon.common.device.bulk.updatePointsHome" deviceCollection="${deviceCollection}">
         
@@ -57,14 +56,9 @@
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
             
             <%-- OPTIONS --%>
-            <c:set var="optionNameWidth" value="150px" />
-            <c:set var="selectInputWidth" value="300px" />
-            <c:set var="optionsTableWidth" value="50%" />
-            <table class="compactResultsTable" style="width:${optionsTableWidth}">
-                <tr><th>Options</th></tr>
-                <tr><td>
+            <cti:msg2 var="optionsTitle" key="yukon.common.device.bulk.options.title"/>
+            <tags:sectionContainer title="${optionsTitle}" styleClass="half_width">
                 <tags:nameValueContainer>
-                
                     <cti:msg var="sharedPointsOptionLabel" key="yukon.common.device.bulk.updatePointsHome.sharedPointsOptionLabel"/>
                     <cti:msg var="sharedPointsTrueOptionText" key="yukon.common.device.bulk.updatePointsHome.sharedPointsTrueOptionText"/>
                     <cti:msg var="sharedPointsTrueOptionTooltip" key="yukon.common.device.bulk.updatePointsHome.sharedPointsTrueOptionTooltip"/>
@@ -72,8 +66,8 @@
                     <cti:msg var="sharedPointsFalseOptionTooltip" key="yukon.common.device.bulk.updatePointsHome.sharedPointsFalseOptionTooltip"/>
                     <c:set var="sharedPointsTrueSelected" value="${sharedPoints ? 'selected' : ''}"/>
                     <c:set var="sharedPointsFalseSelected" value="${sharedPoints ? '' : 'selected'}"/>
-                    <tags:nameValue name="${sharedPointsOptionLabel}" nameColumnWidth="${optionNameWidth}">
-                        <select name="sharedPoints" style="width:${selectInputWidth};" onchange="toggleShowSharedPoints(this);">
+                    <tags:nameValue name="${sharedPointsOptionLabel}">
+                        <select name="sharedPoints" onchange="toggleShowSharedPoints(this);">
                             <option value="true" title="${sharedPointsTrueOptionTooltip}" ${sharedPointsTrueSelected}>${sharedPointsTrueOptionText}</option>
                             <option value="false" title="${sharedPointsFalseOptionTooltip}" ${sharedPointsFalseSelected}>${sharedPointsFalseOptionText}</option>
                         </select> <img src="<cti:url value="/WebConfig/yukon/Icons/help.gif"/>" onclick="$('sharedPointsOptionInfoPopup').toggle();">
@@ -89,18 +83,16 @@
                     <tags:nameValue name="${maskExistingPointsOptionLabel}">
                         <c:choose>
                             <c:when test="${not maskExistingPoints}">
-                                <input type="submit" name="maskExistingPointsSubmitButton" value="${maskExistingPointsFalseOptionText}" title="${maskExistingPointsFalseOptionTooltip}" style="width:${selectInputWidth};"> <img src="<cti:url value="/WebConfig/yukon/Icons/help.gif"/>" onclick="$('maskExistingPointsOptionInfoPopup').toggle();">
+                                <input type="submit" name="maskExistingPointsSubmitButton" value="${maskExistingPointsFalseOptionText}" title="${maskExistingPointsFalseOptionTooltip}"> <img src="<cti:url value="/WebConfig/yukon/Icons/help.gif"/>" onclick="$('maskExistingPointsOptionInfoPopup').toggle();">
                             </c:when>
                             <c:otherwise>
-                                    <input type="submit" name="maskExistingPointsSubmitButton" value="${maskExistingPointsTrueOptionText}" title="${maskExistingPointsTrueOptionTooltip}" style="width:${selectInputWidth};"> <img src="<cti:url value="/WebConfig/yukon/Icons/help.gif"/>" onclick="$('maskExistingPointsOptionInfoPopup').toggle();">
+                                    <input type="submit" name="maskExistingPointsSubmitButton" value="${maskExistingPointsTrueOptionText}" title="${maskExistingPointsTrueOptionTooltip}"> <img src="<cti:url value="/WebConfig/yukon/Icons/help.gif"/>" onclick="$('maskExistingPointsOptionInfoPopup').toggle();">
                             </c:otherwise>
                         </c:choose>
                     </tags:nameValue>
                 
                 </tags:nameValueContainer>
-                </td></tr>
-            </table>
-            <br>
+            </tags:sectionContainer>
             
             <tags:simplePopup id="sharedPointsOptionInfoPopup" title="${sharedPointsOptionLabel}" onClose="$('sharedPointsOptionInfoPopup').toggle();">
                  <br><tags:nameValueContainer>
