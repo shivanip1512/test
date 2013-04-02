@@ -46,6 +46,7 @@ public:
     using Mct410Device::decodeDisconnectDemandLimitConfig;
     using Mct410Device::decodeDisconnectCyclingConfig;
     using Mct410Device::decodeGetValueDailyRead;
+    using Mct410Device::decodeGetValueOutage;
 
     using Mct410Device::isDailyReadVulnerableToAliasing;
 
@@ -665,6 +666,161 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, command_execution_environment)
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   2);
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Message[0], 0x00);
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Message[1], 0x00);
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_getvalue_outage_old)
+    {
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         1029);
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 7);     //  set the device to SSPEC revision 0.7
+
+        {
+            CtiCommandParser parse( "getvalue outage 1" );
+
+            BOOST_CHECK_EQUAL( NoError , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x10);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13);
+
+            BOOST_CHECK( outList.empty() );
+        }
+
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+
+        vgList.clear();
+        retList.clear();
+        outList.clear();
+
+        {
+            CtiTime timeNow(CtiDate(1, 1, 2010), 1, 2, 3);
+
+            INMESS im;
+
+            //  4 bytes of time, 2 bytes duration in cycles.
+            //    If duration's high bit is set, the duration is in seconds, not cycles.
+            char input[13] = {0x50, 1, 2, 3, 4, 5, 0x50, 7, 8, 9, 0x8a, 11, 12};
+
+            std::copy(input, input + 13, im.Buffer.DSt.Message);
+            im.Buffer.DSt.Length = 13;
+            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+            strcpy(im.Return.CommandStr, "getvalue outage 1");
+
+            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueOutage(&im, timeNow, vgList, retList, outList) );
+        }
+
+        {
+            BOOST_REQUIRE_EQUAL( retList.size(),  1 );
+
+            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            CtiMultiMsg_vec points = retMsg->PointData();
+
+            {
+                BOOST_REQUIRE_EQUAL( points.size(), 2 );
+
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_CLOSE( pdata->getValue(), 17.15, 0.001 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), CtiTime(CtiDate(14,  7, 2012), 0, 22, 11) );
+                    BOOST_CHECK_EQUAL( pdata->getString(), "Test MCT-410iL / Outage 1 : 07/14/2012 00:22:11 for 00:00:17.150");
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[1]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_CLOSE( pdata->getValue(), 2571, 0.001 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), CtiTime(CtiDate(18,  7, 2012), 14, 01, 29) );
+                    BOOST_CHECK_EQUAL( pdata->getString(), "Test MCT-410iL / Outage 2 : 07/18/2012 14:01:29 for 00:42:51");
+                }
+            }
+        }
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_getvalue_outage)
+    {
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         1029);
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 17);  //  set the device to SSPEC revision 1.7
+
+        {
+            CtiCommandParser parse( "getvalue outage 1" );
+
+            BOOST_CHECK_EQUAL( NoError , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x10);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13);
+
+            BOOST_CHECK( outList.empty() );
+        }
+
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+
+        vgList.clear();
+        retList.clear();
+        outList.clear();
+
+        {
+            CtiTime timeNow(CtiDate(1, 1, 2010), 1, 2, 3);
+
+            INMESS im;
+
+            //  4 bytes of time, 2 bytes duration in cycles.  Last byte is duration types.
+            char input[13] = {0x50, 1, 2, 3, 4, 5, 0x50, 7, 8, 9, 10, 11, 0x01};
+
+            std::copy(input, input + 13, im.Buffer.DSt.Message);
+            im.Buffer.DSt.Length = 13;
+            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+            strcpy(im.Return.CommandStr, "getvalue outage 1");
+
+            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueOutage(&im, timeNow, vgList, retList, outList) );
+        }
+
+        {
+            BOOST_REQUIRE_EQUAL( retList.size(),  1 );
+
+            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            CtiMultiMsg_vec points = retMsg->PointData();
+
+            {
+                BOOST_REQUIRE_EQUAL( points.size(), 2 );
+
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_CLOSE( pdata->getValue(), 17.15, 0.001 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), CtiTime(CtiDate(14,  7, 2012), 0, 22, 11) );
+                    BOOST_CHECK_EQUAL( pdata->getString(), "Test MCT-410iL / Outage 1 : 07/14/2012 00:22:11 for 00:00:17.150");
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[1]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_CLOSE( pdata->getValue(), 2571, 0.001 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), CtiTime(CtiDate(18,  7, 2012), 14, 01, 29) );
+                    BOOST_CHECK_EQUAL( pdata->getString(), "Test MCT-410iL / Outage 2 : 07/18/2012 14:01:29 for 00:42:51");
+                }
+            }
+        }
     }
 
     BOOST_AUTO_TEST_CASE(test_dev_mct410_getvalue_daily_reads_0kwh)

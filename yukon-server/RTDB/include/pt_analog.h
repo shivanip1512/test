@@ -105,6 +105,7 @@ struct IM_EX_PNTDB Test_CtiPointAnalog : public CtiPointAnalog
     void setPointOffset( int  offset   )  {  _pointBase.setPointOffset(offset);   }
     void setID         ( long id       )  {  _pointBase.setID(id);                }
     void setDeviceID   ( long deviceid )  {  _pointBase.setPAObjectID(deviceid);  }
+    double computeValueForUOM( double value ) const  {  return value;  }
 };
 
 typedef shared_ptr< CtiPointAnalog > CtiPointAnalogSPtr;

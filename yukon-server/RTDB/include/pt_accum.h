@@ -116,6 +116,7 @@ struct IM_EX_PNTDB Test_CtiPointAccumulator : public CtiPointAccumulator
     void setPointOffset( int  offset   )  {  _pointBase.setPointOffset(offset);   }
     void setID         ( long id       )  {  _pointBase.setID(id);                }
     void setDeviceID   ( long deviceid )  {  _pointBase.setPAObjectID(deviceid);  }
+    double computeValueForUOM( double value ) const  {  return value;  }
 };
 
 

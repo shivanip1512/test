@@ -36,6 +36,7 @@ struct test_Mct440_213xBDevice : Cti::Devices::Mct440_213xBDevice
 
     using Mct440_213xBDevice::executeGetValue;
     using Mct440_213xBDevice::decodeGetValueDailyRead;
+    using Mct440_213xBDevice::decodeGetValueOutage;
     using Mct440_213xBDevice::decodeDisconnectConfig;
     using Mct440_213xBDevice::decodeDisconnectStatus;
     using Mct440_213xBDevice::isProfileTablePointerCurrent;
@@ -466,36 +467,36 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 BOOST_AUTO_TEST_SUITE_END()
 
 
-struct getvalueDailyReads_helper : beginExecuteRequest_helper
+struct commandExecution_helper : beginExecuteRequest_helper
 {
-    test_Mct440_213xB test_dev;
+    test_Mct440_213xB mct440;
     OUTMESS *om;
 
-    getvalueDailyReads_helper()
+    commandExecution_helper()
     {
         om = new OUTMESS;
     }
 
-    ~getvalueDailyReads_helper()
+    ~commandExecution_helper()
     {
         delete om;
     }
 };
 
-BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
+BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
 //{  Brace matching for BOOST_FIXTURE_TEST_SUITE
 
 //    BOOST_AUTO_TEST_CASE(test_dev_mct440_213xb_getvalue_daily_reads_0kwh)
 //    {
 //        CtiTime timenow;
 //
-//        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
-//        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
+//        mct440.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
+//        mct440.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
 //
 //        {
 //            CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 //
-//            BOOST_CHECK_EQUAL( NoError , test_dev.executeGetValue(&request, parse, om, vgList, retList, outList) );
+//            BOOST_CHECK_EQUAL( NoError , mct440.executeGetValue(&request, parse, om, vgList, retList, outList) );
 //
 //            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
 //            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -520,7 +521,7 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
 //            im.Buffer.DSt.Length = 13;
 //            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 //
-//            BOOST_CHECK_EQUAL( NoError , test_dev.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+//            BOOST_CHECK_EQUAL( NoError , mct440.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
 //        }
 //
 //        {
@@ -599,13 +600,13 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
 //    {
 //        CtiTime timenow;
 //
-//        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
-//        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
+//        mct440.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
+//        mct440.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
 //
 //        {
 //            CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 //
-//            BOOST_CHECK_EQUAL( NoError , test_dev.executeGetValue(&request, parse, om, vgList, retList, outList) );
+//            BOOST_CHECK_EQUAL( NoError , mct440.executeGetValue(&request, parse, om, vgList, retList, outList) );
 //
 //            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
 //            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -632,7 +633,7 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
 //            im.Buffer.DSt.Length = 13;
 //            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 //
-//            BOOST_CHECK_EQUAL( NoError , test_dev.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+//            BOOST_CHECK_EQUAL( NoError , mct440.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
 //        }
 //
 //        {
@@ -711,13 +712,13 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
 //    {
 //        CtiTime timenow;
 //
-//        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
-//        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
+//        mct440.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
+//        mct440.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
 //
 //        {
 //            CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 //
-//            BOOST_CHECK_EQUAL( NoError , test_dev.executeGetValue(&request, parse, om, vgList, retList, outList) );
+//            BOOST_CHECK_EQUAL( NoError , mct440.executeGetValue(&request, parse, om, vgList, retList, outList) );
 //
 //            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
 //            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -744,7 +745,7 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
 //            im.Buffer.DSt.Length = 13;
 //            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 //
-//            BOOST_CHECK_EQUAL( NoError , test_dev.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+//            BOOST_CHECK_EQUAL( NoError , mct440.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
 //        }
 //
 //        {
@@ -823,13 +824,13 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
 //    {
 //        CtiTime timenow;
 //
-//        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
-//        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
+//        mct440.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
+//        mct440.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
 //
 //        {
 //            CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 //
-//            BOOST_CHECK_EQUAL( NoError , test_dev.executeGetValue(&request, parse, om, vgList, retList, outList) );
+//            BOOST_CHECK_EQUAL( NoError , mct440.executeGetValue(&request, parse, om, vgList, retList, outList) );
 //
 //            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
 //            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -856,7 +857,7 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
 //            im.Buffer.DSt.Length = 13;
 //            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 //
-//            BOOST_CHECK_EQUAL( NoError , test_dev.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+//            BOOST_CHECK_EQUAL( NoError , mct440.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
 //        }
 //
 //        {
@@ -926,13 +927,13 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
 //    {
 //        CtiTime timenow;
 //
-//        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
-//        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
+//        mct440.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
+//        mct440.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
 //
 //        {
 //            CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 //
-//            BOOST_CHECK_EQUAL( NoError , test_dev.executeGetValue(&request, parse, om, vgList, retList, outList) );
+//            BOOST_CHECK_EQUAL( NoError , mct440.executeGetValue(&request, parse, om, vgList, retList, outList) );
 //
 //            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
 //            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -959,7 +960,7 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
 //            im.Buffer.DSt.Length = 13;
 //            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 //
-//            BOOST_CHECK_EQUAL( NoError , test_dev.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+//            BOOST_CHECK_EQUAL( NoError , mct440.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
 //        }
 //
 //        {
@@ -1029,13 +1030,13 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
 //    {
 //        CtiTime timenow;
 //
-//        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
-//        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
+//        mct440.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
+//        mct440.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
 //
 //        {
 //            CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 //
-//            BOOST_CHECK_EQUAL( NoError , test_dev.executeGetValue(&request, parse, om, vgList, retList, outList) );
+//            BOOST_CHECK_EQUAL( NoError , mct440.executeGetValue(&request, parse, om, vgList, retList, outList) );
 //
 //            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
 //            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1062,7 +1063,7 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
 //            im.Buffer.DSt.Length = 13;
 //            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 //
-//            BOOST_CHECK_EQUAL( NoError , test_dev.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+//            BOOST_CHECK_EQUAL( NoError , mct440.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
 //        }
 //
 //        {
@@ -1114,13 +1115,13 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
 //    {
 //        CtiTime timenow;
 //
-//        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
-//        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
+//        mct440.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
+//        mct440.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
 //
 //        {
 //            CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 //
-//            BOOST_CHECK_EQUAL( NoError , test_dev.executeGetValue(&request, parse, om, vgList, retList, outList) );
+//            BOOST_CHECK_EQUAL( NoError , mct440.executeGetValue(&request, parse, om, vgList, retList, outList) );
 //
 //            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
 //            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1147,7 +1148,7 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
 //            im.Buffer.DSt.Length = 13;
 //            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 //
-//            BOOST_CHECK_EQUAL( NoError , test_dev.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+//            BOOST_CHECK_EQUAL( NoError , mct440.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
 //        }
 //
 //        {
@@ -1181,13 +1182,13 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
 //    {
 //        CtiTime timenow;
 //
-//        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
-//        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
+//        mct440.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
+//        mct440.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
 //
 //        {
 //            CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 //
-//            BOOST_CHECK_EQUAL( NoError , test_dev.executeGetValue(&request, parse, om, vgList, retList, outList) );
+//            BOOST_CHECK_EQUAL( NoError , mct440.executeGetValue(&request, parse, om, vgList, retList, outList) );
 //
 //            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
 //            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1214,7 +1215,7 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
 //            im.Buffer.DSt.Length = 13;
 //            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 //
-//            BOOST_CHECK_EQUAL( NoError , test_dev.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+//            BOOST_CHECK_EQUAL( NoError , mct440.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
 //        }
 //
 //        {
@@ -1234,13 +1235,13 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
 //    {
 //        CtiTime timenow;
 //
-//        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
-//        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
+//        mct440.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
+//        mct440.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
 //
 //        {
 //            CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 //
-//            BOOST_CHECK_EQUAL( NoError , test_dev.executeGetValue(&request, parse, om, vgList, retList, outList) );
+//            BOOST_CHECK_EQUAL( NoError , mct440.executeGetValue(&request, parse, om, vgList, retList, outList) );
 //
 //            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
 //            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1267,7 +1268,7 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
 //            im.Buffer.DSt.Length = 13;
 //            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 //
-//            BOOST_CHECK_EQUAL( NoError , test_dev.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+//            BOOST_CHECK_EQUAL( NoError , mct440.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
 //        }
 //
 //        {
@@ -1302,8 +1303,8 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
     BOOST_AUTO_TEST_CASE(test_dev_mct440_213xb_getvalue_daily_read_recent)
     {
 
-        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
-        test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
+        mct440.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
+        mct440.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
 
 
 
@@ -1337,7 +1338,7 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
 
                 CtiCommandParser parse(str_cmd);
 
-                BOOST_CHECK_EQUAL( NoError , test_dev.executeGetValue(&request, parse, om, vgList, retList, outList) );
+                BOOST_CHECK_EQUAL( NoError , mct440.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
                 BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
 
@@ -1382,7 +1383,7 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
                 im.Buffer.DSt.Length = 10;
                 im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-                BOOST_CHECK_EQUAL( NoError , test_dev.decodeGetValueDailyReadRecent(&im, timenow, vgList, retList, outList) );
+                BOOST_CHECK_EQUAL( NoError , mct440.decodeGetValueDailyReadRecent(&im, timenow, vgList, retList, outList) );
 
                 BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -1405,7 +1406,7 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
 
-                    CtiPointSPtr point = test_dev.getDevicePointOffsetTypeEqual(20, PulseAccumulatorPointType);
+                    CtiPointSPtr point = mct440.getDevicePointOffsetTypeEqual(20, PulseAccumulatorPointType);
 
                     BOOST_CHECK_EQUAL( pdata->getId(), point->getID() );
                 }
@@ -1421,7 +1422,7 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
 
-                    CtiPointSPtr point = test_dev.getDevicePointOffsetTypeEqual(181, PulseAccumulatorPointType);
+                    CtiPointSPtr point = mct440.getDevicePointOffsetTypeEqual(181, PulseAccumulatorPointType);
 
                     BOOST_CHECK_EQUAL( pdata->getId(), point->getID() );
                 }
@@ -1437,7 +1438,7 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
 
-                    CtiPointSPtr point = test_dev.getDevicePointOffsetTypeEqual(281, PulseAccumulatorPointType);
+                    CtiPointSPtr point = mct440.getDevicePointOffsetTypeEqual(281, PulseAccumulatorPointType);
 
                     BOOST_CHECK_EQUAL( pdata->getId(), point->getID() );
                 }
@@ -1453,7 +1454,7 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
 
-                    CtiPointSPtr point = test_dev.getDevicePointOffsetTypeEqual(1, PulseAccumulatorPointType);
+                    CtiPointSPtr point = mct440.getDevicePointOffsetTypeEqual(1, PulseAccumulatorPointType);
 
                     BOOST_CHECK_EQUAL( pdata->getId(), point->getID() );
                 }
@@ -1469,7 +1470,7 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
 
-                    CtiPointSPtr point = test_dev.getDevicePointOffsetTypeEqual(2, PulseAccumulatorPointType);
+                    CtiPointSPtr point = mct440.getDevicePointOffsetTypeEqual(2, PulseAccumulatorPointType);
 
                     BOOST_CHECK_EQUAL( pdata->getId(), point->getID() );
                 }
@@ -1477,6 +1478,83 @@ BOOST_FIXTURE_TEST_SUITE(getvalue_daily_reads, getvalueDailyReads_helper)
         }
     }
 
+    BOOST_AUTO_TEST_CASE(test_dev_mct440_getvalue_outage)
+    {
+        mct440.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         10300);
+        //  SSPEC revision does not matter for the MCT-440 outage decode
+        //mct440.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 17);  //  set the device to SSPEC revision 1.7
+
+        {
+            CtiCommandParser parse( "getvalue outage 1" );
+
+            BOOST_CHECK_EQUAL( NoError , mct440.executeGetValue(&request, parse, om, vgList, retList, outList) );
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x10);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13);
+
+            BOOST_CHECK( outList.empty() );
+        }
+
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+
+        vgList.clear();
+        retList.clear();
+        outList.clear();
+
+        {
+            CtiTime timeNow(CtiDate(1, 1, 2010), 1, 2, 3);
+
+            INMESS im;
+
+            //  4 bytes of time, 2 bytes duration in seconds.  Last byte is duration types.
+            char input[13] = {0x50, 1, 2, 3, 4, 5, 0x50, 7, 8, 9, 10, 11, 0x11};
+
+            std::copy(input, input + 13, im.Buffer.DSt.Message);
+            im.Buffer.DSt.Length = 13;
+            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+            strcpy(im.Return.CommandStr, "getvalue outage 1");
+
+            BOOST_CHECK_EQUAL( NoError , mct440.decodeGetValueOutage(&im, timeNow, vgList, retList, outList) );
+        }
+
+        {
+            BOOST_REQUIRE_EQUAL( retList.size(),  1 );
+
+            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            CtiMultiMsg_vec points = retMsg->PointData();
+
+            {
+                BOOST_REQUIRE_EQUAL( points.size(), 2 );
+
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_CLOSE( pdata->getValue(), 17.15, 0.001 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), CtiTime(CtiDate(14,  7, 2012), 0, 22, 11) );
+                    BOOST_CHECK_EQUAL( pdata->getString(), "Test MCT-440-213xB / Outage 1 : 07/14/2012 00:22:11 for 00:00:17.150");
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[1]);
+
+                    BOOST_REQUIRE( pdata );
+
+                    BOOST_CHECK_CLOSE( pdata->getValue(), 42.85, 0.001 );
+                    BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                    BOOST_CHECK_EQUAL( pdata->getTime(), CtiTime(CtiDate(18,  7, 2012), 14, 01, 29) );
+                    BOOST_CHECK_EQUAL( pdata->getString(), "Test MCT-440-213xB / Outage 2 : 07/18/2012 14:01:29 for 00:00:42.850");
+                }
+            }
+        }
+    }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
 
