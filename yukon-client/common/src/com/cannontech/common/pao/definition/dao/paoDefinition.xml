@@ -8992,6 +8992,8 @@
             <point type="Status" offset="4">
                 <init>true</init>
                 <name>CVR Mode</name>
+                <controlType value="LATCH"/>
+                <controlOffset value="10"/>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="5">
