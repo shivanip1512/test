@@ -11,4 +11,5 @@ import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AuthorizeByCparm {
     MasterConfigBooleanKeysEnum value();
+    boolean expecting() default true;
 }

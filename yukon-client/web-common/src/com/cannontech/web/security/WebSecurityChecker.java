@@ -25,10 +25,10 @@ public class WebSecurityChecker {
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     
-    public void authorizeByCparm(MasterConfigBooleanKeysEnum configKey) {
+    public void authorizeByCparm(MasterConfigBooleanKeysEnum configKey, boolean expecting) {
         final LiteYukonUser user = getYukonUser();
         boolean result = configurationSource.getBoolean(configKey);
-        if (!result) {
+        if (result != expecting) {
             throw new NotAuthorizedException("User " + user + " is not authorized to access this page.");
         } 
     }

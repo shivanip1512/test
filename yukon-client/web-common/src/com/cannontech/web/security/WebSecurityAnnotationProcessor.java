@@ -71,7 +71,8 @@ public class WebSecurityAnnotationProcessor {
     
     private void doHasAuthorizeByCparm(AuthorizeByCparm authorizeByCparm) {
         MasterConfigBooleanKeysEnum configKey = authorizeByCparm.value();
-        webSecurityChecker.authorizeByCparm(configKey);
+        boolean expecting = authorizeByCparm.expecting();
+        webSecurityChecker.authorizeByCparm(configKey, expecting);
     }
     
     private void doHasCheckRole(CheckRole checkRole) throws Exception {

@@ -8,13 +8,13 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.spring.CheckConfigParam;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.settlement.model.AvailableRate;
@@ -25,9 +25,10 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFragment;
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.security.annotation.AuthorizeByCparm;
 
 @Controller
-@CheckConfigParam("ENABLE_SETTLEMENTS")
+@AuthorizeByCparm(MasterConfigBooleanKeysEnum.ENABLE_SETTLEMENTS)
 @RequestMapping("/energyCompany/settlement/*")
 public class SettlementController { 
     

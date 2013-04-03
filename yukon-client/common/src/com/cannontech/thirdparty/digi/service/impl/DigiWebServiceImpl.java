@@ -17,6 +17,7 @@ import org.springframework.web.client.RestOperations;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -25,7 +26,6 @@ import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.database.db.point.stategroup.Commissioned;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.spring.CheckConfigParam;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.digi.exception.DigiEmptyDeviceCoreResultException;
@@ -48,7 +48,6 @@ import com.cannontech.thirdparty.service.ZigbeeWebService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-@CheckConfigParam(value="DIGI_ENABLED", expecting="true", throwable=DigiNotConfiguredException.class, errorMessage="SEP not enabled")
 public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterService {
 
     private static final Logger log = YukonLogManager.getLogger(DigiWebServiceImpl.class);
@@ -67,20 +66,30 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     
     private static String digiBaseUrl;
     private static String digiEndPointReadUrl;
+    private static boolean digiEnabled = false;
     
     @PostConstruct
     public void initialize() {
-        digiBaseUrl = configurationSource.getString("DIGI_WEBSERVICE_URL", "http://developer.idigi.com/");
-
-        digiEndPointReadUrl = digiBaseUrl + "ws/XbeeCore";
+        digiEnabled = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DIGI_ENABLED);
+        if (digiEnabled) {
+            digiBaseUrl = configurationSource.getString("DIGI_WEBSERVICE_URL", "http://developer.idigi.com/");
+            digiEndPointReadUrl = digiBaseUrl + "ws/XbeeCore";
+        }
     }
     
     public static String getDigiBaseUrl() {
         return digiBaseUrl;
     }
     
+    private static void verifyDigiEnabled() {
+        if (!digiEnabled) {
+            throw new DigiNotConfiguredException("SEP not configured.");
+        }
+    }
+    
     @Override
     public void installGateway(int gatewayId) {
+        verifyDigiEnabled();
         log.debug("Install Gateway Start");
         
         DigiGateway digiGateway = gatewayDeviceDao.getDigiGateway(gatewayId);
@@ -104,6 +113,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     
     @Override
     public void removeGateway(int gatewayId) {
+        verifyDigiEnabled();
         log.debug("Remove Gateway Start");
         DigiGateway digiGateway= gatewayDeviceDao.getDigiGateway(gatewayId);
         decommissionConnectPort(digiGateway.getDigiId());
@@ -125,6 +135,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
      * @return
      */
     private Integer commissionNewConnectPort(String macAddress) throws ZigbeeCommissionException {
+        verifyDigiEnabled();
         log.debug("CommissionNewConnectPort Start");
         String xml = "<DeviceCore>" + "<devMac>"+macAddress+"</devMac>" + "</DeviceCore>";
 
@@ -166,6 +177,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     }
 
     private void decommissionConnectPort(int digiId) {
+        verifyDigiEnabled();
         log.debug("DecommissionNewConnectPort Start");
         
         try {
@@ -181,6 +193,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
 
     @Override
     public void installEndPoint(int gatewayId, int deviceId) throws ZigbeeCommissionException {
+        verifyDigiEnabled();
         log.debug("InstallEndPoint Start");
         ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
         ZigbeeEndpoint stat= zigbeeDeviceDao.getZigbeeEndPoint(deviceId);
@@ -203,6 +216,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     }
     
     public void uninstallEndPoint(int gatewayId, int deviceId) {
+        verifyDigiEnabled();
         ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
         ZigbeeDevice endpoint = zigbeeDeviceDao.getZigbeeDevice(deviceId);
         
@@ -223,11 +237,13 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     
     @Override
     public void activateSmartPolling(ZigbeeDevice device) {
+        verifyDigiEnabled();
         jmsTemplate.convertAndSend("yukon.notif.obj.dr.smartUpdateRequest", new SmartUpdateRequestMessage(device.getPaoIdentifier()));
     }
     
     @Override
     public void readLoadGroupAddressing(ZigbeeDevice endPoint) {
+        verifyDigiEnabled();
         Integer gatewayId = gatewayDeviceDao.findGatewayIdForDeviceId(endPoint.getPaoIdentifier().getPaoId());
         Validate.notNull(gatewayId, "Device not assigned to a gateway, cannot send addressing configs.");
         ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
@@ -248,6 +264,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     
     @Override
     public void sendLoadGroupAddressing(int deviceId, Map<DRLCClusterAttribute,Integer> attributes) {
+        verifyDigiEnabled();
         Integer gatewayId = gatewayDeviceDao.findGatewayIdForDeviceId(deviceId);
         Validate.notNull(gatewayId, "Device not assigned to a gateway, cannot send addressing configs.");
         ZigbeeDevice endPoint = zigbeeDeviceDao.getZigbeeDevice(deviceId);
@@ -266,6 +283,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     
     @Override
     public ZigbeePingResponse updateGatewayStatus(ZigbeeDevice gateway) {
+        verifyDigiEnabled();
         log.debug("Refresh Gateway start");
         
         DevConnectwareId connectwareId = new DevConnectwareId(gateway.getZigbeeMacAddress());
@@ -296,6 +314,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     
     @Override
     public Map<PaoIdentifier,ZigbeePingResponse> updateAllGatewayStatuses() {
+        verifyDigiEnabled();
         log.debug("Refresh ALL Gateway start");
         
         //URL to load all gateways the account.
@@ -315,6 +334,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     }
     
     private Map<PaoIdentifier,ZigbeePingResponse> refreshDeviceCore(String url, List<ZigbeeDevice> expected) {
+        verifyDigiEnabled();
         String xml;
         
         try {
@@ -334,6 +354,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     }
 
     public Map<PaoIdentifier,ZigbeePingResponse> updateAllEndPointStatuses() {
+        verifyDigiEnabled();
         log.debug("Refresh ALL End Point start");
 
         List<ZigbeeDevice> allEndPoints = zigbeeDeviceDao.getAllEndPoints();
@@ -354,6 +375,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
 
     @Override
     public ZigbeePingResponse updateEndPointStatus(ZigbeeDevice endPoint) {
+        verifyDigiEnabled();
         List<ZigbeeDevice> expected = Lists.newArrayList();
         expected.add(endPoint);
         
@@ -375,6 +397,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     }
     
     private Map<PaoIdentifier,ZigbeePingResponse> refreshEndPoints(String url, List<ZigbeeDevice> expected) {
+        verifyDigiEnabled();
         String xml;
         
         try {
@@ -395,6 +418,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
 
     @Override
     public void sendManualAdjustment(YukonTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {
+        verifyDigiEnabled();
         log.debug("Sending adjusment message to Gateways. Message: \"" + message.getMessage() +"\"");
 
         Set<Integer> inventoryIds = message.getInventoryIds();
@@ -407,6 +431,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     
     @Override
     public void sendTextMessage(YukonTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {
+        verifyDigiEnabled();
         log.debug("Sending text message to Gateways. Message: \"" + message.getMessage() +"\"");
 
         Set<Integer> inventoryIds = message.getInventoryIds();
@@ -416,6 +441,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     }
 
     private void sendTextMessage(List<ZigbeeDevice> gateways, YukonTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {       
+        verifyDigiEnabled();
         String xml = digiXMLBuilder.buildTextMessage(gateways, message);
         String source;
         
@@ -456,6 +482,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
 
     @Override
     public void cancelTextMessage(YukonCancelTextMessage cancelZigbeeText) throws ZigbeeClusterLibraryException, DigiWebServiceException {
+        verifyDigiEnabled();
         Set<Integer> inventoryIds = cancelZigbeeText.getInventoryIds();
         List<ZigbeeDevice> gateways = gatewayDeviceDao.getZigbeeGatewaysForInventoryIds(inventoryIds); 
         
@@ -463,6 +490,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     }
     
     private void cancelTextMessage(List<ZigbeeDevice> devices, YukonCancelTextMessage cancelZigbeeText) {
+        verifyDigiEnabled();
         String xml = digiXMLBuilder.buildCancelMessageEvent(devices, cancelZigbeeText);
         String source;
         
@@ -503,6 +531,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     
     @Override
     public void sendSEPControlMessage(int eventId, SepControlMessage controlMessage) {
+        verifyDigiEnabled();
         log.debug("Sending SEP Control Message Start");
         
         List<ZigbeeDevice> gateways = gatewayDeviceDao.getZigbeeGatewaysForGroupId(controlMessage.getGroupId());
@@ -521,6 +550,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     
     @Override
     public void sendSEPRestoreMessage(int eventId, SepRestoreMessage restoreMessage) {
+        verifyDigiEnabled();
         log.debug("Sending SEP Restore Message Start");
         
         List<ZigbeeDevice> gateways = gatewayDeviceDao.getZigbeeGatewaysForGroupId(restoreMessage.getGroupId());
