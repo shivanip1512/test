@@ -73,13 +73,22 @@ public class WebFileUtilsTest {
         Assert.assertFalse(WebFileUtils.isValidWindowsFilename("contains*two*invalid chars"));
         Assert.assertFalse(WebFileUtils.isValidWindowsFilename(" start with space"));
         
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("mine,yours"));
         Assert.assertTrue(WebFileUtils.isValidWindowsFilename("."));
         Assert.assertTrue(WebFileUtils.isValidWindowsFilename(". "));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("123"));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("1a2B"));
         Assert.assertTrue(WebFileUtils.isValidWindowsFilename("My Filename"));
         Assert.assertTrue(WebFileUtils.isValidWindowsFilename("my_filename"));
         Assert.assertTrue(WebFileUtils.isValidWindowsFilename("my fav filename"));
         Assert.assertTrue(WebFileUtils.isValidWindowsFilename("mine%"));
         Assert.assertTrue(WebFileUtils.isValidWindowsFilename("mi$e"));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("mi$e"));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("mine's"));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("mine#1"));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("foo("));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename(")bar"));
+        Assert.assertTrue(WebFileUtils.isValidWindowsFilename("foo(bar)"));        
     }
 
     private void expectThatCsvDownloadHeaderIsSetProperly(MockHttpServletResponse response, String fileName) {

@@ -27,7 +27,7 @@ import com.cannontech.web.exceptions.NoImportFileException;
 
 public class WebFileUtils {
 
-    private static final Pattern PATTERN_WINDOWS_FILENAME = Pattern.compile("[^/\\\\:*?\"<>|]+");
+    private static final Pattern PATTERN_WINDOWS_FILENAME = Pattern.compile("[\\w- \\(\\)`~!@#\\$%\\^&=+\\[\\]\\{\\};,.']+");
     
 	public static File convertToTempFile(MultipartFile multipartFile, String prefix, String suffix) throws IOException{
         
