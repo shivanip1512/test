@@ -210,15 +210,16 @@
 			<button class="f_toggle_enabled"><i:inline key="${monitoringKey}"/></button>
 			<cti:button id="deleteButton" nameKey="delete" />
 	        <tags:confirmDialog nameKey=".deleteConfirmation" argument="${monitor.name}" on="#deleteButton" styleClass="f_delete_btn"/>
+			<cti:url var="viewMonitorUrl" value="/amr/deviceDataMonitor/view">
+				<cti:param name="monitorId" value="${monitor.id}" />
+			</cti:url>
+			<cti:button nameKey="back" href="${viewMonitorUrl}" />
 		</cti:displayForPageEditModes>
 		<cti:displayForPageEditModes modes="CREATE">
 			<cti:button nameKey="create" styleClass="f_update_monitor" />
+			<cti:url var="startMonitorUrl" value="/meter/start" />
+			<cti:button nameKey="cancel" href="${startMonitorUrl}" />
 		</cti:displayForPageEditModes>
-
-		<cti:url var="viewMonitorUrl" value="/amr/deviceDataMonitor/view">
-			<cti:param name="monitorId" value="${monitor.id}" />
-		</cti:url>
-		<cti:button nameKey="back" href="${viewMonitorUrl}" />
 	</div>
 
 </cti:standardPage>
