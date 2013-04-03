@@ -197,7 +197,7 @@ public class ServiceCompany extends DBPersistent {
 
 	public static List<ServiceCompany> retrieveAllServiceCompanies(final Integer energyCompanyID) {
 	    
-	    YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
+	    YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
 
     	SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT * FROM ServiceCompany");

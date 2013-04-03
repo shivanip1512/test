@@ -98,7 +98,7 @@ public class ApplianceCategory extends DBPersistent {
     }
     
     public static List<ApplianceCategory> getAllApplianceCategories(Integer energyCompanyID) {
-        YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
+        YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append("SELECT * FROM ApplianceCategory");
@@ -120,7 +120,7 @@ public class ApplianceCategory extends DBPersistent {
                 applianceCategory.setDescription(rs.getString("Description"));
                 applianceCategory.setCategoryID(rs.getInt("CategoryId"));
                 applianceCategory.setWebConfigurationID(rs.getInt("WebConfigurationId"));
-                applianceCategory.setConsumerSelectable(Boolean.valueOf(rs.getString("ConsumerSelectable")));
+                applianceCategory.setConsumerSelectable(rs.getYNBoolean("ConsumerSelectable").getBoolean());
                 return applianceCategory;
             }
         });

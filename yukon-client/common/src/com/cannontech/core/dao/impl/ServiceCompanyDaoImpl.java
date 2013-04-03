@@ -173,7 +173,7 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao, InitializingBea
         //add to mapping table
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("INSERT INTO ectogenericmapping");
-        sql.values(energyCompanyId, serviceCompany.getCompanyId(), EcMappingCategory.SERVICE_COMPANY.getDatabaseRepresentation());
+        sql.values(energyCompanyId, serviceCompany.getCompanyId(), EcMappingCategory.SERVICE_COMPANY);
         
         yukonJdbcTemplate.update(sql);
     }
