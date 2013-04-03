@@ -18,10 +18,6 @@ public final class UserAuthenticationInfo {
         this.lastChangedDate = lastChangedDate;
     }
 
-    public UserAuthenticationInfo(UserAuthenticationInfo toCopy, AuthType authType) {
-        this(toCopy.userId, authType, toCopy.lastChangedDate);
-    }
-
     public int getUserId() {
         return userId;
     }

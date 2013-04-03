@@ -60,6 +60,9 @@ public class EncryptPlainTextPasswordsServiceImpl implements EncryptPlainTextPas
     private void encryptPasswords() {
         SqlStatementBuilder sql = new SqlStatementBuilder("SELECT userId FROM yukonUser WHERE authType = 'PLAIN'");
         List<Integer> userIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        if (userIds.size() == 0) {
+            return;
+        }
         log.info("begining to encrypt " + userIds.size() + " passwords");
         int count = 0;
         for (Integer userId : userIds) {
@@ -75,10 +78,13 @@ public class EncryptPlainTextPasswordsServiceImpl implements EncryptPlainTextPas
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT passwordHistoryId, password FROM passwordHistory WHERE authType = 'PLAIN'");
         List<Integer> passwordHistoryIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
+        if (passwordHistoryIds.size() == 0) {
+            return;
+        }
         log.info("begining to encrypt " + passwordHistoryIds.size() + " historical passwords");
         int count = 0;
         for (Integer passwordHistoryId : passwordHistoryIds) {
-            encryptPassword(passwordHistoryId);
+            encryptPasswordHistory(passwordHistoryId);
             if (++count % 1000 == 0) {
                 log.info("finished with " + count + " historical passwords so far");
             }
