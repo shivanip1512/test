@@ -58,7 +58,8 @@ public class EncryptPlainTextPasswordsServiceImpl implements EncryptPlainTextPas
     }
 
     private void encryptPasswords() {
-        SqlStatementBuilder sql = new SqlStatementBuilder("SELECT userId FROM yukonUser WHERE authType = 'PLAIN'");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT userId FROM yukonUser WHERE authType").eq_k(AuthType.PLAIN);
         List<Integer> userIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
         if (userIds.size() == 0) {
             return;
@@ -76,7 +77,7 @@ public class EncryptPlainTextPasswordsServiceImpl implements EncryptPlainTextPas
 
     private void encryptPasswordHistory() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT passwordHistoryId, password FROM passwordHistory WHERE authType = 'PLAIN'");
+        sql.append("SELECT passwordHistoryId, password FROM passwordHistory WHERE authType").eq_k(AuthType.PLAIN);
         List<Integer> passwordHistoryIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
         if (passwordHistoryIds.size() == 0) {
             return;
