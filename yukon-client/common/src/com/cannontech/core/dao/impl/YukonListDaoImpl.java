@@ -22,7 +22,6 @@ import com.cannontech.core.dao.YukonListEntryRowMapper;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.core.service.PhoneNumberFormattingService;
-import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -174,7 +173,8 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
         
     }
 	
-	public YukonListEntry getYukonListEntry(final int entryId) {
+	@Override
+    public YukonListEntry getYukonListEntry(final int entryId) {
 		final YukonListEntry listEntry = yukonListEntries.get(entryId);
 		if (listEntry == NULL_ENTRY) {
 		    throw new IllegalStateException("Unable to find YukonListEntry with an ID of " + entryId);
@@ -182,6 +182,7 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
 		return listEntry;
 	}
     
+    @Override
     public YukonSelectionList getYukonSelectionList(final int listId) {
         final YukonSelectionList selectionList = yukonSelectionLists.get(listId);
         if (selectionList == NULL_LIST) {
@@ -264,6 +265,7 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
     }
     
     // Contact YukonListEntry Helper Methods
+    @Override
     public boolean isListEntryValid(int definitionId, String entry) {
         boolean isValidEntry = true;
         if (definitionId > 0) {
@@ -280,37 +282,45 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
         return isValidEntry;
     }
 	
-	public boolean areSameInYukon(int entryID1, int entryID2) {
+	@Override
+    public boolean areSameInYukon(int entryID1, int entryID2) {
 		YukonListEntry entry1 = getYukonListEntry( entryID1 );
 		YukonListEntry entry2 = getYukonListEntry( entryID2 );
 		return (entry1 != null && entry2 != null && entry1.getYukonDefID() == entry2.getYukonDefID());
 	}
 
-	public boolean isPhoneNumber(int listEntryID) {
+	@Override
+    public boolean isPhoneNumber(int listEntryID) {
 		return ContactNotificationType.getTypeForNotificationCategoryId(listEntryID).isPhoneType();
 	}
 
+    @Override
     public boolean isEmail(int listEntryID) {
     	return ContactNotificationType.getTypeForNotificationCategoryId(listEntryID).isEmailType();
     }
 
+    @Override
     public boolean isShortEmail(int listEntryID){
     	return ContactNotificationType.getTypeForNotificationCategoryId(listEntryID).isShortEmailType();
     }
 
-	public boolean isPIN(int listEntryID){
+	@Override
+    public boolean isPIN(int listEntryID){
 		return ContactNotificationType.getTypeForNotificationCategoryId(listEntryID).isPinType();
 	}
 	
-	public boolean isFax(int listEntryID){
+	@Override
+    public boolean isFax(int listEntryID){
 		return ContactNotificationType.getTypeForNotificationCategoryId(listEntryID).isFaxType();
 	}
 	
-	public boolean isPager(int listEntryID) {
+	@Override
+    public boolean isPager(int listEntryID) {
 		return false;
 			 //listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_PAGER;
 	}	
 
+    @Override
     public YukonListEntry getYukonListEntry(final YukonSelectionList list, final String entryText) {
         final List<YukonListEntry> entryList = list.getYukonListEntries();
         for (final YukonListEntry entry : entryList) {
@@ -343,7 +353,7 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
             selectionList.setSelectionLabel(rs.getString("SelectionLabel"));
             selectionList.setWhereIsList(rs.getString("WhereIsList"));
             selectionList.setType(rs.getEnum("ListName", YukonSelectionListEnum.class));
-            selectionList.setUserUpdateAvailable(rs.getEnum("UserUpdateAvailable", YNBoolean.class).getBoolean());
+            selectionList.setUserUpdateAvailable(rs.getBooleanYN("UserUpdateAvailable"));
             selectionList.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
 
             List<YukonListEntry> allListEntries = getAllListEntries(selectionList);

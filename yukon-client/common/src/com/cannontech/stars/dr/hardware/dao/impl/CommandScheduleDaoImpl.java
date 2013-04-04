@@ -54,7 +54,7 @@ public class CommandScheduleDaoImpl implements CommandScheduleDao {
             retVal.setStartTimeCronString(rs.getString("startTimeCronString"));
             retVal.setRunPeriod(rs.getPeriod("runPeriod"));
             retVal.setDelayPeriod(rs.getPeriod("delayPeriod"));
-            retVal.setEnabled(rs.getEnum("enabled", YNBoolean.class).getBoolean());
+            retVal.setEnabled(rs.getBooleanYN("enabled"));
             retVal.setEnergyCompanyId(rs.getInt("energyCompanyId"));
             return retVal;
         }

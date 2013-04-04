@@ -90,7 +90,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
             Period intervalPeriod = periodFormatter.parsePeriod(rs.getString("intervalPeriod"));
             Long lastChangeId = rs.getLong("lastChangeId");
             Instant runDate = rs.getInstant("runDate");
-            boolean excludeBadPointQualities = rs.getEnum("excludeBadPointQualities", YNBoolean.class).getBoolean();
+            boolean excludeBadPointQualities = rs.getBooleanYN("excludeBadPointQualities");
             AdaStatus status = rs.getEnum("AnalysisStatus", AdaStatus.class);
             String statusId = rs.getString("StatusId");
             
@@ -184,6 +184,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     @Override
     public void deleteAnalysis(final int analysisId) {
         longRunningExecutor.execute(new Runnable() {
+            @Override
             public void run() {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("DELETE FROM ArchiveDataAnalysis");
@@ -266,6 +267,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
         return devicePointValuesList;
     }
     
+    @Override
     public void updateStatus(int analysisId, AdaStatus status, String statusId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE ArchiveDataAnalysis");

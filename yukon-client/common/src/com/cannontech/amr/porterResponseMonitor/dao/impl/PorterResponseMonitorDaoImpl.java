@@ -69,7 +69,7 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao, I
 			PorterResponseMonitorRule retVal = new PorterResponseMonitorRule();
 			retVal.setRuleId(rs.getInt("ruleId"));
 			retVal.setRuleOrder(rs.getInt("ruleOrder"));
-			retVal.setSuccess(rs.getEnum("success", YNBoolean.class).getBoolean());
+			retVal.setSuccess(rs.getBooleanYN("success"));
 			retVal.setMatchStyle(rs.getEnum("matchStyle", PorterResponseMonitorMatchStyle.class));
 			retVal.setState(rs.getString("state"));
 			return retVal;

@@ -120,7 +120,7 @@ public class ApplianceCategory extends DBPersistent {
                 applianceCategory.setDescription(rs.getString("Description"));
                 applianceCategory.setCategoryID(rs.getInt("CategoryId"));
                 applianceCategory.setWebConfigurationID(rs.getInt("WebConfigurationId"));
-                applianceCategory.setConsumerSelectable(rs.getYNBoolean("ConsumerSelectable").getBoolean());
+                applianceCategory.setConsumerSelectable(rs.getBooleanYN("ConsumerSelectable"));
                 return applianceCategory;
             }
         });

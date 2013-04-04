@@ -143,7 +143,7 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
                 event.setManualHeatTemp(Temperature.fromFahrenheit(rs.getDouble("manualHeatTemp")));
                 event.setManualMode(rs.getEnum("manualMode", ThermostatMode.class));
                 event.setManualFan(rs.getEnum("manualFan", ThermostatFanState.class));
-                event.setManualHold(rs.getEnum("manualHold", YNBoolean.class).getBoolean());
+                event.setManualHold(rs.getBooleanYN("manualHold"));
                 retVal = event;
             } else if(eventType == ThermostatEventType.RESTORE) {
                 retVal = new RestoreThermostatEvent();
@@ -157,6 +157,7 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
     };
     
     private FieldMapper<ThermostatEvent> thermostatEventFieldMapper = new FieldMapper<ThermostatEvent>() {
+        @Override
         public void extractValues(MapSqlParameterSource msps, ThermostatEvent thermostatEvent) {
             msps.addValue("UserName", thermostatEvent.getUserName());
             msps.addValue("EventTime", thermostatEvent.getEventTime());
@@ -178,14 +179,17 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
                 msps.addValue("EventType", ThermostatEventType.RESTORE);
             }
         }
+        @Override
         public Number getPrimaryKey(ThermostatEvent thermostatEvent) {
             return thermostatEvent.getEventId();
         }
+        @Override
         public void setPrimaryKey(ThermostatEvent thermostatEvent, int value) {
             thermostatEvent.setEventId(value);
         }
     };
     
+    @Override
     public void afterPropertiesSet() throws Exception {
         thermostatEventTemplate = new SimpleTableAccessTemplate<ThermostatEvent>(yukonJdbcTemplate, nextValueHelper);
         thermostatEventTemplate.setTableName("ThermostatEventHistory");

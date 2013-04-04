@@ -12,7 +12,6 @@ import org.joda.time.Instant;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.pao.annotation.YukonPaoPart;
-import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonResultSet;
 import com.google.common.base.Function;
 
@@ -75,7 +74,7 @@ import com.google.common.base.Function;
         } else if (parameterType == Long.class || parameterType == Long.TYPE) {
             value = rs.getLong(dbColumnName);
         } else if (parameterType == Boolean.class || parameterType == Boolean.TYPE) {
-            value = rs.getEnum(dbColumnName, YNBoolean.class).getBoolean();
+            value = rs.getBooleanYN(dbColumnName);
         } else if (Date.class.isAssignableFrom(parameterType)) {
             value = rs.getDate(dbColumnName);
         } else if (Instant.class.isAssignableFrom(parameterType)) {

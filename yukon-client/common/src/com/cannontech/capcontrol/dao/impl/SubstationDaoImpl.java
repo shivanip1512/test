@@ -18,7 +18,6 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
-import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -49,7 +48,7 @@ public class SubstationDaoImpl implements SubstationDao {
             public Substation mapRow(YukonResultSet rs) throws SQLException {
                 Substation sub = new Substation(new PaoIdentifier(id, rs.getEnum("type", PaoType.class)));
                 sub.setName(rs.getString("paoName"));
-                sub.setDisabled(rs.getEnum("DisableFlag", YNBoolean.class).getBoolean());
+                sub.setDisabled(rs.getBooleanYN("DisableFlag"));
                 sub.setDescription(rs.getString("Description"));
                 sub.setMapLocationId(rs.getString("MapLocationId"));
                 sub.setVoltReductionPointId(rs.getInt("voltReductionPointId"));

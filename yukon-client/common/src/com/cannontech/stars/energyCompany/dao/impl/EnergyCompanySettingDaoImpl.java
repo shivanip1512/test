@@ -197,7 +197,7 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
             setting.setValue(value);
             setting.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
             setting.setId(rs.getInt("EnergyCompanySettingId"));
-            setting.setEnabled(rs.getEnum(("Enabled"), YNBoolean.class).getBoolean());
+            setting.setEnabled(rs.getBooleanYN("Enabled"));
             setting.setComments(rs.getString("Comments"));
             setting.setLastChanged(rs.getInstant("LastChangedDate"));
 

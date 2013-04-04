@@ -199,13 +199,13 @@ public class YukonResultSet {
     }
 
     /**
-     * Returns YNBoolean value for columnLabel.
+     * Returns boolean value for columnLabel.
      * Column values are expected to be "Y" or "N" (as defined by YNBoolean.getDatabaseRepresentation()).
      * @param columnLabel
      * @return
      */
-    public YNBoolean getYNBoolean(String columnLabel) throws SQLException {
-        return getEnum(columnLabel, YNBoolean.class);
+    public boolean getBooleanYN(String columnLabel) throws SQLException {
+        return getEnum(columnLabel, YNBoolean.class).getBoolean();
     }
     
     public boolean wasNull() throws SQLException {

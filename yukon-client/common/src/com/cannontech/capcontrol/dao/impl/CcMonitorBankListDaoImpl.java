@@ -56,7 +56,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
             Phase phase = rs.getEnum("Phase", Phase.class);
             double lowerLimit = rs.getDouble("LowerBandwidth");
             double upperLimit = rs.getDouble("UpperBandwidth");
-            boolean overrideStrategy = rs.getEnum("OverrideStrategy", YNBoolean.class).getBoolean();
+            boolean overrideStrategy = rs.getBooleanYN("OverrideStrategy");
             
             VoltageLimitedDeviceInfo deviceInfo = new VoltageLimitedDeviceInfo();
             deviceInfo.setParentPaoIdentifier(paoIdentifier);

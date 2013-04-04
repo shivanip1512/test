@@ -70,7 +70,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
             InventoryConfigTask retVal = new InventoryConfigTask();
             retVal.setInventoryConfigTaskId(rs.getInt("InventoryConfigTaskId"));
             retVal.setTaskName(rs.getString("taskName"));
-            retVal.setSendInService(rs.getEnum("sendInService", YNBoolean.class).getBoolean());
+            retVal.setSendInService(rs.getBooleanYN("sendInService"));
             retVal.setNumberOfItems(rs.getInt("numberOfItems"));
             retVal.setNumberOfItemsProcessed(rs.getInt("numberOfItemsProcessed"));
             retVal.setEnergyCompanyId(rs.getInt("energyCompanyId"));
@@ -147,7 +147,7 @@ public class InventoryConfigTaskDaoImpl implements InventoryConfigTaskDao {
         InventoryConfigTask task = new InventoryConfigTask();
         task.setTaskName(taskName);
         task.setSendInService(sendInService);
-        task.setNumberOfItems((int) inventoryCollection.getCount());
+        task.setNumberOfItems(inventoryCollection.getCount());
         task.setNumberOfItemsProcessed(0);
         task.setEnergyCompanyId(energyCompanyId);
         task.setUser(user);
