@@ -12,8 +12,7 @@
 	
 	<tx:annotation-driven transaction-manager="transactionManager"/>
     <context:annotation-config/>
-    <aop:aspectj-autoproxy/>
-    
+
 <!--    <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">-->
 <!--        <property name="assembler" ref="assembler"/>-->
 <!--        <property name="namingStrategy" ref="namingStrategy"/>-->

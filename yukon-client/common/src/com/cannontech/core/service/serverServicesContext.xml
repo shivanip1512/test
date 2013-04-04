@@ -12,7 +12,6 @@
 
   <tx:annotation-driven transaction-manager="transactionManager"/>
   <context:annotation-config/>
-  <aop:aspectj-autoproxy/>
   
   <bean id="emailService" class="com.cannontech.tools.email.impl.EmailServiceImpl"/>
  

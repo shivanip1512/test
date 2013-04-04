@@ -16,7 +16,4 @@
        
        <tx:annotation-driven transaction-manager="transactionManager"/>
        
-       <!-- Enabling @AspectJ Support -->
-       <aop:aspectj-autoproxy/>
-       
-</beans>     
+</beans>

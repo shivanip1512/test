@@ -154,16 +154,6 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/aspectjrt.jar" sourcepath="/third-party/linked-sources/aspectjrt1.7.1-src.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/aspectjweaver.jar" sourcepath="/third-party/linked-sources/aspectjweaver1.7.1-src.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/jopcbridge.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>

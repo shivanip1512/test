@@ -12,7 +12,6 @@
 
   <tx:annotation-driven transaction-manager="transactionManager"/>
   <context:annotation-config/>
-  <aop:aspectj-autoproxy/>
     
   <bean id="porterQueueDataService" class="com.cannontech.core.service.impl.PorterQueueDataServiceImpl">
     <property name="porterConnection" ref="porterConnection"/>

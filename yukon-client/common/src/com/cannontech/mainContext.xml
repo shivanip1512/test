@@ -12,9 +12,6 @@
     
     <context:annotation-config/>
     
-    <!-- Enabling @AspectJ Support -->
-    <aop:aspectj-autoproxy/>
-    
     <!--  
        The following is the "main" datasource that should be used for new code
        That uses Spring transactions, JdbcTemplate, or any code that needs a raw

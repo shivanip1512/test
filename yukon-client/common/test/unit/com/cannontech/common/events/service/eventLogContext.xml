@@ -12,9 +12,6 @@
     
     <context:annotation-config/>
     
-    <!-- Enabling @AspectJ Support -->
-    <aop:aspectj-autoproxy/>
-    
     <bean id="eventLogDao" class="com.cannontech.common.events.dao.EventLogDaoImpl"/>
     
     <bean id="transactionExecutor" class="com.cannontech.common.util.TransactionExecutorImpl" />

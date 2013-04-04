@@ -52,8 +52,6 @@ Class-Path: ./
  commons-io-1.3.2.jar 
  commons-httpclient.jar 
  quartz-all-1.6.0.jar 
- aspectjrt.jar 
- aspectjweaver.jar 
  joda-time-2.1.jar 
  activemq-core-5.7.0.jar 
  slf4j-log4j12-1.7.2.jar 
