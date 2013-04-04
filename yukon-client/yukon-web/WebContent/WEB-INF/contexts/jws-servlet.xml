@@ -182,6 +182,8 @@
         <property name="jars">
             <set>
                 <value>graph.jar</value>
+                <value>cbc.jar</value>
+                <value>macs.jar</value>
             </set>
         </property>
     </bean>
