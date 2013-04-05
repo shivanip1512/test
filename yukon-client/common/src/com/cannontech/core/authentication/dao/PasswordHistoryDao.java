@@ -19,7 +19,7 @@ public interface PasswordHistoryDao {
 
     /**
      * This method returns all the previous password history entries in the system for the given
-     * userId. This can then be used to see if a user is reusing a password before they should be
+     * user. This can then be used to see if a user is reusing a password before they should be
      * able to. These entries are ordered from the most recent to the oldest.
      */
     List<PasswordHistory> getPasswordHistory(LiteYukonUser user);
