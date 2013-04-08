@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/19/2013 9:53:47 AM                         */
+/* Created on:     4/8/2013 12:54:20 PM                         */
 /*==============================================================*/
 
 
@@ -11597,6 +11597,7 @@ go
 alter table ECToAcctThermostatSchedule
    add constraint FK_ECToAccThermSch_AccThermSch foreign key (AcctThermostatScheduleId)
       references AcctThermostatSchedule (AcctThermostatScheduleId)
+         on delete cascade
 go
 
 alter table ECToAcctThermostatSchedule

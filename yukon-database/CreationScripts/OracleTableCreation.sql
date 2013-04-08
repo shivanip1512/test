@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/19/2013 10:09:02 AM                        */
+/* Created on:     4/5/2013 3:06:20 PM                          */
 /*==============================================================*/
 
 
@@ -10789,7 +10789,8 @@ alter table ECToAccountMapping
 
 alter table ECToAcctThermostatSchedule
    add constraint FK_ECToAccThermSch_AccThermSch foreign key (AcctThermostatScheduleId)
-      references AcctThermostatSchedule (AcctThermostatScheduleId);
+      references AcctThermostatSchedule (AcctThermostatScheduleId)
+      on delete cascade;
 
 alter table ECToAcctThermostatSchedule
    add constraint FK_ECToAccThermSch_EC foreign key (EnergyCompanyId)
