@@ -66,25 +66,36 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     
     private static String digiBaseUrl;
     private static String digiEndPointReadUrl;
+    
+    /**
+     * All public methods in this class must check that Digi is enabled (the cparm
+     * DIGI_ENABLED is set to TRUE) in order to guarantee that we aren't making lots 
+     * of unnecessary web service calls to Digi's servers from unconfigured systems.
+     * This can be accomplished by calling verifyDigiEnabled() at the top of public methods.
+     */
     private static boolean digiEnabled = false;
     
     @PostConstruct
     public void initialize() {
         digiEnabled = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DIGI_ENABLED);
         if (digiEnabled) {
-            digiBaseUrl = configurationSource.getString("DIGI_WEBSERVICE_URL", "http://developer.idigi.com/");
+            digiBaseUrl = configurationSource.getString("DIGI_WEBSERVICE_URL", "http://my.idigi.com/");
             digiEndPointReadUrl = digiBaseUrl + "ws/XbeeCore";
+        }
+    }
+    
+    /**
+     * verifyDigiEnabled() must be called at the beginning of all public methods within this
+     * class to guarantee that the system has been configured to support Digi web service calls. 
+     */
+    private static void verifyDigiEnabled() {
+        if (!digiEnabled) {
+            throw new DigiNotConfiguredException("SEP not configured.");
         }
     }
     
     public static String getDigiBaseUrl() {
         return digiBaseUrl;
-    }
-    
-    private static void verifyDigiEnabled() {
-        if (!digiEnabled) {
-            throw new DigiNotConfiguredException("SEP not configured.");
-        }
     }
     
     @Override
@@ -135,7 +146,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
      * @return
      */
     private Integer commissionNewConnectPort(String macAddress) throws ZigbeeCommissionException {
-        verifyDigiEnabled();
         log.debug("CommissionNewConnectPort Start");
         String xml = "<DeviceCore>" + "<devMac>"+macAddress+"</devMac>" + "</DeviceCore>";
 
@@ -177,7 +187,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     }
 
     private void decommissionConnectPort(int digiId) {
-        verifyDigiEnabled();
         log.debug("DecommissionNewConnectPort Start");
         
         try {
@@ -334,7 +343,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     }
     
     private Map<PaoIdentifier,ZigbeePingResponse> refreshDeviceCore(String url, List<ZigbeeDevice> expected) {
-        verifyDigiEnabled();
         String xml;
         
         try {
@@ -397,7 +405,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     }
     
     private Map<PaoIdentifier,ZigbeePingResponse> refreshEndPoints(String url, List<ZigbeeDevice> expected) {
-        verifyDigiEnabled();
         String xml;
         
         try {
@@ -441,7 +448,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     }
 
     private void sendTextMessage(List<ZigbeeDevice> gateways, YukonTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {       
-        verifyDigiEnabled();
         String xml = digiXMLBuilder.buildTextMessage(gateways, message);
         String source;
         
@@ -490,7 +496,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     }
     
     private void cancelTextMessage(List<ZigbeeDevice> devices, YukonCancelTextMessage cancelZigbeeText) {
-        verifyDigiEnabled();
         String xml = digiXMLBuilder.buildCancelMessageEvent(devices, cancelZigbeeText);
         String source;
         
