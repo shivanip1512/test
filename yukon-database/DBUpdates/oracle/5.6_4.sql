@@ -5,7 +5,6 @@
 /* Start YUK-11880 */
 ALTER TABLE ECToAcctThermostatSchedule
     DROP CONSTRAINT FK_ECToAccThermSch_AccThermSch;
-COMMIT;
 
 ALTER TABLE ECToAcctThermostatSchedule
     ADD CONSTRAINT FK_ECToAccThermSch_AccThermSch FOREIGN KEY (AcctThermostatScheduleId)
