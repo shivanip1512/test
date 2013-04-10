@@ -54,7 +54,7 @@
         <!-- Create sql server databse and user-->
         <sql
             driver="net.sourceforge.jtds.jdbc.Driver"
-            url="jdbc:jtds:sqlserver://${dbServer}:${dbSqlServerPort}"
+            url="jdbc:jtds:sqlserver://${dbSqlServer}:${dbSqlServerPort}"
             userid="sa"
             password="cannontech123">
             <transaction src="tempCreateDatabase.sql" />
@@ -65,7 +65,7 @@
         
         <sql
              driver="net.sourceforge.jtds.jdbc.Driver"
-             url="jdbc:jtds:sqlserver://${dbServer}:${dbSqlServerPort}"
+             url="jdbc:jtds:sqlserver://${dbSqlServer}:${dbSqlServerPort}"
              userid="sa"
              password="cannontech123">
             <classpath>
@@ -78,7 +78,7 @@
         <echo message="Importing Creation Scripts" />
         <sql
             driver="net.sourceforge.jtds.jdbc.Driver"
-            url="jdbc:jtds:sqlserver://${dbServer}:${dbSqlServerPort}"
+            url="jdbc:jtds:sqlserver://${dbSqlServer}:${dbSqlServerPort}"
             userid="${databaseName}"
             password="${databaseName}"
             delimiter='go'>
@@ -92,7 +92,7 @@
         <echo message="Building Database Snapshot" />
         <java jar="../yukon-client/third-party/SchemaDumpToXML.jar" fork="true">
             <arg value="--dbDriver=net.sourceforge.jtds.jdbc.Driver"/>
-            <arg value="--dbUrl=jdbc:jtds:sqlserver://${dbServer}:${dbSqlServerPort}"/>
+            <arg value="--dbUrl=jdbc:jtds:sqlserver://${dbSqlServer}:${dbSqlServerPort}"/>
             <arg value="--user=${databaseName}"/>
             <arg value="--password=${databaseName}"/>
             <arg value="--schema=dbo"/>
@@ -106,7 +106,7 @@
         <echo message="Deleting database" />
         <sql
             driver="net.sourceforge.jtds.jdbc.Driver"
-            url="jdbc:jtds:sqlserver://${dbServer}:${dbSqlServerPort}"
+            url="jdbc:jtds:sqlserver://${dbSqlServer}:${dbSqlServerPort}"
             userid="sa"
             password="cannontech123">
             <classpath>
@@ -159,7 +159,7 @@
     	<!-- Create oracle databse and user-->
         <sql
             driver="oracle.jdbc.OracleDriver"
-            url="jdbc:oracle:thin:@${dbServer}:${dbOracleServerPort}:${dbOracleServerAlias}"
+            url="jdbc:oracle:thin:@${dbOracleServer}:${dbOracleServerPort}:${dbOracleServerAlias}"
             userid="sys as sysdba"
             password="cannontech123">
             <classpath>
@@ -171,7 +171,7 @@
         <!-- Run the oracle creation scripts -->
         <echo message="Importing Creation Scripts" />
         <exec executable="sqlplus" output="db-init-lookup-identity.log">
-            <arg value="${databaseName}/${databaseName}@${dbServer}/${dbOracleServerAlias}"/>
+            <arg value="${databaseName}/${databaseName}@${dbOracleServer}/${dbOracleServerAlias}"/>
             <arg value="@CreationScripts/OracleTableCreation.sql"/>
         </exec>
 
@@ -179,7 +179,7 @@
         <echo message="Building Database Snapshot" />
         <java jar="../yukon-client/third-party/SchemaDumpToXML.jar" fork="true">
             <arg value="--dbDriver=oracle.jdbc.OracleDriver"/>
-            <arg value="--dbUrl=jdbc:oracle:thin:@${dbServer}:${dbOracleServerPort}:${dbOracleServerAlias}"/>
+            <arg value="--dbUrl=jdbc:oracle:thin:@${dbOracleServer}:${dbOracleServerPort}:${dbOracleServerAlias}"/>
             <arg value="--user=${databaseName}"/>
             <arg value="--password=${databaseName}"/>
             <arg value="--schema=${databaseName}"/>
@@ -193,7 +193,7 @@
         <echo message="Deleting database" />
         <sql
             driver="oracle.jdbc.OracleDriver"
-            url="jdbc:oracle:thin:@${dbServer}:${dbOracleServerPort}:${dbOracleServerAlias}"
+            url="jdbc:oracle:thin:@${dbOracleServer}:${dbOracleServerPort}:${dbOracleServerAlias}"
             userid="sys as sysdba"
             password="cannontech123">
             <classpath>
