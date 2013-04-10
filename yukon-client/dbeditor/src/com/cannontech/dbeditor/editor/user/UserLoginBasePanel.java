@@ -75,7 +75,6 @@ public class UserLoginBasePanel extends DataInputPanel {
     private JLabel ivjJLabelErrorMessage = null;
     private JPanel ivjJPanelError = null;
     private AuthenticationCategory initialAuthenticationCategory = null;
-    private LiteUserGroup initialLiteUserGroup = null;
     private String newPasswordValue = null;
     private boolean passwordRequiresChanging = false;
     private long oldEnergyCompanyID = -1;
@@ -279,13 +278,15 @@ public class UserLoginBasePanel extends DataInputPanel {
         
         List<LiteUserGroup> allUserGroups = userGroupDao.getAllLiteUserGroups();
         
-        List<String> userGroupNames = 
+        List<String> userGroupNames = new ArrayList<>();
+        userGroupNames.add("(none)");
+        userGroupNames.addAll(
             Lists.transform(allUserGroups, new Function<LiteUserGroup, String>() {
                 @Override
                 public String apply(LiteUserGroup liteUserGroup) {
                     return liteUserGroup.getUserGroupName();
                 }
-            });
+            }));
         
         if (ivjJListUserGroup == null) {
             ivjJListUserGroup = new javax.swing.JComboBox(userGroupNames.toArray());
@@ -300,12 +301,7 @@ public class UserLoginBasePanel extends DataInputPanel {
                 @Override
                 public void itemStateChanged(ItemEvent e) {
                     if (e.getStateChange() == ItemEvent.DESELECTED) return;
-                    String userGroupName = String.valueOf(ivjJListUserGroup.getSelectedItem());
-                    LiteUserGroup liteUserGroup = userGroupDao.getLiteUserGroupByUserGroupName(userGroupName);
-    
-                    if (liteUserGroup != initialLiteUserGroup) {
-                        fireInputUpdate();
-                    }
+                    fireInputUpdate();
                 }
             });
         }
@@ -501,8 +497,12 @@ public class UserLoginBasePanel extends DataInputPanel {
         }
 
         String userGroupName = String.valueOf(getJListUserGroup().getSelectedItem());
-        LiteUserGroup newUserGroup = userGroupDao.getLiteUserGroupByUserGroupName(userGroupName);
-        login.getYukonUser().setUserGroupId(newUserGroup.getUserGroupId());
+        if (userGroupName.equals("(none)")) {
+            login.getYukonUser().setUserGroupId(null);
+        } else {
+            LiteUserGroup newUserGroup = userGroupDao.getLiteUserGroupByUserGroupName(userGroupName);
+            login.getYukonUser().setUserGroupId(newUserGroup.getUserGroupId());
+        }
 
         if (passwordRequiresChanging && newPasswordValue == null) {
             // prompt for new password
@@ -754,8 +754,11 @@ public class UserLoginBasePanel extends DataInputPanel {
             getJCheckBoxEnableLogin().setToolTipText("You cannot disable the logged in user.");
         }
 
-        LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(login.getYukonUser().getUserGroupId());
-        getJListUserGroup().setSelectedItem(userGroup.getUserGroupName());
+        if (login.getYukonUser().getUserGroupId() != null) {
+            LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(login.getYukonUser().getUserGroupId());
+            getJListUserGroup().setSelectedItem(userGroup.getUserGroupName());
+        }
+        
 
         if (login.getUserID().intValue() == UserUtils.USER_ADMIN_ID) {
             getJTextFieldUserID().setEnabled(false);
