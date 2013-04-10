@@ -34872,7 +34872,7 @@
             <i__columnName>AcctThermostatScheduleId</i__columnName>
             <i__foreignColumnName>AcctThermostatScheduleId</i__foreignColumnName>
             <i__foreignTableName>AcctThermostatSchedule</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
+            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
