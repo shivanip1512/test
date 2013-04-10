@@ -161,7 +161,7 @@
             driver="oracle.jdbc.OracleDriver"
             url="jdbc:oracle:thin:@${dbOracleServer}:${dbOracleServerPort}:${dbOracleServerAlias}"
             userid="sys as sysdba"
-            password="cannontech123">
+            password="cti">
             <classpath>
                 <pathelement location="../yukon-client/third-party/ojdbc6.jar"/>
             </classpath>
