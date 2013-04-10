@@ -151,7 +151,7 @@
             <arg value="${svn.repo.dbSnapshot}"/>
             <arg value="${dbSnapshotTempDir}" />
             <arg value="--username" />
-            <arg value=" ${svn.username}" />
+            <arg value="${svn.username}" />
             <arg value="--password" />
             <arg value="${svn.password}" />
         </exec>    	
