@@ -29,7 +29,7 @@
                             <tags:simpleInputType id="${prop.extra.yukonRoleProperty}" input="${prop.valueType}" path="${prop.path}"/>
                         </span>
                         <input type="hidden" value="${prop.extra.defaultValue}">
-                        <span class="focusedFieldDescription"><i:inline key="${prop.extra.description}"/> (${prop.extra.defaultValue})</span>
+                        <span class="focusedFieldDescription"><i:inline key="${prop.extra.description}"/>(${prop.extra.defaultValue})</span>
                         <form:errors path="${prop.path}" cssClass="errorMessage" element="div"/>
                     </td>
                 </tr>
