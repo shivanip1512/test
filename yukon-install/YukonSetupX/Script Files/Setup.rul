@@ -423,7 +423,7 @@ begin
     endif;
     Enable(BACKBUTTON);
 	
-	UpdateEsubRoleId():
+	UpdateEsubRoleId();
 
 	Dialog_StartServices:
 	//only give the option to start services if services were installed
