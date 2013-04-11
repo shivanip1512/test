@@ -27,7 +27,7 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 	private static final String ELEMENT_ID = "metaElement";
 	
 	private static final int CURRENT_VERSION = 2;
-	private static final int DEFAULT_ROLE_ID = -1;
+	public static final int DEFAULT_ROLE_ID = -206;
 	
 	private int drawingWidth;
 	private int drawingHeight;
