@@ -22,11 +22,31 @@ Command "{command}" was canceled before completion.
   </a>
 ]]></entry>
 
+<entry key="yukon.common.alerts.commandCompletion.canceled.noneSucceeded"><![CDATA[
+
+Command "{command}" was canceled before completion.
+<br>
+{notCompletedCount} commands did not complete. None of the commands that completed were successful.
+  <a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details">
+    <img src="/WebConfig/yukon/Icons/magnifier_zoom_in.gif" alt="detail" style="border-style: none; vertical-align:middle">
+  </a>
+]]></entry>
+
 <entry key="yukon.common.alerts.commandCompletion.failed"><![CDATA[
 
 Command "{command}" failed. Reason: {exceptionReason}
 <br>
 {notCompletedCount} commands did not complete. {percentSuccess|#0.0#}% of the {completedCount} commands that were completed succeeded.
+  <a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details">
+    <img src="/WebConfig/yukon/Icons/magnifier_zoom_in.gif" alt="detail" style="border-style: none; vertical-align:middle">
+  </a>
+]]></entry>
+
+<entry key="yukon.common.alerts.commandCompletion.failed.noneSucceeded"><![CDATA[
+
+Command "{command}" failed. Reason: {exceptionReason}
+<br>
+{notCompletedCount} commands did not complete. None of the commands that completed were successful.
   <a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details">
     <img src="/WebConfig/yukon/Icons/magnifier_zoom_in.gif" alt="detail" style="border-style: none; vertical-align:middle">
   </a>

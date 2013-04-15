@@ -177,7 +177,7 @@ public class GroupMeterReadController extends MultiActionController {
             	int completedCount = failureCount + successCount;
                 
                 resolvableTemplate.addData("completedCount", completedCount);
-                resolvableTemplate.addData("percentSuccess", (float)successCount *100 / completedCount);
+                resolvableTemplate.addData("percentSuccess", completedCount > 0 ? ((float) successCount * 100 / completedCount) : 0);
                 resolvableTemplate.addData("attributesDescription", resultWrapper.getAttributesDescription(userContext, objectFormattingService));
                 resolvableTemplate.addData("resultKey", result.getKey());
                 
