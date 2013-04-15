@@ -29,6 +29,7 @@ import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -110,7 +111,8 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 		
 		//Store device list in a device group so that it can persist when the server is shut down.
 		//(JobProperty table is not practical for storing a large list of devices)
-		StoredDeviceGroup group = deviceGroupEditorDao.addGroup(deviceGroupEditorDao.getRootGroup(), DeviceGroupType.STATIC, uniqueIdentifier, DeviceGroupPermission.HIDDEN);
+		StoredDeviceGroup parent = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.AUTO);
+		StoredDeviceGroup group = deviceGroupEditorDao.addGroup(parent, DeviceGroupType.STATIC, uniqueIdentifier, DeviceGroupPermission.HIDDEN);
 		deviceGroupMemberEditorDao.addDevices(group, deviceList);
 	}
 	
@@ -136,7 +138,8 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 	public void setUniqueIdentifier(String uniqueIdentifier) {
 		this.uniqueIdentifier = uniqueIdentifier;
 		//Pull out devices from group
-		StoredDeviceGroup group = deviceGroupEditorDao.getGroupByName(deviceGroupEditorDao.getRootGroup(), uniqueIdentifier);
+		StoredDeviceGroup parent = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.AUTO);
+		StoredDeviceGroup group = deviceGroupEditorDao.getGroupByName(parent, uniqueIdentifier);
 		deviceList = deviceGroupMemberEditorDao.getChildDevices(group);
 	}
 
@@ -233,6 +236,7 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 	}
 	
 	public DeviceGroup getDeviceGroup() {
-		return deviceGroupEditorDao.getGroupByName(deviceGroupEditorDao.getRootGroup(), uniqueIdentifier);
+	    StoredDeviceGroup parent = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.AUTO);
+		return deviceGroupEditorDao.getGroupByName(parent, uniqueIdentifier);
 	}
 }

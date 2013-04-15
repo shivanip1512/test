@@ -18,6 +18,7 @@ public enum SystemGroupEnum {
     ROUTES("/System/Routes/"),
     SCANNINGMETERS("/System/Meters/Scanning/"),
     TEMPORARYGROUPS("/System/Temporary/"),
+    AUTO("/System/Auto/"),
     SYSTEMMETERS("/System/Meters/"),
     SYSTEMMETERSDISABLED("/System/Meters/Disabled/"),
     DEVICETAGS("/System/Device Tags/"),
