@@ -125,20 +125,20 @@
                             <cti:formatDate value="${optOut.startDate}" type="DATEHM"/>
                         </td>
                         <td valign="top">
-                            <cti:img nameKey="cancelOptOut" id="cancel${optOut.inventory.inventoryId}" styleClass="hoverableImage pointer"/>
+                            <cti:img nameKey="cancelOptOut" id="cancel${optOut.eventId}" styleClass="hoverableImage pointer"/>
                             <form action="/stars/operator/program/optOut/cancelOptOut" class="di">
                                 <input type="hidden" name="accountId" value="${accountId}"/>
                                 <input type="hidden" name="eventId" value="${optOut.eventId}"/>
-                                <tags:confirmDialog on="#cancel${optOut.inventory.inventoryId}" nameKey=".confirmCancelOptOut" argument="${optOut.inventory.displayName}"/>
+                                <tags:confirmDialog on="#cancel${optOut.eventId}" nameKey=".confirmCancelOptOut" argument="${optOut.inventory.displayName}"/>
                             </form>
                             
                             <c:choose>
                                 <c:when test="${optOut.state == 'START_OPT_OUT_SENT'}">
-                                    <cti:img nameKey="resendOptOut" id="resend${optOut.inventory.inventoryId}" styleClass="hoverableImage pointer"/>
+                                    <cti:img nameKey="resendOptOut" id="resend${optOut.eventId}" styleClass="hoverableImage pointer"/>
                                     <form action="/stars/operator/program/optOut/resend" class="di">
                                         <input type="hidden" name="accountId" value="${accountId}"/>
                                         <input type="hidden" name="inventoryId" value="${optOut.inventory.inventoryId}"/>
-                                        <tags:confirmDialog on="#resend${optOut.inventory.inventoryId}" nameKey=".confirmResendOptOut" argument="${optOut.inventory.displayName}"/>
+                                        <tags:confirmDialog on="#resend${optOut.eventId}" nameKey=".confirmResendOptOut" argument="${optOut.inventory.displayName}"/>
                                     </form>
                                 </c:when>
                                 <c:otherwise>
