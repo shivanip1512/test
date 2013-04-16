@@ -1,6 +1,8 @@
 #include <boost/test/unit_test.hpp>
 
 #include "dev_mct410.h"
+#include "dev_ccu.h"
+#include "rte_ccu.h"
 #include "pt_analog.h"
 #include "pt_accum.h"
 #include "pt_status.h"
@@ -15,13 +17,36 @@ using std::string;
 using std::list;
 using std::vector;
 
+struct test_CtiDeviceCCU : CtiDeviceCCU
+{
+    test_CtiDeviceCCU()
+    {
+        _paObjectID = 12345;
+    }
+};
+
+struct test_CtiRouteCCU : CtiRouteCCU
+{
+    CtiDeviceSPtr ccu;
+
+    test_CtiRouteCCU() : ccu(new test_CtiDeviceCCU)
+    {
+        _tblPAO.setID(1234);
+        setDevicePointer(ccu);
+    }
+};
+
 struct test_Mct410Device : Cti::Devices::Mct410Device
 {
 protected:
-    test_Mct410Device(int type, const string &name)
+    CtiRouteSPtr rte;
+
+    test_Mct410Device(int type, const string &name) :
+        rte(new test_CtiRouteCCU)
     {
         setType(type);
         _name = name;
+        _paObjectID = 123456;
     }
 
 public:
@@ -31,6 +56,7 @@ public:
     using MctDevice::ReadDescriptor;
     using MctDevice::value_locator;
     using MctDevice::getDescriptorForRead;
+    using MctDevice::ResultDecode;
 
     using Mct4xxDevice::getUsageReportDelay;
 
@@ -123,6 +149,11 @@ public:
         }
 
         return point;
+    }
+
+    virtual CtiRouteSPtr getRoute() const
+    {
+        return rte;
     }
 };
 
@@ -401,31 +432,146 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_extractDynamicPaoInfo)
 }
 
 
-struct command_execution_environment
+struct executeRequest_helper
 {
-    test_Mct410IconDevice    mct410;
+    test_Mct410IconDevice mct410;
 
-    CtiRequestMsg           request;
-    OUTMESS                *om;
-    list<CtiMessage*>       vgList, retList;
-    list<OUTMESS*>          outList;
+    test_Mct410Device::CtiMessageList vgList, retList;
+    test_Mct410Device::OutMessageList outList;
 
-    command_execution_environment()
-    {
-        om = new OUTMESS;
-    }
-
-    ~command_execution_environment()
+    ~executeRequest_helper()
     {
         delete_container(vgList);
         delete_container(retList);
         delete_container(outList);
-
-        delete om;
     }
 };
 
-BOOST_FIXTURE_TEST_SUITE(command_executions, command_execution_environment)
+BOOST_FIXTURE_TEST_SUITE(requests, executeRequest_helper)
+//{  Brace matching for BOOST_FIXTURE_TEST_SUITE
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct_control_connect_execute)
+    {
+        CtiRequestMsg    req( -1, "control connect" );
+        CtiCommandParser parse( req.CommandString() );
+
+        //mct410.setDisconnectAddress(123);  //  unnecessary for "control connect"...  bug?
+
+        BOOST_CHECK_EQUAL( NoError , mct410.beginExecuteRequest(&req, parse, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL(  1, outList.size() );
+
+        OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE( om );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 76 );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       0 );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   0 );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct_control_connect_decode)
+    {
+        CtiTime timeNow(CtiDate(1, 1, 2010), 1, 2, 3);
+
+        INMESS im;
+
+        im.Sequence = EmetconProtocol::Control_Connect;
+        im.Buffer.DSt.Length = 0;
+        im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+
+        strcpy(im.Return.CommandStr, "control connect");
+
+        BOOST_CHECK_EQUAL( NoError, mct410.ResultDecode(&im, timeNow, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( 1, retList.size() );
+        BOOST_REQUIRE_EQUAL( 1, outList.size() );
+
+        CtiReturnMsg *ret = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE( ret );
+        BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+        BOOST_CHECK_EQUAL( ret->Status(),   0 );
+        BOOST_CHECK_EQUAL( ret->CommandString(), "control connect" );
+        BOOST_CHECK_EQUAL( ret->ResultString(),  "Test MCT-410iL / control sent" );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE( om );
+        BOOST_CHECK_EQUAL( om->DeviceID, 123456 );
+        BOOST_CHECK_EQUAL( om->Request.CommandStr, "getstatus disconnect" );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct_control_disconnect)
+    {
+        CtiRequestMsg    req( -1, "control disconnect" );
+        CtiCommandParser parse( req.CommandString() );
+
+        mct410.setDisconnectAddress(123);
+
+        BOOST_CHECK_EQUAL( NoError, mct410.beginExecuteRequest(&req, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( retList.empty() );
+        BOOST_REQUIRE_EQUAL( 1, outList.size() );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE( om );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 77 );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       0 );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   0 );
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct_control_disconnect_decode)
+    {
+        CtiTime timeNow(CtiDate(1, 1, 2010), 1, 2, 3);
+
+        INMESS im;
+
+        im.Sequence = EmetconProtocol::Control_Disconnect;
+        im.Buffer.DSt.Length = 0;
+        im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+
+        strcpy(im.Return.CommandStr, "control disconnect");
+
+        BOOST_CHECK_EQUAL( NoError, mct410.ResultDecode(&im, timeNow, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( 1, retList.size() );
+        BOOST_REQUIRE_EQUAL( 1, outList.size() );
+
+        CtiReturnMsg *ret = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE( ret );
+        BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+        BOOST_CHECK_EQUAL( ret->Status(),   0 );
+        BOOST_CHECK_EQUAL( ret->CommandString(), "control disconnect" );
+        BOOST_CHECK_EQUAL( ret->ResultString(),  "Test MCT-410iL / control sent" );
+
+        OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE( om );
+        BOOST_CHECK_EQUAL( om->DeviceID, 123456 );
+        BOOST_CHECK_EQUAL( om->Request.CommandStr, "getstatus disconnect" );
+    }
+//}  Brace matching for BOOST_FIXTURE_TEST_SUITE
+BOOST_AUTO_TEST_SUITE_END()
+
+
+struct mctExecute_helper : executeRequest_helper
+{
+    CtiRequestMsg request;
+    OUTMESS *om;
+    std::auto_ptr<OUTMESS> ptr;
+
+    mctExecute_helper() :
+        ptr(new OUTMESS)
+    {
+        om = ptr.get();
+    }
+};
+
+BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 //{  Brace matching for BOOST_FIXTURE_TEST_SUITE
     /*
     *** TESTING: "putconfig emetcon centron...." commands and parameters
@@ -1632,7 +1778,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, command_execution_environment)
 BOOST_AUTO_TEST_SUITE_END()
 
 
-struct single_error_validator : command_execution_environment
+struct single_error_validator : mctExecute_helper
 {
     ~single_error_validator()
     {

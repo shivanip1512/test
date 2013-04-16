@@ -110,7 +110,7 @@ public:
     CtiDeviceBase& operator=(const CtiDeviceBase& aRef);
     bool operator<(const CtiDeviceBase& rhs) const;
 
-    CtiRouteSPtr         getRoute(LONG RteId) const;
+    virtual CtiRouteSPtr getRoute(LONG RteId) const;  //  virtual for unit tests
     CtiRouteManager*     getRouteManager() const;
     CtiDeviceBase&       setRouteManager(CtiRouteManager* aPtr);
 

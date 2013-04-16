@@ -1,16 +1,52 @@
 #include <boost/test/unit_test.hpp>
 
 #include "dev_mct.h"
+#include "dev_ccu.h"
+#include "rte_ccu.h"
 #include "ctidate.h"
 
 using namespace Cti::Protocols;
 
 BOOST_AUTO_TEST_SUITE( test_dev_mct )
 
+
+struct test_CtiDeviceCCU : CtiDeviceCCU
+{
+    test_CtiDeviceCCU()
+    {
+        _paObjectID = 12345;
+    }
+};
+
+struct test_CtiRouteCCU : CtiRouteCCU
+{
+    CtiDeviceSPtr ccu;
+
+    test_CtiRouteCCU() : ccu(new test_CtiDeviceCCU)
+    {
+        _tblPAO.setID(1234);
+        setDevicePointer(ccu);
+    }
+};
+
 struct test_MctDevice : Cti::Devices::MctDevice
 {
     using MctDevice::findLastScheduledFreeze;
     using MctDevice::getOperation;
+    using MctDevice::ResultDecode;
+
+    CtiRouteSPtr rte;
+
+    test_MctDevice() : rte(new test_CtiRouteCCU)
+    {
+        _name = "Test MCT device";
+        _paObjectID = 123456;
+    }
+
+    virtual CtiRouteSPtr getRoute() const
+    {
+        return rte;
+    }
 };
 
 struct freeze_day_check
@@ -950,6 +986,133 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
         BOOST_CHECK_EQUAL(BSt.IO, EmetconProtocol::IO_Read);
         BOOST_CHECK_EQUAL(BSt.Function, 0x49);
         BOOST_CHECK_EQUAL(BSt.Length,   5);
+    }
+//}  Brace matching for BOOST_FIXTURE_TEST_SUITE
+BOOST_AUTO_TEST_SUITE_END()
+
+struct executeRequest_helper
+{
+    test_MctDevice mct;
+
+    test_MctDevice::CtiMessageList vgList, retList;
+    test_MctDevice::OutMessageList outList;
+
+    ~executeRequest_helper()
+    {
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+    }
+};
+
+BOOST_FIXTURE_TEST_SUITE(control_connect, executeRequest_helper)
+//{  Brace matching for BOOST_FIXTURE_TEST_SUITE
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct_control_connect_execute)
+    {
+        CtiRequestMsg    req( -1, "control connect" );
+        CtiCommandParser parse( req.CommandString() );
+
+        BOOST_CHECK_EQUAL( NoError , mct.beginExecuteRequest(&req, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( retList.empty() );
+        BOOST_REQUIRE_EQUAL( 1, outList.size() );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE( om );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 66 );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       32 );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   0 );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct_control_connect_decode)
+    {
+        CtiTime timeNow(CtiDate(1, 1, 2010), 1, 2, 3);
+
+        INMESS im;
+
+        im.Sequence = EmetconProtocol::Control_Connect;
+        im.Buffer.DSt.Length = 0;
+        im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+
+        strcpy(im.Return.CommandStr, "control connect");
+
+        BOOST_CHECK_EQUAL( NoError , mct.ResultDecode(&im, timeNow, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( 2, retList.size() );
+        BOOST_CHECK( outList.empty() );
+
+        CtiReturnMsg *ret1 = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE( ret1 );
+        BOOST_CHECK_EQUAL( ret1->DeviceId(), 123456 );
+        BOOST_CHECK_EQUAL( ret1->Status(),   0 );
+        BOOST_CHECK_EQUAL( ret1->CommandString(), "control connect" );
+        BOOST_CHECK_EQUAL( ret1->ResultString(),  "Test MCT device / control sent" );
+
+        CtiReturnMsg *ret2 = dynamic_cast<CtiReturnMsg *>(retList.back());
+
+        BOOST_REQUIRE( ret2 );
+        BOOST_CHECK_EQUAL( ret2->DeviceId(), 123456 );
+        BOOST_CHECK_EQUAL( ret2->Status(),   202 );
+        BOOST_CHECK_EQUAL( ret2->CommandString(), "getstatus disconnect" );
+        BOOST_CHECK_EQUAL( ret2->ResultString(),  "NoMethod or invalid command." );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct_control_disconnect)
+    {
+        CtiRequestMsg    req( -1, "control disconnect" );
+        CtiCommandParser parse( req.CommandString() );
+
+        BOOST_CHECK_EQUAL( NoError , mct.beginExecuteRequest(&req, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( retList.empty() );
+        BOOST_REQUIRE_EQUAL( 1, outList.size() );
+
+        OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE( om );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 65 );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       32 );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   0 );
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct_control_disconnect_decode)
+    {
+        CtiTime timeNow(CtiDate(1, 1, 2010), 1, 2, 3);
+
+        INMESS im;
+
+        im.Sequence = EmetconProtocol::Control_Disconnect;
+        im.Buffer.DSt.Length = 0;
+        im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+
+        strcpy(im.Return.CommandStr, "control disconnect");
+
+        BOOST_CHECK_EQUAL( NoError , mct.ResultDecode(&im, timeNow, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( 2, retList.size() );
+        BOOST_CHECK( outList.empty() );
+
+        CtiReturnMsg *ret1 = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE( ret1 );
+        BOOST_CHECK_EQUAL( ret1->DeviceId(), 123456 );
+        BOOST_CHECK_EQUAL( ret1->Status(),   0 );
+        BOOST_CHECK_EQUAL( ret1->CommandString(), "control disconnect" );
+        BOOST_CHECK_EQUAL( ret1->ResultString(),  "Test MCT device / control sent" );
+
+        CtiReturnMsg *ret2 = dynamic_cast<CtiReturnMsg *>(retList.back());
+
+        BOOST_REQUIRE( ret2 );
+        BOOST_CHECK_EQUAL( ret2->DeviceId(), 123456 );
+        BOOST_CHECK_EQUAL( ret2->Status(),   202 );
+        BOOST_CHECK_EQUAL( ret2->CommandString(), "getstatus disconnect" );
+        BOOST_CHECK_EQUAL( ret2->ResultString(),  "NoMethod or invalid command." );
     }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()

@@ -22,6 +22,7 @@ struct test_Mct420Device : Cti::Devices::Mct420Device
     {
         setType(type);
         _name = name;
+        _paObjectID = 123456;
     }
 
     using CtiTblPAOLite::_type;
@@ -30,6 +31,7 @@ struct test_Mct420Device : Cti::Devices::Mct420Device
     using MctDevice::ReadDescriptor;
     using MctDevice::value_locator;
     using MctDevice::getDescriptorForRead;
+    using MctDevice::ResultDecode;
 
     using Mct4xxDevice::getUsageReportDelay;
 
@@ -558,6 +560,291 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xf3 );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   2 );
     }
+//}  Brace matching for BOOST_FIXTURE_TEST_SUITE
+BOOST_AUTO_TEST_SUITE_END()
+
+struct control_helper : beginExecuteRequest_helper
+{
+    void executeControlConnect_expectSuccess(test_Mct420Device &dev)
+    {
+        CtiRequestMsg    req( -1, "control connect" );
+        CtiCommandParser parse( req.CommandString() );
+
+        BOOST_CHECK_EQUAL( 0, dev.beginExecuteRequest(&req, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( retList.empty() );
+        BOOST_CHECK( vgList .empty() );
+        BOOST_REQUIRE_EQUAL( 1, outList.size() );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE( om );
+        BOOST_CHECK_EQUAL( om->DeviceID, 123456 );
+        //BOOST_CHECK_EQUAL( om->MessageFlags, 80 );  //  Must be checked separately for the integrated disconnect vs. collar disconnect meters
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 76 );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       0 );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   0 );
+        BOOST_CHECK_EQUAL( om->Request.CommandStr,  "control connect" );
+    }
+    void decodeControlConnect_expectSuccess(test_Mct420Device &dev)
+    {
+        CtiTime timeNow(CtiDate(1, 1, 2010), 1, 2, 3);
+
+        INMESS im;
+
+        im.Sequence = EmetconProtocol::Control_Disconnect;
+        im.Buffer.DSt.Length = 0;
+        im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+
+        strcpy(im.Return.CommandStr, "control disconnect");
+
+        BOOST_CHECK_EQUAL( NoError, dev.ResultDecode(&im, timeNow, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL( 1, retList.size() );
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( 1, outList.size() );
+
+        const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE( ret );
+        BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+        BOOST_CHECK_EQUAL( ret->Status(),   0 );
+        BOOST_CHECK_EQUAL( ret->CommandString(), "control disconnect" );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE( om );
+        BOOST_CHECK_EQUAL( om->DeviceID,     123456 );
+        BOOST_CHECK_EQUAL( om->MessageFlags, 0 );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 254 );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       3 );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1 );
+        BOOST_CHECK_EQUAL( om->Request.CommandStr, "getstatus disconnect" );
+    }
+    void executeControlConnect_expectNoMethod(test_Mct420Device &dev)
+    {
+        CtiRequestMsg    req( -1, "control connect" );
+        CtiCommandParser parse( req.CommandString() );
+
+        BOOST_CHECK_EQUAL( 202, dev.beginExecuteRequest(&req, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList .empty() );
+        BOOST_REQUIRE_EQUAL( 1, retList.size() );
+        BOOST_CHECK( outList.empty() );
+
+        const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retList.back());
+
+        BOOST_REQUIRE( ret );
+        BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+        BOOST_CHECK_EQUAL( ret->Status(),   202 );
+        BOOST_CHECK_EQUAL( ret->CommandString(), "control connect" );
+        BOOST_CHECK_EQUAL( ret->ResultString(),  "NoMethod or invalid command." );
+    }
+    void executeControlDisconnect_expectSuccess(test_Mct420Device &dev)
+    {
+        CtiRequestMsg    req( -1, "control disconnect" );
+        CtiCommandParser parse( req.CommandString() );
+
+        BOOST_CHECK_EQUAL( 0, dev.beginExecuteRequest(&req, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList .empty() );
+        BOOST_CHECK( retList.empty() );
+        BOOST_REQUIRE_EQUAL( 1, outList.size() );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE( om );
+        BOOST_CHECK_EQUAL( om->DeviceID, 123456 );
+        //BOOST_CHECK_EQUAL( om->MessageFlags, 80 );  //  Must be checked separately for the integrated disconnect vs. collar disconnect meters
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 77 );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       0 );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   0 );
+        BOOST_CHECK_EQUAL( om->Request.CommandStr, "control disconnect" );
+    }
+    void decodeControlDisconnect_expectSuccess(test_Mct420Device &dev)
+    {
+        CtiTime timeNow(CtiDate(1, 1, 2010), 1, 2, 3);
+
+        INMESS im;
+
+        im.Sequence = EmetconProtocol::Control_Disconnect;
+        im.Buffer.DSt.Length = 0;
+        im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+
+        strcpy(im.Return.CommandStr, "control disconnect");
+
+        BOOST_CHECK_EQUAL( NoError, dev.ResultDecode(&im, timeNow, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL( 1, retList.size() );
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( 1, outList.size() );
+
+        const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE( ret );
+        BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+        BOOST_CHECK_EQUAL( ret->Status(),   0 );
+        BOOST_CHECK_EQUAL( ret->CommandString(), "control disconnect" );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE( om );
+        BOOST_CHECK_EQUAL( om->DeviceID,      123456 );
+        BOOST_CHECK_EQUAL( om->MessageFlags,  0 );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 254 );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       3 );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1 );
+        BOOST_CHECK_EQUAL( om->Request.CommandStr, "getstatus disconnect" );
+    }
+    void executeControlDisconnect_expectNoMethod(test_Mct420Device &dev)
+    {
+        CtiRequestMsg    req( -1, "control disconnect" );
+        CtiCommandParser parse( req.CommandString() );
+
+        BOOST_CHECK_EQUAL( 202, dev.beginExecuteRequest(&req, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList .empty() );
+        BOOST_REQUIRE_EQUAL( 1, retList.size() );
+        BOOST_CHECK( outList.empty() );
+
+        const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retList.back());
+
+        BOOST_REQUIRE( ret );
+        BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+        BOOST_CHECK_EQUAL( ret->Status(),   202 );
+        BOOST_CHECK_EQUAL( ret->CommandString(), "control disconnect" );
+        BOOST_CHECK_EQUAL( ret->ResultString(),  "NoMethod or invalid command." );
+    }
+};
+
+BOOST_FIXTURE_TEST_SUITE(control_commands, control_helper)
+//{  Brace matching for BOOST_FIXTURE_TEST_SUITE
+
+    //  MCT-420 CD
+    BOOST_AUTO_TEST_CASE(test_dev_mct420cd_control_connect_execute)
+    {
+        executeControlConnect_expectSuccess(test_Mct420CD());
+
+        //  confirm the message flags are not set for the MCT collar disconnect silence
+        BOOST_CHECK_EQUAL( 16, outList.front()->MessageFlags );
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct420cd_control_connect_decode)
+    {
+        decodeControlConnect_expectSuccess(test_Mct420CD());
+
+        BOOST_CHECK_EQUAL( dynamic_cast<CtiReturnMsg *>(retList.front())->ResultString(),
+                                 "Test MCT-420CD / control sent");
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct420cd_control_disconnect_execute)
+    {
+        executeControlDisconnect_expectSuccess(test_Mct420CD());
+
+        //  confirm the message flags are not set for the MCT collar disconnect silence
+        BOOST_CHECK_EQUAL( 16, outList.front()->MessageFlags );
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct420cd_control_disconnect_decode)
+    {
+        decodeControlDisconnect_expectSuccess(test_Mct420CD());
+
+        BOOST_CHECK_EQUAL( dynamic_cast<CtiReturnMsg *>(retList.front())->ResultString(),
+                                 "Test MCT-420CD / control sent");
+    }
+
+    //  MCT-420 CL
+    BOOST_AUTO_TEST_CASE(test_dev_mct420cl_control_connect_execute)
+    {
+        executeControlConnect_expectNoMethod(test_Mct420CL());
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct420cl_control_disconnect_execute)
+    {
+        executeControlDisconnect_expectNoMethod(test_Mct420CL());
+    }
+
+    //  MCT-420 FD
+    BOOST_AUTO_TEST_CASE(test_dev_mct420fd_control_connect_execute)
+    {
+        executeControlConnect_expectSuccess(test_Mct420FD());
+
+        //  confirm the message flags are not set for the MCT collar disconnect silence
+        BOOST_CHECK_EQUAL( 16, outList.front()->MessageFlags );
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct420fd_control_connect_decode)
+    {
+        decodeControlConnect_expectSuccess(test_Mct420FD());
+
+        BOOST_CHECK_EQUAL( dynamic_cast<CtiReturnMsg *>(retList.front())->ResultString(),
+                               "Test MCT-420FD / control sent");
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct420fd_control_disconnect_execute)
+    {
+        executeControlDisconnect_expectSuccess(test_Mct420FD());
+
+        //  confirm the message flags are not set for the MCT collar disconnect silence
+        BOOST_CHECK_EQUAL( 16, outList.front()->MessageFlags );
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct420fd_control_disconnect_decode)
+    {
+        decodeControlDisconnect_expectSuccess(test_Mct420FD());
+
+        BOOST_CHECK_EQUAL( dynamic_cast<CtiReturnMsg *>(retList.front())->ResultString(),
+                               "Test MCT-420FD / control sent");
+    }
+
+    //  MCT-420 FL
+    BOOST_AUTO_TEST_CASE(test_dev_mct420fl_control_connect_execute)
+    {
+        //  This is an error - we should be failing, since we have no address.
+        executeControlConnect_expectSuccess(test_Mct420FL());
+
+        //  confirm the message flags are set for the MCT collar disconnect silence
+        BOOST_CHECK_EQUAL( 80, outList.front()->MessageFlags );
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct420fl_control_connect_decode)
+    {
+        decodeControlConnect_expectSuccess(test_Mct420FL());
+
+        BOOST_CHECK_EQUAL( dynamic_cast<CtiReturnMsg *>(retList.front())->ResultString(),
+                                 "Test MCT-420FL / control sent");
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct420fl_control_disconnect_execute_no_address)
+    {
+        CtiRequestMsg    req( -1, "control disconnect" );
+        CtiCommandParser parse( req.CommandString() );
+
+        BOOST_CHECK_EQUAL( 0, test_Mct420FL().beginExecuteRequest(&req, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList .empty() );
+        BOOST_REQUIRE_EQUAL(  1, retList.size() );
+        BOOST_CHECK( outList.empty() );
+
+        const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE( ret );
+
+        BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+        BOOST_CHECK_EQUAL( ret->Status(),   276 );
+        BOOST_CHECK_EQUAL( ret->CommandString(), "control disconnect" );
+        BOOST_CHECK_EQUAL( ret->ResultString(),  "Test MCT-420FL / Disconnect command cannot be sent to an empty (zero) address" );
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct420fl_control_disconnect_execute_with_address)
+    {
+        test_Mct420FL mct420fl;
+
+        mct420fl.setDisconnectAddress(123);
+
+        executeControlDisconnect_expectSuccess(mct420fl);
+
+        //  confirm the message flags are set for the MCT collar disconnect silence
+        BOOST_CHECK_EQUAL( 80, outList.front()->MessageFlags );
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct420fl_control_disconnect_decode)
+    {
+        decodeControlDisconnect_expectSuccess(test_Mct420FL());
+
+        BOOST_CHECK_EQUAL( dynamic_cast<CtiReturnMsg *>(retList.front())->ResultString(),
+                                 "Test MCT-420FL / control sent");
+    }
+
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
 

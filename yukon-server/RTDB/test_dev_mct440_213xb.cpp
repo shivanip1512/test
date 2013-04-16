@@ -22,6 +22,7 @@ struct test_Mct440_213xBDevice : Cti::Devices::Mct440_213xBDevice
     {
         // setType(type);
         _name = name;
+        _paObjectID = 123456;
     }
 
     using CtiTblPAOLite::_type;
@@ -31,6 +32,7 @@ struct test_Mct440_213xBDevice : Cti::Devices::Mct440_213xBDevice
     using MctDevice::value_locator;
     using MctDevice::getDescriptorForRead;
     using MctDevice::updateFreezeInfo;
+    using MctDevice::ResultDecode;
 
     using Mct4xxDevice::getUsageReportDelay;
 
@@ -1556,6 +1558,115 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
                 }
             }
         }
+    }
+//}  Brace matching for BOOST_FIXTURE_TEST_SUITE
+BOOST_AUTO_TEST_SUITE_END()
+
+
+BOOST_FIXTURE_TEST_SUITE(requests, beginExecuteRequest_helper)
+//{  Brace matching for BOOST_FIXTURE_TEST_SUITE
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct_control_connect_execute)
+    {
+        CtiRequestMsg    req( -1, "control connect" );
+        CtiCommandParser parse( req.CommandString() );
+
+        BOOST_CHECK_EQUAL( NoError , test_Mct440_213xB().beginExecuteRequest(&req, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( retList.empty() );
+        BOOST_REQUIRE_EQUAL( 1, outList.size() );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE    ( om );
+        BOOST_CHECK_EQUAL( 76, om->Buffer.BSt.Function );
+        BOOST_CHECK_EQUAL(  0, om->Buffer.BSt.IO );
+        BOOST_CHECK_EQUAL(  0, om->Buffer.BSt.Length );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct_control_connect_decode)
+    {
+        CtiTime timeNow(CtiDate(1, 1, 2010), 1, 2, 3);
+
+        INMESS im;
+
+        im.Sequence = EmetconProtocol::Control_Connect;
+        im.Buffer.DSt.Length = 0;
+        im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+
+        strcpy(im.Return.CommandStr, "control connect");
+
+        BOOST_CHECK_EQUAL( NoError , test_Mct440_213xB().ResultDecode(&im, timeNow, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( 1, retList.size() );
+        BOOST_REQUIRE_EQUAL( 1, outList.size() );
+
+        const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE( ret );
+        BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+        BOOST_CHECK_EQUAL( ret->Status(),   0 );
+        BOOST_CHECK_EQUAL( ret->CommandString(), "control connect" );
+        BOOST_CHECK_EQUAL( ret->ResultString(),  "Test MCT-440-213xB / control sent" );
+
+        OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE( om );
+        BOOST_CHECK_EQUAL( om->DeviceID, 123456 );
+        BOOST_CHECK_EQUAL( om->Request.CommandStr, "getstatus disconnect" );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct_control_disconnect_execute)
+    {
+        CtiRequestMsg    req( -1, "control disconnect" );
+        CtiCommandParser parse( req.CommandString() );
+
+        BOOST_CHECK_EQUAL( NoError , test_Mct440_213xB().beginExecuteRequest(&req, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( retList.empty() );
+        BOOST_REQUIRE_EQUAL( 1, outList.size() );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE( om );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 77 );
+        BOOST_CHECK_EQUAL(  0, om->Buffer.BSt.IO );
+        BOOST_CHECK_EQUAL(  0, om->Buffer.BSt.Length );
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct_control_disconnect_decode)
+    {
+        CtiTime timeNow(CtiDate(1, 1, 2010), 1, 2, 3);
+
+        INMESS im;
+
+        im.Sequence = EmetconProtocol::Control_Disconnect;
+        im.Buffer.DSt.Length = 0;
+        im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+
+        strcpy(im.Return.CommandStr, "control disconnect");
+
+        BOOST_CHECK_EQUAL( NoError , test_Mct440_213xB().ResultDecode(&im, timeNow, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( 1, retList.size() );
+        BOOST_REQUIRE_EQUAL( 1, outList.size() );
+
+        const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE( ret );
+        BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+        BOOST_CHECK_EQUAL( ret->Status(),   0 );
+        BOOST_CHECK_EQUAL( ret->CommandString(), "control disconnect" );
+        BOOST_CHECK_EQUAL( ret->ResultString(),  "Test MCT-440-213xB / control sent" );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE( om );
+        BOOST_CHECK_EQUAL( om->DeviceID, 123456 );
+        BOOST_CHECK_EQUAL( om->Request.CommandStr, "getstatus disconnect" );
     }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
