@@ -103,6 +103,8 @@ protected:
         Feature_OutageUnits
     };
 
+    virtual bool disconnectRequiresCollar() const;
+
     virtual bool isSupported(const Mct4xxDevice::Features f) const;
     virtual bool isSupported(const Mct410Device::Features f) const;
 
@@ -422,7 +424,7 @@ protected:
     static std::string decodeDisconnectDemandLimitConfig(const boost::optional<int> config_byte, double demand_threshold);
     static std::string decodeDisconnectCyclingConfig    (const boost::optional<int> config_byte, const int disconnect_minutes, const int connect_minutes);
 
-    virtual std::string decodeDisconnectStatus(const DSTRUCT &DSt);
+    virtual std::string decodeDisconnectStatus(const DSTRUCT &DSt) const;
 
     virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, OutMessageList &outList );
     virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );

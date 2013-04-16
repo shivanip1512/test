@@ -3633,7 +3633,7 @@ INT Mct440_213xBDevice::decodeGetConfigDisconnect(INMESS         *InMessage,
 * Note(s)     :
 *********************************************************************************************************
 */
-string Mct440_213xBDevice::decodeDisconnectStatus(const DSTRUCT &DSt)
+string Mct440_213xBDevice::decodeDisconnectStatus(const DSTRUCT &DSt) const
 {
     string resultStr;
 
@@ -3648,6 +3648,12 @@ string Mct440_213xBDevice::decodeDisconnectStatus(const DSTRUCT &DSt)
     }
 
     return resultStr;
+}
+
+
+unsigned Mct440_213xBDevice::getDisconnectReadDelay() const
+{
+    return 10;
 }
 
 

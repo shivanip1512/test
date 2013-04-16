@@ -44,7 +44,7 @@ protected:
 
     virtual DlcCommandSPtr makeHourlyReadCommand(const CtiDate date_begin, const CtiDate date_end, const unsigned channel) const;
 
-    virtual std::string decodeDisconnectStatus(const DSTRUCT &DSt);
+    virtual std::string decodeDisconnectStatus(const DSTRUCT &DSt) const;
 
     virtual int decodeGetConfigMeterParameters  ( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     virtual int decodeGetConfigModel            ( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );

@@ -5,6 +5,7 @@
 #include "config_data_mct.h"
 
 #include "dev_mct420_commands.h"
+#include "devicetypes.h"
 
 #include <boost/assign/list_of.hpp>
 
@@ -191,6 +192,17 @@ const Mct420Device::ReadDescriptor Mct420Device::getDescriptorForRead(const unsi
 
 bool Mct420Device::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
+    if( getType() == TYPEMCT420CL )
+    {
+        switch( cmd )
+        {
+            //  The MCT-420CL does not support the disconnect collar
+            case EmetconProtocol::Control_Connect:
+            case EmetconProtocol::Control_Disconnect:
+                return false;
+        }
+    }
+
     if( getOperationFromStore(_commandStore, cmd, bst) )
     {
         return true;
@@ -740,7 +752,7 @@ int Mct420Device::decodePutConfigChannel2NetMetering( INMESS *InMessage, CtiTime
 }
 
 
-string Mct420Device::decodeDisconnectStatus(const DSTRUCT &DSt)
+string Mct420Device::decodeDisconnectStatus(const DSTRUCT &DSt) const
 {
     string resultStr;
 
@@ -997,10 +1009,6 @@ bool Mct420Device::isSupported(const Mct420Device::Features feature) const
     return false;
 }
 
-
-//  I wanted to keep devicetypes.h away from everything else...
-//    In The Year 2000, we shouldn't have to compare against types, but that's where we're at right now
-#include "devicetypes.h"
 
 bool Mct420Device::isSupported(const Mct410Device::Features feature) const
 {

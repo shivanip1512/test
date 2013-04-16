@@ -157,8 +157,9 @@ protected:
     virtual int executePutConfigTimezone           (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly);
     virtual int executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly);
 
-    virtual long   resolveScheduleName             (const string & scheduleName);
-    virtual string decodeDisconnectStatus          (const DSTRUCT &DSt);
+    virtual long     resolveScheduleName           (const string & scheduleName);
+    virtual string   decodeDisconnectStatus        (const DSTRUCT &DSt) const;
+    virtual unsigned getDisconnectReadDelay        () const;
 
     virtual void createTOUDayScheduleString        (string &schedule, long (&times)[9], long (&rates)[10]);
     virtual void parseTOUDayScheduleString         (string &schedule, long (&times)[9], long (&rates)[10]);

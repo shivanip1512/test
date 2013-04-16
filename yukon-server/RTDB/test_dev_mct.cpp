@@ -1045,21 +1045,58 @@ BOOST_FIXTURE_TEST_SUITE(control_connect, executeRequest_helper)
         BOOST_REQUIRE_EQUAL( 2, retList.size() );
         BOOST_CHECK( outList.empty() );
 
-        CtiReturnMsg *ret1 = dynamic_cast<CtiReturnMsg *>(retList.front());
+        const std::vector<const CtiMessage *> retMsgs(retList.begin(), retList.end());
 
-        BOOST_REQUIRE( ret1 );
-        BOOST_CHECK_EQUAL( ret1->DeviceId(), 123456 );
-        BOOST_CHECK_EQUAL( ret1->Status(),   0 );
-        BOOST_CHECK_EQUAL( ret1->CommandString(), "control connect" );
-        BOOST_CHECK_EQUAL( ret1->ResultString(),  "Test MCT device / control sent" );
+        const CtiRequestMsg *req = dynamic_cast<const CtiRequestMsg *>(retMsgs[0]);
 
-        CtiReturnMsg *ret2 = dynamic_cast<CtiReturnMsg *>(retList.back());
+        BOOST_REQUIRE( req );
+        BOOST_CHECK_EQUAL( req->DeviceId(), 123456 );
+        BOOST_CHECK_EQUAL( req->CommandString(), "getstatus disconnect" );
+        BOOST_CHECK_EQUAL( req->getMessageTime(), timeNow );
 
-        BOOST_REQUIRE( ret2 );
-        BOOST_CHECK_EQUAL( ret2->DeviceId(), 123456 );
-        BOOST_CHECK_EQUAL( ret2->Status(),   202 );
-        BOOST_CHECK_EQUAL( ret2->CommandString(), "getstatus disconnect" );
-        BOOST_CHECK_EQUAL( ret2->ResultString(),  "NoMethod or invalid command." );
+        const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retMsgs[1]);
+
+        BOOST_REQUIRE( ret );
+        BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+        BOOST_CHECK_EQUAL( ret->Status(),   0 );
+        BOOST_CHECK_EQUAL( ret->CommandString(), "control connect" );
+        BOOST_CHECK_EQUAL( ret->ResultString(),  "Test MCT device / control sent" );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct_control_connect_decode_noqueue)
+    {
+        CtiTime timeNow(CtiDate(1, 1, 2010), 1, 2, 3);
+
+        INMESS im;
+
+        im.Sequence = EmetconProtocol::Control_Connect;
+        im.Buffer.DSt.Length = 0;
+        im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+
+        strcpy(im.Return.CommandStr, "control connect noqueue");
+
+        BOOST_CHECK_EQUAL( NoError , mct.ResultDecode(&im, timeNow, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( 2, retList.size() );
+        BOOST_CHECK( outList.empty() );
+
+        const std::vector<const CtiMessage *> retMsgs(retList.begin(), retList.end());
+
+        const CtiRequestMsg *req = dynamic_cast<const CtiRequestMsg *>(retMsgs[0]);
+
+        BOOST_REQUIRE( req );
+        BOOST_CHECK_EQUAL( req->DeviceId(), 123456 );
+        BOOST_CHECK_EQUAL( req->CommandString(), "getstatus disconnect noqueue" );
+        BOOST_CHECK_EQUAL( req->getMessageTime(), timeNow );
+
+        const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retMsgs[1]);
+
+        BOOST_REQUIRE( ret );
+        BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+        BOOST_CHECK_EQUAL( ret->Status(),   0 );
+        BOOST_CHECK_EQUAL( ret->CommandString(), "control connect noqueue" );
+        BOOST_CHECK_EQUAL( ret->ResultString(),  "Test MCT device / control sent" );
     }
 
     BOOST_AUTO_TEST_CASE(test_dev_mct_control_disconnect)
@@ -1098,21 +1135,22 @@ BOOST_FIXTURE_TEST_SUITE(control_connect, executeRequest_helper)
         BOOST_REQUIRE_EQUAL( 2, retList.size() );
         BOOST_CHECK( outList.empty() );
 
-        CtiReturnMsg *ret1 = dynamic_cast<CtiReturnMsg *>(retList.front());
+        const std::vector<const CtiMessage *> retMsgs(retList.begin(), retList.end());
 
-        BOOST_REQUIRE( ret1 );
-        BOOST_CHECK_EQUAL( ret1->DeviceId(), 123456 );
-        BOOST_CHECK_EQUAL( ret1->Status(),   0 );
-        BOOST_CHECK_EQUAL( ret1->CommandString(), "control disconnect" );
-        BOOST_CHECK_EQUAL( ret1->ResultString(),  "Test MCT device / control sent" );
+        const CtiRequestMsg *req = dynamic_cast<const CtiRequestMsg *>(retMsgs[0]);
 
-        CtiReturnMsg *ret2 = dynamic_cast<CtiReturnMsg *>(retList.back());
+        BOOST_REQUIRE( req );
+        BOOST_CHECK_EQUAL( req->DeviceId(), 123456 );
+        BOOST_CHECK_EQUAL( req->CommandString(), "getstatus disconnect" );
+        BOOST_CHECK_EQUAL( req->getMessageTime(), timeNow );
 
-        BOOST_REQUIRE( ret2 );
-        BOOST_CHECK_EQUAL( ret2->DeviceId(), 123456 );
-        BOOST_CHECK_EQUAL( ret2->Status(),   202 );
-        BOOST_CHECK_EQUAL( ret2->CommandString(), "getstatus disconnect" );
-        BOOST_CHECK_EQUAL( ret2->ResultString(),  "NoMethod or invalid command." );
+        const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retMsgs[1]);
+
+        BOOST_REQUIRE( ret );
+        BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
+        BOOST_CHECK_EQUAL( ret->Status(),   0 );
+        BOOST_CHECK_EQUAL( ret->CommandString(), "control disconnect" );
+        BOOST_CHECK_EQUAL( ret->ResultString(),  "Test MCT device / control sent" );
     }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()

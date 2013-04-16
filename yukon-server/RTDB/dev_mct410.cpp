@@ -4442,7 +4442,7 @@ INT Mct410Device::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeNow,
 }
 
 
-string Mct410Device::decodeDisconnectStatus(const DSTRUCT &DSt)
+string Mct410Device::decodeDisconnectStatus(const DSTRUCT &DSt) const
 {
     string resultStr;
 
@@ -4815,6 +4815,12 @@ INT Mct410Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, CtiM
     retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
+}
+
+
+bool Mct410Device::disconnectRequiresCollar() const
+{
+    return isSupported(Feature_DisconnectCollar);
 }
 
 

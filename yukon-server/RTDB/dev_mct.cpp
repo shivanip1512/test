@@ -919,10 +919,14 @@ INT MctDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &
         case EmetconProtocol::Control_Latch:
         case EmetconProtocol::Control_Shed:
         case EmetconProtocol::Control_Restore:
+        {
+            status = decodeControl(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
         case EmetconProtocol::Control_Connect:
         case EmetconProtocol::Control_Disconnect:
         {
-            status = decodeControl(InMessage, TimeNow, vgList, retList, outList);
+            status = decodeControlDisconnect(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
@@ -2614,7 +2618,6 @@ INT MctDevice::executeControl(CtiRequestMsg *pReq,
                               OutMessageList &outList)
 {
     bool found = false;
-    bool dead_air = false;
 
     INT   nRet = NoError;
 
@@ -2661,14 +2664,9 @@ INT MctDevice::executeControl(CtiRequestMsg *pReq,
         function = EmetconProtocol::Control_Connect;
         found = getOperation(function, OutMessage->Buffer.BSt);
 
-        if( isMct410(getType()) || getType() == TYPEMCT420FL )  //  the MCT-420CL does not support the disconnect collar
+        if( disconnectRequiresCollar() )
         {
-            //  the 410 requires some dead time to transmit to its disconnect base
-            dead_air = true;
-        }
-        else if( getType() == TYPEMCT420CL )
-        {
-            found = false;
+            OutMessage->MessageFlags |= MessageFlag_AddMctDisconnectSilence;
         }
     }
     else if( parse.getFlags() & (CMD_FLAG_CTL_DISCONNECT | CMD_FLAG_CTL_OPEN) )
@@ -2676,37 +2674,28 @@ INT MctDevice::executeControl(CtiRequestMsg *pReq,
         function = EmetconProtocol::Control_Disconnect;
         found = getOperation(function, OutMessage->Buffer.BSt);
 
-        if( isMct410(getType()) || getType() == TYPEMCT420FL )  //  the MCT-420CL does not support the disconnect collar
+        if( disconnectRequiresCollar() )
         {
-            //  allow some dead time for the meter to transmit to its disconnect base
-            dead_air = true;
+            OutMessage->MessageFlags |= MessageFlag_AddMctDisconnectSilence;
 
             //  do not allow the disconnect command to be sent to a meter that has no disconnect address
             if( !_disconnectAddress )
             {
-                CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+                std::auto_ptr<CtiReturnMsg> ReturnMsg(
+                        new CtiReturnMsg(getID(), OutMessage->Request.CommandStr));
 
-                if( ReturnMsg )
-                {
-                    ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                    ReturnMsg->setResultString(getName() + " / Disconnect command cannot be sent to an empty (zero) address");
+                ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+                ReturnMsg->setResultString(getName() + " / Disconnect command cannot be sent to an empty (zero) address");
 
-                    // Error is handled here, put it on the ret list and get out of here!
-                    // Note this bypasses the later setting to error, ect...
-                    retMsgHandler( OutMessage->Request.CommandStr, ErrorNoDisconnect, ReturnMsg, vgList, retList, false );
-                    delete OutMessage;
-                    OutMessage = NULL;
-                    // *******    YIKES   *******  !!!!!!!!
-                    return NoError;
-                    // *******    YIKES   *******  !!!!!!!!
-                }
+                // Error is handled here, put it on the ret list and get out of here!
+                // Note this bypasses the later setting to error, ect...
+                retMsgHandler( OutMessage->Request.CommandStr, ErrorNoDisconnect, ReturnMsg.release(), vgList, retList, false );
 
-                found = false;
+                delete OutMessage;
+                OutMessage = NULL;
+
+                return NoError;
             }
-        }
-        else if( getType() == TYPEMCT420CL )
-        {
-            found = false;
         }
     }
     else if(parse.isKeyValid("latch_relays"))
@@ -2736,11 +2725,6 @@ INT MctDevice::executeControl(CtiRequestMsg *pReq,
         OutMessage->TimeOut   = 2;
         OutMessage->Sequence  = function;         // Helps us figure it out later!
         OutMessage->Retry     = 2;
-
-        if( dead_air )
-        {
-            OutMessage->MessageFlags |= MessageFlag_AddMctDisconnectSilence;
-        }
 
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
@@ -3224,85 +3208,81 @@ INT MctDevice::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow, Ct
 }
 
 
-
 INT MctDevice::decodeControl(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT status = NORMAL;
-    string resultString;
-    bool expectMore = false;
-
-    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return MEMORY;
-    }
+    std::auto_ptr<CtiReturnMsg> ReturnMsg(
+       new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
 
     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString( getName( ) + " / control sent" );
 
-    resultString = getName( ) + " / control sent";
-    ReturnMsg->setResultString( resultString );
+    retMsgHandler( InMessage->Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList );
 
-    const bool isConnectOrDisconnectFunction = ( InMessage->Sequence == EmetconProtocol::Control_Disconnect ||
-                                                 InMessage->Sequence == EmetconProtocol::Control_Connect );
+    return NoError;
+}
 
-    // Set expect more here if appropriate.
-    if( isConnectOrDisconnectFunction )
-    {
-        expectMore = true;
-    }
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
+INT MctDevice::decodeControlDisconnect(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+{
+    std::auto_ptr<CtiReturnMsg> ReturnMsg(
+       new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
 
-    if( isConnectOrDisconnectFunction )
-    {
-        CtiRequestMsg newReq(getID(),
-                             "getstatus disconnect",
-                             InMessage->Return.UserID,
-                             InMessage->Return.GrpMsgID,
-                             getRouteID(),
-                             selectInitialMacroRouteOffset(getRouteID()),  //  this bypasses PIL, so we need to calculate this
-                             0,
-                             InMessage->Return.OptionsField,
-                             InMessage->Priority);
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString( getName( ) + " / control sent" );
 
-        newReq.setConnectionHandle((void *)InMessage->Return.Connection);
+    std::string getstatusDisconnect_commandString =
+        strstr(InMessage->Return.CommandStr, " noqueue")
+        ? "getstatus disconnect noqueue"
+        : "getstatus disconnect";
 
-        beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
-    }
+    std::auto_ptr<CtiRequestMsg> newReq(
+        new CtiRequestMsg(
+                getID(),
+                getstatusDisconnect_commandString,
+                InMessage->Return.UserID,
+                InMessage->Return.GrpMsgID,
+                getRouteID(),
+                0,
+                0,
+                InMessage->Return.OptionsField,
+                InMessage->Priority));
 
-    return status;
+    newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+    newReq->setMessageTime(TimeNow + getDisconnectReadDelay());
+
+    retList.push_back(newReq.release());
+
+    retMsgHandler( InMessage->Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList, true );
+
+    return NoError;
+}
+
+
+unsigned MctDevice::getDisconnectReadDelay() const
+{
+    return 0;
+}
+
+
+bool MctDevice::disconnectRequiresCollar() const
+{
+    return false;
 }
 
 
 INT MctDevice::decodePutValue(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   status = NORMAL,
-          j;
-    ULONG pfCount = 0;
-    string resultString;
-
-    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return MEMORY;
-    }
+    std::auto_ptr<CtiReturnMsg> ReturnMsg(
+        new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
 
     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-    resultString = getName( ) + " / command complete";
-    ReturnMsg->setResultString( resultString );
+    ReturnMsg->setResultString(
+       getName( ) + " / command complete");
 
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    retMsgHandler( InMessage->Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList );
 
-    return status;
+    return NoError;
 }
 
 

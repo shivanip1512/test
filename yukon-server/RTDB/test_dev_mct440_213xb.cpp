@@ -1600,22 +1600,25 @@ BOOST_FIXTURE_TEST_SUITE(requests, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( NoError , test_Mct440_213xB().ResultDecode(&im, timeNow, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_REQUIRE_EQUAL( 1, retList.size() );
-        BOOST_REQUIRE_EQUAL( 1, outList.size() );
+        BOOST_REQUIRE_EQUAL( 2, retList.size() );
+        BOOST_CHECK( outList.empty() );
 
-        const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+        const std::vector<const CtiMessage *> retMsgs(retList.begin(), retList.end());
+
+        const CtiRequestMsg *req = dynamic_cast<const CtiRequestMsg *>(retMsgs[0]);
+
+        BOOST_REQUIRE( req );
+        BOOST_CHECK_EQUAL( req->DeviceId(), 123456 );
+        BOOST_CHECK_EQUAL( req->CommandString(), "getstatus disconnect" );
+        BOOST_CHECK_EQUAL( req->getMessageTime(), CtiTime(CtiDate(1, 1, 2010), 1, 2, 13) );  //  the MCT-440 scans the disconnect status 10 seconds after the decode
+
+        const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retMsgs[1]);
 
         BOOST_REQUIRE( ret );
         BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
         BOOST_CHECK_EQUAL( ret->Status(),   0 );
         BOOST_CHECK_EQUAL( ret->CommandString(), "control connect" );
         BOOST_CHECK_EQUAL( ret->ResultString(),  "Test MCT-440-213xB / control sent" );
-
-        OUTMESS *om = outList.front();
-
-        BOOST_REQUIRE( om );
-        BOOST_CHECK_EQUAL( om->DeviceID, 123456 );
-        BOOST_CHECK_EQUAL( om->Request.CommandStr, "getstatus disconnect" );
     }
 
     BOOST_AUTO_TEST_CASE(test_dev_mct_control_disconnect_execute)
@@ -1651,22 +1654,25 @@ BOOST_FIXTURE_TEST_SUITE(requests, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( NoError , test_Mct440_213xB().ResultDecode(&im, timeNow, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_REQUIRE_EQUAL( 1, retList.size() );
-        BOOST_REQUIRE_EQUAL( 1, outList.size() );
+        BOOST_REQUIRE_EQUAL( 2, retList.size() );
+        BOOST_CHECK( outList.empty() );
 
-        const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retList.front());
+        const std::vector<const CtiMessage *> retMsgs(retList.begin(), retList.end());
+
+        const CtiRequestMsg *req = dynamic_cast<const CtiRequestMsg *>(retMsgs[0]);
+
+        BOOST_REQUIRE( req );
+        BOOST_CHECK_EQUAL( req->DeviceId(), 123456 );
+        BOOST_CHECK_EQUAL( req->CommandString(), "getstatus disconnect" );
+        BOOST_CHECK_EQUAL( req->getMessageTime(), CtiTime(CtiDate(1, 1, 2010), 1, 2, 13) );  //  the MCT-440 scans the disconnect status 10 seconds after the decode
+
+        const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retMsgs[1]);
 
         BOOST_REQUIRE( ret );
         BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
         BOOST_CHECK_EQUAL( ret->Status(),   0 );
         BOOST_CHECK_EQUAL( ret->CommandString(), "control disconnect" );
         BOOST_CHECK_EQUAL( ret->ResultString(),  "Test MCT-440-213xB / control sent" );
-
-        const OUTMESS *om = outList.front();
-
-        BOOST_REQUIRE( om );
-        BOOST_CHECK_EQUAL( om->DeviceID, 123456 );
-        BOOST_CHECK_EQUAL( om->Request.CommandStr, "getstatus disconnect" );
     }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
