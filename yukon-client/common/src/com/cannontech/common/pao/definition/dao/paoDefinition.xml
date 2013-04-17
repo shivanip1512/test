@@ -1865,14 +1865,6 @@
                 <pointRef name="Reverse kWh"/>
                 <pointRef name="Reactive Inductive Energy"/>
             </command>
-            <command id="READ_KW_DEMAND_VOLTAGE_BLINK_COUNT">
-                <name>Read kW Demand, Voltage, Blink Count</name>
-                <cmd text="getvalue demand"/>
-                <pointRef name="kW"/>
-                <pointRef name="kW (Channel 2)"/>
-                <pointRef name="kW (Channel 3)"/>
-                <pointRef name="Blink Count"/>
-            </command>
             <command id="READ_BLINK_COUNT">
                 <name>Read Blink Count</name>
                 <cmd text="getvalue powerfail"/>
@@ -1927,18 +1919,6 @@
                 <cmd text="getvalue kWh tou frozen"/>
                 <pointRef name="Rate D kWh"/>
             </command>
-            <command id="READ_LP_REQUEST_STATUS">
-                <name>Read LP Request Status</name>
-                <cmd text="getvalue lp status"/>
-            </command>
-            <command id="CANCEL_LP_REQUEST">
-                <name>Cancel LP Request</name>
-                <cmd text="getvalue lp cancel"/>
-            </command>
-            <command id="READ_RATES_FOR_DEMAND_LP_VOLTAGEDEMAND_VOLTAGEPROFILE">
-                <name>Read rates for Demand, LP, Volt Demand, and Volt Profile</name>
-                <cmd text="getconfig intervals"/>
-            </command>
             <command id="READ_INTERNAL_STATUS">
                 <name>Read General Info</name>
                 <cmd text="getstatus internal"/>
@@ -1952,23 +1932,8 @@
             <attribute name="USAGE">
                 <basicLookup point="kWh" />
             </attribute>
-            <attribute name="DEMAND">
-                <basicLookup point="kW" />
-            </attribute>
             <attribute name="OUTAGE_LOG">
                 <basicLookup point="Outages" />
-            </attribute>
-            <attribute name="LOAD_PROFILE">
-                <basicLookup point="kW-LP" />
-            </attribute>
-            <attribute name="PROFILE_CHANNEL_2">
-                <basicLookup point="kW-LP (Channel 2)" />
-            </attribute>
-            <!--<attribute name="PROFILE_CHANNEL_3">
-                <basicLookup point="kW-LP (Channel 3)" />
-            </attribute>  YUK-8942 states to NOT have channel 3 for 410 devices -->
-            <attribute name="VOLTAGE_PROFILE">
-                <basicLookup point="Voltage Profile" />
             </attribute>
             <attribute name="BLINK_COUNT">
                 <basicLookup point="Blink Count" />
