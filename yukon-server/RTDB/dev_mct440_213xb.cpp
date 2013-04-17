@@ -3653,7 +3653,7 @@ string Mct440_213xBDevice::decodeDisconnectStatus(const DSTRUCT &DSt) const
 
 unsigned Mct440_213xBDevice::getDisconnectReadDelay() const
 {
-    return 10;
+    return 15;
 }
 
 

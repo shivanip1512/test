@@ -494,7 +494,6 @@ BOOST_FIXTURE_TEST_SUITE(requests, executeRequest_helper)
         BOOST_REQUIRE( req );
         BOOST_CHECK_EQUAL( req->DeviceId(), 123456 );
         BOOST_CHECK_EQUAL( req->CommandString(), "getstatus disconnect" );
-        BOOST_CHECK_EQUAL( req->getMessageTime(), timeNow );
 
         const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retMsgs[1]);
 
@@ -550,7 +549,6 @@ BOOST_FIXTURE_TEST_SUITE(requests, executeRequest_helper)
         BOOST_REQUIRE( req );
         BOOST_CHECK_EQUAL( req->DeviceId(), 123456 );
         BOOST_CHECK_EQUAL( req->CommandString(), "getstatus disconnect" );
-        BOOST_CHECK_EQUAL( req->getMessageTime(), timeNow );
 
         const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retMsgs[1]);
 

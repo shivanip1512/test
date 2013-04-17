@@ -1610,7 +1610,7 @@ BOOST_FIXTURE_TEST_SUITE(requests, beginExecuteRequest_helper)
         BOOST_REQUIRE( req );
         BOOST_CHECK_EQUAL( req->DeviceId(), 123456 );
         BOOST_CHECK_EQUAL( req->CommandString(), "getstatus disconnect" );
-        BOOST_CHECK_EQUAL( req->getMessageTime(), CtiTime(CtiDate(1, 1, 2010), 1, 2, 13) );  //  the MCT-440 scans the disconnect status 10 seconds after the decode
+        BOOST_CHECK_EQUAL( req->getMessageTime(), CtiTime(CtiDate(1, 1, 2010), 1, 2, 18) );  //  the MCT-440 scans the disconnect status 10 seconds after the decode
 
         const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retMsgs[1]);
 
@@ -1618,7 +1618,7 @@ BOOST_FIXTURE_TEST_SUITE(requests, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
         BOOST_CHECK_EQUAL( ret->Status(),   0 );
         BOOST_CHECK_EQUAL( ret->CommandString(), "control connect" );
-        BOOST_CHECK_EQUAL( ret->ResultString(),  "Test MCT-440-213xB / control sent" );
+        BOOST_CHECK_EQUAL( ret->ResultString(),  "Test MCT-440-213xB / control sent\nWaiting 15 seconds to read status (until 01/01/2010 01:02:18)" );
     }
 
     BOOST_AUTO_TEST_CASE(test_dev_mct_control_disconnect_execute)
@@ -1664,7 +1664,7 @@ BOOST_FIXTURE_TEST_SUITE(requests, beginExecuteRequest_helper)
         BOOST_REQUIRE( req );
         BOOST_CHECK_EQUAL( req->DeviceId(), 123456 );
         BOOST_CHECK_EQUAL( req->CommandString(), "getstatus disconnect" );
-        BOOST_CHECK_EQUAL( req->getMessageTime(), CtiTime(CtiDate(1, 1, 2010), 1, 2, 13) );  //  the MCT-440 scans the disconnect status 10 seconds after the decode
+        BOOST_CHECK_EQUAL( req->getMessageTime(), CtiTime(CtiDate(1, 1, 2010), 1, 2, 18) );  //  the MCT-440 scans the disconnect status 10 seconds after the decode
 
         const CtiReturnMsg *ret = dynamic_cast<const CtiReturnMsg *>(retMsgs[1]);
 
@@ -1672,7 +1672,7 @@ BOOST_FIXTURE_TEST_SUITE(requests, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( ret->DeviceId(), 123456 );
         BOOST_CHECK_EQUAL( ret->Status(),   0 );
         BOOST_CHECK_EQUAL( ret->CommandString(), "control disconnect" );
-        BOOST_CHECK_EQUAL( ret->ResultString(),  "Test MCT-440-213xB / control sent" );
+        BOOST_CHECK_EQUAL( ret->ResultString(),  "Test MCT-440-213xB / control sent\nWaiting 15 seconds to read status (until 01/01/2010 01:02:18)" );
     }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()

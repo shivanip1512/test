@@ -3228,7 +3228,8 @@ INT MctDevice::decodeControlDisconnect(INMESS *InMessage, CtiTime &TimeNow, CtiM
        new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
 
     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-    ReturnMsg->setResultString( getName( ) + " / control sent" );
+
+    std::string resultString = getName( ) + " / control sent";
 
     std::string getstatusDisconnect_commandString =
         strstr(InMessage->Return.CommandStr, " noqueue")
@@ -3248,9 +3249,19 @@ INT MctDevice::decodeControlDisconnect(INMESS *InMessage, CtiTime &TimeNow, CtiM
                 InMessage->Priority));
 
     newReq->setConnectionHandle((void *)InMessage->Return.Connection);
-    newReq->setMessageTime(TimeNow + getDisconnectReadDelay());
+
+    if( const unsigned delay = getDisconnectReadDelay() )
+    {
+        const CtiTime readTime = TimeNow + delay;
+
+        resultString += "\nWaiting " + CtiNumStr(delay) + " seconds to read status (until " + readTime.asString() + ")";
+
+        newReq->setMessageTime(readTime);
+    }
 
     retList.push_back(newReq.release());
+
+    ReturnMsg->setResultString(resultString);
 
     retMsgHandler( InMessage->Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList, true );
 
