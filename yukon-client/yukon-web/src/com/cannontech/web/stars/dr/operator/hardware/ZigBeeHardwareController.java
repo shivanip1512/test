@@ -439,7 +439,7 @@ public class ZigBeeHardwareController {
             flash.setConfirm(new YukonMessageSourceResolvable(keyPrefix + "messageSent", gatewaySerialNumber));
         }
         
-        ServletUtils.closePopup(resp, "ajaxDialog");
+        ServletUtils.closePopup(resp, "textMsgDialog");
         return null;
     }
     

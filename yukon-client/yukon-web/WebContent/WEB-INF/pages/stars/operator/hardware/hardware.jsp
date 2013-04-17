@@ -7,6 +7,8 @@
 
 <cti:standardPage module="operator" page="hardware.${mode}">
 
+<div id="ajaxDialog"></div>
+
 <tags:setFormEditMode mode="${mode}"/>
 <cti:msg2 key=".noneSelectOption" var="noneSelectOption"/>
 
@@ -92,7 +94,7 @@ jQuery(function(){
         var params = {'accountId' : ${accountId}, 
                       'inventoryId' : ${inventoryId}, 
                       'gatewayId' : ${hardware.deviceId}};
-        openSimpleDialog('ajaxDialog', 'zb/showTextMessage', null, params);
+        openSimpleDialog('textMsgDialog', 'zb/showTextMessage', null, params);
     });
     </cti:displayForPageEditModes>
 });
@@ -157,7 +159,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
 
      <!-- Text Message Popup -->
     <cti:msg2 var="textMsgTitle" key=".sendTextMsg"/>
-    <tags:simpleDialog id="ajaxDialog" styleClass="smallSimplePopup" title="${textMsgTitle}"/>
+    <tags:simpleDialog id="textMsgDialog" styleClass="smallSimplePopup" title="${textMsgTitle}"/>
 
     <!-- Changeout Form -->
     <cti:displayForPageEditModes modes="VIEW">

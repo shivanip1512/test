@@ -16,7 +16,7 @@
 <cti:msg2 var="heatLabel"  key="yukon.common.thermostat.mode.HEAT"/>
 <cti:msg2 var="coolLabel"  key="yukon.common.thermostat.mode.COOL"/>
 
-<div class="schedule_editor ${pageScope.styleClass} ${pageScope.schedule.thermostatScheduleMode}">
+<div class="schedule small editor ${pageScope.styleClass} ${pageScope.schedule.thermostatScheduleMode}">
     <form id="form_${pageScope.schedule.accountThermostatScheduleId}" method="POST" action="${actionPath}" onsubmit="Yukon.ThermostatScheduleEditor.prepForm(this);">
         <input type="hidden" name="accountId" value="${pageScope.accountId}">
         <input type="hidden" name="thermostatId" value="${pageScope.thermostatId}">
@@ -27,15 +27,16 @@
         <input type="hidden" name="schedules" value="">
         <input type="hidden" name="thermostatScheduleMode" value="${pageScope.schedule.thermostatScheduleMode}">
         
-        <div class="temp tempLabel ${temperatureUnit}">
-            <span class="F"><i:inline key="yukon.web.defaults.fahrenheit"/></span>
-            <span class="C"><i:inline key="yukon.web.defaults.celsius"/></span>
+        <div style="line-height: 26px;">
+            <div class="temp tempLabel ${temperatureUnit}">
+                <span class="F"><i:inline key="yukon.web.defaults.fahrenheit"/></span>
+                <span class="C"><i:inline key="yukon.web.defaults.celsius"/></span>
+            </div>
+            <div class="box fl">
+                <label for="scheduleName"><i:inline key="yukon.web.modules.operator.thermostat.schedules.name"/></label>
+            </div>
+            <input type="text" name="scheduleName" value="<spring:escapeBody htmlEscape="true">${pageScope.schedule.scheduleName}</spring:escapeBody>" initialValue="<spring:escapeBody htmlEscape="true">${pageScope.schedule.scheduleName}</spring:escapeBody>" size="40" maxlength="60">
         </div>
-        <div class="box fl" style="height:2.5em;">
-            <label for="scheduleName"><i:inline key="yukon.web.modules.operator.thermostat.schedules.name"/></label>
-        </div>
-        <input type="text" name="scheduleName" value="<spring:escapeBody htmlEscape="true">${pageScope.schedule.scheduleName}</spring:escapeBody>" initialValue="<spring:escapeBody htmlEscape="true">${pageScope.schedule.scheduleName}</spring:escapeBody>" size="40" maxlength="60">
-
         <div class="days fl">
             <span class="labels">
                 <label class="label fl"></label>

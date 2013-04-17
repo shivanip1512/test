@@ -17,6 +17,7 @@ public class AccountThermostatSchedule {
 	private String scheduleName;
 	private SchedulableThermostatType thermostatType;
 	private ThermostatScheduleMode thermostatScheduleMode;
+	private boolean isArchived;
 	private List<AccountThermostatScheduleEntry> scheduleEntries = Lists.newArrayList();
 	
 	public int getAccountThermostatScheduleId() {
@@ -58,6 +59,14 @@ public class AccountThermostatSchedule {
 	public void setThermostatScheduleMode(ThermostatScheduleMode thermostatScheduleMode) {
 		this.thermostatScheduleMode = thermostatScheduleMode;
 	}
+	
+    public boolean isArchived() {
+        return isArchived;
+    }
+    
+    public void setArchived(boolean isArchived) {
+        this.isArchived = isArchived;
+    }
 	
 	public List<AccountThermostatScheduleEntry> getScheduleEntries() {
 		return scheduleEntries;

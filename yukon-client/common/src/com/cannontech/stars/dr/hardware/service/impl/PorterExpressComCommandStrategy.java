@@ -89,11 +89,15 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
 
         Thermostat stat = inventoryDao.getThermostatById(thermostatId);
         HardwareType type = stat.getType();
-
-        int ecId = yecService.getEnergyCompanyIdByOperator(user); 
-        
+                
         if (type == HardwareType.UTILITY_PRO) {
             try {
+                int ecId = -1;
+                if (yecService.isEnergyCompanyOperator(user)) {
+                    ecId = yecService.getEnergyCompanyIdByOperator(user);
+                } else {
+                    ecId = yecService.getEnergyCompanyByAccountId(account.getAccountId()).getEnergyCompanyId();
+                }
                 // We have to update the schedule mode for Utility Pro thermostats every
                 // time we update the schedule if 5-2 mode is enabled
 

@@ -10,7 +10,7 @@
 <script type="text/javascript">
 submitForm = function() {
     combineDateAndTimeFields('startTime');
-    return submitFormViaAjax('ajaxDialog', 'myform', '/stars/operator/hardware/zb/sendTextMessage');
+    return submitFormViaAjax('textMsgDialog', 'myform', '/stars/operator/hardware/zb/sendTextMessage');
 }
 </script>
 
@@ -41,7 +41,7 @@ submitForm = function() {
     </tags:nameValueContainer2>
     <div class="actionArea">
         <cti:button nameKey="send" type="submit" styleClass="f_blocker"/>
-        <cti:button nameKey="cancel" onclick="$('ajaxDialog').hide()"/>
+        <cti:button nameKey="cancel" onclick="$('textMsgDialog').hide()"/>
     </div>
 </form:form>
 

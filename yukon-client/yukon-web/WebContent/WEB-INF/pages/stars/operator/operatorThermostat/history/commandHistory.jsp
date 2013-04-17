@@ -8,7 +8,9 @@
 <cti:includeScript link="/JavaScript/thermostatScheduleEditor.js"/>
 <cti:includeScript link="/JavaScript/temperature.js"/>
 <cti:includeCss link="/WebConfig/yukon/styles/consumer/StarsConsumerStyles.css"/>
-<cti:includeCss link="/WebConfig/yukon/styles/operator/thermostat.css"/>
+<cti:includeCss link="/WebConfig/yukon/styles/shared/thermostat.css"/>
+<cti:msg var="timeFormatter" key="yukon.common.timeFormatter" />
+<cti:includeScript link="${timeFormatter}"/>
     
 <cti:msg2 var="degreesCelsius" key="yukon.web.modules.operator.thermostatManual.degreesCelsius"/>
 <cti:msg2 var="degreesFahrenheit" key="yukon.web.modules.operator.thermostatManual.degreesFahrenheit"/>
@@ -80,20 +82,20 @@ jQuery(function(){
                                 <c:if test="${historyItem.manualCoolTemp.value != 0}">
                                     <cti:msg2 key="yukon.web.modules.operator.thermostatManual.manualDetailsCoolTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualCoolTemp.value}'></span>" htmlEscapeArguments="false"/>
                                     <span class="C_label unit_label">${degreesCelsius}</span>
-                                    <span class="F_label unit_label">${degreesFahrenheit}</span>,
+                                    <span class="F_label unit_label">${degreesFahrenheit}</span>
                                 </c:if>
                                 <c:if test="${historyItem.manualHeatTemp.value != 0}">
                                     <cti:msg2 key="yukon.web.modules.operator.thermostatManual.manualDetailsHeatTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualHeatTemp.value}'></span>" htmlEscapeArguments="false"/>
                                     <span class="C_label unit_label">${degreesCelsius}</span>
-                                    <span class="F_label unit_label">${degreesFahrenheit}</span>,
+                                    <span class="F_label unit_label">${degreesFahrenheit}</span>
                                 </c:if>
                                 
                                 <!-- Heat/Cool Mode -->
-                                <i:inline key="yukon.web.modules.operator.thermostatManual.unitMode" /> 
+                                [<i:inline key="yukon.web.modules.operator.thermostatManual.unitMode" /> 
                                 <i:inline key="${historyItem.manualMode}" />, 
                                 <!-- Fan Setting -->
                                 <i:inline key="yukon.web.modules.operator.thermostatManual.manualDetailsFan" /> 
-                                <i:inline key="${historyItem.manualFan}" />
+                                <i:inline key="${historyItem.manualFan}" />]
                                 <!-- Hold Setting -->
                                 <c:if test="${historyItem.manualHold == true}">
                                     (<i:inline key="yukon.web.modules.operator.thermostatManual.hold"/>)
@@ -103,21 +105,18 @@ jQuery(function(){
                                 <!-- Schedule Name and Link -->
                                 <c:choose>
                                     <c:when test="${historyItem.scheduleName == null}">
-                                        <i:inline key="yukon.web.modules.operator.thermostatManual.deletedSchedule"/>, 
+                                        <i:inline key="yukon.web.modules.operator.thermostatHistory.noInfo"/> 
                                     </c:when>
                                     <c:otherwise>
-                                        <cti:url var="savedSchedulesUrl" value="/stars/operator/thermostatSchedule/savedSchedules">
+                                        <cti:url var="viewArchivedScheduleUrl" value="/stars/operator/thermostatSchedule/viewArchivedSchedule">
                                             <cti:param name="accountId" value="${accountId}"/>
                                             <cti:param name="thermostatIds" value="${thermostatIds}"/>
                                             <cti:param name="scheduleId" value="${historyItem.scheduleId}"/>
                                             <cti:param name="accountNumber" value="${accountNumber}"/>
                                         </cti:url>
-                                        <a href="${savedSchedulesUrl}"><i:inline key="yukon.web.modules.operator.thermostatManual.scheduleDetails" arguments="${historyItem.scheduleName}"/></a>,
+                                        <a href="${viewArchivedScheduleUrl}" class="f_ajaxPage" data-selector="#ajaxDialog"> ${fn:escapeXml(historyItem.scheduleName)} [<i:inline key="yukon.web.modules.operator.thermostatManual.scheduleDetailsMode"/> <i:inline key="yukon.web.modules.operator.thermostatManual.${historyItem.scheduleMode}"/>]</a>
                                     </c:otherwise>
                                 </c:choose> 
-                                <!-- Schedule Day Mode -->
-                                <i:inline key="yukon.web.modules.operator.thermostatManual.scheduleDetailsMode"/>
-                                <i:inline key="yukon.web.modules.operator.thermostatManual.${historyItem.scheduleMode}"/>
                             </c:if>
                             <c:if test="${historyItem.eventType == 'RESTORE'}">
                                 <i:inline key="yukon.web.defaults.dashes"/>

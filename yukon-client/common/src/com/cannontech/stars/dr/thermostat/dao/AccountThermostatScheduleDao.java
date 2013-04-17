@@ -12,18 +12,26 @@ import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 public interface AccountThermostatScheduleDao {
 
 	/**
-	 * Retrieve the AccountThermostatSchedule with given accountThermostatScheduleId.
+	 * Retrieve the AccountThermostatSchedule with given accountThermostatScheduleId excluding archived entries.
 	 */
 	public AccountThermostatSchedule getById(int atsId);
 	
 	/**
-	 * Retrieve AccountThermostatSchedule with given accountThermostatScheduleId and accountId.
+	 * Retrieve AccountThermostatSchedule with given accountThermostatScheduleId, accountId excluding archived entries.
 	 * Returns null if the AccountThermostatSchedule can not be found.
 	 */
 	public AccountThermostatSchedule findByIdAndAccountId(int atsId, int accountId);
+	
+    /**
+     * Retrieve AccountThermostatSchedule with given accountThermostatScheduleId and accountId.
+     * Returns null if the AccountThermostatSchedule can not be found.
+     * 
+     * @param includeArchived - true will include archived entries
+     */
+	public AccountThermostatSchedule findByIdAndAccountId(int acctThermostatScheduleId, int accountId, boolean includeArchived);
 
 	/**
-	 * Retrieve AccountThermostatSchedule linked to the given inventoryId.
+	 * Retrieve AccountThermostatSchedule linked to the given inventoryId excluding archived entries.
 	 * Returns null if the AccountThermostatSchedule can not be found.
 	 */
 	public AccountThermostatSchedule findByInventoryId(int inventoryId);
@@ -55,12 +63,12 @@ public interface AccountThermostatScheduleDao {
 	public List<Integer> getThermostatIdsUsingSchedule(int atsId);
 	
 	/**
-	 * Get all AccountThermostatSchedules for the specified energy company.
+	 * Get all AccountThermostatSchedules for the specified energy company excluding archived entries.
 	 */
 	public List<AccountThermostatSchedule> getAllThermostatSchedulesForEC(int ecId);
 	
 	/**
-	 * Get the energy company default schedule for the given energyCompanyId and thermostat type.
+	 * Get the energy company default schedule for the given energyCompanyId and thermostat type excluding archived entries.
 	 * If one does not exists it will be created.
 	 */
 	public AccountThermostatSchedule getEnergyCompanyDefaultScheduleByType(int ecId, SchedulableThermostatType type);
@@ -73,7 +81,7 @@ public interface AccountThermostatScheduleDao {
 	public AccountThermostatSchedule getEnergyCompanyDefaultScheduleByAccountAndType(int accountId, SchedulableThermostatType type);
 	
 	/**
-     * Get a schedule for an account by matching an exact schedule name.  If there are more than one schedule it will use the 
+     * Get a schedule for an account by matching an exact schedule name excluding archived entries.  If there are more than one schedule it will use the 
      * first one although this should never be the case.
      * 
      * @param accountId
@@ -84,7 +92,7 @@ public interface AccountThermostatScheduleDao {
     public AccountThermostatSchedule getSchedulesForAccountByScheduleName(int accountId, String scheduleName);
 
     /**
-     * Get a schedule for an account by matching an exact schedule name.  If there are more than one schedule it will use the 
+     * Get a schedule for an account by matching an exact schedule name excluding archived entries.  If there are more than one schedule it will use the 
      * first one although this should never be the case.
      * 
      * @param accountId
@@ -94,7 +102,7 @@ public interface AccountThermostatScheduleDao {
     public AccountThermostatSchedule findSchedulesForAccountByScheduleName(int accountId, String scheduleName);
     
 	/**
-	 * Get a schedule for an account by matching an exact schedule name
+	 * Get a schedule for an account by matching an exact schedule name excluding archived entries.
 	 * @param accountId
 	 * @param scheduleName
 	 * @param fragment - pass in any conditions you like eg. say you wanted to check for name uniqueness
@@ -122,18 +130,18 @@ public interface AccountThermostatScheduleDao {
 	public void mapThermostatsToSchedule(List<Integer> thermostatIds, int atsId);
 	
 	/**
-	 * Retrieve list of all AccountThermostatSchedules for a given accountId and thermostat type.
+	 * Retrieve list of all AccountThermostatSchedules for a given accountId and thermostat type excluding archived entries.
 	 * a.k.a. "all saved schedules for account"
 	 */
     public List<AccountThermostatSchedule> getAllSchedulesForAccountByType(int accountId, SchedulableThermostatType type);
 
     /**
-     * Get all allowed thermostat schedules and entries for an Account based on the user.
+     * Get all allowed thermostat schedules and entries for an Account based on the user excluding archived entries
      */
     public List<AccountThermostatSchedule> getAllAllowedSchedulesAndEntriesForAccountByTypes(int accountId, List<SchedulableThermostatType> types);
 
     /**
-     * Get all allowed thermostat schedules for an Account based on the user.
+     * Get all allowed thermostat schedules for an Account based on the user excluding archived entries
      * 
      * @param accountId
      * @param types

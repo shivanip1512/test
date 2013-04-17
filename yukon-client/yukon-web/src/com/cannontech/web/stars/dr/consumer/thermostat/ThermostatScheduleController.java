@@ -34,6 +34,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -93,8 +94,8 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         // retrieve the schedule
         AccountThermostatSchedule ats = accountThermostatScheduleDao.findByIdAndAccountId(scheduleId, account.getAccountId());
         ThermostatScheduleMode thermostatScheduleMode = ats.getThermostatScheduleMode();
-        
-        int yukonEnergyCompanyId = yukonEnergyCompanyService.getEnergyCompanyIdByOperator(yukonUserContext.getYukonUser());
+                
+        int yukonEnergyCompanyId = yukonEnergyCompanyService.getEnergyCompanyByAccountId(account.getAccountId()).getEnergyCompanyId();
 
         ThermostatScheduleUpdateResult message = thermostatService.sendSchedule(account, ats, thermostatIds, thermostatScheduleMode, yukonEnergyCompanyId, yukonUserContext.getYukonUser());
     
@@ -258,6 +259,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         
         map.addAttribute("thermostats", thermostats);
         map.addAttribute("temperatureUnit", temperatureUnit);
+        map.addAttribute("thermostatIds", thermostatIds);
         
         return "consumer/history.jsp";
     }
@@ -378,5 +380,26 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     
     private boolean isCommunicationDisabled(LiteYukonUser user){
         return !optOutStatusService.getOptOutEnabled(user).isCommunicationEnabled();
+    }
+    
+    @RequestMapping
+    public String viewArchivedSchedule(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
+                                       String thermostatIds,
+                                       Integer scheduleId,
+                                       YukonUserContext userContext,
+                                       ModelMap model,
+                                       HttpServletRequest request) throws IllegalArgumentException, ServletRequestBindingException {
+        AccountThermostatSchedule schedule = accountThermostatScheduleDao.findByIdAndAccountId(scheduleId,  customerAccount.getAccountId(), true);
+        model.addAttribute("schedule", schedule);
+        LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
+        String temperatureUnit = customer.getTemperatureUnit();
+        model.addAttribute("temperatureUnit", temperatureUnit);
+        List<Integer> thermostatIdsList = getThermostatIds(request);
+        Thermostat thermostat = inventoryDao.getThermostatById(thermostatIdsList.get(0));
+        SchedulableThermostatType type = SchedulableThermostatType.getByHardwareType(thermostat.getType());
+        model.addAttribute("thermostatType", type);
+        model.addAttribute("thermostatIds", thermostatIds);
+        model.addAttribute("thermostatId", thermostatIdsList.get(0));
+        return "operator/operatorThermostat/history/commandDetail.jsp";
     }
 }

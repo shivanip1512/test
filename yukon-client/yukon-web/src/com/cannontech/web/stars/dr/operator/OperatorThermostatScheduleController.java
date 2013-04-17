@@ -183,6 +183,28 @@ public class OperatorThermostatScheduleController {
         return "redirect:savedSchedules";
     }
 	
+    @RequestMapping
+    public String viewArchivedSchedule(@RequestParam(value="thermostatIds", required=true) String thermostatIds,
+                                       Integer scheduleId,
+                                       YukonUserContext userContext,
+                                       ModelMap model,
+                                       AccountInfoFragment fragment) throws IllegalArgumentException {
+        AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
+        AccountThermostatSchedule schedule = accountThermostatScheduleDao.findByIdAndAccountId(scheduleId, fragment.getAccountId(), true);
+        model.addAttribute("schedule", schedule);
+        CustomerAccount customerAccount = customerAccountDao.getById(fragment.getAccountId());
+        LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
+        String temperatureUnit = customer.getTemperatureUnit();
+        model.addAttribute("temperatureUnit", temperatureUnit);
+        List<Integer> thermostatIdList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, fragment, model);
+        Thermostat thermostat = inventoryDao.getThermostatById(thermostatIdList.get(0));
+        SchedulableThermostatType type = SchedulableThermostatType.getByHardwareType(thermostat.getType());
+        model.addAttribute("thermostatType", type);
+        model.addAttribute("thermostatIds", thermostatIds);
+        model.addAttribute("thermostatId", thermostatIdList.get(0));
+        return "operator/operatorThermostat/history/commandDetail.jsp";
+    }
+	
 	// SAVED SCHEDULES
 	@RequestMapping
     public String savedSchedules(@RequestParam(value="thermostatIds", required=true) String thermostatIds,

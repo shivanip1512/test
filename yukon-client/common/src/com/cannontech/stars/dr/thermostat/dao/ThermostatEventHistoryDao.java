@@ -42,4 +42,9 @@ public interface ThermostatEventHistoryDao {
      */
     public List<ThermostatEvent> getLastNEventsByThermostatIds(List<Integer> thermostatIds, int numberOfEvents);
 
+    /**
+     * Returns true if this schedule has event history.
+     */
+    public boolean hasEventForScheduleId(int scheduleId);
+
 }

@@ -6,7 +6,6 @@ import java.util.List;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.cannontech.common.temperature.Temperature;
@@ -21,7 +20,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatEventHistoryDao;
-import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ManualThermostatEvent;
 import com.cannontech.stars.dr.thermostat.model.RestoreThermostatEvent;
 import com.cannontech.stars.dr.thermostat.model.ScheduleThermostatEvent;
@@ -35,35 +33,35 @@ import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 
 public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao, InitializingBean {
     
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private NextValueHelper nextValueHelper;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<ThermostatEvent> thermostatEventTemplate;
-    private ThermostatService thermostatService;
-    private AccountThermostatScheduleDao accountThermostatScheduleDao;
+    @Autowired private ThermostatService thermostatService;
+    @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
     
     @Override
     public List<ThermostatEvent> getEventsByThermostatIds(List<Integer> thermostatIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EventId, EventType, UserName, EventTime, ThermostatId, ManualMode, ManualFan, ManualHold, ScheduleId, ScheduleMode, ManualCoolTemp, ManualHeatTemp");
-        sql.append("FROM ThermostatEventHistory");
-        sql.append("WHERE ThermostatId").in(thermostatIds);
+        sql.append("SELECT event.EventId, event.EventType, event.UserName, event.EventTime, event.ThermostatId, event.ManualMode, event.ManualFan, event.ManualHold, event.ScheduleId, event.ScheduleMode, event.ManualCoolTemp, event.ManualHeatTemp, schedule.ScheduleName");
+        sql.append("  FROM ThermostatEventHistory event");
+        sql.append("    LEFT JOIN AcctThermostatSchedule schedule ON event.ScheduleId=schedule.AcctThermostatScheduleId");
+        sql.append("  WHERE ThermostatId").in(thermostatIds);
         sql.append("ORDER BY EventTime DESC");
         
         List<ThermostatEvent> eventList = yukonJdbcTemplate.query(sql, thermostatEventHistoryRowMapper);
-        insertThermostatAndScheduleNames(eventList);
         return eventList;
     }
     
     @Override
     public List<ThermostatEvent> getLastNEventsByThermostatIds(List<Integer> thermostatIds, int numberOfEvents) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EventId, EventType, UserName, EventTime, ThermostatId, ManualMode, ManualFan, ManualHold, ScheduleId, ScheduleMode, ManualCoolTemp, ManualHeatTemp");
-        sql.append("FROM ThermostatEventHistory");
-        sql.append("WHERE ThermostatId").in(thermostatIds);
+        sql.append("SELECT event.EventId, event.EventType, event.UserName, event.EventTime, event.ThermostatId, event.ManualMode, event.ManualFan, event.ManualHold, event.ScheduleId, event.ScheduleMode, event.ManualCoolTemp, event.ManualHeatTemp, schedule.ScheduleName");
+        sql.append("  FROM ThermostatEventHistory event");
+        sql.append("    LEFT JOIN AcctThermostatSchedule schedule ON event.ScheduleId=schedule.AcctThermostatScheduleId");
+        sql.append("  WHERE ThermostatId").in(thermostatIds);
         sql.append("ORDER BY EventTime DESC");
         
         List<ThermostatEvent> eventList = yukonJdbcTemplate.queryForLimitedResults(sql, thermostatEventHistoryRowMapper, numberOfEvents);
-        insertThermostatAndScheduleNames(eventList);
         return eventList;
     }
     
@@ -107,25 +105,20 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
         logEvent(mte);
     }
     
-    private void insertThermostatAndScheduleNames(List<ThermostatEvent> events) {
-        for(ThermostatEvent event : events) {
-            String thermostatName = thermostatService.getThermostatNameFromId(event.getThermostatId());
-            event.setThermostatName(thermostatName);
-            
-            if(event instanceof ScheduleThermostatEvent){
-                String scheduleName = null;
-                ScheduleThermostatEvent scheduleEvent = (ScheduleThermostatEvent) event;
-                try {
-                    AccountThermostatSchedule ats = accountThermostatScheduleDao.getById(scheduleEvent.getScheduleId());
-                    scheduleName = ats.getScheduleName();
-                } catch(EmptyResultDataAccessException e) {
-                    //leave schedule name as null string - schedule has been deleted
-                }
-                scheduleEvent.setScheduleName(scheduleName);
-            }
+    @Override
+    public boolean hasEventForScheduleId(int scheduleId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT count(EventId)");
+        sql.append("FROM ThermostatEventHistory");
+        sql.append("WHERE ScheduleId").eq(scheduleId);
+        
+        int count = yukonJdbcTemplate.queryForInt(sql);
+        if(count > 0){
+            return true;
         }
+        return false;
     }
-    
+        
     private final YukonRowMapper<ThermostatEvent> thermostatEventHistoryRowMapper = new YukonRowMapper<ThermostatEvent>() {
         @Override
         public ThermostatEvent mapRow(YukonResultSet rs) throws SQLException {
@@ -136,6 +129,7 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
                 ScheduleThermostatEvent event = new ScheduleThermostatEvent();
                 event.setScheduleId(rs.getInt("scheduleId"));
                 event.setScheduleMode(rs.getEnum("scheduleMode", ThermostatScheduleMode.class));
+                event.setScheduleName(rs.getString("scheduleName"));
                 retVal = event;
             } else if(eventType == ThermostatEventType.MANUAL) {
                 ManualThermostatEvent event = new ManualThermostatEvent();
@@ -195,25 +189,5 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
         thermostatEventTemplate.setTableName("ThermostatEventHistory");
         thermostatEventTemplate.setPrimaryKeyField("EventId");
         thermostatEventTemplate.setFieldMapper(thermostatEventFieldMapper);
-    }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-    
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-    
-    @Autowired
-    public void setThermostatService(ThermostatService thermostatService) {
-        this.thermostatService = thermostatService;
-    }
-    
-    @Autowired
-    public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
-        this.accountThermostatScheduleDao = accountThermostatScheduleDao;
     }
 }

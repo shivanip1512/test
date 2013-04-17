@@ -17,9 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowAndFieldMapper;
@@ -31,6 +32,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleEntryDao;
+import com.cannontech.stars.dr.thermostat.dao.ThermostatEventHistoryDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
@@ -49,6 +51,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private ThermostatService thermostatService;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private ThermostatEventHistoryDao thermostatEventHistoryDao;
     
     private SimpleTableAccessTemplate<AccountThermostatSchedule> accountThermostatScheduleTemplate;
     
@@ -56,31 +59,57 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     @Override
     @Transactional
     public void save(AccountThermostatSchedule ats) {
+
+        if(ats.isArchived()){
+            return;
+        }
+        /*
+         * Schedule should be archived if it has events.
+         * If the attempt is made to update a schedule that has an event associated with the schedule
+         * the current schedule will be archived (AcctThermostatSchedule.Archived = "true") and a
+         * new identical schedule will be created.
+         */
+        if (ats.getAccountThermostatScheduleId() != -1
+            && thermostatEventHistoryDao.hasEventForScheduleId(ats.getAccountThermostatScheduleId())) {
+            //archive the schedule
+            archiveSchedule(ats.getAccountThermostatScheduleId());
+            //create new schedule
+            ats.setAccountThermostatScheduleId(-1);
+            saveSchedule(ats);
+        } else {
+            /*
+             * If this is a new or old schedule that has no events, the new
+             * schedule will be created or the old schedule will be modified
+             */
+            saveSchedule(ats);
+        }
+    }
+    
+    private void saveSchedule(AccountThermostatSchedule ats){
+        accountThermostatScheduleTemplate.save(ats);
         
-    	accountThermostatScheduleTemplate.save(ats);
-    	
-    	// remove any current entries
-    	accountThermostatScheduleEntryDao.removeAllEntriesForScheduleId(ats.getAccountThermostatScheduleId()); 	
-    	
-    	// insert new entries
-    	List<AccountThermostatScheduleEntry> atsEntries = ats.getScheduleEntries();
-    	for (AccountThermostatScheduleEntry atsEntry : atsEntries) {
-    		atsEntry.setAccountThermostatScheduleId(ats.getAccountThermostatScheduleId());
-    		atsEntry.setAccountThermostatScheduleEntryId(0); // these entries may already have an id if they were pulled from db. reset to 0 so they inserted (otherwise it'll try to update a now-non-existent entry)
-    		accountThermostatScheduleEntryDao.save(atsEntry);
-    	}
-    	
-    	// Logging
-    	CustomerAccount customerAccount = customerAccountDao.getById(ats.getAccountId());
-    	accountEventLogService.thermostatScheduleSaved(customerAccount.getAccountNumber(),
-    	                                               ats.getScheduleName());
+        // remove any current entries
+        accountThermostatScheduleEntryDao.removeAllEntriesForScheduleId(ats.getAccountThermostatScheduleId());  
+        
+        // insert new entries
+        List<AccountThermostatScheduleEntry> atsEntries = ats.getScheduleEntries();
+        for (AccountThermostatScheduleEntry atsEntry : atsEntries) {
+            atsEntry.setAccountThermostatScheduleId(ats.getAccountThermostatScheduleId());
+            atsEntry.setAccountThermostatScheduleEntryId(0); // these entries may already have an id if they were pulled from db. reset to 0 so they inserted (otherwise it'll try to update a now-non-existent entry)
+            accountThermostatScheduleEntryDao.save(atsEntry);
+        }
+        
+        // Logging
+        CustomerAccount customerAccount = customerAccountDao.getById(ats.getAccountId());
+        accountEventLogService.thermostatScheduleSaved(customerAccount.getAccountNumber(),
+                                                       ats.getScheduleName());       
     }
     
     // GET BY ID
     @Override
     public AccountThermostatSchedule getById(int acctThermostatScheduleId) {
     	
-    	return doGetByIds(acctThermostatScheduleId, null);
+    	return getByIdAndAccountId(acctThermostatScheduleId, null, false);
     }
     
     // GET BY ID AND ACCOUNT ID
@@ -88,13 +117,23 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 	public AccountThermostatSchedule findByIdAndAccountId(int acctThermostatScheduleId, int accountId) {
 		
     	try {
-    		return doGetByIds(acctThermostatScheduleId, accountId);
+    		return getByIdAndAccountId(acctThermostatScheduleId, accountId, false);
     	} catch (EmptyResultDataAccessException e) {
     		return null;
     	}
 	}
     
-    private AccountThermostatSchedule doGetByIds(int acctThermostatScheduleId, Integer accountId) {
+    @Override
+    public AccountThermostatSchedule findByIdAndAccountId(int acctThermostatScheduleId, int accountId, boolean includeArchived) {
+        
+        try {
+            return getByIdAndAccountId(acctThermostatScheduleId, accountId, true);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+ 
+    private AccountThermostatSchedule getByIdAndAccountId(int acctThermostatScheduleId, Integer accountId, boolean includeArchived) {
 
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append("SELECT ats.*");
@@ -103,7 +142,9 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     	if (accountId != null) {
     		sql.append("AND ats.accountId").eq(accountId);
     	}
-    	
+    	if (!includeArchived) {
+    	    sql.append("AND ats.archived").eq(YNBoolean.NO);
+    	}
     	return getPopulatedAccountThermostatSchedule(sql);
     }
     
@@ -115,6 +156,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     	sql.append("FROM AcctThermostatSchedule ats");
     	sql.append("  JOIN InventoryToAcctThermostatSch ITATS ON (ats.AcctThermostatScheduleId = ITATS.AcctThermostatScheduleId)");
     	sql.append("WHERE ITATS.InventoryId").eq(inventoryId);
+    	sql.append("AND ats.archived").eq(YNBoolean.NO);
     	
     	try {
     		return getPopulatedAccountThermostatSchedule(sql);
@@ -149,26 +191,39 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 	@Override
 	@Transactional
 	public void deleteById(int atsId) {
-		AccountThermostatSchedule ats = getById(atsId);
-
-		// delete InventoryToAcctThermostatSch
-		SqlStatementBuilder deleteInventoryToAcctThermostatSch = new SqlStatementBuilder();
-		deleteInventoryToAcctThermostatSch.append("DELETE FROM InventoryToAcctThermostatSch");
-		deleteInventoryToAcctThermostatSch.append("WHERE AcctThermostatScheduleId").eq(atsId);
-		yukonJdbcTemplate.update(deleteInventoryToAcctThermostatSch);
+		AccountThermostatSchedule ats = getById(atsId);	
+		if(ats.isArchived()){
+		    return;
+		}
 		
-		// delete AcctThermostatScheduleEntry
-		accountThermostatScheduleEntryDao.removeAllEntriesForScheduleId(atsId);
-		
-		// delete
-		SqlStatementBuilder deleteAcctThermostatSchedule = new SqlStatementBuilder();
-		deleteAcctThermostatSchedule.append("DELETE FROM AcctThermostatSchedule");
-		deleteAcctThermostatSchedule.append("WHERE AcctThermostatScheduleId").eq(atsId);
-		yukonJdbcTemplate.update(deleteAcctThermostatSchedule);
-
-		CustomerAccount customerAccount = customerAccountDao.getById(ats.getAccountId());
-        accountEventLogService.thermostatScheduleDeleted(customerAccount.getAccountNumber(),
-                                                         ats.getScheduleName());
+        /*
+         * Schedule should be archived if it has events.
+         * If the attempt is made to delete a schedule that has an event associated with the
+         * schedule the current schedule will be archived (AcctThermostatSchedule.Archived = "true")
+         * otherwise the schedule will be deleted
+         */
+		if(thermostatEventHistoryDao.hasEventForScheduleId(ats.getAccountThermostatScheduleId())){
+		    archiveSchedule(ats.getAccountThermostatScheduleId());
+		}else{
+    		// delete InventoryToAcctThermostatSch
+    		SqlStatementBuilder deleteInventoryToAcctThermostatSch = new SqlStatementBuilder();
+    		deleteInventoryToAcctThermostatSch.append("DELETE FROM InventoryToAcctThermostatSch");
+    		deleteInventoryToAcctThermostatSch.append("WHERE AcctThermostatScheduleId").eq(atsId);
+    		yukonJdbcTemplate.update(deleteInventoryToAcctThermostatSch);
+    		
+    		// delete AcctThermostatScheduleEntry
+    		accountThermostatScheduleEntryDao.removeAllEntriesForScheduleId(atsId);
+    		
+    		// delete
+    		SqlStatementBuilder deleteAcctThermostatSchedule = new SqlStatementBuilder();
+    		deleteAcctThermostatSchedule.append("DELETE FROM AcctThermostatSchedule");
+    		deleteAcctThermostatSchedule.append("WHERE AcctThermostatScheduleId").eq(atsId);
+    		yukonJdbcTemplate.update(deleteAcctThermostatSchedule);
+    
+    		CustomerAccount customerAccount = customerAccountDao.getById(ats.getAccountId());
+            accountEventLogService.thermostatScheduleDeleted(customerAccount.getAccountNumber(),
+                                                             ats.getScheduleName());
+		}
 	}
     
     @Override
@@ -211,6 +266,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 	    sql.append("FROM AcctThermostatSchedule ats");
 	    sql.append("  JOIN ECToAcctThermostatSchedule ectats ON (ats.AcctThermostatScheduleId = ECTATS.AcctThermostatScheduleId)");
 	    sql.append("WHERE ECTATS.EnergyCompanyId").eq(ecId);
+	    sql.append("AND ats.archived").eq(YNBoolean.NO);
 	    
 	    return yukonJdbcTemplate.query(sql, accountThermostatScheduleRowAndFieldMapper);
 	}
@@ -228,6 +284,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 			sql.append("  JOIN ECToAcctThermostatSchedule ECTATS ON (ats.AcctThermostatScheduleId = ECTATS.AcctThermostatScheduleId)");
 			sql.append("WHERE ECTATS.EnergyCompanyId").eq(ecId);
 			sql.append("AND ats.ThermostatType").eq(type);
+			sql.append("AND ats.archived").eq(YNBoolean.NO);
 			
 			int atsId = yukonJdbcTemplate.queryForInt(sql);
 			return getById(atsId);
@@ -275,6 +332,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     	if (type != null) {
     		sql.append("AND ats.ThermostatType").eq(type);
     	}
+        sql.append("AND ats.archived").eq(YNBoolean.NO);
     	sql.append("ORDER BY ats.ScheduleName");
     	
     	return yukonJdbcTemplate.query(sql, accountThermostatScheduleRowAndFieldMapper);
@@ -305,6 +363,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
         if (types != null) {
             sql.append("AND ATS.ThermostatType").in(types);
         }
+        sql.append("AND ats.archived").eq(YNBoolean.NO);
         sql.append("ORDER BY ATS.ScheduleName");
         
         List<AccountThermostatSchedule> schedules = yukonJdbcTemplate.query(sql, accountThermostatScheduleRowAndFieldMapper);
@@ -344,6 +403,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
         sql.append("FROM AcctThermostatSchedule ATS");
         sql.append("WHERE ATS.AccountId").eq(accountId);
         sql.append("AND ATS.ScheduleName").eq(scheduleName);
+        sql.append("AND ats.archived").eq(YNBoolean.NO);
         if (ignorableScheduleId != null) {
             sql.append("AND AcctThermostatScheduleId").neq(ignorableScheduleId);
         }
@@ -400,7 +460,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 		sql.append("FROM InventoryToAcctThermostatSch ITATS");
 		sql.append("WHERE ITATS.AcctThermostatScheduleId").eq(atsId);
 		
-		return yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+		return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
 	}
     
     @PostConstruct
@@ -442,6 +502,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     		ats.setThermostatScheduleMode(null);
 
     		ats.setThermostatScheduleMode(rs.getEnum("ScheduleMode", ThermostatScheduleMode.class));
+    		ats.setArchived(rs.getEnum("Archived", YNBoolean.class).getBoolean());
     		
     		return ats;
     	}
@@ -453,6 +514,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
             p.addValue("ScheduleName", SqlUtils.convertStringToDbValue(ats.getScheduleName()));
             p.addValue("ThermostatType", ats.getThermostatType());
             p.addValue("ScheduleMode", ats.getThermostatScheduleMode());
+            p.addValue("Archived", YNBoolean.valueOf(ats.isArchived()));
         }
 
         @Override
@@ -526,4 +588,13 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 			return (new Integer(o1.getStartTime())).compareTo(new Integer(o2.getStartTime()));
 		}
 	};
+	
+    private void archiveSchedule(int acctThermostatScheduleId) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE AcctThermostatSchedule");
+        sql.append("SET Archived").eq(YNBoolean.YES);
+        sql.append("WHERE AcctThermostatScheduleId").eq(acctThermostatScheduleId);
+        yukonJdbcTemplate.update(sql);
+    }
 }

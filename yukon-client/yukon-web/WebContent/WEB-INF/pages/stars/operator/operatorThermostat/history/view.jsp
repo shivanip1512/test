@@ -31,6 +31,8 @@ jQuery(function(){
 });
 </script>
 
+    <div id="ajaxDialog"></div>
+    
     <c:set var="multipleThermostatsSelected" value="${fn:length(thermostatNames) > 1}"></c:set>
     <table class="thermostatPageContent">
         <tr>
