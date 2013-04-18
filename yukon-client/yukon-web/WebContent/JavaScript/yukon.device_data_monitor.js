@@ -249,7 +249,10 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
                 last_index = 0;
                 jQuery('.noItemsMessage').remove();
             } else {
-                last_index = jQuery('.f_processors_table tbody tr select:last').attr('name').substring(11,12);
+            	var str		= jQuery('.f_processors_table tbody tr select:last').attr('name');
+            	var iStart	= str.indexOf("[")+1;
+            	var iEnd	= str.indexOf("]");
+                last_index	= str.substring(iStart,iEnd);
                 last_index = parseInt(last_index, 10);
                 last_index += 1;
             }
