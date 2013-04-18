@@ -61,6 +61,7 @@
 #include "dev_mct420.h"
 #include "dev_mct470.h"
 #include "dev_mct440_2131b.h"
+#include "dev_mct440_2132b.h"
 #include "dev_mct440_2133b.h"
 #include "dev_mct_lmt2.h"
 #include "dev_mct_broadcast.h"
@@ -90,6 +91,8 @@
 #include "slctdev.h"
 #include "precompiled.h"
 #include "row_reader.h"
+
+#include <boost/assign/list_of.hpp>
 
 using namespace Cti::Devices;
 using std::string;
@@ -207,6 +210,7 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
         case TYPEMCT470:        NewDevice = CTIDBG_new Mct470Device;     break;
 
         case TYPEMCT440_2131B:  NewDevice = CTIDBG_new Mct440_2131BDevice; break;
+        case TYPEMCT440_2132B:  NewDevice = CTIDBG_new Mct440_2132BDevice; break;
         case TYPEMCT440_2133B:  NewDevice = CTIDBG_new Mct440_2133BDevice; break;
 
         case TYPE_MODBUS:       NewDevice = CTIDBG_new ModbusDevice;      break;
@@ -399,48 +403,34 @@ DLLEXPORT CtiRouteBase* RouteFactory(Cti::RowReader &rdr)
     return Route;
 }
 
-DLLEXPORT BOOL isARoute(CtiRouteBase* pSp, void *arg)
-{
-    BOOL bRet = TRUE;
-
-    return bRet;
+namespace {
+const std::set<int> carrierLpDeviceTypes = boost::assign::list_of
+        (TYPELMT2)
+        (TYPEDCT501)
+        (TYPEMCT240)
+        (TYPEMCT242)
+        (TYPEMCT248)
+        (TYPEMCT250)
+        (TYPEMCT260)
+        (TYPEMCT310IL)
+        (TYPEMCT318L)
+        (TYPEMCT410CL)
+        (TYPEMCT410FL)
+        (TYPEMCT410GL)
+        (TYPEMCT410IL)
+        (TYPEMCT420CL)
+        (TYPEMCT420CD)
+        (TYPEMCT420FL)
+        (TYPEMCT420FD)
+        (TYPEMCT430A)
+        (TYPEMCT430A3)
+        (TYPEMCT430S4)
+        (TYPEMCT430SL)
+        (TYPEMCT470);
 }
 
-
-//  This
 DLLEXPORT bool isCarrierLPDeviceType(const int type)
 {
-    switch(type)
-    {
-        case TYPELMT2:
-        case TYPEDCT501:
-        case TYPEMCT240:
-        case TYPEMCT242:
-        case TYPEMCT248:
-        case TYPEMCT250:
-        case TYPEMCT260:
-        case TYPEMCT310IL:
-        case TYPEMCT318L:
-        case TYPEMCT410CL:
-        case TYPEMCT410FL:
-        case TYPEMCT410GL:
-        case TYPEMCT410IL:
-        case TYPEMCT420CL:
-        case TYPEMCT420CD:
-        case TYPEMCT420FL:
-        case TYPEMCT420FD:
-        case TYPEMCT430A:
-        case TYPEMCT430A3:
-        case TYPEMCT430S4:
-        case TYPEMCT430SL:
-        case TYPEMCT470:
-        case TYPEMCT440_2131B:
-        case TYPEMCT440_2133B:
-        {
-            return true;
-        }
-    }
-
-    return false;
+    return carrierLpDeviceTypes.count(type);
 }
 

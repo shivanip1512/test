@@ -108,6 +108,7 @@ dev_mct470.obj \
 dev_mct4xx.obj \
 dev_mct440_213xb.obj \
 dev_mct440_2131b.obj \
+dev_mct440_2132b.obj \
 dev_mct440_2133b.obj \
 dev_mct_broadcast.obj \
 dev_mct_lmt2.obj \
@@ -196,7 +197,7 @@ ctidevdb.dll:   $(RTDB_DEVDB_FULLBUILD) $(YUKONDEVDLLOBJS) Makefile $(OBJ)\ctide
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(YUKONDEVDLLOBJS) id_devdll.obj -link $(RWLIBS) $(DEVDBLIBS) $(BOOST_LIBS) $(LINKFLAGS) ctidevdb.res 
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(YUKONDEVDLLOBJS) id_devdll.obj -link $(RWLIBS) $(DEVDBLIBS) $(BOOST_LIBS) $(LINKFLAGS) ctidevdb.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

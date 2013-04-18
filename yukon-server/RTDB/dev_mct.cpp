@@ -3713,6 +3713,7 @@ bool MctDevice::isMct440(int type)
     switch(type)
     {
         case TYPEMCT440_2131B:
+        case TYPEMCT440_2132B:
         case TYPEMCT440_2133B:
         {
             return true;

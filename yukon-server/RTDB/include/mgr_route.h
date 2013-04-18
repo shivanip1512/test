@@ -7,8 +7,6 @@
 #include "slctdev.h"
 #include "smartmap.h"
 
-IM_EX_DEVDB BOOL isARoute(CtiRouteBase*,void*);
-
 class IM_EX_DEVDB CtiRouteManager
 {
 private:
@@ -26,10 +24,10 @@ private:
 
     CtiSmartMap< CtiRouteBase > _smartMap;
 
-    void RefreshRoutes(bool &rowFound, Cti::RowReader& rdr, CtiRouteBase* (*Factory)(Cti::RowReader &), BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
-    void RefreshVersacomRoutes(bool &rowFound, Cti::RowReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
-    void RefreshRepeaterRoutes(bool &rowFound, Cti::RowReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
-    void RefreshMacroRoutes(bool &rowFound, Cti::RowReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
+    void RefreshRoutes(bool &rowFound, Cti::RowReader& rdr, CtiRouteBase* (*Factory)(Cti::RowReader &));
+    void RefreshVersacomRoutes(bool &rowFound, Cti::RowReader& rdr);
+    void RefreshRepeaterRoutes(bool &rowFound, Cti::RowReader& rdr);
+    void RefreshMacroRoutes(bool &rowFound, Cti::RowReader& rdr);
 
     void        refreshStaticPaoInfo(const Cti::Database::id_set &paoids);
     void        refreshRouteEncryptionKeys(const Cti::Database::id_set &paoids);
@@ -50,9 +48,8 @@ public:
     void apply(void (*applyFun)(const long, ptr_type, void*), void* d);
 
     void DumpList(void);
-    void DeleteList(void);
 
-    void RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &) = RouteFactory, BOOL (*fn)(CtiRouteBase*,void*) = isARoute, void *d = NULL);
+    void RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &) = RouteFactory);
     ptr_type getRouteById( LONG rid );
     virtual ptr_type getRouteByName( std::string rname );
 

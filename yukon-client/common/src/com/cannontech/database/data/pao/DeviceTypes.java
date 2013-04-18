@@ -188,12 +188,13 @@ public interface DeviceTypes extends TypeBase
     public final static int LM_GROUP_RFN_EXPRESSCOMM = DEVICE_OFFSET +145;
 
     public final static int MCT440_2131B = DEVICE_OFFSET + 146;
-    public final static int MCT440_2133B = DEVICE_OFFSET + 147;
+    public final static int MCT440_2132B = DEVICE_OFFSET + 147;
+    public final static int MCT440_2133B = DEVICE_OFFSET + 148;
 
     // RFN430A3D is above (offset + 123);
-    public final static int RFN430A3K = DEVICE_OFFSET + 148;
-    public final static int RFN430A3T = DEVICE_OFFSET + 149;
-    public final static int RFN430A3R = DEVICE_OFFSET + 150;
+    public final static int RFN430A3K = DEVICE_OFFSET + 149;
+    public final static int RFN430A3T = DEVICE_OFFSET + 150;
+    public final static int RFN430A3R = DEVICE_OFFSET + 151;
 
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
@@ -229,8 +230,9 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_MCT_410FL = {"MCT-410fL"};
 	public static final String[] STRING_MCT_410GL = {"MCT-410gL"};
 
-	public static final String[] STRING_MCT_440_2131B = {"MCT-440-2131B"};
-	public static final String[] STRING_MCT_440_2133B= {"MCT-440-2133B"};
+    public static final String[] STRING_MCT_440_2131B = {"MCT-440-2131B"};
+    public static final String[] STRING_MCT_440_2132B = {"MCT-440-2132B"};
+	public static final String[] STRING_MCT_440_2133B = {"MCT-440-2133B"};
 
 	public static final String[] STRING_MCT_470 = {"MCT-470", "MCT470"};
     public static final String[] STRING_MCT_430A = {"MCT-430A"};

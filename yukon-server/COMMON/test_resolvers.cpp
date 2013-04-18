@@ -338,6 +338,15 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     tempName = "mct-470";
     devType = TYPEMCT470;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "mct-440-2131b";
+    devType = TYPEMCT440_2131B;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "mct-440-2132b";
+    devType = TYPEMCT440_2132B;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "mct-440-2133b";
+    devType = TYPEMCT440_2133B;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
 
     tempName = "mct-430a";
     devType = TYPEMCT430A;

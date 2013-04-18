@@ -1,19 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   mgr_route
-*
-* Date:   7/23/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_route.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2008/08/14 15:57:40 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
-
-
 
 #include "mgr_route.h"
 #include "rte_xcu.h"
@@ -45,23 +30,6 @@ CtiRouteManager::~CtiRouteManager()
     // cleanupDB();  // Deallocate all the DB stuff.
 }
 
-
-void CtiRouteManager::DeleteList(void)
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-}
-
-
-
-inline RWBoolean isRouteIdStaticId(CtiRouteBase *pRoute, void* d)
-{
-    CtiRouteBase *pSp = (CtiRouteBase *)d;
-
-    return(pRoute->getRouteID() == pSp->getRouteID());
-}
 
 inline RWBoolean  isRouteNotUpdated(CtiRouteBase *pRoute, void* d)
 {
@@ -117,7 +85,7 @@ void ApplyInvalidateNotUpdated(const long key, CtiRouteSPtr pPt, void* d)
     return;
 }
 
-void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &), BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
+void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &))
 {
     ptr_type pTempCtiRoute;
     bool rowFound = false;
@@ -172,7 +140,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &), BO
                         dout << loggedSQLstring << endl;
                     }
                 }
-                RefreshRoutes(rowFound, rdr, Factory, testFunc, arg);
+                RefreshRoutes(rowFound, rdr, Factory);
                 if(DebugLevel & 0x00040000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for CCU, LCU, TCU, & CCURPT Routes" << endl;
@@ -199,7 +167,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &), BO
                         dout << loggedSQLstring << endl;
                     }
                 }
-                RefreshVersacomRoutes(rowFound, rdr, testFunc, arg);
+                RefreshVersacomRoutes(rowFound, rdr);
                 if(DebugLevel & 0x00040000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Versacom Routes" << endl;
@@ -225,7 +193,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &), BO
                         dout << loggedSQLstring << endl;
                     }
                 }
-                RefreshRepeaterRoutes(rowFound, rdr, testFunc, arg);
+                RefreshRepeaterRoutes(rowFound, rdr);
                 if(DebugLevel & 0x00040000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Repeater Information" << endl;
@@ -252,7 +220,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &), BO
                         dout << loggedSQLstring << endl;
                     }
                 }
-                RefreshMacroRoutes(rowFound, rdr, testFunc, arg);
+                RefreshMacroRoutes(rowFound, rdr);
                 if(DebugLevel & 0x00040000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Macro Routes" << endl;
@@ -297,7 +265,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &), BO
 }
 
 
-void CtiRouteManager::RefreshRoutes(bool &rowFound, Cti::RowReader& rdr, CtiRouteBase* (*Factory)(Cti::RowReader &), BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
+void CtiRouteManager::RefreshRoutes(bool &rowFound, Cti::RowReader& rdr, CtiRouteBase* (*Factory)(Cti::RowReader &))
 {
     LONG lTemp = 0;
     ptr_type pTempCtiRoute;
@@ -325,21 +293,14 @@ void CtiRouteManager::RefreshRoutes(bool &rowFound, Cti::RowReader& rdr, CtiRout
             {
                 pSp->DecodeDatabaseReader(rdr);        // Fills himself in from the reader
 
-                if(((*testFunc)(pSp, arg)))            // If I care about this point in the db in question....
-                {
-                    pSp->setUpdatedFlag();             // Mark it updated
-                    _smartMap.insert( pSp->getRouteID(), pSp );
-                }
-                else
-                {
-                    delete pSp;                         // I don't want it!
-                }
+                pSp->setUpdatedFlag();             // Mark it updated
+                _smartMap.insert( pSp->getRouteID(), pSp );
             }
         }
     }
 }
 
-void CtiRouteManager::RefreshRepeaterRoutes(bool &rowFound, Cti::RowReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
+void CtiRouteManager::RefreshRepeaterRoutes(bool &rowFound, Cti::RowReader& rdr)
 {
     while( (_smartMap.setErrorCode(rdr.isValid() ? 0 : 1) == 0) && rdr() )
     {
@@ -376,7 +337,7 @@ bool CtiRouteManager::isRepeaterRelevantToRoute(long repeater_id, long route_id)
 }
 
 
-void CtiRouteManager::RefreshMacroRoutes(bool &rowFound, Cti::RowReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
+void CtiRouteManager::RefreshMacroRoutes(bool &rowFound, Cti::RowReader& rdr)
 {
     LONG lTemp = 0;
     ptr_type pTempCtiRoute;
@@ -405,7 +366,7 @@ void CtiRouteManager::RefreshMacroRoutes(bool &rowFound, Cti::RowReader& rdr, BO
     apply(ApplyMacroRouteSort, NULL);
 }
 
-void CtiRouteManager::RefreshVersacomRoutes(bool &rowFound, Cti::RowReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
+void CtiRouteManager::RefreshVersacomRoutes(bool &rowFound, Cti::RowReader& rdr)
 {
     LONG        lTemp = 0;
     ptr_type    pTempCtiRoute;

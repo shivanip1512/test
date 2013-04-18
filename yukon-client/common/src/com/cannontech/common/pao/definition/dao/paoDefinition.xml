@@ -1443,14 +1443,8 @@
     </pao>
 
     <!-- MCT 440 BASE -->
-    <pao id="MCT_440_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_HIGH_BILL_TAG, SUPPORTS_MOVE_TAG, SUPPORTS_LOAD_PROFILE_TAG, SUPPORTS_VOLTAGE_PROFILE_TAG, SUPPORTS_PHASE_DETECT_TAG, SUPPORTS_INTEGRATED_DISCONNECT">
+    <pao id="MCT_440_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_MOVE_TAG, SUPPORTS_INTEGRATED_DISCONNECT">
         <points>
-            <point type="Analog" offset="1">
-                <name>Last Interval kW</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
             <point type="Analog" offset="100">
                 <init>true</init>
                 <name>Outages</name>
@@ -1459,49 +1453,6 @@
                 <decimalplaces value="3"/>
             </point>
 
-            <point type="DemandAccumulator" offset="1">
-                <init>true</init>
-                <name>kW</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="DemandAccumulator" offset="2">
-                <name>kW (Channel 2)</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="DemandAccumulator" offset="3">
-                <name>kW (Channel 3)</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="DemandAccumulator" offset="4">
-                <name>Voltage</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="DemandAccumulator" offset="11">
-                <name>Peak kW</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="DemandAccumulator" offset="12">
-                <name>Peak kW (Channel 2)</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="DemandAccumulator" offset="13">
-                <name>Peak kW (Channel 3)</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>            
             <point type="DemandAccumulator" offset="14">
                 <name>Max Volts</name>
                 <multiplier value="0.1"/>
@@ -1514,13 +1465,6 @@
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="DemandAccumulator" offset="21">
-                <init>true</init>
-                <name>Frozen Peak Demand</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
             <point type="DemandAccumulator" offset="24">
                 <name>Frozen Max Volts</name>
                 <multiplier value="0.1"/>
@@ -1531,92 +1475,6 @@
                 <name>Frozen Min Volts</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="DemandAccumulator" offset="101">
-                <init>true</init>
-                <name>kW-LP</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="DemandAccumulator" offset="102">
-                <name>kW-LP (Channel 2)</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="DemandAccumulator" offset="103">
-                <name>kW-LP (Channel 3)</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="DemandAccumulator" offset="104">
-                <init>true</init>
-                <name>Voltage Profile</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="DemandAccumulator" offset="111">
-                <name>Peak kW (Rate A kW)</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="DemandAccumulator" offset="131">
-                <name>Peak kW (Rate B kW)</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="DemandAccumulator" offset="151">
-                <name>Peak kW (Rate C kW)</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="DemandAccumulator" offset="171">
-                <name>Peak kW (Rate D kW)</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="DemandAccumulator" offset="600">
-                <name>Profile kW</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="DemandAccumulator" offset="601">
-                <name>Profile kVar</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="kVar"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="DemandAccumulator" offset="611">
-                <name>Frozen Peak Rate A kW</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="DemandAccumulator" offset="631">
-                <name>Frozen Peak Rate B kW</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="DemandAccumulator" offset="651">
-                <name>Frozen Peak Rate C kW</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="DemandAccumulator" offset="671">
-                <name>Frozen Peak Rate D kW</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="kW"/>
                 <decimalplaces value="3"/>
             </point>
 
@@ -1970,13 +1828,6 @@
     <pao id="MCT440_2131B" inherits="MCT_440_BASE" creatable="false">
         <displayName>MCT-440-2131B</displayName>
         <points>
-            <point type="Analog" offset="60">
-                <init>true</init>
-                <name>Last Interval Voltage</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
-            </point>
             <point type="Analog" offset="801">
                 <init>true</init>
                 <name>Instant Line Voltage</name>
@@ -1984,25 +1835,11 @@
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="61">
-                <init>true</init>
-                <name>Last Interval Current</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Amps"/>
-                <decimalplaces value="3"/>
-            </point>
             <point type="Analog" offset="811">
                 <init>true</init>
                 <name>Instant Line Current</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Amps"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="62">
-                <init>true</init>
-                <name>Last Interval Power Factor</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="PF"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="821">
@@ -2025,47 +1862,72 @@
         </commands>
     </pao>
 
+    <!-- MCT 440-2132b -->
+    <pao id="MCT440_2132B" inherits="MCT_440_BASE, THREE_PHASE_VOLTAGE, THREE_PHASE_CURRENT" creatable="false">
+        <displayName>MCT-440-2132B</displayName>
+        <points>
+            <point type="Analog" offset="801">
+                <init>true</init>
+                <name>Instant Line Voltage Phase A</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="802">
+                <init>true</init>
+                <name>Instant Line Voltage Phase B</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="811">
+                <init>true</init>
+                <name>Instant Line Current Phase A</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="812">
+                <init>true</init>
+                <name>Instant Line Current Phase B</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="821">
+                <init>true</init>
+                <name>Instant Line Power Factor Phase A</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="PF"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="822">
+                <init>true</init>
+                <name>Instant Line Power Factor Phase B</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="PF"/>
+                <decimalplaces value="3"/>
+            </point>
+        </points>
+        
+        <commands>
+            <command id="READ_INSTANT_LINE_DATA">
+                <name>Read Instant Line Data</name>
+                <cmd text="getvalue instant line data"/>
+                <pointRef name="Instant Line Voltage Phase A"/>
+                <pointRef name="Instant Line Current Phase A"/>
+                <pointRef name="Instant Line Power Factor Phase A"/>
+                <pointRef name="Instant Line Voltage Phase B"/>
+                <pointRef name="Instant Line Current Phase B"/>
+                <pointRef name="Instant Line Power Factor Phase B"/>
+            </command>
+        </commands>
+    </pao>
+
     <!-- MCT 440-2133b -->
-    <pao id="MCT440_2133B" inherits="MCT_440_BASE, MCT_4XX_POLYPHASE_BASE" creatable="false">
+    <pao id="MCT440_2133B" inherits="MCT_440_BASE, THREE_PHASE_VOLTAGE, THREE_PHASE_CURRENT" creatable="false">
         <displayName>MCT-440-2133B</displayName>
         <points>
-            <point type="Analog" offset="20">
-                <name>Last Interval Voltage Phase A</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="21">
-                <name>Last Interval Voltage Phase B</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="22">
-                <name>Last Interval Voltage Phase C</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="23">
-                <name>Profile Voltage Phase A</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="24">
-                <name>Profile Voltage Phase B</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="25">
-                <name>Profile Voltage Phase C</name>
-                <multiplier value="0.1"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
-            </point>
-
             <point type="Analog" offset="801">
                 <name>Instant Line Voltage Phase A</name>
                 <multiplier value="0.1"/>
@@ -2082,25 +1944,6 @@
                 <name>Instant Line Voltage Phase C</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
-            </point>
-
-            <point type="Analog" offset="26">
-                <name>Last Interval Current Phase A</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Amps"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="27">
-                <name>Last Interval Current Phase B</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Amps"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="28">
-                <name>Last Interval Current Phase C</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
 
@@ -2123,24 +1966,6 @@
                 <decimalplaces value="3"/>
             </point>
 
-            <point type="Analog" offset="29">
-                <name>Last Interval Power Factor Phase A</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="PF"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="30">
-                <name>Last Interval Power Factor Phase B</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="PF"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="31">
-                <name>Last Interval Power Factor Phase C</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="PF"/>
-                <decimalplaces value="3"/>
-            </point>
             <point type="Analog" offset="821">
                 <name>Instant Line Power Factor Phase A</name>
                 <multiplier value="1.0"/>
@@ -2160,6 +1985,22 @@
                 <decimalplaces value="3"/>
             </point>
         </points>
+
+        <commands>
+            <command id="READ_INSTANT_LINE_DATA">
+                <name>Read Instant Line Data</name>
+                <cmd text="getvalue instant line data"/>
+                <pointRef name="Instant Line Voltage Phase A"/>
+                <pointRef name="Instant Line Current Phase A"/>
+                <pointRef name="Instant Line Power Factor Phase A"/>
+                <pointRef name="Instant Line Voltage Phase B"/>
+                <pointRef name="Instant Line Current Phase B"/>
+                <pointRef name="Instant Line Power Factor Phase B"/>
+                <pointRef name="Instant Line Voltage Phase C"/>
+                <pointRef name="Instant Line Current Phase C"/>
+                <pointRef name="Instant Line Power Factor Phase C"/>
+            </command>
+        </commands>
     </pao>
 
     <!-- MCT 410 BASE -->

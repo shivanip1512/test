@@ -96,6 +96,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     MCT430S4(DeviceTypes.MCT430S4, "MCT-430S4", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT430SL(DeviceTypes.MCT430SL, "MCT-430SL", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT440_2131B(DeviceTypes.MCT440_2131B, "MCT-440-2131B", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT440_2132B(DeviceTypes.MCT440_2132B, "MCT-440-2132B", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT440_2133B(DeviceTypes.MCT440_2133B, "MCT-440-2133B", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT470(DeviceTypes.MCT470, "MCT-470", PaoCategory.DEVICE, PaoClass.CARRIER),
 
@@ -308,6 +309,7 @@ public enum PaoType implements DatabaseRepresentationSource {
         meterTypesBuilder.add(MCT430S4);
         meterTypesBuilder.add(MCT430SL);
         meterTypesBuilder.add(MCT440_2131B);
+        meterTypesBuilder.add(MCT440_2132B);
         meterTypesBuilder.add(MCT440_2133B);
         meterTypesBuilder.add(MCT470);
         meterTypesBuilder.add(RFN410FL);
@@ -357,6 +359,7 @@ public enum PaoType implements DatabaseRepresentationSource {
             MCT430SL,
             MCT430A3,
             MCT440_2131B,
+            MCT440_2132B,
             MCT440_2133B,
             MCT470,
             MCT310CT,

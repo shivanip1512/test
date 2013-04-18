@@ -230,6 +230,9 @@ public final class DeviceFactory {
         case MCT440_2131B:
             returnDevice = new MCT440_2131B();
             break;
+        case MCT440_2132B:
+            returnDevice = new MCT440_2132B();
+            break;
         case MCT440_2133B:
             returnDevice = new MCT440_2133B();
             break;

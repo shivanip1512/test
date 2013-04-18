@@ -39,7 +39,8 @@
 #define TYPEMCT430S4                         93
 #define TYPEMCT430SL                         94
 #define TYPEMCT440_2131B                     95
-#define TYPEMCT440_2133B                     96
+#define TYPEMCT440_2132B                     96
+#define TYPEMCT440_2133B                     97
 
 #define TYPELCR3102                          120
 
