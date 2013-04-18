@@ -12,6 +12,17 @@ ALTER TABLE ECToAcctThermostatSchedule
             ON DELETE CASCADE;
 /* End YUK-11880 */
 
+/* Start YUK-12012 */
+ALTER TABLE AcctThermostatSchedule
+ADD Archived CHAR(1);
+
+UPDATE AcctThermostatSchedule
+SET Archived = 'N';
+
+ALTER TABLE AcctThermostatSchedule
+MODIFY Archived CHAR(1) NOT NULL;
+/* End YUK-12012 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

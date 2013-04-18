@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/8/2013 12:54:20 PM                         */
+/* Created on:     4/18/2013 1:15:53 PM                         */
 /*==============================================================*/
 
 
@@ -47,6 +47,7 @@ create table AcctThermostatSchedule (
    ScheduleName         varchar(60)          not null,
    ThermostatType       varchar(60)          not null,
    ScheduleMode         varchar(60)          null,
+   Archived             char(1)              not null,
    constraint PK_AcctThermSch primary key nonclustered (AcctThermostatScheduleId)
 )
 go

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/5/2013 3:06:20 PM                          */
+/* Created on:     4/18/2013 1:17:07 PM                         */
 /*==============================================================*/
 
 
@@ -48,6 +48,7 @@ create table AcctThermostatSchedule  (
    ScheduleName         VARCHAR2(60)                    not null,
    ThermostatType       VARCHAR2(60)                    not null,
    ScheduleMode         VARCHAR2(60),
+   Archived             CHAR(1)                         not null,
    constraint PK_AcctThermSch primary key (AcctThermostatScheduleId)
 );
 
