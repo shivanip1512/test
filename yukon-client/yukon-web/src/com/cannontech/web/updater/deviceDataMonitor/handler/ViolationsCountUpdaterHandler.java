@@ -2,6 +2,7 @@ package com.cannontech.web.updater.deviceDataMonitor.handler;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.remoting.RemoteAccessException;
 
 import com.cannontech.amr.deviceDataMonitor.dao.DeviceDataMonitorDao;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
@@ -33,8 +34,14 @@ public class ViolationsCountUpdaterHandler implements DeviceDataUpdaterHandler {
 		    
 		    // if this monitor is disabled then just return "N/A"
 		    if (!monitor.isEnabled()) return messageSourceAccessor.getMessage(NA_MSG_KEY);
-		    
-	        boolean areViolationsBeingCalculated = deviceDataMonitorService.areViolationsBeingCalculatedForMonitor(monitorId);
+
+	        boolean areViolationsBeingCalculated;
+            try {
+                areViolationsBeingCalculated = deviceDataMonitorService.areViolationsBeingCalculatedForMonitor(monitorId);
+            } catch (RemoteAccessException e) {
+                // Yukon Service Manager is probably down or we are not configured properly to talk to it.
+                return messageSourceAccessor.getMessage(NA_MSG_KEY);
+            }
 	        if (!areViolationsBeingCalculated) {
 	            int violationsCount = deviceDataMonitorService.getMonitorViolationCountById(monitorId);
 	            return String.valueOf(violationsCount);

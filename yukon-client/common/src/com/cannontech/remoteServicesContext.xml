@@ -11,9 +11,22 @@
     <context:annotation-config/>
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
+    <bean id="remoteServicesConnectionFactoryTarget" class="com.cannontech.services.jms.YukonJmsConnectionFactory"
+        lazy-init="true" autowire-candidate="false">
+        <property name="connectionType" value="REMOTE_SERVICES"/>
+    </bean>
+    <bean id="remoteServicesConnectionFactory" class="org.springframework.aop.framework.ProxyFactoryBean"
+        autowire-candidate="false">
+        <property name="targetSource">
+            <bean class="org.springframework.aop.target.LazyInitTargetSource">
+                <property name="targetBeanName"><idref local="remoteServicesConnectionFactoryTarget"/></property>
+            </bean>
+        </property>
+    </bean>
+
     <bean class="org.springframework.jms.remoting.JmsInvokerProxyFactoryBean">
         <property name="serviceInterface" value="com.cannontech.amr.deviceDataMonitor.service.DeviceDataMonitorService"/>
-        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="connectionFactory" ref="remoteServicesConnectionFactory"/>
         <property name="queue" ref="serviceProxyQueue"/>
     </bean>
 </beans>
