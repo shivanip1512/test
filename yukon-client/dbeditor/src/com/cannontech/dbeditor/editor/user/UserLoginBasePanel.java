@@ -36,6 +36,7 @@ import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.common.i18n.DisplayableEnumCellRenderer;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.user.UserAuthenticationInfo;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.DaoFactory;
@@ -279,7 +280,7 @@ public class UserLoginBasePanel extends DataInputPanel {
         List<LiteUserGroup> allUserGroups = userGroupDao.getAllLiteUserGroups();
         
         List<String> userGroupNames = new ArrayList<>();
-        userGroupNames.add("(none)");
+        userGroupNames.add(CtiUtilities.STRING_NONE);
         userGroupNames.addAll(
             Lists.transform(allUserGroups, new Function<LiteUserGroup, String>() {
                 @Override
@@ -497,7 +498,7 @@ public class UserLoginBasePanel extends DataInputPanel {
         }
 
         String userGroupName = String.valueOf(getJListUserGroup().getSelectedItem());
-        if (userGroupName.equals("(none)")) {
+        if (userGroupName.equals(CtiUtilities.STRING_NONE)) {
             login.getYukonUser().setUserGroupId(null);
         } else {
             LiteUserGroup newUserGroup = userGroupDao.getLiteUserGroupByUserGroupName(userGroupName);
