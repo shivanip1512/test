@@ -51,6 +51,8 @@ struct test_Mct440_213xBDevice : Cti::Devices::Mct440_213xBDevice
     using Mct440_213xBDevice::decodeGetConfigHoliday;
     using Mct440_213xBDevice::executePutStatus;
     using Mct440_213xBDevice::decodeGetStatusDisconnect;
+    using Mct440_213xBDevice::executeGetStatus;
+    using Mct440_213xBDevice::decodeGetStatusEventLog;
 
     bool test_isSupported_Mct410Feature_OutageUnits()
     {  return isSupported(Feature_OutageUnits);  }
@@ -4283,4 +4285,203 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0A5  );
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 0      );
     }
+}
+
+
+BOOST_AUTO_TEST_CASE(test_executeGetStatusEventLog)
+{
+    CtiRequestMsg                   request;
+    CtiDeviceBase::CtiMessageList   vgList;
+    CtiDeviceBase::CtiMessageList   retList;
+    CtiDeviceBase::OutMessageList   outList;
+
+    test_Mct440_213xB test_dev;
+
+    CtiCommandParser parse("getstatus eventlog");
+
+    CtiOutMessage *outmsg = CTIDBG_new OUTMESS;
+
+    BOOST_CHECK_EQUAL(NoError, test_dev.executeGetStatus(&request, parse, outmsg, vgList, retList, outList));
+
+    BOOST_CHECK_EQUAL(outList.size(), 10);
+
+    for(int offset=0 ; offset < outList.size(); offset++ )
+    {
+        OUTMESS* outmsg = outList.front();
+
+        BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Read);
+        BOOST_CHECK_EQUAL(outmsg->Sequence,            Cti::Protocols::EmetconProtocol::GetStatus_EventLog);
+        BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x50 + offset);
+        BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length,   10);
+
+        outList.pop_front();
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(test_decodeGetStatusEventLog)
+{
+    INMESS                          InMessage;
+    CtiTime                         t(CtiDate(1, 1, 2011), 19, 16, 0);  //  1293930960 seconds (0x4D1FD1D0)
+    CtiDeviceBase::CtiMessageList   vgList;
+    CtiDeviceBase::CtiMessageList   retList;
+    CtiDeviceBase::OutMessageList   outList; // not use
+
+    test_Mct440_213xB test_dev;
+
+    {
+        // -- test no event (event code 0x0) --
+        unsigned char test_data[10] = {0x01, 0x02, 0x03, 0x04, 0x0A, 0x05, 0x00, 0x00, 0x00, 0x00};
+        memcpy( InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
+
+        InMessage.Return.UserID                        = 0;
+        InMessage.Sequence                             = Cti::Protocols::EmetconProtocol::GetStatus_EventLog;
+        InMessage.Return.ProtocolInfo.Emetcon.Function = 0x50; // between 0x50 and 0x59
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(&InMessage, t, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE(retMsg);
+
+        string expected =
+        "Test MCT-440-213xB / Parameters Change:\n"
+        "Time: " + CtiTime(0x01020304).asString() + "\n"
+        "User ID: 2565\n"
+        "Event: No Event\n";
+
+        BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
+
+        retList.pop_front();
+    }
+
+    {
+        // -- test primary power up (event code 0x0) due to power failure --
+        unsigned char test_data[10] = {0x10, 0x20, 0x30, 0x40, 0x00, 0x05, 0x00, 0x02, 0x00, 0x03};
+        memcpy( InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
+
+        InMessage.Return.UserID                        = 0;
+        InMessage.Sequence                             = Cti::Protocols::EmetconProtocol::GetStatus_EventLog;
+        InMessage.Return.ProtocolInfo.Emetcon.Function = 0x59; // between 0x50 and 0x59
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(&InMessage, t, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE(retMsg);
+
+        string expected =
+        "Test MCT-440-213xB / Parameters Change:\n"
+        "Time: " + CtiTime(0x10203040).asString() + "\n"
+        "User ID: 5\n"
+        "Event: Primary Power Up\n"
+        "Reset Cause: Power failure\n";
+
+        BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
+
+        retList.pop_front();
+    }
+
+    {
+        // -- test Disconnect Switch (event code 50 ) -- format 2
+        unsigned char test_data[10] = {0x11, 0x22, 0x33, 0x44, 0x02, 0x03, 0x00, 0x32, 0xEC, 0x4D};
+        memcpy( InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
+
+        InMessage.Return.UserID                        = 0;
+        InMessage.Sequence                             = Cti::Protocols::EmetconProtocol::GetStatus_EventLog;
+        InMessage.Return.ProtocolInfo.Emetcon.Function = 0x55; // between 0x50 and 0x59
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(&InMessage, t, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE(retMsg);
+
+        string expected =
+        "Test MCT-440-213xB / Parameters Change:\n"
+        "Time: " + CtiTime(0x11223344).asString() + "\n"
+        "User ID: 515\n"
+        "Event: Disconnect Switch Error Detected\n"
+        "Internal state: opened\n"
+        "External state: closed\n"
+        "Phase A RMS voltage: <= 195 V RMS\n"
+        "Phase B RMS voltage: <= 235 V RMS\n"
+        "Phase C RMS voltage: <= 245 V RMS\n";
+
+        BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
+
+        retList.pop_front();
+    }
+
+    {
+        // -- test Disconnect Switch (event code 50 ) -- format 3
+        unsigned char test_data[10] = {0x11, 0x22, 0x33, 0x44, 0x00, 0x03, 0x00, 0x32, 0xEC, 0x46};
+        memcpy( InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
+
+        InMessage.Return.UserID                        = 0;
+        InMessage.Sequence                             = Cti::Protocols::EmetconProtocol::GetStatus_EventLog;
+        InMessage.Return.ProtocolInfo.Emetcon.Function = 0x55; // between 0x50 and 0x59
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(&InMessage, t, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE(retMsg);
+
+        string expected =
+        "Test MCT-440-213xB / Parameters Change:\n"
+        "Time: " + CtiTime(0x11223344).asString() + "\n"
+        "User ID: 3\n"
+        "Event: Disconnect Switch Error Detected\n"
+        "Frequency deviation: -2 Hz\n"
+        "Meter temparature: 2 C\n"
+        "Highest instantaneous power (fwd+rev) over last 5 seconds: 48..63 kW\n"
+        "Highest phase DC voltage compensation: >= 56 V\n";
+
+        BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
+
+        retList.pop_front();
+    }
+
+    {
+        // -- test Disconnect Switch (event code 50 ) -- format 4
+        unsigned char test_data[10] = {0x11, 0x22, 0x33, 0x44, 0x00, 0x04, 0x00, 0x32, 0xEC, 0x4C};
+        memcpy( InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
+
+        InMessage.Return.UserID                        = 0;
+        InMessage.Sequence                             = Cti::Protocols::EmetconProtocol::GetStatus_EventLog;
+        InMessage.Return.ProtocolInfo.Emetcon.Function = 0x55; // between 0x50 and 0x59
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(&InMessage, t, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE(retMsg);
+
+        string expected =
+        "Test MCT-440-213xB / Parameters Change:\n"
+        "Time: " + CtiTime(0x11223344).asString() + "\n"
+        "User ID: 4\n"
+        "Event: Disconnect Switch Error Detected\n"
+        "Internal state: closed\n"
+        "Disconnect state: open\n"
+        "Load side voltage: present\n"
+        "Instantaneous power: 472 W\n";
+
+        BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
+
+        retList.pop_front();
+    }
+
+
 }

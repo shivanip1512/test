@@ -12,6 +12,7 @@
 #include "config_data_mct.h"
 #include "portglob.h"
 #include "dllyukon.h"
+#include "eventlog_mct440_213xb.h"
 
 #include <stack>
 
@@ -739,6 +740,71 @@ INT Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
 
 /*
 *********************************************************************************************************
+*                                          executeGetValue()
+*
+* Description :
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+INT Mct440_213xBDevice::executeGetStatus(CtiRequestMsg    *pReq,
+                                        CtiCommandParser  &parse,
+                                        OUTMESS           *&OutMessage,
+                                        CtiMessageList    &vgList,
+                                        CtiMessageList    &retList,
+                                        OutMessageList    &outList)
+{
+    INT nRet = NoMethod;
+
+    // ------------------- EVENT LOG --------------------- //
+
+    if( parse.isKeyValid("eventlog") )
+    {
+        OutMessage->DeviceID = getID();
+        OutMessage->TargetID = getID();
+        OutMessage->Port     = getPortID();
+        OutMessage->Remote   = getAddress();
+        OutMessage->TimeOut  = 2;
+        OutMessage->Retry    = 2;
+
+        OutMessage->Request.RouteID = getRouteID();
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+
+        OutMessage->Buffer.BSt.IO = EmetconProtocol::IO_Read;
+        OutMessage->Sequence      = EmetconProtocol::GetStatus_EventLog;
+
+        for( int offset = 0; offset <= Memory_EventLogMaxOffset; offset++ )
+        {
+            OutMessage->Buffer.BSt.Function = Memory_EventLogBasePos + offset;
+            OutMessage->Buffer.BSt.Length   = Memory_EventLogLen;
+
+            outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+        }
+
+        delete OutMessage;  //  we didn't use it, we made our own
+        OutMessage = 0;
+
+        nRet = NoError;
+    }
+
+    // -------------- INHERITED FROM MCT-420 -------------- //
+
+    else
+    {
+        nRet = Inherited::executeGetValue(pReq, parse, OutMessage, vgList, retList, outList);
+    }
+
+    return nRet;
+}
+
+/*
+*********************************************************************************************************
 *                                              sspecValid()
 *
 * Description :
@@ -842,6 +908,10 @@ INT Mct440_213xBDevice::ModelDecode(INMESS          *InMessage,
 
         case EmetconProtocol::GetConfig_Options:
             status = decodeGetConfigOptions(InMessage, TimeNow, vgList, retList, outList);
+            break;
+
+        case EmetconProtocol::GetStatus_EventLog:
+            status = decodeGetStatusEventLog(InMessage, TimeNow, vgList, retList, outList);
             break;
 
         default:
@@ -1117,6 +1187,82 @@ INT Mct440_213xBDevice::decodeGetValueTOUkWh(INMESS          *InMessage,
     return status;
 }
 
+/*
+*********************************************************************************************************
+*                                   decodeGetStatusEventLog()
+*
+* Description : Decode event log received (read 0x50 - 0x59)
+*
+* Argument(s) :
+*
+* Return(s)   :
+*
+* Caller(s)   :
+*
+* Note(s)     :
+*********************************************************************************************************
+*/
+INT Mct440_213xBDevice::decodeGetStatusEventLog(INMESS          *InMessage,
+                                                CtiTime         &TimeNow,
+                                                CtiMessageList  &vgList,
+                                                CtiMessageList  &retList,
+                                                OutMessageList  &outList)
+{
+    INT status = NORMAL;
+
+    const int offset = InMessage->Return.ProtocolInfo.Emetcon.Function - Memory_EventLogBasePos;
+
+    if( offset < 0 || offset > Memory_EventLogMaxOffset )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Invalid InMessage.Return.ProtocolInfo.Emetcon.Function " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+        return TYNF;
+    }
+
+    DSTRUCT &DSt = InMessage->Buffer.DSt;
+
+    const unsigned long timestamp = ( DSt.Message[0] << 24 ) |
+                                    ( DSt.Message[1] << 16 ) |
+                                    ( DSt.Message[2] <<  8 ) |
+                                    ( DSt.Message[3] );
+
+    const unsigned long userId    = ( DSt.Message[4] <<  8 ) |
+                                    ( DSt.Message[5] );
+
+    const unsigned long eventCode = ( DSt.Message[6] <<  8 ) |
+                                    ( DSt.Message[7] );
+
+    const unsigned long argument  = ( DSt.Message[8] <<  8 ) |
+                                    ( DSt.Message[9] );
+
+    string eventName,
+           resolvedArgument;
+
+    if( !Mct440_213xBEventLog::resolveEventCode( eventCode, argument, eventName, resolvedArgument ))
+    {
+        eventName = "received invalid event code " + CtiNumStr(eventCode);
+    }
+
+    string resultString = getName() + " / Parameters Change:\n" +
+                          "Time: " + CtiTime(timestamp).asString() + "\n" +
+                          "User ID: " + CtiNumStr(userId) + "\n" +
+                          "Event: " + eventName + "\n";
+
+    if( !resolvedArgument.empty() )
+    {
+        resultString += resolvedArgument + "\n";
+    }
+
+    std::auto_ptr<CtiReturnMsg> ReturnMsg( CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr ));
+
+    ReturnMsg->setUserMessageId( InMessage->Return.UserID );
+    ReturnMsg->setResultString( resultString );
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
+
+    return status;
+}
 
 /*
 *********************************************************************************************************

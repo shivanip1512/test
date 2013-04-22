@@ -86,6 +86,7 @@ enum Commands
         GetValue_InstantLineData,
         GetValue_TOUkWhReverse,
         GetValue_FrozenTOUkWhReverse,
+    GetStatus_EventLog,
 
     // PutStatus Commands
     PutStatus_Reset,

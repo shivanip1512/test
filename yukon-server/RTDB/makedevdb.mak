@@ -154,6 +154,7 @@ encryption_cbcrbt.obj \
 encryption_cmac.obj \
 encryption_oneway.obj \
 encryption_oneway_message.obj \
+eventlog_mct440_213xb.obj \
 
 
 DEVDBLIBS=\
