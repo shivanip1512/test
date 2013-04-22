@@ -8906,7 +8906,7 @@
             <point type="Analog" offset="5">
                 <init>true</init>
                 <name>Temperature</name>
-                <multiplier value="1.0"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="Degrees"/>
                 <decimalplaces value="3"/>
             </point>
