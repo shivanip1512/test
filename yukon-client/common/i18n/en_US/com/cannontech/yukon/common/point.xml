@@ -145,6 +145,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.SELF_CHECK_ERROR">Self Check Error</entry>    
     <entry key="yukon.common.attribute.builtInAttribute.SERVICE_CURRENT_TEST_FAILURE_WARNING">Service Current Test Failure Warning</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SERVICE_DISCONNECT_SWITCH_ERROR">Service Disconnect Switch Error</entry>  
+    <entry key="yukon.common.attribute.builtInAttribute.SERVICE_DISCONNECT_SWITCH_OPEN">Service Disconnect Switch Open</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR">Service Disconnect Switch Sensor Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SERVICE_STATUS">Service Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.STUCK_SWITCH">Stuck Switch</entry>
@@ -169,6 +170,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KWH">Sum kWh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVAH">Sum kVAh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVARH">Sum kVArh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVAR">Peak kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KWH_PER_INTERVAL">Delivered kWh per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KWH_PER_INTERVAL">Received kWh per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KWH_PER_INTERVAL">Sum kWh per Interval</entry>

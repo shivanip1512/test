@@ -9,7 +9,6 @@ import com.cannontech.util.NaturalOrderComparator;
 
 public abstract class DeviceGroup implements Comparable<DeviceGroup> {
     private String cachedFullNameInternal = null;
-    private String cachedFullNameInternalLocal = null;
 
     /**
      * Method to determine if this group can have its name changed, parent
@@ -48,7 +47,6 @@ public abstract class DeviceGroup implements Comparable<DeviceGroup> {
     
     protected void clearNameCache() {
         cachedFullNameInternal = null;
-        cachedFullNameInternalLocal = null;
     }
 
     public String getFullName(YukonUserContext context) {
@@ -72,10 +70,7 @@ public abstract class DeviceGroup implements Comparable<DeviceGroup> {
             return "";
         }
 
-        if (cachedFullNameInternalLocal == null) {
-            cachedFullNameInternalLocal = getParent().getFullNameInternal(context) + "/" + getName(context, getName());
-        }
-        return cachedFullNameInternalLocal;
+        return getParent().getFullNameInternal(context) + "/" + getName(context, getName());
     }
     
     private String getFullNameInternal() {
