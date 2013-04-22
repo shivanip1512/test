@@ -566,12 +566,14 @@ struct mctExecute_helper : executeRequest_helper
 {
     CtiRequestMsg request;
     OUTMESS *om;
-    std::auto_ptr<OUTMESS> ptr;
 
-    mctExecute_helper() :
-        ptr(new OUTMESS)
+    mctExecute_helper()
     {
-        om = ptr.get();
+        om = new OUTMESS;
+    }
+    ~mctExecute_helper()
+    {
+        delete om;
     }
 };
 
