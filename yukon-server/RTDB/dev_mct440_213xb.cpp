@@ -3534,14 +3534,14 @@ INT Mct440_213xBDevice::decodeGetValueKWH(INMESS         *InMessage,
 
     if( !status )
     {
-        const int channels = ChannelCount;
-/*
+        int channels = ChannelCount;
+
         //  cheaper than looking for parse.getFlags() & CMD_FLAG_GV_KWH
         if( stringContainsIgnoreCase(InMessage->Return.CommandStr, " kwh") )
         {
             channels = 1;
         }
-*/
+
         for( int chan_nbr = 0; chan_nbr < channels; chan_nbr++ )
         {
             int offset = (chan_nbr * 3);
