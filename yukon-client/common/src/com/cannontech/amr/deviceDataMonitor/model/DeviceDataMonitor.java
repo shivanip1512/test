@@ -1,6 +1,8 @@
 package com.cannontech.amr.deviceDataMonitor.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -11,14 +13,13 @@ import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeStateGroup;
 import com.cannontech.common.util.LazyList;
-import com.google.common.collect.Sets;
 
 public class DeviceDataMonitor implements PointMonitor, Serializable {
     private static final long serialVersionUID = 1L;
 
     private Integer id;
     private String name;
-    private String groupName = SystemGroupEnum.METERS.getFullPath();
+    private String groupName = null;
     private boolean enabled = true;
     private List<DeviceDataMonitorProcessor> processors = LazyList.ofInstance(DeviceDataMonitorProcessor.class);
 
@@ -81,7 +82,7 @@ public class DeviceDataMonitor implements PointMonitor, Serializable {
     }
 
     public Set<Attribute> getProcessorAttributes() {
-        Set<Attribute> attributes = Sets.newHashSet();
+        Set<Attribute> attributes = new HashSet<>();
         for (DeviceDataMonitorProcessor processor : processors) {
             attributes.add(processor.getAttribute());
         }
@@ -96,8 +97,8 @@ public class DeviceDataMonitor implements PointMonitor, Serializable {
         return SystemGroupEnum.DEVICE_DATA_MONITOR_PROCESSING.getFullPath() + getViolationsDeviceGroupName(); 
     }
 
-    public Set<AttributeStateGroup> getAttributeStateGroups() {
-        Set<AttributeStateGroup> attributeStateGroup = Sets.newHashSet();
+    public List<AttributeStateGroup> getAttributeStateGroups() {
+        List<AttributeStateGroup> attributeStateGroup = new ArrayList<>();
         for (DeviceDataMonitorProcessor processor: this.processors) {
             attributeStateGroup.add(new AttributeStateGroup(processor.getAttribute(), processor.getStateGroup()));
         }

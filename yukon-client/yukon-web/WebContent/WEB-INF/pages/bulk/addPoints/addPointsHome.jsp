@@ -163,7 +163,14 @@
             <tags:slowInput myFormId="executeAddPointsForm" labelBusy="${addButtonLabel}" label="${addButtonLabel}" />
             
         </form>
-        
+<c:if test="${not empty preselectedPointIdentifiers}">
+<script type="text/javascript">
+<c:forEach var="pointTypeOffset" items="${preselectedPointIdentifiers}">
+	jQuery("[name$='${pointTypeOffset}']").attr("checked","checked");
+	jQuery("[name$='${pointTypeOffset}']").closest('td').addClass('preselectedPoint');
+</c:forEach>
+</script>
+</c:if>
     </tags:bulkActionContainer>
                     
 </cti:standardPage>

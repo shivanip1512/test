@@ -97,7 +97,7 @@ public final class SimpleDevice implements YukonDevice {
             }
         };
 
-    public static Function<SimpleDevice, Integer> PAO_ID_FUNCITON =
+    public static Function<SimpleDevice, Integer> PAO_ID_FUNCTION =
         new Function<SimpleDevice, Integer>() {
             @Override
             public Integer apply(SimpleDevice simpleDevice) {

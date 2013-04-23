@@ -1,5 +1,6 @@
 package com.cannontech.common.pao.service.impl;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -19,6 +20,7 @@ import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.util.ReverseList;
+import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
@@ -26,41 +28,55 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
+import com.cannontech.core.dao.impl.PointDaoImpl;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.vendor.DatabaseVendor;
+import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
+import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 
 /**
  * Implementation class for PointService
  */
 public class PointServiceImpl implements PointService {
+    private static final String litePointSql = "SELECT DISTINCT P.POINTID, POINTNAME, POINTTYPE, P.PAOBJECTID, POINTOFFSET, STATEGROUPID, UM.FORMULA, UM.UOMID"
+            + " FROM "
+            + "( POINT P LEFT OUTER JOIN POINTUNIT PU ON P.POINTID = PU.POINTID "
+            + "LEFT OUTER JOIN UNITMEASURE UM ON PU.UOMID = UM.UOMID ) ";
 
     private PointDao pointDao = null;
     private RawPointHistoryDao rphDao = null;
     private AttributeService attributeService;
     private DeviceGroupService deviceGroupService;
     private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired
+    private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
 
     @Override
-    public LitePoint getPointForPao(YukonPao pao, PointIdentifier pointIdentifier) throws NotFoundException {
+    public LitePoint getPointForPao(YukonPao pao,
+            PointIdentifier pointIdentifier) throws NotFoundException {
 
-        LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(pao.getPaoIdentifier().getPaoId(),
-																        		pointIdentifier.getOffset(),
-																        		pointIdentifier.getPointType().getPointTypeId());
+        LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(
+                pao.getPaoIdentifier().getPaoId(), pointIdentifier.getOffset(),
+                pointIdentifier.getPointType().getPointTypeId());
 
         return point;
     }
-    
+
     @Override
-    public LitePoint getPointForPao(PaoPointIdentifier paoPointIdentifier) throws NotFoundException {
-        return getPointForPao(paoPointIdentifier.getPaoIdentifier(), paoPointIdentifier.getPointIdentifier());
+    public LitePoint getPointForPao(PaoPointIdentifier paoPointIdentifier)
+            throws NotFoundException {
+        return getPointForPao(paoPointIdentifier.getPaoIdentifier(),
+                paoPointIdentifier.getPointIdentifier());
     }
 
     @Override
-    public boolean pointExistsForPao(YukonPao pao, PointIdentifier pointIdentifier) {
+    public boolean pointExistsForPao(YukonPao pao,
+            PointIdentifier pointIdentifier) {
 
         try {
             LitePoint point = this.getPointForPao(pao, pointIdentifier);
@@ -73,12 +89,13 @@ public class PointServiceImpl implements PointService {
 
         return true;
     }
-    
+
     @Override
     public boolean pointExistsForPao(PaoPointIdentifier paoPointIdentifier) {
-        return pointExistsForPao(paoPointIdentifier.getPaoIdentifier(), paoPointIdentifier.getPointIdentifier());
+        return pointExistsForPao(paoPointIdentifier.getPaoIdentifier(),
+                paoPointIdentifier.getPointIdentifier());
     }
-    
+
     /**
      * Gets all the previous reading information for a given point.
      * 
@@ -89,13 +106,15 @@ public class PointServiceImpl implements PointService {
     public PreviousReadings getPreviousReadings(LitePoint lp) {
 
         PreviousReadings previousReadings = new PreviousReadings();
-        
+
         // ask for six months, with a max of 36 results
         Date today = new Date();
 
         // first 36 hours - all points
         Date sixMonthsAgo = DateUtils.addMonths(today, -6);
-        List<PointValueHolder> previous36 = rphDao.getLimitedPointData(lp.getPointID(), sixMonthsAgo, today, Clusivity.EXCLUSIVE_INCLUSIVE, false, Order.REVERSE, 36);
+        List<PointValueHolder> previous36 = rphDao.getLimitedPointData(
+                lp.getPointID(), sixMonthsAgo, today,
+                Clusivity.EXCLUSIVE_INCLUSIVE, false, Order.REVERSE, 36);
 
         List<PointValueHolder> previous3Months = Collections.emptyList();
         if (previous36.size() == 36) {
@@ -116,76 +135,242 @@ public class PointServiceImpl implements PointService {
                         ninetyThreeDaysAgo, beforeDate,
                         ChartInterval.DAY_MIDNIGHT,
                         RawPointHistoryDao.Mode.HIGHEST);
-                
-                previous3Months = new ReverseList<PointValueHolder>(previous3Months);
+
+                previous3Months = new ReverseList<PointValueHolder>(
+                        previous3Months);
             }
         } else {
             previousReadings.setCutoffDate(sixMonthsAgo);
         }
-        
+
         previousReadings.setPrevious36(previous36);
         previousReadings.setPrevious3Months(previous3Months);
-        
+
         return previousReadings;
     }
-    
+
     @Override
-    public int getCountOfGroupAttributeStateGroup(DeviceGroup group, Attribute attribute,
-                                                  LiteStateGroup stateGroup) {
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
+    public int getCountOfGroupAttributeStateGroup(DeviceGroup group,
+            Attribute attribute, LiteStateGroup stateGroup) {
+
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select count(*)");
-        SqlFragmentSource lookupSql = attributeService.getAttributeLookupSql(attribute);
-        sql.append("from (").appendFragment(lookupSql).append(") pao_point_lookup");
-        sql.append(  "join Point p on p.pointId = pao_point_lookup.pointId");
+        final SqlFragmentSource lookupSql = attributeService
+                .getAttributeLookupSql(attribute);
+        sql.append("from (").appendFragment(lookupSql)
+                .append(") pao_point_lookup");
+        sql.append("join Point p on p.pointId = pao_point_lookup.pointId");
         sql.append("where");
-        sql.append(  "p.stateGroupId").eq_k(stateGroup.getStateGroupID());
-        SqlFragmentSource groupSqlWhereClause = deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "pao_point_lookup.paObjectId");
-        sql.append(  "and").appendFragment(groupSqlWhereClause);
-        
+        sql.append("p.stateGroupId").eq_k(stateGroup.getStateGroupID());
+        final SqlFragmentSource groupSqlWhereClause = deviceGroupService
+                .getDeviceGroupSqlWhereClause(Collections.singleton(group),
+                        "pao_point_lookup.paObjectId");
+        sql.append("and").appendFragment(groupSqlWhereClause);
+
         int result = yukonJdbcTemplate.queryForInt(sql);
-        
+
         return result;
     }
-    
+
+    /**
+     * 
+     * @param group
+     * @param attribute
+     * @param stateGroup
+     * @return
+     */
     @Override
-    public List<Integer> getPaoIdsForGroupAttributeStateGroup(DeviceGroup group, Attribute attribute,
-                                                              LiteStateGroup stateGroup) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select pao_point_lookup.paObjectid");
-        SqlFragmentSource lookupSql = attributeService.getAttributeLookupSql(attribute);
-        sql.append("from (").appendFragment(lookupSql).append(") pao_point_lookup");
-        sql.append(  "join Point p on p.pointId = pao_point_lookup.pointId");
-        sql.append("where");
-        sql.append(  "p.stateGroupId").eq_k(stateGroup.getStateGroupID());
-        SqlFragmentSource groupSqlWhereClause = deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "pao_point_lookup.paObjectId");
-        sql.append(  "and").appendFragment(groupSqlWhereClause);
-        
-        return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+    public List<Integer> getPaoIdsForGroupAttributeStateGroup(
+            DeviceGroup group, Attribute attribute, LiteStateGroup stateGroup) {
+        if (stateGroup == null)
+            return new ArrayList<Integer>();
+        return getPaoIdsForGroupAttributeStateGroupId(group, attribute,
+                stateGroup.getStateGroupID());
     }
-    
+
+    /**
+     * 
+     * @param group
+     * @param attribute
+     * @param stateGroupId
+     * @return
+     */
+    @Override
+    public List<Integer> getPaoIdsForGroupAttributeStateGroupId(
+            DeviceGroup group, Attribute attribute, Integer stateGroupId) {
+        if (stateGroupId == null)
+            return new ArrayList<Integer>();
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select pao_point_lookup.paObjectid");
+        final SqlFragmentSource lookupSql = attributeService
+                .getAttributeLookupSql(attribute);
+        sql.append("from (").appendFragment(lookupSql)
+                .append(") pao_point_lookup");
+        sql.append("join Point p on p.pointId = pao_point_lookup.pointId");
+        sql.append("where");
+        sql.append("p.stateGroupId").eq_k(stateGroupId);
+        final SqlFragmentSource groupSqlWhereClause = deviceGroupService
+                .getDeviceGroupSqlWhereClause(Collections.singleton(group),
+                        "pao_point_lookup.paObjectId");
+        sql.append("and").appendFragment(groupSqlWhereClause);
+        final List<Integer> results = yukonJdbcTemplate.query(sql,
+                RowMapper.INTEGER);
+        return results;
+    }
+
     @Autowired
     public void setPointDao(PointDao pointDao) {
         this.pointDao = pointDao;
     }
-    
+
     @Autowired
     public void setRphDao(RawPointHistoryDao rphDao) {
         this.rphDao = rphDao;
     }
-    
+
     @Autowired
     public void setAttributeService(AttributeService attributeService) {
         this.attributeService = attributeService;
     }
-    
+
     @Autowired
     public void setJdbcTemplate(YukonJdbcTemplate jdbcTemplate) {
         this.yukonJdbcTemplate = jdbcTemplate;
     }
-    
+
     @Autowired
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
         this.deviceGroupService = deviceGroupService;
-    }    
+    }
+
+    @Override
+    public int countDevicesInGroupWithAttributePointStateGroup(
+            DeviceGroup group, Attribute attribute, LiteStateGroup stateGroup) {
+        return getPaoIdsForGroupAttributeStateGroup(group, attribute,
+                stateGroup).size();
+    }
+
+    @Override
+    public List<Integer> findDeviceIdsInGroupWithAttributePointStateGroup(
+            DeviceGroup group, Attribute attribute, LiteStateGroup stateGroup) {
+        return getPaoIdsForGroupAttributeStateGroup(group, attribute,
+                stateGroup);
+    }
+
+    @Override
+    public List<Integer> findDeviceIdsInGroupWithAttributePointStateGroupId(
+            DeviceGroup group, Attribute attribute, Integer stateGroupId) {
+        return getPaoIdsForGroupAttributeStateGroupId(group, attribute,
+                stateGroupId);
+    }
+
+    /**
+     * YUK-11992 Same query as in getCountOfGroupAttributeStateGroup(..) without
+     * the state group clause.
+     */
+    @Override
+    public int countDevicesInGroupWithAttributePoint(DeviceGroup group,
+            Attribute attribute) {
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select count(*)");
+        final SqlFragmentSource lookupSql = attributeService
+                .getAttributeLookupSql(attribute);
+        sql.append("from (").appendFragment(lookupSql)
+                .append(") pao_point_lookup");
+        sql.append("join Point p on p.pointId = pao_point_lookup.pointId");
+        sql.append("where");
+        final SqlFragmentSource groupSqlWhereClause = deviceGroupService
+                .getDeviceGroupSqlWhereClause(Collections.singleton(group),
+                        "pao_point_lookup.paObjectId");
+        sql.appendFragment(groupSqlWhereClause);
+
+        int result = yukonJdbcTemplate.queryForInt(sql);
+        return result;
+    }
+
+    /**
+     * YUK-11992 Same query as countDevicesInGroupWithAttributePoint(..) but
+     * with TOP clauses.
+     */
+    @Override
+    public int countDevicesInGroupWithAttributePoint(DeviceGroup group,
+            Attribute attribute, int limitToRowCount) {
+        final VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory
+                .create();
+        final SqlBuilder sqla = builder.buildFor(DatabaseVendor.MS2000);
+        sqla.append("select count(*)");
+        final SqlFragmentSource lookupSql = attributeService
+                .getAttributeLookupSqlLimit(attribute, limitToRowCount);
+        sqla.append("from (").appendFragment(lookupSql)
+                .append(") pao_point_lookup");
+        sqla.append("join Point p on p.pointId = pao_point_lookup.pointId");
+        sqla.append("where");
+        final SqlFragmentSource groupSqlWhereClause = deviceGroupService
+                .getDeviceGroupSqlWhereClause(Collections.singleton(group),
+                        "pao_point_lookup.paObjectId");
+        sqla.appendFragment(groupSqlWhereClause);
+
+        final SqlBuilder sqlb = builder.buildOther();
+        sqlb.append("select count(*)");
+        sqlb.append("from (").appendFragment(lookupSql)
+                .append(") pao_point_lookup");
+        sqlb.append("join Point p on p.pointId = pao_point_lookup.pointId");
+        sqlb.append("where");
+        sqlb.appendFragment(groupSqlWhereClause);
+        final int result = yukonJdbcTemplate.queryForInt(builder);
+        return result;
+    }
+
+    /**
+     * Same query as in countDevicesInGroupWithAttributePoint(..) except select
+     * clause.
+     */
+    @Override
+    public List<Integer> findDeviceIdsInGroupWithAttributePoint(
+            DeviceGroup group, Attribute attribute) {
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select pao_point_lookup.paObjectid");
+        final SqlFragmentSource lookupSql = attributeService
+                .getAttributeLookupSql(attribute);
+        sql.append("from (").appendFragment(lookupSql)
+                .append(") pao_point_lookup");
+        sql.append("join Point p on p.pointId = pao_point_lookup.pointId");
+        sql.append("where");
+        final SqlFragmentSource groupSqlWhereClause = deviceGroupService
+                .getDeviceGroupSqlWhereClause(Collections.singleton(group),
+                        "pao_point_lookup.paObjectId");
+        sql.appendFragment(groupSqlWhereClause);
+
+        return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+    }
+
+    /**
+     * Return all points ... supported by devices in the group and related to
+     * the given Attribute.
+     * 
+     * @param group
+     *            DeviceGroup
+     * @param attribute
+     *            Attribute
+     * @return List<LitePoint>
+     */
+    public List<LitePoint> getPointsForDevicesInGroupWithAttributePoint(
+            DeviceGroup group, Attribute attribute) {
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(litePointSql);
+        final SqlFragmentSource lookupSql = attributeService
+                .getAttributeLookupSql(attribute);
+        sql.append("join (")
+                .appendFragment(lookupSql)
+                .append(") pao_point_lookup on P.pointId = pao_point_lookup.pointId");
+        sql.append("where");
+        final SqlFragmentSource groupSqlWhereClause = deviceGroupService
+                .getDeviceGroupSqlWhereClause(Collections.singleton(group),
+                        "pao_point_lookup.paObjectId");
+        sql.appendFragment(groupSqlWhereClause);
+
+        final List<LitePoint> points = yukonJdbcTemplate.query(sql,
+                PointDaoImpl.getLitePointRowMapper());
+        return points;
+    }
 }

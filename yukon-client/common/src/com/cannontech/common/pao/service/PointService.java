@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.PreviousReadings;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
@@ -34,12 +35,14 @@ public interface PointService {
      */
     public boolean pointExistsForPao(YukonPao pao, PointIdentifier pointIdentifier);
     public boolean pointExistsForPao(PaoPointIdentifier devicePointIdentifier);
-    
-    
+
+
     public PreviousReadings getPreviousReadings(LitePoint lp);
-    
+
     /**
-     * Returns the count of devices in the passed in DeviceGroup that have an existing point matching Attribute AND state group
+     * Returns the count of devices in the passed in DeviceGroup that have an
+     * existing point matching Attribute AND state group
+     * 
      * @param group
      * @param attribute
      * @param stateGroup
@@ -48,12 +51,71 @@ public interface PointService {
     public int getCountOfGroupAttributeStateGroup(DeviceGroup group, Attribute attribute, LiteStateGroup stateGroup);
 
     /**
-     * Returns the paoIds of all devices in the passed in DeviceGroup that have an existing point matching Attribute AND state group 
+     * Returns the paoIds of all devices in the passed in DeviceGroup that have
+     * an existing point matching Attribute AND state group
+     * 
      * @param group
      * @param attribute
      * @param stateGroup
      * @return
      */
     public List<Integer> getPaoIdsForGroupAttributeStateGroup(DeviceGroup group, Attribute attribute, LiteStateGroup stateGroup);
+    public List<Integer> getPaoIdsForGroupAttributeStateGroupId(DeviceGroup group, Attribute attribute, Integer stateGroupId);
 
+    /**
+     * 
+     * @param group
+     * @param attribute
+     * @param stateGroup
+     * @return int
+     */
+    public int countDevicesInGroupWithAttributePointStateGroup(DeviceGroup group, Attribute attribute, LiteStateGroup stateGroup);
+
+    /**
+     * 
+     * @param group
+     * @param attribute
+     * @param stateGroup	LiteStateGroup
+     * @return
+     */
+    public List<Integer> findDeviceIdsInGroupWithAttributePointStateGroup(DeviceGroup group, Attribute attribute, LiteStateGroup stateGroup);
+    /**
+     * 
+     * @param group
+     * @param attribute
+     * @param stateGroupId	Integer
+     * @return
+     */
+    public List<Integer> findDeviceIdsInGroupWithAttributePointStateGroupId(DeviceGroup group, Attribute attribute, Integer stateGroupId);
+
+    /**
+     * 
+     * @param group
+     * @param attribute
+     * @param limitToRowCount
+     *            int Use this as this query's execution time can grow
+     *            considerably depending on the size of the Device Group and all
+     *            their attributes.
+     * @return
+     */
+    public int countDevicesInGroupWithAttributePoint(DeviceGroup group, Attribute attribute);
+    public int countDevicesInGroupWithAttributePoint(DeviceGroup group, Attribute attribute, int limitToRowCount);
+
+    /**
+     * Return all points ... supported by devices in the group and related to
+     * the given Attribute.
+     * 
+     * @param group             DeviceGroup
+     * @param attribute         Attribute
+     * @return                  List<LitePoint>
+     */
+    public List<LitePoint> getPointsForDevicesInGroupWithAttributePoint(DeviceGroup group, Attribute attribute);
+
+    /**
+     * 
+     * @param group
+     * @param attribute
+     * @return
+     */
+    public List<Integer> findDeviceIdsInGroupWithAttributePoint(DeviceGroup group, Attribute attribute);
 }

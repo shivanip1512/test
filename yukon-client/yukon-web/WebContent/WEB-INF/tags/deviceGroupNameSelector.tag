@@ -68,10 +68,10 @@
 
 <%-- NO GROUP SELECTED TEXT --%>
 <c:if test="${empty pageScope.fieldValue}">
-	<a id="noGroupSelectedText_${uniqueId}" href="javascript:void(0);"
+    <span id="noGroupSelectedText_${uniqueId}" href="javascript:void(0);"
 		class="fl simpleLink leftOfImageLabel chooseGroupIcon_${uniqueId}">
 		<span class="noSelectionPickerLabel">${noGroupSelectedText}</span>
-	</a>
+    </span>
 </c:if>
 
 <c:choose>
@@ -117,6 +117,7 @@
                                 id="selectGroupTree_${uniqueId}"
                                 dataJson="${dataJson}"
                                 title="${pickerTitleText}"
+                                noSelectionAlertText="${noGroupSelectedText}"
                                 width="432"
                                 height="600"
                                 includeControlBar="true" />

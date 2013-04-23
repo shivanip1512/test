@@ -25,7 +25,7 @@
     <entry key="yukon.web.modules.amr.deviceDataMonitor.deviceGroup">Device Group</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.deviceGroup.help">The device group (and all it's child groups) that this monitor will use to look for violating devices</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.violationsGroup">Violations Group</entry>
-    <entry key="yukon.web.modules.amr.deviceDataMonitor.violationsGroup.help">The device group that this monitor places any devices it finds that are in violation of the processors</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.violationsGroup.help">The device group that this monitor places any devices it finds that are in violation of the processors.  "N/A" means the system cannot acquire the data.</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.violationsCount">Violations Count</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.violationsCount.help">The number of devices that are in violation of the processors (also the number of devices in the violation device group)</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.deviceGroupCount">Device Count</entry>
@@ -74,9 +74,45 @@
     <entry key="yukon.web.modules.amr.deviceDataMonitor.processors.state">State</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.addPoints.label">Add Points</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.calculating">Calculating...</entry>
-    
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.refreshViolations">Refresh Violations</entry>
+
     <entry key="yukon.web.modules.amr.deviceDataMonitor.missingOrNoStateGroup">Point Missing or no State Group</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.areMissingPoints">are missing points.</entry>
+
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.fullySupported.noDevices">No devices selected</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.fullySupported.noProcessors">No processors added</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.fullySupported.noAttributes">No attributes selected</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.fullySupported.none"><![CDATA[<span class='error'>No</span> devices are supported by all processors.]]></entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.fullySupported.one"><![CDATA[<span class='success'>1</span> device supported by all processors.]]></entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.fullySupported.plural"><![CDATA[<span class='success'>{0}</span> devices supported by all processors.]]></entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.fullySupported.all"><![CDATA[<span class='success'>all</span> device are supported by all processors.]]></entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.fullySupported.help.title">Supported by Processors Help</entry>
+
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.fullySupported.help.msg.noDevices">You need to select a Device Group (see above) which contains devices before we can verify that the devices support the given attributes, state groups, and underlying points.</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.fullySupported.help.msg.noProcessors">You need to add one or more Processors (to the right) before we can verify that the devices support the given attributes, state groups, and underlying points.</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.fullySupported.help.msg.noAttributes">Please select an attribute for every processor you added on the right side.</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.fullySupported.help.msg.none"><![CDATA[Your Device Group contains {0} devices, but none of them have all the attributes you selected, support those attributes&apos; points, and have the respective state group.]]></entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.fullySupported.help.msg.one"><![CDATA[Your Device Group contains {0} devices, however only 1 device has all the attributes you selected, support those attributes&apos; points, and have the respective state group.]]></entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.fullySupported.help.msg.plural"><![CDATA[Your Device Group contains {0} devices, however only {1} devices have all the attributes you selected, support those attributes&apos; points, and have the respective state group.]]></entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.fullySupported.help.msg.all"><![CDATA[Your Device Group contains {0} devices and all those devices have all the attributes you selected, support those attributes&apos; points, and have the respective state group.]]></entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingATTRIBUTE">missing attribute:</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingATTRIBUTE.help.title">Missing Attribute Help</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingATTRIBUTE.help"><![CDATA[Your Device Group contains {0} devices, however <em>{1}</em> of them do not have the attribute <em>{2}</em> defined.  This is because their PAO is missing that attribute, which currently requires an XML change to remedy.]]></entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingATTRIBUTE.help.all_missing"><![CDATA[Your Device Group contains {0} devices, however <em>none</em> of them have the attribute <em>{2}</em> defined.  This is because their PAO is missing that attribute, which currently requires an XML change to remedy.]]></entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingATTRIBUTE.list.title"><![CDATA[Devices Missing Attribute: <u>{0}</u>]]></entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingPOINT">missing point:</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingPOINT.attribute">missing point for:</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingPOINT.help.title">Missing Point Help</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingPOINT.help"><![CDATA[Your Device Group contains {0} devices, however <em>{1}</em> of them do not currently support a Point for the <em>{2}</em> Attribute.  (Note that this does <em>not</em> include any devices which do not support the attribute)  You may add a point by clicking "Add Points".]]></entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingPOINT.help.all_missing"><![CDATA[Your Device Group contains {0} devices, however <em>none</em> of them currently support a Point for the <em>{2}</em> Attribute.  (Note that this does <em>not</em> include any devices which do not support the attribute)  You may add a point by clicking "Add Points".]]></entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingPOINT.list.title"><![CDATA[Devices Missing Point for: <u>{0}</u>]]></entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingPOINT.limitedQuery.help.title"><![CDATA[<u>Missing</u>: Too Many Devices to Report]]></entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingPOINT.limitedQuery.help">Your device group contains more than 3,500 devices and we've scaled back the precision of the query so that you will get results faster.  Unfortunately we cannot list an accurate number here, but you can still inspect the list of devices using the magnifying glass, and you can use the other controls normally.</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingSTATE_GROUP">missing state group:</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingSTATE_GROUP.help.title">Missing State Group Help</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingSTATE_GROUP.help"><![CDATA[Your Device Group contains {0} devices, however <em>{1}</em> of them do not currently support the <em>{2}</em> State Group.]]></entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingSTATE_GROUP.help.all_missing"><![CDATA[Your Device Group contains {0} devices, however <em>none</em> of them currently support the <em>{2}</em> State Group.]]></entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.missingSTATE_GROUP.list.title"><![CDATA[Devices Missing State Group: <u>{0}</u>]]></entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.viewDetails">View Details</entry>
     
     <entry key="yukon.web.modules.amr.deviceDataMonitor.areYouSureUpdateOrCreateDialog.title">Are you sure you want to {0} this monitor?</entry>

@@ -555,11 +555,14 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         // inherit definitions
         List<PaoStore> finalPaoStores = new ArrayList<PaoStore>();
         for (PaoStore paoStore : sortedPaoStores.values()) {
-        	
-        	mergeInheritedPaoStoresOntoPaoStore(paoStore, sortedPaoStores);
-        	
-        	if (!paoStore.isAbstract()) {
-        		finalPaoStores.add(paoStore);
+        	if (paoStore != null){
+	        	mergeInheritedPaoStoresOntoPaoStore(paoStore, sortedPaoStores);
+	        	
+	        	if (!paoStore.isAbstract()) {
+	        		finalPaoStores.add(paoStore);
+	        	}
+        	} else {
+        		log.error("Iterating through sortedPaoStores.values() got a null object.");
         	}
     	}
         

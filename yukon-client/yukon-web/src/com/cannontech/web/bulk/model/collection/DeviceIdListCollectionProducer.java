@@ -2,7 +2,6 @@ package com.cannontech.web.bulk.model.collection;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,8 +19,6 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.ListBasedDeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -40,18 +37,17 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
     public DeviceCollectionType getSupportedType() {
         return DeviceCollectionType.idList;
     }
-    
+
     public DeviceCollection createDeviceCollection(HttpServletRequest request) throws ServletRequestBindingException {
         final String ids = ServletRequestUtils.getStringParameter(request, getSupportedType().getParameterName("ids"));
         final List<Integer> idList = ServletUtil.getIntegerListFromString(ids);
-        
+
         boolean containsSystemDevice = Iterables.any(idList, Predicates.equalTo(Device.SYSTEM_DEVICE_ID));
         Validate.isTrue(!containsSystemDevice, "cannot create DeviceCollection that contains the system device");
-        
+
         if (idList.size() > 200) {
             /* For large lists of ids, convert to memory list since url's can only be so long. */
-            Iterator<PaoIdentifier> paos = PaoUtils.asPaoIdentifiers(deviceDao.getYukonDeviceObjectByIds(idList)).iterator();
-            return memoryCollectionProducer.createDeviceCollection(paos);
+            return memoryCollectionProducer.createDeviceCollection(idList);
         }
 
         return new ListBasedDeviceCollection() {
@@ -77,7 +73,7 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
 
                 return deviceList;
             }
-            
+
             @Override
             public long getDeviceCount() {
                 return idList.size();

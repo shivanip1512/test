@@ -1526,7 +1526,8 @@
     
     <bean id="paoDetailUrlHelper" class="com.cannontech.web.common.pao.service.PaoDetailUrlHelper"/>
     <bean id="yukonPointHelper" class="com.cannontech.web.common.pao.service.YukonPointHelperImpl"/>
-    
+    <bean id="paoPopupHelperImpl" class="com.cannontech.web.common.pao.service.PaoPopupHelperImpl"/>
+
     <bean id="scheduledGroupRequestExecutionJobWrapperFactory" class="com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory"/>
     <bean id="commandRequestExecutionWrapperFactory" class="com.cannontech.web.common.commandRequestExecution.CommandRequestExecutionWrapperFactory"/>
     

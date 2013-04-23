@@ -73,11 +73,11 @@ import com.google.common.collect.Maps;
 public class PointDaoImpl implements PointDao {
 
     private static final String litePointSql = 
-        "SELECT P.POINTID, POINTNAME, POINTTYPE, PAOBJECTID, POINTOFFSET, STATEGROUPID, UM.FORMULA, UM.UOMID" +
+        "SELECT P.POINTID, POINTNAME, POINTTYPE, P.PAOBJECTID, POINTOFFSET, STATEGROUPID, UM.FORMULA, UM.UOMID" +
         " FROM " +         
         "( POINT P LEFT OUTER JOIN POINTUNIT PU ON P.POINTID = PU.POINTID " +
         "LEFT OUTER JOIN UNITMEASURE UM ON PU.UOMID = UM.UOMID ) ";
-    
+
     private static final String litePointPaoSql = 
         "SELECT P.POINTID, POINTNAME, POINTTYPE, YPO.PAOBJECTID, POINTOFFSET, STATEGROUPID, UM.FORMULA, UM.UOMID" +
         " FROM " +    
@@ -94,6 +94,10 @@ public class PointDaoImpl implements PointDao {
         };
     private static final ParameterizedRowMapper<LitePoint> litePointRowMapper =
         new YukonRowMapperAdapter<LitePoint>(litePointYukonRowMapper);
+
+    public static ParameterizedRowMapper<LitePoint> getLitePointRowMapper() {
+        return litePointRowMapper;
+    }
 
     private static final RowMapper<LitePointUnit> litePointUnitRowMapper = new RowMapper<LitePointUnit>() {
         @Override

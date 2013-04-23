@@ -4,11 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
@@ -31,6 +28,7 @@ import com.cannontech.common.bulk.callbackResult.ImportUpdateCallbackResult;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
+import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -38,23 +36,18 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
-import com.cannontech.common.device.model.DeviceCollectionReportDevice;
-import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.ReverseList;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.pao.PaoPopupHelper;
 import com.cannontech.web.util.WebFileUtils;
-import com.google.common.collect.Lists;
 
 /**
  * Handles request directly off the /bulk/* url.
@@ -64,15 +57,13 @@ import com.google.common.collect.Lists;
 @RequestMapping("/*")
 public class BulkController {
 
-    private final static int MAX_SELECTED_DEVICES_DISPLAYED = 1000;
-    
-    @Autowired private PaoLoadingService paoLoadingService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
+    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper; 
+    @Autowired private PaoPopupHelper paoPopupHelper;
     @Resource(name="recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
     
     // BULK HOME
@@ -185,65 +176,28 @@ public class BulkController {
         
         return "deviceCollectionReport.jsp";
     }
-    
+
     // SELECTED DEVICES POPUP TABLE
     @RequestMapping
-    public String selectedDevicesTableForDeviceCollection(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
-        
-        DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
-        int totalDeviceCount = (int)deviceCollection.getDeviceCount();
-        List<SimpleDevice> devicesToLoad = deviceCollection.getDevices(0, MAX_SELECTED_DEVICES_DISPLAYED);
+    public String selectedDevicesTableForDeviceCollection(HttpServletRequest request, ModelMap model, YukonUserContext context) 
+            throws ServletRequestBindingException {
 
-        return getSelectedDevicesTablemodel(model, devicesToLoad, totalDeviceCount, YukonUserContextUtils.getYukonUserContext(request));
+        DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
+        return paoPopupHelper.buildPopupModel(deviceCollection, model, context);
     }
-    
+
     @RequestMapping
-    public String selectedDevicesTableForGroupName(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
-        
+    public String selectedDevicesTableForGroupName(HttpServletRequest request, ModelMap model, YukonUserContext context) 
+            throws ServletRequestBindingException {
+
         String groupName = ServletRequestUtils.getRequiredStringParameter(request, "groupName");
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
-        
-        int totalDeviceCount = deviceGroupService.getDeviceCount(Collections.singletonList(group));
-        Set<SimpleDevice> devicesToLoad = deviceGroupService.getDevices(Collections.singletonList(group), MAX_SELECTED_DEVICES_DISPLAYED);
-        
-        return getSelectedDevicesTablemodel(model, devicesToLoad, totalDeviceCount, YukonUserContextUtils.getYukonUserContext(request));
-        
-    }
-    
-    private String getSelectedDevicesTablemodel(ModelMap model, 
-                                                Collection<SimpleDevice> devicesToLoad, 
-                                                int totalDeviceCount, 
-                                                YukonUserContext context) {
-        
-        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
-        
-        List<DeviceCollectionReportDevice> deviceCollectionReportDevices = paoLoadingService.getDeviceCollectionReportDevices(devicesToLoad);
-        Collections.sort(deviceCollectionReportDevices);
-        
-        List<List<String>> rows = Lists.newArrayList();
-        
-        List<String> header = Lists.newArrayList();
-        header.add(accessor.getMessage("yukon.common.deviceName"));
-        header.add(accessor.getMessage("yukon.common.address"));
-        header.add(accessor.getMessage("yukon.common.route"));
-        rows.add(header);
-        
-        for (DeviceCollectionReportDevice device : deviceCollectionReportDevices) {
-            List<String> row = Lists.newArrayList();
-            row.add(device.getName());
-            row.add(device.getAddress());
-            row.add(device.getRoute());
-            rows.add(row);
-        }
-        
-        if (totalDeviceCount > MAX_SELECTED_DEVICES_DISPLAYED) {
-            model.addAttribute("resultsLimitedTo", MAX_SELECTED_DEVICES_DISPLAYED);
-        }
-        model.addAttribute("deviceInfoList", rows);
-        
+        DeviceCollection collection = deviceGroupCollectionHelper.buildDeviceCollection(group);
+
+        paoPopupHelper.buildPopupModel(collection, model, context);
         return "selectedDevicesPopup.jsp";
     }
-    
+
     @RequestMapping
     public String processingExceptionErrorsRefresh(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
 

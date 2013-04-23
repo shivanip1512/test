@@ -448,3 +448,15 @@ div.disabled {color: #666;}
 span.info {font-size: 11px; color: #333; background: lightYellow; border: solid 1px orange; display:block; padding: 5px 10px; margin: 0 0 10px;}
 #cannonUpdaterErrorDiv {position: fixed;bottom: 0;left: 0;right: 0;background: #D14836;color: white;font-weight: bold;text-align: center;padding: 3px;}
 #cannonUpdaterErrorDiv .alert {padding-top: 64px;width: 64px;position: absolute;bottom: 0;left: 10px;}
+
+/* Device Data Monitor */
+.f_problems_container .scrollingContainer_large { max-height: none;}
+.f_showViolationHelp {padding: 0 7px;}
+.ui-dialog-content em {font-weight: bold;}
+.compactResultsTable div.f_state_group, .compactResultsTable div.f_states {font-size: 1.2em;}
+#sharedPointsDiv .compactResultsTable td.preselectedPoint {background-color: green;}
+#sharedPointsDiv .compactResultsTable td.preselectedPoint span {font-weight: bold; color: black;}
+#sharedPointsDiv .compactResultsTable td label {overflow: auto;clear: both;}
+#sharedPointsDiv .compactResultsTable td span {display: inline;}
+.refresh {background: #FFF url(../Icons/arrow_refresh.png) left center no-repeat;padding-left: 20px;}
+.warning {height: 16px; padding-left: 16px; background: #FFFFFF url('/WebConfig/yukon/Icons/warning.gif') 0px 0px no-repeat;}

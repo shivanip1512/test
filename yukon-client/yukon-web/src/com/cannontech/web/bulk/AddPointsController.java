@@ -1,5 +1,6 @@
 package com.cannontech.web.bulk;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,6 +40,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 @Controller
 @RequestMapping("addPoints/*")
 public class AddPointsController extends AddRemovePointsControllerBase {
+	public static String VARIABLE_PRESELECTED_POINT_ARRAY = "preselectedPointIdentifiers";
 	
 	private static final Logger log = YukonLogManager.getLogger(AddPointsController.class);
 	@Autowired private DeviceCollectionFactory deviceCollectionFactory;
@@ -51,6 +53,13 @@ public class AddPointsController extends AddRemovePointsControllerBase {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
         
+        // PointIdentifiers
+        final String identifyingPointData   = ServletRequestUtils
+                .getStringParameter(request, "pointTypeOffsets");
+        final String pointTypeOffsets[]     = identifyingPointData.split(",");
+        final List<String> ptos             = Arrays.asList(pointTypeOffsets);
+        model.addAttribute(VARIABLE_PRESELECTED_POINT_ARRAY, ptos);
+
         // options
         boolean sharedPoints = ServletRequestUtils.getBooleanParameter(request, "sharedPoints", true);
         boolean updatePoints = ServletRequestUtils.getBooleanParameter(request, "updatePoints", false);

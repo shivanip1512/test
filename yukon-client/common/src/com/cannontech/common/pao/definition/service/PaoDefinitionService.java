@@ -1,10 +1,12 @@
 package com.cannontech.common.pao.definition.service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
@@ -164,4 +166,14 @@ public interface PaoDefinitionService {
      */
     public Set<PointTemplateTransferPair> getPointTemplatesToTransfer(YukonPao pao,
             PaoDefinition paoDefinition);
+
+    /**
+     * 
+     * @param group
+     * @param possiblePaoTypes
+     * @return
+     * 
+     * @since	5.6.3, from MeterReadPercentageModel.java
+     */
+    public List<PaoType> findListOfPaoTypesInGroup(DeviceGroup group, Collection<PaoType> possiblePaoTypes);
 }

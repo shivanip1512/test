@@ -1,5 +1,7 @@
 package com.cannontech.common.pao.definition.service;
 
+import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -8,6 +10,8 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -17,7 +21,12 @@ import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.common.util.MapUtil;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
 import com.google.common.base.Predicate;
@@ -30,6 +39,8 @@ import com.google.common.collect.Sets;
  * Implementation class for PaoDefinitionService
  */
 public class PaoDefinitionServiceImpl implements PaoDefinitionService {
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private DeviceGroupService deviceGroupService;
 
     private PaoDefinitionDao paoDefinitionDao = null;
     private PointCreationService pointCreationService;
@@ -259,5 +270,31 @@ public class PaoDefinitionServiceImpl implements PaoDefinitionService {
 			}
 		}
         return templates;
+    }
+
+
+    /**
+     * This method returns list of all PAO types in the group
+     * 
+     * @param group
+     * @param possiblePaoTypes
+     * @return
+     */
+    public  List<PaoType> findListOfPaoTypesInGroup(DeviceGroup group, Collection<PaoType> possiblePaoTypes) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select distinct(type) from YukonPAObject ypo");
+        sql.append("where type").in(possiblePaoTypes);
+        SqlFragmentSource groupSqlWhereClause =
+            deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group),
+                                                            "YPO.paObjectId");
+        sql.append("AND").appendFragment(groupSqlWhereClause);
+        List<PaoType> paoTypes  = yukonJdbcTemplate.query(sql, new YukonRowMapper<PaoType>() {
+            @Override
+            public PaoType mapRow(YukonResultSet rs) throws SQLException {
+                PaoType type = PaoType.getForDbString(rs.getString("type"));
+                return type;
+        }});
+        return paoTypes;
     }
 }

@@ -1,5 +1,6 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
@@ -18,8 +19,10 @@
         <input type="hidden" name="monitorId" value="${monitor.id}"/>
     </form>
 
+    <c:set var="disableAddProcessAtStart" value="true"/>
     <cti:displayForPageEditModes modes="EDIT">
         <cti:url value="/amr/deviceDataMonitor/update" var="action"/>
+        <c:set var="disableAddProcessAtStart" value="false"/>
     </cti:displayForPageEditModes>
     <cti:displayForPageEditModes modes="CREATE">
         <cti:url value="/amr/deviceDataMonitor/create" var="action"/>
@@ -39,7 +42,7 @@
 
 							<%-- name --%>
 							<tags:inputNameValue nameKey=".name" path="name" size="50" maxlength="50" />
-							
+
 			                <%-- device group --%>
 			                <tags:nameValue2 nameKey=".deviceGroup">
 			                    <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
@@ -49,8 +52,8 @@
 			                </tags:nameValue2>
 
 							<tags:nameValue2 nameKey=".deviceGroupCount">
-                                   <span class="labeled_icon loading dn"><i:inline key=".calculating"/></span>
-								<span class="f_device_group_count">${monitoringCount}</span>
+                                <span id="canonicalCalculatingSpan" class="labeled_icon loading dn"><i:inline key=".calculating"/></span>
+                                <span class="f_device_group_count"><fmt:formatNumber type="number" value="${monitoringCount}" /></span>
 							</tags:nameValue2>
 							<tags:nameValue2 nameKey=".supportedDevices">
 	                            ${supportedDevices}
@@ -66,14 +69,19 @@
 		                            ${monitoringEnabled}
 		                        </tags:nameValue2>
 							</cti:displayForPageEditModes>
+                            <tags:nameValue2 excludeColon="true">
+                                <a href="javascript:void(0);" id="refreshViolationsAfterAddingPoint" class="refresh dn" data-add-key=""><i:inline key=".refreshViolations"/></a>
+                            </tags:nameValue2>
 						</tags:nameValueContainer2>
 					</tags:formElementContainer>
+                    <div id="pointUnknownNumberHelp" class="dn" target-title="<i:inline key=".missingPOINT.limitedQuery.help.title" />"><i:inline key=".missingPOINT.limitedQuery.help" /></div>
                 </div>
                 <div class="col2">
+                    <span id="str_na" class="dn"><i:inline key="yukon.web.defaults.na"/></span>
 					<tags:sectionContainer2 nameKey="processors" styleClass="${processors_section_class}">
 			            <tags:dynamicTable items="${monitor.processors}" nameKey="dynamicTable"
-			                id="processorsTable" addButtonClass="f_add_processor" noBlockOnAdd="true">
-						<div class="smallDialogScrollArea">
+                            id="processorsTable" addButtonClass="f_add_processor" noBlockOnAdd="true" disableAddButton="${disableAddProcessAtStart}">
+                        <div class="largeDialogScrollArea">
 						<table class="compactResultsTable f_processors_table device_data_processors">
 							<thead>
 								<tr>
@@ -90,6 +98,7 @@
 			                        <input type="hidden" data-name="processors[0].deletion" value="false" class="isDeletionField"/>
 			                        <td>
 					                    <select class="f_attribute" data-name="processors[0].attribute">
+                                            <option value="-1">- Select One -</option>
 					                        <c:forEach items="${allGroupedReadableAttributes}" var="group">
 					                            <optgroup label="<cti:msg2 key="${group.key}"/>">
 					                                <c:forEach items="${group.value}" var="item">
@@ -102,18 +111,10 @@
 					                    </select>
 				                    </td>
 				                    <td>
-								        <select class="f_state_group" data-name="processors[0].stateGroup">
-								            <c:forEach items="${stateGroups}" var="stateGroup">
-								                <option value="${stateGroup.liteID}">${stateGroup.stateGroupName}</option>
-								            </c:forEach>
-								        </select>
+                                        <div class="f_state_group"><input type="hidden" name="" value="" data-name="processors[0].stateGroup"></div>
 				                    </td>
 				                    <td>
-			                            <select class="f_states" data-name="processors[0].state">
-								            <c:forEach items="${stateGroups[0].statesList}" var="state">
-								                <option value="${stateGroups[0].liteID}:${state.liteID}">${state.stateText}</option>
-								            </c:forEach>
-			                            </select>
+                                        <div class="f_states"><input type="hidden" name="" value="" data-name="processors[0].state"></div>
 				                    </td>
 			                        <td class="actions">
 										<a title="Remove" href="javascript:void(0);"
@@ -123,7 +124,7 @@
 			                    </tr>
 			                    <tags:dynamicTableUndoRow columnSpan="4" nameKey="dynamicTable.undoRow"/>
 								<c:forEach var="processor" items="${monitor.processors}" varStatus="status">
-									<tr>
+                                    <tr class="processor">
 										<form:hidden path="processors[${status.index}].processorId" />
 										<form:hidden path="processors[${status.index}].monitorId" />
 										<form:hidden path="processors[${status.index}].deletion" class="isDeletionField"/>
@@ -135,6 +136,7 @@
 				                                           <c:set var="selected" value=""/>
 						                                    <c:if test="${processor.attribute == item}">
 						                                        <c:set var="selected" value="selected"/>
+                                                                <c:set var="attributeKey" value="${item.key}"/>
 						                                    </c:if>
 				                                            <option value="${item.key}" ${selected}>
 				                                                <cti:formatObject value="${item.description}"/>
@@ -145,7 +147,11 @@
 			                                </form:select>
 										</td>
 										<td>
-				                            <form:select path="processors[${status.index}].stateGroup" cssClass="f_state_group">
+                                        <c:set var="stateGroups"	value="${mapAttributeKeyToStateGroupList.get(attributeKey)}"/>
+                                        <c:set var="ctrlName"		value="processors[${status.index}].stateGroup"/>
+                                        <c:choose>
+                                        	<c:when test="${stateGroups.size() > 1}">
+                                            <form:select path="${ctrlName}" cssClass="f_state_group">
 				                                <c:forEach items="${stateGroups}" var="stateGroup">
 			                                        <c:set var="selected" value=""/>
 			                                        <c:if test="${processor.stateGroup == stateGroup}">
@@ -154,6 +160,10 @@
 				                                    <option value="${stateGroup.liteID}" ${selected}>${stateGroup.stateGroupName}</option>
 				                                </c:forEach>
 				                            </form:select>
+                                        	</c:when><c:otherwise>
+                                            	<div class="f_state_group"><input type="hidden" name="${ctrlName}" value="${processor.stateGroup.liteID}">${processor.stateGroup.stateGroupName}</div>
+                                        	</c:otherwise>
+                                        </c:choose>
 										</td>
 										<td>
 				                            <form:select path="processors[${status.index}].state" cssClass="f_states">
