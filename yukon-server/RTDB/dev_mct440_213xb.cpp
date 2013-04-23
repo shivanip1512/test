@@ -3497,9 +3497,6 @@ INT Mct440_213xBDevice::decodeGetValueKWH(INMESS         *InMessage,
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
-    CtiTime pointTime;
-    point_info pi;
-
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
 
     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
@@ -3539,6 +3536,9 @@ INT Mct440_213xBDevice::decodeGetValueKWH(INMESS         *InMessage,
             channels = 1;
         }
 
+        point_info pi;
+        CtiTime    point_time = TimeNow;
+
         for( int chan_nbr = 0; chan_nbr < channels; chan_nbr++ )
         {
             int offset = (chan_nbr * 3);
@@ -3549,8 +3549,6 @@ INT Mct440_213xBDevice::decodeGetValueKWH(INMESS         *InMessage,
                     InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_KWH )
                 {
                     pi = getAccumulatorData(DSt->Message + offset, 3, 0);
-
-                    pointTime -= pointTime.seconds() % 60;
                 }
                 else if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
                 {
@@ -3578,8 +3576,7 @@ INT Mct440_213xBDevice::decodeGetValueKWH(INMESS         *InMessage,
                     }
                     else
                     {
-                        pointTime  = getLastFreezeTimestamp(TimeNow);
-                        pointTime -= pointTime.seconds() % 60;
+                        point_time = getLastFreezeTimestamp(TimeNow);
                     }
                 }
 
@@ -3610,7 +3607,7 @@ INT Mct440_213xBDevice::decodeGetValueKWH(INMESS         *InMessage,
                                       ReturnMsg.get(),
                                       pi,
                                       point_name,
-                                      pointTime,
+                                      point_time,
                                       0.1,
                                       TAG_POINT_MUST_ARCHIVE);
 
