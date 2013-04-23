@@ -43,7 +43,7 @@ BEGIN
 
     WHILE(@configId IS NOT NULL)
     BEGIN
-        SELECT @itemId = MAX(DeviceConfigurationItemId) + 1 FROM DeviceConfigurationItem;
+        SELECT @itemId = ISNULL(MAX(DeviceConfigurationItemId) + 1, 0) FROM DeviceConfigurationItem;
 
         INSERT INTO DeviceConfigurationItem VALUES (@itemId, @configId, 'Display Digits', '5');
         
@@ -71,7 +71,7 @@ BEGIN
 
     WHILE(@configId IS NOT NULL)
     BEGIN
-        SELECT @itemId = MAX(DeviceConfigurationItemId) + 1 FROM DeviceConfigurationItem;
+        SELECT @itemId = ISNULL(MAX(DeviceConfigurationItemId) + 1, 0) FROM DeviceConfigurationItem;
 
         INSERT INTO DeviceConfigurationItem VALUES (@itemId, @configId, 'LCD Cycle Time', '8');
 
@@ -99,7 +99,7 @@ BEGIN
 
     WHILE(@configId IS NOT NULL)
     BEGIN
-        SELECT @itemId = MAX(DeviceConfigurationItemId) + 1 FROM DeviceConfigurationItem;
+        SELECT @itemId = ISNULL(MAX(DeviceConfigurationItemId) + 1, 0) FROM DeviceConfigurationItem;
 
         INSERT INTO DeviceConfigurationItem VALUES (@itemId, @configId, 'Disconnect Display Disabled', 'false');
         

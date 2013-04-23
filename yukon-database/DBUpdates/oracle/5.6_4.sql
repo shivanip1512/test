@@ -44,7 +44,7 @@ BEGIN
 
     WHILE(v_configId IS NOT NULL)
     LOOP
-        SELECT NVL(MAX(DeviceConfigurationItemId) + 1,0) INTO v_itemId FROM DeviceConfigurationItem;
+        SELECT NVL(MAX(DeviceConfigurationItemId) + 1, 0) INTO v_itemId FROM DeviceConfigurationItem;
 
         INSERT INTO DeviceConfigurationItem VALUES (v_itemId, v_configId, 'Display Digits', '5');
         
@@ -73,7 +73,7 @@ BEGIN
 
     WHILE(v_configId IS NOT NULL)
     LOOP
-        SELECT NVL(MAX(DeviceConfigurationItemId) + 1,0) INTO v_itemId FROM DeviceConfigurationItem;
+        SELECT NVL(MAX(DeviceConfigurationItemId) + 1, 0) INTO v_itemId FROM DeviceConfigurationItem;
 
         INSERT INTO DeviceConfigurationItem VALUES (v_itemId, v_configId, 'LCD Cycle Time', '8');
 
@@ -101,7 +101,7 @@ BEGIN
 
     WHILE(v_configId IS NOT NULL)
     LOOP
-        SELECT NVL(MAX(DeviceConfigurationItemId) + 1,0) INTO v_itemId FROM DeviceConfigurationItem;
+        SELECT NVL(MAX(DeviceConfigurationItemId) + 1, 0) INTO v_itemId FROM DeviceConfigurationItem;
 
         INSERT INTO DeviceConfigurationItem VALUES (v_itemId, v_configId, 'Disconnect Display Disabled', 'false');
         
