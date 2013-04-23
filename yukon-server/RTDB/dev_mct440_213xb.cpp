@@ -1075,9 +1075,6 @@ INT Mct440_213xBDevice::decodeGetValueTOUkWh(INMESS          *InMessage,
     INT ErrReturn = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
-    CtiTime point_time;
-    point_info pi;
-
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
 
     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
@@ -1099,6 +1096,9 @@ INT Mct440_213xBDevice::decodeGetValueTOUkWh(INMESS          *InMessage,
 
     if( !status )
     {
+        point_info pi;
+        CtiTime    point_time = TimeNow;
+
         for( int rate_nbr = 0; rate_nbr < 4; rate_nbr++ )
         {
             int offset = (rate_nbr * 3);
@@ -1107,8 +1107,6 @@ INT Mct440_213xBDevice::decodeGetValueTOUkWh(INMESS          *InMessage,
                 InMessage->Sequence == EmetconProtocol::GetValue_TOUkWhReverse)
             {
                 pi = getAccumulatorData(DSt->Message + offset, 3, 0);
-
-                point_time -= point_time.seconds() % 60;
             }
             else if( InMessage->Sequence == EmetconProtocol::GetValue_FrozenTOUkWh ||
                      InMessage->Sequence == EmetconProtocol::GetValue_FrozenTOUkWhReverse)
@@ -1135,8 +1133,7 @@ INT Mct440_213xBDevice::decodeGetValueTOUkWh(INMESS          *InMessage,
                 }
                 else
                 {
-                    point_time  = getLastFreezeTimestamp(TimeNow);
-                    point_time -= point_time.seconds() % 60;
+                    point_time = getLastFreezeTimestamp(TimeNow);
                 }
             }
 

@@ -3232,7 +3232,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
 BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh)
 {
     INMESS                          InMessage;
-    CtiTime                         t(CtiDate(1, 1, 2011), 19, 16, 0);  //  1293930960 seconds (0x4D1FD1D0)
+    CtiTime                         timeNow(CtiDate(1, 1, 2011), 19, 16, 23);
     CtiDeviceBase::CtiMessageList   vgList;
     CtiDeviceBase::CtiMessageList   retList;
     CtiDeviceBase::OutMessageList   outList; // not use
@@ -3247,7 +3247,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh)
 
     test_Mct440_213xB test_dev;
 
-    BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueTOUkWh(&InMessage, t, vgList, retList, outList));
+    BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueTOUkWh(&InMessage, timeNow, vgList, retList, outList));
 
     BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -3264,9 +3264,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh)
 
         BOOST_REQUIRE( pdata );
 
-        BOOST_CHECK_EQUAL( pdata->getValue(), 0x010203);
+        BOOST_CHECK_EQUAL( pdata->getValue(),   0x010203      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
     }
 
     {
@@ -3274,9 +3274,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh)
 
         BOOST_REQUIRE( pdata );
 
-        BOOST_CHECK_EQUAL( pdata->getValue(), 0x040506);
+        BOOST_CHECK_EQUAL( pdata->getValue(),   0x040506      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
     }
 
     {
@@ -3284,9 +3284,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh)
 
         BOOST_REQUIRE( pdata );
 
-        BOOST_CHECK_EQUAL( pdata->getValue(), 0x070809);
+        BOOST_CHECK_EQUAL( pdata->getValue(),   0x070809      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
     }
 
     {
@@ -3294,9 +3294,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh)
 
         BOOST_REQUIRE( pdata );
 
-        BOOST_CHECK_EQUAL( pdata->getValue(), 0x0A0B0C);
+        BOOST_CHECK_EQUAL( pdata->getValue(),   0x0A0B0C      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
     }
 }
 
@@ -3304,7 +3304,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh)
 BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh_reverse)
 {
     INMESS                          InMessage;
-    CtiTime                         t(CtiDate(1, 1, 2011), 19, 16, 0);  //  1293930960 seconds (0x4D1FD1D0)
+    CtiTime                         timeNow(CtiDate(1, 1, 2011), 19, 16, 34);
     CtiDeviceBase::CtiMessageList   vgList;
     CtiDeviceBase::CtiMessageList   retList;
     CtiDeviceBase::OutMessageList   outList; // not use
@@ -3319,7 +3319,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh_reverse)
 
     test_Mct440_213xB test_dev;
 
-    BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueTOUkWh(&InMessage, t, vgList, retList, outList));
+    BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueTOUkWh(&InMessage, timeNow, vgList, retList, outList));
 
     BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -3336,9 +3336,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh_reverse)
 
         BOOST_REQUIRE( pdata );
 
-        BOOST_CHECK_EQUAL( pdata->getValue(), 66051);
+        BOOST_CHECK_EQUAL( pdata->getValue(),   66051         );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
     }
 
     {
@@ -3346,9 +3346,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh_reverse)
 
         BOOST_REQUIRE( pdata );
 
-        BOOST_CHECK_EQUAL( pdata->getValue(), 263430);
+        BOOST_CHECK_EQUAL( pdata->getValue(),   263430        );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
     }
 
     {
@@ -3356,9 +3356,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh_reverse)
 
         BOOST_REQUIRE( pdata );
 
-        BOOST_CHECK_EQUAL( pdata->getValue(), 460809);
+        BOOST_CHECK_EQUAL( pdata->getValue(),   460809        );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
     }
 
     {
@@ -3366,9 +3366,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh_reverse)
 
         BOOST_REQUIRE( pdata );
 
-        BOOST_CHECK_EQUAL( pdata->getValue(), 658188);
+        BOOST_CHECK_EQUAL( pdata->getValue(),   658188        );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
     }
 }
 
@@ -3376,13 +3376,14 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh_reverse)
 BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhFrozen)
 {
     INMESS                          InMessage;
-    CtiTime                         t(CtiDate(1, 1, 2011), 19, 16, 0);  //  1293930960 seconds (0x4D1FD1D0)
+    CtiTime                         timeNow   (CtiDate(1, 1, 2011), 19, 19, 23);
+    CtiTime                         timeFrozen(CtiDate(1, 1, 2011), 19, 12, 45);
     CtiDeviceBase::CtiMessageList   vgList;
     CtiDeviceBase::CtiMessageList   retList;
     CtiDeviceBase::OutMessageList   outList; // not use
 
-
-    unsigned char test_data[13] = {0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xA,0xB,0xC,0xD};
+    const unsigned char freeze_counter = 16;
+    const unsigned char test_data[13]  = {0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xA,0xB,0xC, freeze_counter};
 
     memcpy(InMessage.Buffer.DSt.Message, test_data, 13);
 
@@ -3391,9 +3392,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhFrozen)
 
     test_Mct440_213xB test_dev;
 
-    test_dev.updateFreezeInfo(12,0);
+    test_dev.updateFreezeInfo(freeze_counter, timeFrozen.seconds());
 
-    BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueTOUkWh(&InMessage, t, vgList, retList, outList));
+    BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueTOUkWh(&InMessage, timeNow, vgList, retList, outList));
 
     BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -3410,9 +3411,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhFrozen)
 
         BOOST_REQUIRE( pdata );
 
-        BOOST_CHECK_EQUAL( pdata->getValue(), 0x010203);
+        BOOST_CHECK_EQUAL( pdata->getValue(),   0x010203      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
     }
 
     {
@@ -3420,9 +3421,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhFrozen)
 
         BOOST_REQUIRE( pdata );
 
-        BOOST_CHECK_EQUAL( pdata->getValue(), 0x040506);
+        BOOST_CHECK_EQUAL( pdata->getValue(),   0x040506      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
     }
 
     {
@@ -3430,9 +3431,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhFrozen)
 
         BOOST_REQUIRE( pdata );
 
-        BOOST_CHECK_EQUAL( pdata->getValue(), 0x070809);
+        BOOST_CHECK_EQUAL( pdata->getValue(),   0x070809      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
     }
 
     {
@@ -3440,22 +3441,23 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhFrozen)
 
         BOOST_REQUIRE( pdata );
 
-        BOOST_CHECK_EQUAL( pdata->getValue(), 0x0A0B0C);
+        BOOST_CHECK_EQUAL( pdata->getValue(),   0x0A0B0C      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
     }
 }
 
 BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhReverseFrozen)
 {
     INMESS                          InMessage;
-    CtiTime                         t(CtiDate(1, 1, 2011), 19, 16, 0);  //  1293930960 seconds (0x4D1FD1D0)
+    CtiTime                         timeNow   (CtiDate(1, 1, 2011), 19, 19, 12);
+    CtiTime                         timeFrozen(CtiDate(1, 1, 2011), 18, 12, 34);
     CtiDeviceBase::CtiMessageList   vgList;
     CtiDeviceBase::CtiMessageList   retList;
     CtiDeviceBase::OutMessageList   outList; // not use
 
-
-    unsigned char test_data[13] = {0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xA,0xB,0xC,0xD};
+    const unsigned char freeze_counter = 10;
+    const unsigned char test_data[13]  = {0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xA,0xB,0xC, freeze_counter};
 
     memcpy(InMessage.Buffer.DSt.Message, test_data, 13);
 
@@ -3464,9 +3466,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhReverseFrozen)
 
     test_Mct440_213xB test_dev;
 
-    test_dev.updateFreezeInfo(12,0);
+    test_dev.updateFreezeInfo(freeze_counter, timeFrozen.seconds());
 
-    BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueTOUkWh(&InMessage, t, vgList, retList, outList));
+    BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueTOUkWh(&InMessage, timeNow, vgList, retList, outList));
 
     BOOST_REQUIRE_EQUAL(retList.size(), 1);
 
@@ -3483,9 +3485,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhReverseFrozen)
 
         BOOST_REQUIRE( pdata );
 
-        BOOST_CHECK_EQUAL( pdata->getValue(), 0x010203);
+        BOOST_CHECK_EQUAL( pdata->getValue(),   0x010203      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
     }
 
     {
@@ -3493,9 +3495,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhReverseFrozen)
 
         BOOST_REQUIRE( pdata );
 
-        BOOST_CHECK_EQUAL( pdata->getValue(), 0x040506);
+        BOOST_CHECK_EQUAL( pdata->getValue(),   0x040506      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
     }
 
     {
@@ -3503,9 +3505,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhReverseFrozen)
 
         BOOST_REQUIRE( pdata );
 
-        BOOST_CHECK_EQUAL( pdata->getValue(), 0x070809);
+        BOOST_CHECK_EQUAL( pdata->getValue(),   0x070809      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
     }
 
     {
@@ -3513,9 +3515,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhReverseFrozen)
 
         BOOST_REQUIRE( pdata );
 
-        BOOST_CHECK_EQUAL( pdata->getValue(), 0x0A0B0C);
+        BOOST_CHECK_EQUAL( pdata->getValue(),   0x0A0B0C      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        //BOOST_CHECK_EQUAL( pdata->getTime(), t);
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
     }
 }
 
