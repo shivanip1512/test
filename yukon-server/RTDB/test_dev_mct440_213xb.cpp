@@ -42,6 +42,7 @@ struct test_Mct440_213xBDevice : Cti::Devices::Mct440_213xBDevice
     using Mct440_213xBDevice::decodeDisconnectConfig;
     using Mct440_213xBDevice::decodeDisconnectStatus;
     using Mct440_213xBDevice::isProfileTablePointerCurrent;
+    using Mct440_213xBDevice::decodeGetValueKWH;
     using Mct440_213xBDevice::decodeGetValueTOUkWh;
     using Mct440_213xBDevice::decodeGetValueDailyReadRecent;
     using Mct440_213xBDevice::executePutConfigTOU;
@@ -3225,6 +3226,223 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
         BOOST_CHECK_EQUAL( expSchedule2, result2);
         BOOST_CHECK_EQUAL( expSchedule3, result3);
         BOOST_CHECK_EQUAL( expSchedule4, result4);
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(test_decodeGetValueKWH)
+{
+    INMESS                          InMessage;
+    CtiDeviceBase::CtiMessageList   vgList;
+    CtiDeviceBase::CtiMessageList   retList;
+    CtiDeviceBase::OutMessageList   outList; // not use
+
+    // ----------- GetValue_kWh (getvalue kwh) ----------- //
+
+    {
+        test_Mct440_213xB test_dev;
+        CtiTime           timeNow(CtiDate(1, 1, 2011), 19, 16, 23);
+        string            cmd = "getvalue kwh";
+        
+        strcpy(InMessage.Return.CommandStr, cmd.c_str());
+
+        const unsigned char test_data[3] = {0x1,0x2,0x3};
+
+        memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
+        InMessage.Return.UserID = 0;
+        InMessage.Sequence      = EmetconProtocol::GetValue_KWH;
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueKWH(&InMessage, timeNow, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE(retMsg);
+
+        CtiMultiMsg_vec points = retMsg->PointData();
+
+        BOOST_REQUIRE_EQUAL(points.size(), 1);
+
+        {
+            const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);  // Forward Active Energy
+
+            BOOST_REQUIRE( pdata );
+
+            BOOST_CHECK_EQUAL( pdata->getValue(),   0x010203      );
+            BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+            BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
+        }
+
+        retList.pop_front();
+    }
+
+    // ----------- GetValue_kWh (getvalue usage) ----------- //
+
+    {
+        test_Mct440_213xB test_dev;
+        CtiTime           timeNow(CtiDate(2, 2, 2011), 20, 15, 22);
+        string            cmd = "getvalue usage";
+        
+        strcpy(InMessage.Return.CommandStr, cmd.c_str());
+
+        const unsigned char test_data[9] = {0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9};
+
+        memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
+        InMessage.Return.UserID = 0;
+        InMessage.Sequence      = EmetconProtocol::GetValue_KWH;
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueKWH(&InMessage, timeNow, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE(retMsg);
+
+        CtiMultiMsg_vec points = retMsg->PointData();
+
+        BOOST_REQUIRE_EQUAL(points.size(), 3);
+
+        {
+            const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);  // Forward Active Energy
+
+            BOOST_REQUIRE( pdata );
+
+            BOOST_CHECK_EQUAL( pdata->getValue(),   0x010203      );
+            BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+            BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
+        }
+
+        {
+            const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[1]);  // Reverse Active Energy
+
+            BOOST_REQUIRE( pdata );
+
+            BOOST_CHECK_EQUAL( pdata->getValue(),   0x040506      );
+            BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+            BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
+        }
+
+        {
+            const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[2]);  // Inductive Reactive Energy
+
+            BOOST_REQUIRE( pdata );
+
+            BOOST_CHECK_EQUAL( pdata->getValue(),   0x070809      );
+            BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+            BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
+        }
+
+        retList.pop_front();
+    }
+
+    // ----------- GetValue_FrozenKWH (getvalue kwh frozen) ----------- //
+
+    {
+        test_Mct440_213xB test_dev;
+        CtiTime           timeNow   (CtiDate(2, 2, 2011), 20, 15, 22);
+        CtiTime           timeFrozen(CtiDate(2, 1, 2011), 16, 12, 45);
+        string            cmd = "getvalue kwh frozen";
+        
+        strcpy(InMessage.Return.CommandStr, cmd.c_str());
+
+        const unsigned char freeze_counter = 16;
+        const unsigned char test_data[4]   = {0x11,0x22,0x33, freeze_counter};
+
+        memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
+        InMessage.Return.UserID = 0;
+        InMessage.Sequence      = EmetconProtocol::GetValue_FrozenKWH;
+
+        test_dev.updateFreezeInfo(freeze_counter, timeFrozen.seconds());
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueKWH(&InMessage, timeNow, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE(retMsg);
+
+        CtiMultiMsg_vec points = retMsg->PointData();
+
+        BOOST_REQUIRE_EQUAL(points.size(), 1);
+
+        {
+            const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);   // Frozen Forward Active Energy
+
+            BOOST_REQUIRE( pdata );
+
+            BOOST_CHECK_EQUAL( pdata->getValue(),   0x112233      );
+            BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+            BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
+        }
+
+        retList.pop_front();
+    }
+
+    // ----------- GetValue_FrozenKWH (getvalue usage frozen) ----------- //
+
+    {
+        test_Mct440_213xB test_dev;
+        CtiTime           timeNow   (CtiDate(2, 2, 2011), 21, 38, 36);
+        CtiTime           timeFrozen(CtiDate(2, 2, 2011), 17, 41, 23);
+        string            cmd = "getvalue usage frozen";
+        
+        strcpy(InMessage.Return.CommandStr, cmd.c_str());
+
+        const unsigned char freeze_counter = 24;
+        const unsigned char test_data[10]  = {0x11,0x22,0x33, freeze_counter, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99};
+
+        memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
+        InMessage.Return.UserID = 0;
+        InMessage.Sequence      = EmetconProtocol::GetValue_FrozenKWH;
+
+        test_dev.updateFreezeInfo(freeze_counter, timeFrozen.seconds());
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetValueKWH(&InMessage, timeNow, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE(retMsg);
+
+        CtiMultiMsg_vec points = retMsg->PointData();
+
+        BOOST_REQUIRE_EQUAL(points.size(), 3);
+
+        {
+            const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);  // Frozen Forward Active Energy
+
+            BOOST_REQUIRE( pdata );
+
+            BOOST_CHECK_EQUAL( pdata->getValue(),   0x112233      );
+            BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+            BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
+        }
+
+        {
+            const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[1]);  // Frozen Reverse Active Energy
+
+            BOOST_REQUIRE( pdata );
+
+            BOOST_CHECK_EQUAL( pdata->getValue(),   0x445566      );
+            BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+            BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
+        }
+
+        {
+            const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[2]);  // Frozen Inductive Reactive Energy
+
+            BOOST_REQUIRE( pdata );
+
+            BOOST_CHECK_EQUAL( pdata->getValue(),   0x778899      );
+            BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+            BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
+        }
+
+        retList.pop_front();
     }
 }
 
