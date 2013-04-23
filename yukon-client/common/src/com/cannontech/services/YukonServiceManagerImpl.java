@@ -43,7 +43,7 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
                 String displayName = rset.getString(2);
                 String path = rset.getString(3);
                 if (startService(displayName, path)) {
-                    log.info("successfull start of the " + displayName + " service" );
+                    log.info("successful start of the " + displayName + " service" );
                 } else {
                     log.error("Unable to load the " + displayName + " service: " + path);
                 }
