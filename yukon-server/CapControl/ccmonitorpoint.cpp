@@ -23,10 +23,15 @@
 #include "resolvers.h"
 #include "utility.h"
 #include "database_writer.h"
+#include "boostutil.h"
 
 using namespace std;
 
 extern unsigned long _CC_DEBUG;
+
+#ifdef _DEBUG
+extern bool _MONITOR_POINT_DEBUGGING;
+#endif
 
 using Cti::CapControl::setVariableIfDifferent;
 
@@ -50,11 +55,32 @@ _scanInProgress(false),
 _insertDynamicDataFlag(false),
 _dirty(false)
 {
+#ifdef _DEBUG
+    if ( _MONITOR_POINT_DEBUGGING )
+    {
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - DEBUG - PointID: " << _pointId << "   DeviceID: " << _deviceId << endl;
+        }
+        autopsy( __FILE__, __LINE__ );
+    }
+#endif
 }
 
 CtiCCMonitorPoint::CtiCCMonitorPoint(Cti::RowReader& rdr)
 {
     restore(rdr);
+
+#ifdef _DEBUG
+    if ( _MONITOR_POINT_DEBUGGING )
+    {
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - DEBUG - PointID: " << _pointId << "   DeviceID: " << _deviceId << endl;
+        }
+        autopsy( __FILE__, __LINE__ );
+    }
+#endif
 }
 
 CtiCCMonitorPoint::CtiCCMonitorPoint(const CtiCCMonitorPoint& point)
@@ -67,6 +93,16 @@ CtiCCMonitorPoint::CtiCCMonitorPoint(const CtiCCMonitorPoint& point)
 ---------------------------------------------------------------------------*/
 CtiCCMonitorPoint::~CtiCCMonitorPoint()
 {
+#ifdef _DEBUG
+    if ( _MONITOR_POINT_DEBUGGING )
+    {
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - DEBUG - PointID: " << _pointId << "   DeviceID: " << _deviceId << endl;
+        }
+        autopsy( __FILE__, __LINE__ );
+    }
+#endif
 }
 
 /*---------------------------------------------------------------------------
@@ -418,6 +454,16 @@ void CtiCCMonitorPoint::setDynamicData(Cti::RowReader& rdr)
     _insertDynamicDataFlag = false;
     _dirty = false;
 
+#ifdef _DEBUG
+    if ( _MONITOR_POINT_DEBUGGING )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - DEBUG - PointID: " << _pointId << "   DeviceID: " << _deviceId << endl;
+        }
+        autopsy( __FILE__, __LINE__ );
+    }
+#endif
 }
 
 
@@ -428,6 +474,16 @@ void CtiCCMonitorPoint::setDynamicData(Cti::RowReader& rdr)
 ---------------------------------------------------------------------------*/
 boost::shared_ptr<CtiCCMonitorPoint> CtiCCMonitorPoint::replicate() const
 {
+#ifdef _DEBUG
+    if ( _MONITOR_POINT_DEBUGGING )
+    {
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - DEBUG - PointID: " << _pointId << "   DeviceID: " << _deviceId << endl;
+        }
+        autopsy( __FILE__, __LINE__ );
+    }
+#endif
     return(CtiCCMonitorPointPtr(new CtiCCMonitorPoint(*this)));
 }
 
@@ -491,6 +547,17 @@ void CtiCCMonitorPoint::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
                     dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "  " << loggedSQLstring << endl;
                 }
+
+#ifdef _DEBUG
+                if ( _MONITOR_POINT_DEBUGGING )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " - DEBUG - PointID: " << _pointId << "   DeviceID: " << _deviceId << endl;
+                    }
+                    autopsy( __FILE__, __LINE__ );
+                }
+#endif
             }
         }
         else
@@ -534,6 +601,17 @@ void CtiCCMonitorPoint::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
                     dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << "  " << loggedSQLstring << endl;
                 }
+
+#ifdef _DEBUG
+                if ( _MONITOR_POINT_DEBUGGING )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " - DEBUG - PointID: " << _pointId << "   DeviceID: " << _deviceId << endl;
+                    }
+                    autopsy( __FILE__, __LINE__ );
+                }
+#endif
             }
         }
     }

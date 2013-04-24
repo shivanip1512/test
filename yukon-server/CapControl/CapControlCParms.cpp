@@ -55,6 +55,10 @@ bool    _IVVC_STATIC_DELTA_VOLTAGES;
 bool    _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS;
 unsigned long _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY;
 
+#ifdef _DEBUG
+bool    _MONITOR_POINT_DEBUGGING;
+#endif
+
 void refreshGlobalCParms()
 {
     string  str;
@@ -655,6 +659,13 @@ void refreshGlobalCParms()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CAP_CONTROL_IVVC_REGULATOR_AUTO_MODE_MSG_DELAY: " << _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY << " seconds." << endl;
     }
+#ifdef _DEBUG
     
+    /*
+        This guy is temporary to debug persistent monitor point issues...
+            We don't want the outside world to know about him.
+    */
+    _MONITOR_POINT_DEBUGGING = gConfigParms.isTrue("CAP_CONTROL_MONITOR_POINT_DEBUGGING", false);
+#endif
 }
 
