@@ -39,7 +39,7 @@ public class ViolationsCountUpdaterHandler implements DeviceDataUpdaterHandler {
             try {
                 areViolationsBeingCalculated = deviceDataMonitorService.areViolationsBeingCalculatedForMonitor(monitorId);
             } catch (RemoteAccessException e) {
-                // Yukon Service Manager is probably down or we are not configured properly to talk to it.
+                log.error("Yukon Service Manager is probably down or we are not configured properly to talk to it.");
                 return messageSourceAccessor.getMessage(NA_MSG_KEY);
             }
 	        if (!areViolationsBeingCalculated) {
