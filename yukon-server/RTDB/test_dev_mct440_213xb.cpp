@@ -3241,7 +3241,8 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueKWH)
 
     {
         test_Mct440_213xB test_dev;
-        CtiTime           timeNow(CtiDate(1, 1, 2011), 19, 16, 23);
+        CtiTime           timeNow     (CtiDate(1, 1, 2011), 19, 16, 23);
+        CtiTime           timeExpected(CtiDate(1, 1, 2011), 19, 16, 23);
         string            cmd = "getvalue kwh";
         
         strcpy(InMessage.Return.CommandStr, cmd.c_str());
@@ -3271,7 +3272,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueKWH)
 
             BOOST_CHECK_EQUAL( pdata->getValue(),   0x010203      );
             BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-            BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
+            BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
         }
 
         retList.pop_front();
@@ -3281,7 +3282,8 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueKWH)
 
     {
         test_Mct440_213xB test_dev;
-        CtiTime           timeNow(CtiDate(2, 2, 2011), 20, 15, 22);
+        CtiTime           timeNow     (CtiDate(2, 2, 2011), 20, 15, 22);
+        CtiTime           timeExpected(CtiDate(2, 2, 2011), 20, 15, 22);
         string            cmd = "getvalue usage";
         
         strcpy(InMessage.Return.CommandStr, cmd.c_str());
@@ -3311,7 +3313,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueKWH)
 
             BOOST_CHECK_EQUAL( pdata->getValue(),   0x010203      );
             BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-            BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
+            BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
         }
 
         {
@@ -3321,7 +3323,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueKWH)
 
             BOOST_CHECK_EQUAL( pdata->getValue(),   0x040506      );
             BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-            BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
+            BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
         }
 
         {
@@ -3331,7 +3333,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueKWH)
 
             BOOST_CHECK_EQUAL( pdata->getValue(),   0x070809      );
             BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-            BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
+            BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
         }
 
         retList.pop_front();
@@ -3341,8 +3343,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueKWH)
 
     {
         test_Mct440_213xB test_dev;
-        CtiTime           timeNow   (CtiDate(2, 2, 2011), 20, 15, 22);
-        CtiTime           timeFrozen(CtiDate(2, 1, 2011), 16, 12, 45);
+        CtiTime           timeNow     (CtiDate(2, 2, 2011), 20, 15, 22);
+        CtiTime           timeFrozen  (CtiDate(2, 1, 2011), 16, 12, 45);
+        CtiTime           timeExpected(CtiDate(2, 1, 2011), 16, 12, 45);
         string            cmd = "getvalue kwh frozen";
         
         strcpy(InMessage.Return.CommandStr, cmd.c_str());
@@ -3375,7 +3378,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueKWH)
 
             BOOST_CHECK_EQUAL( pdata->getValue(),   0x112233      );
             BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-            BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
+            BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
         }
 
         retList.pop_front();
@@ -3385,8 +3388,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueKWH)
 
     {
         test_Mct440_213xB test_dev;
-        CtiTime           timeNow   (CtiDate(2, 2, 2011), 21, 38, 36);
-        CtiTime           timeFrozen(CtiDate(2, 2, 2011), 17, 41, 23);
+        CtiTime           timeNow     (CtiDate(2, 2, 2011), 21, 38, 36);
+        CtiTime           timeFrozen  (CtiDate(2, 2, 2011), 17, 41, 23);
+        CtiTime           timeExpected(CtiDate(2, 2, 2011), 17, 41, 23);
         string            cmd = "getvalue usage frozen";
         
         strcpy(InMessage.Return.CommandStr, cmd.c_str());
@@ -3419,7 +3423,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueKWH)
 
             BOOST_CHECK_EQUAL( pdata->getValue(),   0x112233      );
             BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-            BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
+            BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
         }
 
         {
@@ -3429,7 +3433,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueKWH)
 
             BOOST_CHECK_EQUAL( pdata->getValue(),   0x445566      );
             BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-            BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
+            BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
         }
 
         {
@@ -3439,7 +3443,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueKWH)
 
             BOOST_CHECK_EQUAL( pdata->getValue(),   0x778899      );
             BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-            BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
+            BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
         }
 
         retList.pop_front();
@@ -3450,7 +3454,8 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueKWH)
 BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh)
 {
     INMESS                          InMessage;
-    CtiTime                         timeNow(CtiDate(1, 1, 2011), 19, 16, 23);
+    CtiTime                         timeNow     (CtiDate(1, 1, 2011), 19, 16, 23);
+    CtiTime                         timeExpected(CtiDate(1, 1, 2011), 19, 16, 23);
     CtiDeviceBase::CtiMessageList   vgList;
     CtiDeviceBase::CtiMessageList   retList;
     CtiDeviceBase::OutMessageList   outList; // not use
@@ -3484,7 +3489,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh)
 
         BOOST_CHECK_EQUAL( pdata->getValue(),   0x010203      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
     }
 
     {
@@ -3494,7 +3499,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh)
 
         BOOST_CHECK_EQUAL( pdata->getValue(),   0x040506      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
     }
 
     {
@@ -3504,7 +3509,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh)
 
         BOOST_CHECK_EQUAL( pdata->getValue(),   0x070809      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
     }
 
     {
@@ -3514,7 +3519,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh)
 
         BOOST_CHECK_EQUAL( pdata->getValue(),   0x0A0B0C      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
     }
 }
 
@@ -3522,7 +3527,8 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh)
 BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh_reverse)
 {
     INMESS                          InMessage;
-    CtiTime                         timeNow(CtiDate(1, 1, 2011), 19, 16, 34);
+    CtiTime                         timeNow     (CtiDate(1, 1, 2011), 19, 16, 34);
+    CtiTime                         timeExpected(CtiDate(1, 1, 2011), 19, 16, 34);
     CtiDeviceBase::CtiMessageList   vgList;
     CtiDeviceBase::CtiMessageList   retList;
     CtiDeviceBase::OutMessageList   outList; // not use
@@ -3556,7 +3562,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh_reverse)
 
         BOOST_CHECK_EQUAL( pdata->getValue(),   66051         );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
     }
 
     {
@@ -3566,7 +3572,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh_reverse)
 
         BOOST_CHECK_EQUAL( pdata->getValue(),   263430        );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
     }
 
     {
@@ -3576,7 +3582,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh_reverse)
 
         BOOST_CHECK_EQUAL( pdata->getValue(),   460809        );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
     }
 
     {
@@ -3586,7 +3592,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh_reverse)
 
         BOOST_CHECK_EQUAL( pdata->getValue(),   658188        );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        BOOST_CHECK_EQUAL( pdata->getTime(),    timeNow       );
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
     }
 }
 
@@ -3594,8 +3600,9 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWh_reverse)
 BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhFrozen)
 {
     INMESS                          InMessage;
-    CtiTime                         timeNow   (CtiDate(1, 1, 2011), 19, 19, 23);
-    CtiTime                         timeFrozen(CtiDate(1, 1, 2011), 19, 12, 45);
+    CtiTime                         timeNow     (CtiDate(1, 1, 2011), 19, 19, 23);
+    CtiTime                         timeFrozen  (CtiDate(1, 1, 2011), 19, 12, 45);
+    CtiTime                         timeExpected(CtiDate(1, 1, 2011), 19, 12, 45);
     CtiDeviceBase::CtiMessageList   vgList;
     CtiDeviceBase::CtiMessageList   retList;
     CtiDeviceBase::OutMessageList   outList; // not use
@@ -3631,7 +3638,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhFrozen)
 
         BOOST_CHECK_EQUAL( pdata->getValue(),   0x010203      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
     }
 
     {
@@ -3641,7 +3648,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhFrozen)
 
         BOOST_CHECK_EQUAL( pdata->getValue(),   0x040506      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
     }
 
     {
@@ -3651,7 +3658,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhFrozen)
 
         BOOST_CHECK_EQUAL( pdata->getValue(),   0x070809      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
     }
 
     {
@@ -3661,15 +3668,16 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhFrozen)
 
         BOOST_CHECK_EQUAL( pdata->getValue(),   0x0A0B0C      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
     }
 }
 
 BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhReverseFrozen)
 {
     INMESS                          InMessage;
-    CtiTime                         timeNow   (CtiDate(1, 1, 2011), 19, 19, 12);
-    CtiTime                         timeFrozen(CtiDate(1, 1, 2011), 18, 12, 34);
+    CtiTime                         timeNow     (CtiDate(1, 1, 2011), 19, 19, 12);
+    CtiTime                         timeFrozen  (CtiDate(1, 1, 2011), 18, 12, 34);
+    CtiTime                         timeExpected(CtiDate(1, 1, 2011), 18, 12, 34);
     CtiDeviceBase::CtiMessageList   vgList;
     CtiDeviceBase::CtiMessageList   retList;
     CtiDeviceBase::OutMessageList   outList; // not use
@@ -3705,7 +3713,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhReverseFrozen)
 
         BOOST_CHECK_EQUAL( pdata->getValue(),   0x010203      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
     }
 
     {
@@ -3715,7 +3723,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhReverseFrozen)
 
         BOOST_CHECK_EQUAL( pdata->getValue(),   0x040506      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
     }
 
     {
@@ -3725,7 +3733,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhReverseFrozen)
 
         BOOST_CHECK_EQUAL( pdata->getValue(),   0x070809      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
     }
 
     {
@@ -3735,7 +3743,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetValueTOUkWhReverseFrozen)
 
         BOOST_CHECK_EQUAL( pdata->getValue(),   0x0A0B0C      );
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
-        BOOST_CHECK_EQUAL( pdata->getTime(),    timeFrozen    );
+        BOOST_CHECK_EQUAL( pdata->getTime(),    timeExpected  );
     }
 }
 
