@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="paoDefinition.xsl"?>
-<!--  RF Devices: highest OFFSET=213 @ 2013-03-15F -->
+<!--  RF Devices: highest OFFSET=213 @ 2014-04-24W -->
 <!--
     This file contains default pao and point information for all of the pao's in Yukon.
     
@@ -6394,11 +6394,47 @@
             <tag name="NETWORK_MANAGER_ATTRIBUTE_READS"/>
             <tag name="USES_METER_NUMBER_FOR_MSP"/>
         </tags>
-</pao>
-
-	<pao id="RFN_TOU_FOR_ALL_EXCEPT_A3D" abstract="true">
-		<points>
-
+    </pao>
+    
+    <pao id="RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE" abstract="true">
+        <points>
+            <point type="Analog" offset="214">
+                <init>true</init>
+                <name>Voltage</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point type="Analog" offset="14">
+                <init>true</init>
+                <name>Max Volts</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="15">
+                <init>true</init>
+                <name>Min Volts</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="VOLTAGE">
+                <basicLookup point="Voltage"/>
+            </attribute>
+            <attribute name="MINIMUM_VOLTAGE">
+                <basicLookup point="Min Volts" />
+            </attribute>
+            <attribute name="MAXIMUM_VOLTAGE">
+                <basicLookup point="Max Volts" />
+            </attribute>
+        </attributes>
+    </pao>
+    
+    <pao id="RFN_TOU_FOR_ALL_EXCEPT_A3D" abstract="true">
+        <points>
             <point type="Analog" offset="25">
                 <init>true</init>
                 <name>Rate A kWh</name>
@@ -6502,11 +6538,11 @@
             <attribute name="TOU_RATE_D_PEAK_DEMAND">
                 <basicLookup point="Peak kW (Rate D kW)"/>
             </attribute>
-		</attributes>
-    	<tags>
-        	<tag name="TOU"/>
+        </attributes>
+        <tags>
+            <tag name="TOU"/>
         </tags>
-	</pao>
+    </pao>
 
     <pao id="RFN_L2_CENTRON_AND_FOCUS" abstract="true" inherits="RFN_COMMON, RFN_PTCALC__CENTRON_AND_FOCUS, RFN_TOU_FOR_ALL_EXCEPT_A3D">
         <points>
@@ -6574,42 +6610,12 @@
             </attribute>
         </attributes>
     </pao>
-		<pao id="RFN_L3_CENTRON" abstract="true" inherits="RFN_L2_CENTRON_AND_FOCUS">
-        <points>
-            <point type="Analog" offset="70">
-                <init>true</init>
-                <name>Voltage</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="1"/>
-            </point>
-            <point type="Analog" offset="14">
-                <init>true</init>
-                <name>Max Volts</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="15">
-                <name>Min Volts</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3"/>
-            </point>
-        </points>
-        <attributes>
-            <attribute name="VOLTAGE">
-                <basicLookup point="Voltage"/>
-            </attribute>
-            <attribute name="MINIMUM_VOLTAGE">
-                <basicLookup point="Min Volts" />
-            </attribute>
-            <attribute name="MAXIMUM_VOLTAGE">
-                <basicLookup point="Max Volts" />
-            </attribute>
-        </attributes>
-		</pao>
-		<pao id="RFN_L3_FOCUS_FL" abstract="true" inherits="RFN_L2_CENTRON_AND_FOCUS">
+
+    <pao id="RFN_L3_CENTRON" abstract="true" inherits="RFN_L2_CENTRON_AND_FOCUS, RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE"/>
+
+    <pao id="RFN_L3_FOCUS_420FL" abstract="true" inherits="RFN_L2_CENTRON_AND_FOCUS, RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE"/>
+    
+    <pao id="RFN_L3_FOCUS_410FL" abstract="true" inherits="RFN_L2_CENTRON_AND_FOCUS">
         <points>
             <point type="Analog" offset="5">
                 <init>true</init>
@@ -6631,8 +6637,9 @@
                 <basicLookup point="Voltage Primary" />
             </attribute>
         </attributes>
-		</pao>
-		<pao id="RFN_L3_FOCUS_FX_FD" abstract="true" inherits="RFN_L2_CENTRON_AND_FOCUS, RFN_L1_ELSTER_AND_FX_FD">
+    </pao>
+        
+    <pao id="RFN_L3_FOCUS_FX_FD" abstract="true" inherits="RFN_L2_CENTRON_AND_FOCUS, RFN_L1_ELSTER_AND_FX_FD">
         <points>
             <point type="Analog" offset="118">
                 <name>Peak kW (Rate E kW)</name>
@@ -6737,7 +6744,7 @@
                 <decimalplaces value="1"/>
             </point>
         </points>
-		</pao>
+    </pao>
     <pao id="RFN_L1_ELSTER_AND_FX_FD" abstract="true">
         <points>
             <point type="Analog" offset="73">
@@ -6817,11 +6824,9 @@
                 <basicLookup point="Volts Phase C" />
             </attribute>
         </attributes>
-        <tags>
-            <tag name="THREE_PHASE_VOLTAGE"/>
-        </tags>
     </pao>
-		<pao id="RFN_L2_ELSTER_ALL" abstract="true" inherits="RFN_COMMON, RFN_L1_ELSTER_AND_FX_FD">
+    
+    <pao id="RFN_L2_ELSTER_ALL" abstract="true" inherits="RFN_COMMON, RFN_L1_ELSTER_AND_FX_FD">
         <points>
             <point type="Analog" offset="171">
                 <name>Total Cumulative Peak kW</name>
@@ -6848,9 +6853,12 @@
                 <decimalplaces value="4"/>
             </point>
         </points>
+        <tags>
+            <tag name="THREE_PHASE_VOLTAGE"/>
+        </tags>
     </pao>
 
-	<pao id="RFN_L3_ELSTER_TKRV" abstract="true" inherits="RFN_L2_ELSTER_ALL, RFN_TOU_FOR_ALL_EXCEPT_A3D">
+    <pao id="RFN_L3_ELSTER_TKRV" abstract="true" inherits="RFN_L2_ELSTER_ALL, RFN_TOU_FOR_ALL_EXCEPT_A3D">
         <points>
             <point type="Analog" offset="167">
                 <name>Rate A Cumulative Peak kW</name>
@@ -6877,9 +6885,9 @@
                 <decimalplaces value="4"/>
             </point>
         </points>
-	</pao>
+    </pao>
 
-	<pao id="RFN_L4_ELSTER_KRV" abstract="true" inherits="RFN_L3_ELSTER_TKRV, RFN_PTCALC__ELSTER_KRV">
+    <pao id="RFN_L4_ELSTER_KRV" abstract="true" inherits="RFN_L3_ELSTER_TKRV, RFN_PTCALC__ELSTER_KRV">
         <points>
             <point type="Analog" offset="149">
                 <name>Peak kVA</name>
@@ -7116,9 +7124,9 @@
                 <basicLookup point="kVAh Sum"/>
             </attribute>
         </attributes>
-	</pao>
+    </pao>
 
-	<pao id="RFN_L5_ELSTER_RV" abstract="true" inherits="RFN_L4_ELSTER_KRV, RFN_PTCALC__ELSTER_RV">
+    <pao id="RFN_L5_ELSTER_RV" abstract="true" inherits="RFN_L4_ELSTER_KRV, RFN_PTCALC__ELSTER_RV">
         <points>
             <point type="Analog" offset="50">
                 <init>true</init>
@@ -7215,61 +7223,61 @@
             </point>
 
             <!-- ALL THE FOLLOWING ARE NEW per ICD (#2) received 2013 Mar 11M -->
-			<point type="Analog" offset="193">
-				<name>Rate A Coincident kVAr</name>
-				<multiplier value="1.0"/>
-				<unitofmeasure value="kVAr"/>
-				<decimalplaces value="3"/>
-			</point>
-			<point type="Analog" offset="194">
-				<name>Rate B Coincident kVAr</name>
-				<multiplier value="1.0"/>
-				<unitofmeasure value="kVAr"/>
-				<decimalplaces value="3"/>
-			</point>
-			<point type="Analog" offset="195">
-				<name>Rate C Coincident kVAr</name>
-				<multiplier value="1.0"/>
-				<unitofmeasure value="kVAr"/>
-				<decimalplaces value="3"/>
-			</point>
-			<point type="Analog" offset="196">
-				<name>Rate D Coincident kVAr</name>
-				<multiplier value="1.0"/>
-				<unitofmeasure value="kVAr"/>
-				<decimalplaces value="3"/>
-			</point>
+            <point type="Analog" offset="193">
+                <name>Rate A Coincident kVAr</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVAr" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="194">
+                <name>Rate B Coincident kVAr</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVAr" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="195">
+                <name>Rate C Coincident kVAr</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVAr" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="196">
+                <name>Rate D Coincident kVAr</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVAr" />
+                <decimalplaces value="3" />
+            </point>
 
-			<point type="Analog" offset="197">
-				<name>Coincident Cumulative Peak kVAr</name>
-				<multiplier value="1.0"/>
-				<unitofmeasure value="kVAr"/>
-				<decimalplaces value="3"/>
-			</point>
-			<point type="Analog" offset="198">
-				<name>Coincident Cumulative Peak kVAr (Rate A kVAr)</name>
-				<multiplier value="1.0"/>
-				<unitofmeasure value="kVAr"/>
-				<decimalplaces value="3"/>
-			</point>
-			<point type="Analog" offset="199">
-				<name>Coincident Cumulative Peak kVAr (Rate B kVAr)</name>
-				<multiplier value="1.0"/>
-				<unitofmeasure value="kVAr"/>
-				<decimalplaces value="3"/>
-			</point>
-			<point type="Analog" offset="200">
-				<name>Coincident Cumulative Peak kVAr (Rate C kVAr)</name>
-				<multiplier value="1.0"/>
-				<unitofmeasure value="kVAr"/>
-				<decimalplaces value="3"/>
-			</point>
-			<point type="Analog" offset="201">
-				<name>Coincident Cumulative Peak kVAr (Rate D kVAr)</name>
-				<multiplier value="1.0"/>
-				<unitofmeasure value="kVAr"/>
-				<decimalplaces value="3"/>
-			</point>
+            <point type="Analog" offset="197">
+                <name>Coincident Cumulative Peak kVAr</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVAr" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="198">
+                <name>Coincident Cumulative Peak kVAr (Rate A kVAr)</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVAr" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="199">
+                <name>Coincident Cumulative Peak kVAr (Rate B kVAr)</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVAr" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="200">
+                <name>Coincident Cumulative Peak kVAr (Rate C kVAr)</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVAr" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="201">
+                <name>Coincident Cumulative Peak kVAr (Rate D kVAr)</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVAr" />
+                <decimalplaces value="3" />
+            </point>
             <point type="Analog" offset="202">
                 <name>Received Rate A kVArh</name>
                 <multiplier value="1.0"/>
@@ -7306,40 +7314,40 @@
                 <basicLookup point="Delivered kVArh" />
             </attribute>
         </attributes>
-	</pao>
-
+    </pao>
 
     <!-- FOCUS RFN METERS -->
-    <pao id="RFN410FL"  inherits="RFN_L3_FOCUS_FL">
-    	<displayName>RFN-410fL</displayName></pao>
+    <pao id="RFN410FL"  inherits="RFN_L3_FOCUS_410FL">
+        <displayName>RFN-410fL</displayName></pao>
     <pao id="RFN410FX"  inherits="RFN_L3_FOCUS_FX_FD">
-    	<displayName>RFN-410fX</displayName></pao>
+        <displayName>RFN-410fX</displayName></pao>
     <pao id="RFN410FD"  inherits="RFN410FX, RFN_DISCONNECT">
-    	<displayName>RFN-410fD</displayName></pao>
-    <pao id="RFN420FL"  inherits="RFN410FL">
-    	<displayName>RFN-420fL</displayName></pao>
-    <pao id="RFN420FX"  inherits="RFN410FX							, SUPPORTS_RFN_DEMAND_RESET_TAG">
-    	<displayName>RFN-420fX</displayName></pao>
+        <displayName>RFN-410fD</displayName></pao>
+    <pao id="RFN420FL"  inherits="RFN_L3_FOCUS_420FL">
+        <displayName>RFN-420fL</displayName></pao>
+    <pao id="RFN420FX"  inherits="RFN410FX, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE">
+        <displayName>RFN-420fX</displayName></pao>
     <pao id="RFN420FD"  inherits="RFN420FX, RFN_DISCONNECT">
-    	<displayName>RFN-420fD</displayName></pao>
+        <displayName>RFN-420fD</displayName></pao>
+
     <!-- ITRON RFN METERS -->
-    <pao id="RFN420CL"  inherits="RFN_L3_CENTRON					, SUPPORTS_RFN_DEMAND_RESET_TAG">
-    	<displayName>RFN-420cL</displayName></pao>
+    <pao id="RFN420CL"  inherits="RFN_L3_CENTRON, SUPPORTS_RFN_DEMAND_RESET_TAG">
+        <displayName>RFN-420cL</displayName></pao>
     <pao id="RFN420CD"  inherits="RFN420CL, RFN_DISCONNECT">
-    	<displayName>RFN-420cD</displayName></pao>
+        <displayName>RFN-420cD</displayName></pao>
 
     <!-- ELSTER RFN METERS -->
     <pao id="RFN430A3D" inherits="RFN_L2_ELSTER_ALL, SUPPORTS_RFN_DEMAND_RESET_TAG">
-    	<displayName>RFN-430A3D</displayName></pao>
+        <displayName>RFN-430A3D</displayName></pao>
     <pao id="RFN430A3T" inherits="RFN_L3_ELSTER_TKRV, SUPPORTS_RFN_DEMAND_RESET_TAG">
-    	<displayName>RFN-430A3T</displayName></pao>
+        <displayName>RFN-430A3T</displayName></pao>
     <pao id="RFN430A3K" inherits="RFN_L4_ELSTER_KRV, SUPPORTS_RFN_DEMAND_RESET_TAG">
-    	<displayName>RFN-430A3K</displayName></pao>
+        <displayName>RFN-430A3K</displayName></pao>
     <pao id="RFN430A3R" inherits="RFN_L5_ELSTER_RV,  SUPPORTS_RFN_DEMAND_RESET_TAG">
-    	<displayName>RFN-430A3R</displayName></pao>
+        <displayName>RFN-430A3R</displayName></pao>
     <!-- GE RFN METERS -->
     <pao id="RFN430KV"  inherits="RFN_L5_ELSTER_RV">
-    	<displayName>RFN-430KV</displayName></pao>
+        <displayName>RFN-430KV</displayName></pao>
 
 
 

@@ -1639,14 +1639,12 @@
     <pointGroup><!-- BASIC VOLTAGE POINT MAPPINGS -->
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
-<!-- existed for CD, CL + requested for CD, CL -->
-        <point name="Voltage">
-            <uom>V</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal"></modifiers>
-        </point>
+        <paoType value="RFN420FL"/>
+        <paoType value="RFN420FX"/>
+        <paoType value="RFN420FD"/>
 
-<!-- existed for ALL + requested for CD, CL, NOTE: THEY WANT THE TIMESTAMP TOO -->
+<!-- existed for ALL + requested for CD, CL, FL, FX, FD
+     NOTE: THEY WANT THE TIMESTAMP TOO   SEE: YUK-11925, YUK-12049 -->
         <point name="Min Volts">
             <uom>V</uom>
             <parseSiPrefix/>
@@ -1660,6 +1658,11 @@
             <modifiers match="equal">
                 <modifier>Max</modifier>
             </modifiers>
+        </point>
+        <point name="Voltage">
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal"></modifiers>
         </point>
     </pointGroup>
 
