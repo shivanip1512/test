@@ -10,7 +10,7 @@ public enum RfnConditionDataType {
     COUNT(Long.class),
     DIRECTION(Direction.class),
     MEASURED_VALUE(Double.class),
-    OUTAGE_START_TIME(Long.class),  // milliseconds
+    EVENT_START_TIME(Long.class),  // milliseconds
     THRESHOLD_VALUE(Double.class),
     UOM(String.class),
     UOM_MODIFIERS(RfnUomModifierSet.class),

@@ -309,7 +309,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         rfnEventMap.put(RfnConditionDataType.COUNT, testEvent.getCount());
         rfnEventMap.put(RfnConditionDataType.DIRECTION, testEvent.getDirection());
         rfnEventMap.put(RfnConditionDataType.MEASURED_VALUE, testEvent.getMeasuredValue());
-        rfnEventMap.put(RfnConditionDataType.OUTAGE_START_TIME, testEvent.getOutageStartTime());
+        rfnEventMap.put(RfnConditionDataType.EVENT_START_TIME, testEvent.getOutageStartTime());
         rfnEventMap.put(RfnConditionDataType.THRESHOLD_VALUE, testEvent.getThresholdValue());
         rfnEventMap.put(RfnConditionDataType.UOM, testEvent.getUom());
         
