@@ -91,18 +91,18 @@ public class DeviceDataMonitorController {
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorController.class);
 
     @Autowired private AttributeService attributeService;
-    @Autowired private DeviceDataMonitorDao deviceDataMonitorDao;
-    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-    @Autowired private DeviceDataMonitorService deviceDataMonitorService;
-    @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
-    @Autowired private DeviceGroupService deviceGroupService;
+	@Autowired private DeviceDataMonitorDao deviceDataMonitorDao;
+	@Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+	@Autowired private DeviceDataMonitorService deviceDataMonitorService;
+	@Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
+	@Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DeviceMemoryCollectionProducer memoryCollectionProducer;
     @Autowired private PaoPopupHelper popupHelper;
-    @Autowired private PointService pointService;
-    @Autowired private StateDao stateDao;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+	@Autowired private PointService pointService;
+	@Autowired private StateDao stateDao;
+	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
-    private Validator nameValidator = new SimpleValidator<DeviceDataMonitor>(DeviceDataMonitor.class) {
+	private Validator nameValidator = new SimpleValidator<DeviceDataMonitor>(DeviceDataMonitor.class) {
         @Override
         public void doValidation(DeviceDataMonitor monitor, Errors errors) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", baseKey + ".empty");
@@ -120,44 +120,41 @@ public class DeviceDataMonitorController {
         model.addAttribute("mode", PageEditMode.VIEW);
         return "deviceDataMonitor/view.jsp";
     }
-
+    
     @RequestMapping(method = RequestMethod.GET, value = "/createPage")
     public String createPage(ModelMap modelMap, YukonUserContext userContext)
             throws ServletRequestBindingException {
         setupCreateModelMap(new DeviceDataMonitor(), modelMap, userContext);
         return "deviceDataMonitor/edit.jsp";
     }
-
+    
     @RequestMapping(method = RequestMethod.GET, value = "/editPage")
-    public String editPage(int monitorId, ModelMap modelMap,
-            YukonUserContext userContext, FlashScope flashScope)
-            throws ServletRequestBindingException {
-        DeviceDataMonitor monitor = deviceDataMonitorDao
-                .getMonitorById(monitorId);
+    public String editPage(int monitorId, ModelMap modelMap, YukonUserContext userContext,
+                           FlashScope flashScope) throws ServletRequestBindingException {
+        DeviceDataMonitor monitor = deviceDataMonitorDao.getMonitorById(monitorId);
         setupEditModelMap(monitor, modelMap, flashScope, userContext);
         return "deviceDataMonitor/edit.jsp";
     }
-
+    
     @RequestMapping(method = RequestMethod.POST, value = "/create")
     public String create(@ModelAttribute("monitor") DeviceDataMonitor monitor,
-            BindingResult bindingResult, ModelMap modelMap,
-            YukonUserContext userContext, FlashScope flashScope,
-            HttpServletRequest request) {
-
+                                     BindingResult bindingResult,
+                                     ModelMap modelMap, 
+                                     YukonUserContext userContext,
+                                     FlashScope flashScope, HttpServletRequest request) {
+        
         nameValidator.validate(monitor, bindingResult);
 
-        List<DeviceDataMonitorProcessor> remainingProcessors = getRemainingProcessors(monitor
-                .getProcessors());
+        List<DeviceDataMonitorProcessor> remainingProcessors = getRemainingProcessors(monitor.getProcessors());
         monitor.setProcessors(remainingProcessors);
 
         if (bindingResult.hasErrors()) {
-            List<MessageSourceResolvable> messages = YukonValidationUtils
-                    .errorsForBindingResult(bindingResult);
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             setupCreateModelMap(monitor, modelMap, userContext);
             return "deviceDataMonitor/edit.jsp";
         }
-
+        
         try {
             monitor = deviceDataMonitorService.saveAndProcess(monitor);
         } catch (DuplicateException e) {
@@ -165,9 +162,8 @@ public class DeviceDataMonitorController {
             setupCreateModelMap(monitor, modelMap, userContext);
             return "deviceDataMonitor/edit.jsp";
         }
-
-        MessageSourceResolvable createMessage = new YukonMessageSourceResolvable(
-                "yukon.web.modules.amr.deviceDataMonitor.created");
+        
+        MessageSourceResolvable createMessage = new YukonMessageSourceResolvable("yukon.web.modules.amr.deviceDataMonitor.created");
         flashScope.setConfirm(Collections.singletonList(createMessage));
 
         modelMap.addAttribute("monitorId", monitor.getId());
@@ -176,22 +172,22 @@ public class DeviceDataMonitorController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/update")
     public String update(@ModelAttribute("monitor") DeviceDataMonitor monitor,
-            BindingResult bindingResult, ModelMap modelMap,
-            YukonUserContext userContext, FlashScope flashScope) {
+                                                  BindingResult bindingResult,
+                                                  ModelMap modelMap, 
+                                                  YukonUserContext userContext,
+                                                  FlashScope flashScope) {
         nameValidator.validate(monitor, bindingResult);
-
+          
         if (bindingResult.hasErrors()) {
-            List<MessageSourceResolvable> messages = YukonValidationUtils
-                    .errorsForBindingResult(bindingResult);
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             setupEditModelMap(monitor, modelMap, flashScope, userContext);
             return "deviceDataMonitor/edit.jsp";
         }
-
-        List<DeviceDataMonitorProcessor> remainingProcessors = getRemainingProcessors(monitor
-                .getProcessors());
+        
+        List<DeviceDataMonitorProcessor> remainingProcessors = getRemainingProcessors(monitor.getProcessors());
         monitor.setProcessors(remainingProcessors);
-
+        
         try {
             deviceDataMonitorService.saveAndProcess(monitor);
         } catch (DuplicateException e) {
@@ -199,10 +195,8 @@ public class DeviceDataMonitorController {
             setupEditModelMap(monitor, modelMap, flashScope, userContext);
             return "deviceDataMonitor/edit.jsp";
         }
-
-        MessageSourceResolvable updateMessage = new YukonMessageSourceResolvable(
-                "yukon.web.modules.amr.deviceDataMonitor.updated",
-                monitor.getName());
+        
+        MessageSourceResolvable updateMessage = new YukonMessageSourceResolvable("yukon.web.modules.amr.deviceDataMonitor.updated", monitor.getName());
         flashScope.setConfirm(Collections.singletonList(updateMessage));
 
         modelMap.addAttribute("monitorId", monitor.getId());
@@ -210,68 +204,62 @@ public class DeviceDataMonitorController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/delete")
-    public String delete(int monitorId, ModelMap modelMap,
-            FlashScope flashScope, YukonUserContext userContext)
-            throws ServletRequestBindingException {
+	public String delete(int monitorId,
+                         ModelMap modelMap,
+                         FlashScope flashScope,
+                         YukonUserContext userContext) throws ServletRequestBindingException {
 
-        DeviceDataMonitor monitor = deviceDataMonitorDao
-                .getMonitorById(monitorId);
-        deviceDataMonitorDao.deleteMonitor(monitorId);
-
-        MessageSourceResolvable deleteMessage = new YukonMessageSourceResolvable(
-                "yukon.web.modules.amr.deviceDataMonitor.deleted",
-                monitor.getName());
+	    DeviceDataMonitor monitor = deviceDataMonitorDao.getMonitorById(monitorId);
+	    deviceDataMonitorDao.deleteMonitor(monitorId);
+        
+        MessageSourceResolvable deleteMessage = new YukonMessageSourceResolvable("yukon.web.modules.amr.deviceDataMonitor.deleted", monitor.getName());
         flashScope.setConfirm(deleteMessage);
         return "redirect:/meter/start";
-    }
-
-    @RequestMapping(method = RequestMethod.POST, value = "/toggleEnabled")
-    public String toggleEnabled(int monitorId, ModelMap modelMap,
-            FlashScope flashScope, YukonUserContext userContext)
-            throws ServletRequestBindingException {
-        boolean enabled;
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, value = "/toggleEnabled")
+	public String toggleEnabled(int monitorId,
+	                            ModelMap modelMap,
+	                            FlashScope flashScope,
+	                            YukonUserContext userContext) throws ServletRequestBindingException {
+	    boolean enabled;
         try {
             enabled = deviceDataMonitorService.toggleEnabled(monitorId);
-            modelMap.addAttribute("monitorId", monitorId);
+	        modelMap.addAttribute("monitorId", monitorId);
         } catch (NotFoundException e) {
             return "redirect:/meter/start";
         }
-
-        MessageSourceResolvable updateMessage = new YukonMessageSourceResolvable(
-                "yukon.web.modules.amr.deviceDataMonitor.updatedEnabled"
-                        + enabled);
+        
+        MessageSourceResolvable updateMessage = new YukonMessageSourceResolvable("yukon.web.modules.amr.deviceDataMonitor.updatedEnabled" + enabled);
         flashScope.setConfirm(Collections.singletonList(updateMessage));
-
+        
         return "redirect:editPage";
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "/getStatesForGroup")
-    public @ResponseBody
-    JSONObject getStatesForGroup(int stateGroupId) {
-        LiteStateGroup stateGroup = stateDao.getLiteStateGroup(stateGroupId);
-        JSONObject statesContainer = new JSONObject();
-        JSONArray states = new JSONArray();
-        for (LiteState state : stateGroup.getStatesList()) {
-            JSONObject stateObj = new JSONObject();
-            stateObj.put("id", state.getLiteID());
-            stateObj.put("text", state.getStateText());
-            stateObj.put("raw_text", state.getStateRawState());
-            states.add(stateObj);
-        }
-        statesContainer.put("states", states);
-        return statesContainer;
-    }
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, value = "/getStatesForGroup")
+	public @ResponseBody JSONObject getStatesForGroup(int stateGroupId) {
+	    LiteStateGroup stateGroup = stateDao.getLiteStateGroup(stateGroupId);
+	    JSONObject statesContainer = new JSONObject();
+	    JSONArray states = new JSONArray();
+	    for (LiteState state : stateGroup.getStatesList()) {
+	        JSONObject stateObj = new JSONObject();
+	        stateObj.put("id", state.getLiteID());
+	        stateObj.put("text", state.getStateText());
+	        stateObj.put("raw_text", state.getStateRawState());
+	        states.add(stateObj);
+	    }
+	    statesContainer.put("states", states);
+	    return statesContainer;
+	}
 
     @RequestMapping(method = RequestMethod.GET, value = "/getStateGroupsForAttribute")
-    public @ResponseBody
-    JSONObject getStateGroupsForAttribute(String groupName, String attributeKey) {
+    public @ResponseBody JSONObject getStateGroupsForAttribute(String groupName, String attributeKey) {
         List<LiteStateGroup> stateGroupList = attributeService
-                .findListOfStateGroupsForDeviceGroupAndAttributeKey(groupName,
-                        attributeKey);
-        JSONObject sgContainer = new JSONObject();
-        JSONArray jsonSGs = new JSONArray();
+                .findListOfStateGroupsForDeviceGroupAndAttributeKey(groupName, attributeKey);
+        JSONObject 		sgContainer = new JSONObject();
+        JSONArray 		jsonSGs 	= new JSONArray();
         for (LiteStateGroup group : stateGroupList) {
-            JSONObject sgObj = new JSONObject();
+            JSONObject 	sgObj 		= new JSONObject();
             sgObj.put("id", group.getStateGroupID());
             sgObj.put("name", group.getStateGroupName());
             jsonSGs.add(sgObj);
@@ -280,20 +268,16 @@ public class DeviceDataMonitorController {
         return sgContainer;
     }
 
-    private void setupDuplicateMonitorError(DeviceDataMonitor monitor,
-            BindingResult bindingResult, FlashScope flashScope) {
-        log.info("caught error when trying to save device data monitor with duplicate name: "
-                + monitor.getName());
+	private void setupDuplicateMonitorError(DeviceDataMonitor monitor, BindingResult bindingResult,
+	                                        FlashScope flashScope) {
+        log.info("caught error when trying to save device data monitor with duplicate name: " + monitor.getName());
         bindingResult.rejectValue("name", baseKey + ".alreadyExists");
-        List<MessageSourceResolvable> messages = YukonValidationUtils
-                .errorsForBindingResult(bindingResult);
+        List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
         flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
     }
 
-    private List<DeviceDataMonitorProcessor> getRemainingProcessors(
-            List<DeviceDataMonitorProcessor> processors) {
-        List<DeviceDataMonitorProcessor> remainingProcessors = Lists
-                .newArrayList();
+    private List<DeviceDataMonitorProcessor> getRemainingProcessors(List<DeviceDataMonitorProcessor> processors) {
+        List<DeviceDataMonitorProcessor> remainingProcessors = Lists.newArrayList();
         for (DeviceDataMonitorProcessor processor : processors) {
             if (!processor.isDeletion()) {
                 remainingProcessors.add(processor);
@@ -301,77 +285,60 @@ public class DeviceDataMonitorController {
         }
         return remainingProcessors;
     }
-
-    private void setupCreateModelMap(DeviceDataMonitor monitor, ModelMap model,
-            YukonUserContext userContext) {
+    
+    private void setupCreateModelMap(DeviceDataMonitor monitor, ModelMap model, YukonUserContext userContext) {
         model.addAttribute("monitor", monitor);
-
+        
         int monitoringCount = 0;
-        DeviceGroup monitoringGroup = deviceGroupService.findGroupName(monitor
-                .getGroupName());
+        DeviceGroup monitoringGroup = deviceGroupService.findGroupName(monitor.getGroupName());
         if (monitoringGroup != null) {
-            DeviceCollection deviceCollection = deviceGroupCollectionHelper
-                    .buildDeviceCollection(monitoringGroup);
+            DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(monitoringGroup);
             model.addAttribute("deviceCollection", deviceCollection);
-            monitoringCount = deviceGroupService.getDeviceCount(Collections
-                    .singleton(monitoringGroup));
+            monitoringCount = deviceGroupService.getDeviceCount(Collections.singleton(monitoringGroup));
         }
         model.addAttribute("monitoringCount", monitoringCount);
-
+        
         model.addAttribute("mode", PageEditMode.CREATE);
         setupAttributes(model, userContext);
     }
-
+    
     private void setupAttributes(ModelMap model, YukonUserContext userContext) {
         // attributes
-        Set<BuiltInAttribute> allReadableAttributes = BuiltInAttribute
-                .getStandardGroupedAttributes().get(AttributeGroup.STATUS);
-        Set<BuiltInAttribute> rfnEventStatusAttributes = BuiltInAttribute
-                .getRfnEventStatusTypes();
+        Set<BuiltInAttribute> allReadableAttributes = BuiltInAttribute.getStandardGroupedAttributes().get(AttributeGroup.STATUS);
+        Set<BuiltInAttribute> rfnEventStatusAttributes = BuiltInAttribute.getRfnEventStatusTypes();
         Set<BuiltInAttribute> allAttributes = Sets.newHashSet();
         allAttributes.addAll(allReadableAttributes);
         allAttributes.addAll(rfnEventStatusAttributes);
-        Map<AttributeGroup, List<BuiltInAttribute>> allGroupedReadableAttributes = attributeService
-                .getGroupedAttributeMapFromCollection(allAttributes,
-                        userContext);
-        model.addAttribute("allGroupedReadableAttributes",
-                allGroupedReadableAttributes);
+        Map<AttributeGroup, List<BuiltInAttribute>> allGroupedReadableAttributes = 
+        		attributeService.getGroupedAttributeMapFromCollection(allAttributes, userContext);
+        model.addAttribute("allGroupedReadableAttributes", allGroupedReadableAttributes);
     }
 
-    private void setupCommonEditViewModelMap(DeviceDataMonitor monitor,
-            ModelMap model, YukonUserContext userContext, FlashScope flashScope) {
+    private void setupCommonEditViewModelMap(DeviceDataMonitor monitor, ModelMap model, YukonUserContext userContext, FlashScope flashScope) {
         model.addAttribute("monitor", monitor);
-
+        
         int monitoringCount = 0;
-        DeviceGroup monitoringGroup = deviceGroupService.findGroupName(monitor
-                .getGroupName());
+        DeviceGroup monitoringGroup = deviceGroupService.findGroupName(monitor.getGroupName());
         if (monitoringGroup != null) {
-            DeviceCollection deviceCollection = deviceGroupCollectionHelper
-                    .buildDeviceCollection(monitoringGroup);
+            DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(monitoringGroup);
             model.addAttribute("deviceCollection", deviceCollection);
-            monitoringCount = deviceGroupService.getDeviceCount(Collections
-                    .singleton(monitoringGroup));
+            monitoringCount = deviceGroupService.getDeviceCount(Collections.singleton(monitoringGroup));
         }
         model.addAttribute("monitoringCount", monitoringCount);
-
-        StoredDeviceGroup violationsDeviceGroup = deviceGroupEditorDao
-                .getStoredGroup(monitor.getViolationsDeviceGroupPath(), true);
+        
+        StoredDeviceGroup violationsDeviceGroup = deviceGroupEditorDao.getStoredGroup(monitor.getViolationsDeviceGroupPath(), true);
         model.addAttribute("violationsDeviceGroup", violationsDeviceGroup);
 
-        boolean areViolationsBeingCalculated = deviceDataMonitorService
-                .areViolationsBeingCalculatedForMonitor(monitor.getId());
-        model.addAttribute("areViolationsBeingCalculated",
-                areViolationsBeingCalculated);
+        boolean areViolationsBeingCalculated = deviceDataMonitorService.areViolationsBeingCalculatedForMonitor(monitor.getId());
+        model.addAttribute("areViolationsBeingCalculated", areViolationsBeingCalculated);
 
         if (!areViolationsBeingCalculated) {
-            int violationsCount = deviceGroupService.getDeviceCount(Collections
-                    .singleton(violationsDeviceGroup));
+            int violationsCount = deviceGroupService.getDeviceCount(Collections.singleton(violationsDeviceGroup));
             model.addAttribute("violationsCount", violationsCount);
         }
     }
 
-    private void setupEditModelMap(DeviceDataMonitor monitor, ModelMap model,
-            FlashScope flashScope, YukonUserContext userContext) {
+    private void setupEditModelMap(DeviceDataMonitor monitor, ModelMap model, FlashScope flashScope, YukonUserContext userContext) {
         model.addAttribute("mode", PageEditMode.EDIT);
         setupCommonEditViewModelMap(monitor, model, userContext, flashScope);
         setupAttributes(model, userContext);
@@ -387,17 +354,13 @@ public class DeviceDataMonitorController {
     }
 
     /* AJAX methods */
-
+    
     @RequestMapping(method = RequestMethod.GET, value = "/getDeviceGroupCount")
-    public @ResponseBody
-    JSONObject getDeviceGroupCount(String groupName,
-            YukonUserContext userContext) {
+    public @ResponseBody JSONObject getDeviceGroupCount(String groupName, YukonUserContext userContext) {
         int monitoringCount = 0;
-        DeviceGroup monitoringGroup = deviceGroupService
-                .findGroupName(groupName);
+        DeviceGroup monitoringGroup = deviceGroupService.findGroupName(groupName);
         if (monitoringGroup != null) {
-            monitoringCount = deviceGroupService.getDeviceCount(Collections
-                    .singleton(monitoringGroup));
+            monitoringCount = deviceGroupService.getDeviceCount(Collections.singleton(monitoringGroup));
         }
         JSONObject obj = new JSONObject();
         obj.put("count", monitoringCount);
@@ -405,42 +368,31 @@ public class DeviceDataMonitorController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/getViolationsCount")
-    public @ResponseBody
-    JSONObject getViolationsCount(HttpServletRequest request,
-            HttpServletResponse response, int monitorId,
-            YukonUserContext userContext) {
+    public @ResponseBody JSONObject getViolationsCount(HttpServletRequest request, HttpServletResponse response,
+                                                       int monitorId, YukonUserContext userContext) {
         String status;
-        JSONObject obj = new JSONObject();
-        if (deviceDataMonitorService
-                .areViolationsBeingCalculatedForMonitor(monitorId)) {
+        final JSONObject obj = new JSONObject();
+        if (deviceDataMonitorService.areViolationsBeingCalculatedForMonitor(monitorId)) {
             status = "working";
         } else {
             status = "done";
-            int violationCount = deviceDataMonitorService
-                    .getMonitorViolationCountById(monitorId);
+            final int violationCount = deviceDataMonitorService.getMonitorViolationCountById(monitorId);
             obj.put("count", violationCount);
         }
         obj.put("status", status);
         return obj;
     }
-
+    
     @RequestMapping(method = RequestMethod.GET, value = "/getSupportedCountsByMonitor")
-    public @ResponseBody
-    JSONObject getSupportedCountsByMonitor(
-            @ModelAttribute DeviceDataMonitor monitor,
-            YukonUserContext userContext) throws IOException {
-        List<DeviceDataMonitorProcessor> remainingProcessors = getRemainingProcessors(monitor
-                .getProcessors());
+    public @ResponseBody JSONObject getSupportedCountsByMonitor(@ModelAttribute DeviceDataMonitor monitor, YukonUserContext userContext) throws IOException {
+        List<DeviceDataMonitorProcessor> remainingProcessors = getRemainingProcessors(monitor.getProcessors());
         monitor.setProcessors(remainingProcessors);
         return getSupportedCountsForMonitor(monitor, userContext);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/getSupportedCountsById")
-    public @ResponseBody
-    JSONObject getSupportedCountsById(int monitorId,
-            YukonUserContext userContext) throws IOException {
-        DeviceDataMonitor monitor = deviceDataMonitorDao
-                .getMonitorById(monitorId);
+    public @ResponseBody JSONObject getSupportedCountsById(int monitorId, YukonUserContext userContext) throws IOException {
+        DeviceDataMonitor monitor = deviceDataMonitorDao.getMonitorById(monitorId);
         return getSupportedCountsForMonitor(monitor, userContext);
     }
 
@@ -453,15 +405,12 @@ public class DeviceDataMonitorController {
      *         POINT, STATE_GROUP), field ID (eg. attribute Key), field
      *         Name/string, # missing], ..]
      */
-    private JSONObject getSupportedCountsForMonitor(DeviceDataMonitor monitor,
-            YukonUserContext userContext) {
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver
-                .getMessageSourceAccessor(userContext);
-
+    private JSONObject getSupportedCountsForMonitor(DeviceDataMonitor monitor, YukonUserContext userContext) {
+        final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        
         messageSourceAccessor.getMessage("yukon.web.defaults.na");
 
-        final DeviceGroup monitoringGroup = deviceGroupService
-                .findGroupName(monitor.getGroupName());
+        final DeviceGroup monitoringGroup = deviceGroupService.findGroupName(monitor.getGroupName());
         long totalSupportedCount = 0;
         long totalDeviceCount = 0;
 
@@ -476,14 +425,12 @@ public class DeviceDataMonitorController {
         } else {
             Set<SimpleDevice> allDevices = deviceGroupService
                     .getDevices(Collections.singleton(monitoringGroup));
-            Set<SimpleDevice> fullySupportedDevices = new HashSet<SimpleDevice>(
-                    allDevices);
+            Set<SimpleDevice> fullySupportedDevices = new HashSet<SimpleDevice>(allDevices);
             totalDeviceCount = allDevices.size();
 
             int rowId = 0;
             int rowsMissingAttribute = 0;
-            for (AttributeStateGroup attributeStateGroup : monitor
-                    .getAttributeStateGroups()) {
+            for (AttributeStateGroup attributeStateGroup : monitor.getAttributeStateGroups()) {
                 if (attributeStateGroup.getAttribute() == null) {
                     rowId++;
                     rowsMissingAttribute++;
@@ -517,13 +464,11 @@ public class DeviceDataMonitorController {
                 .getMessage(keyPrefix + keySuffix, totalSupportedCount));
         returnObj.put("totalSupportedCountHelpTitle",
                 messageSourceAccessor.getMessage(keyPrefix + "help.title"));
-        returnObj.put(
-                "totalSupportedCountHelp",
+        returnObj.put("totalSupportedCountHelp",
                 messageSourceAccessor.getMessage(keyPrefix + "help.msg."
                         + keySuffix, totalDeviceCount, totalSupportedCount));
         returnObj.put("missingPointList", missingList);
-        returnObj.put("totalMissingCount", totalDeviceCount
-                - totalSupportedCount); // allMissingPaoIds.size());
+        returnObj.put("totalMissingCount", totalDeviceCount - totalSupportedCount);
         return returnObj;
     } // ENDS getSupportedCountsForMonitor
 
@@ -573,8 +518,7 @@ public class DeviceDataMonitorController {
         final List<Integer> devicesSupportingAttributePointStateGroup = pointService
                 .findDeviceIdsInGroupWithAttributePointStateGroup(
                         monitoringGroup, attribute, stateGroup);
-        final long deviceCountSupportingAttributePointStateGroup = devicesSupportingAttributePointStateGroup
-                .size();
+        final long deviceCountSupportingAttributePointStateGroup = devicesSupportingAttributePointStateGroup.size();
 
         if (deviceCountSupportingAttributePointStateGroup == totalDeviceCount)
             return null; // Everything is supported
@@ -583,13 +527,12 @@ public class DeviceDataMonitorController {
         final JSONArray processorMissingList = new JSONArray();
 
         // Check vs the Attribute
-        final List<SimpleDevice> attrSupportedDevices = attributeService
-                .getDevicesInGroupThatSupportAttribute(monitoringGroup,
+        final List<SimpleDevice> attrSupportedDevices = 
+        		attributeService.getDevicesInGroupThatSupportAttribute(monitoringGroup,
                         attributeStateGroup.getAttribute());
         final long deviceCountSupportingAttribute = attrSupportedDevices.size();
         final String attributeName = messageSourceAccessor
-                .getMessage("yukon.common.attribute.builtInAttribute."
-                        + attribute);
+                .getMessage("yukon.common.attribute.builtInAttribute."+ attribute);
         JSONaddProcessorIfViolationsExist(totalDeviceCount,
                 deviceCountSupportingAttribute, ATTRIBUTE, attribute.getKey(),
                 attributeName, processorMissingList, rowId,
@@ -611,15 +554,13 @@ public class DeviceDataMonitorController {
         final long missingPoints = deviceCountSupportingAttribute
                 - deviceCountSupportingAttributePoint;
         if (missingPoints > 0) {
-            final String baseKey = "yukon.web.modules.amr.deviceDataMonitor.missing"
-                    + POINT;
+            final String baseKey = "yukon.web.modules.amr.deviceDataMonitor.missing"+ POINT;
             final JSONArray ptRow = new JSONArray();
 
-            String nameString = "";
-            final JSONArray jsonDatas = new JSONArray();
-            String labelKey = baseKey;
-            nameString = attributeName;
-            JSONObject jsonData = new JSONObject();
+            String 			nameString 	= attributeName;
+            final JSONArray jsonDatas 	= new JSONArray();
+            String 			labelKey 	= baseKey;
+            JSONObject 		jsonData 	= new JSONObject();
             jsonData.put("attributeKey", attribute.getKey());
             jsonData.put("attributeName", attributeName);
             jsonDatas.add(jsonData);
@@ -675,9 +616,9 @@ public class DeviceDataMonitorController {
      * @throws NoSuchMessageException
      */
     private void JSONaddProcessorIfViolationsExist(final long highCount,
-            final long lowCount, final DeviceViolationEnum fieldType,
-            final String fieldId, final String fieldDisplayName,
-            JSONArray processorMissingList, final int rowId,
+            final long lowCount, 			 final DeviceViolationEnum fieldType,
+            final String fieldId, 			 final String fieldDisplayName,
+            JSONArray processorMissingList,  final int rowId,
             final MessageSourceAccessor msg, final long deviceCount,
             final boolean useLimitedQuery) throws NoSuchMessageException {
 
@@ -715,14 +656,13 @@ public class DeviceDataMonitorController {
     public String getDeviceListInViolation(ModelMap model,
             YukonUserContext context, DeviceViolationEnum violationType,
             String groupName, BuiltInAttribute attribute, Integer stateGroup) {
-        final DeviceGroup monitoringGroup = deviceGroupService
-                .findGroupName(groupName);
-        final Set<SimpleDevice> allDevices = deviceGroupService
+        final DeviceGroup monitoringGroup 	= deviceGroupService.findGroupName(groupName);
+        final Set<SimpleDevice> allDevices	= deviceGroupService
                 .getDevices(Collections.singleton(monitoringGroup));
 
-        final List<YukonPao> results = getViolationsForProblem(monitoringGroup,
+        final List<YukonPao> results 		= getViolationsForProblem(monitoringGroup,
                 allDevices, attribute, stateGroup, violationType);
-        final DeviceCollection collection = memoryCollectionProducer
+        final DeviceCollection collection 	= memoryCollectionProducer
                 .createDeviceCollection(results);
 
         popupHelper.buildPopupModel(collection, model, context);
@@ -764,11 +704,10 @@ public class DeviceDataMonitorController {
         final List<YukonPao> listMissingPoint = new ArrayList<YukonPao>();
         hasPoint.addAll(attrSupportedDevices);
         final List<Integer> deviceIdsSupportingAttributePoint = pointService
-                .findDeviceIdsInGroupWithAttributePoint(monitoringGroup,
-                        attribute);
+                .findDeviceIdsInGroupWithAttributePoint(monitoringGroup, attribute);
         for (YukonPao sd : hasPoint) {
-            if (!deviceIdsSupportingAttributePoint.contains(sd
-                    .getPaoIdentifier().getPaoId())) {
+        	final boolean doesDeviceSupportAttrAndPt = deviceIdsSupportingAttributePoint.contains(sd.getPaoIdentifier().getPaoId()); 
+            if (!doesDeviceSupportAttrAndPt) {
                 listMissingPoint.add(sd);
             }
         }
@@ -787,8 +726,7 @@ public class DeviceDataMonitorController {
         }
         if (violationType != STATE_GROUP)
             throw new IllegalArgumentException(
-                    "getViolationsForProblem(..) was passed a ViolationType not in the 3-member enum: "
-                            + violationType);
+                    "getViolationsForProblem(..) was passed a ViolationType not in the 3-member enum: "+ violationType);
         return listMissingStateGroup;
     } // END getViolationsForProblem
 
@@ -823,86 +761,79 @@ public class DeviceDataMonitorController {
                 + points + "&collectionType=idList&idList.ids=" + ids;
         return url;
     }
-
-    @InitBinder
-    public void setupBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(Attribute.class,
-                new PropertyEditorSupport() {
-                    @Override
-                    public void setAsText(String attr)
-                            throws IllegalArgumentException {
-                        Attribute attribute = null;
-                        try {
-                            attribute = attributeService
-                                    .resolveAttributeName(attr);
-                        } catch (Exception ee) {
-                            return;
-                        } finally {
-                            setValue(attribute);
-                        }
-                    }
-
-                    @Override
-                    public String getAsText() {
-                        Attribute attr = (Attribute) getValue();
-                        return attr.getKey();
-                    }
-                });
-        binder.registerCustomEditor(LiteStateGroup.class,
-                new PropertyEditorSupport() {
-                    @Override
-                    public void setAsText(String groupId)
-                            throws IllegalArgumentException {
-                        if (groupId == null || groupId.length() < 1)
-                            setValue(null);
-                        else {
-                            LiteStateGroup stateGroup = stateDao
-                                    .getLiteStateGroup(Integer.valueOf(groupId));
-                            setValue(stateGroup);
-                        }
-                    }
-
-                    @Override
-                    public String getAsText() {
-                        LiteStateGroup stateGroup = (LiteStateGroup) getValue();
-                        return stateGroup.getStateGroupName();
-                    }
-                });
+	
+	@InitBinder
+	public void setupBinder(WebDataBinder binder) {
+	    binder.registerCustomEditor(Attribute.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String attr) throws IllegalArgumentException {
+                Attribute attribute = null;
+                try {
+                    attribute = attributeService.resolveAttributeName(attr);
+                } catch (Exception ee) {
+                    return;
+                } finally {
+                    setValue(attribute);
+                }
+            }
+            @Override
+            public String getAsText() {
+                Attribute attr = (Attribute) getValue();
+                if (attr == null)
+                    return null;
+                return attr.getKey();
+            }
+        });
+        binder.registerCustomEditor(LiteStateGroup.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String groupId) throws IllegalArgumentException {
+                if (groupId == null || groupId.length() < 1) {
+                    setValue(null);
+                    return;
+                }
+                LiteStateGroup stateGroup = stateDao.getLiteStateGroup(Integer.valueOf(groupId));
+                setValue(stateGroup);
+            }
+            @Override
+            public String getAsText() {
+                LiteStateGroup stateGroup = (LiteStateGroup) getValue();
+                if (stateGroup == null)
+                    return null;
+                return stateGroup.getStateGroupName();
+            }
+        });
         /**
          * Making this a more passive binding since there'll be times when no
          * state exists for an attribute.
          */
-        binder.registerCustomEditor(LiteState.class,
-                new PropertyEditorSupport() {
-                    @Override
-                    public void setAsText(String stateGroupIdAndStateId)
-                            throws IllegalArgumentException {
-                        if (stateGroupIdAndStateId == null)
-                            return;
-                        final int iSplit = stateGroupIdAndStateId.indexOf(":");
-                        if (iSplit < 1)
-                            return;
-                        final String stateGroupId = stateGroupIdAndStateId
-                                .substring(0, iSplit);
-                        final String stateId = stateGroupIdAndStateId
-                                .substring(iSplit + 1);
-                        final int iStateId = Integer.valueOf(stateId);
-                        final LiteStateGroup stateGroup = stateDao
-                                .getLiteStateGroup(Integer
-                                        .valueOf(stateGroupId));
-                        for (LiteState state : stateGroup.getStatesList()) {
-                            if (iStateId == state.getLiteID()) {
-                                setValue(state);
-                                break;
-                            }
-                        }
+        binder.registerCustomEditor(LiteState.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String stateGroupIdAndStateId) throws IllegalArgumentException {
+                setValue(null);
+                if (stateGroupIdAndStateId == null)
+                    return;
+                final int       iSplit          = stateGroupIdAndStateId.indexOf(":");
+                if (iSplit < 1)
+                    return;
+                final String    stateGroupId    = stateGroupIdAndStateId.substring(0, iSplit);
+                final String    stateId         = stateGroupIdAndStateId.substring(iSplit + 1);
+                final int       iStateId        = Integer.valueOf(stateId);
+                final LiteStateGroup stateGroup = stateDao.getLiteStateGroup(Integer.valueOf(stateGroupId));
+                for (LiteState state: stateGroup.getStatesList()) {
+                    if (iStateId == state.getLiteID()) {
+                        setValue(state);
+                        break;
                     }
-
-                    @Override
-                    public String getAsText() {
-                        LiteState state = (LiteState) getValue();
-                        return String.valueOf(state.getStateText());
-                    }
-                });
+                }
+            }
+            @Override
+            public String getAsText() {
+                final LiteState state = (LiteState) getValue();
+                if (state == null)
+                    return null;
+                return String.valueOf(state.getStateText());
+            }
+        });
     }
+
 }

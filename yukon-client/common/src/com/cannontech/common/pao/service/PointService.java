@@ -66,15 +66,6 @@ public interface PointService {
      * 
      * @param group
      * @param attribute
-     * @param stateGroup
-     * @return int
-     */
-    public int countDevicesInGroupWithAttributePointStateGroup(DeviceGroup group, Attribute attribute, LiteStateGroup stateGroup);
-
-    /**
-     * 
-     * @param group
-     * @param attribute
      * @param stateGroup	LiteStateGroup
      * @return
      */
@@ -100,16 +91,6 @@ public interface PointService {
      */
     public int countDevicesInGroupWithAttributePoint(DeviceGroup group, Attribute attribute);
     public int countDevicesInGroupWithAttributePoint(DeviceGroup group, Attribute attribute, int limitToRowCount);
-
-    /**
-     * Return all points ... supported by devices in the group and related to
-     * the given Attribute.
-     * 
-     * @param group             DeviceGroup
-     * @param attribute         Attribute
-     * @return                  List<LitePoint>
-     */
-    public List<LitePoint> getPointsForDevicesInGroupWithAttributePoint(DeviceGroup group, Attribute attribute);
 
     /**
      * 
