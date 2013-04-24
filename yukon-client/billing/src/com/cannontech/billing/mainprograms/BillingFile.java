@@ -194,14 +194,15 @@ public class BillingFile extends java.util.Observable implements Runnable
 	 * Retrieve all billingData and writeTofile for a formatBase.
 	 * @see java.lang.Runnable#run()
 	 */
-	public void run() 
+	@Override
+    public void run() 
 	{
 	    try {
 			writeToFile();
 	    } catch(java.io.IOException ioe) {
 	        setChanged();
 	        CTILogger.error(ioe);
-	        notify("Unsuccessfull reading of file : " + simpleBillingFormat.getBillingFileDefaults().getOutputFileDir() );
+	        notify("Unsuccessful reading of file : " + simpleBillingFormat.getBillingFileDefaults().getOutputFileDir() );
 		}
 	}
 	/**
