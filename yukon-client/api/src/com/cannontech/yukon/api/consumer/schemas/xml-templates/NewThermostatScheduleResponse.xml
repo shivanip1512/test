@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<updateThermostatScheduleResponse xmlns="http://yukon.cannontech.com/api"
+<newThermostatScheduleResponse xmlns="http://yukon.cannontech.com/api"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://yukon.cannontech.com/api ../UpdateThermostatScheduleResponse.xsd"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../NewThermostatScheduleResponse.xsd"
            version="1.0">
-    
     <thermostatScheduleResultList>
         <thermostatScheduleResult scheduleName="test schedule2" thermostatScheduleMode="Weekday Weekend">
             <success/>
@@ -15,4 +14,4 @@
             </failure>
         </thermostatScheduleResult>
     </thermostatScheduleResultList>
-</updateThermostatScheduleResponse>
+</newThermostatScheduleResponse>

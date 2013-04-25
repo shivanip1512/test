@@ -12,28 +12,24 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
-import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.stars.core.service.AccountCheckerService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
+import com.google.common.collect.ImmutableSet;
 
 @Endpoint
 public class ThermostatScheduleEndpoint {
 
-    @Autowired private AccountCheckerService accountCheckerService;
     @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private RolePropertyDao rolePropertyDao;
@@ -41,7 +37,7 @@ public class ThermostatScheduleEndpoint {
     private Namespace ns = YukonXml.getYukonNamespace();
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="thermostatScheduleRequest")
-    public Element invoke(Element thermostatSchedule, YukonUserContext userContext) throws Exception {
+    public Element invoke(Element thermostatSchedule, CustomerAccount customerAccount) throws Exception {
         XmlVersionUtils.verifyYukonMessageVersion(thermostatSchedule, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         // create template and parse data
@@ -53,35 +49,25 @@ public class ThermostatScheduleEndpoint {
         resp.setAttribute(versionAttribute);
         
         try {
-            rolePropertyDao.verifyRole(YukonRole.INVENTORY, userContext.getYukonUser());
             
-            // Get all of the thermostat schedule ids and check if the user is allowed to see them.
-            List<Integer> thermostatScheduleIds = requestTemplate.evaluateAsIntegerList("//y:thermostatScheduleId");
-            accountCheckerService.checkThermostatSchedule(userContext.getYukonUser(), thermostatScheduleIds.toArray(new Integer[thermostatScheduleIds.size()]));
+            List<String> scheduleNames = requestTemplate.evaluateAsStringList("//y:scheduleName");
+            // remove duplicate names
+            scheduleNames = ImmutableSet.copyOf(scheduleNames).asList();
 
-            for (int thermostatScheduleId : thermostatScheduleIds) {
-                AccountThermostatSchedule accountThermostatSchedule = accountThermostatScheduleDao.getById(thermostatScheduleId);
-                CustomerAccount customerAccount = customerAccountDao.getById(accountThermostatSchedule.getAccountId());
-                resp.addContent(buildResponseForAccountThermostatSchedule(customerAccount, accountThermostatSchedule));
+            for (String scheduleName : scheduleNames) {
+                try {
+                    AccountThermostatSchedule accountThermostatSchedule = accountThermostatScheduleDao.getSchedulesForAccountByScheduleName(customerAccount
+                            .getAccountId(), scheduleName);
+                    resp.addContent(buildResponseForAccountThermostatSchedule(customerAccount, accountThermostatSchedule));
+                } catch (EmptyResultDataAccessException e) {
+                    //didn't find a schedule
+                    continue;
+                }
             }
-            
-        } catch (NotAuthorizedException e) {
-            Element fe = XMLFailureGenerator.generateFailure(thermostatSchedule, e, "UserNotAuthorized", "The user is not authorized to send text messages.");
-            resp.addContent(fe);
-            return resp;
-        } catch (EmptyResultDataAccessException e) {
-            Element fe = XMLFailureGenerator.generateFailure(thermostatSchedule, e, "ScheduleDoesNotExist", "The schedule name supplied does not exist.");
-            resp.addContent(fe);
-            return resp;
         } catch (Exception e) {
             Element fe = XMLFailureGenerator.generateFailure(thermostatSchedule, e, "OtherException", "An exception has been caught.");
             resp.addContent(fe);
-            return resp;
         }
-        
-        // build response
-        resp.addContent(new Element("success", ns));
-
         return resp;
     }
 
@@ -90,7 +76,6 @@ public class ThermostatScheduleEndpoint {
      */
     private Element buildResponseForAccountThermostatSchedule(CustomerAccount customerAccount, AccountThermostatSchedule accountThermostatSchedule) {
         Element thermostatScheduleElem = new Element("thermostatSchedule", ns);
-        thermostatScheduleElem.setAttribute("accountNumber", customerAccount.getAccountNumber(), ns);
         thermostatScheduleElem.setAttribute("thermostatType", XmlUtils.toXmlRepresentation(accountThermostatSchedule.getThermostatType()), ns);
         thermostatScheduleElem.setAttribute("thermostatScheduleMode", XmlUtils.toXmlRepresentation(accountThermostatSchedule.getThermostatScheduleMode()), ns);
 

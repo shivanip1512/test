@@ -5,29 +5,25 @@
             elementFormDefault="qualified" version="1.0">
 
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
+    <xsd:include schemaLocation="../../common/schemas/Types.xsd"/>
     <xsd:include schemaLocation="./Schedule.xsd" />
     
-    <xsd:complexType name="ThermostatScheduleResponse">
+    <xsd:complexType name="NewThermostatScheduleRequest">
         <xsd:annotation>
             <xsd:documentation xml:lang="en">
-                This is the response for retrieving a thermostat schedule.
+                This web service creates new thermostat schedule supplied and saves it into Yukon.
             </xsd:documentation>
         </xsd:annotation>
     
         <xsd:complexContent>
             <xsd:extension base="yukon:YukonMessage">
-                <xsd:sequence minOccurs="0" maxOccurs="unbounded">
-                    <xsd:choice>
-                        <xsd:sequence>
-                            <xsd:element name="thermostatSchedule" type="yukon:ThermostatSchedule" />
-                        </xsd:sequence>
-                        <xsd:element name="failure" type="yukon:Failure" />
-                    </xsd:choice>
+                <xsd:sequence maxOccurs="unbounded">
+                    <xsd:element name="thermostatSchedule" type="yukon:ThermostatSchedule"/>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
 
-    <xsd:element name="thermostatScheduleResponse" type="yukon:ThermostatScheduleResponse"/>
+    <xsd:element name="newThermostatScheduleRequest" type="yukon:NewThermostatScheduleRequest"/>
 
 </xsd:schema>

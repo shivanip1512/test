@@ -6,20 +6,13 @@ import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.google.common.collect.SetMultimap;
 
 public class ThermostatSchedule {
-    private int acctThermostatScheduleId;
+
     private String scheduleName;
     private String accountNumber;
     private SchedulableThermostatType schedulableThermostatType;
     private ThermostatScheduleMode thermostatScheduleMode;
     private SetMultimap<TimeOfWeek, SchedulePeriod> schedulePeriodContainer;
-    
-    public int getAcctThermostatScheduleId() {
-        return acctThermostatScheduleId;
-    }
-    public void setAcctThermostatScheduleId(int acctThermostatScheduleId) {
-        this.acctThermostatScheduleId = acctThermostatScheduleId;
-    }
-    
+        
     public String getScheduleName() {
         return scheduleName;
     }

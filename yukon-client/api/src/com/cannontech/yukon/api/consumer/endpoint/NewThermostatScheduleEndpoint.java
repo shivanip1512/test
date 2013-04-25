@@ -31,7 +31,7 @@ import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 
 @Endpoint
-public class UpdateThermostatScheduleEndpoint {
+public class NewThermostatScheduleEndpoint {
     @Autowired private AccountEventLogService accountEventLogService;
     @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
     @Autowired private CustomerAccountDao customerAccountDao;
@@ -41,83 +41,62 @@ public class UpdateThermostatScheduleEndpoint {
 
     private Namespace ns = YukonXml.getYukonNamespace();
     
-    @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="updateThermostatScheduleRequest")
-    public Element invoke(Element updateThermostatSchedule, CustomerAccount customerAccount) throws Exception {
-        XmlVersionUtils.verifyYukonMessageVersion(updateThermostatSchedule, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+    @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="newThermostatScheduleRequest")
+    public Element invoke(Element newThermostatSchedule, CustomerAccount customerAccount) throws Exception {
+        XmlVersionUtils.verifyYukonMessageVersion(newThermostatSchedule, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         // create template and parse data
-        SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(updateThermostatSchedule);
+        SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(newThermostatSchedule);
 
         // init response
-        Element resp = new Element("updateThermostatScheduleResponse", ns);
+        Element resp = new Element("newThermostatScheduleResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         Element resultList = new Element("thermostatScheduleResultList", ns);
         resp.addContent(resultList);
         
         try {          
-            
             LiteYukonUser yukonUser = customerAccountDao.getYukonUserByAccountId(customerAccount.getAccountId());
-            Boolean addOnFail = requestTemplate.evaluateAsBoolean("//y:updateThermostatScheduleRequest/@addOnFail", true);
-            
-            YukonEnergyCompany energyCompany =  yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
+            YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
 
             List<Integer> childEnergyCompanyIds = yukonEnergyCompanyService.getChildEnergyCompanies(energyCompany.getEnergyCompanyId());
             childEnergyCompanyIds.add(energyCompany.getEnergyCompanyId());
             
             Set<ThermostatScheduleMode> allowedThermostatScheduleModes = thermostatService.getAllowedThermostatScheduleModes(energyCompany);
            
-            // Get the information for the supplied request.
             List<ThermostatSchedule> thermostatSchedules =
-                    requestTemplate.evaluate("//y:updateThermostatScheduleRequest/y:thermostatSchedule", 
+                    requestTemplate.evaluate("//y:newThermostatScheduleRequest/y:thermostatSchedule", 
                                              new NodeToElementMapperWrapper<ThermostatSchedule>(new ThermostatScheduleElementRequestMapper()));
                
             for (ThermostatSchedule schedule : thermostatSchedules) {
-                boolean newScheduleCreated = false;
-
+                accountEventLogService.thermostatScheduleCreationAttempted(yukonUser, customerAccount.getAccountNumber(), schedule.getSchedulableThermostatType().toString(), schedule.getScheduleName(),
+                                                                           EventSource.API);
                 Element thermostatScheduleResultNode = ThermostatScheduleHelper.addThermostatScheduleResultNode(ns, resultList, schedule);
                 try {
-                    if (!allowedThermostatScheduleModes.contains(schedule.getThermostatScheduleMode())) {
-                        Element fe = XMLFailureGenerator.makeSimple("InvalidThermostatScheduleMode", "Thermostat schedule mode is not allowed");
+                    AccountThermostatSchedule duplicateSchedule =
+                        accountThermostatScheduleDao.findSchedulesForAccountByScheduleName(customerAccount.getAccountId(), schedule.getScheduleName());
+                    if (duplicateSchedule != null) {
+                        Element fe = XMLFailureGenerator.makeSimple("DuplicateScheduleName", "Duplicate schedule name.");
+                        thermostatScheduleResultNode.addContent(fe);
+                    } else if (!allowedThermostatScheduleModes.contains(schedule.getThermostatScheduleMode())) {
+                        Element fe = XMLFailureGenerator.makeSimple("InvalidThermostatScheduleMode", "Thermostat schedule mode is not allowed.");
                         thermostatScheduleResultNode.addContent(fe);
                     } else {
-                        AccountThermostatSchedule scheduleToUpdate =
-                                accountThermostatScheduleDao.findSchedulesForAccountByScheduleName(customerAccount.getAccountId(), schedule.getScheduleName());
                         AccountThermostatSchedule accountThermostatSchedule = ThermostatScheduleHelper.convertToAccountThermostatSchedule(schedule, customerAccount.getAccountId());
-                        if(scheduleToUpdate != null){
-                            accountThermostatSchedule.setAccountThermostatScheduleId(scheduleToUpdate.getAccountThermostatScheduleId());
-                            accountThermostatScheduleDao.save(accountThermostatSchedule);
-                            thermostatScheduleResultNode.addContent(new Element("success", ns));  
-                        }else if(addOnFail){
-                            newScheduleCreated = true;
-                            accountThermostatScheduleDao.save(accountThermostatSchedule);
-                            thermostatScheduleResultNode.addContent(new Element("success", ns));  
-                        }else{
-                            Element fe = XMLFailureGenerator.makeSimple("ScheduleDoesNotExist", "The schedule name supplied does not exist.");
-                            thermostatScheduleResultNode.addContent(fe);
-                        }
+                        accountThermostatScheduleDao.save(accountThermostatSchedule);
+                        thermostatScheduleResultNode.addContent(new Element("success", ns));  
                     }
                 } 
                 catch (Exception e) {
-                    Element fe = XMLFailureGenerator.generateFailure(updateThermostatSchedule, e, "OtherException","An exception has been caught.");
+                    Element fe = XMLFailureGenerator.generateFailure(newThermostatSchedule, e, "OtherException","An exception has been caught.");
                     resp.addContent(fe);
                 }
-                
-                if(newScheduleCreated){
-                    accountEventLogService.thermostatScheduleCreationAttempted(yukonUser, customerAccount.getAccountNumber(),
-                                                                             schedule.getSchedulableThermostatType().toString(), schedule.getScheduleName(),
-                                                                             EventSource.API);
-                }else{
-                    accountEventLogService.thermostatScheduleUpdateAttempted(yukonUser, customerAccount.getAccountNumber(),
-                                                                             schedule.getSchedulableThermostatType().toString(), schedule.getScheduleName(),
-                                                                             EventSource.API);
-                }
             }
+        
         } catch (Exception e) {
-            Element fe = XMLFailureGenerator.generateFailure(updateThermostatSchedule, e, "OtherException", "An exception has been caught.");
+            Element fe = XMLFailureGenerator.generateFailure(newThermostatSchedule, e, "OtherException", "An exception has been caught.");
             resp.addContent(fe);
         }
-
         return resp;
     }
 }

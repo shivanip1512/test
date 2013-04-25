@@ -365,4 +365,21 @@ public class MockAccountEventLogService implements AccountEventLogService{
                                                 String scheduleName,
                                                 EventSource source) {
     }
+    
+    @Override
+    public void thermostatScheduleCreationAttempted(LiteYukonUser yukonUser,
+                                                  String accountNumber,
+                                                  String serialNumber,
+                                                  String scheduleName,
+                                                  EventSource source) {
+    }
+
+    @Override
+    public void thermostatScheduleUpdateAttempted(LiteYukonUser yukonUser,
+                                                  String accountNumber,
+                                                  String serialNumber,
+                                                  String scheduleName,
+                                                  EventSource source) {
+    }
+
 }

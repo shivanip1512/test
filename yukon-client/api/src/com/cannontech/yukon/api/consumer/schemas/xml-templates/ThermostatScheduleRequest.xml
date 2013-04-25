@@ -4,5 +4,5 @@
            xsi:schemaLocation="http://yukon.cannontech.com/api ../ThermostatScheduleRequest.xsd"
            version="1.0">
            
-           <thermostatScheduleId>54321</thermostatScheduleId>
+           <scheduleName>54321</scheduleName>
 </thermostatScheduleRequest>

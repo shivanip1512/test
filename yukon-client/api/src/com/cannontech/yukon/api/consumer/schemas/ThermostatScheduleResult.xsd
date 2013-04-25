@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified" version="1.0">
+    
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
+    <xsd:include schemaLocation="../../common/schemas/Types.xsd"/>
+    
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+        Thermostat schedule modification result
+        </xsd:documentation>
+    </xsd:annotation>
+    
+    <xsd:complexType name="ThermostatScheduleResult">
+        <xsd:sequence>
+            <xsd:choice>
+                <xsd:element name="success" />
+                <xsd:element name="failure" type="yukon:Failure" />
+            </xsd:choice>
+        </xsd:sequence>
+        <xsd:attribute name="scheduleName" type="xsd:string"/>
+        <xsd:attribute name="thermostatScheduleMode" type="yukon:ThermostatScheduleMode"/>
+        <xsd:attribute name="thermostatType" type="yukon:SchedulableThermostatType"/>
+    </xsd:complexType>
+
+</xsd:schema>

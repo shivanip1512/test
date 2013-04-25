@@ -18,9 +18,10 @@
     
         <xsd:complexContent>
             <xsd:extension base="yukon:YukonMessage">
-                <xsd:sequence>
+                <xsd:sequence minOccurs="1" maxOccurs="unbounded">
                     <xsd:element name="thermostatSchedule" type="yukon:ThermostatSchedule"/>
                 </xsd:sequence>
+                 <xsd:attribute name="addOnFail" type="xsd:string" use="optional"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>

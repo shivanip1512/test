@@ -6,38 +6,34 @@ import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.model.EventSource;
-import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
-import com.cannontech.core.roleproperties.YukonRole;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.stars.core.service.AccountCheckerService;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
-import com.cannontech.user.YukonUserContext;
+import com.cannontech.yukon.api.consumer.endpoint.helper.ThermostatScheduleHelper;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
+import com.google.common.collect.ImmutableSet;
 
 @Endpoint
 public class DeleteThermostatScheduleEndpoint {
-
-    @Autowired private AccountCheckerService accountCheckerService;
     @Autowired private AccountEventLogService accountEventLogService;
     @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
     @Autowired private CustomerAccountDao customerAccountDao;
-    @Autowired private RolePropertyDao rolePropertyDao;
 
     private Namespace ns = YukonXml.getYukonNamespace();
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="deleteThermostatScheduleRequest")
-    public Element invoke(Element deleteThermostatSchedule, YukonUserContext userContext) throws Exception {
+    public Element invoke(Element deleteThermostatSchedule, CustomerAccount customerAccount) throws Exception {
         XmlVersionUtils.verifyYukonMessageVersion(deleteThermostatSchedule, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         // create template and parse data
@@ -45,39 +41,38 @@ public class DeleteThermostatScheduleEndpoint {
 
         // init response
         Element resp = new Element("deleteThermostatScheduleResponse", ns);
+        Element resultList = new Element("thermostatScheduleResultList", ns);
+        resp.addContent(resultList);
         Attribute versionAttribute = new Attribute("version", "1.0");
         resp.setAttribute(versionAttribute);
         
-        try {
-            rolePropertyDao.verifyRole(YukonRole.INVENTORY, userContext.getYukonUser());
-            
-            // Get all of the thermostat schedule ids and check if the user is allowed to delete them.
-            List<Integer> thermostatScheduleIds = requestTemplate.evaluateAsIntegerList("//y:thermostatScheduleId");
-            accountCheckerService.checkThermostatSchedule(userContext.getYukonUser(), thermostatScheduleIds.toArray(new Integer[thermostatScheduleIds.size()]));
-
-            // Log thermostat schedule save attempt
-            for (int thermostatScheduleId : thermostatScheduleIds) {
-                AccountThermostatSchedule accountThermostatSchedule = accountThermostatScheduleDao.getById(thermostatScheduleId);
-                CustomerAccount customerAccount = customerAccountDao.getById(accountThermostatSchedule.getAccountId());
-                accountEventLogService.thermostatScheduleDeleteAttempted(userContext.getYukonUser(), customerAccount.getAccountNumber(),
-                                                                         accountThermostatSchedule.getScheduleName(), EventSource.API);
+        try {     
+            LiteYukonUser yukonUser = customerAccountDao.getYukonUserByAccountId(customerAccount.getAccountId());
+            List<String> scheduleNames = requestTemplate.evaluateAsStringList("//y:scheduleName");
+            // remove duplicate names
+            scheduleNames = ImmutableSet.copyOf(scheduleNames).asList();
+       
+            for (String scheduleName : scheduleNames) {
+                accountEventLogService.thermostatScheduleDeleteAttempted(yukonUser, customerAccount.getAccountNumber(), scheduleName, EventSource.API);   
+                Element thermostatScheduleNode = ThermostatScheduleHelper.addThermostatScheduleResultNode(ns, resultList, scheduleName);
+                try{
+                    AccountThermostatSchedule accountThermostatSchedule = accountThermostatScheduleDao.getSchedulesForAccountByScheduleName(customerAccount.getAccountId(), scheduleName);
+                    accountThermostatScheduleDao.deleteById(accountThermostatSchedule.getAccountThermostatScheduleId());
+                    thermostatScheduleNode.addContent(new Element("success", ns));
+                } catch (EmptyResultDataAccessException e) {
+                    Element fe = XMLFailureGenerator.generateFailure(deleteThermostatSchedule, e, "ScheduleDoesNotExist", "The schedule name supplied does not exist.");
+                    thermostatScheduleNode.addContent(fe);
+                } catch (Exception e) {
+                    Element fe = XMLFailureGenerator.generateFailure(deleteThermostatSchedule, e, "OtherException", "An exception has been caught.");
+                    thermostatScheduleNode.addContent(fe);
+                }
             }
             
-            accountThermostatScheduleDao.deleteByThermostatScheduleIds(thermostatScheduleIds);
-            
-        } catch (NotAuthorizedException e) {
-            Element fe = XMLFailureGenerator.generateFailure(deleteThermostatSchedule, e, "UserNotAuthorized", "The user is not authorized to send text messages.");
-            resp.addContent(fe);
-            return resp;
         } catch (Exception e) {
             Element fe = XMLFailureGenerator.generateFailure(deleteThermostatSchedule, e, "OtherException", "An exception has been caught.");
             resp.addContent(fe);
-            return resp;
         }
-        
-        // build response
-        resp.addContent(new Element("success", ns));
-
         return resp;
+        
     }
 }

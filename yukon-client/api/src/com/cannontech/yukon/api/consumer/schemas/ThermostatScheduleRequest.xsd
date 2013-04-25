@@ -10,14 +10,14 @@
     <xsd:complexType name="ThermostatScheduleRequest">
         <xsd:annotation>
             <xsd:documentation xml:lang="en">
-                This web service requests an account thermostat schedule.
+                This web service requests an account thermostat schedules.
             </xsd:documentation>
         </xsd:annotation>
     
         <xsd:complexContent>
             <xsd:extension base="yukon:YukonMessage">
                 <xsd:sequence>
-                    <xsd:element name="thermostatScheduleId" type="xsd:int" maxOccurs="unbounded" />
+                    <xsd:element name="scheduleName" type="xsd:string" maxOccurs="unbounded" />
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>

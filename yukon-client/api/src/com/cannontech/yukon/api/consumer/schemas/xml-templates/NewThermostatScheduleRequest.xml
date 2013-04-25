@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<updateThermostatScheduleRequest xmlns="http://yukon.cannontech.com/api"
+<newThermostatScheduleRequest xmlns="http://yukon.cannontech.com/api"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://yukon.cannontech.com/api ../UpdateThermostatScheduleRequest.xsd"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../NewThermostatScheduleRequest.xsd"
            version="1.0">
-   <thermostatSchedule thermostatType="UtilityPRO G2" thermostatScheduleMode="Weekday Weekend">
+    
+    <thermostatSchedule thermostatType="UtilityPRO G2" thermostatScheduleMode="Weekday Weekend">
         <scheduleName>test schedule</scheduleName>
         <schedulePeriod timeOfWeek="Weekday">
             <thermostatSchedulePeriod>
@@ -97,4 +98,4 @@
             </thermostatSchedulePeriod>
         </schedulePeriod>
     </thermostatSchedule>
-</updateThermostatScheduleRequest>
+</newThermostatScheduleRequest>

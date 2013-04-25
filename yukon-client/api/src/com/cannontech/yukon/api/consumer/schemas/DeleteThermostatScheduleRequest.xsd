@@ -5,6 +5,8 @@
             elementFormDefault="qualified" version="1.0">
 
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
+    <xsd:include schemaLocation="../../common/schemas/Types.xsd"/>
+    <xsd:include schemaLocation="./Schedule.xsd" />
     
     <xsd:complexType name="DeleteThermostatScheduleRequest">
         <xsd:annotation>
@@ -15,13 +17,13 @@
     
         <xsd:complexContent>
             <xsd:extension base="yukon:YukonMessage">
-                <xsd:sequence>
-                    <xsd:element name="thermostatScheduleId" type="xsd:int" maxOccurs="unbounded" />
+                <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+                    <xsd:element name="scheduleName" type="xsd:string" />
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
+        
     </xsd:complexType>
-
+           
     <xsd:element name="deleteThermostatScheduleRequest" type="yukon:DeleteThermostatScheduleRequest"/>
-
 </xsd:schema>

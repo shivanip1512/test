@@ -23,7 +23,9 @@
     <xsd:include schemaLocation="ThermostatScheduleResponse.xsd"></xsd:include>
     <xsd:include schemaLocation="UpdateThermostatScheduleRequest.xsd"></xsd:include>
     <xsd:include schemaLocation="UpdateThermostatScheduleResponse.xsd"></xsd:include>
-    
+    <xsd:include schemaLocation="NewThermostatScheduleRequest.xsd"></xsd:include>
+    <xsd:include schemaLocation="NewThermostatScheduleResponse.xsd"></xsd:include>
+
     <!-- stars -->
     <!-- revert to program -->
     <xsd:include schemaLocation="../../stars/schemas/RunThermostatProgramRequest.xsd"></xsd:include>

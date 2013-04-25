@@ -5,9 +5,9 @@
             elementFormDefault="qualified" version="1.0">
 
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
-     <xsd:include schemaLocation="./ThermostatScheduleResult.xsd" />
-    
-    <xsd:complexType name="DeleteThermostatScheduleResponse">
+    <xsd:include schemaLocation="./ThermostatScheduleResult.xsd" />
+        
+    <xsd:complexType name="NewThermostatScheduleResponse">
         <xsd:complexContent>
             <xsd:extension base="yukon:YukonMessage">
                 <xsd:sequence>
@@ -23,6 +23,6 @@
         </xsd:complexContent>
     </xsd:complexType>
 
-    <xsd:element name="deleteThermostatScheduleResponse" type="yukon:DeleteThermostatScheduleResponse"/>
+    <xsd:element name="newThermostatScheduleResponse" type="yukon:NewThermostatScheduleResponse"/>
 
 </xsd:schema>

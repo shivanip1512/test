@@ -3,5 +3,16 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://yukon.cannontech.com/api ../DeleteThermostatScheduleResponse.xsd"
            version="1.0">
-    <success/>
+    <thermostatScheduleResultList>
+        <thermostatScheduleResult scheduleName="test schedule">
+            <failure>
+                <errorCode>ScheduleDoesNotExist</errorCode>
+                <errorReference>FK9725125445</errorReference>
+                <errorDescription>The schedule name supplied does not exist.</errorDescription>
+            </failure>
+        </thermostatScheduleResult>
+        <thermostatScheduleResult scheduleName="UtilityPRO">
+            <success/>
+        </thermostatScheduleResult>
+    </thermostatScheduleResultList>
 </deleteThermostatScheduleResponse>

@@ -24,10 +24,7 @@ public class ThermostatScheduleElementRequestMapper implements ObjectMapper<Elem
 
         YukonXPathTemplate yukonTemplate = YukonXml.getXPathTemplateForElement(createThermostatScheduleRequestElement);
 
-        ThermostatSchedule thermostatSchedule = new ThermostatSchedule();
-        thermostatSchedule.setAccountNumber(yukonTemplate.evaluateAsString("y:*/@accountNumber"));
-        thermostatSchedule.setAcctThermostatScheduleId(yukonTemplate.evaluateAsInt("y:*/@accountThermostatScheduleId", -1));
-        
+        ThermostatSchedule thermostatSchedule = new ThermostatSchedule();        
         thermostatSchedule.setSchedulableThermostatType(yukonTemplate.evaluateAsEnum("y:*/@thermostatType", SchedulableThermostatType.class));
         thermostatSchedule.setScheduleName(yukonTemplate.evaluateAsString("y:*/y:scheduleName"));
 
