@@ -144,7 +144,8 @@
     <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChangeAttempted">User {1} attempted to change thermostat label from {3} to {4} for thermostat {2}. Source: {5}</entry>
     <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChangeAttempted.3">Old Thermostat Label</entry>
     <entry key="yukon.common.events.stars.account.thermostat.thermostatLabelChangeAttempted.4">New Thermostat Label</entry>
-    
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleUpdateAttempted">User {1} attempted to update schedule {4} to thermostat {3} for account {2}. Source: {5}</entry>
+    <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleCreationAttempted">User {1} attempted to create schedule {4} to thermostat {3} for account {2}. Source: {5}</entry>
     <!-- Thermostat Schedule Service Level -->
     <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleSaved">Schedule {2} saved for account {1}.</entry>
     <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleDeleted">Schedule {2} deleted from account {1}.</entry>

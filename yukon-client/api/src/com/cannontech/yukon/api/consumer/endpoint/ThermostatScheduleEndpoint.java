@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -12,6 +13,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
@@ -35,6 +37,7 @@ public class ThermostatScheduleEndpoint {
     @Autowired private RolePropertyDao rolePropertyDao;
 
     private Namespace ns = YukonXml.getYukonNamespace();
+    private Logger log = YukonLogManager.getLogger(ThermostatScheduleEndpoint.class);
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="thermostatScheduleRequest")
     public Element invoke(Element thermostatSchedule, CustomerAccount customerAccount) throws Exception {
@@ -61,6 +64,7 @@ public class ThermostatScheduleEndpoint {
                     resp.addContent(buildResponseForAccountThermostatSchedule(customerAccount, accountThermostatSchedule));
                 } catch (EmptyResultDataAccessException e) {
                     //didn't find a schedule
+                    log.warn("The schedule name: "+scheduleName+" does not exist.");
                     continue;
                 }
             }
