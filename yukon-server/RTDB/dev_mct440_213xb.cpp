@@ -787,6 +787,8 @@ INT Mct440_213xBDevice::executeGetStatus(CtiRequestMsg    *pReq,
             outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
         }
 
+        incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle(), outList.size());
+
         delete OutMessage;  //  we didn't use it, we made our own
         OutMessage = 0;
 
@@ -797,7 +799,7 @@ INT Mct440_213xBDevice::executeGetStatus(CtiRequestMsg    *pReq,
 
     else
     {
-        nRet = Inherited::executeGetValue(pReq, parse, OutMessage, vgList, retList, outList);
+        nRet = Inherited::executeGetStatus(pReq, parse, OutMessage, vgList, retList, outList);
     }
 
     return nRet;
@@ -1255,6 +1257,12 @@ INT Mct440_213xBDevice::decodeGetStatusEventLog(INMESS          *InMessage,
 
     ReturnMsg->setUserMessageId( InMessage->Return.UserID );
     ReturnMsg->setResultString( resultString );
+
+    decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+    if( InMessage->MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)!=0 )
+    {
+        ReturnMsg->setExpectMore(true);
+    }
 
     retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
 
