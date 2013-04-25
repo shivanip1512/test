@@ -36,12 +36,4 @@
         <xsd:attribute name="thermostatScheduleMode" type="yukon:ThermostatScheduleMode"/>
         <xsd:attribute name="thermostatType" type="yukon:SchedulableThermostatType" />
     </xsd:complexType>
-    
-    <xsd:complexType name="LiteThermostatSchedule">
-        <xsd:sequence>
-            <xsd:element name="scheduleName" type="xsd:string" minOccurs="1" maxOccurs="unbounded"/>
-        </xsd:sequence>
-        <xsd:attribute name="accountNumber" type="yukon:AccountNumber"/>
-    </xsd:complexType>
-    
 </xsd:schema>
