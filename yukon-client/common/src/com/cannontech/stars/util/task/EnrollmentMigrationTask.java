@@ -63,8 +63,7 @@ public class EnrollmentMigrationTask extends TimeConsumingTask {
                 YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
             InventoryBaseDao inventoryBaseDao = 
             	YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
-            EnergyCompanySettingDao energyCompanySettingDao = 
-                    YukonSpringHook.getBean("energyCompanySettingDao", EnergyCompanySettingDao.class);
+            EnergyCompanySettingDao energyCompanySettingDao = YukonSpringHook.getBean(EnergyCompanySettingDao.class);
             boolean useHardwareAddressing = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, energyCompany.getEnergyCompanyId());
             
             List<LiteAccountInfo> custAcctInfoList = starsCustAccountInformationDao.getAll(energyCompany.getEnergyCompanyId());

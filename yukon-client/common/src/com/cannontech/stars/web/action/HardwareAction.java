@@ -389,7 +389,7 @@ public class HardwareAction {
         StarsInventories starsInvs = new StarsInventories();
         boolean disabled = false;
     
-        EnergyCompanySettingDao energyCompanySettingDao = YukonSpringHook.getBean("energyCompanySettingDao", EnergyCompanySettingDao.class);
+        EnergyCompanySettingDao energyCompanySettingDao = YukonSpringHook.getBean(EnergyCompanySettingDao.class);
         boolean useHardwareAddressing = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, energyCompany.getEnergyCompanyId());
     
         for (int i = 0; i < hwsToConfig.size(); i++) {
