@@ -76,6 +76,7 @@
     <entry key="yukon.common.systemGroupEnum.TAMPER_FLAG_PROCESSING">/Monitors/Tamper Flag/</entry>
     <entry key="yukon.common.systemGroupEnum.SYSTEMMETERS_DISCONNECT">/System/Meters/Disconnect/</entry>
     <entry key="yukon.common.systemGroupEnum.SUBSTATION_NAME">/Meters/CIS Substation/</entry>
+    <entry key="yukon.common.systemGroupEnum.SUBSTATIONS">/System/Substations/</entry>
     <entry key="yukon.common.systemGroupEnum.PHASE_DETECT_LAST_RESULTS_A">/System/Meters/Phase Detect/Last Results/A</entry>
     <entry key="yukon.common.systemGroupEnum.PHASE_DETECT_LAST_RESULTS_B">/System/Meters/Phase Detect/Last Results/B</entry>
     <entry key="yukon.common.systemGroupEnum.PHASE_DETECT_LAST_RESULTS_C">/System/Meters/Phase Detect/Last Results/C</entry>

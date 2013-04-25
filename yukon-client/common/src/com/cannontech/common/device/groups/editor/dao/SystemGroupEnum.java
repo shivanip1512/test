@@ -28,6 +28,7 @@ public enum SystemGroupEnum {
     TAMPER_FLAG_PROCESSING("/Monitors/Tamper Flag/"),
     SYSTEMMETERS_DISCONNECT("/System/Meters/Disconnect/"),
     SUBSTATION_NAME("/Meters/CIS Substation/"),
+    SUBSTATIONS("/System/Substations/"),
     PHASE_DETECT_LAST_RESULTS_A("/System/Meters/Phase Detect/Last Results/A"),
     PHASE_DETECT_LAST_RESULTS_B("/System/Meters/Phase Detect/Last Results/B"),
     PHASE_DETECT_LAST_RESULTS_C("/System/Meters/Phase Detect/Last Results/C"),
