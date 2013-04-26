@@ -7,7 +7,7 @@ namespace Cti       {
 namespace Protocol  {
 namespace DNP       {
 
-class BinaryInput : public Object
+class IM_EX_PROT BinaryInput : public Object
 {
 private:
     union bifu  //  binary in flag union, named for Slick's parsing pleasure

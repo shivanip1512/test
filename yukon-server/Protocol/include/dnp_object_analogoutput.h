@@ -6,7 +6,7 @@ namespace Cti       {
 namespace Protocol  {
 namespace DNP       {
 
-class AnalogOutputStatus : public Object
+class IM_EX_PROT AnalogOutputStatus : public Object
 {
 private:
     long   _longValue;
@@ -14,7 +14,7 @@ private:
 
     union aofu //  analog out flag union, only for Slick's parsing pleasure
     {
-        struct aoflags
+        struct
         {
             unsigned char online       : 1;
             unsigned char restart      : 1;

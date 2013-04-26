@@ -1,98 +1,12 @@
 #include <boost/test/auto_unit_test.hpp>
 
 #include "prot_dnp.h"
-#include "dnp_object_internalindications.h"
 
 #include "boost_test_helpers.h"
 
 using Cti::byte_buffer;
 
 BOOST_AUTO_TEST_SUITE( test_prot_dnp )
-
-BOOST_AUTO_TEST_CASE(test_prot_dnp_object_internalindications)
-{
-    const void *Null = 0;
-
-    {
-        Cti::Protocol::DNP::InternalIndications iin(Cti::Protocol::DNP::InternalIndications::II_InternalIndications);
-
-        BOOST_CHECK_EQUAL(80,    iin.getGroup());
-        BOOST_CHECK_EQUAL( 1,    iin.getVariation());
-        BOOST_CHECK_EQUAL(false, iin.isValid());
-
-        BOOST_CHECK_EQUAL(0,     iin.restore(NULL, 0));
-        BOOST_CHECK_EQUAL(false, iin.isValid());
-
-        BOOST_CHECK_EQUAL(17,    iin.restore(NULL, 17));
-        BOOST_CHECK_EQUAL(false, iin.isValid());
-
-        BOOST_CHECK_EQUAL(1,     iin.restoreBits(NULL, 0, 17));
-        BOOST_CHECK_EQUAL(true,  iin.isValid());
-
-        BOOST_CHECK_EQUAL(Null,  iin.getPoint(NULL));
-    }
-
-    {
-        Cti::Protocol::DNP::InternalIndications iin(Cti::Protocol::DNP::InternalIndications::II_InternalIndications);
-
-        BOOST_CHECK_EQUAL(80,    iin.getGroup());
-        BOOST_CHECK_EQUAL( 1,    iin.getVariation());
-
-        unsigned char buf = 17;
-
-        iin.setValue(true);
-
-        BOOST_CHECK_EQUAL( 1,    iin.getSerializedLen());
-        BOOST_CHECK_EQUAL( 1,    iin.serialize(&buf));
-
-        BOOST_CHECK_EQUAL( 1,    buf);
-
-        iin.setValue(false);
-
-        BOOST_CHECK_EQUAL( 1,    iin.getSerializedLen());
-        BOOST_CHECK_EQUAL( 1,    iin.serialize(&buf));
-
-        BOOST_CHECK_EQUAL( 0,    buf);
-    }
-
-    {
-        Cti::Protocol::DNP::InternalIndications iin(-1);
-
-        BOOST_CHECK_EQUAL( 80,   iin.getGroup());
-        BOOST_CHECK_EQUAL(255,   iin.getVariation());  //  getVariation returns an unsigned char
-        BOOST_CHECK_EQUAL(false, iin.isValid());
-
-        BOOST_CHECK_EQUAL(  0,   iin.restore(NULL, 0));
-        BOOST_CHECK_EQUAL(false, iin.isValid());
-
-        BOOST_CHECK_EQUAL( 17,   iin.restore(NULL, 17));
-        BOOST_CHECK_EQUAL(false, iin.isValid());
-
-        BOOST_CHECK_EQUAL(  1,   iin.restoreBits(NULL, 0, 17));
-        BOOST_CHECK_EQUAL(true,  iin.isValid());
-
-        BOOST_CHECK_EQUAL(Null,  iin.getPoint(NULL));
-    }
-
-    {
-        Cti::Protocol::DNP::InternalIndications iin(2);
-
-        BOOST_CHECK_EQUAL(80,    iin.getGroup());
-        BOOST_CHECK_EQUAL( 2,    iin.getVariation());  //  getVariation returns an unsigned char
-        BOOST_CHECK_EQUAL(false, iin.isValid());
-
-        BOOST_CHECK_EQUAL( 0,    iin.restore(NULL, 0));
-        BOOST_CHECK_EQUAL(false, iin.isValid());
-
-        BOOST_CHECK_EQUAL(17,    iin.restore(NULL, 17));
-        BOOST_CHECK_EQUAL(false, iin.isValid());
-
-        BOOST_CHECK_EQUAL( 1,    iin.restoreBits(NULL, 0, 17));
-        BOOST_CHECK_EQUAL(true,  iin.isValid());
-
-        BOOST_CHECK_EQUAL(Null,  iin.getPoint(NULL));
-    }
-}
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
 {
@@ -116,7 +30,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
         byte_buffer request;
-        request << 0x05, 0x64, 0x08, 0xC4, 0x04, 0x00, 0x03, 0x00, 0xB4, 0xB8, 
+        request << 0x05, 0x64, 0x08, 0xC4, 0x04, 0x00, 0x03, 0x00, 0xB4, 0xB8,
                    0xC0, 0xC1, 0x01, 0x23, 0x0B;
 
         //  copy them into int vectors so they display nicely
@@ -190,8 +104,8 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
         byte_buffer request;
-        request << 0x05, 0x64, 0x0E, 0xC4, 0x04, 0x00, 0x03, 0x00, 0x6D, 0xD3, 
-                   0xC0, 0xC2, 0x02, 0x50, 0x01, 0x00, 0x07, 0x07, 0x00, 0x08, 
+        request << 0x05, 0x64, 0x0E, 0xC4, 0x04, 0x00, 0x03, 0x00, 0x6D, 0xD3,
+                   0xC0, 0xC2, 0x02, 0x50, 0x01, 0x00, 0x07, 0x07, 0x00, 0x08,
                    0x65;
 
         //  copy them into int vectors so they display nicely
@@ -288,7 +202,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
 
         BOOST_CHECK_EQUAL(4, string_list.size());
 
-        BOOST_CHECK_EQUAL(*string_list[0], 
+        BOOST_CHECK_EQUAL(*string_list[0],
             "Loopback successful");
         BOOST_CHECK_EQUAL(*string_list[1],
             "Internal indications:\n"
@@ -300,6 +214,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
         BOOST_CHECK_EQUAL(*string_list[3],
             "Internal indications:\n"
             "Time synchronization needed\n");
+
+        delete_container(point_list);
+        delete_container(string_list);
     }
 }
 
@@ -458,6 +375,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
             "[2:0]\n"
             "Counters:\n"
             "[1:19]\n");
+
+        delete_container(point_list);
+        delete_container(string_list);
     }
 }
 
@@ -616,6 +536,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_no_ack_required)
             "[2:0]\n"
             "Counters:\n"
             "[1:19]\n");
+
+        delete_container(point_list);
+        delete_container(string_list);
     }
 }
 
@@ -802,6 +725,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
             "[2:0]\n"
             "Counters:\n"
             "[1:19]\n");
+
+        delete_container(point_list);
+        delete_container(string_list);
     }
 }
 
@@ -1098,6 +1024,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
             "[2:0, 3:0]\n"
             "Counters:\n"
             "[1:19, 17:19]\n");
+
+        delete_container(point_list);
+        delete_container(string_list);
     }
 }
 
@@ -1255,6 +1184,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan)
             "[2:0]\n"
             "Counters:\n"
             "[1:19]\n");
+
+        delete_container(point_list);
+        delete_container(string_list);
     }
 }
 
@@ -1412,6 +1344,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_no_ack_required)
             "[2:0]\n"
             "Counters:\n"
             "[1:19]\n");
+
+        delete_container(point_list);
+        delete_container(string_list);
     }
 }
 
@@ -1597,6 +1532,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
             "[2:0]\n"
             "Counters:\n"
             "[1:19]\n");
+
+        delete_container(point_list);
+        delete_container(string_list);
     }
 }
 
@@ -1892,6 +1830,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
             "[2:0, 3:0]\n"
             "Counters:\n"
             "[1:19, 17:19]\n");
+
+        delete_container(point_list);
+        delete_container(string_list);
     }
 }
 
@@ -2034,6 +1975,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
         dnp.getInboundStrings(string_list);
 
         BOOST_CHECK_EQUAL(0, string_list.size());
+
+        delete_container(point_list);
+        delete_container(string_list);
     }
 }
 

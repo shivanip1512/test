@@ -7,7 +7,7 @@ namespace Cti       {
 namespace Protocol  {
 namespace DNP       {
 
-class Counter : public Object
+class IM_EX_PROT Counter : public Object
 {
     unsigned long _counter;
     unsigned char _flag;  //  this will be a bitfield struct someday
@@ -96,7 +96,7 @@ public:
 class CounterEvent : public Counter
 {
 protected:
-    
+
     Time _toc;
 
 public:

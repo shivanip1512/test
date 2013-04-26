@@ -8,7 +8,7 @@ namespace Protocol  {
 namespace DNP       {
 
 
-class AnalogInput : public Object
+class IM_EX_PROT AnalogInput : public Object
 {
 private:
     long   _longValue;

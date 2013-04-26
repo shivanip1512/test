@@ -6,7 +6,7 @@ namespace Cti       {
 namespace Protocol  {
 namespace DNP       {
 
-class BinaryOutput : public Object
+class IM_EX_PROT BinaryOutput : public Object
 {
 private:
     union bofu  //  binary out flag union, named for Slick's parsing pleasure
