@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="paoDefinition.xsl"?>
-<!--  RF Devices: highest OFFSET=213 @ 2014-04-24W -->
+<!--  RF Devices: highest OFFSET=214 @ 2014-04-24W -->
 <!--
     This file contains default pao and point information for all of the pao's in Yukon.
     
@@ -7331,7 +7331,9 @@
         <displayName>RFN-420fD</displayName></pao>
 
     <!-- ITRON RFN METERS -->
-    <pao id="RFN420CL"  inherits="RFN_L3_CENTRON, SUPPORTS_RFN_DEMAND_RESET_TAG">
+    <pao id="RFN410CL"  inherits="RFN_L3_CENTRON, SUPPORTS_RFN_DEMAND_RESET_TAG">
+        <displayName>RFN-410cL</displayName></pao>
+    <pao id="RFN420CL"  inherits="RFN410CL">
         <displayName>RFN-420cL</displayName></pao>
     <pao id="RFN420CD"  inherits="RFN420CL, RFN_DISCONNECT">
         <displayName>RFN-420cD</displayName></pao>

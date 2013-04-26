@@ -2,6 +2,8 @@
 <pointMappings>
 
     <pointGroup><!--  COMMON MAPPINGS -->
+
+        <paoType value="RFN410CL"/>
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
         <paoType value="RFN410FX"/>
@@ -103,6 +105,7 @@
 
 
     <pointGroup><!--  ALL *EXCEPT* A3D MAPPINGS -->
+        <paoType value="RFN410CL"/>
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
         <paoType value="RFN410FX"/>
@@ -268,6 +271,7 @@
         <paoType value="RFN420FL"/>
         <paoType value="RFN420FX"/>
         <paoType value="RFN420FD"/>
+        <paoType value="RFN410CL"/>
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
 <!-- existed for ALL + requested for all EXCEPT Elster; NOTE: they also want Peak's timestamp -->
@@ -1637,6 +1641,7 @@
     </pointGroup>
 
     <pointGroup><!-- BASIC VOLTAGE POINT MAPPINGS -->
+        <paoType value="RFN410CL"/>
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
         <paoType value="RFN420FL"/>

@@ -100,6 +100,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     MCT440_2133B(DeviceTypes.MCT440_2133B, "MCT-440-2133B", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT470(DeviceTypes.MCT470, "MCT-470", PaoCategory.DEVICE, PaoClass.CARRIER),
 
+    RFN410CL(DeviceTypes.RFN410CL, "RFN-410cL", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN410FL(DeviceTypes.RFN410FL, "RFN-410fL", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN410FX(DeviceTypes.RFN410FX, "RFN-410fX", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN410FD(DeviceTypes.RFN410FD, "RFN-410fD", PaoCategory.DEVICE, PaoClass.RFMESH),
@@ -318,6 +319,7 @@ public enum PaoType implements DatabaseRepresentationSource {
         meterTypesBuilder.add(RFN420FL);
         meterTypesBuilder.add(RFN420FX);
         meterTypesBuilder.add(RFN420FD);
+        meterTypesBuilder.add(RFN410CL);
         meterTypesBuilder.add(RFN420CL);
         meterTypesBuilder.add(RFN420CD);
         meterTypesBuilder.add(RFN430A3D);

@@ -195,6 +195,9 @@ public interface DeviceTypes extends TypeBase
     public final static int RFN430A3K = DEVICE_OFFSET + 149;
     public final static int RFN430A3T = DEVICE_OFFSET + 150;
     public final static int RFN430A3R = DEVICE_OFFSET + 151;
+    
+    // Other RFN410__ models are above (offset + 120)
+    public final static int RFN410CL = DEVICE_OFFSET + 152;
 
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]

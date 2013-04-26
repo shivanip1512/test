@@ -24,6 +24,7 @@ public enum RfnManufacturerModel {
     RFN_420FX(PaoType.RFN420FX, "LGYR", "FocusAXD"),
     RFN_420FD(PaoType.RFN420FD, "LGYR", "FocusAXR-SD"),
     
+    RFN_410CL(PaoType.RFN410CL, "ITRN", "C1SX"),
     RFN_420CL(PaoType.RFN420CL, "ITRN", "C2SX"),
     RFN_420CD(PaoType.RFN420CD, "ITRN", "C2SX-SD"),
     
