@@ -1657,10 +1657,11 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
                 OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
                 outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
 
-                OutMessage->Priority           -= 1; // decrease priority for part 2 to make sure we process it after part 1
                 OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Part2Pos;
                 OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Part2Len;
                 outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+
+                incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle(), outList.size());
 
                 delete OutMessage;  //  we didn't use it, we made our own
                 OutMessage = 0;
@@ -1673,10 +1674,11 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
                 OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
                 outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
 
-                OutMessage->Priority           -= 1; // decrease priority for part 2 to make sure we process it after part 1
                 OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Part2Pos;
                 OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Part2Len;
                 outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+
+                incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle(), outList.size());
 
                 delete OutMessage;  //  we didn't use it, we made our own
                 OutMessage = 0;
@@ -2755,6 +2757,12 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
 
+    decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+    if( InMessage->MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)!=0 )
+    {
+        ReturnMsg->setExpectMore(true);
+    }
+
     int schedulenum = parse.getiValue("tou_schedule");
 
     if( schedulenum > 0 && schedulenum <= 4 )
@@ -2887,7 +2895,7 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
                                                                 /* Set daily schedule dynamic info                      */
             CtiDeviceBase::setDynamicInfo(key[schedule_nbr], daySchedule);
 
-            if( !first_part )
+            if( !ReturnMsg->ExpectMore() )
             {
                 resultString += getName() + " / TOU Schedule " + CtiNumStr(schedulenum + schedule_nbr) + ":\n";
 
