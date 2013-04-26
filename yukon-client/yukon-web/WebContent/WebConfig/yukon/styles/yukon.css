@@ -393,6 +393,8 @@ html[xmlns] .clearfix {display: block;}
 .datetimeEntry_wrap input { padding: 2px; float: left; height: 16px; border: solid 1px white;}
 .datetimeEntry_wrap img {margin: 3px;}
 .datetimeEntry_wrap .datetimeEntry_control {display: none !important;}
+.datetimeEntry_wrap input[disabled] {color: #999};
+.datetimeEntry_wrap input[disabled] + .ui-datepicker-trigger {cursor: auto;} 
 .ui-datepicker.hide_minutes .ui_tpicker_minute_label,.ui-datepicker.hide_minutes .ui_tpicker_minute{display: none;}
 .datetimeEntry_wrap .timezone_container {line-height: 21px; margin-left: -31px; float: left; color: #999; font-size: 13px; padding-right: 5px;}
 input.datePicker, input.timePicker, input.dateTimePicker {border-radius: 2px 0 0 2px;}

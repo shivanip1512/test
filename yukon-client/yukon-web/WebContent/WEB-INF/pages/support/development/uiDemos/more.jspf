@@ -48,6 +48,7 @@ hr {
 
     <h3>Date Picker</h3>
     <div class="dateContainer"><label>Basic</label><dateTime:date value="${now}"/></div>
+    <div class="dateContainer"><label>Basic - disabled </label><dateTime:date value="${now}" disabled="true"/></div>
     <div class="dateContainer"><label>Maximum Date<br><small>1 week from now</small></label><dateTime:date value="${now}" maxDate="${end}" /></div>
     <div class="dateContainer"><label>Minimum Date<br><small>1 week ago</small></label><dateTime:date value="${now}" minDate="${start}" /></div>
     <div class="dateContainer"><label>Limited Range<br><small>1 week ago -<br>1 week from now</small></label><dateTime:date value="${now}" minDate="${start}" maxDate="${end}" /></div>

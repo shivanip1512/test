@@ -65,11 +65,11 @@
 	                    <cti:dataUpdaterValue type="JOB" identifier="${jobWrapper.job.id}/STATE_TEXT"/>
 	                </span>
 	                <span id="jobRunningSpan_${jobWrapper.job.id}" <c:if test="${not (jobWrapper.jobStatus eq 'RUNNING')}">style="display:none;"</c:if>>
-	                    <tags:updateableProgressBar totalCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_REQUEST_COUNT_FOR_JOB"
+	                    <span class="fl"><tags:updateableProgressBar totalCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_REQUEST_COUNT_FOR_JOB"
 	                        countKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_SUCCESS_RESULTS_COUNT_FOR_JOB"
 	                        failureCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_FAILURE_RESULTS_COUNT_FOR_JOB"
-	                        borderClasses="scheduledRequestProgressBarBorder" hideCount="true" hidePercent="true"/>
-	                	<cti:button nameKey="cancel" id="cancel_${jobWrapper.job.id}" styleClass="stopButton" renderMode="image" arguments="${jobWrapper.name}" />
+	                        borderClasses="scheduledRequestProgressBarBorder" hideCount="true" hidePercent="true"/></span>
+	                    <a id="cancel_${jobWrapper.job.id}" href="javascript:void(0);" class="icon icon_remove stopButton" title="<cti:msg2 key="yukon.common.cancel"/>">&nbsp;</a>
 	                	<d:confirm on="#cancel_${jobWrapper.job.id}" nameKey="cancelConfirm" argument="${jobWrapper.name}" />
 	                </span>
 	            </td>
