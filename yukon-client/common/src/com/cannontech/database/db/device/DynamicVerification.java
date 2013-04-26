@@ -1,24 +1,12 @@
-/*
- * Created on Jul 15, 2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package com.cannontech.database.db.device;
 
 import java.util.Date;
 
 import com.cannontech.database.SqlUtils;
 
-/**
- * @author jdayton
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 public class DynamicVerification extends com.cannontech.database.db.DBPersistent 
 {
-	private Integer logID;
+	private Long logID;
 	private Date timeArrival;
 	private Integer receiverID;
 	private Integer transmitterID;
@@ -42,7 +30,7 @@ public DynamicVerification() {
 	super();
 }
 
-public DynamicVerification(Integer lgID, Date date_, Integer recID, Integer transID, String command_, String code_, Integer codeSeq, Character received_, String stat) {
+public DynamicVerification(Long lgID, Date date_, Integer recID, Integer transID, String command_, String code_, Integer codeSeq, Character received_, String stat) {
 	super();
 	logID = lgID;
 	timeArrival = date_;
@@ -105,7 +93,7 @@ public static synchronized Integer getNextLogID( java.sql.Connection conn )
 }
 
 
-public Integer getLogID() {
+public Long getLogID() {
 	return logID;
 	}
 
@@ -135,7 +123,7 @@ public String getCodeStatus() {
 
 public void retrieve() 
 {
-	Integer constraintValues[] = { getLogID() };	
+	Long constraintValues[] = { getLogID() };	
 	
 	try
 	{
@@ -143,7 +131,7 @@ public void retrieve()
 	
 		if( results.length == SETTER_COLUMNS.length )
 		{
-			setLogID( (Integer) results[0]);
+			setLogID( (Long) results[0]);
 			setTimeArrival( (Date) results[1] );
 			setReceiverID( (Integer) results[2] );
 			setTransmitterID( (Integer) results[3] );
@@ -162,7 +150,7 @@ public void retrieve()
 	}
 }
 
-public void setLogID(Integer lgID) {
+public void setLogID(Long lgID) {
 	logID = lgID;
 }
 

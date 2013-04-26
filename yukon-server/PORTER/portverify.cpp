@@ -718,14 +718,14 @@ void CtiPorterVerification::pruneEntries(const ptime::time_duration_type &age)
 }
 
 
-long CtiPorterVerification::logIDGen(bool force)
+long long CtiPorterVerification::logIDGen(bool force)
 {
     static RWMutexLock mux;
     RWMutexLock::LockGuard guard(mux);
 
-    INT tempid = 0;
-    static BOOL init_id = FALSE;
-    static INT id = 0;
+    long long tempid = 0;
+    static bool init_id = FALSE;
+    static long long id = 0;
     static const CHAR sql[] = "SELECT MAX(LOGID) FROM DYNAMICVERIFICATION";
 
     if(!init_id || force)

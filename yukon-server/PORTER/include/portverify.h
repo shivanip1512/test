@@ -48,7 +48,7 @@ private:
     void writeUnknown(const CtiVerificationReport &report);
     void pruneEntries(const boost::posix_time::ptime::time_duration_type &earliest);
 
-    long logIDGen(bool force=false);
+    long long logIDGen(bool force=false);
 
     //  yeah
     CtiPorterVerification(const CtiPorterVerification& aRef);

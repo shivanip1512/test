@@ -136,7 +136,7 @@ public class LoadControlVerificationModel extends ReportModelBase
      */
     public void addDataRow(ResultSet rset) throws SQLException
     {
-        Integer logID = new Integer(rset.getInt(1));
+        Long logID = new Long(rset.getLong(1));
         java.sql.Timestamp dateTime = rset.getTimestamp(2);
         Integer receiverID = new Integer(rset.getInt(3));
         Integer transID = new Integer(rset.getInt(4));
