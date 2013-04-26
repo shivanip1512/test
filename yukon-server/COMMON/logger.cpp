@@ -40,7 +40,7 @@ void cleanupStream( strstream *stream )
 
 CtiLogger::~CtiLogger()
 {
-    cleanupStream(_current_stream)
+    cleanupStream(_current_stream);
 
     strstream *tmpStream;
 
@@ -451,7 +451,7 @@ void CtiLogger::cleanupOldFiles()
     {
         WIN32_FIND_DATA     found_file_info;
         const std::string   file_spec = _path + "\\" + _base_filename + "????????.log";
-        
+
         CtiDate cutOffDate;
         cutOffDate -= _days_to_keep;
 
@@ -466,7 +466,7 @@ void CtiLogger::cleanupOldFiles()
                 deleteOldFile( found_filename );
             }
 
-            while ( FindNextFile( finder_handle, &found_file_info ) ) 
+            while ( FindNextFile( finder_handle, &found_file_info ) )
             {
                 found_filename = _path + "\\" + found_file_info.cFileName;
 
