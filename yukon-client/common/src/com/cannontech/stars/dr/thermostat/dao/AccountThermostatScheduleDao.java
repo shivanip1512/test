@@ -115,13 +115,15 @@ public interface AccountThermostatScheduleDao {
 	 */
 	public List<AccountThermostatSchedule> getSchedulesForAccountByScheduleName(int accountId, String scheduleName, Integer ignorableScheduleId);
 	
-	/**
-	 * Save given AccountThermostatSchedule.<br><br>
-	 * Will either update or insert the AccountThermostatSchedule and its entries.<br>
-	 * Update: accountThermostatScheduleId >= 0.<br>
-	 * Insert: accountThermostatScheduleId < 0.
-	 * @throws InvalidAttributeValueException 
-	 */
+    /**
+     * Save given AccountThermostatSchedule.<br><br>
+     * If the attempt is made to update a schedule that has an event associated with the schedule
+     * the current schedule will be archived (AcctThermostatSchedule.Archived = "true") and a
+     * new identical schedule will be created.
+     * Update: accountThermostatScheduleId >= 0.<br>
+     * Insert: accountThermostatScheduleId < 0.
+     * @throws InvalidAttributeValueException
+     */
 	public void save(AccountThermostatSchedule ats);
 	
 	/**

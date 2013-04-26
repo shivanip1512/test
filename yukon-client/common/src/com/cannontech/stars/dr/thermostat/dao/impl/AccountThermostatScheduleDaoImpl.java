@@ -69,20 +69,12 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
          * the current schedule will be archived (AcctThermostatSchedule.Archived = "true") and a
          * new identical schedule will be created.
          */
-        if (ats.getAccountThermostatScheduleId() != -1
-            && thermostatEventHistoryDao.hasEventForScheduleId(ats.getAccountThermostatScheduleId())) {
-            //archive the schedule
+        if(ats.getAccountThermostatScheduleId() != -1 && thermostatEventHistoryDao.hasEventForScheduleId(ats.getAccountThermostatScheduleId())) {
             archiveSchedule(ats.getAccountThermostatScheduleId());
-            //create new schedule
+            //if id equals -1 the new schedule will be created otherwise the schedule will be updated
             ats.setAccountThermostatScheduleId(-1);
-            saveSchedule(ats);
-        } else {
-            /*
-             * If this is a new or old schedule that has no events, the new
-             * schedule will be created or the old schedule will be modified
-             */
-            saveSchedule(ats);
         }
+        saveSchedule(ats);    
     }
     
     private void saveSchedule(AccountThermostatSchedule ats){
