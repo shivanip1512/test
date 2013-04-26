@@ -550,16 +550,6 @@ void CtiCalcLogicService::Run( )
 
                         _nextCheckTime = timeNow + CHECK_RATE_SECONDS;
                     }
-
-                    if( ((timeNow-18000) % 86400) <= 5 )        // CGP this is terrible code.  Fix it someday.
-                    {//reset the max allocations once a day, midnight central standard time
-                        LONG currentAllocations = ResetBreakAlloc();
-                        if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Current Number of Historical Memory Allocations: " << currentAllocations << endl;
-                        }
-                    }
                 }
                 catch(...)
                 {

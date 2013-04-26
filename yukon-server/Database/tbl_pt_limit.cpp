@@ -1,19 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_pt_limit
-*
-* Date:   7/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_limit.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2008/10/08 15:13:02 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
-
-#include <strstream>
 
 #include "tbl_pt_limit.h"
 

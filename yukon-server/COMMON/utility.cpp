@@ -617,12 +617,11 @@ void identifyProject(const compileinfo_t &Info)
 
 bool setConsoleTitle(const compileinfo_t &Info)
 {
-    strstream s;
+    ostringstream s;
 
-    //  std::ends is required to null-terminate the strstream.str()
-    s << Info.project << " - YUKON " << Info.version << std::ends;
+    s << Info.project << " - YUKON " << Info.version;
 
-    return SetConsoleTitle( s.str() );
+    return SetConsoleTitle( s.str().c_str() );
 }
 
 
@@ -1990,24 +1989,6 @@ BOOL searchFuncForOutMessageUniqueID(void *pId, void* d)
     return(OutMessage->Request.CheckSum == Id);
 }
 
-LONG ResetBreakAlloc()
-{
-    long allocReqNum = 0;
-
-#ifdef _DEBUG
-    long *my_pointer = (long*)new long;
-    _CrtIsMemoryBlock(my_pointer, sizeof(long), &allocReqNum, NULL, NULL);
-    /*
-     * Set a breakpoint on the allocation request number for "my_pointer"
-     * this should keep us from breaking for at least 2^31 more allocations.
-     */
-    _CrtSetBreakAlloc(allocReqNum);
-    _crtBreakAlloc = allocReqNum;
-    delete my_pointer;
-#endif
-
-    return allocReqNum;
-}
 
 #define LOADPROFILESEQUENCE 4  //  Protocols::EmetconProtocol::Scan_LoadProfile
 

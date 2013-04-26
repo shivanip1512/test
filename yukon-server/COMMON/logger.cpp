@@ -28,9 +28,26 @@ CtiLogger::CtiLogger(const string& file, bool to_stdout) :
     _current_stream->fill(_fill);
 }
 
+void cleanupStream( strstream *stream )
+{
+    if( stream )
+    {
+        stream->freeze(false);
+
+        delete stream;
+    }
+}
+
 CtiLogger::~CtiLogger()
 {
-    delete _current_stream;
+    cleanupStream(_current_stream)
+
+    strstream *tmpStream;
+
+    while( _queue.tryRead(tmpStream) )
+    {
+        cleanupStream(tmpStream);
+    }
 }
 
 CtiLogger& CtiLogger::setOutputPath(const string& path)

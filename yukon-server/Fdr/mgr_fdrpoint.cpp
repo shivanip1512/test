@@ -93,8 +93,6 @@ bool CtiFDRManager::loadPointList()
 {
     bool functionSuccess;
 
-    ResetBreakAlloc();
-
     try
     {
         std::stringstream ss;
@@ -174,8 +172,6 @@ bool CtiFDRManager::loadPointList()
 bool CtiFDRManager::loadPoint(long pointId, CtiFDRPointSPtr & point)
 {
     bool functionStatus = false;
-
-    ResetBreakAlloc();
 
     try
     {
@@ -359,7 +355,7 @@ bool CtiFDRManager::getPointsFromDB(const std::stringstream &ss, std::map<long,C
                 {
                     fdrPtr->setControllable (true);
                 }
-                
+
                 CtiFDRDestination tmpDestination (fdrPtr.get(), translation, destination);
                 fdrPtr->getDestinationList().push_back(tmpDestination);
                 fdrPtrMap.insert( std::pair<long,CtiFDRPointSPtr >(pointID, fdrPtr));

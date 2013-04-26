@@ -1,22 +1,6 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_pt_alarm
-*
-* Date:   7/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_alarm.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2008/11/05 19:03:36 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
-
 #include "row_reader.h"
-
-#include <strstream>
 
 #include "dbaccess.h"
 #include "logger.h"

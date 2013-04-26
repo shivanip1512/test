@@ -78,7 +78,7 @@ void SimulatorLogger::breadcrumbLog(const string &str, const bytes &l_bytes)
 
 string SimulatorLogger::formatIOBytes(const bytes &buf)
 {
-    std::ostrstream bytes;
+    std::ostringstream bytes;
 
     bytes::const_iterator buf_itr = buf.begin();
 
@@ -87,9 +87,7 @@ string SimulatorLogger::formatIOBytes(const bytes &buf)
         bytes << setfill('0') << setw(2) << hex << static_cast<int>(*buf_itr++) << " ";
     }
 
-    bytes.freeze();
-
-    return string(bytes.str(), bytes.pcount());
+    return bytes.str();
 }
 
 string SimulatorLogger::breadcrumbPrefix()

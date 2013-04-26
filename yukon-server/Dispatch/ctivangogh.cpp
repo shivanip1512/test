@@ -4614,8 +4614,6 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
     {
         if(Now > Refresh || force)   // Should be 5 minutes or greater
         {
-            ResetBreakAlloc();  // Make certain the debug allocator does not break our spirit.
-
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << Now << " Starting loadRTDB. " << (pChg != 0 ? string(pChg->getCategory() + " DBChange present.") : "No DBChange present.") << endl;

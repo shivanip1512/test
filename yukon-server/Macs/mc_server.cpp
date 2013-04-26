@@ -80,9 +80,6 @@ void CtiMCServer::run()
             /* Main Loop */
             while(true)
             {
-                // Workaround for bug in vc6 debug heap
-                ResetBreakAlloc();
-
                 // Do thread monitor stuff
                 if( threadMonitorPointId != 0 )
                 {

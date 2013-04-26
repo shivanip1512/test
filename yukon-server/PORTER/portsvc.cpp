@@ -108,7 +108,6 @@ void CtiPorterService::Run()
    do
    {
        waitResult = WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 300000);   // Wake up Every 5 minutes and toggle the break counter
-       ResetBreakAlloc();
 
    } while( WAIT_TIMEOUT == waitResult );
 

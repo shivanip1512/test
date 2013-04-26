@@ -1189,7 +1189,6 @@ void LoadScannableDevices(void *ptr)
 
 
     InitScannerGlobals();      // Go fetch from the environmant
-    ResetBreakAlloc();         // Make certain the debug library does not break us.
 
     CtiDeviceManager::coll_type::writer_lock_guard_t guard(ScannerDeviceManager.getLock());
 

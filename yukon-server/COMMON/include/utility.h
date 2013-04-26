@@ -148,8 +148,6 @@ IM_EX_CTIBASE FLOAT   FltLittleEndian(FLOAT  *BigEndianFloat);
 
 IM_EX_CTIBASE ULONG   MilliTime (PULONG);
 
-IM_EX_CTIBASE LONG    ResetBreakAlloc();
-
 IM_EX_CTIBASE bool findLPRequestEntries(void *om, void *d);
 IM_EX_CTIBASE bool findRequestIDMatch(void *rid, void *d);
 IM_EX_CTIBASE bool findExpiredOutMessage(void *rid, void *d);

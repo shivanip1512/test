@@ -2,7 +2,6 @@
 
 #include <vector>
 #include <map>
-#include <strstream>
 #include "utility.h"
 #include "ctidate.h"
 #include "dsm2.h"

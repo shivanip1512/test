@@ -1265,13 +1265,6 @@ void CtiCCSubstationBusStore::reset()
     bool wasAlreadyRunning = false;
     try
     {
-        long currentAllocations = ResetBreakAlloc();
-        if ( _CC_DEBUG & CC_DEBUG_EXTENDED )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Current Number of Historical Memory Allocations: " << currentAllocations << endl;
-        }
-
         {
             RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
             {
@@ -2347,8 +2340,6 @@ void CtiCCSubstationBusStore::doOpStatsThr()
     CtiTime currentTime;
     CtiTime opStatRefreshRate =  nextScheduledTimeAlignedOnRate( currentTime,  _OP_STATS_REFRESH_RATE );
 
-    CtiTime resetMemAllocRefreshRate =  nextScheduledTimeAlignedOnRate( currentTime,  HOURLY_RATE );
-
     unsigned long secondsFrom1901 = 0;
 
     while(true)
@@ -2362,17 +2353,6 @@ void CtiCCSubstationBusStore::doOpStatsThr()
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Controller refreshing OP STATS" << endl;
-            }
-            if( currentTime.seconds() > resetMemAllocRefreshRate.seconds())
-            {
-                long currentAllocations = ResetBreakAlloc();
-                if ( _CC_DEBUG & CC_DEBUG_EXTENDED )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Current Number of Historical Memory Allocations: " << currentAllocations << endl;
-                }
-
-                resetMemAllocRefreshRate =  nextScheduledTimeAlignedOnRate( currentTime,  HOURLY_RATE );
             }
 
             {
@@ -3923,7 +3903,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                 long currentSubstationId;
 
                 rdr["substationid"] >> currentSubstationId;
-                
+
                 if (CtiCCSubstationPtr currentCCSubstation = findInMap(currentSubstationId, paobject_substation_map))
                 {
                      currentCCSubstation->setDynamicData(rdr);
@@ -4487,7 +4467,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
                 {
                     continue;
                 }
-                
+
                 if ( !rdr["pointid"].isNull() )
                 {
                     long tempPointId = -1000;
@@ -4765,7 +4745,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
                 long currentSpAreaId;
 
                 rdr["areaid"] >> currentSpAreaId;
-                
+
                 if (CtiCCSpecialPtr currentCCSpArea = findInMap(currentSpAreaId, paobject_specialarea_map))
                 {
                      currentCCSpArea->setDynamicData(rdr);
@@ -5038,7 +5018,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                 dbRdr["substationid"] >> currentSubstationId;
                 dbRdr["substationbusid"] >> currentSubBusId;
                 dbRdr["displayorder"] >>displayOrder;
-                
+
                 if (CtiCCSubstationBusPtr currentCCSubstationBus = findInMap(currentSubBusId, paobject_subbus_map))
                 {
                     currentCCSubstationBus->setParentId(currentSubstationId);
@@ -5463,7 +5443,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                 {
                     continue;
                 }
-                
+
                 if ( !rdr["pointid"].isNull() )
                 {
                     long tempPointId = -1000;
@@ -6098,7 +6078,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
             }
 
             if (CtiCCFeederPtr currentFeeder = findInMap(feederId, paobject_feeder_map))
-            {   
+            {
                 reloadMonitorPointsFromDatabase(currentFeeder->getParentId(), &_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map, &_pointid_capbank_map, &_pointid_subbus_map);
             }
         }
@@ -6257,7 +6237,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                 {
                     continue;
                 }
-                
+
                 long tempPAObjectId = 0;
                 rdr["paobjectid"] >> tempPAObjectId;
                 if (    tempPAObjectId == currentCCFeeder->getPaoId() )
@@ -6941,11 +6921,11 @@ void CtiCCSubstationBusStore::reloadOperationStatsFromDatabase(long paoId, PaoId
             {
                 long currentPaoId;
                 rdr["paobjectid"] >> currentPaoId;
-                
+
                 currentCCCapBank = findInMap(currentPaoId, paobject_capbank_map);
                 currentFeeder = findInMap(currentPaoId, paobject_feeder_map);
                 currentSubBus = findInMap(currentPaoId, paobject_subbus_map);
-                
+
                 currentStation = findSubstationByPAObjectID(currentPaoId);
                 currentArea = findAreaByPAObjectID(currentPaoId);
                 currentSpArea = findSpecialAreaByPAObjectID(currentPaoId);
@@ -7073,7 +7053,7 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long subBusId, Pao
                     continue;
                 }
 
-                
+
                 if (!subBusPtr->addMonitorPoint(currentPointId, currentMonPoint))
                 {
                     currentMonPoint.reset();

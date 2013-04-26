@@ -98,7 +98,7 @@ CtiLMControlAreaStore::~CtiLMControlAreaStore()
 {
     if( _resetthr.isValid() )
     {
-        // 30 seconds seems to be the standard across Yukon. If you do not wait for the cancellation, 
+        // 30 seconds seems to be the standard across Yukon. If you do not wait for the cancellation,
         // bad things can happen in some cases.
         _resetthr.requestCancellation(30000);
         _resetthr.join(30000);
@@ -288,14 +288,6 @@ void CtiLMControlAreaStore::reset()
         std::multimap<long, long >     temp_point_control_area_map;
         std::map<long, CtiLMProgramBaseSPtr > temp_all_program_map;
         std::map<long, CtiLMControlArea* > temp_all_control_area_map;
-
-
-        LONG currentAllocations = ResetBreakAlloc();
-        if( _LM_DEBUG & LM_DEBUG_EXTENDED )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Current Number of Historical Memory Allocations: " << currentAllocations << endl;
-        }
 
         RWTimer overallTimer;
         overallTimer.start();
