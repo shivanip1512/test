@@ -58,9 +58,6 @@ protected:
     Protocol::DNPInterface _dnp;
     CtiTableDeviceAddress  _dnp_address;
 
-    Protocol::Interface::stringlist_t _string_results;
-    Protocol::Interface::pointlist_t  _point_results;
-
     void resetDNPScansPending( void );
 
     virtual Protocol::Interface *getProtocol();

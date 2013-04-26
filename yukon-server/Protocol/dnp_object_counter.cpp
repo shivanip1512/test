@@ -1,18 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dnp_object_counter
-*
-* Date:   7/8/2002
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2008/02/15 21:08:15 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
-
 
 #include "dnp_object_counter.h"
 #include "logger.h"
@@ -25,19 +11,19 @@ namespace DNP       {
 
 Counter::Counter(int variation) :
     Object(Group, variation),
-    _counter(0),
-    _flag(0)
+    _counter(0)
 {
-
+    _flags.raw = 0;
+    _flags.online = true;
 }
 
 
 Counter::Counter(int group, int variation) :
     Object(group, variation),
-    _counter(0),
-    _flag(0)
+    _counter(0)
 {
-
+    _flags.raw = 0;
+    _flags.online = true;
 }
 
 
@@ -57,9 +43,9 @@ unsigned long Counter::getValue() const
 {
     return _counter;
 }
-unsigned char Counter::getFlag() const
+unsigned char Counter::getFlags() const
 {
-    return _flag;
+    return _flags.raw;
 }
 
 void Counter::setValue(long value)
@@ -69,7 +55,7 @@ void Counter::setValue(long value)
 
 void Counter::setOnlineFlag(bool online)
 {
-    _flag = (online?0x01:0x00);
+    _flags.online = online;
 }
 
 
@@ -132,7 +118,7 @@ int Counter::restoreVariation(const unsigned char *buf, int len, int variation)
         case C_Binary32Bit:
         case C_Delta32Bit:
         {
-            _flag = buf[pos++];
+            _flags.raw = buf[pos++];
 
             //  fall through
         }
@@ -152,7 +138,7 @@ int Counter::restoreVariation(const unsigned char *buf, int len, int variation)
         case C_Binary16Bit:
         case C_Delta16Bit:
         {
-            _flag = buf[pos++];
+            _flags.raw = buf[pos++];
 
             //  fall through
         }
@@ -196,7 +182,7 @@ int Counter::serializeVariation(unsigned char *buf, int variation) const
         case C_Binary32Bit:
         case C_Delta32Bit:
         {
-            buf[pos++] = _flag;
+            buf[pos++] = _flags.raw;
             //  fall through
         }
         case C_Binary32BitNoFlag:
@@ -213,7 +199,7 @@ int Counter::serializeVariation(unsigned char *buf, int variation) const
         case C_Binary16Bit:
         case C_Delta16Bit:
         {
-            buf[pos++] = _flag;
+            buf[pos++] = _flags.raw;
             //  fall through
         }
         case C_Binary16BitNoFlag:
@@ -239,57 +225,23 @@ int Counter::serializeVariation(unsigned char *buf, int variation) const
 
 CtiPointDataMsg *Counter::getPoint( const TimeCTO *cto ) const
 {
-    CtiPointDataMsg *tmpMsg;
-
-    double val = 0;
     int quality = NormalQuality;
 
-    //  this used to be chosen or excluded by the variation...  but every
-    //    variation returns the same data, so there's no need to differentiate...
-    //    at least not for counters
-    //  the child classes add to this, but the values concerned are still the same
-    val = _counter;
-
-    if (!_flag && gDNPOfflineNonUpdated)
+    if( ! _flags.online && gDNPOfflineNonUpdated )
     {
         quality = NonUpdatedQuality;
     }
-
-/*    UnintializedQuality = 0,
-    InitDefaultQuality,
-    InitLastKnownQuality,
-    NonUpdatedQuality,
-    ManualQuality,
-    NormalQuality,
-    ExceedsLowQuality,
-    ExceedsHighQuality,
-    AbnormalQuality,
-    UnknownQuality,
-    InvalidQuality,
-    PartialIntervalQuality,
-    DeviceFillerQuality,
-    QuestionableQuality,
-    OverflowQuality,
-    PowerfailQuality,
-    UnreasonableQuality
-
-    if( _flags.aiflags.remoteforced )
-    {
-
-    }*/
 
     if( gDNPVerbose )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "Counter object, value " << val << endl;
+        dout << "Counter object, value " << _counter << endl;
     }
 
     //  the ID will be replaced by the offset by the object block, which will then be used by the
     //    device to figure out the true ID
-    tmpMsg = CTIDBG_new CtiPointDataMsg(0, val, quality, PulseAccumulatorPointType);
-
-    return tmpMsg;
+    return new CtiPointDataMsg(0, _counter, quality, PulseAccumulatorPointType);
 }
 
 
@@ -348,7 +300,7 @@ int CounterEvent::serialize(unsigned char *buf) const
 int CounterEvent::serializeVariation(unsigned char *buf, int variation) const
 {
     int pos = 0;
-    unsigned char flag = getFlag();
+    unsigned char flag = getFlags();
     unsigned long counter = getValue();
 
     switch(variation)

@@ -90,6 +90,7 @@ protected:
 public:
 
     DNPInterface();
+    ~DNPInterface();
 
     void setAddresses( unsigned short slaveAddress, unsigned short masterAddress );
     void setOptions( int options );
@@ -97,7 +98,7 @@ public:
     bool setCommand( Command command );
     bool setCommand( Command command, output_point &point );
 
-    void setConfigData( unsigned internalRetries, bool useLocalTime, bool enableDnpTimesyncs, 
+    void setConfigData( unsigned internalRetries, bool useLocalTime, bool enableDnpTimesyncs,
                         bool omitTimeRequest, bool enableUnsolicited );
 
     void setInternalRetries( unsigned retries ) const;

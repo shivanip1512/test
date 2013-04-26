@@ -803,34 +803,6 @@ int DnpDevice::sendCommResult(INMESS *InMessage)
         strings.pop_back();
     }
 
-    int length_remaining = sizeof(InMessage->Buffer.InMessage) - 1;
-    for( itr = _string_results.begin(); itr != _string_results.end(); itr++ )
-    {
-        if( (*itr)->size() >= length_remaining )
-        {
-            string cropped("\n---cropped---");
-
-            //  erase the end chunk so we can append the "cropped" string in
-            result_string.erase(sizeof(InMessage->Buffer.InMessage) - cropped.size() - 1, result_string.size());
-            result_string += cropped;
-
-            //  breaking out of the loop, we've plugged all we can in there
-            break;
-        }
-
-        result_string += *(*itr);
-        result_string += "\n";
-
-        length_remaining -= (*itr)->size() + 1;
-    }
-
-    while( !_string_results.empty() )
-    {
-        delete _string_results.back();
-
-        _string_results.pop_back();
-    }
-
     InMessage->InLength = result_string.size() + 1;
 
     //  make sure we don't overrun the buffer, even though we just checked above

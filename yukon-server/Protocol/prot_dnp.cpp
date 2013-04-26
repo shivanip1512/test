@@ -33,6 +33,12 @@ DNPInterface::DNPInterface() :
     setAddresses(DefaultSlaveAddress, DefaultMasterAddress);
 }
 
+DNPInterface::~DNPInterface()
+{
+    delete_container(_string_results);
+    delete_container(_point_results);
+}
+
 void DNPInterface::setAddresses( unsigned short slaveAddress, unsigned short masterAddress )
 {
     _masterAddress = masterAddress;
@@ -74,7 +80,7 @@ bool DNPInterface::setCommand( Command command, output_point &point )
     return setCommand(command);
 }
 
-void DNPInterface::setConfigData( unsigned internalRetries, bool useLocalTime, bool enableDnpTimesyncs, 
+void DNPInterface::setConfigData( unsigned internalRetries, bool useLocalTime, bool enableDnpTimesyncs,
                                   bool omitTimeRequest, bool enableUnsolicited )
 {
     _config.reset(
@@ -105,7 +111,7 @@ int DNPInterface::generate( CtiXfer &xfer )
                     const unsigned local_seconds = convertUtcSecondsToLocalSeconds(utc_seconds);
                     time_now->setSeconds(local_seconds);
                 }
-                else 
+                else
                 {
                     time_now->setSeconds(now.seconds());
                 }
@@ -655,7 +661,7 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
             // Point value for the message regarding device restart.
             bool deviceRestarted = false;
 
-            if( _app_layer.hasDeviceRestarted() ) 
+            if( _app_layer.hasDeviceRestarted() )
             {
                 deviceRestarted = true;
 
@@ -667,8 +673,8 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
 
                 if( _config->enableUnsolicited )
                 {
-                    Command_deq_itr itr = std::find(_additional_commands.begin(), 
-                                                    _additional_commands.end(), 
+                    Command_deq_itr itr = std::find(_additional_commands.begin(),
+                                                    _additional_commands.end(),
                                                     Command_UnsolicitedEnable);
 
                     if( itr == _additional_commands.end() )
@@ -678,7 +684,7 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                     }
                 }
             }
-            else 
+            else
             {
                 if ( !_additional_commands.empty() )
                 {
@@ -692,7 +698,7 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
             }
 
             // Add the point message for the restart bit.
-            CtiPointDataMsg* pt_msg = 
+            CtiPointDataMsg* pt_msg =
                 new CtiPointDataMsg(IINStatusPointOffset_RestartBit,
                                     deviceRestarted,
                                     NormalQuality,
@@ -702,7 +708,7 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
             SYSTEMTIME st;
             GetLocalTime(&st);
 
-            pt_msg->setTimeWithMillis( 
+            pt_msg->setTimeWithMillis(
                CtiTime( CtiDate(st.wDay, st.wMonth, st.wYear), st.wHour, st.wMinute, st.wSecond ),
                st.wMilliseconds );
 
@@ -1018,7 +1024,7 @@ int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
                 ObjectBlock         *dob1;
                 ObjectBlock         *dob2;
                 ObjectBlock         *dob3;
-                
+
                 DNP::AnalogInputChange *ainc;
                 DNP::BinaryInputChange *binc;
                 DNP::CounterEvent *counterevent;
@@ -1031,7 +1037,7 @@ int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
                 dob3 = CTIDBG_new ObjectBlock(ObjectBlock::ShortIndex_ShortQty);
 
                 for ( int i = 0; i < _input_point_list.size(); i++ )
-                {   
+                {
                     input_point &ip =  _input_point_list[i];
 
                     if( ip.type == AnalogInputType )
@@ -1088,7 +1094,7 @@ int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
                             dob3->addObjectIndex(counterin, ip.control_offset);
                         }
                     }
-                }   
+                }
                 addObjectBlock(dob1);
                 addObjectBlock(dob2);
                 addObjectBlock(dob3);

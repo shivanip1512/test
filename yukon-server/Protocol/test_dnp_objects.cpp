@@ -13,10 +13,12 @@ const Cti::Protocol::DNP::TimeCTO *NoTimeCTO = 0;
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_object_internalindications)
 {
+    using Cti::Protocol::DNP::InternalIndications;
+
     const void *Null = 0;
 
     {
-        Cti::Protocol::DNP::InternalIndications iin(Cti::Protocol::DNP::InternalIndications::II_InternalIndications);
+        InternalIndications iin(InternalIndications::II_InternalIndications);
 
         BOOST_CHECK_EQUAL(80,    iin.getGroup());
         BOOST_CHECK_EQUAL( 1,    iin.getVariation());
@@ -35,7 +37,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_internalindications)
     }
 
     {
-        Cti::Protocol::DNP::InternalIndications iin(Cti::Protocol::DNP::InternalIndications::II_InternalIndications);
+        InternalIndications iin(InternalIndications::II_InternalIndications);
 
         BOOST_CHECK_EQUAL(80,    iin.getGroup());
         BOOST_CHECK_EQUAL( 1,    iin.getVariation());
@@ -58,7 +60,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_internalindications)
     }
 
     {
-        Cti::Protocol::DNP::InternalIndications iin(-1);
+        InternalIndications iin(-1);
 
         BOOST_CHECK_EQUAL( 80,   iin.getGroup());
         BOOST_CHECK_EQUAL(255,   iin.getVariation());  //  getVariation returns an unsigned char
@@ -77,7 +79,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_internalindications)
     }
 
     {
-        Cti::Protocol::DNP::InternalIndications iin(2);
+        InternalIndications iin(2);
 
         BOOST_CHECK_EQUAL(80,    iin.getGroup());
         BOOST_CHECK_EQUAL( 2,    iin.getVariation());  //  getVariation returns an unsigned char
@@ -241,7 +243,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_binary_output)
         BOOST_REQUIRE(pData.get());
 
         BOOST_CHECK_EQUAL( pData->getValue(),   0 );
-        BOOST_CHECK_EQUAL( pData->getQuality(), NormalQuality );
+        BOOST_CHECK_EQUAL( pData->getQuality(), NonUpdatedQuality );
     }
 
     {
@@ -271,7 +273,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_binary_output)
         BOOST_REQUIRE(pData.get());
 
         BOOST_CHECK_EQUAL( pData->getValue(),   1 );
-        BOOST_CHECK_EQUAL( pData->getQuality(), NormalQuality );
+        BOOST_CHECK_EQUAL( pData->getQuality(), NonUpdatedQuality );
     }
 
     {
@@ -463,7 +465,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_output_status)
         BOOST_REQUIRE(pData.get());
 
         BOOST_CHECK_EQUAL( pData->getValue(),   770 );
-        BOOST_CHECK_EQUAL( pData->getQuality(), NormalQuality );
+        BOOST_CHECK_EQUAL( pData->getQuality(), NonUpdatedQuality );
     }
 
     {
@@ -488,7 +490,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_output_status)
         BOOST_REQUIRE(pData.get());
 
         BOOST_CHECK_EQUAL( pData->getValue(),   84148994 );
-        BOOST_CHECK_EQUAL( pData->getQuality(), NormalQuality );
+        BOOST_CHECK_EQUAL( pData->getQuality(), NonUpdatedQuality );
     }
 
     {
@@ -513,7 +515,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_output_status)
         BOOST_REQUIRE(pData.get());
 
         BOOST_CHECK_CLOSE( pData->getValue(),   3.7258e-265, 0.001 );
-        BOOST_CHECK_EQUAL( pData->getQuality(), NormalQuality );
+        BOOST_CHECK_EQUAL( pData->getQuality(), NonUpdatedQuality );
     }
 
     {
@@ -538,7 +540,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_output_status)
         BOOST_REQUIRE(pData.get());
 
         BOOST_CHECK_CLOSE( pData->getValue(),   6.2072e-36, 0.001 );
-        BOOST_CHECK_EQUAL( pData->getQuality(), NormalQuality );
+        BOOST_CHECK_EQUAL( pData->getQuality(), NonUpdatedQuality );
     }
 }
 
@@ -588,7 +590,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_counter)
         BOOST_REQUIRE(pData.get());
 
         BOOST_CHECK_EQUAL( pData->getValue(),   513 );
-        BOOST_CHECK_EQUAL( pData->getQuality(), NonUpdatedQuality );
+        BOOST_CHECK_EQUAL( pData->getQuality(), NormalQuality );
     }
 
     {
@@ -626,7 +628,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_counter)
         BOOST_REQUIRE(pData.get());
 
         BOOST_CHECK_EQUAL( pData->getValue(),   67305985 );
-        BOOST_CHECK_EQUAL( pData->getQuality(), NonUpdatedQuality );
+        BOOST_CHECK_EQUAL( pData->getQuality(), NormalQuality );
     }
 
     {
@@ -664,7 +666,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_counter)
         BOOST_REQUIRE(pData.get());
 
         BOOST_CHECK_EQUAL( pData->getValue(),   513 );
-        BOOST_CHECK_EQUAL( pData->getQuality(), NonUpdatedQuality );
+        BOOST_CHECK_EQUAL( pData->getQuality(), NormalQuality );
     }
 
     {
@@ -702,7 +704,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_counter)
         BOOST_REQUIRE(pData.get());
 
         BOOST_CHECK_EQUAL( pData->getValue(),   67305985 );
-        BOOST_CHECK_EQUAL( pData->getQuality(), NonUpdatedQuality );
+        BOOST_CHECK_EQUAL( pData->getQuality(), NormalQuality );
     }
 }
 

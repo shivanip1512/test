@@ -70,6 +70,7 @@ int BinaryOutput::restoreBits(const unsigned char *buf, int bitoffset, int len)
     {
         case BO_SingleBit:
         {
+            _bo.flags.online = true;
             _bo.flags.state = (buf[bitpos/8] >> (bitpos++)) & 0x01;
 
             break;
@@ -151,10 +152,8 @@ int BinaryOutput::getSerializedLen(void) const
 
 CtiPointDataMsg *BinaryOutput::getPoint( const TimeCTO *cto ) const
 {
-    CtiPointDataMsg *tmpMsg;
-
     double val = 0.0;
-    int quality;
+    int quality = NormalQuality;
 
     switch(getVariation())
     {
@@ -176,28 +175,10 @@ CtiPointDataMsg *BinaryOutput::getPoint( const TimeCTO *cto ) const
         }
     }
 
-/*    UnintializedQuality = 0,
-    InitDefaultQuality,
-    InitLastKnownQuality,
-    NonUpdatedQuality,
-    ManualQuality,
-    NormalQuality,
-    ExceedsLowQuality,
-    ExceedsHighQuality,
-    AbnormalQuality,
-    UnknownQuality,
-    InvalidQuality,
-    PartialIntervalQuality,
-    DeviceFillerQuality,
-    QuestionableQuality,
-    OverflowQuality,
-    PowerfailQuality,
-    UnreasonableQuality
-
-    if( _flags.aiflags.remoteforced )
+    if( ! _bo.flags.online && gDNPOfflineNonUpdated )
     {
-
-    }*/
+        quality = NonUpdatedQuality;
+    }
 
     if( gDNPVerbose )
     {
@@ -208,9 +189,7 @@ CtiPointDataMsg *BinaryOutput::getPoint( const TimeCTO *cto ) const
 
     //  the ID will be replaced by the offset by the object block, which will then be used by the
     //    device to figure out the true ID
-    tmpMsg = CTIDBG_new CtiPointDataMsg(0, val, NormalQuality, StatusPointType);
-
-    return tmpMsg;
+    return new CtiPointDataMsg(0, val, quality, StatusPointType);
 }
 
 

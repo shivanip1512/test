@@ -21,6 +21,7 @@ AnalogInput::AnalogInput(int group, int variation) : Object(group, variation)
     _doubleValue = 0.0;
     _longValue = 0;
     _flags.raw = 0;
+    _flags.online = true;
 }
 
 
@@ -29,6 +30,7 @@ AnalogInput::AnalogInput(int variation) : Object(Group, variation)
     _doubleValue = 0.0;
     _longValue = 0;
     _flags.raw = 0;
+    _flags.online = true;
 }
 
 
@@ -244,12 +246,6 @@ CtiPointDataMsg *AnalogInput::getPoint( const TimeCTO *cto ) const
     {
         case AI_32Bit:
         case AI_16Bit:
-        {
-            if (!_flags.online && gDNPOfflineNonUpdated)
-            {
-                quality = NonUpdatedQuality;
-            }
-        }
         case AI_32BitNoFlag:
         case AI_16BitNoFlag:
         {
@@ -260,11 +256,6 @@ CtiPointDataMsg *AnalogInput::getPoint( const TimeCTO *cto ) const
         case AI_SingleFloat:
         case AI_DoubleFloat:
         {
-            if (!_flags.online && gDNPOfflineNonUpdated)
-            {
-                quality = NonUpdatedQuality;
-            }
-
             val = _doubleValue;
             break;
         }
@@ -278,6 +269,11 @@ CtiPointDataMsg *AnalogInput::getPoint( const TimeCTO *cto ) const
 
             break;
         }
+    }
+
+    if (!_flags.online && gDNPOfflineNonUpdated)
+    {
+        quality = NonUpdatedQuality;
     }
 
     if( gDNPVerbose )

@@ -10,7 +10,22 @@ namespace DNP       {
 class IM_EX_PROT Counter : public Object
 {
     unsigned long _counter;
-    unsigned char _flag;  //  this will be a bitfield struct someday
+    union
+    {
+        struct
+        {
+            unsigned char online        : 1;
+            unsigned char restart       : 1;
+            unsigned char commlost      : 1;
+            unsigned char remoteforced  : 1;
+            unsigned char localforced   : 1;
+            unsigned char rollover      : 1;
+            unsigned char discontinuity : 1;
+            unsigned char reserved      : 1;
+        };
+
+        unsigned char raw;
+    } _flags;
 
 protected:
     Counter(int group, int variation);
@@ -40,13 +55,13 @@ public:
     void setValue(long value);
     void setOnlineFlag(bool online);
     unsigned long getValue() const;
-    unsigned char getFlag() const;   
+    unsigned char getFlags() const;
 
     virtual int restore(const unsigned char *buf, int len);
     virtual int serialize(unsigned char *buf) const;
     virtual int getSerializedLen(void) const;
-    
- 
+
+
     virtual CtiPointDataMsg *getPoint( const TimeCTO *cto ) const;
 };
 

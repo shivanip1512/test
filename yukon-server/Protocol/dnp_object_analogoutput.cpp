@@ -1,6 +1,5 @@
 #include "precompiled.h"
 
-
 #include "dnp_object_analogoutput.h"
 #include "logger.h"
 
@@ -20,6 +19,7 @@ AnalogOutputStatus::AnalogOutputStatus(int group, int variation) : Object(group,
     _longValue = 0;
     _doubleValue = 0.0;
     _flags.raw = 0;
+    _flags.online = true;
 }
 
 
@@ -28,6 +28,7 @@ AnalogOutputStatus::AnalogOutputStatus(int variation) : Object(Group, variation)
     _longValue = 0;
     _doubleValue = 0.0;
     _flags.raw = 0;
+    _flags.online = true;
 }
 
 
@@ -217,7 +218,7 @@ int AnalogOutputStatus::getSerializedLen(void) const
 CtiPointDataMsg *AnalogOutputStatus::getPoint( const TimeCTO *cto ) const
 {
     double val = 0.0;
-    int quality;
+    int quality = NormalQuality;
 
     switch(getVariation())
     {
@@ -246,6 +247,11 @@ CtiPointDataMsg *AnalogOutputStatus::getPoint( const TimeCTO *cto ) const
         }
     }
 
+    if( ! _flags.online && gDNPOfflineNonUpdated )
+    {
+        quality = NonUpdatedQuality;
+    }
+
     if( gDNPVerbose )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -255,7 +261,7 @@ CtiPointDataMsg *AnalogOutputStatus::getPoint( const TimeCTO *cto ) const
 
     //  the ID will be replaced by the offset by the object block, which will then be used by the
     //    device to figure out the true ID
-    return new CtiPointDataMsg(0, val, NormalQuality, AnalogPointType);
+    return new CtiPointDataMsg(0, val, quality, AnalogPointType);
 }
 
 

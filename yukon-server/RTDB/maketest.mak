@@ -91,7 +91,6 @@ test_mgr_point.obj \
 test_pt_base.obj \
 test_rte_ccu.obj \
 test_slctdev.obj \
-test_rtdb_sql.obj \
 test_encryption_cbcrbt.obj \
 test_encryption_cmac.obj \
 test_encryption_oneway.obj \
@@ -3737,12 +3736,6 @@ test_pt_base.obj:	pt_base.h dbmemobject.h tbl_pt_base.h row_reader.h \
 		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
 		optional.h dbaccess.h resolvers.h pointtypes.h \
 		db_entry_defines.h desolvers.h pointdefs.h
-test_rtdb_sql.obj:	database_reader.h database_connection.h dbaccess.h \
-		dllbase.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \
-		dlldefs.h netports.h mutex.h guard.h utility.h ctitime.h \
-		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
-		optional.h row_reader.h ctidate.h logger.h thread.h \
-		CtiPCPtrQueue.h tbl_pt_property.h dbmemobject.h
 test_rte_ccu.obj:	rte_ccu.h rte_xcu.h dev_base.h dsm2.h cticonnect.h \
 		yukon.h types.h ctidbgmem.h dlldefs.h netports.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
