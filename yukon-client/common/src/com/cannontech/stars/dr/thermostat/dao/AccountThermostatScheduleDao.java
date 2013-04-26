@@ -117,6 +117,7 @@ public interface AccountThermostatScheduleDao {
 	
     /**
      * Save given AccountThermostatSchedule.<br><br>
+     * Will either update or insert the AccountThermostatSchedule and its entries.<br>
      * If the attempt is made to update a schedule that has an event associated with the schedule
      * the current schedule will be archived (AcctThermostatSchedule.Archived = "true") and a
      * new identical schedule will be created.
