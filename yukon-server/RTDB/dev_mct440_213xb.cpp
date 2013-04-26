@@ -1962,24 +1962,6 @@ INT Mct440_213xBDevice::decodeGetValueDailyReadRecent(INMESS          *InMessage
                               CtiTime(_daily_read_info.request.begin + 1));  //  add on 24 hours - end of day
 
         insertPointDataReport(PulseAccumulatorPointType,
-                              PointOffset_PulseAcc_RecentkWhForward,
-                              ReturnMsg.get(),
-                              pi_forward,
-                              "forward active kWh",
-                              CtiTime(_daily_read_info.request.begin + 1), //  add on 24 hours - end of day
-                              TAG_POINT_MUST_ARCHIVE);
-
-        insertPointDataReport(PulseAccumulatorPointType,
-                              PointOffset_PulseAcc_RecentkWhReverse,
-                              ReturnMsg.get(),
-                              pi_reverse,
-                              "reverse active kWh",
-                              CtiTime(_daily_read_info.request.begin + 1), //  add on 24 hours - end of day
-                              TAG_POINT_MUST_ARCHIVE);
-
-        // echo forward active kWh and reverse active kWh to pulse acc 1 and 2
-
-        insertPointDataReport(PulseAccumulatorPointType,
                               PointOffset_PulseAcc_BaseMRead,
                               ReturnMsg.get(),
                               pi_forward,
@@ -1994,6 +1976,30 @@ INT Mct440_213xBDevice::decodeGetValueDailyReadRecent(INMESS          *InMessage
                               "reverse active kWh",
                               CtiTime(_daily_read_info.request.begin + 1), //  add on 24 hours - end of day
                               TAG_POINT_MUST_ARCHIVE);
+
+        // echo forward active kWh and reverse active kWh to pulse acc 181 and 281 if they exist
+
+        if( getDevicePointOffsetTypeEqual(PointOffset_PulseAcc_RecentkWhForward, PulseAccumulatorPointType ))
+        {
+            insertPointDataReport(PulseAccumulatorPointType,
+                                  PointOffset_PulseAcc_RecentkWhForward,
+                                  ReturnMsg.get(),
+                                  pi_forward,
+                                  "recent forward active kWh",
+                                  CtiTime(_daily_read_info.request.begin + 1), //  add on 24 hours - end of day
+                                  TAG_POINT_MUST_ARCHIVE);
+        }
+
+        if( getDevicePointOffsetTypeEqual(PointOffset_PulseAcc_RecentkWhReverse, PulseAccumulatorPointType ))
+        {
+            insertPointDataReport(PulseAccumulatorPointType,
+                                  PointOffset_PulseAcc_RecentkWhReverse,
+                                  ReturnMsg.get(),
+                                  pi_reverse,
+                                  "recent reverse active kWh",
+                                  CtiTime(_daily_read_info.request.begin + 1), //  add on 24 hours - end of day
+                                  TAG_POINT_MUST_ARCHIVE);
+        }
 
         InterlockedExchange(&_daily_read_info.request.in_progress, false);
     }

@@ -1429,7 +1429,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
 
-                    CtiPointSPtr point = mct440.getDevicePointOffsetTypeEqual(181, PulseAccumulatorPointType);
+                    CtiPointSPtr point = mct440.getDevicePointOffsetTypeEqual(1, PulseAccumulatorPointType);
 
                     BOOST_CHECK_EQUAL( pdata->getId(), point->getID() );
                 }
@@ -1445,10 +1445,12 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
 
-                    CtiPointSPtr point = mct440.getDevicePointOffsetTypeEqual(281, PulseAccumulatorPointType);
+                    CtiPointSPtr point = mct440.getDevicePointOffsetTypeEqual(2, PulseAccumulatorPointType);
 
                     BOOST_CHECK_EQUAL( pdata->getId(), point->getID() );
                 }
+
+                // verify points are echoed to 181 and 281
 
                 {
                     const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[3]);  // forward active energy echoed
@@ -1461,7 +1463,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
 
-                    CtiPointSPtr point = mct440.getDevicePointOffsetTypeEqual(1, PulseAccumulatorPointType);
+                    CtiPointSPtr point = mct440.getDevicePointOffsetTypeEqual(181, PulseAccumulatorPointType);
 
                     BOOST_CHECK_EQUAL( pdata->getId(), point->getID() );
                 }
@@ -1477,7 +1479,7 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime().seconds(), t_exp.seconds());
 
-                    CtiPointSPtr point = mct440.getDevicePointOffsetTypeEqual(2, PulseAccumulatorPointType);
+                    CtiPointSPtr point = mct440.getDevicePointOffsetTypeEqual(281, PulseAccumulatorPointType);
 
                     BOOST_CHECK_EQUAL( pdata->getId(), point->getID() );
                 }
