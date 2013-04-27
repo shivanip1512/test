@@ -570,7 +570,8 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
             var missingCount = 0;
             var procs = [jQuery(DeviceDataMonitor._processor_selector)];
             procs.each(function(row){
-                if( DeviceDataMonitor._get_state_group_value(row).length < 1 )
+                var ctrl = DeviceDataMonitor._get_state_group_value(row);   // for IE8
+                if( ctrl == null || ctrl.length < 1 )
                     missingCount++;
             });
 

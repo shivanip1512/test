@@ -83,7 +83,7 @@ public class AttributeServiceImpl implements AttributeService {
     @Autowired private PointService pointService;
     @Autowired private PointCreationService pointCreationService;
     @Autowired private DeviceGroupService deviceGroupService;
-	@Autowired private StateDao stateDao;
+    @Autowired private StateDao stateDao;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
@@ -321,17 +321,17 @@ public class AttributeServiceImpl implements AttributeService {
         }
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT pao_als.paObjectid, p_als.pointId");
-        sql.append("FROM YukonPAObject pao_als");
-        sql.append(  "JOIN Point p_als ON pao_als.paObjectId = p_als.paObjectId");
+        sql.append("SELECT PAO_ALS.paObjectid, P_ALS.pointId");
+        sql.append("FROM YukonPAObject PAO_ALS");
+        sql.append(  "JOIN Point P_ALS ON PAO_ALS.paObjectId = P_ALS.paObjectId");
         
         SqlFragmentCollection orCollection = SqlFragmentCollection.newOrCollection();
         for (Entry<PointIdentifier, Collection<PaoType>> entry : typesByPointIdentifier.asMap().entrySet()) {
             SqlStatementBuilder clause1 = new SqlStatementBuilder();
             clause1.append("(");
-            clause1.append("pao_als.Type").in(entry.getValue());
-            clause1.append(  "AND p_als.pointType").eq_k(entry.getKey().getPointType());
-            clause1.append(  "AND p_als.pointOffset").eq_k(entry.getKey().getOffset());
+            clause1.append("PAO_ALS.Type").in(entry.getValue());
+            clause1.append(  "AND P_ALS.pointType").eq_k(entry.getKey().getPointType());
+            clause1.append(  "AND P_ALS.pointOffset").eq_k(entry.getKey().getOffset());
             clause1.append(")");
             orCollection.add(clause1);
         }
@@ -344,7 +344,7 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     /**
-     * Add a version which limits the results.  Used RawPointHistoryDaoImpl.java as multi-DB-engine example,
+     * Add a version which limits the results.  Used {@link RawPointHistoryDaoImpl} as multi-DB-engine example,
      * however had to add TOP to sqlb for it to be valid within MSSQL2008.
      * 
      * @category    YUK-11992
@@ -357,40 +357,39 @@ public class AttributeServiceImpl implements AttributeService {
 
         SetMultimap<PointIdentifier, PaoType> typesByPointIdentifier = HashMultimap.create();
         for (Entry<PaoType, Map<Attribute, AttributeDefinition>> entry : definitionMap.entrySet()) {
-            AttributeDefinition attributeDefinition = entry.getValue().get(attribute);
+            final AttributeDefinition attributeDefinition = entry.getValue().get(attribute);
 
             if (attributeDefinition == null)
                 continue;
 
-            PointIdentifier pointIdentifier =
-                attributeDefinition.getPointTemplate().getPointIdentifier();
+            final PointIdentifier pointIdentifier = attributeDefinition.getPointTemplate().getPointIdentifier();
             typesByPointIdentifier.put(pointIdentifier, entry.getKey());
         }
 
-        final String orderByClause = "ORDER BY pao_als.paObjectid ASC, p_als.pointId ASC";
+        final String orderByClause = "ORDER BY PAO_ALS.paObjectid ASC, P_ALS.pointId ASC";
 
         final VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
         final SqlBuilder sqla = builder.buildFor(DatabaseVendor.MS2000);
-        sqla.append("SELECT TOP " + limitToRowCount + " pao_als.paObjectid, p_als.pointId");
-        sqla.append("FROM YukonPAObject pao_als");
-        sqla.append("JOIN Point p_als ON pao_als.paObjectId = p_als.paObjectId");
+        sqla.append("SELECT TOP " + limitToRowCount + " PAO_ALS.paObjectid, P_ALS.pointId");
+        sqla.append("FROM YukonPAObject PAO_ALS");
+        sqla.append("JOIN Point P_ALS ON PAO_ALS.paObjectId = P_ALS.paObjectId");
         sqla.append(orderByClause);
 
         final SqlBuilder sqlb = builder.buildOther();
         sqlb.append("select TOP " + limitToRowCount + " * from (");
-        sqlb.append("SELECT pao_als.paObjectid, p_als.pointId, ROW_NUMBER() over (");
+        sqlb.append("SELECT PAO_ALS.paObjectid, P_ALS.pointId, ROW_NUMBER() over (");
         sqlb.append(orderByClause);
         sqlb.append(") rn");
-        sqlb.append("FROM YukonPAObject pao_als");
-        sqlb.append("JOIN Point p_als ON pao_als.paObjectId = p_als.paObjectId");
+        sqlb.append("FROM YukonPAObject PAO_ALS");
+        sqlb.append("JOIN Point P_ALS ON PAO_ALS.paObjectId = P_ALS.paObjectId");
 
         final SqlFragmentCollection orCollection = SqlFragmentCollection.newOrCollection();
         for (Entry<PointIdentifier, Collection<PaoType>> entry : typesByPointIdentifier.asMap().entrySet()) {
             SqlStatementBuilder clause1 = new SqlStatementBuilder();
             clause1.append("(");
-            clause1.append("pao_als.Type").in(entry.getValue());
-            clause1.append("AND p_als.pointType").eq_k(entry.getKey().getPointType());
-            clause1.append("AND p_als.pointOffset").eq_k(entry.getKey().getOffset());
+            clause1.append("PAO_ALS.Type").in(entry.getValue());
+            clause1.append("AND P_ALS.pointType").eq_k(entry.getKey().getPointType());
+            clause1.append("AND P_ALS.pointOffset").eq_k(entry.getKey().getOffset());
             clause1.append(")");
             orCollection.add(clause1);
         }
@@ -400,7 +399,7 @@ public class AttributeServiceImpl implements AttributeService {
             sqlb.append("WHERE").appendFragment(orCollection);
         }
         sqlb.append(") numberedRows");
-        sqlb.append("where numberedRows.rn").lte(limitToRowCount);
+        sqlb.append("WHERE    numberedRows.rn").lte(limitToRowCount);
         sqlb.append("ORDER BY numberedRows.rn");
 
         return builder;
