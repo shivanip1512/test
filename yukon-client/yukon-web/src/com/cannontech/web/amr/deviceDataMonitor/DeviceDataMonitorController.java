@@ -310,7 +310,7 @@ public class DeviceDataMonitorController {
         allAttributes.addAll(allReadableAttributes);
         allAttributes.addAll(rfnEventStatusAttributes);
         Map<AttributeGroup, List<BuiltInAttribute>> allGroupedReadableAttributes = 
-        		attributeService.getGroupedAttributeMapFromCollection(allAttributes, userContext);
+                attributeService.getGroupedAttributeMapFromCollection(allAttributes, userContext);
         model.addAttribute("allGroupedReadableAttributes", allGroupedReadableAttributes);
     }
 
@@ -407,16 +407,16 @@ public class DeviceDataMonitorController {
      */
     private JSONObject getSupportedCountsForMonitor(DeviceDataMonitor monitor, YukonUserContext userContext) {
         final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        
+
         messageSourceAccessor.getMessage("yukon.web.defaults.na");
 
-        final DeviceGroup monitoringGroup = deviceGroupService.findGroupName(monitor.getGroupName());
-        long totalSupportedCount = 0;
-        long totalDeviceCount = 0;
+        final DeviceGroup monitoringGroup   = deviceGroupService.findGroupName(monitor.getGroupName());
+        long totalSupportedCount            = 0;
+        long totalDeviceCount               = 0;
 
-        final JSONObject returnObj = new JSONObject();
-        final JSONArray missingList = new JSONArray();
-        boolean allAttributesAreNull = false;
+        final JSONObject returnObj          = new JSONObject();
+        final JSONArray missingList         = new JSONArray();
+        boolean allAttributesAreNull        = false;
 
         if (monitoringGroup == null) {
             LogHelper.warn(log,
@@ -452,21 +452,17 @@ public class DeviceDataMonitorController {
             totalSupportedCount = fullySupportedDevices.size();
         }
 
-        returnObj.put("totalSupportedCount", totalSupportedCount);// allSupportedPaoIds.size());
+        returnObj.put("totalSupportedCount", totalSupportedCount);
         final String keySuffix = (allAttributesAreNull) ? "noAttributes"
                 : (totalDeviceCount == 0 ? "noDevices"
                         : (monitor.getAttributeStateGroups().size() == 0) ? "noProcessors"
-                                : totalSupportedCount == 0 ? "none"
-                                        : totalSupportedCount == 1 ? "one"
-                                                : "plural");
+                                : "message");
         final String keyPrefix = "yukon.web.modules.amr.deviceDataMonitor.fullySupported.";
-        returnObj.put("totalSupportedCountMessage", messageSourceAccessor
-                .getMessage(keyPrefix + keySuffix, totalSupportedCount));
-        returnObj.put("totalSupportedCountHelpTitle",
-                messageSourceAccessor.getMessage(keyPrefix + "help.title"));
-        returnObj.put("totalSupportedCountHelp",
-                messageSourceAccessor.getMessage(keyPrefix + "help.msg."
-                        + keySuffix, totalDeviceCount, totalSupportedCount));
+        final long messageSignal = totalDeviceCount == totalSupportedCount ? -1 : totalSupportedCount;
+        returnObj.put("totalSupportedCountMessage",     messageSourceAccessor.getMessage(keyPrefix + keySuffix, messageSignal));
+        returnObj.put("totalSupportedCountHelpTitle",   messageSourceAccessor.getMessage(keyPrefix + "help.title"));
+        returnObj.put("totalSupportedCountHelp",        messageSourceAccessor.getMessage(keyPrefix + "help.msg."
+                        + keySuffix, totalDeviceCount, messageSignal));
         returnObj.put("missingPointList", missingList);
         returnObj.put("totalMissingCount", totalDeviceCount - totalSupportedCount);
         return returnObj;
@@ -528,7 +524,7 @@ public class DeviceDataMonitorController {
 
         // Check vs the Attribute
         final List<SimpleDevice> attrSupportedDevices = 
-        		attributeService.getDevicesInGroupThatSupportAttribute(monitoringGroup,
+                    attributeService.getDevicesInGroupThatSupportAttribute(monitoringGroup,
                         attributeStateGroup.getAttribute());
         final long deviceCountSupportingAttribute = attrSupportedDevices.size();
         final String attributeName = messageSourceAccessor
@@ -557,10 +553,10 @@ public class DeviceDataMonitorController {
             final String baseKey = "yukon.web.modules.amr.deviceDataMonitor.missing"+ POINT;
             final JSONArray ptRow = new JSONArray();
 
-            String 			nameString 	= attributeName;
-            final JSONArray jsonDatas 	= new JSONArray();
-            String 			labelKey 	= baseKey;
-            JSONObject 		jsonData 	= new JSONObject();
+            String          nameString  = attributeName;
+            final JSONArray jsonDatas   = new JSONArray();
+            String          labelKey    = baseKey;
+            JSONObject      jsonData    = new JSONObject();
             jsonData.put("attributeKey", attribute.getKey());
             jsonData.put("attributeName", attributeName);
             jsonDatas.add(jsonData);
@@ -573,13 +569,10 @@ public class DeviceDataMonitorController {
             ptRow.add("" + useLimitedQuery);
             ptRow.add("" + missingPoints);
             ptRow.add(messageSourceAccessor.getMessage(labelKey));
-            ptRow.add(messageSourceAccessor.getMessage(baseKey + ".list.title",
-                    nameString));
+            ptRow.add(messageSourceAccessor.getMessage(baseKey + ".list.title",nameString));
             ptRow.add(messageSourceAccessor.getMessage(baseKey + ".help.title"));
-            ptRow.add(messageSourceAccessor.getMessage(baseKey + ".help",
-                    totalDeviceCount, missingPoints, nameString));
-            ptRow.add(messageSourceAccessor
-                    .getMessage("yukon.web.modules.amr.deviceDataMonitor.addPoints.label"));
+            ptRow.add(messageSourceAccessor.getMessage(baseKey + ".help.msg",totalDeviceCount, missingPoints, nameString));
+            ptRow.add(messageSourceAccessor.getMessage("yukon.web.modules.amr.deviceDataMonitor.addPoints.label"));
             processorMissingList.add(ptRow);
         }
 
@@ -616,8 +609,8 @@ public class DeviceDataMonitorController {
      * @throws NoSuchMessageException
      */
     private void JSONaddProcessorIfViolationsExist(final long highCount,
-            final long lowCount, 			 final DeviceViolationEnum fieldType,
-            final String fieldId, 			 final String fieldDisplayName,
+            final long lowCount,             final DeviceViolationEnum fieldType,
+            final String fieldId,            final String fieldDisplayName,
             JSONArray processorMissingList,  final int rowId,
             final MessageSourceAccessor msg, final long deviceCount,
             final boolean useLimitedQuery) throws NoSuchMessageException {
@@ -637,8 +630,7 @@ public class DeviceDataMonitorController {
                     msg.getMessage(baseKey),
                     msg.getMessage(baseKey + ".list.title", fieldDisplayName),
                     msg.getMessage(baseKey + ".help.title"),
-                    msg.getMessage(baseKey + ".help"
-                            + ((lowCount == 0) ? ".all_missing" : ""),
+                    msg.getMessage(baseKey + ".help.msg",
                             deviceCount, missingCount, fieldDisplayName) }));
             processorMissingList.add(attr);
         }
@@ -656,13 +648,13 @@ public class DeviceDataMonitorController {
     public String getDeviceListInViolation(ModelMap model,
             YukonUserContext context, DeviceViolationEnum violationType,
             String groupName, BuiltInAttribute attribute, Integer stateGroup) {
-        final DeviceGroup monitoringGroup 	= deviceGroupService.findGroupName(groupName);
-        final Set<SimpleDevice> allDevices	= deviceGroupService
+        final DeviceGroup monitoringGroup   = deviceGroupService.findGroupName(groupName);
+        final Set<SimpleDevice> allDevices  = deviceGroupService
                 .getDevices(Collections.singleton(monitoringGroup));
 
-        final List<YukonPao> results 		= getViolationsForProblem(monitoringGroup,
+        final List<YukonPao> results        = getViolationsForProblem(monitoringGroup,
                 allDevices, attribute, stateGroup, violationType);
-        final DeviceCollection collection 	= memoryCollectionProducer
+        final DeviceCollection collection   = memoryCollectionProducer
                 .createDeviceCollection(results);
 
         popupHelper.buildPopupModel(collection, model, context);

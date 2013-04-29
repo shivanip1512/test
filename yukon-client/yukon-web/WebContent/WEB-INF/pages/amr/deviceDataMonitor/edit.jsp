@@ -98,7 +98,7 @@
 			                        <input type="hidden" data-name="processors[0].deletion" value="false" class="isDeletionField"/>
 			                        <td>
 					                    <select class="f_attribute" data-name="processors[0].attribute">
-                                            <option value="-1">- Select One -</option>
+                                            <option value="-1"><i:inline key="yukon.web.defaults.selector.selectOne" /></option>
 					                        <c:forEach items="${allGroupedReadableAttributes}" var="group">
 					                            <optgroup label="<cti:msg2 key="${group.key}"/>">
 					                                <c:forEach items="${group.value}" var="item">
