@@ -171,6 +171,30 @@ INSERT INTO DeviceTypeCommand VALUES (-1015, -191, 'MCT-440-2132B', 12, 'Y', -1)
 INSERT INTO DeviceTypeCommand VALUES (-1016, -191, 'MCT-440-2133B', 12, 'Y', -1);
 /* End YUK-11468 */
 
+/* Start YUK-12096 */
+INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type, CreatedDate)
+SELECT DG1.DeviceGroupId, 'Auto', DG2.ParentDeviceGroupId, 'HIDDEN', 'STATIC', GETDATE()
+FROM (SELECT MAX(DG.DeviceGroupId)+1 DeviceGroupId
+      FROM DeviceGroup DG
+      WHERE DG.DeviceGroupId < 100) DG1,
+     (SELECT MAX(DG.DeviceGroupId) ParentDeviceGroupId
+      FROM DeviceGroup DG
+      WHERE DG.GroupName = 'System'
+      AND DG.ParentDeviceGroupId = 0) DG2;
+
+UPDATE DeviceGroup
+SET ParentDeviceGroupId = (SELECT DeviceGroupId 
+                           FROM   DEVICEGROUP 
+                           WHERE  GroupName = 'AUTO' 
+                             AND  PERMISSION = 'HIDDEN')
+FROM DeviceGroup DG
+JOIN JobProperty JP ON JP.Value = DG.GroupName
+JOIN Job J ON (J.JobId = JP.JobId
+           AND JP.Name = 'uniqueIdentifier'
+           AND J.BeanName = 'scheduledArchivedDataFileExportJobDefinition'
+           AND DG.ParentDeviceGroupId = 0);
+/* End YUK-12096 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
