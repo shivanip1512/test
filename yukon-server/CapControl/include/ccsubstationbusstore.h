@@ -289,7 +289,7 @@ public:
                                                         PaoIdToSpecialAreaMap *paobject_specialarea_map );
     void reloadAndAssignHolidayStrategysFromDatabase(long strategyId);
     void reloadStrategyParametersFromDatabase(long strategyId);
-    bool loadCapBankMonitorPoint(CtiCCMonitorPointPtr currentMonPoint, std::set< std::pair<long, int> >  &requiredPointResponses, 
+    bool loadCapBankMonitorPoint(CtiCCMonitorPointPtr currentMonPoint, std::set< std::pair<long, int> >  &requiredPointResponses,
                                                         PaoIdToCapBankMap *paobject_capbank_map,
                                                         PaoIdToFeederMap *paobject_feeder_map,
                                                         PaoIdToSubBusMap *paobject_subbus_map,
@@ -518,6 +518,7 @@ protected:
     void addSubBusToPaoMap(CtiCCSubstationBusPtr bus);
     void addSubBusToAltBusMap(CtiCCSubstationBusPtr bus);
     void addFeederToPaoMap(CtiCCFeederPtr feeder);
+    void addCapBankToCBCMap(CtiCCCapBankPtr capbank);
 
 public:
     CtiCCSubstationBus_vec getSubBusesByAreaId(int areaId);
@@ -537,9 +538,6 @@ public:
 
     bool isAnyBankOpen(int paoId, Cti::CapControl::CapControlType type);
     bool isAnyBankClosed(int paoId, Cti::CapControl::CapControlType type);
-
-    //Setter for unit tests.
-    void setAttributeService(AttributeService attributeService);
 
     void executeAllStrategies() const;
 
@@ -607,7 +605,7 @@ private:
     int  _voltDisabledCount;
 
     CapControlPointDataHandler _pointDataHandler;
-    AttributeService _attributeService;
+    std::auto_ptr<AttributeService> _attributeService;
 
     //The singleton instance of CtiCCSubstationBusStore
     static CtiCCSubstationBusStore* _instance;
@@ -651,6 +649,8 @@ private:
 protected:
     boost::shared_ptr<Cti::CapControl::VoltageRegulatorManager> _voltageRegulatorManager;
 
+    void setAttributeService( std::auto_ptr<AttributeService> service );
+
 private:
     ChildToParentMultiMap _substation_specialarea_map;
 
@@ -685,8 +685,5 @@ public:
     boost::shared_ptr<Cti::CapControl::VoltageRegulatorManager> getVoltageRegulatorManager();
     bool reloadVoltageRegulatorFromDatabase(const long regulatorId);
 
-    AttributeService & getAttributeService()
-    {
-        return _attributeService;
-    }
+    static AttributeService &getAttributeService();
 };

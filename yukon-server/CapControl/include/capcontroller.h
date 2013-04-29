@@ -76,8 +76,11 @@ class CtiCapController : public MessageListener
         void adjustAlternateBusModeValues(long pointID, double value, CtiCCSubstationBusPtr currentBus);
         void handleAlternateBusModeValues(long pointID, double value, CtiCCSubstationBusPtr currentSubstationBus);
 
-    private:
+    protected:
 
+        void porterReturnMsg(long deviceId, const string& commandString, int status, const string& resultString);
+
+    private:
 
         //Thread Functions
         void controlLoop();
@@ -100,7 +103,6 @@ class CtiCapController : public MessageListener
         void pointDataMsgByArea(long pointID, double value, unsigned quality, CtiTime& timestamp);
         void pointDataMsgBySpecialArea(long pointID, double value, unsigned quality, CtiTime& timestamp);
         void pointDataMsgBySubstation( long pointID, double value, unsigned quality, CtiTime& timestamp);
-        void porterReturnMsg(long deviceId, const string& commandString, int status, const string& resultString);
         void signalMsg(long pointID, unsigned tags, const string& text, const string& additional);
         void checkDisablePaoPoint(CapControlPao* pao, long pointID, bool disable, long enableCommand, long disableCommand);
 

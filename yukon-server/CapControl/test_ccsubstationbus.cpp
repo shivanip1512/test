@@ -11,6 +11,7 @@
 #include "MsgVerifyBanks.h"
 
 using namespace std;
+using namespace Cti::Test::CapControl;
 
 extern unsigned long _MAX_KVAR;
 extern unsigned long _SEND_TRIES;
@@ -89,80 +90,6 @@ private:
     }
 };
 
-
-void initialize_area(Test_CtiCCSubstationBusStore* store, CtiCCArea* area)
-{
-    store->insertAreaToPaoMap(area);
-    area->setDisableFlag(false);
-}
-void initialize_station(Test_CtiCCSubstationBusStore* store, CtiCCSubstation* station, CtiCCArea* parentArea)
-{
-    station->setSaEnabledFlag(false);
-    station->setParentId(parentArea->getPaoId());
-    parentArea->getSubstationIds().push_back(station->getPaoId());
-    store->insertSubstationToPaoMap(station);
-    station->setDisableFlag(false);
-
-
-}
-void initialize_bus(Test_CtiCCSubstationBusStore* store, CtiCCSubstationBus* bus, CtiCCSubstation* parentStation)
-{
-
-
-    bus->setParentId(parentStation->getPaoId());
-    bus->setEventSequence(22);
-    bus->setCurrentVarLoadPointId(1);
-    bus->setCurrentVarLoadPointValue(55, CtiTime());
-    bus->setVerificationFlag(false);
-    parentStation->getCCSubIds().push_back(bus->getPaoId());
-    store->insertSubBusToPaoMap(bus);
-    bus->setDisableFlag(false);
-    bus->setVerificationFlag(false);
-    bus->setPerformingVerificationFlag(false);
-    bus->setVerificationDoneFlag(false);
-}
-void initialize_feeder(Test_CtiCCSubstationBusStore* store, CtiCCFeeder* feed, CtiCCSubstationBus* parentBus, long displayOrder)
-{
-
-    long feederId = feed->getPaoId();
-    long busId = parentBus->getPaoId();
-    feed->setParentId(busId);
-    feed->setDisplayOrder(displayOrder);
-    parentBus->getCCFeeders().push_back(feed);
-    store->insertItemsIntoMap(CtiCCSubstationBusStore::FeederIdSubBusIdMap, &feederId, &busId);
-    store->insertFeederToPaoMap(feed);
-    feed->setDisableFlag(false);
-    feed->setVerificationFlag(false);
-    feed->setPerformingVerificationFlag(false);
-    feed->setVerificationDoneFlag(false);
-
-    feed->setStrategy( -1 );        // init to NoStrategy
-
-    feed->setCurrentVarPointQuality(NormalQuality);
-    feed->setWaitForReCloseDelayFlag(false);
-
-}
-
-void initialize_capbank(Test_CtiCCSubstationBusStore* store, CtiCCCapBank* cap, CtiCCFeeder* parentFeed, long displayOrder)
-{
-    long bankId = cap->getPaoId();
-    long fdrId = parentFeed->getPaoId();
-    cap->setParentId(fdrId);
-    cap->setControlOrder(displayOrder);
-    cap->setCloseOrder(displayOrder);
-    cap->setTripOrder(displayOrder);
-    parentFeed->getCCCapBanks().push_back(cap);
-    store->insertItemsIntoMap(CtiCCSubstationBusStore::CapBankIdFeederIdMap, &bankId, &fdrId);
-    cap->setOperationalState(CtiCCCapBank::SwitchedOperationalState);
-    cap->setDisableFlag(false);
-    cap->setVerificationFlag(false);
-    cap->setPerformingVerificationFlag(false);
-    cap->setVerificationDoneFlag(false);
-    cap->setBankSize(600);
-
-    cap->setControlPointId(1);
-}  
-
 BOOST_AUTO_TEST_CASE(test_cannot_control_bank_text)
 {
     Test_CtiCCSubstationBusStore* store = new Test_CtiCCSubstationBusStore();
@@ -183,11 +110,11 @@ BOOST_AUTO_TEST_CASE(test_cannot_control_bank_text)
     bus->setCurrentVarLoadPointValue(55, CtiTime());
     station->setParentId(1);
     station->setSaEnabledFlag(false);
-    store->insertAreaToPaoMap(area);
+    store->addAreaToPaoMap(area);
     area->getSubstationIds().push_back(station->getPaoId());
-    store->insertSubstationToPaoMap(station);
+    store->addSubstationToPaoMap(station);
     station->getCCSubIds().push_back(bus->getPaoId());
-    store->insertSubBusToPaoMap(bus);
+    store->addSubBusToPaoMap(bus);
 
     bus->setCorrectionNeededNoBankAvailFlag(false);
     CtiMultiMsg_vec ccEvents;
@@ -359,7 +286,7 @@ BOOST_AUTO_TEST_CASE(test_parallel_bus)
     bus1->setSwitchOverStatus(true);
     bus1->setDualBusEnable(true);
     bus2->setPrimaryBusFlag(true);
-    store->insertSubBusToAltBusMap(bus1);
+    store->addSubBusToAltBusMap(bus1);
 
     bus1->setCurrentVarLoadPointId(1);
     bus1->setCurrentWattLoadPointId(1);

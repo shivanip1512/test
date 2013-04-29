@@ -47,8 +47,10 @@ test_ControlStrategies.obj \
 test_StrategyManager.obj \
 test_ZoneManager.obj \
 test_VoltageRegulatorManager.obj \
+test_capcontroller.obj \
 test_ccsubstationbus.obj \
 test_ccFeeder.obj \
+test_ccutil.obj \
 test_likeDayControl.obj \
 test_pointHolder.obj \
 test_IVVCAlgorithm.obj \

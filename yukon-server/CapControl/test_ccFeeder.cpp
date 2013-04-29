@@ -12,6 +12,7 @@
 extern bool _RETRY_FAILED_BANKS;
 
 using namespace std;
+using namespace Cti::Test::CapControl;
 
 BOOST_AUTO_TEST_SUITE( test_ccFeeder )
 
@@ -29,7 +30,7 @@ void initialize_bank(CtiCCCapBank* bank, int closeOrder = 0, int tripOrder = 0)
     bank->setControlInhibitFlag(false);
     bank->setMaxDailyOperation(0);
     bank->setMaxDailyOpsHitFlag(false);
-} 
+}
 
 class StrategyUnitTestLoader : public StrategyLoader
 {

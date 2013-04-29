@@ -67,6 +67,7 @@ CtiTime timeSaver;
     Constructor
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(false),
+                                                    _attributeService(new AttributeService),
                                                     _reregisterforpoints(true),
                                                     _reloadfromamfmsystemflag(false),
                                                     _lastdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)),
@@ -120,7 +121,7 @@ _voltageRegulatorManager( new Cti::CapControl::VoltageRegulatorManager(std::auto
     _pointDataHandler.setPointDataListener(this);
     _daoFactory = boost::shared_ptr<DaoFactory>(new DatabaseDaoFactory());
 
-    _voltageRegulatorManager->setAttributeService( & _attributeService );
+    _voltageRegulatorManager->setAttributeService( _attributeService.get() );
     _voltageRegulatorManager->setPointDataHandler( & _pointDataHandler );
 
 }
@@ -544,6 +545,10 @@ void CtiCCSubstationBusStore::addSubBusToAltBusMap(CtiCCSubstationBusPtr bus)
 void CtiCCSubstationBusStore::addFeederToPaoMap(CtiCCFeederPtr feeder)
 {
     _paobject_feeder_map.insert(make_pair(feeder->getPaoId(),feeder));
+}
+void CtiCCSubstationBusStore::addCapBankToCBCMap(CtiCCCapBankPtr capbank)
+{
+    _cbc_capbank_map[capbank->getControlDeviceId()] = capbank->getPaoId();
 }
 
 std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBusStore::getSubBusesByAreaId(int areaId)
@@ -2707,6 +2712,23 @@ void CtiCCSubstationBusStore::setInstance(CtiCCSubstationBusStore* substationBus
     }
     _instance = substationBusStore;
 
+}
+
+
+AttributeService &CtiCCSubstationBusStore::getAttributeService()
+{
+    return *(getInstance()->_attributeService);
+}
+
+
+void CtiCCSubstationBusStore::setAttributeService(std::auto_ptr<AttributeService> service)
+{
+    if( service.get() )
+    {
+        _attributeService = service;
+
+        _voltageRegulatorManager->setAttributeService( _attributeService.get() );
+    }
 }
 
 /*---------------------------------------------------------------------------

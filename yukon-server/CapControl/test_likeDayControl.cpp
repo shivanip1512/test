@@ -12,6 +12,7 @@
 extern unsigned long _LIKEDAY_OVERRIDE_TIMEOUT;
 
 using namespace std;
+using namespace Cti::Test::CapControl;
 
 BOOST_AUTO_TEST_SUITE( test_likeDayControl )
 
