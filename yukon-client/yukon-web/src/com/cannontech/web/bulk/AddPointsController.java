@@ -1,5 +1,6 @@
 package com.cannontech.web.bulk;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -54,10 +55,9 @@ public class AddPointsController extends AddRemovePointsControllerBase {
         model.addAttribute("deviceCollection", deviceCollection);
         
         // PointIdentifiers
-        final String identifyingPointData   = ServletRequestUtils
-                .getStringParameter(request, "pointTypeOffsets");
-        final String pointTypeOffsets[]     = identifyingPointData.split(",");
-        final List<String> ptos             = Arrays.asList(pointTypeOffsets);
+        final String identifyingPointData   = ServletRequestUtils.getStringParameter(request, "pointTypeOffsets");
+        final String pointTypeOffsets[]     = StringUtils.isBlank(identifyingPointData) ? null : identifyingPointData.split(",");
+        final List<String> ptos             = pointTypeOffsets == null ? new ArrayList<String>() : Arrays.asList(pointTypeOffsets);
         model.addAttribute(VARIABLE_PRESELECTED_POINT_ARRAY, ptos);
 
         // options
