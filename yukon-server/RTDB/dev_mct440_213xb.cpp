@@ -1259,7 +1259,7 @@ INT Mct440_213xBDevice::decodeGetStatusEventLog(INMESS          *InMessage,
     ReturnMsg->setResultString( resultString );
 
     decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
-    if( InMessage->MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)!=0 )
+    if( InMessage->MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection ))
     {
         ReturnMsg->setExpectMore(true);
     }
@@ -2764,7 +2764,7 @@ INT Mct440_213xBDevice::decodeGetConfigTOU(INMESS          *InMessage,
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
 
     decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
-    if( InMessage->MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)!=0 )
+    if( InMessage->MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection ))
     {
         ReturnMsg->setExpectMore(true);
     }
@@ -4534,9 +4534,7 @@ INT Mct440_213xBDevice::decodePutConfig(INMESS         *InMessage,
 
         // note that at the moment only putconfig install will ever have a group message count.
         decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
-
-        if( InMessage->MessageFlags & MessageFlag_ExpectMore ||
-            getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection) != 0)
+        if( InMessage->MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection ))
         {
             ReturnMsg->setExpectMore(true);
         }
