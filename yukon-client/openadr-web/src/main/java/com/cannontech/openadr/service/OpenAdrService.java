@@ -369,8 +369,14 @@ public class OpenAdrService {
                     
                     Date stop;
                     if (period.getMillis() == 0) {
-                        // Conformance rule 47. 0 is open-ended.
-                        stop = CtiUtilities.get2035GregCalendar().getTime();
+                    	// Conformance rule 47. 0 is open-ended.
+                    	Period openEnded = configService.getOpenEndedDuration();
+                    	if (openEnded == null) {
+                    		// The user probably provided a poorly formatted string. Just use 2035 for now.
+                    		stop = CtiUtilities.get2035GregCalendar().getTime();
+                    	} else {
+                    		stop = new DateTime(start).plus(openEnded).toDate();
+                    	}
                     } else {
                         stop = new DateTime(start).plus(period).toDate();
                     }

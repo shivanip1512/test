@@ -74,6 +74,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     OADR_REPLY_LIMIT(GlobalSettingSubCategory.OPEN_ADR, integerType(), 0),
     OADR_VTN_THUMBPRINT(GlobalSettingSubCategory.OPEN_ADR, stringType(), null),
     OADR_YUKON_USER(GlobalSettingSubCategory.OPEN_ADR, userType(), null),
+    OADR_OPEN_ENDED_CONTROL_DURATION(GlobalSettingSubCategory.OPEN_ADR, stringType(), null),
     
     // Yukon Services
     DISPATCH_MACHINE(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "127.0.0.1"),

@@ -1,5 +1,7 @@
 package com.cannontech.openadr.service;
 
+import org.joda.time.Period;
+
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.openadr.exception.OpenAdrConfigurationException;
 
@@ -20,6 +22,15 @@ public interface OpenAdrConfigurationService {
      * @return the request interval value from global settings if it exists, a default value otherwise.
      */
     public int getRequestInterval();
+    
+    /**
+     * Gets the user-defined duration for open-ended control requests.
+     * @return the period object defined by the number of milliseconds the user specified for open-ended control if
+     * 		the user-defined duration is properly formed. Returns null if the user-defined string cannot be converted
+     * 		into a period object.
+     * @throws OpenAdrConfigurationException if the Open-ended control duration isn't defined in global settings.
+     */
+    public Period getOpenEndedDuration() throws OpenAdrConfigurationException;
     
     /**
      * Get the VEN ID.
