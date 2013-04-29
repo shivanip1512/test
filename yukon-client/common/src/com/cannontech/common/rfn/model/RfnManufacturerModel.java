@@ -23,6 +23,8 @@ public enum RfnManufacturerModel {
     RFN_420FL(PaoType.RFN420FL, "LGYR", "FocuskWh"),
     RFN_420FX(PaoType.RFN420FX, "LGYR", "FocusAXD"),
     RFN_420FD(PaoType.RFN420FD, "LGYR", "FocusAXR-SD"),
+    RFN_420FRX(PaoType.RFN420FRX, "LGYR", "FocusRXR"),
+    RFN_420FRD(PaoType.RFN420FRD, "LGYR", "FocusRXR-SD"),
     
     RFN_410CL(PaoType.RFN410CL, "ITRN", "C1SX"),
     RFN_420CL(PaoType.RFN420CL, "ITRN", "C2SX"),

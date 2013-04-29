@@ -169,6 +169,7 @@ public interface DeviceTypes extends TypeBase
     public final static int CBC_8020 = DEVICE_OFFSET + 130;
     public final static int CBC_8024 = DEVICE_OFFSET + 131;
 
+    // RFN420FRX and RFN420FRD are below at +153/+154
     public final static int RFN420FL = DEVICE_OFFSET + 132;
     public final static int RFN420FX = DEVICE_OFFSET + 133;
     public final static int RFN420FD = DEVICE_OFFSET + 134;
@@ -198,6 +199,10 @@ public interface DeviceTypes extends TypeBase
     
     // Other RFN410__ models are above (offset + 120)
     public final static int RFN410CL = DEVICE_OFFSET + 152;
+
+    // RFN420F* models above around (offset + 132)
+    public final static int RFN420FRX = DEVICE_OFFSET + 153;
+    public final static int RFN420FRD = DEVICE_OFFSET + 154;
 
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]

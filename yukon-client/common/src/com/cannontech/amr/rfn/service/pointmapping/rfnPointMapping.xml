@@ -12,6 +12,8 @@
         <paoType value="RFN420FX"/>
         <paoType value="RFN420FD"/>
         <paoType value="RFN420FL"/>
+        <paoType value="RFN420FRX"/>
+        <paoType value="RFN420FRD"/>
         <paoType value="RFN430A3D"/>
         <paoType value="RFN430A3T"/>
         <paoType value="RFN430A3K"/>
@@ -114,6 +116,8 @@
         <paoType value="RFN420FX"/>
         <paoType value="RFN420FD"/>
         <paoType value="RFN420FL"/>
+        <paoType value="RFN420FRX"/>
+        <paoType value="RFN420FRD"/>
         <paoType value="RFN430A3T"/>
         <paoType value="RFN430A3K"/>
         <paoType value="RFN430A3R"/>
@@ -271,6 +275,8 @@
         <paoType value="RFN420FL"/>
         <paoType value="RFN420FX"/>
         <paoType value="RFN420FD"/>
+        <paoType value="RFN420FRX"/>
+        <paoType value="RFN420FRD"/>
         <paoType value="RFN410CL"/>
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
@@ -380,6 +386,8 @@
         <paoType value="RFN410FD"/>
         <paoType value="RFN420FX"/>
         <paoType value="RFN420FD"/>
+        <paoType value="RFN420FRX"/>
+        <paoType value="RFN420FRD"/>
         <paoType value="RFN430A3D"/>
         <paoType value="RFN430A3T"/>
         <paoType value="RFN430A3K"/>
@@ -1475,6 +1483,8 @@
         <paoType value="RFN410FD"/>
         <paoType value="RFN420FX"/>
         <paoType value="RFN420FD"/>
+        <paoType value="RFN420FRX"/>
+        <paoType value="RFN420FRD"/>
 <!-- existed for all EXCEPT FL + requested by NONE = add to FL + keep the rest -->
         <point name="Peak kW (Rate E kW)">
             <uom>W</uom>
@@ -1618,6 +1628,28 @@
                 <modifier>Phase C</modifier>
             </modifiers>
         </point>
+    </pointGroup><!-- ENDS GROUP: FX, FD -->
+
+
+    <pointGroup><!--  Focus RXR* -->
+        <paoType value="RFN420FRX"/>
+        <paoType value="RFN420FRD"/>
+        <point name="Received kVArh">
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Total kVArh">
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+            </modifiers>
+        </point>
     </pointGroup>
 
     <pointGroup><!-- TWO POINT VOLTAGE POINT MAPPINGS -->
@@ -1647,6 +1679,8 @@
         <paoType value="RFN420FL"/>
         <paoType value="RFN420FX"/>
         <paoType value="RFN420FD"/>
+        <paoType value="RFN420FRX"/>
+        <paoType value="RFN420FRD"/>
 
 <!-- existed for ALL + requested for CD, CL, FL, FX, FD
      NOTE: THEY WANT THE TIMESTAMP TOO   SEE: YUK-11925, YUK-12049 -->

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="paoDefinition.xsl"?>
-<!--  RF Devices: highest OFFSET=214 @ 2014-04-24W -->
+<!--  RF Devices: highest OFFSET=215 @ 2014-04-29M -->
 <!--
     This file contains default pao and point information for all of the pao's in Yukon.
     
@@ -7316,6 +7316,23 @@
         </attributes>
     </pao>
 
+    <pao id="RFN_L5_FOCUS_FR_" abstract="true" inherits="RFN_L3_FOCUS_FX_FD, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE">
+        <points>
+            <point type="Analog" offset="7"><!-- use SAME OFFSET as other RFN's Received kVArh -->
+                <name>Received kVArh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="215">
+                <name>Total kVArh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="4"/>
+            </point>
+        </points>
+    </pao>
+
     <!-- FOCUS RFN METERS -->
     <pao id="RFN410FL"  inherits="RFN_L3_FOCUS_410FL">
         <displayName>RFN-410fL</displayName></pao>
@@ -7329,6 +7346,10 @@
         <displayName>RFN-420fX</displayName></pao>
     <pao id="RFN420FD"  inherits="RFN420FX, RFN_DISCONNECT">
         <displayName>RFN-420fD</displayName></pao>
+    <pao id="RFN420FRX"  inherits="RFN_L5_FOCUS_FR_">
+        <displayName>RFN-420fRX</displayName></pao>
+    <pao id="RFN420FRD"  inherits="RFN420FRX, RFN_DISCONNECT">
+        <displayName>RFN-420fRD</displayName></pao>
 
     <!-- ITRON RFN METERS -->
     <pao id="RFN410CL"  inherits="RFN_L3_CENTRON, SUPPORTS_RFN_DEMAND_RESET_TAG">

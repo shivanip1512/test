@@ -100,13 +100,16 @@ public enum PaoType implements DatabaseRepresentationSource {
     MCT440_2133B(DeviceTypes.MCT440_2133B, "MCT-440-2133B", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT470(DeviceTypes.MCT470, "MCT-470", PaoCategory.DEVICE, PaoClass.CARRIER),
 
-    RFN410CL(DeviceTypes.RFN410CL, "RFN-410cL", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN410FL(DeviceTypes.RFN410FL, "RFN-410fL", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN410FX(DeviceTypes.RFN410FX, "RFN-410fX", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN410FD(DeviceTypes.RFN410FD, "RFN-410fD", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN420FL(DeviceTypes.RFN420FL, "RFN-420fL", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN420FX(DeviceTypes.RFN420FX, "RFN-420fX", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN420FD(DeviceTypes.RFN420FD, "RFN-420fD", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN420FRX(DeviceTypes.RFN420FRX, "RFN-420fRX", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN420FRD(DeviceTypes.RFN420FRD, "RFN-420fRD", PaoCategory.DEVICE, PaoClass.RFMESH),
+
+    RFN410CL(DeviceTypes.RFN410CL, "RFN-410cL", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN420CL(DeviceTypes.RFN420CL, "RFN-420cL", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN420CD(DeviceTypes.RFN420CD, "RFN-420cD", PaoCategory.DEVICE, PaoClass.RFMESH),
 
@@ -319,7 +322,8 @@ public enum PaoType implements DatabaseRepresentationSource {
         meterTypesBuilder.add(RFN420FL);
         meterTypesBuilder.add(RFN420FX);
         meterTypesBuilder.add(RFN420FD);
-        meterTypesBuilder.add(RFN410CL);
+        meterTypesBuilder.add(RFN420FRX);
+        meterTypesBuilder.add(RFN420FRD);
         meterTypesBuilder.add(RFN420CL);
         meterTypesBuilder.add(RFN420CD);
         meterTypesBuilder.add(RFN430A3D);

@@ -25,6 +25,9 @@ public class DevAMR extends DevObject {
                           new DevPaoType(PaoType.MCT470),
                           new DevPaoType(PaoType.RFN420FL),
                           new DevPaoType(PaoType.RFN420FX),
+                          new DevPaoType(PaoType.RFN420FD),
+                          new DevPaoType(PaoType.RFN420FRX),
+                          new DevPaoType(PaoType.RFN420FRD),
                           new DevPaoType(PaoType.RFWMETER));
     
     public boolean isCreateRfnTemplates() {
