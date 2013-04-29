@@ -9,8 +9,7 @@ jQuery(function() {
     jQuery(document).on('click', '#rfReadNow', function(event) {
         var url = '<cti:url value="/stars/operator/hardware/rf/readNow"/>';
         
-        var elementToBlock = event.currentTarget;
-        Yukon.ui.block(elementToBlock);
+        Yukon.ui.block(event);
         
         jQuery.ajax({
             url: url,
@@ -21,20 +20,20 @@ jQuery(function() {
                 jQuery('#rfCommandStatus').show();
                 if (data.success ==  true) {
                     jQuery('#rfCommandStatus').addClass('successMessage').removeClass('errorMessage');
-                 } else {
-                     jQuery('#rfCommandStatus').removeClass('successMessage').addClass('errorMessage');
-                 }
-                Yukon.ui.unblock(elementToBlock);
-             },
-             error: function() {
-                 Yukon.ui.unblock(elementToBlock);
-             }
+                } else {
+                    jQuery('#rfCommandStatus').removeClass('successMessage').addClass('errorMessage');
+                }
+                Yukon.ui.unblock(event.target);
+            },
+            error: function() {
+                Yukon.ui.unblock(event.target);
+            }
         });
     });
 });
 </script>
 
-<tags:boxContainer2 nameKey="hardwarePoints" styleClass="f_block_this">
+<tags:boxContainer2 nameKey="hardwarePoints">
     <c:forEach var="entry" items="${points}">
         <c:if test="${fn:length(entry.value) > 0}">
             <span><i:inline key="${entry.key}" /></span>
@@ -51,9 +50,11 @@ jQuery(function() {
         </c:if>
     </c:forEach>
     <c:if test="${hardware.hardwareType.rf}">
-        <div id="rfCommandStatus" class="dn errorMessage rfCommandMsg"></div>
-        <div class="actionArea">
-            <cti:button id="rfReadNow" nameKey="readNow"/>
+        <div  class="f_block_this">
+            <div id="rfCommandStatus" class="dn errorMessage rfCommandMsg"></div>
+            <div class="actionArea">
+                <cti:button id="rfReadNow" nameKey="readNow"/>
+            </div>
         </div>
     </c:if>
 </tags:boxContainer2>
