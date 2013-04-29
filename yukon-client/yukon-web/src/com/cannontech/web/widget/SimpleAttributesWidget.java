@@ -120,17 +120,10 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
     
     public class AttributeInfo {
         
-//        private String description;
         private Attribute attribute;
         private boolean supported;
         private boolean exists;
 
-//        public void setDescription(String description) {
-//        	this.description = description;
-//        }
-//        public String getDescription() {
-//        	return description;
-//        }
         public Attribute getAttribute() {
             return attribute;
         }
