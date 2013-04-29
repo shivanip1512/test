@@ -141,7 +141,7 @@ public class ComposedGroupController {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
-        JsTreeNode groupExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, null, userContext);
+        JsTreeNode groupExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, null);
         
         JSONObject chooseGrouptreeJsonObj = new JSONObject(groupExtRoot.toMap());
         String chooseGroupTreeJson = chooseGrouptreeJsonObj.toString();

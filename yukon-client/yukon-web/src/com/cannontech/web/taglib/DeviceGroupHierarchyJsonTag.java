@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.jsp.JspException;
 
-import net.sf.jsonOLD.JSONObject;
+import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -52,9 +52,10 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{
         	}
         }
         
-        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, rootName, nodeCallback, getUserContext());
-        JSONObject jsonObj = new JSONObject(root.toMap());
-        
+        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, rootName, nodeCallback);
+        JSONObject jsonObj = new JSONObject();
+        jsonObj.accumulateAll(root.toMap());
+
         String extSelectedNodePath = null;
         if (nodeCallback != null) {
         	extSelectedNodePath = nodeCallback.getJsTreeSelectedNodePath();

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -14,13 +13,12 @@ import com.cannontech.common.device.groups.model.MutableDeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.user.YukonUserContext;
+import com.cannontech.database.YukonJdbcTemplate;
 
 /**
  * This provides support for creating "binning" dynamic device groups. A binning
@@ -34,7 +32,7 @@ import com.cannontech.user.YukonUserContext;
  * @param <T> The type that represents a bin, usually a String
  */
 public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProviderSqlBase {
-    private SimpleJdbcOperations jdbcTemplate;
+	@Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private ObjectFormattingService objectFormatingService;
     
     @Override
@@ -107,9 +105,6 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
      * @return
      */
     protected String getGroupName(T bin) {
-        if (bin instanceof BuiltInAttribute) {
-            return ((BuiltInAttribute) bin).getDescription();
-        }
         return bin.toString();
     }
 
@@ -201,14 +196,6 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
         public boolean isHidden() {
             return false;
         }
-
-        @Override
-        public String getName(YukonUserContext context, String defaultName) {
-            if (bin instanceof BuiltInAttribute) {
-                return objectFormatingService.formatObjectAsString(((BuiltInAttribute)bin).getMessage(), context);
-            } 
-            return defaultName;
-        }
     }
 
 	@Override
@@ -269,13 +256,7 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
 	    }
     }
     
-    @Autowired
-    public final void setJdbcTemplate(SimpleJdbcOperations jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-    
-    public SimpleJdbcOperations getJdbcTemplate() {
+    public YukonJdbcTemplate getJdbcTemplate() {
         return jdbcTemplate;
     }
-    
 }

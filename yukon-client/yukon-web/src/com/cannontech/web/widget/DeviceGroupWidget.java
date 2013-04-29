@@ -11,7 +11,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.jsonOLD.JSONObject;
+import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -186,11 +186,10 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         JsTreeNode root =
             DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy,
                                                        groupsLabel,
-                                                       callback,
-                                                       userContext);
-        JSONObject jsonObj = new JSONObject(root.toMap());
-        String dataJson = jsonObj.toString();
-        return dataJson;
+                                                       callback);
+        JSONObject jsonObj = new JSONObject();
+        jsonObj.accumulateAll(root.toMap());
+        return jsonObj.toString();
     }
     
     /**

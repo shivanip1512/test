@@ -60,28 +60,24 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
         }
         
         // build infos
-        String attributeName;
         List<AttributeInfo> attributeInfos = new ArrayList<AttributeInfo>();
         for (Attribute attr : attributes) {
             
             AttributeInfo attrInfo = new AttributeInfo();
             attrInfo.setAttribute(attr);
-            
+
             boolean supported = attributeService.isAttributeSupported(device, attr);
             attrInfo.setSupported(supported);
-            
+
             boolean exists = false;
             if (supported) {
                 exists = attributeService.pointExistsForAttribute(device, attr);
             }
             attrInfo.setExists(exists);
-            attributeName = objectFormattingService.formatObjectAsString(attr.getMessage(), context);
-            attrInfo.setDescription(attributeName);
-            
             attributeInfos.add(attrInfo);
         }
         mav.addObject("attributeInfos", attributeInfos);
-        
+
         // readable?
         Meter meter = meterDao.getForId(deviceId);
         boolean isReadable = deviceAttributeReadService.isReadable(Collections.singleton(meter), attributes, user);
@@ -89,9 +85,7 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
 
         return mav;
     }
-    
-    
-    
+
     public ModelAndView read(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         // get attributes
@@ -126,17 +120,17 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
     
     public class AttributeInfo {
         
-        private String description;
+//        private String description;
         private Attribute attribute;
         private boolean supported;
         private boolean exists;
 
-        public void setDescription(String description) {
-            this.description = description;
-        }
-        public String getDescription() {
-            return description;
-        }
+//        public void setDescription(String description) {
+//        	this.description = description;
+//        }
+//        public String getDescription() {
+//        	return description;
+//        }
         public Attribute getAttribute() {
             return attribute;
         }

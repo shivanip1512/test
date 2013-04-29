@@ -190,7 +190,7 @@ public class ScheduledBillingFileExportController {
 			if(i > 0) {
 				groupNames += ", ";
 			}
-			groupNames += group.getName(userContext, "");
+			groupNames += group.getName();
 		}
 		
 		if(maxDisplayedGroupNames < deviceGroups.size()) {

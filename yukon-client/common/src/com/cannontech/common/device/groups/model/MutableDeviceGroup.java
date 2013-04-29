@@ -4,7 +4,6 @@ import org.apache.commons.lang.Validate;
 import org.joda.time.Instant;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
-import com.cannontech.user.YukonUserContext;
 
 /**
  * This is meant as a base class for a groups that are "mutable".
@@ -55,12 +54,6 @@ public abstract class MutableDeviceGroup extends DeviceGroup {
     @Override
     public String getName() {
         return name;
-    }
-
-    // Intentionally calling getName(), not using context or default
-    @Override
-    public String getName(YukonUserContext context, String defaultName) {
-        return getName();
     }
 
     @Override

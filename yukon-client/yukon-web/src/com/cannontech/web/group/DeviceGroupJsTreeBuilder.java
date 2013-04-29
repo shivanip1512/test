@@ -8,7 +8,6 @@ import java.util.Map;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.JsTreeBuilderUtil;
 import com.cannontech.web.util.JsTreeNode;
 
@@ -16,7 +15,7 @@ public class DeviceGroupJsTreeBuilder {
     
     private Map<String, Integer> nodeIdHistory = new HashMap<String, Integer>();
     
-    public JsTreeNode doMakeDeviceGroupJsTree(DeviceGroupHierarchy dgh, String rootName, NodeAttributeSettingCallback<DeviceGroup> nodeCallback, String parentNodeId, YukonUserContext context) {
+    public JsTreeNode doMakeDeviceGroupJsTree(DeviceGroupHierarchy dgh, String rootName, NodeAttributeSettingCallback<DeviceGroup> nodeCallback, String parentNodeId) {
         
         DeviceGroup deviceGroup = dgh.getGroup();
         
@@ -35,14 +34,14 @@ public class DeviceGroupJsTreeBuilder {
         node.setNodePath(nodePath);
         
         // node attributes
-        DeviceGroupTreeUtils.setupNodeAttributes(node, deviceGroup, nodeId, rootName, "javascript:void(0);", context);
+        DeviceGroupTreeUtils.setupNodeAttributes(node, deviceGroup, nodeId, rootName, "javascript:void(0);");
         
         // add group name to the list of items in the node's "info" attribute
         JsTreeNode.addToNodeInfo(node, "groupName", deviceGroup.getFullName());
         
         // recursively add child groups
         for (DeviceGroupHierarchy d : dgh.getChildGroupList()) {
-            node.addChild(doMakeDeviceGroupJsTree(d, null, nodeCallback, nodePath, context));
+            node.addChild(doMakeDeviceGroupJsTree(d, null, nodeCallback, nodePath));
         }
         
         // run special callback to set specific attributes if provided

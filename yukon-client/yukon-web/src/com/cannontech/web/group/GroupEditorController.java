@@ -97,7 +97,7 @@ public class GroupEditorController extends MultiActionController {
             group = rootGroup;
         }
         mav.addObject("group", group);
-        mav.addObject("groupFullName", group.getFullName(userContext));
+        mav.addObject("groupFullName", group.getFullName());
         
         // sub groups (child groups)
         List<DeviceGroup> childGroups = deviceGroupDao.getChildGroups(group);
@@ -106,7 +106,7 @@ public class GroupEditorController extends MultiActionController {
         
         for (DeviceGroup childGroup : childGroups) {
             if(!childGroup.isHidden()){
-                subGroupMap.put(childGroup, childGroup.getFullName(userContext));
+                subGroupMap.put(childGroup, childGroup.getFullName());
             }
         }
         
@@ -149,7 +149,7 @@ public class GroupEditorController extends MultiActionController {
         
         // ALL GROUPS TREE JSON
         HighlightSelectedGroupNodeAttributeSettingCallback callback = new HighlightSelectedGroupNodeAttributeSettingCallback(selectedDeviceGroup);
-        JsTreeNode allGroupsRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(allGroupsGroupHierarchy, groupsLabel, callback, userContext);
+        JsTreeNode allGroupsRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(allGroupsGroupHierarchy, groupsLabel, callback);
         
         // selected node Ext path
         String extSelectedNodePath = callback.getJsTreeSelectedNodePath();
@@ -162,7 +162,7 @@ public class GroupEditorController extends MultiActionController {
         // MOVE GROUPS TREE JSON
         Predicate<DeviceGroup> canMoveUnderPredicate = deviceGroupDao.getGroupCanMovePredicate(selectedDeviceGroup);
         DeviceGroupHierarchy moveGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, canMoveUnderPredicate);
-        JsTreeNode moveGroupRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(moveGroupHierarchy, groupsLabel, null, userContext);
+        JsTreeNode moveGroupRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(moveGroupHierarchy, groupsLabel, null);
         
         JSONObject moveGroupJsonObj = new JSONObject(moveGroupRoot.toMap());
         mav.addObject("moveGroupDataJson", moveGroupJsonObj.toString()); 
@@ -174,7 +174,7 @@ public class GroupEditorController extends MultiActionController {
             }
         };
         DeviceGroupHierarchy copyGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, canCopyIntoPredicate);
-        JsTreeNode copyExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(copyGroupHierarchy, groupsLabel, null, userContext);
+        JsTreeNode copyExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(copyGroupHierarchy, groupsLabel, null);
         
         JSONObject copyGroupJson = new JSONObject(copyExtRoot.toMap());
         mav.addObject("copyGroupDataJson", copyGroupJson.toString()); 
@@ -248,7 +248,7 @@ public class GroupEditorController extends MultiActionController {
             return mav;
         }
 
-        mav.addObject("groupName", group.getFullName(userContext));
+        mav.addObject("groupName", group.getFullName());
 
         return mav;
 
@@ -292,7 +292,7 @@ public class GroupEditorController extends MultiActionController {
                     
                     
                     
-                    deviceGroupMav.addObject("groupName", newGroup.getFullName(userContext));
+                    deviceGroupMav.addObject("groupName", newGroup.getFullName());
                     return deviceGroupMav;
                     
                 // COMPOSED GROUP
@@ -305,7 +305,7 @@ public class GroupEditorController extends MultiActionController {
                     DeviceGroupComposed deviceGroupComposed = new DeviceGroupComposed(newGroup.getId());
                     deviceGroupComposedDao.saveOrUpdate(deviceGroupComposed);
                     
-                    composedGroupMav.addObject("groupName", newGroup.getFullName(userContext));
+                    composedGroupMav.addObject("groupName", newGroup.getFullName());
                     return composedGroupMav;
                 
                 } else {
@@ -327,7 +327,7 @@ public class GroupEditorController extends MultiActionController {
 
         } else {
             deviceGroupMav.addObject("groupName", groupName);
-            deviceGroupMav.addObject("errorMessage", "Cannot add sub group to " + group.getFullName(userContext));
+            deviceGroupMav.addObject("errorMessage", "Cannot add sub group to " + group.getFullName());
             return deviceGroupMav;
         }
     }
@@ -360,7 +360,7 @@ public class GroupEditorController extends MultiActionController {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
         
-        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, new DisableCurrentGroup(), userContext);
+        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, new DisableCurrentGroup());
         JSONObject jsonObj = new JSONObject(root.toMap());
         String dataJson = jsonObj.toString();
         
@@ -412,7 +412,7 @@ public class GroupEditorController extends MultiActionController {
 
             deviceGroupMemberEditorDao.removeDevicesById(group, Collections.singleton(deviceId));
         } else {
-            mav.addObject("errorMessage", "Cannot remove devices from " + group.getFullName(userContext));
+            mav.addObject("errorMessage", "Cannot remove devices from " + group.getFullName());
             return mav;
         }
 
@@ -442,15 +442,15 @@ public class GroupEditorController extends MultiActionController {
                 group.setParent(parentGroup);
                 deviceGroupEditorDao.updateGroup(group);
     
-                mav.addObject("groupName", group.getFullName(userContext));
+                mav.addObject("groupName", group.getFullName());
     
             } else {
-                mav.addObject("errorMessage", "Cannot move Group: " + group.getFullName(userContext));
+                mav.addObject("errorMessage", "Cannot move Group: " + group.getFullName());
                 mav.addObject("groupName", groupName);
             }
         }
         catch(DuplicateException e) {
-            mav.addObject("errorMessage", "Group '" + group.getName(userContext,group.getName()) + "' already exists in group '" + parentGroup.getName(userContext,parentGroup.getName()) +
+            mav.addObject("errorMessage", "Group '" + group.getName() + "' already exists in group '" + parentGroup.getName() +
                           "'. Please rename the group using a unqiue name and try again.");
             mav.addObject("groupName", groupName);
         }
@@ -482,16 +482,16 @@ public class GroupEditorController extends MultiActionController {
             List<DeviceGroup> parentsGroupChildGroups = deviceGroupDao.getChildGroups(toParentGroup);
             List<String> parentsGroupChildGroupNames = new ArrayList<String>();
             for (DeviceGroup d : parentsGroupChildGroups) {
-                parentsGroupChildGroupNames.add(d.getName(userContext,d.getName()));
+                parentsGroupChildGroupNames.add(d.getName());
             }
             
             List<DeviceGroup> fromGroupChildGroups = deviceGroupDao.getChildGroups(fromGroup);
             for (DeviceGroup d : fromGroupChildGroups) {
                 
-                if (parentsGroupChildGroupNames.contains(d.getName(userContext,d.getName()))) {
+                if (parentsGroupChildGroupNames.contains(d.getName())) {
                     
-                    mav.addObject("errorMessage", "Group '" + d.getName(userContext,d.getName()) + "' already exists in group '" +
-                                  toParentGroup.getName(userContext,toParentGroup.getName()) + "'. Please rename the group using a unique name and try again.");
+                    mav.addObject("errorMessage", "Group '" + d.getName() + "' already exists in group '" +
+                                  toParentGroup.getName() + "'. Please rename the group using a unique name and try again.");
                     mav.addObject("groupName", groupName);
                     return mav;
                 }
@@ -501,12 +501,12 @@ public class GroupEditorController extends MultiActionController {
             copyDeviceGroupService.copyGroupAndDevicesToGroup(fromGroup, toParentGroup);
         
             // take you to newly created copied group on return
-            mav.addObject("groupName", toParentGroup.getFullName(userContext));
+            mav.addObject("groupName", toParentGroup.getFullName());
             
         }
         else {
             
-            mav.addObject("errorMessage", "Cannot copy devices to group: " + toParentGroup.getFullName(userContext));
+            mav.addObject("errorMessage", "Cannot copy devices to group: " + toParentGroup.getFullName());
             mav.addObject("groupName", groupName);
         }
         
@@ -531,7 +531,7 @@ public class GroupEditorController extends MultiActionController {
         if (removeGroup.isEditable()) {
             deviceGroupEditorDao.removeGroup(removeGroup);
         } else {
-            mav.addObject("errorMessage", "Cannot remove Group: " + removeGroup.getFullName(userContext));
+            mav.addObject("errorMessage", "Cannot remove Group: " + removeGroup.getFullName());
         }
 
         return mav;
@@ -554,7 +554,7 @@ public class GroupEditorController extends MultiActionController {
             if (removeGroup.isEditable()) {
                 deviceGroupMemberEditorDao.removeAllChildDevices(removeGroup);
             } else {
-                membersErrorMessage = "Cannot remove Group: " + removeGroup.getFullName(userContext);
+                membersErrorMessage = "Cannot remove Group: " + removeGroup.getFullName();
             }
         } catch (NotAuthorizedException e) {
             membersErrorMessage = "User not authorized to remove devices.";

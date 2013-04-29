@@ -127,7 +127,7 @@ public class AttributeServiceImpl implements AttributeService {
         
             return litePoint;
         } catch (NotFoundException nfe) {
-            throw new IllegalUseOfAttribute("Illegal use of attribute (no point): " + attribute.getKey());
+            throw new IllegalUseOfAttribute("Illegal use of attribute (no point): " + attribute);
         }
     }
 

@@ -48,10 +48,10 @@
             			<c:if test="${notFirst}">
             				|
             			</c:if>
-                        
-            			<tags:widgetLink method="render" title="${agt.label} data" labelBusy="${agt.label}" selected="${agt == attributeGraphType}" attribute="${agt.attribute.key}"><i:inline key="${agt.label}"/></tags:widgetLink>
+                        <cti:msg2 var="graphTypeLabel" key="${agt.label}"/>
+            			<tags:widgetLink method="render" title="${graphTypeLabel}" labelBusy="${agt.label}" selected="${agt == attributeGraphType}" attribute="${agt.attribute.key}"><i:inline key="${agt.label}"/></tags:widgetLink>
             			
-            			<c:set var="notFirst" value="true" scope="page"></c:set>
+            			<c:set var="notFirst" value="true" scope="page"/>
                         
             		</c:forEach>
         		</td>
