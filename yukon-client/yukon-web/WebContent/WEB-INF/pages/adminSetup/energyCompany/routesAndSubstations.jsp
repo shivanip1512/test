@@ -93,30 +93,34 @@
                     <c:otherwise>
                         <div class="membersContainer">
                             <table class="compactResultsTable">
-                                <tr>
-                                    <th><i:inline key=".substation"/></th>
-                                    <th class="removeColumn"><i:inline key=".remove"/></th>
-                                </tr>
-
-                                <!-- Inherited Routes -->
-                                <c:forEach items="${inheritedSubstations}" var="substation" >
+                                <thead>
                                     <tr>
-                                        <td><spring:escapeBody htmlEscape="true">${substation.substationName}</spring:escapeBody></td>
-                                        <td class="removeColumn"><i:inline key=".inherited" /></td>
+                                        <th><i:inline key=".substation"/></th>
+                                        <th class="removeColumn"><i:inline key=".remove"/></th>
                                     </tr>
-                                </c:forEach>
-                                
-                                <!-- EC Routes -->
-                                <c:forEach items="${ecSubstations}" var="substation" >
-                                    <tr>
-                                        <td><spring:escapeBody htmlEscape="true">${substation.substationName}</spring:escapeBody></td>
-                                        <td class="removeColumn">
-                                            <div class="dib">
-                                                <input type="submit" class="pointer icon icon_remove" name="removeSubstation" value="${substation.substationID}">
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
+                                </thead>
+                                <tfoot></tfoot>
+                                <tbody>
+                                    <!-- Inherited Routes -->
+                                    <c:forEach items="${inheritedSubstations}" var="substation" >
+                                        <tr>
+                                            <td><spring:escapeBody htmlEscape="true">${substation.substationName}</spring:escapeBody></td>
+                                            <td class="removeColumn"><i:inline key=".inherited" /></td>
+                                        </tr>
+                                    </c:forEach>
+                                    
+                                    <!-- EC Routes -->
+                                    <c:forEach items="${ecSubstations}" var="substation" >
+                                        <tr>
+                                            <td><spring:escapeBody htmlEscape="true">${substation.substationName}</spring:escapeBody></td>
+                                            <td class="removeColumn">
+                                                <div class="dib">
+                                                    <cti:button nameKey="remove" name="removeSubstation" value="${substation.substationID}" type="submit" renderMode="image"/>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
                             </table>
                         </div>
                     </c:otherwise>
