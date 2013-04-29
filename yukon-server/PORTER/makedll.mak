@@ -409,7 +409,7 @@ portfill.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		tbl_dv_ied.h encryption_oneway_message.h dev_snpp.h \
 		dev_tnpp.h tbl_dv_tnpp.h dev_pagingreceiver.h \
 		tbl_dv_pagingreceiver.h dev_wctp.h prot_versacom.h \
-		expresscom.h ctistring.h
+		expresscom.h
 portglob.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		queues.h dsm2.h cticonnect.h yukon.h ctidbgmem.h netports.h \
 		mutex.h guard.h utility.h ctitime.h numstr.h dsm2err.h \

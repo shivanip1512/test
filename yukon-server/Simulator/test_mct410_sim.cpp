@@ -7,6 +7,8 @@
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
 
+#include "boost_test_helpers.h"
+
 #include <cmath>
 
 using namespace Cti::Simulator;
@@ -99,6 +101,8 @@ BOOST_AUTO_TEST_CASE( mct_consumption_multiplier )
 
 BOOST_AUTO_TEST_CASE( test_make_value_consumption )
 {
+    Cti::Test::set_to_central_timezone();
+
     struct ConsumptionTestCase
     {
         unsigned address;
@@ -135,6 +139,8 @@ BOOST_AUTO_TEST_CASE( test_make_value_consumption )
 
 BOOST_AUTO_TEST_CASE( test_get_hectowatt_hours )
 {
+    Cti::Test::set_to_central_timezone();
+
     struct HectoWattTestCase
     {
         unsigned address;
@@ -187,6 +193,8 @@ BOOST_AUTO_TEST_CASE( test_get_table_pointer )
 
 BOOST_AUTO_TEST_CASE( test_fill_load_profile )
 {
+    Cti::Test::set_to_central_timezone();
+
     const unsigned address(0);
     const CtiDate startDate(4, 4, 2012);
     const CtiTime blockStart = CtiTime(startDate, 8, 0, 0); // 08:00 4/4/2012
@@ -209,6 +217,8 @@ BOOST_AUTO_TEST_CASE( test_fill_load_profile )
 
 BOOST_AUTO_TEST_CASE( test_fill_long_load_profile )
 {
+    Cti::Test::set_to_central_timezone();
+
     const unsigned address(0);
     const unsigned interval(3600);
     const CtiDate startDate(4, 4, 2012);
@@ -255,6 +265,8 @@ BOOST_AUTO_TEST_CASE( test_fill_long_load_profile )
 
 BOOST_AUTO_TEST_CASE( test_peak_demand )
 {
+    Cti::Test::set_to_central_timezone();
+
     CtiTime lastFreeze(CtiDate(6, 5, 2012), 10, 0, 0);
     CtiTime nowTime(CtiDate(28, 5, 2012), 2, 0, 0);
     struct PeakDemandTestCase
@@ -265,7 +277,7 @@ BOOST_AUTO_TEST_CASE( test_peak_demand )
         CtiTime c_time;
         testMct410Sim::peak_demand_t result;
     }
-    const peak_demand_test_cases[] = 
+    const peak_demand_test_cases[] =
     {
         {   0,  300, lastFreeze.seconds(), nowTime, { 0x3000 | 2000, 1338120300 } },
         {   0,  900, lastFreeze.seconds(), nowTime, { 0x2000 |  500, 1338120900 } },
@@ -284,8 +296,8 @@ BOOST_AUTO_TEST_CASE( test_peak_demand )
         expected.push_back(testCase.result);
         result.push_back(
             testMct410Sim::checkForNewPeakDemand(
-                testCase.address, 
-                testCase.demandInterval, 
+                testCase.address,
+                testCase.demandInterval,
                 testCase.lastFreezeTimestamp,
                 testCase.c_time));
     }

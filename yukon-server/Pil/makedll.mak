@@ -185,6 +185,26 @@ pil_exefct.obj:	precompiled.h executorfactory.h collectable.h \
 		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		executor.h exe_cmd.h exe_reg.h pil_exefct.h exe_pcreq.h
+test_pilserver.obj:	pilserver.h dsm2.h cticonnect.h yukon.h types.h \
+		ctidbgmem.h dlldefs.h netports.h mutex.h guard.h utility.h \
+		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
+		words.h optional.h server_b.h con_mgr.h connection.h \
+		exchange.h dllbase.h logger.h thread.h CtiPCPtrQueue.h \
+		string_utility.h message.h collectable.h rwutil.h \
+		database_connection.h dbaccess.h database_reader.h \
+		row_reader.h boost_time.h boostutil.h msg_multi.h msg_pdata.h \
+		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
+		cparms.h configkey.h configval.h ctibase.h ctinexus.h \
+		critical_Section.h smartmap.h readers_writer_lock.h \
+		msg_pcrequest.h mgr_device.h rtdb.h hashkey.h \
+		hash_functions.h dev_base.h cmdparse.h ctitokenizer.h \
+		parsevalue.h dev_exclusion.h tbl_paoexclusion.h \
+		config_device.h rte_base.h dbmemobject.h tbl_pao_lite.h \
+		tbl_rtcomm.h resolvers.h db_entry_defines.h desolvers.h \
+		msg_signal.h tbl_static_paoinfo.h encryption.h tbl_base.h \
+		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
+		slctdev.h mgr_point.h mgr_route.h repeaterrole.h mgr_config.h \
+		msg_pcreturn.h
 #ENDUPDATE#
 
 include $(COMPILEBASE)\versioninfo.inc

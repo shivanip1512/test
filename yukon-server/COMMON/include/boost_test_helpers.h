@@ -26,5 +26,27 @@ struct byte_buffer
     void copy_to(T *t) const {  std::copy(v.begin(), v.end(), t);  }
 };
 
+namespace Test {
+namespace {  //  hack to get around multiple linkages when included in multiple translation units
+
+void set_to_central_timezone()
+{
+    _putenv_s("TZ", "CST6CDT");
+    _tzset();
 }
 
+void set_to_eastern_timezone()
+{
+    _putenv_s("TZ", "EST5EDT");
+    _tzset();
+}
+
+void unset_timezone()
+{
+    _putenv_s("TZ", "");
+    _tzset();
+}
+
+}
+}
+}

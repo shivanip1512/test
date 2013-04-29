@@ -822,6 +822,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
     BOOST_AUTO_TEST_CASE(test_dev_mct410_getvalue_outage_old)
     {
+        Cti::Test::set_to_central_timezone();
+
         mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         1029);
         mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 7);     //  set the device to SSPEC revision 0.7
 
@@ -900,6 +902,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
     BOOST_AUTO_TEST_CASE(test_dev_mct410_getvalue_outage)
     {
+        Cti::Test::set_to_central_timezone();
+
         mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         1029);
         mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 17);  //  set the device to SSPEC revision 1.7
 

@@ -351,7 +351,7 @@ test_ctipcptrqueue.obj:	ctipcptrqueue.h mutex.h dlldefs.h guard.h \
 test_ctistring.obj:	ctistring.h dlldefs.h
 test_ctitime.obj:	ctitime.h dlldefs.h ctidate.h logger.h thread.h \
 		mutex.h guard.h utility.h queues.h cticalls.h os2_2w32.h \
-		types.h numstr.h CtiPCPtrQueue.h
+		types.h numstr.h CtiPCPtrQueue.h boost_test_helpers.h
 test_date_utility.obj:	date_utility.h ctidate.h dlldefs.h logger.h \
 		thread.h mutex.h guard.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h CtiPCPtrQueue.h

@@ -128,6 +128,15 @@ test_decodetextcmdfile.obj:	decodetextcmdfile.h logger.h dlldefs.h \
 test_interp.obj:	interp.h critical_section.h dlldefs.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h types.h \
 		numstr.h thread.h mutex.h
+test_mccmd.obj:	mccmd.h msg_pcrequest.h dlldefs.h message.h ctitime.h \
+		ctidbgmem.h collectable.h rwutil.h yukon.h types.h \
+		database_connection.h dbaccess.h dllbase.h dsm2.h \
+		cticonnect.h netports.h mutex.h guard.h utility.h queues.h \
+		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
+		database_reader.h row_reader.h boost_time.h boostutil.h \
+		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
+		pointtypes.h logger.h thread.h CtiPCPtrQueue.h ctdpcptrq.h \
+		tbl_meterreadlog.h ctistring.h
 test_scheduletime.obj:	ctitime.h dlldefs.h mc_scheduler.h mc.h \
 		logger.h thread.h mutex.h guard.h utility.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \

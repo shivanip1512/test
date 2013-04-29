@@ -17,7 +17,7 @@ namespace Cti {
 namespace Simulator {
 
 const double   Mct410Sim::Pi              = 4.0 * atan(1.0);
-const CtiTime  Mct410Sim::DawnOfTime      = CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 2005),0, 0, 0);
+const CtiTime  Mct410Sim::DawnOfTime      = CtiTime::CtiTime(0x41D63C60);  // Jan 1, 2005 CST
 const double   Mct410Sim::alarmFlagChance = gConfigParms.getValueAsDouble("SIMULATOR_ALARM_FLAG_CHANCE_PERCENT");
 const unsigned Mct410Sim::MemoryMapSize   = 256;
 
@@ -49,22 +49,22 @@ Mct410Sim::Mct410Sim(int address) :
     {
         /**
          * The file we wanted to load from didn't exist. Load the memory
-         * map with the default information. 
+         * map with the default information.
          */
 
         //  _llp_interest should eventually be persisted and restored.
         //  We could access the DynamicPaoInfo table for this... ?
         // _llp_interest.time = CtiTime::now();
-    
+
         // Memory map position 0x0A is the EventFlags-1 Alarm Mask. This needs to be initialized to 0x80 in order
         // to catch the tamper flag bit that may be set at memory map position 0x06 and set the general alarm bit.
         // Refer to section 4.10 of the MCT-410 SSPEC doc for more information.
         _memory.writeValueToMemoryMap(MM_EventFlags1AlarmMask, EF1_TamperFlag);
-    
+
         // These should already be 0s, but we should explicitly say so just in case.
         _memory.writeValueToMemoryMap(MM_FreezeCounter, 0);
         _memory.writeValueToMemoryMap(MM_VoltageFreezeCounter, 0);
-    
+
         // Default the Demand Interval to 15 minutes.
         _memory.writeValueToMemoryMap(MM_DemandInterval, 0x0f);
 
@@ -265,7 +265,7 @@ bool Mct410Sim::read(const words_t &request_words, words_t &response_words, Logg
             unsigned char eventFlags = _memory.getValueFromMemoryMapLocation(MM_EventFlags1);
             unsigned char eventFlagsMask = _memory.getValueFromMemoryMapLocation(MM_EventFlags1AlarmMask);
             bool alarm = eventFlags & eventFlagsMask;
-    
+
             response_words.insert(response_words.begin(),
                                   word_t(new EmetconWordD1(b_word.repeater_variable,
                                                            b_word.dlc_address & ((1 << 14) - 1),  //  lowest 13 bits set
@@ -497,14 +497,14 @@ bytes Mct410Sim::getScheduledFreezeDay()
 }
 
 /**
- * From MCT410 SSPEC: 
- * 
- * MCT-410: This command will perform a Freeze on the Current 
- * Meter Reading and Peak Demand for Channel 1, 2, and 3.  It 
- * will also freeze the TOU Data. 
- *  
- * All of this will only take place if the Freeze Counter 
- * correlates correctly to the last freeze that was received. 
+ * From MCT410 SSPEC:
+ *
+ * MCT-410: This command will perform a Freeze on the Current
+ * Meter Reading and Peak Demand for Channel 1, 2, and 3.  It
+ * will also freeze the TOU Data.
+ *
+ * All of this will only take place if the Freeze Counter
+ * correlates correctly to the last freeze that was received.
  */
 void Mct410Sim::putFreeze(unsigned incoming_freeze)
 {
@@ -516,7 +516,7 @@ void Mct410Sim::putFreeze(unsigned incoming_freeze)
             bytes data;
 
             int last_freeze_timestamp = CtiTime::now().seconds();
-            
+
             data.push_back(last_freeze_timestamp >> 24);
             data.push_back(last_freeze_timestamp >> 16);
             data.push_back(last_freeze_timestamp >> 8);
@@ -524,32 +524,32 @@ void Mct410Sim::putFreeze(unsigned incoming_freeze)
 
             _memory.writeDataToMemoryMap(MM_LastFreezeTimestamp, data);
         }
-        
+
         // Increment and record the freeze counter.
         {
             freeze_counter = (freeze_counter + 1) % 0x100;
-    
+
             _memory.writeValueToMemoryMap(MM_FreezeCounter, freeze_counter);
         }
 
         // Freeze the current peak demand and record it, then reset peak demand to 0.
         {
             bytes data, zeroes(MML_CurrentPeakDemand1, 0x00);
-            
+
             short int peakDemand = _memory.getValueFromMemoryMapLocation(MM_CurrentPeakDemand1, MML_CurrentPeakDemand1);
 
             data.push_back(peakDemand >> 8);
             data.push_back(peakDemand);
-    
+
             _memory.writeDataToMemoryMap(MM_FrozenPeakDemand1, data);
             _memory.writeDataToMemoryMap(MM_CurrentPeakDemand1, zeroes);
         }
 
         // Write the current peak demand timestamp to Frozen Peak Demand timestamp
         {
-            bytes currentPeakDemandTimestamp = _memory.getValueVectorFromMemoryMap(MM_CurrentPeakDemand1Timestamp, 
+            bytes currentPeakDemandTimestamp = _memory.getValueVectorFromMemoryMap(MM_CurrentPeakDemand1Timestamp,
                                                                                    MML_CurrentPeakDemand1Timestamp);
-    
+
             _memory.writeDataToMemoryMap(MM_FrozenPeakDemand1Timestamp, currentPeakDemandTimestamp);
         }
 
@@ -571,12 +571,12 @@ void Mct410Sim::putFreeze(unsigned incoming_freeze)
             data.push_back(hwh);
 
             /**
-             * We need to set the parity of the frozen kWh value to match 
-             * the freeze command that froze the kWh. 
-             *  
-             * The least significant bit of the Frozen Meter reading should 
-             * be set to 0 if this command was a freeze one or 1 if this 
-             * command was a freeze two as per section 4.63 of the MCT 410 
+             * We need to set the parity of the frozen kWh value to match
+             * the freeze command that froze the kWh.
+             *
+             * The least significant bit of the Frozen Meter reading should
+             * be set to 0 if this command was a freeze one or 1 if this
+             * command was a freeze two as per section 4.63 of the MCT 410
              * SSPEC-S01029.
              */
             if( incoming_freeze == 1 )
@@ -594,14 +594,14 @@ void Mct410Sim::putFreeze(unsigned incoming_freeze)
 }
 
 /**
- * From MCT-410 SSPEC: 
- *  
- * 4.22 Load Profile Interval 
- *  
- * Interval, in minute increments, over which standard load 
- * profile values are kept for.  Valid values are 5, 15, 30 and 
- * 60. This value should not be written directly but rather is 
- * set by commands 0x70 - 0x73. 
+ * From MCT-410 SSPEC:
+ *
+ * 4.22 Load Profile Interval
+ *
+ * Interval, in minute increments, over which standard load
+ * profile values are kept for.  Valid values are 5, 15, 30 and
+ * 60. This value should not be written directly but rather is
+ * set by commands 0x70 - 0x73.
  */
 void Mct410Sim::setLpInterval(unsigned interval_minutes)
 {
@@ -703,11 +703,11 @@ bytes Mct410Sim::formatFrozenKwh(const bytes &frozenData, unsigned freezeCounter
 
 bytes Mct410Sim::getAllFrozenChannel1Readings()
 {
-    const short peakDemand = _memory.getValueFromMemoryMapLocation(MM_FrozenPeakDemand1, 
+    const short peakDemand = _memory.getValueFromMemoryMapLocation(MM_FrozenPeakDemand1,
                                                                    MML_FrozenPeakDemand1);
-    const unsigned long frozenTime = _memory.getValueFromMemoryMapLocation(MM_FrozenPeakDemand1Timestamp, 
+    const unsigned long frozenTime = _memory.getValueFromMemoryMapLocation(MM_FrozenPeakDemand1Timestamp,
                                                                            MML_FrozenPeakDemandTimestamp);
-    const unsigned long frozenRead = _memory.getValueFromMemoryMapLocation(MM_FrozenMeterReading1, 
+    const unsigned long frozenRead = _memory.getValueFromMemoryMapLocation(MM_FrozenMeterReading1,
                                                                            MML_FrozenMeterReading1);
 
     const unsigned freezeCounter = _memory.getValueFromMemoryMapLocation(MM_FreezeCounter);
@@ -717,7 +717,7 @@ bytes Mct410Sim::getAllFrozenChannel1Readings()
     return formatAllFrozenChannel1Readings(frozenRead, frozenTime, hwh, freezeCounter, peakDemand);
 }
 
-bytes Mct410Sim::formatAllFrozenChannel1Readings(const unsigned long frozenRead, const unsigned long frozenTime, 
+bytes Mct410Sim::formatAllFrozenChannel1Readings(const unsigned long frozenRead, const unsigned long frozenTime,
                                                  const unsigned hWh, const unsigned freezeCounter, const short peakDemand )
 {
     bytes data;
@@ -772,10 +772,10 @@ bytes Mct410Sim::formatAllCurrentPeakDemandReadings(const unsigned address, cons
     consumption.push_back(consumption_hWh);
 
     /**
-     * Bytes 0-1: Peak Demand 
-     * Bytes 2-5: Peak Demand Timestamp 
-     * Bytes 6-8: Current Meter Read 
-     * Bytes 9-12: No Data 
+     * Bytes 0-1: Peak Demand
+     * Bytes 2-5: Peak Demand Timestamp
+     * Bytes 6-8: Current Meter Read
+     * Bytes 9-12: No Data
      */
     data.insert(data.begin(), peakDemand.begin(), peakDemand.end());
     data.insert(data.end(), peakTimestamp.begin(), peakTimestamp.end());
@@ -857,8 +857,8 @@ bytes Mct410Sim::getAllRecentDemandReadings()
     return formatAllRecentDemandReadings(dynamicDemand);
 }
 
-Mct410Sim::peak_demand_t Mct410Sim::checkForNewPeakDemand(const unsigned address, const unsigned demandInterval, 
-                                               const unsigned lastFreezeTimestamp, const CtiTime c_time) 
+Mct410Sim::peak_demand_t Mct410Sim::checkForNewPeakDemand(const unsigned address, const unsigned demandInterval,
+                                               const unsigned lastFreezeTimestamp, const CtiTime c_time)
 {
     double maxIntervalConsumption = 0;
     unsigned maxIntervalTimestamp = 0;
@@ -1080,7 +1080,7 @@ bytes Mct410Sim::getLoadProfile(const unsigned offset, const unsigned channel)
     return formatLoadProfile(offset, channel, _address, readTime, lpIntervalSeconds);
 }
 
-bytes Mct410Sim::formatLoadProfile(const unsigned offset, const unsigned channel, const unsigned address, 
+bytes Mct410Sim::formatLoadProfile(const unsigned offset, const unsigned channel, const unsigned address,
                                    const CtiTime readTime, const unsigned lpIntervalSeconds)
 {
     bytes result_bytes;
@@ -1108,7 +1108,7 @@ bytes Mct410Sim::formatLoadProfile(const unsigned offset, const unsigned channel
 void Mct410Sim::fillLoadProfile(const unsigned address, const CtiTime &blockStart, const unsigned interval_length, byte_appender &out_itr)
 {
     for( unsigned interval = 0; interval < LoadProfile_IntervalsPerBlock; ++interval )
-    {   
+    {
         // How long ago did this interval start? Start with the most recent interval and work backward.
         const int intervalOffset = (interval + 1) * interval_length;
         const CtiTime intervalStart = blockStart - intervalOffset;
@@ -1122,7 +1122,7 @@ void Mct410Sim::fillLoadProfile(const unsigned address, const CtiTime &blockStar
 void Mct410Sim::fillLongLoadProfile(const unsigned address, const CtiTime &blockStart, const unsigned interval_length, byte_appender &out_itr)
 {
     for( unsigned interval = 0; interval < LoadProfile_IntervalsPerBlock; ++interval )
-    {   
+    {
         // How long ago did this interval start? Start with the most distant interval and work forward.
         const int intervalOffset = (LoadProfile_IntervalsPerBlock - interval) * interval_length;
         const CtiTime intervalStart = blockStart - intervalOffset;

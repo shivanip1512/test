@@ -424,11 +424,10 @@ expresscom.obj:	precompiled.h expresscom.h cmdparse.h ctitokenizer.h \
 		dlldefs.h parsevalue.h dllbase.h dsm2.h cticonnect.h yukon.h \
 		types.h ctidbgmem.h netports.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
-		words.h optional.h ctistring.h logger.h thread.h \
-		CtiPCPtrQueue.h cparms.h rwutil.h database_connection.h \
-		dbaccess.h database_reader.h row_reader.h boost_time.h \
-		boostutil.h configkey.h configval.h ctidate.h \
-		BeatThePeakAlertLevel.h
+		words.h optional.h logger.h thread.h CtiPCPtrQueue.h cparms.h \
+		rwutil.h database_connection.h dbaccess.h database_reader.h \
+		row_reader.h boost_time.h boostutil.h configkey.h configval.h \
+		ctidate.h BeatThePeakAlertLevel.h ctistring.h
 fmu_application.obj:	precompiled.h guard.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		logger.h thread.h mutex.h CtiPCPtrQueue.h
@@ -933,6 +932,16 @@ std_ansi_tbl_base.obj:	precompiled.h logger.h dlldefs.h thread.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
 		os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
 		std_ansi_tbl_base.h ctidate.h
+test_dnp_objects.obj:	dnp_object_internalindications.h dnp_objects.h \
+		dllbase.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \
+		dlldefs.h netports.h mutex.h guard.h utility.h ctitime.h \
+		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
+		optional.h msg_pdata.h pointdefs.h pointtypes.h message.h \
+		collectable.h rwutil.h database_connection.h dbaccess.h \
+		database_reader.h row_reader.h boost_time.h boostutil.h \
+		prot_base.h xfer.h dnp_object_analoginput.h dnp_object_time.h \
+		dnp_object_analogoutput.h dnp_object_binaryinput.h \
+		dnp_object_binaryoutput.h dnp_object_counter.h
 test_dnp_transport.obj:	dnp_transport.h dnp_datalink.h xfer.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
@@ -953,7 +962,7 @@ test_prot_expresscom.obj:	expresscom.h cmdparse.h ctitokenizer.h \
 		dlldefs.h parsevalue.h dllbase.h dsm2.h cticonnect.h yukon.h \
 		types.h ctidbgmem.h netports.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
-		words.h optional.h ctistring.h
+		words.h optional.h
 test_prot_klondike.obj:	prot_klondike.h prot_wrap.h prot_base.h \
 		msg_pdata.h yukon.h types.h ctidbgmem.h dlldefs.h pointdefs.h \
 		pointtypes.h message.h ctitime.h collectable.h rwutil.h \

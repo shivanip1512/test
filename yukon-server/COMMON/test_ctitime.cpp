@@ -5,6 +5,8 @@
 #include <rw/rwtime.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
+#include "boost_test_helpers.h"
+
 using namespace boost::gregorian;
 using namespace boost::posix_time;
 
@@ -311,13 +313,10 @@ unsigned long mkLocalSeconds(const time_parts &tp)
 
 BOOST_AUTO_TEST_CASE(test_ctitime_fromLocalSeconds)
 {
-    _TIME_ZONE_INFORMATION tzinfo;
-    GetTimeZoneInformation(&tzinfo);
+    Cti::Test::set_to_central_timezone();
 
-    //  Windows defines the bias as the difference from local time to GMT;
-    //    since we want GMT to local, we negate the values
-    const int standard_offset = -(tzinfo.Bias + tzinfo.StandardBias) * 60;
-    const int daylight_offset = -(tzinfo.Bias + tzinfo.DaylightBias) * 60;
+    const int standard_offset = -6 * 3600;
+    const int daylight_offset = -5 * 3600;
 
     //  =====  2009 test cases  =====
     time_parts tc2009[15] =
@@ -365,8 +364,10 @@ BOOST_AUTO_TEST_CASE(test_ctitime_fromLocalSeconds)
 }
 
 
-BOOST_AUTO_TEST_CASE(test_ctitime_GMT_conversions)
+BOOST_AUTO_TEST_CASE(test_ctitime_CentralTime_GMT_conversions)
 {
+    Cti::Test::set_to_central_timezone();
+
     // Wed Jan 20th, 2010 at 12:00:00 CST == Wed Jan 20th, 2010 at 18:00:00 GMT
 
     CtiTime theTime( CtiDate( 20, 1, 2010),  12,  0,  0  );
@@ -514,6 +515,157 @@ BOOST_AUTO_TEST_CASE(test_ctitime_GMT_conversions)
 }
 
 
+BOOST_AUTO_TEST_CASE(test_ctitime_EasternTime_GMT_conversions)
+{
+    Cti::Test::set_to_eastern_timezone();
+
+    // Wed Jan 20th, 2010 at 12:00:00 EST == Wed Jan 20th, 2010 at 17:00:00 GMT
+
+    CtiTime theTime( CtiDate( 20, 1, 2010),  12,  0,  0  );
+
+    BOOST_CHECK_EQUAL( theTime.date()   , theTime.dateGMT()     );
+    BOOST_CHECK_EQUAL( 17               , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
+
+
+    // Wed Jan 20th, 2010 at 22:00:00 EST == Thu Jan 21st, 2010 at 03:00:00 GMT
+
+    theTime = CtiTime(CtiDate( 20, 1, 2010),  22,  0,  0  );
+
+    BOOST_CHECK_EQUAL( 1                , theTime.dateGMT().month()         );
+    BOOST_CHECK_EQUAL( 21               , theTime.dateGMT().dayOfMonth()    );
+    BOOST_CHECK_EQUAL( 2010             , theTime.dateGMT().year()          );
+    BOOST_CHECK_EQUAL( 4                , theTime.dateGMT().weekDay()       );      // 4 == Thursday
+    BOOST_CHECK_EQUAL( 3                , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
+
+
+    // Sun Jan 31st, 2010 at 20:00:00 EST == Mon Feb 1st, 2010 at 01:00:00 GMT
+
+    theTime = CtiTime(CtiDate( 31, 1, 2010),  20,  0,  0  );
+
+    BOOST_CHECK_EQUAL( 2                , theTime.dateGMT().month()         );
+    BOOST_CHECK_EQUAL( 1                , theTime.dateGMT().dayOfMonth()    );
+    BOOST_CHECK_EQUAL( 2010             , theTime.dateGMT().year()          );
+    BOOST_CHECK_EQUAL( 1                , theTime.dateGMT().weekDay()       );      // 1 == Monday
+    BOOST_CHECK_EQUAL( 1                , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
+
+
+    // Sun Mar 14th, 2010 at 1:00:00 EST == Sun Mar 14th, 2010 at 6:00:00 GMT
+
+    theTime = CtiTime(CtiDate( 14, 3, 2010),  1,  0,  0  );
+
+    BOOST_CHECK_EQUAL( theTime.date()   , theTime.dateGMT()     );
+    BOOST_CHECK_EQUAL( 6                , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
+
+
+    // Sun Mar 14th, 2010 at 1:59:59 EST == Sun Mar 14th, 2010 at 6:59:59 GMT
+
+    theTime = CtiTime(CtiDate( 14, 3, 2010),  1,  59,  59  );
+
+    BOOST_CHECK_EQUAL( theTime.date()   , theTime.dateGMT()     );
+    BOOST_CHECK_EQUAL( 6                , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 59               , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 59               , theTime.secondGMT()   );
+
+
+    // Sun Mar 14th, 2010 at 2:00:00 EST == Sun Mar 14th, 2010 at 6:00:00 GMT?!?!
+    //  Just for documentation and completeness and fail.
+
+    theTime = CtiTime(CtiDate( 14, 3, 2010),  2,   0,   0  );
+
+    BOOST_CHECK_EQUAL( theTime.date()   , theTime.dateGMT()     );
+    BOOST_CHECK_EQUAL( 6                , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
+
+
+    // Sun Mar 14th, 2010 at 3:00:00 EDT == Sun Mar 14th, 2010 at 7:00:00 GMT
+
+    theTime = CtiTime(CtiDate( 14, 3, 2010),  3,  0,  0  );
+
+    BOOST_CHECK_EQUAL( theTime.date()   , theTime.dateGMT()     );
+    BOOST_CHECK_EQUAL( 7                , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
+
+
+    // Sun Mar 14th, 2010 at 4:00:00 EDT == Sun Mar 14th, 2010 at 8:00:00 GMT
+
+    theTime = CtiTime(CtiDate( 14, 3, 2010),  4,  0,  0  );
+
+    BOOST_CHECK_EQUAL( theTime.date()   , theTime.dateGMT()     );
+    BOOST_CHECK_EQUAL( 8                , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
+
+
+    // Wed July 14th, 2010 at 12:00:00 EDT == Wed July 14th, 2010 at 16:00:00 GMT
+
+    theTime = CtiTime(CtiDate( 14, 7, 2010),  12,  0,  0  );
+
+    BOOST_CHECK_EQUAL( theTime.date()   , theTime.dateGMT()     );
+    BOOST_CHECK_EQUAL( 16               , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
+
+
+    // Sun Nov 7th, 2010 at 00:59:59 EDT == Sun Nov 7th, 2010 at 4:59:59 GMT
+
+    theTime = CtiTime(CtiDate( 7, 11, 2010),  0, 59, 59  );
+
+    BOOST_CHECK_EQUAL( theTime.date()   , theTime.dateGMT()     );
+    BOOST_CHECK_EQUAL( 4                , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 59               , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 59               , theTime.secondGMT()   );
+
+    theTime += 1;  //  Move it to 1:00 EDT (the first 1:00)
+
+    BOOST_CHECK_EQUAL( theTime.date()   , theTime.dateGMT()     );
+    BOOST_CHECK_EQUAL( 5                , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
+
+    // Sun Nov 7th, 2010 at 1:00:00 EST == Sun Nov 7th, 2010 at 6:00:00 GMT
+
+    theTime = CtiTime(CtiDate( 7, 11, 2010),  1,  0,  0  );
+
+    BOOST_CHECK_EQUAL( theTime.date()   , theTime.dateGMT()     );
+    BOOST_CHECK_EQUAL( 6                , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
+
+
+    // Sun Nov 7th, 2010 at 4:00:00 EDT == Sun Nov 7th, 2010 at 9:00:00 GMT
+
+    theTime = CtiTime(CtiDate( 7, 11, 2010),  4,  0,  0  );
+
+    BOOST_CHECK_EQUAL( theTime.date()   , theTime.dateGMT()     );
+    BOOST_CHECK_EQUAL( 9                , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
+
+
+    // Fri Dec 31st, 2010 at 22:00:00 EDT == Sat Jan 1st, 2011 at 3:00:00 GMT
+
+    theTime = CtiTime(CtiDate( 31, 12, 2010),  22,  0,  0  );
+
+    BOOST_CHECK_EQUAL( 1                , theTime.dateGMT().month()         );
+    BOOST_CHECK_EQUAL( 1                , theTime.dateGMT().dayOfMonth()    );
+    BOOST_CHECK_EQUAL( 2011             , theTime.dateGMT().year()          );
+    BOOST_CHECK_EQUAL( 6                , theTime.dateGMT().weekDay()       );      // 6 == Saturday
+    BOOST_CHECK_EQUAL( 3                , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
+}
+
+
 BOOST_AUTO_TEST_CASE(test_ctitime_fall_dst_creation)
 {
     {
@@ -526,8 +678,45 @@ BOOST_AUTO_TEST_CASE(test_ctitime_fall_dst_creation)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_ctitime_asString_standard_time)
+
+BOOST_AUTO_TEST_CASE(test_ctitime_asString)
 {
+    Cti::Test::unset_timezone();
+
+    CtiDate d = CtiDate(1, 1, 2009);
+
+    CtiTime t = CtiTime(d, 0, 0, 0);
+
+    BOOST_CHECK_EQUAL(t.asString(), "01/01/2009 00:00:00");
+
+    struct test_case
+    {
+        CtiTime::DisplayOffset offset;
+        CtiTime::DisplayTimezone timezone;
+        std::string expected;
+    }
+    const test_cases[] = {
+        { CtiTime::Local,      CtiTime::OmitTimezone,    "01/01/2009 00:00:00" },
+        { CtiTime::LocalNoDst, CtiTime::OmitTimezone,    "01/01/2009 00:00:00" } };
+
+    std::vector<std::string> results, expected;
+
+    for each( const test_case &tc in test_cases )
+    {
+        results.push_back(t.asString(tc.offset, tc.timezone));
+        expected.push_back(tc.expected);
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+        expected.begin(), expected.end(),
+        results.begin(), results.end());
+}
+
+/*
+BOOST_AUTO_TEST_CASE(test_ctitime_asString_CST)
+{
+    Cti::Test::set_to_central_timezone();
+
     CtiDate d = CtiDate(1, 1, 2009);
 
     CtiTime t = CtiTime(d, 0, 0, 0);
@@ -562,8 +751,10 @@ BOOST_AUTO_TEST_CASE(test_ctitime_asString_standard_time)
 }
 
 
-BOOST_AUTO_TEST_CASE(test_ctitime_asString_daylight_saving_time)
+BOOST_AUTO_TEST_CASE(test_ctitime_asString_CDT)
 {
+    Cti::Test::set_to_central_timezone();
+
     CtiDate d = CtiDate(1, 6, 2009);
 
     CtiTime t = CtiTime(d, 0, 0, 0);
@@ -597,5 +788,81 @@ BOOST_AUTO_TEST_CASE(test_ctitime_asString_daylight_saving_time)
         results.begin(), results.end());
 }
 
+
+BOOST_AUTO_TEST_CASE(test_ctitime_asString_EST)
+{
+    Cti::Test::set_to_eastern_timezone();
+
+    CtiDate d = CtiDate(1, 1, 2009);
+
+    CtiTime t = CtiTime(d, 0, 0, 0);
+
+    BOOST_CHECK_EQUAL(t.asString(), "01/01/2009 00:00:00");
+
+    struct test_case
+    {
+        CtiTime::DisplayOffset offset;
+        CtiTime::DisplayTimezone timezone;
+        std::string expected;
+    }
+    const test_cases[] = {
+        { CtiTime::Gmt,        CtiTime::OmitTimezone,    "01/01/2009 05:00:00" },
+        { CtiTime::Gmt,        CtiTime::IncludeTimezone, "01/01/2009 05:00:00 (UTC+0:00 GMT)" },
+        { CtiTime::Local,      CtiTime::OmitTimezone,    "01/01/2009 00:00:00" },
+        { CtiTime::Local,      CtiTime::IncludeTimezone, "01/01/2009 00:00:00 (UTC-5:00 EST)" },
+        { CtiTime::LocalNoDst, CtiTime::OmitTimezone,    "01/01/2009 00:00:00" },
+        { CtiTime::LocalNoDst, CtiTime::IncludeTimezone, "01/01/2009 00:00:00 (UTC-5:00 EST)" } };
+
+    std::vector<std::string> results, expected;
+
+    for each( const test_case &tc in test_cases )
+    {
+        results.push_back(t.asString(tc.offset, tc.timezone));
+        expected.push_back(tc.expected);
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+        expected.begin(), expected.end(),
+        results.begin(), results.end());
+}
+
+
+BOOST_AUTO_TEST_CASE(test_ctitime_asString_EDT)
+{
+    Cti::Test::set_to_eastern_timezone();
+
+    CtiDate d = CtiDate(1, 6, 2009);
+
+    CtiTime t = CtiTime(d, 0, 0, 0);
+
+    BOOST_CHECK_EQUAL(t.asString(), "06/01/2009 00:00:00");
+
+    struct test_case
+    {
+        CtiTime::DisplayOffset offset;
+        CtiTime::DisplayTimezone timezone;
+        std::string expected;
+    }
+    const test_cases[] = {
+        { CtiTime::Gmt,        CtiTime::OmitTimezone,    "06/01/2009 04:00:00" },
+        { CtiTime::Gmt,        CtiTime::IncludeTimezone, "06/01/2009 04:00:00 (UTC+0:00 GMT)" },
+        { CtiTime::Local,      CtiTime::OmitTimezone,    "06/01/2009 00:00:00" },
+        { CtiTime::Local,      CtiTime::IncludeTimezone, "06/01/2009 00:00:00 (UTC-4:00 EDT)" },
+        { CtiTime::LocalNoDst, CtiTime::OmitTimezone,    "05/31/2009 23:00:00" },
+        { CtiTime::LocalNoDst, CtiTime::IncludeTimezone, "05/31/2009 23:00:00 (UTC-5:00 EST)" } };
+
+    std::vector<std::string> results, expected;
+
+    for each( const test_case &tc in test_cases )
+    {
+        results.push_back(t.asString(tc.offset, tc.timezone));
+        expected.push_back(tc.expected);
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+        expected.begin(), expected.end(),
+        results.begin(), results.end());
+}
+*/
 
 BOOST_AUTO_TEST_SUITE_END()
