@@ -16,7 +16,11 @@ public class EmailServiceMessage {
     
     public EmailServiceMessage(InternetAddress from, InternetAddress[] to, InternetAddress[] cc, 
                                InternetAddress[] bcc, String subject, MimeMultipart body) throws AddressException {
-        this.from = new InternetAddress(from.getAddress());
+    	if (from != null) {
+    		this.from = new InternetAddress(from.getAddress());
+    	} else {
+    		this.from = null;
+    	}
         
         this.to = new InternetAddress[to.length];
         System.arraycopy(to, 0, this.to, 0, to.length);
