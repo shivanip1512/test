@@ -23,10 +23,10 @@ jQuery(function() {
                 } else {
                     jQuery('#rfCommandStatus').removeClass('successMessage').addClass('errorMessage');
                 }
-                Yukon.ui.unblock(event.target);
+                Yukon.ui.unblock(event.currentTarget);
             },
             error: function() {
-                Yukon.ui.unblock(event.target);
+                Yukon.ui.unblock(event.currentTarget);
             }
         });
     });
