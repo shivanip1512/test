@@ -640,9 +640,9 @@ public class OperatorHardwareController {
         // Log change out attempt
         Hardware oldInventory = hardwareUiService.getHardware(oldInventoryId);
         LiteYukonUser user = context.getYukonUser();
-        
-        InventoryIdentifier newInventoryIdentifier = inventoryDao.getYukonInventory(newInventoryId);
-        
+        String changeOutMessage = "yukon.web.modules.operator.hardware.hardwareChangeOut";
+        FlashScopeMessageType messageType =  FlashScopeMessageType.CONFIRM;
+
         if (isMeter) {
             LiteYukonPAObject oldLiteYukonPAO = paoDao.getLiteYukonPAO(oldInventory.getDeviceId());
             LiteYukonPAObject newLiteYukonPAO = paoDao.getLiteYukonPAO(newInventoryId);
@@ -654,34 +654,29 @@ public class OperatorHardwareController {
             String newInventorySN = lmHardwareBaseDao.getSerialNumberForInventoryId(newInventoryId);
             String oldInventorySN = oldInventory.getSerialNumber();
             hardwareEventLogService.hardwareChangeOutAttempted(user, oldInventorySN, newInventorySN, EventSource.OPERATOR);
+            InventoryIdentifier newInventoryIdentifier = inventoryDao.getYukonInventory(newInventoryId);
+            HardwareType type = newInventoryIdentifier.getHardwareType();
+            if (type.isGateway()) {
+                changeOutMessage = "yukon.web.modules.operator.hardware.hardwareChangeOut.gateway";
+                messageType = FlashScopeMessageType.WARNING;
+            } else if (type.isThermostat() && type.isZigbee()) {
+                changeOutMessage = "yukon.web.modules.operator.hardware.hardwareChangeOut.zigbeeDevice";
+                messageType = FlashScopeMessageType.WARNING;
+            }
         }
-
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, user);
-        hardwareUiService.changeOutInventory(oldInventoryId, newInventoryId, user, isMeter);
         
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, user);
+        int inventoryId = hardwareUiService.changeOutInventory(oldInventoryId, newInventoryId, user, isMeter);
+ 
         AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
         
-        HardwareType type = newInventoryIdentifier.getHardwareType();
-        String changeOutMessage;
-        FlashScopeMessageType messageType;
-        if (type.isGateway()) {
-            changeOutMessage = "yukon.web.modules.operator.hardware.hardwareChangeOut.gateway";
-            messageType = FlashScopeMessageType.WARNING;
-        } else if (type.isThermostat() && type.isZigbee()) {
-            changeOutMessage = "yukon.web.modules.operator.hardware.hardwareChangeOut.zigbeeDevice";
-            messageType = FlashScopeMessageType.WARNING;
-        } else {
-            changeOutMessage = "yukon.web.modules.operator.hardware.hardwareChangeOut";
-            messageType = FlashScopeMessageType.CONFIRM;
-        }
-
         MessageSourceResolvable message = new YukonMessageSourceResolvable(changeOutMessage);
         flashScope.setMessage(message, messageType);
         
         if (redirect.equalsIgnoreCase("list")) {
             return "redirect:list";
         } else {
-            model.addAttribute("inventoryId", newInventoryId);
+            model.addAttribute("inventoryId", inventoryId);
             return "redirect:view";
         }
     }

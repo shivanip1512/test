@@ -81,8 +81,9 @@ public interface HardwareUiService {
      * Removes the inventory with id 'oldInventoryId' from the account and adds the 
      * inventory with id 'changeOutId'.
      * @param isMeter true if this is a meter change out, the changeOutId will be a pao id
+     * @return int the inventoryId
      */
-    public void changeOutInventory(int oldInventoryId, int changeOutId, LiteYukonUser user, boolean isMeter);
+    public int changeOutInventory(int oldInventoryId, int changeOutId, LiteYukonUser user, boolean isMeter);
 
     /**
      * Serial numbers can only be used once among all energy companies that are relatives.

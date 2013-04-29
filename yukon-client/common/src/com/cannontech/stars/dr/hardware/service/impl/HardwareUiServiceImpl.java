@@ -601,7 +601,9 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     }
     
     @Override
-    public void changeOutInventory(int oldInventoryId, int newInventoryId, LiteYukonUser user, boolean isMeter) {
+    public int changeOutInventory(int oldInventoryId, int newInventoryId, LiteYukonUser user, boolean isMeter) {
+        
+        int inventoryId;
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         LiteInventoryBase oldInventory = inventoryBaseDao.getByInventoryId(oldInventoryId);
@@ -610,14 +612,15 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         if (isMeter) {
             int accountId = oldInventory.getAccountID();
             starsInventoryBaseService.removeDeviceFromAccount(oldInventory, energyCompany, user);
-            addYukonMeter(newInventoryId, accountId, user);
+            inventoryId = addYukonMeter(newInventoryId, accountId, user);
         } else {
             LiteInventoryBase newInventory = inventoryBaseDao.getByInventoryId(newInventoryId);
             newInventory.setAccountID(oldInventory.getAccountID());
             starsInventoryBaseService.removeDeviceFromAccount(oldInventory, energyCompany, user);
-            starsInventoryBaseService.addDeviceToAccount(newInventory, energyCompany, user, false);
+            LiteInventoryBase inventoryBase = starsInventoryBaseService.addDeviceToAccount(newInventory, energyCompany, user, false);
+            inventoryId = inventoryBase.getInventoryID();
         }
-        
+        return inventoryId;
     }
     
     /* HELPERS */
