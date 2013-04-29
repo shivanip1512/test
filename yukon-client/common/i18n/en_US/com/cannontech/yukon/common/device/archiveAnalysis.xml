@@ -142,7 +142,7 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.endDate">End Date</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.dateRange">Date Range</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.previousDays">Previous Days</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.sinceLastChange">Since Last Change</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.sinceLastChange">Since Last Run</entry>
 
     <!-- exporter.jsp -->
     <entry key="yukon.web.modules.amr.archivedValueExporter.saveFormat.label">Save Format</entry>
