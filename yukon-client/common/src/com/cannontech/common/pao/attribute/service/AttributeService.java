@@ -24,7 +24,6 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.user.YukonUserContext;
 
-// REVERT THE FORMATTING HERE
 public interface AttributeService {
 
     /**

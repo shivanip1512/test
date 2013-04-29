@@ -86,6 +86,8 @@ import com.google.common.collect.Sets;
 @CheckRoleProperty(YukonRoleProperty.DEVICE_DATA_MONITORING)
 public class DeviceDataMonitorController {
     int MAX_ROWS_FROM_ATTRIBUTE_POINT_QUERY = 3500;
+    // Send this to i18n messages rather than a count so their logic knows "all" devices are one in a state.
+    final int MESSAGE_MAGIC_NUMBER__ALL     = -1;
 
     private static final String baseKey = "yukon.web.modules.amr.deviceDataMonitor";
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorController.class);
@@ -458,7 +460,7 @@ public class DeviceDataMonitorController {
                         : (monitor.getAttributeStateGroups().size() == 0) ? "noProcessors"
                                 : "message");
         final String keyPrefix = "yukon.web.modules.amr.deviceDataMonitor.fullySupported.";
-        final long messageSignal = totalDeviceCount == totalSupportedCount ? -1 : totalSupportedCount;
+        final long messageSignal = totalDeviceCount == totalSupportedCount ? MESSAGE_MAGIC_NUMBER__ALL : totalSupportedCount;
         returnObj.put("totalSupportedCountMessage",     messageSourceAccessor.getMessage(keyPrefix + keySuffix, messageSignal));
         returnObj.put("totalSupportedCountHelpTitle",   messageSourceAccessor.getMessage(keyPrefix + "help.title"));
         returnObj.put("totalSupportedCountHelp",        messageSourceAccessor.getMessage(keyPrefix + "help.msg."
@@ -571,7 +573,8 @@ public class DeviceDataMonitorController {
             ptRow.add(messageSourceAccessor.getMessage(labelKey));
             ptRow.add(messageSourceAccessor.getMessage(baseKey + ".list.title",nameString));
             ptRow.add(messageSourceAccessor.getMessage(baseKey + ".help.title"));
-            ptRow.add(messageSourceAccessor.getMessage(baseKey + ".help.msg",totalDeviceCount, missingPoints, nameString));
+            final long missingNumber = missingPoints == totalDeviceCount ? MESSAGE_MAGIC_NUMBER__ALL : missingPoints;
+            ptRow.add(messageSourceAccessor.getMessage(baseKey + ".help.msg",totalDeviceCount, missingNumber, nameString));
             ptRow.add(messageSourceAccessor.getMessage("yukon.web.modules.amr.deviceDataMonitor.addPoints.label"));
             processorMissingList.add(ptRow);
         }
@@ -620,6 +623,7 @@ public class DeviceDataMonitorController {
                     + fieldType;
             final long missingCount = (highCount - lowCount);
             JSONArray attr = new JSONArray();
+            final long missingNumber = missingCount == deviceCount ? MESSAGE_MAGIC_NUMBER__ALL : missingCount;
             attr.addAll(Arrays.asList(new String[] {
                     "" + rowId,
                     fieldType.toString(),
@@ -631,7 +635,7 @@ public class DeviceDataMonitorController {
                     msg.getMessage(baseKey + ".list.title", fieldDisplayName),
                     msg.getMessage(baseKey + ".help.title"),
                     msg.getMessage(baseKey + ".help.msg",
-                            deviceCount, missingCount, fieldDisplayName) }));
+                            deviceCount, missingNumber, fieldDisplayName) }));
             processorMissingList.add(attr);
         }
     }

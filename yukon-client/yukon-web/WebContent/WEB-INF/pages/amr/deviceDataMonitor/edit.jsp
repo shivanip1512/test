@@ -81,8 +81,8 @@
 					<tags:sectionContainer2 nameKey="processors" styleClass="${processors_section_class}">
 			            <tags:dynamicTable items="${monitor.processors}" nameKey="dynamicTable"
                             id="processorsTable" addButtonClass="f_add_processor" noBlockOnAdd="true" disableAddButton="${disableAddProcessAtStart}">
-                        <div class="largeDialogScrollArea">
-						<table class="compactResultsTable f_processors_table device_data_processors">
+                        <div>
+						<table class="inputTable f_processors_table device_data_processors">
 							<thead>
 								<tr>
 									<th><i:inline key=".processors.attribute" /></th>

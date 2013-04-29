@@ -246,7 +246,7 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
             var addStyle = data.totalMissingCount === 0 ? '': 'border-bottom: 1px dotted #ccc;';
             var helpDivId = 'totalSupportedHelpId';
             jQuery(countSel).html("<div style='"+ addStyle +"padding: 3px 0;'>"+ data.totalSupportedCountMessage 
-                    +"<a href='javascript:void(0);' class='icon_help f_showViolationHelp' target-id='"+ helpDivId +"' target-title='"+ data.totalSupportedCountHelpTitle +"'>&nbsp;</a>"
+                    +"<a href='javascript:void(0);' class='icon_help f_showViolationHelp violation_help_link' target-id='"+ helpDivId +"' target-title='"+ data.totalSupportedCountHelpTitle +"'>&nbsp;</a>"
                     +"<div class='dn' id='"+ helpDivId +"'>"+ data.totalSupportedCountHelp +"</div></div>" );
 
             if (data.totalMissingCount === 0) {
@@ -303,9 +303,9 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
                     if(usedLimitQry && DeviceDataMonitor._str_equal(""+ usedLimitQry, "true")) {
                         countText = '';
                         var pt_help_title = jQuery("#pointUnknownNumberHelp").attr('target-title');
-                        postHref = '<a class="warning f_showTooManyDevicesForPointHelp" href="javascript:void(0);" target-id="pointUnknownNumberHelp" target-title="'+ pt_help_title +'">&nbsp;</span>';
+                        postHref = '<a class="icon_warning f_showTooManyDevicesForPointHelp" href="javascript:void(0);" target-id="pointUnknownNumberHelp" target-title="'+ pt_help_title +'">&nbsp;</span>';
                     }
-                    output += "<td><a class='labeled_icon magnifier error f_showProblem' href='javascript:void(0);' data-url='" + the_list_url + "' target-id='"+ popupListId +"' target-title='"+ listTitle +"'>" + countText + "</a><span class='labeled_icon loading'>"+ countText +"</span>"+ postHref +"<div class='f_problems_container dn' id='"+ popupListId +"'/></td>";
+                    output += "<td><a class='labeled_icon magnifier error f_showProblem' href='javascript:void(0);' data-url='" + the_list_url + "' target-id='"+ popupListId +"' target-title='"+ listTitle +"'>" + countText + "</a><span class='labeled_icon loading'>"+ countText +"</span>"+ postHref +"<div class='f_problems_container problem_device_list dn' id='"+ popupListId +"'/></td>";
                     output += "<td>"+ missingText +"</td><td>"+ itemName +"</td>\n";
                     if(DeviceDataMonitor._check_row_type_is_point(itemType)) {
                         var add_points_url = DeviceDataMonitor._url_to_add_points_to_display_devices +'?'+ url_params;
@@ -314,7 +314,7 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
                             same_point_violation_exists = true;
                     } else
                         output += "<td>&nbsp;</td>\n";
-                    jQuery(countSel).append(output +"<td><a href='javascript:void(0);' class='icon_help f_showViolationHelp' target-id='"+ popupHelpId +"' target-title='"+ helpTitle +"'>&nbsp;</a><div class='dn' id='"+ popupHelpId +"'>"+ helpText +"</div></td></td></tr>\n");
+                    jQuery(countSel).append(output +"<td><a href='javascript:void(0);' class='icon_help f_showViolationHelp violation_help_link' target-id='"+ popupHelpId +"' target-title='"+ helpTitle +"'>&nbsp;</a><div class='dn' id='"+ popupHelpId +"'>"+ helpText +"</div></td></td></tr>\n");
                     
                 }
             }

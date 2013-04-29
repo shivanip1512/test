@@ -109,11 +109,11 @@ table.naturalWidth {width: auto;}
 
 table.nowrap th, table.nowrap td {white-space: nowrap;}
 
-.compactResultsTable, .resultsTable, .nameValueTable {width:100%;border-collapse:collapse;}
+.compactResultsTable, .inputTable, .resultsTable, .nameValueTable {width:100%;border-collapse:collapse;}
 .compactResultsTable tr.focused, .compactResultsTable tr.focused:nth-child(2n) { background-color: #DAE2FF;}
 .compactResultsTable {font-size:0.8em;}
-.compactResultsTable tr:nth-child(even), .resultsTable tr:nth-child(even), .striped-list > div:nth-child(even), .striped tr:nth-child(even) {background-color:#f6f6f6;}
-.compactResultsTable td, .resultsTable td, .nameValueTable td {border:none;}
+.compactResultsTable tr:nth-child(even), .inputTable tr:nth-child(even), .resultsTable tr:nth-child(even), .striped-list > div:nth-child(even), .striped tr:nth-child(even) {background-color:#f6f6f6;}
+.compactResultsTable td, .inputTable td, .resultsTable td, .nameValueTable td {border:none;}
 .compactResultsPaging {border-top: 1px solid #ccc;}
 .compactResultsPaging .pagingArea {float: right; margin: -1px 50px 0 0; border: 1px solid #ccc; border-style: none solid solid solid; padding: 5px 10px;background-color: white;}
 .compactResultsPaging span {line-height: 16px;}
@@ -373,6 +373,8 @@ html[xmlns] .clearfix {display: block;}
 .wall_of_text .value {max-width: 300px;}
 .title-bar-tool {float:right !important;margin-right: 10px;}
 .dialog-no-buttons {margin-bottom: 20px;} /* buffer to get content (like scroll bar) from running into drag handle in dialogs with no button bar */
+.refresh {background: #FFF url(../Icons/arrow_refresh.png) left center no-repeat;padding-left: 20px;}
+.icon_warning {height: 16px; padding-left: 16px; background: #FFFFFF url('/WebConfig/yukon/Icons/warning.gif') 0px 0px no-repeat;}
 
 .setting {border-top: dotted 1px #ccc; margin-top: -1px; padding: 10px 0;}
 .setting > .fl {margin-left: 10px;}
@@ -450,15 +452,3 @@ div.disabled {color: #666;}
 span.info {font-size: 11px; color: #333; background: lightYellow; border: solid 1px orange; display:block; padding: 5px 10px; margin: 0 0 10px;}
 #cannonUpdaterErrorDiv {position: fixed;bottom: 0;left: 0;right: 0;background: #D14836;color: white;font-weight: bold;text-align: center;padding: 3px;}
 #cannonUpdaterErrorDiv .alert {padding-top: 64px;width: 64px;position: absolute;bottom: 0;left: 10px;}
-
-/* Device Data Monitor */
-.f_problems_container .scrollingContainer_large { max-height: none;}
-.f_showViolationHelp {padding: 0 7px;}
-.ui-dialog-content em {font-weight: bold;}
-.compactResultsTable div.f_state_group, .compactResultsTable div.f_states {font-size: 1.2em;}
-#sharedPointsDiv .compactResultsTable td.preselectedPoint {background-color: green;}
-#sharedPointsDiv .compactResultsTable td.preselectedPoint span {font-weight: bold; color: black;}
-#sharedPointsDiv .compactResultsTable td label {overflow: auto;clear: both;}
-#sharedPointsDiv .compactResultsTable td span {display: inline;}
-.refresh {background: #FFF url(../Icons/arrow_refresh.png) left center no-repeat;padding-left: 20px;}
-.warning {height: 16px; padding-left: 16px; background: #FFFFFF url('/WebConfig/yukon/Icons/warning.gif') 0px 0px no-repeat;}
