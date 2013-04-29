@@ -164,6 +164,11 @@
 		<filter-name>noCacheFilter</filter-name>
 		<url-pattern>*.jsf</url-pattern>
 	</filter-mapping>
+    
+    <filter-mapping>
+        <filter-name>noCacheFilter</filter-name>
+        <servlet-name>ControlServlet</servlet-name>
+    </filter-mapping>
 
 	<filter-mapping>
 		<filter-name>noCacheFilter</filter-name>
