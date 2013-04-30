@@ -5,69 +5,43 @@
 <entry key="yukon.common.alerts.alarm">{paoName} / {pointName}: {alarmText}</entry>
 <entry key="yukon.common.alerts.serverResponse">{responseText}</entry>
 <entry key="yukon.common.alerts.commandCompletion"><![CDATA[
-
-Command "{command}" completed with {percentSuccess|#0.0#}% success of the {completedCount} sent.
-  <a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details">
-    <img src="/WebConfig/yukon/Icons/magnifier_zoom_in.gif" alt="detail" style="border-style: none; vertical-align:middle">
-  </a>
+<a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details" class="labeled_icon_right magnifier_zoom_in">
+Command "{command}" completed with {percentSuccess|#0.0#}% success of the {completedCount} sent.</a>
 ]]></entry>
 
 <entry key="yukon.common.alerts.commandCompletion.canceled"><![CDATA[
-
-Command "{command}" was canceled before completion.
-<br>
-{notCompletedCount} commands did not complete. {percentSuccess|#0.0#}% of the {completedCount} commands that were completed succeeded.
-  <a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details">
-    <img src="/WebConfig/yukon/Icons/magnifier_zoom_in.gif" alt="detail" style="border-style: none; vertical-align:middle">
-  </a>
+<p>Command "{command}" was canceled before completion.</p>
+<a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details" class="labeled_icon_right magnifier_zoom_in">
+{notCompletedCount} commands did not complete. {percentSuccess|#0.0#}% of the {completedCount} commands that were completed succeeded.</a>
 ]]></entry>
 
 <entry key="yukon.common.alerts.commandCompletion.canceled.noneSucceeded"><![CDATA[
-
-Command "{command}" was canceled before completion.
-<br>
-{notCompletedCount} commands did not complete. None of the commands that completed were successful.
-  <a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details">
-    <img src="/WebConfig/yukon/Icons/magnifier_zoom_in.gif" alt="detail" style="border-style: none; vertical-align:middle">
-  </a>
+<p>Command "{command}" was canceled before completion.</p>
+<a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details" class="labeled_icon_right magnifier_zoom_in">
+{notCompletedCount} commands did not complete. None of the commands that completed were successful.</a>
 ]]></entry>
 
 <entry key="yukon.common.alerts.commandCompletion.failed"><![CDATA[
-
-Command "{command}" failed. Reason: {exceptionReason}
-<br>
-{notCompletedCount} commands did not complete. {percentSuccess|#0.0#}% of the {completedCount} commands that were completed succeeded.
-  <a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details">
-    <img src="/WebConfig/yukon/Icons/magnifier_zoom_in.gif" alt="detail" style="border-style: none; vertical-align:middle">
-  </a>
+<p>Command "{command}" failed. Reason: {exceptionReason}</p>
+<a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details" class="labeled_icon_right magnifier_zoom_in">
+{notCompletedCount} commands did not complete. {percentSuccess|#0.0#}% of the {completedCount} commands that were completed succeeded.</a>
 ]]></entry>
 
 <entry key="yukon.common.alerts.commandCompletion.failed.noneSucceeded"><![CDATA[
-
-Command "{command}" failed. Reason: {exceptionReason}
-<br>
-{notCompletedCount} commands did not complete. None of the commands that completed were successful.
-  <a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details">
-    <img src="/WebConfig/yukon/Icons/magnifier_zoom_in.gif" alt="detail" style="border-style: none; vertical-align:middle">
-  </a>
+<p>Command "{command}" failed. Reason: {exceptionReason}</p>
+<a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details" class="labeled_icon_right magnifier_zoom_in">
+{notCompletedCount} commands did not complete. None of the commands that completed were successful.</a>
 ]]></entry>
 
 <entry key="yukon.common.alerts.groupMeterReadCompletion"><![CDATA[
-
-Group Attribute Read "{attributesDescription}" completed with {percentSuccess|#0.0#}% success of the {completedCount} sent.
-  <a href="/group/groupMeterRead/resultDetail?resultKey={resultKey}" title="Click to see complete details">
-    <img src="/WebConfig/yukon/Icons/magnifier_zoom_in.gif" alt="detail" style="border-style: none; vertical-align:middle">
-  </a>
+<a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details" class="labeled_icon_right magnifier_zoom_in">
+Group Attribute Read "{attributesDescription}" completed with {percentSuccess|#0.0#}% success of the {completedCount} sent.</a>
 ]]></entry>
 
 <entry key="yukon.common.alerts.groupMeterReadCompletion.failed"><![CDATA[
-
-Group Attribute Read "{attributesDescription}" failed. Reason: {exceptionReason}
-<br>
-{notCompletedCount} commands did not complete. {percentSuccess|#0.0#}% of the {completedCount} commands that were completed succeeded.
-  <a href="/group/groupMeterRead/resultDetail?resultKey={resultKey}" title="Click to see complete details">
-    <img src="/WebConfig/yukon/Icons/magnifier_zoom_in.gif" alt="detail" style="border-style: none; vertical-align:middle">
-  </a>
+<p>Group Attribute Read "{attributesDescription}" failed. Reason: {exceptionReason}</p>
+<a href="/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details" class="labeled_icon_right magnifier_zoom_in">
+{notCompletedCount} commands did not complete. {percentSuccess|#0.0#}% of the {completedCount} commands that were completed succeeded.</a>
 ]]></entry>
 
 </properties>

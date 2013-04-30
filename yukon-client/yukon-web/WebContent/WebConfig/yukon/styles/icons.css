@@ -100,6 +100,7 @@ a .arrow-down, a .arrow-up {left: 3px;}
 
 .magnifier {background: transparent url(../Icons/magnifier.gif) 0 1px no-repeat;}
 .magnifier_hovered,.magnifier:hover {background: transparent url(../Icons/magnifier_over.gif) 0 1px no-repeat;}
+.magnifier_zoom_in {background: url(../Icons/magnifier_zoom_in.png) 0 1px no-repeat;}
 .meter1 {background-image: url(../Icons/32/meter1.png);}
 .money_bag {background-image: url(../Icons/32/money_bag.png);}
 .monitor {background-image: url(../Icons/32/monitor.png);}
