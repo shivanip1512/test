@@ -195,6 +195,18 @@ JOIN Job J ON (J.JobId = JP.JobId
            AND DG.ParentDeviceGroupId = 0);
 /* End YUK-12096 */
 
+/* Start YUK-12150 */
+UPDATE Point
+SET PointOffset = 214
+WHERE PointId IN
+   (SELECT P.PointId
+    FROM Point P, YukonPAObject YPAO 
+    WHERE P.PAObjectID = YPAO.PAObjectID
+      AND P.PointOffset = 70
+      AND P.PointName = 'Voltage'
+      AND UPPER(YPAO.Type) IN ('RFN-420CL', 'RFN-420CD'));
+/* End YUK-12150 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
