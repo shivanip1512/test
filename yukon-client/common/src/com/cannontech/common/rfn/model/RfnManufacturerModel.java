@@ -7,8 +7,8 @@ import com.google.common.collect.Lists;
 
 public enum RfnManufacturerModel {
     
-    RFN_LCR_6200(PaoType.LCR6200_RFN, "CPS", "RFN-LCR6200"),
-    RFN_LCR_6600(PaoType.LCR6600_RFN, "CPS", "RFN-LCR6600"),
+    RFN_LCR_6200(PaoType.LCR6200_RFN, "CPS", "RFN-1077"),
+    RFN_LCR_6600(PaoType.LCR6600_RFN, "CPS", "RFN-1082"),
     
     RFN_430A3D(PaoType.RFN430A3D, "EE", "A3D"),
     RFN_430A3T(PaoType.RFN430A3T, "EE", "A3T"),
