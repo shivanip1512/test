@@ -119,5 +119,5 @@
                                 title="${pickerTitleText}"
                                 noSelectionAlertText="${noGroupSelectedText}"
                                 width="432"
-                                height="600"
+                                height="400"
                                 includeControlBar="true" />

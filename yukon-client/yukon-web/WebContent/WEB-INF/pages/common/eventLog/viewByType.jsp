@@ -89,7 +89,7 @@
                                dataJson="${allEventCategoriesDataJson}" highlightNodePath="${extSelectedNodePath}"
                                title="${selectEventLog}"
                                width="432"
-                               height="600"
+                               height="400"
                                treeParameters="{onActivate: TreeHelper.redirect_node_data_href_onActivate}"
                                includeControlBar="true" />
 

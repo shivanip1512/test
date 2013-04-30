@@ -328,7 +328,6 @@ span.dynatree-selected a
 /* 	font-style: italic; */
 }
 
-
 span.dynatree-active a
 {
 /* 	background-color: #3169C6 !important; */
@@ -337,27 +336,7 @@ span.dynatree-active a
 
 span.dynatree-selected .dynatree-title {
     background-color:#FFF465 !important;
-    color: black !important;
-}
-
-.static-mode .dynatree-selected .dynatree-title {
-    background-color: white !important;
-}
-.static-mode .dynatree-title {
-    cursor: default;
-}
-.static-mode a.dynatree-title:hover {
-    color: black;
-}
-.static-mode .dynatree-focused a:link,
-span.dynatree-active a {
-    color: black;
-    background: white; 
-}
-.static-mode .dynatree-checkbox, .static-mode .dynatree-checkbox:hover {background-position: 0px -160px !important;}
-
-.contained .tree_helper_controls {
-    background: white;
+    color: #444 !important;
 }
 
 /*******************************************************************************
@@ -530,3 +509,21 @@ span.disabled a {
 .tree_helper_controls .close_all {
     background-image: url('tree/collapse.png');
 }
+
+/* CUSTOM YUKON CHANGES START HERE */
+.dynatree-title {border-radius: 2px;}
+.dynatree-selected .dynatree-title {border: 1px solid #EFE455;}
+.static-mode .dynatree-selected .dynatree-title {border: 1px solid #bbb;}
+
+.contained .tree_helper_controls {background: white;}
+
+.static-mode .dynatree-selected .dynatree-title {background-color: white !important;}
+.static-mode .dynatree-title {cursor: default;}
+.static-mode a.dynatree-title:hover {color: black;}
+.static-mode .dynatree-focused a:link, span.dynatree-active a {color: black;background: white;}
+
+.static-mode span.dynatree-checkbox, .static-mode span.dynatree-checkbox:hover {background-position: 0px -160px;}
+.static-mode span.dynatree-selected span.dynatree-checkbox, .static-mode .dynatree-selected span.dynatree-checkbox:hover {background-position: -32px -160px;}
+.static-mode span.dynatree-partsel span.dynatree-checkbox, .static-mode .dynatree-partsel span.dynatree-checkbox:hover {background-position: -64px -160px;}
+
+.static-mode span.dynatree-selected .dynatree-title {background-color:#ddd !important;color: #444 !important;}

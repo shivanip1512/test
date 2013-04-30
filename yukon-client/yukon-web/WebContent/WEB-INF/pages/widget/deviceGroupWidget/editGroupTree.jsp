@@ -13,6 +13,6 @@
                                           dataJson="${allGroupsDataJson}"
                                           title=".groupTree.label"
                                           width="432"
-                                          height="600"/>  
+                                          height="400"/>  
 </cti:msgScope>
 </dialog:ajaxPage>

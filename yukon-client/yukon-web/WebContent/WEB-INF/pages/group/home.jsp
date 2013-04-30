@@ -145,7 +145,7 @@
                                                 id="deviceGroupEditorTree"
                                                 dataJson="${allGroupsDataJson}"
                                                 width="432"
-                                                height="600"
+                                                height="400"
                                                 highlightNodePath="${extSelectedNodePath}"
                                                 includeControlBar="true" />
                                 
@@ -247,7 +247,7 @@
                                                                         dataJson="${moveGroupDataJson}"
                                                                         title="${moveGroupPopupTitle}"
                                                                         width="432"
-                                                                        height="600"
+                                                                        height="400"
                                                                         noSelectionAlertText="${noGroupSelectedAlertText}"
                                                                         includeControlBar="true" />
                                     </form>
@@ -371,7 +371,7 @@
                                                                     dataJson="${copyGroupDataJson}"
                                                                     title="${copyContentsPopupTitle}"
                                                                     width="432"
-                                                                    height="600"
+                                                                    height="400"
                                                                     noSelectionAlertText="${noGroupSelectedAlertText}"
                                                                     includeControlBar="true" />
                             </form>

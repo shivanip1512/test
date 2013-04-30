@@ -225,7 +225,7 @@
                                                     dataJson="${groupDataJson}"
                                                     title="${addDeviceTitle}"
                                                     width="432"
-                                                    height="600"
+                                                    height="400"
                                                     includeControlBar="true"/>
                                 
             </form>                    

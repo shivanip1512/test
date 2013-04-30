@@ -14,7 +14,9 @@
 
         jQuery('#showPopupButton').click(function() {
             var parameters = ${cti:jsonString(widgetParameters)};
-            jQuery('#editGroupTreeDialog').load('/widget/deviceGroupWidget/edit', parameters);
+            jQuery('#editGroupTreeDialog').load('/widget/deviceGroupWidget/edit', parameters, function() {
+                jQuery('#internalTreeContainer_deviceGroupWidgetTree').addClass('contained');
+            });
         });
 
         jQuery('#editGroupTreeDialog').on('dialogSubmit', function() {
