@@ -5509,7 +5509,7 @@
         </tags>
     </pao>
 
-
+<!--  These Yukon-calculated points are NOT in rfnPointMapping.xml as they are not read directly from the devices-->
     <pao id="RFN_PTCALC__ALL" abstract="true">
     	<points>
             <point type="Analog" offset="182">
@@ -5519,10 +5519,23 @@
                 <unitofmeasure value="kWh"/>
                 <decimalplaces value="3"/>
             </point>
+            <point type="Analog" offset="188">
+                <init>true</init>
+                <name>Delivered kW Load Profile</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
+            </point>
             <point type="Analog" offset="183">
                 <name>Received kWh per Interval</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="189">
+                <name>Received kW Load Profile</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="180">
@@ -5556,8 +5569,14 @@
             <attribute name="DELIVERED_KWH_PER_INTERVAL">
                 <basicLookup point="Delivered kWh per Interval"/>
             </attribute>
+            <attribute name="DELIVERED_KW_LOAD_PROFILE">
+                <basicLookup point="Delivered kW Load Profile"/>
+            </attribute>
             <attribute name="RECEIVED_KWH_PER_INTERVAL">
                 <basicLookup point="Received kWh per Interval"/>
+            </attribute>
+            <attribute name="RECEIVED_KW_LOAD_PROFILE">
+                <basicLookup point="Received kW Load Profile"/>
             </attribute>
             <attribute name="SUM_KWH_PER_INTERVAL">
                 <basicLookup point="Sum kWh per Interval"/>
@@ -5575,24 +5594,6 @@
         <tags>
             <tag name="RFN_POINT_CALCULATION"/>
         </tags>
-    </pao>
-
-
-    <pao id="RFN_PTCALC__CENTRON_AND_FOCUS" abstract="true">
-        <points>
-            <point type="Analog" offset="188">
-                <init>true</init>
-                <name>Delivered kW Load Profile</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="3"/>
-            </point>
-        </points>
-        <attributes>
-            <attribute name="DELIVERED_KW_LOAD_PROFILE">
-                <basicLookup point="Delivered kW Load Profile"/>
-            </attribute>
-        </attributes>
     </pao>
 
 
@@ -6544,7 +6545,7 @@
         </tags>
     </pao>
 
-    <pao id="RFN_L2_CENTRON_AND_FOCUS" abstract="true" inherits="RFN_COMMON, RFN_PTCALC__CENTRON_AND_FOCUS, RFN_TOU_FOR_ALL_EXCEPT_A3D">
+    <pao id="RFN_L2_CENTRON_AND_FOCUS" abstract="true" inherits="RFN_COMMON, RFN_TOU_FOR_ALL_EXCEPT_A3D">
         <points>
             <point type="Analog" offset="101">
                 <init>true</init>
