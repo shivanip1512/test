@@ -10,7 +10,7 @@
     <xsd:complexType name="ThermostatScheduleRequest">
         <xsd:annotation>
             <xsd:documentation xml:lang="en">
-                This web service requests an account thermostat schedules.
+                This web service requests account thermostat schedules.
             </xsd:documentation>
         </xsd:annotation>
     

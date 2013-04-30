@@ -7,22 +7,25 @@
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
     <xsd:include schemaLocation="./ThermostatScheduleResult.xsd" />
     
-        <xsd:complexType name="UpdateThermostatScheduleResponse">
+    <xsd:complexType name="UpdateThermostatScheduleResponse">
         <xsd:complexContent>
             <xsd:extension base="yukon:YukonMessage">
-                <xsd:sequence>
-                    <xsd:element name="thermostatScheduleResultList">
-                        <xsd:complexType>
-                            <xsd:sequence>
-                                <xsd:element name="thermostatScheduleResult" type="yukon:ThermostatScheduleResult" maxOccurs="unbounded" />
-                            </xsd:sequence>
-                        </xsd:complexType>
-                    </xsd:element>
-                </xsd:sequence>
+                <xsd:choice>
+                    <xsd:sequence>
+                        <xsd:element name="thermostatScheduleResultList">
+                            <xsd:complexType>
+                              <xsd:sequence>
+                                    <xsd:element name="thermostatScheduleResult" type="yukon:ThermostatScheduleResult" maxOccurs="unbounded" />
+                               </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                    <xsd:element name="failure" type="yukon:Failure" />
+                </xsd:choice>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
-
+    
     <xsd:element name="updateThermostatScheduleResponse" type="yukon:UpdateThermostatScheduleResponse"/>
 
 </xsd:schema>

@@ -51,10 +51,7 @@ public class NewThermostatScheduleEndpoint {
         // init response
         Element resp = new Element("newThermostatScheduleResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-        
-        Element resultList = new Element("thermostatScheduleResultList", ns);
-        resp.addContent(resultList);
-        
+                
         try {          
             LiteYukonUser yukonUser = customerAccountDao.getYukonUserByAccountId(customerAccount.getAccountId());
             YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
@@ -65,11 +62,13 @@ public class NewThermostatScheduleEndpoint {
             Set<ThermostatScheduleMode> allowedThermostatScheduleModes = thermostatService.getAllowedThermostatScheduleModes(energyCompany);
            
             List<ThermostatSchedule> thermostatSchedules =
-                    requestTemplate.evaluate("//y:newThermostatScheduleRequest/y:thermostatSchedule", 
+                    requestTemplate.evaluate("/y:newThermostatScheduleRequest/y:thermostatSchedule", 
                                              new NodeToElementMapperWrapper<ThermostatSchedule>(new ThermostatScheduleElementRequestMapper()));
+            Element resultList = new Element("thermostatScheduleResultList", ns);
+            resp.addContent(resultList);
                
             for (ThermostatSchedule schedule : thermostatSchedules) {
-                accountEventLogService.thermostatScheduleCreationAttempted(yukonUser, customerAccount.getAccountNumber(), schedule.getSchedulableThermostatType().toString(), schedule.getScheduleName(),
+                accountEventLogService.thermostatScheduleCreationAttempted(yukonUser, customerAccount.getAccountNumber(), schedule.getSchedulableThermostatType().name(), schedule.getScheduleName(),
                                                                            EventSource.API);
                 Element thermostatScheduleResultNode = ThermostatScheduleHelper.addThermostatScheduleResultNode(ns, resultList, schedule);
                 try {
@@ -88,8 +87,8 @@ public class NewThermostatScheduleEndpoint {
                     }
                 } 
                 catch (Exception e) {
-                    Element fe = XMLFailureGenerator.generateFailure(newThermostatSchedule, e, "OtherException","An exception has been caught.");
-                    resp.addContent(fe);
+                    Element fe = XMLFailureGenerator.generateFailure(thermostatScheduleResultNode, e, "OtherException","An exception has been caught.");
+                    thermostatScheduleResultNode.addContent(fe);
                 }
             }
         

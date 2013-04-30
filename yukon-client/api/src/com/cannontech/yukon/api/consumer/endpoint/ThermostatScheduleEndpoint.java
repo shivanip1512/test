@@ -97,7 +97,7 @@ public class ThermostatScheduleEndpoint {
                 thermostatSchedulePeriodElem.addContent(startTimeElem);
                 
                 Element coolTempElem = XmlUtils.createDoubleElement("coolTemp", ns, accountThermostatScheduleEntry.getCoolTemp().toFahrenheit().getValue());
-                coolTempElem.setAttribute("unit", TemperatureUnit.FAHRENHEIT.getLetter());
+                coolTempElem.setAttribute("unit", XmlUtils.toXmlRepresentation(TemperatureUnit.FAHRENHEIT));
                 thermostatSchedulePeriodElem.addContent(coolTempElem);
 
                 Element heatTempElem = XmlUtils.createDoubleElement("heatTemp", ns, accountThermostatScheduleEntry.getHeatTemp().toFahrenheit().getValue());

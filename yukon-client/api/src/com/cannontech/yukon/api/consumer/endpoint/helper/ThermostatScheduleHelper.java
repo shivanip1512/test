@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import org.jdom.Element;
 import org.jdom.Namespace;
 
+import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
@@ -58,7 +59,7 @@ public class ThermostatScheduleHelper {
     public static Element addThermostatScheduleResultNode(Namespace ns, Element thermostatScheduleResultList, ThermostatSchedule schedule){
         Element result = new Element("thermostatScheduleResult", ns);
         result.setAttribute("scheduleName", schedule.getScheduleName());
-        result.setAttribute("thermostatScheduleMode", schedule.getThermostatScheduleMode().toString());
+        result.setAttribute("thermostatScheduleMode", XmlUtils.toXmlRepresentation(schedule.getThermostatScheduleMode()));
         thermostatScheduleResultList.addContent(result);
         return result;
     }

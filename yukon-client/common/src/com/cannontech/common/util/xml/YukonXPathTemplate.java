@@ -41,10 +41,6 @@ public class YukonXPathTemplate extends SimpleXPathTemplate {
      */
     public <E extends Enum<E>> E evaluateAsEnum(String expression, Class<E> enumClass) throws XPathException {
         String enumString = evaluateAsString(expression);
-        if (StringUtils.isEmpty(enumString)) {
-            return null;
-        }
-
         try {
             return XmlUtils.toEnum(enumString, enumClass);
         } catch (IllegalArgumentException e) {

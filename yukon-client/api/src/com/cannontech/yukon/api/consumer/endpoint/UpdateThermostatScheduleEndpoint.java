@@ -52,13 +52,10 @@ public class UpdateThermostatScheduleEndpoint {
         Element resp = new Element("updateThermostatScheduleResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
-        Element resultList = new Element("thermostatScheduleResultList", ns);
-        resp.addContent(resultList);
-        
         try {          
             
             LiteYukonUser yukonUser = customerAccountDao.getYukonUserByAccountId(customerAccount.getAccountId());
-            Boolean addOnFail = requestTemplate.evaluateAsBoolean("//y:updateThermostatScheduleRequest/@addOnFail", true);
+            Boolean addOnFail = requestTemplate.evaluateAsBoolean("/y:updateThermostatScheduleRequest/@addOnFail", true);
             
             YukonEnergyCompany energyCompany =  yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
 
@@ -69,9 +66,12 @@ public class UpdateThermostatScheduleEndpoint {
            
             // Get the information for the supplied request.
             List<ThermostatSchedule> thermostatSchedules =
-                    requestTemplate.evaluate("//y:updateThermostatScheduleRequest/y:thermostatSchedule", 
+                    requestTemplate.evaluate("/y:updateThermostatScheduleRequest/y:thermostatSchedule", 
                                              new NodeToElementMapperWrapper<ThermostatSchedule>(new ThermostatScheduleElementRequestMapper()));
-               
+                       
+            Element resultList = new Element("thermostatScheduleResultList", ns);
+            resp.addContent(resultList);
+            
             for (ThermostatSchedule schedule : thermostatSchedules) {
                 boolean newScheduleCreated = false;
 
@@ -99,17 +99,17 @@ public class UpdateThermostatScheduleEndpoint {
                     }
                 } 
                 catch (Exception e) {
-                    Element fe = XMLFailureGenerator.generateFailure(updateThermostatSchedule, e, "OtherException","An exception has been caught.");
-                    resp.addContent(fe);
+                    Element fe = XMLFailureGenerator.generateFailure(thermostatScheduleResultNode, e, "OtherException","An exception has been caught.");
+                    thermostatScheduleResultNode.addContent(fe);
                 }
                 
                 if(newScheduleCreated){
                     accountEventLogService.thermostatScheduleCreationAttempted(yukonUser, customerAccount.getAccountNumber(),
-                                                                             schedule.getSchedulableThermostatType().toString(), schedule.getScheduleName(),
+                                                                             schedule.getSchedulableThermostatType().name(), schedule.getScheduleName(),
                                                                              EventSource.API);
                 }else{
                     accountEventLogService.thermostatScheduleUpdateAttempted(yukonUser, customerAccount.getAccountNumber(),
-                                                                             schedule.getSchedulableThermostatType().toString(), schedule.getScheduleName(),
+                                                                             schedule.getSchedulableThermostatType().name(), schedule.getScheduleName(),
                                                                              EventSource.API);
                 }
             }

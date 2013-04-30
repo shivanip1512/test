@@ -1,9 +1,14 @@
 package com.cannontech.common.temperature;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.xml.XmlRepresentation;
+
 
 public enum TemperatureUnit {
+
+    @XmlRepresentation("F")
     FAHRENHEIT("F"),
+    @XmlRepresentation("C")
     CELSIUS("C"),
     ;
     
