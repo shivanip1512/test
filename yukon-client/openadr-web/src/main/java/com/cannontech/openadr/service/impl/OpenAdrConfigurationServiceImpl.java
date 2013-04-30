@@ -43,12 +43,7 @@ public class OpenAdrConfigurationServiceImpl implements OpenAdrConfigurationServ
     public Period getOpenEndedDuration() {
     	String gsVal = globalSettingDao.getString(GlobalSettingType.OADR_OPEN_ENDED_CONTROL_DURATION);
     	
-    	if (StringUtils.isBlank(gsVal)) {
-    		throw new OpenAdrConfigurationException("No Open-ended Control Duration defined in Global Settings.");
-    	}
-    	
     	try {
-    		// The string isn't empty, let's try to convert it.
     		long millis = convertInputToMillis(gsVal);
     		return new Period(millis, PeriodType.millis());
     	} catch (IllegalArgumentException iae) {

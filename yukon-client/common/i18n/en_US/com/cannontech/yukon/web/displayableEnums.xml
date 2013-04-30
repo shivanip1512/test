@@ -299,7 +299,7 @@
     <entry key="yukon.common.setting.OADR_YUKON_USER">OpenADR Yukon User</entry>
     <entry key="yukon.common.setting.OADR_YUKON_USER.description">The Yukon User for which the load management requests will be executed.</entry>
     <entry key="yukon.common.setting.OADR_OPEN_ENDED_CONTROL_DURATION">Open-Ended Control Duration</entry>
-    <entry key="yukon.common.setting.OADR_OPEN_ENDED_CONTROL_DURATION.description">The duration to be used for open ended control events, specified using a combination of weeks, days, hours, or minutes (i.e. "1.5d".)</entry>
+    <entry key="yukon.common.setting.OADR_OPEN_ENDED_CONTROL_DURATION.description">The duration to be used for open-ended control events, specified by a number and a character indicating weeks, days, hours, or minutes (i.e. "1.5d".)</entry>
     
     <entry key="yukon.common.setting.DATABASE_MIGRATION_FILE_LOCATION">Database Migration File Location</entry>
     <entry key="yukon.common.setting.DATABASE_MIGRATION_FILE_LOCATION.description">File location of the database migration export process.</entry>
