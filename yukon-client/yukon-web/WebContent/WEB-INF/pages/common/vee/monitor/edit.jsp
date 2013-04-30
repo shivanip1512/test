@@ -105,116 +105,83 @@
         <c:if test="${validationMonitorId > 0}">
             <c:set var="setupSectionTitle" value="${editSetupSectionText}"/>
         </c:if>
+        <div style="max-width:50%;">
         
-        <tags:sectionContainer title="${setupSectionTitle}">
-        
-            <tags:nameValueContainer style="border-collapse:separate;border-spacing:5px;">
-                
-                <%-- name --%>
-                <tags:nameValue name="${nameText}" nameColumnWidth="250px">
-                    <input type="text" name="name" size="50" value="${name}">
-                </tags:nameValue>
-                
-                <%-- device group --%>
-                <tags:nameValue name="${deviceGroupText}">
-                    
-                    <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
-                    <tags:deviceGroupNameSelector fieldName="deviceGroupName" fieldValue="${deviceGroupName}" dataJson="${groupDataJson}" linkGroupName="true"/>
-                                                        
-                    <tags:helpInfoPopup title="${deviceGroupText}">
-                        ${deviceGroupPopupInfoText}
-                    </tags:helpInfoPopup>
-                    
-                </tags:nameValue>
-                
-                <%-- threshold --%>
-                <tags:nameValue name="${thresholdText}">
-                <table>
-                    <tr>
-                        <td>
-                            <input type="text" name="threshold" style="text-align: right;" value="${threshold}"> ${thresholdUnits} 
-                            <tags:helpInfoPopup title="${thresholdText}">
-                                ${thresholdPopupInfoText}
-                            </tags:helpInfoPopup>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input type="checkbox" name="reread" style="text-align: right;" <c:if test="${reread}">checked</c:if>> ${rereadThresholdText} 
-                            <tags:helpInfoPopup title="${rereadThresholdText}">
-                                ${rereadThresholdPopupInfoText}
-                            </tags:helpInfoPopup>
-                        </td>
-                    </tr>
-                </table>
-            </tags:nameValue>
-                
-                <%-- slope error --%>
-                <tags:nameValue name="${slopeErrorText}">
-                    
-                    <input type="text" name="slopeError" style="text-align:right;" value="${slopeError}"> 
-                    ${slopeErrorUnits}
-                                                        
-                    <tags:helpInfoPopup title="${slopeErrorText}">
-                        ${slopeErrorPopupInfoText}
-                    </tags:helpInfoPopup>
-                    
-                </tags:nameValue>
-                
-                <%-- peak height minimum --%>
-                <tags:nameValue name="${peakHeightMinimumText}">
-                    <table>
-                        <tr>
-                            <td>
-                                <input type="text" name="peakHeightMinimum" style="text-align: right;" value="${peakHeightMinimum}"> ${peakHeightMinimumUnits}
-                                <tags:helpInfoPopup title="${peakHeightMinimumText}">
-                                    ${peakHeightMinimumPopupInfoText}
-                                </tags:helpInfoPopup>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <input type="checkbox" name="setQuestionable" style="text-align: right;" <c:if test="${setQuestionable}">checked</c:if>> ${setQuestionableText}
-                                <tags:helpInfoPopup title="${setQuestionableText}">
-                                    ${setQuestionablePopupInfoText}
-                                </tags:helpInfoPopup>
-                            </td>
-                        </tr>
-                    </table>
-    
-                    </tags:nameValue>
-                
-                <%-- enable/disable monitoring --%>
-                <c:if test="${validationMonitorId > 0}">
-                    <tags:nameValue name="${validationMonitoringText}">
-                        ${validationMonitor.evaluatorStatus.description}
-                    </tags:nameValue>
-                </c:if>
-                
-            </tags:nameValueContainer>
+            <tags:sectionContainer title="${setupSectionTitle}">
             
-        </tags:sectionContainer>
-        
-        <br>
-        <c:choose>
-            <c:when test="${validationMonitorId >= 0}">
-                <tags:slowInput myFormId="updateForm" labelBusy="${updateBusyText}" label="${updateText}" disableOtherButtons="true"/>
-                <c:choose>
-				    <c:when test="${validationMonitor.evaluatorStatus eq 'ENABLED'}">
-				        <tags:slowInput myFormId="toggleEnabledForm" labelBusy="${validationMonitoringDisableText}" label="${validationMonitoringDisableText}" disableOtherButtons="true"/>
-				    </c:when>
-				    <c:when test="${validationMonitor.evaluatorStatus eq 'DISABLED'}">
-				        <tags:slowInput myFormId="toggleEnabledForm" labelBusy="${validationMonitoringEnableText}" label="${validationMonitoringEnableText}" disableOtherButtons="true"/>
-				    </c:when>
-				</c:choose>
-				<input type="button" onclick="validationMonitorEditor_deleteValidationMonitor(${validationMonitorId});" value="${deleteText}" class="formSubmit"/>
-            </c:when>
-            <c:otherwise>
-                <tags:slowInput myFormId="updateForm" labelBusy="${createBusyText}" label="${createText}" disableOtherButtons="true"/>
-            </c:otherwise>
-        </c:choose>
-        <tags:slowInput myFormId="cancelForm" label="${cancelText}" disableOtherButtons="true"/>
-        
+                <tags:nameValueContainer>
+                    
+                    <%-- name --%>
+                    <tags:nameValue name="${nameText}">
+                        <input type="text" name="name" size="50" value="${name}">
+                    </tags:nameValue>
+                    
+                    <%-- device group --%>
+                    <tags:nameValue name="${deviceGroupText}">
+                        <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
+                        <tags:deviceGroupNameSelector fieldName="deviceGroupName" fieldValue="${deviceGroupName}" dataJson="${groupDataJson}" linkGroupName="true"/>
+                        <tags:helpInfoPopup title="${deviceGroupText}">${deviceGroupPopupInfoText}</tags:helpInfoPopup>
+                    </tags:nameValue>
+                    
+                    <%-- threshold --%>
+                    <tags:nameValue name="${thresholdText}">
+                        <div>
+                            <input type="text" name="threshold" style="text-align: right;" value="${threshold}"><span>${thresholdUnits}</span> 
+                            <tags:helpInfoPopup title="${thresholdText}">${thresholdPopupInfoText}</tags:helpInfoPopup>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="reread" style="text-align: right;" <c:if test="${reread}">checked</c:if>><span>${rereadThresholdText}</span> 
+                            <tags:helpInfoPopup title="${rereadThresholdText}">${rereadThresholdPopupInfoText}</tags:helpInfoPopup>
+                        </div>
+                    </tags:nameValue>
+                    
+                    <%-- slope error --%>
+                    <tags:nameValue name="${slopeErrorText}">
+                        <input type="text" name="slopeError" style="text-align:right;" value="${slopeError}"><span>${slopeErrorUnits}</span>
+                        <tags:helpInfoPopup title="${slopeErrorText}">${slopeErrorPopupInfoText}</tags:helpInfoPopup>
+                    </tags:nameValue>
+                    
+                    <%-- peak height minimum --%>
+                    <tags:nameValue name="${peakHeightMinimumText}">
+                        <div>
+                            <input type="text" name="peakHeightMinimum" style="text-align: right;" value="${peakHeightMinimum}"><span>${peakHeightMinimumUnits}</span>
+                            <tags:helpInfoPopup title="${peakHeightMinimumText}">${peakHeightMinimumPopupInfoText}</tags:helpInfoPopup>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="setQuestionable" style="text-align: right;" <c:if test="${setQuestionable}">checked</c:if>><span>${setQuestionableText}</span>
+                            <tags:helpInfoPopup title="${setQuestionableText}">${setQuestionablePopupInfoText}</tags:helpInfoPopup>
+                        </div>        
+                    </tags:nameValue>
+                    
+                    <%-- enable/disable monitoring --%>
+                    <c:if test="${validationMonitorId > 0}">
+                        <tags:nameValue name="${validationMonitoringText}">${validationMonitor.evaluatorStatus.description}</tags:nameValue>
+                    </c:if>
+                    
+                </tags:nameValueContainer>
+                
+            </tags:sectionContainer>
+        </div>
+        <div class="pageActionArea">
+            <c:choose>
+                <c:when test="${validationMonitorId >= 0}">
+                    <tags:slowInput myFormId="updateForm" labelBusy="${updateBusyText}" label="${updateText}" disableOtherButtons="true"/>
+                    <c:choose>
+    				    <c:when test="${validationMonitor.evaluatorStatus eq 'ENABLED'}">
+    				        <tags:slowInput myFormId="toggleEnabledForm" labelBusy="${validationMonitoringDisableText}" label="${validationMonitoringDisableText}" disableOtherButtons="true"/>
+    				    </c:when>
+    				    <c:when test="${validationMonitor.evaluatorStatus eq 'DISABLED'}">
+    				        <tags:slowInput myFormId="toggleEnabledForm" labelBusy="${validationMonitoringEnableText}" label="${validationMonitoringEnableText}" disableOtherButtons="true"/>
+    				    </c:when>
+    				</c:choose>
+    				<input type="button" onclick="validationMonitorEditor_deleteValidationMonitor(${validationMonitorId});" value="${deleteText}" class="formSubmit"/>
+                </c:when>
+                <c:otherwise>
+                    <tags:slowInput myFormId="updateForm" labelBusy="${createBusyText}" label="${createText}" disableOtherButtons="true"/>
+                </c:otherwise>
+            </c:choose>
+            <tags:slowInput myFormId="cancelForm" label="${cancelText}" disableOtherButtons="true"/>
+        </div>
     </form>
         
 </cti:standardPage>

@@ -30,7 +30,7 @@
     <input id="${uniqueId}" 
     	   type="button" 
     	   value="${label}" 
-           class="formSubmit ${styleClass}"
+           class="button ${styleClass}"
     	   onclick="updateButton('slowInputSpan${uniqueId}', '${labelBusy}...', '${myFormId}','slowInputProcessImg${uniqueId}', ${disableOtherButtons});">
     	   
     <span id="slowInputWaitingSpan${uniqueId}" class="slowInput_waiting" style="display:none;"> 

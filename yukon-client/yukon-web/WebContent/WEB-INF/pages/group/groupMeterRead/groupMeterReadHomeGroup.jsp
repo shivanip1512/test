@@ -63,10 +63,11 @@
 			      
 			      
 			<%-- READ BUTTON --%>
+            <div class="pageActionArea">
 			<tags:slowInput myFormId="groupMeterReadForm" labelBusy="${readButtonText}" label="${readButtonText}"/>
-			
+			</div>
+            
 			<%-- RECENT RESULTS --%>
-			<br><br>
 			<span class="largeBoldLabel">${recentResultLinkLabel}</span> 
 			<a href="/group/groupMeterRead/resultsList">${recentResultLink}</a>
 			 
