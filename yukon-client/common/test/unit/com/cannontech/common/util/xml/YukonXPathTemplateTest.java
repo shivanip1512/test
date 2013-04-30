@@ -1,5 +1,6 @@
 package com.cannontech.common.util.xml;
 
+import static org.junit.Assert.fail;
 import junit.framework.Assert;
 
 import org.jdom.Element;
@@ -122,6 +123,24 @@ public class YukonXPathTemplateTest {
         
         Assert.assertNotNull(thermostatScheduleMode);
         Assert.assertEquals(ThermostatScheduleMode.WEEKDAY_WEEKEND, thermostatScheduleMode);
+    }
+
+    /**
+     * <testElement>
+     *      <enumElement />
+     * </testElement>
+     */
+    @Test
+    public void testEvaluateAsEnum_nullElement() {
+        Element testElement = createEnumElement(null, null);
+        YukonXPathTemplate yukonTemplate = YukonXml.getXPathTemplateForElement(testElement);
+        try {
+            
+            yukonTemplate.evaluateAsEnum("/testElement/enumElement", ThermostatScheduleMode.class);
+            fail(); // we should never get here b/c we should throw an exception
+        } catch (Exception e) {
+            // we should get into here
+        }
     }
 
     /**
