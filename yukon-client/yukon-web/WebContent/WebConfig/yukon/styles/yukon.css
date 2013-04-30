@@ -27,13 +27,13 @@ h1 {font-size: 1.3em;font-weight:bold;}
 .standardPageHeading{margin-bottom:.8em;}
 
 /* shared form field attributes */
-input[type=text],input[type=password], button, textarea, select, .datetimeEntry_wrap {border:solid 1px #ccc; border-radius:2px; color:#555;}
+input[type=text],input[type=password], button, input[type=submit], input[type=button], input[type=reset], textarea, select, .datetimeEntry_wrap {border:solid 1px #ccc; border-radius:2px; color:#555;}
 input, button, textarea {padding:2px 5px;}
 input:focus, button:focus, textarea:focus, select:focus, button:hover, input[type=submit]:hover, input[type=submit]:focus, input[type=button]:hover, input[type=button]:focus {border:solid 1px #4373A3;box-shadow:0 0 5px lightBlue;outline:0;color:black;}
 input::-moz-focus-inner, button::-moz-focus-inner, textarea::-moz-focus-inner, select::-moz-focus-inner {border:0}
 select {margin:0;}
 input {background:white;padding:2px 5px;}
-button, input[type=submit], input[type=button] {color:#333;border:solid 1px #888; cursor:pointer; background-color:#efefef; background:linear-gradient(#efefef, #cccccc); text-shadow: 1px 1px 0 white;}
+button, input[type=submit], input[type=button], input[type=reset] {color:#333;border:solid 1px #888; cursor:pointer; background-color:#efefef; background:linear-gradient(#efefef, #cccccc); text-shadow: 1px 1px 0 white;}
 
 button:hover, input[type=submit]:hover, input[type=button]:hover {color:black; background:linear-gradient(#efefef, #bbbbbb);text-shadow:1px 1px 0 #eeeeee;}
 button:active, input[type=submit]:active, input[type=button]:active {color:black; background:#cccccc;text-shadow:1px 1px 0 #eeeeee;}
@@ -66,7 +66,7 @@ button.primary:active {background:#06C;}
 button.naked, button.naked:hover {border:none; background:transparent; box-shadow:none;}
 .button-container button {margin-right: 4px;}
 
-input:not([type="submit"]):not([type="radio"]):not([type="checkbox"]) { -webkit-background-clip: padding-box; background-clip: padding-box; -webkit-transition: border .2s ease-in-out,background-color .2s ease-in-out; -moz-transition: border .2s ease-in-out,background-color .2s ease-in-out; -ms-transition: border .2s ease-in-out,background-color .2s ease-in-out; -o-transition: border .2s ease-in-out,background-color .2s ease-in-out; transition: border .2s ease-in-out,background-color .2s ease-in-out; }
+input[type="text"], textarea { -webkit-background-clip: padding-box; background-clip: padding-box; -webkit-transition: border .2s ease-in-out,background-color .2s ease-in-out; -moz-transition: border .2s ease-in-out,background-color .2s ease-in-out; -ms-transition: border .2s ease-in-out,background-color .2s ease-in-out; -o-transition: border .2s ease-in-out,background-color .2s ease-in-out; transition: border .2s ease-in-out,background-color .2s ease-in-out; }
 /* containing block may need to float left or clear, should be variable width for these to work */
 .equalWidthButtons input { margin-bottom: 0.75em; margin-top: 0; width: 100%; float: left; clear: both; }
 .equalWidthButtons input:last-child { margin-bottom: 0; }
