@@ -106,6 +106,281 @@ private:
 };
 
 
+BOOST_AUTO_TEST_CASE(test_attemptToResendControl)
+{
+    Test_CtiCCSubstationBusStore* store = new Test_CtiCCSubstationBusStore();
+
+    CtiCCSubstationBusStore::setInstance(store);
+
+    CtiCCFeeder         *feeder     = create_object<CtiCCFeeder>         (4, "test feeder");
+    CtiCCCapBank        *bank       = create_object<CtiCCCapBank>        (5, "test cap bank");
+
+    initialize_capbank(store, bank, feeder, 1);
+
+    bank->setControlDeviceId(6);
+    bank->setControlPointId(7);
+    bank->setStatusPointId(8);
+    bank->setControlDeviceType("cbc 7010");
+
+    store->addCapBankToCBCMap(bank);
+
+    std::auto_ptr<test_AttributeService> attributeService(new test_AttributeService);
+
+    test_AttributeService &attributeBackdoor = *attributeService;
+
+    store->setAttributeService(std::auto_ptr<AttributeService>(attributeService.release()));
+
+    LitePoint p;
+
+    p.setPaoId(6);
+    p.setPointId(7);
+
+    attributeBackdoor.points[p.getPointId()] = p;
+
+    const CtiTime currentTime(CtiDate(1, 1, 2010));
+
+    {
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
+
+        feeder->setLastCapBankControlledDeviceId(5);
+        bank->setControlStatus(CtiCCCapBank::OpenPending);
+        bank->setLastStatusChangeTime(currentTime - 1);
+
+        feeder->attemptToResendControl(currentTime, pointChanges, ccEvents, pilMessages, 10);
+
+        BOOST_REQUIRE_EQUAL(pilMessages.size(), 1);
+
+        CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMessages[0]);
+
+        BOOST_REQUIRE(pilRequest);
+
+        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "");
+        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+    }
+    {
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
+
+        feeder->setLastCapBankControlledDeviceId(5);
+        bank->setControlStatus(CtiCCCapBank::ClosePending);
+        bank->setLastStatusChangeTime(currentTime - 1);
+
+        feeder->attemptToResendControl(currentTime, pointChanges, ccEvents, pilMessages, 10);
+
+        BOOST_REQUIRE_EQUAL(pilMessages.size(), 1);
+
+        CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMessages[0]);
+
+        BOOST_REQUIRE(pilRequest);
+
+        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "");
+        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+    }
+
+    p.setStateZeroControl("apple jacks");
+    p.setStateOneControl("banana loops");
+
+    attributeBackdoor.points[p.getPointId()] = p;
+
+    {
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
+
+        feeder->setLastCapBankControlledDeviceId(5);
+        bank->setControlStatus(CtiCCCapBank::OpenPending);
+        bank->setLastStatusChangeTime(currentTime - 1);
+
+        feeder->attemptToResendControl(currentTime, pointChanges, ccEvents, pilMessages, 10);
+
+        BOOST_REQUIRE_EQUAL(pilMessages.size(), 1);
+
+        CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMessages[0]);
+
+        BOOST_REQUIRE(pilRequest);
+
+        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "apple jacks");
+        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+    }
+    {
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
+
+        feeder->setLastCapBankControlledDeviceId(5);
+        bank->setControlStatus(CtiCCCapBank::ClosePending);
+        bank->setLastStatusChangeTime(currentTime - 1);
+
+        feeder->attemptToResendControl(currentTime, pointChanges, ccEvents, pilMessages, 10);
+
+        BOOST_REQUIRE_EQUAL(pilMessages.size(), 1);
+
+        CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMessages[0]);
+
+        BOOST_REQUIRE(pilRequest);
+
+        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "banana loops");
+        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(test_create_requests)
+{
+    Test_CtiCCSubstationBusStore* store = new Test_CtiCCSubstationBusStore();
+
+    CtiCCSubstationBusStore::setInstance(store);
+
+    CtiCCFeeder         *feeder     = create_object<CtiCCFeeder>         (4, "test feeder");
+    CtiCCCapBank        *bank       = create_object<CtiCCCapBank>        (5, "test cap bank");
+
+    initialize_capbank(store, bank, feeder, 1);
+
+    bank->setControlDeviceId(6);
+    bank->setControlPointId(7);
+    bank->setStatusPointId(8);
+    bank->setControlDeviceType("cbc 7010");
+
+    store->addCapBankToCBCMap(bank);
+
+    std::auto_ptr<test_AttributeService> attributeService(new test_AttributeService);
+
+    test_AttributeService &attributeBackdoor = *attributeService;
+
+    store->setAttributeService(std::auto_ptr<AttributeService>(attributeService.release()));
+
+    LitePoint p;
+
+    p.setPaoId(6);
+    p.setPointId(7);
+
+    attributeBackdoor.points[p.getPointId()] = p;
+
+    const CtiTime currentTime(CtiDate(1, 1, 2010));
+
+    {
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
+
+        CtiRequestMsg *pilRequest = feeder->createDecreaseVarRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
+
+        BOOST_REQUIRE(pilRequest);
+
+        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "");
+        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+    }
+    {
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
+
+        CtiRequestMsg *pilRequest = feeder->createDecreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
+
+        BOOST_REQUIRE(pilRequest);
+
+        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "");
+        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+    }
+    {
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
+
+        CtiRequestMsg *pilRequest = feeder->createForcedVarRequest(bank, pointChanges, ccEvents, CtiCCCapBank::Close, "n/a");
+
+        BOOST_REQUIRE(pilRequest);
+
+        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "");
+        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+    }
+    {
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
+
+        CtiRequestMsg *pilRequest = feeder->createForcedVarRequest(bank, pointChanges, ccEvents, CtiCCCapBank::Open, "n/a");
+
+        BOOST_REQUIRE(pilRequest);
+
+        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "");
+        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+    }
+    {
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
+
+        CtiRequestMsg *pilRequest = feeder->createIncreaseVarRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
+
+        BOOST_REQUIRE(pilRequest);
+
+        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "");
+        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+    }
+    {
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
+
+        CtiRequestMsg *pilRequest = feeder->createIncreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
+
+        BOOST_REQUIRE(pilRequest);
+
+        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "");
+        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+    }
+
+    p.setStateZeroControl("apple jacks");
+    p.setStateOneControl("banana loops");
+
+    attributeBackdoor.points[p.getPointId()] = p;
+
+    {
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
+
+        CtiRequestMsg *pilRequest = feeder->createDecreaseVarRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
+
+        BOOST_REQUIRE(pilRequest);
+
+        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "banana loops");
+        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+    }
+    {
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
+
+        CtiRequestMsg *pilRequest = feeder->createDecreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
+
+        BOOST_REQUIRE(pilRequest);
+
+        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "banana loops");
+        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+    }
+    {
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
+
+        CtiRequestMsg *pilRequest = feeder->createForcedVarRequest(bank, pointChanges, ccEvents, CtiCCCapBank::Close, "n/a");
+
+        BOOST_REQUIRE(pilRequest);
+
+        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "banana loops");
+        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+    }
+    {
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
+
+        CtiRequestMsg *pilRequest = feeder->createForcedVarRequest(bank, pointChanges, ccEvents, CtiCCCapBank::Open, "n/a");
+
+        BOOST_REQUIRE(pilRequest);
+
+        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "apple jacks");
+        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+    }
+    {
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
+
+        CtiRequestMsg *pilRequest = feeder->createIncreaseVarRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
+
+        BOOST_REQUIRE(pilRequest);
+
+        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "apple jacks");
+        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+    }
+    {
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
+
+        CtiRequestMsg *pilRequest = feeder->createIncreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
+
+        BOOST_REQUIRE(pilRequest);
+
+        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "apple jacks");
+        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+    }
+}
+
 
 BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
 {

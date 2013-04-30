@@ -48,6 +48,7 @@ test_StrategyManager.obj \
 test_ZoneManager.obj \
 test_VoltageRegulatorManager.obj \
 test_capcontroller.obj \
+test_ccexecutor.obj \
 test_ccsubstationbus.obj \
 test_ccFeeder.obj \
 test_ccutil.obj \

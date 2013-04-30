@@ -4,6 +4,9 @@
 #include "capcontroller.h"
 #include "PointDataRequest.h"
 #include "PointDataRequestFactory.h"
+#include "StrategyLoader.h"
+#include "kvarstrategy.h"
+#include "pfactorkwkvarstrategy.h"
 #include "pointdefs.h"
 
 namespace Cti {
@@ -24,6 +27,88 @@ struct Test_CtiCCSubstationBusStore : CtiCCSubstationBusStore
     using CtiCCSubstationBusStore::addCapBankToCBCMap;
 
     using CtiCCSubstationBusStore::setAttributeService;
+    using CtiCCSubstationBusStore::setStrategyManager;
+};
+
+struct test_AttributeService : AttributeService
+{
+    std::map<int, LitePoint> points;
+
+    virtual LitePoint getLitePointsById(int pointid)
+    {
+        return points[pointid];
+    }
+};
+
+class StrategyUnitTestLoader : public StrategyLoader
+{
+
+public:
+
+    // default construction and destruction is OK
+
+    virtual StrategyManager::StrategyMap load(const long ID)
+    {
+        StrategyManager::StrategyMap strategies;
+
+        if (ID < 0)
+        {
+            long IDs[] = { 100, 110, 125 };
+
+            for (int i = 0; i < sizeof(IDs)/ sizeof(*IDs); i++)
+            {
+                loadSingle(IDs[i], strategies);
+            }
+        }
+        else
+        {
+            loadSingle(ID, strategies);
+        }
+
+        return strategies;
+    }
+
+private:
+
+    void loadSingle(const long ID, StrategyManager::StrategyMap &strategies)
+    {
+        bool doInsertion = true;
+
+        StrategyManager::SharedPtr newStrategy;
+
+        switch (ID)
+        {
+            case 100:
+            {
+                newStrategy.reset( new KVarStrategy );
+                newStrategy->setStrategyName("Test kVAr Strategy");
+                break;
+            }
+            case 110:
+            {
+                newStrategy.reset( new PFactorKWKVarStrategy );
+                newStrategy->setStrategyName("Test kVAr Power Factor Strategy");
+                break;
+            }
+            case 125:
+            {
+                newStrategy.reset( new PFactorKWKVarStrategy );
+                newStrategy->setStrategyName("Test Power Factor Strategy #2");
+                break;
+            }
+            default:
+            {
+                doInsertion = false;
+                break;
+            }
+        }
+
+        if (doInsertion)
+        {
+            newStrategy->setStrategyId(ID);
+            strategies[ID] = newStrategy;
+        }
+    }
 };
 
 struct Test_CtiCapController : CtiCapController
@@ -66,6 +151,7 @@ void initialize_bus(Test_CtiCCSubstationBusStore* store, CtiCCSubstationBus* bus
     bus->setVerificationFlag(false);
     parentStation->getCCSubIds().push_back(bus->getPaoId());
     store->addSubBusToPaoMap(bus);
+    store->getCCSubstationBuses(0, false)->push_back(bus);
     bus->setDisableFlag(false);
     bus->setVerificationFlag(false);
     bus->setPerformingVerificationFlag(false);

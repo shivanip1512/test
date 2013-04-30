@@ -642,7 +642,7 @@ private:
     PointIdToFeederMultiMap      _pointid_feeder_map;
     PointIdToCapBankMultiMap     _pointid_capbank_map;
 
-    StrategyManager _strategyManager;
+    std::auto_ptr<StrategyManager> _strategyManager;
 
     Cti::CapControl::ZoneManager _zoneManager;
 
@@ -650,6 +650,7 @@ protected:
     boost::shared_ptr<Cti::CapControl::VoltageRegulatorManager> _voltageRegulatorManager;
 
     void setAttributeService( std::auto_ptr<AttributeService> service );
+    void setStrategyManager ( std::auto_ptr<StrategyManager> strategyManager );
 
 private:
     ChildToParentMultiMap _substation_specialarea_map;

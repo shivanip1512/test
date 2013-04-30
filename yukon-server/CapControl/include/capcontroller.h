@@ -45,7 +45,7 @@ class CtiCapController : public MessageListener
         virtual void manualCapBankControl(CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg = NULL);
         virtual void sendEventLogMessage(CtiMessage* message);
 
-        void confirmCapBankControl(CtiMultiMsg* pilMultiMsg, CtiMultiMsg* multiMsg);
+        virtual void confirmCapBankControl(CtiMultiMsg* pilMultiMsg, CtiMultiMsg* multiMsg);
         CtiPCPtrQueue< RWCollectable > &getInClientMsgQueueHandle();
         CtiPCPtrQueue< RWCollectable > &getOutClientMsgQueueHandle();
         CtiPCPtrQueue< RWCollectable > &getCCEventMsgQueueHandle();

@@ -6,79 +6,12 @@
 #include "NoStrategy.h"
 #include "PFactorKWKVarStrategy.h"
 
+#include "ccunittestutil.h"
+
 BOOST_AUTO_TEST_SUITE( test_StrategyManager )
 
-class StrategyUnitTestLoader : public StrategyLoader
-{
 
-public:
-
-    // default construction and destruction is OK
-
-    virtual StrategyManager::StrategyMap load(const long ID)
-    {
-        StrategyManager::StrategyMap strategies;
-
-        if (ID < 0)
-        {
-            long IDs[] = { 100, 110, 125 };
-
-            for (int i = 0; i < sizeof(IDs)/ sizeof(*IDs); i++)
-            {
-                loadSingle(IDs[i], strategies);
-            }
-        }
-        else
-        {
-            loadSingle(ID, strategies);
-        }
-
-        return strategies;
-    }
-
-private:
-
-    void loadSingle(const long ID, StrategyManager::StrategyMap &strategies)
-    {
-        bool doInsertion = true;
-
-        StrategyManager::SharedPtr newStrategy;
-
-        switch (ID)
-        {
-            case 100:
-            {
-                newStrategy.reset( new KVarStrategy );
-                newStrategy->setStrategyName("Test kVAr Strategy");
-                break;
-            }
-            case 110:
-            {
-                newStrategy.reset( new PFactorKWKVarStrategy );
-                newStrategy->setStrategyName("Test kVAr Power Factor Strategy");
-                break;
-            }
-            case 125:
-            {
-                newStrategy.reset( new PFactorKWKVarStrategy );
-                newStrategy->setStrategyName("Test Power Factor Strategy #2");
-                break;
-            }
-            default:
-            {
-                doInsertion = false;
-                break;
-            }
-        }
-
-        if (doInsertion)
-        {
-            newStrategy->setStrategyId(ID);
-            strategies[ID] = newStrategy;
-        }
-    }
-};
-
+using Cti::Test::CapControl::StrategyUnitTestLoader;
 
 
 BOOST_AUTO_TEST_CASE(test_StrategyManager_default_initialization)

@@ -73,7 +73,7 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(false),
                                                     _lastdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)),
                                                     _wassubbusdeletedflag(false),
                                                     _lastindividualdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)),
-                                                    _strategyManager( std::auto_ptr<StrategyDBLoader>( new StrategyDBLoader ) ),
+                                                    _strategyManager( new StrategyManager( std::auto_ptr<StrategyDBLoader>( new StrategyDBLoader ) ) ),
                                                     _zoneManager( std::auto_ptr<ZoneDBLoader>( new ZoneDBLoader ) ),
 _voltageRegulatorManager( new Cti::CapControl::VoltageRegulatorManager(std::auto_ptr<VoltageRegulatorDBLoader>( new VoltageRegulatorDBLoader ) ) )
 {
@@ -2731,6 +2731,14 @@ void CtiCCSubstationBusStore::setAttributeService(std::auto_ptr<AttributeService
     }
 }
 
+void CtiCCSubstationBusStore::setStrategyManager(std::auto_ptr<StrategyManager> manager)
+{
+    if( manager.get() )
+    {
+        _strategyManager = manager;
+    }
+}
+
 /*---------------------------------------------------------------------------
     isValid
 
@@ -3542,13 +3550,13 @@ bool CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
         // First save states, then reload the strategy.
         if (strategyId == -1)
         {
-            _strategyManager.saveAllStates();
-            _strategyManager.reloadAll();
+            _strategyManager->saveAllStates();
+            _strategyManager->reloadAll();
         }
         else
         {
-            _strategyManager.saveStates(strategyId);
-            _strategyManager.reload(strategyId);
+            _strategyManager->saveStates(strategyId);
+            _strategyManager->reload(strategyId);
         }
         {
             reloadTimeOfDayStrategyFromDatabase(strategyId);
@@ -3634,11 +3642,11 @@ bool CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
         // After the strategy has been properly assigned everywhere, restore the states
         if (strategyId == -1)
         {
-            _strategyManager.restoreAllStates();
+            _strategyManager->restoreAllStates();
         }
         else
         {
-            _strategyManager.restoreStates(strategyId);
+            _strategyManager->restoreStates(strategyId);
         }
     }
     catch(...)
@@ -4261,7 +4269,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
 
             while ( rdr() )
             {
-                CtiCCAreaPtr currentCCArea = CtiCCAreaPtr(new CtiCCArea(rdr, &_strategyManager));
+                CtiCCAreaPtr currentCCArea = CtiCCAreaPtr(new CtiCCArea(rdr, _strategyManager.get()));
 
                 paobject_area_map->insert(make_pair(currentCCArea->getPaoId(),currentCCArea));
 
@@ -4625,7 +4633,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
 
             while ( rdr() )
             {
-                CtiCCSpecialPtr currentCCSpArea = CtiCCSpecialPtr(new CtiCCSpecial(rdr, &_strategyManager));
+                CtiCCSpecialPtr currentCCSpArea = CtiCCSpecialPtr(new CtiCCSpecial(rdr, _strategyManager.get()));
 
                 paobject_specialarea_map->insert(make_pair(currentCCSpArea->getPaoId(),currentCCSpArea));
 
@@ -4941,7 +4949,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                 }
                 else
                 {
-                    currentCCSubstationBus = CtiCCSubstationBusPtr(new CtiCCSubstationBus(rdr, &_strategyManager));
+                    currentCCSubstationBus = CtiCCSubstationBusPtr(new CtiCCSubstationBus(rdr, _strategyManager.get()));
                     paobject_subbus_map->insert(make_pair(currentCCSubstationBus->getPaoId(),currentCCSubstationBus));
                 }
 
@@ -5691,7 +5699,7 @@ void CtiCCSubstationBusStore::assignStrategyToCCObject(Cti::RowReader& dbRdr, Ct
 
 void CtiCCSubstationBusStore::assignStrategyAtFeeder(CtiCCFeederPtr feeder, long stratId)
 {
-    long strategyID = _strategyManager.getDefaultId();   // default NoStrategy
+    long strategyID = _strategyManager->getDefaultId();   // default NoStrategy
 
     CtiCCSubstationBusPtr currentSubBus = findSubBusByPAObjectID(feeder->getParentId());
     if (currentSubBus != NULL)
@@ -5722,7 +5730,7 @@ void CtiCCSubstationBusStore::assignStrategyAtBus(CtiCCSubstationBusPtr bus, lon
     CtiCCSubstationPtr currentStation = findSubstationByPAObjectID(bus->getParentId());
     if (currentStation != NULL)
     {
-        long strategyID = _strategyManager.getDefaultId();
+        long strategyID = _strategyManager->getDefaultId();
 
         if (currentStation->getSaEnabledFlag())
         {
@@ -5810,7 +5818,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
             CtiCCSubstationBusPtr oldFeederParentSub = NULL;
             while ( rdr() )
             {
-                currentCCFeeder = CtiCCFeederPtr(new CtiCCFeeder(rdr, &_strategyManager));
+                currentCCFeeder = CtiCCFeederPtr(new CtiCCFeeder(rdr, _strategyManager.get()));
 
                 paobject_feeder_map->insert(make_pair(currentCCFeeder->getPaoId(),currentCCFeeder));
 
@@ -8554,7 +8562,7 @@ void CtiCCSubstationBusStore::handleStrategyDBChange(long reloadId, BYTE reloadA
     }
     else
     {
-        _strategyManager.unload(reloadId);
+        _strategyManager->unload(reloadId);
     }
 }
 
@@ -10425,7 +10433,7 @@ bool CtiCCSubstationBusStore::isAnyBankOpen(int paoId, CapControlType type)
 
 void CtiCCSubstationBusStore::executeAllStrategies() const
 {
-    _strategyManager.executeAll();
+    _strategyManager->executeAll();
 }
 
 
