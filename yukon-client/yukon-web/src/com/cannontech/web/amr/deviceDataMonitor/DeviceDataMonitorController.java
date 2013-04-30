@@ -85,9 +85,11 @@ import com.google.common.collect.Sets;
 @RequestMapping("/deviceDataMonitor/*")
 @CheckRoleProperty(YukonRoleProperty.DEVICE_DATA_MONITORING)
 public class DeviceDataMonitorController {
-    int MAX_ROWS_FROM_ATTRIBUTE_POINT_QUERY = 3500;
+    int MAX_ROWS_FROM_ATTRIBUTE_POINT_QUERY     = 3500;
     // Send this to i18n messages rather than a count so their logic knows "all" devices are one in a state.
-    final int MESSAGE_MAGIC_NUMBER__ALL     = -1;
+    final int MESSAGE_MAGIC_NUMBER__ALL         = -1;
+    // Send to i18n messages to indicate that the count is invalid, so don't report numbers.
+    final int MESSAGE_MAGIC_NUMBER_LIMITED_QUERY= -2;
 
     private static final String baseKey = "yukon.web.modules.amr.deviceDataMonitor";
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorController.class);
@@ -573,7 +575,7 @@ public class DeviceDataMonitorController {
             ptRow.add(messageSourceAccessor.getMessage(labelKey));
             ptRow.add(messageSourceAccessor.getMessage(baseKey + ".list.title",nameString));
             ptRow.add(messageSourceAccessor.getMessage(baseKey + ".help.title"));
-            final long missingNumber = missingPoints == totalDeviceCount ? MESSAGE_MAGIC_NUMBER__ALL : missingPoints;
+            final long missingNumber = useLimitedQuery ? MESSAGE_MAGIC_NUMBER_LIMITED_QUERY : missingPoints == totalDeviceCount ? MESSAGE_MAGIC_NUMBER__ALL : missingPoints;
             ptRow.add(messageSourceAccessor.getMessage(baseKey + ".help.msg",totalDeviceCount, missingNumber, nameString));
             ptRow.add(messageSourceAccessor.getMessage("yukon.web.modules.amr.deviceDataMonitor.addPoints.label"));
             processorMissingList.add(ptRow);

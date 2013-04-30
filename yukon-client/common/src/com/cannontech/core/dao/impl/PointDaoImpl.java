@@ -95,10 +95,6 @@ public class PointDaoImpl implements PointDao {
     private static final ParameterizedRowMapper<LitePoint> litePointRowMapper =
         new YukonRowMapperAdapter<LitePoint>(litePointYukonRowMapper);
 
-    public static ParameterizedRowMapper<LitePoint> getLitePointRowMapper() {
-        return litePointRowMapper;
-    }
-
     private static final RowMapper<LitePointUnit> litePointUnitRowMapper = new RowMapper<LitePointUnit>() {
         @Override
         public LitePointUnit mapRow(ResultSet rs, int rowNum) throws SQLException {

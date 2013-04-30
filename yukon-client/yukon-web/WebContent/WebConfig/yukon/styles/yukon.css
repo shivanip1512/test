@@ -373,8 +373,6 @@ html[xmlns] .clearfix {display: block;}
 .wall_of_text .value {max-width: 300px;}
 .title-bar-tool {float:right !important;margin-right: 10px;}
 .dialog-no-buttons {margin-bottom: 20px;} /* buffer to get content (like scroll bar) from running into drag handle in dialogs with no button bar */
-.refresh {background: #FFF url(../Icons/arrow_refresh.png) left center no-repeat;padding-left: 20px;}
-.icon_warning {height: 16px; padding-left: 16px; background: #FFFFFF url('/WebConfig/yukon/Icons/warning.gif') 0px 0px no-repeat;}
 
 .setting {border-top: dotted 1px #ccc; margin-top: -1px; padding: 10px 0;}
 .setting > .fl {margin-left: 10px;}

@@ -90,6 +90,7 @@ a .arrow-down, a .arrow-up {left: 3px;}
 .icon_help {background: transparent url(../Icons/help.gif) top left no-repeat;}
 .icon_help:hover {background: transparent url(../Icons/help_over.gif) top left no-repeat;}
 .icon_item {background-image: url(../Icons/32/item.png);}
+.icon_warning {height: 16px; padding-left: 16px; background: url('/WebConfig/yukon/Icons/warning.gif') 0px 0px no-repeat;}
 
 .lightbulb {background-image: url(../Icons/32/lightbulb.png);}
 .list {background-image: url(../Icons/32/list.png);}
@@ -117,6 +118,7 @@ a .arrow-down, a .arrow-up {left: 3px;}
 .prev_disabled {background-image: url(../Icons/resultset_previous_disabled.gif);}
 
 .random {background-image: url(../Icons/32/random.png);}
+.refresh {background: url(../Icons/arrow_refresh.png) left center no-repeat;padding-left: 20px;}
 
 .search_button {background: transparent url(../Buttons/GoButtonGray.gif) top left no-repeat; padding-top: 20px; width: 23px;}
 .search_button:hover,.search_button:active {background: transparent url(../Buttons/GoButton.gif) top left no-repeat;}
