@@ -211,6 +211,36 @@ WHERE PointId IN
       AND UPPER(YPAO.Type) IN ('RFN-420CL', 'RFN-420CD'));
 /* End YUK-12150 */
 
+/* Start YUK-11959 */
+UPDATE YukonGroupRole ROLE
+SET ROLE.Value = ' '
+WHERE EXISTS (SELECT PROP.KeyName
+              FROM YukonRoleProperty PROP
+              WHERE ROLE.RolePropertyId = PROP.RolePropertyId
+                AND ROLE.RoleId = PROP.RoleId
+                AND (LOWER(PROP.KeyName)= 'msg_priority'
+                 OR  LOWER(PROP.KeyName) = 'maximum daily scans'
+                 OR  LOWER(PROP.KeyName) = 'minimum scan frequency'))
+  AND ROLE.Value NOT LIKE ' '
+  AND LENGTH(TRIM(TRANSLATE(ROLE.Value, '0123456789', ' '))) > 0;
+ 
+UPDATE YukonGroupRole ROLE
+SET ROLE.Value = ' '
+WHERE EXISTS (SELECT PROP.KeyName
+              FROM YukonRoleProperty PROP
+              WHERE ROLE.RolePropertyId = PROP.RolePropertyId
+                AND ROLE.RoleId = PROP.RoleId
+                AND (LOWER(PROP.KeyName) = 'allow_member_programs'
+                 OR  LOWER(PROP.KeyName) = 'dbeditor_lm' 
+                 OR  LOWER(PROP.KeyName) = 'dbeditor_system' 
+                 OR  LOWER(PROP.KeyName) = 'dbeditor_trans_exclusion'
+                 OR  LOWER(PROP.KeyName) = 'permit_login_edit'
+                 OR  LOWER(PROP.KeyName) = 'graph_edit_graphdefinition' 
+                 OR  LOWER(PROP.KeyName) = 'scan now enabled'
+                 OR  LOWER(PROP.KeyName) = 'auto process batch configs'))
+  AND LOWER(ROLE.Value) NOT IN ('true', 'false', ' ');
+/* End YUK-11959 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
