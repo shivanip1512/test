@@ -178,7 +178,7 @@ void Cbc8020Device::initOffsetAttributeMaps( std::map <int, PointAttribute> &ana
     //analogOffsetAttribute.insert( std::make_pair( 6, PointAttribute::DeltaVoltage) );
     //analogOffsetAttribute.insert( std::make_pair( 7, PointAttribute::HighVoltage) );
     //analogOffsetAttribute.insert( std::make_pair( 8, PointAttribute::LowVoltage) );
-    //analogOffsetAttribute.insert( std::make_pair( 12, PointAttribute::AverageLineVoltage) );
+    analogOffsetAttribute.insert( std::make_pair( 12, PointAttribute::CbcVoltage) );    // aka: AverageLineVoltage
     //analogOffsetAttribute.insert( std::make_pair( 21, PointAttribute::LineVoltageTHD) );
     //analogOffsetAttribute.insert( std::make_pair( 114, PointAttribute::IgnoredControlReason) );
     analogOffsetAttribute.insert( std::make_pair( 10001, PointAttribute::OvThreshold) );
