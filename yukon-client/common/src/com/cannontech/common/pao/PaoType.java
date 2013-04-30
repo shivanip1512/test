@@ -324,6 +324,7 @@ public enum PaoType implements DatabaseRepresentationSource {
         meterTypesBuilder.add(RFN420FD);
         meterTypesBuilder.add(RFN420FRX);
         meterTypesBuilder.add(RFN420FRD);
+        meterTypesBuilder.add(RFN410CL);
         meterTypesBuilder.add(RFN420CL);
         meterTypesBuilder.add(RFN420CD);
         meterTypesBuilder.add(RFN430A3D);
