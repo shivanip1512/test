@@ -430,7 +430,7 @@ function UpdateEsubRoleId()
 string sProg;
 begin
      SdShowMsg("Checking for any Esubstation files that contain obsolete role ids", TRUE);
-     sProg = TARGETDIR ^ "\\Server\\bin\\UpdateEsubRoleId.bat";
+     sProg = TARGETDIR ^ "\\Client\\bin\\UpdateEsubRoleId.bat";
      LAAW_PARAMETERS.nTimeOut = INFINITE;
      LAAW_STARTUPINFO.wShowWindow = SW_HIDE;
      LaunchAppAndWait(sProg, "", LAAW_OPTION_WAIT);
