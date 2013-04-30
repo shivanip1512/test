@@ -55,6 +55,9 @@
     <entry key="yukon.common.attribute.builtInAttribute.LOAD_PROFILE">Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MAXIMUM_VOLTAGE">Maximum Voltage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MINIMUM_VOLTAGE">Minimum Voltage</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.OVER_VOLTAGE">Over Voltage</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.OVER_VOLTAGE_MEASURED">Over Voltage Measured</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.OVER_VOLTAGE_THRESHOLD">Over Voltage Threshold</entry>
     <entry key="yukon.common.attribute.builtInAttribute.OUTAGE_LOG">Outage Log</entry>
     <entry key="yukon.common.attribute.builtInAttribute.OUTAGE_STATUS">Outage Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_DEMAND">Peak Demand</entry>
@@ -90,15 +93,20 @@
     <entry key="yukon.common.attribute.builtInAttribute.TOU_RATE_B_USAGE">Tou Rate B Usage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TOU_RATE_C_USAGE">Tou Rate C Usage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TOU_RATE_D_USAGE">Tou Rate D Usage</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.UNDER_VOLTAGE">Under Voltage</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.UNDER_VOLTAGE_MEASURED">Under Voltage Measured</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.UNDER_VOLTAGE_THRESHOLD">Under Voltage Threshold</entry>
     <entry key="yukon.common.attribute.builtInAttribute.USAGE">Usage Reading</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.USAGE_WATER">Water Usage Reading</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE">Voltage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PHASE_A">Voltage (Phase A)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PHASE_B">Voltage (Phase B)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PHASE_C">Voltage (Phase C)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PROFILE">Voltage Profile</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.USAGE_WATER">Water Usage Reading</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.WATT_HOUR_PULSE_FAILURE">Watt-Hour Pulse Failure</entry>
     <entry key="yukon.common.attribute.builtInAttribute.ZERO_USAGE_FLAG">Zero Usage Flag</entry>
     <entry key="yukon.common.attribute.builtInAttribute.ZIGBEE_LINK_STATUS">ZigBee Link Status</entry>
+
     <entry key="yukon.common.attribute.builtInAttribute.IED_DEMAND_RESET_COUNT">IED Demand Reset Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RF_DEMAND_RESET_STATUS">RF Demand Reset Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CONFIGURATION_ERROR">Configuration Error</entry>

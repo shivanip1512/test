@@ -43,6 +43,9 @@ public enum BuiltInAttribute implements Attribute {
     MINIMUM_VOLTAGE("Minimum Voltage"),
     OUTAGE_LOG("Outage Log"),
     OUTAGE_STATUS("Outage Status"),
+    OVER_VOLTAGE("Over Voltage"),
+    OVER_VOLTAGE_MEASURED("Over Voltage Measured"),
+    OVER_VOLTAGE_THRESHOLD("Over Voltage Threshold"),
     PEAK_DEMAND("Peak Demand"),
     PEAK_KVAR("Peak kVAr"),
     PHASE("Phase"),
@@ -81,16 +84,20 @@ public enum BuiltInAttribute implements Attribute {
     TOU_RATE_B_USAGE("Tou Rate B Usage"), 
     TOU_RATE_C_USAGE("Tou Rate C Usage"), 
     TOU_RATE_D_USAGE("Tou Rate D Usage"), 
+    UNDER_VOLTAGE("Under Voltage"),
+    UNDER_VOLTAGE_MEASURED("Under Voltage Measured"),
+    UNDER_VOLTAGE_THRESHOLD("Under Voltage Threshold"),
     USAGE("Usage Reading"), 
+    USAGE_WATER("Water Usage Reading"),
     VOLTAGE("Voltage"),
     VOLTAGE_PHASE_A("Voltage (Phase A)"),
     VOLTAGE_PHASE_B("Voltage (Phase B)"),
     VOLTAGE_PHASE_C("Voltage (Phase C)"),
     VOLTAGE_PROFILE("Voltage Profile"),
-    USAGE_WATER("Water Usage Reading"),
+    WATT_HOUR_PULSE_FAILURE("Watt-Hour Pulse Failure"),
     ZERO_USAGE_FLAG("Zero Usage Flag"),
     ZIGBEE_LINK_STATUS("ZigBee Link Status"),
-    
+
     DELIVERED_KWH("Delivered kWh"),
     RECEIVED_KWH("Received kWh"),
     NET_KWH("Net kWh"),
@@ -383,6 +390,9 @@ public enum BuiltInAttribute implements Attribute {
         builder.add(LOW_LOSS_POTENTIAL);
         builder.add(MEASUREMENT_ERROR);
         builder.add(NON_VOLATILE_MEM_FAILURE);
+        builder.add(OVER_VOLTAGE);
+        builder.add(OVER_VOLTAGE_MEASURED);
+        builder.add(OVER_VOLTAGE_THRESHOLD);
         builder.add(PASSWORD_TABLE_CRC_ERROR);
         builder.add(POTENTIAL_INDICATOR_WARNING);
         builder.add(POWER_FAIL_DATA_SAVE_ERROR);
@@ -405,6 +415,9 @@ public enum BuiltInAttribute implements Attribute {
         builder.add(TAMPER_FLAG);                 //[PLC & RFN] Shared
         builder.add(TIME_ADJUSTMENT);
         builder.add(UNCONFIGURED);
+        builder.add(UNDER_VOLTAGE);
+        builder.add(UNDER_VOLTAGE_MEASURED);
+        builder.add(UNDER_VOLTAGE_THRESHOLD);
         builder.add(UNPROGRAMMED);
         builder.add(USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED);
         builder.add(VOLTAGE_ALERTS);
@@ -413,8 +426,8 @@ public enum BuiltInAttribute implements Attribute {
         builder.add(VOLTAGE_PHASE_B_OUT);
         builder.add(VOLTAGE_PHASE_C_OUT);
         builder.add(VOLTAGE_PHASE_ERROR);
+        builder.add(WATT_HOUR_PULSE_FAILURE);
         builder.add(OUTAGE_STATUS);                 //[PLC & RFN] Shared
-        
         rfnEventStatusTypes = builder.build();
         
         Builder<BuiltInAttribute> analogBuilder = ImmutableSet.builder();

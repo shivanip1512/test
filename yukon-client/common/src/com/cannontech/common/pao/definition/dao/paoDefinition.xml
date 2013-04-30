@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="paoDefinition.xsl"?>
-<!--  RF Devices: highest OFFSET=215 @ 2014-04-29M -->
+<!--  RF Devices: highest Analog OFFSET=219 @ 2014-04-30T -->
+<!--  RF Devices: highest Status OFFSET=62  @ 2014-04-30T -->
 <!--
     This file contains default pao and point information for all of the pao's in Yukon.
     
@@ -5724,6 +5725,30 @@
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="3"/>
             </point>
+            <point type="Analog" offset="216">
+                <name>Over Voltage Measured</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="217">
+                <name>Over Voltage Threshold</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="218">
+                <name>Under Voltage Measured</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="219">
+                <name>Under Voltage Threshold</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="4"/>
+            </point>
 
 
 
@@ -5920,6 +5945,14 @@
                </archive>
                <stategroup value="Event Status"/>
             </point>
+            <point type="Status" offset="60">
+                <name>Over Voltage</name>
+                <archive>
+                    <type>ON_CHANGE</type>
+                    <interval>ZERO</interval>
+                </archive>
+                <stategroup value="Event Status"/>
+            </point>
             <point type="Status" offset="28">
                <name>Password Table Crc Error</name>
                <archive>
@@ -6096,6 +6129,14 @@
                </archive>
                <stategroup value="Event Status"/>
             </point>
+            <point type="Status" offset="61">
+                <name>Under Voltage</name>
+                <archive>
+                    <type>ON_CHANGE</type>
+                    <interval>ZERO</interval>
+                </archive>
+                <stategroup value="Event Status"/>
+            </point>
             <point type="Status" offset="51">
                <name>Unprogrammed</name>
                <archive>
@@ -6159,6 +6200,14 @@
                    <interval>ZERO</interval>
                </archive>
                <stategroup value="Event Status"/>
+            </point>
+            <point type="Status" offset="62">
+                <name>Watt-Hour Pulse Failure</name>
+                <archive>
+                    <type>ON_CHANGE</type>
+                    <interval>ZERO</interval>
+                </archive>
+                <stategroup value="Event Status"/>
             </point>
 
             <point type="CalcAnalog" offset="0">
@@ -6296,6 +6345,15 @@
             <attribute name="NON_VOLATILE_MEM_FAILURE">
                 <basicLookup point="Non Volatile Mem Failure" />
             </attribute>
+            <attribute name="OVER_VOLTAGE">
+                <basicLookup point="Over Voltage"/>
+            </attribute>
+            <attribute name="OVER_VOLTAGE_MEASURED">
+                <basicLookup point="Over Voltage Measured"/>
+            </attribute>
+            <attribute name="OVER_VOLTAGE_THRESHOLD">
+                <basicLookup point="Over Voltage Threshold"/>
+            </attribute>
             <attribute name="PASSWORD_TABLE_CRC_ERROR">
                 <basicLookup point="Password Table Crc Error" />
             </attribute>
@@ -6362,6 +6420,15 @@
             <attribute name="UNCONFIGURED">
                 <basicLookup point="Unconfigured" />
             </attribute>
+            <attribute name="UNDER_VOLTAGE">
+                <basicLookup point="Under Voltage"/>
+            </attribute>
+            <attribute name="UNDER_VOLTAGE_MEASURED">
+                <basicLookup point="Under Voltage Measured"/>
+            </attribute>
+            <attribute name="UNDER_VOLTAGE_THRESHOLD">
+                <basicLookup point="Under Voltage Threshold"/>
+            </attribute>
             <attribute name="UNPROGRAMMED">
                 <basicLookup point="Unprogrammed" />
             </attribute>
@@ -6385,6 +6452,9 @@
             </attribute>
             <attribute name="VOLTAGE_PHASE_ERROR">
                 <basicLookup point="Voltage Phase Error" />
+            </attribute>
+            <attribute name="WATT_HOUR_PULSE_FAILURE">
+                <basicLookup point="Watt-Hour Pulse Failure"/>
             </attribute>
         </attributes>
         <tags>
