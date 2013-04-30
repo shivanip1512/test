@@ -26,29 +26,39 @@ public enum BuiltInAttribute implements Attribute {
     CONTROL_POINT("Control Point"),
     CONTROL_STATUS("Control Status"),
     NEUTRAL_CURRENT("Current (Neutral)"),
+    CURRENT("Current"),
     CURRENT_PHASE_A("Current (Phase A)"),
     CURRENT_PHASE_B("Current (Phase B)"),
     CURRENT_PHASE_C("Current (Phase C)"),
+    CURRENT_WITHOUT_VOLTAGE_FLAG("Current Without Voltage"),
     DEMAND("Demand"), 
     DISCONNECT_STATUS("Disconnect Status"),
     ENERGY_GENERATED("Energy Generated"),
     FAULT_STATUS("Fault Status"),
+    FORWARD_INDUCTIVE_KVARH("Forward Inductive kVARh"),
     GENERAL_ALARM_FLAG("General Alarm Flag"),
     IED_DEMAND_RESET_COUNT("IED Demand Reset Count"),
     KVAR("kVAr"),
     KVARH("kVArh"),
     LM_GROUP_STATUS("LM Group Status"),
     LOAD_PROFILE("Load Profile"),
+    LOAD_SIDE_VOLTAGE_DETECTED_FLAG("Load Side Voltage Detected"),
     MAXIMUM_VOLTAGE("Maximum Voltage"),
     MINIMUM_VOLTAGE("Minimum Voltage"),
     OUTAGE_LOG("Outage Log"),
     OUTAGE_STATUS("Outage Status"),
+    OUT_OF_VOLTAGE_FLAG("Out of Voltage"),
+    VOLTAGE_OUT_OF_LIMITS_FLAG("Voltage Out of Limits"),
     OVER_VOLTAGE("Over Voltage"),
     OVER_VOLTAGE_MEASURED("Over Voltage Measured"),
     OVER_VOLTAGE_THRESHOLD("Over Voltage Threshold"),
     PEAK_DEMAND("Peak Demand"),
     PEAK_KVAR("Peak kVAr"),
     PHASE("Phase"),
+    POWER_FACTOR("Power Factor"),
+    POWER_FACTOR_PHASE_A("Power Factor (Phase A)"),
+    POWER_FACTOR_PHASE_B("Power Factor (Phase B)"),
+    POWER_FACTOR_PHASE_C("Power Factor (Phase C)"),
     POWER_FAIL_FLAG("Power Fail Flag"),
     PROFILE_CHANNEL_2("Profile Channel 2"),
     PROFILE_CHANNEL_3("Profile Channel 3"),
@@ -84,6 +94,10 @@ public enum BuiltInAttribute implements Attribute {
     TOU_RATE_B_USAGE("Tou Rate B Usage"), 
     TOU_RATE_C_USAGE("Tou Rate C Usage"), 
     TOU_RATE_D_USAGE("Tou Rate D Usage"), 
+    TOU_RATE_A_ENERGY_GENERATED("Tou Rate A Energy Generated"), 
+    TOU_RATE_B_ENERGY_GENERATED("Tou Rate B Energy Generated"), 
+    TOU_RATE_C_ENERGY_GENERATED("Tou Rate C Energy Generated"), 
+    TOU_RATE_D_ENERGY_GENERATED("Tou Rate D Energy Generated"), 
     UNDER_VOLTAGE("Under Voltage"),
     UNDER_VOLTAGE_MEASURED("Under Voltage Measured"),
     UNDER_VOLTAGE_THRESHOLD("Under Voltage Threshold"),
@@ -244,6 +258,10 @@ public enum BuiltInAttribute implements Attribute {
         accumulators.add(USAGE_WATER);
         accumulators.add(DELIVERED_KWH);
         accumulators.add(RECEIVED_KWH);
+        accumulators.add(TOU_RATE_A_ENERGY_GENERATED);
+        accumulators.add(TOU_RATE_B_ENERGY_GENERATED);
+        accumulators.add(TOU_RATE_C_ENERGY_GENERATED);
+        accumulators.add(TOU_RATE_D_ENERGY_GENERATED);
         accumulators.add(NET_KWH);
         accumulators.add(SUM_KWH);
         accumulatorAttributes = accumulators.build();
@@ -261,6 +279,7 @@ public enum BuiltInAttribute implements Attribute {
         other.add(ENERGY_GENERATED);
         other.add(KVAR);
         other.add(KVARH);
+        other.add(FORWARD_INDUCTIVE_KVARH);
         other.add(PEAK_KVAR);
         other.add(PHASE);
         other.add(RECORDING_INTERVAL);
@@ -277,6 +296,10 @@ public enum BuiltInAttribute implements Attribute {
         other.add(SUM_KVAH_PER_INTERVAL);
         other.add(SUM_KVARH_PER_INTERVAL);
         other.add(WATER_USAGE_PER_INTERVAL);
+        other.add(POWER_FACTOR);
+        other.add(POWER_FACTOR_PHASE_A);
+        other.add(POWER_FACTOR_PHASE_B);
+        other.add(POWER_FACTOR_PHASE_C);
         otherAttributes = other.build();
         
         ImmutableSet.Builder<BuiltInAttribute> demand = ImmutableSet.builder();
@@ -299,6 +322,7 @@ public enum BuiltInAttribute implements Attribute {
         voltageAttributes = voltage.build();
         
         ImmutableSet.Builder<BuiltInAttribute> current = ImmutableSet.builder();
+        current.add(CURRENT);
         current.add(CURRENT_PHASE_A);
         current.add(CURRENT_PHASE_B);
         current.add(CURRENT_PHASE_C);
@@ -321,6 +345,10 @@ public enum BuiltInAttribute implements Attribute {
         status.add(TAMPER_FLAG);
         status.add(ZERO_USAGE_FLAG);
         status.add(ZIGBEE_LINK_STATUS);
+        status.add(CURRENT_WITHOUT_VOLTAGE_FLAG);
+        status.add(LOAD_SIDE_VOLTAGE_DETECTED_FLAG);
+        status.add(OUT_OF_VOLTAGE_FLAG);
+        status.add(VOLTAGE_OUT_OF_LIMITS_FLAG);
         statusAttributes = status.build();
         
         ImmutableSet.Builder<BuiltInAttribute> relay = ImmutableSet.builder();

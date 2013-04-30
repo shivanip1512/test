@@ -84,6 +84,10 @@
     <entry key="yukon.common.attribute.builtInAttribute.REPORTING_INTERVAL">Reporting Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_POWER_FLAG">Reverse Power Flag</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TAMPER_FLAG">Tamper Flag</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.METER_BOX_COVER_REMOVAL_FLAG">Meter Box Cover Removal</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.OUT_OF_VOLTAGE_FLAG">Out of Voltage</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_OUT_OF_LIMITS_FLAG">Voltage Out of Limits</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.INTERNAL_ERROR_FLAG">Internal Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TEMPORARY_OUT_OF_SERVICE">Temp Out of Service Duration</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TOU_RATE_A_PEAK_DEMAND">Tou Rate A Peak</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TOU_RATE_B_PEAK_DEMAND">Tou Rate B Peak</entry>
@@ -93,11 +97,19 @@
     <entry key="yukon.common.attribute.builtInAttribute.TOU_RATE_B_USAGE">Tou Rate B Usage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TOU_RATE_C_USAGE">Tou Rate C Usage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TOU_RATE_D_USAGE">Tou Rate D Usage</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TOU_RATE_A_ENERGY_GENERATED">Tou Rate A Energy Generated</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TOU_RATE_B_ENERGY_GENERATED">Tou Rate B Energy Generated</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TOU_RATE_C_ENERGY_GENERATED">Tou Rate C Energy Generated</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TOU_RATE_D_ENERGY_GENERATED">Tou Rate D Energy Generated</entry>
     <entry key="yukon.common.attribute.builtInAttribute.UNDER_VOLTAGE">Under Voltage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.UNDER_VOLTAGE_MEASURED">Under Voltage Measured</entry>
     <entry key="yukon.common.attribute.builtInAttribute.UNDER_VOLTAGE_THRESHOLD">Under Voltage Threshold</entry>
     <entry key="yukon.common.attribute.builtInAttribute.USAGE">Usage Reading</entry>
     <entry key="yukon.common.attribute.builtInAttribute.USAGE_WATER">Water Usage Reading</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR">Power Factor</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR_PHASE_A">Power Factor (Phase A)</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR_PHASE_B">Power Factor (Phase B)</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR_PHASE_C">Power Factor (Phase C)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE">Voltage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PHASE_A">Voltage (Phase A)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PHASE_B">Voltage (Phase B)</entry>
@@ -127,6 +139,8 @@
     <entry key="yukon.common.attribute.builtInAttribute.INVALID_SERVICE">Invalid Service</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LINE_FREQUENCY_WARNING">Line Frequency Warning</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LOAD_SIDE_VOLTAGE_IS_MISSING">Load Side Voltage Is Missing</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOAD_SIDE_VOLTAGE_DETECTED_FLAG">Load Side Voltage Detected</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.CURRENT_WITHOUT_VOLTAGE_FLAG">Current Without Voltage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LOSS_OF_ALL_CURRENT">Loss Of All Current</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LOSS_OF_PHASE_A_CURRENT">Loss Of Phase A Current</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LOSS_OF_PHASE_C_CURRENT">Loss Of Phase C Current</entry>
@@ -174,6 +188,7 @@
     
     <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KWH">Delivered kWh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KWH">Received kWh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.FORWARD_INDUCTIVE_KVARH">Forward Inductive kVARh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_KWH">Net kWh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KWH">Sum kWh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVAH">Sum kVAh</entry>

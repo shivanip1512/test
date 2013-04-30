@@ -1448,7 +1448,7 @@
         <points>
             <point type="Analog" offset="100">
                 <init>true</init>
-                <name>Outages</name>
+                <name>Outage Log</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="3"/>
@@ -1481,21 +1481,21 @@
 
             <point type="PulseAccumulator" offset="1">
                 <init>true</init>
-                <name>kWh</name>
+                <name>Delivered kWh</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="1"/>
             </point>
             <point type="PulseAccumulator" offset="2">
                 <init>true</init>
-                <name>Reverse kWh</name>
+                <name>Received kWh</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="PulseAccumulator" offset="3">
                 <init>true</init>
-                <name>Reactive Inductive Energy</name>
+                <name>Forward Inductive kVARh</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="3"/>
@@ -1543,28 +1543,34 @@
             </point>
             <point type="PulseAccumulator" offset="201">
                 <init>true</init>
-                <name>Rate A Reverse kWh</name>
+                <name>Received kWh (Rate A kWh)</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="PulseAccumulator" offset="221">
                 <init>true</init>
-                <name>Rate B Reverse kWh</name>
+                <name>Received kWh (Rate B kWh)</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="PulseAccumulator" offset="241">
                 <init>true</init>
-                <name>Rate C Reverse kWh</name>
+                <name>Received kWh (Rate C kWh)</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="PulseAccumulator" offset="261">
                 <init>true</init>
-                <name>Rate D Reverse kWh</name>
+                <name>Received kWh (Rate D kWh)</name>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="PulseAccumulator" offset="281">
+                <name>Recent Received kWh</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="3"/>
@@ -1669,7 +1675,7 @@
             </point>
             <point type="Status" offset="40">
                 <init>true</init>
-                <name>Current without voltage</name>
+                <name>Current Without Voltage</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="50">
@@ -1789,10 +1795,19 @@
 
         <attributes>
             <attribute name="USAGE">
-                <basicLookup point="kWh" />
+                <basicLookup point="Delivered kWh" />
+            </attribute>
+            <attribute name="ENERGY_GENERATED">
+                <basicLookup point="Received kWh" />
+            </attribute>
+            <attribute name="RECEIVED_KWH">
+                <basicLookup point="Received kWh" />
+            </attribute>
+            <attribute name="FORWARD_INDUCTIVE_KVARH">
+                <basicLookup point="Forward Inductive kVARh" />
             </attribute>
             <attribute name="OUTAGE_LOG">
-                <basicLookup point="Outages" />
+                <basicLookup point="Outage Log" />
             </attribute>
             <attribute name="BLINK_COUNT">
                 <basicLookup point="Blink Count" />
@@ -1809,8 +1824,44 @@
             <attribute name="TOU_RATE_D_USAGE">
                 <basicLookup point="Rate D kWh" />
             </attribute>
+            <attribute name="TOU_RATE_A_ENERGY_GENERATED">
+                <basicLookup point="Received kWh (Rate A kWh)" />
+            </attribute>
+            <attribute name="TOU_RATE_B_ENERGY_GENERATED">
+                <basicLookup point="Received kWh (Rate B kWh)" />
+            </attribute>
+            <attribute name="TOU_RATE_C_ENERGY_GENERATED">
+                <basicLookup point="Received kWh (Rate C kWh)" />
+            </attribute>
+            <attribute name="TOU_RATE_D_ENERGY_GENERATED">
+                <basicLookup point="Received kWh (Rate D kWh)" />
+            </attribute>
             <attribute name="GENERAL_ALARM_FLAG">
                 <basicLookup point="General Alarm" />
+            </attribute>
+            <attribute name="OUT_OF_VOLTAGE_FLAG">
+                <basicLookup point="Out of Voltage" />
+            </attribute>
+            <attribute name="INTERNAL_ERROR_FLAG">
+                <basicLookup point="Internal Error" />
+            </attribute>
+            <attribute name="REVERSE_POWER_FLAG">
+                <basicLookup point="Reverse Energy" />
+            </attribute>
+            <attribute name="METER_BOX_COVER_REMOVAL_FLAG">
+                <basicLookup point="Meter Box Cover Removal" />
+            </attribute>
+            <attribute name="VOLTAGE_OUT_OF_LIMITS_FLAG">
+                <basicLookup point="Voltage Out of Limits" />
+            </attribute>
+            <attribute name="LOW_BATTERY_WARNING">
+                <basicLookup point="Low Battery" />
+            </attribute>
+            <attribute name="LOAD_SIDE_VOLTAGE_DETECTED_FLAG">
+                <basicLookup point="Load Side Voltage Detected, Relay Open" />
+            </attribute>
+            <attribute name="CURRENT_WITHOUT_VOLTAGE_FLAG">
+                <basicLookup point="Current Without Voltage" />
             </attribute>
             <attribute name="POWER_FAIL_FLAG">
                 <basicLookup point="Power Fail" />
@@ -1831,36 +1882,47 @@
         <points>
             <point type="Analog" offset="801">
                 <init>true</init>
-                <name>Instant Line Voltage</name>
+                <name>Voltage</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="811">
                 <init>true</init>
-                <name>Instant Line Current</name>
+                <name>Current</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="821">
                 <init>true</init>
-                <name>Instant Line Power Factor</name>
+                <name>Power Factor</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="PF"/>
                 <decimalplaces value="3"/>
             </point>
         </points>
-        
+
         <commands>
             <command id="READ_INSTANT_LINE_DATA">
                 <name>Read Instant Line Data</name>
                 <cmd text="getvalue instant line data"/>
-                <pointRef name="Instant Line Voltage"/>
-                <pointRef name="Instant Line Current"/>
-                <pointRef name="Instant Line Power Factor"/>
+                <pointRef name="Voltage"/>
+                <pointRef name="Current"/>
+                <pointRef name="Power Factor"/>
             </command>
         </commands>
+        <attributes>
+            <attribute name="VOLTAGE">
+                <basicLookup point="Voltage" />
+            </attribute>
+            <attribute name="CURRENT">
+                <basicLookup point="Current" />
+            </attribute>
+            <attribute name="POWER_FACTOR">
+                <basicLookup point="Power Factor" />
+            </attribute>
+        </attributes>
     </pao>
 
     <!-- MCT 440-2132b -->
@@ -1869,42 +1931,42 @@
         <points>
             <point type="Analog" offset="801">
                 <init>true</init>
-                <name>Instant Line Voltage Phase A</name>
+                <name>Voltage Phase A</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="802">
                 <init>true</init>
-                <name>Instant Line Voltage Phase B</name>
+                <name>Voltage Phase B</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="811">
                 <init>true</init>
-                <name>Instant Line Current Phase A</name>
+                <name>Current Phase A</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="812">
                 <init>true</init>
-                <name>Instant Line Current Phase B</name>
+                <name>Current Phase B</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="821">
                 <init>true</init>
-                <name>Instant Line Power Factor Phase A</name>
+                <name>Power Factor Phase A</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="PF"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="822">
                 <init>true</init>
-                <name>Instant Line Power Factor Phase B</name>
+                <name>Power Factor Phase B</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="PF"/>
                 <decimalplaces value="3"/>
@@ -1914,15 +1976,35 @@
         <commands>
             <command id="READ_INSTANT_LINE_DATA">
                 <name>Read Instant Line Data</name>
-                <cmd text="getvalue instant line data"/>
-                <pointRef name="Instant Line Voltage Phase A"/>
-                <pointRef name="Instant Line Current Phase A"/>
-                <pointRef name="Instant Line Power Factor Phase A"/>
-                <pointRef name="Instant Line Voltage Phase B"/>
-                <pointRef name="Instant Line Current Phase B"/>
-                <pointRef name="Instant Line Power Factor Phase B"/>
+                <cmd text="getvalue instant line data" />
+                <pointRef name="Phase A Voltage" />
+                <pointRef name="Phase A Current" />
+                <pointRef name="Phase A Power Factor" />
+                <pointRef name="Phase B Voltage" />
+                <pointRef name="Phase B Current" />
+                <pointRef name="Phase B Power Factor" />
             </command>
         </commands>
+        <attributes>
+            <attribute name="VOLTAGE_PHASE_A">
+                <basicLookup point="Phase A Voltage" />
+            </attribute>
+            <attribute name="CURRENT_PHASE_A">
+                <basicLookup point="Phase A Current" />
+            </attribute>
+            <attribute name="POWER_FACTOR_PHASE_A">
+                <basicLookup point="Phase A Power Factor" />
+            </attribute>
+            <attribute name="VOLTAGE_PHASE_B">
+                <basicLookup point="Phase A Voltage" />
+            </attribute>
+            <attribute name="CURRENT_PHASE_B">
+                <basicLookup point="Phase B Current" />
+            </attribute>
+            <attribute name="POWER_FACTOR_PHASE_B">
+                <basicLookup point="Phase B Power Factor" />
+            </attribute>
+        </attributes>
     </pao>
 
     <!-- MCT 440-2133b -->
@@ -1930,57 +2012,57 @@
         <displayName>MCT-440-2133B</displayName>
         <points>
             <point type="Analog" offset="801">
-                <name>Instant Line Voltage Phase A</name>
+                <name>Phase A Voltage</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="802">
-                <name>Instant Line Voltage Phase B</name>
+                <name>Phase B Voltage</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="803">
-                <name>Instant Line Voltage Phase C</name>
+                <name>Phase C Voltage</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
 
             <point type="Analog" offset="811">
-                <name>Instant Line Current Phase A</name>
+                <name>Phase A Current</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="812">
-                <name>Instant Line Current Phase B</name>
+                <name>Phase B Current</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="813">
-                <name>Instant Line Current Phase C</name>
+                <name>Phase C Current</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
 
             <point type="Analog" offset="821">
-                <name>Instant Line Power Factor Phase A</name>
+                <name>Phase A Power Factor</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="PF"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="822">
-                <name>Instant Line Power Factor Phase B</name>
+                <name>Phase B Power Factor</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="PF"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="823">
-                <name>Instant Line Power Factor Phase C</name>
+                <name>Phase C Power Factor</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="PF"/>
                 <decimalplaces value="3"/>
@@ -1990,18 +2072,47 @@
         <commands>
             <command id="READ_INSTANT_LINE_DATA">
                 <name>Read Instant Line Data</name>
-                <cmd text="getvalue instant line data"/>
-                <pointRef name="Instant Line Voltage Phase A"/>
-                <pointRef name="Instant Line Current Phase A"/>
-                <pointRef name="Instant Line Power Factor Phase A"/>
-                <pointRef name="Instant Line Voltage Phase B"/>
-                <pointRef name="Instant Line Current Phase B"/>
-                <pointRef name="Instant Line Power Factor Phase B"/>
-                <pointRef name="Instant Line Voltage Phase C"/>
-                <pointRef name="Instant Line Current Phase C"/>
-                <pointRef name="Instant Line Power Factor Phase C"/>
+                <cmd text="getvalue instant line data" />
+                <pointRef name="Phase A Voltage" />
+                <pointRef name="Phase A Current" />
+                <pointRef name="Phase A Power Factor" />
+                <pointRef name="Phase B Voltage" />
+                <pointRef name="Phase B Current" />
+                <pointRef name="Phase B Power Factor" />
+                <pointRef name="Phase C Voltage" />
+                <pointRef name="Phase C Current" />
+                <pointRef name="Phase C Power Factor" />
             </command>
         </commands>
+        <attributes>
+            <attribute name="VOLTAGE_PHASE_A">
+                <basicLookup point="Phase A Voltage" />
+            </attribute>
+            <attribute name="CURRENT_PHASE_A">
+                <basicLookup point="Phase A Current" />
+            </attribute>
+            <attribute name="POWER_FACTOR_PHASE_A">
+                <basicLookup point="Phase A Power Factor" />
+            </attribute>
+            <attribute name="VOLTAGE_PHASE_B">
+                <basicLookup point="Phase B Voltage" />
+            </attribute>
+            <attribute name="CURRENT_PHASE_B">
+                <basicLookup point="Phase B Current" />
+            </attribute>
+            <attribute name="POWER_FACTOR_PHASE_B">
+                <basicLookup point="Phase B Power Factor" />
+            </attribute>
+            <attribute name="VOLTAGE_PHASE_C">
+                <basicLookup point="Phase C Voltage" />
+            </attribute>
+            <attribute name="CURRENT_PHASE_C">
+                <basicLookup point="Phase C Current" />
+            </attribute>
+            <attribute name="POWER_FACTOR_PHASE_C">
+                <basicLookup point="Phase C Power Factor" />
+            </attribute>
+        </attributes>
     </pao>
 
     <!-- MCT 410 BASE -->
