@@ -25,7 +25,7 @@ class IM_EX_CTIBASE AttributeService
         virtual LitePoint getPointByPaoAndAttribute(int paoId, const PointAttribute& attribute);
 
         // sacrilege
-        virtual LitePoint getLitePointsById(int pointId);
+        virtual LitePoint getLitePointById(int pointId);
 
     private:
 

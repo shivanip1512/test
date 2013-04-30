@@ -41,6 +41,8 @@ class CtiCapController : public MessageListener
         void start();
         void stop();
 
+        static void sendCapBankRequestAndPoints(std::auto_ptr<CtiRequestMsg> msg, CtiMultiMsg* multiMsg = NULL);
+
         virtual void sendMessageToDispatch(CtiMessage* message);
         virtual void manualCapBankControl(CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg = NULL);
         virtual void sendEventLogMessage(CtiMessage* message);

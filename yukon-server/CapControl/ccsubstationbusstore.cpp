@@ -66,16 +66,17 @@ CtiTime timeSaver;
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(false),
-                                                    _attributeService(new AttributeService),
-                                                    _reregisterforpoints(true),
-                                                    _reloadfromamfmsystemflag(false),
-                                                    _lastdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)),
-                                                    _wassubbusdeletedflag(false),
-                                                    _lastindividualdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)),
-                                                    _strategyManager( new StrategyManager( std::auto_ptr<StrategyDBLoader>( new StrategyDBLoader ) ) ),
-                                                    _zoneManager( std::auto_ptr<ZoneDBLoader>( new ZoneDBLoader ) ),
-_voltageRegulatorManager( new Cti::CapControl::VoltageRegulatorManager(std::auto_ptr<VoltageRegulatorDBLoader>( new VoltageRegulatorDBLoader ) ) )
+CtiCCSubstationBusStore::CtiCCSubstationBusStore() :
+    _isvalid(false),
+    _attributeService(new AttributeService),
+    _reregisterforpoints(true),
+    _reloadfromamfmsystemflag(false),
+    _lastdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)),
+    _wassubbusdeletedflag(false),
+    _lastindividualdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)),
+    _strategyManager( new StrategyManager( std::auto_ptr<StrategyDBLoader>( new StrategyDBLoader ) ) ),
+    _zoneManager( std::auto_ptr<ZoneDBLoader>( new ZoneDBLoader ) ),
+    _voltageRegulatorManager( new Cti::CapControl::VoltageRegulatorManager(std::auto_ptr<VoltageRegulatorDBLoader>( new VoltageRegulatorDBLoader ) ) )
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     _ccSubstationBuses = new CtiCCSubstationBus_vec;
@@ -83,33 +84,6 @@ _voltageRegulatorManager( new Cti::CapControl::VoltageRegulatorManager(std::auto
     _ccCapBankStates = new CtiCCState_vec;
     _ccGeoAreas = new CtiCCArea_vec;
     _ccSpecialAreas = new CtiCCSpArea_vec;
-
-    _paobject_specialarea_map.clear();
-    _paobject_area_map.clear();
-    _paobject_substation_map.clear();
-    _paobject_subbus_map.clear();
-    _paobject_feeder_map.clear();
-    _paobject_capbank_map.clear();
-
-    _pointid_area_map.clear();
-    _pointid_specialarea_map.clear();
-    _pointid_subbus_map.clear();
-    _pointid_station_map.clear();
-    _pointid_feeder_map.clear();
-    _pointid_capbank_map.clear();
-
-    _substation_area_map.clear();
-    _subbus_substation_map.clear();
-    _feeder_subbus_map.clear();
-    _capbank_subbus_map.clear();
-    _capbank_feeder_map.clear();
-    _cbc_capbank_map.clear();
-
-    _reloadList.clear();
-    _orphanedCapBanks.clear();
-    _orphanedFeeders.clear();
-    _unsolicitedCapBanks.clear();
-    _rejectedCapBanks.clear();
 
     _linkStatusPointId = 0;
     _linkStatusFlag = OPENED;
@@ -528,23 +502,23 @@ long CtiCCSubstationBusStore::findSubIDbyAltSubID(long altSubId, int index)
 
 void CtiCCSubstationBusStore::addAreaToPaoMap(CtiCCAreaPtr area)
 {
-    _paobject_area_map.insert(make_pair(area->getPaoId(),area));
+    _paobject_area_map[area->getPaoId()] = area;
 }
 void CtiCCSubstationBusStore::addSubstationToPaoMap(CtiCCSubstationPtr station)
 {
-    _paobject_substation_map.insert(make_pair(station->getPaoId(),station));
+    _paobject_substation_map[station->getPaoId()] = station;
 }
 void CtiCCSubstationBusStore::addSubBusToPaoMap(CtiCCSubstationBusPtr bus)
 {
-    _paobject_subbus_map.insert(make_pair(bus->getPaoId(),bus));
+    _paobject_subbus_map[bus->getPaoId()] = bus;
 }
 void CtiCCSubstationBusStore::addSubBusToAltBusMap(CtiCCSubstationBusPtr bus)
 {
-    _altsub_sub_idmap.insert(make_pair(bus->getAltDualSubId(),bus->getPaoId()));
+    _altsub_sub_idmap.insert(make_pair(bus->getAltDualSubId(), bus->getPaoId()));
 }
 void CtiCCSubstationBusStore::addFeederToPaoMap(CtiCCFeederPtr feeder)
 {
-    _paobject_feeder_map.insert(make_pair(feeder->getPaoId(),feeder));
+    _paobject_feeder_map[feeder->getPaoId()] = feeder;
 }
 void CtiCCSubstationBusStore::addCapBankToCBCMap(CtiCCCapBankPtr capbank)
 {

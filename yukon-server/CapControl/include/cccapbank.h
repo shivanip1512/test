@@ -54,12 +54,6 @@ typedef enum
     CC_Temperature = 7
 } CtiCCLastControlReason;
 
-typedef enum
-{
-    Close = 0,
-    Open = 1
-} BankOperation;
-
 namespace capcontrol
 {
     enum CapbankOperationalStates

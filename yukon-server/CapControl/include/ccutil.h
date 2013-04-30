@@ -7,8 +7,11 @@
 #include "amq_connection.h"
 #include "CapControlOperationMessage.h"
 
+class CtiCCCapBank;
+
 namespace Cti           {
 namespace CapControl    {
+
 enum CapControlType
 {
     Undefined = 0,
@@ -23,6 +26,15 @@ enum CapControlType
     ZoneType,                   // added Type suffix to remove warnings from compiler
     VoltageRegulatorType,
     MonitorPoint
+};
+
+
+enum BankOperationType
+{
+    BankOperation_Open,
+    BankOperation_Close,
+    BankOperation_Flip,
+    BankOperation_Unknown
 };
 
 
@@ -55,14 +67,18 @@ enum Phase
 Phase       resolvePhase( const std::string & p );
 std::string desolvePhase( const Phase & p );
 
-std::set<int> initClosedStates();
-std::set<int> initOpenStates();
+BankOperationType resolveOperationTypeForPointId(const std::string &commandString, const int pointId);
+
+std::auto_ptr<CtiRequestMsg> createBankOpenRequest (const CtiCCCapBank &capBank);
+std::auto_ptr<CtiRequestMsg> createBankCloseRequest(const CtiCCCapBank &capBank);
+std::auto_ptr<CtiRequestMsg> createBankFlipRequest (const CtiCCCapBank &capBank);
+
 CtiRequestMsg* createPorterRequestMsg(long controllerId,const std::string& commandString);
 CtiRequestMsg* createPorterRequestMsg(long controllerId,const std::string& commandString, const std::string& user);
 bool isQualityOk(unsigned quality);
 
-static const std::set<int> ClosedStates = initClosedStates();
-static const std::set<int> OpenStates = initOpenStates();
+extern const std::set<int> ClosedStates;
+extern const std::set<int> OpenStates;
 
 template<class T>
 bool setVariableIfDifferent(T &original, const T &updated)

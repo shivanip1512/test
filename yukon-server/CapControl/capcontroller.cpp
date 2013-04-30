@@ -3921,21 +3921,24 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
         if( currentSubstationBus->getRecentlyControlledFlag() ||
              currentSubstationBus->getVerificationFlag() )
         {
-            CtiToLower(commandString);
-            LitePoint controlPoint = store->getAttributeService().getLitePointsById( currentCapBank->getControlPointId() );
+            using namespace Cti::CapControl;
 
-            if( status == 0 )
+            const BankOperationType operationType = resolveOperationTypeForPointId(commandString, currentCapBank->getControlPointId());
+
+            if( status == NoError )
             {
                 if ( !currentCapBank->isControlDeviceTwoWay() &&
                      !currentSubstationBus->getVerificationFlag() )
                 {
-                    if( commandString == controlPoint.getStateZeroControl() )
+                    switch( operationType )
                     {
-                        currentCapBank->setControlStatus(CtiCCCapBank::OpenPending);
-                    }
-                    else if( commandString == controlPoint.getStateOneControl() )
-                    {
-                        currentCapBank->setControlStatus(CtiCCCapBank::ClosePending);
+                        case BankOperation_Open:
+                            currentCapBank->setControlStatus(CtiCCCapBank::OpenPending);
+                            break;
+
+                        case BankOperation_Close:
+                            currentCapBank->setControlStatus(CtiCCCapBank::ClosePending);
+                            break;
                     }
                 }
                 if (currentCapBank->getControlStatusQuality() == CC_CommFail)
@@ -3945,25 +3948,37 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
             }
             else
             {
-                if( commandString == controlPoint.getStateZeroControl() )
+                switch( operationType )
                 {
-                    if (!currentCapBank->isControlDeviceTwoWay() )
-                        currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
-                }
-                else if( commandString == controlPoint.getStateOneControl() )
-                {
-                    if (!currentCapBank->isControlDeviceTwoWay() )
-                        currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
-                }
-                else if( commandString == "control flip" )  // CBC7010 special case...
-                {
-                    if (currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending)
+                    case BankOperation_Open:
                     {
-                        currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
+                        if( ! currentCapBank->isControlDeviceTwoWay() )
+                        {
+                            currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
+                        }
+                        break;
                     }
-                    else
+
+                    case BankOperation_Close:
                     {
-                        currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
+                        if( ! currentCapBank->isControlDeviceTwoWay() )
+                        {
+                            currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
+                        }
+                        break;
+                    }
+
+                    case BankOperation_Flip:
+                    {
+                        if (currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending)
+                        {
+                            currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
+                        }
+                        else
+                        {
+                            currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
+                        }
+                        break;
                     }
                 }
                 {
@@ -4359,6 +4374,11 @@ void CtiCapController::manualCapBankControl( CtiRequestMsg* pilRequest, CtiMulti
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
+}
+
+void CtiCapController::sendCapBankRequestAndPoints( std::auto_ptr<CtiRequestMsg> pilRequest, CtiMultiMsg* multiMsg)
+{
+    getInstance()->manualCapBankControl(pilRequest.release(), multiMsg);
 }
 
 /*---------------------------------------------------------------------------

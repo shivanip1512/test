@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE( test_commands )
 
         CtiRequestMsg &request = cc->requests[0];
 
-        BOOST_CHECK_EQUAL(request.CommandString(), "");
+        BOOST_CHECK_EQUAL(request.CommandString(), "control open");
         BOOST_CHECK_EQUAL(request.DeviceId(), 6);
     }
     cc->requests.clear();
@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE( test_commands )
 
         CtiRequestMsg &request = cc->requests[0];
 
-        BOOST_CHECK_EQUAL(request.CommandString(), "");
+        BOOST_CHECK_EQUAL(request.CommandString(), "control close");
         BOOST_CHECK_EQUAL(request.DeviceId(), 6);
     }
     cc->requests.clear();
@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE( test_commands )
 
         CtiRequestMsg &request = cc->requests[0];
 
-        BOOST_CHECK_EQUAL(request.CommandString(), "");
+        BOOST_CHECK_EQUAL(request.CommandString(), "control close");
         BOOST_CHECK_EQUAL(request.DeviceId(), 6);
     }
     cc->requests.clear();
@@ -169,7 +169,7 @@ BOOST_AUTO_TEST_CASE( test_commands )
 
         CtiRequestMsg &request = cc->requests[0];
 
-        BOOST_CHECK_EQUAL(request.CommandString(), "");
+        BOOST_CHECK_EQUAL(request.CommandString(), "control open");
         BOOST_CHECK_EQUAL(request.DeviceId(), 6);
     }
     cc->requests.clear();
@@ -194,7 +194,7 @@ BOOST_AUTO_TEST_CASE( test_commands )
 
         BOOST_REQUIRE(pilRequest);
 
-        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "");
+        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control open");
         BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
     }
     cc->pilMultiMsgs.clear();
@@ -219,7 +219,7 @@ BOOST_AUTO_TEST_CASE( test_commands )
 
         BOOST_REQUIRE(pilRequest);
 
-        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "");
+        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control close");
         BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
     }
     cc->pilMultiMsgs.clear();
@@ -244,7 +244,7 @@ BOOST_AUTO_TEST_CASE( test_commands )
 
         BOOST_REQUIRE(pilRequest);
 
-        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "");
+        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control open");
         BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
     }
     cc->pilMultiMsgs.clear();
@@ -269,7 +269,7 @@ BOOST_AUTO_TEST_CASE( test_commands )
 
         BOOST_REQUIRE(pilRequest);
 
-        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "");
+        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control close");
         BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
     }
     cc->pilMultiMsgs.clear();

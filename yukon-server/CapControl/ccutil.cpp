@@ -1,20 +1,10 @@
-/*---------------------------------------------------------------------------
-        Filename:  ccstatsobject.cpp
-
-        Programmer:  Julie Richter
-
-        Description:    CCStatsObject
-
-
-        Initial Date:  2/24/2009
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2009
----------------------------------------------------------------------------*/
-
 #include "precompiled.h"
 #include "ccutil.h"
 #include "pointdefs.h"
-#include "cccapbank.h"
+#include "ccsubstationbusstore.h"
+
+#include <boost/bimap.hpp>
+#include <boost/assign/list_of.hpp>
 
 using std::string;
 
@@ -22,47 +12,139 @@ extern unsigned long _MSG_PRIORITY;
 namespace Cti           {
 namespace CapControl    {
 
-std::set<int> initClosedStates()
+const std::set<int> ClosedStates = boost::assign::list_of
+    (CtiCCCapBank::Close)
+    (CtiCCCapBank::ClosePending)
+    (CtiCCCapBank::CloseQuestionable)
+    (CtiCCCapBank::CloseFail);
+
+const std::set<int> OpenStates = boost::assign::list_of
+    (CtiCCCapBank::Open)
+    (CtiCCCapBank::OpenPending)
+    (CtiCCCapBank::OpenQuestionable)
+    (CtiCCCapBank::OpenFail);
+
+typedef std::string (LitePoint::*CommandLookupMethod)() const;
+
+struct CommandInfo
 {
-    std::set<int> s;
-    s.insert(CtiCCCapBank::Close);
-    s.insert(CtiCCCapBank::ClosePending);
-    s.insert(CtiCCCapBank::CloseQuestionable);
-    s.insert(CtiCCCapBank::CloseFail);
-    return s;
+    std::string defaultCommand;
+    CommandLookupMethod lookupMethod;
+};
+
+CommandInfo makeCommandInfo(std::string s, CommandLookupMethod m)
+{
+    CommandInfo info = { s, m };
+
+    return info;
 }
 
-std::set<int> initOpenStates()
+typedef std::map<BankOperationType, CommandInfo> BankOperationCommands;
+
+const BankOperationCommands availableOperations = boost::assign::map_list_of
+    (BankOperation_Open,  makeCommandInfo("control open",  &LitePoint::getStateZeroControl))
+    (BankOperation_Close, makeCommandInfo("control close", &LitePoint::getStateOneControl))
+    (BankOperation_Flip,  makeCommandInfo("control flip",  0));
+
+
+std::string getCommandStringForOperation(const LitePoint &p, const CommandInfo &info)
 {
-    std::set<int> s;
-    s.insert(CtiCCCapBank::Open);
-    s.insert(CtiCCCapBank::OpenPending);
-    s.insert(CtiCCCapBank::OpenQuestionable);
-    s.insert(CtiCCCapBank::OpenFail);
-    return s;
+    if( info.lookupMethod )
+    {
+        string s = (p.*(info.lookupMethod))();
+
+        if( ! s.empty() )
+        {
+            return s;
+        }
+    }
+
+    return info.defaultCommand;
 }
 
-CtiRequestMsg* createPorterRequestMsg(long controllerId,const string& commandString)
+
+BankOperationType resolveOperationTypeForPointId(const std::string &commandString, const int pointId)
+{
+    AttributeService &pointLookup = CtiCCSubstationBusStore::getAttributeService();
+
+    const LitePoint p = pointLookup.getLitePointById(pointId);
+
+    if( ! commandString.empty() )
+    {
+        for each( BankOperationCommands::value_type command in availableOperations )
+        {
+            BankOperationType operation = command.first;
+            CommandInfo info = command.second;
+
+            if( commandString == getCommandStringForOperation(p, info) )
+            {
+                return operation;
+            }
+        }
+    }
+
+    return BankOperation_Unknown;
+}
+
+
+std::string getBankOperationCommand(BankOperationType bankOperation, const CtiCCCapBank &capBank)
+{
+    AttributeService &pointLookup = CtiCCSubstationBusStore::getAttributeService();
+
+    const LitePoint p = pointLookup.getLitePointById(capBank.getControlPointId());
+
+    BankOperationCommands::const_iterator itr = availableOperations.find(bankOperation);
+
+    if( itr == availableOperations.end() )
+    {
+        return "command-not-found";
+    }
+
+    return getCommandStringForOperation(p, itr->second);
+}
+
+std::auto_ptr<CtiRequestMsg> createBankOperationRequest(const CtiCCCapBank &capBank, const BankOperationType bankOperation)
+{
+    return std::auto_ptr<CtiRequestMsg>(
+       createPorterRequestMsg(
+          capBank.getControlDeviceId(),
+          getBankOperationCommand(bankOperation, capBank)));
+}
+
+std::auto_ptr<CtiRequestMsg> createBankOpenRequest(const CtiCCCapBank &capBank)
+{
+    return createBankOperationRequest(capBank, BankOperation_Open);
+}
+
+std::auto_ptr<CtiRequestMsg> createBankCloseRequest(const CtiCCCapBank &capBank)
+{
+    return createBankOperationRequest(capBank, BankOperation_Close);
+}
+
+std::auto_ptr<CtiRequestMsg> createBankFlipRequest(const CtiCCCapBank &capBank)
+{
+    return createBankOperationRequest(capBank, BankOperation_Flip);
+}
+
+
+CtiRequestMsg* createPorterRequestMsg(long controllerId, const string& commandString)
 {
     CtiRequestMsg* reqMsg = new CtiRequestMsg(controllerId, commandString);
     reqMsg->setMessagePriority(_MSG_PRIORITY);
     return reqMsg;
-};
+}
 
-CtiRequestMsg* createPorterRequestMsg(long controllerId,const string& commandString, const string& user)
+CtiRequestMsg* createPorterRequestMsg(long controllerId, const string& commandString, const string& user)
 {
     CtiRequestMsg* reqMsg = createPorterRequestMsg(controllerId, commandString);
     reqMsg->setUser(user);
     return reqMsg;
-};
+}
 
 bool isQualityOk(unsigned quality)
 {
-    if (quality == NormalQuality || quality == ManualQuality)
-    {
-        return true;
-    }
-    return false;
+    return (quality == NormalQuality ||
+            quality == ManualQuality);
 }
 
 MissingPointAttribute::MissingPointAttribute(const long ID, const PointAttribute & attribute, string paoType, bool complainFlag)
@@ -84,25 +166,31 @@ const bool MissingPointAttribute::complain( ) const
 }
 
 
+typedef boost::bimap<std::string, Phase> PhaseLookup;
+
+const string String_A = "A";
+const string String_B = "B";
+const string String_C = "C";
+const string String_Poly = "*";
+const string String_Unknown = "?";
+
+
+const PhaseLookup phases = boost::assign::list_of<PhaseLookup::relation>
+    (String_A, Phase_A)
+    (String_B, Phase_B)
+    (String_C, Phase_C)
+    (String_Poly, Phase_Poly)
+    (String_Unknown, Phase_Unknown);
+
+
 Phase resolvePhase( const std::string & p )
 {
-    if ( p == "A" )
+    PhaseLookup::left_const_iterator itr = phases.left.find(p);
+
+    if( itr != phases.left.end() )
     {
-        return Phase_A;
+        return itr->second;
     }
-    else if ( p == "B" )
-    {
-        return Phase_B;
-    }
-    else if ( p == "C" )
-    {
-        return Phase_C;
-    }
-    else if ( p == "*" )
-    {
-        return Phase_Poly;
-    }
-//    else if ( p == "?" )
 
     return Phase_Unknown;
 }
@@ -110,30 +198,14 @@ Phase resolvePhase( const std::string & p )
 
 std::string desolvePhase( const Phase & p )
 {
-    switch ( p )
-    {
-        case Phase_A:
-        {
-            return "A";
-        }
-        case Phase_B:
-        {
-            return "B";
-        }
-        case Phase_C:
-        {
-            return "C";
-        }
+    PhaseLookup::right_const_iterator itr = phases.right.find(p);
 
-        case Phase_Poly:
-        {
-            return "*";
-        }
-//        default:
-//        case Phase_Unknown:
+    if( itr != phases.right.end() )
+    {
+        return itr->second;
     }
 
-    return "?";
+    return String_Unknown;
 }
 
 CtiPAOScheduleManager::VerificationStrategy ConvertIntToVerificationStrategy(int verifyId)
@@ -150,11 +222,9 @@ CtiPAOScheduleManager::VerificationStrategy ConvertIntToVerificationStrategy(int
         {
             return CtiPAOScheduleManager::VerificationStrategy(verifyId);
         }
-        default:
-        {
-            return CtiPAOScheduleManager::Undefined;
-        }
     }
+
+    return CtiPAOScheduleManager::Undefined;
 }
 
 
@@ -172,7 +242,7 @@ double calculatePowerFactor( const double kvar, const double kwatt )
         }
     }
 
-    return pf;  
+    return pf;
 }
 
 

@@ -34,7 +34,7 @@ struct test_AttributeService : AttributeService
 {
     std::map<int, LitePoint> points;
 
-    virtual LitePoint getLitePointsById(int pointid)
+    virtual LitePoint getLitePointById(int pointid)
     {
         return points[pointid];
     }

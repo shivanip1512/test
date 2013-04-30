@@ -28,6 +28,9 @@
 using Cti::CapControl::PointResponse;
 using Cti::CapControl::PointResponseManager;
 using Cti::CapControl::createPorterRequestMsg;
+using Cti::CapControl::createBankOpenRequest;
+using Cti::CapControl::createBankCloseRequest;
+using Cti::CapControl::createBankFlipRequest;
 using Cti::CapControl::setVariableIfDifferent;
 using Cti::CapControl::sendCapControlOperationMessage;
 using namespace Cti::Messaging::CapControl;
@@ -1313,9 +1316,11 @@ CtiCCFeeder& CtiCCFeeder::setMultiMonitorFlag(bool flag)
 CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(double kvarSolution,  CtiMultiMsg_vec& pointChanges, double leadLevel, double lagLevel, double currentVarValue,
                                                    bool checkLimits)
 {
+    using namespace Cti::CapControl;
+
     CtiCCCapBankPtr returnCapBank = NULL;
     CtiTime currentTime = CtiTime();
-    BankOperation solution;
+    BankOperationType solution;
     bool endDayFlag = false;
     std::vector<CtiCCCapBankPtr> banks;
 
@@ -1325,7 +1330,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(double kvarSolution,  CtiMult
     }
     else if (kvarSolution < 0.0)
     {
-        solution = Close;
+        solution = BankOperation_Close;
         // Sort according to CloseOrder.
         CtiCCCapBank_SCloseVector closeCaps;
         for (int i = 0; i < _cccapbanks.size(); i++)
@@ -1336,7 +1341,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(double kvarSolution,  CtiMult
     }
     else
     {
-        solution = Open;
+        solution = BankOperation_Open;
         // Sort according to TripOrder..
         CtiCCCapBank_STripVector tripCaps;
         for (int i = 0; i < _cccapbanks.size(); i++)
@@ -1359,7 +1364,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(double kvarSolution,  CtiMult
         long controlStatus = currentCapBank->getControlStatus();
         bool correctControlStatus;
 
-        if (solution == Close)
+        if (solution == BankOperation_Close)
         {
             correctControlStatus = (controlStatus == CtiCCCapBank::Open || controlStatus == CtiCCCapBank::OpenQuestionable || controlStatus == CtiCCCapBank::OpenPending);
         }
@@ -1376,7 +1381,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(double kvarSolution,  CtiMult
             if (checkLimits && !((leadLevel == 0) && (lagLevel == 0) && (currentVarValue == 0)))
             {
                 int bankSize = currentCapBank->getBankSize();
-                if (solution == Close)
+                if (solution == BankOperation_Close)
                 {
                     int newValue = currentVarValue - bankSize;
                     if ((newValue <= leadLevel))
@@ -1454,12 +1459,12 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(double kvarSolution,  CtiMult
                         pointChanges.push_back(pSig);
                     }
 
-                    if (!getStrategy()->getEndDaySettings().compare("Trip") && (solution == Open))
+                    if (!getStrategy()->getEndDaySettings().compare("Trip") && (solution == BankOperation_Open))
                     {
                         // We need this to return this bank (since we disabled it).
                         endDayFlag = true;
                     }
-                    else if (!getStrategy()->getEndDaySettings().compare("Close") && (solution == Close))
+                    else if (!getStrategy()->getEndDaySettings().compare("Close") && (solution == BankOperation_Close))
                     {
                         // We need this to return this bank (since we disabled it).
                         endDayFlag = true;
@@ -1492,12 +1497,12 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(double kvarSolution,  CtiMult
                 (currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail ||
                  currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail))
             {
-                if( solution == Close && !currentCapBank->getRetryCloseFailedFlag() )
+                if( solution == BankOperation_Close && !currentCapBank->getRetryCloseFailedFlag() )
                 {
                     currentCapBank->setRetryCloseFailedFlag(true);
                     return currentCapBank;
                 }
-                if( solution == Open && !currentCapBank->getRetryOpenFailedFlag() )
+                if( solution == BankOperation_Open && !currentCapBank->getRetryOpenFailedFlag() )
                 {
                     currentCapBank->setRetryOpenFailedFlag(true);
                     return currentCapBank;
@@ -1534,10 +1539,9 @@ bool CtiCCFeeder::removeMaxKvar( long bankId )
 CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
                                                      string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue)
 {
-    CtiRequestMsg* reqMsg = NULL;
     if( capBank == NULL )
     {
-        return reqMsg;
+        return 0;
     }
 
     //Determine if we are at max KVAR and don't create the request if we are.
@@ -1545,7 +1549,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPaoName() << ". "  << endl;
-        return reqMsg;
+        return 0;
     }
 
     setLastCapBankControlledDeviceId(capBank->getPaoId());
@@ -1629,26 +1633,24 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
         }
     }
 
-    LitePoint controlPoint = store->getAttributeService().getLitePointsById( capBank->getControlPointId() );
-    reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(), controlPoint.getStateZeroControl() );
+    std::auto_ptr<CtiRequestMsg> reqMsg = createBankOpenRequest(*capBank);
     reqMsg->setSOE(4);
 
-    return reqMsg;
+    return reqMsg.release();
 }
 
 CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
                                                                  string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue )
 {
-    CtiRequestMsg* reqMsg = NULL;
     if( capBank == NULL )
-        return reqMsg;
+        return 0;
 
     //Determine if we are at max KVAR and don't create the request if we are.
     if( checkForMaxKvar(capBank->getPaoId(), capBank->getBankSize() ) == false )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPaoName() << ". "  << endl;
-        return reqMsg;
+        return 0;
     }
 
     if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
@@ -1717,33 +1719,33 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
         ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control verification"));
     }
 
+    std::auto_ptr<CtiRequestMsg> reqMsg;
+
     if  (stringContainsIgnoreCase(capBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG )
     {
-        reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(),"control flip");
+        reqMsg = createBankFlipRequest(*capBank);
     }
     else
     {
-        LitePoint controlPoint = store->getAttributeService().getLitePointsById( capBank->getControlPointId() );
-        reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(), controlPoint.getStateZeroControl() );
+        reqMsg = createBankOpenRequest(*capBank);
     }
     reqMsg->setSOE(4);
 
-    return reqMsg;
+    return reqMsg.release();
 }
 
 CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
                                                                  string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue )
 {
-    CtiRequestMsg* reqMsg = NULL;
     if( capBank == NULL )
-        return reqMsg;
+        return 0;
 
     //Determine if we are at max KVAR and don't create the request if we are.
     if( checkForMaxKvar(capBank->getPaoId(), capBank->getBankSize() ) == false )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPaoName() << ". "  << endl;
-        return reqMsg;
+        return 0;
     }
 
     if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
@@ -1812,18 +1814,19 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
         ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control verification"));
     }
 
+    std::auto_ptr<CtiRequestMsg> reqMsg;
+
     if  (stringContainsIgnoreCase(capBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG )
     {
-        reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(),"control flip");
+        reqMsg = createBankFlipRequest(*capBank);
     }
     else
-    {   
-        LitePoint controlPoint = store->getAttributeService().getLitePointsById( capBank->getControlPointId() );
-        reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(), controlPoint.getStateOneControl() );
+    {
+        reqMsg = createBankCloseRequest(*capBank);
     }
     reqMsg->setSOE(4);
 
-    return reqMsg;
+    return reqMsg.release();
 }
 
 
@@ -1838,10 +1841,9 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
 CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
                                                      string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue)
 {
-    CtiRequestMsg* reqMsg = NULL;
     if( capBank == NULL )
     {
-        return reqMsg;
+        return 0;
     }
 
     //Determine if we are at max KVAR and don't create the request if we are.
@@ -1849,7 +1851,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPaoName() << ". "  << endl;
-        return reqMsg;
+        return 0;
     }
 
     setLastCapBankControlledDeviceId(capBank->getPaoId());
@@ -1933,11 +1935,10 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
         }
     }
 
-    LitePoint controlPoint = store->getAttributeService().getLitePointsById( capBank->getControlPointId() );
-    reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(), controlPoint.getStateOneControl() );
+    std::auto_ptr<CtiRequestMsg> reqMsg = createBankCloseRequest(*capBank);
     reqMsg->setSOE(4);
 
-    return reqMsg;
+    return reqMsg.release();
 }
 
 /*---------------------------------------------------------------------------
@@ -1950,16 +1951,15 @@ CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMul
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
-    CtiRequestMsg* reqMsg = NULL;
     if( capBank == NULL )
-        return reqMsg;
+        return 0;
 
     //Determine if we are at max KVAR and don't create the request if we are.
     if( checkForMaxKvar(capBank->getPaoId(), capBank->getBankSize() ) == false )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPaoName() << ". "  << endl;
-        return reqMsg;
+        return 0;
     }
 
     setLastCapBankControlledDeviceId(capBank->getPaoId());
@@ -2049,20 +2049,20 @@ CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMul
         }
     }
 
-    LitePoint controlPoint = store->getAttributeService().getLitePointsById( capBank->getControlPointId() );
+    std::auto_ptr<CtiRequestMsg> reqMsg;
 
     if (capBank->getControlStatus() == CtiCCCapBank::Close )
     {
-        reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(), controlPoint.getStateOneControl() );
+        reqMsg = createBankCloseRequest(*capBank);
     }
     else
     {
-        reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(), controlPoint.getStateZeroControl() );
+        reqMsg = createBankOpenRequest(*capBank);
     }
 
     reqMsg->setSOE(4);
 
-    return reqMsg;
+    return reqMsg.release();
 }
 
 void CtiCCFeeder::createForcedVarConfirmation(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string typeOfControl)
@@ -4670,9 +4670,9 @@ bool CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
                             << " DeviceID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
                         }
 
-                        LitePoint controlPoint = store->getAttributeService().getLitePointsById( currentCapBank->getControlPointId() );
-                        CtiRequestMsg* reqMsg = createPorterRequestMsg(currentCapBank->getControlDeviceId(), controlPoint.getStateZeroControl() );
-                        pilMessages.push_back(reqMsg);
+                        pilMessages.push_back(
+                           createBankOpenRequest(*currentCapBank).release());
+
                         if (_RETRY_ADJUST_LAST_OP_TIME)
                         {
                             setLastOperationTime(currentDateTime);
@@ -4713,9 +4713,9 @@ bool CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
                             << " DeviceID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
                         }
 
-                        LitePoint controlPoint = store->getAttributeService().getLitePointsById( currentCapBank->getControlPointId() );
-                        CtiRequestMsg* reqMsg = createPorterRequestMsg(currentCapBank->getControlDeviceId(), controlPoint.getStateOneControl() );
-                        pilMessages.push_back(reqMsg);
+                        pilMessages.push_back(
+                           createBankCloseRequest(*currentCapBank).release());
+
                         if (_RETRY_ADJUST_LAST_OP_TIME)
                         {
                             setLastOperationTime(currentDateTime);

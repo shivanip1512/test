@@ -12,7 +12,7 @@ struct test_AttributeService : AttributeService
 {
     std::map<int, LitePoint> points;
 
-    virtual LitePoint getLitePointsById(int pointid)
+    virtual LitePoint getLitePointById(int pointid)
     {
         return points[pointid];
     }
@@ -82,12 +82,12 @@ BOOST_AUTO_TEST_CASE( test_porterReturnMsg_oneway_device )
             bus->setRecentlyControlledFlag(true);
             cc.porterReturnMsg(6, "control open", 0, "n/a");
 
-            BOOST_CHECK_EQUAL( bank->getControlStatus(), -1 );
+            BOOST_CHECK_EQUAL( bank->getControlStatus(), CtiCCCapBank::OpenPending );
 
             bus->setRecentlyControlledFlag(true);
             cc.porterReturnMsg(6, "control open", 1, "n/a");
 
-            BOOST_CHECK_EQUAL( bank->getControlStatus(), -1 );
+            BOOST_CHECK_EQUAL( bank->getControlStatus(), CtiCCCapBank::OpenQuestionable );
         }
 
         //  Verify default "control close"
@@ -102,12 +102,12 @@ BOOST_AUTO_TEST_CASE( test_porterReturnMsg_oneway_device )
             bus->setRecentlyControlledFlag(true);
             cc.porterReturnMsg(6, "control close", 0, "n/a");
 
-            BOOST_CHECK_EQUAL( bank->getControlStatus(), -1 );
+            BOOST_CHECK_EQUAL( bank->getControlStatus(), CtiCCCapBank::ClosePending );
 
             bus->setRecentlyControlledFlag(true);
             cc.porterReturnMsg(6, "control close", 1, "n/a");
 
-            BOOST_CHECK_EQUAL( bank->getControlStatus(), -1 );
+            BOOST_CHECK_EQUAL( bank->getControlStatus(), CtiCCCapBank::CloseQuestionable );
         }
 
         //  Verify "control flip" (cannot be customized)

@@ -110,15 +110,12 @@ class CtiCCCommandExecutor : public CtiCCExecutor
         void Scan2WayDevice(long bankId);
         void Flip7010Device();
         void SendAllCapBankCommands();
-        void ControlAllCapBanksByFeeder(long feederId, int control, CtiMultiMsg_vec& pilMessages,
-                                       CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
         void SendTimeSync();
 
         void AutoEnableOvUv();
         void AutoDisableOvUv();
         void setAutoControlOvUvFlags(CtiCCSubstationBusPtr currentSubBus, bool disableFlag);
         bool checkForCommandRefusal(CtiCCFeeder* feeder);
-        void ControlAllCapBanks(long paoId, int control);
         void syncCbcAndCapBankStates(long bankId);
 
         void queueCapBankTimeSyncPilMessages(CtiMultiMsg_vec& pilMessages, CapBankList capBanks);

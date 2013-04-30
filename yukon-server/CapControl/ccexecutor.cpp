@@ -21,6 +21,9 @@
 
 using Cti::CapControl::VoltageRegulatorManager;
 using Cti::CapControl::createPorterRequestMsg;
+using Cti::CapControl::createBankOpenRequest;
+using Cti::CapControl::createBankCloseRequest;
+using Cti::CapControl::createBankFlipRequest;
 using Cti::Messaging::CapControl::CapControlOperationMessage;
 using std::endl;
 
@@ -700,7 +703,7 @@ void CtiCCCommandExecutor::syncCbcAndCapBankStates(long bankId)
     {
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << commandName << " command rejected, CapBank: " << capBank->getPaoName()<<" received an invalid " 
+            dout << CtiTime() << commandName << " command rejected, CapBank: " << capBank->getPaoName()<<" received an invalid "
                  << "control state value (" << controlStatus << "). Not adjusting the cap bank state." << endl;
         }
         return;
@@ -1710,7 +1713,7 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
         setParentOvUvFlags(paoId,type,ovuvFlag,modifiedSubsList);
     }
 
-    
+
     for each(CtiCCEventLogMsg* message in events)
     {
         CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(message);
@@ -2267,19 +2270,26 @@ void CtiCCCommandExecutor::OpenCapBank(long bankId, bool confirmImmediately)
         // Send the activeMQ command.
         Cti::CapControl::sendCapControlOperationMessage( CapControlOperationMessage::createOpenBankMessage( bankId, CtiTime() ) );
 
-        LitePoint controlPoint = store->getAttributeService().getLitePointsById( operatingCapBank->getControlPointId() );
-        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID, controlPoint.getStateZeroControl() );
+        std::auto_ptr<CtiRequestMsg> reqMsg = createBankOpenRequest(*operatingCapBank);
+
         reqMsg->setSOE(5);
-        CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
+
+        CtiCapController::sendCapBankRequestAndPoints(reqMsg, multi);
 
         if (eventMulti->getCount() >0)
+        {
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+        }
         else
+        {
             delete eventMulti;
+        }
+
         if (updatedSubs.size() > 0)
         {
             CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg(updatedSubs))->execute();
         }
+
         if (updatedStations.size() > 0)
         {
             CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(updatedStations))->execute();
@@ -2580,17 +2590,26 @@ void CtiCCCommandExecutor::CloseCapBank(long bankId, bool confirmImmediately)
         // Send the activeMQ command.
         Cti::CapControl::sendCapControlOperationMessage( CapControlOperationMessage::createCloseBankMessage( bankId, CtiTime() ) );
 
-        LitePoint controlPoint = store->getAttributeService().getLitePointsById( operatingCapBank->getControlPointId() );
-        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID, controlPoint.getStateOneControl() );
+        std::auto_ptr<CtiRequestMsg> reqMsg = createBankCloseRequest(*operatingCapBank);
+
         reqMsg->setSOE(5);
-        CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
+
+        CtiCapController::sendCapBankRequestAndPoints(reqMsg, multi);
 
         if (eventMulti->getCount() >0)
+        {
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+        }
+        else
+        {
+            delete eventMulti;
+        }
+
         if (updatedSubs.size() > 0)
         {
             CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg(updatedSubs))->execute();
         }
+
         if (updatedStations.size() > 0)
         {
             CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(updatedStations))->execute();
@@ -2600,336 +2619,6 @@ void CtiCCCommandExecutor::CloseCapBank(long bankId, bool confirmImmediately)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
-    }
-}
-
-
-void CtiCCCommandExecutor::ControlAllCapBanks(long paoId, int control)
-{
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-
-    CtiMultiMsg* multi = new CtiMultiMsg();
-    CtiMultiMsg* eventMulti = new CtiMultiMsg();
-    CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
-    CtiMultiMsg_vec& pilMessages = multiPilMsg->getData();
-    CtiMultiMsg_vec& pointChanges = multi->getData();
-    CtiMultiMsg_vec& ccEvents = eventMulti->getData();
-    CtiCCSubstationBus_vec updatedSubs;
-
-    CtiCCSpecialPtr spArea = store->findSpecialAreaByPAObjectID(paoId);
-    CtiCCAreaPtr area = store->findAreaByPAObjectID(paoId);
-    CtiCCSubstationPtr station = store->findSubstationByPAObjectID(paoId);
-    CtiCCSubstationBusPtr currentSubstationBus = store->findSubBusByPAObjectID(paoId);
-    CtiCCFeederPtr currentFeeder = store->findFeederByPAObjectID(paoId);
-
-    if (currentFeeder != NULL)
-    {
-        if (!currentFeeder->getDisableFlag())
-        {
-
-            ControlAllCapBanksByFeeder(currentFeeder->getPaoId(), control,
-                                   pilMessages, pointChanges, ccEvents);
-        }
-    }
-    else if (currentSubstationBus != NULL && !currentSubstationBus->getDisableFlag())
-    {
-
-        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
-
-        for(long j=0;j<ccFeeders.size();j++)
-        {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
-            if (!currentFeeder->getDisableFlag())
-            {
-                ControlAllCapBanksByFeeder(currentFeeder->getPaoId(), control,
-                                       pilMessages, pointChanges, ccEvents);
-            }
-        }
-    }
-    else if (station != NULL && !station->getDisableFlag())
-    {
-        for each (long busId in station->getCCSubIds())
-        {
-            currentSubstationBus = store->findSubBusByPAObjectID(busId);
-            if (currentSubstationBus != NULL && !currentSubstationBus->getDisableFlag())
-            {
-                CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
-
-                for(long j=0;j<ccFeeders.size();j++)
-                {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
-                    if (!currentFeeder->getDisableFlag() )
-                    {
-                        ControlAllCapBanksByFeeder(currentFeeder->getPaoId(), control,
-                                               pilMessages, pointChanges, ccEvents);
-                    }
-                }
-            }
-        }
-    }
-    else if (area != NULL && !area->getDisableFlag())
-    {
-        for each(long subId in area->getSubstationIds())
-        {
-            station = store->findSubstationByPAObjectID(subId);
-
-            if (station != NULL && !station->getDisableFlag())
-            {
-                for each (long busId in station->getCCSubIds())
-                {
-                    currentSubstationBus = store->findSubBusByPAObjectID(busId);
-                    if (currentSubstationBus != NULL && !currentSubstationBus->getDisableFlag())
-                    {
-                        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
-
-                        for(long j=0;j<ccFeeders.size();j++)
-                        {
-                            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
-                            if (!currentFeeder->getDisableFlag() )
-                            {
-                                ControlAllCapBanksByFeeder(currentFeeder->getPaoId(), control,
-                                                       pilMessages, pointChanges, ccEvents);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-    }
-    else if (spArea != NULL && !spArea->getDisableFlag())
-    {
-        for each (long subId in spArea->getSubstationIds())
-        {
-            station = store->findSubstationByPAObjectID(subId);
-
-            if (station != NULL && !station->getDisableFlag())
-            {
-                for each (long busId in station->getCCSubIds())
-                {
-                    currentSubstationBus = store->findSubBusByPAObjectID(busId);
-                    if (currentSubstationBus != NULL && !currentSubstationBus->getDisableFlag())
-                    {
-                        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
-
-                        for(long j=0;j<ccFeeders.size();j++)
-                        {
-                            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
-                            if (!currentFeeder->getDisableFlag() )
-                            {
-                                ControlAllCapBanksByFeeder(currentFeeder->getPaoId(), control,
-                                                       pilMessages, pointChanges, ccEvents);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-    }
-
-    if (multi->getCount() > 0 || multiPilMsg->getCount() > 0)
-        CtiCapController::getInstance()->confirmCapBankControl(multiPilMsg, multi);
-    else
-    {
-        delete multi;
-        delete multiPilMsg;
-    }
-    if (eventMulti->getCount() > 0)
-        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
-    else
-        delete eventMulti;
-
-    if (updatedSubs.size() > 0)
-    {
-        CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg(updatedSubs))->execute();
-    }
-}
-
-
-void CtiCCCommandExecutor::ControlAllCapBanksByFeeder(long feederId, int control, CtiMultiMsg_vec& pilMessages,
-                                                      CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents)
-{
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-
-    long controlID = 0;
-
-    bool found = false;
-
-    CtiCCSubstationBus_vec updatedSubs;
-
-    CtiCCFeederPtr currentFeeder = store->findFeederByPAObjectID(feederId);
-    if (currentFeeder != NULL)
-    {
-        CtiCCSubstationBusPtr currentSubstationBus = store->findSubBusByPAObjectID(currentFeeder->getParentId());
-        if (currentSubstationBus != NULL)
-        {
-            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-            for(long k=0;k<ccCapBanks.size();k++)
-            {
-                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                if( !currentCapBank->getDisableFlag() &&
-                    currentCapBank->getControlDeviceId() > 0 &&
-                    ( ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) ||
-                      ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::StandAloneState)) )
-
-                {
-                    updatedSubs.push_back(currentSubstationBus);
-                    if (!currentSubstationBus->getVerificationFlag() &&
-                        currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::None)
-                    {
-                        controlID = currentCapBank->getControlDeviceId();
-                        if (ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState))
-                            currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPaoId());
-                        currentSubstationBus->setLastFeederControlled(currentFeeder->getPaoId());
-                        currentSubstationBus->setLastOperationTime(CtiTime());
-                        currentFeeder->setLastOperationTime(CtiTime());
-                        if (control == CtiCCCapBank::Close || control == CtiCCCapBank::CloseQuestionable ||
-                            control == CtiCCCapBank::CloseFail || control == CtiCCCapBank::ClosePending )
-                            store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::ClosePending,
-                                                                   currentCapBank, true);
-                        if (control == CtiCCCapBank::Open || control == CtiCCCapBank::OpenQuestionable ||
-                            control == CtiCCCapBank::OpenFail || control == CtiCCCapBank::OpenPending )
-                            store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::OpenPending,
-                                                                   currentCapBank, true);
-
-                        currentCapBank->setControlStatusQuality(CC_Normal);
-                        currentSubstationBus->figureEstimatedVarLoadPointValue();
-                        currentCapBank->setTotalOperations(currentCapBank->getTotalOperations() + 1);
-                        currentSubstationBus->setBusUpdatedFlag(true);
-                        currentSubstationBus->setVarValueBeforeControl(currentSubstationBus->getCurrentVarLoadPointValue());
-                        currentFeeder->setVarValueBeforeControl(currentFeeder->getCurrentVarLoadPointValue());
-                        if( currentCapBank->getStatusPointId() > 0 )
-                        {
-                            char tempchar[80] = "";
-                            char tempchar1[80] = "";
-                            string additional("Sub: ");
-                            additional += currentSubstationBus->getPaoName();
-                            if (_LOG_MAPID_INFO)
-                            {
-                                additional += " MapID: ";
-                                additional += currentSubstationBus->getMapLocationId();
-                                additional += " (";
-                                additional += currentSubstationBus->getPaoDescription();
-                                additional += ")";
-                            }
-                            additional += string("  Feeder: ");
-                            additional += currentFeeder->getPaoName();
-                            if (_LOG_MAPID_INFO)
-                            {
-                                additional += " MapID: ";
-                                additional += currentFeeder->getMapLocationId();
-                                additional += " (";
-                                additional += currentFeeder->getPaoDescription();
-                                additional += ")";
-                            }
-                            string text = "Manual ";
-                            if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
-                                text += "Open Sent, Sub VarLoad = ";
-                            else
-                                text += "Close Sent, Sub VarLoad = ";
-                            _snprintf(tempchar,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentSubstationBus->getCurrentVarLoadPointValue());
-                            text += tempchar;
-                            text += string(" Feeder VarLoad = ");
-                            _snprintf(tempchar1,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentFeeder->getCurrentVarLoadPointValue());
-                            text += tempchar1;
-                            pointChanges.push_back(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
-
-                            double kvarBefore = 0;
-                            double kvarAfter = 0;
-                            double kvarChange = 0;
-
-                            ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
-                            pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
-
-                            if (ciStringEqual(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::IndividualFeederControlMethod) ||
-                                ciStringEqual(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::BusOptimizedFeederControlMethod) )
-                            {
-                                kvarBefore = currentFeeder->getCurrentVarLoadPointValue();
-                                kvarAfter = currentFeeder->getCurrentVarLoadPointValue();
-                            }
-                            else
-                            {
-                                kvarBefore = currentSubstationBus->getCurrentVarLoadPointValue();
-                                kvarAfter = currentSubstationBus->getCurrentVarLoadPointValue();
-                            }
-
-                            ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
-                            currentCapBank->setLastStatusChangeTime(CtiTime());
-
-                            currentCapBank->setBeforeVarsString(currentFeeder->createVarText(kvarBefore, 1.0));
-                            currentCapBank->setAfterVarsString(" --- ");
-                            currentCapBank->setPercentChangeString(" --- ");
-
-                            INT seqId = CCEventSeqIdGen();
-                            currentSubstationBus->setEventSequence(seqId);
-                            currentCapBank->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()) + 1);
-                            string stateInfo = currentCapBank->getControlStatusQualityString();
-                            long stationId, areaId, spAreaId;
-                            store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                            ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlCommandSent, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser(), kvarBefore, kvarAfter, kvarChange, currentCapBank->getIpAddress(), currentCapBank->getActionId(), stateInfo));
-
-                            if( controlID > 0 )
-                            {
-                                CtiRequestMsg* reqMsg = NULL;
-                                LitePoint controlPoint = store->getAttributeService().getLitePointsById( currentCapBank->getControlPointId() );
-                                if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending)
-                                {
-                                    reqMsg = createPorterRequestMsg(controlID, controlPoint.getStateZeroControl() );
-                                }
-                                else //CLOSE
-                                {
-                                    reqMsg = createPorterRequestMsg(controlID, controlPoint.getStateOneControl() );
-                                }
-                                reqMsg->setSOE(2);
-                                pilMessages.push_back(reqMsg);
-                            }
-                            else
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
-                            }
-                            doConfirmImmediately(currentSubstationBus, pointChanges, ccEvents, controlID);
-                        }
-                        else
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName()
-                                          << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
-                        }
-
-                        if( currentCapBank->getOperationAnalogPointId() > 0 )
-                        {
-                            pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,AnalogPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
-                            ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(3);
-                            long stationId, areaId, spAreaId;
-                            store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                            ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlSetOperationCount, currentSubstationBus->getEventSequence(), currentCapBank->getTotalOperations(), "opCount adjustment", _command->getUser()));
-
-                        }
-                    }
-                    else
-                    {
-                        if (currentSubstationBus->getVerificationFlag())
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPaoName() <<" PAOID: "<< currentSubstationBus->getPaoId()
-                                         <<".  Cannot perform CONFIRM CLOSE on Cap Bank: " << currentCapBank->getPaoName() << " PAOID: " << currentCapBank->getPaoId() << "."<<endl;
-                        }
-                        else
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - No Control Method: " << currentSubstationBus->getStrategy()->getControlMethod()
-                                          << " PAOID: " << currentSubstationBus->getPaoId() << " Name: " << currentSubstationBus->getPaoName() << endl;
-                        }
-                    }
-                }
-            }
-            currentSubstationBus->verifyControlledStatusFlags();
-        }
     }
 }
 
@@ -3238,7 +2927,7 @@ void CtiCCCommandExecutor::AutoEnableOvUv()
                         setAutoControlOvUvFlags(currentSubBus, false);
                     }
                 }
-                
+
             }
             break;
         }
@@ -3275,7 +2964,7 @@ void CtiCCCommandExecutor::AutoEnableOvUv()
     ItemCommand* actionMsg = new ItemCommand(CapControlCommand::SEND_ENABLE_OVUV, cmdId);
     actionMsg->setUser(_command->getUser());
     CtiCCExecutorFactory::createExecutor(actionMsg)->execute();
-    
+
     return;
 }
 
@@ -3332,7 +3021,7 @@ void CtiCCCommandExecutor::AutoDisableOvUv()
                         setAutoControlOvUvFlags(currentSubBus, true);
                     }
                 }
-                
+
             }
             break;
         }
@@ -3519,6 +3208,7 @@ void CtiCCCommandExecutor::Flip7010Device()
     CtiMultiMsg_vec& pointChanges = multi->getData();
     CtiMultiMsg* eventMulti = new CtiMultiMsg();
     CtiMultiMsg_vec& ccEvents = eventMulti->getData();
+    CtiCCCapBank* currentCapBank = NULL;
 
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
     CtiCCSubstationBus_vec updatedSubs;
@@ -3534,7 +3224,7 @@ void CtiCCCommandExecutor::Flip7010Device()
 
             for(long k=0;k<ccCapBanks.size();k++)
             {
-                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
+                currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                 if( bankID == currentCapBank->getPaoId() )
                 {
                     found = true;
@@ -3764,12 +3454,21 @@ void CtiCCCommandExecutor::Flip7010Device()
 
     if( controlID > 0 )
     {
-        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID,"control flip");
+        std::auto_ptr<CtiRequestMsg> reqMsg = createBankFlipRequest(*currentCapBank);
+
         reqMsg->setSOE(5);
-        CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
+
+        CtiCapController::sendCapBankRequestAndPoints(reqMsg, multi);
 
         if (eventMulti->getCount() >0)
+        {
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+        }
+        else
+        {
+            delete eventMulti;
+        }
+
         if (updatedSubs.size() > 0)
         {
             CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg(updatedSubs))->execute();
@@ -4016,18 +3715,18 @@ void CtiCCCommandExecutor::ConfirmSubstationBus()
 
                             if( controlID > 0 )
                             {
-                                CtiRequestMsg* reqMsg = NULL;
-                                LitePoint controlPoint = store->getAttributeService().getLitePointsById( currentCapBank->getControlPointId() );
+                                std::auto_ptr<CtiRequestMsg> reqMsg;
+
                                 if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending)
                                 {
-                                    reqMsg = createPorterRequestMsg(controlID, controlPoint.getStateZeroControl() );
+                                    reqMsg = createBankOpenRequest(*currentCapBank);
                                 }
                                 else //CLOSE
                                 {
-                                    reqMsg = createPorterRequestMsg(controlID, controlPoint.getStateOneControl() );
+                                    reqMsg = createBankCloseRequest(*currentCapBank);
                                 }
                                 reqMsg->setSOE(2);
-                                pilMessages.push_back(reqMsg);
+                                pilMessages.push_back(reqMsg.release());
                             }
                             else
                             {
@@ -4211,18 +3910,18 @@ void CtiCCCommandExecutor::ConfirmFeeder()
 
                 if( controlID > 0 )
                 {
-                    CtiRequestMsg* reqMsg = NULL;
-                    LitePoint controlPoint = store->getAttributeService().getLitePointsById( currentCapBank->getControlPointId() );
+                    std::auto_ptr<CtiRequestMsg> reqMsg;
+
                     if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending)
                     {
-                        reqMsg = createPorterRequestMsg(controlID, controlPoint.getStateZeroControl() );
+                        reqMsg = createBankOpenRequest(*currentCapBank);
                     }
                     else //CLOSE
                     {
-                        reqMsg = createPorterRequestMsg(controlID, controlPoint.getStateOneControl() );
+                        reqMsg = createBankCloseRequest(*currentCapBank);
                     }
                     reqMsg->setSOE(2);
-                    pilMessages.push_back(reqMsg);
+                    pilMessages.push_back(reqMsg.release());
                 }
                 else
                 {
@@ -4773,10 +4472,11 @@ void CtiCCCommandExecutor::ConfirmOpen()
 
     if( controlID > 0 )
     {
-        LitePoint controlPoint = store->getAttributeService().getLitePointsById( operatingCapBank->getControlPointId() );
-        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID, controlPoint.getStateZeroControl() );
+        std::auto_ptr<CtiRequestMsg> reqMsg = createBankOpenRequest(*operatingCapBank);
+
         reqMsg->setSOE(5);
-        CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
+
+        CtiCapController::sendCapBankRequestAndPoints(reqMsg, multi);
 
         if (eventMulti->getCount() >0)
         {
@@ -5074,10 +4774,11 @@ void CtiCCCommandExecutor::ConfirmClose()
 
     if( controlID > 0 )
     {
-        LitePoint controlPoint = store->getAttributeService().getLitePointsById( operatingCapBank->getControlPointId() );
-        CtiRequestMsg* reqMsg = createPorterRequestMsg(controlID, controlPoint.getStateOneControl() );
+        std::auto_ptr<CtiRequestMsg> reqMsg = createBankCloseRequest(*operatingCapBank);
+
         reqMsg->setSOE(5);
-        CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
+
+        CtiCapController::sendCapBankRequestAndPoints(reqMsg, multi);
 
         if (eventMulti->getCount() >0)
         {
@@ -6047,8 +5748,8 @@ bool CtiCCExecutor::moveCapBank(int permanentFlag, long oldFeederId, long movedC
             movedCapBankPtr->setTripOrder(tripOrder);
 
             /**
-             * Adding the bank to this feeder may not be necessary if it's 
-             * here as a result of a temp move and is being kept here 
+             * Adding the bank to this feeder may not be necessary if it's
+             * here as a result of a temp move and is being kept here
              * instead of moved to its original parent.
              */
             bool addNecessary = true;
@@ -6061,7 +5762,7 @@ bool CtiCCExecutor::moveCapBank(int permanentFlag, long oldFeederId, long movedC
                 }
             }
 
-            if (addNecessary) 
+            if (addNecessary)
             {
                 newFeederCapBanks.push_back(movedCapBankPtr);
             }

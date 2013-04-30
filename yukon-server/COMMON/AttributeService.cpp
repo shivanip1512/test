@@ -40,10 +40,10 @@ LitePoint AttributeService::getPointByPaoAndAttribute(int paoId, const PointAttr
         }
     }
 
-    return pointId == 0 ? LitePoint() : getLitePointsById(pointId);
+    return pointId == 0 ? LitePoint() : getLitePointById(pointId);
 }
 
-LitePoint AttributeService::getLitePointsById(int pointId)
+LitePoint AttributeService::getLitePointById(int pointId)
 {
     std::vector<int> pointIds;
     pointIds.push_back(pointId);
