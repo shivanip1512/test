@@ -126,21 +126,6 @@ public class YukonXPathTemplateTest {
 
     /**
      * <testElement>
-     *      <enumElement />
-     * </testElement>
-     */
-    @Test
-    public void testEvaluateAsEnum_nullElement() {
-        Element testElement = createEnumElement(null, null);
-
-        YukonXPathTemplate yukonTemplate = YukonXml.getXPathTemplateForElement(testElement);
-        ThermostatScheduleMode thermostatScheduleMode = yukonTemplate.evaluateAsEnum("/testElement/enumElement", ThermostatScheduleMode.class);
-        
-        Assert.assertNull(thermostatScheduleMode);
-    }
-
-    /**
-     * <testElement>
      *      <enumElement>WeekDay_WeekEndddd<enumElement>
      * </testElement>
      */

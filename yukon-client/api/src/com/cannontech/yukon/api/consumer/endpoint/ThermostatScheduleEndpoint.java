@@ -80,8 +80,8 @@ public class ThermostatScheduleEndpoint {
      */
     private Element buildResponseForAccountThermostatSchedule(CustomerAccount customerAccount, AccountThermostatSchedule accountThermostatSchedule) {
         Element thermostatScheduleElem = new Element("thermostatSchedule", ns);
-        thermostatScheduleElem.setAttribute("thermostatType", XmlUtils.toXmlRepresentation(accountThermostatSchedule.getThermostatType()), ns);
-        thermostatScheduleElem.setAttribute("thermostatScheduleMode", XmlUtils.toXmlRepresentation(accountThermostatSchedule.getThermostatScheduleMode()), ns);
+        thermostatScheduleElem.setAttribute("thermostatType", XmlUtils.toXmlRepresentation(accountThermostatSchedule.getThermostatType()));
+        thermostatScheduleElem.setAttribute("thermostatScheduleMode", XmlUtils.toXmlRepresentation(accountThermostatSchedule.getThermostatScheduleMode()));
 
         Element scheduleNameElem = XmlUtils.createStringElement("scheduleName", ns, accountThermostatSchedule.getScheduleName());
         thermostatScheduleElem.addContent(scheduleNameElem);
