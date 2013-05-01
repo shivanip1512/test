@@ -77,7 +77,7 @@
 				<tags:inputNameValue nameKey=".dataType.COUNT" path="count" />
 				<tags:inputNameValue nameKey=".dataType.DIRECTION" path="direction" />
 				<tags:inputNameValue nameKey=".dataType.MEASURED_VALUE" path="measuredValue" />
-				<tags:inputNameValue nameKey=".dataType.OUTAGE_START_TIME" path="outageStartTime" />
+				<tags:inputNameValue nameKey=".dataType.EVENT_START_TIME" path="outageStartTime" />
 				<tags:inputNameValue nameKey=".dataType.THRESHOLD_VALUE" path="thresholdValue" />
 				<tags:inputNameValue nameKey=".dataType.UOM" path="uom" />
 				<tags:inputNameValue nameKey=".dataType.UOM_MODIFIERS" path="uomModifiers" />
