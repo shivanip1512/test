@@ -480,6 +480,9 @@
 		                </page>
                 	</pages>
 		        </page>
+		        <page name="meterEventsReport.jobs" type="BASIC">
+		        	<menu>meters</menu>
+		        </page>
 		        <page name="waterLeakReport.report" type="BASIC">
 		            <menu>meters</menu>
 					<pages>
@@ -487,6 +490,9 @@
                             <menu>meters</menu>
                         </page>
                 	</pages>
+		        </page>
+		        <page name="waterLeakReport.jobs" type="BASIC">
+		        	<menu>meters</menu>
 		        </page>
             </pages>
         </page>

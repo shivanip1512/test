@@ -18,55 +18,7 @@
 	    <cti:crumbLink><cti:msg2 key=".pageTitle"/></cti:crumbLink>
 	</cti:breadCrumbs>
 	
-	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}" baseUrl="jobs">
-	<table id="jobsTable" class="compactResultsTable">
-		<thead>
-			<th><i:inline key=".nameHeader"/></th>
-			<th><i:inline key=".scheduleHeader"/></th>
-			<th><i:inline key=".nextRunHeader"/></th>
-			<th><i:inline key=".actions"/></th>
-		</thead>
-		<tfoot></tfoot>
-		<tbody>
-			<c:forEach var="job" items="${filterResult.resultList}">
-				<tr>
-					<td>
-						${fn:escapeXml(job.name)}
-					</td>
-					<td>
-						${job.cronString}
-					</td>
-					<td>
-						<cti:dataUpdaterValue type="JOB" identifier="${job.id}/NEXT_RUN_DATE"/>
-					</td>
-					<td>
-						<cti:url var="editUrl" value="showForm">
-							<cti:param name="jobId" value="${job.id}"/>
-						</cti:url>
-						<cti:button nameKey="edit" renderMode="image" href="${editUrl}"/>
-						
-						<cti:url var="historyUrl" value="/support/fileExportHistory/list">
-							<cti:param name="initiator" value="Billing Schedule: ${job.name}"/>
-						</cti:url>
-						<cti:button nameKey="history" renderMode="image" href="${historyUrl}"/>
-						
-						<cti:url var="deleteUrl" value="delete">
-							<cti:param name="jobId" value="${job.id}"/>
-						</cti:url>
-						<cti:button nameKey="delete" renderMode="image" href="${deleteUrl}"/>
-					</td>
-				</tr>
-			</c:forEach>
-			<c:if test="${fn:length(filterResult.resultList) == 0}">
-				<tr>
-					<td class="empty-list" colspan="3">
-						<i:inline key=".noJobs"/>
-					</td>
-				</tr>
-			</c:if>
-		</tbody>
-	</table>
-	</tags:pagedBox2>
+	<tags:scheduledFileExportJobs searchResult="${filterResult}" jobType="${jobType}" baseUrl="jobs" editUrl="showForm" deleteUrl="delete" />
 	
 </cti:standardPage>
 </cti:msgScope>

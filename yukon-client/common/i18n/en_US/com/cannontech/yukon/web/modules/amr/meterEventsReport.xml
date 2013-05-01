@@ -65,5 +65,15 @@
     <entry key="yukon.web.modules.amr.meterEventsReport.bulkActionContainer.header">Select Devices</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.bulkActionContainer.noteLabel"></entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.bulkActionContainer.noteText"></entry>
-
+	
+	<entry key="yukon.web.modules.amr.meterEventsReport.schedule.label">Schedule</entry>
+	<entry key="yukon.web.modules.amr.meterEventsReport.schedulePopup">Schedule Report {0}</entry>
+	<entry key="yukon.web.modules.amr.meterEventsReport.daysPrevious">Days Previous</entry>
+	
+	<!-- jobs.jsp -->
+	<entry key="yukon.web.modules.amr.meterEventsReport.jobs.pageName">Scheduled Meter Event Reports</entry>
+	<entry key="yukon.web.modules.amr.meterEventsReport.jobs.pageDescription">Scheduled Meter Event Reports</entry>
+	<entry key="yukon.web.modules.amr.meterEventsReport.jobs.scheduleSuccess">Event report "{0}" scheduled successfully.</entry>
+	<entry key="yukon.web.modules.amr.meterEventsReport.jobs.updateSuccess">Event report "{0}" updated successfully.</entry>
+	<entry key="yukon.web.modules.amr.meterEventsReport.jobs.deletedSuccess">Event report "{0}" was deleted.</entry>
 </properties>

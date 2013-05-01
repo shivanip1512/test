@@ -44,13 +44,13 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.RawPointHistoryDao;
 
 public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask {
-	@Autowired ExportReportGeneratorService exportReportGeneratorService;
-	@Autowired MeterDao meterDao;
-	@Autowired ArchiveValuesExportFormatDao archiveValuesExportFormatDao;
-	@Autowired RawPointHistoryDao rawPointHistoryDao;
-	@Autowired ScheduledFileExportDao scheduledFileExportDao;
-	@Autowired DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-	@Autowired DeviceGroupEditorDao deviceGroupEditorDao;
+	@Autowired private ExportReportGeneratorService exportReportGeneratorService;
+	@Autowired private MeterDao meterDao;
+	@Autowired private ArchiveValuesExportFormatDao archiveValuesExportFormatDao;
+	@Autowired private RawPointHistoryDao rawPointHistoryDao;
+	@Autowired private ScheduledFileExportDao scheduledFileExportDao;
+	@Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+	@Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
 	
 	private String uniqueIdentifier = CtiUtilities.getUuidString();
 	private List<SimpleDevice> deviceList;

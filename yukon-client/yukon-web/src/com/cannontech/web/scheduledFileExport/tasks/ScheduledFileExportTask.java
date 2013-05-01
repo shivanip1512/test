@@ -19,6 +19,7 @@ import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.fileExportHistory.service.FileExportHistoryService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.scheduledFileExport.ExportFileGenerationParameters;
+import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -43,6 +44,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 	@Autowired private DateFormattingService dateFormattingService;
 	@Autowired private ConfigurationSource configurationSource;
 	
+	protected String defaultYukonExternalUrl;
 	protected String name;
 	protected boolean appendDateToFileName;
 	protected String exportFileName;
@@ -54,7 +56,6 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 	protected static final String DEFAULT_FILE_EXTENSION = ".csv";
 	private static final String HISTORY_URL_PART = "/support/fileExportHistory/list?entryId=";
 	
-	
 	@Override
 	public abstract void start();
 	
@@ -63,6 +64,24 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 	 * ExportFileGenerationParameters specific to that task.
 	 */
 	public abstract void setFileGenerationParameters(ExportFileGenerationParameters parameters);
+	
+	public ScheduledFileExportData getPartialData() {
+		ScheduledFileExportData data = new ScheduledFileExportData();
+		data.setAppendDateToFileName(appendDateToFileName);
+		data.setExportFileName(exportFileName);
+		data.setExportPath(exportPath);
+		data.setNotificationEmailAddresses(notificationEmailAddresses);
+		data.setScheduleName(name);
+		return data;
+	}
+	
+	public String getDefaultYukonExternalUrl() {
+		return defaultYukonExternalUrl;
+	}
+
+	public void setDefaultYukonExternalUrl(String url) {
+		this.defaultYukonExternalUrl = url;
+	}
 	
 	public String getName() {
 		return name;
@@ -174,12 +193,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 	
 	//Gets the appropriate email subject i18n key based on the type of file export.
 	private String getSubjectKey(FileExportType type) {
-		if(type == FileExportType.BILLING) {
-			return "yukon.web.modules.amr.scheduledFileExport.notification.billingSubject";
-		} else if(type == FileExportType.ARCHIVED_DATA_EXPORT) {
-			return "yukon.web.modules.amr.scheduledFileExport.notification.adeSubject";
-		}
-		throw new IllegalArgumentException("No email subject found for file export type " + type);
+		return "yukon.web.modules.amr.scheduledFileExport.notification.subject." + type.name();
 	}
 	
 	//Gets the message String for an i18n key.
@@ -194,7 +208,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 	 * related File Export History page.
 	 */
 	private String getNotificationBody(ExportHistoryEntry historyEntry) {
-		String baseUrl = configurationSource.getString(MasterConfigStringKeysEnum.YUKON_EXTERNAL_URL, "");
+		String baseUrl = configurationSource.getString(MasterConfigStringKeysEnum.YUKON_EXTERNAL_URL, defaultYukonExternalUrl);
 		
 		int historyId = historyEntry == null ? 0 : historyEntry.getId();
 		String historyLink = baseUrl + HISTORY_URL_PART + historyId;

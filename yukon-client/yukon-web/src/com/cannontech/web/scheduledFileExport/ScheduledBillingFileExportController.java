@@ -2,7 +2,6 @@ package com.cannontech.web.scheduledFileExport;
 
 import java.text.ParseException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -23,8 +22,8 @@ import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.scheduledFileExport.BillingFileExportGenerationParameters;
+import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
-import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -35,22 +34,23 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportJobsTagService;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledBillingFileExportTask;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledFileExportTask;
 import com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/*")
 @CheckRole(YukonRole.APPLICATION_BILLING)
 public class ScheduledBillingFileExportController {
-	@Autowired JobManager jobManager;
-	@Autowired ScheduledFileExportService scheduledFileExportService;
-	@Autowired DeviceGroupService deviceGroupService;
-	@Autowired ScheduledFileExportValidator scheduledFileExportValidator;
+	@Autowired private JobManager jobManager;
+	@Autowired private ScheduledFileExportService scheduledFileExportService;
+	@Autowired private DeviceGroupService deviceGroupService;
+	@Autowired private ScheduledFileExportValidator scheduledFileExportValidator;
 	@Autowired private CronExpressionTagService cronExpressionTagService;
+	@Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
 	
 	private static final int MAX_GROUPS_DISPLAYED = 2;
 	
@@ -136,11 +136,11 @@ public class ScheduledBillingFileExportController {
 		
 		if(jobId == null) {
 			//new schedule
-			scheduledFileExportService.scheduleFileExport(exportData, userContext);
+			scheduledFileExportService.scheduleFileExport(exportData, userContext, request);
 			flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.jobCreated", exportData.getScheduleName()));
 		} else {
 			//edit schedule
-			scheduledFileExportService.updateFileExport(exportData, userContext, jobId);
+			scheduledFileExportService.updateFileExport(exportData, userContext, request, jobId);
 			flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.jobUpdated", exportData.getScheduleName()));
 		}
 		
@@ -150,23 +150,8 @@ public class ScheduledBillingFileExportController {
 	@RequestMapping
 	public String jobs(ModelMap model, @RequestParam(defaultValue="25") int itemsPerPage,
 			@RequestParam(defaultValue="1") int page) {
-		List<ScheduledRepeatingJob> billingExportJobs = scheduledFileExportService.getBillingExportJobs();
-		List<ScheduledFileExportJobData> jobDataObjects = Lists.newArrayListWithCapacity(billingExportJobs.size());
 		
-		int startIndex = (page -1) * itemsPerPage;
-		
-		for(ScheduledRepeatingJob job : billingExportJobs) {
-			jobDataObjects.add(scheduledFileExportService.getBillingJobData(job));
-		}
-		Collections.sort(jobDataObjects);
-		int endIndex = startIndex + itemsPerPage > billingExportJobs.size() ? billingExportJobs.size() : startIndex + itemsPerPage;
-		jobDataObjects = jobDataObjects.subList(startIndex, endIndex);
-		
-		SearchResult<ScheduledFileExportJobData> filterResult = new SearchResult<ScheduledFileExportJobData>();
-	    filterResult.setBounds(startIndex, itemsPerPage, billingExportJobs.size());
-		filterResult.setResultList(jobDataObjects);
-        model.addAttribute("filterResult", filterResult);
-		
+		scheduledFileExportJobsTagService.populateModel(model, ScheduledExportType.BILLING, page, itemsPerPage);
 		return "jobs.jsp";
 	}
 	

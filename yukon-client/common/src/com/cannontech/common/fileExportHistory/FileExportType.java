@@ -9,6 +9,8 @@ import com.cannontech.common.i18n.DisplayableEnum;
 public enum FileExportType implements DisplayableEnum {
 	BILLING,
 	ARCHIVED_DATA_EXPORT,
+	WATER_LEAK,
+	METER_EVENTS,
 	;
 	
 	private static final String prefix = "yukon.web.modules.support.fileExportHistory.types.";

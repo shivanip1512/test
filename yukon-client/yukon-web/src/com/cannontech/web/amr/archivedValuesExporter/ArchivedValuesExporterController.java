@@ -9,7 +9,6 @@ import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +35,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFormatDao;
 import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
@@ -64,8 +64,8 @@ import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.scheduledFileExport.ArchivedDataExportFileGenerationParameters;
+import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
-import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -90,13 +90,12 @@ import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.EnumPropertyEditor;
-import com.cannontech.web.scheduledFileExport.ScheduledFileExportJobData;
+import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportJobsTagService;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledArchivedDataFileExportTask;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledFileExportTask;
 import com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 @Controller
@@ -128,10 +127,17 @@ public class ArchivedValuesExporterController {
     @Autowired private JobManager jobManager;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private ScheduledFileExportValidator scheduledFileExportValidator;
+    @Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
+    
+    private static Integer DEFAULT_PAGES = 1;
+    private static Integer DEFAULT_ITEMS_PER_PAGE = 25;
     
     @RequestMapping
     public String view(ModelMap model, HttpServletRequest request, YukonUserContext userContext, 
-                       @ModelAttribute ArchivedValuesExporter archivedValuesExporter) throws ServletRequestBindingException, DeviceCollectionCreationException {
+                       @ModelAttribute ArchivedValuesExporter archivedValuesExporter, 
+                       @RequestParam(defaultValue="25") int itemsPerPage, 
+                       @RequestParam(defaultValue="1") int page) 
+                       throws ServletRequestBindingException, DeviceCollectionCreationException {
         
         List<ExportFormat> allFormats = archiveValuesExportFormatDao.getAllFormats();
         ExportFormat format = getExportFormat(archivedValuesExporter.getFormatId(), allFormats);
@@ -164,24 +170,7 @@ public class ArchivedValuesExporterController {
         }
         
         //Jobs List Prep
-        List<ScheduledRepeatingJob> adeExportJobs = scheduledFileExportService.getArchivedDataExportJobs();
-        List<ScheduledFileExportJobData> jobDataObjects = Lists.newArrayListWithCapacity(adeExportJobs.size());
-        
-        int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 25);
-        int page = ServletRequestUtils.getIntParameter(request, "page", 1);
-        int startIndex = (page-1) * itemsPerPage;
-        
-        for(ScheduledRepeatingJob job : adeExportJobs) {
-        	jobDataObjects.add(scheduledFileExportService.getBillingJobData(job));
-        }
-        Collections.sort(jobDataObjects);
-        int endIndex = startIndex + itemsPerPage > adeExportJobs.size() ? adeExportJobs.size() : startIndex + itemsPerPage;
-        jobDataObjects = jobDataObjects.subList(startIndex, endIndex);
-        
-        SearchResult<ScheduledFileExportJobData> filterResult = new SearchResult<ScheduledFileExportJobData>();
-        filterResult.setBounds(startIndex, itemsPerPage, adeExportJobs.size());
-        filterResult.setResultList(jobDataObjects);
-        model.addAttribute("filterResult", filterResult);
+        scheduledFileExportJobsTagService.populateModel(model, ScheduledExportType.ARCHIVED_DATA_EXPORT, page, itemsPerPage);
         
         return "archivedValuesExporter/archiveDataExporterHome.jsp";
     }
@@ -205,8 +194,8 @@ public class ArchivedValuesExporterController {
     @RequestMapping
     public String selected(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
                            @ModelAttribute ArchivedValuesExporter archivedValuesExporter)
-    throws DeviceCollectionCreationException, ServletException {
-        return view(model, request, userContext, archivedValuesExporter);
+                           throws DeviceCollectionCreationException, ServletException {
+        return view(model, request, userContext, archivedValuesExporter, DEFAULT_ITEMS_PER_PAGE, DEFAULT_PAGES);
     }
 
     @RequestMapping
@@ -449,7 +438,7 @@ public class ArchivedValuesExporterController {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setError(messages);
             
-            return view(model, request, userContext, archivedValuesExporter);
+            return view(model, request, userContext, archivedValuesExporter, DEFAULT_ITEMS_PER_PAGE, DEFAULT_PAGES);
         }
 
         List<SimpleDevice> deviceList = archivedValuesExporter.getDeviceCollection().getDeviceList();
@@ -560,10 +549,10 @@ public class ArchivedValuesExporterController {
 		}
     	
     	if(jobId == null) {
-    		scheduledFileExportService.scheduleFileExport(exportData, userContext);
+    		scheduledFileExportService.scheduleFileExport(exportData, userContext, request);
     		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.archivedValueExporterScheduleSetup.scheduleSuccess", exportData.getScheduleName()));
     	} else {
-    		scheduledFileExportService.updateFileExport(exportData, userContext, jobId);
+    		scheduledFileExportService.updateFileExport(exportData, userContext, request, jobId);
     		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.archivedValueExporterScheduleSetup.updateSuccess", exportData.getScheduleName()));
     	}
     	

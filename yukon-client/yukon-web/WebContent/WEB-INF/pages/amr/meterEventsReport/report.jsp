@@ -14,7 +14,14 @@
 	<cti:includeScript link="/JavaScript/yukon/ui/fieldHelper.js"/>
 
     <script type="text/javascript">
-	    jQuery(document).ready(function() {
+	    function openSchedulePopup() {
+	    	jQuery("#onlyLatestEvent").prop("checked", jQuery("#filter_onlyLatestEvent").prop("checked"));
+	    	jQuery("#onlyAbnormalEvents").prop("checked", jQuery("#filter_onlyAbnormalEvents").prop("checked"));
+	    	jQuery("#includeDisabledDevices").prop("checked", jQuery("#filter_includeDisabledPaos").prop("checked"));
+	    	showSimplePopup('schedulePopup');
+	    };    
+    
+    	jQuery(document).ready(function() {
 	        jQuery("#resetButton").click(function () {
 	        	jQuery("#resetForm").submit();
 	        });
@@ -31,9 +38,11 @@
 	        	jQuery(".f_showSelectedDevices").trigger("click");
 	        });
 	        
-	        jQuery("#eventTypesCog, .eventTypesLink").click(function() {
+	        jQuery("span[id^='eventTypesCog']").click(function() {
 	        	showSimplePopup('filterPopupEventTypes');
 	        });
+	        
+	        jQuery("#scheduleButton").click(openSchedulePopup);
 	        
 	        jQuery("#eventTypesListOk").click(function() {
 	        	jQuery('#eventTypesList').hide();
@@ -55,6 +64,25 @@
 	   			return true;
 	        });
 	        
+	        jQuery('#scheduleForm').submit(function() {
+	        	var attrNames = '';
+		    	jQuery("#eventTree").dynatree("getSelectedNodes").each(function(node) {
+		    		if (ignoreTitle(node.data.title) === false) {
+		    			attrNames += node.data.title + ",";
+		    		}
+		    	});
+	        	
+	   			jQuery('<input>').attr({
+	   			    type: 'hidden',
+	   			    name: 'attrNames',
+	   			    value: attrNames
+	   			}).appendTo('#scheduleForm');
+	   			return true;
+	        });
+	        
+	        if(${not empty jobId} || ${not empty scheduleError}) {
+	        	openSchedulePopup();
+	        }
 	    });
 	    
 	    function updateEventTypesNum() {
@@ -64,7 +92,7 @@
 	    			numSelected++;
 	    		}
 	    	});
-	    	jQuery('#numEventTypes').html(numSelected);
+	    	jQuery('.numEventTypes').html(numSelected);
 	    	jQuery('#filterPopupEventTypes').hide();
 	    }
 	    
@@ -145,7 +173,75 @@
         	return false;
         }
     </script>
-
+	
+	<c:set var="popupTitleArgs" value=""/>
+	<c:if test="${not empty exportData.scheduleName}">
+		<c:set var="popupTitleArgs" value="\"${fn:escapeXml(exportData.scheduleName)}\""/>
+	</c:if>
+	<i:simplePopup titleKey=".schedulePopup" arguments="${popupTitleArgs}" id="schedulePopup">
+		<cti:flashScopeMessages/>
+		<form:form id="scheduleForm" action="schedule" method="post" commandName="exportData">
+			<cti:deviceCollection deviceCollection="${backingBean.deviceCollection}" />
+			<tags:nameValueContainer2>
+				<tags:nameValue2 nameKey="yukon.web.modules.amr.meterEventsReport.report.selectedDevices">
+					<c:set var="isDeviceGroup" value="${backingBean.deviceCollection.collectionParameters['collectionType'] == 'group'}"/>
+					<c:if test="${backingBean.deviceCollection.deviceCount > 0}">
+						<c:if test="${isDeviceGroup}">
+							<span class="viewGroupLink fr">
+								<cti:url var="deviceGroupUrl" value="/group/editor/home">
+									<cti:param name="groupName">${backingBean.deviceCollection.collectionParameters['group.name']}</cti:param>
+								</cti:url>
+								(<a href="${deviceGroupUrl}"><i:inline key=".filter.viewDeviceGroup"/></a>)
+							</span>
+						</c:if>
+						<span class="fr deviceMagIcon">
+							<tags:selectedDevicesPopup deviceCollection="${backingBean.deviceCollection}"/>
+						</span>
+					</c:if>
+					<span class="selectedDevicesLink anchorUnderlineHover">
+						<c:choose>
+							<c:when test="${isDeviceGroup}">
+								<i:inline key=".filter.deviceGroup" arguments="${backingBean.deviceCollection.collectionParameters['group.name']}"/>
+							</c:when>
+							<c:otherwise>
+								<cti:msg key="${backingBean.deviceCollection.description}" />
+							</c:otherwise>
+						</c:choose>
+					</span>
+				</tags:nameValue2>
+				<tags:nameValue2 nameKey=".daysPrevious">
+					<input type="text" name="daysPrevious" id="daysPrevious" value="${daysPrevious}" size="3">
+				</tags:nameValue2>
+				<tags:nameValue2 nameKey=".filter.onlyLatestEvent" excludeColon="true">
+					<input type="checkbox" name="onlyLatestEvent" id="onlyLatestEvent">
+				</tags:nameValue2>
+				<tags:nameValue2 nameKey=".filter.onlyAbnormalEvents" excludeColon="true">
+					<input type="checkbox" name="onlyAbnormalEvents" id="onlyAbnormalEvents">
+				</tags:nameValue2>
+				<tags:nameValue2 nameKey=".filter.includeDisabledDevices" excludeColon="true">
+					<input type="checkbox" name="includeDisabledDevices" id="includeDisabledDevices">
+				</tags:nameValue2>
+				<tags:nameValue2 nameKey=".filter.eventTypesRow">
+					<cti:msg2 key=".filter.cog.title" var="cogTitle"/>
+					<span id="eventTypesCogSchedule" title="${cogTitle}" class="cog anchorUnderlineHover labeled_icon_right">
+						<span class="numEventTypes">
+							${backingBean.numSelectedEventTypes}
+						</span>
+						<i:inline key=".filter.selected"/>
+					</span>
+				</tags:nameValue2>
+				<tags:scheduledFileExportInputs cronExpressionTagState="${cronExpressionTagState}"/>
+			</tags:nameValueContainer2>
+			<c:if test="${not empty jobId}">
+				<input type="hidden" name="jobId" value="${jobId}">
+			</c:if>
+			<div class="actionArea">
+				<cti:button nameKey="submit" type="submit"/>
+				<cti:button nameKey="cancel" onclick="schedulePopup.hide()"/>
+			</div>
+		</form:form>
+	</i:simplePopup>
+	
 	<form:form id="eventsFilterForm" action="report" method="get" commandName="backingBean" cssClass="eventForm">
         <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
 
@@ -162,7 +258,7 @@
 						</tags:nameValue2>
 			
 						<tags:nameValue2 nameKey=".filter.onlyLatestEvent">
-							<form:checkbox path="onlyLatestEvent" cssClass="fl"/>
+							<form:checkbox path="onlyLatestEvent" cssClass="fl" id="filter_onlyLatestEvent"/>
 							<span class="focusableFieldHolder">
 								<a id="latestEventsHelp" class="icon icon_help"><i:inline key=".filter.helpText"/></a>
 							</span>
@@ -170,7 +266,7 @@
 						</tags:nameValue2>
 			
 						<tags:nameValue2 nameKey=".filter.onlyAbnormalEvents">
-							<form:checkbox path="onlyAbnormalEvents" cssClass="fl"/>
+							<form:checkbox path="onlyAbnormalEvents" cssClass="fl" id="filter_onlyAbnormalEvents"/>
 							<span class="focusableFieldHolder">
 								<a id="activeEventsHelp" class="icon icon_help"><i:inline key=".filter.helpText"/></a>
 							</span>
@@ -178,13 +274,13 @@
 						</tags:nameValue2>
 			
 						<tags:nameValue2 nameKey=".filter.includeDisabledDevices">
-							<form:checkbox path="includeDisabledPaos" />
+							<form:checkbox path="includeDisabledPaos" id="filter_includeDisabledPaos"/>
 						</tags:nameValue2>
 			
 						<tags:nameValue2 nameKey=".filter.eventTypesRow">
 							<cti:msg2 key=".filter.cog.title" var="cogTitle"/>
-							<span id="eventTypesCog" title="${cogTitle}" class="cog anchorUnderlineHover labeled_icon_right">
-								<span id="numEventTypes">
+							<span id="eventTypesCogFilter" title="${cogTitle}" class="cog anchorUnderlineHover labeled_icon_right">
+								<span class="numEventTypes">
 									${backingBean.numSelectedEventTypes}
 								</span>
 								<i:inline key=".filter.selected"/>
@@ -192,7 +288,7 @@
 						</tags:nameValue2>
 					</tags:nameValueContainer2>
 				</tags:formElementContainer>
-	
+				
 				<i:simplePopup titleKey=".filter.eventTypes"
 					id="filterPopupEventTypes" styleClass="smallSimplePopup"
 					onClose="updateEventTypesNum()">
@@ -206,9 +302,11 @@
 						<cti:button nameKey="ok" onclick="updateEventTypesNum()" />
 					</div>
 				</i:simplePopup>
+				
 				<div class="pageActionArea">
 					<cti:button nameKey="update" type="submit"/>
 					<cti:button nameKey="reset" id="resetButton"/>
+					<cti:button nameKey="schedule" id="scheduleButton"/>
 				</div>
 			</cti:dataGridCell>
 

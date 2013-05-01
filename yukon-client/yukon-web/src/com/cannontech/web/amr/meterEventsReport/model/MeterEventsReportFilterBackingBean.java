@@ -102,6 +102,12 @@ public class MeterEventsReportFilterBackingBean extends ListBackingBean {
             event.setValue(true);
         }
     }
+    
+    public void setEventTypesAllFalse() {
+    	for (Entry<BuiltInAttribute, Boolean> event : meterEventTypesMap.entrySet()) {
+            event.setValue(false);
+        }
+    }
 
     public int getNumSelectedEventTypes() {
         int result = 0;

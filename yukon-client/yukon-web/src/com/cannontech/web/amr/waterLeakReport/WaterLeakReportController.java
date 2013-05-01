@@ -1,6 +1,7 @@
 package com.cannontech.web.amr.waterLeakReport;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -14,6 +15,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.Duration;
 import org.joda.time.Hours;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
@@ -46,6 +49,9 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.scheduledFileExport.ScheduledExportType;
+import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
+import com.cannontech.common.scheduledFileExport.WaterLeakExportGenerationParameters;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -53,7 +59,11 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.jobs.model.ScheduledRepeatingJob;
+import com.cannontech.jobs.model.YukonJob;
+import com.cannontech.jobs.service.JobManager;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
@@ -62,11 +72,18 @@ import com.cannontech.multispeak.service.MultispeakCustomerInfoService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
+import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.amr.waterLeakReport.model.WaterLeakReportFilterBackingBean;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
+import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportJobsTagService;
+import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
+import com.cannontech.web.scheduledFileExport.tasks.ScheduledFileExportTask;
+import com.cannontech.web.scheduledFileExport.tasks.ScheduledWaterLeakFileExportTask;
+import com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.base.Function;
 import com.google.common.cache.Cache;
@@ -80,7 +97,6 @@ import com.google.common.collect.Sets;
 @Controller
 @RequestMapping("/waterLeakReport/*")
 public class WaterLeakReportController {
-
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
@@ -97,7 +113,12 @@ public class WaterLeakReportController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private MultispeakCustomerInfoService multispeakCustomerInfoService;
     @Autowired private GlobalSettingDao globalSettingDao;
-
+    @Autowired private CronExpressionTagService cronExpressionTagService;
+    @Autowired private ScheduledFileExportValidator scheduledFileExportValidator;
+    @Autowired private ScheduledFileExportService scheduledFileExportService;
+    @Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
+    @Autowired private JobManager jobManager;
+    
     private final static String baseKey = "yukon.web.modules.amr.waterLeakReport.report";
     private final static Hours water_node_reporting_interval = Hours.hours(24);
     private Map<String, Comparator<WaterMeterLeak>> sorters;
@@ -155,25 +176,127 @@ public class WaterLeakReportController {
     public String report(@ModelAttribute("backingBean") WaterLeakReportFilterBackingBean backingBean,
                          BindingResult bindingResult, HttpServletRequest request, ModelMap model,
                          FlashScope flashScope, YukonUserContext userContext, boolean initReport,
-                         boolean resetReport)
+                         boolean resetReport, Integer jobId,
+                         @RequestParam(defaultValue="false") Boolean hasScheduleError)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
-        if (initReport) model.addAttribute("first_visit", true);
+    	
+    	model.addAttribute("hasScheduleError", hasScheduleError);
+    	CronExpressionTagState cronTagState = new CronExpressionTagState();
+    	ScheduledFileExportData exportData = new ScheduledFileExportData();
+    	
+    	if (initReport) model.addAttribute("first_visit", true);
         if (initReport || resetReport) {
             backingBean = new WaterLeakReportFilterBackingBean(backingBean);
         }
-        setupDeviceCollectionFromRequest(backingBean, request);
-        filterValidator.validate(backingBean, bindingResult);
-        if (bindingResult.hasErrors()) {
-            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            model.addAttribute("hasFilterError", true);
-            return "waterLeakReport/report.jsp";
+        
+        //editing existing scheduled export
+        if(jobId != null) {
+        	model.addAttribute("jobId", jobId);
+        	ScheduledRepeatingJob job = jobManager.getRepeatingJob(jobId);
+    		ScheduledWaterLeakFileExportTask task = (ScheduledWaterLeakFileExportTask) jobManager.instantiateTask(job);
+    		model.addAttribute("task", task);
+    		
+    		//populate report data
+    		backingBean.setDeviceCollection(deviceGroupCollectionHelper.buildDeviceCollection(task.getDeviceGroup()));
+    		backingBean.setFromInstant(backingBean.getToInstant().minus(Duration.standardHours(task.getHoursPrevious())));
+    		backingBean.setIncludeDisabledPaos(task.isIncludeDisabledPaos());
+    		backingBean.setThreshold(task.getThreshold());
+    		model.addAttribute("hoursPrevious", task.getHoursPrevious());
+    		
+    		//populate scheduled export data
+    		cronTagState = cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
+    		exportData = new ScheduledFileExportData();
+    		exportData.setScheduleName(task.getName());
+    		exportData.setExportFileName(task.getExportFileName());
+    		exportData.setExportPath(task.getExportPath());
+    		exportData.setAppendDateToFileName(task.isAppendDateToFileName());
+    		exportData.setNotificationEmailAddresses(task.getNotificationEmailAddresses());
+        } else {
+        	setupDeviceCollectionFromRequest(backingBean, request);
+            filterValidator.validate(backingBean, bindingResult);
+            if (bindingResult.hasErrors()) {
+                List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+                flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+                model.addAttribute("hasFilterError", true);
+                return "waterLeakReport/report.jsp";
+            }
         }
-
+        
+        model.addAttribute("cronExpressionTagState", cronTagState);
+    	model.addAttribute("fileExportData", exportData);
+        
         setupWaterLeakReportFromFilter(request, backingBean, userContext, model);
         return "waterLeakReport/report.jsp";
     }
-
+    
+    @RequestMapping(method = RequestMethod.GET)
+    public String schedule(@ModelAttribute("fileExportData") ScheduledFileExportData scheduledFileExportData,
+    		BindingResult bindingResult, Integer hoursPrevious, Double threshold, 
+    		@RequestParam(defaultValue="false") Boolean includeDisabledPaos,
+    		String collectionType, Integer jobId, YukonUserContext userContext, HttpServletRequest request, 
+    		ModelMap model, FlashScope flashScope) throws ServletRequestBindingException, ParseException {
+    	
+    	DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
+        
+        String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
+    	scheduledFileExportData.setScheduleCronString(scheduleCronString);
+        
+    	scheduledFileExportValidator.validate(scheduledFileExportData, bindingResult);
+    	YukonValidationUtils.checkRange(bindingResult, "threshold", threshold, 0.0, Double.MAX_VALUE, true);
+        YukonValidationUtils.checkRange(bindingResult, "hoursPrevious", hoursPrevious, 1, Integer.MAX_VALUE, true);
+        if(bindingResult.hasErrors()) {
+			//send it back
+        	List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            model.addAttribute("hasScheduleError", true);
+            if(jobId != null) model.addAttribute("jobId", jobId);
+            model.addAttribute("threshold", threshold);
+            model.addAttribute("hoursPrevious", hoursPrevious);
+            model.addAttribute("includeDisabledPaos", includeDisabledPaos);
+            model.addAttribute("fileExportData", scheduledFileExportData);
+            model.addAttribute("cronExpressionTagState", cronExpressionTagService.parse(scheduleCronString, userContext));
+            WaterLeakReportFilterBackingBean backingBean = new WaterLeakReportFilterBackingBean();
+            backingBean.setThreshold(threshold);
+            backingBean.setIncludeDisabledPaos(includeDisabledPaos);
+            backingBean.setFromInstant(backingBean.getToInstant().minus(Duration.standardHours(hoursPrevious)));
+            backingBean.setDeviceCollection(deviceCollection);
+            model.addAttribute("backingBean", backingBean);
+            setupWaterLeakReportFromFilter(null, backingBean, userContext, model);
+            return "waterLeakReport/report.jsp";
+		}
+    	
+        WaterLeakExportGenerationParameters parameters = new WaterLeakExportGenerationParameters(deviceCollection, hoursPrevious, threshold, includeDisabledPaos);
+        scheduledFileExportData.setParameters(parameters);
+        
+		if(jobId == null) {
+    		scheduledFileExportService.scheduleFileExport(scheduledFileExportData, userContext, request);
+    		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.waterLeakReport.jobs.scheduleSuccess", scheduledFileExportData.getScheduleName()));
+    	} else {
+    		scheduledFileExportService.updateFileExport(scheduledFileExportData, userContext, request, jobId);
+    		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.waterLeakReport.jobs.updateSuccess", scheduledFileExportData.getScheduleName()));
+    	}
+		
+    	return "redirect:jobs";
+    }
+    
+    @RequestMapping
+    public String jobs(ModelMap model, @RequestParam(defaultValue="25") int itemsPerPage, @RequestParam(defaultValue="1") int page) {
+		
+		scheduledFileExportJobsTagService.populateModel(model, ScheduledExportType.WATER_LEAK, page, itemsPerPage);
+		return "waterLeakReport/jobs.jsp";
+	}
+    
+    @RequestMapping
+	public String delete(ModelMap model, int jobId, FlashScope flashScope) {
+		YukonJob job = jobManager.getJob(jobId);
+		ScheduledFileExportTask task = (ScheduledFileExportTask) jobManager.instantiateTask(job);
+		String jobName = task.getName();
+		jobManager.deleteJob(job);
+		
+		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.waterLeakReport.jobs.deletedSuccess", jobName));
+		return "redirect:jobs";
+	}
+    
     @RequestMapping(method = RequestMethod.GET)
     public String intervalData(@ModelAttribute("backingBean") WaterLeakReportFilterBackingBean backingBean,
                                ModelMap model, YukonUserContext userContext,

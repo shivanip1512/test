@@ -2,12 +2,41 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 	
-	<entry key="yukon.web.modules.amr.scheduledFileExport.notification.adeSubject">Archived data file export "{0}" complete</entry>
-	<entry key="yukon.web.modules.amr.scheduledFileExport.notification.billingSubject">Billing file export "{0}" complete</entry>
+	<entry key="yukon.web.modules.amr.scheduledFileExport.notification.subject.ARCHIVED_DATA_EXPORT">Archived data file export "{0}" complete</entry>
+	<entry key="yukon.web.modules.amr.scheduledFileExport.notification.subject.BILLING">Billing file export "{0}" complete</entry>
+	<entry key="yukon.web.modules.amr.scheduledFileExport.notification.subject.WATER_LEAK">Water leak report "{0}" complete</entry>
+	<entry key="yukon.web.modules.amr.scheduledFileExport.notification.subject.METER_EVENTS">Meter events report "{0}" complete</entry>
 	
 	<entry key="yukon.web.modules.amr.scheduledFileExport.notification.body"><![CDATA[
 		The scheduled file export "{0}" has completed successfully.
 		<br><br>
 		More information is available on the <a href="{1}">File Export History</a> page.
 	]]></entry>
+	
+    <entry key="yukon.web.modules.amr.scheduledFileExport.inputs.exportPathInfo">The location where the file will be generated. This should be a complete, valid file path that does not include the file name. For example, 'C:\Exports\Test'</entry>
+    <entry key="yukon.web.modules.amr.scheduledFileExport.inputs.exportFileNameInfo">A valid file name, with no file extension. May only contain alphanumeric characters.</entry>
+    <entry key="yukon.web.modules.amr.scheduledFileExport.inputs.scheduleName">Schedule Name</entry>
+    <entry key="yukon.web.modules.amr.scheduledFileExport.inputs.exportPath">Export Path</entry>
+    <entry key="yukon.web.modules.amr.scheduledFileExport.inputs.exportFileName">Export File Name</entry>
+    <entry key="yukon.web.modules.amr.scheduledFileExport.inputs.appendDateToFileName">Append Date to File Name</entry>
+    <entry key="yukon.web.modules.amr.scheduledFileExport.inputs.scheduleCronString">Schedule</entry>
+    <entry key="yukon.web.modules.amr.scheduledFileExport.inputs.notificationEmailAddresses">Notification Email Addresses</entry>
+    
+    <!-- ScheduledFileExportJobs tag -->
+    <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.tableTitle.BILLING.title">Billing Schedules</entry>
+    <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.tableTitle.ARCHIVED_DATA_EXPORT.title">Scheduled Archived Data Exports</entry>
+    <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.tableTitle.WATER_LEAK.title">Scheduled Report Exports</entry>
+    <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.tableTitle.METER_EVENT.title">Scheduled Meter Events Reports</entry>
+    <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.nameHeader">Name</entry>
+    <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.scheduleHeader">Schedule</entry>
+    <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.nextRunHeader">Next Run</entry>
+    <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.actions">Actions</entry>
+    <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.edit.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
+    <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.edit.hoverText">Edit this schedule</entry>
+    <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.history.imageUrl">/WebConfig/yukon/Icons/script.gif</entry>
+    <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.history.hoverText">View export history</entry>
+    <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.delete.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+    <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.delete.hoverText">Delete this schedule</entry>
+    <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.noJobs">No scheduled exports.</entry>
+    
 </properties>

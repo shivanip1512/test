@@ -16,21 +16,28 @@
     <cti:includeScript link="/JavaScript/yukon/ui/fieldHelper.js"/>
 
 	<input type="hidden" id="hasFilterError" value="${hasFilterError}"/>
+	<input type="hidden" id="hasScheduleError" value="${hasScheduleError}"/>
 
 	<cti:msg2 var="filterButton" key="yukon.web.components.button.filter.label"/>
 	<cti:msg2 var="filterButtonTitle" key=".filterButtonTitle"/>
+	<cti:msg2 var="scheduleButton" key=".scheduleButton"/>
+	<cti:msg2 var="scheduleButtonTitle" key=".scheduleButtonTitle"/>
+	<cti:msg2 var="updateButton" key=".updateButton"/>
+	<cti:msg2 var="updateButtonTitle" key=".updateButtonTitle"/>
 	<cti:msg2 var="resetButtonTitle" key=".filterResetButtonTitle"/>
 	<cti:msg2 var="resetButton" key="yukon.web.components.button.reset.label"/>
 	<cti:msg2 var="cancelButton" key="yukon.web.components.button.cancel.label"/>
 	<cti:msg2 var="cancelButtonTitle" key=".filterShortcutClose"/>
-
+	
 	<dialog:inline id="leakFilterDialog" okEvent="none" nameKey="leakFilterDialog" on=".f_open_filter_dialog"
 		options="{width: 550, 'buttons': [{text: '${filterButton}', click: function() { WaterLeakReport.filter_submit(); }, title: '${filterButtonTitle}', 'class': 'leakFilterSubmitButton' },
                                           {text: '${resetButton}', click: function() { WaterLeakReport.reset_filter_submit(); }, title: '${resetButtonTitle}' },
                                           {text: '${cancelButton}', click: function() { jQuery(this).dialog('close'); }, title: '${cancelButtonTitle}', 'class': 'naked leakFilterCancelButton anchorUnderlineHover' }]}">
 		<form:form id="filterForm" action="report" method="get" commandName="backingBean">
 			<tags:sortFields backingBean="${backingBean}"/>
-			<tags:selectDevicesTabbed deviceCollection="${backingBean.deviceCollection}" tabClass="waterLeakFilterTab" individualPickerType="waterMeterPicker"/>
+			<tags:selectDevicesTabbed deviceCollection="${backingBean.deviceCollection}" tabClass="waterLeakFilterTab" individualPickerType="waterMeterPicker"
+				groupSelectedCallback="WaterLeakReport.filter_group_selected_callback();" individualSelectedCallback="WaterLeakReport.filter_individual_selected_callback"
+				uniqueId="filterSelector"/>
 			<div class="under_tabs">
 				<tags:nameValueContainer2>
 					<tags:nameValue2 nameKey=".filter.fromDate">
@@ -59,8 +66,41 @@
 		</form:form>
 	</dialog:inline>
 	<input type="hidden" id="filter_shortcut_text" value="<cti:msg2 key=".filterShortcutOpen"/>"/>
-
     <%@ include file="leakAlgorithmDialog.jspf"%>
+	
+	<c:set var="popupTitleArgs" value=""/>
+	<c:if test="${not empty exportData.scheduleName}">
+		<c:set var="popupTitleArgs" value="\"${fn:escapeXml(fileExportData.scheduleName)}\""/>
+	</c:if>
+	<dialog:inline id="leakScheduleDialog" okEvent="none" nameKey="leakScheduleDialog" arguments="${popupTitleArgs}" on=".f_open_schedule_dialog"
+		options="{width: 550, 'buttons': [{text: '${empty jobId ? scheduleButton : updateButton}', click: function() {WaterLeakReport.schedule_submit();}, title: '${empty jobId ? scheduleButtonTitle : updateButtonTitle}', 'class': 'leakScheduleSubmitButton'},
+										  {text: '${cancelButton}', click: function() {jQuery(this).dialog('close');}, title: '${cancelButtonTitle}', 'class': 'leakScheduleCancelButton'}]}">
+		
+		<form:form id="scheduleForm" action="schedule" method="get" commandName="fileExportData">
+			<tags:selectDevicesTabbed deviceCollection="${backingBean.deviceCollection}" tabClass="waterLeakFilterTab" individualPickerType="waterMeterPicker"
+				groupSelectedCallback="WaterLeakReport.schedule_group_selected_callback();" individualSelectedCallback="WaterLeakReport.schedule_individual_selected_callback"
+				uniqueId="scheduleSelector"/>
+			<div class="under_tabs">
+				<tags:nameValueContainer2>
+					<c:if test="${not empty jobId}">
+						<input type="hidden" name="jobId" value="${jobId}" id="jobId">
+					</c:if>
+					<tags:nameValue2 nameKey=".schedule.hoursPrevious">
+						<input type="text" name="hoursPrevious" value="${not empty hoursPrevious ? hoursPrevious : '25' }" size="3">
+					</tags:nameValue2>
+					<tags:nameValue2 nameKey=".filter.threshold">
+						<input type="text" name="threshold" value="${backingBean.threshold}" size="3">
+					</tags:nameValue2>
+					<tags:nameValue2 nameKey=".filter.includeDisabledDevices">
+						<input type="checkbox" name="includeDisabledPaos" ${backingBean.includeDisabledPaos ? "checked" : ""}>
+					</tags:nameValue2>
+					<input type="hidden" name="collectionType" value="${backingBean.deviceCollection.collectionParameters['collectionType']}">
+					<tags:scheduledFileExportInputs cronExpressionTagState="${cronExpressionTagState}"/>
+				</tags:nameValueContainer2>
+			</div>
+		</form:form>
+	</dialog:inline>
+	<input type="hidden" id="schedule_shortcut_text" value="<cti:msg2 key=".scheduleShortcutOpen"/>"/>
 
 	<form:form id="resetForm" action="report" method="get">
 		<input type="hidden" name="resetReport" value="true"/>
@@ -165,6 +205,11 @@
                 <a href="javascript:void(0);" class="f_open_filter_dialog">
                     <i:inline key=".filter"/>
                 </a>
+            </li>
+            <li>
+            	<a href="javascript:void(0);" class="f_open_schedule_dialog">
+            		<i:inline key=".schedule"/>
+            	</a>
             </li>
         </cm:dropdownActions>
         

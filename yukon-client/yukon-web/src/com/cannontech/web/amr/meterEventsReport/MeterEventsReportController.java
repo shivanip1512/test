@@ -2,10 +2,12 @@ package com.cannontech.web.amr.meterEventsReport;
 
 import java.beans.PropertyEditor;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -35,6 +37,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.meter.service.impl.MeterEventLookupService;
@@ -49,6 +52,9 @@ import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.scheduledFileExport.MeterEventsExportGenerationParameters;
+import com.cannontech.common.scheduledFileExport.ScheduledExportType;
+import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -60,13 +66,24 @@ import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.db.point.stategroup.EventStatus;
 import com.cannontech.database.db.point.stategroup.OutageStatus;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.jobs.model.ScheduledRepeatingJob;
+import com.cannontech.jobs.model.YukonJob;
+import com.cannontech.jobs.service.JobManager;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.meterEventsReport.model.MeterEventsReportFilterBackingBean;
+import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
+import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
+import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportJobsTagService;
+import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
+import com.cannontech.web.scheduledFileExport.tasks.ScheduledFileExportTask;
+import com.cannontech.web.scheduledFileExport.tasks.ScheduledMeterEventsFileExportTask;
+import com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -77,7 +94,6 @@ import com.google.common.collect.Sets;
 @Controller
 @RequestMapping("/meterEventsReport/*")
 public class MeterEventsReportController {
-	
 	@Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
 	@Autowired private PaoPointValueService paoPointValueService;
 	@Autowired private PointFormattingService pointFormattingService;
@@ -88,6 +104,11 @@ public class MeterEventsReportController {
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private AttributeService attributeService;
     @Autowired private ObjectFormattingService objectFormatingService;
+    @Autowired private CronExpressionTagService cronExpressionTagService;
+    @Autowired private ScheduledFileExportValidator scheduledFileExportValidator;
+    @Autowired private ScheduledFileExportService scheduledFileExportService;
+	@Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
+	@Autowired private JobManager jobManager;
 	
 	private final static String reportJspPath = "meterEventsReport/report.jsp";
 	private final static String baseKey = "yukon.web.modules.amr.meterEventsReport.report";
@@ -138,6 +159,9 @@ public class MeterEventsReportController {
     public String selected(HttpServletRequest request, YukonUserContext userContext, ModelMap model)
     throws ServletRequestBindingException, DeviceCollectionCreationException {
         
+    	model.addAttribute("exportData", new ScheduledFileExportData());
+        model.addAttribute("cronExpressionTagState", new CronExpressionTagState());
+    	
         setupModelMap(new MeterEventsReportFilterBackingBean(userContext), request, model, null, null, userContext, null);
         return reportJspPath;
     }
@@ -145,21 +169,131 @@ public class MeterEventsReportController {
     @RequestMapping
     public String report(@ModelAttribute("backingBean") MeterEventsReportFilterBackingBean backingBean,
                          BindingResult bindingResult, HttpServletRequest request, ModelMap model,
-                         FlashScope flashScope, YukonUserContext userContext, String attrNames)
+                         FlashScope flashScope, YukonUserContext userContext, String attrNames, Integer jobId)
                                  throws ServletRequestBindingException, DeviceCollectionCreationException {
-        filterValidator.validate(backingBean, bindingResult);
-        if (bindingResult.hasErrors()) {
-            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            setupBackingBean(backingBean, request, attrNames, userContext);
-            setupCommonPageAttributes(backingBean, bindingResult, flashScope, userContext, model);
-            return reportJspPath;
-        }
-        setupModelMap(backingBean, request, model, bindingResult, flashScope, userContext, attrNames);
-		return reportJspPath;
+        
+    	CronExpressionTagState cronExpressionTagState = new CronExpressionTagState();
+    	ScheduledFileExportData exportData = new ScheduledFileExportData();
+    	
+    	if(jobId != null) {
+    		ScheduledRepeatingJob job = jobManager.getRepeatingJob(jobId);
+    		ScheduledMeterEventsFileExportTask task = (ScheduledMeterEventsFileExportTask) jobManager.instantiateTask(job);
+    		//set schedule parameters
+    		model.addAttribute("jobId", jobId);
+    		model.addAttribute("daysPrevious", task.getDaysPrevious());
+    		exportData = task.getPartialData();
+    		exportData.setScheduleCronString(job.getCronString());
+    		cronExpressionTagState = cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
+    		//set backing bean parameters
+    		backingBean.setDeviceCollection(deviceGroupCollectionHelper.buildDeviceCollection(task.getDeviceGroup()));
+    		backingBean.setIncludeDisabledPaos(task.isIncludeDisabledDevices());
+    		backingBean.setEventTypesAllFalse();
+    		for(Attribute attribute : task.getAttributes()) {
+    			BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
+    			if(backingBean.getMeterEventTypesMap().containsKey(builtInAttribute)) {
+    				backingBean.getMeterEventTypesMap().put(builtInAttribute, true);
+    			}
+    		}
+    		backingBean.setOnlyAbnormalEvents(task.isOnlyAbnormalEvents());
+    		backingBean.setOnlyLatestEvent(task.isOnlyLatestEvent());
+    		setupCommonPageAttributes(backingBean, bindingResult, flashScope, userContext, model);
+    		setupReportFromFilter(backingBean, userContext, model);
+    	} else {
+	    	filterValidator.validate(backingBean, bindingResult);
+	        if (bindingResult.hasErrors()) {
+	            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+	            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+	            setupBackingBean(backingBean, request, attrNames, userContext);
+	            setupCommonPageAttributes(backingBean, bindingResult, flashScope, userContext, model);
+	            return reportJspPath;
+	        }
+	        setupModelMap(backingBean, request, model, bindingResult, flashScope, userContext, attrNames);
+    	}
+    	
+        model.addAttribute("exportData", exportData);
+        model.addAttribute("cronExpressionTagState", cronExpressionTagState);
+        return reportJspPath;
 	}
-
-
+    
+    @RequestMapping(method = RequestMethod.POST)
+    public String schedule(@ModelAttribute("exportData") ScheduledFileExportData exportData, BindingResult bindingResult,
+    		String attrNames, ModelMap model, FlashScope flashScope, HttpServletRequest request, Integer daysPrevious,
+    		@RequestParam(defaultValue="false") Boolean onlyLatestEvent, 
+    		@RequestParam(defaultValue="false") Boolean onlyAbnormalEvents, 
+    		@RequestParam(defaultValue="false") Boolean includeDisabledDevices, 
+    		YukonUserContext userContext, Integer jobId) 
+    		throws ServletRequestBindingException, DeviceCollectionCreationException, ParseException {
+    	
+    	if(daysPrevious == null) daysPrevious = 7;
+    	DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
+    	String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
+    	
+    	SortedSet<Attribute> events = Sets.newTreeSet(attributeService.getNameComparator(userContext));
+    	Map<BuiltInAttribute, Boolean> meterEventsTypeMap = getEventMap(attrNames, deviceCollection, userContext);
+    	for(Entry<BuiltInAttribute, Boolean> event : meterEventsTypeMap.entrySet()) {
+            if (event.getValue()) {
+                events.add(event.getKey());
+            }
+        }
+    	
+    	exportData.setScheduleCronString(scheduleCronString);
+    	
+    	scheduledFileExportValidator.validate(exportData, bindingResult);
+    	YukonValidationUtils.checkRange(bindingResult, "daysPrevious", daysPrevious, 0, Integer.MAX_VALUE, true);
+    	if(bindingResult.hasErrors()) {
+    		//send it back
+    		List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult, true);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            MeterEventsReportFilterBackingBean backingBean = new MeterEventsReportFilterBackingBean(userContext);
+            backingBean.setOnlyLatestEvent(onlyLatestEvent);
+            backingBean.setOnlyAbnormalEvents(onlyAbnormalEvents);
+            backingBean.setDeviceCollection(deviceCollection);
+            backingBean.setMeterEventTypesMap(meterEventsTypeMap);
+            backingBean.setIncludeDisabledPaos(includeDisabledDevices);
+            model.addAttribute("backingBean", backingBean);
+            model.addAttribute("exportData", exportData);
+            model.addAttribute("jobId", jobId);
+            model.addAttribute("cronExpressionTagState", cronExpressionTagService.parse(exportData.getScheduleCronString(), userContext));
+            model.addAttribute("daysPrevious", daysPrevious);
+            model.addAttribute("scheduleError", true);
+            setupCommonPageAttributes(backingBean, bindingResult, flashScope, userContext, model);
+            setupReportFromFilter(backingBean, userContext, model);
+    		return reportJspPath;
+    	}
+    	
+    	MeterEventsExportGenerationParameters parameters = new MeterEventsExportGenerationParameters(daysPrevious, 
+    			onlyLatestEvent, onlyAbnormalEvents, includeDisabledDevices, deviceCollection, events);
+    	exportData.setParameters(parameters);
+    	
+    	if(jobId == null) {
+    		scheduledFileExportService.scheduleFileExport(exportData, userContext, request);
+    		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.meterEventsReport.jobs.scheduleSuccess", exportData.getScheduleName()));
+    	} else {
+    		scheduledFileExportService.updateFileExport(exportData, userContext, request, jobId);
+    		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.meterEventsReport.jobs.updateSuccess", exportData.getScheduleName()));
+    	}
+    	
+    	return "redirect:jobs";
+    }
+    
+    @RequestMapping
+    public String jobs(ModelMap model, @RequestParam(defaultValue="25") int itemsPerPage, @RequestParam(defaultValue="1") int page) {
+		
+		scheduledFileExportJobsTagService.populateModel(model, ScheduledExportType.METER_EVENT, page, itemsPerPage);
+		return "meterEventsReport/jobs.jsp";
+	}
+    
+    @RequestMapping
+	public String delete(ModelMap model, int jobId, FlashScope flashScope) {
+		YukonJob job = jobManager.getJob(jobId);
+		ScheduledFileExportTask task = (ScheduledFileExportTask) jobManager.instantiateTask(job);
+		String jobName = task.getName();
+		jobManager.deleteJob(job);
+		
+		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.meterEventsReport.jobs.deletedSuccess", jobName));
+		return "redirect:jobs";
+	}
+    
     @RequestMapping
     public String reportAll(HttpServletRequest request, ModelMap model, YukonUserContext userContext, boolean includeDisabledPaos)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
@@ -235,8 +369,13 @@ public class MeterEventsReportController {
     private void setupBackingBean(MeterEventsReportFilterBackingBean backingBean,
                                   HttpServletRequest request, String attrNames, YukonUserContext userContext)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
-        DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
-        backingBean.setDeviceCollection(deviceCollection);
+        
+    	try {
+        	DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
+        	backingBean.setDeviceCollection(deviceCollection);
+        } catch(NullPointerException npe) {
+        	if(backingBean.getDeviceCollection() == null) throw npe;
+        }
         
         if (attrNames != null) {
             List<String> attrNamesList = Lists.newArrayList(StringUtils.split(attrNames, ","));
@@ -263,6 +402,41 @@ public class MeterEventsReportController {
         }
         
         backingBean.setMeterEventTypesMap(tempMap);
+    }
+    
+    private Map<BuiltInAttribute, Boolean> getEventMap(String attrNames, DeviceCollection deviceCollection, 
+    		YukonUserContext userContext) {
+    	
+    	Map<BuiltInAttribute, Boolean> allEvents = Maps.newHashMapWithExpectedSize(MeterEventStatusTypeGroupings.getAll().size());
+        for (BuiltInAttribute attr : MeterEventStatusTypeGroupings.getAll()) {
+        	allEvents.put(attr, false);
+        }
+    	
+    	if (attrNames != null) {
+            List<String> attrNamesList = Lists.newArrayList(StringUtils.split(attrNames, ","));
+            String attrName;
+            for (Entry<BuiltInAttribute, Boolean> type : allEvents.entrySet()) {
+                attrName = objectFormatingService.formatObjectAsString(type.getKey().getMessage(), userContext);
+                if (attrNamesList.contains(attrName)) {
+                    type.setValue(true);
+                }
+            }
+        } else {
+        	for (Entry<BuiltInAttribute, Boolean> event : allEvents.entrySet()) {
+                event.setValue(true);
+            }
+        }
+
+    	Set<Attribute> availableEventAttributes = meterEventLookupService.getAvailableEventAttributes(deviceCollection.getDeviceList());
+
+        Map<BuiltInAttribute, Boolean> validEvents = Maps.newHashMap(allEvents);
+        for (Entry<BuiltInAttribute, Boolean> entry : allEvents.entrySet()) {
+            if (!availableEventAttributes.contains(entry.getKey())) {
+                validEvents.remove(entry.getKey());
+            }
+        }
+        
+        return validEvents;
     }
     
     private void setupReportFromFilter(MeterEventsReportFilterBackingBean backingBean,

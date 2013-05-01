@@ -2164,5 +2164,6 @@
 	
 	<bean class="com.cannontech.web.scheduledFileExport.service.impl.ScheduledFileExportServiceImpl"/>
 	<bean class="com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator" />
+	<bean class="com.cannontech.web.scheduledFileExport.service.impl.ScheduledFileExportJobsTagServiceImpl"/>
 	
 </beans>

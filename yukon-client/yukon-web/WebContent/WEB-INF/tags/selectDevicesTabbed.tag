@@ -11,6 +11,9 @@
 <%@ attribute name="hideIndividual" type="java.lang.Boolean"%>
 <%@ attribute name="showCount" type="java.lang.Boolean"%>
 <%@ attribute name="individualPickerType" type="java.lang.String" description="The type of the Individual picker. This defaults to meterPicker."%>
+<%@ attribute name="groupSelectedCallback" description="The callback called when a group is selected." %>
+<%@ attribute name="individualSelectedCallback" description="The callback called when an individual device is selected." %>
+<%@ attribute name="uniqueId" %>
 
 <c:set var="pickerType" value="${individualPickerType}"/>
 <c:if test="${empty pickerType}">
@@ -46,7 +49,7 @@
 								<tags:deviceGroupNameSelector fieldName="group.name"
 									fieldValue="${deviceCollection.collectionParameters['group.name']}"
 									dataJson="${groupDataJson}" linkGroupName="false"
-									submitCallback="WaterLeakReport.group_selected_callback();" />
+									submitCallback="${groupSelectedCallback}" />
 							</tags:nameValue2>
 							<c:if test="${showCount}">
 							    <tags:nameValue2 nameKey=".devicesCount">
@@ -62,15 +65,15 @@
 					    initiallySelected="${isIdList}">
 						<tags:nameValueContainer2>
 							<tags:nameValue2 nameKey=".devices">
-							    <input type="hidden" id="picker_meters" name="idList.ids" value="${deviceCollection.collectionParameters['idList.ids']}"/>
-								<tags:pickerDialog id="selectDevicesPicker" 
+							    <input type="hidden" id="picker_meters_${uniqueId}" name="idList.ids" value="${deviceCollection.collectionParameters['idList.ids']}"/>
+								<tags:pickerDialog id="selectDevicesPicker_${uniqueId}" 
 	                                type="${pickerType}"
-	                                destinationFieldId="picker_meters"
+	                                destinationFieldId="picker_meters_${uniqueId}"
 									destinationFieldName="idList.ids"
 									multiSelectMode="true"
 									linkType="selection"
 									selectionProperty="paoName"
-									endAction="WaterLeakReport.individual_selected_callback"
+									endAction="${individualSelectedCallback}"
 									styleClass="selectDevicesPicker" />
 							</tags:nameValue2>
 	                        <c:if test="${showCount}">

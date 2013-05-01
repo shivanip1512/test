@@ -198,7 +198,7 @@ form#filterForm .icon_help {
     height: 355px;
 }
 
-div#selectDevicesPicker {
+div#selectDevicesPicker_filterSelector, div#selectDevicesPicker_scheduleSelector {
 	z-index: 9999;
 }
 

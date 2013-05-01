@@ -50,28 +50,7 @@
 		
 		<tags:boxContainer2 nameKey="exportParameters">
 			<tags:nameValueContainer2 id="exportParametersContainer">
-				<tags:inputNameValue nameKey=".scheduleName" path="scheduleName" maxlength="100"/>
-				
-				<tags:nameValue2 nameKey=".exportPath">
-					<tags:input path="exportPath" />
-					<cti:url var="infoImg" value="/WebConfig/yukon/Icons/information.gif"/>
-                    <img src="${infoImg}" title="<cti:msg2 key=".exportPathInfo"/>"/>
-				</tags:nameValue2>
-				
-				<tags:nameValue2 nameKey=".exportFileName">
-					<tags:input path="exportFileName" maxlength="100"/>
-					<img src="${infoImg}" title="<cti:msg2 key=".exportFileNameInfo"/>"/>
-				</tags:nameValue2>
-				
-				<tags:nameValue2 nameKey=".appendDateToFileName" excludeColon="true">
-					<form:checkbox path="appendDateToFileName" />
-				</tags:nameValue2>
-		
-				<tags:nameValue2 nameKey=".scheduleCronString">
-					<tags:cronExpressionData id="scheduleCronString" state="${cronExpressionTagState}" allowTypeChange="false" />
-				</tags:nameValue2>
-		
-				<tags:inputNameValue nameKey=".notificationEmailAddresses" path="notificationEmailAddresses"/>
+				<tags:scheduledFileExportInputs cronExpressionTagState="${cronExpressionTagState}" />
 			</tags:nameValueContainer2>
 		</tags:boxContainer2>
 		

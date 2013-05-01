@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledArchivedDataFileExportTask;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledBillingFileExportTask;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledFileExportTask;
+import com.cannontech.web.scheduledFileExport.tasks.ScheduledMeterEventsFileExportTask;
+import com.cannontech.web.scheduledFileExport.tasks.ScheduledWaterLeakFileExportTask;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
@@ -34,6 +37,10 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
 	private YukonJobDefinition<ScheduledBillingFileExportTask> scheduledBillingFileExportJobDefinition;
 	@Resource(name="scheduledArchivedDataFileExportJobDefinition")
 	private YukonJobDefinition<ScheduledArchivedDataFileExportTask> scheduledArchivedDataFileExportJobDefinition;
+	@Resource(name="scheduledWaterLeakFileExportJobDefinition")
+	private YukonJobDefinition<ScheduledWaterLeakFileExportTask> scheduledWaterLeakFileExportJobDefinition;
+	@Resource(name="scheduledMeterEventsFileExportJobDefinition")
+	private YukonJobDefinition<ScheduledMeterEventsFileExportTask> scheduledMeterEventsFileExportJobDefinition;
 
 	private Logger log = YukonLogManager.getLogger(ScheduledFileExportServiceImpl.class);
 	
@@ -44,14 +51,22 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
 		typeToJobDefinitionMap = Maps.newEnumMap(ScheduledExportType.class);
 		typeToJobDefinitionMap.put(ScheduledExportType.BILLING, scheduledBillingFileExportJobDefinition);
 		typeToJobDefinitionMap.put(ScheduledExportType.ARCHIVED_DATA_EXPORT, scheduledArchivedDataFileExportJobDefinition);
+		typeToJobDefinitionMap.put(ScheduledExportType.WATER_LEAK, scheduledWaterLeakFileExportJobDefinition);
+		typeToJobDefinitionMap.put(ScheduledExportType.METER_EVENT, scheduledMeterEventsFileExportJobDefinition);
 	}
 	
 	@Override
-	public YukonJob scheduleFileExport(ScheduledFileExportData data, YukonUserContext userContext) {
+	public YukonJob scheduleFileExport(ScheduledFileExportData data, YukonUserContext userContext, HttpServletRequest request) {
+		//Build default url for notifications
+		String defaultYukonExternalUrl = request.getScheme() + "://" + request.getServerName();
+		if (request.getServerPort() != 80) {
+			defaultYukonExternalUrl += ":" + request.getServerPort();
+		}		
 		//Find the appropriate job definition for this export type
-		YukonJobDefinition<? extends ScheduledFileExportTask> jobDefinition = getJobDefinition(data);
+		YukonJobDefinition<? extends ScheduledFileExportTask> jobDefinition = getJobDefinition(data.getExportType());
 		//Create task
 		ScheduledFileExportTask task = getTask(jobDefinition, data);
+		task.setDefaultYukonExternalUrl(defaultYukonExternalUrl);
 		//Schedule the job
 		YukonJob job = jobManager.scheduleJob(jobDefinition, task, data.getScheduleCronString(), userContext);
 		logSchedulingAction(data, false);
@@ -59,11 +74,17 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
 	}
 	
 	@Override
-	public YukonJob updateFileExport(ScheduledFileExportData data, YukonUserContext userContext, int jobId) {
+	public YukonJob updateFileExport(ScheduledFileExportData data, YukonUserContext userContext, HttpServletRequest request, int jobId) {
+		//Build default url for notifications
+		String defaultYukonExternalUrl = request.getScheme() + "://" + request.getServerName();
+		if (request.getServerPort() != 80) {
+			defaultYukonExternalUrl += ":" + request.getServerPort();
+		}
 		//Find the appropriate job definition for this export type
-		YukonJobDefinition<? extends ScheduledFileExportTask> jobDefinition = getJobDefinition(data);
+		YukonJobDefinition<? extends ScheduledFileExportTask> jobDefinition = getJobDefinition(data.getExportType());
 		//Create task and supply parameters
 		ScheduledFileExportTask task = getTask(jobDefinition, data);
+		task.setDefaultYukonExternalUrl(defaultYukonExternalUrl);
 		//Update the job
 		YukonJob job = jobManager.replaceScheduledJob(jobId, jobDefinition, task, data.getScheduleCronString(), userContext);
 		logSchedulingAction(data, true);
@@ -71,19 +92,15 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
 	}
 	
 	@Override
-	public List<ScheduledRepeatingJob> getBillingExportJobs() {
-		return jobManager.getNotDeletedRepeatingJobsByDefinition(scheduledBillingFileExportJobDefinition);
-	}
-	
-	@Override
-	public List<ScheduledRepeatingJob> getArchivedDataExportJobs() {
-		return jobManager.getNotDeletedRepeatingJobsByDefinition(scheduledArchivedDataFileExportJobDefinition);
+	public List<ScheduledRepeatingJob> getJobsByType(ScheduledExportType type) {
+		YukonJobDefinition<? extends ScheduledFileExportTask> jobDefinition = getJobDefinition(type);
+		return jobManager.getNotDeletedRepeatingJobsByDefinition(jobDefinition);
 	}
 	
 	@Override
 	public int deleteAdeJobsByFormatId(int formatId) {
 		int count = 0;
-		List<ScheduledRepeatingJob> jobs = getArchivedDataExportJobs();
+		List<ScheduledRepeatingJob> jobs = getJobsByType(ScheduledExportType.ARCHIVED_DATA_EXPORT);
         for(ScheduledRepeatingJob job : jobs) {
         	ScheduledArchivedDataFileExportTask task = (ScheduledArchivedDataFileExportTask) jobManager.instantiateTask(job);
         	if(task.getFormatId() == formatId) {
@@ -97,7 +114,7 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
 	@Override
 	public int deleteBillingJobsByFormatId(int formatId) {
 		int count = 0;
-		List<ScheduledRepeatingJob> jobs = getBillingExportJobs();
+		List<ScheduledRepeatingJob> jobs = getJobsByType(ScheduledExportType.BILLING);
 		for(ScheduledRepeatingJob job : jobs) {
 			ScheduledBillingFileExportTask task = (ScheduledBillingFileExportTask) jobManager.instantiateTask(job);
 			if(task.getFileFormatId() == formatId) {
@@ -109,14 +126,14 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
 	}
 	
 	@Override
-	public ScheduledFileExportJobData getBillingJobData(ScheduledRepeatingJob job) {
+	public ScheduledFileExportJobData getExportJobData(ScheduledRepeatingJob job) {
 		return new ScheduledFileExportJobDataImpl(job);
 	}
 	
-	public YukonJobDefinition<? extends ScheduledFileExportTask> getJobDefinition(ScheduledFileExportData data) {
-		YukonJobDefinition<? extends ScheduledFileExportTask> jobDefinition = typeToJobDefinitionMap.get(data.getExportType());
+	public YukonJobDefinition<? extends ScheduledFileExportTask> getJobDefinition(ScheduledExportType type) {
+		YukonJobDefinition<? extends ScheduledFileExportTask> jobDefinition = typeToJobDefinitionMap.get(type);
 		if(jobDefinition == null) {
-			throw new IllegalArgumentException("Cannot schedule file export task of type \"" + data.getExportType());
+			throw new IllegalArgumentException("Cannot schedule file export task of type \"" + type);
 		}
 		return jobDefinition;
 	}

@@ -101,12 +101,14 @@ public class YukonValidationUtils extends ValidationUtils {
                 retVal.add(message);
             }
         }
-
-        int numErrors = bindingResult.getFieldErrorCount();
-        if (numErrors == 1) {
-            retVal.add(new YukonMessageSourceResolvable("yukon.web.error.fieldErrorExists"));
-        } else if (numErrors > 1) {
-            retVal.add(new YukonMessageSourceResolvable("yukon.web.error.fieldErrorsExist"));
+        
+        if(!includeFieldErrors) {
+	        int numErrors = bindingResult.getFieldErrorCount();
+	        if (numErrors == 1) {
+	            retVal.add(new YukonMessageSourceResolvable("yukon.web.error.fieldErrorExists"));
+	        } else if (numErrors > 1) {
+	            retVal.add(new YukonMessageSourceResolvable("yukon.web.error.fieldErrorsExist"));
+	        }
         }
 
         return retVal;

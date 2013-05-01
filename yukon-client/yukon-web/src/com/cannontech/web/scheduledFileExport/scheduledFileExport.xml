@@ -18,6 +18,13 @@
     			<property name="inputList">
     				<list>
     					<bean class="com.cannontech.web.input.InputBase">
+							<property name="field" value="defaultYukonExternalUrl"/>
+							<property name="displayName" value="Default Yukon External Url"/>
+							<property name="type">
+								<bean class="com.cannontech.web.input.type.StringType"/>
+							</property>
+						</bean>
+    					<bean class="com.cannontech.web.input.InputBase">
                             <property name="field" value="name"/>
                             <property name="displayName" value="Name"/>
                             <property name="type">
@@ -103,6 +110,13 @@
     		<bean class="com.cannontech.web.input.InputRoot">
     			<property name="inputList">
     				<list>
+    					<bean class="com.cannontech.web.input.InputBase">
+							<property name="field" value="defaultYukonExternalUrl"/>
+							<property name="displayName" value="Default Yukon External Url"/>
+							<property name="type">
+								<bean class="com.cannontech.web.input.type.StringType"/>
+							</property>
+						</bean>
     					<bean class="com.cannontech.web.input.InputBase">
                             <property name="field" value="name"/>
                             <property name="displayName" value="Name"/>
@@ -206,7 +220,205 @@
     		</bean>
     	</property>
     </bean>
-
+	
+	<!-- Scheduled Water Leak File Export Job Definition -->
+    <bean id="scheduledWaterLeakFileExportJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+    	<property name="taskName">
+    		<idref local="scheduledWaterLeakFileExportTask" />
+    	</property>
+    	<property name="title" value="Scheduled Water Leak File Export Job" />
+    	<property name="inputs">
+    		<bean class="com.cannontech.web.input.InputRoot">
+    			<property name="inputList">
+    				<list>
+    					<bean class="com.cannontech.web.input.InputBase">
+							<property name="field" value="defaultYukonExternalUrl"/>
+							<property name="displayName" value="Default Yukon External Url"/>
+							<property name="type">
+								<bean class="com.cannontech.web.input.type.StringType"/>
+							</property>
+						</bean>
+    					<bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="name"/>
+                            <property name="displayName" value="Name"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="appendDateToFileName"/>
+                        	<property name="displayName" value="Append Date to File Name"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.BooleanType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="exportFileName"/>
+                        	<property name="displayName" value="Export File Name"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.StringType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="exportPath"/>
+                        	<property name="displayName" value="Export Path"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.StringType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="notificationEmailAddresses"/>
+                        	<property name="displayName" value="Notification Email Addresses"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.StringType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="uniqueIdentifier"/>
+                        	<property name="displayName" value="Unique Identifier"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.StringType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="hoursPrevious"/>
+                        	<property name="displayName" value="Hours Previous"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.IntegerType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="threshold"/>
+                        	<property name="displayName" value="Threshold"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.DoubleType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="includeDisabledPaos"/>
+                        	<property name="displayName" value="Include Disabled Paos"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.BooleanType"/>
+                        	</property>
+                        </bean>
+    				</list>
+    			</property>
+    		</bean>
+    	</property>
+    </bean>
+	
+	<!-- Scheduled Meter Events File Export Job Definition -->
+    <bean id="scheduledMeterEventsFileExportJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+    	<property name="taskName">
+    		<idref local="scheduledMeterEventsFileExportTask" />
+    	</property>
+    	<property name="title" value="Scheduled Meter Events File Export Job" />
+    	<property name="inputs">
+    		<bean class="com.cannontech.web.input.InputRoot">
+    			<property name="inputList">
+    				<list>
+    					<bean class="com.cannontech.web.input.InputBase">
+							<property name="field" value="defaultYukonExternalUrl"/>
+							<property name="displayName" value="Default Yukon External Url"/>
+							<property name="type">
+								<bean class="com.cannontech.web.input.type.StringType"/>
+							</property>
+						</bean>
+    					<bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="name"/>
+                            <property name="displayName" value="Name"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="appendDateToFileName"/>
+                        	<property name="displayName" value="Append Date to File Name"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.BooleanType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="exportFileName"/>
+                        	<property name="displayName" value="Export File Name"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.StringType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="exportPath"/>
+                        	<property name="displayName" value="Export Path"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.StringType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="notificationEmailAddresses"/>
+                        	<property name="displayName" value="Notification Email Addresses"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.StringType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="daysPrevious"/>
+                        	<property name="displayName" value="Days Previous"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.IntegerType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="onlyLatestEvent"/>
+                        	<property name="displayName" value="Only Latest Event"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.BooleanType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="onlyAbnormalEvents"/>
+                        	<property name="displayName" value="Only Abnormal Events"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.BooleanType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="includeDisabledDevices"/>
+                        	<property name="displayName" value="Include Disabled Devices"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.BooleanType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="uniqueIdentifier"/>
+                        	<property name="displayName" value="Unique Identifier"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.StringType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="attributes"/>
+                        	<property name="displayName" value="Attributes"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.AttributeSetType"/>
+                        	</property>
+                        </bean>
+    				</list>
+    			</property>
+    		</bean>
+    	</property>
+    </bean>
+	
+	<!-- Scheduled Water Leak File Export Task -->
+	<bean id="scheduledWaterLeakFileExportTask"
+		class="com.cannontech.web.scheduledFileExport.tasks.ScheduledWaterLeakFileExportTask"
+		scope="prototype">
+	</bean>
+	
+	<!-- Scheduled Meter Events File Export Task -->
+	<bean id="scheduledMeterEventsFileExportTask"
+		class="com.cannontech.web.scheduledFileExport.tasks.ScheduledMeterEventsFileExportTask"
+		scope="prototype">
+	</bean>
+	
     <!-- Scheduled Archived Data Export Task -->
     <bean id="scheduledArchivedDataFileExportTask"
     	class="com.cannontech.web.scheduledFileExport.tasks.ScheduledArchivedDataFileExportTask"
