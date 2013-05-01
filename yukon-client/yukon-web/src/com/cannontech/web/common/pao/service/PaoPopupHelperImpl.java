@@ -26,7 +26,7 @@ public class PaoPopupHelperImpl implements PaoPopupHelper {
     private YukonUserContextMessageSourceResolver resolver;
 
     @Override
-    public String buildPopupModel(DeviceCollection collection, ModelMap model,
+    public void buildPopupModel(DeviceCollection collection, ModelMap model,
             YukonUserContext context) {
         int totalDeviceCount = (int) collection.getDeviceCount();
         List<SimpleDevice> devicesToLoad = collection.getDevices(0,
@@ -59,8 +59,6 @@ public class PaoPopupHelperImpl implements PaoPopupHelper {
             model.addAttribute("resultsLimitedTo", MAX_DEVICES_DISPLAYED);
         }
         model.addAttribute("deviceInfoList", rows);
-
-        return "deviceListPopup.jsp";
     }
 
 }

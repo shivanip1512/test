@@ -183,7 +183,8 @@ public class BulkController {
             throws ServletRequestBindingException {
 
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
-        return paoPopupHelper.buildPopupModel(deviceCollection, model, context);
+        paoPopupHelper.buildPopupModel(deviceCollection, model, context);
+        return "selectedDevicesPopup.jsp";
     }
 
     @RequestMapping
