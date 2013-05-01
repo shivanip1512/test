@@ -348,8 +348,14 @@ public enum BuiltInAttribute implements Attribute {
         status.add(CURRENT_WITHOUT_VOLTAGE_FLAG);
         status.add(LOAD_SIDE_VOLTAGE_DETECTED_FLAG);
         status.add(OVER_VOLTAGE);
+        status.add(OVER_VOLTAGE_MEASURED);
+        status.add(OVER_VOLTAGE_THRESHOLD);
         status.add(OUT_OF_VOLTAGE_FLAG);
+        status.add(UNDER_VOLTAGE);
+        status.add(UNDER_VOLTAGE_MEASURED);
+        status.add(UNDER_VOLTAGE_THRESHOLD);
         status.add(VOLTAGE_OUT_OF_LIMITS_FLAG);
+        status.add(WATT_HOUR_PULSE_FAILURE);
         statusAttributes = status.build();
         
         ImmutableSet.Builder<BuiltInAttribute> relay = ImmutableSet.builder();
