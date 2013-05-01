@@ -264,6 +264,9 @@ public enum BuiltInAttribute implements Attribute {
         accumulators.add(TOU_RATE_D_ENERGY_GENERATED);
         accumulators.add(NET_KWH);
         accumulators.add(SUM_KWH);
+        accumulators.add(ENERGY_GENERATED);
+        accumulators.add(KVARH);
+        accumulators.add(FORWARD_INDUCTIVE_KVARH);
         accumulatorAttributes = accumulators.build();
         
         ImmutableSet.Builder<BuiltInAttribute> analogBuilder = ImmutableSet.builder();
@@ -276,10 +279,7 @@ public enum BuiltInAttribute implements Attribute {
         blinkAndOutageCounts = analogBuilder.build();
         
         ImmutableSet.Builder<BuiltInAttribute> other = ImmutableSet.builder();
-        other.add(ENERGY_GENERATED);
         other.add(KVAR);
-        other.add(KVARH);
-        other.add(FORWARD_INDUCTIVE_KVARH);
         other.add(PEAK_KVAR);
         other.add(PHASE);
         other.add(RECORDING_INTERVAL);
@@ -347,6 +347,7 @@ public enum BuiltInAttribute implements Attribute {
         status.add(ZIGBEE_LINK_STATUS);
         status.add(CURRENT_WITHOUT_VOLTAGE_FLAG);
         status.add(LOAD_SIDE_VOLTAGE_DETECTED_FLAG);
+        status.add(OVER_VOLTAGE);
         status.add(OUT_OF_VOLTAGE_FLAG);
         status.add(VOLTAGE_OUT_OF_LIMITS_FLAG);
         statusAttributes = status.build();
