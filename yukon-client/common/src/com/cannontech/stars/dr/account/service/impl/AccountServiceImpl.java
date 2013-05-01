@@ -657,7 +657,7 @@ public class AccountServiceImpl implements AccountService {
                 yukonUserDao.save(newUser);
                 String password = accountDto.getPassword();
                 if (!StringUtils.isBlank(password)) {
-                    authenticationService.setPassword(user, defaultAuthenticationCategory, password);
+                    authenticationService.setPassword(newUser, defaultAuthenticationCategory, password);
                 }
 
                 newLoginId = newUser.getUserID();
