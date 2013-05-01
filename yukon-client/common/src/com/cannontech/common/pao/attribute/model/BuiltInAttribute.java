@@ -43,6 +43,7 @@ public enum BuiltInAttribute implements Attribute {
     LM_GROUP_STATUS("LM Group Status"),
     LOAD_PROFILE("Load Profile"),
     LOAD_SIDE_VOLTAGE_DETECTED_FLAG("Load Side Voltage Detected"),
+    METER_BOX_COVER_REMOVAL_FLAG("Meter Box Cover Removal"),
     MAXIMUM_VOLTAGE("Maximum Voltage"),
     MINIMUM_VOLTAGE("Minimum Voltage"),
     OUTAGE_LOG("Outage Log"),
@@ -347,6 +348,7 @@ public enum BuiltInAttribute implements Attribute {
         status.add(ZIGBEE_LINK_STATUS);
         status.add(CURRENT_WITHOUT_VOLTAGE_FLAG);
         status.add(LOAD_SIDE_VOLTAGE_DETECTED_FLAG);
+        status.add(METER_BOX_COVER_REMOVAL_FLAG);
         status.add(OUT_OF_VOLTAGE_FLAG);
         status.add(VOLTAGE_OUT_OF_LIMITS_FLAG);
         statusAttributes = status.build();

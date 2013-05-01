@@ -1996,7 +1996,7 @@
                 <basicLookup point="Phase A Power Factor" />
             </attribute>
             <attribute name="VOLTAGE_PHASE_B">
-                <basicLookup point="Phase A Voltage" />
+                <basicLookup point="Phase B Voltage" />
             </attribute>
             <attribute name="CURRENT_PHASE_B">
                 <basicLookup point="Phase B Current" />
