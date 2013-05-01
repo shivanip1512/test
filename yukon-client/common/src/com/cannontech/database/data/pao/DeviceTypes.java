@@ -183,8 +183,8 @@ public interface DeviceTypes extends TypeBase
     public final static int LCR6200_RFN = DEVICE_OFFSET + 141;
     public final static int LCR6600_RFN = DEVICE_OFFSET + 142;
 
-    public final static int RFN420ELO = DEVICE_OFFSET + 143;
-    public final static int RFN430ELO = DEVICE_OFFSET + 144;
+    //public final static int RFN420ELO = DEVICE_OFFSET + 143;
+    //public final static int RFN430ELO = DEVICE_OFFSET + 144;
 
     public final static int LM_GROUP_RFN_EXPRESSCOMM = DEVICE_OFFSET +145;
 
@@ -203,6 +203,13 @@ public interface DeviceTypes extends TypeBase
     // RFN420F* models above around (offset + 132)
     public final static int RFN420FRX = DEVICE_OFFSET + 153;
     public final static int RFN420FRD = DEVICE_OFFSET + 154;
+    
+    public final static int RFN440_2131T = DEVICE_OFFSET + 155;
+    public final static int RFN440_2131TD = DEVICE_OFFSET + 156;
+    public final static int RFN440_2132T = DEVICE_OFFSET + 157;
+    public final static int RFN440_2132TD = DEVICE_OFFSET + 158;
+    public final static int RFN440_2133T = DEVICE_OFFSET + 159;
+    public final static int RFN440_2133TD = DEVICE_OFFSET + 160;
 
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
@@ -338,7 +345,5 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_IPC_430SL = {"IPC-430SL"};
     public static final String[] STRING_IPC_420FD = {"IPC-420fD"};
     public static final String[] STRING_IPC_410FL = {"IPC-410fL"};
-    public static final String[] STRING_RFN_420ELO = {"RFN-420ELO"};
-    public static final String[] STRING_RFN_430ELO = {"RFN-430ELO"};
 
 }

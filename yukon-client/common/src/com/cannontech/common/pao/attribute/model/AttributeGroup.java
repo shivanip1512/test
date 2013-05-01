@@ -9,6 +9,7 @@ public enum AttributeGroup implements DisplayableEnum {
     DEMAND,
     OTHER,
     PROFILE,
+    REACTIVE,
     RELAY,
     STATUS,
     USAGE,

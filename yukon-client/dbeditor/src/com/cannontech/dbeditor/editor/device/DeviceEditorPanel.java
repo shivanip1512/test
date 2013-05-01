@@ -40,12 +40,12 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
             PAOGroups.SENTINEL, PAOGroups.FOCUS, PAOGroups.ALPHA_A3, PAOGroups.FAULT_CI, PAOGroups.NEUTRAL_MONITOR, PAOGroups.LCR3102, PAOGroups.LCR6200_RFN, PAOGroups.LCR6600_RFN,
             PAOGroups.RFN410FL, PAOGroups.RFN410FX, PAOGroups.RFN410FD, PAOGroups.RFN420FL, PAOGroups.RFN420FX, PAOGroups.RFN420FD, PAOGroups.RFN420FRX, PAOGroups.RFN420FRD,
             PAOGroups.RFN410CL, PAOGroups.RFN420CL, PAOGroups.RFN420CD,
-            PAOGroups.RFN430KV, PAOGroups.RFN430A3D, PAOGroups.RFN430A3T, PAOGroups.RFN430A3K, PAOGroups.RFN430A3R, PAOGroups.RDS_TERMINAL, 
+            PAOGroups.RFN430KV, PAOGroups.RFN430A3D, PAOGroups.RFN430A3T, PAOGroups.RFN430A3K, PAOGroups.RFN430A3R, PAOGroups.RDS_TERMINAL,
+            PAOGroups.RFN440_2131T, PAOGroups.RFN440_2131TD, PAOGroups.RFN440_2132T, PAOGroups.RFN440_2132TD, PAOGroups.RFN440_2133T, PAOGroups.RFN440_2133TD,
             PAOGroups.MCT420FL, PAOGroups.MCT420FD, PAOGroups.MCT420CL, PAOGroups.MCT420CD,
             PAOGroups.MCT440_2131B, PAOGroups.MCT440_2132B, PAOGroups.MCT440_2133B,  
             PAOGroups.RFWMETER,
-            PAOGroups.IPC410FL, PAOGroups.IPC420FD, PAOGroups.IPC430S4E, PAOGroups.IPC430SL,
-            PAOGroups.RFN420ELO, PAOGroups.RFN430ELO
+            PAOGroups.IPC410FL, PAOGroups.IPC420FD, PAOGroups.IPC430S4E, PAOGroups.IPC430SL
 		},
 		{ 	//1 - DeviceMeterGroupEditorPanel
 			PAOGroups.ALPHA_A1, PAOGroups.ALPHA_PPLUS, PAOGroups.FULCRUM, PAOGroups.VECTRON, PAOGroups.QUANTUM, 
@@ -59,12 +59,12 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
             PAOGroups.SENTINEL, PAOGroups.FOCUS, PAOGroups.ALPHA_A3, PAOGroups.LCR3102,
             PAOGroups.RFN410FL, PAOGroups.RFN410FX, PAOGroups.RFN410FD, PAOGroups.RFN420FL, PAOGroups.RFN420FX, PAOGroups.RFN420FD, PAOGroups.RFN420FRX, PAOGroups.RFN420FRD,
             PAOGroups.RFN410CL, PAOGroups.RFN420CL, PAOGroups.RFN420CD,
-            PAOGroups.RFN430KV, PAOGroups.RFN430A3D, PAOGroups.RFN430A3T, PAOGroups.RFN430A3K, PAOGroups.RFN430A3R, 
+            PAOGroups.RFN430KV, PAOGroups.RFN430A3D, PAOGroups.RFN430A3T, PAOGroups.RFN430A3K, PAOGroups.RFN430A3R,
+            PAOGroups.RFN440_2131T, PAOGroups.RFN440_2131TD, PAOGroups.RFN440_2132T, PAOGroups.RFN440_2132TD, PAOGroups.RFN440_2133T, PAOGroups.RFN440_2133TD,
             PAOGroups.MCT420FL, PAOGroups.MCT420FD, PAOGroups.MCT420CL, PAOGroups.MCT420CD,
             PAOGroups.MCT440_2131B, PAOGroups.MCT440_2132B, PAOGroups.MCT440_2133B,
             PAOGroups.RFWMETER,
-            PAOGroups.IPC410FL, PAOGroups.IPC420FD, PAOGroups.IPC430S4E, PAOGroups.IPC430SL,
-            PAOGroups.RFN420ELO, PAOGroups.RFN430ELO
+            PAOGroups.IPC410FL, PAOGroups.IPC420FD, PAOGroups.IPC430S4E, PAOGroups.IPC430SL
 		},
       	{   //2 - CapBankController
          PAOGroups.CAPBANKCONTROLLER, PAOGroups.CBC_FP_2800, PAOGroups.DNP_CBC_6510, PAOGroups.CBC_EXPRESSCOM,

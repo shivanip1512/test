@@ -196,10 +196,12 @@
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVAR">Peak kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KWH_PER_INTERVAL">Delivered kWh per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KWH_PER_INTERVAL">Received kWh per Interval</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.GENERATED_KWH_PER_INTERVAL">Generated kWh per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KWH_PER_INTERVAL">Sum kWh per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_KWH_PER_INTERVAL">Net kWh per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVAH_PER_INTERVAL">Sum kVAh per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVARH_PER_INTERVAL">Sum kVArh per Interval</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.USAGE_PER_INTERVAL">Usage per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.WATER_USAGE_PER_INTERVAL">Water Usage per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KW_LOAD_PROFILE">Delivered kW Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KW_LOAD_PROFILE">Received kW Load Profile</entry>
@@ -207,6 +209,13 @@
     <entry key="yukon.common.attribute.builtInAttribute.NET_KW_LOAD_PROFILE">Net kW Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVA_LOAD_PROFILE">Sum kVA Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVAR_LOAD_PROFILE">Sum kVAr Load Profile</entry>
+    
+    <entry key="yukon.common.attribute.builtInAttribute.FORWARD_INDUCTIVE_KVARH">Forward Inductive kVARh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.REVERSE_INDUCTIVE_KVARH">Reverse Inductive kVARh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.FORWARD_INDUCTIVE_KVARH_PER_INTERVAL">Forward Inductive kVARh per Interval</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.FORWARD_CAPACITIVE_KVARH_PER_INTERVAL">Forward Capactive kVARh per Interval</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.REVERSE_INDUCTIVE_KVARH_PER_INTERVAL">Reverse Inductive kVARh per Interval</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.REVERSE_CAPACITIVE_KVARH_PER_INTERVAL">Reverse Capactive kVARh per Interval</entry>
     
     <!-- BuiltInAttribute see note above about changing values-->
 </properties>

@@ -7,8 +7,15 @@ import com.google.common.collect.Lists;
 
 public enum RfnManufacturerModel {
     
-    RFN_LCR_6200(PaoType.LCR6200_RFN, "CPS", "RFN-1077"),
-    RFN_LCR_6600(PaoType.LCR6600_RFN, "CPS", "RFN-1082"),
+    RFN_LCR_6200(PaoType.LCR6200_RFN, "CPS", "1077"),
+    RFN_LCR_6600(PaoType.LCR6600_RFN, "CPS", "1082"),
+    
+    RFN_440_2131T(PaoType.RFN440_2131T, "ELO", "2131T"),
+    RFN_440_2131TD(PaoType.RFN440_2131T, "ELO", "2131TD"),
+    RFN_440_2132T(PaoType.RFN440_2131T, "ELO", "2132T"),
+    RFN_440_2132TD(PaoType.RFN440_2131T, "ELO", "2132TD"),
+    RFN_440_2133T(PaoType.RFN440_2131T, "ELO", "2133T"),
+    RFN_440_2133TD(PaoType.RFN440_2131T, "ELO", "2133TD"),
     
     RFN_430A3D(PaoType.RFN430A3D, "EE", "A3D"),
     RFN_430A3T(PaoType.RFN430A3T, "EE", "A3T"),
@@ -29,9 +36,6 @@ public enum RfnManufacturerModel {
     RFN_410CL(PaoType.RFN410CL, "ITRN", "C1SX"),
     RFN_420CL(PaoType.RFN420CL, "ITRN", "C2SX"),
     RFN_420CD(PaoType.RFN420CD, "ITRN", "C2SX-SD"),
-    
-    RFN_420ELO(PaoType.RFN420ELO, "ELO", "2131T"),
-    RFN_430ELO(PaoType.RFN430ELO, "ELO", "2131xT"),
     
     RFN_410FL(PaoType.RFN410FL, "LGYR", "FocuskWh"),
     RFN_410FX_D(PaoType.RFN410FX, "LGYR", "FocusAXD"),

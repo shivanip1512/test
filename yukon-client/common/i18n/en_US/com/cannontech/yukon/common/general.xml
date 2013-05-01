@@ -86,6 +86,7 @@
 <entry key="yukon.common.attributeGroups.DEMAND">Demand</entry>
 <entry key="yukon.common.attributeGroups.OTHER">Other</entry>
 <entry key="yukon.common.attributeGroups.PROFILE">Profile</entry>
+<entry key="yukon.common.attributeGroups.REACTIVE">Reactive</entry>
 <entry key="yukon.common.attributeGroups.RELAY">Relay</entry>
 <entry key="yukon.common.attributeGroups.STATUS">Status</entry>
 <entry key="yukon.common.attributeGroups.USAGE">Usage</entry>

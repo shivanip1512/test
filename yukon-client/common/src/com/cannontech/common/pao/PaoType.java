@@ -117,11 +117,16 @@ public enum PaoType implements DatabaseRepresentationSource {
     RFN430A3T(DeviceTypes.RFN430A3T, "RFN-430A3T", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN430A3K(DeviceTypes.RFN430A3K, "RFN-430A3K", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN430A3R(DeviceTypes.RFN430A3R, "RFN-430A3R", PaoCategory.DEVICE, PaoClass.RFMESH),
-
     RFN430KV(DeviceTypes.RFN430KV, "RFN-430KV", PaoCategory.DEVICE, PaoClass.RFMESH),
+    
+    RFN440_2131T(DeviceTypes.RFN440_2131T, "RFN-440-2131T", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN440_2131TD(DeviceTypes.RFN440_2131TD, "RFN-440-2131TD", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN440_2132T(DeviceTypes.RFN440_2132T, "RFN-440-2132T", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN440_2132TD(DeviceTypes.RFN440_2132TD, "RFN-440-2132TD", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN440_2133T(DeviceTypes.RFN440_2133T, "RFN-440-2133T", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN440_2133TD(DeviceTypes.RFN440_2133TD, "RFN-440-2133TD", PaoCategory.DEVICE, PaoClass.RFMESH),
+    
     RFWMETER(DeviceTypes.RFWMETER, "RFW-Meter", PaoCategory.DEVICE, PaoClass.RFMESH),
-    RFN420ELO(DeviceTypes.RFN420ELO, "RFN-420ELO", PaoCategory.DEVICE, PaoClass.RFMESH),
-    RFN430ELO(DeviceTypes.RFN430ELO, "RFN-430ELO", PaoCategory.DEVICE, PaoClass.RFMESH),
     LCR6200_RFN(DeviceTypes.LCR6200_RFN, "LCR-6200 RFN", PaoCategory.DEVICE, PaoClass.RFMESH),
     LCR6600_RFN(DeviceTypes.LCR6600_RFN, "LCR-6600 RFN", PaoCategory.DEVICE, PaoClass.RFMESH),
 
@@ -247,96 +252,96 @@ public enum PaoType implements DatabaseRepresentationSource {
             throw e;
         }
         
-        ImmutableSet.Builder<PaoType> cbcTypesBuilder = ImmutableSet.builder();
-        cbcTypesBuilder.add(CBC_7010);
-        cbcTypesBuilder.add(CBC_7011);
-        cbcTypesBuilder.add(CBC_7012);
-        cbcTypesBuilder.add(CBC_7020);
-        cbcTypesBuilder.add(CBC_7022);
-        cbcTypesBuilder.add(CBC_7023);
-        cbcTypesBuilder.add(CBC_7024);
-        cbcTypesBuilder.add(CBC_8020);
-        cbcTypesBuilder.add(CBC_8024);
-        cbcTypesBuilder.add(CBC_DNP);
-        cbcTypesBuilder.add(CBC_EXPRESSCOM);
-        cbcTypesBuilder.add(CBC_FP_2800);
-        cbcTypesBuilder.add(DNP_CBC_6510);
-        cbcTypesBuilder.add(CAPBANKCONTROLLER);
+        cbcTypes = ImmutableSet.of(
+                CAPBANKCONTROLLER,
+                CBC_7010,
+                CBC_7011,
+                CBC_7012,
+                CBC_7020,
+                CBC_7022,
+                CBC_7023,
+                CBC_7024,
+                CBC_8020,
+                CBC_8024,
+                CBC_DNP,
+                CBC_EXPRESSCOM,
+                CBC_FP_2800,
+                DNP_CBC_6510);
         
-        cbcTypes = cbcTypesBuilder.build();
-        
-        ImmutableSet.Builder<PaoType> meterTypesBuilder = ImmutableSet.builder();
-        meterTypesBuilder.add(ALPHA_A1);
-        meterTypesBuilder.add(ALPHA_A3);
-        meterTypesBuilder.add(ALPHA_PPLUS);
-        meterTypesBuilder.add(DR_87);
-        meterTypesBuilder.add(FOCUS);
-        meterTypesBuilder.add(FULCRUM);
-        meterTypesBuilder.add(KV);
-        meterTypesBuilder.add(KVII);
-        meterTypesBuilder.add(LANDISGYRS4);
-        meterTypesBuilder.add(QUANTUM);
-        meterTypesBuilder.add(SENTINEL);
-        meterTypesBuilder.add(SIXNET);
-        meterTypesBuilder.add(TRANSDATA_MARKV);
-        meterTypesBuilder.add(VECTRON);
-        meterTypesBuilder.add(IPC430S4E);
-        meterTypesBuilder.add(IPC430SL);
-        meterTypesBuilder.add(IPC420FD);
-        meterTypesBuilder.add(IPC410FL);
-        meterTypesBuilder.add(MCTBROADCAST);
-        meterTypesBuilder.add(MCT210);
-        meterTypesBuilder.add(MCT213);
-        meterTypesBuilder.add(MCT240);
-        meterTypesBuilder.add(MCT248);
-        meterTypesBuilder.add(MCT250);
-        meterTypesBuilder.add(MCT310);
-        meterTypesBuilder.add(MCT310CT);
-        meterTypesBuilder.add(MCT310ID);
-        meterTypesBuilder.add(MCT310IDL);
-        meterTypesBuilder.add(MCT310IL);
-        meterTypesBuilder.add(MCT310IM);
-        meterTypesBuilder.add(MCT318);
-        meterTypesBuilder.add(MCT318L);
-        meterTypesBuilder.add(MCT360);
-        meterTypesBuilder.add(MCT370);
-        meterTypesBuilder.add(MCT410CL);
-        meterTypesBuilder.add(MCT410FL);
-        meterTypesBuilder.add(MCT410GL);
-        meterTypesBuilder.add(MCT410IL);
-        meterTypesBuilder.add(MCT420CL);
-        meterTypesBuilder.add(MCT420CD);
-        meterTypesBuilder.add(MCT420FL);
-        meterTypesBuilder.add(MCT420FD);
-        meterTypesBuilder.add(MCT430A);
-        meterTypesBuilder.add(MCT430A3);
-        meterTypesBuilder.add(MCT430S4);
-        meterTypesBuilder.add(MCT430SL);
-        meterTypesBuilder.add(MCT440_2131B);
-        meterTypesBuilder.add(MCT440_2132B);
-        meterTypesBuilder.add(MCT440_2133B);
-        meterTypesBuilder.add(MCT470);
-        meterTypesBuilder.add(RFN410FL);
-        meterTypesBuilder.add(RFN410FX);
-        meterTypesBuilder.add(RFN410FD);
-        meterTypesBuilder.add(RFN420FL);
-        meterTypesBuilder.add(RFN420FX);
-        meterTypesBuilder.add(RFN420FD);
-        meterTypesBuilder.add(RFN420FRX);
-        meterTypesBuilder.add(RFN420FRD);
-        meterTypesBuilder.add(RFN410CL);
-        meterTypesBuilder.add(RFN420CL);
-        meterTypesBuilder.add(RFN420CD);
-        meterTypesBuilder.add(RFN430A3D);
-        meterTypesBuilder.add(RFN430A3T);
-        meterTypesBuilder.add(RFN430A3K);
-        meterTypesBuilder.add(RFN430A3R);
-        meterTypesBuilder.add(RFN430KV);
-        meterTypesBuilder.add(RFN420ELO);
-        meterTypesBuilder.add(RFN430ELO);
-        meterTypesBuilder.add(RFWMETER);
-        
-        meterTypes = meterTypesBuilder.build();
+        meterTypes = ImmutableSet.of(
+                ALPHA_A1,
+                ALPHA_A3,
+                ALPHA_PPLUS,
+                DR_87,
+                FOCUS,
+                FULCRUM,
+                IPC410FL,
+                IPC420FD,
+                IPC430S4E,
+                IPC430SL,
+                KV,
+                KVII,
+                LANDISGYRS4,
+                MCT210,
+                MCT213,
+                MCT240,
+                MCT248,
+                MCT250,
+                MCT310,
+                MCT310CT,
+                MCT310ID,
+                MCT310IDL,
+                MCT310IL,
+                MCT310IM,
+                MCT318,
+                MCT318L,
+                MCT360,
+                MCT370,
+                MCT410CL,
+                MCT410FL,
+                MCT410GL,
+                MCT410IL,
+                MCT420CD,
+                MCT420CL,
+                MCT420FD,
+                MCT420FL,
+                MCT430A,
+                MCT430A3,
+                MCT430S4,
+                MCT430SL,
+                MCT440_2131B,
+                MCT440_2132B,
+                MCT440_2133B,
+                MCT470,
+                MCTBROADCAST,
+                QUANTUM,
+                RFN410CL,
+                RFN410FD,
+                RFN410FL,
+                RFN410FX,
+                RFN420CD,
+                RFN420CL,
+                RFN420FD,
+                RFN420FL,
+                RFN420FRD,
+                RFN420FRX,
+                RFN420FX,
+                RFN430A3D,
+                RFN430A3K,
+                RFN430A3R,
+                RFN430A3T,
+                RFN430KV,
+                RFN440_2131T,
+                RFN440_2131TD,
+                RFN440_2132T,
+                RFN440_2132TD,
+                RFN440_2133T,
+                RFN440_2133TD,
+                RFWMETER,
+                SENTINEL,
+                SIXNET,
+                TRANSDATA_MARKV,
+                VECTRON);
         
         mctTypes = ImmutableSet.of(
             MCT213,

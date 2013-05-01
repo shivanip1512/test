@@ -80,6 +80,7 @@ public enum BuiltInAttribute implements Attribute {
     RELAY_4_RUN_TIME_DATA_LOG("Relay 4 Run Time"),
     RELAY_4_SHED_TIME_DATA_LOG("Relay 4 Shed Time"),
     REPORTING_INTERVAL("Reporting Interval"),
+    REVERSE_INDUCTIVE_KVARH("Reverse Inductive kVARh"),
     REVERSE_POWER_FLAG("Reverse Power Flag"),
     RF_DEMAND_RESET_STATUS("RF Demand Reset Status"),
     SERVICE_STATUS("Service Status"),
@@ -120,13 +121,19 @@ public enum BuiltInAttribute implements Attribute {
     SUM_KVAH("Sum kVAh"),
     SUM_KVARH("Sum kVArh"),
     
+    USAGE_PER_INTERVAL("Usage per Interval"),
     DELIVERED_KWH_PER_INTERVAL("Delivered kWh per Interval"),
     RECEIVED_KWH_PER_INTERVAL("Received kWh per Interval"),
+    GENERATED_KWH_PER_INTERVAL("Generated kWh per Interval"),
     SUM_KWH_PER_INTERVAL("Sum kWh per Interval"),
     NET_KWH_PER_INTERVAL("Net kWh per Interval"),
     SUM_KVAH_PER_INTERVAL("Sum kVAh per Interval"),
     SUM_KVARH_PER_INTERVAL("Sum kVArh per Interval"),
     WATER_USAGE_PER_INTERVAL("Water Usage per Interval"),
+    FORWARD_INDUCTIVE_KVARH_PER_INTERVAL("Forward Inductive kVARh per Interval"),
+    FORWARD_CAPACITIVE_KVARH_PER_INTERVAL("Forward Capactive kVARh per Interval"),
+    REVERSE_INDUCTIVE_KVARH_PER_INTERVAL("Reverse Inductive kVARh per Interval"),
+    REVERSE_CAPACITIVE_KVARH_PER_INTERVAL("Reverse Capactive kVARh per Interval"),
     
     DELIVERED_KW_LOAD_PROFILE("Delivered kW Load Profile"),
     RECEIVED_KW_LOAD_PROFILE("Received kW Load Profile"),
@@ -152,6 +159,7 @@ public enum BuiltInAttribute implements Attribute {
     ENERGY_ACCUMULATED_WHILE_IN_STANDBY_MODE("Energy Accumulated While In Standby Mode"),
     IMPROPER_METER_ENGINE_OPERATION_WARNING("Improper Meter Engine Operation Warning"),
     INTERNAL_COMMUNICATION_ERROR("Internal Communication Error"),
+    INTERNAL_ERROR_FLAG("Internal Error Flag"),
     INVALID_SERVICE("Invalid Service"),
     LINE_FREQUENCY_WARNING("Line Frequency Warning"),
     LOAD_SIDE_VOLTAGE_IS_MISSING("Load Side Voltage Is Missing"),
@@ -196,17 +204,22 @@ public enum BuiltInAttribute implements Attribute {
     
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";
     
+    // These are informational sets not used for display group purposes.
     private static ImmutableSet<BuiltInAttribute> rfnEventTypes;
     private static ImmutableSet<BuiltInAttribute> rfnEventStatusTypes;
     private static ImmutableSet<BuiltInAttribute> rfnEventAnalogTypes;
+
+    // These are both informational and used for display group purposes.
     private static ImmutableSet<BuiltInAttribute> profileAttributes;
     private static ImmutableSet<BuiltInAttribute> accumulatorAttributes;
     
+    // The following maps and sets are used for displaying grouped attribute lists.
     private static ImmutableMap<AttributeGroup, ImmutableSet<BuiltInAttribute>> groupedDataAttributes;
     private static ImmutableSet<BuiltInAttribute> otherAttributes;
     private static ImmutableSet<BuiltInAttribute> demandAttributes;
     private static ImmutableSet<BuiltInAttribute> voltageAttributes; 
     private static ImmutableSet<BuiltInAttribute> currentAttributes;
+    private static ImmutableSet<BuiltInAttribute> reactiveAttributes;
     private static ImmutableSet<BuiltInAttribute> statusAttributes;
     private static ImmutableSet<BuiltInAttribute> relayAttributes;
     private static ImmutableSet<BuiltInAttribute> blinkAndOutageCounts;
@@ -236,156 +249,157 @@ public enum BuiltInAttribute implements Attribute {
      * they have numeric values which can be read.
      */
     private static void buildDataAttributeSets() {
-        ImmutableSet.Builder<BuiltInAttribute> profile = ImmutableSet.builder();
-        profile.add(LOAD_PROFILE);
-        profile.add(PROFILE_CHANNEL_2);
-        profile.add(PROFILE_CHANNEL_3);
-        profile.add(VOLTAGE_PROFILE);
-        profile.add(DELIVERED_KW_LOAD_PROFILE);
-        profile.add(RECEIVED_KW_LOAD_PROFILE);
-        profile.add(SUM_KW_LOAD_PROFILE);
-        profile.add(NET_KW_LOAD_PROFILE);
-        profile.add(SUM_KVA_LOAD_PROFILE);
-        profile.add(SUM_KVAR_LOAD_PROFILE);
-        profileAttributes = profile.build();
+        
+        profileAttributes = ImmutableSet.of(
+                DELIVERED_KW_LOAD_PROFILE,
+                LOAD_PROFILE,
+                NET_KW_LOAD_PROFILE,
+                PROFILE_CHANNEL_2,
+                PROFILE_CHANNEL_3,
+                RECEIVED_KW_LOAD_PROFILE,
+                SUM_KVAR_LOAD_PROFILE,
+                SUM_KVA_LOAD_PROFILE,
+                SUM_KW_LOAD_PROFILE,
+                VOLTAGE_PROFILE);
         
         //point is an accumulation; Example: Usage 
-        ImmutableSet.Builder<BuiltInAttribute> accumulators = ImmutableSet.builder();
-        accumulators.add(TOU_RATE_A_USAGE);
-        accumulators.add(TOU_RATE_B_USAGE);
-        accumulators.add(TOU_RATE_C_USAGE);
-        accumulators.add(TOU_RATE_D_USAGE);
-        accumulators.add(USAGE);
-        accumulators.add(USAGE_WATER);
-        accumulators.add(DELIVERED_KWH);
-        accumulators.add(RECEIVED_KWH);
-        accumulators.add(TOU_RATE_A_ENERGY_GENERATED);
-        accumulators.add(TOU_RATE_B_ENERGY_GENERATED);
-        accumulators.add(TOU_RATE_C_ENERGY_GENERATED);
-        accumulators.add(TOU_RATE_D_ENERGY_GENERATED);
-        accumulators.add(NET_KWH);
-        accumulators.add(SUM_KWH);
-        accumulators.add(ENERGY_GENERATED);
-        accumulators.add(KVARH);
-        accumulators.add(FORWARD_INDUCTIVE_KVARH);
-        accumulatorAttributes = accumulators.build();
+        accumulatorAttributes = ImmutableSet.of(
+                DELIVERED_KWH,
+                DELIVERED_KWH_PER_INTERVAL,
+                ENERGY_GENERATED,
+                GENERATED_KWH_PER_INTERVAL,
+                NET_KWH,
+                NET_KWH_PER_INTERVAL,
+                RECEIVED_KWH,
+                RECEIVED_KWH_PER_INTERVAL,
+                SUM_KVAH,
+                SUM_KVAH_PER_INTERVAL,
+                SUM_KVARH,
+                SUM_KWH,
+                SUM_KWH_PER_INTERVAL,
+                TOU_RATE_A_ENERGY_GENERATED,
+                TOU_RATE_A_USAGE,
+                TOU_RATE_B_ENERGY_GENERATED,
+                TOU_RATE_B_USAGE,
+                TOU_RATE_C_ENERGY_GENERATED,
+                TOU_RATE_C_USAGE,
+                TOU_RATE_D_ENERGY_GENERATED,
+                TOU_RATE_D_USAGE,
+                USAGE,
+                USAGE_PER_INTERVAL,
+                USAGE_WATER,
+                WATER_USAGE_PER_INTERVAL);
         
-        ImmutableSet.Builder<BuiltInAttribute> analogBuilder = ImmutableSet.builder();
-        analogBuilder.add(BLINK_COUNT);
-        analogBuilder.add(RFN_BLINK_COUNT);
-        analogBuilder.add(RFN_BLINK_RESTORE_COUNT);
-        analogBuilder.add(RFN_OUTAGE_COUNT);
-        analogBuilder.add(RFN_OUTAGE_RESTORE_COUNT);
-        analogBuilder.add(OUTAGE_LOG);
-        blinkAndOutageCounts = analogBuilder.build();
+        blinkAndOutageCounts = ImmutableSet.of(
+                BLINK_COUNT,
+                OUTAGE_LOG,
+                RFN_BLINK_COUNT,
+                RFN_BLINK_RESTORE_COUNT,
+                RFN_OUTAGE_COUNT,
+                RFN_OUTAGE_RESTORE_COUNT);
         
-        ImmutableSet.Builder<BuiltInAttribute> other = ImmutableSet.builder();
-        other.add(KVAR);
-        other.add(PEAK_KVAR);
-        other.add(PHASE);
-        other.add(RECORDING_INTERVAL);
-        other.add(REPORTING_INTERVAL);
-        other.add(TEMPORARY_OUT_OF_SERVICE);
-        other.add(TOTAL_LUF_COUNT);
-        other.add(TOTAL_LUV_COUNT);
-        other.add(SUM_KVAH);
-        other.add(SUM_KVARH);
-        other.add(DELIVERED_KWH_PER_INTERVAL);
-        other.add(RECEIVED_KWH_PER_INTERVAL);
-        other.add(SUM_KWH_PER_INTERVAL);
-        other.add(NET_KWH_PER_INTERVAL);
-        other.add(SUM_KVAH_PER_INTERVAL);
-        other.add(SUM_KVARH_PER_INTERVAL);
-        other.add(WATER_USAGE_PER_INTERVAL);
-        other.add(POWER_FACTOR);
-        other.add(POWER_FACTOR_PHASE_A);
-        other.add(POWER_FACTOR_PHASE_B);
-        other.add(POWER_FACTOR_PHASE_C);
-        otherAttributes = other.build();
+        reactiveAttributes = ImmutableSet.of(
+                FORWARD_INDUCTIVE_KVARH,
+                FORWARD_CAPACITIVE_KVARH_PER_INTERVAL,
+                FORWARD_INDUCTIVE_KVARH_PER_INTERVAL,
+                REVERSE_INDUCTIVE_KVARH,
+                REVERSE_INDUCTIVE_KVARH_PER_INTERVAL,
+                REVERSE_CAPACITIVE_KVARH_PER_INTERVAL,
+                KVAR,
+                KVARH,
+                PEAK_KVAR,
+                POWER_FACTOR,
+                POWER_FACTOR_PHASE_A,
+                POWER_FACTOR_PHASE_B,
+                POWER_FACTOR_PHASE_C,
+                SUM_KVARH_PER_INTERVAL
+                );
         
-        ImmutableSet.Builder<BuiltInAttribute> demand = ImmutableSet.builder();
-        demand.add(DEMAND);
-        demand.add(IED_DEMAND_RESET_COUNT);
-        demand.add(PEAK_DEMAND);
-        demand.add(TOU_RATE_A_PEAK_DEMAND);
-        demand.add(TOU_RATE_B_PEAK_DEMAND);
-        demand.add(TOU_RATE_C_PEAK_DEMAND);
-        demand.add(TOU_RATE_D_PEAK_DEMAND);
-        demandAttributes = demand.build();
+        otherAttributes = ImmutableSet.of(
+                PHASE,
+                RECORDING_INTERVAL,
+                REPORTING_INTERVAL,
+                TEMPORARY_OUT_OF_SERVICE,
+                TOTAL_LUF_COUNT,
+                TOTAL_LUV_COUNT);
         
-        ImmutableSet.Builder<BuiltInAttribute> voltage = ImmutableSet.builder();
-        voltage.add(VOLTAGE);
-        voltage.add(VOLTAGE_PHASE_A);
-        voltage.add(VOLTAGE_PHASE_B);
-        voltage.add(VOLTAGE_PHASE_C);
-        voltage.add(MAXIMUM_VOLTAGE);
-        voltage.add(MINIMUM_VOLTAGE);
-        voltageAttributes = voltage.build();
+        demandAttributes = ImmutableSet.of(
+                DEMAND,
+                IED_DEMAND_RESET_COUNT,
+                PEAK_DEMAND,
+                TOU_RATE_A_PEAK_DEMAND,
+                TOU_RATE_B_PEAK_DEMAND,
+                TOU_RATE_C_PEAK_DEMAND,
+                TOU_RATE_D_PEAK_DEMAND);
         
-        ImmutableSet.Builder<BuiltInAttribute> current = ImmutableSet.builder();
-        current.add(CURRENT);
-        current.add(CURRENT_PHASE_A);
-        current.add(CURRENT_PHASE_B);
-        current.add(CURRENT_PHASE_C);
-        current.add(NEUTRAL_CURRENT);
-        currentAttributes = current.build();
+        voltageAttributes = ImmutableSet.of(
+                MAXIMUM_VOLTAGE,
+                MINIMUM_VOLTAGE,
+                VOLTAGE,
+                VOLTAGE_PHASE_A,
+                VOLTAGE_PHASE_B,
+                VOLTAGE_PHASE_C);
         
-        ImmutableSet.Builder<BuiltInAttribute> status = ImmutableSet.builder();
-        status.add(CONTROL_STATUS);
-        status.add(CONNECTION_STATUS);
-        status.add(CONTROL_POINT);
-        status.add(DISCONNECT_STATUS);
-        status.add(FAULT_STATUS);
-        status.add(GENERAL_ALARM_FLAG);
-        status.add(LM_GROUP_STATUS);
-        status.add(OUTAGE_STATUS);
-        status.add(POWER_FAIL_FLAG);
-        status.add(REVERSE_POWER_FLAG);
-        status.add(RF_DEMAND_RESET_STATUS);
-        status.add(SERVICE_STATUS);
-        status.add(TAMPER_FLAG);
-        status.add(ZERO_USAGE_FLAG);
-        status.add(ZIGBEE_LINK_STATUS);
-        status.add(CURRENT_WITHOUT_VOLTAGE_FLAG);
-        status.add(LOAD_SIDE_VOLTAGE_DETECTED_FLAG);
-        status.add(METER_BOX_COVER_REMOVAL_FLAG);
-        status.add(OUT_OF_VOLTAGE_FLAG);
-        status.add(VOLTAGE_OUT_OF_LIMITS_FLAG);
-        statusAttributes = status.build();
+        currentAttributes = ImmutableSet.of(
+                CURRENT,
+                CURRENT_PHASE_A,
+                CURRENT_PHASE_B,
+                CURRENT_PHASE_C,
+                NEUTRAL_CURRENT);
         
-        ImmutableSet.Builder<BuiltInAttribute> relay = ImmutableSet.builder();
-        relay.add(RELAY_1_LOAD_SIZE);
-        relay.add(RELAY_1_REMAINING_CONTROL);
-        relay.add(RELAY_1_RUN_TIME_DATA_LOG);
-        relay.add(RELAY_1_SHED_TIME_DATA_LOG);
-        relay.add(RELAY_2_LOAD_SIZE);
-        relay.add(RELAY_2_REMAINING_CONTROL);
-        relay.add(RELAY_2_RUN_TIME_DATA_LOG);
-        relay.add(RELAY_2_SHED_TIME_DATA_LOG);
-        relay.add(RELAY_3_LOAD_SIZE);
-        relay.add(RELAY_3_REMAINING_CONTROL);
-        relay.add(RELAY_3_RUN_TIME_DATA_LOG);
-        relay.add(RELAY_3_SHED_TIME_DATA_LOG);
-        relay.add(RELAY_4_REMAINING_CONTROL);
-        relay.add(RELAY_4_RUN_TIME_DATA_LOG);
-        relay.add(RELAY_4_SHED_TIME_DATA_LOG);
-        relayAttributes = relay.build();
+        statusAttributes = ImmutableSet.of(
+                CONNECTION_STATUS,
+                CONTROL_POINT,
+                CONTROL_STATUS,
+                CURRENT_WITHOUT_VOLTAGE_FLAG,
+                DISCONNECT_STATUS,
+                FAULT_STATUS,
+                GENERAL_ALARM_FLAG,
+                LM_GROUP_STATUS,
+                LOAD_SIDE_VOLTAGE_DETECTED_FLAG,
+                METER_BOX_COVER_REMOVAL_FLAG,
+                OUTAGE_STATUS,
+                OUT_OF_VOLTAGE_FLAG,
+                POWER_FAIL_FLAG,
+                REVERSE_POWER_FLAG,
+                RF_DEMAND_RESET_STATUS,
+                SERVICE_STATUS,
+                TAMPER_FLAG,
+                VOLTAGE_OUT_OF_LIMITS_FLAG,
+                ZERO_USAGE_FLAG,
+                ZIGBEE_LINK_STATUS);
         
+        relayAttributes = ImmutableSet.of(
+                RELAY_1_LOAD_SIZE,
+                RELAY_1_REMAINING_CONTROL,
+                RELAY_1_RUN_TIME_DATA_LOG,
+                RELAY_1_SHED_TIME_DATA_LOG,
+                RELAY_2_LOAD_SIZE,
+                RELAY_2_REMAINING_CONTROL,
+                RELAY_2_RUN_TIME_DATA_LOG,
+                RELAY_2_SHED_TIME_DATA_LOG,
+                RELAY_3_LOAD_SIZE,
+                RELAY_3_REMAINING_CONTROL,
+                RELAY_3_RUN_TIME_DATA_LOG,
+                RELAY_3_SHED_TIME_DATA_LOG,
+                RELAY_4_REMAINING_CONTROL,
+                RELAY_4_RUN_TIME_DATA_LOG,
+                RELAY_4_SHED_TIME_DATA_LOG);
         
-        // Group attributes in categories so they can be more easily displayed and
-        // found in the UI.  The attribute group map that is created can be used 
-        // in conjunction with the selectNameValue tag and groupItems="true".
+        // This map defines how attributes are grouped in drop downs and list selectors. 
+        // Used in conjunction with the selectNameValue or attributeSelector tag and groupItems="true".
         ImmutableMap.Builder<AttributeGroup, ImmutableSet<BuiltInAttribute>> groupedDataAttributesBuilder = ImmutableMap.builder();
         
-        groupedDataAttributesBuilder.put(AttributeGroup.PROFILE, profileAttributes);
-        groupedDataAttributesBuilder.put(AttributeGroup.USAGE, accumulatorAttributes);
         groupedDataAttributesBuilder.put(AttributeGroup.BLINK_AND_OUTAGE, blinkAndOutageCounts);
-        groupedDataAttributesBuilder.put(AttributeGroup.OTHER, otherAttributes);
-        groupedDataAttributesBuilder.put(AttributeGroup.DEMAND, demandAttributes);
-        groupedDataAttributesBuilder.put(AttributeGroup.VOLTAGE, voltageAttributes);
         groupedDataAttributesBuilder.put(AttributeGroup.CURRENT, currentAttributes);
-        groupedDataAttributesBuilder.put(AttributeGroup.STATUS, statusAttributes);
+        groupedDataAttributesBuilder.put(AttributeGroup.DEMAND, demandAttributes);
+        groupedDataAttributesBuilder.put(AttributeGroup.OTHER, otherAttributes);
+        groupedDataAttributesBuilder.put(AttributeGroup.PROFILE, profileAttributes);
+        groupedDataAttributesBuilder.put(AttributeGroup.REACTIVE, reactiveAttributes);
         groupedDataAttributesBuilder.put(AttributeGroup.RELAY, relayAttributes);
+        groupedDataAttributesBuilder.put(AttributeGroup.STATUS, statusAttributes);
+        groupedDataAttributesBuilder.put(AttributeGroup.USAGE, accumulatorAttributes);
+        groupedDataAttributesBuilder.put(AttributeGroup.VOLTAGE, voltageAttributes);
         
         groupedDataAttributes = groupedDataAttributesBuilder.build();
     }
@@ -395,163 +409,156 @@ public enum BuiltInAttribute implements Attribute {
      * indicates that some significant event has occurred on a device.
      */
     private static void buildRfnEventAttributeSets() {
+        
+        rfnEventStatusTypes = ImmutableSet.of(
+                CLOCK_ERROR,
+                CONFIGURATION_ERROR,
+                CRYSTAL_OSCILLATOR_ERROR,
+                CURRENT_LOSS,
+                DEMAND_OVERLOAD,
+                DEMAND_READS_AND_RESET,
+                DEMAND_THRESHOLD_EXCEEDED_WARNING,
+                DISPLAY_LOCKED_BY_WARNING,
+                EEPROM_ACCESS_ERROR,
+                ENCRYPTION_KEY_TABLE_CRC_ERROR,
+                END_OF_CALENDAR_WARNING,
+                ENERGY_ACCUMULATED_WHILE_IN_STANDBY_MODE,
+                IMPROPER_METER_ENGINE_OPERATION_WARNING,
+                INTERNAL_COMMUNICATION_ERROR,
+                INVALID_SERVICE,
+                LINE_FREQUENCY_WARNING,
+                LOAD_SIDE_VOLTAGE_IS_MISSING,
+                LOSS_OF_ALL_CURRENT,
+                LOSS_OF_PHASE_A_CURRENT,
+                LOSS_OF_PHASE_C_CURRENT,
+                LOW_BATTERY_WARNING,
+                LOW_LOSS_POTENTIAL,
+                MEASUREMENT_ERROR,
+                NON_VOLATILE_MEM_FAILURE,
+                OUTAGE_STATUS,                 //[PLC & RFN] Shared
+                OVER_VOLTAGE,
+                PASSWORD_TABLE_CRC_ERROR,
+                POTENTIAL_INDICATOR_WARNING,
+                POWER_FAIL_DATA_SAVE_ERROR,
+                POWER_FAIL_FLAG,             //[PLC & RFN] Shared
+                PQM_TEST_FAILURE_WARNING,
+                RAM_ERROR,
+                REVERSED_AGGREGATE,
+                REVERSED_PHASE_A,
+                REVERSED_PHASE_C,
+                REVERSE_POWER_FLAG,          //[PLC & RFN] Shared
+                ROM_ERROR,
+                SECURITY_CONFIGURATION_ERROR,
+                SELF_CHECK_ERROR,
+                SERVICE_CURRENT_TEST_FAILURE_WARNING,
+                SERVICE_DISCONNECT_SWITCH_ERROR,
+                SERVICE_DISCONNECT_SWITCH_OPEN,
+                SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR,
+                STUCK_SWITCH,
+                TABLE_CRC_ERROR,
+                TAMPER_FLAG,                 //[PLC & RFN] Shared
+                TIME_ADJUSTMENT,
+                UNCONFIGURED,
+                UNDER_VOLTAGE,
+                UNPROGRAMMED,
+                USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED,
+                VOLTAGE_ALERTS,
+                VOLTAGE_LOSS,
+                VOLTAGE_PHASE_A_OUT,
+                VOLTAGE_PHASE_B_OUT,
+                VOLTAGE_PHASE_C_OUT,
+                VOLTAGE_PHASE_ERROR,
+                WATT_HOUR_PULSE_FAILURE);
+        
+        rfnEventAnalogTypes = ImmutableSet.of(
+                OVER_VOLTAGE_MEASURED,
+                OVER_VOLTAGE_THRESHOLD,
+                RFN_BLINK_COUNT,
+                RFN_BLINK_RESTORE_COUNT,
+                RFN_OUTAGE_COUNT,
+                RFN_OUTAGE_RESTORE_COUNT,
+                UNDER_VOLTAGE_MEASURED,
+                UNDER_VOLTAGE_THRESHOLD);
+        
         Builder<BuiltInAttribute> builder = ImmutableSet.builder();
-        builder.add(CONFIGURATION_ERROR);
-        builder.add(CLOCK_ERROR);
-        builder.add(CRYSTAL_OSCILLATOR_ERROR);
-        builder.add(CURRENT_LOSS);
-        builder.add(DEMAND_OVERLOAD);
-        builder.add(DEMAND_READS_AND_RESET);
-        builder.add(DEMAND_THRESHOLD_EXCEEDED_WARNING);
-        builder.add(DISPLAY_LOCKED_BY_WARNING);
-        builder.add(EEPROM_ACCESS_ERROR);
-        builder.add(ENCRYPTION_KEY_TABLE_CRC_ERROR);
-        builder.add(END_OF_CALENDAR_WARNING);
-        builder.add(ENERGY_ACCUMULATED_WHILE_IN_STANDBY_MODE);
-        builder.add(IMPROPER_METER_ENGINE_OPERATION_WARNING);
-        builder.add(INTERNAL_COMMUNICATION_ERROR);
-        builder.add(INVALID_SERVICE);
-        builder.add(LINE_FREQUENCY_WARNING);
-        builder.add(LOAD_SIDE_VOLTAGE_IS_MISSING);
-        builder.add(LOSS_OF_ALL_CURRENT);
-        builder.add(LOSS_OF_PHASE_A_CURRENT);
-        builder.add(LOSS_OF_PHASE_C_CURRENT);
-        builder.add(LOW_BATTERY_WARNING);
-        builder.add(LOW_LOSS_POTENTIAL);
-        builder.add(MEASUREMENT_ERROR);
-        builder.add(NON_VOLATILE_MEM_FAILURE);
-        builder.add(OVER_VOLTAGE);
-        builder.add(PASSWORD_TABLE_CRC_ERROR);
-        builder.add(POTENTIAL_INDICATOR_WARNING);
-        builder.add(POWER_FAIL_DATA_SAVE_ERROR);
-        builder.add(POWER_FAIL_FLAG);             //[PLC & RFN] Shared
-        builder.add(PQM_TEST_FAILURE_WARNING);
-        builder.add(RAM_ERROR);
-        builder.add(REVERSE_POWER_FLAG);          //[PLC & RFN] Shared
-        builder.add(REVERSED_AGGREGATE);
-        builder.add(REVERSED_PHASE_A);
-        builder.add(REVERSED_PHASE_C);
-        builder.add(ROM_ERROR);
-        builder.add(SECURITY_CONFIGURATION_ERROR);
-        builder.add(SELF_CHECK_ERROR);
-        builder.add(SERVICE_CURRENT_TEST_FAILURE_WARNING);
-        builder.add(SERVICE_DISCONNECT_SWITCH_ERROR);
-        builder.add(SERVICE_DISCONNECT_SWITCH_OPEN);
-        builder.add(SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR);
-        builder.add(STUCK_SWITCH);
-        builder.add(TABLE_CRC_ERROR);
-        builder.add(TAMPER_FLAG);                 //[PLC & RFN] Shared
-        builder.add(TIME_ADJUSTMENT);
-        builder.add(UNCONFIGURED);
-        builder.add(UNDER_VOLTAGE);
-        builder.add(UNPROGRAMMED);
-        builder.add(USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED);
-        builder.add(VOLTAGE_ALERTS);
-        builder.add(VOLTAGE_LOSS);
-        builder.add(VOLTAGE_PHASE_A_OUT);
-        builder.add(VOLTAGE_PHASE_B_OUT);
-        builder.add(VOLTAGE_PHASE_C_OUT);
-        builder.add(VOLTAGE_PHASE_ERROR);
-        builder.add(WATT_HOUR_PULSE_FAILURE);
-        builder.add(OUTAGE_STATUS);                 //[PLC & RFN] Shared
-        rfnEventStatusTypes = builder.build();
-        
-        Builder<BuiltInAttribute> analogBuilder = ImmutableSet.builder();
-        analogBuilder.add(RFN_BLINK_COUNT);
-        analogBuilder.add(RFN_BLINK_RESTORE_COUNT);
-        analogBuilder.add(RFN_OUTAGE_COUNT);
-        analogBuilder.add(RFN_OUTAGE_RESTORE_COUNT);
-        analogBuilder.add(OVER_VOLTAGE_MEASURED);
-        analogBuilder.add(OVER_VOLTAGE_THRESHOLD);
-        analogBuilder.add(UNDER_VOLTAGE_MEASURED);
-        analogBuilder.add(UNDER_VOLTAGE_THRESHOLD);
-        rfnEventAnalogTypes = analogBuilder.build();
-        
+        builder.addAll(rfnEventStatusTypes);
         builder.addAll(rfnEventAnalogTypes);
         rfnEventTypes = builder.build();
         
-        ImmutableSet.Builder<BuiltInAttribute> hardware = ImmutableSet.builder();
-        hardware.add(CLOCK_ERROR);
-        hardware.add(CRYSTAL_OSCILLATOR_ERROR);
-        hardware.add(EEPROM_ACCESS_ERROR);
-        hardware.add(INTERNAL_COMMUNICATION_ERROR);
-        hardware.add(LOW_BATTERY_WARNING);
-        hardware.add(NON_VOLATILE_MEM_FAILURE);
-        hardware.add(OVER_VOLTAGE);
-        hardware.add(OVER_VOLTAGE_MEASURED);
-        hardware.add(OVER_VOLTAGE_THRESHOLD);
-        hardware.add(RAM_ERROR);
-        hardware.add(ROM_ERROR);
-        hardware.add(STUCK_SWITCH);
-        hardware.add(UNDER_VOLTAGE);
-        hardware.add(UNDER_VOLTAGE_MEASURED);
-        hardware.add(UNDER_VOLTAGE_THRESHOLD);
-        hardware.add(WATT_HOUR_PULSE_FAILURE);
-        rfnHardwareAttributes = hardware.build();
+        rfnHardwareAttributes = ImmutableSet.of(
+                CLOCK_ERROR,
+                CRYSTAL_OSCILLATOR_ERROR,
+                EEPROM_ACCESS_ERROR,
+                INTERNAL_COMMUNICATION_ERROR,
+                LOW_BATTERY_WARNING,
+                NON_VOLATILE_MEM_FAILURE,
+                OVER_VOLTAGE,
+                OVER_VOLTAGE_MEASURED,
+                OVER_VOLTAGE_THRESHOLD,
+                RAM_ERROR,
+                ROM_ERROR,
+                STUCK_SWITCH,
+                UNDER_VOLTAGE,
+                UNDER_VOLTAGE_MEASURED,
+                UNDER_VOLTAGE_THRESHOLD,
+                WATT_HOUR_PULSE_FAILURE);
         
-        ImmutableSet.Builder<BuiltInAttribute> software = ImmutableSet.builder();
-        software.add(CONFIGURATION_ERROR);
-        software.add(ENCRYPTION_KEY_TABLE_CRC_ERROR);
-        software.add(END_OF_CALENDAR_WARNING);
-        software.add(MEASUREMENT_ERROR);
-        software.add(PASSWORD_TABLE_CRC_ERROR);
-        software.add(POWER_FAIL_DATA_SAVE_ERROR);
-        software.add(SECURITY_CONFIGURATION_ERROR);
-        software.add(SELF_CHECK_ERROR);
-        software.add(TABLE_CRC_ERROR);
-        software.add(UNCONFIGURED);
-        software.add(UNPROGRAMMED);
-        software.add(USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED);
-        software.add(INVALID_SERVICE);
-        rfnSoftwareAttributes = software.build();
+        rfnSoftwareAttributes = ImmutableSet.of(
+                CONFIGURATION_ERROR,
+                ENCRYPTION_KEY_TABLE_CRC_ERROR,
+                END_OF_CALENDAR_WARNING,
+                INVALID_SERVICE,
+                MEASUREMENT_ERROR,
+                PASSWORD_TABLE_CRC_ERROR,
+                POWER_FAIL_DATA_SAVE_ERROR,
+                SECURITY_CONFIGURATION_ERROR,
+                SELF_CHECK_ERROR,
+                TABLE_CRC_ERROR,
+                UNCONFIGURED,
+                UNPROGRAMMED,
+                USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED);
         
-        ImmutableSet.Builder<BuiltInAttribute> voltage = ImmutableSet.builder();
-        voltage.add(VOLTAGE_ALERTS);
-        voltage.add(VOLTAGE_LOSS);
-        voltage.add(VOLTAGE_PHASE_A_OUT);
-        voltage.add(VOLTAGE_PHASE_B_OUT);
-        voltage.add(VOLTAGE_PHASE_C_OUT);
-        voltage.add(VOLTAGE_PHASE_ERROR);
-        voltage.add(LOAD_SIDE_VOLTAGE_IS_MISSING);
-        rfnVoltageAttributes = voltage.build();
+        rfnVoltageAttributes = ImmutableSet.of(
+                LOAD_SIDE_VOLTAGE_IS_MISSING,
+                VOLTAGE_ALERTS,
+                VOLTAGE_LOSS,
+                VOLTAGE_PHASE_A_OUT,
+                VOLTAGE_PHASE_B_OUT,
+                VOLTAGE_PHASE_C_OUT,
+                VOLTAGE_PHASE_ERROR);
         
-        ImmutableSet.Builder<BuiltInAttribute> current = ImmutableSet.builder();
-        current.add(CURRENT_LOSS);
-        current.add(LOSS_OF_ALL_CURRENT);
-        current.add(LOSS_OF_PHASE_A_CURRENT);
-        current.add(LOSS_OF_PHASE_C_CURRENT);
-        current.add(REVERSED_AGGREGATE);
-        current.add(REVERSED_PHASE_A);
-        current.add(REVERSED_PHASE_C);
-        rfnCurrentAttributes = current.build();
-
-        ImmutableSet.Builder<BuiltInAttribute> disconnect = ImmutableSet.builder();
-        disconnect.add(SERVICE_DISCONNECT_SWITCH_ERROR);
-        disconnect.add(SERVICE_DISCONNECT_SWITCH_OPEN);
-        disconnect.add(SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR);
-        rfnDisconnectAttributes = disconnect.build();
+        rfnCurrentAttributes = ImmutableSet.of(
+                CURRENT_LOSS,
+                LOSS_OF_ALL_CURRENT,
+                LOSS_OF_PHASE_A_CURRENT,
+                LOSS_OF_PHASE_C_CURRENT,
+                REVERSED_AGGREGATE,
+                REVERSED_PHASE_A,
+                REVERSED_PHASE_C);
         
-        ImmutableSet.Builder<BuiltInAttribute> demand = ImmutableSet.builder();
-        demand.add(DEMAND_OVERLOAD);
-        demand.add(DEMAND_READS_AND_RESET);
-        demand.add(DEMAND_THRESHOLD_EXCEEDED_WARNING);
-        rfnDemandAttributes = demand.build();
-                
-        ImmutableSet.Builder<BuiltInAttribute> other = ImmutableSet.builder();
-        other.add(DISPLAY_LOCKED_BY_WARNING);
-        other.add(ENERGY_ACCUMULATED_WHILE_IN_STANDBY_MODE);
-        other.add(IMPROPER_METER_ENGINE_OPERATION_WARNING);
-        other.add(LINE_FREQUENCY_WARNING);
-        other.add(LOW_LOSS_POTENTIAL);
-        other.add(POTENTIAL_INDICATOR_WARNING);
-        other.add(PQM_TEST_FAILURE_WARNING);
-        other.add(SERVICE_CURRENT_TEST_FAILURE_WARNING);
-        other.add(TIME_ADJUSTMENT);
-        rfnOtherAttributes = other.build();
+        rfnDisconnectAttributes = ImmutableSet.of(
+                SERVICE_DISCONNECT_SWITCH_ERROR,
+                SERVICE_DISCONNECT_SWITCH_OPEN,
+                SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR);
         
-        // Group attributes in categories so they can be more easily displayed and
-        // found in the UI.  The attribute group map that is created can be used 
-        // in conjunction with the selectNameValue tag and groupItems="true".
+        rfnDemandAttributes = ImmutableSet.of(
+                DEMAND_OVERLOAD,
+                DEMAND_READS_AND_RESET,
+                DEMAND_THRESHOLD_EXCEEDED_WARNING);
+        
+        rfnOtherAttributes = ImmutableSet.of(
+                DISPLAY_LOCKED_BY_WARNING,
+                ENERGY_ACCUMULATED_WHILE_IN_STANDBY_MODE,
+                IMPROPER_METER_ENGINE_OPERATION_WARNING,
+                LINE_FREQUENCY_WARNING,
+                LOW_LOSS_POTENTIAL,
+                POTENTIAL_INDICATOR_WARNING,
+                PQM_TEST_FAILURE_WARNING,
+                SERVICE_CURRENT_TEST_FAILURE_WARNING,
+                TIME_ADJUSTMENT);
+        
+        // This map defines how attributes are grouped in drop downs and list selectors. 
+        // Used in conjunction with the selectNameValue or attributeSelector tag and groupItems="true".
         ImmutableMap.Builder<AttributeGroup, ImmutableSet<BuiltInAttribute>> groupedRfnEventBuilder = ImmutableMap.builder();
 
         groupedRfnEventBuilder.put(AttributeGroup.RFN_HARDWARE_EVENT, rfnHardwareAttributes);
@@ -602,11 +609,12 @@ public enum BuiltInAttribute implements Attribute {
         allOtherAttributes.addAll(rfnOtherAttributes);
         allGroupedBuilder.put(AttributeGroup.OTHER, allOtherAttributes.build());
         
-        allGroupedBuilder.put(AttributeGroup.PROFILE, profileAttributes);
-        allGroupedBuilder.put(AttributeGroup.USAGE, accumulatorAttributes);
-        allGroupedBuilder.put(AttributeGroup.STATUS, statusAttributes);
-        allGroupedBuilder.put(AttributeGroup.RELAY, relayAttributes);
         allGroupedBuilder.put(AttributeGroup.BLINK_AND_OUTAGE, blinkAndOutageCounts);
+        allGroupedBuilder.put(AttributeGroup.PROFILE, profileAttributes);
+        allGroupedBuilder.put(AttributeGroup.REACTIVE, reactiveAttributes);
+        allGroupedBuilder.put(AttributeGroup.RELAY, relayAttributes);
+        allGroupedBuilder.put(AttributeGroup.STATUS, statusAttributes);
+        allGroupedBuilder.put(AttributeGroup.USAGE, accumulatorAttributes);
         
         allGroupedBuilder.put(AttributeGroup.RFN_HARDWARE_EVENT, rfnHardwareAttributes);
         allGroupedBuilder.put(AttributeGroup.RFN_SOFTWARE_EVENT, rfnSoftwareAttributes);
