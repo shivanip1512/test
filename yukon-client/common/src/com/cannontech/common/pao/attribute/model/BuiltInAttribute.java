@@ -347,15 +347,8 @@ public enum BuiltInAttribute implements Attribute {
         status.add(ZIGBEE_LINK_STATUS);
         status.add(CURRENT_WITHOUT_VOLTAGE_FLAG);
         status.add(LOAD_SIDE_VOLTAGE_DETECTED_FLAG);
-        status.add(OVER_VOLTAGE);
-        status.add(OVER_VOLTAGE_MEASURED);
-        status.add(OVER_VOLTAGE_THRESHOLD);
         status.add(OUT_OF_VOLTAGE_FLAG);
-        status.add(UNDER_VOLTAGE);
-        status.add(UNDER_VOLTAGE_MEASURED);
-        status.add(UNDER_VOLTAGE_THRESHOLD);
         status.add(VOLTAGE_OUT_OF_LIMITS_FLAG);
-        status.add(WATT_HOUR_PULSE_FAILURE);
         statusAttributes = status.build();
         
         ImmutableSet.Builder<BuiltInAttribute> relay = ImmutableSet.builder();
@@ -426,8 +419,6 @@ public enum BuiltInAttribute implements Attribute {
         builder.add(MEASUREMENT_ERROR);
         builder.add(NON_VOLATILE_MEM_FAILURE);
         builder.add(OVER_VOLTAGE);
-        builder.add(OVER_VOLTAGE_MEASURED);
-        builder.add(OVER_VOLTAGE_THRESHOLD);
         builder.add(PASSWORD_TABLE_CRC_ERROR);
         builder.add(POTENTIAL_INDICATOR_WARNING);
         builder.add(POWER_FAIL_DATA_SAVE_ERROR);
@@ -451,8 +442,6 @@ public enum BuiltInAttribute implements Attribute {
         builder.add(TIME_ADJUSTMENT);
         builder.add(UNCONFIGURED);
         builder.add(UNDER_VOLTAGE);
-        builder.add(UNDER_VOLTAGE_MEASURED);
-        builder.add(UNDER_VOLTAGE_THRESHOLD);
         builder.add(UNPROGRAMMED);
         builder.add(USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED);
         builder.add(VOLTAGE_ALERTS);
@@ -470,6 +459,10 @@ public enum BuiltInAttribute implements Attribute {
         analogBuilder.add(RFN_BLINK_RESTORE_COUNT);
         analogBuilder.add(RFN_OUTAGE_COUNT);
         analogBuilder.add(RFN_OUTAGE_RESTORE_COUNT);
+        analogBuilder.add(OVER_VOLTAGE_MEASURED);
+        analogBuilder.add(OVER_VOLTAGE_THRESHOLD);
+        analogBuilder.add(UNDER_VOLTAGE_MEASURED);
+        analogBuilder.add(UNDER_VOLTAGE_THRESHOLD);
         rfnEventAnalogTypes = analogBuilder.build();
         
         builder.addAll(rfnEventAnalogTypes);
@@ -482,9 +475,16 @@ public enum BuiltInAttribute implements Attribute {
         hardware.add(INTERNAL_COMMUNICATION_ERROR);
         hardware.add(LOW_BATTERY_WARNING);
         hardware.add(NON_VOLATILE_MEM_FAILURE);
+        hardware.add(OVER_VOLTAGE);
+        hardware.add(OVER_VOLTAGE_MEASURED);
+        hardware.add(OVER_VOLTAGE_THRESHOLD);
         hardware.add(RAM_ERROR);
         hardware.add(ROM_ERROR);
         hardware.add(STUCK_SWITCH);
+        hardware.add(UNDER_VOLTAGE);
+        hardware.add(UNDER_VOLTAGE_MEASURED);
+        hardware.add(UNDER_VOLTAGE_THRESHOLD);
+        hardware.add(WATT_HOUR_PULSE_FAILURE);
         rfnHardwareAttributes = hardware.build();
         
         ImmutableSet.Builder<BuiltInAttribute> software = ImmutableSet.builder();
