@@ -570,19 +570,32 @@ public class AttributeServiceImpl implements AttributeService {
         sql.append(")");
 
         final LiteStateGroup[] allStateGroups = stateDao.getAllStateGroups();
-        final List<LiteStateGroup> stateGroupList = Arrays.asList(allStateGroups);
-        final List<LiteStateGroup> results =
-            yukonJdbcTemplate.query(sql, new YukonRowMapper<LiteStateGroup>() {
-                @Override
-                public LiteStateGroup mapRow(YukonResultSet rs) throws SQLException {
-                    for (LiteStateGroup lsg : stateGroupList) {
-                        final int id = rs.getInt("stategroupid");
-                        if (lsg.getStateGroupID() == id)
-                            return lsg;
-                    }
-                    return null;
-                }
-            });
+//        final List<LiteStateGroup> stateGroupList = Arrays.asList(allStateGroups);
+//        final List<LiteStateGroup> results =
+//            yukonJdbcTemplate.query(sql, new YukonRowMapper<LiteStateGroup>() {
+//                @Override
+//                public LiteStateGroup mapRow(YukonResultSet rs) throws SQLException {
+//                    for (LiteStateGroup lsg : stateGroupList) {
+//                        final int id = rs.getInt("stategroupid");
+//                        if (lsg.getStateGroupID() == id)
+//                            return lsg;
+//                    }
+//                    return null;
+//                }
+//            });
+        final Map<Integer, LiteStateGroup> stateGroupsById = Maps.uniqueIndex(Arrays.asList(allStateGroups),
+                                                                              new Function<LiteStateGroup, Integer>() {
+            @Override
+            public Integer apply(LiteStateGroup stateGroup) {
+                return stateGroup.getStateGroupID();
+            }
+        });
+        List<LiteStateGroup> results = yukonJdbcTemplate.query(sql, new YukonRowMapper<LiteStateGroup>() {
+            @Override
+            public LiteStateGroup mapRow(YukonResultSet rs) throws SQLException {
+                return stateGroupsById.get(rs.getInt("stateGroupId"));
+            }
+        });
         return results;
     } // ENDS findListOfStateGroupsForDeviceGroupAndAttributeKey
 
@@ -601,14 +614,14 @@ public class AttributeServiceImpl implements AttributeService {
         for (PaoType type : typeToDevice.keySet()) {
             final AttributeDefinition attrDef   = paoDefinitionDao.getAttributeLookup(type, builtInAttribute);
             final YukonPao device               = typeToDevice.get(type);
-            try {
+//            try {
                 final PaoPointIdentifier ppi    = attrDef.getPointIdentifier(device); // throws ???
                 if (!pis.contains(ppi.getPointIdentifier()))
                     pis.add(ppi.getPointIdentifier());
-            } catch (Exception ee) {
-                log.warn("Failed finding Point for Attribute [" + builtInAttribute
-                         + "] for PaoType=[" + type + "] on Device=[" + device + "]", ee);
-            }
+//            } catch (Exception ee) {
+//                log.warn("Failed finding Point for Attribute [" + builtInAttribute
+//                         + "] for PaoType=[" + type + "] on Device=[" + device + "]", ee);
+//            }
         }
 
         return pis;

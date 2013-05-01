@@ -68,7 +68,7 @@ public class PaoDefinitionServiceImplTest {
         pointService = new PointServiceImpl();
         pointCreationService = new PointCreationServiceImpl();
         // Create the point service for testing
-        pointService.setPointDao(pointDao);
+        pointService.pointDao = pointDao;
         pointCreationService.setNextValueHelper(new NextValueHelper() {
             @Override
             public int getNextValue(String tableName) {

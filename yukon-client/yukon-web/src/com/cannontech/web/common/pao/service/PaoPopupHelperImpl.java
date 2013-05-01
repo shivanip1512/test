@@ -20,10 +20,8 @@ public class PaoPopupHelperImpl implements PaoPopupHelper {
 
     private final static int MAX_DEVICES_DISPLAYED = 1000;
 
-    @Autowired
-    private PaoLoadingService paoLoadingService;
-    @Autowired
-    private YukonUserContextMessageSourceResolver resolver;
+    @Autowired  private PaoLoadingService paoLoadingService;
+    @Autowired  private YukonUserContextMessageSourceResolver resolver;
 
     @Override
     public void buildPopupModel(DeviceCollection collection, ModelMap model,

@@ -22,7 +22,7 @@ public class PointServiceImplTest extends TestCase {
     protected void setUp() throws Exception {
 
         PointServiceImpl impl = new PointServiceImpl();
-        impl.setPointDao(new MockPointDao());
+        impl.pointDao = new MockPointDao();
 
         service = impl;
 

@@ -1,6 +1,5 @@
 package com.cannontech.common.pao.service.impl;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -28,7 +27,6 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
-import com.cannontech.core.dao.impl.PointDaoImpl;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -43,19 +41,13 @@ import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
  * Implementation class for PointService
  */
 public class PointServiceImpl implements PointService {
-    private static final String litePointSql = 
-    		"SELECT DISTINCT P.POINTID, POINTNAME, POINTTYPE, P.PAOBJECTID, POINTOFFSET, STATEGROUPID, UM.FORMULA, UM.UOMID"
-            + " FROM "
-            + "( POINT P LEFT OUTER JOIN POINTUNIT PU ON P.POINTID = PU.POINTID "
-            + "LEFT OUTER JOIN UNITMEASURE UM ON PU.UOMID = UM.UOMID ) ";
 
-    private PointDao pointDao = null;
-    private RawPointHistoryDao rphDao = null;
-    private AttributeService attributeService;
-    private DeviceGroupService deviceGroupService;
-    private YukonJdbcTemplate yukonJdbcTemplate;
-
-    @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
+    @Autowired private AttributeService                 attributeService;
+    @Autowired private DeviceGroupService               deviceGroupService;
+    @Autowired public  PointDao                         pointDao;
+    @Autowired private RawPointHistoryDao               rphDao;
+    @Autowired private VendorSpecificSqlBuilderFactory  vendorSpecificSqlBuilderFactory;
+    @Autowired private YukonJdbcTemplate                yukonJdbcTemplate;
 
     @Override
     public LitePoint getPointForPao(YukonPao pao, PointIdentifier pointIdentifier) throws NotFoundException {
@@ -170,7 +162,7 @@ public class PointServiceImpl implements PointService {
     public List<Integer> getPaoIdsForGroupAttributeStateGroup(
             DeviceGroup group, Attribute attribute, LiteStateGroup stateGroup) {
         if (stateGroup == null)
-            return new ArrayList<Integer>();
+            return Collections.emptyList();
         return getPaoIdsForGroupAttributeStateGroupId(group, attribute,
                 stateGroup.getStateGroupID());
     }
@@ -186,48 +178,20 @@ public class PointServiceImpl implements PointService {
     public List<Integer> getPaoIdsForGroupAttributeStateGroupId(
             DeviceGroup group, Attribute attribute, Integer stateGroupId) {
         if (stateGroupId == null)
-            return new ArrayList<Integer>();
-        final SqlStatementBuilder sql = new SqlStatementBuilder();
+            return Collections.emptyList();
+        final SqlStatementBuilder   sql         = new SqlStatementBuilder();
+        final SqlFragmentSource     lookupSql   = attributeService.getAttributeLookupSql(attribute);
         sql.append("select pao_point_lookup.paObjectid");
-        final SqlFragmentSource lookupSql = attributeService
-                .getAttributeLookupSql(attribute);
-        sql.append("from (").appendFragment(lookupSql)
-                .append(") pao_point_lookup");
+        sql.append("from (").appendFragment(lookupSql).append(") pao_point_lookup");
         sql.append("join Point p on p.pointId = pao_point_lookup.pointId");
         sql.append("where");
         sql.append("p.stateGroupId").eq_k(stateGroupId);
         final SqlFragmentSource groupSqlWhereClause = deviceGroupService
-                .getDeviceGroupSqlWhereClause(Collections.singleton(group),
-                        "pao_point_lookup.paObjectId");
+                .getDeviceGroupSqlWhereClause(Collections.singleton(group), "pao_point_lookup.paObjectId");
         sql.append("and").appendFragment(groupSqlWhereClause);
         final List<Integer> results = yukonJdbcTemplate.query(sql,
                 RowMapper.INTEGER);
         return results;
-    }
-
-    @Autowired
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
-    
-    @Autowired
-    public void setRphDao(RawPointHistoryDao rphDao) {
-        this.rphDao = rphDao;
-    }
-    
-    @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-    
-    @Autowired
-    public void setJdbcTemplate(YukonJdbcTemplate jdbcTemplate) {
-        this.yukonJdbcTemplate = jdbcTemplate;
-    }
-    
-    @Autowired
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
     }
 
     @Override
@@ -249,15 +213,14 @@ public class PointServiceImpl implements PointService {
     @Override
     public int countDevicesInGroupWithAttributePoint(DeviceGroup group, Attribute attribute) {
         final SqlStatementBuilder   sql       = new SqlStatementBuilder();
-        sql.append("select count(*)");
         final SqlFragmentSource     lookupSql = attributeService
                 .getAttributeLookupSql(attribute);
+        sql.append("select count(*)");
         sql.append("from (").appendFragment(lookupSql).append(") pao_point_lookup");
         sql.append("join Point p on p.pointId = pao_point_lookup.pointId");
         sql.append("where");
         final SqlFragmentSource groupSqlWhereClause = deviceGroupService
-                .getDeviceGroupSqlWhereClause(Collections.singleton(group),
-                        "pao_point_lookup.paObjectId");
+                .getDeviceGroupSqlWhereClause(Collections.singleton(group), "pao_point_lookup.paObjectId");
         sql.appendFragment(groupSqlWhereClause);
 
         int result = yukonJdbcTemplate.queryForInt(sql);
@@ -271,17 +234,16 @@ public class PointServiceImpl implements PointService {
     @Override
     public int countDevicesInGroupWithAttributePoint(DeviceGroup group,
             Attribute attribute, int limitToRowCount) {
-        final VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
-        final SqlBuilder sqla = builder.buildFor(DatabaseVendor.MS2000);
+        final VendorSpecificSqlBuilder  builder = vendorSpecificSqlBuilderFactory.create();
+        final SqlBuilder                sqla    = builder.buildFor(DatabaseVendor.MS2000);
         sqla.append("select count(*)");
-        final SqlFragmentSource lookupSql = attributeService
-                .getAttributeLookupSqlLimit(attribute, limitToRowCount);
+        final SqlFragmentSource         lookupSql = 
+                attributeService.getAttributeLookupSqlLimit(attribute, limitToRowCount);
         sqla.append("from (").appendFragment(lookupSql).append(") pao_point_lookup");
         sqla.append("join Point p on p.pointId = pao_point_lookup.pointId");
         sqla.append("where");
         final SqlFragmentSource groupSqlWhereClause = deviceGroupService
-                .getDeviceGroupSqlWhereClause(Collections.singleton(group),
-                        "pao_point_lookup.paObjectId");
+                .getDeviceGroupSqlWhereClause(Collections.singleton(group),"pao_point_lookup.paObjectId");
         sqla.appendFragment(groupSqlWhereClause);
 
         final SqlBuilder sqlb = builder.buildOther();
@@ -308,8 +270,7 @@ public class PointServiceImpl implements PointService {
         sql.append("join Point p on p.pointId = pao_point_lookup.pointId");
         sql.append("where");
         final SqlFragmentSource     groupSqlWhereClause = deviceGroupService
-                .getDeviceGroupSqlWhereClause(Collections.singleton(group),
-                        "pao_point_lookup.paObjectId");
+                .getDeviceGroupSqlWhereClause(Collections.singleton(group), "pao_point_lookup.paObjectId");
         sql.appendFragment(groupSqlWhereClause);
 
         return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
