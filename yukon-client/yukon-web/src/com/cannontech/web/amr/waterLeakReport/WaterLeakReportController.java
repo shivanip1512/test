@@ -231,7 +231,9 @@ public class WaterLeakReportController {
     
     @RequestMapping(method = RequestMethod.GET)
     public String schedule(@ModelAttribute("fileExportData") ScheduledFileExportData scheduledFileExportData,
-    		BindingResult bindingResult, Integer hoursPrevious, Double threshold, 
+    		BindingResult bindingResult, 
+    		@RequestParam(defaultValue="25") Integer hoursPrevious, 
+    		@RequestParam(defaultValue="0.0") Double threshold, 
     		@RequestParam(defaultValue="false") Boolean includeDisabledPaos,
     		String collectionType, Integer jobId, YukonUserContext userContext, HttpServletRequest request, 
     		ModelMap model, FlashScope flashScope) throws ServletRequestBindingException, ParseException {

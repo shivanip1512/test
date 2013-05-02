@@ -150,12 +150,12 @@ public class MeterEventsReportController {
                 }
             };
     
-    @RequestMapping
+    @RequestMapping("selectDevices")
     public String selectDevices(YukonUserContext userContext, ModelMap model) {
         return "meterEventsReport/selectDevices.jsp";
     }
     
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping("selected")
     public String selected(HttpServletRequest request, YukonUserContext userContext, ModelMap model)
     throws ServletRequestBindingException, DeviceCollectionCreationException {
         
