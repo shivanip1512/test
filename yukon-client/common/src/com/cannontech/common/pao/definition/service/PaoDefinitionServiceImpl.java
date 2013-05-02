@@ -283,17 +283,15 @@ public class PaoDefinitionServiceImpl implements PaoDefinitionService {
     public  List<PaoType> findListOfPaoTypesInGroup(DeviceGroup group, Collection<PaoType> possiblePaoTypes) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select distinct(type) from YukonPAObject ypo");
-        sql.append("where type").in(possiblePaoTypes);
+        sql.append("SELECT DISTINCT(type) FROM YukonPAObject ypo");
+        sql.append("WHERE type").in(possiblePaoTypes);
         SqlFragmentSource groupSqlWhereClause =
-            deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group),
-                                                            "YPO.paObjectId");
+            deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "YPO.paObjectId");
         sql.append("AND").appendFragment(groupSqlWhereClause);
-        List<PaoType> paoTypes  = yukonJdbcTemplate.query(sql, new YukonRowMapper<PaoType>() {
+        List<PaoType> paoTypes = yukonJdbcTemplate.query(sql, new YukonRowMapper<PaoType>() {
             @Override
             public PaoType mapRow(YukonResultSet rs) throws SQLException {
-                PaoType type = PaoType.getForDbString(rs.getString("type"));
-                return type;
+                return PaoType.getForDbString(rs.getString("type"));
         }});
         return paoTypes;
     }

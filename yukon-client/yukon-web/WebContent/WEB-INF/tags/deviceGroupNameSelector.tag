@@ -68,14 +68,14 @@
 
 <%-- NO GROUP SELECTED TEXT --%>
 <c:if test="${empty pageScope.fieldValue}">
-    <span id="noGroupSelectedText_${uniqueId}" href="javascript:void(0);"
-		class="fl simpleLink leftOfImageLabel chooseGroupIcon_${uniqueId}">
-		<span class="noSelectionPickerLabel">${noGroupSelectedText}</span>
-    </span>
+    <a id="noGroupSelectedText_${uniqueId}" href="javascript:void(0);"
+        class="fl simpleLink leftOfImageLabel chooseGroupIcon_${uniqueId}">
+        <span class="noSelectionPickerLabel empty-list">${noGroupSelectedText}</span>
+    </a>
+    <c:set var="linkCssClass" value=" dn"/>
 </c:if>
 
 <c:choose>
-
 	<%-- PLAIN GROUP NAME --%>
 	<c:when test="${not pageScope.linkGroupName}">
         <a id="deviceGroupName_${uniqueId}" href="javascript:void(0);"
@@ -86,7 +86,7 @@
 	<%-- LINKED GROUP NAME --%>
 	<c:otherwise>
 		<a id="deviceGroupName_${uniqueId}" href="javascript:void(0);" 
-            class="deviceGroupLink_${uniqueId} fl leftOfImageLabel">${pageScope.fieldValue}&nbsp;</a>
+            class="deviceGroupLink_${uniqueId} fl leftOfImageLabel${linkCssClass}">${pageScope.fieldValue}&nbsp;</a>
 	</c:otherwise>
 </c:choose>
 <%-- EDIT FOLDER --%>

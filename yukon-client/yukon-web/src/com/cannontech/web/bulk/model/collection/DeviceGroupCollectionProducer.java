@@ -39,11 +39,11 @@ public class DeviceGroupCollectionProducer implements DeviceCollectionProducer  
     public DeviceCollection createDeviceCollection(HttpServletRequest request)
             throws ServletRequestBindingException {
 
-        final String groupParameterName         = getSupportedType().getParameterName("name");
-        final String groupName                  = ServletRequestUtils.getStringParameter(request, groupParameterName);
-        final String descriptionParameterName   = getSupportedType().getParameterName("description");
-        final String description                = ServletRequestUtils.getStringParameter(request, descriptionParameterName);
-        final DeviceGroup group                 = deviceGroupService.resolveGroupName(groupName);
+        final String groupParameterName = getSupportedType().getParameterName("name");
+        final String groupName = ServletRequestUtils.getStringParameter(request, groupParameterName);
+        final String descriptionParameterName = getSupportedType().getParameterName("description");
+        final String description = ServletRequestUtils.getStringParameter(request, descriptionParameterName);
+        final DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
 
         return deviceGroupCollectionHelper.buildDeviceCollection(group, description);
     }

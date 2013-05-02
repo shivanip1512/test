@@ -82,19 +82,19 @@ public interface PointService {
      * 
      * @param group
      * @param attribute
-     * @param limitToRowCount
-     *            int Use this as this query's execution time can grow
-     *            considerably depending on the size of the Device Group and all
-     *            their attributes.
+     * @param limitToRowCount   int     Use this as this query's execution time can grow considerably
+     *                                  depending on the size of the Device Group and all their attributes.
      * @return
      */
     public int countDevicesInGroupWithAttributePoint(DeviceGroup group, Attribute attribute);
     public int countDevicesInGroupWithAttributePoint(DeviceGroup group, Attribute attribute, int limitToRowCount);
 
     /**
+     * Out of the given Device Group, this returns only IDs which have both the given attribute and 
+     * the respective point for the attribute.
      * 
-     * @param group
-     * @param attribute
+     * @param group         DeviceGroup
+     * @param attribute     Attribute
      * @return
      */
     public List<Integer> findDeviceIdsInGroupWithAttributePoint(DeviceGroup group, Attribute attribute);

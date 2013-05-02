@@ -89,7 +89,7 @@ public class DeviceMemoryCollectionProducer implements DeviceCollectionProducer 
     }
 
 	public DeviceCollection createDeviceCollection(List<Integer> idList) {
-		final String key = UUID.randomUUID().toString();
+        final String key = UUID.randomUUID().toString();
         final List<SimpleDevice> devices = deviceDao.getYukonDeviceObjectByIds(idList);
 
         ListBasedDeviceCollection value = new ListBasedDeviceCollection() {

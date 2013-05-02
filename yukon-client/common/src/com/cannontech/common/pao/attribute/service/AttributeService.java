@@ -226,5 +226,13 @@ public interface AttributeService {
     public PaoTypePointIdentifier getPaoTypePointIdentifierForAttribute(PaoType type, Attribute attribute)
     throws IllegalUseOfAttribute;
 
+    /**
+     * A Device Group may contain devices with many varieties of device types,
+     * so that even for a unique Attribute it is possible to have multiple State Groups.
+     * 
+     * @param groupName         String      Must be findable in the database, eg. "/Group1 Meters"
+     * @param attributeKey      String      Should be exactly from the java constant, eg. BuiltInAttribute.USAGE.getKey()
+     * @return                  List<LiteStateGroup>
+     */
     public List<LiteStateGroup> findListOfStateGroupsForDeviceGroupAndAttributeKey(String groupName, String attributeKey);
 }

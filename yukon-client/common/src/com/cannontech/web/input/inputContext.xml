@@ -25,5 +25,6 @@
  <bean id="commandRequestExecutionTypeType" class="com.cannontech.web.input.type.CommandRequestExecutionTypeType" />
  
  <bean class="com.cannontech.web.input.DatePropertyEditorFactory"/>
+ <bean class="com.cannontech.web.input.StateIdPairingPropertyEditor"/>
  
  </beans>
