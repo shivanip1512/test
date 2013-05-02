@@ -1,12 +1,13 @@
 package com.cannontech.common.scheduledFileExport.dao.impl;
 
-import java.util.List;
+import javax.annotation.PostConstruct;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.scheduledFileExport.dao.ScheduledFileExportDao;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.RawPointHistoryDao;
@@ -17,6 +18,14 @@ import com.cannontech.database.YukonJdbcTemplate;
 public class ScheduledFileExportDaoImpl implements ScheduledFileExportDao {
 	@Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 	@Autowired private RawPointHistoryDao rawPointHistoryDao;
+	@Autowired private ConfigurationSource configurationSource;
+	
+	private int initDays;
+	
+	@PostConstruct
+	public void init() {
+		initDays = configurationSource.getInteger("SINCE_LAST_RUN_INIT_DAYS", 7);
+	}
 	
 	@Override
 	public void setRphIdForJob(int jobId, long rphId) {
@@ -69,27 +78,24 @@ public class ScheduledFileExportDaoImpl implements ScheduledFileExportDao {
 		try {
 			result = yukonJdbcTemplate.queryForLong(sql);
 		} catch(DataAccessException e) {
-			result = getRphIdUpToSevenDaysPrevious();
+			result = getOldestRphIdInDaysPrevious();
 		}
 		return result;
 	}
 	
-	private long getRphIdUpToSevenDaysPrevious() {
-		Instant sevenDaysAgo = Instant.now().minus(Duration.standardDays(7));
+	private long getOldestRphIdInDaysPrevious() {
+		Instant xDaysAgo = Instant.now().minus(Duration.standardDays(initDays));
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT ChangeId");
+		sql.append("SELECT MIN(ChangeId)");
 		sql.append("FROM RawPointHistory");
-		sql.append("WHERE Timestamp").gte(sevenDaysAgo);
-		sql.append("ORDER BY Timestamp ASC");
+		sql.append("WHERE Timestamp").gte(xDaysAgo);
 		
-		List<Long> changeId = yukonJdbcTemplate.queryForLimitedResults(sql, RowMapper.LONG, 1);
-		if(changeId.size() > 0) {
-			//Return oldest changeId in the past 7 days
-			return changeId.get(0);
-		} else {
-			//No changeIds from the past 7 days. Just return the most recent one.
+		long changeId = yukonJdbcTemplate.queryForLong(sql);
+		if(changeId == 0) {
+			//No changeIds from the past X days. Just return the most recent one.
 			return rawPointHistoryDao.getMaxChangeId();
 		}
+		return changeId;
 	}
 }
