@@ -235,6 +235,18 @@ WHERE (PROP.KeyName = 'allow_member_programs'
    AND ROLE.Value NOT IN ('true', 'false', ' ');
 /* End YUK-11959 */
 
+/* Start YUK-12153 */
+DELETE FROM Job
+WHERE JobId NOT IN (SELECT JobId 
+                    FROM JobProperty 
+                    WHERE Name = 'defaultYukonExternalUrl')
+  AND BeanName IN 
+    ('scheduledBillingFileExportJobDefinition', 
+     'scheduledArchivedDataFileExportJobDefinition',
+     'scheduledWaterLeakFileExportJobDefinition',
+     'scheduledMeterEventsFileExportJobDefinition');
+/* End YUK-12153 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
