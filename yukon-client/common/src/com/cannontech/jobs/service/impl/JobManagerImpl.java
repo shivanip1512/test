@@ -405,7 +405,7 @@ public class JobManagerImpl implements JobManager {
             //If the next run time has already passed, check for the one after that,
             //and so on, until we catch back up to the present.
             Date nextValidTimeAfter = cronExpression.getNextValidTimeAfter(from);
-            while(nextValidTimeAfter.before(new Date())) {
+            while(nextValidTimeAfter != null && nextValidTimeAfter.before(new Date())) {
             	from = nextValidTimeAfter;
             	nextValidTimeAfter = cronExpression.getNextValidTimeAfter(from);
             }
