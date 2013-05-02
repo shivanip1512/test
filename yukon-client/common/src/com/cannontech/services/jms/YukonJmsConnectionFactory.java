@@ -26,11 +26,13 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
 
     @Override
     public ConnectionFactory getObject() throws Exception {
+        String serverListenConnection =
+                configurationSource.getString("JMS_SERVER_BROKER_LISTEN_CONNECTION", "tcp://localhost:61616");
         ConnectionFactory delegate;
 
         if (connectionType == ConnectionType.REMOTE_SERVICES) {
             String clientConnection = configurationSource.getString("JMS_REMOTE_SERVICES_CONNECTION",
-                "tcp://localhost:61616");
+                serverListenConnection);
             // Create a ConnectionFactory
             ConnectionFactory factory = new ActiveMQConnectionFactory(clientConnection);
 
@@ -43,8 +45,6 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
             final String applicationName = BootstrapUtils.getApplicationName();
 
             if (applicationName.equals("ServiceManager")) {
-                String serverListenConnection =
-                        configurationSource.getString("JMS_SERVER_BROKER_LISTEN_CONNECTION", "tcp://localhost:61616");
                 ServerEmbeddedBroker serverEmbeddedBroker =
                         new ServerEmbeddedBroker(applicationName, serverListenConnection);
                 serverEmbeddedBroker.start();
@@ -52,7 +52,7 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
                 log.debug("created ServiceManager ConnectionFactory at " + serverListenConnection);
             } else if (!CtiUtilities.isRunningAsClient()) {
                 String clientBrokerConnection = configurationSource.getString("JMS_CLIENT_BROKER_CONNECTION",
-                    "tcp://localhost:61616");
+                    serverListenConnection);
                 ClientEmbeddedBroker clientEmbeddedBroker =
                         new ClientEmbeddedBroker(applicationName, clientBrokerConnection);
                 clientEmbeddedBroker.start();
@@ -60,7 +60,7 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
                 log.debug("created Server ConnectionFactory at " + clientBrokerConnection);
             } else {
                 String clientConnection =
-                        configurationSource.getString("JMS_CLIENT_CONNECTION", "tcp://localhost:61616");
+                        configurationSource.getString("JMS_CLIENT_CONNECTION", serverListenConnection);
                 // Create a ConnectionFactory
                 ConnectionFactory factory = new ActiveMQConnectionFactory(clientConnection);
 
