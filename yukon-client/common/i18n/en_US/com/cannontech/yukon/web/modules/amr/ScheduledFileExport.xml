@@ -26,7 +26,7 @@
     <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.tableTitle.BILLING.title">Billing Schedules</entry>
     <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.tableTitle.ARCHIVED_DATA_EXPORT.title">Scheduled Archived Data Exports</entry>
     <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.tableTitle.WATER_LEAK.title">Scheduled Exports</entry>
-    <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.tableTitle.METER_EVENT.title">Scheduled Exports</entry>
+    <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.tableTitle.METER_EVENTS.title">Scheduled Exports</entry>
     <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.nameHeader">Name</entry>
     <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.scheduleHeader">Schedule</entry>
     <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.nextRunHeader">Next Run</entry>

@@ -495,6 +495,7 @@
     <entry key="yukon.web.modules.support.fileExportHistory.types.ARCHIVED_DATA_EXPORT">Archived Data Export</entry>
     <entry key="yukon.web.modules.support.fileExportHistory.types.WATER_LEAK">Water Leak Report</entry>
     <entry key="yukon.web.modules.support.fileExportHistory.types.METER_EVENTS">Meter Events Report</entry>
+    <entry key="yukon.web.modules.support.fileExportHistory.types.scheduleAppender">Schedule:</entry>
     
     <!-- routeUsage.jsp -->
     <entry key="yukon.web.modules.support.routeUsage.pageName">Route Usage</entry>

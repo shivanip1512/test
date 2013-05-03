@@ -36,6 +36,7 @@ import com.cannontech.tools.email.EmailException;
 import com.cannontech.tools.email.EmailMessageHolder;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.service.PasswordResetService;
 import com.google.common.base.Function;
 import com.google.common.cache.Cache;
@@ -105,22 +106,12 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     public String getPasswordResetUrl(String username, HttpServletRequest request) {
         LiteYukonUser user = yukonUserDao.findUserByUsername(username);
         String passwordResetKey = getPasswordKey(user);
-
-        StringBuilder url = new StringBuilder();
-        url.append(request.getScheme()+"://");
         
-        // Get the external base url.
-        StringBuilder defaultYukonExternalUrl = new StringBuilder();
-        defaultYukonExternalUrl.append(request.getServerName());
-        // We don't need to added 80 as a port since it is used by default
-        if (request.getServerPort() != 80) {
-            defaultYukonExternalUrl.append(":"+request.getServerPort());
-        }
+        String defaultYukonExternalUrl = ServletUtil.getDefaultYukonExternalUrl(request);
         String baseurl = configurationSource.getString(MasterConfigStringKeysEnum.YUKON_EXTERNAL_URL, defaultYukonExternalUrl.toString());
-        url.append(baseurl);
-        url.append("/login/changePassword?k="+passwordResetKey);
+        baseurl += "/login/changePassword?k=" + passwordResetKey;
         
-        return url.toString();
+        return baseurl;
     }
 
     @Override

@@ -46,6 +46,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -284,7 +285,7 @@ public class WaterLeakReportController {
     @RequestMapping
     public String jobs(ModelMap model, @RequestParam(defaultValue="25") int itemsPerPage, @RequestParam(defaultValue="1") int page) {
 		
-		scheduledFileExportJobsTagService.populateModel(model, ScheduledExportType.WATER_LEAK, page, itemsPerPage);
+		scheduledFileExportJobsTagService.populateModel(model, FileExportType.WATER_LEAK, ScheduledExportType.WATER_LEAK, page, itemsPerPage);
 		return "waterLeakReport/jobs.jsp";
 	}
     

@@ -47,6 +47,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
+import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -279,7 +280,7 @@ public class MeterEventsReportController {
     @RequestMapping
     public String jobs(ModelMap model, @RequestParam(defaultValue="25") int itemsPerPage, @RequestParam(defaultValue="1") int page) {
 		
-		scheduledFileExportJobsTagService.populateModel(model, ScheduledExportType.METER_EVENT, page, itemsPerPage);
+		scheduledFileExportJobsTagService.populateModel(model, FileExportType.METER_EVENTS, ScheduledExportType.METER_EVENT, page, itemsPerPage);
 		return "meterEventsReport/jobs.jsp";
 	}
     
@@ -404,6 +405,11 @@ public class MeterEventsReportController {
         backingBean.setMeterEventTypesMap(tempMap);
     }
     
+    /*
+     * Returns a map whose keys are meter events attributes, and whose values are booleans. An
+     * attribute exists in the map if it's applicable to the devices in the device group, and the
+     * attribute is mapped to "true" if it is present in the attrNames String.
+     */
     private Map<BuiltInAttribute, Boolean> getEventMap(String attrNames, DeviceCollection deviceCollection, 
     		YukonUserContext userContext) {
     	

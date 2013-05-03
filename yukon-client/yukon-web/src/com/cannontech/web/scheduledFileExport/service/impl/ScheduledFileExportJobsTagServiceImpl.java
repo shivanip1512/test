@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 
+import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
@@ -18,10 +19,10 @@ public class ScheduledFileExportJobsTagServiceImpl implements ScheduledFileExpor
 	@Autowired private ScheduledFileExportService scheduledFileExportService;
 	
 	@Override
-	public void populateModel(ModelMap model, ScheduledExportType type, int page, int itemsPerPage) {
-		model.addAttribute("jobType", type);
+	public void populateModel(ModelMap model, FileExportType fileType, ScheduledExportType scheduleType, int page, int itemsPerPage) {
+		model.addAttribute("jobType", fileType);
 		
-		List<ScheduledRepeatingJob> exportJobs = scheduledFileExportService.getJobsByType(type);
+		List<ScheduledRepeatingJob> exportJobs = scheduledFileExportService.getJobsByType(scheduleType);
 		List<ScheduledFileExportJobData> jobDataObjects = Lists.newArrayListWithCapacity(exportJobs.size());
 		
 		int startIndex = (page -1) * itemsPerPage;

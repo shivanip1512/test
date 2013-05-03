@@ -58,6 +58,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationExce
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
@@ -129,14 +130,16 @@ public class ArchivedValuesExporterController {
     @Autowired private ScheduledFileExportValidator scheduledFileExportValidator;
     @Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
     
-    private static Integer DEFAULT_PAGES = 1;
-    private static Integer DEFAULT_ITEMS_PER_PAGE = 25;
+    private static final Integer DEFAULT_PAGES = 1;
+    private static final String DEFAULT_PAGES_STRING = "1";
+    private static final Integer DEFAULT_ITEMS_PER_PAGE = 25;
+    private static final String DEFAULT_ITEMS_PER_PAGE_STRING = "25";
     
     @RequestMapping
     public String view(ModelMap model, HttpServletRequest request, YukonUserContext userContext, 
                        @ModelAttribute ArchivedValuesExporter archivedValuesExporter, 
-                       @RequestParam(defaultValue="25") int itemsPerPage, 
-                       @RequestParam(defaultValue="1") int page) 
+                       @RequestParam(defaultValue=DEFAULT_ITEMS_PER_PAGE_STRING) int itemsPerPage, 
+                       @RequestParam(defaultValue=DEFAULT_PAGES_STRING) int page) 
                        throws ServletRequestBindingException, DeviceCollectionCreationException {
         
         List<ExportFormat> allFormats = archiveValuesExportFormatDao.getAllFormats();
@@ -170,7 +173,7 @@ public class ArchivedValuesExporterController {
         }
         
         //Jobs List Prep
-        scheduledFileExportJobsTagService.populateModel(model, ScheduledExportType.ARCHIVED_DATA_EXPORT, page, itemsPerPage);
+        scheduledFileExportJobsTagService.populateModel(model, FileExportType.ARCHIVED_DATA_EXPORT, ScheduledExportType.ARCHIVED_DATA_EXPORT, page, itemsPerPage);
         
         return "archivedValuesExporter/archiveDataExporterHome.jsp";
     }

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -57,14 +56,8 @@ public class ScheduledBillingFileExportTask extends ScheduledFileExportTask {
 		//Add File Export History entry
 		ExportHistoryEntry historyEntry = addFileToExportHistory(FileExportType.BILLING, exportFile);
 		
-		if(historyEntry == null) {
-			log.error("Attempted to send notification for scheduled file export, but export information was not properly archived.");
-		} else {
-			//Send notifications
-			if(StringUtils.isNotEmpty(notificationEmailAddresses)) {
-				sendNotificationEmails(historyEntry);
-			}
-		}
+		//Send notification emails
+        prepareAndSendNotificationEmails(historyEntry);
 	}
 	
 	@Override

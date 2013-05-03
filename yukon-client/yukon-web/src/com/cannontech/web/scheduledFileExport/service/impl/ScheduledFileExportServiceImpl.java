@@ -27,6 +27,7 @@ import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.ServletUtil;
 import com.google.common.collect.Maps;
 
 public class ScheduledFileExportServiceImpl implements ScheduledFileExportService {
@@ -58,10 +59,7 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
 	@Override
 	public YukonJob scheduleFileExport(ScheduledFileExportData data, YukonUserContext userContext, HttpServletRequest request) {
 		//Build default url for notifications
-		String defaultYukonExternalUrl = request.getScheme() + "://" + request.getServerName();
-		if (request.getServerPort() != 80) {
-			defaultYukonExternalUrl += ":" + request.getServerPort();
-		}		
+	    String defaultYukonExternalUrl = ServletUtil.getDefaultYukonExternalUrl(request);		
 		//Find the appropriate job definition for this export type
 		YukonJobDefinition<? extends ScheduledFileExportTask> jobDefinition = getJobDefinition(data.getExportType());
 		//Create task
@@ -73,13 +71,18 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
 		return job;
 	}
 	
+	public String getDefaultYukonExternalUrl(HttpServletRequest request) {
+	    String defaultYukonExternalUrl = request.getScheme() + "://" + request.getServerName();
+        if (request.getServerPort() != 80) {
+            defaultYukonExternalUrl += ":" + request.getServerPort();
+        }
+        return defaultYukonExternalUrl;
+	}
+	
 	@Override
 	public YukonJob updateFileExport(ScheduledFileExportData data, YukonUserContext userContext, HttpServletRequest request, int jobId) {
 		//Build default url for notifications
-		String defaultYukonExternalUrl = request.getScheme() + "://" + request.getServerName();
-		if (request.getServerPort() != 80) {
-			defaultYukonExternalUrl += ":" + request.getServerPort();
-		}
+		String defaultYukonExternalUrl = ServletUtil.getDefaultYukonExternalUrl(request);
 		//Find the appropriate job definition for this export type
 		YukonJobDefinition<? extends ScheduledFileExportTask> jobDefinition = getJobDefinition(data.getExportType());
 		//Create task and supply parameters

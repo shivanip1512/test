@@ -1,7 +1,10 @@
 package com.cannontech.web.scheduledFileExport.tasks;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.List;
 
 import javax.mail.MessagingException;
@@ -14,6 +17,7 @@ import org.springframework.util.StringUtils;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigStringKeysEnum;
+import com.cannontech.common.exception.FileCreationException;
 import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.fileExportHistory.service.FileExportHistoryService;
@@ -25,6 +29,7 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.support.YukonTaskBase;
+import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.tools.email.DefaultEmailMessage;
 import com.cannontech.tools.email.EmailMessageHolder;
 import com.cannontech.tools.email.EmailService;
@@ -121,6 +126,37 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 	
 	public void setNotificationEmailAddresses(String notificationEmailAddresses) {
 		this.notificationEmailAddresses = notificationEmailAddresses;
+	}
+	
+	/**
+	 * Convenience method for exporting to csv.
+	 */
+	protected File exportToCsvFile(List<String[]> dataRows) {
+        File exportFile = getExportFile(DateTime.now() ,".csv");
+        try (
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(exportFile)));
+        ){
+            CSVWriter csvWriter = new CSVWriter(writer);
+            csvWriter.writeAll(dataRows);
+        } catch(IOException e) {
+            throw new FileCreationException("Unable to generate scheduled export file due to I/O errors.", e);
+        }
+        return exportFile;
+    }
+	
+	/**
+	 * Checks the validity of the history entry and notificationEmailAddress, then sends email
+	 * notifications.
+	 */
+	protected void prepareAndSendNotificationEmails(ExportHistoryEntry historyEntry) {
+	    if(historyEntry == null) {
+            log.error("Attempted to send notification for scheduled file export, but export information was not properly archived.");
+        } else {
+            //send notifications
+            if(org.apache.commons.lang.StringUtils.isNotEmpty(notificationEmailAddresses)) {
+                sendNotificationEmails(historyEntry);
+            }
+        }
 	}
 	
 	/**

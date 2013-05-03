@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.scheduledFileExport.BillingFileExportGenerationParameters;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
@@ -151,7 +152,7 @@ public class ScheduledBillingFileExportController {
 	public String jobs(ModelMap model, @RequestParam(defaultValue="25") int itemsPerPage,
 			@RequestParam(defaultValue="1") int page) {
 		
-		scheduledFileExportJobsTagService.populateModel(model, ScheduledExportType.BILLING, page, itemsPerPage);
+		scheduledFileExportJobsTagService.populateModel(model, FileExportType.BILLING, ScheduledExportType.BILLING, page, itemsPerPage);
 		return "jobs.jsp";
 	}
 	

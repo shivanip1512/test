@@ -1,15 +1,9 @@
 package com.cannontech.web.scheduledFileExport.tasks;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
@@ -19,7 +13,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.paoPointValue.model.MeterPointValue;
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
@@ -28,7 +21,6 @@ import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.exception.FileCreationException;
 import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -45,7 +37,6 @@ import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.db.point.stategroup.EventStatus;
 import com.cannontech.database.db.point.stategroup.OutageStatus;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.tools.csv.CSVWriter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -68,36 +59,20 @@ public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask 
 	private List<SimpleDevice> devices;
 	private Set<Attribute> attributes;
 	
-	private Logger log = YukonLogManager.getLogger(ScheduledMeterEventsFileExportTask.class);
-	
 	@Override
 	public void start() {
 		List<String[]> dataRows = getDataRows();
         
         //Write the file
-  		File exportFile = getExportFile(DateTime.now() ,".csv");
-  		try (
-  			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(exportFile)));
-  		){
-  			CSVWriter csvWriter = new CSVWriter(writer);
-        	csvWriter.writeAll(dataRows);
-  		} catch(IOException e) {
-  			throw new FileCreationException("Unable to generate meter events report file due to I/O errors.", e);
-  		}
+  		File exportFile = exportToCsvFile(dataRows);
   		
   		//Add File Export History entry
   		ExportHistoryEntry historyEntry = addFileToExportHistory(FileExportType.METER_EVENTS, exportFile);
         
-        if(historyEntry == null) {
-			log.error("Attempted to send notification for scheduled file export, but export information was not properly archived.");
-		} else {
-			//send notifications
-			if(StringUtils.isNotEmpty(notificationEmailAddresses)) {
-				sendNotificationEmails(historyEntry);
-			}
-		}
+  		//Send notification emails
+        prepareAndSendNotificationEmails(historyEntry);
 	}
-
+	
 	@Override
 	public void setFileGenerationParameters(ExportFileGenerationParameters parameters) {
 		MeterEventsExportGenerationParameters meterEventsParameters = (MeterEventsExportGenerationParameters) parameters;

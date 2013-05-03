@@ -5,7 +5,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 
 <%@ attribute name="searchResult" required="true" type="com.cannontech.common.search.SearchResult" %>
-<%@ attribute name="jobType" required="true" type="com.cannontech.common.scheduledFileExport.ScheduledExportType" %>
+<%@ attribute name="jobType" required="true" type="com.cannontech.common.fileExportHistory.FileExportType" %>
 <%@ attribute name="baseUrl" %>
 <%@ attribute name="editUrl" required="true" %>
 <%@ attribute name="deleteUrl" required="true" %>
@@ -39,8 +39,10 @@
 						</cti:url>
 						<cti:button nameKey="edit" renderMode="image" href="${finalEditUrl}"/>
 						
+                        <cti:msg2 var="initiator" key="yukon.web.modules.support.fileExportHistory.types.${jobType}"/>
+                        <cti:msg2 var="scheduleAppender" key="yukon.web.modules.support.fileExportHistory.types.scheduleAppender"/>
 						<cti:url var="historyUrl" value="/support/fileExportHistory/list">
-							<cti:param name="initiator" value="${jobType.initiator}${job.name}"/>
+							<cti:param name="initiator" value="${initiator} ${scheduleAppender} ${job.name}"/>
 						</cti:url>
 						<cti:button nameKey="history" renderMode="image" href="${historyUrl}"/>
 						

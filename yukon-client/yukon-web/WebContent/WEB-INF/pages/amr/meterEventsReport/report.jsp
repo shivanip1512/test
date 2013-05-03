@@ -38,11 +38,15 @@
 	        	jQuery(".f_showSelectedDevices").trigger("click");
 	        });
 	        
-	        jQuery("span[id^='eventTypesCog']").click(function() {
+	        jQuery("#eventTypesCogFilter, #eventTypesCogSchedule").click(function() {
 	        	showSimplePopup('filterPopupEventTypes');
 	        });
 	        
 	        jQuery("#scheduleButton").click(openSchedulePopup);
+	        
+	        jQuery("#cancelButton").click(function() {
+	            schedulePopup.hide();
+	        });
 	        
 	        jQuery("#eventTypesListOk").click(function() {
 	        	jQuery('#eventTypesList').hide();
@@ -237,7 +241,7 @@
 			</c:if>
 			<div class="actionArea">
 				<cti:button nameKey="submit" type="submit"/>
-				<cti:button nameKey="cancel" onclick="schedulePopup.hide()"/>
+				<cti:button nameKey="cancel" id="cancelButton"/>
 			</div>
 		</form:form>
 	</i:simplePopup>

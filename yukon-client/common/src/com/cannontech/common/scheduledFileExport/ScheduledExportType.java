@@ -1,19 +1,9 @@
 package com.cannontech.common.scheduledFileExport;
 
 public enum ScheduledExportType {
-	BILLING("Billing Schedule: "),
-	ARCHIVED_DATA_EXPORT("Archived Data Export Schedule: "),
-	WATER_LEAK("Water Leak Report Schedule: "),
-	METER_EVENT("Meter Event Report Schedule: "),
+	BILLING,
+	ARCHIVED_DATA_EXPORT,
+	WATER_LEAK,
+	METER_EVENT,
 	;
-	
-	private final String initiator;
-	
-	private ScheduledExportType(String initiator) {
-		this.initiator = initiator;
-	}
-	
-	public String getInitiator() {
-		return initiator;
-	}
 }

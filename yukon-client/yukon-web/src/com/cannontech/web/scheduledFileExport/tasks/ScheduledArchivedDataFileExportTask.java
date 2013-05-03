@@ -9,8 +9,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +22,6 @@ import com.cannontech.amr.archivedValueExporter.model.dataRange.LocalDateRange;
 import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
@@ -58,8 +55,6 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 	private Set<Attribute> attributes;
 	private DataRange dataRange = new DataRange();
 	
-	private Logger log = YukonLogManager.getLogger(ScheduledArchivedDataFileExportTask.class);
-	
 	@Override
 	public void start() {
 		List<Meter> meters = meterDao.getMetersForYukonPaos(deviceList);
@@ -91,14 +86,8 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 		//Add File Export History entry
 		ExportHistoryEntry historyEntry = addFileToExportHistory(FileExportType.ARCHIVED_DATA_EXPORT, exportFile);
 		
-		if(historyEntry == null) {
-			log.error("Attempted to send notification for scheduled file export, but export information was not properly archived.");
-		} else {
-			//send notifications
-			if(StringUtils.isNotEmpty(notificationEmailAddresses)) {
-				sendNotificationEmails(historyEntry);
-			}
-		}
+		//Send notification emails
+        prepareAndSendNotificationEmails(historyEntry);
 	}
 
 	@Override

@@ -1713,4 +1713,12 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
         }
         return result;
     }
+    
+    public static String getDefaultYukonExternalUrl(HttpServletRequest request) {
+        String defaultYukonExternalUrl = request.getScheme() + "://" + request.getServerName();
+        if(request.getServerPort() != 80) {
+            defaultYukonExternalUrl += ":" + request.getServerPort();
+        }
+        return defaultYukonExternalUrl;
+    }
 }

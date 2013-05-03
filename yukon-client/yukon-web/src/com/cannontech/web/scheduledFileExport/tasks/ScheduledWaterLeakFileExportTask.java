@@ -1,23 +1,15 @@
 package com.cannontech.web.scheduledFileExport.tasks;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.waterMeterLeak.model.WaterMeterLeak;
 import com.cannontech.amr.waterMeterLeak.service.WaterMeterLeakService;
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
@@ -26,7 +18,6 @@ import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.exception.FileCreationException;
 import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -37,7 +28,6 @@ import com.cannontech.common.util.Range;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -56,8 +46,6 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
     private int hoursPrevious;
     private double threshold;
     private boolean includeDisabledPaos;
-    
-    private Logger log = YukonLogManager.getLogger(ScheduledWaterLeakFileExportTask.class);
 	
     private String[] getHeaderRow() {
     	YukonUserContext userContext = getJobContext().getJob().getUserContext();
@@ -75,7 +63,7 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
 		YukonUserContext userContext = getJobContext().getJob().getUserContext();
 		
 		Range<Instant> range = new Range<Instant>();
-		range.setMin(Instant.now()); //TODO: start of today?
+		range.setMin(Instant.now());
 		Duration timePrevious = Duration.standardHours(hoursPrevious);
 		range.setMax(Instant.now().minus(timePrevious));
 		
@@ -99,27 +87,13 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
         }
         
         //Write the file
-        File exportFile = getExportFile(DateTime.now(), ".csv");
-        try (
-        	BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(exportFile)));
-        ){
-        	CSVWriter csvWriter = new CSVWriter(writer);
-        	csvWriter.writeAll(dataRows);
-        } catch(IOException e) {
-        	throw new FileCreationException("Unable to generate water leak report file due to I/O errors.", e);
-        }
+        File exportFile = exportToCsvFile(dataRows);
         
         //Add File Export History entry
         ExportHistoryEntry historyEntry = addFileToExportHistory(FileExportType.WATER_LEAK, exportFile);
         
-        if(historyEntry == null) {
-			log.error("Attempted to send notification for scheduled file export, but export information was not properly archived.");
-		} else {
-			//send notifications
-			if(StringUtils.isNotEmpty(notificationEmailAddresses)) {
-				sendNotificationEmails(historyEntry);
-			}
-		}
+        //Send notification emails
+        prepareAndSendNotificationEmails(historyEntry);
 	}
 	
 	@Override
