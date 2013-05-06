@@ -133,7 +133,8 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
                 int disabledCount = paoDao.getDisabledDeviceCount(group);
 
                 // find that devices that were successfully read within the last 10 years
-                DateMidnight tenYrStopDate = dateRanges.get(1).getStopDate();
+                // This must cover a wider time range than the report or counts will be wrong and can go negative.
+                DateMidnight tenYrStopDate = new DateMidnight(context.getJodaTimeZone()).plusDays(1);
                 DateMidnight tenYrStartDate = tenYrStopDate.minusYears(10);
                 DateRange tenYrDateRange = new DateRange(tenYrStartDate, tenYrStopDate);
 
