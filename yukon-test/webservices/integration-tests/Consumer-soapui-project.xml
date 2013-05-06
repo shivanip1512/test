@@ -298,7 +298,6 @@
           <xsd:element name="scheduleName" type="xsd:string"/>
           <xsd:element maxOccurs="7" name="schedulePeriod" type="yukon:SchedulePeriod"/>
         </xsd:sequence>
-        <xsd:attribute name="accountNumber" type="yukon:AccountNumber"/>
         <xsd:attribute name="thermostatScheduleMode" type="yukon:ThermostatScheduleMode"/>
         <xsd:attribute name="thermostatType" type="yukon:SchedulableThermostatType"/>
       </xsd:complexType>
@@ -320,14 +319,19 @@
       <xsd:element name="deleteThermostatScheduleResponse" type="yukon:DeleteThermostatScheduleResponse"/>
       <xsd:complexType name="ThermostatScheduleResult">
         <xsd:sequence>
-          <xsd:choice>
-            <xsd:element name="success"/>
-            <xsd:element name="failure" type="yukon:Failure"/>
-          </xsd:choice>
+          <xsd:element minOccurs="0" name="success"/>
+          <xsd:element minOccurs="0" name="failure" type="yukon:Failure"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="thermostatSchedulePeriodResult" type="yukon:ThermostatSchedulePeriodResult"/>
         </xsd:sequence>
         <xsd:attribute name="scheduleName" type="xsd:string"/>
         <xsd:attribute name="thermostatScheduleMode" type="yukon:ThermostatScheduleMode"/>
         <xsd:attribute name="thermostatType" type="yukon:SchedulableThermostatType"/>
+      </xsd:complexType>
+      <xsd:complexType name="ThermostatSchedulePeriodResult">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" name="failure" type="yukon:Failure"/>
+        </xsd:sequence>
+        <xsd:attribute name="timeOfWeek" type="xsd:string"/>
       </xsd:complexType>
       <xsd:complexType name="HardwareSummaryListRequest">
         <xsd:complexContent>
@@ -1008,7 +1012,197 @@
          <api:notes>?</api:notes>
       </api:forgotPasswordRequest>
    </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/forgotPasswordRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:forgotPasswordRequest version="?">
+         <!--Optional:-->
+         <api:username>?</api:username>
+         <!--Optional:-->
+         <api:email>?</api:email>
+         <!--Optional:-->
+         <api:firstName>?</api:firstName>
+         <!--Optional:-->
+         <api:lastName>?</api:lastName>
+         <!--Optional:-->
+         <api:accountNumber>?</api:accountNumber>
+         <!--Optional:-->
+         <api:energyProvider>?</api:energyProvider>
+         <!--Optional:-->
+         <api:notes>?</api:notes>
+      </api:forgotPasswordRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/forgotPasswordRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:forgotPasswordRequest version="?">
+         <!--Optional:-->
+         <api:username>?</api:username>
+         <!--Optional:-->
+         <api:email>?</api:email>
+         <!--Optional:-->
+         <api:firstName>?</api:firstName>
+         <!--Optional:-->
+         <api:lastName>?</api:lastName>
+         <!--Optional:-->
+         <api:accountNumber>?</api:accountNumber>
+         <!--Optional:-->
+         <api:energyProvider>?</api:energyProvider>
+         <!--Optional:-->
+         <api:notes>?</api:notes>
+      </api:forgotPasswordRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/forgotPasswordRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:forgotPasswordRequest version="?">
+         <!--Optional:-->
+         <api:username>?</api:username>
+         <!--Optional:-->
+         <api:email>?</api:email>
+         <!--Optional:-->
+         <api:firstName>?</api:firstName>
+         <!--Optional:-->
+         <api:lastName>?</api:lastName>
+         <!--Optional:-->
+         <api:accountNumber>?</api:accountNumber>
+         <!--Optional:-->
+         <api:energyProvider>?</api:energyProvider>
+         <!--Optional:-->
+         <api:notes>?</api:notes>
+      </api:forgotPasswordRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/forgotPasswordRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:forgotPasswordRequest version="?">
+         <!--Optional:-->
+         <api:username>?</api:username>
+         <!--Optional:-->
+         <api:email>?</api:email>
+         <!--Optional:-->
+         <api:firstName>?</api:firstName>
+         <!--Optional:-->
+         <api:lastName>?</api:lastName>
+         <!--Optional:-->
+         <api:accountNumber>?</api:accountNumber>
+         <!--Optional:-->
+         <api:energyProvider>?</api:energyProvider>
+         <!--Optional:-->
+         <api:notes>?</api:notes>
+      </api:forgotPasswordRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/forgotPasswordRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:forgotPasswordRequest version="?">
+         <!--Optional:-->
+         <api:username>?</api:username>
+         <!--Optional:-->
+         <api:email>?</api:email>
+         <!--Optional:-->
+         <api:firstName>?</api:firstName>
+         <!--Optional:-->
+         <api:lastName>?</api:lastName>
+         <!--Optional:-->
+         <api:accountNumber>?</api:accountNumber>
+         <!--Optional:-->
+         <api:energyProvider>?</api:energyProvider>
+         <!--Optional:-->
+         <api:notes>?</api:notes>
+      </api:forgotPasswordRequest>
+   </soapenv:Body>
 </soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/forgotPasswordRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="hardwareSummaryList" bindingOperationName="hardwareSummaryList" type="Request-Response" outputName="hardwareSummaryListResponse" inputName="hardwareSummaryListRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://127.0.0.1:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:hardwareSummaryListRequest version="?">
+         <!--Zero or more repetitions:-->
+         <api:hardwareClass>?</api:hardwareClass>
+      </api:hardwareSummaryListRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/hardwareSummaryListRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:hardwareSummaryListRequest version="?">
+         <!--Zero or more repetitions:-->
+         <api:hardwareClass>?</api:hardwareClass>
+      </api:hardwareSummaryListRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/hardwareSummaryListRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:hardwareSummaryListRequest version="?">
+         <!--Zero or more repetitions:-->
+         <api:hardwareClass>?</api:hardwareClass>
+      </api:hardwareSummaryListRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/hardwareSummaryListRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:hardwareSummaryListRequest version="?">
+         <!--Zero or more repetitions:-->
+         <api:hardwareClass>?</api:hardwareClass>
+      </api:hardwareSummaryListRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/hardwareSummaryListRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:hardwareSummaryListRequest version="?">
+         <!--Zero or more repetitions:-->
+         <api:hardwareClass>?</api:hardwareClass>
+      </api:hardwareSummaryListRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/hardwareSummaryListRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
    <soapenv:Header>
       <api:yukonUser>?</api:yukonUser>
       <api:extra>
@@ -1054,6 +1248,56 @@
    <soapenv:Body>
       <api:thermostatAndScheduleListRequest version="?"/>
    </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/thermostatAndScheduleListRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:thermostatAndScheduleListRequest version="?"/>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/thermostatAndScheduleListRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:thermostatAndScheduleListRequest version="?"/>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/thermostatAndScheduleListRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:thermostatAndScheduleListRequest version="?"/>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/thermostatAndScheduleListRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:thermostatAndScheduleListRequest version="?"/>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/thermostatAndScheduleListRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:thermostatAndScheduleListRequest version="?"/>
+   </soapenv:Body>
 </soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/thermostatAndScheduleListRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="userLogin" bindingOperationName="userLogin" type="Request-Response" outputName="userLoginResponse" inputName="userLoginRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://127.0.0.1:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
    <soapenv:Header>
       <api:yukonUser>?</api:yukonUser>
@@ -1068,6 +1312,71 @@
       </api:userLoginRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/userLoginRequest"/><con:wsrmConfig version="1.2"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:userLoginRequest version="?">
+         <api:username>?</api:username>
+         <api:password>?</api:password>
+      </api:userLoginRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/userLoginRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:userLoginRequest version="?">
+         <api:username>?</api:username>
+         <api:password>?</api:password>
+      </api:userLoginRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/userLoginRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:userLoginRequest version="?">
+         <api:username>?</api:username>
+         <api:password>?</api:password>
+      </api:userLoginRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/userLoginRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:userLoginRequest version="?">
+         <api:username>?</api:username>
+         <api:password>?</api:password>
+      </api:userLoginRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/userLoginRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:userLoginRequest version="?">
+         <api:username>?</api:username>
+         <api:password>?</api:password>
+      </api:userLoginRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/userLoginRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
    <soapenv:Header>
       <api:yukonUser>?</api:yukonUser>
       <api:extra>
@@ -1108,7 +1417,142 @@
          <api:scheduleName>?</api:scheduleName>
       </api:sendThermostatScheduleRequest>
    </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/sendThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:sendThermostatScheduleRequest version="?">
+         <!--1 or more repetitions:-->
+         <api:serialNumber>?</api:serialNumber>
+         <api:scheduleName>?</api:scheduleName>
+      </api:sendThermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/sendThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:sendThermostatScheduleRequest version="?">
+         <!--1 or more repetitions:-->
+         <api:serialNumber>?</api:serialNumber>
+         <api:scheduleName>?</api:scheduleName>
+      </api:sendThermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/sendThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:sendThermostatScheduleRequest version="?">
+         <!--1 or more repetitions:-->
+         <api:serialNumber>?</api:serialNumber>
+         <api:scheduleName>?</api:scheduleName>
+      </api:sendThermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/sendThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:sendThermostatScheduleRequest version="?">
+         <!--1 or more repetitions:-->
+         <api:serialNumber>?</api:serialNumber>
+         <api:scheduleName>?</api:scheduleName>
+      </api:sendThermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/sendThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:sendThermostatScheduleRequest version="?">
+         <!--1 or more repetitions:-->
+         <api:serialNumber>?</api:serialNumber>
+         <api:scheduleName>?</api:scheduleName>
+      </api:sendThermostatScheduleRequest>
+   </soapenv:Body>
 </soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/sendThermostatScheduleRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="runThermostatProgram" bindingOperationName="runThermostatProgram" type="Request-Response" outputName="runThermostatProgramResponse" inputName="runThermostatProgramRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://127.0.0.1:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:runThermostatProgramRequest version="?">
+         <!--1 or more repetitions:-->
+         <api:serialNumber>?</api:serialNumber>
+      </api:runThermostatProgramRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/runThermostatProgramRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:runThermostatProgramRequest version="?">
+         <!--1 or more repetitions:-->
+         <api:serialNumber>?</api:serialNumber>
+      </api:runThermostatProgramRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/runThermostatProgramRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:runThermostatProgramRequest version="?">
+         <!--1 or more repetitions:-->
+         <api:serialNumber>?</api:serialNumber>
+      </api:runThermostatProgramRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/runThermostatProgramRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:runThermostatProgramRequest version="?">
+         <!--1 or more repetitions:-->
+         <api:serialNumber>?</api:serialNumber>
+      </api:runThermostatProgramRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/runThermostatProgramRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:runThermostatProgramRequest version="?">
+         <!--1 or more repetitions:-->
+         <api:serialNumber>?</api:serialNumber>
+      </api:runThermostatProgramRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/runThermostatProgramRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
    <soapenv:Header>
       <api:yukonUser>?</api:yukonUser>
       <api:extra>
@@ -1184,6 +1628,131 @@
          </api:manualThermostatSettingList>
       </api:sendManualThermostatSettingRequest>
    </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/sendManualThermostatSettingRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:sendManualThermostatSettingRequest version="?">
+         <api:manualThermostatSettingList>
+            <api:manualThermostatSetting>
+               <!--1 or more repetitions:-->
+               <api:serialNumber>?</api:serialNumber>
+               <api:mode>?</api:mode>
+               <api:fanState>?</api:fanState>
+               <!--Optional:-->
+               <api:heatTemperature unit="?">?</api:heatTemperature>
+               <!--Optional:-->
+               <api:coolTemperature unit="?">?</api:coolTemperature>
+               <!--Optional:-->
+               <api:holdTemperature>false</api:holdTemperature>
+            </api:manualThermostatSetting>
+         </api:manualThermostatSettingList>
+      </api:sendManualThermostatSettingRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/sendManualThermostatSettingRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:sendManualThermostatSettingRequest version="?">
+         <api:manualThermostatSettingList>
+            <api:manualThermostatSetting>
+               <!--1 or more repetitions:-->
+               <api:serialNumber>?</api:serialNumber>
+               <api:mode>?</api:mode>
+               <api:fanState>?</api:fanState>
+               <!--Optional:-->
+               <api:heatTemperature unit="?">?</api:heatTemperature>
+               <!--Optional:-->
+               <api:coolTemperature unit="?">?</api:coolTemperature>
+               <!--Optional:-->
+               <api:holdTemperature>false</api:holdTemperature>
+            </api:manualThermostatSetting>
+         </api:manualThermostatSettingList>
+      </api:sendManualThermostatSettingRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/sendManualThermostatSettingRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:sendManualThermostatSettingRequest version="?">
+         <api:manualThermostatSettingList>
+            <api:manualThermostatSetting>
+               <!--1 or more repetitions:-->
+               <api:serialNumber>?</api:serialNumber>
+               <api:mode>?</api:mode>
+               <api:fanState>?</api:fanState>
+               <!--Optional:-->
+               <api:heatTemperature unit="?">?</api:heatTemperature>
+               <!--Optional:-->
+               <api:coolTemperature unit="?">?</api:coolTemperature>
+               <!--Optional:-->
+               <api:holdTemperature>false</api:holdTemperature>
+            </api:manualThermostatSetting>
+         </api:manualThermostatSettingList>
+      </api:sendManualThermostatSettingRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/sendManualThermostatSettingRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:sendManualThermostatSettingRequest version="?">
+         <api:manualThermostatSettingList>
+            <api:manualThermostatSetting>
+               <!--1 or more repetitions:-->
+               <api:serialNumber>?</api:serialNumber>
+               <api:mode>?</api:mode>
+               <api:fanState>?</api:fanState>
+               <!--Optional:-->
+               <api:heatTemperature unit="?">?</api:heatTemperature>
+               <!--Optional:-->
+               <api:coolTemperature unit="?">?</api:coolTemperature>
+               <!--Optional:-->
+               <api:holdTemperature>false</api:holdTemperature>
+            </api:manualThermostatSetting>
+         </api:manualThermostatSettingList>
+      </api:sendManualThermostatSettingRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/sendManualThermostatSettingRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:sendManualThermostatSettingRequest version="?">
+         <api:manualThermostatSettingList>
+            <api:manualThermostatSetting>
+               <!--1 or more repetitions:-->
+               <api:serialNumber>?</api:serialNumber>
+               <api:mode>?</api:mode>
+               <api:fanState>?</api:fanState>
+               <!--Optional:-->
+               <api:heatTemperature unit="?">?</api:heatTemperature>
+               <!--Optional:-->
+               <api:coolTemperature unit="?">?</api:coolTemperature>
+               <!--Optional:-->
+               <api:holdTemperature>false</api:holdTemperature>
+            </api:manualThermostatSetting>
+         </api:manualThermostatSettingList>
+      </api:sendManualThermostatSettingRequest>
+   </soapenv:Body>
 </soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/sendManualThermostatSettingRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="sendDefaultThermostatSchedule" bindingOperationName="sendDefaultThermostatSchedule" type="Request-Response" outputName="sendDefaultThermostatScheduleResponse" inputName="sendDefaultThermostatScheduleRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://127.0.0.1:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
    <soapenv:Header>
       <api:yukonUser>?</api:yukonUser>
@@ -1210,7 +1779,137 @@
          <api:serialNumber>?</api:serialNumber>
       </api:sendDefaultThermostatScheduleRequest>
    </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/sendDefaultThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:sendDefaultThermostatScheduleRequest version="?">
+         <!--1 or more repetitions:-->
+         <api:serialNumber>?</api:serialNumber>
+      </api:sendDefaultThermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/sendDefaultThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:sendDefaultThermostatScheduleRequest version="?">
+         <!--1 or more repetitions:-->
+         <api:serialNumber>?</api:serialNumber>
+      </api:sendDefaultThermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/sendDefaultThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:sendDefaultThermostatScheduleRequest version="?">
+         <!--1 or more repetitions:-->
+         <api:serialNumber>?</api:serialNumber>
+      </api:sendDefaultThermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/sendDefaultThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:sendDefaultThermostatScheduleRequest version="?">
+         <!--1 or more repetitions:-->
+         <api:serialNumber>?</api:serialNumber>
+      </api:sendDefaultThermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/sendDefaultThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:sendDefaultThermostatScheduleRequest version="?">
+         <!--1 or more repetitions:-->
+         <api:serialNumber>?</api:serialNumber>
+      </api:sendDefaultThermostatScheduleRequest>
+   </soapenv:Body>
 </soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/sendDefaultThermostatScheduleRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="thermostatSchedule" bindingOperationName="thermostatSchedule" type="Request-Response" outputName="thermostatScheduleResponse" inputName="thermostatScheduleRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:thermostatScheduleRequest version="?">
+         <!--1 or more repetitions:-->
+         <api:scheduleName>?</api:scheduleName>
+      </api:thermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/thermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:thermostatScheduleRequest version="?">
+         <!--1 or more repetitions:-->
+         <api:scheduleName>?</api:scheduleName>
+      </api:thermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/thermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:thermostatScheduleRequest version="?">
+         <!--1 or more repetitions:-->
+         <api:scheduleName>?</api:scheduleName>
+      </api:thermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/thermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:thermostatScheduleRequest version="?">
+         <!--1 or more repetitions:-->
+         <api:scheduleName>?</api:scheduleName>
+      </api:thermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/thermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:thermostatScheduleRequest version="?">
+         <!--1 or more repetitions:-->
+         <api:scheduleName>?</api:scheduleName>
+      </api:thermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/thermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
    <soapenv:Header>
       <api:yukonUser>?</api:yukonUser>
       <api:extra>
@@ -1251,7 +1950,207 @@
          </api:thermostatSchedule>
       </api:updateThermostatScheduleRequest>
    </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/updateThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:updateThermostatScheduleRequest version="?" addOnFail="?">
+         <api:thermostatSchedule thermostatScheduleMode="?" thermostatType="?">
+            <api:scheduleName>?</api:scheduleName>
+            <!--1 to 7 repetitions:-->
+            <api:schedulePeriod timeOfWeek="?">
+               <!--2 to 4 repetitions:-->
+               <api:thermostatSchedulePeriod>
+                  <api:startTime>?</api:startTime>
+                  <api:coolTemp unit="?">?</api:coolTemp>
+                  <api:heatTemp unit="?">?</api:heatTemp>
+               </api:thermostatSchedulePeriod>
+               <api:thermostatSchedulePeriod>
+                  <api:startTime>?</api:startTime>
+                  <api:coolTemp unit="?">?</api:coolTemp>
+                  <api:heatTemp unit="?">?</api:heatTemp>
+               </api:thermostatSchedulePeriod>
+            </api:schedulePeriod>
+         </api:thermostatSchedule>
+      </api:updateThermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/updateThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:updateThermostatScheduleRequest version="?" addOnFail="?">
+         <api:thermostatSchedule thermostatScheduleMode="?" thermostatType="?">
+            <api:scheduleName>?</api:scheduleName>
+            <!--1 to 7 repetitions:-->
+            <api:schedulePeriod timeOfWeek="?">
+               <!--2 to 4 repetitions:-->
+               <api:thermostatSchedulePeriod>
+                  <api:startTime>?</api:startTime>
+                  <api:coolTemp unit="?">?</api:coolTemp>
+                  <api:heatTemp unit="?">?</api:heatTemp>
+               </api:thermostatSchedulePeriod>
+               <api:thermostatSchedulePeriod>
+                  <api:startTime>?</api:startTime>
+                  <api:coolTemp unit="?">?</api:coolTemp>
+                  <api:heatTemp unit="?">?</api:heatTemp>
+               </api:thermostatSchedulePeriod>
+            </api:schedulePeriod>
+         </api:thermostatSchedule>
+      </api:updateThermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/updateThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:updateThermostatScheduleRequest version="?" addOnFail="?">
+         <api:thermostatSchedule thermostatScheduleMode="?" thermostatType="?">
+            <api:scheduleName>?</api:scheduleName>
+            <!--1 to 7 repetitions:-->
+            <api:schedulePeriod timeOfWeek="?">
+               <!--2 to 4 repetitions:-->
+               <api:thermostatSchedulePeriod>
+                  <api:startTime>?</api:startTime>
+                  <api:coolTemp unit="?">?</api:coolTemp>
+                  <api:heatTemp unit="?">?</api:heatTemp>
+               </api:thermostatSchedulePeriod>
+               <api:thermostatSchedulePeriod>
+                  <api:startTime>?</api:startTime>
+                  <api:coolTemp unit="?">?</api:coolTemp>
+                  <api:heatTemp unit="?">?</api:heatTemp>
+               </api:thermostatSchedulePeriod>
+            </api:schedulePeriod>
+         </api:thermostatSchedule>
+      </api:updateThermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/updateThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:updateThermostatScheduleRequest version="?" addOnFail="?">
+         <api:thermostatSchedule thermostatScheduleMode="?" thermostatType="?">
+            <api:scheduleName>?</api:scheduleName>
+            <!--1 to 7 repetitions:-->
+            <api:schedulePeriod timeOfWeek="?">
+               <!--2 to 4 repetitions:-->
+               <api:thermostatSchedulePeriod>
+                  <api:startTime>?</api:startTime>
+                  <api:coolTemp unit="?">?</api:coolTemp>
+                  <api:heatTemp unit="?">?</api:heatTemp>
+               </api:thermostatSchedulePeriod>
+               <api:thermostatSchedulePeriod>
+                  <api:startTime>?</api:startTime>
+                  <api:coolTemp unit="?">?</api:coolTemp>
+                  <api:heatTemp unit="?">?</api:heatTemp>
+               </api:thermostatSchedulePeriod>
+            </api:schedulePeriod>
+         </api:thermostatSchedule>
+      </api:updateThermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/updateThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:updateThermostatScheduleRequest version="?" addOnFail="?">
+         <api:thermostatSchedule thermostatScheduleMode="?" thermostatType="?">
+            <api:scheduleName>?</api:scheduleName>
+            <!--1 to 7 repetitions:-->
+            <api:schedulePeriod timeOfWeek="?">
+               <!--2 to 4 repetitions:-->
+               <api:thermostatSchedulePeriod>
+                  <api:startTime>?</api:startTime>
+                  <api:coolTemp unit="?">?</api:coolTemp>
+                  <api:heatTemp unit="?">?</api:heatTemp>
+               </api:thermostatSchedulePeriod>
+               <api:thermostatSchedulePeriod>
+                  <api:startTime>?</api:startTime>
+                  <api:coolTemp unit="?">?</api:coolTemp>
+                  <api:heatTemp unit="?">?</api:heatTemp>
+               </api:thermostatSchedulePeriod>
+            </api:schedulePeriod>
+         </api:thermostatSchedule>
+      </api:updateThermostatScheduleRequest>
+   </soapenv:Body>
 </soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/updateThermostatScheduleRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="deleteThermostatSchedule" bindingOperationName="deleteThermostatSchedule" type="Request-Response" outputName="deleteThermostatScheduleResponse" inputName="deleteThermostatScheduleRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:deleteThermostatScheduleRequest version="?">
+         <api:scheduleName>?</api:scheduleName>
+      </api:deleteThermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/deleteThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:deleteThermostatScheduleRequest version="?">
+         <api:scheduleName>?</api:scheduleName>
+      </api:deleteThermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/deleteThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:deleteThermostatScheduleRequest version="?">
+         <api:scheduleName>?</api:scheduleName>
+      </api:deleteThermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/deleteThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:deleteThermostatScheduleRequest version="?">
+         <api:scheduleName>?</api:scheduleName>
+      </api:deleteThermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/deleteThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:deleteThermostatScheduleRequest version="?">
+         <api:scheduleName>?</api:scheduleName>
+      </api:deleteThermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/deleteThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
    <soapenv:Header>
       <api:yukonUser>?</api:yukonUser>
       <api:extra>
@@ -1273,6 +2172,146 @@
    <soapenv:Body>
       <api:newThermostatScheduleRequest version="?">
          <api:thermostatSchedule accountNumber="?" thermostatScheduleMode="?" thermostatType="?">
+            <api:scheduleName>?</api:scheduleName>
+            <!--1 to 7 repetitions:-->
+            <api:schedulePeriod timeOfWeek="?">
+               <!--2 to 4 repetitions:-->
+               <api:thermostatSchedulePeriod>
+                  <api:startTime>?</api:startTime>
+                  <api:coolTemp unit="?">?</api:coolTemp>
+                  <api:heatTemp unit="?">?</api:heatTemp>
+               </api:thermostatSchedulePeriod>
+               <api:thermostatSchedulePeriod>
+                  <api:startTime>?</api:startTime>
+                  <api:coolTemp unit="?">?</api:coolTemp>
+                  <api:heatTemp unit="?">?</api:heatTemp>
+               </api:thermostatSchedulePeriod>
+            </api:schedulePeriod>
+         </api:thermostatSchedule>
+      </api:newThermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/newThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:newThermostatScheduleRequest version="?">
+         <api:thermostatSchedule thermostatScheduleMode="?" thermostatType="?">
+            <api:scheduleName>?</api:scheduleName>
+            <!--1 to 7 repetitions:-->
+            <api:schedulePeriod timeOfWeek="?">
+               <!--2 to 4 repetitions:-->
+               <api:thermostatSchedulePeriod>
+                  <api:startTime>?</api:startTime>
+                  <api:coolTemp unit="?">?</api:coolTemp>
+                  <api:heatTemp unit="?">?</api:heatTemp>
+               </api:thermostatSchedulePeriod>
+               <api:thermostatSchedulePeriod>
+                  <api:startTime>?</api:startTime>
+                  <api:coolTemp unit="?">?</api:coolTemp>
+                  <api:heatTemp unit="?">?</api:heatTemp>
+               </api:thermostatSchedulePeriod>
+            </api:schedulePeriod>
+         </api:thermostatSchedule>
+      </api:newThermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/newThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:newThermostatScheduleRequest version="?">
+         <api:thermostatSchedule thermostatScheduleMode="?" thermostatType="?">
+            <api:scheduleName>?</api:scheduleName>
+            <!--1 to 7 repetitions:-->
+            <api:schedulePeriod timeOfWeek="?">
+               <!--2 to 4 repetitions:-->
+               <api:thermostatSchedulePeriod>
+                  <api:startTime>?</api:startTime>
+                  <api:coolTemp unit="?">?</api:coolTemp>
+                  <api:heatTemp unit="?">?</api:heatTemp>
+               </api:thermostatSchedulePeriod>
+               <api:thermostatSchedulePeriod>
+                  <api:startTime>?</api:startTime>
+                  <api:coolTemp unit="?">?</api:coolTemp>
+                  <api:heatTemp unit="?">?</api:heatTemp>
+               </api:thermostatSchedulePeriod>
+            </api:schedulePeriod>
+         </api:thermostatSchedule>
+      </api:newThermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/newThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:newThermostatScheduleRequest version="?">
+         <api:thermostatSchedule thermostatScheduleMode="?" thermostatType="?">
+            <api:scheduleName>?</api:scheduleName>
+            <!--1 to 7 repetitions:-->
+            <api:schedulePeriod timeOfWeek="?">
+               <!--2 to 4 repetitions:-->
+               <api:thermostatSchedulePeriod>
+                  <api:startTime>?</api:startTime>
+                  <api:coolTemp unit="?">?</api:coolTemp>
+                  <api:heatTemp unit="?">?</api:heatTemp>
+               </api:thermostatSchedulePeriod>
+               <api:thermostatSchedulePeriod>
+                  <api:startTime>?</api:startTime>
+                  <api:coolTemp unit="?">?</api:coolTemp>
+                  <api:heatTemp unit="?">?</api:heatTemp>
+               </api:thermostatSchedulePeriod>
+            </api:schedulePeriod>
+         </api:thermostatSchedule>
+      </api:newThermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/newThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:newThermostatScheduleRequest version="?">
+         <api:thermostatSchedule thermostatScheduleMode="?" thermostatType="?">
+            <api:scheduleName>?</api:scheduleName>
+            <!--1 to 7 repetitions:-->
+            <api:schedulePeriod timeOfWeek="?">
+               <!--2 to 4 repetitions:-->
+               <api:thermostatSchedulePeriod>
+                  <api:startTime>?</api:startTime>
+                  <api:coolTemp unit="?">?</api:coolTemp>
+                  <api:heatTemp unit="?">?</api:heatTemp>
+               </api:thermostatSchedulePeriod>
+               <api:thermostatSchedulePeriod>
+                  <api:startTime>?</api:startTime>
+                  <api:coolTemp unit="?">?</api:coolTemp>
+                  <api:heatTemp unit="?">?</api:heatTemp>
+               </api:thermostatSchedulePeriod>
+            </api:schedulePeriod>
+         </api:thermostatSchedule>
+      </api:newThermostatScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/newThermostatScheduleRequest"/></con:call><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:newThermostatScheduleRequest version="?">
+         <api:thermostatSchedule thermostatScheduleMode="?" thermostatType="?">
             <api:scheduleName>?</api:scheduleName>
             <!--1 to 7 repetitions:-->
             <api:schedulePeriod timeOfWeek="?">
@@ -1405,7 +2444,7 @@
 </soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:assertion type="XPath Match" name="Match content of [@version]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
 //y:sendDefaultThermostatScheduleResponse[1]/@version</path><content>1.0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="thermostatSchedule TestCase" searchProperties="true" id="2c756267-20cc-4c50-9120-e9eedea00072"><con:settings/><con:testStep type="request" name="deleteThermostatSchedule"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>consumerPortSoap11</con:interface><con:operation>deleteThermostatSchedule</con:operation><con:request name="deleteThermostatSchedule"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
    <soapenv:Header>
-      <api:yukonUser>100000</api:yukonUser>
+      <api:yukonUser>mark</api:yukonUser>
       <api:extra>
          <!--You may enter ANY elements at this point-->
       </api:extra>
@@ -1415,9 +2454,9 @@
          <api:scheduleName>test schedule</api:scheduleName>
       </api:deleteThermostatScheduleRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="newThermostatSchedule"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>consumerPortSoap11</con:interface><con:operation>newThermostatSchedule</con:operation><con:request name="newThermostatSchedule"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.42.66:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="newThermostatSchedule"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>consumerPortSoap11</con:interface><con:operation>newThermostatSchedule</con:operation><con:request name="newThermostatSchedule"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
    <soapenv:Header>
-      <api:yukonUser>100000</api:yukonUser>
+      <api:yukonUser>mark</api:yukonUser>
       <api:extra>
          <!--You may enter ANY elements at this point-->
       </api:extra>
@@ -1470,7 +2509,7 @@
                   <api:heatTemp unit="F">70</api:heatTemp>
                </api:thermostatSchedulePeriod>
             </api:schedulePeriod>
-             <api:schedulePeriod timeOfWeek="Sunday">
+            <api:schedulePeriod timeOfWeek="Sunday">
                <api:thermostatSchedulePeriod>
                   <api:startTime>6:00</api:startTime>
                   <api:coolTemp unit="F">76</api:coolTemp>
@@ -1497,15 +2536,15 @@
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:assertion type="XPath Match" name="Match content of [@version]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
 //y:newThermostatScheduleResponse[1]/@version</path><content>1.0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [@success]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
-exists(//y:newThermostatScheduleResponse[1]/y:thermostatScheduleResultList[1]/y:thermostatScheduleResult[1]/y:success[1])</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="updateThermostatSchedule"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>consumerPortSoap11</con:interface><con:operation>updateThermostatSchedule</con:operation><con:request name="updateThermostatSchedule"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.42.66:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+exists(//y:newThermostatScheduleResponse[1]/y:thermostatScheduleResultList[1]/y:thermostatScheduleResult[1]/y:success[1])</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="updateThermostatSchedule"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>consumerPortSoap11</con:interface><con:operation>updateThermostatSchedule</con:operation><con:request name="updateThermostatSchedule"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
    <soapenv:Header>
-      <api:yukonUser>100000</api:yukonUser>
+      <api:yukonUser>mark</api:yukonUser>
       <api:extra>
          <!--You may enter ANY elements at this point-->
       </api:extra>
    </soapenv:Header>
    <soapenv:Body>
-      <api:updateThermostatScheduleRequest version="1.0" addOnFail="false">
+      <api:updateThermostatScheduleRequest version="1.0" addOnFail="true">
          <api:thermostatSchedule thermostatType="UtilityPRO G2" thermostatScheduleMode="Weekday Saturday Sunday">
             <api:scheduleName>test schedule</api:scheduleName>
             <api:schedulePeriod timeOfWeek="Weekday">
@@ -1579,9 +2618,9 @@ exists(//y:newThermostatScheduleResponse[1]/y:thermostatScheduleResultList[1]/y:
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:assertion type="XPath Match" name="Match content of [@version]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
 //y:updateThermostatScheduleResponse[1]/@version</path><content>1.0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [@success]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
-exists(//y:updateThermostatScheduleResponse[1]/y:thermostatScheduleResultList[1]/y:thermostatScheduleResult[1]/y:success[1])</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="thermostatScheduleRequest"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>consumerPortSoap11</con:interface><con:operation>thermostatSchedule</con:operation><con:request name="thermostatScheduleRequest"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.42.66:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+exists(//y:updateThermostatScheduleResponse[1]/y:thermostatScheduleResultList[1]/y:thermostatScheduleResult[1]/y:success[1])</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="thermostatScheduleRequest"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>consumerPortSoap11</con:interface><con:operation>thermostatSchedule</con:operation><con:request name="thermostatScheduleRequest"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
    <soapenv:Header>
-      <api:yukonUser>100000</api:yukonUser>
+      <api:yukonUser>mark</api:yukonUser>
       <api:extra>
          <!--You may enter ANY elements at this point-->
       </api:extra>
@@ -1594,9 +2633,9 @@ exists(//y:updateThermostatScheduleResponse[1]/y:thermostatScheduleResultList[1]
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:assertion type="XPath Match" name="Match content of [@version]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
 //y:thermostatScheduleResponse[1]/@version</path><content>1.0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [@success]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
-exists(//y:thermostatScheduleResponse[1]/y:thermostatSchedule[1]/y:scheduleName[1])</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="deleteThemostatSchedule"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>consumerPortSoap11</con:interface><con:operation>deleteThermostatSchedule</con:operation><con:request name="deleteThemostatSchedule"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.42.66:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+exists(//y:thermostatScheduleResponse[1]/y:thermostatSchedule[1]/y:scheduleName[1])</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="deleteThemostatSchedule"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>consumerPortSoap11</con:interface><con:operation>deleteThermostatSchedule</con:operation><con:request name="deleteThemostatSchedule"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
    <soapenv:Header>
-      <api:yukonUser>100000</api:yukonUser>
+      <api:yukonUser>mark</api:yukonUser>
       <api:extra>
          <!--You may enter ANY elements at this point-->
       </api:extra>
