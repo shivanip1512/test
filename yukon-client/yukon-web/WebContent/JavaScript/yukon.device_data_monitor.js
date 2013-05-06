@@ -568,7 +568,7 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
 
         _validate_processors: function() {
             var missingCount = 0;
-            var procs = [jQuery(DeviceDataMonitor._processor_selector)];
+            var procs = [jQuery(DeviceDataMonitor._processor_selector).filter(":visible")];
             procs.each(function(row){
                 var ctrl = DeviceDataMonitor._get_state_group_value(row);   // for IE8
                 if( ctrl == null || ctrl.length < 1 )
