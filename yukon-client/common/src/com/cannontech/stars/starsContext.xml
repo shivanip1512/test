@@ -278,6 +278,8 @@
     <bean id="rfCommandStrategy" class="com.cannontech.stars.dr.hardware.service.impl.RfCommandStrategy"/>
     <bean id="porterExpressComCommandBuilder" class="com.cannontech.stars.dr.hardware.service.impl.PorterExpressComCommandBuilder"/>
     
+    <bean id="thermostatScheduleHelper" class="com.cannontech.yukon.api.consumer.endpoint.helper.ThermostatScheduleHelper"/>
+    
     <!-- OPERATOR GENERAL -->
     <bean id="operatorGeneralSearchService" class="com.cannontech.stars.dr.general.service.impl.OperatorGeneralSearchServiceImpl"/>
     <bean id="operatorAccountSeachDaoImpl" class="com.cannontech.stars.dr.general.dao.impl.OperatorAccountSeachDaoImpl"/>

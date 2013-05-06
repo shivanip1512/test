@@ -1,13 +1,13 @@
 package com.cannontech.yukon.api.consumer.endpoint;
 
 import java.util.List;
-import java.util.Set;
 
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.xml.xpath.XPathException;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.model.EventSource;
@@ -15,14 +15,10 @@ import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
-import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
-import com.cannontech.stars.dr.thermostat.service.ThermostatService;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.yukon.api.consumer.endpoint.endpointMappers.ThermostatScheduleElementRequestMapper;
 import com.cannontech.yukon.api.consumer.endpoint.helper.ThermostatScheduleHelper;
 import com.cannontech.yukon.api.stars.model.ThermostatSchedule;
@@ -36,8 +32,7 @@ public class UpdateThermostatScheduleEndpoint {
     @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
-    @Autowired private ThermostatService thermostatService;
+    @Autowired private ThermostatScheduleHelper thermostatScheduleHelper;
 
     private Namespace ns = YukonXml.getYukonNamespace();
     
@@ -57,13 +52,6 @@ public class UpdateThermostatScheduleEndpoint {
             LiteYukonUser yukonUser = customerAccountDao.getYukonUserByAccountId(customerAccount.getAccountId());
             Boolean addOnFail = requestTemplate.evaluateAsBoolean("/y:updateThermostatScheduleRequest/@addOnFail", true);
             
-            YukonEnergyCompany energyCompany =  yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
-
-            List<Integer> childEnergyCompanyIds = yukonEnergyCompanyService.getChildEnergyCompanies(energyCompany.getEnergyCompanyId());
-            childEnergyCompanyIds.add(energyCompany.getEnergyCompanyId());
-            
-            Set<ThermostatScheduleMode> allowedThermostatScheduleModes = thermostatService.getAllowedThermostatScheduleModes(energyCompany);
-           
             // Get the information for the supplied request.
             List<ThermostatSchedule> thermostatSchedules =
                     requestTemplate.evaluate("/y:updateThermostatScheduleRequest/y:thermostatSchedule", 
@@ -74,28 +62,24 @@ public class UpdateThermostatScheduleEndpoint {
             
             for (ThermostatSchedule schedule : thermostatSchedules) {
                 boolean newScheduleCreated = false;
-
-                Element thermostatScheduleResultNode = ThermostatScheduleHelper.addThermostatScheduleResultNode(ns, resultList, schedule);
+                Element thermostatScheduleResultNode = thermostatScheduleHelper.addThermostatScheduleResultNode(ns, resultList, schedule);
                 try {
-                    if (!allowedThermostatScheduleModes.contains(schedule.getThermostatScheduleMode())) {
-                        Element fe = XMLFailureGenerator.makeSimple("InvalidThermostatScheduleMode", "Thermostat schedule mode is not allowed");
-                        thermostatScheduleResultNode.addContent(fe);
-                    } else {
-                        AccountThermostatSchedule scheduleToUpdate =
-                                accountThermostatScheduleDao.findSchedulesForAccountByScheduleName(customerAccount.getAccountId(), schedule.getScheduleName());
-                        AccountThermostatSchedule accountThermostatSchedule = ThermostatScheduleHelper.convertToAccountThermostatSchedule(schedule, customerAccount.getAccountId());
-                        if(scheduleToUpdate != null){
-                            accountThermostatSchedule.setAccountThermostatScheduleId(scheduleToUpdate.getAccountThermostatScheduleId());
+                    AccountThermostatSchedule scheduleToUpdate =
+                        accountThermostatScheduleDao.findSchedulesForAccountByScheduleName(customerAccount.getAccountId(), schedule.getScheduleName());
+                    if (scheduleToUpdate != null || addOnFail) {
+                        if(thermostatScheduleHelper.isValidSchedule(customerAccount.getAccountId(), schedule, thermostatScheduleResultNode, ns, true)){
+                            AccountThermostatSchedule accountThermostatSchedule =
+                                    thermostatScheduleHelper.convertToAccountThermostatSchedule(schedule, customerAccount.getAccountId());
+                            if(scheduleToUpdate != null){
+                                accountThermostatSchedule.setAccountThermostatScheduleId(scheduleToUpdate.getAccountThermostatScheduleId());
+                            }
                             accountThermostatScheduleDao.save(accountThermostatSchedule);
-                            thermostatScheduleResultNode.addContent(new Element("success", ns));  
-                        }else if(addOnFail){
-                            newScheduleCreated = true;
-                            accountThermostatScheduleDao.save(accountThermostatSchedule);
-                            thermostatScheduleResultNode.addContent(new Element("success", ns));  
-                        }else{
-                            Element fe = XMLFailureGenerator.makeSimple("ScheduleDoesNotExist", "The schedule name supplied does not exist.");
-                            thermostatScheduleResultNode.addContent(fe);
+                            thermostatScheduleResultNode.addContent(new Element("success", ns));
                         }
+                    }
+                    if (scheduleToUpdate == null || !addOnFail) {
+                        Element fe = XMLFailureGenerator.makeSimple("ScheduleDoesNotExist", "The schedule name supplied does not exist.");
+                        thermostatScheduleResultNode.addContent(fe);
                     }
                 } 
                 catch (Exception e) {
@@ -113,11 +97,13 @@ public class UpdateThermostatScheduleEndpoint {
                                                                              EventSource.API);
                 }
             }
+        } catch (XPathException e) {
+            Element fe = XMLFailureGenerator.generateFailure(updateThermostatSchedule, e, "OtherException", e.getMessage());
+            resp.addContent(fe);
         } catch (Exception e) {
             Element fe = XMLFailureGenerator.generateFailure(updateThermostatSchedule, e, "OtherException", "An exception has been caught.");
             resp.addContent(fe);
         }
-
         return resp;
     }
 }

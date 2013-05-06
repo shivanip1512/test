@@ -29,6 +29,7 @@ public class DeleteThermostatScheduleEndpoint {
     @Autowired private AccountEventLogService accountEventLogService;
     @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
     @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private ThermostatScheduleHelper thermostatScheduleHelper;
 
     private Namespace ns = YukonXml.getYukonNamespace();
     
@@ -54,7 +55,7 @@ public class DeleteThermostatScheduleEndpoint {
        
             for (String scheduleName : scheduleNames) {
                 accountEventLogService.thermostatScheduleDeleteAttempted(yukonUser, customerAccount.getAccountNumber(), scheduleName, EventSource.API);   
-                Element thermostatScheduleNode = ThermostatScheduleHelper.addThermostatScheduleResultNode(ns, resultList, scheduleName);
+                Element thermostatScheduleNode = thermostatScheduleHelper.addThermostatScheduleResultNode(ns, resultList, scheduleName);
                 try{
                     AccountThermostatSchedule accountThermostatSchedule = accountThermostatScheduleDao.getSchedulesForAccountByScheduleName(customerAccount.getAccountId(), scheduleName);
                     accountThermostatScheduleDao.deleteById(accountThermostatSchedule.getAccountThermostatScheduleId());
