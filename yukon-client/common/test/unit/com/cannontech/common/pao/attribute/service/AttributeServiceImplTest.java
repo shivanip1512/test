@@ -42,7 +42,7 @@ public class AttributeServiceImplTest extends TestCase {
         PointServiceImpl pointService = new PointServiceImpl();
 
         pointDao = new MockPointDao();
-        pointService.pointDao = pointDao;
+        ReflectionTestUtils.setField(pointService, "pointDao", pointDao);
         ReflectionTestUtils.setField(service, "pointService", pointService);
 
         device = new SimpleDevice(1, 1019);

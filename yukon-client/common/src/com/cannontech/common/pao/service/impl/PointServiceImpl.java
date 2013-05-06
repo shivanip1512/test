@@ -44,7 +44,7 @@ public class PointServiceImpl implements PointService {
 
     @Autowired private AttributeService attributeService;
     @Autowired private DeviceGroupService deviceGroupService;
-    @Autowired public PointDao pointDao;
+    @Autowired private PointDao pointDao;
     @Autowired private RawPointHistoryDao rphDao;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;

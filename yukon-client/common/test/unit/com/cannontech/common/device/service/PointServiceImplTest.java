@@ -3,6 +3,8 @@ package com.cannontech.common.device.service;
 /**
  * Test class for PointServiceImpl
  */
+import org.springframework.test.util.ReflectionTestUtils;
+
 import junit.framework.TestCase;
 
 import com.cannontech.common.device.model.SimpleDevice;
@@ -22,7 +24,7 @@ public class PointServiceImplTest extends TestCase {
     protected void setUp() throws Exception {
 
         PointServiceImpl impl = new PointServiceImpl();
-        impl.pointDao = new MockPointDao();
+        ReflectionTestUtils.setField(impl, "pointDao", new MockPointDao());
 
         service = impl;
 
