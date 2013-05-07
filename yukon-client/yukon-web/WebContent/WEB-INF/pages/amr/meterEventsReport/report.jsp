@@ -208,7 +208,7 @@
 								<i:inline key=".filter.deviceGroup" arguments="${backingBean.deviceCollection.collectionParameters['group.name']}"/>
 							</c:when>
 							<c:otherwise>
-								<cti:msg key="${backingBean.deviceCollection.description}" />
+								<i:inline key="${backingBean.deviceCollection.description}" />
 							</c:otherwise>
 						</c:choose>
 					</span>

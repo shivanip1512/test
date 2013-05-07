@@ -10,7 +10,7 @@ public class DoubleType extends DefaultValidatedType<Double>{
 	private String renderer = null;
 	
 	public DoubleType() {
-		setRenderer("integerType.jsp");
+		setRenderer("doubleType.jsp");
 	}
 
 	@Override

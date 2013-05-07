@@ -149,6 +149,10 @@ public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask 
 		this.attributes = attributes;
 	}
 	
+	/*
+	 * Runs the meter events report using the parameters stored in this object. Returns a List of rows,
+	 * where each row is a String[], to be written out to csv. 
+	 */
 	private List<String[]> getDataRows() {
 		MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(getUserContext());
         
