@@ -3544,8 +3544,26 @@ INT Mct4xxDevice::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, 
                               ReturnMsg, pi_kw, peak_demand_str, kw_time);
     }
 
-    insertPointDataReport(PulseAccumulatorPointType, pointoffset,
-                          ReturnMsg, pi_kwh, meter_reading_str, kwh_time, 0.1, TAG_POINT_MUST_ARCHIVE);
+    if( !status ) 
+    {
+        // Only send the point report if we don't have an error after processing.
+        insertPointDataReport(
+           PulseAccumulatorPointType, 
+           pointoffset,
+           ReturnMsg, 
+           pi_kwh, 
+           meter_reading_str, 
+           kwh_time, 
+           0.1, 
+           TAG_POINT_MUST_ARCHIVE);
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Peak demand decode for \"" << getName() << "\" resulted in a status code of " << CtiNumStr(status) << ", not inserting kWh point data." << endl;
+        }
+    }
 
     if( !result_string.empty() )
     {
