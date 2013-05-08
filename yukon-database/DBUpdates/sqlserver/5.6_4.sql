@@ -251,4 +251,4 @@ WHERE JobId NOT IN (SELECT JobId
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/* INSERT INTO CTIDatabase VALUES ('5.6', '03-APR-2013', 'Latest Update', 4, GETDATE()); */
+INSERT INTO CTIDatabase VALUES ('5.6', '10-MAY-2013', 'Latest Update', 4, GETDATE());
