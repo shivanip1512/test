@@ -456,18 +456,8 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
 
                         try
                         {
-                            CtiLockGuard<CtiMutex> guard(_connectionListMutex);
-
-                            // Shutdown current connection before replacing it with a new one.  The connection is
-                            // maintained in a list for legacy reasons...
-                            // Someday remove the list?
-                            for each ( CtiFDRClientServerConnectionSPtr connection in _connectionList )
-                            {
-                                connection->stop();
-                            }
-                            _connectionList.clear();
-
                             CtiFDRClientServerConnectionSPtr newConnection = createNewConnection(tmpConnection);
+                            CtiLockGuard<CtiMutex> guard(_connectionListMutex);
                             _connectionList.push_back(newConnection);
                             newConnection->run();
                         }
