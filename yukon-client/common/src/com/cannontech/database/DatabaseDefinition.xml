@@ -162,6 +162,18 @@
         <data name="AddressName"/>
     </table>
 
+    <table name="LMGroupVersacom">
+        <primaryKey name="DeviceID" tableRef="LMGroup"/>
+        <data name="RouteID" tableRef="Route"  refType="MANY_TO_ONE" />
+        <data name="UtilityAddress"/>
+        <data name="SectionAddress"/>
+        <data name="ClassAddress"/>
+        <data name="DivisionAddress"/>
+        <data name="AddressUsage"/>
+        <data name="RelayUsage"/>
+        <data name="SerialAddress"/>
+    </table>
+
     <table name="LMProgram">
         <primaryKey name="DeviceId" tableRef="YukonPAObject"/>
         <data name="ControlType" />

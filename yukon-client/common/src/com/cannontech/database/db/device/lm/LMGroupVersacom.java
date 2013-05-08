@@ -133,7 +133,7 @@ public void retrieve() throws java.sql.SQLException
 		setSerialAddress( (String) results[7] );
 	}
 	else
-		throw new Error(getClass() + " - Incorrect Number of results retrieved");
+		throw new Error(getClass() + " - Incorrect Number of results retrieved: " + results.length);
 
 }
 /**

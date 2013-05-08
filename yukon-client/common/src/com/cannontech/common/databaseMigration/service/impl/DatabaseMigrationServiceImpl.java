@@ -332,7 +332,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     /**
      * Helper method to insert/update each item in the import list
      */
-    private void processElementList(final List<Element> importItemList,
+	private void processElementList(final List<Element> importItemList,
                                     ExportTypeEnum exportType,
                                     final ImportDatabaseMigrationStatus importDatabaseMigrationStatus,
                                     final PrintWriter logFileWriter) {
@@ -353,21 +353,6 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                 public Object doInTransaction(TransactionStatus status) {
                     try {
                         processElement(element, null, importDatabaseMigrationStatus);
-                    } catch (ConfigurationErrorException e) {
-                    	// Add to error list for display on the page
-                        importDatabaseMigrationStatus.addErrorListEntry(label, e.getMessage());
-                        
-                        String errorMessage = "Error (" + label + ") --> ";
-                        // Log to webserver log
-                        log.error(errorMessage, e);
-                        
-                        // Log to migration specific log
-                        logFileWriter.println(errorMessage);
-                        e.printStackTrace(logFileWriter);
-                        logFileWriter.println();
-                        
-                        status.setRollbackOnly();
-                        
                     } catch (Exception e) {
                     	// Add to error list for display on the page
                         importDatabaseMigrationStatus.addErrorListEntry(label, e.getMessage());

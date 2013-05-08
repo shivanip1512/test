@@ -36,6 +36,7 @@
 							<include field="LMGroupDeviceId" >
 								<table name="LMGroup" >
 									<references>
+										<table name="LMGroupVersacom"/>
 										<table name="LMGroupExpressCom" />
 										<table name="Point">
 											<references>
