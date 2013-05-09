@@ -1,6 +1,6 @@
 var stopJobId;
 jQuery(function() {
-	jQuery(document).on('yukonDialogConfirmOk', function(event) {
+    jQuery(document).on('yukonDialogConfirmOk', '#yukon_dialog_confirm', function(event) {
 	    event.preventDefault();
 	    //close the dialog
 	    Yukon.Dialog.ConfirmationManager.cancel();
@@ -12,7 +12,7 @@ jQuery(function() {
 	 	});
 	});
 	 
-	jQuery('table#jobsTable button.stopButton').on('click', function(event) {	
+	jQuery('table#jobsTable .stopButton').on('click', function(event) {	
 		var stopButton = event.currentTarget;
 		stopJobId = stopButton.id.replace('cancel_', '');
 	});

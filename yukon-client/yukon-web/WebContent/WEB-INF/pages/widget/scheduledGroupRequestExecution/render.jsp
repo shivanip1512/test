@@ -69,7 +69,7 @@
 	                        countKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_SUCCESS_RESULTS_COUNT_FOR_JOB"
 	                        failureCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_FAILURE_RESULTS_COUNT_FOR_JOB"
 	                        borderClasses="scheduledRequestProgressBarBorder" hideCount="true" hidePercent="true"/></span>
-	                    <a id="cancel_${jobWrapper.job.id}" href="javascript:void(0);" class="icon icon_remove stopButton" title="<cti:msg2 key="yukon.common.cancel"/>">&nbsp;</a>
+	                    <i id="cancel_${jobWrapper.job.id}" class="icon icon_remove stopButton" title="<cti:msg2 key="yukon.common.cancel"/>"></i>
 	                	<d:confirm on="#cancel_${jobWrapper.job.id}" nameKey="cancelConfirm" argument="${jobWrapper.name}" />
 	                </span>
 	            </td>

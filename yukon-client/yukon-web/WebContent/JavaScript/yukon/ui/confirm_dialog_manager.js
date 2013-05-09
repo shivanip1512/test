@@ -144,7 +144,7 @@ if(typeof(Yukon.Dialog.ConfirmationManager) === 'undefined'){
                     buttons[0].click = function(){window.location = element.data("href");};
                 }
                 //is the intent to submit a form on ok?
-                else if (element.attr("type").toLowerCase() == "submit") {
+                else if (element.attr("type") != undefined && element.attr("type").toLowerCase() == "submit") {
                     buttons[0].click = function() {
                     	var form = element.closest("form")[0];
                     	if(!(typeof(element.attr("value")) == "undefined") 
