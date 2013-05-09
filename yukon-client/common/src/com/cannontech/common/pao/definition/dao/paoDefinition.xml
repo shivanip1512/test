@@ -5838,25 +5838,25 @@
             </point>
             <point type="Analog" offset="216">
                 <name>Over Voltage Measured</name>
-                <multiplier value="0.01"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="4"/>
             </point>
             <point type="Analog" offset="217">
                 <name>Over Voltage Threshold</name>
-                <multiplier value="0.01"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="4"/>
             </point>
             <point type="Analog" offset="218">
                 <name>Under Voltage Measured</name>
-                <multiplier value="0.01"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="4"/>
             </point>
             <point type="Analog" offset="219">
                 <name>Under Voltage Threshold</name>
-                <multiplier value="0.01"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="4"/>
             </point>
