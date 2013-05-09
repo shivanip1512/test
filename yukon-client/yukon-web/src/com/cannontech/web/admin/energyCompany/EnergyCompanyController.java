@@ -54,17 +54,17 @@ import com.google.common.collect.Maps;
 @Controller
 public class EnergyCompanyController {
     
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private StarsDatabaseCache starsDatabaseCache;
-    private RolePropertyDao rolePropertyDao;
-    private EnergyCompanyDtoValidator energyCompanyDtoValidator;
-    private EnergyCompanyService energyCompanyService;
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
-    private PaoDao paoDao;
-    private ECMappingDao ecMappingDao;
-    private YukonUserDao yukonUserDao;
-    private LoginService loginService;
-    private ConfigurationSource configurationSource;
+	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private EnergyCompanyDtoValidator energyCompanyDtoValidator;
+    @Autowired private EnergyCompanyService energyCompanyService;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private PaoDao paoDao;
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private LoginService loginService;
+    @Autowired private ConfigurationSource configurationSource;
 
     /* Energy Company Setup Home Page*/
     @RequestMapping("/energyCompany/home")
@@ -236,62 +236,5 @@ public class EnergyCompanyController {
             }
         }
         return parentLogins;
-    }
-
-    /* Dependencies */
-    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setEnergyCompanyDtoValidator(EnergyCompanyDtoValidator energyCompanyDtoValidator) {
-        this.energyCompanyDtoValidator = energyCompanyDtoValidator;
-    }
-    
-    @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
-    @Autowired
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
-    }
-    
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
-    }
-    
-    @Autowired
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-    
-    @Autowired
-    public void setLoginService(LoginService loginService) {
-        this.loginService = loginService;
-    }
-
-    @Autowired
-    public void setConfigurationSource(ConfigurationSource configurationSource) {
-        this.configurationSource = configurationSource;
     }
 }
