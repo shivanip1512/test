@@ -126,7 +126,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
             throw new DataIntegrityViolationException("Strategy name already in use.");
         }
     }
-    
+
     @Override
     @Transactional(readOnly = false)
     public boolean delete(int strategyId) {
@@ -207,6 +207,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         strategy.setTargetSettings(getPeakSettings(strategy));
         strategy.setVoltageViolationSettings(getVoltageViolationSettings(strategy));
         strategy.setPowerFactorCorrectionSetting(getPowerFactorCorrectionSetting(strategy));
+        strategy.setMinCommunicationPercentageSetting(getMinCommunicationPercentageSetting(strategy));
         
         return strategy;
     }
@@ -229,6 +230,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
             strategy.setTargetSettings(getPeakSettings(strategy));
             strategy.setVoltageViolationSettings(getVoltageViolationSettings(strategy));
             strategy.setPowerFactorCorrectionSetting(getPowerFactorCorrectionSetting(strategy));
+            strategy.setMinCommunicationPercentageSetting(getMinCommunicationPercentageSetting(strategy));
         }
         
         return strategies;
@@ -522,7 +524,7 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         sql.append("FROM CCStrategyTargetSettings banks, CCStrategyTargetSettings regulator, CCStrategyTargetSettings voltageMonitor");
         sql.append("WHERE banks.SettingName = regulator.SettingName");
         sql.append("  AND banks.SettingName = voltageMonitor.SettingName");
-        sql.append("  AND banks.SettingName").eq_k(PowerFactorCorrectionSettingName.POWER_FACTOR_CORRECTION);
+        sql.append("  AND banks.SettingName").eq_k(CommReportingPercentageSettingName.COMM_REPORTING_PERCENTAGE);
         sql.append("  AND banks.strategyid = regulator.strategyid");
         sql.append("  AND banks.strategyid = voltageMonitor.strategyid");
         sql.append("  AND banks.strategyid").eq(strategy.getStrategyID());
