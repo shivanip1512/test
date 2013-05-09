@@ -1,5 +1,6 @@
 package com.cannontech.yukon.api.consumer.endpoint;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jdom.Attribute;
@@ -46,7 +47,7 @@ public class DeleteThermostatScheduleEndpoint {
         Attribute versionAttribute = new Attribute("version", "1.0");
         resp.setAttribute(versionAttribute);
        
-        List<Element> thermostatScheduleResults = Lists.newArrayList();
+        List<Element> thermostatScheduleResults = new ArrayList<>();
         try {     
             LiteYukonUser yukonUser = customerAccountDao.getYukonUserByAccountId(customerAccount.getAccountId());
             List<String> scheduleNames = requestTemplate.evaluateAsStringList("//y:scheduleName");

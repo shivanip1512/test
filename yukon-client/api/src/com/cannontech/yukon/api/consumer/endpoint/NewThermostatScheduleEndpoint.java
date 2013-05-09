@@ -1,5 +1,6 @@
 package com.cannontech.yukon.api.consumer.endpoint;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jdom.Element;
@@ -25,7 +26,6 @@ import com.cannontech.yukon.api.stars.model.ThermostatSchedule;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
-import com.google.common.collect.Lists;
 
 
 @Endpoint
@@ -49,7 +49,7 @@ public class NewThermostatScheduleEndpoint {
         Element resp = new Element("newThermostatScheduleResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
             
-        List<Element> thermostatScheduleResults = Lists.newArrayList();
+        List<Element> thermostatScheduleResults = new ArrayList<>();
         try {          
             LiteYukonUser yukonUser = customerAccountDao.getYukonUserByAccountId(customerAccount.getAccountId());
             List<ThermostatSchedule> thermostatSchedules =
@@ -61,7 +61,7 @@ public class NewThermostatScheduleEndpoint {
                                                                            schedule.getSchedulableThermostatType().name(), schedule.getScheduleName(), EventSource.API);
                 Element thermostatScheduleResult = thermostatScheduleHelper.addThermostatScheduleResultNode(ns, schedule);
                 Element errors = new Element("errors", ns);
-                if (thermostatScheduleHelper.isValidSchedule(customerAccount.getAccountId(),schedule, errors, ns, false)) {
+                if (thermostatScheduleHelper.validateSchedule(customerAccount.getAccountId(),schedule, errors, ns, false)) {
                     AccountThermostatSchedule accountThermostatSchedule = thermostatScheduleHelper.convertToAccountThermostatSchedule(schedule,
                                                                                         customerAccount.getAccountId());
                     accountThermostatScheduleDao.save(accountThermostatSchedule);

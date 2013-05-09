@@ -92,12 +92,12 @@ public class ThermostatScheduleHelper {
      * 
      * @return true if no errors found
      */
-    public boolean isValidSchedule(int customerId, ThermostatSchedule schedule, Element errors,
+    public boolean validateSchedule(int customerId, ThermostatSchedule schedule, Element errors,
                                    Namespace ns, boolean isUpdate) {
-        return isValidThermostatScheduleMode(customerId, schedule, errors, ns)
-               & isValidScheduleName(customerId, schedule, isUpdate, errors, ns)
-               & isValidTimesOfWeek(schedule, errors, ns)
-               & isValidSchedulePeriods(schedule, errors, ns);
+        return validateThermostatScheduleMode(customerId, schedule, errors, ns)
+               & validateValidScheduleName(customerId, schedule, isUpdate, errors, ns)
+               & validateTimesOfWeek(schedule, errors, ns)
+               & validateSchedulePeriods(schedule, errors, ns);
     }
 
     /**
@@ -105,7 +105,7 @@ public class ThermostatScheduleHelper {
      * 
      * @return true if no errors found
      */
-    private boolean isValidThermostatScheduleMode(int customerId, ThermostatSchedule schedule,
+    private boolean validateThermostatScheduleMode(int customerId, ThermostatSchedule schedule,
                                                   Element errors, Namespace ns) {
         YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerId);
         Set<ThermostatScheduleMode> allowedThermostatScheduleModes =
@@ -122,7 +122,7 @@ public class ThermostatScheduleHelper {
      * 
      * @return true if no errors found
      */
-    private boolean isValidScheduleName(int customerId, ThermostatSchedule schedule, boolean isUpdate, Element errors, Namespace ns) {
+    private boolean validateValidScheduleName(int customerId, ThermostatSchedule schedule, boolean isUpdate, Element errors, Namespace ns) {
         if (!isUpdate) {
             AccountThermostatSchedule duplicateSchedule =
                 accountThermostatScheduleDao.findSchedulesForAccountByScheduleName(customerId, schedule.getScheduleName());
@@ -143,7 +143,7 @@ public class ThermostatScheduleHelper {
      * 
      * @return true if no errors found
      */
-    private boolean isValidTimesOfWeek(ThermostatSchedule schedule, Element errors, Namespace ns) {
+    private boolean validateTimesOfWeek(ThermostatSchedule schedule, Element errors, Namespace ns) {
         Set<TimeOfWeek> timesOfWeek = Sets.newHashSet(schedule.getSchedulePeriodContainer().keySet());
         Set<TimeOfWeek> allowedTimesOfWeek = schedule.getThermostatScheduleMode().getAssociatedTimeOfWeeks();
         for(TimeOfWeek tow: allowedTimesOfWeek ){
@@ -168,7 +168,7 @@ public class ThermostatScheduleHelper {
      * 
      * @return true if no errors found
      */
-    private boolean isValidSchedulePeriods(ThermostatSchedule schedule, Element errors, Namespace ns) {
+    private boolean validateSchedulePeriods(ThermostatSchedule schedule, Element errors, Namespace ns) {
         boolean isValidResult = true;
         SchedulableThermostatType thermostatType = schedule.getSchedulableThermostatType();
         Set<TimeOfWeek> timesOfWeek = schedule.getSchedulePeriodContainer().keySet();

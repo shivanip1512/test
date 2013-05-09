@@ -1,5 +1,6 @@
 package com.cannontech.yukon.api.consumer.endpoint;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jdom.Element;
@@ -25,7 +26,6 @@ import com.cannontech.yukon.api.stars.model.ThermostatSchedule;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
-import com.google.common.collect.Lists;
 
 @Endpoint
 public class UpdateThermostatScheduleEndpoint {
@@ -58,7 +58,7 @@ public class UpdateThermostatScheduleEndpoint {
                     requestTemplate.evaluate("/y:updateThermostatScheduleRequest/y:thermostatSchedule", 
                                              new NodeToElementMapperWrapper<ThermostatSchedule>(new ThermostatScheduleElementRequestMapper()));
                        
-            List<Element> thermostatScheduleResults = Lists.newArrayList();
+            List<Element> thermostatScheduleResults = new ArrayList<>();
             for (ThermostatSchedule schedule : thermostatSchedules) {
                 boolean newScheduleCreated = false;
                 Element thermostatScheduleResult = thermostatScheduleHelper.addThermostatScheduleResultNode(ns, schedule);
@@ -67,7 +67,7 @@ public class UpdateThermostatScheduleEndpoint {
                     accountThermostatScheduleDao.findSchedulesForAccountByScheduleName(customerAccount.getAccountId(),
                                                                                        schedule.getScheduleName());
                 if (scheduleToUpdate != null || addOnFail) {
-                    if (thermostatScheduleHelper.isValidSchedule(customerAccount.getAccountId(), schedule, errors,ns,
+                    if (thermostatScheduleHelper.validateSchedule(customerAccount.getAccountId(), schedule, errors,ns,
                                                                  true)) {
                         AccountThermostatSchedule accountThermostatSchedule =
                             thermostatScheduleHelper.convertToAccountThermostatSchedule(schedule,customerAccount.getAccountId());

@@ -10,6 +10,6 @@
 
     <context:annotation-config/>
        
-    <bean id="thermostatScheduleHelper" class="com.cannontech.yukon.api.consumer.endpoint.helper.ThermostatScheduleHelper"/>
+    <bean class="com.cannontech.yukon.api.consumer.endpoint.helper.ThermostatScheduleHelper"/>
     
 </beans>

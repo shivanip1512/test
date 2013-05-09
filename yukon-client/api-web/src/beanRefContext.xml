@@ -10,7 +10,7 @@
        <list>
             <value>com/cannontech/web/serverContext.xml</value>
             <value>com/cannontech/yukonWebExportedServicesContext.xml</value>
-            <value>com/cannontech/yukon/api/apiContext.xml</value>
+            <value>com/cannontech/yukon/api/eimContext.xml</value>
        </list>
      </constructor-arg>
      <constructor-arg>
