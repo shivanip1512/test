@@ -125,7 +125,7 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
                         field.setAttribute(attribute);
                         field.setAttributeField(rs.getEnum("AttributeField", AttributeField.class));
                     }
-                    field.setPattern(SqlUtils.convertDbValueToString(rs.getString("Pattern")));
+                    field.setPattern(rs.getString("Pattern"));
                     field.setMaxLength(rs.getInt("MaxLength"));
                     if(!StringUtils.isEmpty(SqlUtils.convertDbValueToString(rs.getString("PadSide")))){
                         field.setPadSide(rs.getEnum("PadSide", PadSide.class));
