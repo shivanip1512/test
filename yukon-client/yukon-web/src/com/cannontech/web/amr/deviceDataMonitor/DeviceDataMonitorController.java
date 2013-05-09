@@ -536,8 +536,8 @@ public class DeviceDataMonitorController {
         // Check vs the Point
         boolean useLimitedQuery = deviceCountSupportingAttribute > MAX_ROWS_FROM_ATTRIBUTE_POINT_QUERY;
         long deviceCountSupportingAttributePoint = useLimitedQuery ? 
-                pointService.countDevicesInGroupWithAttributePoint(monitoringGroup,attribute, MAX_ROWS_FROM_ATTRIBUTE_POINT_QUERY)
-                : pointService.countDevicesInGroupWithAttributePoint(monitoringGroup, attribute);
+                pointService.getCountDevicesInGroupWithAttributePoint(monitoringGroup,attribute, MAX_ROWS_FROM_ATTRIBUTE_POINT_QUERY)
+                : pointService.getCountDevicesInGroupWithAttributePoint(monitoringGroup, attribute);
 
         long missingPoints = deviceCountSupportingAttribute - deviceCountSupportingAttributePoint;
         if (missingPoints > 0) {

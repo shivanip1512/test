@@ -309,7 +309,7 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public SqlFragmentSource getAttributeLookupSql(Attribute attribute) {
         Map<PaoType, Map<Attribute, AttributeDefinition>> definitionMap = paoDefinitionDao.getPaoAttributeAttrDefinitionMap();
-        
+
         SetMultimap<PointIdentifier, PaoType> typesByPointIdentifier = HashMultimap.create();
         for (Entry<PaoType, Map<Attribute, AttributeDefinition>> entry : definitionMap.entrySet()) {
             AttributeDefinition attributeDefinition = entry.getValue().get(attribute);
@@ -319,27 +319,27 @@ public class AttributeServiceImpl implements AttributeService {
             PointIdentifier pointIdentifier = attributeDefinition.getPointTemplate().getPointIdentifier();
             typesByPointIdentifier.put(pointIdentifier, entry.getKey());
         }
-        
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT YPO.paObjectid, P.pointId");
         sql.append("FROM YukonPAObject YPO");
         sql.append("JOIN Point P ON YPO.paObjectId = P.paObjectId");
-        
+
         SqlFragmentCollection orCollection = SqlFragmentCollection.newOrCollection();
         for (Entry<PointIdentifier, Collection<PaoType>> entry : typesByPointIdentifier.asMap().entrySet()) {
             SqlStatementBuilder clause1 = new SqlStatementBuilder();
             clause1.append("(");
             clause1.append("YPO.Type").in(entry.getValue());
-            clause1.append("AND P.pointType").eq_k(entry.getKey().getPointType());
+            clause1.append("AND P.pointType").eq(entry.getKey().getPointType());
             clause1.append("AND P.pointOffset").eq_k(entry.getKey().getOffset());
             clause1.append(")");
             orCollection.add(clause1);
         }
-        
+
         if (!orCollection.isEmpty()) {
             sql.append("WHERE").appendFragment(orCollection);
         }
-        
+
         return sql;
     }
 

@@ -86,8 +86,8 @@ public interface PointService {
      *                                  depending on the size of the Device Group and all their attributes.
      * @return
      */
-    public int countDevicesInGroupWithAttributePoint(DeviceGroup group, Attribute attribute);
-    public int countDevicesInGroupWithAttributePoint(DeviceGroup group, Attribute attribute, int limitToRowCount);
+    public int getCountDevicesInGroupWithAttributePoint(DeviceGroup group, Attribute attribute);
+    public int getCountDevicesInGroupWithAttributePoint(DeviceGroup group, Attribute attribute, int limitToRowCount);
 
     /**
      * Out of the given Device Group, this returns only IDs which have both the given attribute and 

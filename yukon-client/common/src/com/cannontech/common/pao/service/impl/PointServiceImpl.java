@@ -138,7 +138,7 @@ public class PointServiceImpl implements PointService {
     public int getCountOfGroupAttributeStateGroup(DeviceGroup group, Attribute attribute,
                                                               LiteStateGroup stateGroup) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT PaoPointLookup.paObjectid");
+        sql.append("SELECT COUNT(*)");
         SqlFragmentSource lookupSql = attributeService.getAttributeLookupSql(attribute);
         sql.append("FROM (").appendFragment(lookupSql).append(") PaoPointLookup");
         sql.append("JOIN Point PT on PT.pointId = PaoPointLookup.pointId");
@@ -211,10 +211,10 @@ public class PointServiceImpl implements PointService {
      * the state group clause.
      */
     @Override
-    public int countDevicesInGroupWithAttributePoint(DeviceGroup group, Attribute attribute) {
+    public int getCountDevicesInGroupWithAttributePoint(DeviceGroup group, Attribute attribute) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlFragmentSource lookupSql = attributeService.getAttributeLookupSql(attribute);
-        sql.append("SELECT count(*)");
+        sql.append("SELECT COUNT(*)");
         sql.append("FROM (").appendFragment(lookupSql).append(") PaoPointLookup");
         sql.append("JOIN Point PT ON PT.pointId = PaoPointLookup.pointId");
         sql.append("WHERE");
@@ -230,7 +230,7 @@ public class PointServiceImpl implements PointService {
      * with TOP clauses.
      */
     @Override
-    public int countDevicesInGroupWithAttributePoint(DeviceGroup group,
+    public int getCountDevicesInGroupWithAttributePoint(DeviceGroup group,
             Attribute attribute, int limitToRowCount) {
         VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
         SqlBuilder sqla = builder.buildFor(DatabaseVendor.MS2000);
