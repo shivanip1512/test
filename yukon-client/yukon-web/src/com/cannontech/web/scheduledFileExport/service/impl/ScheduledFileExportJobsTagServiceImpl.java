@@ -25,18 +25,12 @@ public class ScheduledFileExportJobsTagServiceImpl implements ScheduledFileExpor
 		List<ScheduledRepeatingJob> exportJobs = scheduledFileExportService.getJobsByType(scheduleType);
 		List<ScheduledFileExportJobData> jobDataObjects = Lists.newArrayListWithCapacity(exportJobs.size());
 		
-		int startIndex = (page -1) * itemsPerPage;
-		
 		for(ScheduledRepeatingJob job : exportJobs) {
-			jobDataObjects.add(scheduledFileExportService.getExportJobData(job));
-		}
+            jobDataObjects.add(scheduledFileExportService.getExportJobData(job));
+        }
 		Collections.sort(jobDataObjects);
-		int endIndex = startIndex + itemsPerPage > exportJobs.size() ? exportJobs.size() : startIndex + itemsPerPage;
-		jobDataObjects = jobDataObjects.subList(startIndex, endIndex);
 		
-		SearchResult<ScheduledFileExportJobData> filterResult = new SearchResult<ScheduledFileExportJobData>();
-	    filterResult.setBounds(startIndex, itemsPerPage, exportJobs.size());
-		filterResult.setResultList(jobDataObjects);
+		SearchResult<ScheduledFileExportJobData> filterResult = SearchResult.pageBasedForWholeList(page, itemsPerPage, jobDataObjects);
         model.addAttribute("filterResult", filterResult);
 	}
 }

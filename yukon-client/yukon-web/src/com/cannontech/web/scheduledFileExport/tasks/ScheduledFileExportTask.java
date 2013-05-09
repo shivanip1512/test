@@ -1,10 +1,8 @@
 package com.cannontech.web.scheduledFileExport.tasks;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.List;
 
 import javax.mail.MessagingException;
@@ -134,7 +132,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 	protected File exportToCsvFile(List<String[]> dataRows) {
         File exportFile = getExportFile(DateTime.now() ,".csv");
         try (
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(exportFile)));
+            FileWriter writer = new FileWriter(exportFile);
         ){
             CSVWriter csvWriter = new CSVWriter(writer);
             csvWriter.writeAll(dataRows);
