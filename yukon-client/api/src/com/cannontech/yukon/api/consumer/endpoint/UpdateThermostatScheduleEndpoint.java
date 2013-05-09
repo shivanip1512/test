@@ -73,6 +73,8 @@ public class UpdateThermostatScheduleEndpoint {
                             thermostatScheduleHelper.convertToAccountThermostatSchedule(schedule,customerAccount.getAccountId());
                         if (scheduleToUpdate != null) {
                             accountThermostatSchedule.setAccountThermostatScheduleId(scheduleToUpdate.getAccountThermostatScheduleId());
+                        } else {
+                            newScheduleCreated = true;
                         }
                         accountThermostatScheduleDao.save(accountThermostatSchedule);
                         thermostatScheduleResult.addContent(new Element("success", ns));
