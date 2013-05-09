@@ -160,6 +160,7 @@
     <entry key="yukon.web.modules.adminSetup.routesAndSubstations.routeReasons.CHILD_DEFAULT">(member's default route)</entry>
     <entry key="yukon.web.modules.adminSetup.routesAndSubstations.routeAdded">Route Added Successfully</entry>    
     <entry key="yukon.web.modules.adminSetup.routesAndSubstations.routeRemoved">Route Removed Successfully</entry>    
+    <entry key="yukon.web.modules.adminSetup.routesAndSubstations.routeRemovedError">Route was not removed</entry>    
     <entry key="yukon.web.modules.adminSetup.routesAndSubstations.confirmRouteRemove.title">Remove Route {0}</entry>
     <entry key="yukon.web.modules.adminSetup.routesAndSubstations.confirmRouteRemove.message">Are you sure you want to remove the route {0}?</entry>
     

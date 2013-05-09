@@ -562,6 +562,7 @@ public class StarsAdminUtil {
 		EnergyCompanySettingDao energyCompanySettingDao = YukonSpringHook.getBean(EnergyCompanySettingDao.class);
 
 		energyCompanySettingDao.updateSettingValue(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, false, user, energyCompany.getEnergyCompanyId());
+		energyCompanySettingDao.updateSettingValue(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, false, user, member.getEnergyCompanyId());
 
 		DaoFactory.getRoleDao().updateGroupRoleProperty(energyCompany.getOperatorAdminGroup(),
 		                                                AdministratorRole.ROLEID,

@@ -4,11 +4,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.model.Substation;
 import com.cannontech.core.dao.PaoDao;
@@ -41,6 +43,7 @@ import com.google.common.collect.Maps;
 @RequestMapping("/energyCompany/routesAndSubstations/*")
 @Controller
 public class RouteAndSubstationController { 
+    private final Logger log = YukonLogManager.getLogger(RouteAndSubstationController.class);
 
     public enum Reason implements DisplayableEnum {
         CAN_DELETE(true),
@@ -136,9 +139,14 @@ public class RouteAndSubstationController {
                               int removeRoute, EnergyCompanyInfoFragment energyCompanyInfoFragment){
         // Validate Access
         energyCompanyService.verifyEditPageAccess(userContext.getYukonUser(), energyCompanyInfoFragment.getEnergyCompanyId());
-        
-        energyCompanyService.removeRouteFromEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId(), removeRoute);
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.routesAndSubstations.routeRemoved"));
+
+        int numberRoutesRemoved = energyCompanyService.removeRouteFromEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId(), removeRoute);
+        if (numberRoutesRemoved != 1) {
+        	log.error("Attempting to remove route id: " + removeRoute + " failed. Number of routes removed: " + numberRoutesRemoved);
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.routesAndSubstations.routeRemovedError"));
+        } else {
+        	flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.routesAndSubstations.routeRemoved"));
+        }
 
         setupModelMap(modelMap, energyCompanyInfoFragment, userContext);
         return "redirect:view";
@@ -223,15 +231,14 @@ public class RouteAndSubstationController {
         for (LiteYukonPAObject childDefault : allChildDefaultRoutes) {
             routeToReason.put(childDefault, Reason.CHILD_DEFAULT);
         }
-        
-        modelMap.addAttribute("isSingleEnergycompany", energyCompanySettingDao.getBoolean(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, energyCompany.getEnergyCompanyId()));
+
+        modelMap.addAttribute("isSingleEnergyCompany", energyCompanySettingDao.getBoolean(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, energyCompany.getEnergyCompanyId()));
         modelMap.addAttribute("ecRoutes", routeToReason);
 
         List<LiteSubstation> inheritedSubstations = getInheritedSubstations(energyCompany);
         modelMap.addAttribute("inheritedSubstations", inheritedSubstations);
         List<LiteSubstation> ecSubstations = getECSubstations(energyCompany);
         modelMap.addAttribute("ecSubstations", ecSubstations);
-
     }
 
     // Route Helper Methods
