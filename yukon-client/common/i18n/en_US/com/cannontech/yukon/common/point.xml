@@ -213,9 +213,9 @@
     <entry key="yukon.common.attribute.builtInAttribute.FORWARD_INDUCTIVE_KVARH">Forward Inductive kVARh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_INDUCTIVE_KVARH">Reverse Inductive kVARh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.FORWARD_INDUCTIVE_KVARH_PER_INTERVAL">Forward Inductive kVARh per Interval</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.FORWARD_CAPACITIVE_KVARH_PER_INTERVAL">Forward Capactive kVARh per Interval</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.FORWARD_CAPACITIVE_KVARH_PER_INTERVAL">Forward Capacitive kVARh per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_INDUCTIVE_KVARH_PER_INTERVAL">Reverse Inductive kVARh per Interval</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.REVERSE_CAPACITIVE_KVARH_PER_INTERVAL">Reverse Capactive kVARh per Interval</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.REVERSE_CAPACITIVE_KVARH_PER_INTERVAL">Reverse Capacitive kVARh per Interval</entry>
     
     <!-- BuiltInAttribute see note above about changing values-->
 </properties>

@@ -131,9 +131,9 @@ public enum BuiltInAttribute implements Attribute {
     SUM_KVARH_PER_INTERVAL("Sum kVArh per Interval"),
     WATER_USAGE_PER_INTERVAL("Water Usage per Interval"),
     FORWARD_INDUCTIVE_KVARH_PER_INTERVAL("Forward Inductive kVARh per Interval"),
-    FORWARD_CAPACITIVE_KVARH_PER_INTERVAL("Forward Capactive kVARh per Interval"),
+    FORWARD_CAPACITIVE_KVARH_PER_INTERVAL("Forward Capacitive kVARh per Interval"),
     REVERSE_INDUCTIVE_KVARH_PER_INTERVAL("Reverse Inductive kVARh per Interval"),
-    REVERSE_CAPACITIVE_KVARH_PER_INTERVAL("Reverse Capactive kVARh per Interval"),
+    REVERSE_CAPACITIVE_KVARH_PER_INTERVAL("Reverse Capacitive kVARh per Interval"),
     
     DELIVERED_KW_LOAD_PROFILE("Delivered kW Load Profile"),
     RECEIVED_KW_LOAD_PROFILE("Received kW Load Profile"),

@@ -1704,6 +1704,19 @@
             <modifiers match="equal"></modifiers>
         </point>
     </pointGroup>
+    
+    <pointGroup>
+    <!-- 2013-05-09   
+         RFN440-213xT ELO device family  SEE: YUK-12163 
+         The channel data has not been finalized by the firmware team yet, 
+         these point mappings will be added when data becomes available. --> 
+        <paoType value="RFN440_2131T"/>
+        <paoType value="RFN440_2131TD"/>
+        <paoType value="RFN440_2132T"/>
+        <paoType value="RFN440_2132TD"/>
+        <paoType value="RFN440_2133T"/>
+        <paoType value="RFN440_2133TD"/>
+    </pointGroup>
 
 
 <!--  ################################################  START: Non-Standard RFN Mappings  ################################################  -->

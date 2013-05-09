@@ -2101,7 +2101,7 @@
                 <basicLookup point="Current Phase B" />
             </attribute>
             <attribute name="POWER_FACTOR_PHASE_B">
-                <basicLookup point="Phase B Power Factor" />
+                <basicLookup point="Power Factor Phase B" />
             </attribute>
             <attribute name="VOLTAGE_PHASE_C">
                 <basicLookup point="Voltage Phase C" />
@@ -7720,13 +7720,13 @@
                 <init>true</init>
                 <name>Delivered kWh per Interval</name>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="kWh"/>
+                <unitofmeasure value="kWH"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="183">
                 <name>Received kWh per Interval</name>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="kWh"/>
+                <unitofmeasure value="kWH"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="220">
