@@ -7,7 +7,6 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.message.porter.message.Return;
-import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
@@ -33,9 +32,9 @@ public class ODEvent extends MultispeakEvent{
 	 * @param vendorName_
 	 * @param pilMessageID_
 	 */
-	public ODEvent(MultispeakVendor mspVendor_, long pilMessageID_, String transactionID_)
+	public ODEvent(MultispeakVendor mspVendor_, long pilMessageID_, String transactionID_, String responseUrl)
 	{
-		super(mspVendor_, pilMessageID_, transactionID_);
+		super(mspVendor_, pilMessageID_, transactionID_, responseUrl);
 	}
 
     public OutageDetectionEvent getOutageDetectionEvent()
@@ -69,6 +68,7 @@ public class ODEvent extends MultispeakEvent{
      * @param event The OD event for the Return message
      * @param returnMsg The Pil return message
      */
+    @Override
     public boolean messageReceived(Return returnMsg) {
 
         YukonMeter meter = meterDao.getYukonMeterForId(returnMsg.getDeviceID());
@@ -109,29 +109,30 @@ public class ODEvent extends MultispeakEvent{
      * Send an ODEventNotification to the OMS webservice containing odEvents 
      * @param odEvents
      */
+    @Override
     public void eventNotification() {
         
-        String endpointURL = getMspVendor().getEndpointURL(MultispeakDefines.OA_Server_STR);
-        CTILogger.info("Sending ODEventNotification ("+ endpointURL+ "): Meter Number " + getOutageDetectionEvent().getObjectID());
+        CTILogger.info("Sending ODEventNotification ("+ getResponseUrl() + "): Meter Number " + getOutageDetectionEvent().getObjectID());
         
         try {
             OutageDetectionEvent[] odEvents = new OutageDetectionEvent[1];
             odEvents [0] = getOutageDetectionEvent();
             
-            OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(getMspVendor());
+            OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(getMspVendor(), getResponseUrl());
             if (port != null) {
                 ErrorObject[] errObjects = port.ODEventNotification(odEvents, getTransactionID());
                 if( errObjects != null)
-                    ((MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs")).logErrorObjects(endpointURL, "ODEventNotification", errObjects);
+                    ((MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs")).logErrorObjects(getResponseUrl(), "ODEventNotification", errObjects);
             } else {
                 CTILogger.error("Port not found for OA_Server (" + getMspVendor().getCompanyName() + ")");
             }
         } catch (RemoteException e) {
-            CTILogger.error("TargetService: " + endpointURL + " - initiateOutageDetection (" + getMspVendor().getCompanyName() + ")");
+            CTILogger.error("TargetService: " + getResponseUrl() + " - initiateOutageDetection (" + getMspVendor().getCompanyName() + ")");
             CTILogger.error("RemoteExceptionDetail: " + e.getMessage());
         }
     }
     
+    @Override
     public boolean isPopulated() {
         //Technically this object is always/never populated because it is asynchronous. 
         return true;

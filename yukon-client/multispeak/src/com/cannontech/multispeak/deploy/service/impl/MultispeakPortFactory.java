@@ -3,7 +3,6 @@ package com.cannontech.multispeak.deploy.service.impl;
 import javax.xml.rpc.ServiceException;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.deploy.service.CB_ServerLocator;
 import com.cannontech.multispeak.deploy.service.CB_ServerSoap_BindingStub;
@@ -31,22 +30,15 @@ import com.cannontech.multispeak.deploy.service.OD_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.OD_ServerSoap_PortType;
 
 public class MultispeakPortFactory {
-    /**
-     * Get a new CB_Server port instance using the endpoint URL configured in Yukon.
-     */
-    public static CB_ServerSoap_BindingStub getCB_ServerPort(MultispeakVendor mspVendor) {
-        String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
-        return getCB_ServerPort(mspVendor, endpointURL);
-    }
 
 	/**
 	 * Get a new CB_Server port instance using the specified endpoint URL. 
 	 */
 	public static CB_ServerSoap_BindingStub getCB_ServerPort(MultispeakVendor mspVendor,
-	                                                         String endpointURL) {
+	                                                         String endpointUrl) {
 
 		CB_ServerLocator service = new CB_ServerLocator();
-        service.setCB_ServerSoapEndpointAddress(endpointURL);
+        service.setCB_ServerSoapEndpointAddress(endpointUrl);
         
         CB_ServerSoap_PortType port = null;
         try {
@@ -69,16 +61,10 @@ public class MultispeakPortFactory {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public static CB_ServerSoap_BindingStub getCB_CDPort(MultispeakVendor mspVendor) {
+	public static CB_ServerSoap_BindingStub getCB_CDPort(MultispeakVendor mspVendor, String endpointUrl) {
 
 		CB_ServerLocator service = new CB_ServerLocator();
-		String endpoint = mspVendor.getEndpointURL(MultispeakDefines.CB_CD_STR);
-		if (endpoint == "") {
-			//Couldn't find an endpoint for CB_CD...lets try the new way!
-			CTILogger.info("CB_CD service is not defined for company(" + mspVendor.getCompanyName()+ ") - Will try CB_Server instead.");
-			endpoint = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
-		}
-        service.setCB_ServerSoapEndpointAddress(endpoint);
+        service.setCB_ServerSoapEndpointAddress(endpointUrl);
         
         CB_ServerSoap_PortType port = null;
         try {
@@ -102,10 +88,10 @@ public class MultispeakPortFactory {
      * @return
      * @throws ServiceException
      */
-    public static MR_ServerSoap_BindingStub getMR_ServerPort(MultispeakVendor mspVendor) {
+    public static MR_ServerSoap_BindingStub getMR_ServerPort(MultispeakVendor mspVendor, String endpointUrl) {
 
         MR_ServerLocator service = new MR_ServerLocator();
-        service.setMR_ServerSoapEndpointAddress(mspVendor.getEndpointURL(MultispeakDefines.MR_Server_STR));
+        service.setMR_ServerSoapEndpointAddress(endpointUrl);
         
         MR_ServerSoap_PortType port = null;
         try {
@@ -128,10 +114,10 @@ public class MultispeakPortFactory {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public static CD_ServerSoap_BindingStub getCD_ServerPort(MultispeakVendor mspVendor) {
+	public static CD_ServerSoap_BindingStub getCD_ServerPort(MultispeakVendor mspVendor, String endpointUrl) {
 
 		CD_ServerLocator service = new CD_ServerLocator();
-        service.setCD_ServerSoapEndpointAddress(mspVendor.getEndpointURL(MultispeakDefines.CD_Server_STR));
+        service.setCD_ServerSoapEndpointAddress(endpointUrl);
         
         CD_ServerSoap_PortType port = null;
         try {
@@ -153,10 +139,10 @@ public class MultispeakPortFactory {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public static OA_ServerSoap_BindingStub getOA_ServerPort(MultispeakVendor mspVendor) {
+	public static OA_ServerSoap_BindingStub getOA_ServerPort(MultispeakVendor mspVendor, String endpointUrl) {
 
 		OA_ServerLocator service = new OA_ServerLocator();
-        service.setOA_ServerSoapEndpointAddress(mspVendor.getEndpointURL(MultispeakDefines.OA_Server_STR));
+        service.setOA_ServerSoapEndpointAddress(endpointUrl);
         
         OA_ServerSoap_PortType port = null;
         try { 
@@ -178,10 +164,10 @@ public class MultispeakPortFactory {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public static OD_ServerSoap_BindingStub getOD_ServerPort(MultispeakVendor mspVendor) {
+	public static OD_ServerSoap_BindingStub getOD_ServerPort(MultispeakVendor mspVendor, String endpointUrl) {
 
 		OD_ServerLocator service = new OD_ServerLocator();
-        service.setOD_ServerSoapEndpointAddress(mspVendor.getEndpointURL(MultispeakDefines.OD_Server_STR));
+        service.setOD_ServerSoapEndpointAddress(endpointUrl);
         
         OD_ServerSoap_PortType port = null;
         try {
@@ -203,10 +189,10 @@ public class MultispeakPortFactory {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public static EA_ServerSoap_BindingStub getEA_ServerPort(MultispeakVendor mspVendor) {
+	public static EA_ServerSoap_BindingStub getEA_ServerPort(MultispeakVendor mspVendor, String endpointUrl) {
 
 		EA_ServerLocator service = new EA_ServerLocator();
-        service.setEA_ServerSoapEndpointAddress(mspVendor.getEndpointURL(MultispeakDefines.EA_Server_STR));
+        service.setEA_ServerSoapEndpointAddress(endpointUrl);
         
         EA_ServerSoap_PortType port = null;
         try {
@@ -228,10 +214,10 @@ public class MultispeakPortFactory {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public static LM_ServerSoap_BindingStub getLM_ServerPort(MultispeakVendor mspVendor) {
+	public static LM_ServerSoap_BindingStub getLM_ServerPort(MultispeakVendor mspVendor, String endpointUrl) {
 
 		LM_ServerLocator service = new LM_ServerLocator();
-        service.setLM_ServerSoapEndpointAddress(mspVendor.getEndpointURL(MultispeakDefines.LM_Server_STR));
+        service.setLM_ServerSoapEndpointAddress(endpointUrl);
         
         LM_ServerSoap_PortType port = null;
         try {
@@ -248,20 +234,11 @@ public class MultispeakPortFactory {
 	}
 
     /**
-     * Get a new MDM_Server port instance using the endpoint URL configured in Yukon.
+     * Get a new MDM_Server port instance using the specified endpointUrlL.
      */
-    public static MDM_ServerSoap_PortType getMDM_ServerPort(MultispeakVendor mspVendor) {
-        String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.MDM_Server_STR);
-        return getMDM_ServerPort(mspVendor, endpointURL);
-   }
-
-    /**
-     * Get a new MDM_Server port instance using the specified endpoint URL.
-     */
-    public static MDM_ServerSoap_PortType getMDM_ServerPort(MultispeakVendor mspVendor,
-                                                            String endpointURL) {
+    public static MDM_ServerSoap_PortType getMDM_ServerPort(MultispeakVendor mspVendor, String endpointUrl) {
         MDM_ServerLocator service = new MDM_ServerLocator();
-        service.setMDM_ServerSoapEndpointAddress(endpointURL);
+        service.setMDM_ServerSoapEndpointAddress(endpointUrl);
 
         MDM_ServerSoap_PortType port = null;
         try {

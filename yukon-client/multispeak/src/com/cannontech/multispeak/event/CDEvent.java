@@ -14,7 +14,6 @@ import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.porter.message.Return;
-import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.deploy.service.CB_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.LoadActionCode;
@@ -41,16 +40,16 @@ public class CDEvent extends MultispeakEvent{
      * @param returnMessages_
      */
     public CDEvent(MultispeakVendor mspVendor_, long pilMessageID_, int returnMessages_, 
-            String transactionID_) {
-        super(mspVendor_, pilMessageID_, returnMessages_, transactionID_ );
+            String transactionID_, String responseUrl) {
+        super(mspVendor_, pilMessageID_, returnMessages_, transactionID_ , responseUrl);
     }
     
 	/**
 	 * @param mspVendor_
 	 * @param pilMessageID_
 	 */
-	public CDEvent(MultispeakVendor mspVendor_, long pilMessageID_, String transactionID_) {
-		this(mspVendor_, pilMessageID_, 1, transactionID_);
+	public CDEvent(MultispeakVendor mspVendor_, long pilMessageID_, String transactionID_, String responseUrl) {
+		this(mspVendor_, pilMessageID_, 1, transactionID_, responseUrl);
 	}
 
     public LoadActionCode getLoadActionCode() {
@@ -106,6 +105,7 @@ public class CDEvent extends MultispeakEvent{
             setLoadActionCode(LoadActionCode.Unknown);
     }
     
+    @Override
     public boolean messageReceived(Return returnMsg)
     {
         YukonMeter meter = meterDao.getYukonMeterForId(returnMsg.getDeviceID());
@@ -142,27 +142,27 @@ public class CDEvent extends MultispeakEvent{
      * Send an CDEventNotification to the CB_Server webservice containing cdEvents 
      * @param cdEvents
      */
+    @Override
     public void eventNotification()
     {
-        String endpointURL = getMspVendor().getEndpointURL(MultispeakDefines.CB_CD_STR);
-
-        CTILogger.info("Sending CDStateChangedNotification ("+ endpointURL+ "): Meter Number " + getMeterNumber());
+        CTILogger.info("Sending CDStateChangedNotification ("+ getResponseUrl() + "): Meter Number " + getMeterNumber());
 
         try
         {
-            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(getMspVendor());
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(getMspVendor(), getResponseUrl());
             if (port != null) {
                 port.CDStateChangedNotification(getMeterNumber(), getLoadActionCode(), getTransactionID(), "errorString?");
             } else {
                 CTILogger.error("Port not found for CB_Server (" + getMspVendor().getCompanyName() + ")");
             }  
         } catch (RemoteException e) {
-            CTILogger.error("TargetService: " + endpointURL + " - initiateConnectDisconnect (" + getMspVendor().getCompanyName() + ")");
+            CTILogger.error("TargetService: " + getResponseUrl() + " - initiateConnectDisconnect (" + getMspVendor().getCompanyName() + ")");
             CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
             e.printStackTrace();
         }   
     }
     
+    @Override
     public boolean isPopulated() {
         return (getLoadActionCode() != null); 
     }

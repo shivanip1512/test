@@ -24,23 +24,26 @@ public abstract class MultispeakEvent implements MspEvent{
     private int returnMessages = 0;
     /** The transactionID provided from the calling web service request. */
     private String transactionID = null;
+    /** The responseURL to send notification message to **/
+    private String responseUrl = null;
 	/**
 	 * 
 	 */
-	public MultispeakEvent(MultispeakVendor mspVendor_, long pilMessageID_, String transactionID_) {
-		this(mspVendor_, pilMessageID_, 1, transactionID_);
+	public MultispeakEvent(MultispeakVendor mspVendor_, long pilMessageID_, String transactionID_, String responseUrl) {
+		this(mspVendor_, pilMessageID_, 1, transactionID_, responseUrl);
 	}
 
     /**
      * 
      */
     public MultispeakEvent(MultispeakVendor mspVendor_, long pilMessageID_, 
-            int returnMessages_, String transactionID_) {
+            int returnMessages_, String transactionID_, String responseUrl) {
         super();
         mspVendor = mspVendor_;
         pilMessageID = pilMessageID_;
         returnMessages = returnMessages_;
         transactionID = transactionID_;
+        this.responseUrl = responseUrl;
     }
 	/**
 	 * @return
@@ -98,6 +101,14 @@ public abstract class MultispeakEvent implements MspEvent{
         this.transactionID = transactionID;
     }
 
+    public String getResponseUrl() {
+        return responseUrl;
+    }
+    
+    public void setResponseUrl(String responseUrl) {
+        this.responseUrl = responseUrl;
+    }
+    
     public void updateReturnMessageCount() {
         if( getReturnMessages() > 0)
             returnMessages--;

@@ -135,7 +135,8 @@ public class CD_ServerImpl implements CD_ServerSoap_PortType
         ErrorObject[] errorObjects = new ErrorObject[0];
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        errorObjects = multispeakMeterService.cdEvent(vendor, cdEvents, transactionID);
+        String actualResponseURL = multispeakFuncs.getEndpointURL(vendor, responseURL, MultispeakDefines.CB_CD_STR, MultispeakDefines.CB_Server_STR);
+        errorObjects = multispeakMeterService.cdEvent(vendor, cdEvents, transactionID, actualResponseURL);
         
         multispeakFuncs.logErrorObjects(MultispeakDefines.CD_Server_STR, "initiateConnectDisconnect", errorObjects);
         return errorObjects;

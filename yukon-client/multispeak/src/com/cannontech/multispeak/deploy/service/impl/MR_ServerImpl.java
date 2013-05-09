@@ -255,7 +255,10 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     	
         //Custom hack put in only for SEDC.  Performs an actual meter read instead of simply replying from the database.
         if ( vendor.getCompanyName().equalsIgnoreCase("SEDC") && canInitiatePorterRequest) {
-        	return multispeakMeterService.getLatestReadingInterrogate(vendor, meter, null);
+            
+            // Don't know the responseURL as it's not provided in this method (by definition!) Using default for SEDC.
+            String responseUrl = multispeakFuncs.getEndpointURL(vendor, null, MultispeakDefines.CB_Server_STR);
+        	return multispeakMeterService.getLatestReadingInterrogate(vendor, meter, null, responseUrl);
         } else	{ //THIS SHOULD BE WHERE EVERYONE ELSE GOES!!!
             try {
                 MeterRead meterRead = meterReadProcessingService.createMeterRead(meter);
@@ -379,14 +382,15 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         ErrorObject[] errorObjects = new ErrorObject[0];
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-
+        String actualResponseUrl = multispeakFuncs.getEndpointURL(vendor, responseURL, MultispeakDefines.CB_Server_STR);
+        
         if ( ! porterConnection.isValid() ) {
             String message = "Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.";
             log.error(message);
             throw new RemoteException(message);
         }
 
-        errorObjects = multispeakMeterService.meterReadEvent(vendor, meterNos, transactionID);
+        errorObjects = multispeakMeterService.meterReadEvent(vendor, meterNos, transactionID, actualResponseUrl);
 
         multispeakFuncs.logErrorObjects(MultispeakDefines.MR_Server_STR, "initiateMeterReadByMeterNumberRequest", errorObjects);
         return errorObjects;
@@ -709,7 +713,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         ErrorObject[] errorObjects = new ErrorObject[0];
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-
+        String actualResponseUrl = multispeakFuncs.getEndpointURL(vendor, responseURL, MultispeakDefines.CB_Server_STR);
         if ( ! porterConnection.isValid() ) {
             String message = "Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.";
             log.error(message);                
@@ -719,7 +723,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         FormattedBlockProcessingService<Block> formattedBlockServ = 
             mspValidationService.getProcessingServiceByReadingType(readingTypesMap, readingType);
         
-        errorObjects = multispeakMeterService.blockMeterReadEvent(vendor, meterNo, formattedBlockServ, transactionID);
+        errorObjects = multispeakMeterService.blockMeterReadEvent(vendor, meterNo, formattedBlockServ, transactionID, actualResponseUrl);
 
         multispeakFuncs.logErrorObjects(MultispeakDefines.MR_Server_STR, "initiateMeterReadByMeterNumberRequest", errorObjects);
         return errorObjects;
@@ -858,11 +862,15 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             String responseURL, String transactionId, Float expirationTime)
             throws RemoteException {
         init();
-
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        
         List<ErrorObject> errors = Lists.newArrayList();
         boolean hasFatalErrors = false;
+        
+        String actualResponseUrl = multispeakFuncs.getEndpointURL(vendor, responseURL, MultispeakDefines.CB_Server_STR);
+        
         // Do a basic URL check. This only validates that it's not empty.
-        ErrorObject errorObject = mspValidationService.validateResponseURL(responseURL, "Meter",
+        ErrorObject errorObject = mspValidationService.validateResponseURL(actualResponseUrl, "Meter",
                                                                           "InitiateDemandReset");
         if (errorObject != null) {
             errors.add(errorObject);
@@ -879,7 +887,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             };
         Set<String> meterNumbers =
                 Sets.newHashSet(Lists.transform(meterIdentifierList, meterNumberFromIdentifier));
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        
         Map<String, PaoIdentifier> paoIdsByMeterNumber =
                 paoDao.findPaoIdentifiersByMeterNumber(meterNumbers);
         Map<PaoIdentifier, String> meterNumbersByPaoId =

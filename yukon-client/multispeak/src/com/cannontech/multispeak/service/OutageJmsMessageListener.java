@@ -63,7 +63,11 @@ public class OutageJmsMessageListener implements MessageListener {
         for (MultispeakVendor mspVendor : allVendors) {
 
             if (mspVendor.getMspInterfaceMap().get(MultispeakDefines.OA_Server_STR) != null) {
-                OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(mspVendor);
+                
+                // This is a solicited method call, no responseUrl is known.
+                String endpointUrl = multispeakFuncs.getEndpointURL(mspVendor, null, MultispeakDefines.OA_Server_STR); 
+                                                                    
+                OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(mspVendor, endpointUrl);
                 
                 if (port != null) {
                     try {
@@ -116,19 +120,21 @@ public class OutageJmsMessageListener implements MessageListener {
         OutageDetectionEvent outageDetectionEvent = getOutageDetectionEvent(outageJmsMessage);
         
         for (MultispeakVendor mspVendor : vendorsToSendOutageMsg) {
-            String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.OA_Server_STR);
-            log.info("Sending ODEventNotification ("+ endpointURL + "): ObjectID: " + outageDetectionEvent.getObjectID() + " Type: " + outageDetectionEvent.getOutageEventType());
+            // This is an unsolicited method call happening in a solicited way, no responseUrl is known.
+            String endpointUrl = multispeakFuncs.getEndpointURL(mspVendor, null, MultispeakDefines.OA_Server_STR);
+            
+            log.info("Sending ODEventNotification ("+ endpointUrl + "): ObjectID: " + outageDetectionEvent.getObjectID() + " Type: " + outageDetectionEvent.getOutageEventType());
             
             try {
                 OutageDetectionEvent[] odEvents = new OutageDetectionEvent[1];
                 odEvents [0] = outageDetectionEvent;
                 
-                OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(mspVendor);
+                OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(mspVendor, endpointUrl);
                 if (port != null) {
                     String transactionId = String.valueOf(atomicLong.getAndIncrement());
                     ErrorObject[] errObjects = port.ODEventNotification(odEvents, transactionId);
                     if( errObjects != null && errObjects.length > 0) {
-                        multispeakFuncs.logErrorObjects(endpointURL, "ODEventNotification", errObjects);
+                        multispeakFuncs.logErrorObjects(endpointUrl, "ODEventNotification", errObjects);
                     } else {
                         outageEventLogService.mspMessageSentToVendor(outageJmsMessage.getSource(), 
                                                                      outageDetectionEvent.getOutageEventType().toString(), 
@@ -141,7 +147,7 @@ public class OutageJmsMessageListener implements MessageListener {
                     return;
                 }
             } catch (RemoteException e) {
-                log.error("TargetService: " + endpointURL + " - initiateOutageDetection (" + mspVendor.getCompanyName() + ")");
+                log.error("TargetService: " + endpointUrl + " - initiateOutageDetection (" + mspVendor.getCompanyName() + ")");
                 log.error("RemoteExceptionDetail: " + e.getMessage());
             }
         }

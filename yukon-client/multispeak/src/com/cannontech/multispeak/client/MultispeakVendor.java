@@ -203,15 +203,7 @@ public class MultispeakVendor
     public MultispeakMeterLookupFieldEnum[] getMeterLookupFields() {
         return meterLookupFields;
     }
-    
-    public String getEndpointURL(String service) {
-		MultispeakInterface mspInterface = getMspInterfaceMap().get(service);
-		String endpointURL = "";
-		if( mspInterface != null)
-			endpointURL = getUrl() + mspInterface.getMspEndpoint();
-		return endpointURL;
-    }
-    
+
     public SOAPHeaderElement getHeader() {
     	YukonMultispeakMsgHeader yukonMspMsgHeader = new YukonMultispeakMsgHeader(getOutUserName(), getOutPassword());
         SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", yukonMspMsgHeader);

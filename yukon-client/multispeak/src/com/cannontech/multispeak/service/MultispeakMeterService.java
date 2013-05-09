@@ -55,7 +55,7 @@ public interface MultispeakMeterService {
      */
     public MeterRead getLatestReadingInterrogate(MultispeakVendor mspVendor, 
             YukonMeter meter,
-            String transactionID);
+            String transactionID, String responseUrl);
 
 	/**
 	 * Send a ping command to pil connection for each meter in meterNumbers.
@@ -64,7 +64,7 @@ public interface MultispeakMeterService {
 	 */
 	public ErrorObject[] odEvent(MultispeakVendor vendor, 
 	        String[] meterNumbers,
-	        String transactionID) throws RemoteException;
+	        String transactionID, String responseUrl) throws RemoteException;
 	
     /**
      * Initiate reads for all meterNumber and fire ReadingChangedNotification on callback.
@@ -74,7 +74,7 @@ public interface MultispeakMeterService {
      */
     public ErrorObject[] meterReadEvent(MultispeakVendor vendor, 
             String[] meterNumbers,
-            String transactionID);
+            String transactionID, String responseUrl);
 
     /**
      * Initiate reads for meterNumber and fire FormattedBlockChangeNotification on callback.
@@ -88,7 +88,7 @@ public interface MultispeakMeterService {
     public ErrorObject[] blockMeterReadEvent(MultispeakVendor vendor,
                                              String meterNumber,
                                              FormattedBlockProcessingService<Block> blockProcessingService,
-                                             String transactionId);
+                                             String transactionId, String responseUrl);
     
     /**
      * Send a ping command to pil connection for each meter in meterNumbers.
@@ -97,7 +97,7 @@ public interface MultispeakMeterService {
      */
     public ErrorObject[] cdEvent(MultispeakVendor vendor, 
             ConnectDisconnectEvent [] cdEvents,
-            String transactionID) throws RemoteException;
+            String transactionID, String responseURL) throws RemoteException;
 
     /**
      * Add MeterNos to SystemGroupEnum.DISCONNECTSTATUS Device Group. 

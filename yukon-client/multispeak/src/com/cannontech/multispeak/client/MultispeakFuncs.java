@@ -49,6 +49,7 @@ import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.data.MspLoadActionCode;
 import com.cannontech.multispeak.data.MspReturnList;
+import com.cannontech.multispeak.db.MultispeakInterface;
 import com.cannontech.multispeak.deploy.service.Customer;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.LoadActionCode;
@@ -444,4 +445,30 @@ public class MultispeakFuncs
         } 
         return mspLoadActionCode.getLoadActionCode();
     }
+    
+    /**
+     * Return the responseURL.
+     * If responseURL is not blank, return responseURL.
+     * Otherwise, loop through services and try to build the responseURL from the mspVendor's URL and service endpoint
+     * @param mspVendor
+     * @param responseURL
+     * @param services
+     * @return responseURL for notification messages
+     */
+    public String getEndpointURL(MultispeakVendor mspVendor, String responseURL, String... services) {
+        if (StringUtils.isNotBlank(responseURL)) {
+            return responseURL;
+        } else { 
+            for (String service : services) {
+                MultispeakInterface mspInterface = mspVendor.getMspInterfaceMap().get(service);
+                if (mspInterface != null) {
+                    return mspVendor.getUrl() + mspInterface.getMspEndpoint();
+                }
+            }
+        }
+        
+        // return empty response URL...may need to do some more here? We don't expect to ever be in this situation!!
+        return "";
+    }
+
 }
