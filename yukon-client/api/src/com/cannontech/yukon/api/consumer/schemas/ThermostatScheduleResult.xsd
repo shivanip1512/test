@@ -6,32 +6,42 @@
             elementFormDefault="qualified" version="1.0">
     
     <xsd:include schemaLocation="../../common/schemas/Types.xsd"/>
-    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
-
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd"/>
 
     <xsd:annotation>
-        <xsd:documentation xml:lang="en">
+        <xsd:documentation>
             Thermostat schedule modification result
         </xsd:documentation>
     </xsd:annotation>
 
     <xsd:complexType name="ThermostatScheduleResult">
-        <xsd:sequence>
-            <xsd:element name="success" minOccurs="0"/>
-            <xsd:element name="failure" type="yukon:Failure" minOccurs="0"/>
-            <xsd:element name="thermostatSchedulePeriodResult" type="yukon:ThermostatSchedulePeriodResult"
-                minOccurs="0" maxOccurs="unbounded"/>
-        </xsd:sequence>
-        <xsd:attribute name="scheduleName" type="xsd:string" />
-        <xsd:attribute name="thermostatScheduleMode" type="yukon:ThermostatScheduleMode" />
-        <xsd:attribute name="thermostatType" type="yukon:SchedulableThermostatType" />
+        <xsd:choice>
+            <xsd:element name="success"/>
+            <xsd:element name="errors" type="yukon:ThermostatScheduleErrors"/>
+        </xsd:choice>
+        <xsd:attribute name="scheduleName" type="xsd:string"/>
+        <xsd:attribute name="thermostatScheduleMode" type="yukon:ThermostatScheduleMode"/>
+        <xsd:attribute name="thermostatType" type="yukon:SchedulableThermostatType"/>
     </xsd:complexType>
 
-    <xsd:complexType name="ThermostatSchedulePeriodResult">
+    <xsd:complexType name="ThermostatScheduleErrors">
+        <xsd:annotation>
+            <xsd:documentation>At least one error will be included.</xsd:documentation>
+        </xsd:annotation>
         <xsd:sequence>
-            <xsd:element name="failure" type="yukon:Failure" minOccurs="1" maxOccurs="unbounded"/>
+            <xsd:element name="generalError" type="yukon:ScheduleError" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="periodError" type="yukon:PeriodError" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
-        <xsd:attribute name="timeOfWeek" type="xsd:string" />
     </xsd:complexType>
-   
+
+    <xsd:complexType name="ScheduleError">
+        <xsd:attribute name="message" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="PeriodError">
+        <xsd:sequence>
+            <xsd:element name="error" type="yukon:ScheduleError" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="timeOfWeek" type="xsd:string"/>
+    </xsd:complexType>
 </xsd:schema>

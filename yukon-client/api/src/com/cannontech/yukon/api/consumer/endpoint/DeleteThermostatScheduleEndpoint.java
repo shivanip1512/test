@@ -23,6 +23,7 @@ import com.cannontech.yukon.api.consumer.endpoint.helper.ThermostatScheduleHelpe
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 
 @Endpoint
 public class DeleteThermostatScheduleEndpoint {
@@ -42,38 +43,36 @@ public class DeleteThermostatScheduleEndpoint {
 
         // init response
         Element resp = new Element("deleteThermostatScheduleResponse", ns);
-        Element resultList = new Element("thermostatScheduleResultList", ns);
-        resp.addContent(resultList);
         Attribute versionAttribute = new Attribute("version", "1.0");
         resp.setAttribute(versionAttribute);
-        
+       
+        List<Element> thermostatScheduleResults = Lists.newArrayList();
         try {     
             LiteYukonUser yukonUser = customerAccountDao.getYukonUserByAccountId(customerAccount.getAccountId());
             List<String> scheduleNames = requestTemplate.evaluateAsStringList("//y:scheduleName");
             // remove duplicate names
             scheduleNames = ImmutableSet.copyOf(scheduleNames).asList();
-       
             for (String scheduleName : scheduleNames) {
-                accountEventLogService.thermostatScheduleDeleteAttempted(yukonUser, customerAccount.getAccountNumber(), scheduleName, EventSource.API);   
-                Element thermostatScheduleNode = thermostatScheduleHelper.addThermostatScheduleResultNode(ns, resultList, scheduleName);
+                accountEventLogService.thermostatScheduleDeleteAttempted(yukonUser, customerAccount.getAccountNumber(), scheduleName, EventSource.API);
+                Element thermostatScheduleResult = thermostatScheduleHelper.addThermostatScheduleResultNode(ns, scheduleName);
                 try{
                     AccountThermostatSchedule accountThermostatSchedule = accountThermostatScheduleDao.getSchedulesForAccountByScheduleName(customerAccount.getAccountId(), scheduleName);
                     accountThermostatScheduleDao.deleteById(accountThermostatSchedule.getAccountThermostatScheduleId());
-                    thermostatScheduleNode.addContent(new Element("success", ns));
+                    thermostatScheduleResult.addContent(new Element("success", ns));
                 } catch (EmptyResultDataAccessException e) {
-                    Element fe = XMLFailureGenerator.generateFailure(deleteThermostatSchedule, e, "ScheduleDoesNotExist", "The schedule name supplied does not exist.");
-                    thermostatScheduleNode.addContent(fe);
-                } catch (Exception e) {
-                    Element fe = XMLFailureGenerator.generateFailure(deleteThermostatSchedule, e, "OtherException", "An exception has been caught.");
-                    thermostatScheduleNode.addContent(fe);
+                    Element errors = new Element("errors", ns);
+                    thermostatScheduleHelper.addScheduleError("The schedule name supplied does not exist.", errors, ns);
+                    thermostatScheduleResult.addContent(errors);
                 }
+                thermostatScheduleResults.add(thermostatScheduleResult);
             }
-            
+            for (Element element : thermostatScheduleResults) {
+                resp.addContent(element);
+            }
         } catch (Exception e) {
             Element fe = XMLFailureGenerator.generateFailure(deleteThermostatSchedule, e, "OtherException", "An exception has been caught.");
             resp.addContent(fe);
         }
         return resp;
-        
     }
 }

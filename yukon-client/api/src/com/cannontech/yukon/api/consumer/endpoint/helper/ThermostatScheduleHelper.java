@@ -23,10 +23,10 @@ import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.yukon.api.stars.model.SchedulePeriod;
 import com.cannontech.yukon.api.stars.model.ThermostatSchedule;
-import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class ThermostatScheduleHelper {
     
@@ -74,165 +74,175 @@ public class ThermostatScheduleHelper {
         return accountThermostatScheduleEntrys;
     }
     
-    public Element addThermostatScheduleResultNode(Namespace ns, Element thermostatScheduleResultList, ThermostatSchedule schedule){
-        Element result = new Element("thermostatScheduleResult", ns);
-        result.setAttribute("scheduleName", schedule.getScheduleName());
-        result.setAttribute("thermostatScheduleMode", XmlUtils.toXmlRepresentation(schedule.getThermostatScheduleMode()));
-        thermostatScheduleResultList.addContent(result);
-        return result;
+    public Element addThermostatScheduleResultNode(Namespace ns,  ThermostatSchedule schedule){
+        Element thermostatScheduleResult = new Element("thermostatScheduleResult", ns);
+        thermostatScheduleResult.setAttribute("scheduleName", schedule.getScheduleName());
+        thermostatScheduleResult.setAttribute("thermostatScheduleMode", XmlUtils.toXmlRepresentation(schedule.getThermostatScheduleMode()));
+        return thermostatScheduleResult;
     }
     
-    public Element addThermostatScheduleResultNode(Namespace ns, Element thermostatScheduleResultList, String scheduleName){
-        Element result = new Element("thermostatScheduleResult", ns);
-        result.setAttribute("scheduleName", scheduleName);
-        thermostatScheduleResultList.addContent(result);
-        return result;
+    public Element addThermostatScheduleResultNode(Namespace ns, String scheduleName){
+        Element thermostatScheduleResult = new Element("thermostatScheduleResult", ns);
+        thermostatScheduleResult.setAttribute("scheduleName", scheduleName);
+        return thermostatScheduleResult;
     }
     
     /**
-     * Validates thermostat schedule, if errors found adds them to thermostatScheduleResultNode.
+     * Validates thermostat schedule, if errors found adds them to errors.
      * 
      * @return true if no errors found
      */
-    public boolean isValidSchedule(int customerId, ThermostatSchedule schedule, Element thermostatScheduleResultNode,
+    public boolean isValidSchedule(int customerId, ThermostatSchedule schedule, Element errors,
                                    Namespace ns, boolean isUpdate) {
-        return isValidThermostatScheduleMode(customerId, schedule, thermostatScheduleResultNode)
-               && isValidScheduleName(customerId, schedule, thermostatScheduleResultNode, isUpdate)
-               && isValidTimesOfWeek(schedule, thermostatScheduleResultNode)
-               && isValidSchedulePeriods(schedule, thermostatScheduleResultNode, ns);
-
+        return isValidThermostatScheduleMode(customerId, schedule, errors, ns)
+               & isValidScheduleName(customerId, schedule, isUpdate, errors, ns)
+               & isValidTimesOfWeek(schedule, errors, ns)
+               & isValidSchedulePeriods(schedule, errors, ns);
     }
 
+    /**
+     * Validates thermostat schedule mode, if errors found adds them to errors.
+     * 
+     * @return true if no errors found
+     */
     private boolean isValidThermostatScheduleMode(int customerId, ThermostatSchedule schedule,
-                                                  Element thermostatScheduleResultNode) {
+                                                  Element errors, Namespace ns) {
         YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerId);
-        List<Integer> childEnergyCompanyIds =
-            yukonEnergyCompanyService.getChildEnergyCompanies(energyCompany.getEnergyCompanyId());
-        childEnergyCompanyIds.add(energyCompany.getEnergyCompanyId());
-
         Set<ThermostatScheduleMode> allowedThermostatScheduleModes =
             thermostatService.getAllowedThermostatScheduleModes(energyCompany);
         if (!allowedThermostatScheduleModes.contains(schedule.getThermostatScheduleMode())) {
-            Element fe =
-                XMLFailureGenerator.makeSimple("InvalidThermostatScheduleMode",
-                                               "Thermostat schedule mode is not allowed.");
-            thermostatScheduleResultNode.addContent(fe);
+            addScheduleError("Thermostat schedule mode is not allowed.", errors, ns);
             return false;
         }
         return true;
     }
-
-    private boolean isValidScheduleName(int customerId, ThermostatSchedule schedule,
-                                        Element thermostatScheduleResultNode, boolean isUpdate) {
+    
+    /**
+     * Validates schedule name, if errors found adds them to errors.
+     * 
+     * @return true if no errors found
+     */
+    private boolean isValidScheduleName(int customerId, ThermostatSchedule schedule, boolean isUpdate, Element errors, Namespace ns) {
         if (!isUpdate) {
             AccountThermostatSchedule duplicateSchedule =
                 accountThermostatScheduleDao.findSchedulesForAccountByScheduleName(customerId, schedule.getScheduleName());
             if (duplicateSchedule != null) {
-                Element fe = XMLFailureGenerator.makeSimple("DuplicateScheduleName", "Duplicate schedule name.");
-                thermostatScheduleResultNode.addContent(fe);
+                addScheduleError("Duplicate schedule name.", errors, ns);
                 return false;
             }
         }
         if (schedule.getScheduleName().length() > SCHEDULE_NAME_LENGTH) {
-            Element fe =
-                XMLFailureGenerator.makeSimple("InvalidScheduleNameLength", "Schedule Name length cannot exceed "
-                                                                            + SCHEDULE_NAME_LENGTH + " characters.");
-            thermostatScheduleResultNode.addContent(fe);
+            addScheduleError("Schedule Name length cannot exceed " + SCHEDULE_NAME_LENGTH + " characters.", errors, ns);
             return false;
         }
         return true;
     }
 
-    private boolean isValidTimesOfWeek(ThermostatSchedule schedule, Element thermostatScheduleResultNode) {
-        Set<TimeOfWeek> timesOfWeek = schedule.getSchedulePeriodContainer().keySet();
+    /**
+     * Validates times of the week, if errors found adds them to errors.
+     * 
+     * @return true if no errors found
+     */
+    private boolean isValidTimesOfWeek(ThermostatSchedule schedule, Element errors, Namespace ns) {
+        Set<TimeOfWeek> timesOfWeek = Sets.newHashSet(schedule.getSchedulePeriodContainer().keySet());
         Set<TimeOfWeek> allowedTimesOfWeek = schedule.getThermostatScheduleMode().getAssociatedTimeOfWeeks();
-        if (allowedTimesOfWeek.size() != timesOfWeek.size()) {
+        for(TimeOfWeek tow: allowedTimesOfWeek ){
+            timesOfWeek.remove(tow);
+        }
+        if (!timesOfWeek.isEmpty() || schedule.getSchedulePeriodContainer().keySet().size() != allowedTimesOfWeek.size()) {
             List<String> allowedTimes = Lists.transform(new ArrayList<TimeOfWeek>(allowedTimesOfWeek), new Function<TimeOfWeek, String>() {
                 @Override
                 public String apply(TimeOfWeek t) {
                     return WordUtils.capitalize(t.getValue().toLowerCase());
                 }});
             ;
-            Element fe =
-                XMLFailureGenerator.makeSimple("InvalidTimesOfWeek",
-                                               "Invalid Times of the week entered. Valid times of the week: " + Joiner.on(", ").join(allowedTimes));
-            thermostatScheduleResultNode.addContent(fe);
+            addScheduleError("Invalid times of the week entered. Valid times of the week: "
+                                     + Joiner.on(", ").join(allowedTimes), errors, ns);
             return false;
         }
         return true;
     }
 
-    private boolean isValidSchedulePeriods(ThermostatSchedule schedule, Element thermostatScheduleResultNode,
-                                           Namespace ns) {
+    /**
+     * Validates schedule periods, if errors found adds them to errors.
+     * 
+     * @return true if no errors found
+     */
+    private boolean isValidSchedulePeriods(ThermostatSchedule schedule, Element errors, Namespace ns) {
         boolean isValidResult = true;
         SchedulableThermostatType thermostatType = schedule.getSchedulableThermostatType();
         Set<TimeOfWeek> timesOfWeek = schedule.getSchedulePeriodContainer().keySet();
-        Set<TimeOfWeek> allowedTimesOfWeek = schedule.getThermostatScheduleMode().getAssociatedTimeOfWeeks();
         for (TimeOfWeek timeOfWeek : timesOfWeek) {
-            boolean isValid = true;
+            Element periodError = new Element("periodError", ns);
+            periodError.setAttribute("timeOfWeek", XmlUtils.toXmlRepresentation(timeOfWeek));
             Element thermostatSchedulePeriodResult = new Element("thermostatSchedulePeriodResult", ns);
             thermostatSchedulePeriodResult.setAttribute("timeOfWeek", XmlUtils.toXmlRepresentation(timeOfWeek));
             Set<SchedulePeriod> schedulePeriods = schedule.getSchedulePeriodContainer().get(timeOfWeek);
-            if (!allowedTimesOfWeek.contains(timeOfWeek)) {
-                thermostatSchedulePeriodResult
-                    .addContent(XMLFailureGenerator.makeSimple("InvalidTimeOfWeek",
-                                                               XmlUtils.toXmlRepresentation(timeOfWeek)
-                                                                       + " is invalid time of the week."));
-                isValid = false;
-            }
             if (schedulePeriods.size() != thermostatType.getPeriodStyle().getAllPeriods().size()) {
-                thermostatSchedulePeriodResult.addContent(XMLFailureGenerator
-                    .makeSimple("InvalidNumberOfPeriods",
-                                "Invalid number of periods for " + XmlUtils.toXmlRepresentation(timeOfWeek))+".");
-                isValid = false;
+                addPeriodError(periodError,
+                               "Invalid number of periods for " + XmlUtils.toXmlRepresentation(timeOfWeek) + ".", ns);
             }
 
             for (SchedulePeriod schedulePeriod : schedulePeriods) {
-                String info = buildScheduleInfo(schedulePeriod, timeOfWeek);
+                String info = buildTimeInfo(schedulePeriod);
                 if (schedulePeriod.getCoolTemperature().compareTo(thermostatType.getLowerLimitCool()) < 0) {
-                    thermostatSchedulePeriodResult.addContent(XMLFailureGenerator
-                        .makeSimple("InvalidCoolingTemperature",
-                                    info + "The cooling temperature " + schedulePeriod.getCoolTemperature()
-                                            + " is too low."));
-                    isValid = false;
+                    addPeriodError(periodError,
+                                   info + "The cooling temperature " + schedulePeriod.getCoolTemperature()
+                                           + " is too low.", ns);
                 }
                 if (schedulePeriod.getCoolTemperature().compareTo(thermostatType.getUpperLimitCool()) > 0) {
-                    thermostatSchedulePeriodResult.addContent(XMLFailureGenerator
-                        .makeSimple("InvalidCoolingTemperature", info + "The cooling temperature "
-                                                                 + schedulePeriod.getCoolTemperature()
-                                                                 + " is too high."));
-                    isValid = false;
+                    addPeriodError(periodError,
+                                   info + "The cooling temperature " + schedulePeriod.getCoolTemperature()
+                                           + " is too high.", ns);
                 }
                 if (schedulePeriod.getHeatTemperature().compareTo(thermostatType.getLowerLimitHeat()) < 0) {
-                    thermostatSchedulePeriodResult.addContent(XMLFailureGenerator
-                        .makeSimple("InvalidHeatingTemperature",
-                                    info + "The heating temperature " + schedulePeriod.getHeatTemperature()
-                                            + " is too low."));
-                    isValid = false;
+                    addPeriodError(periodError,
+                                   info + "The heating temperature " + schedulePeriod.getHeatTemperature()
+                                           + " is too low.", ns);
                 }
                 if (schedulePeriod.getHeatTemperature().compareTo(thermostatType.getUpperLimitHeat()) > 0) {
-                    thermostatSchedulePeriodResult.addContent(XMLFailureGenerator
-                        .makeSimple("InvalidHeatingTemperature", info + "The heating temperature "
-                                                                 + schedulePeriod.getHeatTemperature()
-                                                                 + "is too high."));
-                    isValid = false;
+                    addPeriodError(periodError,
+                                   info + "The heating temperature " + schedulePeriod.getHeatTemperature()
+                                           + "is too high.", ns);
                 }
             }
-            if (!isValid) {
-                thermostatScheduleResultNode.addContent(thermostatSchedulePeriodResult);
+            if (!periodError.getChildren().isEmpty()) {
+                errors.addContent(periodError);
                 isValidResult = false;
             }
         }
         return isValidResult;
     }
 
-    private String buildScheduleInfo(SchedulePeriod schedulePeriod, TimeOfWeek timeOfWeek) {
+    /**
+     * Builds start time info string.
+     * 
+     */
+    private String buildTimeInfo(SchedulePeriod schedulePeriod) {
         StringBuilder info = new StringBuilder();
-        info.append("[");
-        info.append(XmlUtils.toXmlRepresentation(timeOfWeek));
-        info.append(":");
+        info.append("[Start Time:");
         info.append(YukonXPathTemplate.PERIOD_START_TIME_FORMATTER.print(schedulePeriod.getPeriodStartTime()));
         info.append("] ");
         return info.toString();
+    }
+    
+    /**
+     * Adds schedule error
+     * 
+     */
+    public void addScheduleError(String message, Element errors, Namespace ns){
+        Element error = new Element("generalError", ns);
+        error.setAttribute("message", message);
+        errors.addContent(error); 
+    }
+    
+    /**
+     * Adds period error
+     * 
+     */
+    private void addPeriodError(Element periodError, String message, Namespace ns){
+        Element error = new Element("error", ns);
+        error.setAttribute("message", message);
+        periodError.addContent(error); 
     }
 }

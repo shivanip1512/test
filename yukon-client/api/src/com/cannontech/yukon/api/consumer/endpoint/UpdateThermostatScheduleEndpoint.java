@@ -25,6 +25,7 @@ import com.cannontech.yukon.api.stars.model.ThermostatSchedule;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
+import com.google.common.collect.Lists;
 
 @Endpoint
 public class UpdateThermostatScheduleEndpoint {
@@ -57,45 +58,46 @@ public class UpdateThermostatScheduleEndpoint {
                     requestTemplate.evaluate("/y:updateThermostatScheduleRequest/y:thermostatSchedule", 
                                              new NodeToElementMapperWrapper<ThermostatSchedule>(new ThermostatScheduleElementRequestMapper()));
                        
-            Element resultList = new Element("thermostatScheduleResultList", ns);
-            resp.addContent(resultList);
-            
+            List<Element> thermostatScheduleResults = Lists.newArrayList();
             for (ThermostatSchedule schedule : thermostatSchedules) {
                 boolean newScheduleCreated = false;
-                Element thermostatScheduleResultNode = thermostatScheduleHelper.addThermostatScheduleResultNode(ns, resultList, schedule);
-                try {
-                    AccountThermostatSchedule scheduleToUpdate =
-                        accountThermostatScheduleDao.findSchedulesForAccountByScheduleName(customerAccount.getAccountId(), schedule.getScheduleName());
-                    if (scheduleToUpdate != null || addOnFail) {
-                        if(thermostatScheduleHelper.isValidSchedule(customerAccount.getAccountId(), schedule, thermostatScheduleResultNode, ns, true)){
-                            AccountThermostatSchedule accountThermostatSchedule =
-                                    thermostatScheduleHelper.convertToAccountThermostatSchedule(schedule, customerAccount.getAccountId());
-                            if(scheduleToUpdate != null){
-                                accountThermostatSchedule.setAccountThermostatScheduleId(scheduleToUpdate.getAccountThermostatScheduleId());
-                            }
-                            accountThermostatScheduleDao.save(accountThermostatSchedule);
-                            thermostatScheduleResultNode.addContent(new Element("success", ns));
+                Element thermostatScheduleResult = thermostatScheduleHelper.addThermostatScheduleResultNode(ns, schedule);
+                Element errors = new Element("errors", ns);
+                AccountThermostatSchedule scheduleToUpdate =
+                    accountThermostatScheduleDao.findSchedulesForAccountByScheduleName(customerAccount.getAccountId(),
+                                                                                       schedule.getScheduleName());
+                if (scheduleToUpdate != null || addOnFail) {
+                    if (thermostatScheduleHelper.isValidSchedule(customerAccount.getAccountId(), schedule, errors,ns,
+                                                                 true)) {
+                        AccountThermostatSchedule accountThermostatSchedule =
+                            thermostatScheduleHelper.convertToAccountThermostatSchedule(schedule,customerAccount.getAccountId());
+                        if (scheduleToUpdate != null) {
+                            accountThermostatSchedule.setAccountThermostatScheduleId(scheduleToUpdate.getAccountThermostatScheduleId());
                         }
+                        accountThermostatScheduleDao.save(accountThermostatSchedule);
+                        thermostatScheduleResult.addContent(new Element("success", ns));
                     }
-                    if (scheduleToUpdate == null || !addOnFail) {
-                        Element fe = XMLFailureGenerator.makeSimple("ScheduleDoesNotExist", "The schedule name supplied does not exist.");
-                        thermostatScheduleResultNode.addContent(fe);
-                    }
-                } 
-                catch (Exception e) {
-                    Element fe = XMLFailureGenerator.generateFailure(thermostatScheduleResultNode, e, "OtherException","An exception has been caught.");
-                    thermostatScheduleResultNode.addContent(fe);
+                } else {
+                    thermostatScheduleHelper.addScheduleError("The schedule name supplied does not exist.", errors, ns);
                 }
-                
-                if(newScheduleCreated){
+                if(!errors.getChildren().isEmpty()){
+                    thermostatScheduleResult.addContent(errors);
+                }
+                if (newScheduleCreated) {
                     accountEventLogService.thermostatScheduleCreationAttempted(yukonUser, customerAccount.getAccountNumber(),
-                                                                             schedule.getSchedulableThermostatType().name(), schedule.getScheduleName(),
-                                                                             EventSource.API);
-                }else{
+                                                                               schedule.getSchedulableThermostatType()
+                                                                                   .name(), schedule.getScheduleName(),
+                                                                               EventSource.API);
+                } else {
                     accountEventLogService.thermostatScheduleUpdateAttempted(yukonUser, customerAccount.getAccountNumber(),
-                                                                             schedule.getSchedulableThermostatType().name(), schedule.getScheduleName(),
+                                                                             schedule.getSchedulableThermostatType()
+                                                                                 .name(), schedule.getScheduleName(),
                                                                              EventSource.API);
                 }
+                thermostatScheduleResults.add(thermostatScheduleResult);
+            }
+            for (Element element : thermostatScheduleResults) {
+                resp.addContent(element);
             }
         } catch (XPathException e) {
             Element fe = XMLFailureGenerator.generateFailure(updateThermostatSchedule, e, "OtherException", e.getMessage());

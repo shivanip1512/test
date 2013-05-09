@@ -3,15 +3,14 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://yukon.cannontech.com/api ../NewThermostatScheduleResponse.xsd"
            version="1.0">
-    <thermostatScheduleResultList>
-        <thermostatScheduleResult scheduleName="test schedule2" thermostatScheduleMode="Weekday Weekend">
-            <success/>
-        </thermostatScheduleResult>
-        <thermostatScheduleResult scheduleName="test schedule3" thermostatScheduleMode="Seven Day">
-            <failure>
-                 <errorCode>InvalidThermostatScheduleMode</errorCode>
-                 <errorDescription>Thermostat schedule mode is not allowed</errorDescription>
-            </failure>
-        </thermostatScheduleResult>
-    </thermostatScheduleResultList>
+    <thermostatScheduleResult scheduleName="test schedule2" thermostatScheduleMode="Weekday Weekend">
+        <success/>
+    </thermostatScheduleResult>
+    <thermostatScheduleResult scheduleName="test schedule3" thermostatScheduleMode="Seven Day">
+        <errors>
+            <generalError message="Thermostat schedule mode is not allowed."/>
+            <generalError message="Duplicate schedule name."/>
+            <generalError message="Invalid times of the week entered. Valid times of the week: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday"/>
+        </errors>
+    </thermostatScheduleResult>
 </newThermostatScheduleResponse>
