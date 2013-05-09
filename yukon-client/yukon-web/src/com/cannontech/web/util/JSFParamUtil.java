@@ -13,71 +13,60 @@ import com.cannontech.common.constants.LoginController;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 
-/**
- * @author ryan
- *
- */
-public class JSFParamUtil
-{
+public class JSFParamUtil {
 
-	/**
-	 * 
-	 */
-	public JSFParamUtil()
-	{
-		super();
-	}
-	
 	/**
 	 * Allows a JSF variable to be retrieved in a JSP scriptlet
 	 */
-	public static Object getJSFVar( String varName )
-	{
-		if( varName == null )		
+	public static Object getJSFVar(String varName) {
+		if (varName == null) {
 			return null;
-        else {
-            FacesContext currentInstance = FacesContext.getCurrentInstance();
-			if (currentInstance != null)	
-                return currentInstance.getApplication().getVariableResolver().resolveVariable(
-    					FacesContext.getCurrentInstance(), varName );
-            else 
-                return null;
-        }
+		}
+
+		FacesContext currentInstance = FacesContext.getCurrentInstance();
+		if (currentInstance == null) {
+			return null;
+		}
+
+		return currentInstance.getApplication().getVariableResolver().resolveVariable(
+				FacesContext.getCurrentInstance(), varName);
 	}
-	
+
 	/**
 	 * Returns the request parameter from the JSF framework
 	 */
-	public static String getJSFReqParam( String paramName ) {
-		
-		if( paramName == null )
+	public static String getJSFReqParam(String paramName) {
+		if (paramName == null) {
 			return null;
-		else		
-			return (String)FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get( paramName );		
+		}
+
+		return (String)FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(paramName);		
 	}
 
 	/**
 	 * Allows a JSF variable to be removed from the session scope
 	 */
-	public static void removeJSFVar( String varName )
-	{
-		if( varName != null )
-			FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove( varName );
+	public static void removeJSFVar(String varName) {
+		if(varName != null) {
+			FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(varName);
+		}
 	}
 
 	/**
 	 * Allows URL parameters to be retrived.
 	 */
-	public static String[] getReqParamsVar( String varName )
-	{
+	public static String[] getReqParamsVar(String varName) {
 		ExternalContext ex = FacesContext.getCurrentInstance().getExternalContext();
-		
-		if( varName != null && ex != null ) {
-			Object retVal = ex.getRequestParameterValuesMap().get( varName );
-			if( retVal instanceof String[] )
+
+		if (varName != null && ex != null) {
+			Object retVal = ex.getRequestParameterValuesMap().get(varName);
+
+			if (retVal instanceof String[]) {
 				return (String[])retVal;
-			else if( retVal != null )
+			}
+			if (retVal != null) {
 				return new String[]{ retVal.toString() };
+			}
 		}
 
 		return null;
@@ -86,15 +75,14 @@ public class JSFParamUtil
 	/**
 	 * Returns the value of a child element with the given name
 	 */
-	public static Object getChildElemValue( UIComponent comp, String childName )
-	{
-		if( comp != null && childName != null ) {
-			for( int i = 0; i < comp.getChildCount(); i++ ) {
-				
+	public static Object getChildElemValue(UIComponent comp, String childName) {
+		if(comp != null && childName != null) {
+			for(int i = 0; i < comp.getChildCount(); i++) {
 				UIComponent child = (UIComponent)comp.getChildren().get(i);
-				
-				if( childName.equals(child.getAttributes().get("name")) )
+
+				if (childName.equals(child.getAttributes().get("name"))) {
 					return child.getAttributes().get("value");
+				}
 			}
 		}
 
@@ -104,49 +92,42 @@ public class JSFParamUtil
 	/**
 	 * Returns the current YukonUser in the session scope
 	 */
-	public static LiteYukonUser getYukonUser()
-	{
+	public static LiteYukonUser getYukonUser() {
 		FacesContext fc = FacesContext.getCurrentInstance();
-		if (fc != null)
-        {
-            ExternalContext externalContext = fc.getExternalContext();
-            {
-                HttpSession session = (HttpSession)externalContext.getSession(false);
-        
-        		if( session == null ) {
-        			CTILogger.warn("The current HttpSession is NULL");
-        			return null;
-        		}
-        		else 
-        			return (LiteYukonUser)session.getAttribute(LoginController.YUKON_USER);
-        	
-            }
-        }
-        return null;
-    }
-    
-    public static void goToPointEditor (Integer parentID, final FacesMessage fm) {
-        try {
-            //make sure the point form will have the pao id
-            //of the cbc 
-            String red = "pointBase.jsf?parentId=" + parentID.toString() + "&itemid=";
-            String val = getJSFReqParam("ptID");
-            String location = red + val;
-            //bookmark the current page
-            HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
-            CBCNavigationUtil.bookmarkLocationAndRedirect(location, session);
-            FacesContext.getCurrentInstance().getExternalContext().redirect(location);
-            FacesContext.getCurrentInstance().responseComplete();
-        } 
-        catch (IOException e) {
-            fm.setDetail("ERROR - Couldn't redirect. CBControllerEditor:pointClick. " + e.getMessage());
-        } catch (Exception e) {
-            //add some code to handle null session exception
-        }
-        finally{
-            if(fm.getDetail() != null) {
-                FacesContext.getCurrentInstance().addMessage("point_click", fm);
-            }
-        }
-    }    
+		if (fc != null) {
+			ExternalContext externalContext = fc.getExternalContext();
+			HttpSession session = (HttpSession)externalContext.getSession(false);
+
+			if(session == null) {
+				CTILogger.warn("The current HttpSession is NULL");
+				return null;
+			}
+
+			return (LiteYukonUser)session.getAttribute(LoginController.YUKON_USER);
+		}
+		return null;
+	}
+
+	public static void goToPointEditor(Integer parentID, final FacesMessage fm) {
+		try {
+			//make sure the point form will have the pao id
+			//of the cbc 
+			String red = "pointBase.jsf?parentId=" + parentID.toString() + "&itemid=";
+			String val = getJSFReqParam("ptID");
+			String location = red + val;
+			//bookmark the current page
+			HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+			CBCNavigationUtil.bookmarkLocationAndRedirect(location, session);
+			FacesContext.getCurrentInstance().getExternalContext().redirect(location);
+			FacesContext.getCurrentInstance().responseComplete();
+		}  catch (IOException e) {
+			fm.setDetail("ERROR - Couldn't redirect. CBControllerEditor:pointClick. " + e.getMessage());
+		} catch (Exception e) {
+			//add some code to handle null session exception
+		} finally {
+			if(fm.getDetail() != null) {
+				FacesContext.getCurrentInstance().addMessage("point_click", fm);
+			}
+		}
+	}    
 }
