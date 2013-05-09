@@ -4715,5 +4715,35 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusEventLog)
         retList.pop_front();
     }
 
+    {
+        // -- test Control Output 1 Tripped (event code 66 )
+        unsigned char test_data[10] = {0x33, 0x44, 0x55, 0x66, 0x00, 0x02, 0x00, 0x42, 0x06, 0x52};
+        memcpy( InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
+
+        InMessage.Return.UserID                        = 0;
+        InMessage.Sequence                             = Cti::Protocols::EmetconProtocol::GetStatus_EventLog;
+        InMessage.Return.ProtocolInfo.Emetcon.Function = 0x55; // between 0x50 and 0x59
+
+        BOOST_CHECK_EQUAL(NoError, test_dev.decodeGetStatusEventLog(&InMessage, t, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE(retMsg);
+
+        string expected =
+        "Test MCT-440-213xB / Parameters Change:\n"
+        "Time: " + CtiTime(0x33445566).asString() + "\n"
+        "User ID: 2\n"
+        "Event: Control Output 1 Tripped\n"
+        "Changed state: opened\n"
+        "Attempt: failed\n"
+        "Reason of change: Manual operation\n";
+
+        BOOST_REQUIRE_EQUAL(retMsg->ResultString(), expected);
+
+        retList.pop_front();
+    }
 
 }
