@@ -102,9 +102,9 @@ public class ScheduledFileExportData {
 	public void setNotificationEmailAddresses(String notificationEmailAddresses) {
 		String input = StringUtils.trimAllWhitespace(notificationEmailAddresses);
 		if(org.apache.commons.lang.StringUtils.isNotBlank(input)) {
-			this.notificationEmailAddresses = notificationEmailAddresses;
+			this.notificationEmailAddresses = input;
 		} else {
-			notificationEmailAddresses = null;
+			this.notificationEmailAddresses = null;
 		}
 	}
 }

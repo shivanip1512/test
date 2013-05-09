@@ -67,8 +67,10 @@
     <entry key="yukon.web.modules.amr.meterEventsReport.bulkActionContainer.noteText"></entry>
 	
 	<entry key="yukon.web.modules.amr.meterEventsReport.schedule.label">Schedule</entry>
-	<entry key="yukon.web.modules.amr.meterEventsReport.schedulePopup">Schedule Report {0}</entry>
-	<entry key="yukon.web.modules.amr.meterEventsReport.daysPrevious">Days Previous</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.schedulePopup.title">Schedule Report {0}</entry>
+	<entry key="yukon.web.modules.amr.meterEventsReport.scheduleButton">Schedule</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.updateButton">Update</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.daysPrevious">Days Previous</entry>
 	
 	<!-- jobs.jsp -->
 	<entry key="yukon.web.modules.amr.meterEventsReport.jobs.pageName">Scheduled Meter Event Reports</entry>

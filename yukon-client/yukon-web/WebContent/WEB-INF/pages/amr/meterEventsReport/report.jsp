@@ -8,6 +8,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
+<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage page="meterEventsReport.report" module="amr">
 
@@ -18,7 +19,7 @@
 	    	jQuery("#onlyLatestEvent").prop("checked", jQuery("#filter_onlyLatestEvent").prop("checked"));
 	    	jQuery("#onlyAbnormalEvents").prop("checked", jQuery("#filter_onlyAbnormalEvents").prop("checked"));
 	    	jQuery("#includeDisabledDevices").prop("checked", jQuery("#filter_includeDisabledPaos").prop("checked"));
-	    	showSimplePopup('schedulePopup');
+	    	open_schedulePopup();
 	    };    
     
     	jQuery(document).ready(function() {
@@ -44,9 +45,22 @@
 	        
 	        jQuery("#scheduleButton").click(openSchedulePopup);
 	        
-	        jQuery("#cancelButton").click(function() {
-	            schedulePopup.hide();
-	        });
+	        submitSchedule = function() {
+	            var attrNames = '';
+                jQuery("#eventTree").dynatree("getSelectedNodes").each(function(node) {
+                    if (ignoreTitle(node.data.title) === false) {
+                        attrNames += node.data.title + ",";
+                    }
+                });
+                
+                jQuery('<input>').attr({
+                    type: 'hidden',
+                    name: 'attrNames',
+                    value: attrNames
+                }).appendTo('#scheduleForm');
+
+                jQuery('#scheduleForm').submit();
+	        };
 	        
 	        jQuery("#eventTypesListOk").click(function() {
 	        	jQuery('#eventTypesList').hide();
@@ -67,25 +81,10 @@
 	   			}).appendTo('.eventForm');
 	   			return true;
 	        });
-	        
-	        jQuery('#scheduleForm').submit(function() {
-	        	var attrNames = '';
-		    	jQuery("#eventTree").dynatree("getSelectedNodes").each(function(node) {
-		    		if (ignoreTitle(node.data.title) === false) {
-		    			attrNames += node.data.title + ",";
-		    		}
-		    	});
-	        	
-	   			jQuery('<input>').attr({
-	   			    type: 'hidden',
-	   			    name: 'attrNames',
-	   			    value: attrNames
-	   			}).appendTo('#scheduleForm');
-	   			return true;
-	        });
+
 	        
 	        if(${not empty jobId} || ${not empty scheduleError}) {
-	        	openSchedulePopup();
+	        	open_schedulePopup();
 	        }
 	    });
 	    
@@ -182,70 +181,79 @@
 	<c:if test="${not empty exportData.scheduleName}">
 		<c:set var="popupTitleArgs" value="\"${fn:escapeXml(exportData.scheduleName)}\""/>
 	</c:if>
-	<i:simplePopup titleKey=".schedulePopup" arguments="${popupTitleArgs}" id="schedulePopup">
-		<cti:flashScopeMessages/>
-		<form:form id="scheduleForm" action="schedule" method="post" commandName="exportData">
-			<cti:deviceCollection deviceCollection="${backingBean.deviceCollection}" />
-			<tags:nameValueContainer2>
-				<tags:nameValue2 nameKey="yukon.web.modules.amr.meterEventsReport.report.selectedDevices">
-					<c:set var="isDeviceGroup" value="${backingBean.deviceCollection.collectionParameters['collectionType'] == 'group'}"/>
-					<c:if test="${backingBean.deviceCollection.deviceCount > 0}">
-						<c:if test="${isDeviceGroup}">
-							<span class="viewGroupLink fr">
-								<cti:url var="deviceGroupUrl" value="/group/editor/home">
-									<cti:param name="groupName">${backingBean.deviceCollection.collectionParameters['group.name']}</cti:param>
-								</cti:url>
-								(<a href="${deviceGroupUrl}"><i:inline key=".filter.viewDeviceGroup"/></a>)
-							</span>
-						</c:if>
-						<span class="fr deviceMagIcon">
-							<tags:selectedDevicesPopup deviceCollection="${backingBean.deviceCollection}"/>
-						</span>
-					</c:if>
-					<span class="selectedDevicesLink anchorUnderlineHover">
-						<c:choose>
-							<c:when test="${isDeviceGroup}">
-								<i:inline key=".filter.deviceGroup" arguments="${backingBean.deviceCollection.collectionParameters['group.name']}"/>
-							</c:when>
-							<c:otherwise>
-								<i:inline key="${backingBean.deviceCollection.description}" />
-							</c:otherwise>
-						</c:choose>
-					</span>
-				</tags:nameValue2>
-				<tags:nameValue2 nameKey=".daysPrevious">
-					<input type="text" name="daysPrevious" id="daysPrevious" value="${daysPrevious}" size="3">
-				</tags:nameValue2>
-				<tags:nameValue2 nameKey=".filter.onlyLatestEvent" excludeColon="true">
-					<input type="checkbox" name="onlyLatestEvent" id="onlyLatestEvent">
-				</tags:nameValue2>
-				<tags:nameValue2 nameKey=".filter.onlyAbnormalEvents" excludeColon="true">
-					<input type="checkbox" name="onlyAbnormalEvents" id="onlyAbnormalEvents">
-				</tags:nameValue2>
-				<tags:nameValue2 nameKey=".filter.includeDisabledDevices" excludeColon="true">
-					<input type="checkbox" name="includeDisabledDevices" id="includeDisabledDevices">
-				</tags:nameValue2>
-				<tags:nameValue2 nameKey=".filter.eventTypesRow">
-					<cti:msg2 key=".filter.cog.title" var="cogTitle"/>
-					<span id="eventTypesCogSchedule" title="${cogTitle}" class="cog anchorUnderlineHover labeled_icon_right">
-						<span class="numEventTypes">
-							${backingBean.numSelectedEventTypes}
-						</span>
-						<i:inline key=".filter.selected"/>
-					</span>
-				</tags:nameValue2>
-				<tags:scheduledFileExportInputs cronExpressionTagState="${cronExpressionTagState}"/>
-			</tags:nameValueContainer2>
-			<c:if test="${not empty jobId}">
-				<input type="hidden" name="jobId" value="${jobId}">
-			</c:if>
-			<div class="actionArea">
-				<cti:button nameKey="submit" type="submit"/>
-				<cti:button nameKey="cancel" id="cancelButton"/>
-			</div>
-		</form:form>
-	</i:simplePopup>
 	
+    <cti:msg2 var="scheduleButton" key=".scheduleButton"/>
+    <cti:msg2 var="updateButton" key=".updateButton"/>
+    <cti:msg2 var="cancelButton" key="yukon.web.components.button.cancel.label"/>
+    <dialog:inline nameKey="schedulePopup" arguments="${popupTitleArgs}" id="schedulePopup" okEvent="submitSchedule"
+        options="{'modal': false, 
+                  'buttons': 
+                    [{
+                         text: '${empty jobId ? scheduleButton : updateButton}', 
+                         click: function() {submitSchedule();}
+                    },{
+                         text: '${cancelButton}', 
+                         click: function() {jQuery(this).dialog('close')}
+                    }]
+                 }">
+        <form:form id="scheduleForm" action="schedule" method="post" commandName="exportData">
+            <cti:deviceCollection deviceCollection="${backingBean.deviceCollection}" />
+            <tags:nameValueContainer2>
+                <tags:nameValue2 nameKey="yukon.web.modules.amr.meterEventsReport.report.selectedDevices">
+                    <c:set var="isDeviceGroup" value="${backingBean.deviceCollection.collectionParameters['collectionType'] == 'group'}"/>
+                    <c:if test="${backingBean.deviceCollection.deviceCount > 0}">
+                        <c:if test="${isDeviceGroup}">
+                            <span class="viewGroupLink fr">
+                                <cti:url var="deviceGroupUrl" value="/group/editor/home">
+                                    <cti:param name="groupName">${backingBean.deviceCollection.collectionParameters['group.name']}</cti:param>
+                                </cti:url>
+                                (<a href="${deviceGroupUrl}"><i:inline key=".filter.viewDeviceGroup"/></a>)
+                            </span>
+                        </c:if>
+                        <span class="fr deviceMagIcon">
+                            <tags:selectedDevicesPopup deviceCollection="${backingBean.deviceCollection}"/>
+                        </span>
+                    </c:if>
+                    <span class="selectedDevicesLink anchorUnderlineHover">
+                        <c:choose>
+                            <c:when test="${isDeviceGroup}">
+                                <i:inline key=".filter.deviceGroup" arguments="${backingBean.deviceCollection.collectionParameters['group.name']}"/>
+                            </c:when>
+                            <c:otherwise>
+                                <i:inline key="${backingBean.deviceCollection.description}" />
+                            </c:otherwise>
+                        </c:choose>
+                    </span>
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".daysPrevious">
+                    <input type="text" name="daysPrevious" id="daysPrevious" value="${daysPrevious}" size="3">
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".filter.onlyLatestEvent" excludeColon="true">
+                    <input type="checkbox" name="onlyLatestEvent" id="onlyLatestEvent">
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".filter.onlyAbnormalEvents" excludeColon="true">
+                    <input type="checkbox" name="onlyAbnormalEvents" id="onlyAbnormalEvents">
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".filter.includeDisabledDevices" excludeColon="true">
+                    <input type="checkbox" name="includeDisabledDevices" id="includeDisabledDevices">
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".filter.eventTypesRow">
+                    <cti:msg2 key=".filter.cog.title" var="cogTitle"/>
+                    <span id="eventTypesCogSchedule" title="${cogTitle}" class="cog anchorUnderlineHover labeled_icon_right">
+                        <span class="numEventTypes">
+                            ${backingBean.numSelectedEventTypes}
+                        </span>
+                        <i:inline key=".filter.selected"/>
+                    </span>
+                </tags:nameValue2>
+                <tags:scheduledFileExportInputs cronExpressionTagState="${cronExpressionTagState}"/>
+            </tags:nameValueContainer2>
+            <c:if test="${not empty jobId}">
+                <input type="hidden" name="jobId" value="${jobId}">
+            </c:if>
+        </form:form>
+    </dialog:inline>
+    
 	<form:form id="eventsFilterForm" action="report" method="get" commandName="backingBean" cssClass="eventForm">
         <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
 
@@ -294,7 +302,7 @@
 				</tags:formElementContainer>
 				
 				<i:simplePopup titleKey=".filter.eventTypes"
-					id="filterPopupEventTypes" styleClass="smallSimplePopup"
+					id="filterPopupEventTypes" styleClass="smallSimplePopup front"
 					onClose="updateEventTypesNum()">
 		
 					<jsTree:inlineTree id="eventTree"

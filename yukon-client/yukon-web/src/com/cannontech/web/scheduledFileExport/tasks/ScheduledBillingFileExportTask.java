@@ -24,7 +24,7 @@ import com.google.common.collect.Lists;
 /**
  * A task that generates a billing file of a specified format on a set of DeviceGroups.
  */
-public class ScheduledBillingFileExportTask extends ScheduledFileExportTask {
+public class ScheduledBillingFileExportTask extends ScheduledFileExportTask implements PersistedFormatTask {
 	private List<String> deviceGroupNames = Lists.newArrayList();
 	private int fileFormatId;
 	private int demandDays;
@@ -110,6 +110,11 @@ public class ScheduledBillingFileExportTask extends ScheduledFileExportTask {
 	
 	public boolean isRemoveMultiplier() {
 		return removeMultiplier;
+	}
+	
+	@Override
+	public int getFormatId() {
+	    return fileFormatId;
 	}
 	
 	//Creates a BillingBean configured with the appropriate parameters for this export task.

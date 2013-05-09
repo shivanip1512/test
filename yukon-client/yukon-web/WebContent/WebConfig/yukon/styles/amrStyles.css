@@ -202,6 +202,10 @@ div#selectDevicesPicker_filterSelector, div#selectDevicesPicker_scheduleSelector
 	z-index: 9999;
 }
 
+.front {
+    z-index: 9999;
+}
+
 form#intervalDataForm {
 	display: inline-block;
 }

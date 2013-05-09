@@ -40,7 +40,7 @@ import com.cannontech.common.scheduledFileExport.dao.ScheduledFileExportDao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.RawPointHistoryDao;
 
-public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask {
+public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask implements PersistedFormatTask {
 	@Autowired private ExportReportGeneratorService exportReportGeneratorService;
 	@Autowired private MeterDao meterDao;
 	@Autowired private ArchiveValuesExportFormatDao archiveValuesExportFormatDao;
@@ -131,7 +131,8 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 		StoredDeviceGroup group = deviceGroupEditorDao.getGroupByName(parent, uniqueIdentifier);
 		deviceList = deviceGroupMemberEditorDao.getChildDevices(group);
 	}
-
+	
+	@Override
 	public int getFormatId() {
 		return formatId;
 	}

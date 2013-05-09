@@ -10,6 +10,11 @@ import org.joda.time.Instant;
 public final class ExportHistoryEntry implements Comparable<ExportHistoryEntry>{
 	private static final MimetypesFileTypeMap fileTypeMap = new MimetypesFileTypeMap();
 	
+	static {
+	    fileTypeMap.addMimeTypes("text/csv csv CSV");
+	    fileTypeMap.addMimeTypes("application/xml xml XML");
+	}
+	
 	private final int entryId;
 	private final String fileName;
 	private final String originalFileName;
@@ -71,7 +76,7 @@ public final class ExportHistoryEntry implements Comparable<ExportHistoryEntry>{
 	}
 	
 	public String getFileMimeType() {
-		return fileTypeMap.getContentType(fileName);
+		return fileTypeMap.getContentType(originalFileName);
 	}
 	
 	@Override

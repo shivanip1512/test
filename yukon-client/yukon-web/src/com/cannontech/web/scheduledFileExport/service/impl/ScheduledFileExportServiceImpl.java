@@ -16,6 +16,7 @@ import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.scheduledFileExport.ScheduledFileExportJobData;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
+import com.cannontech.web.scheduledFileExport.tasks.PersistedFormatTask;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledArchivedDataFileExportTask;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledBillingFileExportTask;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledFileExportTask;
@@ -102,30 +103,29 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
 	
 	@Override
 	public int deleteAdeJobsByFormatId(int formatId) {
-		int count = 0;
-		List<ScheduledRepeatingJob> jobs = getJobsByType(ScheduledExportType.ARCHIVED_DATA_EXPORT);
-        for(ScheduledRepeatingJob job : jobs) {
-        	ScheduledArchivedDataFileExportTask task = (ScheduledArchivedDataFileExportTask) jobManager.instantiateTask(job);
-        	if(task.getFormatId() == formatId) {
-        		jobManager.deleteJob(job);
-        		count++;
-        	}
-        }
-        return count;
+	    return deleteJobsByFormatId(formatId, ScheduledExportType.ARCHIVED_DATA_EXPORT);
 	}
 	
 	@Override
 	public int deleteBillingJobsByFormatId(int formatId) {
-		int count = 0;
-		List<ScheduledRepeatingJob> jobs = getJobsByType(ScheduledExportType.BILLING);
-		for(ScheduledRepeatingJob job : jobs) {
-			ScheduledBillingFileExportTask task = (ScheduledBillingFileExportTask) jobManager.instantiateTask(job);
-			if(task.getFileFormatId() == formatId) {
-				jobManager.deleteJob(job);
-				count++;
-			}
-		}
-		return count;
+		return deleteJobsByFormatId(formatId, ScheduledExportType.BILLING);
+	}
+	
+	private int deleteJobsByFormatId(int formatId, ScheduledExportType type) {
+	    if(!type.isPersistedFormat()) {
+	        throw new IllegalArgumentException("ScheduledExportType of " + type + " cannot be deleted by format id.");
+	    }
+	    
+	    int count = 0;
+	    List<ScheduledRepeatingJob> jobs = getJobsByType(type);
+	    for(ScheduledRepeatingJob job : jobs) {
+	        PersistedFormatTask task = (PersistedFormatTask) jobManager.instantiateTask(job);
+	        if(task.getFormatId() == formatId) {
+	            jobManager.deleteJob(job);
+	            count++;
+	        }
+	    }
+	    return count;
 	}
 	
 	@Override
