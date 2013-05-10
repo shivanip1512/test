@@ -1,49 +1,53 @@
-<%@ taglib tagdir="/WEB-INF/tags" prefix="ct" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <script type="text/javascript">
-    function toggleConnectButons() {
+    function toggleConnectButtons() {
       //assumes data is of type Hash
         return function(data) {
             var rawValue = data.get('rawValue');
-            
             // connected states
             if (rawValue == 0 || rawValue == 2) {
-                $('connectSpan').show();
-                $('disconnectSpan').hide();
+                jQuery('#connectSpan').show();
+                jQuery('#disconnectSpan').hide();
             }
             else {
-                $('connectSpan').hide();
-                $('disconnectSpan').show();
+                jQuery('#connectSpan').hide();
+                jQuery('#disconnectSpan').show();
             }
-           
         };
     }
+
+    jQuery(function() {
+        jQuery('.f_showDisconnectInfo').click(function(event) {
+            var params = {'deviceId': ${device.deviceId},
+                          'shortName': '${shortName}'};
+            jQuery('#disconnectInfo').load('/widget/disconnectMeterWidget/helpInfo', params, function() {
+                jQuery('#disconnectInfo').dialog({width: 600});
+            });
+        });
+    });
 </script>
-
-<div align="right" id="popupDiv">
-	<ct:widgetActionPopup nameKey="title" method="helpInfo" container="helpInfo" deviceId="${device.deviceId}">
-        <i:inline key=".infoLink"/>
-	</ct:widgetActionPopup>
-</div>
-
-<ct:simpleDialog id="disconnectInfo"/>
-
-<ct:nameValueContainer2>
-    <ct:nameValue2 label="${attribute}">
+<tags:nameValueContainer2>
+    <tags:nameValue2 label="${attribute}">
         <c:if test="${isConfigured}">
-            <ct:attributeValue device="${device}" attribute="${attribute}" />
+            <tags:attributeValue device="${device}" attribute="${attribute}" />
         </c:if>
         <c:if test="${not isConfigured}">
             <cti:msg2 key=".notConfigured" />
         </c:if>
-    </ct:nameValue2>
-</ct:nameValueContainer2>
-<br>
-<div style="text-align: right">
-	<ct:widgetActionRefresh hide="${!readable}" method="read" nameKey="read"/>
+    </tags:nameValue2>
+</tags:nameValueContainer2>
+
+<div id="disconnectInfo" class="dn" title="<cti:msg2 key=".infoLink"/>"></div>
+
+<div class="actionArea">
+
+    <a href="javascript:void(0);" class="f_showDisconnectInfo fl"><i:inline key=".infoLink"/></a>
+
+	<tags:widgetActionRefresh hide="${!readable}" method="read" nameKey="read"/>
     
     <%-- INIT VISIBILITY OF BUTTONS --%>
     <c:set var="connectStyle" value="" />
@@ -58,26 +62,24 @@
     
     <%-- CONNECT/DISCONNECT BUTTONS --%>
     <span id="connectSpan" style="${connectStyle}">
-		<ct:widgetActionRefresh hide="${!controllable}" method="connect" nameKey="connect" showConfirm="true"/>
+		<tags:widgetActionRefresh hide="${!controllable}" method="connect" nameKey="connect" showConfirm="true"/>
     </span>
     
     <span id="disconnectSpan" style="${disconnectStyle}">
-		<ct:widgetActionRefresh hide="${!controllable}" method="disconnect" nameKey="disconnect" showConfirm="true"/>
+		<tags:widgetActionRefresh hide="${!controllable}" method="disconnect" nameKey="disconnect" showConfirm="true"/>
     </span>
 </div>
-<br>
 <c:if test="${configString != ''}">
 <div style="max-height: 240px; overflow: auto">
     <cti:msg2 var="disconnectConfigSettings" key=".disconnectConfigSettings"/>
-    <ct:hideReveal title="${disconnectConfigSettings}" showInitially="false">
+    <tags:hideReveal title="${disconnectConfigSettings}" showInitially="false">
 		${configString}
-    </ct:hideReveal><br>
+    </tags:hideReveal><br>
 </div>
 </c:if>
-<br>
 <c:if test="${isRead}">
 	<c:import url="/WEB-INF/pages/widget/common/meterReadingsResult.jsp"/>
 </c:if>
 
 <%-- UPDATER WILL TOGGLE WHICH BUTTON IS DISPLAYED IF REMOTELY CONTROLED --%>
-<cti:dataUpdaterCallback function="toggleConnectButons()" initialize="true" rawValue="POINT/${pointId}/RAWVALUE" />
+<cti:dataUpdaterCallback function="toggleConnectButtons()" initialize="true" rawValue="POINT/${pointId}/RAWVALUE" />

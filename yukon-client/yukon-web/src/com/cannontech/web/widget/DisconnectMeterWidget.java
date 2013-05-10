@@ -58,9 +58,9 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
-
         Meter meter = getMeter(request);
         ModelAndView mav = new ModelAndView("disconnectMeterWidget/render.jsp");
+        mav.addObject("shortName", getShortName());
         mav.addObject("device", meter);
         mav.addObject("attribute", BuiltInAttribute.DISCONNECT_STATUS);
         mav.addObject("isRead", false);
@@ -100,7 +100,6 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     throws Exception {
         Meter meter = getMeter(request);
         ModelAndView mav = getReadModelAndView(meter, true);
-        
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         CommandResultHolder result = plcDeviceAttributeReadService.readMeter(meter, disconnectAttribute, DeviceRequestType.DISCONNECT_STATUS_ATTRIBUTE_READ,user);
         
@@ -126,8 +125,8 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
 
     public ModelAndView helpInfo(HttpServletRequest request, HttpServletResponse response)
     throws Exception {
-        
         ModelAndView mav = new ModelAndView("disconnectMeterWidget/helpInfo.jsp");
+        mav.addObject("shortName", getShortName());
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         mav.addObject("device", device);
@@ -208,6 +207,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         mav.addObject("isRead", isRead);
         mav.addObject("isSupported", true);
         mav.addObject("isConfigured", true);
+        mav.addObject("shortName", getShortName());
         
         return mav;
     }
@@ -216,7 +216,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         Meter meter = getMeter(request);
         
         ModelAndView mav = getReadModelAndView(meter, true);
-        
+        mav.addObject("shortName", getShortName());
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         
         mav.addObject("state", getDisconnectedState(meter, result));
