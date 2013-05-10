@@ -511,7 +511,7 @@ span.disabled a {
 }
 
 /* CUSTOM YUKON CHANGES START HERE */
-.dynatree-title {border-radius: 2px;}
+.dynatree-title {border-radius: 2px;border: 1px solid white;}
 .dynatree-selected .dynatree-title {border: 1px solid #EFE455;}
 .static-mode .dynatree-selected .dynatree-title {border: 1px solid #bbb;}
 
