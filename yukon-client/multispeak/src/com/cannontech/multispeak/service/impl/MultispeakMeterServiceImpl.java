@@ -524,6 +524,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 
                 MeterRead[] meterReads = new MeterRead[] {meterRead};
                 try {
+                    log.info("Sending ReadingChangedNotification ("+ responseUrl + "): Meter Number " + meterRead.getObjectID());
                     ErrorObject[] errObjects = port.readingChangedNotification(meterReads, transactionID);
                     if (!ArrayUtils.isEmpty(errObjects)) {
                         multispeakFuncs.logErrorObjects(responseUrl, "ReadingChangedNotification", errObjects);
