@@ -397,62 +397,6 @@ public class MspObjectDaoImpl implements MspObjectDao {
     }
 
     @Override
-    public List<String> getMspMethods(String mspServer, MultispeakVendor mspVendor) {
-        
-        // This is a solicited method call, no responseUrl is known.
-        String endpointUrl = multispeakFuncs.getEndpointURL(mspVendor, null, mspServer);
-        
-        String[] objects = new String[]{};
-        try {
-            if(mspServer.equalsIgnoreCase(MultispeakDefines.OD_Server_STR)) {
-                OD_ServerSoap_BindingStub port = MultispeakPortFactory.getOD_ServerPort(mspVendor, endpointUrl);
-                objects = port.getMethods();
-            }
-            else if(mspServer.equalsIgnoreCase(MultispeakDefines.OA_Server_STR)) {
-                OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(mspVendor, endpointUrl);
-                objects = port.getMethods();
-            }
-            else if(mspServer.equalsIgnoreCase(MultispeakDefines.MDM_Server_STR)) {
-                MDM_ServerSoap_PortType port = MultispeakPortFactory.getMDM_ServerPort(mspVendor, endpointUrl);
-                objects = port.getMethods();
-            }
-            else if(mspServer.equalsIgnoreCase(MultispeakDefines.MR_Server_STR)) {
-                MR_ServerSoap_BindingStub port = MultispeakPortFactory.getMR_ServerPort(mspVendor, endpointUrl);
-                objects = port.getMethods();
-            }
-            else if(mspServer.equalsIgnoreCase(MultispeakDefines.EA_Server_STR)) {
-                EA_ServerSoap_BindingStub port = MultispeakPortFactory.getEA_ServerPort(mspVendor, endpointUrl);
-                objects = port.getMethods();
-            }
-            else if(mspServer.equalsIgnoreCase(MultispeakDefines.LM_Server_STR)) {
-                LM_ServerSoap_BindingStub port = MultispeakPortFactory.getLM_ServerPort(mspVendor, endpointUrl);
-                objects = port.getMethods();
-            }
-            else if(mspServer.equalsIgnoreCase(MultispeakDefines.CD_Server_STR)) {
-                CD_ServerSoap_BindingStub port = MultispeakPortFactory.getCD_ServerPort(mspVendor, endpointUrl);
-                objects = port.getMethods();
-            }
-            else if(mspServer.equalsIgnoreCase(MultispeakDefines.CB_Server_STR)) {
-                CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
-                objects = port.getMethods();
-            }
-            else if(mspServer.equalsIgnoreCase(MultispeakDefines.CB_CD_STR)) {
-                CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(mspVendor, endpointUrl);
-                objects = port.getMethods();
-            }
-        } catch (RemoteException e) {
-            log.error("Exception processing getMethods (" + mspVendor.getCompanyName() + ") for Server: " + mspServer);
-            log.error("RemoteExceptionDetail: "+e.getMessage());
-        }
-        
-        if (objects == null) {
-        	return Collections.emptyList();
-        }
-        
-        return Arrays.asList(objects);
-    }
-    
-    @Override
     public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByEALocation(String eaLocation, MultispeakVendor mspVendor) {
         
         List<com.cannontech.multispeak.deploy.service.Meter> meters = new ArrayList<com.cannontech.multispeak.deploy.service.Meter>();
@@ -601,7 +545,19 @@ public class MspObjectDaoImpl implements MspObjectDao {
     }
     
     @Override
-    public String[] getMethods(MultispeakVendor mspVendor, String service) throws RemoteException
+    public List<String> findMethods(String mspServer, MultispeakVendor mspVendor) {
+        
+        try {
+            return getMethods(mspVendor, mspServer);
+        } catch (RemoteException e) {
+            log.error("Exception processing getMethods (" + mspVendor.getCompanyName() + ") for Server: " + mspServer);
+            log.error("RemoteExceptionDetail: "+e.getMessage());
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<String> getMethods(MultispeakVendor mspVendor, String service) throws RemoteException
     {
         // This is a solicited method call, no responseUrl is known.
         String endpointUrl = multispeakFuncs.getEndpointURL(mspVendor, null, service); 
@@ -643,9 +599,11 @@ public class MspObjectDaoImpl implements MspObjectDao {
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(mspVendor, endpointUrl);
             objects = port.getMethods();
         }
-        else {
-            return new String[]{"No server for " + service};
+
+        if (objects == null) {
+            return Collections.emptyList();
         }
-        return objects;
+        
+        return Arrays.asList(objects);
     }
 }

@@ -44,14 +44,15 @@ public class MspMeterSearchServiceImpl implements MspMeterSearchService, Initial
 	    loadMspSearchFields(vendorId);
     }
 	
-	public void loadMspSearchFields(int vendorId) {
+	@Override
+    public void loadMspSearchFields(int vendorId) {
 	    //set to available mspSearchFields based on methods that vendor supports
         mspSearchFields = new ArrayList<MspSearchField>();
         
         if (vendorId > 0) {
             
             MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
-            List<String> mspMethodNames = mspObjectDao.getMspMethods(MultispeakDefines.CB_Server_STR, mspVendor);
+            List<String> mspMethodNames = mspObjectDao.findMethods(MultispeakDefines.CB_Server_STR, mspVendor);
             
             MspSearchField[] allMspSearchFields = MspSearchField.values();
             for (MspSearchField mspSearchField : allMspSearchFields) {

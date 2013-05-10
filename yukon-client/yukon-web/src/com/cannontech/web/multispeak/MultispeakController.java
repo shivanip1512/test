@@ -175,23 +175,17 @@ public class MultispeakController {
         String mspService = ServletRequestUtils.getStringParameter(request, "actionService");
         if( mspService != null) {
             try {
-                String[] objects = mspObjectDao.getMethods(mspVendor, mspService);
-                if( objects != null && objects != null)
-                {
+                List<String> supportedMethods = mspObjectDao.getMethods(mspVendor, mspService);
+                if (supportedMethods.isEmpty()) {
+                    map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, "* No methods reported for " + mspService +" getMethods:\n" + mspService + " is not supported.");
+                    map.addAttribute(RESULT_COLOR_ATT, "red");
+                } else {
                     String resultStr = mspService + " available methods:\n";
-                    if( objects.length > 0)
-                    {
-                        resultStr += " * " + objects[0] + "\n";
-                        for (int i = 1; i < objects.length; i++)
-                            resultStr += " * " + objects[i] + "\n";
+                    for (String method : supportedMethods) {
+                        resultStr += " * " + method + "\n";
                     }
                     map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, resultStr);
                     map.addAttribute(RESULT_COLOR_ATT, "blue");
-                }
-                else
-                {
-                    map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, "* No methods reported for " + mspService +" getMethods:\n" + mspService + " is not supported.");
-                    map.addAttribute(RESULT_COLOR_ATT, "red");
                 }
             }catch (RemoteException re) {
                 map.addAttribute( MultispeakDefines.MSP_RESULT_MSG, re.getMessage());

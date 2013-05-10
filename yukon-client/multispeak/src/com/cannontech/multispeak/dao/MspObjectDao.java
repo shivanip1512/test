@@ -152,13 +152,6 @@ public interface MspObjectDao {
     public List<String> getMspSubstationName(MultispeakVendor mspVendor);
 
     /**
-     * Returns a list of supported method names for mspVendor
-     * @param mspVendor
-     * @return
-     */
-    public List<String> getMspMethods(String mspServer, MultispeakVendor mspVendor);
-
-    /**
      * Returns a list of the MeterNumber(s) for the eaLocation.
      * If the interface/method is not supported by mspVendor, or if no object is found,
      * an empty List<Meter> object is returned.
@@ -207,6 +200,15 @@ public interface MspObjectDao {
      */
     public ErrorObject[] pingURL(MultispeakVendor mspVendor, String service) throws RemoteException;
     
+
+    /**
+     * Returns a list of supported method names for mspVendor
+     * Catches any RemoteExceptions and returns emptyList.
+     * @param mspVendor
+     * @return
+     */
+    public List<String> findMethods(String mspServer, MultispeakVendor mspVendor);
+    
     /**
      * Utility to implement the getMethods method for the service.
      * @param mspVendor The multispeak vendor to invoke. 
@@ -214,5 +216,5 @@ public interface MspObjectDao {
      * @return Returns an ArrayOfErrorObjects
      * @throws RemoteException
      */
-    public String[] getMethods(MultispeakVendor mspVendor, String service) throws RemoteException;
+    public List<String> getMethods(MultispeakVendor mspVendor, String service) throws RemoteException;
 }
