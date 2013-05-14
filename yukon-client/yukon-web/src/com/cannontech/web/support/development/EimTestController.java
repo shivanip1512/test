@@ -34,11 +34,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.client.core.WebServiceMessageCallback;
 import org.springframework.ws.client.core.WebServiceTemplate;
+import org.springframework.ws.soap.SoapHeader;
+import org.springframework.ws.soap.SoapHeaderElement;
+import org.springframework.ws.soap.SoapMessage;
 
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.AuthorizeByCparm;
-import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -142,7 +144,7 @@ public class EimTestController implements ApplicationContextAware {
                 TransformerException {
             QName usernameElementName =
                     new QName("http://yukon.cannontech.com/api", "yukonUser", "api");
-            XmlApiUtils.addHeaderToMessage(message, usernameElementName, username, false);
+            addHeaderToMessage(message, usernameElementName, username, false);
         }
     }
 
@@ -197,5 +199,15 @@ public class EimTestController implements ApplicationContextAware {
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+    }
+
+    private static void addHeaderToMessage(WebServiceMessage message, QName headerElementName, String headerValue, boolean mustUnderstand) {
+        
+        SoapMessage soapMessage = ((SoapMessage)message);
+        SoapHeader soapHeader = soapMessage.getSoapHeader();
+
+        SoapHeaderElement headerElement = soapHeader.addHeaderElement(headerElementName);
+        headerElement.setText(headerValue);
+        headerElement.setMustUnderstand(mustUnderstand);
     }
 }

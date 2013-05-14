@@ -15,7 +15,7 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
  * queries against the initial part of a word (which would occur in a find-as-you-type
  * scenario), without resorting to wildcard queries.
  */
-public class PrefixTokenizer extends Tokenizer {
+public final class PrefixTokenizer extends Tokenizer {
 
     public PrefixTokenizer(Reader input) {
         super(input);

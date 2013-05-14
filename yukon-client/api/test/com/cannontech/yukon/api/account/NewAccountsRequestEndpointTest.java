@@ -9,6 +9,7 @@ import org.jdom.output.XMLOutputter;
 import org.jdom.transform.JDOMSource;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -51,6 +52,7 @@ public class NewAccountsRequestEndpointTest {
     }
 
     @Test
+    @Ignore("YUK-11816")
     public void testInvoke() throws Exception {
         /*
          * Test the success file 

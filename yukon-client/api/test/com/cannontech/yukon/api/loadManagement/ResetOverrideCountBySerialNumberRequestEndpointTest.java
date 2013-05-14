@@ -3,6 +3,7 @@ package com.cannontech.yukon.api.loadManagement;
 import org.jdom.Element;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -45,6 +46,7 @@ public class ResetOverrideCountBySerialNumberRequestEndpointTest {
     }
    
     @Test
+    @Ignore("YUK-11816")
     public void testInvoke() throws Exception {
 
     	// Load schemas

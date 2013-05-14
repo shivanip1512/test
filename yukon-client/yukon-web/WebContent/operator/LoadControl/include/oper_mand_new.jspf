@@ -91,7 +91,7 @@ function confirm_form(f) {
     <tr>       
     <td width="650" class="TitleHeader" valign="top"> 
       <div align="center"><br><%= checker.getError("duplicate_error") %> NOTIFICATION - NEW</div>
-        <struts:form name="checker" type="com.cannontech.validate.PageBean" action="oper_mand.jsp?tab=new" onSubmit="return confirm_form(this)"> 
+        <struts:form name="checker" type="com.cannontech.web.validate.PageBean" action="oper_mand.jsp?tab=new" onSubmit="return confirm_form(this)"> 
         <input type=hidden name="submitted" value="true">
         <input type=hidden name="programname">     
         <table width="350" border="1" cellspacing="0" cellpadding="4" align="center" class = "TableCell">
@@ -185,8 +185,8 @@ function confirm_form(f) {
         </struts:form></td>
     </tr>
   </table>
-  <p><struts:form name="checker" type="com.cannontech.validate.PageBean" action="oper_mand.jsp?tab=new" onSubmit="return confirm_form(this)"></struts:form></p>
-  <struts:form name="checker" type="com.cannontech.validate.PageBean" action="oper_mand.jsp?tab=new" onSubmit="return confirm_form(this)"> 
+  <p><struts:form name="checker" type="com.cannontech.web.validate.PageBean" action="oper_mand.jsp?tab=new" onSubmit="return confirm_form(this)"></struts:form></p>
+  <struts:form name="checker" type="com.cannontech.web.validate.PageBean" action="oper_mand.jsp?tab=new" onSubmit="return confirm_form(this)"> 
   <b><br>
   </b> 
   <p>&nbsp;</p>

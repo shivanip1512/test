@@ -8,6 +8,7 @@ import org.jdom.Element;
 import org.jdom.Namespace;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -104,6 +105,7 @@ public class ListAllScenarioProgramsRequestEndpointTest {
     }
    
     @Test
+    @Ignore("YUK-11816")
     public void testInvoke() throws Exception {
         
         // init

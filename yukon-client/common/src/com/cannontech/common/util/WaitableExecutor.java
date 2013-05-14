@@ -10,7 +10,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.sun.xml.internal.txw2.IllegalSignatureException;
 
 
 /**
@@ -29,7 +28,7 @@ public class WaitableExecutor implements Executor {
         Future<?> future = executorService.submit(command);
         futures.add(future);
         if (waitStarted.get()) {
-            throw new IllegalSignatureException("await was called before execute finished");
+            throw new IllegalStateException("await was called before execute finished");
         }
     }
     

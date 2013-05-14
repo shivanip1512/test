@@ -5,6 +5,7 @@ import java.util.Date;
 import org.jdom.Element;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -57,6 +58,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
     }
     
     @Test
+    @Ignore("YUK-11816")
     public void testInvokeDevicesByAccountSuccess() throws Exception {
 
     	// Load the schemas
@@ -174,6 +176,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
     }
     
     @Test
+    @Ignore("YUK-11816")
     public void testInvokeDevicesByProgramSuccess() throws Exception {
         
     	// Load schemas

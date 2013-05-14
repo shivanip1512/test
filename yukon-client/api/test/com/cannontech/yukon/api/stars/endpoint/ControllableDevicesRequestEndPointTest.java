@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -136,6 +137,7 @@ public class ControllableDevicesRequestEndPointTest {
     }
 
     @Test
+    @Ignore("YUK-11816")
     public void testInvokeAddDeviceAuthUser() throws Exception {
 
         // init
@@ -213,6 +215,7 @@ public class ControllableDevicesRequestEndPointTest {
     }
 
     @Test(expected=NotAuthorizedException.class)
+    @Ignore("YUK-11816")
     public void testInvokeAddDeviceUnauthUser() throws Exception {
 
         // init
@@ -229,6 +232,7 @@ public class ControllableDevicesRequestEndPointTest {
     }
     
     @Test
+    @Ignore("YUK-11816")
     public void testInvokeUpdateDeviceAuthUser() throws Exception {
 
         // init
@@ -322,6 +326,7 @@ public class ControllableDevicesRequestEndPointTest {
     }
 
     @Test
+    @Ignore("YUK-11816")
     public void testInvokeRemoveDeviceAuthUser() throws Exception {
 
         // init

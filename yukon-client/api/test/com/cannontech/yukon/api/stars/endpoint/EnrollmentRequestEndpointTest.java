@@ -7,6 +7,7 @@ import org.jdom.Element;
 import org.jdom.Namespace;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
@@ -33,6 +34,7 @@ public class EnrollmentRequestEndpointTest {
     }
 
     @Test
+    @Ignore("YUK-11816")
     public void testInvokeNotFoundException() throws Exception {
         
         // init
@@ -59,6 +61,7 @@ public class EnrollmentRequestEndpointTest {
     }
     
     @Test
+    @Ignore("YUK-11816")
     public void testInvokeIllegalArgument() throws Exception {
      
         // init
@@ -85,6 +88,7 @@ public class EnrollmentRequestEndpointTest {
     }
     
     @Test
+    @Ignore("YUK-11816")
     public void testInvokeDuplicateEnrollment() throws Exception {
 
         // init
@@ -111,6 +115,7 @@ public class EnrollmentRequestEndpointTest {
     }
 
     @Test
+    @Ignore("YUK-11816")
     public void testInvokeSingle() throws Exception {
         
         // init
@@ -134,6 +139,7 @@ public class EnrollmentRequestEndpointTest {
     }
     
     @Test
+    @Ignore("YUK-11816")
     public void testInvokeMutliple() throws Exception {
 
         // init
@@ -163,6 +169,7 @@ public class EnrollmentRequestEndpointTest {
     }
 
     @Test
+    @Ignore("YUK-11816")
     public void testInvokeOptionalRequirements() throws Exception {
 
         // init

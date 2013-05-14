@@ -7,6 +7,7 @@ import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -89,6 +90,7 @@ public class CancelScheduledOverrideRequestEndpointTest {
     }
     
     @Test
+    @Ignore("YUK-11816")
     public void testInvoke() throws Exception {
         // test with unauthorized user
         // ========================================================================================

@@ -10,18 +10,6 @@
   <shortname>CTI Tags</shortname>
   <uri>http://cannontech.com/tags/cti</uri>
 
-  <!-- ===================== Control Flow Tags ====================== -->
-  <tag>
-  	<name>errormsg</name>
-	<tag-class>com.cannontech.taglib.ErrorMsgTag</tag-class>
-	<body-content>JSP</body-content>
-	<attribute>
-		<name>colSpan</name>
-		<required>false</required>
-		<rtexprvalue>false</rtexprvalue>
-	</attribute>
-  </tag>
-
   <!-- Start of user/role/roleproperty tags -->
   <tag>
   	<name>breadCrumbs</name>

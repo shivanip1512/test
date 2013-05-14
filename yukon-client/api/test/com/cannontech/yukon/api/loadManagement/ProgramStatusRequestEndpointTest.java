@@ -5,6 +5,7 @@ import org.jdom.Element;
 import org.jdom.Namespace;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.cannontech.common.exception.NotAuthorizedException;
@@ -59,6 +60,7 @@ public class ProgramStatusRequestEndpointTest {
     }
    
     @Test
+    @Ignore("YUK-11816")
     public void testInvoke() throws Exception {
         
         // init

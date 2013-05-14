@@ -21,7 +21,7 @@
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramCurtailment" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="/WEB-INF/struts.tld" prefix="struts" %>
-<jsp:useBean id="checker" scope="session" class="com.cannontech.validate.PageBean"/>
+<jsp:useBean id="checker" scope="session" class="com.cannontech.web.validate.PageBean"/>
 
 <%
     String[] programNames = null;

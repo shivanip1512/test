@@ -62,16 +62,14 @@ public class PrefixTokenizerTest extends TestCase {
 
     private void testNextHelper(String testInput, List<String> expectedList) throws IOException {
         List<String> tokeTextList = new ArrayList<String>();
-        PrefixTokenizer tokenizer = new PrefixTokenizer(new StringReader(testInput));
-
-        while (tokenizer.incrementToken()) {
-            CharTermAttribute termAttribute = tokenizer.getAttribute(CharTermAttribute.class);
-            String tokenText = termAttribute.toString();
-            tokeTextList.add(tokenText);
+        try (PrefixTokenizer tokenizer = new PrefixTokenizer(new StringReader(testInput))) {
+            while (tokenizer.incrementToken()) {
+                CharTermAttribute termAttribute = tokenizer.getAttribute(CharTermAttribute.class);
+                String tokenText = termAttribute.toString();
+                tokeTextList.add(tokenText);
+            }
         }
-        
-        
+
         assertEquals("Lists don't match", expectedList, tokeTextList);
     }
-
 }

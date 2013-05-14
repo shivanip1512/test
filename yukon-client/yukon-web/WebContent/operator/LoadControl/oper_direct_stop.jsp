@@ -8,7 +8,7 @@
 <%@ page import="java.util.Calendar" %>
 <%@ taglib uri="/WEB-INF/struts.tld" prefix="struts" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<jsp:useBean id="checker" scope="session" class="com.cannontech.validate.PageBean"/>
+<jsp:useBean id="checker" scope="session" class="com.cannontech.web.validate.PageBean"/>
 <%
 /* Parameters:
    id - the id of the program to stop
@@ -210,7 +210,7 @@
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF">
 		  <table width="657" border="0" cellspacing="0" cellpadding="0">
-<struts:form name="checker" type="com.cannontech.validate.PageBean" action="oper_direct_stop.jsp" onSubmit="return validForm(this)"> 
+<struts:form name="checker" type="com.cannontech.web.validate.PageBean" action="oper_direct_stop.jsp" onSubmit="return validForm(this)"> 
   <tr> 
                 <td width="650" class="TitleHeader"> 
                   <div align="center"><br>DIRECT CONTROL - STOP PROGRAM<br><br>
@@ -236,8 +236,8 @@
                 <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
                   </td>
               </tr>
-              <tr> <cti:errormsg colSpan="3"> <span class = "TableCell"><%= checker.getError("STOPTIME") %></span> 
-                </cti:errormsg> </tr>
+              <tr> <td colSpan="3"> <span class = "TableCell"><%= checker.getError("STOPTIME") %></span> 
+                </td> </tr>
             </table>
           </td>
         </tr>
