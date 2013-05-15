@@ -1,5 +1,5 @@
 jQuery(function() {
-	fileLength = 0;
+	var fileLength = 0;
 
 	var update = function() {
 		// if none exist on this page, get out build up JS object to be used for request
