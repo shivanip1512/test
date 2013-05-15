@@ -27,7 +27,7 @@
 	<cti:button id="startBtn" type="button" nameKey="start" />
 	
 	<a href="download?file=${file}" id="downloadBtn"><i:inline key=".download"/></a>
-	
-	<div id="logOutput" class="monospace"> </div>
+
+	<div id="logOutput" class="monospace"><c:forEach var="line" items="${logLines}"><div class="logLine">${line}</div></c:forEach></div>
 
 </cti:standardPage>

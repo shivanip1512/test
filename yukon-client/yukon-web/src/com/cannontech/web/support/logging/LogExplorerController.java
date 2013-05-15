@@ -127,7 +127,7 @@ public class LogExplorerController {
             String fileLength = String.valueOf(fileLengthL/1024);
         	List<String> logLines = FileUtil.readLines(logFile, numLines, offSet);
             
-       		map.addAttribute("logContents", logLines);
+       		map.addAttribute("logLines", logLines);
        		
        		String applicationName = fileToApplicationNameFunction.apply(logFile);
        		map.addAttribute("logFile", new LogFile(logFile, applicationName));

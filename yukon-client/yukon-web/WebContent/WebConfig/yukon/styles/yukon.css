@@ -453,3 +453,4 @@ span.info {font-size: 11px; color: #333; background: lightYellow; border: solid 
 
 .logSection {padding: 20px 0px 20px; display:inline-block; vertical-align:top;}
 li.subDirectory {margin-left:20px;}
+#logOutput {padding-top: 20px;}
