@@ -55,8 +55,8 @@ jQuery(function() {
 	};
 
 	setNumberOfLines = function(num) {
-		if (num <= 1) {
-			jQuery("#numLines").val(1);
+		if (isNaN(num) || num <= 5) {
+			jQuery("#numLines").val(5);
 			jQuery("#decrementLinesBtn").removeClass("prev").addClass("prev_disabled");
 		} else {
 			jQuery("#numLines").val(num);
