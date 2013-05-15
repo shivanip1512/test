@@ -1129,7 +1129,7 @@
         </option>
         <option name="logs">
           <requireRoleProperty value="ADMIN_VIEW_LOGS" />
-          <link>/support/logging/menu?file=/</link>
+          <link>/support/logging/menu</link>
         </option>
         <option name="database">
           <link>/support/database/info</link>
@@ -1237,23 +1237,17 @@
             <pages>
                 <page name="logLanding" type="BASIC">
                     <requireRoleProperty value="ADMIN_EVENT_LOGS" />
-                    <link>/support/logging/menu?file=/</link>
+                    <link>/support/logging/menu</link>
                     <pages>
-                        <page name="logMenu" type="DETAIL">
+                        <page name="logMenu" type="BASIC">
                             <menu>logs</menu>
                             <link>/support/logging/menu?file=${rootlessDirFileString}</link>
                             <labelArgument>${rootlessDirFileString}</labelArgument>
                             <pages>
                                 <page name="logTail" type="DETAIL">
                                     <menu>logs</menu>
-                                    <link>/support/logging/tail?file=${rootlessDirFileString}${logFileName}</link>
-                                    <labelArgument>${logFileName}</labelArgument>
-                                    <pages>
-                                        <page name="logView" type="DETAIL_CHILD">
-                                            <menu>logs</menu>
-                                            <labelArgument>${logFileName}</labelArgument>
-                                        </page>
-                                    </pages>
+                                    <link>/support/logging/view?file=${file}</link>
+                                    <labelArgument>${logFile.identifier}</labelArgument>
                                 </page>
                             </pages>
                         </page>

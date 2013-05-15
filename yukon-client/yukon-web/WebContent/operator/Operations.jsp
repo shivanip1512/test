@@ -343,7 +343,7 @@
 
                 <cti:checkRolesAndProperties value="ADMIN_VIEW_LOGS">
                     <tags:sectionLink>
-                        <a href="/support/logging/menu?file=/"><cti:msg key="yukon.web.viewLogs"/></a>
+                        <a href="/support/logging/menu"><cti:msg key="yukon.web.viewLogs"/></a>
                     </tags:sectionLink>
                 </cti:checkRolesAndProperties>
 

@@ -1,9 +1,5 @@
 package com.cannontech.common.util;
 
-import java.util.ArrayList;
-//import java.util.HashMap;
-import java.util.List;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +7,8 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;

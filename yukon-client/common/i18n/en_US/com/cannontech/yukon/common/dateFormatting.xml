@@ -18,6 +18,7 @@
 <entry key="yukon.common.dateFormatting.HOUR">HH zz</entry>
 <entry key="yukon.common.dateFormatting.DATE_MIDNIGHT_PREV">MM/dd/yyyy</entry>
 <entry key="yukon.common.dateFormatting.LONG_DATE">MMMM d, yyyy</entry>
+<entry key="yukon.common.dateFormatting.LONG_DATE_TIME">MMMM d, yyyy hh:mm a</entry>
 <entry key="yukon.common.dateFormatting.VERY_SHORT">MM/dd HH:mm</entry>
 
 <!-- 

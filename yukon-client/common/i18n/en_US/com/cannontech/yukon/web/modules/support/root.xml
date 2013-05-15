@@ -16,25 +16,27 @@
     <!-- logging/menu.jsp -->
     <entry key="yukon.web.modules.support.logMenu.pageName">Log Explorer</entry>
     <entry key="yukon.web.modules.support.logMenu.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.support.logMenu.sortBy">Sort By:</entry>
-    <entry key="yukon.web.modules.support.logMenu.alphabetic">Alphabetic</entry>
+    <entry key="yukon.web.modules.support.logMenu.sortByApplication">Sort By Application</entry>
+    <entry key="yukon.web.modules.support.logMenu.sortByDate">Sort By Date</entry>
     <entry key="yukon.web.modules.support.logMenu.directories">Directories</entry>
-
+    <entry key="yukon.web.modules.support.logMenu.showAll">Show All</entry>
+    <entry key="yukon.web.modules.support.logMenu.hidden">hidden</entry>
+    <entry key="yukon.web.modules.support.logMenu.showMostRecent">Show Condensed</entry>
+    <entry key="yukon.web.modules.support.logMenu.directories">Directories</entry>
+    <entry key="yukon.web.modules.support.logMenu.logs">Logs</entry>
+    
     <!-- logging/logTail.jsp -->
     <entry key="yukon.web.modules.support.logTail.pageName">Log Tail</entry>
     <entry key="yukon.web.modules.support.logTail.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.support.logTail.fileName">File Name</entry>
     <entry key="yukon.web.modules.support.logTail.lastModified">Last Modified</entry>
     <entry key="yukon.web.modules.support.logTail.fileSize">File Size</entry>
-    <entry key="yukon.web.modules.support.logTail.fileSize.unit">KB</entry>
-    <entry key="yukon.web.modules.support.logTail.numberOfLinesShown">Number of Lines Shown</entry>
-    <entry key="yukon.web.modules.support.logTail.numberOfLinesTailed">Number of Lines Tailed:</entry>
+    <entry key="yukon.web.modules.support.logTail.numberOfLines">Number of Lines</entry>
     <entry key="yukon.web.modules.support.logTail.change.label">Change</entry>
     <entry key="yukon.web.modules.support.logTail.pause.label">Pause</entry>
-
-    <entry key="yukon.web.modules.support.logView.pageName">Log View</entry>
-    <entry key="yukon.web.modules.support.logView.contextualPageName">View</entry>
-    <entry key="yukon.web.modules.support.logView.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.support.logTail.start.label">Start</entry>
+    <entry key="yukon.web.modules.support.logTail.download">Download</entry>
+    <entry key="yukon.web.modules.support.logTail.loading">Loading...</entry>
 
     <!-- database/info.jsp -->
     <entry key="yukon.web.modules.support.databaseInfo.pageName">Database Information</entry>
