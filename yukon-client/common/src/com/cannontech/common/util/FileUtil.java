@@ -7,7 +7,10 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -178,6 +181,11 @@ public final class FileUtil {
         }
     }
     
+    public static Date getCreationDate(File file) throws IOException {
+    	BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+		return new Date(attr.creationTime().toMillis());
+    }
+
     /**
      * Checks two files for equality, ignoring any trailing
      * separator characters in the file path.  (The File.equals

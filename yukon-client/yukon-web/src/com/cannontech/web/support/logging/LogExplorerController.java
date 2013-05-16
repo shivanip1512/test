@@ -2,8 +2,7 @@ package com.cannontech.web.support.logging;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -114,21 +113,20 @@ public class LogExplorerController {
     		@RequestParam(required=false, defaultValue="0") int offSet,
     		YukonUserContext userContext) throws IOException {
 
-        // Gets the correct log file from the request
         File logFile = sanitizeAndVerify(new File(localDir, file));
         Validate.isTrue(logFile.isFile());
-        
+
         long lastModL = logFile.lastModified();
         long fileLengthL = logFile.length();
-       
+ 
         // Checks to see if the logFile exists and has the ability to be read
         if((logFile != null) && (logFile.canRead())){
             String lastMod = dateFormattingService.format(new Date(lastModL), DateFormattingService.DateFormatEnum.BOTH, userContext);
             String fileLength = String.valueOf(fileLengthL/1024);
         	List<String> logLines = FileUtil.readLines(logFile, numLines, offSet);
-            
+
        		map.addAttribute("logLines", logLines);
-       		
+
        		String applicationName = fileToApplicationNameFunction.apply(logFile);
        		map.addAttribute("logFile", new LogFile(logFile, applicationName));
        		String rootlessDirFileString = getRootlessFilePath(logFile.getParentFile());
@@ -234,12 +232,11 @@ public class LogExplorerController {
         }
     }
 
-    // LocalDate is a convenient class because it only knows about year, month, day
-    private Function<File, Instant> getFileCreationDate = new Function<File, Instant> () {
-        public Instant apply(File from) {
+    private Function<File, String> getFileCreationDate = new Function<File, String> () {
+    	SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
+        public String apply(File from) {
         	try {
-				BasicFileAttributes attr = Files.readAttributes(from.toPath(), BasicFileAttributes.class);
-				return new Instant(attr.creationTime().toMillis());
+				return df.format(FileUtil.getCreationDate(from));
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
@@ -255,27 +252,24 @@ public class LogExplorerController {
     	// Sort by application name
         Ordering<String> caseInsensitiveOrdering = CollationUtils.getCaseInsensitiveOrdering(userContext);
         Ordering<File> applicationNameOrdering = caseInsensitiveOrdering.onResultOf(fileToApplicationNameFunction);
-        
-        // sort by newest file and use name to resolve ties (each "day" will be a tie)
+
         Ordering<File> fileCreationOrdering = Ordering.natural().onResultOf(getFileCreationDate).reverse();
 
         // compound the two orderings
         if (sortByApplication) {
-            return  applicationNameOrdering.compound(fileCreationOrdering);
+            return applicationNameOrdering.compound(fileCreationOrdering);
         }
 
         return fileCreationOrdering.compound(applicationNameOrdering);
     }
 
-    private LinkedHashMultimap<String, LogFile> sortLogs(List<File> logs, boolean sortByApplication, YukonUserContext userContext) {
-        Collections.sort(logs, getLogOrdering(userContext, true));
+    private LinkedHashMultimap<String, LogFile> sortLogs(List<File> logs, boolean sortByApplication, YukonUserContext userContext) throws IOException {
+        Collections.sort(logs, getLogOrdering(userContext, sortByApplication));
         LinkedHashMultimap<String, LogFile> result = LinkedHashMultimap.create();
-
         for (File log : logs) {
-            Instant modificationAsDate = getFileCreationDate.apply(log);
             String applicationName = fileToApplicationNameFunction.apply(log);
-            String dateHeading = dateFormattingService.format(modificationAsDate, DateFormatEnum.LONG_DATE, userContext);
-            
+            String dateHeading = dateFormattingService.format(FileUtil.getCreationDate(log), DateFormatEnum.LONG_DATE, userContext);
+
             if (sortByApplication) {
             	result.put(applicationName, new LogFile(log, dateHeading));
             } else {
@@ -290,9 +284,9 @@ public class LogExplorerController {
      * This method checks to see if the file extension is the right type
      */
     public boolean isLog(String logName) {
-        return ((logName.endsWith("log")) || (logName.endsWith("xml")));
+        return logName.endsWith("log") || logName.endsWith("xml");
     }
-    
+
     private File sanitizeAndVerify(File file) throws IOException {
 
     	file = file.getCanonicalFile();

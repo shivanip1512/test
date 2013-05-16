@@ -50,7 +50,6 @@
 									<td><a href="${url}">${logFile.identifier}</a></td>
 									<td><cti:msg2 key="${logFile.size}" /></td>
 								</tr>
-								
 							</c:forEach>
 						</table>
 					</tags:sectionContainer>

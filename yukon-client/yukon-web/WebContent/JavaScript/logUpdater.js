@@ -80,11 +80,10 @@ jQuery(function() {
 		}
 	};
 
-
 	update();
 	var repeatingTaskId = setInterval(update, 1000 * 3);
 	jQuery("#startBtn").hide();
-	
+
 	jQuery("#numLines").change(function() {
 		setNumberOfLines(jQuery("#numLines").val());
 	});
