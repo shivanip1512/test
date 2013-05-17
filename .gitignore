@@ -61,6 +61,7 @@ yukon-client/palm/bin
 yukon-client/palm/build
 yukon-client/report/bin
 yukon-client/report/build
+yukon-client/resource/master.cfg
 yukon-client/sensus-jms/bin
 yukon-client/sensus-jms/build
 yukon-client/services/activemq-data
