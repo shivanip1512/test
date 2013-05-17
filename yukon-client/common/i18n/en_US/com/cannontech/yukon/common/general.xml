@@ -16,6 +16,8 @@
 <entry key="yukon.common.save">Save</entry>
 <entry key="yukon.common.help">Help</entry>
 <entry key="yukon.common.historyTooltip">Click to view history</entry>
+<entry key="yukon.common.download.label">Download</entry>
+<entry key="yukon.common.download.imageUrl">/WebConfig/yukon/Icons/green_arrow_down.gif</entry>
 
 <entry key="yukon.common.to">to</entry>
 

@@ -55,8 +55,8 @@ jQuery(function() {
 	};
 
 	setNumberOfLines = function(num) {
-		if (isNaN(num) || num <= 5) {
-			jQuery("#numLines").val(5);
+		if (isNaN(num) || num <= 10) {
+			jQuery("#numLines").val(10);
 			jQuery("#decrementLinesBtn").removeClass("prev").addClass("prev_disabled");
 		} else {
 			jQuery("#numLines").val(num);
@@ -90,23 +90,25 @@ jQuery(function() {
 
 	jQuery("#decrementLinesBtn").click(function() {
 		var num = parseInt(jQuery("#numLines").val());
-		setNumberOfLines(num-5);
+		setNumberOfLines(num-10);
 	});
 
 	jQuery("#incrementLinesBtn").click(function() {
 		var num = parseInt(jQuery("#numLines").val());
-		setNumberOfLines(num+5);
+		setNumberOfLines(num+10);
 	});
 
 	jQuery("#pauseBtn").click(function() {
 		clearInterval(repeatingTaskId);
-		jQuery("#pauseBtn").hide();
-		jQuery("#startBtn").show();
+		jQuery("#pauseBtn").fadeOut(100, function() {
+			jQuery("#startBtn").fadeIn(25);
+		});
 	});
 
 	jQuery("#startBtn").click(function() {
 		repeatingTaskId = setInterval(update, 1000 * 3);
-		jQuery("#startBtn").hide();
-		jQuery("#pauseBtn").show();
+		jQuery("#startBtn").fadeOut(100, function() {
+			jQuery("#pauseBtn").fadeIn(25);
+		});
 	});
 });

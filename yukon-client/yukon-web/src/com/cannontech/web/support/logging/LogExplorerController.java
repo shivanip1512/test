@@ -90,10 +90,10 @@ public class LogExplorerController {
 
         Multimap<String, LogFile> resultsByApplication = sortLogs(localLogList, true, userContext);;
         Multimap<String, LogFile> resultsByDate = sortLogs(localLogList, false, userContext);
-
+        String baseDir = localDir.getCanonicalPath().substring(localDir.getCanonicalPath().indexOf('\\')); // Remove C:
         map.addAttribute("isSubDirectory", !isLogRoot(logDir));
         map.addAttribute("currentDirectory", getRootlessFilePath(logDir.getParentFile()));
-        
+        map.addAttribute("logBaseDir",  baseDir.replace("\\", "/") + "/");
         map.addAttribute("file", HtmlUtils.htmlEscape(file));
         map.addAttribute("dirList", directoryNameList);
         map.addAttribute("localLogListByApplication", resultsByApplication.asMap());

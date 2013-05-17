@@ -451,6 +451,8 @@ span.info {font-size: 11px; color: #333; background: lightYellow; border: solid 
 #cannonUpdaterErrorDiv {position: fixed;bottom: 0;left: 0;right: 0;background: #D14836;color: white;font-weight: bold;text-align: center;padding: 3px;}
 #cannonUpdaterErrorDiv .alert {padding-top: 64px;width: 64px;position: absolute;bottom: 0;left: 10px;}
 
+/* Log Explorer*/
+a.currentSelection:hover, a.currentSelection:visited, a.currentSelection:link, a.currentSelection:active {font-size:100%;color:grey;text-decoration:none;cursor:default;}
 .logSection {padding: 20px 0px 20px; display:inline-block; vertical-align:top;}
 li.subDirectory {margin-left:20px;}
-#logOutput {padding-top: 20px;}
+#logOutput {margin-top: 20px;}

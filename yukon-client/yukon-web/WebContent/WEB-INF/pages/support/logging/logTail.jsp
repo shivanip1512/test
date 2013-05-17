@@ -12,7 +12,7 @@
 	<input type="hidden" id="updateUrl" value="${updateUrl}"/>
 	<input type="hidden" id="file" value="${file}"/>
 
-	<tags:nameValueContainer2 tableClass="stacked striped">
+	<tags:nameValueContainer2 tableClass="stacked">
 		<tags:nameValue2 nameKey=".fileName">${fn:escapeXml(logFile.name)}</tags:nameValue2>
 		<tags:nameValue2 nameKey=".lastModified"><span id="lastMod"><cti:msg2 key=".loading"/><!-- AJAX --></span></tags:nameValue2>
 		<tags:nameValue2 nameKey=".fileSize"><span id="fileLength"><cti:msg2 key=".loading"/><!-- AJAX --></span></tags:nameValue2>
@@ -23,11 +23,11 @@
 		</tags:nameValue2>
 	</tags:nameValueContainer2>
 	
-	<cti:button  id="pauseBtn" type="button" nameKey="pause" />
-	<cti:button id="startBtn" type="button" nameKey="start" />
-	
-	<a href="download?file=${file}" id="downloadBtn"><i:inline key=".download"/></a>
+	<cti:button nameKey="download" type="button" href="download?file=${file}"/>
 
+	<cti:button id="pauseBtn" type="button" nameKey="pause" />
+	<cti:button id="startBtn" type="button" nameKey="resume" />
+	
 	<div id="logOutput" class="monospace"><c:forEach var="line" items="${logLines}"><div class="logLine">${line}</div></c:forEach></div>
 
 </cti:standardPage>

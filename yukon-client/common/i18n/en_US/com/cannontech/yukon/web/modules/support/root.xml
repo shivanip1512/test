@@ -16,14 +16,14 @@
     <!-- logging/menu.jsp -->
     <entry key="yukon.web.modules.support.logMenu.pageName">Log Explorer</entry>
     <entry key="yukon.web.modules.support.logMenu.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.support.logMenu.sortByApplication">Sort By Application</entry>
-    <entry key="yukon.web.modules.support.logMenu.sortByDate">Sort By Date</entry>
-    <entry key="yukon.web.modules.support.logMenu.directories">Directories</entry>
-    <entry key="yukon.web.modules.support.logMenu.showAll">Show All</entry>
-    <entry key="yukon.web.modules.support.logMenu.hidden">hidden</entry>
-    <entry key="yukon.web.modules.support.logMenu.showMostRecent">Show Condensed</entry>
-    <entry key="yukon.web.modules.support.logMenu.directories">Directories</entry>
-    <entry key="yukon.web.modules.support.logMenu.logs">Logs</entry>
+    <entry key="yukon.web.modules.support.logMenu.sortBy">Sort By</entry>
+    <entry key="yukon.web.modules.support.logMenu.application">Application</entry>
+    <entry key="yukon.web.modules.support.logMenu.date">Date</entry>
+    <entry key="yukon.web.modules.support.logMenu.show">Show</entry>
+    <entry key="yukon.web.modules.support.logMenu.all">All</entry>
+    <entry key="yukon.web.modules.support.logMenu.mostRecent">Most Recent</entry>
+    <entry key="yukon.web.modules.support.logMenu.directories.title">Directories</entry>
+    <entry key="yukon.web.modules.support.logMenu.settings.title">Settings</entry>
     
     <!-- logging/logTail.jsp -->
     <entry key="yukon.web.modules.support.logTail.pageName">Log Tail</entry>
@@ -34,9 +34,10 @@
     <entry key="yukon.web.modules.support.logTail.numberOfLines">Number of Lines</entry>
     <entry key="yukon.web.modules.support.logTail.change.label">Change</entry>
     <entry key="yukon.web.modules.support.logTail.pause.label">Pause</entry>
-    <entry key="yukon.web.modules.support.logTail.start.label">Start</entry>
-    <entry key="yukon.web.modules.support.logTail.download">Download</entry>
-    <entry key="yukon.web.modules.support.logTail.loading">Loading...</entry>
+    <entry key="yukon.web.modules.support.logTail.resume.label">Resume</entry>
+    <entry key="yukon.web.modules.support.logTail.download.label">Download</entry>
+	<entry key="yukon.web.modules.support.logTail.download.imageUrl">/WebConfig/yukon/Icons/green_arrow_down.gif</entry>
+	<entry key="yukon.web.modules.support.logTail.loading">Loading...</entry>
 
     <!-- database/info.jsp -->
     <entry key="yukon.web.modules.support.databaseInfo.pageName">Database Information</entry>
@@ -137,6 +138,8 @@
     <entry key="yukon.web.modules.support.supportBundle.downloadBtn.imageUrl">/WebConfig/yukon/Icons/green_arrow_down.gif</entry>
     <entry key="yukon.web.modules.support.supportBundle.ftpUploadBtn.label">Upload Via FTP</entry>
     <entry key="yukon.web.modules.support.supportBundle.ftpUploadBtn.imageUrl">/WebConfig/yukon/Icons/green_arrow_up.gif</entry>
+    <entry key="yukon.web.modules.support.supportBundle.downloadBtn.label">Download</entry>
+	<entry key="yukon.web.modules.support.supportBundle.downloadBtn.imageUrl">/WebConfig/yukon/Icons/green_arrow_down.gif</entry>
     <entry key="yukon.web.modules.support.supportBundle.bundleInProgressMsg">There is already a bundle in progress.</entry>
     <entry key="yukon.web.modules.support.supportBundle.viewProgressBtn.label">View Progress</entry>
     <entry key="yukon.web.modules.support.supportBundle.includeLbl">Include</entry>
