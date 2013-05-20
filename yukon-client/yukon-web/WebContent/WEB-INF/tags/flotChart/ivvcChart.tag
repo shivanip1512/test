@@ -1,6 +1,9 @@
+<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
+
 <%@ include file="defaultTagLibs.jspf" %>
-<%@ include file="defaultIncludes.jspf" %>
 <%@ include file="defaultAttributes.jspf" %>
+
+<<flot:defaultIncludes/>
 
 <div class="flotchart_container">
     <%@ include file="defaultElements.jspf" %>

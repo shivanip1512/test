@@ -74,7 +74,6 @@ public class CBCAnalysisChartController extends MultiActionController  {
     	Long startDateMillis = startDate.getTime();
     	Long endDateMillis = endDate.getTime();
     	
-    	
     	// INIT MAPS
     	// ------------------------------------------------------------------------------------------------------
     	Map<Integer, String> targetNames = new LinkedHashMap<Integer, String>();
@@ -188,20 +187,10 @@ public class CBCAnalysisChartController extends MultiActionController  {
     		// groupedPointIdsByTarget
     		groupedPointIdsByTarget.put(targetId, labledPointIds);
     		
-    		
     		// FINISH REPORT INFO
     		reportInfo.put("definitionName", definitionName);
     		targetReportInfo.put(targetId, reportInfo);
     	}
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
     	
     	// GRAPHS
     	// list of graphs per target name
@@ -243,7 +232,6 @@ public class CBCAnalysisChartController extends MultiActionController  {
     	    		graphMapsForTarget.add(graph);
     			}
     			
-    			
     		}
     		
     		if (graphMapsForTarget.size() > 0) {
@@ -264,11 +252,7 @@ public class CBCAnalysisChartController extends MultiActionController  {
     	ModelAndView mav = new ModelAndView("cbcAnalysisChart/cbcChart.jsp");
     	
     	// title, module
-    	mav.addObject("title", "Analysis");
-    	mav.addObject("module", "capcontrol");
     	mav.addObject("showMenu", "false");
-    	
-    	
     	mav.addObject("targetIds", targetIds);
     	mav.addObject("targetNames", targetNames);
     	mav.addObject("targetGraphs", targetGraphs);

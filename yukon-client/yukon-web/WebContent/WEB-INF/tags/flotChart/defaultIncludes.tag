@@ -1,3 +1,7 @@
+<%@ tag body-content="empty" description="JavaScript includes needed for flot charts."%>
+
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+
 <cti:includeScript link="JQUERY_FLOTCHARTS" />
 <cti:includeScript link="JQUERY_FLOTCHARTS_SELECTION" />
 <cti:includeScript link="JQUERY_FLOTCHARTS_AXIS_LABEL" />

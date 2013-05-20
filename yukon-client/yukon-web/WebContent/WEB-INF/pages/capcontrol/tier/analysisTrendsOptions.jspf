@@ -3,23 +3,6 @@
 <cti:msg2 key=".todayPf.label" var="todayPf"/>
 <cti:msg2 key=".thirtyDayPf.label" var="thirtyDayPf"/>
 
-<script type="text/javascript">
-function loadPointChartGreyBox(title, url) {
-    $('analysisTrendsOptions').hide();
-    
-    var selectedItems = $$('table.analysisCheckboxes input:checkbox:checked');
-    var targets = new Array();
-    selectedItems.each(function (item) {
-        targets.push(item.readAttribute('value'));
-    });
-    
-    url += '&targets=' + encodeURIComponent(targets.join(','));
-    
-    GB_showFullScreen(title, url, null);
-    return void(0);
-}
-</script>
-
 <tags:formElementContainer nameKey="busContainer" styleClass="padBottom">
     <div>
         <input type="checkbox" id="analysisBusSelectAll" onclick="checkAll(this, 'table.analysisBuses input[type=checkbox]');">
@@ -50,9 +33,26 @@ function loadPointChartGreyBox(title, url) {
     </cti:dataGrid>
 </tags:formElementContainer>
 
+
 <div class="actionArea">
     <cti:button nameKey="todayKvarWatt" onclick="loadPointChartGreyBox('${todayKvarWatt}', '/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=DAY')"/>
     <cti:button nameKey="thirtyDayKvarWatt" onclick="loadPointChartGreyBox('${thirtyDayKvarWatt}', '/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=MONTH')"/>
     <cti:button nameKey="todayPf" onclick="loadPointChartGreyBox('${todayPf}', '/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=DAY')"/>
     <cti:button nameKey="thirtyDayPf" onclick="loadPointChartGreyBox('${thirtyDayPf}', '/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=MONTH')"/>
 </div>
+
+
+<script type='text/javascript'>
+function updateButtons() {
+    if (jQuery('#analysisTrendsOptions input:checkbox:checked').length == 0) {
+        jQuery('#analysisTrendsOptions .actionArea button').attr("disabled", "disabled");
+    } else {
+        jQuery('#analysisTrendsOptions .actionArea button').removeAttr("disabled");
+    }
+}
+
+jQuery(function() {
+    updateButtons();
+    jQuery('#analysisTrendsOptions input:checkbox').click(updateButtons);
+});
+</script>

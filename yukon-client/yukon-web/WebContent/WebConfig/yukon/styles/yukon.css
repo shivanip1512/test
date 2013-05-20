@@ -254,7 +254,7 @@ input.error {background: pink;border-color:#D14836;}
 /* END Color Coding */
 
 /* Dialogs */
-.popUpDiv, .widgetPopup, .ui-dialog {background:white;position:fixed;box-shadow:0 10px 30px #444; border:solid 1px #bbb; border-radius:3px; z-index: 1000;max-width:800px;} 
+.popUpDiv, .widgetPopup, .ui-dialog {background:white;position:fixed;box-shadow:0 10px 30px #444; border:solid 1px #bbb; border-radius:3px; z-index: 1000;} 
 .widgetPopup {padding: 10px 20px;}
 .simplePopup {left:75px;top:15%;}
 .popUpDiv .controls, .titledContainer .controls, .pagedBox .controls {float:right;cursor:pointer;}

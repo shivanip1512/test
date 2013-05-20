@@ -5,9 +5,12 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 
 <cti:standardPage module="capcontrol" page="substation">
 <%@ include file="/capcontrol/capcontrolHeader.jspf"%>
+
+<flot:defaultIncludes/>
 
 <cti:includeScript link="JQUERY_COOKIE" />
 <cti:includeScript link="JQUERY_SCROLLTO" />
@@ -30,7 +33,12 @@
 </c:if>
 
 <script type="text/javascript">
-jQuery(function() {checkPageExpire();});
+jQuery(function() {
+    checkPageExpire();
+    jQuery('#analysisTrendsButton').click(function(event) {
+        jQuery('#analysisTrendsOptions').dialog({width: "auto", minWidth: 500});
+    });
+});
 
 // Filters
 function applySubBusFilter(select) {
@@ -116,9 +124,28 @@ function applyCapBankFilter(feederIds) {
 </i:simplePopup>
 
 <c:if test="${showAnalysis}">
-    <i:simplePopup titleKey=".analysisTrends" id="analysisTrendsOptions" on="#analysisTrendsButton" styleClass="mediumSimplePopup">
+    <div title="<cti:msg2 key=".analysisTrends"/>" id="analysisTrendsOptions" class="dn">
         <%@ include file="analysisTrendsOptions.jspf" %>
-    </i:simplePopup>
+    </div>
+    <div id="trend-popup" class="dn" style="width:800px;height=500px"></div>
+    
+<script type="text/javascript">
+function loadPointChartGreyBox(title, url) {
+    jQuery('#analysisTrendsOptions').dialog('close');
+    
+    var selectedItems = jQuery('table.analysisCheckboxes input:checkbox:checked');
+    var targets = new Array();
+    jQuery.each(selectedItems, function (i, item) {
+        targets.push(jQuery(item).val());
+    });
+    
+    url += '&targets=' + encodeURIComponent(targets.join(','));
+    
+    jQuery("#trend-popup").load(url, function() {
+        jQuery("#trend-popup").dialog({'title': title, 'width': 1000, 'minWidth': 600, 'height': 600});
+    });
+}
+</script>
 </c:if>
     
     <input type="hidden" id="paoId_${substationId}" value="${substationId}">

@@ -1,7 +1,6 @@
 <%@ tag body-content="empty" description="FlotChart tag for displaying historical pointId data as a line or bar chart (See FlotChartServiceImpl.java:getMeterGraphData)"%>
 
-<%@ include file="defaultTagLibs.jspf" %>
-<%@ include file="defaultIncludes.jspf" %>
+<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 
 <%@ attribute name="title" required="true"%>
 <%@ attribute name="pointIds" required="true" description="Comma seperated list of pointIds"%>
@@ -13,6 +12,10 @@
 <%@ attribute name="reloadInterval" description="The reload interval of the added chart (in seconds)"%>
 <%@ attribute name="ymin"%>
 <%@ attribute name="ymax"%>
+
+<%@ include file="defaultTagLibs.jspf" %>
+
+<flot:defaultIncludes/>
 
 <cti:uniqueIdentifier var="chartId" prefix="flotChart_"/>
 
