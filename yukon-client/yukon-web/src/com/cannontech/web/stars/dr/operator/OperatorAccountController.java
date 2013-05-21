@@ -371,8 +371,8 @@ public class OperatorAccountController {
             return "redirect:search";
         }
 	    
-	    LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(new LiteYukonUser());//yukonUserDao.getLiteYukonUser(UserUtils.USER_DEFAULT_ID));
-	    LoginPasswordValidator usernameValidator = loginValidatorFactory.getPasswordValidator(new LiteYukonUser());//yukonUserDao.getLiteYukonUser(UserUtils.USER_DEFAULT_ID));
+        LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(new LiteYukonUser());
+	    LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(new LiteYukonUser());
 
 	    YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
 	    final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
@@ -393,7 +393,7 @@ public class OperatorAccountController {
 	    try {
             
             accountGeneralValidator.validate(accountGeneral, bindingResult);
-            if(createLogin) {
+            if (createLogin) {
                 bindingResult.pushNestedPath("loginBackingBean");
                 usernameValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
                 passwordValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
@@ -402,7 +402,7 @@ public class OperatorAccountController {
             
             if (!bindingResult.hasErrors()) {
                 
-                if(createLogin) {
+                if (createLogin) {
                     /* Check to see if the user is trying to modify the default user */
                     checkEditingDefaultUser(accountGeneral.getLoginBackingBean().getUsername());
                 }
@@ -425,7 +425,7 @@ public class OperatorAccountController {
                     public Integer doInTransaction(TransactionStatus status) {
     	                /* Create the account */
             	        int accountId = operatorAccountService.addAccount(updatableAccount, user, accountGeneral.getOperatorGeneralUiExtras());
-            	        if(createLogin) {
+            	        if (createLogin) {
             	            /* Create the login */
             	            residentialLoginService.createResidentialLogin(accountGeneral.getLoginBackingBean(), user, accountId, energyCompany.getEnergyCompanyId());
             	            /* Added Event Log Message */
