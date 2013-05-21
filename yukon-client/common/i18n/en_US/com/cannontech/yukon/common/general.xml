@@ -121,4 +121,8 @@
 <entry key="yukon.common.true">True</entry>
 <entry key="yukon.common.false">False</entry>
 
+<entry key="yukon.common.html">HTML</entry>
+<entry key="yukon.common.csv">CSV</entry>
+<entry key="yukon.common.pdf">PDF</entry>
+
 </properties>

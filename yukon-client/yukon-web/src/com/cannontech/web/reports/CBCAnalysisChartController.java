@@ -251,7 +251,6 @@ public class CBCAnalysisChartController extends MultiActionController  {
     	// ------------------------------------------------------------------------------------------------------
     	ModelAndView mav = new ModelAndView("cbcAnalysisChart/cbcChart.jsp");
     	
-    	// title, module
     	mav.addObject("showMenu", "false");
     	mav.addObject("targetIds", targetIds);
     	mav.addObject("targetNames", targetNames);

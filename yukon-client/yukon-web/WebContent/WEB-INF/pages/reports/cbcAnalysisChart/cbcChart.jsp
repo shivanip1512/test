@@ -2,14 +2,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
-
-<%-- NO DATA --%>
-<c:if test="${empty targetIds}">
-	<div style="text-align:center;">
-		<h3>No target selected.</h3>
-		<h4>Select one or more Substation Buses or Feeders.</h4>
-	</div>
-</c:if>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <c:forEach var="targetId" items="${targetIds}">
 
@@ -18,50 +11,38 @@
 		<h3>${targetNames[targetId]}</h3>
 		
 		<%-- REPORT LINKS --%>
-		Tabular Data: 
+		<i:inline key="yukon.web.modules.capcontrol.tabularData"/> 
 		<cti:simpleReportLinkFromNameTag 
 			parameterAttributes="${targetReportInfo[targetId]}"
 			definitionName="${targetReportInfo[targetId].definitionName}"
-			viewType="extView">HTML</cti:simpleReportLinkFromNameTag>
+			viewType="extView"><i:inline key="yukon.common.html"/>
+        </cti:simpleReportLinkFromNameTag>
 		|
 		<cti:simpleReportLinkFromNameTag 
 			parameterAttributes="${targetReportInfo[targetId]}"
 			definitionName="${targetReportInfo[targetId].definitionName}"
-			viewType="csvView">CSV</cti:simpleReportLinkFromNameTag>
+			viewType="csvView"><i:inline key="yukon.common.csv"/>
+        </cti:simpleReportLinkFromNameTag>
 		|
 		<cti:simpleReportLinkFromNameTag 
 			parameterAttributes="${targetReportInfo[targetId]}"
 			definitionName="${targetReportInfo[targetId].definitionName}"
-			viewType="pdfView">PDF</cti:simpleReportLinkFromNameTag>
+			viewType="pdfView"><i:inline key="yukon.common.pdf"/>
+        </cti:simpleReportLinkFromNameTag>
 										
 	</div>
 	
-	<c:choose>
-		
-		<%-- NO GRAPHS --%>
-		<c:when test="${empty targetGraphs[targetId]}">
-			No Points To Chart
-		</c:when>
-		
-		<%-- LOOP PER GRAPH --%>
-		<c:otherwise>
-	
-			<c:forEach var="graph" items="${targetGraphs[targetId]}">
-			
-				<div style="margin-left:20px;height: 250px">
-				
-					<flot:trend title="${graph.pointName}" 
-								pointIds="${graph.pointIds}" 
-								startDate="${graph.startDateMillis}" 
-								endDate="${graph.endDateMillis}" 
-								interval="${graph.interval}" 
-								converterType="${graph.converterType}" 
-								graphType="${graph.graphType}"/>
-				</div>
-			</c:forEach>
-			
-		</c:otherwise>
-		
-	</c:choose>
+    <%-- LOOP PER GRAPH --%>
+	<c:forEach var="graph" items="${targetGraphs[targetId]}">
+		<div style="margin-left:20px;height: 250px">
+			<flot:trend title="${graph.pointName}" 
+						pointIds="${graph.pointIds}" 
+						startDate="${graph.startDateMillis}" 
+						endDate="${graph.endDateMillis}" 
+						interval="${graph.interval}" 
+						converterType="${graph.converterType}" 
+						graphType="${graph.graphType}"/>
+		</div>
+	</c:forEach>
 
 </c:forEach>

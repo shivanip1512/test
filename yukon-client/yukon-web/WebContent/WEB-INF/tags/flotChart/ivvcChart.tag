@@ -3,7 +3,7 @@
 <%@ include file="defaultTagLibs.jspf" %>
 <%@ include file="defaultAttributes.jspf" %>
 
-<<flot:defaultIncludes/>
+<flot:defaultIncludes/>
 
 <div class="flotchart_container">
     <%@ include file="defaultElements.jspf" %>

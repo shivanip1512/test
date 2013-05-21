@@ -127,7 +127,7 @@ function applyCapBankFilter(feederIds) {
     <div title="<cti:msg2 key=".analysisTrends"/>" id="analysisTrendsOptions" class="dn">
         <%@ include file="analysisTrendsOptions.jspf" %>
     </div>
-    <div id="trend-popup" class="dn" style="width:800px;height=500px"></div>
+    <div id="trend-popup" class="dn dialog-no-buttons"></div>
     
 <script type="text/javascript">
 function loadPointChartGreyBox(title, url) {
@@ -142,7 +142,7 @@ function loadPointChartGreyBox(title, url) {
     url += '&targets=' + encodeURIComponent(targets.join(','));
     
     jQuery("#trend-popup").load(url, function() {
-        jQuery("#trend-popup").dialog({'title': title, 'width': 1000, 'minWidth': 600, 'height': 600});
+        jQuery("#trend-popup").dialog({'title': title, width: 600, height: 580});
     });
 }
 </script>
