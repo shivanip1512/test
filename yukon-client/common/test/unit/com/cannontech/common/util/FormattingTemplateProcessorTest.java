@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -40,6 +41,11 @@ public class FormattingTemplateProcessorTest {
        Assert.assertEquals(expectedResult, result);
    }
    
+    @After
+    public void tearDown() {
+    	Locale.setDefault(Locale.US);
+    }
+
     //Same test performed in multiple locales to ensure correct functionality
     @Test
     public void testNumberFormat_en_US() {
