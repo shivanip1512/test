@@ -447,7 +447,9 @@ public class MultispeakFuncs
     }
     
     /**
-     * Return the responseURL.
+     * Return the responseUrl.
+     * Used for asynchronous calls, where Yukon is the Server. (Initiate_toYukon > Return_fromYukon; Notification_toVendor > Return_fromVendor)
+     * Yukon receives the InitiateXxx. Then asynchoronously pushes notificationXxx _to_ responseUrl. 
      * If responseURL is not blank, return responseURL.
      * Otherwise, loop through services and try to build the responseURL from the mspVendor's URL and service endpoint
      * @param mspVendor
@@ -455,7 +457,7 @@ public class MultispeakFuncs
      * @param services
      * @return responseURL for notification messages
      */
-    public String getEndpointURL(MultispeakVendor mspVendor, String responseURL, String... services) {
+    public String getResponseUrl(MultispeakVendor mspVendor, String responseURL, String... services) {
         if (StringUtils.isNotBlank(responseURL)) {
             return responseURL;
         } else { 
@@ -469,6 +471,16 @@ public class MultispeakFuncs
         
         // return empty response URL...may need to do some more here? We don't expect to ever be in this situation!!
         return "";
+    }
+
+    /**
+     * Return the endpointUrl to send method/request _to_.
+     * Used for synchronous calls, where Yukon is the Client. (Get_fromVendor > Return_toYukon)
+     * @param mspVendor
+     * @param services
+     */
+    public String getEndpointUrl(MultispeakVendor mspVendor, String services) {
+        return getResponseUrl(mspVendor, null, services);
     }
 
 }

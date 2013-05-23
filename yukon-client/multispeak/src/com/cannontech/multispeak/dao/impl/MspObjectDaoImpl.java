@@ -63,8 +63,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
 
         Customer mspCustomer = new Customer();
         
-        // This is a solicited method call, no responseUrl is known.
-        String endpointUrl = multispeakFuncs.getEndpointURL(mspVendor, null, MultispeakDefines.CB_Server_STR); 
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR); 
                                                             
         try {    
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
@@ -88,8 +87,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     public ServiceLocation getMspServiceLocation(String meterNumber, MultispeakVendor mspVendor) {
         ServiceLocation mspServiceLocation = new ServiceLocation();
         
-        // This is a solicited method call, no responseUrl is known.
-        String endpointUrl = multispeakFuncs.getEndpointURL(mspVendor, null, MultispeakDefines.CB_Server_STR); 
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR); 
                                                             
         try {
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
@@ -114,8 +112,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     public com.cannontech.multispeak.deploy.service.Meter getMspMeter(String meterNumber, MultispeakVendor mspVendor) {
         com.cannontech.multispeak.deploy.service.Meter mspMeter = new com.cannontech.multispeak.deploy.service.Meter();
         
-        // This is a solicited method call, no responseUrl is known.
-        String endpointUrl = multispeakFuncs.getEndpointURL(mspVendor, null, MultispeakDefines.CB_Server_STR); 
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR); 
                                                             
         try {
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
@@ -150,8 +147,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     private String getMoreMspMeters(MultispeakVendor mspVendor, String lastReceived, SimpleCallback<List<com.cannontech.multispeak.deploy.service.Meter>> callback) throws Exception {
     	
     	String lastSent = null;
-        // This is a solicited method call, no responseUrl is known.
-        String endpointUrl = multispeakFuncs.getEndpointURL(mspVendor, null, MultispeakDefines.CB_Server_STR);
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         try {
         	
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
@@ -223,9 +219,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     private String getMoreServiceLocations(MultispeakVendor mspVendor, String lastReceived, MultispeakGetAllServiceLocationsCallback callback) throws RemoteException {
     	
     	String lastSent = null;
-        
-        // This is a solicited method call, no responseUrl is known.
-        String endpointUrl = multispeakFuncs.getEndpointURL(mspVendor, null, MultispeakDefines.CB_Server_STR);
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         try {
         	
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
@@ -309,8 +303,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByServiceLocation(String serviceLocation, MultispeakVendor mspVendor) {
         
     	List<com.cannontech.multispeak.deploy.service.Meter> meters = new ArrayList<com.cannontech.multispeak.deploy.service.Meter>();
-        // This is a solicited method call, no responseUrl is known.
-        String endpointUrl = multispeakFuncs.getEndpointURL(mspVendor, null, MultispeakDefines.CB_Server_STR);
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
 
         try {
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
@@ -375,8 +368,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     public List<String> getMspSubstationName(MultispeakVendor mspVendor) {
 
         List<String> substationNames = new ArrayList<String>();
-        // This is a solicited method call, no responseUrl is known.
-        String endpointUrl = multispeakFuncs.getEndpointURL(mspVendor, null, MultispeakDefines.CB_Server_STR);
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         try {
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
             if (port != null) {
@@ -400,9 +392,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByEALocation(String eaLocation, MultispeakVendor mspVendor) {
         
         List<com.cannontech.multispeak.deploy.service.Meter> meters = new ArrayList<com.cannontech.multispeak.deploy.service.Meter>();
-        
-        // This is a solicited method call, no responseUrl is known.
-        String endpointUrl = multispeakFuncs.getEndpointURL(mspVendor, null, MultispeakDefines.CB_Server_STR);
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         
         try {
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
@@ -425,9 +415,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByFacilityId(String facilityId, MultispeakVendor mspVendor) {
         
         List<com.cannontech.multispeak.deploy.service.Meter> meters = new ArrayList<com.cannontech.multispeak.deploy.service.Meter>();
-        
-        // This is a solicited method call, no responseUrl is known.
-        String endpointUrl = multispeakFuncs.getEndpointURL(mspVendor, null, MultispeakDefines.CB_Server_STR);
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         
         try {
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
@@ -450,8 +438,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByAccountNumber(String accountNumber, MultispeakVendor mspVendor) {
         
         List<com.cannontech.multispeak.deploy.service.Meter> meters = new ArrayList<com.cannontech.multispeak.deploy.service.Meter>();
-        // This is a solicited method call, no responseUrl is known.
-        String endpointUrl = multispeakFuncs.getEndpointURL(mspVendor, null, MultispeakDefines.CB_Server_STR);
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         
         try {
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
@@ -474,8 +461,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByCustId(String custId, MultispeakVendor mspVendor) {
         
         List<com.cannontech.multispeak.deploy.service.Meter> meters = new ArrayList<com.cannontech.multispeak.deploy.service.Meter>();
-        // This is a solicited method call, no responseUrl is known.
-        String endpointUrl = multispeakFuncs.getEndpointURL(mspVendor, null, MultispeakDefines.CB_Server_STR);
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         try {
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
             if (port != null) {
@@ -496,8 +482,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     @Override
     public ErrorObject[] pingURL(MultispeakVendor mspVendor, String service) throws RemoteException
     {
-        // This is a solicited method call, no responseUrl is known.
-        String endpointUrl = multispeakFuncs.getEndpointURL(mspVendor, null, service);
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor,service);
         
         ErrorObject[] objects = new ErrorObject[]{};
         
@@ -559,8 +544,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     @Override
     public List<String> getMethods(MultispeakVendor mspVendor, String service) throws RemoteException
     {
-        // This is a solicited method call, no responseUrl is known.
-        String endpointUrl = multispeakFuncs.getEndpointURL(mspVendor, null, service); 
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor,service); 
                                                             
         String[] objects = new String[]{};
         if(service.equalsIgnoreCase(MultispeakDefines.OD_Server_STR)) {

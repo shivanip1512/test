@@ -98,7 +98,7 @@ public class OD_ServerImpl implements OD_ServerSoap_PortType
         ErrorObject[] errorObjects = new ErrorObject[0];
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        String actualResponseUrl = multispeakFuncs.getEndpointURL(vendor, responseURL, MultispeakDefines.OA_Server_STR);
+        String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor, responseURL, MultispeakDefines.OA_Server_STR);
 
         errorObjects = multispeakMeterService.odEvent(vendor, meterNos, transactionID, actualResponseUrl);
         multispeakFuncs.logErrorObjects(MultispeakDefines.OD_Server_STR, "initiateOutageDetectionEventRequest", errorObjects);

@@ -63,9 +63,7 @@ public class OutageJmsMessageListener implements MessageListener {
         for (MultispeakVendor mspVendor : allVendors) {
 
             if (mspVendor.getMspInterfaceMap().get(MultispeakDefines.OA_Server_STR) != null) {
-                
-                // This is a solicited method call, no responseUrl is known.
-                String endpointUrl = multispeakFuncs.getEndpointURL(mspVendor, null, MultispeakDefines.OA_Server_STR); 
+                String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.OA_Server_STR); 
                                                                     
                 OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(mspVendor, endpointUrl);
                 
@@ -120,8 +118,7 @@ public class OutageJmsMessageListener implements MessageListener {
         OutageDetectionEvent outageDetectionEvent = getOutageDetectionEvent(outageJmsMessage);
         
         for (MultispeakVendor mspVendor : vendorsToSendOutageMsg) {
-            // This is an unsolicited method call happening in a solicited way, no responseUrl is known.
-            String endpointUrl = multispeakFuncs.getEndpointURL(mspVendor, null, MultispeakDefines.OA_Server_STR);
+            String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.OA_Server_STR);
             
             log.info("Sending ODEventNotification ("+ endpointUrl + "): ObjectID: " + outageDetectionEvent.getObjectID() + " Type: " + outageDetectionEvent.getOutageEventType());
             

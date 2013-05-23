@@ -257,7 +257,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         if ( vendor.getCompanyName().equalsIgnoreCase("SEDC") && canInitiatePorterRequest) {
             
             // Don't know the responseURL as it's not provided in this method (by definition!) Using default for SEDC.
-            String responseUrl = multispeakFuncs.getEndpointURL(vendor, null, MultispeakDefines.CB_Server_STR);
+            String responseUrl = multispeakFuncs.getResponseUrl(vendor, null, MultispeakDefines.CB_Server_STR);
         	return multispeakMeterService.getLatestReadingInterrogate(vendor, meter, null, responseUrl);
         } else	{ //THIS SHOULD BE WHERE EVERYONE ELSE GOES!!!
             try {
@@ -382,7 +382,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         ErrorObject[] errorObjects = new ErrorObject[0];
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        String actualResponseUrl = multispeakFuncs.getEndpointURL(vendor, responseURL, MultispeakDefines.CB_Server_STR);
+        String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor, responseURL, MultispeakDefines.CB_Server_STR);
         
         if ( ! porterConnection.isValid() ) {
             String message = "Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.";
@@ -713,7 +713,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         ErrorObject[] errorObjects = new ErrorObject[0];
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        String actualResponseUrl = multispeakFuncs.getEndpointURL(vendor, responseURL, MultispeakDefines.CB_Server_STR);
+        String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor, responseURL, MultispeakDefines.CB_Server_STR);
         if ( ! porterConnection.isValid() ) {
             String message = "Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.";
             log.error(message);                
@@ -867,7 +867,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         List<ErrorObject> errors = Lists.newArrayList();
         boolean hasFatalErrors = false;
         
-        String actualResponseUrl = multispeakFuncs.getEndpointURL(vendor, responseURL, MultispeakDefines.CB_Server_STR);
+        String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor, responseURL, MultispeakDefines.CB_Server_STR);
         
         // Do a basic URL check. This only validates that it's not empty.
         ErrorObject errorObject = mspValidationService.validateResponseURL(actualResponseUrl, "Meter",
