@@ -6,40 +6,39 @@ import java.io.IOException;
 import java.nio.channels.FileLock;
 
 import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.jdom.JDOMException;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 
 public class MasterConfigCryptoUtils {
+    private static Logger log = YukonLogManager.getLogger(CryptoUtils.class);
+
     private static final File keysFolder = new File(BootstrapUtils.getKeysFolder());
     private static final File masterCfgCryptoFile = new File(keysFolder, "masterConfigKeyfile.dat");
     private static final File masterCfgCryptoLockFile = new File(keysFolder, "masterConfigKeyfile.lck");
-    private static final String encryptionIndicator = "(AUTO_ENCRYPTED)";
+    private static final String ENCRYPTION_DESIGNATION = "(AUTO_ENCRYPTED)";
     private static AESPasswordBasedCrypto encrypter;
-    
+
     static {
         try {
             encrypter = new AESPasswordBasedCrypto(getMasterCfgPasskey());
         } catch (CryptoException | IOException | JDOMException e) {
-            // Logging probably hasn't been set up...log to standard error.
-            System.err.println("error creating encryptor");
-            e.printStackTrace(System.err);
+        	throw new IllegalStateException("Corrupt or invalid crypto file for master.cfg found. " +
+            			"If this file has been tampered with it will need to be removed and a new one will be generated. " +
+            			"Settings in master.cfg will need to be plain text for the new file to re-encrypt properly.",e);
         }
     }
-    
+
     private MasterConfigCryptoUtils() {/*Not instantiable. Utility class only */ }
-    
+
     /**
      * Returns the results of CryptoUtils.getPassKeyFromFile(masterCfgCryptoFile : File);
      * 
      * @return char[]
-     * 
-     * @throws JDOMException 
-     * @throws CryptoException 
-     * @throws IOException 
      */
     private static char[] getMasterCfgPasskey() throws IOException, CryptoException, JDOMException {
         char[] passkey = null;
@@ -47,19 +46,16 @@ public class MasterConfigCryptoUtils {
         if (!keysFolder.exists()) {
             keysFolder.mkdir();
         }
-        FileOutputStream fos = new FileOutputStream(masterCfgCryptoLockFile);
-        FileLock lock = fos.getChannel().lock();
-        try {
-            if (CryptoUtils.isValidCryptoFile(masterCfgCryptoFile)) {
+        
+        try (FileOutputStream fos = new FileOutputStream(masterCfgCryptoLockFile);
+    		 FileLock lock = fos.getChannel().lock()) {
+            if (masterCfgCryptoFile.exists()) {
                 passkey = CryptoUtils.getPasskeyFromCryptoFile(masterCfgCryptoFile);
             } else {
-                masterCfgCryptoFile.delete();
+            	log.info(masterCfgCryptoFile.getName() + " doesn't exist. Creating a new CryptoFile for master.cfg");
                 CryptoUtils.createNewCryptoFile(masterCfgCryptoFile);
                 passkey = CryptoUtils.getPasskeyFromCryptoFile(masterCfgCryptoFile);
             }
-        } finally {
-            lock.release();
-            fos.close();
         }
 
         return passkey;
@@ -71,19 +67,17 @@ public class MasterConfigCryptoUtils {
      * Decrypts the text following "(AUTO_ENCRYPTED)" in the string value
      * sent in. This will return the plain text as it was originally
      * 
-     * @return valuePlainText : String
-     * @throws CryptoException 
      */
-    public static String decryptValue(String valueEncrypted) throws CryptoException {
-        String valuePlainText = null;
+    public static String decryptValue(String encryptedText) throws CryptoException {
+        String plainText = null;
         try {
-            valueEncrypted = StringUtils.deleteWhitespace(valueEncrypted);
-            char[] value = valueEncrypted.substring(encryptionIndicator.length()).toCharArray();
-            valuePlainText = new String(encrypter.decrypt(Hex.decodeHex(value)));
-        } catch (DecoderException de) {
-            throw new CryptoException(de);
+            encryptedText = StringUtils.deleteWhitespace(encryptedText);
+            String hexStr = encryptedText.substring(ENCRYPTION_DESIGNATION.length());
+            plainText = encrypter.decryptHexStr(hexStr);
+        } catch (DecoderException | CryptoException e) {
+        	throw new CryptoException("Unable to decrypt master.cfg encrypted value.", e);
         }
-        return valuePlainText;
+        return plainText;
     }
 
     /**
@@ -93,14 +87,10 @@ public class MasterConfigCryptoUtils {
      * "(AUTO_ENCRYPTED)" appended to the value so the master.cfg parsers
      * can tell its encrypted. The rest of the value returned is the encrypted
      * data in hex format.
-     * 
-     * @return encryptedValue : String
-     * @throws CryptoException 
      */
     public static String encryptValue(String valuePlaintext) throws CryptoException {
         valuePlaintext = StringUtils.deleteWhitespace(valuePlaintext);
-        String encryptedValue =
-                encryptionIndicator + new String(Hex.encodeHex(encrypter.encrypt(valuePlaintext.getBytes())));
+        String encryptedValue = ENCRYPTION_DESIGNATION + encrypter.encryptToHexStr(valuePlaintext);
         return encryptedValue;
     }
 
@@ -116,8 +106,8 @@ public class MasterConfigCryptoUtils {
     public static boolean isEncrypted(String value) {
         value = StringUtils.deleteWhitespace(value); // null safe
         if (StringUtils.isEmpty(value) // check for "" or Null
-                || value.length() <= encryptionIndicator.length() // Ensure the next line doesn't throw indexOutOfBounds
-                || !value.substring(0, encryptionIndicator.length()).equals(encryptionIndicator)) {
+                || value.length() <= ENCRYPTION_DESIGNATION.length() // Ensure the next line doesn't throw indexOutOfBounds
+                || !value.substring(0, ENCRYPTION_DESIGNATION.length()).equals(ENCRYPTION_DESIGNATION)) {
             return false;
         } else {
             return true;

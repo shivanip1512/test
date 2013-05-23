@@ -1,6 +1,8 @@
 package com.cannontech.encryption;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.security.SecureRandom;
@@ -36,12 +38,12 @@ public class AESPasswordBasedCryptoTest  {
         String helloStrHexEncrypted_2 = aes.encryptToHexStr(helloStr);
         String helloStrDecrypted = aes.decryptHexStr(helloStrHexEncrypted_1);
 
-        assertEquals(false, helloStr.equals(helloStrHexEncrypted_1));
-        assertEquals(false, helloStrDecrypted.equals(helloStrHexEncrypted_1));
-        assertEquals(true, helloStr.equals(helloStrDecrypted));
+        assertFalse(helloStr.equals(helloStrHexEncrypted_1));
+        assertFalse(helloStrDecrypted.equals(helloStrHexEncrypted_1));
+        assertTrue(helloStr.equals(helloStrDecrypted));
 
         // Same thing encrypted twice should result in two different strings
-        assertEquals(false, helloStrHexEncrypted_2.equals(helloStrHexEncrypted_1));
+        assertFalse(helloStrHexEncrypted_2.equals(helloStrHexEncrypted_1));
     }
 
     /**
@@ -50,7 +52,7 @@ public class AESPasswordBasedCryptoTest  {
     @Test
     public void test_validityToPass1() throws CryptoException {
         AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(password);
-        assertEquals(true, aes.isAuthentic(cipherText1));
+        assertTrue(aes.isAuthentic(cipherText1));
     }
 
     /**
@@ -59,7 +61,7 @@ public class AESPasswordBasedCryptoTest  {
     @Test
     public void test_validityToPass2() throws CryptoException {
         AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(password);
-        assertEquals(true, aes.isAuthentic(cipherText2));
+        assertTrue(aes.isAuthentic(cipherText2));
     }
 
     /**
@@ -68,16 +70,16 @@ public class AESPasswordBasedCryptoTest  {
     @Test
     public void test_validityToPass3() throws CryptoException {
         AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(password);
-        assertEquals(true, aes.isAuthentic(cipherText3));
+        assertTrue(aes.isAuthentic(cipherText3));
     }
 
     /**
      * Tests the isAuthentic method against cipherText4 (test to fail)
      */
-    @Test
+    @Test(expected=CryptoException.class)
     public void test_validityToFail() throws CryptoException {
         AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(password);
-        assertEquals(false, aes.isAuthentic(badCipherText4));
+        aes.verifyAuthenticity(badCipherText4);
     }
 
     /**

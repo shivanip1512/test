@@ -1,16 +1,11 @@
 package com.cannontech.encryption;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.jdom.JDOMException;
-import org.joda.time.Instant;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.cannontech.common.util.BootstrapUtils;
@@ -18,27 +13,7 @@ import com.cannontech.common.util.BootstrapUtils;
 public class KeyfileTest {
     private static final File keysFolder = new File(BootstrapUtils.getKeysFolder());
     private static final File masterCfgCryptoFile = new File(keysFolder,"masterConfigKeyfile.dat");
-    private static final Instant timeAtTest = new Instant();
 
-    private File testFileGood; // Set before tests run
-    private File testFileBad; // Set before tests run
-    private static final String testFilePassKeyStr = "1r[cP7.=ui=u$Z}5ct2TC-:siZ1niLA3";
-
-    @Before
-    public void setup() {
-        try {
-            testFileGood = new File(getClass().getResource("testKeyfileGood.dat").toURI());
-        } catch(URISyntaxException e) {
-            testFileGood = new File(getClass().getResource("testKeyfileGood.dat").getPath());
-        }
-
-        try {
-            testFileBad = new File(getClass().getResource("testKeyfileBad.dat").toURI());
-        } catch(URISyntaxException e) {
-            testFileBad = new File(getClass().getResource("testKeyfileBad.dat").getPath());
-        }
-    }
-    
     @Test
     // Generates random keys and tests them all to check for duplicates
     public void test_GenerateRandomPasskeyRandomness() {
@@ -115,50 +90,5 @@ public class KeyfileTest {
         } catch (Exception e) {
             Assert.fail();
         } 
-    }
-
-    @Test
-    public void test_RandomCryptoFileGeneration() {
-        String filename = "KeyFileTest_r_"+timeAtTest.getMillis()+".dat";
-        File randomFile = new File(BootstrapUtils.getKeysFolder(),filename);
-        try {
-            char[] passkey = CryptoUtils.getPasskeyFromCryptoFile(randomFile);
-            Assert.assertNotNull(passkey);
-        } catch (Exception e) {
-            Assert.fail();
-        } 
-        randomFile.delete();
-    }
-
-    @Test
-    public void test_ValidityCheck() {
-            Assert.assertEquals(true, CryptoUtils.isValidCryptoFile(testFileGood));
-            Assert.assertEquals(false, CryptoUtils.isValidCryptoFile(testFileBad));
-    }
-
-    @Test
-    public void test_validPasskeyFileGetPasskey() {
-        char[] passkey = null;
-        try {
-            passkey = CryptoUtils.getPasskeyFromCryptoFile(testFileGood);
-            Assert.assertNotNull(passkey);
-            String passkeyStr = new String(passkey);
-            Assert.assertEquals(passkeyStr,testFilePassKeyStr);
-        } catch (Exception e) {
-            Assert.fail();
-        } 
-        Assert.assertNotNull(passkey);
-    }
-
-    @Test
-    public void test_InvalidPasskeyFile() throws IOException, JDOMException {
-        char[] passkey = null;
-        try {
-            passkey = CryptoUtils.getPasskeyFromCryptoFile(testFileBad);
-            Assert.fail();
-        } catch (CryptoException e) {
-            /* Test Pass. */
-        }
-        Assert.assertNull(passkey);
     }
 }

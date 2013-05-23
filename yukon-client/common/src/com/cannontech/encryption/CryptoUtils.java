@@ -2,7 +2,6 @@ package com.cannontech.encryption;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.security.KeyPair;
@@ -15,9 +14,11 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.encryption.impl.AESEncryptedFileInputStream;
 import com.cannontech.encryption.impl.AESEncryptedFileOutputStream;
@@ -25,29 +26,32 @@ import com.cannontech.tools.xml.SimpleXmlReader;
 import com.cannontech.tools.xml.SimpleXmlWriter;
 
 public class CryptoUtils {
-    
+    private static Logger log = YukonLogManager.getLogger(CryptoUtils.class);
+
     private static final int passKeyLength = 32; //chars
     private static final int rsaKeySize = 512; //4096 bits
     private static final String passkeyAlphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-+={}[];:,.?!@#$%^*()";
 
     private static final File keysFolder = new File(BootstrapUtils.getKeysFolder());
     private static final File sharedCryptoFile = new File(keysFolder,"sharedKeyfile.dat");
-    // System wide passkey to do encryption when no other passkey is available. Currently only using this to encrypt a file
-    // which contains the actual passkey. In other words, this passkey unlocks the real passkey which is used for encryption.
+
+    /**
+     * System-wide passkey to do encryption when no other passkey is available. Currently only using this to encrypt a file
+     * which contains the actual passkey. In other words, this passkey unlocks the real passkey which is used for encryption.
+     */
     private static final String yukonPasskey = "Bdk=5ohaIc51ifstd-zl2dCV)5iUE(DG";
 
+    /**
+     * System-wide salt for when no other salt is available.
+     */
     private static final byte[] yukonSalt = {(byte)0x9B, (byte)0x02, (byte)0xF9, (byte)0x92,(byte)0x64, (byte)0xE5, (byte)0xE3, (byte)0x03,
         (byte)0xF2, (byte)0x9B, (byte)0x19, (byte)0x12,(byte)0x56, (byte)0x35, (byte)0x56, (byte)0x93};
-    private static final String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA1";
-    private static final String CRYPTO_FILE_XML_ROOT = "root";
-    private static final String CRYPTO_FILE_XML_VERSION = "version";
+
     private static final String CRYPTO_FILE_VERSION = "1";
-    private static final String CRYPTO_FILE_XML_PASSKEY = "pk";
-    private static final String RSA_ALGORITHM = "RSA";
     private static final SecureRandom secureRandom = new SecureRandom();
 
     private CryptoUtils() {/*Not instantiable. Utility class only */ }
-    
+
     /**
      * Generates a random password and returns it as a array of characters.
      * Uses a SecureRandom number generator and selects characters randomly
@@ -69,10 +73,9 @@ public class CryptoUtils {
      * Returns a KeyPair object for use with RSA crypto of keysize rsaKeySize. 
      * 
      * @return key : KeyPair
-     * @throws NoSuchAlgorithmException
      */
     public static KeyPair generateRSAKeyPair() throws NoSuchAlgorithmException {
-        KeyPairGenerator keyGen = KeyPairGenerator.getInstance(RSA_ALGORITHM);
+        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
         keyGen.initialize(rsaKeySize*8);
         KeyPair key = keyGen.generateKeyPair();
         return key;
@@ -90,12 +93,10 @@ public class CryptoUtils {
      * @param salt : byte[] - salt for hashing function
      * @param iterations : int - number of iterations to do salt/hash function
      * @return key : byte[] - random array of bytes derived from secret
-     * @throws InvalidKeySpecException
-     * @throws NoSuchAlgorithmException
      */
     public static byte[] pbkdf2(char[] password, int byteLength, byte[] salt, int iterations) throws InvalidKeySpecException, NoSuchAlgorithmException {
         PBEKeySpec pbe = new PBEKeySpec(password,salt,iterations,byteLength*8);
-        byte [] secret = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM).generateSecret(pbe).getEncoded();
+        byte [] secret = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1").generateSecret(pbe).getEncoded();
         return secret;
     }
 
@@ -112,7 +113,6 @@ public class CryptoUtils {
     /**
      * Returns the predefinded and static yukon salt. Should only be used as a salt if no
      * other more secure random salt is available.
-     * @return yukonSalt : byte[]
      */
     public static byte[] getYukonsalt() {
         return yukonSalt;
@@ -120,18 +120,14 @@ public class CryptoUtils {
 
     /**
      * Returns the results of getPassKey(sharedCryptoFile : File);
-     * @return char[]
-     * @throws JDOMException 
-     * @throws CryptoException 
-     * @throws PasswordBasedCryptoException 
-     * @throws IOException 
      */
     public static char[] getSharedPasskey() throws IOException, CryptoException, JDOMException {
         char[] passkey = null;
 
-        if (CryptoUtils.isValidCryptoFile(sharedCryptoFile)) {
+        if (sharedCryptoFile.exists()) {
             passkey = CryptoUtils.getPasskeyFromCryptoFile(sharedCryptoFile);
         } else {
+        	log.info(sharedCryptoFile.getName() + " doesn't exist. Creating new SharedCryptoFile.");
             CryptoUtils.createNewCryptoFile(sharedCryptoFile);
             passkey = CryptoUtils.getPasskeyFromCryptoFile(sharedCryptoFile);
         }
@@ -173,8 +169,7 @@ public class CryptoUtils {
      *          <pk>...</pk>
      *      </root>
      *
-     * The passkey generated in is placed in <pk></pk> tag.
-     * 
+     * The passkey generated is placed in <pk></pk> tag.
      */
     public static char[] createNewCryptoFile(File file) {
         char[] passkey = null;
@@ -189,18 +184,16 @@ public class CryptoUtils {
             AESEncryptedFileOutputStream outputStream = new AESEncryptedFileOutputStream(file, yukonPasskey.toCharArray());
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
             SimpleXmlWriter xmlFile = new SimpleXmlWriter(writer);
-            xmlFile.setRootElement(new Element(CRYPTO_FILE_XML_ROOT));
-            xmlFile.createNewElementWithContent(CRYPTO_FILE_XML_VERSION, CRYPTO_FILE_VERSION);
+            xmlFile.setRootElement(new Element("root"));
+            xmlFile.createNewElementWithContent("version", CRYPTO_FILE_VERSION);
             xmlFile.setWorkingElementRoot();
-            xmlFile.createNewElementWithContent(CRYPTO_FILE_XML_PASSKEY, passkey);
+            xmlFile.createNewElementWithContent("pk", passkey);
             xmlFile.writeAndClose();
         } catch (IOException e) {
-            System.out.println("Unable to save new passkey to file. Returning null");
-            passkey = null;
-        } catch (CryptoException e) {
-            System.out.println("caught exception in createNewCryptoFile");
+        	log.error("Unable to save new passkey to file. Returning null passkey.");
             passkey = null;
         }
+
         return passkey;
     }
 
@@ -212,42 +205,15 @@ public class CryptoUtils {
      *          <version>1</version>
      *          <pk>...</pk>
      *      </root>
-     * With the data found between <pk></pk> being returned as a character array.
-     * @throws CryptoException 
-     * @throws PasswordBasedCryptoException 
-     * @throws IOException 
-     * @throws JDOMException 
-     * 
+     * With the returned data being the data found between <pk></pk> elements.
      */
     public static char[] getPasskeyFromCryptoFile(File cryptoFile) throws IOException, CryptoException, JDOMException {
         char [] passkey = null;
-        try {
-            AESEncryptedFileInputStream inputStream = new AESEncryptedFileInputStream(cryptoFile, yukonPasskey.toCharArray());
-            SimpleXmlReader xmlFile = new SimpleXmlReader(inputStream);
-            passkey = xmlFile.getElementValue(CRYPTO_FILE_XML_PASSKEY).toCharArray();
-        } catch (FileNotFoundException fnfe) {
-            passkey = createNewCryptoFile(cryptoFile);
-        } 
+        
+        AESEncryptedFileInputStream inputStream = new AESEncryptedFileInputStream(cryptoFile, yukonPasskey.toCharArray());
+        SimpleXmlReader xmlFile = new SimpleXmlReader(inputStream);
+        passkey = xmlFile.getElementValue("pk").toCharArray();
 
         return passkey;
     }
-    
-    public static boolean isValidCryptoFile(File cryptoFile) {
-        boolean isValid = false;
-        try {
-            AESEncryptedFileInputStream inputStream = new AESEncryptedFileInputStream(cryptoFile, yukonPasskey.toCharArray());
-            SimpleXmlReader xmlFile = new SimpleXmlReader(inputStream);
-            
-            if (xmlFile.getElementValue(CRYPTO_FILE_XML_PASSKEY).toCharArray() == null) {
-                isValid = false;
-            } else {
-                isValid = true;
-            }
-        } catch (Exception e) {
-            isValid = false;
-        }
-        
-        return isValid;
-    }
-    
 }

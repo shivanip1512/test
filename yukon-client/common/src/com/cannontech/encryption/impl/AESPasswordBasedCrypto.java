@@ -105,107 +105,112 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
         }
     }
 
-    /**
-     * Encrypts the string returning a hex encoded string.
-     * 
-     * Returns a hex string (e.g. "1234567890abcdef") encoded UTF-8 bytes
-     */
-    @Override
-    public synchronized String encryptToHexStr(String plainText) throws CryptoException {
-        try {
-            return new String(Hex.encodeHex(encrypt(plainText.getBytes("UTF-8"))));
-        }  catch (UnsupportedEncodingException e) {
-            throw new AssertionError("UTF-8 is unknown");
-        }
-    }
+	/**
+	 * Encrypts the string returning a hex encoded string.
+	 *
+	 * Returns a UTF-8 hex encoded string
+	 */
+	@Override
+	public synchronized String encryptToHexStr(String plainText) throws CryptoException {
+		try {
+			return new String(Hex.encodeHex(encrypt(plainText.getBytes("UTF-8"))));
+		}  catch (UnsupportedEncodingException e) {
+			throw new AssertionError("UTF-8 is unknown", e);
+		}
+	}
 
-    /**
-     * Decrypts the hex encoded string (UTF-8 bytes) returning a plain text string.
-     * 
-     * The hex string must be an even number of hex characters. If hexStr has an odd number or non hex characters
-     * a DecoderException will be thrown. 
-     */
-    @Override
-    public synchronized String decryptHexStr(String hexStr) throws CryptoException, DecoderException {
-        try {
-            return new String(decrypt(Hex.decodeHex(hexStr.toCharArray())),"UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new AssertionError("UTF-8 is unknown");
-        }
-    }
+	/**
+	 * Decrypts the hex encoded string (UTF-8 bytes) returning a plain text string.
+	 * 
+	 * The hex string must be an even number of hex characters. If hexStr has an odd number or non hex characters
+	 * a DecoderException will be thrown. 
+	 */
+	@Override
+	public synchronized String decryptHexStr(String hexStr) throws CryptoException, DecoderException {
+		try {
+			return new String(decrypt(Hex.decodeHex(hexStr.toCharArray())), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new AssertionError("UTF-8 is unknown", e);
+		}
+	}
 
-    /**
-     * Encrypts the byte array using a symmetric cipher.
-     * 
-     * Returns an encrypted byte array.
-     * This should use the same internal cipher as decrypt() so anything encrypted by this
-     * object will be decrypted into its original byte array
-     */
-    @Override
-    public synchronized byte[] encrypt(byte[] plainText) throws CryptoException  {
-        try {
-            byte[] plainTextWithSalt = CryptoUtils.appendSalt(plainText, numRandomBytes);
-            // update hMac hash
-            hMac.update(plainTextWithSalt);
-            byte[] cipherText = new byte[encryptingCipher.getOutputSize(plainTextWithSalt.length + hMac.getMacLength())];
-            int outputOffset = encryptingCipher.update(plainTextWithSalt, 0 , plainTextWithSalt.length, cipherText,0);
+	/**
+	 * Encrypts the byte array using a symmetric cipher.
+	 * 
+	 * Returns an encrypted byte array.
+	 * This should use the same internal cipher as decrypt() so anything encrypted by this
+	 * object will be decrypted into its original byte array
+	 */
+	@Override
+	public synchronized byte[] encrypt(byte[] plainText) throws CryptoException  {
+		try {
+			byte[] plainTextWithSalt = CryptoUtils.appendSalt(plainText, numRandomBytes);
+			// update hMac hash
+			hMac.update(plainTextWithSalt);
+			byte[] cipherText = new byte[encryptingCipher.getOutputSize(plainTextWithSalt.length + hMac.getMacLength())];
+			int outputOffset = encryptingCipher.update(plainTextWithSalt, 0 , plainTextWithSalt.length, cipherText,0);
 
-            // Add the hMac hash
-            encryptingCipher.doFinal(hMac.doFinal(), 0, hMac.getMacLength(), cipherText, outputOffset);
+			// Add the hMac hash
+			encryptingCipher.doFinal(hMac.doFinal(), 0, hMac.getMacLength(), cipherText, outputOffset);
 
-            return cipherText;
-        } catch (Exception e) {
-            throw new CryptoException("Unable to encrypt the plain-text",e);
-        }
-    }
+			return cipherText;
+		} catch (Exception e) {
+			throw new CryptoException("Unable to encrypt the plain-text", e);
+		}
+	}
 
-    /**
-     * Decrypts the byte array using a symmetric cipher.
-     * 
-     * Returns the plain text version as byte array.
-     * This should use the same internal cipher as encrypt() so anything encrypted by this
-     * object will be decrypted into its original byte array
-     */
-    @Override
-    public synchronized byte[] decrypt(byte[] cipherText) throws CryptoException {
-        try {
-            byte[] blob = decryptingCipher.doFinal(cipherText, 0, cipherText.length);
-            int numBytes = blob.length - hMac.getMacLength();
-            if (!isAuthentic(cipherText)) {
-                throw new CryptoException("Cipher text is not authentic and may have been tampered with. Failed to decrypt");
-            }
-            byte[] plainTextAndHmac = CryptoUtils.removeSalt(blob,numRandomBytes);
-            int plainTextLength = numBytes - numRandomBytes;
-            byte[] plainText = ArrayUtils.subarray(plainTextAndHmac, 0, plainTextLength);
+	/**
+	 * Decrypts the byte array using a symmetric cipher.
+	 * 
+	 * Returns the plain text version as byte array.
+	 * This should use the same internal cipher as encrypt() so anything encrypted by this
+	 * object will be decrypted into its original byte array
+	 */
+	@Override
+	public synchronized byte[] decrypt(byte[] cipherText) throws CryptoException {
+		try {
+			verifyAuthenticity(cipherText);
+			byte[] blob = decryptingCipher.doFinal(cipherText, 0, cipherText.length);
+			int numBytes = blob.length - hMac.getMacLength();
+			byte[] plainTextAndHmac = CryptoUtils.removeSalt(blob,numRandomBytes);
+			int plainTextLength = numBytes - numRandomBytes;
+			byte[] plainText = ArrayUtils.subarray(plainTextAndHmac, 0, plainTextLength);
 
-            return plainText;
-        } catch (BadPaddingException bpe) {
-            throw new CryptoException("Failed to decrypt cipher text. Cipher text is not authentic. Bad Padding",bpe);
-        } catch (IllegalBlockSizeException ibse) {
-            throw new CryptoException("Failed to decrypt cipher text. Cipher text is not authentic. Illegal Block Size",ibse);
-        }
-    }
+			return plainText;
+		} catch (BadPaddingException | IllegalBlockSizeException e) {
+			throw new CryptoException("Failed to decrypt cipher text.", e);
+		}
+	}
 
-    /**
-     * Checks the cipher text against the current cipher for validity
-     */
-    public synchronized boolean isAuthentic(byte[] cipherText) {
-        boolean isAuthentic = false;
-        try {
-            byte[] blob = decryptingCipher.doFinal(cipherText, 0, cipherText.length);
-            int numBytes = blob.length - hMac.getMacLength();
-            hMac.update(blob, 0, numBytes);
+	/**
+	 * Checks the cipher text against the current cipher for validity
+	 * Throws if not authentic
+	 */
+	public synchronized void verifyAuthenticity(byte[] cipherText) {
+		try {
+			byte[] blob = decryptingCipher.doFinal(cipherText, 0, cipherText.length);
+			int numBytes = blob.length - hMac.getMacLength();
+			hMac.update(blob, 0, numBytes);
 
-            // Extract hMac hash and verify
-            byte[] hMacHash = ArrayUtils.subarray(blob, numBytes, blob.length);
-            if (MessageDigest.isEqual(hMac.doFinal(), hMacHash)) {
-                isAuthentic = true;
-            }
-        } catch (IllegalBlockSizeException e) {
-            isAuthentic = false;
-        } catch (BadPaddingException e) {
-            isAuthentic = false;
-        }
-        return isAuthentic;
-    }
+			// Extract hMac hash and verify
+			byte[] hMacHash = ArrayUtils.subarray(blob, numBytes, blob.length);
+			if (!MessageDigest.isEqual(hMac.doFinal(), hMacHash)) {
+				throw new CryptoException("CipherText is not authentic. Message Authentication Failed.");
+			}
+		} catch (IllegalBlockSizeException| BadPaddingException e) {
+			throw new CryptoException("CipherText is not authentic. Decryption failed.");
+		}
+	}
+
+	/**
+	 * Checks the cipher text against the current cipher for validity
+	 */
+	public boolean isAuthentic(byte[] cipherText) {
+		try {
+			verifyAuthenticity(cipherText);
+		} catch (CryptoException e) {
+			return false;
+		}
+		return true;
+	}
 }
