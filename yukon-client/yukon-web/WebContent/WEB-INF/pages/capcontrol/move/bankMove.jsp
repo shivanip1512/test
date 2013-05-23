@@ -7,6 +7,7 @@
 <%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
 <cti:msgScope paths="yukon.web.modules.capcontrol.bankMove">
 
@@ -46,17 +47,17 @@ treeInit = function() {
     
     var areas = [];
     <c:forEach var="area" items="${allAreas}">
-        var area = {title: '${area.name}', icon: false};
+        var area = {title: '${cti:escapeJavaScript(area.name)}', icon: false};
         var stations = [];
         <c:forEach var="station" items="${area.substations}">
-            var station = {title: '${station.name}', icon: false};
+            var station = {title: '${cti:escapeJavaScript(station.name)}', icon: false};
             var buses = [];
             <c:forEach var="bus" items="${station.substationBuses}">
-                var bus = {title: '${bus.name}', icon: false};
+                var bus = {title: '${cti:escapeJavaScript(bus.name)}', icon: false};
                 var feeders = [];
                 <c:forEach var="feeder" items="${bus.feeders}">
                     <c:if test="${!(feeder.id == oldFeederId)}">
-                        var feeder = {title: '${feeder.name}', icon: false, key: '${feeder.id}'};
+                        var feeder = {title: '${cti:escapeJavaScript(feeder.name)}', icon: false, key: '${feeder.id}'};
                         feeders.push(feeder);
                     </c:if>
                 </c:forEach>
