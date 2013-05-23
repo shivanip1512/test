@@ -53,6 +53,7 @@ h1, h2, h3, h4, h5, h6, b, strong, .fwb{font-weight:bold}
 .fwn{font-weight:normal}
 .wsnw{white-space: nowrap}
 .wsn{white-space: normal}
+.wsp{white-space:pre;}
 
 .vat {vertical-align:top;}
 .vam {vertical-align:middle;}

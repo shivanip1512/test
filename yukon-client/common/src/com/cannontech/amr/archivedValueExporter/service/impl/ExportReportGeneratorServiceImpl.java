@@ -386,7 +386,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
 
             String value = getValue(field, meter, null, pointValueQualityHolder, userContext);
 
-            if (StringUtils.isEmpty(value)) {
+            if (StringUtils.isEmpty(value) && field.getFieldType() != FieldType.PLAIN_TEXT) {
                 switch (field.getMissingAttribute()) {
                     case LEAVE_BLANK:
                         value = "";

@@ -6,6 +6,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:standardPage page="archivedValueExporter.${mode}" module="amr">
 
@@ -396,7 +397,7 @@
                             <td><spring:escapeBody htmlEscape="true"><c:if test="${not empty field.attributeField}">${field.attribute.daysPrevious}</c:if></spring:escapeBody></td>
                             <td><i:inline key="${field.missingAttribute}" />&nbsp&nbsp<spring:escapeBody htmlEscape="true">${field.missingAttributeValue}</spring:escapeBody></td>
                             <td><spring:escapeBody htmlEscape="true"><i:inline key="${field.roundingMode}" /></spring:escapeBody></td>
-                            <td><spring:escapeBody htmlEscape="true">${field.pattern}</spring:escapeBody></td>
+                            <td><span class="wsp">${fn:escapeXml(field.pattern)}</span></td>
                             <td><c:choose>
                                     <c:when test="${field.maxLength == 0}">
                                         <i:inline key=".noMax" />

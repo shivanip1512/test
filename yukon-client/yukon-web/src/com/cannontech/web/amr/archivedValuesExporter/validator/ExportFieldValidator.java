@@ -23,7 +23,6 @@ public class ExportFieldValidator extends SimpleValidator<ArchivedValuesExporter
     @Override
     protected void doValidation(ArchivedValuesExporterBackingBean target, Errors errors) {
         if (target.getExportField().getFieldType() == FieldType.PLAIN_TEXT ) {
-            YukonValidationUtils.rejectIfEmpty(errors, "plainText", ArchivedValuesExporterController.baseKey+"formatError.textInputRequired");
             YukonValidationUtils.checkExceedsMaxLength(errors, "plainText", target.getPlainText(), 50);
 
         } else if (target.getExportField().getMaxLength() == null || target.getExportField().getMaxLength() < 0) {
