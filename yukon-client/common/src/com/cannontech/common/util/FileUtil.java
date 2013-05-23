@@ -1,6 +1,7 @@
 package com.cannontech.common.util;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,24 +15,25 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.util.Assert;
 
 import com.cannontech.clientutils.YukonLogManager;
 
 public final class FileUtil {
 	private static Logger log = YukonLogManager.getLogger(FileUtil.class);
-	
+
     /**
      * FileUtil constructor comment.
      */
     private FileUtil() {
         super();
     }
-    
+
     public static List<String> readLines(File fileObj, int linesWanted) throws IOException{
     	return readLines(fileObj, linesWanted, 0);
     }
-    
+
     public static List<String> readLines(File fileObj, int linesWanted, long offSet) throws IOException{
     	List<String> results = new ArrayList<String>();
         int avgLineSize = 75;
@@ -184,6 +186,26 @@ public final class FileUtil {
     public static Date getCreationDate(File file) throws IOException {
     	BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
 		return new Date(attr.creationTime().toMillis());
+    }
+
+    /**
+     * Returns a FileFilter which will filter files based on the date range supplied. 
+     */
+    public static FileFilter creationDateFilter(final Instant from, final Instant to, final boolean filterDirectories) {
+    	return new FileFilter() {
+    		@Override
+    		public boolean accept(File file) {
+    			if (!filterDirectories && file.isDirectory()) {
+    				return true;
+    			}
+    			try {
+					Instant creation = new Instant(getCreationDate(file));
+					return !(from.isAfter(creation) || to.isBefore(creation));
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+    		}
+    	};
     }
 
     /**

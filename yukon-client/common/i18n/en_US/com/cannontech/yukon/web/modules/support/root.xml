@@ -20,10 +20,15 @@
     <entry key="yukon.web.modules.support.logMenu.application">Application</entry>
     <entry key="yukon.web.modules.support.logMenu.date">Date</entry>
     <entry key="yukon.web.modules.support.logMenu.show">Show</entry>
-    <entry key="yukon.web.modules.support.logMenu.all">All</entry>
-    <entry key="yukon.web.modules.support.logMenu.mostRecent">Most Recent</entry>
+    <entry key="yukon.web.modules.support.logMenu.showing">Showing</entry>
+    <entry key="yukon.web.modules.support.logMenu.today">Today</entry>
+    <entry key="yukon.web.modules.support.logMenu.oneWeek">Week</entry>
+    <entry key="yukon.web.modules.support.logMenu.oneMonth">Month</entry>
     <entry key="yukon.web.modules.support.logMenu.directories.title">Directories</entry>
     <entry key="yukon.web.modules.support.logMenu.settings.title">Settings</entry>
+    <entry key="yukon.web.modules.support.logMenu.custom">Custom</entry>
+    <entry key="yukon.web.modules.support.logMenu.custom.title">Custom Date Range</entry>
+    <entry key="yukon.web.modules.support.logMenu.noLogsFound">No logs found for selected date range.</entry>
     
     <!-- logging/logTail.jsp -->
     <entry key="yukon.web.modules.support.logTail.pageName">Log Tail</entry>
@@ -35,9 +40,6 @@
     <entry key="yukon.web.modules.support.logTail.change.label">Change</entry>
     <entry key="yukon.web.modules.support.logTail.pause.label">Pause</entry>
     <entry key="yukon.web.modules.support.logTail.resume.label">Resume</entry>
-    <entry key="yukon.web.modules.support.logTail.download.label">Download</entry>
-	<entry key="yukon.web.modules.support.logTail.download.imageUrl">/WebConfig/yukon/Icons/green_arrow_down.gif</entry>
-	<entry key="yukon.web.modules.support.logTail.loading">Loading...</entry>
 
     <!-- database/info.jsp -->
     <entry key="yukon.web.modules.support.databaseInfo.pageName">Database Information</entry>

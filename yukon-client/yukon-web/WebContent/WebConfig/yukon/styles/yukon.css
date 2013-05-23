@@ -157,6 +157,8 @@ div.progressBarInnerFailure {
 .buttonStack li {margin-bottom: 5px;}
 .labeledImageStack li {padding-bottom: 23px;}
 ul.disc li {list-style-type: disc; margin-left: 25px;}
+.tree-list li li {margin-left: 15px;}
+.tree-list li li li {margin-left: 30px;}
 
 /* CONTAINERS */
 .toggle-title {cursor: pointer; background: white url(../Icons/icon_blockexpanded.png) no-repeat scroll 0 8px; padding-left: 14px; display: inline;}
@@ -450,9 +452,3 @@ div.disabled {color: #666;}
 span.info {font-size: 11px; color: #333; background: lightYellow; border: solid 1px orange; display:block; padding: 5px 10px; margin: 0 0 10px;}
 #cannonUpdaterErrorDiv {position: fixed;bottom: 0;left: 0;right: 0;background: #D14836;color: white;font-weight: bold;text-align: center;padding: 3px;}
 #cannonUpdaterErrorDiv .alert {padding-top: 64px;width: 64px;position: absolute;bottom: 0;left: 10px;}
-
-/* Log Explorer*/
-a.currentSelection:hover, a.currentSelection:visited, a.currentSelection:link, a.currentSelection:active {font-size:100%;color:grey;text-decoration:none;cursor:default;}
-.logSection {padding: 20px 0px 20px; display:inline-block; vertical-align:top;}
-li.subDirectory {margin-left:20px;}
-#logOutput {margin-top: 20px;}

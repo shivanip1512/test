@@ -1,5 +1,6 @@
 package com.cannontech.web.support.logging;
 
+import java.beans.PropertyEditor;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -20,13 +21,17 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,11 +44,16 @@ import com.cannontech.common.i18n.CollationUtils;
 import com.cannontech.common.util.BinaryPrefix;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.FileUtil;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
 import com.google.common.collect.LinkedHashMultimap;
@@ -64,6 +74,7 @@ public class LogExplorerController {
 
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     
     /**
      * Stores all log filenames from local and remote directories in two lists
@@ -74,34 +85,72 @@ public class LogExplorerController {
     @RequestMapping(value = "/logging/menu", method = RequestMethod.GET)
     public String menu(ModelMap map, 
     		@RequestParam(required=false, defaultValue="/") String file,
-    		YukonUserContext userContext) throws IOException {
+    		@RequestParam(required=false, defaultValue="today") String show,
+    		@RequestParam(required=false, defaultValue="date") String sortBy,
+    		@RequestParam(required=false) LocalDate customStart,
+    		@RequestParam(required=false) LocalDate customEnd,
+    		HttpServletRequest request, FlashScope flashScope, YukonUserContext userContext) throws IOException {
 
         File logDir = sanitizeAndVerify(new File(localDir, file));
         Validate.isTrue(logDir.isDirectory());
 
+    	Instant from;
+    	Instant to;
+    	DateTimeZone tz = DateTimeZone.getDefault();
+    	LocalDate now = LocalDate.now(tz);
+    	switch (show) {
+    	case "custom":
+			from = TimeUtil.toMidnightAtBeginningOfDay(customStart, tz);
+			to = TimeUtil.toMidnightAtEndOfDay(customEnd, tz);
+        	break;
+		case "today":
+			from = TimeUtil.toMidnightAtBeginningOfDay(now, tz);
+			to = TimeUtil.toMidnightAtEndOfDay(now, tz);
+			break;
+		case "lastWeek":
+			from = TimeUtil.toMidnightAtBeginningOfDay(now.minusDays(6), tz);
+			to = TimeUtil.toMidnightAtEndOfDay(now, tz);
+			break;
+		case "lastMonth":
+		default:
+			from = TimeUtil.toMidnightAtBeginningOfDay(now.minusMonths(1), tz);
+			to = TimeUtil.toMidnightAtEndOfDay(now, tz);
+			break;
+		}
+
+        map.addAttribute("maxDate", now);
+        map.addAttribute("customStart", customStart != null ? customStart.toDate() : from);
+        map.addAttribute("customEnd", customEnd != null ? customEnd.toDate() : now.toDate());
+
         List<File> localLogList = Lists.newArrayList();
         List<File> localDirectoryList = Lists.newArrayList();
 
-        // lists to hold log file names
-        populateFileLists(logDir, localLogList, localDirectoryList);
+        populateFileLists(logDir, localLogList, localDirectoryList, from, to);
  
         // get directory names
         List<String> directoryNameList = Lists.transform(localDirectoryList, fileToNameFunction);
 
-        Multimap<String, LogFile> resultsByApplication = sortLogs(localLogList, true, userContext);;
-        Multimap<String, LogFile> resultsByDate = sortLogs(localLogList, false, userContext);
+        Multimap<String, LogFile> results = sortLogs(localLogList, "date".equals(sortBy), userContext);
+
         String baseDir = localDir.getCanonicalPath().substring(localDir.getCanonicalPath().indexOf('\\')); // Remove C:
+
         map.addAttribute("isSubDirectory", !isLogRoot(logDir));
         map.addAttribute("currentDirectory", getRootlessFilePath(logDir.getParentFile()));
-        map.addAttribute("logBaseDir",  baseDir.replace("\\", "/") + "/");
+        map.addAttribute("logBaseDir",  baseDir.replace("\\", "/"));
         map.addAttribute("file", HtmlUtils.htmlEscape(file));
-        map.addAttribute("dirList", directoryNameList);
-        map.addAttribute("localLogListByApplication", resultsByApplication.asMap());
-        map.addAttribute("localLogListByDate", resultsByDate.asMap());
+        map.addAttribute("directories", directoryNameList);
+        map.addAttribute("logList", results.asMap());
+
+        if (results.size() == 0) {
+            flashScope.setMessage(YukonMessageSourceResolvable.createSingleCode("yukon.web.modules.support.logMenu.noLogsFound"), FlashScopeMessageType.WARNING);
+        }
+
+        map.addAttribute("sortBy", sortBy);
+        map.addAttribute("show", show);
 
         return "logging/menu.jsp";
     }
-
+    
     /**
      * Extracts a log file/filename from the local or remote 
      * directory and stores them in the ModelAndView object.
@@ -219,9 +268,16 @@ public class LogExplorerController {
         return null;
     }
 
-    private void populateFileLists(File currentDir, Collection<File> localLogList, Collection<File> localDirectoryList) {
+    /**
+     * Iterates through everything in the given directory and sort into files and directories.
+     * 
+     * Filters the files by creation date. If a file's creation date falls between the instants (inclusive) the file will be included.
+     */
+    private void populateFileLists(File currentDir, Collection<File> localLogList, Collection<File> localDirectoryList, final Instant from, final Instant to) {
         // iterates through everything in the given directory and sort into files and directories
-        File[] localDirAndFiles = currentDir.listFiles();
+
+    	File[] localDirAndFiles = currentDir.listFiles(FileUtil.creationDateFilter(from, to, false));
+        
         for (File fileObj : localDirAndFiles) {
 
             if (fileObj.isDirectory()) {
@@ -248,7 +304,7 @@ public class LogExplorerController {
      * 
      * If sortByApplication is false the files will be sorted by date.
      */
-    private Ordering<File> getLogOrdering(YukonUserContext userContext, boolean sortByApplication) {
+    private Ordering<File> getLogOrdering(YukonUserContext userContext, boolean sortByDate) {
     	// Sort by application name
         Ordering<String> caseInsensitiveOrdering = CollationUtils.getCaseInsensitiveOrdering(userContext);
         Ordering<File> applicationNameOrdering = caseInsensitiveOrdering.onResultOf(fileToApplicationNameFunction);
@@ -256,24 +312,24 @@ public class LogExplorerController {
         Ordering<File> fileCreationOrdering = Ordering.natural().onResultOf(getFileCreationDate).reverse();
 
         // compound the two orderings
-        if (sortByApplication) {
-            return applicationNameOrdering.compound(fileCreationOrdering);
+        if (sortByDate) {
+            return fileCreationOrdering.compound(applicationNameOrdering);
         }
+        return applicationNameOrdering.compound(fileCreationOrdering);
 
-        return fileCreationOrdering.compound(applicationNameOrdering);
     }
 
-    private LinkedHashMultimap<String, LogFile> sortLogs(List<File> logs, boolean sortByApplication, YukonUserContext userContext) throws IOException {
-        Collections.sort(logs, getLogOrdering(userContext, sortByApplication));
+    private LinkedHashMultimap<String, LogFile> sortLogs(List<File> logs, boolean sortByDate, YukonUserContext userContext) throws IOException {
+        Collections.sort(logs, getLogOrdering(userContext, sortByDate));
         LinkedHashMultimap<String, LogFile> result = LinkedHashMultimap.create();
         for (File log : logs) {
             String applicationName = fileToApplicationNameFunction.apply(log);
             String dateHeading = dateFormattingService.format(FileUtil.getCreationDate(log), DateFormatEnum.LONG_DATE, userContext);
 
-            if (sortByApplication) {
-            	result.put(applicationName, new LogFile(log, dateHeading));
-            } else {
+            if (sortByDate) {
             	result.put(dateHeading, new LogFile(log, applicationName));
+            } else {
+            	result.put(applicationName, new LogFile(log, dateHeading));
             }
         }
 
@@ -295,7 +351,7 @@ public class LogExplorerController {
         	throw new IllegalArgumentException("File either doesn't exist or isn't in a valid directory.");
         } else if (!isFileUnderRoot(localDir, file)) {
         	log.warn(file.getName() + " isn't under the log root directory.");
-        	throw new IllegalArgumentException("File either doesn't exist or is isn't in a valid directory.");
+        	throw new IllegalArgumentException("File either doesn't exist or isn't in a valid directory.");
         }
 
         return file;
@@ -303,7 +359,7 @@ public class LogExplorerController {
 
     private String getRootlessFilePath(File file){
         if(isLogRoot(file)){
-            return "";
+            return "/";
         } else {
             return getRootlessFilePath(file.getParentFile()) + file.getName() + "/";
         }
@@ -380,6 +436,12 @@ public class LogExplorerController {
     	public String getIdentifier() {
     		return identifier;
     	}
-
+    }
+    
+    @InitBinder
+    public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
+        PropertyEditor dateTimeEditor =
+                datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext);
+            binder.registerCustomEditor(LocalDate.class, dateTimeEditor);
     }
 }

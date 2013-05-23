@@ -2,7 +2,6 @@ jQuery(function() {
 	var fileLength = 0;
 
 	var update = function() {
-		// if none exist on this page, get out build up JS object to be used for request
 		var requestData = {
 			fileLength : fileLength,
 			numLines : jQuery('#numLines').val(),
@@ -69,9 +68,8 @@ jQuery(function() {
 		var numLogsCurrent = jQuery('.logLine').size();
 		var numLinesNew = jQuery("#numLines").val();
 		var linesToSlice = numLogsCurrent - numLinesNew;
-
 		if (linesToSlice > 0) {
-			jQuery('.logLine').slice(0, linesToSlice).slideUp(300, function() {
+			jQuery('.logLine').slice(0, linesToSlice).slideUp(200, function() {
 				this.remove();
 			});
 		} else if (linesToSlice < 0 && reloadIfNeeded) {

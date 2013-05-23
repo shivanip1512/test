@@ -6,6 +6,7 @@
 <%@ attribute name="endPath" required="false" description="Spring binding path"%>
 <%@ attribute name="endName" description="Name of the field in the supplied object"%>
 <%@ attribute name="endValue" type="java.lang.Object" description="Default: null. Sets the initial value of the input." %>
+<%@ attribute name="maxDate" required="false" type="java.lang.Object" description="Default: null. Sets the maxDate for this dateRange" %>
 <%@ attribute name="disabled" type="java.lang.Boolean" description="Default: false. Determines if the input is disabled." %>
 <%@ attribute name="cssClass" type="java.lang.String" description="Class added to the input of the widget" %>
 <%@ attribute name="cssDialogClass" type="java.lang.String" description="Class added to the outer dialog div" %>
@@ -30,5 +31,6 @@
 			 disabled="${pageScope.disabled}"
 			 cssClass="${pageScope.cssClass} f_dateEnd"
 			 cssDialogClass="${pageScope.cssDialogClass}"
-			 minDate="${pageScope.startValue}" />
+			 minDate="${pageScope.startValue}" 
+			 maxDate="${pageScope.maxDate}" />
 </div>
