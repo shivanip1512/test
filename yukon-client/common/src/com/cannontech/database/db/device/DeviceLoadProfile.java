@@ -6,11 +6,11 @@ package com.cannontech.database.db.device;
 public class DeviceLoadProfile extends com.cannontech.database.db.DBPersistent
 {
 	private Integer deviceID = null;
-	private Integer lastIntervalDemandRate = new Integer(300);
-	private Integer loadProfileDemandRate = new Integer(3600);
+	private Integer lastIntervalDemandRate = new Integer(300);	// demand averaged over an hour 
+	private Integer loadProfileDemandRate = new Integer(3600);	//rate at which load profile is stored.
 	private String loadProfileCollection = "NNNN";
-	private Integer voltageDmdInterval = new Integer(60);
-	private Integer voltageDmdRate = new Integer(300);
+	private Integer voltageDmdInterval = new Integer(60);	// voltage averaged over an hour
+	private Integer voltageDmdRate = new Integer(300);	// voltage "profile". Rate at which profile is stored.
 
 
 	public static final String SETTER_COLUMNS[] = 
