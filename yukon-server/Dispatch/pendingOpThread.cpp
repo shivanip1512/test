@@ -863,20 +863,6 @@ void CtiPendingOpThread::postControlStopPoint(CtiPendingPointOperations &ppc, bo
         }
     }
 
-    #if 0
-    if(_multi && _multi->getCount() >= gConfigParms.getValueAsULong("DISPATCH_MAX_CTLHIST_POINT_BATCH", 100))
-    {
-        if(_pMainQueue)
-            _pMainQueue->putQueue( _multi );
-        else
-            delete _multi;
-
-        _multi = new CtiMultiMsg;
-        _multi->setMessagePriority(5);
-        _multi->setSource("Dispatch pendingOpThread");
-    }
-    #endif
-
     return;
 }
 
@@ -922,40 +908,7 @@ void CtiPendingOpThread::postControlHistoryPoints( CtiPendingPointOperations &pp
         }
     }
 
-    #if 0
-    if(_multi && _multi->getCount() >= gConfigParms.getValueAsULong("DISPATCH_MAX_CTLHIST_POINT_BATCH", 100))
-    {
-        if(_pMainQueue)
-            _pMainQueue->putQueue( _multi );
-        else
-            delete _multi;
-
-        _multi = new CtiMultiMsg;
-        _multi->setMessagePriority(5);
-        _multi->setSource("Dispatch pendingOpThread");
-    }
-    #endif
-
     return;
-}
-
-// This method is not threadsafe.  Do not call after startup!
-bool CtiPendingOpThread::isPointInPendingControl(LONG pointid)
-{
-    bool pendingStat = false;
-
-    UINT sleepcnt = 0;
-
-    set(QPROCESSED, false);
-    set(PROCESSQ);
-
-    if(!_pendingControls.empty())
-    {
-        CtiPendingOpSet_t::iterator it = _pendingControls.find(CtiPendingPointOperations(pointid, CtiPendingPointOperations::pendingControl));
-        pendingStat = it != _pendingControls.end();
-    }
-
-    return(pendingStat);
 }
 
 // Returns an invalid time if there is no pending control for pointid
@@ -1827,11 +1780,9 @@ CtiPointNumericSPtr CtiPendingOpThread::getPointOffset(CtiPendingPointOperations
 
 CtiPendingOpThread::CtiPendingOpSet_t::iterator CtiPendingOpThread::erasePendingControl(CtiPendingOpThread::CtiPendingOpSet_t::iterator iter)
 {
-    CtiPointSPtr point = PointMgr.getPoint(iter->getPointID());
-    if( point )
+    if( const CtiPointSPtr pPoint = PointMgr.getPoint(iter->getPointID()) )
     {
-        CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(point);
-        if( pDyn != NULL )
+        if( CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(*pPoint) )
         {
             pDyn->getDispatch().resetTags( TAG_CONTROL_PENDING );
         }

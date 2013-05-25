@@ -115,11 +115,10 @@ public:
    void validateConnections();
    void storeDirtyRecords();
 
-   bool hasReasonabilityLimits(CtiPointSPtr point);
-   ReasonabilityLimitStruct getReasonabilityLimits(CtiPointSPtr point) const;
-   CtiTablePointLimit       getPointLimit(CtiPointSPtr point, LONG limitNum) const;  //  is copying the table cheap/fast enough?
-   CtiTablePointAlarming    getAlarming  (CtiPointSPtr point) const;                 //    if not, we'll need to return smart pointers
-   CtiDynamicPointDispatchSPtr getDynamic   (CtiPointSPtr point) const;
+   ReasonabilityLimitStruct getReasonabilityLimits(const CtiPointBase &point) const;
+   CtiTablePointLimit       getPointLimit(const CtiPointBase &point, LONG limitNum) const;  //  is copying the table cheap/fast enough?
+   CtiTablePointAlarming    getAlarming  (const CtiPointBase &point) const;          //    if not, we'll need to return smart pointers
+   CtiDynamicPointDispatchSPtr getDynamic(const CtiPointBase &point) const;
    bool                     setDynamic   (long pointID, CtiDynamicPointDispatchSPtr &point);
    int  getProperty (LONG point, unsigned int property) const;
    bool hasProperty (LONG point, unsigned int property) const;

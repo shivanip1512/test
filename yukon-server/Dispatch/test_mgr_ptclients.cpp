@@ -11,9 +11,9 @@ using namespace std;
 BOOST_AUTO_TEST_SUITE( test_mgr_ptclients )
 
 template <class T>
-T *make_point(long deviceid, long pointid, CtiPointType_t type, int offset)
+std::auto_ptr<T> make_point(long deviceid, long pointid, CtiPointType_t type, int offset)
 {
-    T *new_point = new T();
+    std::auto_ptr<T> new_point(new T());
 
     new_point->setID(pointid);
     new_point->setDeviceID(deviceid);
@@ -47,22 +47,12 @@ BOOST_AUTO_TEST_CASE(test_alarming)
     Test_CtiPointClientManager manager;
     BOOST_CHECK(manager.entries() == 0);
 
-    Test_CtiPointStatus *point_status1,
-                        *point_status2;
-    Test_CtiPointAnalog *point_analog1,
-                        *point_analog2,
-                        *point_analog3;
+    std::auto_ptr<Test_CtiPointStatus> point_status1;
 
     point_status1 = make_point<Test_CtiPointStatus>(device1_id, status1_id, StatusPointType, point1_offset);
-    point_status2 = make_point<Test_CtiPointStatus>(device1_id, status2_id, StatusPointType, point2_offset);
-    point_analog1 = make_point<Test_CtiPointAnalog>(device1_id, analog1_id, AnalogPointType, point1_offset);
-    point_analog2 = make_point<Test_CtiPointAnalog>(device1_id, analog2_id, AnalogPointType, point2_offset);
-    point_analog3 = make_point<Test_CtiPointAnalog>(device2_id, analog3_id, AnalogPointType, point1_offset);
-
-    CtiPointSPtr point_status1_sptr = CtiPointSPtr(point_status1);
 
     Test_CtiTablePointAlarming alarm;
-    alarm = manager.getAlarming(point_status1_sptr);
+    alarm = manager.getAlarming(*point_status1);
 
     BOOST_CHECK(!(alarm.getAlarmCategory(0) > SignalEvent));
     BOOST_CHECK(!(alarm.getAlarmCategory(1) > SignalEvent));
@@ -80,7 +70,7 @@ BOOST_AUTO_TEST_CASE(test_alarming)
 
     manager.addAlarming(alarm);
 
-    alarm = manager.getAlarming(point_status1_sptr);
+    alarm = manager.getAlarming(*point_status1);
 
     BOOST_CHECK(alarm.getAlarmCategory(1) > SignalEvent);
 
@@ -95,7 +85,7 @@ BOOST_AUTO_TEST_CASE(test_alarming)
 
     manager.removeAlarming(status1_id);
 
-    alarm = manager.getAlarming(point_status1_sptr);
+    alarm = manager.getAlarming(*point_status1);
 
     BOOST_CHECK(!(alarm.getAlarmCategory(0) > SignalEvent));
     BOOST_CHECK(!(alarm.getAlarmCategory(1) > SignalEvent));
@@ -113,34 +103,24 @@ BOOST_AUTO_TEST_CASE(test_dynamic)
     Test_CtiPointClientManager manager;
     BOOST_CHECK(manager.entries() == 0);
 
-    Test_CtiPointStatus *point_status1,
-                        *point_status2;
-    Test_CtiPointAnalog *point_analog1,
-                        *point_analog2,
-                        *point_analog3;
+    std::auto_ptr<Test_CtiPointStatus> point_status1;
 
     point_status1 = make_point<Test_CtiPointStatus>(device1_id, status1_id, StatusPointType, point1_offset);
-    point_status2 = make_point<Test_CtiPointStatus>(device1_id, status2_id, StatusPointType, point2_offset);
-    point_analog1 = make_point<Test_CtiPointAnalog>(device1_id, analog1_id, AnalogPointType, point1_offset);
-    point_analog2 = make_point<Test_CtiPointAnalog>(device1_id, analog2_id, AnalogPointType, point2_offset);
-    point_analog3 = make_point<Test_CtiPointAnalog>(device2_id, analog3_id, AnalogPointType, point1_offset);
 
-    CtiPointSPtr point_status1_sptr = CtiPointSPtr(point_status1);
-
-    CtiDynamicPointDispatchSPtr dynamic = manager.getDynamic(point_status1_sptr);
+    CtiDynamicPointDispatchSPtr dynamic = manager.getDynamic(*point_status1);
 
     BOOST_CHECK(!dynamic);
 
     dynamic = CtiDynamicPointDispatchSPtr(CTIDBG_new CtiDynamicPointDispatch(status1_id));
     manager.setDynamic(status1_id, dynamic);
 
-    CtiDynamicPointDispatchSPtr pDispatch = manager.getDynamic(point_status1_sptr);
+    CtiDynamicPointDispatchSPtr pDispatch = manager.getDynamic(*point_status1);
     BOOST_CHECK(pDispatch);
 
     BOOST_CHECK_EQUAL(pDispatch.get(), dynamic.get());
 
     manager.erase(status1_id);
-    pDispatch = manager.getDynamic(point_status1_sptr);
+    pDispatch = manager.getDynamic(*point_status1);
 
     BOOST_CHECK(!pDispatch);
 }

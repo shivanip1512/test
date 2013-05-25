@@ -38,7 +38,7 @@ using Cti::Database::DatabaseReader;
 void ApplyInitialDynamicConditions(const long key, CtiPointSPtr pTempPoint, void* d)
 {
     CtiPointClientManager *pointManager = (CtiPointClientManager*)d;
-    CtiDynamicPointDispatchSPtr pDyn = pointManager->getDynamic(pTempPoint);
+    CtiDynamicPointDispatchSPtr pDyn = pointManager->getDynamic(*pTempPoint);
 
     if(!pDyn)
     {
@@ -65,8 +65,6 @@ void ApplyInitialDynamicConditions(const long key, CtiPointSPtr pTempPoint, void
             pDyn->getDispatch().setTags(statictags);
         }
     }
-
-    return;
 }
 
 // This gives the point its initial data. We should not need a mutex for this.
@@ -75,35 +73,29 @@ void ApplyInitialDynamicConditions(const long key, CtiPointSPtr pTempPoint, void
 // is responsible for loading the points before calling.
 void CtiPointClientManager::processPointDynamicData(LONG pntID, const set<long> &pointIds)
 {
-    CtiPointSPtr pTempPoint;
-    if(pntID)
+    if( pntID )
     {
         //Lets be smart about handling a single point.
-        pTempPoint = getCachedPoint(pntID);
-        if(pTempPoint)
+        if( CtiPointSPtr pPoint = getCachedPoint(pntID) )
         {
-            ApplyInitialDynamicConditions(0,pTempPoint,this);
+            ApplyInitialDynamicConditions(0, pPoint, this);
 
-            const CtiDynamicPointDispatchSPtr dynamic = getDynamic(pTempPoint);
+            const CtiDynamicPointDispatchSPtr dynamic = getDynamic(*pPoint);
 
             //This will probably always be true, but why not check.
             if(dynamic && !dynamic->getDispatch().getUpdatedFlag())
             {
                 refreshDynamicDataForSinglePoint(pntID);
-                //ApplyInsertNonUpdatedDynamicData(0, pTempPoint, NULL);
             }
         }
     }
-    else if(!pointIds.empty())
+    else if( ! pointIds.empty() )
     {
-        set<long>::const_iterator pointid_itr = pointIds.begin(),
-                                  pointid_end = pointIds.end();
-
-        for( ; pointid_itr != pointid_end; ++pointid_itr )
+        for each( long pointid in pointIds )
         {
-            if( pTempPoint = getCachedPoint(*pointid_itr) )
+            if( CtiPointSPtr pPoint = getCachedPoint(pointid) )
             {
-                ApplyInitialDynamicConditions(0, pTempPoint, this);
+                ApplyInitialDynamicConditions(0, pPoint, this);
             }
         }
 
@@ -619,18 +611,12 @@ CtiTime CtiPointClientManager::findNextNearestArchivalTime()
         coll_type::reader_lock_guard_t guard(getLock());
         vector<long> points;
         getPointsWithProperty(CtiTablePointProperty::ARCHIVE_ON_TIMER, points);
-        vector<long>::iterator itr = points.begin();
-        vector<long>::iterator ptsEnd = points.end();
 
-        for( ;itr != ptsEnd; itr++)
+        for each( long ptid in points )
         {
-            CtiPointSPtr pPt = getPoint(*itr);
-
-            if( pPt )
+            if( CtiPointSPtr pPt = getPoint(ptid) )
             {
-                const CtiDynamicPointDispatchSPtr pDyn = getDynamic(pPt);
-
-                if(pDyn)
+                if( const CtiDynamicPointDispatchSPtr pDyn = getDynamic(*pPt) )
                 {
                     if(pDyn->getNextArchiveTime() < closeTime)
                     {
@@ -651,61 +637,56 @@ void CtiPointClientManager::scanForArchival(const CtiTime &Now, CtiFIFOQueue<Cti
         coll_type::writer_lock_guard_t guard(getLock());
         vector<long> points;
         getPointsWithProperty(CtiTablePointProperty::ARCHIVE_ON_TIMER, points);
-        vector<long>::iterator itr = points.begin();
-        vector<long>::iterator ptsEnd = points.end();
 
-        for( ;itr != ptsEnd; itr++)
+        for each( long ptid in points )
         {
-            CtiPointSPtr pPt = getPoint(*itr);
-
+            if( CtiPointSPtr pPt = getPoint(ptid) )
             {
-                CtiDynamicPointDispatchSPtr pDyn = getDynamic(pPt);
-
-                if(pDyn && !(pDyn->getDispatch().getTags() & MASK_ANY_SERVICE_DISABLE))  // Point is disabled.
+                if( CtiDynamicPointDispatchSPtr pDyn = getDynamic(*pPt) )
                 {
-                    if(
-                      pPt->getArchiveType() == ArchiveTypeOnTimer             ||
-                      pPt->getArchiveType() == ArchiveTypeOnTimerAndUpdated   ||
-                      pPt->getArchiveType() == ArchiveTypeOnTimerOrUpdated
-                      )
+                    // Make sure the point is not disabled.
+                    if( !(pDyn->getDispatch().getTags() & MASK_ANY_SERVICE_DISABLE) )
                     {
-                        if( pDyn->getNextArchiveTime() <= Now )
+                        if( pPt->getArchiveType() == ArchiveTypeOnTimer           ||
+                            pPt->getArchiveType() == ArchiveTypeOnTimerAndUpdated ||
+                            pPt->getArchiveType() == ArchiveTypeOnTimerOrUpdated )
                         {
-                            switch( pPt->getArchiveType() )
+                            if( pDyn->getNextArchiveTime() <= Now )
                             {
-                            case ArchiveTypeOnTimer:
-                            case ArchiveTypeOnTimerOrUpdated:
+                                switch( pPt->getArchiveType() )
                                 {
-                                    Que.putQueue(CTIDBG_new CtiTableRawPointHistory(pPt->getID(), pDyn->getQuality(), pDyn->getValue(), Now));
-                                    break;
+                                case ArchiveTypeOnTimer:
+                                case ArchiveTypeOnTimerOrUpdated:
+                                    {
+                                        Que.putQueue(CTIDBG_new CtiTableRawPointHistory(pPt->getID(), pDyn->getQuality(), pDyn->getValue(), Now));
+                                        break;
+                                    }
+                                case ArchiveTypeOnTimerAndUpdated:
+                                    {
+                                        pDyn->setArchivePending(true);                   // Mark him so the next one gets archived!
+                                        break;
+                                    }
                                 }
-                            case ArchiveTypeOnTimerAndUpdated:
-                                {
-                                    pDyn->setArchivePending(true);                   // Mark him so the next one gets archived!
-                                    break;
-                                }
-                            }
 
-                            /*
-                             *  Now make the time correct for the next archive.
-                             */
-                            pDyn->setNextArchiveTime( nextScheduledTimeAlignedOnRate(Now, pPt->getArchiveInterval()) );
-                        }
-                        else if( pPt->getArchiveInterval() >= 0 &&
-                                 pDyn->getNextArchiveTime() > Now + (2 * pPt->getArchiveInterval()))
-                        {
-                            /*
-                             *  Now make the time correct for the next archive.
-                             */
-                            pDyn->setNextArchiveTime( nextScheduledTimeAlignedOnRate(Now, pPt->getArchiveInterval()) );
+                                /*
+                                 *  Now make the time correct for the next archive.
+                                 */
+                                pDyn->setNextArchiveTime( nextScheduledTimeAlignedOnRate(Now, pPt->getArchiveInterval()) );
+                            }
+                            else if( pPt->getArchiveInterval() >= 0 &&
+                                     pDyn->getNextArchiveTime() > Now + (2 * pPt->getArchiveInterval()))
+                            {
+                                /*
+                                 *  Now make the time correct for the next archive.
+                                 */
+                                pDyn->setNextArchiveTime( nextScheduledTimeAlignedOnRate(Now, pPt->getArchiveInterval()) );
+                            }
                         }
                     }
                 }
             }
         }
     }
-
-    return;
 }
 
 void CtiPointClientManager::getDirtyRecordList(list<CtiTablePointDispatch> &updateList)
@@ -763,7 +744,7 @@ void CtiPointClientManager::writeRecordsToDB(list<CtiTablePointDispatch> &update
 
     {
         Cti::Database::DatabaseTransaction trans(conn);
-         
+
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " WRITING " << updateList.size() << " dynamic dispatch records. " << endl;
@@ -878,8 +859,8 @@ void CtiPointClientManager::refreshDynamicDataForSinglePoint(const long id)
     if( ! id )
     {
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); 
-            dout << CtiTime() << " A valid pointId was not provided. Unable to refresh dynamic data for point." << endl; 
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " A valid pointId was not provided. Unable to refresh dynamic data for point." << endl;
         }
         return;
     }
@@ -894,8 +875,8 @@ void CtiPointClientManager::refreshDynamicDataForPointSet(const set<long> &point
     if( pointIds.empty() )
     {
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); 
-            dout << CtiTime() << " No pointIds were provided. Unable to refresh dynamic data for points." << endl; 
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " No pointIds were provided. Unable to refresh dynamic data for points." << endl;
         }
         return;
     }
@@ -917,7 +898,7 @@ vector<string> CtiPointClientManager::generateSqlStatements(const set<long> &poi
 {
     // We want the sql without a single-id where clause.
     const string sql = CtiTablePointDispatch::getSQLCoreStatement(0);
-    
+
     vector<string> queries;
 
     Cti::Database::id_set_itr pointid_itr = pointIds.begin();
@@ -1007,16 +988,12 @@ void CtiPointClientManager::executeDynamicDataQueries(const vector<string> &quer
 void CtiPointClientManager::loadDynamicPoint(Cti::Database::DatabaseReader &rdr)
 {
     long lTemp = 0;
-    CtiPointSPtr pTempPoint;
 
     rdr["pointid"] >> lTemp;                        // get the point id
-    pTempPoint = getCachedPoint( lTemp );
 
-    if(pTempPoint)
+    if( CtiPointSPtr pTempPoint = getCachedPoint(lTemp) )
     {
-        CtiDynamicPointDispatchSPtr pDyn = getDynamic(pTempPoint);
-
-        if(pDyn)
+        if( CtiDynamicPointDispatchSPtr pDyn = getDynamic(*pTempPoint) )
         {
             if(pDyn->getDispatch().getUpdatedFlag() == FALSE)
             {
@@ -1282,56 +1259,30 @@ CtiPointClientManager::WeakPointMap CtiPointClientManager::getRegistrationMap(LO
 }
 
 
-bool CtiPointClientManager::hasReasonabilityLimits(CtiPointSPtr point)
-{
-    bool retVal = false;
-    if( point )
-    {
-        coll_type::reader_lock_guard_t guard(getLock());
-
-        if(!_reasonabilityLimits.empty())
-        {
-            if(_reasonabilityLimits.find(point->getPointID()) != _reasonabilityLimits.end())
-            {
-                retVal = true;
-            }
-        }
-    }
-
-    return retVal;
-}
-
 //Returns pair<HighLimit, LowLimit>
 //returns pair<0, 0> if the limit is invalid.
-CtiPointClientManager::ReasonabilityLimitStruct CtiPointClientManager::getReasonabilityLimits(CtiPointSPtr point) const
+CtiPointClientManager::ReasonabilityLimitStruct CtiPointClientManager::getReasonabilityLimits(const CtiPointBase &point) const
 {
-    ReasonabilityLimitStruct retVal;
-    retVal.highLimit = 0;
-    retVal.lowLimit = 0;
+    ReasonabilityLimitStruct retVal = { 0, 0 };
 
-    if( point )
     {
         coll_type::reader_lock_guard_t guard(getLock());
 
-        if(!_reasonabilityLimits.empty())
+        ReasonabilityLimitMap::const_iterator iter;
+        iter = _reasonabilityLimits.find(point.getPointID());
+        if(iter != _reasonabilityLimits.end())
         {
-            ReasonabilityLimitMap::const_iterator iter;
-            iter = _reasonabilityLimits.find(point->getPointID());
-            if(iter != _reasonabilityLimits.end())
-            {
-                retVal = iter->second;
-            }
+            retVal = iter->second;
         }
     }
 
     return retVal;
 }
 
-CtiTablePointLimit CtiPointClientManager::getPointLimit(CtiPointSPtr point, LONG limitNum) const
+CtiTablePointLimit CtiPointClientManager::getPointLimit(const CtiPointBase &point, LONG limitNum) const
 {
-    CtiTablePointLimit retVal(point->getPointID(), limitNum);
+    CtiTablePointLimit retVal(point.getPointID(), limitNum);
 
-    if( point )
     {
         coll_type::reader_lock_guard_t guard(getLock());
 
@@ -1353,11 +1304,10 @@ CtiTablePointLimit CtiPointClientManager::getPointLimit(CtiPointSPtr point, LONG
  *
  * @return CtiTablePointAlarming
  */
-CtiTablePointAlarming CtiPointClientManager::getAlarming(CtiPointSPtr point) const
+CtiTablePointAlarming CtiPointClientManager::getAlarming(const CtiPointBase &point) const
 {
-    CtiTablePointAlarming retVal(point->getPointID());
+    CtiTablePointAlarming retVal(point.getPointID());
 
-    if( point )
     {
         coll_type::reader_lock_guard_t guard(getLock());
 
@@ -1378,18 +1328,15 @@ bool CtiPointClientManager::setDynamic(long pointID, CtiDynamicPointDispatchSPtr
     return (_dynamic.insert(make_pair(pointID, point))).second;
 }
 
-CtiDynamicPointDispatchSPtr CtiPointClientManager::getDynamic(CtiPointSPtr point) const
+CtiDynamicPointDispatchSPtr CtiPointClientManager::getDynamic(const CtiPointBase &point) const
 {
     CtiDynamicPointDispatchSPtr retVal;
 
-    if( point )
+    coll_type::reader_lock_guard_t guard(getLock());
+    DynamicPointDispatchIterator iter = _dynamic.find(point.getPointID());
+    if( iter != _dynamic.end() )
     {
-        coll_type::reader_lock_guard_t guard(getLock());
-        DynamicPointDispatchIterator iter = _dynamic.find(point->getPointID());
-        if( iter != _dynamic.end() )
-        {
-            retVal = iter->second;
-        }
+        retVal = iter->second;
     }
 
     return retVal;

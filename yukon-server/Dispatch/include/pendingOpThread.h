@@ -76,10 +76,8 @@ public:
     void doPendingLimits(bool bShutdown = false);
     void doPendingPointData(bool bShutdown = false);
     void updateControlHistory(  CtiPendingPointOperations &ppc, int cause, const CtiTime &thetime = CtiTime(), CtiTime &now = CtiTime(), int line = 0);
-    // void dumpPendingOps( bool force = false  );
     void postControlStopPoint( CtiPendingPointOperations &ppc, bool doit = false);
     void postControlHistoryPoints( CtiPendingPointOperations &ppc, bool doit = false );
-    bool isPointInPendingControl(LONG pointid);
     int  getCurrentControlPriority(LONG pointid);
     CtiTime getPendingControlCompleteTime(LONG pointid);
 
