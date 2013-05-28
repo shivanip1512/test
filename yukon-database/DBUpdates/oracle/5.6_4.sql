@@ -28,93 +28,72 @@ MODIFY Archived CHAR(1) NOT NULL;
 DECLARE 
     v_configId NUMBER;
     v_itemId NUMBER;
-
-    /* Find all of the 420 configurations without a Display Digits field and add it with the default value of 5. */
+    CURSOR curs_configIdsDisplayDigits IS (
+        SELECT DC.DeviceConfigurationId
+        FROM DeviceConfiguration DC
+        WHERE DC.Type = 'MCT420'
+        MINUS
+        SELECT DC.DeviceConfigurationId
+        FROM DeviceConfiguration DC
+        JOIN DeviceConfigurationItem DCI ON DC.DeviceConfigurationId = DCI.DeviceConfigurationId
+        WHERE DC.Type = 'MCT420'
+          AND DCI.FieldName = 'Display Digits');
+    
+    CURSOR curs_configIdsDisconnectDisp IS (
+        SELECT DC.DeviceConfigurationId
+        FROM DeviceConfiguration DC
+        WHERE DC.Type = 'MCT420'
+        MINUS
+        SELECT DC.DeviceConfigurationId
+        FROM DeviceConfiguration DC
+        JOIN DeviceConfigurationItem DCI ON DC.DeviceConfigurationId = DCI.DeviceConfigurationId
+        WHERE DC.Type = 'MCT420'
+          AND DCI.FieldName = 'Disconnect Display Disabled');
+    
+    CURSOR curs_configIdsLcdCycleTime IS (
+        SELECT DC.DeviceConfigurationId
+        FROM DeviceConfiguration DC
+        WHERE DC.Type = 'MCT420'
+        MINUS
+        SELECT DC.DeviceConfigurationId
+        FROM DeviceConfiguration DC
+        JOIN DeviceConfigurationItem DCI ON DC.DeviceConfigurationId = DCI.DeviceConfigurationId
+        WHERE DC.Type = 'MCT420'
+          AND DCI.FieldName = 'LCD Cycle Time');
 BEGIN 
-
-    SELECT MIN(DC.DeviceConfigurationId) INTO v_configId
-    FROM DeviceConfiguration DC
-    WHERE DC.Type = 'MCT420'
-    MINUS
-    SELECT DC.DeviceConfigurationId
-    FROM DeviceConfiguration DC, DeviceConfigurationItem DCI
-    WHERE DC.Type = 'MCT420' 
-      AND DCI.FieldName = 'Display Digits'
-      AND DCI.DeviceConfigurationId = DC.DeviceConfigurationId;
-
-    WHILE(v_configId IS NOT NULL)
+    
+    OPEN curs_configIdsDisplayDigits;
     LOOP
+        FETCH curs_configIdsDisplayDigits INTO v_configId;
+        EXIT WHEN curs_configIdsDisplayDigits%NOTFOUND;
+        
         SELECT NVL(MAX(DeviceConfigurationItemId) + 1, 0) INTO v_itemId FROM DeviceConfigurationItem;
-
         INSERT INTO DeviceConfigurationItem VALUES (v_itemId, v_configId, 'Display Digits', '5');
         
-        SELECT MIN(DC.DeviceConfigurationId) INTO v_configId
-        FROM DeviceConfiguration DC
-        WHERE DC.Type = 'MCT420'
-        MINUS
-        SELECT DC.DeviceConfigurationId
-        FROM DeviceConfiguration DC, DeviceConfigurationItem DCI
-        WHERE DC.Type = 'MCT420' 
-          AND DCI.FieldName = 'Display Digits'
-          AND DCI.DeviceConfigurationId = DC.DeviceConfigurationId ;
-
     END LOOP;
-
-    /* Find all of the 420 configurations without an LCD Cycle Time field and add it with the default value of 8. */
-    SELECT MIN(DC.DeviceConfigurationId) INTO v_configId
-    FROM DeviceConfiguration DC
-    WHERE DC.Type = 'MCT420'
-    MINUS
-    SELECT DC.DeviceConfigurationId
-    FROM DeviceConfiguration DC, DeviceConfigurationItem DCI 
-    WHERE DC.Type = 'MCT420' 
-      AND DCI.FieldName = 'LCD Cycle Time'
-      AND DCI.DeviceConfigurationId = DC.DeviceConfigurationId;
-
-    WHILE(v_configId IS NOT NULL)
+    CLOSE curs_configIdsDisplayDigits;
+    
+    OPEN curs_configIdsDisconnectDisp;
     LOOP
-        SELECT NVL(MAX(DeviceConfigurationItemId) + 1, 0) INTO v_itemId FROM DeviceConfigurationItem;
+        FETCH curs_configIdsDisconnectDisp INTO v_configId;
+        EXIT WHEN curs_configIdsDisconnectDisp%NOTFOUND;
 
+        SELECT NVL(MAX(DeviceConfigurationItemId) + 1, 0) INTO v_itemId FROM DeviceConfigurationItem;
         INSERT INTO DeviceConfigurationItem VALUES (v_itemId, v_configId, 'LCD Cycle Time', '8');
-
-        SELECT MIN(DC.DeviceConfigurationId) INTO v_configId
-        FROM DeviceConfiguration DC
-        WHERE DC.Type = 'MCT420'
-        MINUS
-        SELECT DC.DeviceConfigurationId
-        FROM DeviceConfiguration DC, DeviceConfigurationItem DCI 
-        WHERE DC.Type = 'MCT420' 
-          AND DCI.FieldName = 'LCD Cycle Time'
-          AND DCI.DeviceConfigurationId = DC.DeviceConfigurationId;
+        
     END LOOP;
+    CLOSE curs_configIdsDisconnectDisp;
 
-    /* Find all of the 420 configurations without a Disconnect Display Disabled field and add it with the default value of false. */
-    SELECT MIN(DC.DeviceConfigurationId) INTO v_configId
-        FROM DeviceConfiguration DC
-        WHERE DC.Type = 'MCT420'
-        MINUS
-        SELECT DC.DeviceConfigurationId
-        FROM DeviceConfiguration DC, DeviceConfigurationItem DCI 
-        WHERE DC.Type = 'MCT420' 
-          AND DCI.FieldName = 'Disconnect Display Disabled'
-          AND DCI.DeviceConfigurationId = DC.DeviceConfigurationId;
-
-    WHILE(v_configId IS NOT NULL)
+    OPEN curs_configIdsLcdCycleTime;
     LOOP
+        FETCH curs_configIdsLcdCycleTime INTO v_configId;
+        EXIT WHEN curs_configIdsLcdCycleTime%NOTFOUND;
+        
         SELECT NVL(MAX(DeviceConfigurationItemId) + 1, 0) INTO v_itemId FROM DeviceConfigurationItem;
-
         INSERT INTO DeviceConfigurationItem VALUES (v_itemId, v_configId, 'Disconnect Display Disabled', 'false');
         
-        SELECT MIN(DC.DeviceConfigurationId) INTO v_configId
-        FROM DeviceConfiguration DC
-        WHERE DC.Type = 'MCT420'
-        MINUS
-        SELECT DC.DeviceConfigurationId
-        FROM DeviceConfiguration DC, DeviceConfigurationItem DCI 
-        WHERE DC.Type = 'MCT420' 
-          AND DCI.FieldName = 'Disconnect Display Disabled'
-          AND DCI.DeviceConfigurationId = DC.DeviceConfigurationId;
     END LOOP;
+    CLOSE curs_configIdsLcdCycleTime;
 END;
 /
 /* @end-block */
