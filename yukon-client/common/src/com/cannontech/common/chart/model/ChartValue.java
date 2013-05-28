@@ -35,8 +35,11 @@ public class ChartValue<T> {
         this.value = value;
     }
 
+    /**
+     * Returns the description as set by setDescription with formatedValue prepended.
+     */
     public String getDescription() {
-        return description;
+        return "<div>" + formattedValue + "</div>" + description;
     }
 
     public void setDescription(String description) {
@@ -44,7 +47,7 @@ public class ChartValue<T> {
     }
 
     public String getFormattedValue() {
-        return this.formattedValue;
+        return formattedValue;
     }
 
     public long getTime() {

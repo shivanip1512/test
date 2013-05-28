@@ -49,7 +49,9 @@ public class ChartServiceImpl implements ChartService {
     public List<Graph> getGraphs(Set<Integer> pointIds, Date startDate, Date stopDate, ChartInterval interval,
                                  ConverterType converterType, YukonUserContext userContext) {
 
-        List<Graph> graphList = new ArrayList<Graph>();
+    	MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+
+        List<Graph> graphList = new ArrayList<>();
 
         int colorIdx = 0;
         ChartColorsEnum[] colors = ChartColorsEnum.values();
@@ -68,12 +70,11 @@ public class ChartServiceImpl implements ChartService {
             pointValueFormat.setGroupingUsed(false);
             
             LiteUnitMeasure unitMeasure = unitMeasureDao.getLiteUnitMeasure(pointUnit.getUomID());
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             String chartIntervalString = messageSourceAccessor.getMessage(interval.getIntervalString());
             String units = messageSourceAccessor.getMessage(converterType.getFormattedUnits(unitMeasure, chartIntervalString));
 
             // Make a list of each of the data points
-            List<ChartValue<Double>> chartData = new ArrayList<ChartValue<Double>>();
+            List<ChartValue<Double>> chartData = new ArrayList<>();
             for (PointValueHolder data : pointData) {
 
                 ChartValue<Double> chartValue = new ChartValue<Double>();
@@ -81,7 +82,7 @@ public class ChartServiceImpl implements ChartService {
                 chartValue.setId(data.getPointDataTimeStamp().getTime());
                 chartValue.setTime(data.getPointDataTimeStamp().getTime());
                 chartValue.setValue(data.getValue());
-                chartValue.setDescription("<div>" + pointValueFormat.format(data.getValue()) + "</div>" + "<div>" + units + "</div>" + "<div>" + timeFormat.format(data.getPointDataTimeStamp()) + "</div>" + "<div>" + lPoint.getPointName() + "</div>");
+                chartValue.setDescription("<div>" + units + "</div><div>" + timeFormat.format(data.getPointDataTimeStamp()) + "</div><div>" + lPoint.getPointName() + "</div>");
                 chartValue.setFormattedValue(pointValueFormat.format(data.getValue()));
 
                 chartData.add(chartValue);

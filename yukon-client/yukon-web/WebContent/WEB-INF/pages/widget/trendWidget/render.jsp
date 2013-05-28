@@ -1,5 +1,4 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
@@ -7,10 +6,19 @@
 <%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 
 <script type="text/javascript"> 
-	
-	function toggleWhatsThis(){
-		$('whatsThisText').toggle();
-	}
+jQuery(function (){
+	var _mouseenter = function() {
+		// prevents buildup of mouseenter/mouseleave events
+		jQuery("#whatsThisToggle").off("mouseenter");
+		jQuery("#whatsThisText").fadeIn(200);
+	};
+
+	jQuery('#whatsThisToggle').mouseenter(_mouseenter).mouseleave(function() {
+		jQuery("#whatsThisText").fadeOut(200, function() {
+			jQuery("#whatsThisToggle").on("mouseenter", "", _mouseenter);
+		});
+	});
+});
 
 </script>
 
@@ -20,9 +28,9 @@
     
         <%-- DESCRIPTION POPUP --%>
 		<c:if test="${attributeGraphType.description != null}">
-			<div style="font-size: 10px; text-align: right; position: relative"  onmouseover="toggleWhatsThis()" onmouseout="toggleWhatsThis()">
-				<cti:msg2 key=".whatsThis"/>
-				<div id="whatsThisText" class="widgetPopup" style="display:none;text-align: left">
+			<div style="font-size: 10px; text-align: right; position: relative">
+				<span id="whatsThisToggle"><cti:msg2 key=".whatsThis"/></span>
+				<div id="whatsThisText" class="widgetPopup" style="display:none; text-align: left; right:30px;">
 					<cti:msg2 key="${attributeGraphType.description}"/>
 				</div>
 			</div>
