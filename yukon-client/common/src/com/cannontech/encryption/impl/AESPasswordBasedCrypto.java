@@ -15,13 +15,17 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.CryptoUtils;
+import com.cannontech.encryption.MasterConfigCryptoUtils;
 import com.cannontech.encryption.PasswordBasedCrypto;
 
 public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
+    private static Logger log = YukonLogManager.getLogger(MasterConfigCryptoUtils.class);
 
     private Cipher encryptingCipher;
     private Cipher decryptingCipher;
@@ -198,7 +202,7 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
 				throw new CryptoException("CipherText is not authentic. Message Authentication Failed.");
 			}
 		} catch (IllegalBlockSizeException| BadPaddingException e) {
-			throw new CryptoException("CipherText is not authentic. Decryption failed.");
+			throw new CryptoException("CipherText is not authentic. Decryption failed.", e);
 		}
 	}
 
@@ -209,6 +213,7 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
 		try {
 			verifyAuthenticity(cipherText);
 		} catch (CryptoException e) {
+			log.info("CipherText not authentic. ", e);
 			return false;
 		}
 		return true;

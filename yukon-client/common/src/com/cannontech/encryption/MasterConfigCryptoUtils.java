@@ -15,12 +15,12 @@ import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 
 public class MasterConfigCryptoUtils {
-    private static Logger log = YukonLogManager.getLogger(CryptoUtils.class);
+    private static Logger log = YukonLogManager.getLogger(MasterConfigCryptoUtils.class);
 
     private static final File keysFolder = new File(BootstrapUtils.getKeysFolder());
     private static final File masterCfgCryptoFile = new File(keysFolder, "masterConfigKeyfile.dat");
     private static final File masterCfgCryptoLockFile = new File(keysFolder, "masterConfigKeyfile.lck");
-    private static final String ENCRYPTION_DESIGNATION = "(AUTO_ENCRYPTED)";
+    private static final String encryptionDesignation = "(AUTO_ENCRYPTED)";
     private static AESPasswordBasedCrypto encrypter;
 
     static {
@@ -72,7 +72,7 @@ public class MasterConfigCryptoUtils {
         String plainText = null;
         try {
             encryptedText = StringUtils.deleteWhitespace(encryptedText);
-            String hexStr = encryptedText.substring(ENCRYPTION_DESIGNATION.length());
+            String hexStr = encryptedText.substring(encryptionDesignation.length());
             plainText = encrypter.decryptHexStr(hexStr);
         } catch (DecoderException | CryptoException e) {
         	throw new CryptoException("Unable to decrypt master.cfg encrypted value.", e);
@@ -90,7 +90,7 @@ public class MasterConfigCryptoUtils {
      */
     public static String encryptValue(String valuePlaintext) throws CryptoException {
         valuePlaintext = StringUtils.deleteWhitespace(valuePlaintext);
-        String encryptedValue = ENCRYPTION_DESIGNATION + encrypter.encryptToHexStr(valuePlaintext);
+        String encryptedValue = encryptionDesignation + encrypter.encryptToHexStr(valuePlaintext);
         return encryptedValue;
     }
 
@@ -106,8 +106,8 @@ public class MasterConfigCryptoUtils {
     public static boolean isEncrypted(String value) {
         value = StringUtils.deleteWhitespace(value); // null safe
         if (StringUtils.isEmpty(value) // check for "" or Null
-                || value.length() <= ENCRYPTION_DESIGNATION.length() // Ensure the next line doesn't throw indexOutOfBounds
-                || !value.substring(0, ENCRYPTION_DESIGNATION.length()).equals(ENCRYPTION_DESIGNATION)) {
+                || value.length() <= encryptionDesignation.length() // Ensure the next line doesn't throw indexOutOfBounds
+                || !value.substring(0, encryptionDesignation.length()).equals(encryptionDesignation)) {
             return false;
         } else {
             return true;
