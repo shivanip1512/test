@@ -7,7 +7,6 @@
 <%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
 <cti:msgScope paths="yukon.web.modules.capcontrol.bankMove">
 
