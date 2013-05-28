@@ -1,8 +1,8 @@
 package com.cannontech.clientutils;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -16,6 +16,7 @@ import org.apache.log4j.spi.ErrorCode;
 import org.apache.log4j.spi.LoggingEvent;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.FileUtil;
 
 // Based on DatedFileAppender from http://minaret.biz/tips/datedFileAppender.html
 // Written by Geoff Mottram (geoff at minaret dot biz).
@@ -159,11 +160,9 @@ public class DatedFileAppender extends FileAppender {
     public final static int RETRY_DELAY_IN_MS = 1000;
     public final static int LOG_RETENTION_DAYS = 90;
 
+    private DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+
     //----------------------------------------------------- class Variables
-    /**
-     * The number of milliseconds in a day
-     */
-    private final static long millisecondsInADay = 86400000L;
 
     /**
      * tells whether the maxFileSize has been reached
@@ -231,14 +230,6 @@ public class DatedFileAppender extends FileAppender {
     private long retryDelayInMillis = RETRY_DELAY_IN_MS;
 
     private int logRetentionDays = LOG_RETENTION_DAYS;
-
-    private class FileLogFilter implements FilenameFilter {
-        @Override
-        public boolean accept(File dir, String name) {
-            String regex = "^" + m_prefix + "[0-9]{8}" + m_suffix;
-            return name.matches(regex);
-        }
-    }
 
     // ----------------------------------------------------------- Constructors
 
@@ -396,8 +387,7 @@ public class DatedFileAppender extends FileAppender {
 
             m_calendar.setTimeInMillis(n); // set Calendar to current time
 
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-            datestamp = sdf.format(m_calendar.getTime());
+            datestamp = dateFormat.format(m_calendar.getTime());
 
             tomorrow(m_calendar); // set the Calendar to the start of tomorrow
             isMaxFileSizeReached = false; //file is always empty at beginning of
@@ -407,17 +397,6 @@ public class DatedFileAppender extends FileAppender {
             m_tomorrow = m_calendar.getTimeInMillis();
             String child = m_prefix + datestamp + m_suffix;
             newFile = new File(m_path, child);
-
-            // if the file has a timestamp that is earlier than the beginning of
-            // today, then it must be last months file, so delete its contents
-            //and start with an empty file
-            long today = m_calendar.getTimeInMillis() - millisecondsInADay;
-            long lastModified = newFile.lastModified();
-
-            if ((lastModified < today) && lastModified != 0) {
-                //lastModified == 0 if the file doesn't exist
-                newFile.delete();
-            }
 
             // The below while loop is basically a copy from super.activateOptions();
             // This allows us to catch any exceptions and retry open/create of a file.
@@ -538,27 +517,45 @@ public class DatedFileAppender extends FileAppender {
         }
 
         File directory = new File(m_directory);
-        File[] files = directory.listFiles(new FileLogFilter());
-
-        Calendar retentionDate = Calendar.getInstance();
-        retentionDate.setTime(m_calendar.getTime());
-        retentionDate.add(Calendar.DAY_OF_YEAR, -logRetentionDays);
+        File[] files = directory.listFiles(new LogFilesToDeleteFilter());
 
         for (File file : files) {
-            String fileDateStr = file.getName().replace(m_prefix, "").replace(m_suffix, "");
-
-            Date fileDate;
-            try {
-                // Verify the fileDate is a valid date!
-                DateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-                fileDate = formatter.parse(fileDateStr);
-            } catch (ParseException e) {
-                continue;
-            }
-
-            if (fileDate.before(retentionDate.getTime())) {
-                file.delete();
-            }
+            file.delete();
         }
+    }
+
+    /**
+     * Filter files based on the previous (Webserver_##) and new (Webserver_####) format. Will not include files
+     * which are newer than logRetentionDays.
+     * 
+     * Files which PASS this filter will be deleted.
+     */
+    private class LogFilesToDeleteFilter implements FileFilter {
+        String regex = "^" + m_prefix + "([0-9]{2}|[0-9]{8})" + m_suffix;
+
+    	@Override
+        public boolean accept(File file) {
+    		Calendar retentionDate = Calendar.getInstance();
+            retentionDate.setTime(m_calendar.getTime());
+            retentionDate.add(Calendar.DAY_OF_YEAR, -logRetentionDays);
+
+            return file.getName().matches(regex) && getLogCreationDate(file).before(retentionDate.getTime());
+        }
+    }
+
+    /**
+     * Returns the log creation date. First tries to use date in log filename, if the format isn't correct
+     * it will return the file creation date.
+     */
+    private Date getLogCreationDate(File file) {
+    	try { /* lets try to parse the filename for the date */
+    		return dateFormat.parse(file.getName().replace(m_prefix, ""));
+    	} catch (ParseException e) {/* Can't use filename (could be an old format)*/}
+
+    	try { /* Use the files creation date */
+    		return FileUtil.getCreationDate(file);
+    	} catch (IOException e) {
+    		return new Date(file.lastModified());
+    	}
     }
 }
