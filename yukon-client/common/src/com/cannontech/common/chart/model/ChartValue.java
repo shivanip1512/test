@@ -36,7 +36,7 @@ public class ChartValue<T> {
     }
 
     /**
-     * Returns the description as set by setDescription with formatedValue prepended.
+     * Returns the description as set by setDescription with formattedValue prepended.
      */
     public String getDescription() {
         return "<div>" + formattedValue + "</div>" + description;
