@@ -1,10 +1,12 @@
 package com.cannontech.common.temperature;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.common.util.xml.XmlRepresentation;
 
 
-public enum TemperatureUnit {
+public enum TemperatureUnit implements DatabaseRepresentationSource, DisplayableEnum {
 
     @XmlRepresentation("F")
     FAHRENHEIT("F"),
@@ -34,5 +36,13 @@ public enum TemperatureUnit {
         } else {
             throw new IllegalArgumentException("'" + letter + "' is not a valid temperature abbreviation");
         }
+    }
+
+    public String getFormatKey() {
+        return "yukon.web.modules.consumer.thermostat." + this.name();
+    }
+
+    public Object getDatabaseRepresentation() {
+        return this.name();
     }
 }

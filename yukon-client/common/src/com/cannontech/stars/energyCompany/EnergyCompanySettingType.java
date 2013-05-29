@@ -10,7 +10,7 @@ import static com.cannontech.stars.energyCompany.model.SettingCategory.MISC;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
-import com.cannontech.enums.TemperatureUnit;
+import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.stars.energyCompany.model.SettingCategory;
 import com.cannontech.web.input.type.InputType;
 
@@ -29,7 +29,7 @@ public enum EnergyCompanySettingType implements DisplayableEnum {
     ADMIN_ALLOW_THERMOSTAT_SCHEDULE_WEEKDAY_WEEKEND(HARDWARE, booleanType(), false),
     ADMIN_ALLOW_THERMOSTAT_SCHEDULE_7_DAY(HARDWARE, booleanType(), false),
     ADMIN_ALLOW_THERMOSTAT_SCHEDULE_ALL(HARDWARE, booleanType(), true),
-    DEFAULT_TEMPERATURE_UNIT(HARDWARE,  InputTypeFactory.enumType(TemperatureUnit.class), TemperatureUnit.F),
+    DEFAULT_TEMPERATURE_UNIT(HARDWARE,  InputTypeFactory.enumType(TemperatureUnit.class), TemperatureUnit.FAHRENHEIT),
     METER_MCT_BASE_DESIGNATION(HARDWARE, InputTypeFactory.enumType(MeteringType.class), MeteringType.stars),
     SERIAL_NUMBER_VALIDATION(HARDWARE, InputTypeFactory.enumType(SerialNumberValidation.class), SerialNumberValidation.NUMERIC),
     TRACK_HARDWARE_ADDRESSING(HARDWARE, booleanType(), false),
