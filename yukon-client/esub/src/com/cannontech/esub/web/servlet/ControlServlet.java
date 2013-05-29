@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LitePoint;
@@ -37,7 +38,7 @@ public class ControlServlet extends HttpServlet {
 	// Parameter Names
 	private static final String ID = "id";
 	private static final String RAWSTATE = "rawstate";
-			
+	
 	/**
 	 * @see javax.servlet.http.HttpServlet#service(HttpServletRequest, HttpServletResponse)
 	 */
@@ -78,7 +79,8 @@ public class ControlServlet extends HttpServlet {
 			return;
 		}
 		
-		LitePoint lp = DaoFactory.getPointDao().getLitePoint(id);
+		PointDao pointDao = YukonSpringHook.getBean("pointDao", PointDao.class);
+		LitePoint lp = pointDao.getLitePoint(id);
 		
 		if( lp == null ) {
 			out.write("error");		
@@ -114,6 +116,7 @@ public class ControlServlet extends HttpServlet {
 		}
 		
 		conn.write(cmd);
+		
 		CTILogger.info("Control request sent, deviceid: " + deviceID + " pointid: " + pointID + " rawstate: " + rawstate);
 	}
 }

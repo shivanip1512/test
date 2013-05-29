@@ -59,10 +59,6 @@ function handleShowPointReq(obj) {
  */
 function showControlWindow(pointID) {
 	var url = "/esub/jsp/control.jsp?pointid=" + pointID + "&action=display";
-	var w = 800;
-	var h = 480;
-	var popx = (screen.width - w) / 2; 
-	var popy = (screen.height - h) / 2; 
 
 	var popUp = new PopupWindow();
 	popUp.setSize(800,480);
@@ -82,6 +78,9 @@ function submitControl(pointid, rawstate) {
 
 function submitControlXMLHttp(pointid, rawstate, close) {
 	var url = '/servlet/ControlServlet?id=' + pointid + '&rawstate=' + rawstate;
+	//  Add a unique suffix to prevent caching
+	url +=  '&_=' + (new Date).getTime();
+	
 	loadXMLDoc(url, null);
 	if(close == true) {
 		self.close();
