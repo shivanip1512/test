@@ -3,62 +3,31 @@ package com.cannontech.common.util;
 import com.google.common.base.Function;
 
 public class Range<T extends Comparable<? super T>> {
-    private final T min;
-    private final boolean includesMinValue;
-    private final T max;
-    private final boolean includesMaxValue;
+    private T min = null;
+    private boolean includesMinValue = true;
+    private T max = null;
+    private boolean includesMaxValue = true;
 
     /**
-     * Create a range
-     * max & min        Default to null
-     * includesMinValue Default to exclusive
-     * includesMaxvalue Default to exclusive
+     * Create an unbounded range.
      */
     public Range() {
-        this.min = null;
-        this.includesMinValue = false;
-        this.max = null;
-        this.includesMaxValue = false;
     }
-    
-    /** 
-     * @param min   The minimum value. A null value represents no minimum.
-     * @param max   The maximum value. A null value represents no maximum.
-     * includesMinValue Inclusive if min value specified, otherwise exclusive.
-     * includesMaxValue Inclusive if max value specified, otherwise exclusive.
-     * (inclusive - true, exclusive - false)
-     */
-    public Range(T min, T max) {
-        this.min = min;
-        this.max = max;
-        
-        if (min != null) {
-            //min specified -> inclusive
-            this.includesMinValue = true;
-        } else {
-            //exclusive
-            this.includesMinValue = false;
-        }
 
-        if (max != null) {
-            //max specified -> inclusive
-            this.includesMaxValue = true;
-        } else {
-            //exclusive
-            this.includesMaxValue = false;
-        }
-    }
-    
     /**
-     * Create a range from min to max.
+     * Create a range from min to max, inclusive at both ends.
      * @param min The minimum value. A null value represents no minimum.
      * @param max The maximum value. A null value represents no maximum.
      * @throws IllegalArgumentException if min and max are specified and
      * max less than min
      */
-    public Range(T min, boolean includesMinValue, T max, boolean includesMaxValue) {
+    public Range(T min, T max) {
         this.min = min;
         this.max = max;
+    }
+
+    public Range(T min, boolean includesMinValue, T max, boolean includesMaxValue) {
+        this(min, max);
         this.includesMinValue = includesMinValue;
         this.includesMaxValue = includesMaxValue;
     }
@@ -71,18 +40,34 @@ public class Range<T extends Comparable<? super T>> {
         return min;
     }
 
+    public void setMin(T min) {
+        this.min = min;
+    }
+
     public boolean isIncludesMinValue() {
         return includesMinValue;
+    }
+
+    public void setIncludesMinValue(boolean includesMinValue) {
+        this.includesMinValue = includesMinValue;
     }
 
     public T getMax() {
         return max;
     }
 
+    public void setMax(T max) {
+        this.max = max;
+    }
+
     public boolean isIncludesMaxValue() {
         return includesMaxValue;
     }
-    
+
+    public void setIncludesMaxValue(boolean includesMaxValue) {
+        this.includesMaxValue = includesMaxValue;
+    }
+
     public boolean intersects(T value) {
         if (min == null && max == null) {
             // completely unbounded, everything is included
