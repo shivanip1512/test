@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/29/2013 2:39:16 PM                         */
+/* Created on:     5/29/2013 5:28:58 PM                         */
 /*==============================================================*/
 
 
@@ -2169,54 +2169,6 @@ create table DEVICEEVENT (
 go
 
 /*==============================================================*/
-/* Table: DEVICEGROUP                                           */
-/*==============================================================*/
-create table DEVICEGROUP (
-   DeviceGroupId        numeric(18,0)        not null,
-   GroupName            varchar(255)         not null,
-   ParentDeviceGroupId  numeric(18,0)        null,
-   Permission           nvarchar(50)         not null,
-   Type                 varchar(255)         not null,
-   CreatedDate          datetime             not null,
-   constraint PK_DEVICEGROUP primary key (DeviceGroupId)
-)
-go
-
-INSERT INTO DeviceGroup VALUES (0,' ',null,'NOEDIT_MOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (1,'Meters',0,'NOEDIT_MOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (2,'Billing',1,'NOEDIT_MOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (3,'Collection',1,'NOEDIT_MOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (4,'Alternate',1,'NOEDIT_MOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (8,'Flags',1,'NOEDIT_MOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (9,'Inventory',8,'NOEDIT_MOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (10,'DisconnectedStatus',8,'NOEDIT_MOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (11,'UsageMonitoring',8,'NOEDIT_MOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (12,'System',0,'NOEDIT_NOMOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (13,'Routes',12,'NOEDIT_NOMOD','ROUTE', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (14,'Device Types',12,'NOEDIT_NOMOD','DEVICETYPE', '01-JAN-2013'); 
-INSERT INTO DeviceGroup VALUES (15,'Meters',12,'NOEDIT_NOMOD','STATIC', '01-JAN-2013'); 
-INSERT INTO DeviceGroup VALUES (16,'Scanning',15,'NOEDIT_NOMOD','STATIC', '01-JAN-2013'); 
-INSERT INTO DeviceGroup VALUES (17,'Load Profile',16,'NOEDIT_NOMOD','METERS_SCANNING_LOAD_PROFILE', '01-JAN-2013'); 
-INSERT INTO DeviceGroup VALUES (18,'Voltage Profile',16,'NOEDIT_NOMOD','METERS_SCANNING_VOLTAGE_PROFILE', '01-JAN-2013'); 
-INSERT INTO DeviceGroup VALUES (19,'Integrity',16,'NOEDIT_NOMOD','METERS_SCANNING_INTEGRITY', '01-JAN-2013'); 
-INSERT INTO DeviceGroup VALUES (20,'Accumulator',16,'NOEDIT_NOMOD','METERS_SCANNING_ACCUMULATOR', '01-JAN-2013'); 
-INSERT INTO DeviceGroup VALUES (21,'Temporary',12,'HIDDEN','STATIC', '01-JAN-2013'); 
-INSERT INTO DeviceGroup VALUES (22,'Disabled',15,'NOEDIT_NOMOD','METERS_DISABLED', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (23,'Disconnect',15,'NOEDIT_MOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (24,'Collars',23,'NOEDIT_MOD','METERS_DISCONNECT_COLLAR', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (25,'CIS Substation',1,'NOEDIT_MOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (26,'Substations',12,'NOEDIT_NOMOD','SUBSTATION_TO_ROUTE', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (27,'Attributes',12,'NOEDIT_NOMOD','STATIC', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (28,'Supported',27,'NOEDIT_NOMOD','ATTRIBUTE_DEFINED', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (29,'Existing',27,'NOEDIT_NOMOD','ATTRIBUTE_EXISTS', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (30,'Device Configs',12,'NOEDIT_NOMOD','DEVICECONFIG', '01-JAN-2013');
-INSERT INTO DeviceGroup VALUES (31,'Auto',12,'HIDDEN','STATIC', '01-JAN-2013');
-
-alter table DEVICEGROUP
-   add constraint AK_DEVICEGR_PDG_GN unique (GroupName, ParentDeviceGroupId)
-go
-
-/*==============================================================*/
 /* Table: DEVICEGROUPMEMBER                                     */
 /*==============================================================*/
 create table DEVICEGROUPMEMBER (
@@ -2990,6 +2942,69 @@ create table DeviceDirectCommSettings (
    PORTID               numeric              not null,
    constraint PK_DEVICEDIRECTCOMMSETTINGS primary key (DEVICEID)
 )
+go
+
+/*==============================================================*/
+/* Table: DeviceGroup                                           */
+/*==============================================================*/
+create table DeviceGroup (
+   DeviceGroupId        numeric(18,0)        not null,
+   GroupName            varchar(255)         not null,
+   ParentDeviceGroupId  numeric(18,0)        null,
+   Permission           nvarchar(50)         not null,
+   Type                 varchar(255)         not null,
+   CreatedDate          datetime             not null,
+   SystemGroupEnum      varchar(255)         null,
+   constraint PK_DeviceGroup primary key (DeviceGroupId)
+)
+go
+
+INSERT INTO DeviceGroup VALUES (0, ' ', null, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'ROOT');
+INSERT INTO DeviceGroup VALUES (1, 'Meters', 0, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'METERS');
+INSERT INTO DeviceGroup VALUES (2, 'Billing', 1, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'BILLING');
+INSERT INTO DeviceGroup VALUES (3, 'Collection', 1, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'COLLECTION');
+INSERT INTO DeviceGroup VALUES (4, 'Alternate', 1, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'ALTERNATE');
+INSERT INTO DeviceGroup VALUES (8, 'Flags', 1, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'FLAGS');
+INSERT INTO DeviceGroup VALUES (9, 'Inventory', 8, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'INVENTORY');
+INSERT INTO DeviceGroup VALUES (10, 'DisconnectedStatus', 8, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'DISCONNECT_STATUS');
+INSERT INTO DeviceGroup VALUES (11, 'UsageMonitoring', 8, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'USAGE_MONITORING');
+INSERT INTO DeviceGroup VALUES (12, 'System', 0, 'NOEDIT_NOMOD', 'STATIC', '01-JAN-2013', 'SYSTEM');
+INSERT INTO DeviceGroup VALUES (13, 'Routes', 12, 'NOEDIT_NOMOD', 'ROUTE', '01-JAN-2013', 'ROUTES');
+INSERT INTO DeviceGroup VALUES (14, 'Device Types', 12, 'NOEDIT_NOMOD', 'DEVICETYPE', '01-JAN-2013', 'DEVICE_TYPES'); 
+INSERT INTO DeviceGroup VALUES (15, 'Meters', 12, 'NOEDIT_NOMOD', 'STATIC', '01-JAN-2013', 'SYSTEM_METERS'); 
+INSERT INTO DeviceGroup VALUES (16, 'Scanning', 15, 'NOEDIT_NOMOD', 'STATIC', '01-JAN-2013', 'SCANNING'); 
+INSERT INTO DeviceGroup VALUES (17, 'Load Profile', 16, 'NOEDIT_NOMOD', 'METERS_SCANNING_LOAD_PROFILE', '01-JAN-2013', 'LOAD_PROFILE'); 
+INSERT INTO DeviceGroup VALUES (18, 'Voltage Profile', 16, 'NOEDIT_NOMOD', 'METERS_SCANNING_VOLTAGE_PROFILE', '01-JAN-2013', 'VOLTAGE_PROFILE'); 
+INSERT INTO DeviceGroup VALUES (19, 'Integrity', 16, 'NOEDIT_NOMOD', 'METERS_SCANNING_INTEGRITY', '01-JAN-2013', 'INTEGRITY'); 
+INSERT INTO DeviceGroup VALUES (20, 'Accumulator', 16, 'NOEDIT_NOMOD', 'METERS_SCANNING_ACCUMULATOR', '01-JAN-2013', 'ACCUMULATOR'); 
+INSERT INTO DeviceGroup VALUES (21, 'Temporary', 12, 'HIDDEN', 'STATIC', '01-JAN-2013', 'TEMPORARY'); 
+INSERT INTO DeviceGroup VALUES (22, 'Disabled', 15, 'NOEDIT_NOMOD', 'METERS_DISABLED', '01-JAN-2013', 'DISABLED');
+INSERT INTO DeviceGroup VALUES (23, 'Disconnect', 15, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'DISCONNECT');
+INSERT INTO DeviceGroup VALUES (24, 'Collars', 23, 'NOEDIT_MOD', 'METERS_DISCONNECT_COLLAR', '01-JAN-2013', 'COLLARS');
+INSERT INTO DeviceGroup VALUES (25, 'CIS Substation', 1, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'CIS_SUBSTATION');
+INSERT INTO DeviceGroup VALUES (26, 'Substations', 12, 'NOEDIT_NOMOD', 'SUBSTATION_TO_ROUTE', '01-JAN-2013', 'SUBSTATIONS');
+INSERT INTO DeviceGroup VALUES (27, 'Attributes', 12, 'NOEDIT_NOMOD', 'STATIC', '01-JAN-2013', 'ATTRIBUTES');
+INSERT INTO DeviceGroup VALUES (28, 'Supported', 27, 'NOEDIT_NOMOD', 'ATTRIBUTE_DEFINED', '01-JAN-2013', 'SUPPORTED');
+INSERT INTO DeviceGroup VALUES (29, 'Existing', 27, 'NOEDIT_NOMOD', 'ATTRIBUTE_EXISTS', '01-JAN-2013', 'EXISTING');
+INSERT INTO DeviceGroup VALUES (30, 'Device Configs', 12, 'NOEDIT_NOMOD', 'DEVICECONFIG', '01-JAN-2013', 'DEVICE_CONFIGS');
+INSERT INTO DeviceGroup VALUES (31, 'Auto', 12, 'HIDDEN', 'STATIC', '01-JAN-2013', 'AUTO');
+INSERT INTO DeviceGroup VALUES (32, 'Monitors', 0, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'MONITORS');
+INSERT INTO DeviceGroup VALUES (33, 'Outage', 32, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'OUTAGE');
+INSERT INTO DeviceGroup VALUES (34, 'DeviceData', 32, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'DEVICE_DATA');
+INSERT INTO DeviceGroup VALUES (35, 'Tamper Flag', 32, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'TAMPER_FLAG');
+INSERT INTO DeviceGroup VALUES (36, 'Phase Detect', 15, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'PHASE_DETECT');
+INSERT INTO DeviceGroup VALUES (37, 'Last Results', 36, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'LAST_RESULTS');
+INSERT INTO DeviceGroup VALUES (38, 'A', 37, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'A');
+INSERT INTO DeviceGroup VALUES (39, 'B', 37, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'B');
+INSERT INTO DeviceGroup VALUES (40, 'C', 37, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'C');
+INSERT INTO DeviceGroup VALUES (41, 'AB', 37, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'AB');
+INSERT INTO DeviceGroup VALUES (42, 'AC', 37, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'AC');
+INSERT INTO DeviceGroup VALUES (43, 'BC', 37, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'BC');
+INSERT INTO DeviceGroup VALUES (44, 'ABC', 37, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'ABC');
+INSERT INTO DeviceGroup VALUES (45, 'UNKNOWN', 37, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'UNKNOWN');
+
+alter table DeviceGroup
+   add constraint AK_DeviceGroup_ParentDG_GrpNam unique (GroupName, ParentDeviceGroupId)
 go
 
 /*==============================================================*/
@@ -11227,11 +11242,6 @@ alter table DEVICEDIALUPSETTINGS
       references DEVICE (DEVICEID)
 go
 
-alter table DEVICEGROUP
-   add constraint FK_DEVICEGROUP_DEVICEGROUP foreign key (ParentDeviceGroupId)
-      references DEVICEGROUP (DeviceGroupId)
-go
-
 alter table DEVICEGROUPMEMBER
    add constraint FK_DeviceGroupMember_DEVICE foreign key (YukonPaoId)
       references DEVICE (DEVICEID)
@@ -11240,7 +11250,7 @@ go
 
 alter table DEVICEGROUPMEMBER
    add constraint FK_DevGrpMember_DeviceGroup foreign key (DeviceGroupID)
-      references DEVICEGROUP (DeviceGroupId)
+      references DeviceGroup (DeviceGroupId)
          on delete cascade
 go
 
@@ -11434,9 +11444,14 @@ alter table DeviceDirectCommSettings
       references CommPort (PORTID)
 go
 
+alter table DeviceGroup
+   add constraint FK_DeviceGroup_DeviceGroup foreign key (ParentDeviceGroupId)
+      references DeviceGroup (DeviceGroupId)
+go
+
 alter table DeviceGroupComposed
    add constraint FK_DevGroupComp_DevGroup foreign key (DeviceGroupId)
-      references DEVICEGROUP (DeviceGroupId)
+      references DeviceGroup (DeviceGroupId)
          on delete cascade
 go
 
