@@ -23,6 +23,9 @@
 <entry key="yukon.common.chartPeriod.YEAR">Year</entry>
 <entry key="yukon.common.chartPeriod.NOPERIOD">NoPeriod</entry>
 
+<entry key="yukon.common.temperatureUnit.Celsius">C</entry>
+<entry key="yukon.common.temperatureUnit.Fahrenheit">F</entry>
+
 <!--  Attribute Graph Type -->
 <entry key="yukon.web.attributeGraphType.USAGE_WATER.label">Water Usage (Delta)</entry>
 <entry key="yukon.web.attributeGraphType.USAGE_WATER.description"><![CDATA[The <b>Delta Usage</b> graph is a view of the usage data as the delta between intervals.<br><br>  Each

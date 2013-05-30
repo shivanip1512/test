@@ -597,6 +597,8 @@ Yukon.ThermostatScheduleEditor = {
         jQuery(".temp, .tempLabel").removeClass('F').addClass('C');
         jQuery("#tempSlider .startLabel, #tempSlider .endLabel").removeClass('F').addClass('C');
         jQuery("input[name=temperatureUnit]").val("C");
+        jQuery(".tempSlider, .F").hide();
+        jQuery(".tempSlider, .C").show();
         _self.calcTempColor();
     },
     
@@ -618,6 +620,8 @@ Yukon.ThermostatScheduleEditor = {
         jQuery(".temp").removeClass('C').addClass('F');
         jQuery("#tempSlider .startLabel, #tempSlider .endLabel").removeClass('C').addClass('F');
         jQuery("input[name=temperatureUnit]").val("F");
+        jQuery(".tempSlider, .C").hide();
+        jQuery(".tempSlider, .F").show();
         _self.calcTempColor();
     },
     

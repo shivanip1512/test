@@ -199,8 +199,6 @@
     <entry key="yukon.web.modules.consumer.thermostat.fan.ON">On</entry>
     <entry key="yukon.web.modules.consumer.thermostat.fan.DEFAULT">Default</entry>
     <entry key="yukon.web.modules.consumer.thermostat.unitMode">Mode:</entry>
-    <entry key="yukon.web.modules.consumer.thermostat.Celsius">Celsius</entry>
-    <entry key="yukon.web.modules.consumer.thermostat.Fahrenheit">Fahrenheit</entry>
     <entry key="yukon.web.modules.consumer.thermostat.degreesCelsius">&amp;deg;C</entry>
     <entry key="yukon.web.modules.consumer.thermostat.degreesFahrenheit">&amp;deg;F</entry>
     <entry key="yukon.web.modules.consumer.thermostat.autoModeDisclaimer">

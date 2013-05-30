@@ -39,6 +39,11 @@
         jQuery("[class^='bulkImportType_']").hide();
         //show rows for the selected interface
         jQuery(".bulkImportType_" + itemSelected).show();
+        
+        //hide all sample files
+        jQuery("[class^='sample_import_files_']").hide();
+        //show sample files for the selected interface
+        jQuery(".sample_import_files_" + itemSelected).show();
     }
     </script>
     
@@ -113,14 +118,21 @@
                         <cti:msg key="yukon.common.device.bulk.importUpload.instructions"/>
                     </ul>
                    
-                    <%-- sample files --%>
-                    <div class="small">
+                  
+                  <div class="small">
                         <div class="fwb" style="display:inline;"><cti:msg key="yukon.common.device.bulk.importUpload.sampleFilesLabel"/>:</div>
-                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Import_File1.csv"/>">File 1</a>, 
-                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Import_File2.csv"/>">File 2</a>, 
-                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Import_File3.csv"/>">File 3</a>, 
-                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Import_File4.csv"/>">File 4</a>
+                        <c:forEach var="bulkImportType" items="${bulkImportTypes}">
+                        <span class="sample_import_files_${bulkImportType}">
+                            <c:forEach var="i" begin="1" end="4">
+                                <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/${bulkImportType}/Sample_Bulk_Import_File${i}.csv"/>">File ${i}</a>,
+                            </c:forEach>
+                        </span>
+                        </c:forEach>
+
                     </div>
+                  
+                   
+                    
                     
                 </td>
             
@@ -132,7 +144,7 @@
                 <tr>
                     <td><label class="fwb"><cti:msg2 key="yukon.common.device.bulk.options.deviceTypeSelect.text" /> <select name="importTypeSelector" id="importTypeSelector">
                                 <c:forEach var="bulkImportType" items="${bulkImportTypes}">
-                                    <option value="${bulkImportType}" <c:if test="${importTypeSelector eq bulkImportType}">selected="selected"</c:if>>
+                                    <option value="${bulkImportType}" <c:if test="${importTypeSelector eq bulkImportType}"> selected </c:if>>
                                         <i:inline key="yukon.common.device.bulk.options.deviceTypeSelect.${bulkImportType}" />
                                     </option>
                                 </c:forEach>

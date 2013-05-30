@@ -39,10 +39,10 @@ public enum TemperatureUnit implements DatabaseRepresentationSource, Displayable
     }
 
     public String getFormatKey() {
-        return "yukon.web.modules.consumer.thermostat." + this.name();
+        return "yukon.common.temperatureUnit." + name();
     }
 
     public Object getDatabaseRepresentation() {
-        return this.name();
+        return getLetter();
     }
 }
