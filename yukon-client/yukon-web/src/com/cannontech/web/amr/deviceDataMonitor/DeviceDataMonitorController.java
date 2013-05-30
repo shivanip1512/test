@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
+import org.springframework.remoting.RemoteAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -85,11 +86,11 @@ import com.google.common.collect.Sets;
 @RequestMapping("/deviceDataMonitor/*")
 @CheckRoleProperty(YukonRoleProperty.DEVICE_DATA_MONITORING)
 public class DeviceDataMonitorController {
-    int MAX_ROWS_FROM_ATTRIBUTE_POINT_QUERY = 3500;
+    private final int MAX_ROWS_FROM_ATTRIBUTE_POINT_QUERY = 3500;
     // Send this to i18n messages rather than a count so their logic knows "all" devices are one in a state.
-    final int MESSAGE_MAGIC_NUMBER__ALL = -1;
+    private final int MESSAGE_MAGIC_NUMBER__ALL = -1;
     // Send to i18n messages to indicate that the count is invalid, so don't report numbers.
-    final int MESSAGE_MAGIC_NUMBER_LIMITED_QUERY= -2;
+    private final int MESSAGE_MAGIC_NUMBER_LIMITED_QUERY= -2;
 
     private static final String baseKey = "yukon.web.modules.amr.deviceDataMonitor";
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorController.class);
@@ -197,6 +198,11 @@ public class DeviceDataMonitorController {
             deviceDataMonitorService.saveAndProcess(monitor);
         } catch (DuplicateException e) {
             setupDuplicateMonitorError(monitor, bindingResult, flashScope);
+            setupEditModelMap(monitor, modelMap, flashScope, userContext);
+            return "deviceDataMonitor/edit.jsp";
+        } catch (RemoteAccessException e) {
+            log.error("Cannot update monitor. Yukon Service Manager is down or we are not configured properly to talk to it.", e);
+            flashScope.setMessage(new YukonMessageSourceResolvable( baseKey + ".unableToUpdate.yukonServiceManager"), FlashScopeMessageType.ERROR);
             setupEditModelMap(monitor, modelMap, flashScope, userContext);
             return "deviceDataMonitor/edit.jsp";
         }
@@ -333,7 +339,12 @@ public class DeviceDataMonitorController {
         StoredDeviceGroup violationsDeviceGroup = deviceGroupEditorDao.getStoredGroup(monitor.getViolationsDeviceGroupPath(), true);
         model.addAttribute("violationsDeviceGroup", violationsDeviceGroup);
 
-        boolean areViolationsBeingCalculated = deviceDataMonitorService.areViolationsBeingCalculatedForMonitor(monitor.getId());
+        boolean areViolationsBeingCalculated = false;
+        try {
+            areViolationsBeingCalculated = deviceDataMonitorService.areViolationsBeingCalculatedForMonitor(monitor.getId());
+        } catch (RemoteAccessException e) {
+            log.error("Yukon Service Manager is down or we are not configured properly to talk to it.", e);
+        }
         model.addAttribute("areViolationsBeingCalculated", areViolationsBeingCalculated);
 
         if (!areViolationsBeingCalculated) {
