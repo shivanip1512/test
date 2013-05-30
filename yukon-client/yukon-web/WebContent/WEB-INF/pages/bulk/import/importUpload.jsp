@@ -120,22 +120,28 @@
                    
                   
                   <div class="small">
-                        <div class="fwb" style="display:inline;"><cti:msg key="yukon.common.device.bulk.importUpload.sampleFilesLabel"/>:</div>
+                        <div class="fwb" style="display:inline;"><cti:msg key="yukon.common.device.bulk.importUpload.sampleFilesLabel"/> </div>
                         <c:forEach var="bulkImportType" items="${bulkImportTypes}">
-                        <span class="sample_import_files_${bulkImportType}">
-                            <c:forEach var="i" begin="1" end="4">
-                                <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/${bulkImportType}/Sample_Bulk_Import_File${i}.csv"/>">File ${i}</a>,
-                            </c:forEach>
-                        </span>
+                            <span class="sample_import_files_${bulkImportType}">
+                                <span class="fwb">(${bulkImportType}):</span>
+                                <c:choose>
+                                    <c:when test="${bulkImportType=='MCT'}">
+                                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/import/${bulkImportType}/Sample_Bulk_Import_File1.csv"/>">File 1</a>,
+                                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/import/${bulkImportType}/Sample_Bulk_Import_File2.csv"/>">File 2</a>,
+                                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/import/${bulkImportType}/Sample_Bulk_Import_File3.csv"/>">File 3</a>,
+                                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/import/${bulkImportType}/Sample_Bulk_Import_File4.csv"/>">File 4</a>
+                                    </c:when>
+                                    <c:when test="${bulkImportType=='RFN'}">
+                                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/import/${bulkImportType}/Sample_Bulk_Import_File1.csv"/>">File 1</a>,
+                                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/import/${bulkImportType}/Sample_Bulk_Import_File2.csv"/>">File 2</a>,
+                                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/import/${bulkImportType}/Sample_Bulk_Import_File3.csv"/>">File 3</a>,
+                                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/import/${bulkImportType}/Sample_Bulk_Import_File4.csv"/>">File 4</a>
+                                    </c:when>
+                                </c:choose>
+                            </span>
                         </c:forEach>
-
-                    </div>
-                  
-                   
-                    
-                    
+                   </div>
                 </td>
-            
             </tr>
                 <tr>
                     <td colspan="2"><div style="height: 20px;"></div>
