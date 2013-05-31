@@ -154,7 +154,7 @@
     						
     						</tr>
     					</c:forEach>
-                    </tbody
+                    </tbody>
 				</table>
 			</c:if>
 	    </form>

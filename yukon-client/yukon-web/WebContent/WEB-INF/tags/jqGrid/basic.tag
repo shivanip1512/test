@@ -1,4 +1,4 @@
-<%@ attribute name="columnInfo" required="true" type="java.util.ArrayList" description="List<ColumnInfo>  This describes which columns to show and how big they should be."%>
+<%@ attribute name="columnInfo" required="true" type="java.util.ArrayList" description="List&lt;ColumnInfo&gt;  This describes which columns to show and how big they should be."%>
 <%@ attribute name="rows" required="true" type="java.util.ArrayList" description="The rows of data.  Can be comprised of any Java Object that will convert nicely to a JSONObject" %>
 <%@ attribute name="title" required="true" type="java.lang.String" description="Make sure this is a resolved string." %>
 <%@ attribute name="total" required="true" type="java.lang.Integer" description="Total number of records for the query - not always the same as rows.size()" %>
