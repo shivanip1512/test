@@ -221,6 +221,32 @@ WHERE EXISTS (SELECT PROP.KeyName
 /* End YUK-11959 */
 
 /* Start YUK-12153 */
+DELETE FROM RawPointHistoryDependentJob
+WHERE JobId IN (
+    SELECT JobId 
+    FROM Job
+    WHERE JobId NOT IN (SELECT JobId 
+                        FROM JobProperty 
+                        WHERE Name = 'defaultYukonExternalUrl')
+    AND BeanName IN (
+        'scheduledBillingFileExportJobDefinition', 
+        'scheduledArchivedDataFileExportJobDefinition',
+        'scheduledWaterLeakFileExportJobDefinition',
+        'scheduledMeterEventsFileExportJobDefinition'));
+        
+DELETE FROM ScheduledGrpCommandRequest
+WHERE JobId IN (
+    SELECT JobId 
+    FROM Job
+    WHERE JobId NOT IN (SELECT JobId 
+                        FROM JobProperty 
+                        WHERE Name = 'defaultYukonExternalUrl')
+    AND BeanName IN (
+        'scheduledBillingFileExportJobDefinition', 
+        'scheduledArchivedDataFileExportJobDefinition',
+        'scheduledWaterLeakFileExportJobDefinition',
+        'scheduledMeterEventsFileExportJobDefinition'));
+        
 DELETE FROM Job
 WHERE JobId NOT IN (SELECT JobId 
                     FROM JobProperty 
