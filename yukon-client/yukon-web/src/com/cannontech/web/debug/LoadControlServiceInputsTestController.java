@@ -344,9 +344,6 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
     private ModelAndView returnMav(HttpServletRequest request, List<String> results) {
         
         ModelAndView mav = new ModelAndView("loadControlService/inputs/home.jsp");
-     
-        // re-populate fields
-        mav.addAllObjects(ServletUtil.getParameterMap(request));
         mav.addObject("results", results);
         
         return mav;
