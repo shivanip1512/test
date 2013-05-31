@@ -179,6 +179,7 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.selectDevices.label">Select Devices</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.noSelectedDevice">Devices Selected: None</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.attributeSetup.title">Attribute Setup:</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.timeZoneFormat">Time Zone Format</entry>
 
 
     <entry key="yukon.web.modules.amr.archivedValueExporter.attribute">Attribute</entry>
@@ -231,7 +232,7 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.roundingMode">Rounding Mode</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.readingPattern">Reading Pattern</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.fieldSize">Field Size</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.readingPattern">Reading Pattern</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.showUTC">Show in UTC</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.timestampPattern">Timestamp Pattern</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.padding">Padding</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.character">Character</entry>
@@ -265,6 +266,8 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.comma">Comma ( , )</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.semicolon">Semicolon ( ; )</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.colon">Colon ( : )</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.spaceDelim"><![CDATA[Space ( &nbsp;&nbsp )]]></entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.noneDelim"><![CDATA[None (  )]]></entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.custom">Custom</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.noFormat">No Format</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.noFormatsCreated">No formats have been created.</entry>
@@ -346,6 +349,10 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.dataRangeType.DATE_RANGE">Date Range</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.dataRangeType.DAYS_PREVIOUS">Days Previous</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.dataRangeType.SINCE_LAST_CHANGE_ID">Since Last Run</entry>
+
+    <entry key="yukon.web.modules.amr.archivedValueExporter.tzDisplayOption.LOCALTZ">Local</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.tzDisplayOption.LOCALTZ_NO_DST">Standard (no DST)</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.tzDisplayOption.UTCTZ">UTC (GMT)</entry>
 
     <!-- preview  -->
     <entry key="yukon.web.modules.amr.archivedValueExporter.previewUOMValue">kWh</entry>

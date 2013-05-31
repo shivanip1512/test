@@ -11,6 +11,7 @@ public class ExportFormat {
     private String delimiter;
     private String header;
     private String footer;
+    private ArchivedValuesExportTimeZoneFormat tzFormat;
     
     private List<ExportAttribute> attributes =  LazyList.ofInstance(ExportAttribute.class);
     private List<ExportField> fields =  LazyList.ofInstance(ExportField.class);
@@ -73,4 +74,12 @@ public class ExportFormat {
     public void setFields(List<ExportField> fields) {
         this.fields = fields;
     }
+
+    public void setDateTimeZoneFormat(ArchivedValuesExportTimeZoneFormat tzFormat) {
+        this.tzFormat = tzFormat;
+    }
+    public ArchivedValuesExportTimeZoneFormat getDateTimeZoneFormat() {
+        return tzFormat;
+    }
+
 }

@@ -16,6 +16,7 @@ import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
+import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportTimeZoneFormat;
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
 import com.cannontech.amr.archivedValueExporter.model.ExportField;
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
@@ -84,12 +85,15 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         Meter previewMeter = getDefaultMeter(userContext);
         addHeader(format, preview);
 
+        ArchivedValuesExportTimeZoneFormat tzFormat = format.getDateTimeZoneFormat();
+        DateTimeZone reportTZ = getReportTZ(tzFormat, userContext);
+
         if (format.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE) {
             Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> fieldIdToAttributeData = getFixedPreviewAttributeData(format, previewMeter);
-            generateFixedBody(preview, Collections.singletonList(previewMeter), format, fieldIdToAttributeData, userContext);
+            generateFixedBody(preview, Collections.singletonList(previewMeter), format, fieldIdToAttributeData, userContext, reportTZ);
         } else {
             ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeData = getDynamicPreviewAttributeData(format, previewMeter);
-            generateDynamicBody(preview, Collections.singletonList(previewMeter), format, userContext, BuiltInAttribute.USAGE, attributeData);
+            generateDynamicBody(preview, Collections.singletonList(previewMeter), format, userContext, BuiltInAttribute.USAGE, attributeData, reportTZ);
         }
         
         addFooter(format, preview);
@@ -101,12 +105,14 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         List<String> reportResults = new ArrayList<>();
 
         addHeader(format, reportResults);
+        ArchivedValuesExportTimeZoneFormat tzFormat = format.getDateTimeZoneFormat();
+        DateTimeZone reportTZ = getReportTZ(tzFormat, userContext);
 
         switch (dataRange.getDataRangeType()) {
             case END_DATE:
                 Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> endDateAttributeData = new HashMap<>();
-                DateTime endOfDay = dataRange.getEndDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone());
-
+                DateTime endOfDay = dataRange.getEndDate().plusDays(1).toDateTimeAtStartOfDay(reportTZ);
+                
                 for (ExportField field : format.getFields()) {
                     if (field.getFieldType() == FieldType.ATTRIBUTE) {
                         DateTime startDate = getStartDate(field.getAttribute(), endOfDay);
@@ -117,7 +123,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                     }
                 }
 
-                generateFixedBody(reportResults, meters, format, endDateAttributeData, userContext);
+                generateFixedBody(reportResults, meters, format, endDateAttributeData, userContext, reportTZ);
                 break;
 
             case DATE_RANGE:
@@ -125,7 +131,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 for (Attribute attribute : attributes) {
                     ListMultimap<PaoIdentifier, PointValueQualityHolder> dateRangeAttributeData =
                             getDynamicAttributeData(meters, attribute, dateRange, null);
-                    generateDynamicBody(reportResults, meters, format, userContext, attribute, dateRangeAttributeData);
+                    generateDynamicBody(reportResults, meters, format, userContext, attribute, dateRangeAttributeData, reportTZ);
                 }
 
                 break;
@@ -137,7 +143,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 for (Attribute attribute : attributes) {
                     ListMultimap<PaoIdentifier, PointValueQualityHolder> previousDaysAttributeData = 
                             getDynamicAttributeData(meters, attribute, previousDaysDateRange, null);
-                    generateDynamicBody(reportResults, meters, format, userContext, attribute, previousDaysAttributeData);
+                    generateDynamicBody(reportResults, meters, format, userContext, attribute, previousDaysAttributeData, reportTZ);
                 }
 
                 break;
@@ -149,7 +155,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 for (Attribute attribute : attributes) {
                     ListMultimap<PaoIdentifier, PointValueQualityHolder> sinceLastChangeIdAttributeData =
                             getDynamicAttributeData(meters, attribute, null, changeIdRange);
-                    generateDynamicBody(reportResults, meters, format, userContext, attribute, sinceLastChangeIdAttributeData);
+                    generateDynamicBody(reportResults, meters, format, userContext, attribute, sinceLastChangeIdAttributeData, reportTZ);
                 }
                 
                 break;
@@ -163,6 +169,27 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         return reportResults;
     }
 
+    /**
+     * Determines the time zone to use for the report.
+     */
+    private DateTimeZone getReportTZ(ArchivedValuesExportTimeZoneFormat tzFormat, YukonUserContext userContext) {
+    
+        DateTimeZone reportTZ = null;
+        switch (tzFormat) { 
+            case LOCALTZ:
+                reportTZ = DateTimeZone.forTimeZone(userContext.getTimeZone());
+                break;
+            case LOCALTZ_NO_DST:
+                reportTZ = DateTimeZone.forTimeZone(userContext.getTimeZone());
+                break;
+            case UTCTZ:
+                reportTZ = DateTimeZone.UTC;
+                break;
+        }
+        return reportTZ;
+    }
+    
+    
     /**
      * Adds the header portion of the report
      */
@@ -185,10 +212,11 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
      * Builds and returns a list of strings each representing one row of data for the report.
      */
     private void generateFixedBody(List<String> reportRows, List<Meter> meters, ExportFormat format, 
-            Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData, YukonUserContext userContext) {
+            Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData, 
+            YukonUserContext userContext, DateTimeZone reportTZ) {
 
         for (Meter meter : meters) {
-            String dataRow = getDataRow(format, meter, userContext, attributeData);
+            String dataRow = getDataRow(format, meter, userContext, attributeData, reportTZ);
             if (!dataRow.equals(SKIP_RECORD)) {
                 reportRows.add(dataRow);
             }
@@ -199,12 +227,13 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
      * Builds and returns a list of strings each representing one row of data for the report.
      */
     private void generateDynamicBody(List<String> reportRows, List<Meter> meters, ExportFormat format, YukonUserContext userContext, 
-                                             Attribute attribute, ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeData) {
+                                             Attribute attribute, ListMultimap<PaoIdentifier, 
+                                             PointValueQualityHolder> attributeData, DateTimeZone reportTZ) {
         
         for (Meter meter : meters) {
             List<PointValueQualityHolder> pointData = attributeData.get(meter.getPaoIdentifier());
             for (PointValueQualityHolder pointValueQualityHolder : pointData) {
-                String reportRow = generateReportRow(format, meter, attribute, pointValueQualityHolder, userContext);
+                String reportRow = generateReportRow(format, meter, attribute, pointValueQualityHolder, userContext, reportTZ);
                 if (!reportRow.equals(SKIP_RECORD)) {
                     reportRows.add(reportRow);
                 }
@@ -215,14 +244,20 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     /**
      * This method generates one row to the given report.
      */
-    private String generateReportRow(ExportFormat format, Meter meter, Attribute attribute, PointValueQualityHolder pointValueQualityHolder, YukonUserContext userContext) {
+    private String generateReportRow(ExportFormat format, Meter meter, Attribute attribute, PointValueQualityHolder pointValueQualityHolder, 
+                                     YukonUserContext userContext, DateTimeZone reportTZ) {
         StringBuilder reportRow = new StringBuilder();
         
+        boolean removeDST = false;
+        if (format.getDateTimeZoneFormat() == ArchivedValuesExportTimeZoneFormat.LOCALTZ_NO_DST) {
+            removeDST = true;
+        }
+
         for (int i = 0; i < format.getFields().size(); i++) {
             ExportField field = format.getFields().get(i);
-            String value = getValue(field, meter, attribute, pointValueQualityHolder, userContext);
+            String value = getValue(field, meter, attribute, pointValueQualityHolder, userContext, reportTZ, removeDST);
 
-            if (StringUtils.isEmpty(value)) {
+            if (StringUtils.isEmpty(value) && field.getFieldType() != FieldType.PLAIN_TEXT) {
                 switch (field.getMissingAttribute()) {
                     case LEAVE_BLANK:
                         break;
@@ -246,7 +281,8 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     /**
      * This method translates the information supplied along with the export field to get the desired data from the report row.
      */
-    public String getValue(ExportField field, Meter meter, Attribute attribute, PointValueQualityHolder pointValueQualityHolder, YukonUserContext userContext) {
+    public String getValue(ExportField field, Meter meter, Attribute attribute, PointValueQualityHolder pointValueQualityHolder, 
+                           YukonUserContext userContext, DateTimeZone reportTZ, boolean removeDST) {
         switch (field.getFieldType()) {
             case METER_NUMBER:
                 return meter.getMeterNumber();
@@ -274,7 +310,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             case POINT_VALUE:
                 return getPointValue(field, pointValueQualityHolder);
             case POINT_TIMESTAMP:
-                return getTimestamp(field, userContext.getJodaTimeZone(), pointValueQualityHolder);
+                return getTimestamp(field, reportTZ, pointValueQualityHolder, removeDST);
             case POINT_QUALITY:
                 return getQuality(field, pointValueQualityHolder);
                 
@@ -285,7 +321,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                     case VALUE:
                         return getPointValue(field, pointValueQualityHolder);
                     case TIMESTAMP:
-                        return getTimestamp(field, userContext.getJodaTimeZone(), pointValueQualityHolder);
+                        return getTimestamp(field, reportTZ, pointValueQualityHolder, removeDST);
                     case QUALITY:
                         return getQuality(field, pointValueQualityHolder);
                 }
@@ -373,9 +409,15 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
      * selected to skip a record, it returns "SKIP_RECORD_SKIP_RECORD".
      */
     private String getDataRow(ExportFormat format, Meter meter, YukonUserContext userContext,
-                              Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData) {
+                              Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData, 
+                              DateTimeZone reportTZ) {
 
         StringBuilder dataRow = new StringBuilder();
+        boolean removeDST = false;
+        if (format.getDateTimeZoneFormat() == ArchivedValuesExportTimeZoneFormat.LOCALTZ_NO_DST) {
+            removeDST = true;
+        }
+        
         for (int i = 0; i < format.getFields().size(); i++) {
             ExportField field = format.getFields().get(i);
 
@@ -384,7 +426,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 pointValueQualityHolder = findPointValueQualityHolder(meter, field, attributeData);
             }
 
-            String value = getValue(field, meter, null, pointValueQualityHolder, userContext);
+            String value = getValue(field, meter, null, pointValueQualityHolder, userContext, reportTZ, removeDST);
 
             if (StringUtils.isEmpty(value) && field.getFieldType() != FieldType.PLAIN_TEXT) {
                 switch (field.getMissingAttribute()) {
@@ -478,12 +520,18 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     /**
      * Gets the timestamp. Returns "" if the timestamp was not found.
      */
-    private String getTimestamp(ExportField field, DateTimeZone timeZone, PointValueQualityHolder pointValueQualityHolder) {
+    private String getTimestamp(ExportField field, DateTimeZone timeZone, 
+                                PointValueQualityHolder pointValueQualityHolder, boolean removeDST) {
         if (pointValueQualityHolder == null) {
             return "";
         }
 
         DateTime dateTime = new DateTime(pointValueQualityHolder.getPointDataTimeStamp()).withZone(timeZone);
+        if (removeDST && !timeZone.isStandardOffset(dateTime.getMillis())) {
+            long stdOffset = timeZone.getStandardOffset(dateTime.getMillis());
+            DateTimeZone timeZoneWithoutDST = DateTimeZone.forOffsetMillis((int) stdOffset);
+            dateTime = dateTime.withZone(timeZoneWithoutDST);
+        }
         return field.formatTimestamp(dateTime);
     }
 

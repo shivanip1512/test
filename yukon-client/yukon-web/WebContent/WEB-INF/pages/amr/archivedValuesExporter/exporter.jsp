@@ -28,36 +28,32 @@
     
     function toggleFieldAndUpdateValue(element, event){
         var selection = jQuery(element.attr("data-selection")).val();
-        var fieldToDispay = jQuery(element.attr("data-field-to-display"));
+        var fieldToDisplay = jQuery(element.attr("data-field-to-display"));
         var skipDisable = element.attr("data-skip-disable");
         
-        if(!skipDisable){
-            fieldToDispay.attr("disabled", "disabled");
-        }else{
-            fieldToDispay.removeAttr("disabled");
+        if (!skipDisable) {
+            fieldToDisplay.attr("disabled", "disabled");
+        } else {
+            fieldToDisplay.removeAttr("disabled");
         }
-        
-        if (selection == 'Custom' || selection == 'FIXED_VALUE'){
+
+        if (selection == 'Custom' || selection == 'FIXED_VALUE') {
            //only reset the field value if the select element is the same one clicked
-            if(initialized && event && event.currentTarget == element[0]){
-                fieldToDispay.val("");
+            if (initialized && event && event.currentTarget == element[0]) {
+                fieldToDisplay.val("");
             }
-            fieldToDispay.focus();
-            fieldToDispay.show().removeAttr("disabled");
+            fieldToDisplay.focus();
+            fieldToDisplay.show().removeAttr("disabled");
             jQuery("input[name=exportField\\.pattern]").each(function(index, element){
-                if(element != fieldToDispay[0]){
+                if (element != fieldToDisplay[0]) {
                     element.value="";
                 }
             });
-        }else{
-            fieldToDispay.hide();
-            if(initialized){
-                fieldToDispay.val(selection);
+        } else {
+            fieldToDisplay.hide();
+            if (initialized) {
+                fieldToDisplay.val(selection);
             }
-        }
-        
-        if (selection == 'LEAVE_BLANK' || selection == 'SKIP_RECORD'){
-            fieldToDispay.val("");
         }
     };
 
@@ -260,6 +256,7 @@
             Yukon.Dialog.ConfirmationManager.cancel();
             submitForm(-1, 'deleteFormat');
         });
+        jQuery('.f_initialFocus').focus();
     });
 </script>
 
@@ -311,20 +308,30 @@
 
         <tags:boxContainer2 nameKey="formatSettings" styleClass="stacked">
             <tags:nameValueContainer2>
-                <tags:inputNameValue nameKey=".nameOfFormat" path="format.formatName" size="50" maxlength="100" />
+                <tags:inputNameValue inputClass="f_initialFocus" nameKey=".nameOfFormat" path="format.formatName" size="50" maxlength="100" />
                 <tags:nameValue2 nameKey=".delimiter">
                     <select name="delimiterSelect" id="delimiterSelect" data-selection="#delimiterSelect" data-field-to-display="#delimiter" data-skip-disable="true">
-                        <option value="," <c:if test="${format.delimiter == ','}">selected="selected" </c:if>>
+                        <option value="," <c:if test="${backingBean.format.delimiter == ','}"> selected="selected" </c:if>>
                             <i:inline key=".comma" />
                         </option>
-                        <option value=";" <c:if test="${format.delimiter ==  ';'}">selected="selected" </c:if>>
+                        <option value=";" <c:if test="${backingBean.format.delimiter == ';'}"> selected="selected" </c:if>>
                             <i:inline key=".semicolon" />
                         </option>
-                        <option value=":" <c:if test="${format.delimiter  == ':'}">selected="selected" </c:if>>
+                        <option value=":" <c:if test="${backingBean.format.delimiter == ':'}"> selected="selected" </c:if>>
                             <i:inline key=".colon" />
                         </option>
+                        <option value=" " <c:if test="${backingBean.format.delimiter == ' '}"> selected="selected" </c:if>>
+                            <i:inline key=".spaceDelim" />
+                        </option>
+                        <option value="" <c:if test="${backingBean.format.delimiter == ''}"> selected="selected" </c:if>>
+                            <i:inline key=".noneDelim" />
+                        </option>
                         <option value="Custom"
-                            <c:if test="${format.delimiter  !=  ',' && format.delimiter  != ';' && format.delimiter  != ':'}">selected="selected" </c:if>>
+                            <c:if test="${backingBean.format.delimiter != ',' && 
+                                backingBean.format.delimiter != ';' && 
+                                backingBean.format.delimiter != ':' && 
+                                backingBean.format.delimiter != ' ' &&
+                                backingBean.format.delimiter != ''}"> selected="selected" </c:if>>
                             <i:inline key=".custom" />
                         </option>
                     </select>
@@ -332,6 +339,17 @@
                 </tags:nameValue2>
                 <tags:inputNameValue nameKey=".header" path="format.header" size="100" maxlength="255" />
                 <tags:inputNameValue nameKey=".footer" path="format.footer" size="100" maxlength="255" />
+
+                <tags:nameValue2 nameKey=".timeZoneFormat">
+                    <form:select path="format.dateTimeZoneFormat">
+                        <c:forEach var="dateTZFormat" items="${dateTimeZoneFormats}">
+                            <form:option value="${dateTZFormat}">
+                                <cti:msg2 key="${dateTZFormat}" />
+                            </form:option>
+                        </c:forEach>
+                    </form:select>
+                </tags:nameValue2>
+                
             </tags:nameValueContainer2>
         </tags:boxContainer2>
 

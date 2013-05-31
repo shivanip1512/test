@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFormatDao;
 import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
+import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportTimeZoneFormat;
 import com.cannontech.amr.archivedValueExporter.model.AttributeField;
 import com.cannontech.amr.archivedValueExporter.model.DataSelection;
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
@@ -205,6 +206,8 @@ public class ArchivedValuesExporterController {
     public String create(ModelMap model, YukonUserContext userContext, ArchivedValuesExportFormatType formatType) {
         ArchivedValuesExporterBackingBean backingBean = new ArchivedValuesExporterBackingBean();
         backingBean.getFormat().setFormatType(formatType);
+        backingBean.getFormat().setDelimiter(",");
+        backingBean.getFormat().setDateTimeZoneFormat(ArchivedValuesExportTimeZoneFormat.LOCALTZ);
         List<String> generatePreview = exportReportGeneratorService.generatePreview(backingBean.getFormat(), userContext);
 
         model.addAttribute("backingBean", backingBean);
@@ -656,5 +659,7 @@ public class ArchivedValuesExporterController {
         model.addAttribute("missingAttribute", MissingAttribute.values());
         model.addAttribute("padSide", PadSide.values());
         model.addAttribute("roundingModes", YukonRoundingMode.values());
+        model.addAttribute("dateTimeZoneFormats", ArchivedValuesExportTimeZoneFormat.values());
+
     }
 }
