@@ -430,13 +430,13 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
 
         Meter newMeter = moveInResultObj.getNewMeter();
 
-        StoredDeviceGroup disconnectGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.DISCONNECTSTATUS);
+        StoredDeviceGroup disconnectGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.DISCONNECTED_STATUS);
         if (deviceGroupDao.isDeviceInGroup(disconnectGroup, newMeter)) {
             deviceGroupMemberEditorDao.removeDevices(disconnectGroup, newMeter);
             moveInResultObj.getDeviceGroupsRemoved().add(disconnectGroup);
         }
 
-        StoredDeviceGroup usageMonitoringGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.USAGEMONITORING);
+        StoredDeviceGroup usageMonitoringGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.USAGE_MONITORING);
         if (deviceGroupDao.isDeviceInGroup(usageMonitoringGroup, newMeter)) {
             deviceGroupMemberEditorDao.removeDevices(usageMonitoringGroup,
                                                      newMeter);
@@ -447,13 +447,13 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     private void addServiceDeviceGroups(MoveOutResult moveOutResultObj) {
         Meter oldMeter = moveOutResultObj.getPreviousMeter();
 
-        StoredDeviceGroup disconnectGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.DISCONNECTSTATUS);
+        StoredDeviceGroup disconnectGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.DISCONNECTED_STATUS);
         if (!deviceGroupDao.isDeviceInGroup(disconnectGroup, oldMeter)) {
             deviceGroupMemberEditorDao.addDevices(disconnectGroup, oldMeter);
             moveOutResultObj.getDeviceGroupsAdded().add(disconnectGroup);
         }
 
-        StoredDeviceGroup usageMonitoringGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.USAGEMONITORING);
+        StoredDeviceGroup usageMonitoringGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.USAGE_MONITORING);
         if (!deviceGroupDao.isDeviceInGroup(usageMonitoringGroup, oldMeter)) {
             deviceGroupMemberEditorDao.addDevices(usageMonitoringGroup,
                                                   oldMeter);

@@ -4,20 +4,27 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
+import com.cannontech.common.device.groups.editor.dao.impl.PartialDeviceGroup;
+import com.cannontech.common.device.groups.editor.dao.impl.PartialDeviceGroupRowMapper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -26,12 +33,56 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.google.common.collect.Iterables;
 
 public class DeviceGroupServiceImpl implements DeviceGroupService {
-    private DeviceGroupProviderDao deviceGroupDao;
+    
+    @Autowired private DeviceGroupProviderDao deviceGroupDao;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    
+    private Map<SystemGroupEnum, String> systemGroupPaths = new HashMap<>();
     private Logger log = YukonLogManager.getLogger(DeviceGroupServiceImpl.class);
+    
+    @PostConstruct
+    private void initialize() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select dg.*");
+        sql.append("from DeviceGroup dg");
+        sql.append("where dg.SystemGroupEnum is not null");
+        List<PartialDeviceGroup> groups = jdbcTemplate.query(sql, new PartialDeviceGroupRowMapper());
+        Map<Integer, PartialDeviceGroup> groupsById = new HashMap<>();
+
+        for (PartialDeviceGroup group : groups) {
+            groupsById.put(group.getStoredDeviceGroup().getId(), group);
+        }
+
+        for (PartialDeviceGroup group : groups) {
+            SystemGroupEnum systemGroupEnum = group.getStoredDeviceGroup().getSystemGroupEnum();
+            Integer parentProupId = group.getParentGroupId();
+            String path = group.getStoredDeviceGroup().getName() + "/";
+            while (parentProupId != null) {
+                PartialDeviceGroup parentGroup = groupsById.get(parentProupId);
+                parentProupId = parentGroup.getParentGroupId();
+                path = parentGroup.getStoredDeviceGroup().getName() + "/" + path;
+            }
+            log.info(systemGroupEnum + "=" + path.toString());
+            systemGroupPaths.put(systemGroupEnum, path);
+        }
+    }
+    
+    @Override
+    public String getFullPath(SystemGroupEnum systemGroupEnum) {
+        String fullPath = systemGroupPaths.get(systemGroupEnum);
+
+        if (fullPath == null) {
+            throw new NotFoundException("Full path was not found for SystemGroupEnum = " + systemGroupEnum);
+        }
+
+        return fullPath;
+    }
     
     @Override
     public SqlFragmentSource getDeviceGroupSqlWhereClause(Collection<? extends DeviceGroup> groups, String identifier) {
@@ -139,6 +190,12 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
     }
 
     @Override
+    public DeviceGroup resolveGroupName(SystemGroupEnum systemGroupEnum) {
+        String groupName = getFullPath(systemGroupEnum);
+        return resolveGroupName(groupName);
+    }
+    
+    @Override
     public DeviceGroup resolveGroupName(String groupName) {
         Validate.notNull(groupName, "groupName must not be null");
         Validate.isTrue(groupName.startsWith("/"), "Group name isn't valid, must start with '/': " + groupName);
@@ -152,6 +209,12 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
         List<String> names = new LinkedList<String>(Arrays.asList(strings));
         return getRelativeGroup(getRootGroup(), names);
 
+    }
+    
+    @Override
+    public DeviceGroup resolveGroupName(SystemGroupEnum systemGroupEnum, String groupName) {
+        String fullPath = getFullPath(systemGroupEnum) + groupName;
+        return resolveGroupName(fullPath);
     }
     
     @Override
@@ -200,10 +263,5 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
     @Override
     public DeviceGroup getRootGroup() {
         return deviceGroupDao.getRootGroup();
-    }
-    
-    @Required
-    public void setDeviceGroupDao(DeviceGroupProviderDao deviceGroupDao) {
-        this.deviceGroupDao = deviceGroupDao;
     }
 }

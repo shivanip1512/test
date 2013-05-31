@@ -4,11 +4,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.Instant;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.database.SqlUtils;
 
@@ -49,6 +51,11 @@ public class PartialDeviceGroupRowMapper implements ParameterizedRowMapper<Parti
         
         Timestamp date = rs.getTimestamp("createddate");
         group.setCreatedDate(new Instant(date));
+        
+        String systemGroupEnum = rs.getString("SystemGroupEnum");
+        if(StringUtils.isNotEmpty(systemGroupEnum)){
+            group.setSystemGroupEnum(SystemGroupEnum.valueOf(systemGroupEnum));
+        }
         
         return partialDeviceGroup;
     }

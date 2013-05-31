@@ -10,11 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
@@ -28,6 +31,7 @@ import com.cannontech.tools.bulk.service.MissListConverterService;
 
 public class MissListConverterServiceImpl implements MissListConverterService {
 
+    @Autowired private DeviceGroupService deviceGroupService;
 	public void convert(File missListFile, File bulkImporterFile,
 			String routeName, boolean importFlag) {
 
@@ -155,21 +159,24 @@ public class MissListConverterServiceImpl implements MissListConverterService {
             LiteDeviceMeterNumber liteDeviceMeterNumber = deviceDao.getLiteDeviceMeterNumber(liteYukonPAObject.getLiteID());
 			if (liteDeviceMeterNumber != null) {
 				tempData.setMeterNumber(liteDeviceMeterNumber.getMeterNumber());
+                String alternatePath = deviceGroupService.getFullPath(SystemGroupEnum.ALTERNATE);
+                String billingPath = deviceGroupService.getFullPath(SystemGroupEnum.BILLING);
+                String collectionPath = deviceGroupService.getFullPath(SystemGroupEnum.COLLECTION);
 				for (StoredDeviceGroup group : deviceGroups) {
-                    if(group.getFullName().contains(SystemGroupEnum.ALTERNATE.getFullPath())){
-                        String groupName = group.getFullName().replace(SystemGroupEnum.ALTERNATE.getFullPath(), "");
+                    if(group.getFullName().contains(alternatePath)){
+                        String groupName = group.getFullName().replace(alternatePath, "");
                         tempData.setAltGrp(groupName);
                         continue;
                     }
                     
-                    if(group.getFullName().contains(SystemGroupEnum.BILLING.getFullPath())){
-                        String groupName = group.getFullName().replace(SystemGroupEnum.BILLING.getFullPath(), "");
+                    if(group.getFullName().contains(billingPath)){
+                        String groupName = group.getFullName().replace(billingPath, "");
                         tempData.setBillingGroup(groupName);
                         continue;
                     }
                     
-                    if(group.getFullName().contains(SystemGroupEnum.COLLECTION.getFullPath())){
-                        String groupName = group.getFullName().replace(SystemGroupEnum.COLLECTION.getFullPath(), "");
+                    if(group.getFullName().contains(collectionPath)){
+                        String groupName = group.getFullName().replace(collectionPath, "");
                         tempData.setCollectionGrp(groupName);
                         continue;
                     }

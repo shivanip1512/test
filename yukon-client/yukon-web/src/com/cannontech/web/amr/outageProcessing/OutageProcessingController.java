@@ -31,6 +31,7 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -53,6 +54,7 @@ public class OutageProcessingController extends MultiActionController {
 	private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
 	private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
 	private AlertService alertService;
+	@Autowired private DeviceGroupService deviceGroupService;
 	
 	private ListMultimap<Integer, String> monitorToRecentReadKeysCache = ArrayListMultimap.create();
 	
@@ -82,7 +84,7 @@ public class OutageProcessingController extends MultiActionController {
 		mav.addObject("readResults", readResults);
 		
 		mav.addObject("outageMonitor", outageMonitor);
-		mav.addObject("outageGroupBase", SystemGroupEnum.OUTAGE_PROCESSING.getFullPath());
+		mav.addObject("outageGroupBase", deviceGroupService.getFullPath(SystemGroupEnum.OUTAGE));
 		mav.addObject("reportStartDate", DateUtils.addMonths(new Date(), -1));
 		
 		return mav;

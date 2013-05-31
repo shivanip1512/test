@@ -28,10 +28,9 @@ public class ViolationsCountOutageProcessingUpdaterHandler implements OutageProc
 		
 		try {
 			
-			OutageMonitor outageMonitor = outageMonitorDao.getById(outageMonitorId);
-			String outageGroupName = SystemGroupEnum.OUTAGE_PROCESSING.getFullPath() + outageMonitor.getOutageMonitorName();
+			OutageMonitor outageMonitor = outageMonitorDao.getById(outageMonitorId);			
+			StoredDeviceGroup outageGroup = deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.OUTAGE, outageMonitor.getOutageMonitorName(), false);
 			
-			StoredDeviceGroup outageGroup = deviceGroupEditorDao.getStoredGroup(outageGroupName, false);
 			int deviceCount = deviceGroupService.getDeviceCount(Collections.singletonList(outageGroup));
 			countStr = String.valueOf(deviceCount);
 			

@@ -632,7 +632,7 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
             /* If they didn't pick anything to filter on, assume all devices. */
             /* Use contents of SystemGroupEnum.DEVICETYPES. */
             DeviceGroupEditorDao deviceGroupEditorDao = YukonSpringHook.getBean("deviceGroupEditorDao", DeviceGroupEditorDao.class);
-            DeviceGroup group = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.DEVICETYPES);
+            DeviceGroup group = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.DEVICE_TYPES);
             return Lists.newArrayList(deviceGroupService.getDevices(Collections.singletonList(group)));
         }
     }

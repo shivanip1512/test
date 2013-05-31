@@ -1,53 +1,51 @@
 package com.cannontech.common.device.groups.editor.dao;
 
 public enum SystemGroupEnum {
-    ROOT("/"),
-    METERS("/Meters/"), 
-    BILLING("/Meters/Billing/"), 
-    COLLECTION("/Meters/Collection/"), 
-    ALTERNATE("/Meters/Alternate/"), 
-    FLAGS("/Meters/Flags/"), 
-    INVENTORY("/Meters/Flags/Inventory/"), 
-    DISCONNECTSTATUS("/Meters/Flags/DisconnectedStatus/"), 
-    USAGEMONITORING("/Meters/Flags/UsageMonitoring/"),
-    SYSTEM("/System/"),
-    ATTRIBUTES_EXISTING("/System/Attributes/Existing"),
-    ATTRIBUTES_SUPPORTED("/System/Attributes/Supported"),
-    DEVICETYPES("/System/Device Types/"),
-    DEVICECONFIGS("/System/Meters/Device Configs/"),
-    ROUTES("/System/Routes/"),
-    SCANNINGMETERS("/System/Meters/Scanning/"),
-    TEMPORARYGROUPS("/System/Temporary/"),
-    AUTO("/System/Auto/"),
-    SYSTEMMETERS("/System/Meters/"),
-    SYSTEMMETERSDISABLED("/System/Meters/Disabled/"),
-    DEVICETAGS("/System/Device Tags/"),
-    MONITORS("/Monitors/"),
-    OUTAGE_PROCESSING("/Monitors/Outage/"),
-    DEVICE_DATA_MONITOR_PROCESSING("/Monitors/DeviceData/"),
-    TAMPER_FLAG_PROCESSING("/Monitors/Tamper Flag/"),
-    SYSTEMMETERS_DISCONNECT("/System/Meters/Disconnect/"),
-    SUBSTATION_NAME("/Meters/CIS Substation/"),
-    SUBSTATIONS("/System/Substations/"),
-    PHASE_DETECT_LAST_RESULTS_A("/System/Meters/Phase Detect/Last Results/A"),
-    PHASE_DETECT_LAST_RESULTS_B("/System/Meters/Phase Detect/Last Results/B"),
-    PHASE_DETECT_LAST_RESULTS_C("/System/Meters/Phase Detect/Last Results/C"),
-    PHASE_DETECT_LAST_RESULTS_AB("/System/Meters/Phase Detect/Last Results/AB"),
-    PHASE_DETECT_LAST_RESULTS_AC("/System/Meters/Phase Detect/Last Results/AC"),
-    PHASE_DETECT_LAST_RESULTS_BC("/System/Meters/Phase Detect/Last Results/BC"),
-    PHASE_DETECT_LAST_RESULTS_ABC("/System/Meters/Phase Detect/Last Results/ABC"),
-    PHASE_DETECT_LAST_RESULTS_UNKNOWN("/System/Meters/Phase Detect/Last Results/UNKNOWN"),
-    ;
-
-    private String fullPath;
-
-    SystemGroupEnum(String fullPath) {
-        this.fullPath = fullPath;
-    }
-
     
-    public String getFullPath() {
-        return this.fullPath;
-    }
-
+    ROOT,
+    METERS, 
+    BILLING, 
+    COLLECTION, 
+    ALTERNATE, 
+    FLAGS, 
+    INVENTORY, 
+    DISCONNECTED_STATUS, 
+    USAGE_MONITORING,
+    SYSTEM,
+    ROUTES,
+    DEVICE_TYPES,
+    SYSTEM_METERS,
+    SCANNING,
+    LOAD_PROFILE,
+    VOLTAGE_PROFILE,
+    INTEGRITY,
+    ACCUMULATOR,
+    TEMPORARY,
+    DISABLED,
+    DISCONNECT,
+    COLLARS,
+    CIS_SUBSTATION,
+    SUBSTATIONS,
+    ATTRIBUTES,
+    SUPPORTED,
+    EXISTING,
+    DEVICE_CONFIGS,
+    AUTO,
+    MONITORS,
+    OUTAGE,
+    DEVICE_DATA,
+    TAMPER_FLAG,
+    PHASE_DETECT,
+    LAST_RESULTS,
+    A,
+    B,
+    C,
+    AB,
+    AC,
+    BC,
+    ABC,
+    UNKNOWN,
+    ;
 }
+
+

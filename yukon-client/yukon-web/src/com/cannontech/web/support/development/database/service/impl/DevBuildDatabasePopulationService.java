@@ -14,6 +14,7 @@ import org.joda.time.Period;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.TimeUtil;
@@ -33,8 +34,8 @@ public class DevBuildDatabasePopulationService {
     private static DevDatabasePopulationService devDatabasePopulationService;
     private static BulkPointDataInjectionService bulkPointDataInjectionService;
     private static RfnEventTestingService rfnEventTestingService;
+    private static DeviceGroupService deviceGroupService;
     
-    private final static String DEFAULT_WATER_NODE_DEVICE_GROUP = SystemGroupEnum.DEVICETYPES.getFullPath() + PaoType.RFWMETER.getPaoTypeName();
     private final static int RFN_SERIAL_FROM = 1000;
     private final static int RFN_SERIAL_TO = 1015;
     private final static int RFN_NUM_DAYS_BEFORE_NOW_EVENTS_SHOULD_START = 10;
@@ -45,12 +46,13 @@ public class DevBuildDatabasePopulationService {
             devDatabasePopulationService = YukonSpringHook.getBean(DevDatabasePopulationService.class);
             bulkPointDataInjectionService = YukonSpringHook.getBean(BulkPointDataInjectionService.class);
             rfnEventTestingService = YukonSpringHook.getBean(RfnEventTestingService.class);
-
+            deviceGroupService = YukonSpringHook.getBean(DeviceGroupService.class);
+            String groupName = deviceGroupService.getFullPath(SystemGroupEnum.DEVICE_TYPES)+ PaoType.RFWMETER.getPaoTypeName();
             insertInitialDatabaseData();
             insertRfnMetersAndEvents();
 
             insertMeterUsagePointData();
-            insertWaterUsagePointData();
+            insertWaterUsagePointData(groupName);
         } catch (Exception e) {
             log.error("An Exception was thrown during database population. Database population may not have successfully finished. ", e);
             System.exit(1);
@@ -129,10 +131,10 @@ public class DevBuildDatabasePopulationService {
      * Inserts water usage point data in a way that indicates a water leak
      * (for testing the Water Leak Report)
      */
-    private static void insertWaterUsagePointData() {
+    private static void insertWaterUsagePointData(String groupName) {
         BulkFakePointInjectionDto bulkInjection = new BulkFakePointInjectionDto();
         bulkInjection.setAttribute(BuiltInAttribute.USAGE_WATER);
-        bulkInjection.setGroupName(DEFAULT_WATER_NODE_DEVICE_GROUP);
+        bulkInjection.setGroupName(groupName);
         bulkInjection.setIncremental(true);
         bulkInjection.setValueLow(1.123);
         bulkInjection.setValueHigh(3.456);

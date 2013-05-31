@@ -32,7 +32,7 @@ public class TemporaryDeviceGroupServiceImpl implements TemporaryDeviceGroupServ
     @Override
     public StoredDeviceGroup createTempGroup() {
         String groupName = UUID.randomUUID().toString();
-        StoredDeviceGroup temporaryParent = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.TEMPORARYGROUPS);
+        StoredDeviceGroup temporaryParent = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.TEMPORARY);
         final StoredDeviceGroup group = deviceGroupEditorDao.addGroup(temporaryParent, 
                                                                       DeviceGroupType.STATIC, 
                                                                       groupName, 
@@ -61,7 +61,7 @@ public class TemporaryDeviceGroupServiceImpl implements TemporaryDeviceGroupServ
         
         int groupsDeleted = 0;
         
-        StoredDeviceGroup parentGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.TEMPORARYGROUPS);
+        StoredDeviceGroup parentGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.TEMPORARY);
         List<StoredDeviceGroup> childGroups = deviceGroupEditorDao.getChildGroups(parentGroup);
         for (StoredDeviceGroup childGroup : childGroups) {
             if(childGroup.getCreatedDate().isBefore(earliestDate)){

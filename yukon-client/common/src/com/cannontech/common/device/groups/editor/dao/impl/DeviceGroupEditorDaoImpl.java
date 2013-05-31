@@ -29,6 +29,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.device.groups.util.YukonPaoToIdMapper;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -64,6 +65,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private DeviceGroupService deviceGroupService;
     
     private StoredDeviceGroup rootGroupCache = null;
     
@@ -335,8 +337,8 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
                 
                 String fullName = parent.getFullName()+"/"+groupName;
                 
-                // throw special exception if the grup is child of Hidden group (temp group)
-                if ((parent.getFullName() + "/").equals(SystemGroupEnum.TEMPORARYGROUPS.getFullPath())) {
+                // throw special exception if the group is child of Hidden group (temp group)
+                if (parent.getParent().isHidden()) {
                     throw new TemporaryDeviceGroupNotFoundException("Group \"" + fullName + "\" could not be found");
                 }
                 
@@ -579,6 +581,16 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         List<String> names = Arrays.asList(strings);
         return getOrCreateGroup(names, create);
     }
+    
+    @Override
+    @Transactional(propagation=Propagation.REQUIRED)
+    public StoredDeviceGroup getStoredGroup(SystemGroupEnum systemGroupEnum, String groupName, boolean create) throws NotFoundException {
+        
+        String basePath = deviceGroupService.getFullPath(systemGroupEnum);
+        String fullName = basePath + groupName;
+        return getStoredGroup(fullName, create);
+    }
+
 
     private StoredDeviceGroup getOrCreateGroup(List<String> names, boolean create) throws NotFoundException {
         if (names.isEmpty()) {
@@ -605,11 +617,11 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     @Override
     @Transactional(propagation=Propagation.REQUIRED)
     public StoredDeviceGroup getSystemGroup(SystemGroupEnum systemGroupEnum) throws NotFoundException {
-        String groupName = systemGroupEnum.getFullPath();
+        String groupName = deviceGroupService.getFullPath(systemGroupEnum);
         StoredDeviceGroup storedGroup = getStoredGroup(groupName, true);
         return storedGroup;
     }
-
+    
     private StoredDeviceGroup queryForDeviceGroup(String sql, Object... arguments) {
         PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
         PartialDeviceGroup group = jdbcTemplate.queryForObject(sql.toString(), mapper, arguments);
@@ -636,7 +648,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         
         return sql.toString();
     }
-
+    
     @Required
     public void setJdbcTemplate(YukonJdbcOperations jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;

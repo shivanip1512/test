@@ -191,10 +191,7 @@
         <property name="groupCommandExecutor" ref="groupCommandExecutor" />
     </bean>
     
-    <bean id="deviceGroupService"
-        class="com.cannontech.common.device.groups.service.impl.DeviceGroupServiceImpl">
-        <property name="deviceGroupDao" ref="deviceGroupDao"/>
-    </bean>
+    <bean id="deviceGroupService" class="com.cannontech.common.device.groups.service.impl.DeviceGroupServiceImpl"/>
     
     <bean id="deviceGroupUiService" class="com.cannontech.common.device.groups.service.impl.DeviceGroupUiServiceImpl">
     </bean>

@@ -20,16 +20,14 @@ import com.cannontech.core.dao.OutageMonitorNotFoundException;
 
 public class OutageMonitorServiceImpl implements OutageMonitorService {
 
-	private OutageMonitorDao outageMonitorDao;
-	private DeviceGroupEditorDao deviceGroupEditorDao;
+    @Autowired private OutageMonitorDao outageMonitorDao;
+    @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
 	private Logger log = YukonLogManager.getLogger(OutageMonitorServiceImpl.class);
 	
 	@Override
 	public StoredDeviceGroup getOutageGroup(String name) {
-		
-		String outageGroupName = SystemGroupEnum.OUTAGE_PROCESSING.getFullPath() + name;
-		StoredDeviceGroup outageGroup = deviceGroupEditorDao.getStoredGroup(outageGroupName, true);
-		
+	    
+        StoredDeviceGroup outageGroup = deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.OUTAGE, name, true);
 		return outageGroup;
 	}
 	
@@ -76,15 +74,5 @@ public class OutageMonitorServiceImpl implements OutageMonitorService {
 		log.debug("Updated outageMonitor evaluator status: status=" + newEvaluatorStatus + ", outageMonitor=" + outageMonitor.toString());
 		
 		return newEvaluatorStatus;
-	}
-	
-	@Autowired
-	public void setOutageMonitorDao(OutageMonitorDao outageMonitorDao) {
-		this.outageMonitorDao = outageMonitorDao;
-	}
-	
-	@Autowired
-	public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
-		this.deviceGroupEditorDao = deviceGroupEditorDao;
 	}
 }

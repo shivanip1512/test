@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
-import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.LazyLinkedHashMap;
@@ -22,7 +22,7 @@ public class PorterResponseMonitorDto {
     private static final AtomicInteger nextKey = new AtomicInteger();
 
     public PorterResponseMonitorDto() {
-        groupName = SystemGroupEnum.ROOT.getFullPath();
+        groupName = DeviceGroupService.ROOT;
         attribute = BuiltInAttribute.OUTAGE_STATUS;
         evaluatorStatus = MonitorEvaluatorStatus.ENABLED;
     }

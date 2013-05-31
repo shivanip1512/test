@@ -48,6 +48,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
@@ -335,8 +336,9 @@ public class DeviceDataMonitorController {
             monitoringCount = deviceGroupService.getDeviceCount(Collections.singleton(monitoringGroup));
         }
         model.addAttribute("monitoringCount", monitoringCount);
-        
-        StoredDeviceGroup violationsDeviceGroup = deviceGroupEditorDao.getStoredGroup(monitor.getViolationsDeviceGroupPath(), true);
+        model.addAttribute("violationsDeviceGroupPath", deviceGroupService.getFullPath(SystemGroupEnum.DEVICE_DATA)
+                                                        + monitor.getViolationsDeviceGroupName());
+        StoredDeviceGroup violationsDeviceGroup = deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.DEVICE_DATA, monitor.getViolationsDeviceGroupName(), true);
         model.addAttribute("violationsDeviceGroup", violationsDeviceGroup);
 
         boolean areViolationsBeingCalculated = false;

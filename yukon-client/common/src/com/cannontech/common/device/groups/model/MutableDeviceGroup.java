@@ -4,6 +4,7 @@ import org.apache.commons.lang.Validate;
 import org.joda.time.Instant;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 
 /**
  * This is meant as a base class for a groups that are "mutable".
@@ -17,6 +18,7 @@ public abstract class MutableDeviceGroup extends DeviceGroup {
     private DeviceGroup parent;
     private DeviceGroupType type;
     private Instant createdDate;
+    private SystemGroupEnum systemGroupEnum;
     
     public MutableDeviceGroup(MutableDeviceGroup group) {
         this.name = group.name;
@@ -68,5 +70,14 @@ public abstract class MutableDeviceGroup extends DeviceGroup {
 
     public Instant getCreatedDate() {
         return createdDate;
+    }
+    
+    @Override
+    public SystemGroupEnum getSystemGroupEnum() {
+        return systemGroupEnum;
+    }
+
+    public void setSystemGroupEnum(SystemGroupEnum systemGroupEnum1) {
+        this.systemGroupEnum = systemGroupEnum1;
     }
 }

@@ -26,20 +26,20 @@ span.dynatree-icon { background-image:url("tree/folder.gif"); background-positio
 .INVENTORY span.dynatree-icon { background-image: url("tree/folder_deviceGroupMetersFlagsInventory.gif"); }
 
 /* Meters/Flags/DisconnectStatus */
-.dynatree-expanded.DISCONNECTSTATUS span.dynatree-icon { background-image: url("tree/folder-open_deviceGroupMetersFlagsDisconnectStatus.gif"); }
-.DISCONNECTSTATUS span.dynatree-icon { background-image: url("tree/folder_deviceGroupMetersFlagsDisconnectStatus.gif"); }
+.dynatree-expanded.DISCONNECTED_STATUS span.dynatree-icon { background-image: url("tree/folder-open_deviceGroupMetersFlagsDisconnectStatus.gif"); }
+.DISCONNECTED_STATUS span.dynatree-icon { background-image: url("tree/folder_deviceGroupMetersFlagsDisconnectStatus.gif"); }
 
 /* Meters/Flags/Usage Monitoring */
-.dynatree-expanded.USAGEMONITORING span.dynatree-icon { background-image: url("tree/folder-open_deviceGroupMetersFlagsUsageMonitoring.gif"); }
-.USAGEMONITORING span.dynatree-icon { background-image: url("tree/folder_deviceGroupMetersFlagsUsageMonitoring.gif"); }
+.dynatree-expanded.USAGE_MONITORING span.dynatree-icon { background-image: url("tree/folder-open_deviceGroupMetersFlagsUsageMonitoring.gif"); }
+.USAGE_MONITORING span.dynatree-icon { background-image: url("tree/folder_deviceGroupMetersFlagsUsageMonitoring.gif"); }
 
 /* System */
 .dynatree-expanded.SYSTEM span.dynatree-icon { background-image: url("tree/folder-open_deviceGroupSystem.gif"); }
 .SYSTEM span.dynatree-icon { background-image: url("tree/folder_deviceGroupSystem.gif"); }
 
 /* Device Types */
-.dynatree-expanded.DEVICETYPES span.dynatree-icon { background-image: url("tree/folder-open_deviceGroupDeviceTypes.gif"); }
-.DEVICETYPES span.dynatree-icon { background-image: url("tree/folder_deviceGroupDeviceTypes.gif"); }
+.dynatree-expanded.DEVICE_TYPES span.dynatree-icon { background-image: url("tree/folder-open_deviceGroupDeviceTypes.gif"); }
+.DEVICE_TYPES span.dynatree-icon { background-image: url("tree/folder_deviceGroupDeviceTypes.gif"); }
 
 /* Routes */
 .dynatree-expanded.ROUTES span.dynatree-icon { background-image: url("tree/folder-open_deviceGroupRoutes.gif"); }
@@ -50,17 +50,17 @@ span.dynatree-icon { background-image:url("tree/folder.gif"); background-positio
 .DEVICETAGS span.dynatree-icon { background-image: url("tree/folder_deviceGroupTags.gif"); }
 
 /* Scanning Meters */
-.dynatree-expanded.SCANNINGMETERS span.dynatree-icon { background-image: url("tree/folder-open_deviceGroupScanningMeters.gif"); }
-.SCANNINGMETERS span.dynatree-icon { background-image: url("tree/folder_deviceGroupScanningMeters.gif"); }
+.dynatree-expanded.SCANNING span.dynatree-icon { background-image: url("tree/folder-open_deviceGroupScanningMeters.gif"); }
+.SCANNING span.dynatree-icon { background-image: url("tree/folder_deviceGroupScanningMeters.gif"); }
 
 /* System Meters */
-.dynatree-expanded.SYSTEMMETERS span.dynatree-icon { background-image: url("tree/folder-open_deviceGroupMeters.gif"); }
-.SYSTEMMETERS span.dynatree-icon { background-image: url("tree/folder_deviceGroupMeters.gif"); }
+.dynatree-expanded.SYSTEM_METERS span.dynatree-icon { background-image: url("tree/folder-open_deviceGroupMeters.gif"); }
+.SYSTEM_METERS span.dynatree-icon { background-image: url("tree/folder_deviceGroupMeters.gif"); }
     
 /* System Disabled Meters */
-.dynatree-expanded.SYSTEMMETERSDISABLED span.dynatree-icon { background-image: url("tree/folder-open_deviceGroupDisabled.gif"); }
-.SYSTEMMETERSDISABLED span.dynatree-icon { background-image: url("tree/folder_deviceGroupDisabled.gif"); }
+.dynatree-expanded.DISABLED span.dynatree-icon { background-image: url("tree/folder-open_deviceGroupDisabled.gif"); }
+.DISABLED span.dynatree-icon { background-image: url("tree/folder_deviceGroupDisabled.gif"); }
 
 /* Device Config */
-.dynatree-expanded.DEVICECONFIGS span.dynatree-icon { background-image: url("tree/folder-open_deviceConfigs.gif"); }
-.DEVICECONFIGS span.dynatree-icon { background-image: url("tree/folder_deviceConfigs.gif"); }
+.dynatree-expanded.DEVICE_CONFIGS span.dynatree-icon { background-image: url("tree/folder-open_deviceConfigs.gif"); }
+.DEVICE_CONFIGS span.dynatree-icon { background-image: url("tree/folder_deviceConfigs.gif"); }

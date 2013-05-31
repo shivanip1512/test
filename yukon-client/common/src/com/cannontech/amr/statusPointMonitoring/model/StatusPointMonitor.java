@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.amr.monitors.PointMonitor;
-import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.LazyList;
@@ -21,7 +21,7 @@ public class StatusPointMonitor implements PointMonitor, Comparable<StatusPointM
 	private List<StatusPointMonitorProcessor> processors = LazyList.ofInstance(StatusPointMonitorProcessor.class);
 	
 	public StatusPointMonitor() {
-	    setGroupName(SystemGroupEnum.ROOT.getFullPath());
+	    setGroupName(DeviceGroupService.ROOT);
         setAttribute(BuiltInAttribute.FAULT_STATUS);
         setEvaluatorStatus(MonitorEvaluatorStatus.ENABLED);
 	}

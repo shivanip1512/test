@@ -106,10 +106,25 @@ public interface DeviceGroupEditorDao {
     /**
      * This method will return the StoredDeviceGroup for a SystemGroupEnum.
      * If only a DeviceGroup is needed, simply call 
-     *   DeviceGroupService.resolveGroupName(systemGroupEnum.getFullPath())
+     *  DeviceGroupService.resolveGroupName(SystemGroupEnum systemGroupEnum);
      * as that method uses a cache and this will hit the database every time.
      * @param systemGroupEnum
      * @return
      */
     public StoredDeviceGroup getSystemGroup(SystemGroupEnum systemGroupEnum) throws NotFoundException;
+
+    /**
+     * This method will return the StoredDeviceGroup for a SystemGroupEnum and groupName.
+     * 
+     * Example:
+     * SystemGroupEnum = METERS
+     * GroupName = My Meters
+     * This method will find the full path = /Meters/My Meters and use that path to get StoredDeviceGroup
+     * 
+     * If only a DeviceGroup is needed, simply call 
+     *  DeviceGroupService.resolveGroupName(SystemGroupEnum systemGroupEnum, String groupName)
+     * as that method uses a cache and this will hit the database every time.
+     */
+    public StoredDeviceGroup getStoredGroup(SystemGroupEnum systemGroupEnum, String groupName, boolean create)
+            throws NotFoundException;
 }

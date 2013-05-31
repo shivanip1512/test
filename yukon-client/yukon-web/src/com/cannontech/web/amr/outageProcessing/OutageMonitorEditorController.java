@@ -24,6 +24,7 @@ import com.cannontech.common.device.commands.RetryStrategy;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -47,6 +48,7 @@ public class OutageMonitorEditorController extends MultiActionController {
 	private OutageMonitorService outageMonitorService;
 	private CronExpressionTagService cronExpressionTagService;
 	private RolePropertyDao rolePropertyDao;
+	@Autowired private DeviceGroupService deviceGroupService;
 	
 	private static final String CRON_TAG_ID = "outageMonitor";
 	private static final Attribute BLINK_COUNT_ATTRIBUTE = BuiltInAttribute.BLINK_COUNT;
@@ -108,7 +110,8 @@ public class OutageMonitorEditorController extends MultiActionController {
         mav.addObject("scheduleGroupCommand", scheduleGroupCommand);
         mav.addObject("scheduleName", scheduleName);
         
-        mav.addObject("outageGroupBase", SystemGroupEnum.OUTAGE_PROCESSING.getFullPath());
+        String basePath = deviceGroupService.getFullPath(SystemGroupEnum.OUTAGE);
+        mav.addObject("outageGroupBase", basePath);
         mav.addObject("outageMonitor", outageMonitor);
         
         // cron tag setup
@@ -217,13 +220,11 @@ public class OutageMonitorEditorController extends MultiActionController {
         		String currentProcessorName = outageMonitor.getOutageMonitorName();
         		if (!currentProcessorName.equals(name)) {
         			
-        			String newOutageGroupName = SystemGroupEnum.OUTAGE_PROCESSING.getFullPath() + name;
-        			
         			// try to retrieve group by new name (possible it could exist)
         			// if does not exist, get old group, give it new name
         			try {
         				
-        				deviceGroupEditorDao.getStoredGroup(newOutageGroupName, false);
+        				deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.OUTAGE, name, false);
         				
         			} catch (NotFoundException e) {
 						

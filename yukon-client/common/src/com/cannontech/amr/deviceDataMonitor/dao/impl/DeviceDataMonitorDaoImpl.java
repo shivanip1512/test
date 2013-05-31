@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import com.cannontech.amr.deviceDataMonitor.dao.DeviceDataMonitorDao;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
@@ -151,23 +150,11 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
         DeviceDataMonitor monitor = getMonitorById(monitorId);
         
         /* remove the violation device group */
-        DeviceGroup monitorViolationGroup = deviceGroupService.resolveGroupName(monitor.getViolationsDeviceGroupPath());
+        DeviceGroup monitorViolationGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.DEVICE_DATA, monitor.getViolationsDeviceGroupName());
         StoredDeviceGroup monitorViolationStoredGroup = deviceGroupEditorDao.getStoredGroup(monitorViolationGroup);
         deviceGroupEditorDao.removeGroup(monitorViolationStoredGroup);
-        log.info("Deleted device data monitor violations group: " + monitor.getViolationsDeviceGroupPath());
+        log.info("Deleted device data monitor violations group: " + monitorViolationStoredGroup.getFullName());
         
-        /* check to see if we need to remove the monitor parent group */
-        /* get /Meters/Monitors/ group */
-        DeviceGroup deviceDataMonitorGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.DEVICE_DATA_MONITOR_PROCESSING.getFullPath());
-        StoredDeviceGroup deviceDataMonitorStoredGroup = deviceGroupEditorDao.getStoredGroup(deviceDataMonitorGroup);
-        
-        /* get /Meters/Monitors/DeviceData/ group */
-        List<StoredDeviceGroup> childGroups = deviceGroupEditorDao.getChildGroups(deviceDataMonitorStoredGroup);
-        if (CollectionUtils.isEmpty(childGroups)) {
-            /* remove this parent monitor group if there are no longer any monitors */
-            deviceGroupEditorDao.removeGroup(deviceDataMonitorStoredGroup);
-        }
-
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM DeviceDataMonitor");
         sql.append("WHERE MonitorId").eq(monitorId);

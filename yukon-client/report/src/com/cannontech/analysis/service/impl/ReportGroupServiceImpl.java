@@ -32,7 +32,7 @@ public class ReportGroupServiceImpl implements ReportGroupService {
 
     @Override
     public SimpleReportGroup getSimpleGroupMembership(SystemGroupEnum systemGroupEnum, SimpleDevice device) {
-        DeviceGroup storedDeviceGroup = deviceGroupService.resolveGroupName(systemGroupEnum.getFullPath());
+        DeviceGroup storedDeviceGroup = deviceGroupService.resolveGroupName(systemGroupEnum);
         return getSimpleGroupMembership(storedDeviceGroup, device);
     }
     

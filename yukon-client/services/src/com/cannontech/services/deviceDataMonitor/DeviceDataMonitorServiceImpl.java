@@ -126,7 +126,8 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
             @Override
             public void eventReceived(DatabaseChangeEvent event) {
                 StoredDeviceGroup deviceGroupWithModifiedDevices = deviceGroupEditorDao.getGroupById(event.getPrimaryKey());
-                if (deviceGroupWithModifiedDevices.getFullName().contains(SystemGroupEnum.DEVICE_DATA_MONITOR_PROCESSING.getFullPath())) {
+                String basePath = deviceGroupService.getFullPath(SystemGroupEnum.DEVICE_DATA);
+                if (deviceGroupWithModifiedDevices.getFullName().contains(basePath)) {
                     // don't trigger violation count updates based on devices in the Device Data Monitor groups
                     return;
                 }
@@ -187,7 +188,7 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
     
     @Override
     public boolean shouldUpdateViolationsGroupNameBeforeSave(DeviceDataMonitor updatedMonitor, DeviceDataMonitor existingMonitor) {
-        return !existingMonitor.getViolationsDeviceGroupPath().equals(updatedMonitor.getViolationsDeviceGroupPath());
+        return !existingMonitor.getViolationsDeviceGroupName().equals(updatedMonitor.getViolationsDeviceGroupName());
     }
 
     @Override
@@ -220,7 +221,7 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
     @Override
     public int getMonitorViolationCountById(int monitorId) {
         DeviceDataMonitor monitor = deviceDataMonitorDao.getMonitorById(monitorId);
-        StoredDeviceGroup violationsGroup = deviceGroupEditorDao.getStoredGroup(monitor.getViolationsDeviceGroupPath(), false);
+        StoredDeviceGroup violationsGroup = deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.DEVICE_DATA, monitor.getViolationsDeviceGroupName(), false);
         int violationsCount = deviceGroupService.getDeviceCount(Collections.singleton(violationsGroup));
         return violationsCount;
     }
@@ -277,26 +278,28 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
      * @throws InterruptedException 
      */
     private void recalculateViolatingPaosForMonitorBeforeSave(DeviceDataMonitorMessage message) throws InterruptedException {
+       
+        String basePath = deviceGroupService.getFullPath(SystemGroupEnum.DEVICE_DATA);
         DeviceDataMonitor updatedMonitor = message.getUpdatedMonitor();
         DeviceDataMonitor existingMonitor = message.getOldMonitor();
 
         // rename or create device groups if need be
         if (existingMonitor == null) {
-            deviceGroupEditorDao.getStoredGroup(updatedMonitor.getViolationsDeviceGroupPath(), true);
-            log.info("Created new device group for Device Data Monitor: " + updatedMonitor.getViolationsDeviceGroupPath());
+            deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.DEVICE_DATA, updatedMonitor.getViolationsDeviceGroupName(), true);
+            log.info("Created new device group for Device Data Monitor: " + basePath + updatedMonitor.getViolationsDeviceGroupName());
 
         } else {
             if (shouldUpdateViolationsGroupNameBeforeSave(updatedMonitor, existingMonitor)) {
                 // get existing /Monitors/DeviceData/_monitor_name group
-                DeviceGroup existingViolationGroup = deviceGroupService.resolveGroupName(existingMonitor.getViolationsDeviceGroupPath());
+                DeviceGroup existingViolationGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.DEVICE_DATA, updatedMonitor.getViolationsDeviceGroupName());
                 StoredDeviceGroup existingViolationStoredGroup = deviceGroupEditorDao.getStoredGroup(existingViolationGroup);
                 
                 // update it's name, then save it
                 existingViolationStoredGroup.setName(updatedMonitor.getViolationsDeviceGroupName());
                 deviceGroupEditorDao.updateGroup(existingViolationStoredGroup);
-                log.info("Updated existing device group (" + existingMonitor.getViolationsDeviceGroupPath() + ") for Device Data Monitor to: " + updatedMonitor.getViolationsDeviceGroupPath());
+                log.info("Updated existing device group (" +  basePath + existingMonitor.getViolationsDeviceGroupName() + ") for Device Data Monitor to: " + basePath + updatedMonitor.getViolationsDeviceGroupName());
             } else {
-                log.debug("No updates needed to Device Data Monitor device group: " + existingMonitor.getViolationsDeviceGroupPath());
+                log.debug("No updates needed to Device Data Monitor device group: " + basePath + existingMonitor.getViolationsDeviceGroupName());
             }
         }
 
@@ -428,10 +431,10 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
      * Adds a Set of violating PaoIdentifiers to our monitor's violation device group (something similar
      * to /Meters/Monitors/DeviceData/_monitor_name. See DeviceDataMonitor.getViolationsDeviceGroupPath)
      */
-    private void addMonitorViolatingPaos(DeviceDataMonitor monitor, Set<PaoIdentifier> paosInViolation) {
+    private void addMonitorViolatingPaos(DeviceDataMonitor monitor, Set<PaoIdentifier> paosInViolation) {;
         StoredDeviceGroup violationsGroup;
         try {
-            violationsGroup = deviceGroupEditorDao.getStoredGroup(monitor.getViolationsDeviceGroupPath(), false);
+            violationsGroup = deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.DEVICE_DATA, monitor.getViolationsDeviceGroupName(), false);
         } catch (NotFoundException nfe) {
             /* the user either deleted this monitor or directly deleted this monitor's violations device group
              * between starting this async calculation and right now. Just returning silently.
@@ -439,14 +442,15 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
             return;
         }
         List<SimpleDevice> currentViolationDevices = deviceGroupMemberEditorDao.getChildDevices(violationsGroup);
+        String basePath = deviceGroupService.getFullPath(SystemGroupEnum.DEVICE_DATA);
         if (paosInViolation.isEmpty()) {
             if (currentViolationDevices.isEmpty()) {
                 // nothing to do here!
-                log.debug("No violating devices for monitor " + monitor.getName() + " or devices in our violations group " + monitor.getViolationsDeviceGroupPath());
+                log.debug("No violating devices for monitor " + monitor.getName() + " or devices in our violations group " + basePath + monitor.getViolationsDeviceGroupName());
                 return;
             }
             // clear out our violations group
-            log.debug("No violating devices for monitor " + monitor.getName() + ", but we have existing devices in our violations group (" + monitor.getViolationsDeviceGroupPath() + " that are being cleared out");
+            log.debug("No violating devices for monitor " + monitor.getName() + ", but we have existing devices in our violations group (" + basePath + monitor.getViolationsDeviceGroupName() + " that are being cleared out");
             removeDevicesInGroupForMonitor(violationsGroup, monitor);
         } else {
             if (currentViolationDevices.isEmpty()) {
@@ -472,14 +476,16 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
     }
 
     private void removeDevicesInGroupForMonitor(StoredDeviceGroup group, DeviceDataMonitor monitor) {
+        String basePath = deviceGroupService.getFullPath(SystemGroupEnum.DEVICE_DATA);
         deviceGroupMemberEditorDao.removeAllChildDevices(group);
-        log.info("Cleared out devices in device data monitor's (" + monitor.getName() + ") violations device group: " + monitor.getViolationsDeviceGroupPath());
+        log.info("Cleared out devices in device data monitor's (" + monitor.getName() + ") violations device group: " + basePath + monitor.getViolationsDeviceGroupName());
     }
 
     private void addViolatingDevicesToGroupForMonitor(StoredDeviceGroup violationsGroup, DeviceDataMonitor monitor, Set<PaoIdentifier> paosInViolation) {
+        String basePath = deviceGroupService.getFullPath(SystemGroupEnum.DEVICE_DATA);
         // add all the devices we found that are in violation to our violations group
         deviceGroupMemberEditorDao.addDevices(violationsGroup, paosInViolation);
-        log.info("Added " + paosInViolation.size() + " violating devices to device data monitor's (" + monitor.getName() + ") violations device group: " + monitor.getViolationsDeviceGroupPath());
+        log.info("Added " + paosInViolation.size() + " violating devices to device data monitor's (" + monitor.getName() + ") violations device group: " + basePath + monitor.getViolationsDeviceGroupName());
     }
     
     private void asyncRecalculateViolatingPaosForMonitorBeforeSave(DeviceDataMonitor updatedMonitor, DeviceDataMonitor existingMonitor) {

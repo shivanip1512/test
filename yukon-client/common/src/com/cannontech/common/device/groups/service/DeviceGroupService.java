@@ -3,6 +3,7 @@ package com.cannontech.common.device.groups.service;
 import java.util.Collection;
 import java.util.Set;
 
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonPao;
@@ -15,6 +16,8 @@ import com.cannontech.core.dao.NotFoundException;
  * but that should be avoided.
  */
 public interface DeviceGroupService {
+    
+    public static String ROOT = "/";
     /**
      * Group names are specified with a slash-separated syntax such as
      *   /Meters/Billing/Week 1
@@ -111,5 +114,26 @@ public interface DeviceGroupService {
      * @param pao
      */
     public boolean isDeviceInGroup(DeviceGroup group, YukonPao pao);
+    
+    /**
+     * This method will return DeviceGroup for a SystemGroupEnum and groupName.
+     * 
+     * Example:
+     * SystemGroupEnum = METERS
+     * GroupName = My Meters
+     * This method will find the full path = /Meters/My Meters and use that path to get DeviceGroup
+     * 
+     */
+    public DeviceGroup resolveGroupName(SystemGroupEnum systemGroupEnum, String groupName) throws NotFoundException;
+
+    /**
+     * This method will return the DeviceGroup for a SystemGroupEnum.
+     */
+    public DeviceGroup resolveGroupName(SystemGroupEnum systemGroupEnum);
+
+    /**
+     * This method will return full path for a SystemGroupEnum. For SystemGroupEnum = METERS, /Meters/ will be returned.
+     */
+    public String getFullPath(SystemGroupEnum systemGroupEnum);
 
 }

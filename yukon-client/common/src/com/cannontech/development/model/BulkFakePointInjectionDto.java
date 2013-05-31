@@ -6,7 +6,7 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.Period;
 
-import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.point.PointQuality;
@@ -14,7 +14,7 @@ import com.google.common.collect.Lists;
 
 public class BulkFakePointInjectionDto {
     private List<YukonPao> yukonPaos;
-    private String groupName = SystemGroupEnum.ROOT.getFullPath();
+    private String groupName = DeviceGroupService.ROOT;
     private Attribute attribute;
     private boolean archive = true;
     private Instant start = new Instant().minus(Duration.standardDays(30));

@@ -16,18 +16,16 @@ import com.cannontech.core.dao.TamperFlagMonitorNotFoundException;
 
 public class TamperFlagMonitorServiceImpl implements TamperFlagMonitorService {
 
-	private DeviceGroupEditorDao deviceGroupEditorDao;
-	private TamperFlagMonitorDao tamperFlagMonitorDao;
+    @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
+	@Autowired private TamperFlagMonitorDao tamperFlagMonitorDao;
 	private Logger log = YukonLogManager.getLogger(TamperFlagMonitorServiceImpl.class);
 	
 	@Override
-	public StoredDeviceGroup getTamperFlagGroup(String name) {
+    public StoredDeviceGroup getTamperFlagGroup(String name) {
 
-		String tameprFlagGroupName = SystemGroupEnum.TAMPER_FLAG_PROCESSING.getFullPath() + name;
-		StoredDeviceGroup tamperFlagGroup = deviceGroupEditorDao.getStoredGroup(tameprFlagGroupName, true);
-		
-		return tamperFlagGroup;
-	}
+        StoredDeviceGroup tamperFlagGroup = deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.TAMPER_FLAG, name, true);
+        return tamperFlagGroup;
+    }
 	
 	@Override
 	public boolean deleteTamperFlagMonitor(int tamperFlagMonitorId) throws TamperFlagMonitorNotFoundException {
@@ -65,15 +63,5 @@ public class TamperFlagMonitorServiceImpl implements TamperFlagMonitorService {
 		log.debug("Updated tamperFlagMonitor evaluator status: status=" + newEvaluatorStatus + ", tamperFlagMonitor=" + tamperFlagMonitor.toString());
 		
 		return newEvaluatorStatus;
-	}
-	
-	@Autowired
-	public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
-		this.deviceGroupEditorDao = deviceGroupEditorDao;
-	}
-
-	@Autowired
-	public void setTamperFlagMonitorDao(TamperFlagMonitorDao tamperFlagMonitorDao) {
-		this.tamperFlagMonitorDao = tamperFlagMonitorDao;
 	}
 }

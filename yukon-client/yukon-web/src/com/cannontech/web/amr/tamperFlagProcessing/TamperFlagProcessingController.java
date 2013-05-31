@@ -32,6 +32,7 @@ import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.ResolvableTemplate;
@@ -56,6 +57,7 @@ public class TamperFlagProcessingController {
 	private GroupCommandExecutor groupCommandExecutor;
 	private GroupMetersDao groupMetersDao;
 	private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+	@Autowired private DeviceGroupService deviceGroupService;
 	
 	private ListMultimap<Integer, String> monitorToRecentReadKeysCache = ArrayListMultimap.create();
 	private ListMultimap<Integer, String> monitorToRecentResetKeysCache = ArrayListMultimap.create();
@@ -107,7 +109,8 @@ public class TamperFlagProcessingController {
 		model.addAttribute("resetResults", resetResults);
 		
 		model.addAttribute("tamperFlagMonitor", tamperFlagMonitor);
-		model.addAttribute("tamperFlagGroupBase", SystemGroupEnum.TAMPER_FLAG_PROCESSING.getFullPath());
+		String basePath = deviceGroupService.getFullPath(SystemGroupEnum.TAMPER_FLAG);
+		model.addAttribute("tamperFlagGroupBase", basePath);
 		model.addAttribute("tamperFlagGroupDeviceCollection", tamperFlagGroupDeviceCollection);
 		
 	}

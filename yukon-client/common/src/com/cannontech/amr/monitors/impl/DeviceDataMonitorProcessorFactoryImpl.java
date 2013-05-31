@@ -16,6 +16,7 @@ import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
@@ -123,7 +124,7 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
             }
         }
         if (matchFound != null) {
-            StoredDeviceGroup violationsDeviceGroup = deviceGroupEditorDao.getStoredGroup(monitor.getViolationsDeviceGroupPath(), true);
+            StoredDeviceGroup violationsDeviceGroup = deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.DEVICE_DATA, monitor.getViolationsDeviceGroupName(), true);
             boolean inViolationsGroup = deviceGroupService.isDeviceInGroup(violationsDeviceGroup, paoIdentifier);
             if (matchFound) {
                 /*
@@ -133,8 +134,8 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
                 if (!inViolationsGroup) {
                     deviceGroupMemberEditorDao.addDevices(violationsDeviceGroup, paoIdentifier);
                     LogHelper.debug(log, "Device Data Monitor [%s] found a data match! Adding device to device group [%s]",
-                                    monitor.getName(),
-                                    monitor.getViolationsDeviceGroupPath());
+                                    violationsDeviceGroup.getName(),
+                                    violationsDeviceGroup.getFullName());
                 } else {
                     LogHelper.debug(log, "Device Data Monitor [%s] found a data match! Doing nothing since the device is already in the violations group",
                                     monitor.getName());
@@ -147,8 +148,8 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
                 if (inViolationsGroup) {
                     deviceGroupMemberEditorDao.removeDevicesById(violationsDeviceGroup, Collections.singleton(paoIdentifier.getPaoId()));
                     LogHelper.debug(log, "Device Data Monitor [%s] data did NOT match! Removing device from device group [%s]",
-                                    monitor.getName(),
-                                    monitor.getViolationsDeviceGroupPath());
+                                    violationsDeviceGroup.getName(),
+                                    violationsDeviceGroup.getFullName());
                 } else {
                     LogHelper.debug(log, "Device Data Monitor [%s] data did NOT match! Doing nothing since we weren't in the violations group",
                                     monitor.getName());

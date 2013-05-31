@@ -28,11 +28,8 @@ public class DeviceGroupTreeUtils {
         node.setAttribute("id", nodeId);
         
         // set icon class
-        for (SystemGroupEnum systemGroup : SystemGroupEnum.values()) {
-            if ((deviceGroup.getFullName() + "/").equals(systemGroup.getFullPath())) {
-                node.setAttribute("iconCls", systemGroup.toString());
-                break;
-            }
+        if(deviceGroup.getSystemGroupEnum() != null){
+            node.setAttribute("iconCls", deviceGroup.getSystemGroupEnum().name());
         }
         
         // set name

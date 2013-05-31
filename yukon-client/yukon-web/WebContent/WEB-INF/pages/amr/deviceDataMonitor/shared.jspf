@@ -78,14 +78,14 @@
 <cti:displayForPageEditModes modes="VIEW,EDIT">
 <c:set var="violationsGroup">
 	<cti:url var="deviceGroupUrl" value="/group/editor/home">
-		<cti:param name="groupName">${monitor.violationsDeviceGroupPath}</cti:param>
+		<cti:param name="groupName">${violationsDeviceGroupPath}</cti:param>
 	</cti:url>
-	<a href="${deviceGroupUrl}">${fn:escapeXml(monitor.violationsDeviceGroupPath)}</a>
+	<a href="${deviceGroupUrl}">${fn:escapeXml(violationsDeviceGroupPath)}</a>
 </c:set>
 
 <c:set var="violationReportLinks">
 	<cti:url value="/amr/reports/groupDevicesReport" var="htmlReportUrl">
-	    <cti:param name="groupName" value="${monitor.violationsDeviceGroupPath}" />
+	    <cti:param name="groupName" value="${violationsDeviceGroupPath}" />
 	</cti:url>
 	(<a href="${htmlReportUrl}">
 	    <cti:msg key="yukon.web.modules.amr.fileFormatHtml" />

@@ -19,6 +19,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.OutageMonitorNotFoundException;
@@ -36,6 +37,7 @@ public class TamperFlagEditorController {
 	private TamperFlagMonitorDao tamperFlagMonitorDao;
 	private DeviceGroupEditorDao deviceGroupEditorDao;
 	private TamperFlagMonitorService tamperFlagMonitorService;
+	@Autowired private DeviceGroupService deviceGroupService;
 	
 	private Logger log = YukonLogManager.getLogger(TamperFlagEditorController.class);
 
@@ -76,7 +78,7 @@ public class TamperFlagEditorController {
         model.addAttribute("name", name);
         model.addAttribute("deviceGroupName", deviceGroupName);
         
-        model.addAttribute("tamperFlagGroupBase", SystemGroupEnum.TAMPER_FLAG_PROCESSING.getFullPath());
+        model.addAttribute("tamperFlagGroupBase", deviceGroupService.getFullPath(SystemGroupEnum.TAMPER_FLAG));
         model.addAttribute("tamperFlagMonitor", tamperFlagMonitor);
 		
     }
@@ -141,14 +143,12 @@ public class TamperFlagEditorController {
         		// tamper flag group needs new name 
         		String currentProcessorName = tamperFlagMonitor.getTamperFlagMonitorName();
         		if (!currentProcessorName.equals(name)) {
-        			
-        			String newTamperFlagGroupName = SystemGroupEnum.TAMPER_FLAG_PROCESSING.getFullPath() + name;
-        			
+        			        			
         			// try to retrieve group by new name (possible it could exist)
         			// if does not exist, get old group, give it new name
         			try {
         				
-        				deviceGroupEditorDao.getStoredGroup(newTamperFlagGroupName, false);
+        				deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.TAMPER_FLAG, name, false);
         				
         			} catch (NotFoundException e) {
 						

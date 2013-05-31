@@ -85,7 +85,7 @@ public class DeviceGroupTreeFactory {
     }
     
     public TreeModel getStaticOnlyModel() {
-        final DeviceGroup systemDeviceGrp = deviceGroupService.resolveGroupName(SystemGroupEnum.SYSTEM.getFullPath());   
+        final DeviceGroup systemDeviceGrp = deviceGroupService.resolveGroupName(SystemGroupEnum.SYSTEM);   
         return getModel(new Predicate<DeviceGroup>() {
             public boolean evaluate(DeviceGroup object) {
                 return object.getType().equals(DeviceGroupType.STATIC) && !object.isEqualToOrDescendantOf(systemDeviceGrp); 

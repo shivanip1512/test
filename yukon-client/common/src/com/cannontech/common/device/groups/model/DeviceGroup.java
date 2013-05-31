@@ -4,6 +4,7 @@ import org.apache.commons.lang.Validate;
 import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.util.NaturalOrderComparator;
 
 public abstract class DeviceGroup implements Comparable<DeviceGroup> {
@@ -30,6 +31,8 @@ public abstract class DeviceGroup implements Comparable<DeviceGroup> {
     public abstract DeviceGroup getParent();
 
     public abstract DeviceGroupType getType();
+    
+    public abstract SystemGroupEnum getSystemGroupEnum();
     
     protected void clearNameCache() {
         cachedFullNameInternal = null;

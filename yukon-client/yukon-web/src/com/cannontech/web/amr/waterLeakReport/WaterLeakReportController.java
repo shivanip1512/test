@@ -125,7 +125,6 @@ public class WaterLeakReportController {
     private Map<String, Comparator<WaterMeterLeak>> sorters;
     private Cache<Integer, MspMeterAccountInfo> mspMeterAccountInfoMap = CacheBuilder.newBuilder()
         .concurrencyLevel(1).expireAfterWrite(1, TimeUnit.HOURS).build();
-    private final static String DEFAULT_DEVICE_GROUP = SystemGroupEnum.DEVICETYPES.getFullPath() + PaoType.RFWMETER.getPaoTypeName();
 
     private class MspMeterAccountInfo {
         com.cannontech.multispeak.deploy.service.Customer mspCustomer;
@@ -452,11 +451,13 @@ public class WaterLeakReportController {
         if (type != null) {
             deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         } else {
+
+            String groupName = deviceGroupService.getFullPath(SystemGroupEnum.DEVICE_TYPES) + PaoType.RFWMETER.getPaoTypeName();
             // Setup default device group (this is probably the first time the user is hitting this page)
-            DeviceGroup deviceGroup = deviceGroupService.findGroupName(DEFAULT_DEVICE_GROUP);
+            DeviceGroup deviceGroup = deviceGroupService.findGroupName(groupName);
             if (deviceGroup == null) {
                 // We're probably not going to find many water leaks if we get in here. Oh well!
-                deviceGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.DEVICETYPES);
+                deviceGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.DEVICE_TYPES);
             }
             deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(deviceGroup);
         }
@@ -534,7 +535,8 @@ public class WaterLeakReportController {
         
         WaterLeakReportFilterBackingBean defaultsTest = new WaterLeakReportFilterBackingBean();
         String groupName = backingBean.getDeviceCollection().getCollectionParameters().get("group.name");
-        boolean defaultFilterValues = (groupName != null && groupName.equals(DEFAULT_DEVICE_GROUP))
+        String defaultGroupName = deviceGroupService.getFullPath(SystemGroupEnum.DEVICE_TYPES) + PaoType.RFWMETER.getPaoTypeName();
+        boolean defaultFilterValues = (groupName != null && groupName.equals(defaultGroupName))
                 && backingBean.getFromInstant().isEqual(defaultsTest.getFromInstant().getMillis())
                 && backingBean.getToInstant().isEqual(defaultsTest.getToInstant().getMillis())
                 && backingBean.getThreshold() == defaultsTest.getThreshold()

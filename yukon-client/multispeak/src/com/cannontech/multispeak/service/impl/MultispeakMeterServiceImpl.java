@@ -57,6 +57,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.device.service.DeviceUpdateService;
@@ -169,6 +170,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private ConfigurationSource configurationSource;
+    @Autowired private DeviceGroupService deviceGroupService;
     
 	/** Singleton incrementor for messageIDs to send to porter connection */
 	private static long messageID = 1;
@@ -1015,25 +1017,25 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     @Override
     public ErrorObject[] initiateDisconnectedStatus(MultispeakVendor mspVendor, String[] meterNos) {
         
-        return addToGroup(meterNos, SystemGroupEnum.DISCONNECTSTATUS, "initiateDisconnectedStatus", mspVendor);
+        return addToGroup(meterNos, SystemGroupEnum.DISCONNECTED_STATUS, "initiateDisconnectedStatus", mspVendor);
     }
 
     @Override
     public ErrorObject[] initiateUsageMonitoringStatus(MultispeakVendor mspVendor, String[] meterNos) {
         
-        return addToGroup(meterNos, SystemGroupEnum.USAGEMONITORING, "initiateUsageMonitoring", mspVendor);
+        return addToGroup(meterNos, SystemGroupEnum.USAGE_MONITORING, "initiateUsageMonitoring", mspVendor);
     }
 
     @Override
     public ErrorObject[] cancelDisconnectedStatus(MultispeakVendor mspVendor, String[] meterNos) {
 
-        return removeFromGroup(meterNos, SystemGroupEnum.DISCONNECTSTATUS, "cancelDisconnectedStatus", mspVendor);
+        return removeFromGroup(meterNos, SystemGroupEnum.DISCONNECTED_STATUS, "cancelDisconnectedStatus", mspVendor);
     }
 
     @Override
     public ErrorObject[] cancelUsageMonitoringStatus(MultispeakVendor mspVendor, String[] meterNos) {
 
-        return removeFromGroup(meterNos, SystemGroupEnum.USAGEMONITORING, "cancelUsageMonitoring", mspVendor);
+        return removeFromGroup(meterNos, SystemGroupEnum.USAGE_MONITORING, "cancelUsageMonitoring", mspVendor);
     }
     
     @Override
@@ -1606,7 +1608,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         if (!StringUtils.isBlank(substationName)) {
             
             //Remove from all substation membership groups
-            DeviceGroup substationNameDeviceGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.SUBSTATION_NAME);
+            DeviceGroup substationNameDeviceGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.CIS_SUBSTATION);
             StoredDeviceGroup deviceGroupParent = deviceGroupEditorDao.getStoredGroup(substationNameDeviceGroup);
             return updatePrefixGroup(substationName, meterNumber, yukonDevice, logActionStr, mspVendor, deviceGroupParent);
         }
@@ -1666,10 +1668,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
         DeviceGroup deviceGroup = deviceGroupEditorDao.getSystemGroup(systemGroup);
         deviceGroupMemberEditorDao.removeDevices((StoredDeviceGroup)deviceGroup, Collections.singletonList(meter));
-
+        String basePath = deviceGroupService.getFullPath(systemGroup);
         mspObjectDao.logMSPActivity(logActionStr,
-                       "MeterNumber(" + meter.getMeterNumber() + ") - Removed from " + systemGroup.getFullPath(),
-                       mspVendor.getCompanyName());
+                       "MeterNumber(" + meter.getMeterNumber() + ") - Removed from " + basePath,  mspVendor.getCompanyName());
     }
 
     /**
@@ -1684,10 +1685,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
         DeviceGroup deviceGroup = deviceGroupEditorDao.getSystemGroup(systemGroup);
         deviceGroupMemberEditorDao.addDevices((StoredDeviceGroup)deviceGroup, Collections.singletonList(meter));
-
+        String basePath = deviceGroupService.getFullPath(systemGroup);
         mspObjectDao.logMSPActivity(logActionStr,
-                       "MeterNumber(" + meter.getMeterNumber() + ") - Added to " + systemGroup.getFullPath(), 
-                       mspVendor.getCompanyName());
+                       "MeterNumber(" + meter.getMeterNumber() + ") - Added to " + basePath,  mspVendor.getCompanyName());
     }
    
     /**

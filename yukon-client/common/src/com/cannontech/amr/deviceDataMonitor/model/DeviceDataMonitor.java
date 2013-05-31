@@ -92,10 +92,6 @@ public class DeviceDataMonitor implements PointMonitor, Serializable {
     public String getViolationsDeviceGroupName() {
         return DeviceGroupUtil.removeInvalidDeviceGroupNameCharacters(this.name);
     }
-    
-    public String getViolationsDeviceGroupPath() {
-        return SystemGroupEnum.DEVICE_DATA_MONITOR_PROCESSING.getFullPath() + getViolationsDeviceGroupName(); 
-    }
 
     public List<AttributeStateGroup> getAttributeStateGroups() {
         List<AttributeStateGroup> attributeStateGroup = new ArrayList<>();

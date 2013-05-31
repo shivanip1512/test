@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
-import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -22,7 +22,7 @@ public class PorterResponseMonitor {
 	private List<PorterResponseMonitorRule> rules = Lists.newArrayList();
 
 	public PorterResponseMonitor() {
-	    groupName = SystemGroupEnum.ROOT.getFullPath();
+	    groupName = DeviceGroupService.ROOT;
 	    attribute = BuiltInAttribute.OUTAGE_STATUS;
 	    evaluatorStatus = MonitorEvaluatorStatus.ENABLED;
 	}

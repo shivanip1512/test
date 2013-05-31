@@ -464,8 +464,7 @@ public class PhaseDetectController {
         model.addAttribute("undefinedCollection", undefinedCollection);
         
         try {
-            DeviceGroup abGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.PHASE_DETECT_LAST_RESULTS_AB.getFullPath());
-            StoredDeviceGroup abStoredGroup = deviceGroupEditorDao.getStoredGroup(abGroup);
+            StoredDeviceGroup abStoredGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.AB);
             DeviceCollection phaseABCollection = deviceGroupCollectionHelper.buildDeviceCollection(abStoredGroup);
             model.addAttribute("phaseABMeters", getMeterListForGroup(abStoredGroup));
             model.addAttribute("phaseABMetersSize", phaseABCollection.getDeviceList().size());
@@ -475,8 +474,7 @@ public class PhaseDetectController {
         }
         
         try {
-            DeviceGroup acGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.PHASE_DETECT_LAST_RESULTS_AC.getFullPath());
-            StoredDeviceGroup acStoredGroup = deviceGroupEditorDao.getStoredGroup(acGroup);
+            StoredDeviceGroup acStoredGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.AC);
             DeviceCollection phaseACCollection = deviceGroupCollectionHelper.buildDeviceCollection(acStoredGroup);
             model.addAttribute("phaseACMeters", getMeterListForGroup(acStoredGroup));
             model.addAttribute("phaseACMetersSize", phaseACCollection.getDeviceList().size());
@@ -486,7 +484,7 @@ public class PhaseDetectController {
         }
         
         try {
-            DeviceGroup bcGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.PHASE_DETECT_LAST_RESULTS_BC.getFullPath());
+            DeviceGroup bcGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.BC);
             StoredDeviceGroup bcStoredGroup = deviceGroupEditorDao.getStoredGroup(bcGroup);
             DeviceCollection phaseBCCollection = deviceGroupCollectionHelper.buildDeviceCollection(bcStoredGroup);
             model.addAttribute("phaseBCMeters", getMeterListForGroup(bcStoredGroup));
@@ -497,7 +495,7 @@ public class PhaseDetectController {
         }
         
         try {
-            DeviceGroup abcGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.PHASE_DETECT_LAST_RESULTS_ABC.getFullPath());
+            DeviceGroup abcGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.ABC);
             StoredDeviceGroup abcStoredGroup = deviceGroupEditorDao.getStoredGroup(abcGroup);
             DeviceCollection phaseABCCollection = deviceGroupCollectionHelper.buildDeviceCollection(abcStoredGroup);
             model.addAttribute("phaseABCMeters", getMeterListForGroup(abcStoredGroup));
@@ -520,7 +518,7 @@ public class PhaseDetectController {
     private Map<String, Integer> getChartPhaseResults() {
         Map<String, Integer> phaseResultsMap = Maps.newHashMap();
         try {
-            DeviceGroup aGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.PHASE_DETECT_LAST_RESULTS_A.getFullPath());
+            DeviceGroup aGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.A);
             int groupACount = deviceGroupService.getDeviceCount(Collections.singletonList(aGroup));
             phaseResultsMap.put("phaseA", groupACount);
         } catch (NotFoundException e){
@@ -528,7 +526,7 @@ public class PhaseDetectController {
         }
         
         try {
-            DeviceGroup bGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.PHASE_DETECT_LAST_RESULTS_B.getFullPath());
+            DeviceGroup bGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.B);
             int groupBCount = deviceGroupService.getDeviceCount(Collections.singletonList(bGroup));
             phaseResultsMap.put("phaseB", groupBCount);
         } catch (NotFoundException e){
@@ -536,7 +534,7 @@ public class PhaseDetectController {
         }
         
         try {
-            DeviceGroup cGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.PHASE_DETECT_LAST_RESULTS_C.getFullPath());
+            DeviceGroup cGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.C);
             int groupCCount = deviceGroupService.getDeviceCount(Collections.singletonList(cGroup));
             phaseResultsMap.put("phaseC", groupCCount);
         } catch (NotFoundException e){
@@ -548,7 +546,7 @@ public class PhaseDetectController {
         
         if(!dataCopy.isReadAfterAll()){
             try {
-                DeviceGroup abGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.PHASE_DETECT_LAST_RESULTS_AB.getFullPath());
+                DeviceGroup abGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.AB);
                 int groupABCount = deviceGroupService.getDeviceCount(Collections.singletonList(abGroup));
                 phaseResultsMap.put("phaseAB", groupABCount);
             } catch (NotFoundException e){
@@ -556,7 +554,7 @@ public class PhaseDetectController {
             }
             
             try {
-                DeviceGroup acGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.PHASE_DETECT_LAST_RESULTS_AC.getFullPath());
+                DeviceGroup acGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.AC);
                 int groupACCount = deviceGroupService.getDeviceCount(Collections.singletonList(acGroup));
                 phaseResultsMap.put("phaseAC", groupACCount);
             } catch (NotFoundException e){
@@ -564,7 +562,7 @@ public class PhaseDetectController {
             }
             
             try {
-                DeviceGroup bcGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.PHASE_DETECT_LAST_RESULTS_BC.getFullPath());
+                DeviceGroup bcGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.BC);
                 int groupBCCount = deviceGroupService.getDeviceCount(Collections.singletonList(bcGroup));
                 phaseResultsMap.put("phaseBC", groupBCCount);
             } catch (NotFoundException e){
@@ -572,7 +570,7 @@ public class PhaseDetectController {
             }
             
             try {
-                DeviceGroup abcGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.PHASE_DETECT_LAST_RESULTS_ABC.getFullPath());
+                DeviceGroup abcGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.ABC);
                 int groupABCCount = deviceGroupService.getDeviceCount(Collections.singletonList(abcGroup));
                 phaseResultsMap.put("phaseABC", groupABCCount);
             } catch (NotFoundException e){
