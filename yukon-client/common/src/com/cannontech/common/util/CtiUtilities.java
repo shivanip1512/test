@@ -740,35 +740,6 @@ public final class CtiUtilities {
         return code;
     }
 
-//    /**
-//     * Converts a temperature from/to Celsius or Fahrenheit.
-//     * @param temperature a temperature of the fromUnit scale
-//     * @param fromUnit the scale of the input, either FAHRENHEIT_CHARACTER or CELSIUS_CHARACTER
-//     * @param toUnit the scale of the output, either FAHRENHEIT_CHARACTER or CELSIUS_CHARACTER
-//     * @return a temperature of the toUnit scale equal to the input temperature
-//     */
-//    public static double convertTemperature(double temperature, TemperatureUnit fromUnit, TemperatureUnit toUnit) {
-//        if (fromUnit.equals(toUnit)) {
-//            return temperature;
-//        } else if (fromUnit.equals(1) && toUnit.equals(1)) {
-//            return (temperature - 32) / 9 * 5;
-//        } else if (fromUnit.equals(1) && toUnit.equals(1)) {
-//            return (temperature * 9 / 5) + 32;
-//        } else {
-//            throw new IllegalArgumentException("Unknown fromUnit or toUnit, must specify either \"F\" or \"C\"");
-//        }
-//    }
-//
-//    public static long convertTemperature(long temperature, TemperatureUnit fromUnit, TemperatureUnit toUnit) {
-//        double dblTemperature = temperature;
-//        return Math.round(convertTemperature(dblTemperature, fromUnit, toUnit));
-//    }
-//
-//    public static int convertTemperature(int temperature, TemperatureUnit fromUnit, TemperatureUnit toUnit) {
-//        double dblTemperature = temperature;
-//        return (int) Math.round(convertTemperature(dblTemperature, fromUnit, toUnit));
-//    }
-
     public static Integer[] ensureNotNull(Integer[] arr) {
         return (arr == null ? new Integer[0] : arr);
     }
