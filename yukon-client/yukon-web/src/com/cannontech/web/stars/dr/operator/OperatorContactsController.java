@@ -26,6 +26,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -141,6 +142,7 @@ public class OperatorContactsController {
                                 AccountInfoFragment accountInfoFragment) {
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+
         modelMap.addAttribute("mode", PageEditMode.EDIT);
         
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
@@ -149,6 +151,11 @@ public class OperatorContactsController {
         // validate/save
         boolean newContact = contactDto.getContactId() <= 0;
         contactDtoValidator.validate(contactDto, bindingResult);
+        
+        // retrieve version of original contact name before save for logging
+        ContactDto oldContactDto = operatorAccountService.getContactDto(contactDto.getContactId(), userContext);
+        String oldContactName = StarsUtils.formatName(oldContactDto.getFirstName(), oldContactDto.getLastName());
+        
         if (!bindingResult.hasErrors()) {
             operatorAccountService.saveContactDto(contactDto, customer);
         }
@@ -160,7 +167,8 @@ public class OperatorContactsController {
             return "operator/contacts/contactEdit.jsp";
         }
         
-        String newContactName = contactDto.getFirstName()+" "+contactDto.getLastName();
+        // after save, store new contact name for logging
+        String newContactName = StarsUtils.formatName(contactDto.getFirstName(), contactDto.getLastName());
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contact.contactUpdated"));
         if (newContact) {
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contact.contactCreated"));
@@ -169,20 +177,16 @@ public class OperatorContactsController {
                                                 accountInfoFragment.getAccountNumber(), 
                                                 newContactName);
         } else {
-            LiteContact contact = contactDao.getContact(contactDto.getContactId());
-            String oldContactName = contact.toString();
             accountEventLogService.contactUpdated(userContext.getYukonUser(), 
                                                 accountInfoFragment.getAccountNumber(), 
-                                                newContactName);
-            
+                                                oldContactName);
             // Log contact name change
             if (!oldContactName.equalsIgnoreCase(newContactName)) {
                 accountEventLogService.contactNameChanged(userContext.getYukonUser(), 
                                                           accountInfoFragment.getAccountNumber(),
-                                                          oldContactName,
-                                                          newContactName);
+                                                          newContactName,
+                                                          oldContactName);
             }
-        
         }
         
         return "redirect:contactList";

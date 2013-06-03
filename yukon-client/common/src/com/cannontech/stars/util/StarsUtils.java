@@ -34,7 +34,6 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
@@ -72,7 +71,8 @@ public class StarsUtils {
 	public static final String ADMIN_EMAIL_ADDRESS = "info@cannontech.com";
 	
 	public static final Comparator<YukonListEntry> YUK_LIST_ENTRY_ALPHA_CMPTR = new Comparator<YukonListEntry>() {
-		public int compare(YukonListEntry entry1, YukonListEntry entry2) {
+		@Override
+        public int compare(YukonListEntry entry1, YukonListEntry entry2) {
 			int res = entry1.getEntryText().compareToIgnoreCase(entry2.getEntryText());
 			if (res == 0) res = entry1.getEntryID() - entry2.getEntryID();
 			return res;
@@ -80,7 +80,8 @@ public class StarsUtils {
 	};
 	
 	public static final Comparator<LiteServiceCompany> SERVICE_COMPANY_CMPTR = new Comparator<LiteServiceCompany>() {
-		public int compare(LiteServiceCompany o1, LiteServiceCompany o2) {
+		@Override
+        public int compare(LiteServiceCompany o1, LiteServiceCompany o2) {
 			int res = o1.getCompanyName().compareToIgnoreCase(o2.getCompanyName());
 			if (res == 0) res = o1.getCompanyID() - o2.getCompanyID();
 			return res;
@@ -88,7 +89,8 @@ public class StarsUtils {
 	};
 	
 	public static final Comparator<LiteSubstation> SUBSTATION_CMPTR = new Comparator<LiteSubstation>() {
-		public int compare(LiteSubstation o1, LiteSubstation o2) {
+		@Override
+        public int compare(LiteSubstation o1, LiteSubstation o2) {
 			LiteSubstation sub1 = o1;
 			LiteSubstation sub2 = o2;
 			int res = sub1.getSubstationName().compareToIgnoreCase(sub2.getSubstationName());
@@ -260,16 +262,30 @@ public class StarsUtils {
 		return StarsUtils.forceNotNull(notification);
 	}
 
-	public static String formatName(LiteContact liteContact) {
+	/**
+	 * Returns name as "FirstName LastName"
+	 * If only firstName, returns "firstname"
+	 * If only lastName, returns "lastname"
+     * If both empty, returns empty string 
+	 */
+	public static String formatName(String contactFirstName, String contactLastName) {
 		StringBuffer name = new StringBuffer();
 		
-		String firstName = StarsUtils.forceNotNone(liteContact.getContFirstName()).trim();
-		if (firstName.length() > 0)
+		String firstName = StringUtils.defaultString(StarsUtils.forceNotNone(contactFirstName));
+	    String lastName = StringUtils.defaultString(StarsUtils.forceNotNone(contactLastName));
+	      
+		if (StringUtils.isNotBlank(firstName)) {
 			name.append(firstName);
 		
-		String lastName = StarsUtils.forceNotNone(liteContact.getContLastName()).trim();
-		if (lastName.length() > 0)
-			name.append(" ").append(lastName);
+    		// add a space only if we have a firstname and a lastname
+    		if (StringUtils.isNotBlank(lastName.toString())) {
+    		    name.append(" ");
+    		}
+		}
+		
+		if (StringUtils.isNotBlank(lastName.toString())) {
+			name.append(lastName);
+		}
 		
 		return name.toString();
 	}

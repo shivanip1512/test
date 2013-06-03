@@ -7,10 +7,10 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
+import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsLMProgram;
 import com.cannontech.stars.dr.optout.model.ScheduledOptOutQuestion;
 import com.cannontech.stars.util.StarsUtils;
@@ -70,7 +70,7 @@ public final class OptOutNotificationUtil {
         text.append("Account #").append(liteAcctInfo.getCustomerAccount().getAccountNumber()).append(LINE_SEPARATOR);
         
         LiteContact cont = DaoFactory.getContactDao().getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
-        String name = StarsUtils.formatName( cont );
+        String name = StarsUtils.formatName(cont.getContFirstName(), cont.getContLastName());
         if (name.length() > 0)
             text.append( name ).append(LINE_SEPARATOR);
         

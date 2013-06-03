@@ -20,10 +20,10 @@ import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.database.db.hardware.Warehouse;
 import com.cannontech.stars.util.ECUtils;
@@ -431,7 +431,7 @@ public class InventoryBean {
 				LiteContact liteCont = DaoFactory.getContactDao().getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
 				LiteAddress liteAddr = member.getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
             	
-				String name = StarsUtils.formatName( liteCont );
+				String name = StarsUtils.formatName(liteCont.getContFirstName(), liteCont.getContLastName());
 				StreetAddress starsAddr = new StreetAddress();
 				StarsLiteFactory.setStarsCustomerAddress( starsAddr, liteAddr );
 				String address = ServletUtils.getOneLineAddress( starsAddr );
