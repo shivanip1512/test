@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/29/2013 5:21:27 PM                         */
+/* Created on:     6/3/2013 1:44:07 PM                          */
 /*==============================================================*/
 
 
@@ -2786,7 +2786,7 @@ INSERT INTO DeviceGroup VALUES (3, 'Collection', 1, 'NOEDIT_MOD', 'STATIC', '01-
 INSERT INTO DeviceGroup VALUES (4, 'Alternate', 1, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'ALTERNATE');
 INSERT INTO DeviceGroup VALUES (8, 'Flags', 1, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'FLAGS');
 INSERT INTO DeviceGroup VALUES (9, 'Inventory', 8, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'INVENTORY');
-INSERT INTO DeviceGroup VALUES (10, 'DisconnectedStatus', 8, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'DISCONNECT_STATUS');
+INSERT INTO DeviceGroup VALUES (10, 'DisconnectedStatus', 8, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'DISCONNECTED_STATUS');
 INSERT INTO DeviceGroup VALUES (11, 'UsageMonitoring', 8, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'USAGE_MONITORING');
 INSERT INTO DeviceGroup VALUES (12, 'System', 0, 'NOEDIT_NOMOD', 'STATIC', '01-JAN-2013', 'SYSTEM');
 INSERT INTO DeviceGroup VALUES (13, 'Routes', 12, 'NOEDIT_NOMOD', 'ROUTE', '01-JAN-2013', 'ROUTES');
