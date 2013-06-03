@@ -412,7 +412,7 @@ function sendWorkOrder() {
  		LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
  		LiteAddress liteAddr = liteEC.getAddress(liteAcctSite.getStreetAddressID());
  		
- 		String name = StarsUtils.formatName(liteContact);
+ 		String name = StarsUtils.formatName(liteContact.getContFirstName(), liteContact.getContLastName());
  		String homePhone = StarsUtils.getNotification(DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(liteContact, ContactNotificationType.HOME_PHONE));
  		String workPhone = StarsUtils.getNotification(DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(liteContact, ContactNotificationType.WORK_PHONE));
  		String mapNo = StarsUtils.forceNotNone(liteAcctSite.getSiteNumber());
