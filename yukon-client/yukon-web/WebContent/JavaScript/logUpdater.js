@@ -79,7 +79,7 @@ jQuery(function() {
 	};
 
 	update();
-	var repeatingTaskId = setInterval(update, 1000 * 3);
+	var repeatingTaskId = setInterval(update, 1500);
 	jQuery("#startBtn").hide();
 
 	jQuery("#numLines").change(function() {
@@ -104,7 +104,7 @@ jQuery(function() {
 	});
 
 	jQuery("#startBtn").click(function() {
-		repeatingTaskId = setInterval(update, 1000 * 3);
+		repeatingTaskId = setInterval(update, 1500);
 		jQuery("#startBtn").fadeOut(100, function() {
 			jQuery("#pauseBtn").fadeIn(25);
 		});

@@ -160,7 +160,7 @@ public class DatedFileAppender extends FileAppender {
     public final static int RETRY_DELAY_IN_MS = 1000;
     public final static int LOG_RETENTION_DAYS = 90;
 
-    private DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+    private final static String filenameDateFormat = "yyyyMMdd";
 
     //----------------------------------------------------- class Variables
 
@@ -386,6 +386,7 @@ public class DatedFileAppender extends FileAppender {
             //this condition is only met once per day
 
             m_calendar.setTimeInMillis(n); // set Calendar to current time
+            DateFormat dateFormat = new SimpleDateFormat(filenameDateFormat);
 
             datestamp = dateFormat.format(m_calendar.getTime());
 
@@ -549,6 +550,7 @@ public class DatedFileAppender extends FileAppender {
      */
     private Date getLogCreationDate(File file) {
     	try { /* lets try to parse the filename for the date */
+            DateFormat dateFormat = new SimpleDateFormat(filenameDateFormat);
     		return dateFormat.parse(file.getName().replace(m_prefix, ""));
     	} catch (ParseException e) {/* Can't use filename (could be an old format)*/}
 
