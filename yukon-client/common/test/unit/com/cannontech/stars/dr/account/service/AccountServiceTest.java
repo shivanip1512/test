@@ -15,6 +15,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.model.ContactNotificationType;
+import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -303,7 +304,7 @@ public class AccountServiceTest extends EasyMockSupport {
         expectLastCall().times(3);
         expect(authDaoMock.getUserTimeZone(user)).andReturn(TimeZone.getDefault());
         expect(authDaoMock.getRolePropertyValue(-9999, -1110)).andReturn(null);
-        expect(energyCompanySettingDaoMock.getString(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT, YukonEnergyCompanyMockFactory.getYukonEC1().getEnergyCompanyId())).andReturn(null);
+        expect(energyCompanySettingDaoMock.getEnum(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT, TemperatureUnit.class, YukonEnergyCompanyMockFactory.getYukonEC1().getEnergyCompanyId())).andReturn(TemperatureUnit.FAHRENHEIT);
         customerDaoMock.addCustomer(liteCustomer);
         dbChangeManager.processDbChange(1,
                                         DBChangeMsg.CHANGE_CUSTOMER_DB,

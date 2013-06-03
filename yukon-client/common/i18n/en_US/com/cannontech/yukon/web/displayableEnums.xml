@@ -23,8 +23,8 @@
 <entry key="yukon.common.chartPeriod.YEAR">Year</entry>
 <entry key="yukon.common.chartPeriod.NOPERIOD">NoPeriod</entry>
 
-<entry key="yukon.common.temperatureUnit.Celsius">C</entry>
-<entry key="yukon.common.temperatureUnit.Fahrenheit">F</entry>
+<entry key="yukon.common.temperatureUnit.CELSIUS">C</entry>
+<entry key="yukon.common.temperatureUnit.FAHRENHEIT">F</entry>
 
 <!--  Attribute Graph Type -->
 <entry key="yukon.web.attributeGraphType.USAGE_WATER.label">Water Usage (Delta)</entry>

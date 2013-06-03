@@ -30,7 +30,7 @@ import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.search.SearchResult;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.TransactionException;
@@ -162,8 +162,8 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         map.addAttribute("thermostatType", type);
         map.addAttribute("type", type);
         map.addAttribute("temperatureUnit", temperatureUnit);
-        map.addAttribute("celsius_char", CtiUtilities.CELSIUS_CHARACTER);
-        map.addAttribute("fahrenheit_char", CtiUtilities.FAHRENHEIT_CHARACTER);
+        map.addAttribute("celsius_char", TemperatureUnit.CELSIUS.getLetter());
+        map.addAttribute("fahrenheit_char", TemperatureUnit.FAHRENHEIT.getLetter());
         
         //default schedule(s)
         AccountThermostatSchedule defaultSchedule  = thermostatService.getAccountThermostatScheduleTemplate(account.getAccountId(), type);

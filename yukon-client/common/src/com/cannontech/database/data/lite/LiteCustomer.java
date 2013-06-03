@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
@@ -29,8 +29,7 @@ public class LiteCustomer extends LiteBase {
 	private String customerNumber = CtiUtilities.STRING_NONE;
 	private int rateScheduleID = CtiUtilities.NONE_ZERO_ID;
 	private String altTrackNum = CtiUtilities.STRING_NONE;
-    private String temperatureUnit = CtiUtilities.FAHRENHEIT_CHARACTER;
-//	private LiteContact liteContact = null;
+    private String temperatureUnit = TemperatureUnit.FAHRENHEIT.toString();
     
 	//non-persistent data, 
 	//contains com.cannontech.database.data.lite.LiteContact
@@ -70,11 +69,6 @@ public class LiteCustomer extends LiteBase {
             String sql = "SELECT PrimaryContactID, CustomerTypeID, TimeZone, CustomerNumber, RateScheduleID, AltTrackNum, TemperatureUnit" +
                         " FROM " + Customer.TABLE_NAME +
                         " WHERE CustomerID = ?";            
-/*            String sql = "SELECT PrimaryContactID, CustomerTypeID, TimeZone, CustomerNumber, RateScheduleID, AltTrackNum, TemperatureUnit, " +
-                        " cont.ContFirstName, cont.ContLastName, cont.LoginID, cont.AddressID " +
-                        " FROM " + Customer.TABLE_NAME + " cust, " + Contact.TABLE_NAME + " cont " +
-                        " WHERE PrimaryContactID = ContactID " + 
-                        " and CustomerID = ?";*/
             
             pstmt = conn.prepareStatement( sql );
             pstmt.setInt( 1, getCustomerID());
@@ -89,12 +83,6 @@ public class LiteCustomer extends LiteBase {
                 setRateScheduleID( rset.getInt(5) );
                 setAltTrackingNumber( rset.getString(6) );
                 setTemperatureUnit( rset.getString(7) );
-/*                LiteContact liteContact = new LiteContact(rset.getInt(1));
-                liteContact.setContFirstName( rset.getString(8));
-                liteContact.setContLastName( rset.getString(9));
-                liteContact.setLoginID( rset.getInt(10));
-                liteContact.setAddressID( rset.getInt(11));
-                setLiteContact(liteContact);*/
             }
             else
                 throw new IllegalStateException("Unable to find the Customer with CustomerID = " + getCustomerID() );

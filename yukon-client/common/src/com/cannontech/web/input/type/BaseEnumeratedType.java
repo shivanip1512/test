@@ -7,7 +7,8 @@ import org.springframework.validation.Errors;
 import com.cannontech.web.input.validate.InputValidator;
 
 /**
- * Base class for input types which represent a list input type.
+ * Base class for input types which represent a list input type.  This represents any enumerated type, not
+ * just those based on a java enum.
  */
 public abstract class BaseEnumeratedType<T> implements InputType<T> {
 

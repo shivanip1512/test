@@ -19,6 +19,8 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.web.input.type.EnumInputType;
+import com.cannontech.web.input.type.InputType;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -62,6 +64,26 @@ public class YukonResultSet {
 
     public byte getByte(String columnLabel) throws SQLException {
         return rs.getByte(columnLabel);
+    }
+
+    public Object getObjectOfInputType(String columnLabel, InputType<?> type) throws SQLException {
+    	Class<?> valueType = type.getTypeClass();
+
+    	if(valueType == Boolean.class) {
+        	return getBoolean(columnLabel);
+        } else if(valueType == String.class) {
+        	return getString(columnLabel);
+        } else if(valueType == Integer.class) {
+        	return getInt(columnLabel);
+        } else if (valueType == Double.class) {
+        	return getDouble(columnLabel);
+        } else if (valueType.isEnum()) {
+        	EnumInputType<?> inputType = (EnumInputType<?>) type;
+        	return getEnum(columnLabel, inputType.getTypeClass());
+        } 
+
+        // add more obvious ones here, then add unit test
+    	throw new UnsupportedOperationException("Unsupported InputType. This InputType will need to be added to this method");
     }
 
     public byte[] getBytes(String columnLabel) throws SQLException {
@@ -201,13 +223,32 @@ public class YukonResultSet {
     /**
      * Returns boolean value for columnLabel.
      * Column values are expected to be "Y" or "N" (as defined by YNBoolean.getDatabaseRepresentation()).
-     * @param columnLabel
-     * @return
+	 *
+	 * Deprecated in favor of {@link #getBoolean()} which supports Y/N
      */
+    @Deprecated
     public boolean getBooleanYN(String columnLabel) throws SQLException {
         return getEnum(columnLabel, YNBoolean.class).getBoolean();
     }
     
+    /**
+     * Returns boolean value for columnLabel. Returns null if value is SQL NULL or empty string.
+     * Column true values are expected to be "Y", "true", or 1. False values are expected to be "N", "false", or 0.
+     */
+    public Boolean getNullableBoolean(String columnLabel) throws SQLException {
+    	CompatibleBoolean booleanValue = CompatibleBoolean.valueOfStr(getString(columnLabel));
+        return booleanValue.getBoolean();
+    }
+
+    /**
+     * Returns boolean value for columnLabel. Returns false if value is SQL NULL or empty string.
+     * Column true values are expected to be "Y", "true", or 1. False values are expected to be "N", "false", or 0.
+     */
+    public boolean getBoolean(String columnLabel) throws SQLException {
+    	CompatibleBoolean booleanValue = CompatibleBoolean.valueOfStr(getString(columnLabel));
+    	return booleanValue == CompatibleBoolean.TRUE;
+    }
+
     public boolean wasNull() throws SQLException {
         return rs.wasNull();
     }

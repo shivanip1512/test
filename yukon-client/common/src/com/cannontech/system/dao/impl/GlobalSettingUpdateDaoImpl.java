@@ -50,7 +50,7 @@ public class GlobalSettingUpdateDaoImpl implements GlobalSettingUpdateDao {
         @Override
         public void extractValues(MapSqlParameterSource parameterHolder, GlobalSetting setting) {
             parameterHolder.addValue("Name", setting.getType());
-            parameterHolder.addValue("Value", setting.getValue());
+        	parameterHolder.addValue("Value", setting.getValue());
             parameterHolder.addValue("Comments", setting.getComments());
             parameterHolder.addValue("LastChangedDate", setting.getLastChanged());
         }

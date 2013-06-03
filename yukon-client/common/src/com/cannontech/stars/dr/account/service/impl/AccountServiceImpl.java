@@ -14,6 +14,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.model.ContactNotificationType;
+import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -265,7 +266,8 @@ public class AccountServiceImpl implements AccountService {
         	liteCustomer.setRateScheduleID(CtiUtilities.NONE_ZERO_ID);
         }
         liteCustomer.setAltTrackingNumber(accountDto.getAltTrackingNumber());
-        liteCustomer.setTemperatureUnit(energyCompanySettingDao.getString(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT, yukonEnergyCompany.getEnergyCompanyId()));
+        String tempUnit = energyCompanySettingDao.getEnum(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT, TemperatureUnit.class, yukonEnergyCompany.getEnergyCompanyId()).getLetter();
+        liteCustomer.setTemperatureUnit(tempUnit);
         customerDao.addCustomer(liteCustomer);
         dbChangeManager.processDbChange(liteCustomer.getLiteID(),
                                         DBChangeMsg.CHANGE_CUSTOMER_DB,

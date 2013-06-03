@@ -52,7 +52,7 @@ public class EnergyCompanySetting {
     }
     
     public void setValue(Object obj) {
-        this.value = obj;// InputTypeFactory.convertPropertyValue(value, type.getType());
+        this.value = obj;
     }
 
     public String getComments() {

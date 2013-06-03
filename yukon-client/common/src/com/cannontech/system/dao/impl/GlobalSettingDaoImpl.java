@@ -10,7 +10,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.LeastRecentlyUsedCacheMap;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -162,14 +161,11 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
     private final YukonRowMapper<GlobalSetting> settingMapper = new YukonRowMapper<GlobalSetting>() {
         @Override
         public GlobalSetting mapRow(YukonResultSet rs) throws SQLException {
-            
+
             GlobalSettingType type = rs.getEnum(("Name"), GlobalSettingType.class);
-            Object value = null;
-            String valueStr = rs.getString("Value");
-            if (valueStr != null) {
-                value = InputTypeFactory.convertPropertyValue(type.getType(), valueStr);
-            }
-            
+
+            Object value = rs.getObjectOfInputType("Value", type.getType());
+
             GlobalSetting setting = new GlobalSetting(type, value);
             setting.setId(rs.getInt("GlobalSettingId"));
             setting.setComments(rs.getString("Comments"));

@@ -20,7 +20,6 @@ import com.cannontech.common.util.LeastRecentlyUsedCacheMap;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
-import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YNBoolean;
@@ -54,11 +53,10 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
     private final static FieldMapper<EnergyCompanySetting> fieldMapper = new FieldMapper<EnergyCompanySetting>() {
         @Override
         public void extractValues(MapSqlParameterSource parameterHolder, EnergyCompanySetting setting) {
-            parameterHolder.addValue("Name", setting.getType());
             parameterHolder.addValue("EnergyCompanyId", setting.getEnergyCompanyId());
             parameterHolder.addValue("Name", setting.getType());
             parameterHolder.addValue("Enabled", YNBoolean.valueOf(setting.isEnabled()));
-            parameterHolder.addValue("Value", setting.getValue());
+        	parameterHolder.addValue("Value", setting.getValue());
             parameterHolder.addValue("Comments", setting.getComments());
             parameterHolder.addValue("LastChangedDate", setting.getLastChanged());
         }
@@ -186,25 +184,20 @@ public class EnergyCompanySettingDaoImpl implements EnergyCompanySettingDao {
         public EnergyCompanySetting mapRow(YukonResultSet rs) throws SQLException {
 
             EnergyCompanySettingType type = rs.getEnum(("Name"), EnergyCompanySettingType.class);
-            Object value = null;
-            String valueStr = rs.getString("Value");
-            if (valueStr != null) {
-                value = InputTypeFactory.convertPropertyValue(type.getType(), valueStr);
-            }
 
             EnergyCompanySetting setting = new EnergyCompanySetting();
             setting.setType(type);
-            setting.setValue(value);
+            setting.setValue(rs.getObjectOfInputType("Value", type.getType()));
             setting.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
             setting.setId(rs.getInt("EnergyCompanySettingId"));
-            setting.setEnabled(rs.getBooleanYN("Enabled"));
+            setting.setEnabled(rs.getBoolean("Enabled"));
             setting.setComments(rs.getString("Comments"));
             setting.setLastChanged(rs.getInstant("LastChangedDate"));
 
             return setting;
         }
     };
-    
+
     /**
      * @param <T>
      * @param returnType the type to convert to, can be Object, otherwise must be compatible with setting

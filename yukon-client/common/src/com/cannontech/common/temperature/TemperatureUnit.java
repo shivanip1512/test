@@ -28,13 +28,13 @@ public enum TemperatureUnit implements DatabaseRepresentationSource, Displayable
         return "\u00B0" + letter;
     }
     
-    public static TemperatureUnit fromAbbreviation(String letter) {
-        if (CtiUtilities.FAHRENHEIT_CHARACTER.equals(letter)) {
+    public static TemperatureUnit fromAbbreviation(String abbreviation) {
+        if (FAHRENHEIT.getLetter().equals(abbreviation)) {
             return FAHRENHEIT;
-        } else if (CtiUtilities.CELSIUS_CHARACTER.equals(letter)) {
+        } else if (CELSIUS.getLetter().equals(abbreviation)) {
             return CELSIUS;
         } else {
-            throw new IllegalArgumentException("'" + letter + "' is not a valid temperature abbreviation");
+            throw new IllegalArgumentException("'" + abbreviation + "' is not a valid temperature abbreviation");
         }
     }
 

@@ -1,5 +1,6 @@
 package com.cannontech.database.db.customer;
 
+import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.spring.YukonSpringHook;
@@ -18,8 +19,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent
 	private String customerNumber = CtiUtilities.STRING_NONE;
 	private Integer rateScheduleID = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private String altTrackNum = CtiUtilities.STRING_NONE;
-    private String temperatureUnit = CtiUtilities.FAHRENHEIT_CHARACTER;
-
+    private String temperatureUnit = TemperatureUnit.FAHRENHEIT.getLetter();
 
 
 	public static final String SETTER_COLUMNS[] = 
