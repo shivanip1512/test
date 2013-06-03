@@ -32,7 +32,6 @@ public class ExportFormatValidator extends SimpleValidator<ArchivedValuesExporte
             }
         }
 
-//        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "format.delimiter", ArchivedValuesExporterController.baseKey+"formatError.delimiterRequired");
         if (target.getFormat().getFields().isEmpty()) {
             errors.reject(ArchivedValuesExporterController.baseKey+"formatError.fieldsRequired");
         }
