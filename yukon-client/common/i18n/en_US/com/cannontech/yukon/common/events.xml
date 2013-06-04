@@ -65,7 +65,7 @@
     <entry key="yukon.common.events.stars.account.accountNumberChanged.3">New Account Number</entry>
 
     <!-- Contact Info -->
-    <entry key="yukon.common.events.stars.account.contactInfo.contactNameChanged">Contact name {2} changed to {3} by {1}.</entry>
+    <entry key="yukon.common.events.stars.account.contactInfo.contactNameChanged">Contact name {3} changed to {4} for account {2} by {1}.</entry>
     <entry key="yukon.common.events.stars.account.contactInfo.contactNameChanged.2">Old Contact Name</entry>
     <entry key="yukon.common.events.stars.account.contactInfo.contactNameChanged.3">New Contact Name</entry>
     

@@ -271,19 +271,20 @@ public class StarsUtils {
 	public static String formatName(String contactFirstName, String contactLastName) {
 		StringBuffer name = new StringBuffer();
 		
-		String firstName = StringUtils.defaultString(StarsUtils.forceNotNone(contactFirstName));
-	    String lastName = StringUtils.defaultString(StarsUtils.forceNotNone(contactLastName));
-	      
+		String firstName = StarsUtils.forceNotNone(contactFirstName);
+	    String lastName = StarsUtils.forceNotNone(contactLastName);
+	    boolean hasLastName = StringUtils.isNotBlank(lastName); 
+
 		if (StringUtils.isNotBlank(firstName)) {
 			name.append(firstName);
 		
     		// add a space only if we have a firstname and a lastname
-    		if (StringUtils.isNotBlank(lastName.toString())) {
+    		if (hasLastName) {
     		    name.append(" ");
     		}
 		}
 		
-		if (StringUtils.isNotBlank(lastName.toString())) {
+		if (hasLastName) {
 			name.append(lastName);
 		}
 		

@@ -177,16 +177,16 @@ public class OperatorContactsController {
                                                 accountInfoFragment.getAccountNumber(), 
                                                 newContactName);
         } else {
-            accountEventLogService.contactUpdated(userContext.getYukonUser(), 
-                                                accountInfoFragment.getAccountNumber(), 
-                                                oldContactName);
             // Log contact name change
             if (!oldContactName.equalsIgnoreCase(newContactName)) {
                 accountEventLogService.contactNameChanged(userContext.getYukonUser(), 
                                                           accountInfoFragment.getAccountNumber(),
-                                                          newContactName,
-                                                          oldContactName);
+                                                          oldContactName,
+                                                          newContactName);
             }
+            accountEventLogService.contactUpdated(userContext.getYukonUser(), 
+                                                  accountInfoFragment.getAccountNumber(), 
+                                                  newContactName);
         }
         
         return "redirect:contactList";
