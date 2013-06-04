@@ -18,7 +18,7 @@ public enum ChangeLoginMessage implements DisplayableEnum {
     MIN_PASSWORD_LENGTH_NOT_MET(FlashScopeMessageType.ERROR), 
     MIN_PASSWORD_AGE_NOT_MET(FlashScopeMessageType.ERROR), 
     PASSWORD_USED_TOO_RECENTLY(FlashScopeMessageType.ERROR), 
-    PASSWORD_DOES_NOT_MET_POLICY_QUALITY(FlashScopeMessageType.ERROR),
+    PASSWORD_DOES_NOT_MEET_POLICY_QUALITY(FlashScopeMessageType.ERROR),
     ;
 
     private static final String keyPrefix = "yukon.web.changelogin.message.";
