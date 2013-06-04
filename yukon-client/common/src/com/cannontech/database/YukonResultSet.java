@@ -81,8 +81,6 @@ public class YukonResultSet {
         	EnumInputType<?> inputType = (EnumInputType<?>) type;
         	return getEnum(columnLabel, inputType.getTypeClass());
         } 
-
-        // add more obvious ones here, then add unit test
     	throw new UnsupportedOperationException("Unsupported InputType. This InputType will need to be added to this method");
     }
 

@@ -29,7 +29,7 @@ public class LiteCustomer extends LiteBase {
 	private String customerNumber = CtiUtilities.STRING_NONE;
 	private int rateScheduleID = CtiUtilities.NONE_ZERO_ID;
 	private String altTrackNum = CtiUtilities.STRING_NONE;
-    private String temperatureUnit = TemperatureUnit.FAHRENHEIT.toString();
+    private String temperatureUnit = TemperatureUnit.FAHRENHEIT.getLetter();
     
 	//non-persistent data, 
 	//contains com.cannontech.database.data.lite.LiteContact

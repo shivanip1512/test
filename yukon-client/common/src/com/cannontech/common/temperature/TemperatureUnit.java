@@ -1,10 +1,8 @@
 package com.cannontech.common.temperature;
 
 import com.cannontech.common.i18n.DisplayableEnum;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.common.util.xml.XmlRepresentation;
-
 
 public enum TemperatureUnit implements DatabaseRepresentationSource, DisplayableEnum {
 
@@ -38,11 +36,13 @@ public enum TemperatureUnit implements DatabaseRepresentationSource, Displayable
         }
     }
 
-    public String getFormatKey() {
+    @Override
+	public String getFormatKey() {
         return "yukon.common.temperatureUnit." + name();
     }
 
-    public Object getDatabaseRepresentation() {
+    @Override
+	public Object getDatabaseRepresentation() {
         return getLetter();
     }
 }
