@@ -97,10 +97,10 @@ public class YukonResultSetTest {
 
     	Boolean falseBoolean = (Boolean) resultSet.getObjectOfInputType("false", booleanType())
 							|| (Boolean) resultSet.getObjectOfInputType("0", booleanType())
-							|| (Boolean) resultSet.getObjectOfInputType("n", booleanType())
-							|| (Boolean) resultSet.getObjectOfInputType("", booleanType())
-							|| (Boolean) resultSet.getObjectOfInputType("  ", booleanType());
+							|| (Boolean) resultSet.getObjectOfInputType("n", booleanType());
     	assertFalse(falseBoolean);
+
+    	assertNull(resultSet.getObjectOfInputType("", booleanType()));
 
     	try {
         	resultSet.getObjectOfInputType("abc", booleanType());
@@ -112,43 +112,49 @@ public class YukonResultSetTest {
 
     @Test
     public void test_getObjectByInputType_stringType() throws SQLException {
-    	String abc = (String) resultSet.getObjectOfInputType("abc", stringType());
+        String abc = (String) resultSet.getObjectOfInputType("", stringType());
+        assertNull(abc);
+ 
+    	abc = (String) resultSet.getObjectOfInputType("abc", stringType());
     	assertTrue(abc.equals("abc"));
     }
 
     @Test
     public void test_getObjectByInputType_integerType() throws SQLException {
-    	Integer abc = (Integer) resultSet.getObjectOfInputType("42", integerType());
-    	assertTrue(abc.equals(42));
+        Integer nullNum = (Integer) resultSet.getObjectOfInputType("", integerType());
+        assertNull(nullNum);
+
+    	Integer fortyTwo = (Integer) resultSet.getObjectOfInputType("42", integerType());
+    	assertTrue(fortyTwo.equals(42));
     }
 
     @Test
     public void test_getObjectByInputType_doubleType() throws SQLException {
-    	Double abc = (Double) resultSet.getObjectOfInputType("42.421", new DoubleType());
-    	assertTrue(abc.equals(42.421));
-    	
-    	abc = (Double) resultSet.getObjectOfInputType("42", new DoubleType());
-    	assertTrue(abc.equals(42d));
+    	Double fortyTwo = (Double) resultSet.getObjectOfInputType("42.421", new DoubleType());
+    	assertTrue(fortyTwo.equals(42.421));
+
+    	fortyTwo = (Double) resultSet.getObjectOfInputType("42", new DoubleType());
+    	assertTrue(fortyTwo.equals(42d));
     }
 
     @Test
     public void test_getObjectByInputType_enumType() throws SQLException {
     	PlanOldEnum apple =  (PlanOldEnum)resultSet.getObjectOfInputType("APPLE", 
     			InputTypeFactory.enumType(PlanOldEnum.class));
-    	
+
     	assertSame(apple, PlanOldEnum.APPLE);
-    	
+
     	try {
     		resultSet.getObjectOfInputType("GRAPE", InputTypeFactory.enumType(PlanOldEnum.class));
         	fail("'GRAPE' shouldn't return a valid PlainOldEnum type");
     	} catch (IllegalArgumentException e) {
     		/* expected */
     	}
-    	
+
     	EnumWithDatabaseRep apple2 = 
     			(EnumWithDatabaseRep)resultSet.getObjectOfInputType("APPLE_DBREP", 
     					InputTypeFactory.enumType(EnumWithDatabaseRep.class));
-    	
+
     	assertSame(apple2, EnumWithDatabaseRep.APPLE);
 
     	try {
@@ -158,7 +164,7 @@ public class YukonResultSetTest {
     		/* expected */
     	}
     }
-    
+
     @Test(expected=UnsupportedOperationException.class)
     public void test_getObjectByInputType_unsupportedType() throws SQLException {
     	resultSet.getObjectOfInputType("anything", new DateType());
