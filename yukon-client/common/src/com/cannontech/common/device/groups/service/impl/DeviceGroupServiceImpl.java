@@ -29,14 +29,12 @@ import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.database.YukonJdbcTemplate;
 import com.google.common.collect.Iterables;
 
 public class DeviceGroupServiceImpl implements DeviceGroupService {
     
     @Autowired private DeviceGroupProviderDao deviceGroupDao;
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
-    @Autowired private YukonJdbcTemplate jdbcTemplate;
 
     private Logger log = YukonLogManager.getLogger(DeviceGroupServiceImpl.class);
     
