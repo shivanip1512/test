@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.Instant;
 import org.joda.time.ReadablePeriod;
 import org.joda.time.format.ISOPeriodFormat;
@@ -69,10 +70,14 @@ public class YukonResultSet {
     public Object getObjectOfInputType(String columnLabel, InputType<?> type) throws SQLException {
     	Class<?> valueType = type.getTypeClass();
 
+    	String valueStr = getString(columnLabel);
+    	if (StringUtils.isBlank(valueStr)) {
+    	    return null;
+    	}
     	if(valueType == Boolean.class) {
         	return getBoolean(columnLabel);
         } else if(valueType == String.class) {
-        	return getString(columnLabel);
+        	return valueStr;
         } else if(valueType == Integer.class) {
         	return getInt(columnLabel);
         } else if (valueType == Double.class) {
