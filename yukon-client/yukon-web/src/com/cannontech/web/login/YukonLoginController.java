@@ -149,8 +149,4 @@ public class YukonLoginController extends MultiActionController {
         return null;
     }
 
-    public ModelAndView inboundVoiceLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        loginService.inboundVoiceLogin(request, response);
-        return null;
-    }
 }

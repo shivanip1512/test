@@ -43,11 +43,7 @@ public interface SystemEventLogService {
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.login")
     public void loginClient(@Arg(ArgEnum.username) LiteYukonUser user,
                             @Arg(ArgEnum.remoteAddress) String remoteAddress);
-    
-    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.login")
-    public void loginInboundVoice(@Arg(ArgEnum.username) LiteYukonUser user,
-                                  @Arg(ArgEnum.remoteAddress) String remoteAddress);
-    
+        
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.login")
     public void loginOutboundVoice(@Arg(ArgEnum.username) LiteYukonUser user,
                                    @Arg(ArgEnum.remoteAddress) String remoteAddress);    

@@ -55,7 +55,6 @@
                 <prop key="LOGOUT">logout</prop>
                 <prop key="CLIENTLOGIN">clientLogin</prop>
                 <prop key="VOICELOGIN">outboundVoiceLogin</prop>
-                <prop key="INBOUNDVOICELOGIN">inboundVoiceLogin</prop>
             </props>
         </property>
     </bean>

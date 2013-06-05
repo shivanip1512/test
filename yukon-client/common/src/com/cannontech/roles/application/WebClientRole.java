@@ -18,7 +18,6 @@ public interface WebClientRole {
 	public static final int NAV_CONNECTOR_MIDDLE = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 8;	// MidConnector.gif
     // -9 was moved to EnergyCompanyRole then moved to EnergyCompanySetting
 	// -10 was removed YUK-9135
-	public static final int INBOUND_VOICE_HOME_URL = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 11;
 	public static final int JAVA_WEB_START_LAUNCHER_ENABLED = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 12;
 	public static final int SUPPRESS_ERROR_PAGE_DETAILS = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 14;
 	public static final int DATA_UPDATER_DELAY_MS = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 15;

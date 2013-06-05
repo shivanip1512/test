@@ -42,10 +42,7 @@ import com.cannontech.web.stars.service.PasswordResetService;
 
 public class LoginServiceImpl implements LoginService {
     private static final String INVALID_PARAMS = "failed=true";
-    private static final String INVALID_INBOUND_URI = "/voice/inboundLogin.jsp";
     private static final String VOICE_ROOT = "/voice";
-    private static final String PHONE_NUMBER = "PHONE";
-    private static final String PIN = "PIN";
     private static final String USERNAME = com.cannontech.common.constants.LoginController.USERNAME;
     private static final String PASSWORD = com.cannontech.common.constants.LoginController.PASSWORD;
     private static final String TOKEN = com.cannontech.common.constants.LoginController.TOKEN;
@@ -56,7 +53,6 @@ public class LoginServiceImpl implements LoginService {
     private static final String LOGOUT_ACTIVITY_LOG = com.cannontech.database.data.activity.ActivityLogActions.LOGOUT_ACTIVITY_LOG;
     private static final String LOGIN_FAILED_ACTIVITY_LOG = com.cannontech.database.data.activity.ActivityLogActions.LOGIN_FAILED_ACTIVITY_LOG;
     private static final String OUTBOUND_LOGIN_VOICE_ACTIVITY_ACTION = com.cannontech.database.data.activity.ActivityLogActions.LOGIN_VOICE_ACTIVITY_ACTION;
-    private static final String INBOUND_LOGIN_VOICE_ACTIVITY_ACTION = "LOG IN (INBOUND VOICE)";
 
     private List<SessionInitializer> sessionInitializers;
 
@@ -161,43 +157,6 @@ public class LoginServiceImpl implements LoginService {
         }        
 
         response.sendRedirect(redirect);
-    }
-
-    @Override
-    public void inboundVoiceLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String phone = request.getParameter(PHONE_NUMBER); // phone number
-        String pin = request.getParameter(PIN); // pin
-        String tries = request.getParameter("TRIES"); // pin
-
-        LiteYukonUser user = authDao.inboundVoiceLogin(phone, pin);
-
-        if( user != null) {
-            HttpSession session = request.getSession();
-
-            if (session != null && session.getAttribute(YUKON_USER) != null) {
-                session.invalidate();
-                session = request.getSession(true);
-            }                   
-
-            initSession(user, session, request);
-            ActivityLogger.logEvent(
-                                    INBOUND_LOGIN_VOICE_ACTIVITY_ACTION, 
-                                    "INBOUND VOICE User " + user.getUsername() + " (userid=" + 
-                                    user.getUserID() + ") has logged in from " + request.getRemoteAddr());
-            systemEventLogService.loginInboundVoice(user, request.getRemoteAddr());
-            response.sendRedirect(
-                                  request.getContextPath() + 
-                                  rolePropertyDao.getPropertyStringValue(
-                                		  YukonRoleProperty.INBOUND_VOICE_HOME_URL, user));
-        } else {
-
-            ActivityLogger.logEvent(
-                                    INBOUND_LOGIN_VOICE_ACTIVITY_ACTION, 
-                                    "INBOUND VOICE User could not be logged in with phone: " + 
-                                    phone + " from " + 
-                                    request.getRemoteAddr());
-            response.sendRedirect(request.getContextPath() + INVALID_INBOUND_URI + "?TRIES=" + tries);
-        }
     }
 
     @Override

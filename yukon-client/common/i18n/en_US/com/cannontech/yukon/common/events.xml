@@ -372,7 +372,6 @@
     <entry key="yukon.common.events.system.login.loginPasswordChangeAttempted">User {1} attempted to change password. Source: {2}</entry>
 
     <entry key="yukon.common.events.system.login.loginClient">User {1} logged in via GUI Client from remote address {2}.</entry>
-    <entry key="yukon.common.events.system.login.loginInboundVoice">User {1} logged in via Inbound voice from remote address {2}.</entry>
     <entry key="yukon.common.events.system.login.loginOutboundVoice">User {1} logged in via Outbound voice from remote address {2}.</entry>    
     
     <!--  System Administration -->

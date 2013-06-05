@@ -82,11 +82,6 @@ public class AuthDaoAdapter implements AuthDao {
 	}
 
 	@Override
-	public LiteYukonUser inboundVoiceLogin(String phoneNumber, String pin) {
-		throw new UnsupportedOperationException("not implemented");
-	}
-
-	@Override
 	public boolean isAdminUser(String username_) {
 		throw new UnsupportedOperationException("not implemented");
 	}

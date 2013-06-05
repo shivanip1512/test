@@ -190,44 +190,6 @@ public class AuthDaoImpl implements AuthDao {
         return false;
     }    
 
-    public LiteYukonUser inboundVoiceLogin(String phoneNumber, String pin){
-        
-        LiteYukonUser user = null;
-        
-        int[] phoneTypes = new int[]{YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE};
-        
-        LiteContact[] contacts = contactDao.getContactsByPhoneNo(phoneNumber, phoneTypes);
-            
-        // If no contact is found, try adding '-'s to the phone number
-        if((contacts == null || contacts.length == 0) && phoneNumber.length() == 10) {
-
-            String dashedPhoneNumber = phoneNumber.substring(0, 3) + "-" + phoneNumber.substring(3, 6) + "-" + phoneNumber.substring(6);
-
-            contacts = contactDao.getContactsByPhoneNo(dashedPhoneNumber, phoneTypes);
-
-        } 
-        
-        // If still no contact is found, login failed - return null
-        if(contacts == null || contacts.length == 0) {
-            CTILogger.info("An INBOUND VOICE login with phone number: " + phoneNumber + " and pin: " + pin + " was unsuccessful - No contacts were found.");
-
-            return user;
-        
-        }
-        if(contacts.length > 1) {
-            CTILogger.info("An INBOUND VOICE login with phone number: " + phoneNumber + " and pin: " + pin + " was unsuccessful - More than one contact was found.");
-            
-            return user;
-            
-        }
-        
-        LiteContact contact = contacts[0];
-
-        user = voiceLogin(contact.getContactID(), pin);
-        
-        return user;
-    }
-
 	public LiteYukonUser voiceLogin(int contactid, String pin) {
 			
 		LiteContact lContact = contactDao.getContact( contactid );

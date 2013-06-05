@@ -148,17 +148,6 @@ public interface AuthDao {
     public boolean hasExlusiveAccess(LiteYukonUser user, int paoID);
 
     /**
-     * Attemps to login a voice user by phone number and voice pin.  The phone number will 
-     * be matched against Home Phone and Work Phone.  
-     * 
-     * @param phoneNumber - User's phone number
-     * @param pin - User's pin
-     * 
-     * @return Logged in user or null if login was unsuccessful
-     */
-    public LiteYukonUser inboundVoiceLogin(String phoneNumber, String pin);
-
-    /**
      * Attempts to log a voice user into the system using the
      * given ContactID and pin. If the PIN is matched to any PIN 
      * the contact hast, then we are logged in. Returns null if

@@ -32,9 +32,7 @@ public interface LoginService {
     public void clientLogin(HttpServletRequest request, HttpServletResponse response) throws Exception;
     
     public void outboundVoiceLogin(HttpServletRequest request, HttpServletResponse response) throws Exception;
-    
-    public void inboundVoiceLogin(HttpServletRequest request, HttpServletResponse response) throws Exception;
-    
+        
     public LiteYukonUser internalLogin(HttpServletRequest request, HttpSession session, String username, boolean saveCurrentUser);
     
 }

@@ -503,7 +503,6 @@ public class DevEventLogCreationService {
                 systemEventLogService.usernameChanged(user, oldUsername, newUsername);
                 systemEventLogService.loginWeb(user, remoteAddress);
                 systemEventLogService.loginClient(user, remoteAddress);
-                systemEventLogService.loginInboundVoice(user, remoteAddress);
                 systemEventLogService.loginOutboundVoice(user, remoteAddress);
                 systemEventLogService.rphDeleteDuplicates(rowsDeleted, start, finish);
                 systemEventLogService.rphDeleteDanglingEntries(rowsDeleted, start, finish);

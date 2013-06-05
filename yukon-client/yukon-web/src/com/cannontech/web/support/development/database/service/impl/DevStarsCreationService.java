@@ -188,7 +188,6 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             setRoleProperty(roleGroup, YukonRoleProperty.LOG_IN_URL, " ");
             setRoleProperty(roleGroup, YukonRoleProperty.NAV_CONNECTOR_BOTTOM, " ");
             setRoleProperty(roleGroup, YukonRoleProperty.NAV_CONNECTOR_MIDDLE, " ");
-            setRoleProperty(roleGroup, YukonRoleProperty.INBOUND_VOICE_HOME_URL, " ");
 
             setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_ACCOUNT_GENERAL,true);
             setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY,true);
