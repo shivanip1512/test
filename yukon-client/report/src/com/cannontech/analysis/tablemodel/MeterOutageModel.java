@@ -1,441 +1,240 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.RowCallbackHandler;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.analysis.ColumnProperties;
-import com.cannontech.analysis.ReportFilter;
-import com.cannontech.analysis.data.device.MeterAndPointData;
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.pao.PaoUtils;
+import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.TimeUtil;
-import com.cannontech.database.JdbcTemplateHelper;
+import com.cannontech.core.dao.RawPointHistoryDao;
+import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
+import com.cannontech.core.dao.RawPointHistoryDao.Order;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
+import com.cannontech.util.NaturalOrderComparator;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ListMultimap;
 
-/**
- * Created on Dec 15, 2003
- * MeterData TableModel object
- *  String deviceName	- YukonPaobject.paoName
- *  String pointName	- Point.pointName
- *  Integer pointID		- Point.pointID
- *  String routeName  
- * @author snebben
- */
-public class MeterOutageModel extends ReportModelBase<MeterAndPointData>
-{
-	/** Number of columns */
-	protected final int NUMBER_COLUMNS = 7;
-	
-	/** Enum values for column representation */
-	public final static int DEVICE_NAME_COLUMN = 0;
-	public final static int DEVICE_TYPE_COLUMN = 1;
-	public final static int METER_NUMBER_COLUMN = 2;
-	public final static int PHYSICAL_ADDRESS_COLUMN = 3;
-	public final static int ROUTE_NAME_COLUMN = 4;
-	public final static int DATE_TIME_COLUMN = 5;
-	public final static int DURATION = 6;
-//	public final static int POINT_NAME_COLUMN = 7;
+public class MeterOutageModel extends FilteredReportModelBase<MeterOutageModel.MeterOutageRow> implements Comparator<MeterOutageModel.MeterOutageRow> {
 
-	/** String values for column representation */
-	public final static String DEVICE_NAME_STRING = "Device Name";
-	public final static String DEVICE_TYPE_STRING = "Type";
-	public final static String METER_NUMBER_STRING = "Meter Number";
-	public final static String PHYSICAL_ADDRESS_STRING = "Address";
-	public final static String ROUTE_NAME_STRING = "Route Name";
-	public final static String DATE_TIME_STRING = "Date/Time";
-	public final static String DURATION_STRING = "Duration";
-	public final static String POINT_NAME_STRING = "Point Name";
+    @Autowired private RawPointHistoryDao rawPointHistoryDao;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 
-	/** Class fields */
-	private int minOutageSecs = 0;
-	public static final int ORDER_BY_DEVICE_NAME = 0;
-	public static final int ORDER_BY_TIMESTAMP = 1;
-	public static final int ORDER_BY_DURATION = 2;
-
-	private int orderBy = ORDER_BY_DEVICE_NAME;	//default
-	private static final int[] ALL_ORDER_BYS = new int[]
-	{
-		ORDER_BY_DEVICE_NAME, ORDER_BY_TIMESTAMP, ORDER_BY_DURATION
-	};
-
-	//servlet attributes/parameter strings
-	private static final String ATT_ORDER_BY = "orderBy";
-	private static final String ATT_MINIMUM_OUTAGE_SECS = "minOutageSecs";
-	/**
-	 * 
-	 */
-	public MeterOutageModel()
-	{
-		this(null);
-	}
-	/**
-	 * 
-	 */
-	public MeterOutageModel(Date start_)
-	{
-		//Long.MIN_VALUE is the default (null) value for time
-		super(start_, null);
-		setFilterModelTypes(new ReportFilter[]{
-                ReportFilter.METER,
-                ReportFilter.DEVICE,
-                ReportFilter.GROUPS}
-                );
-	}
-	/**
-	 * Add MissedMeter objects to data, retrieved from rset.
-	 * @param ResultSet rset
-	 * @throws SQLException 
-	 */
-	public void addDataRow(ResultSet rset) throws SQLException
-	{
-	    Meter meter = new Meter();
-
-	    int paobjectID = rset.getInt(1);
-	    String paoName = rset.getString(2);
-	    meter.setName(paoName);
-        PaoType paoType = PaoType.getForDbString(rset.getString(3));
-        PaoIdentifier paoIdentifier = new PaoIdentifier(paobjectID, paoType);
-        meter.setPaoIdentifier(paoIdentifier);
-	    boolean disabled = CtiUtilities.isTrue(rset.getString(4).charAt(0));
-	    meter.setDisabled(disabled);
-	    String meterNumber = rset.getString(5);
-	    meter.setMeterNumber(meterNumber);
-	    String address = rset.getString(6);
-	    meter.setAddress(address);
-	    int routeID = rset.getInt(7);
-	    meter.setRouteId(routeID);
-	    String routeName = rset.getString(8);
-	    meter.setRoute(routeName);
-	    int pointID = rset.getInt(9);
-	    String pointName = rset.getString(10);
-
-	    Date ts = null;
-	    Double value = null;
-	    Timestamp timestamp = rset.getTimestamp(11);
-	    ts = new Date(timestamp.getTime());
-	    value = new Double(rset.getDouble(12));
-
-	    MeterAndPointData meterAndPointData = new MeterAndPointData(meter, pointID, pointName, ts, value);
-
-	    getData().add(meterAndPointData);
-	}
-
-	/**
-	 * Build the SQL statement to retrieve MissedMeter data.
-	 * @return StringBuffer  an sqlstatement
-	 */
-	public SqlFragmentSource buildSQLStatement()
-	{
-
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, PAO.DISABLEFLAG, ");
-        sql.append(" DMG.METERNUMBER, DCS.ADDRESS, ROUTE.PAOBJECTID, ROUTE.PAONAME, ");
-        sql.append(" P.POINTID, P.POINTNAME, TIMESTAMP, VALUE ");
-
-        sql.append(" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, DEVICECARRIERSETTINGS DCS, ");
-        sql.append(" DEVICEROUTES DR, YUKONPAOBJECT ROUTE, POINT P , RAWPOINTHISTORY RPH");
+    public enum MeterOutageOrderByFilter {
+        DEVICE_NAME("Device Name"),
+        METER_NUMBER("Meter Number"),
+        ROUTE_NAME("Route Name"),
+        TIMESTAMP("Timestamp"),
+        DURATION("Duration"),
+        ;
         
-        sql.append(" WHERE PAO.PAOBJECTID = DMG.DEVICEID ");
-        sql.append(" AND PAO.PAOBJECTID = DCS.DEVICEID ");
-        sql.append(" AND PAO.PAOBJECTID = DR.DEVICEID ");
-        sql.append(" AND ROUTE.PAOBJECTID = DR.ROUTEID ");
-        sql.append(" AND P.POINTID = RPH.POINTID ");
-        sql.append(" AND PAO.PAOBJECTID = P.PAOBJECTID "); 
-
-        sql.append(" AND P.POINTOFFSET = 100 AND P.POINTTYPE = 'Analog' ");	// OUTAGE POINT OFFSET and POINTTYPE
-        sql.append(" AND VALUE >= ").appendArgument(getMinOutageSecs());
-        sql.append(" AND TIMESTAMP > ").appendArgument(getStartDate());
-        sql.append(" AND TIMESTAMP <= ").appendArgument(getStopDate());
-		
-        // RESTRICT BY DEVICE/METER PAOID (if any)
-        String paoIdWhereClause = getPaoIdWhereClause("PAO.PAOBJECTID");
-        if (!StringUtils.isBlank(paoIdWhereClause)) {
-            sql.append(" AND " + paoIdWhereClause);
+        private String displayName;
+        MeterOutageOrderByFilter (String displayName) {
+            this.displayName = displayName;
         }
         
-        // RESTRICT BY GROUPS (if any)
-        final String[] groups = getBillingGroups();
-        if (groups != null && groups.length > 0) {
-            SqlFragmentSource deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
-            sql.append(" AND ", deviceGroupSqlWhereClause);
+        public String getDisplayName() {
+            return displayName;
         }
-        
-		sql.append(" ORDER BY ");	//TODO what to order by?
-		if (getOrderBy() == ORDER_BY_TIMESTAMP)
-			sql.append(" TIMESTAMP " );		
-		else if (getOrderBy() == ORDER_BY_DURATION)
-		    sql.append(" VALUE ");
-		else //if (getOrderBy() == ORDER_BY_DEVICE_NAME) //default
-			sql.append(" PAO.PAONAME ");
+    }
+    private Logger log = YukonLogManager.getLogger(MeterOutageModel.class);
 
-		if( getOrderBy() == DESCENDING)
-		    sql.append(" DESC ");
-		
-		if (getOrderBy() == ORDER_BY_DEVICE_NAME) //add more ordering columns when device name selected
-		    sql.append(", POINTNAME, TIMESTAMP"); 
-		return sql;
-	}
-	
-	@Override
-	public void collectData()
-	{
-		//Reset all objects, new data being collected!
-		setData(null);
-				
-        SqlFragmentSource sql = buildSQLStatement();
-        CTILogger.info(sql.toString()); 
-        CTILogger.info("START DATE > " + getStartDate() + " - STOP DATE <= " + getStopDate());
-        
-        JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
-        template.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
-            @Override
-            public void processRow(ResultSet rs) throws SQLException {
-                addDataRow(rs);
+	/** A string for the title of the data */
+	private static String title = "Outage Report";
+    
+    /** Class fields */
+    private List<MeterOutageRow> data = new ArrayList<MeterOutageRow>();
+    private Attribute attribute = BuiltInAttribute.OUTAGE_LOG;
+    private int minOutageSecs = 0;
+    private MeterOutageOrderByFilter orderBy = MeterOutageOrderByFilter.DEVICE_NAME;
+    private Order orderDirection = Order.FORWARD;
+
+
+    static public class MeterOutageRow {
+        public String deviceName;
+        public String meterNumber;
+        public String address;
+        public String deviceType;
+        public String routeName;
+        public Date timestamp;
+        public String duration;
+
+        public void loadData(Meter meter, PointValueQualityHolder pointValue) {
+            deviceName = meter.getName();
+            meterNumber =meter.getMeterNumber();
+            address = meter.getAddress();
+            deviceType = meter.getPaoType().getPaoTypeName();
+            routeName = meter.getRoute();
+            timestamp = pointValue.getPointDataTimeStamp();
+            duration = TimeUtil.convertSecondsToTimeString(pointValue.getValue());
+        }
+    }
+
+    @Override
+    protected MeterOutageRow getRow(int rowIndex) {
+    	return data.get(rowIndex);
+    }
+    
+    @Override
+    protected Class<MeterOutageRow> getRowClass() {
+    	return MeterOutageRow.class;
+    }
+    
+    @Override
+    public int getRowCount() {
+    	return data.size();
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public void doLoadData() {
+        Iterable<? extends YukonPao> devices = getYukonPaoList();
+        List<Meter> meters = getMetersForYukonPaos(devices);
+
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> intermediateResults;
+        intermediateResults = rawPointHistoryDao.getAttributeData(meters, attribute, getStartDate(), getStopDate(), false, Clusivity.INCLUSIVE_INCLUSIVE, getOrderDirection());
+
+        for (Meter meter : meters) {
+            List<PointValueQualityHolder> values = intermediateResults.get(meter.getPaoIdentifier());
+            for (PointValueQualityHolder pointValueHolder : values) {
+                
+                if (isIncluded(pointValueHolder.getValue())) {    //limit by minimum value filter; COULD BE DONE IN SQL but...
+                    MeterOutageRow meterOutage = new MeterOutageRow();
+                    meterOutage.loadData(meter, pointValueHolder);   //This probably duplicates the memory footprint, need to cleanup.
+            	    data.add(meterOutage);
+            	}
             }
-        });
-		
-		CTILogger.info("Report Records Collected from Database: " + getData().size());
-		return;
-	}
+        }
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
-	 */
-	public Object getAttribute(int columnIndex, Object o)
-	{
-		if ( o instanceof MeterAndPointData)
-		{
-			MeterAndPointData meterPD = ((MeterAndPointData)o);
-			switch( columnIndex)
-			{
-				case DEVICE_NAME_COLUMN:
-					return meterPD.getMeter().getName();
-					
-				case DEVICE_TYPE_COLUMN:
-				    return meterPD.getMeter().getPaoType().getPaoTypeName();
-				    
-				case METER_NUMBER_COLUMN:
-				    return meterPD.getMeter().getMeterNumber();
-				    
-				case PHYSICAL_ADDRESS_COLUMN:
-				    return meterPD.getMeter().getAddress();
-				    
-				case ROUTE_NAME_COLUMN:
-					return meterPD.getMeter().getRoute();
-					
-				case DATE_TIME_COLUMN:
-				    return meterPD.getTimeStamp();
-
-				case DURATION:
-				    return TimeUtil.convertSecondsToTimeString(meterPD.getValue().doubleValue());
-			}
-		}
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.Reportable#getColumnNames()
-	 */
-	public String[] getColumnNames()
-	{
-		if( columnNames == null)
-		{
-			columnNames = new String[]{
-				DEVICE_NAME_STRING,
-				DEVICE_TYPE_STRING,
-				METER_NUMBER_STRING,
-				PHYSICAL_ADDRESS_STRING,
-				ROUTE_NAME_STRING,
-				DATE_TIME_STRING,
-				DURATION_STRING
-			};
-		}
-		return columnNames;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
-	 */
-	public Class[] getColumnTypes()
-	{
-		if( columnTypes == null)
-		{
-			columnTypes = new Class[]{
-				String.class,
-				String.class,
-				String.class,
-				String.class,
-				String.class,
-				Date.class,
-				String.class
-			};
-		}
-		return columnTypes;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.Reportable#getColumnProperties()
-	 */
-	public ColumnProperties[] getColumnProperties()
-	{
-		if(columnProperties == null)
-		{
-			columnProperties = new ColumnProperties[]{
-				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 180, null),
-				new ColumnProperties(180, 1, 80, null),
-				new ColumnProperties(260, 1, 80, null),
-				new ColumnProperties(340, 1, 80, null),
-				new ColumnProperties(420, 1, 120, null),
-				new ColumnProperties(540, 1, 100, "MM/dd/yyyy HH:mm:ss"),
-				new ColumnProperties(640, 1, 80, null)
-			};
-		}
-		return columnProperties;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.Reportable#getTitleString()
-	 */
-	public String getTitleString()
-	{
-	    String title = "Outage Report";
-		return title;
-	}
+        //Order the records
+        Collections.sort(data, this);
+        
+        log.info("Report Records Collected from Database: " + data.size());
+    }
 	
-	/**
-	 * @return
-	 */
-	public int getOrderBy()
-	{
-		return orderBy;
-	}
+    private <I extends YukonPao> List<Meter> getMetersForYukonPaos(Iterable<I> identifiers) {
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
 
-	/**
-	 * @param i
-	 */
-	public void setOrderBy(int i)
-	{
-		orderBy = i;
-	}
+        SqlFragmentGenerator<I> sqlGenerator = new SqlFragmentGenerator<I>() {
+            @Override
+            public SqlFragmentSource generate(List<I> subList) {
+                ImmutableList<Integer> paoIdList = PaoUtils.asPaoIdList(subList);
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT ypo.paobjectId, ypo.paoName, ypo.type, ypo.disableFlag,");
+                sql.append("dmg.meterNumber, dcs.address, dr.routeId, rypo.paoName as route,");
+                sql.append("rfna.serialNumber");
+                sql.append("FROM YukonPaobject ypo");
+                sql.append("JOIN Device d ON ypo.paObjectId = d.deviceId");
+                sql.append("JOIN DeviceMeterGroup dmg ON d.deviceId = dmg.deviceId");
+                sql.append("LEFT JOIN DeviceCarrierSettings dcs ON d.deviceId = dcs.deviceId");
+                sql.append("LEFT JOIN DeviceRoutes dr ON d.deviceId = dr.deviceId");
+                sql.append("LEFT JOIN YukonPaobject rypo ON dr.routeId = rypo.paObjectId");
+                sql.append("LEFT JOIN RFNAddress rfna ON rfna.deviceId = d.deviceid");
+                sql.append("WHERE ypo.paObjectId").in(paoIdList);
+                return sql;
+            }
+        };
+
+        YukonRowMapper<Meter> rowMapper = new YukonRowMapper<Meter>() {
+
+            /**
+             * NOTE! This mapper overloads the meter.address field with either the plc address or rfn serial number.
+             */
+            @Override
+            public Meter mapRow(YukonResultSet rs) throws SQLException {
+                int paobjectId = rs.getInt("paobjectId");
+                PaoType paoType = rs.getEnum("type", PaoType.class);
+                PaoIdentifier paoIdentifier = new PaoIdentifier(paobjectId, paoType);
+
+                Meter meter = new Meter();
+                meter.setPaoIdentifier(paoIdentifier);
+                meter.setName(rs.getString("paoName"));
+                meter.setMeterNumber(rs.getString("meterNumber"));
+                String address = rs.getString("address");
+                if (address == null) {  //try to load the rfn address
+                    address = rs.getString("serialNumber");
+                }
+                meter.setAddress(address);
+                meter.setRoute(rs.getString("route"));
+                meter.setDisabled(rs.getBoolean("disableFlag"));
+
+                return meter;
+            }
+        };
+
+        List<Meter> result = template.query(sqlGenerator, identifiers, rowMapper);
+        return Collections.unmodifiableList(result);
+    }
 	
-	public String getOrderByString(int orderBy)
-	{
-		switch (orderBy)
-		{
-			case ORDER_BY_DEVICE_NAME:
-				return "Device Name";
-			case ORDER_BY_TIMESTAMP:
-				return "Timestamp";
-			case ORDER_BY_DURATION:
-			    return "Duration";
-		}
-		return "UNKNOWN";
-	}
-	public static int[] getAllOrderBys()
-	{
-		return ALL_ORDER_BYS;
-	}
-	@Override
-	public String getHTMLOptionsTable()
-	{
-		String html = "";
-		html += "<table align='center' width='90%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
-		html += "  <tr>" + LINE_SEPARATOR;
-		
-		html += "    <td valign='top'>" + LINE_SEPARATOR;
-		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
-		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td class='TitleHeader'>&nbsp;Minimum Outage Duration</td>";
-		html += "        </tr>" + LINE_SEPARATOR;
-		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td class='main'>";
-		html += "            <input type='text' name='"+ATT_MINIMUM_OUTAGE_SECS +"' value='" + getMinOutageSecs() + "'>&nbsp;seconds";  
-		html += "          </td>" + LINE_SEPARATOR;
-		html += "        </tr>" + LINE_SEPARATOR;
-		html += "      </table>" + LINE_SEPARATOR;
-		html += "    </td>" + LINE_SEPARATOR;		
+    @Override
+    public int compare(MeterOutageRow o1, MeterOutageRow o2) {
 
-		html += "    <td valign='top'>" + LINE_SEPARATOR;
-		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
-		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td class='TitleHeader'>&nbsp;Order By</td>" +LINE_SEPARATOR;
-		html += "        </tr>" + LINE_SEPARATOR;
-		for (int i = 0; i < getAllOrderBys().length; i++)
-		{
-			html += "        <tr>" + LINE_SEPARATOR;
-			html += "          <td><input type='radio' name='"+ATT_ORDER_BY+"' value='" + getAllOrderBys()[i] + "' " +  
-			 (i==0? "checked" : "") + ">" + getOrderByString(getAllOrderBys()[i])+ LINE_SEPARATOR;
-			html += "          </td>" + LINE_SEPARATOR;
-			html += "        </tr>" + LINE_SEPARATOR;
-		}
-		html += "      </table>" + LINE_SEPARATOR;
-		html += "    </td>" + LINE_SEPARATOR;
+        if (orderBy == MeterOutageOrderByFilter.METER_NUMBER) {
+            NaturalOrderComparator noComp = new NaturalOrderComparator();
+            return noComp.compare(o1.meterNumber, o2.meterNumber);
+        }
 
-		html += "    <td valign='top'>" + LINE_SEPARATOR;
-		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;		
-		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td class='TitleHeader'>&nbsp;Order Direction</td>" +LINE_SEPARATOR;
-		html += "        </tr>" + LINE_SEPARATOR;
-		for (int i = 0; i < getAllSortOrders().length; i++)
-		{
-			html += "        <tr>" + LINE_SEPARATOR;
-			html += "          <td><input type='radio' name='" +ATT_SORT_ORDER + "' value='" + getAllSortOrders()[i] + "' " +  
-			 (i==0? "checked" : "") + ">" + getSortOrderString(getAllSortOrders()[i])+ LINE_SEPARATOR;
-			html += "          </td>" + LINE_SEPARATOR;
-			html += "        </tr>" + LINE_SEPARATOR;
-		}
-		html += "      </table>" + LINE_SEPARATOR;
-		html += "    </td>" + LINE_SEPARATOR;
-		
-		html += "  </tr>" + LINE_SEPARATOR;
-		html += "</table>" + LINE_SEPARATOR;
-		return html;
-	}
-	@Override
-	public void setParameters( HttpServletRequest req )
-	{
-		super.setParameters(req);
-		if( req != null)
-		{
-			String param = req.getParameter(ATT_MINIMUM_OUTAGE_SECS);
-			if( param != null)
-				setMinOutageSecs(Integer.valueOf(param).intValue());
-			else
-				setMinOutageSecs(0);
+        if (orderBy == MeterOutageOrderByFilter.ROUTE_NAME) {
+            return o1.routeName.compareToIgnoreCase(o2.routeName);
+        } 
 
-			param = req.getParameter(ATT_ORDER_BY);
-			if( param != null)
-				setOrderBy(Integer.valueOf(param).intValue());
-			else
-				setOrderBy(ORDER_BY_DEVICE_NAME);
-		}
-	}
+        if (orderBy == MeterOutageOrderByFilter.TIMESTAMP) {
+            return o1.timestamp.compareTo(o2.timestamp);
+        }
 
-    /**
-     * @return Returns the minOutageSecs.
-     */
-    public int getMinOutageSecs()
-    {
+        if (orderBy == MeterOutageOrderByFilter.DURATION) {
+            return o1.duration.compareTo(o2.duration);
+        }
+
+        return o1.deviceName.compareToIgnoreCase(o2.deviceName);
+    }
+
+
+    private boolean isIncluded(double value) {
+        return value >= getMinOutageSecs();
+    }
+
+    
+    public void setMinOutageSecs(int minOutageSecs) {
+        this.minOutageSecs = minOutageSecs;
+    }
+    
+    public int getMinOutageSecs() {
         return minOutageSecs;
     }
-    /**
-     * @param minOutageSecs The minOutageSecs to set.
-     */
-    public void setMinOutageSecs(int minOutageSecs)
-    {
-        this.minOutageSecs = minOutageSecs;
+    
+    public void setOrderBy(MeterOutageOrderByFilter orderBy) {
+        this.orderBy = orderBy;
+    }
+    
+    public void setOrderDirection(Order orderDirection) {
+        this.orderDirection = orderDirection;
+    }
+    
+    public Order getOrderDirection() {
+        return orderDirection;
     }
 }

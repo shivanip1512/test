@@ -54,7 +54,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
     public final static String DISABLED_STRING = "Disabled";
     public final static String PAO_TYPE_STRING = "Type";
 	public final static String METER_NUMBER_STRING = "Meter #";
-	public final static String PHYSICAL_ADDRESS_STRING = "Address";
+	public final static String PHYSICAL_ADDRESS_STRING = "Address/Serial#";
 	public final static String ROUTE_NAME_STRING = "Route Name";
 	public final static String TIMESTAMP_STRING= "Timestamp";
     
@@ -137,6 +137,9 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
             String meterNumber = rset.getString("meterNumber");
             meter.setMeterNumber(meterNumber);
             String address = rset.getString("address");
+            if (address == null) {
+                address = rset.getString("serialNumber");               
+            }
             meter.setAddress(address);
             int routeID = rset.getInt("routeId");
             meter.setRouteId(routeID);
@@ -167,7 +170,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT");
         sql.append("  PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, PAO.DISABLEFLAG, DMG.METERNUMBER, DCS.ADDRESS,");
-        sql.append("  ROUTE.PAOBJECTID as routeId, ROUTE.PAONAME as routeName");
+        sql.append("  ROUTE.PAOBJECTID as routeId, ROUTE.PAONAME as routeName, RFNA.SerialNumber");
 
 		if (getMeterReadType() == SUCCESS_METER_READ_TYPE) {
             sql.append(", RPH.maxTime as TIMESTAMP");
@@ -175,9 +178,10 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 
         sql.append("FROM YukonPaObject PAO");
         sql.append("  JOIN DeviceMeterGroup DMG on PAO.PAOBJECTID = DMG.DEVICEID");
-        sql.append("  JOIN DeviceCarrierSettings DCS on PAO.PAOBJECTID = DCS.DEVICEID");
-        sql.append("  JOIN DeviceRoutes DR on PAO.PAOBJECTID = DR.DEVICEID");
-        sql.append("  JOIN YukonPaObject ROUTE on ROUTE.PAOBJECTID = DR.ROUTEID");
+        sql.append("  LEFT JOIN DeviceCarrierSettings DCS on PAO.PAOBJECTID = DCS.DEVICEID");
+        sql.append("  LEFT JOIN DeviceRoutes DR on PAO.PAOBJECTID = DR.DEVICEID");
+        sql.append("  LEFT JOIN YukonPaObject ROUTE on ROUTE.PAOBJECTID = DR.ROUTEID");
+        sql.append("  LEFT JOIN RFNAddress RFNA ON PAO.PaobjectId = RFNA.DeviceId");
         
         if( getMeterReadType() == SUCCESS_METER_READ_TYPE) {
             sql.append("  JOIN (");
@@ -254,7 +258,8 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
-	public Object getAttribute(int columnIndex, Object o)
+	@Override
+    public Object getAttribute(int columnIndex, Object o)
 	{
 		if ( o instanceof MeterAndPointData)
 		{
@@ -290,7 +295,8 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnNames()
 	 */
-	public String[] getColumnNames()
+	@Override
+    public String[] getColumnNames()
 	{
 		if( columnNames == null)
 		{
@@ -324,7 +330,8 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
 	 */
-	public Class[] getColumnTypes()
+	@Override
+    public Class[] getColumnTypes()
 	{
 		if( columnTypes == null)
 		{
@@ -358,7 +365,8 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnProperties()
 	 */
-	public ColumnProperties[] getColumnProperties()
+	@Override
+    public ColumnProperties[] getColumnProperties()
 	{
 		if(columnProperties == null)
 		{
@@ -394,7 +402,8 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getTitleString()
 	 */
-	public String getTitleString()
+	@Override
+    public String getTitleString()
 	{
 	    String title = "";
 	    if( getMeterReadType() == SUCCESS_METER_READ_TYPE)
@@ -557,6 +566,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 	    super.setFilterModelType(filterModelType);
 	}
     
+    @Override
     public int compare(MeterAndPointData o1, MeterAndPointData o2) {
 
         String thisVal = NULL_STRING;

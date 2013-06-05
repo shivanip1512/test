@@ -22,9 +22,9 @@ public enum ReportTypes implements DisplayableEnum {
     REPEATER_ROLE_COLLISION(RepeaterRoleCollisionModel.class, ReportGroup.DATABASE),
         
     METER_READ(MeterReadModel.class, ReportGroup.METERING),
-    METER_OUTAGE_LOG(MeterOutageModel.class, ReportGroup.METERING),
+    METER_OUTAGE_LOG(MeterOutageController.class, ReportGroup.METERING),
     METER_OUTAGE_COUNT(MeterOutageCountModel.class, ReportGroup.METERING),
-    METER_DISCONNECT_STATUS(DisconnectModel.class, ReportGroup.METERING),
+    METER_DISCONNECT_STATUS(DisconnectController.class, ReportGroup.METERING),
     LP_SETUP_DATA(LPSetupDBModel.class, ReportGroup.METERING),
     LP_POINT_DATA_SUMMARY(LPDataSummaryModel.class, ReportGroup.METERING),      
     SCHEDULED_METER_READS(ScheduledMeterReadModel.class, ReportGroup.METERING),
@@ -98,20 +98,17 @@ public enum ReportTypes implements DisplayableEnum {
     ZIGBEE_CONTROL_EVENT_DEVICE(ZigbeeControlledDeviceController.class, ReportGroup.LOAD_MANAGEMENT);
 
     
-    @SuppressWarnings("unchecked")
-    private ReportTypes(Class modelClass, ReportGroup reportGroup) {
+    private ReportTypes(Class<?> modelClass, ReportGroup reportGroup) {
         this.modelClass = modelClass;
         this.reportGroup = reportGroup;
     }
     
     /** Class <? extends ReportModelBase> modelClass; OR Class <? extends ReportController> modelClass*/
-    @SuppressWarnings("unchecked")
-    private Class modelClass;
+    private Class<?> modelClass;
     private ReportGroup reportGroup;
     private static final String baseKey = "yukon.web.reportTypes.";
     
-    @SuppressWarnings("unchecked")
-    public Class getModelClass() {
+    public Class<?> getModelClass() {
         return modelClass;
     }
 
@@ -121,11 +118,11 @@ public enum ReportTypes implements DisplayableEnum {
 
     @Override
     public String getFormatKey() {
-        return this.baseKey + name();
+        return baseKey + name();
     }
 
     public String getDescriptionKey() {
-    	return this.baseKey + name() + ".description";
+    	return baseKey + name() + ".description";
     }
 
     /**
@@ -171,7 +168,6 @@ public enum ReportTypes implements DisplayableEnum {
      * @return com.cannontech.database.model.DBTreeModel
      * @param type int
      */
-    @SuppressWarnings("unchecked")
     public static ReportController create(ReportTypes reportType) {
     
         ReportController returnVal = null;
@@ -181,11 +177,11 @@ public enum ReportTypes implements DisplayableEnum {
             // What's about to happen here isn't pretty.
             // I'm trying to bridge the gap between the old
             // way of creating reports and the new way.
-            Class modelClass = reportType.getModelClass();
+            Class<?> modelClass = reportType.getModelClass();
             if (ReportController.class.isAssignableFrom(modelClass)) {
                 returnVal = (ReportController) modelClass.newInstance();
             } else {
-                ReportModelBase oldModel = (ReportModelBase) modelClass.newInstance();
+                ReportModelBase<?> oldModel = (ReportModelBase<?>) modelClass.newInstance();
                 returnVal = new ReportControllerAdapter(oldModel);
             }
             

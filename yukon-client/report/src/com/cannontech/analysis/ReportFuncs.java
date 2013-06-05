@@ -27,7 +27,6 @@ import com.cannontech.analysis.report.CapControlEventLogReport;
 import com.cannontech.analysis.report.CapControlNewActivityReport;
 import com.cannontech.analysis.report.CarrierDBReport;
 import com.cannontech.analysis.report.DailyPeaksReport;
-import com.cannontech.analysis.report.DisconnectReport;
 import com.cannontech.analysis.report.ECActivityDetailReport;
 import com.cannontech.analysis.report.ECActivityLogReport;
 import com.cannontech.analysis.report.HECO_CustomerMonthlyBillingSettlementReport;
@@ -39,7 +38,6 @@ import com.cannontech.analysis.report.LPDataSummaryReport;
 import com.cannontech.analysis.report.LPSetupDBReport;
 import com.cannontech.analysis.report.LoadControlVerificationReport;
 import com.cannontech.analysis.report.MeterOutageCountReport;
-import com.cannontech.analysis.report.MeterOutageReport;
 import com.cannontech.analysis.report.MeterReadReport;
 import com.cannontech.analysis.report.PointDataIntervalReport;
 import com.cannontech.analysis.report.PointDataSummaryReport;
@@ -65,7 +63,6 @@ import com.cannontech.analysis.tablemodel.CapControlEventLogModel;
 import com.cannontech.analysis.tablemodel.CapControlNewActivityModel;
 import com.cannontech.analysis.tablemodel.CarrierDBModel;
 import com.cannontech.analysis.tablemodel.DailyPeaksModel;
-import com.cannontech.analysis.tablemodel.DisconnectModel;
 import com.cannontech.analysis.tablemodel.HECO_CustomerMonthlyBillingSettlementModel;
 import com.cannontech.analysis.tablemodel.HECO_DSMISModel;
 import com.cannontech.analysis.tablemodel.HECO_LMEventSummaryModel;
@@ -76,7 +73,6 @@ import com.cannontech.analysis.tablemodel.LPSetupDBModel;
 import com.cannontech.analysis.tablemodel.LoadControlVerificationModel;
 import com.cannontech.analysis.tablemodel.LoadGroupModel;
 import com.cannontech.analysis.tablemodel.MeterOutageCountModel;
-import com.cannontech.analysis.tablemodel.MeterOutageModel;
 import com.cannontech.analysis.tablemodel.MeterReadModel;
 import com.cannontech.analysis.tablemodel.PointDataIntervalModel;
 import com.cannontech.analysis.tablemodel.PointDataSummaryModel;
@@ -104,15 +100,12 @@ import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.account.model.ProgramLoadGroup;
-import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.IDatabaseCache;
 import com.keypoint.PngEncoder;
 
@@ -139,16 +132,12 @@ public class ReportFuncs
             returnVal = new DailyPeaksReport();
         else if( model instanceof MeterReadModel)
             returnVal = new MeterReadReport();
-        else if( model instanceof MeterOutageModel)
-            returnVal = new MeterOutageReport();
         else if(model instanceof RouteDBModel)  //extends CarrierDBModel, so check this first.
             returnVal = new RouteDBReport();        
         else if( model instanceof CarrierDBModel)
             returnVal = new CarrierDBReport();
         else if( model instanceof MeterOutageCountModel)
             returnVal = new MeterOutageCountReport();
-        else if( model instanceof DisconnectModel)
-            returnVal = new DisconnectReport();
         else if( model instanceof ActivityModel)
             returnVal = new ECActivityLogReport();
         else if( model instanceof RouteMacroModel)
@@ -250,6 +239,7 @@ public class ReportFuncs
         // Add a window closeing event, even though I think it's already handled by setDefaultCloseOperation(..)
         dialog.addWindowListener(new java.awt.event.WindowAdapter()
         {
+            @Override
             public void windowClosing(java.awt.event.WindowEvent e)
             {
                 dialog.setVisible(false);
@@ -265,13 +255,7 @@ public class ReportFuncs
     
     public static List<? extends Object> getObjectsByModelType(ReportFilter filter, int userId) {
         IDatabaseCache cache = (IDatabaseCache) YukonSpringHook.getBean("databaseCache");
-        LiteYukonUser user = null;
-        
-        YukonUserDao yukonUserDao = YukonSpringHook.getBean("yukonUserDao", YukonUserDao.class);
-        if(userId > UserUtils.USER_DEFAULT_ID) {
-            user = yukonUserDao.getLiteYukonUser(userId);
-        }
-        
+
         if( filter.equals(ReportFilter.DEVICE)){
             return cache.getAllDevices();
 
@@ -281,6 +265,7 @@ public class ReportFuncs
         } else if( filter.equals(ReportFilter.GROUPS)){
             List<? extends DeviceGroup> allGroups = ((DeviceGroupUiService)YukonSpringHook.getBean("deviceGroupUiService")).getGroups(new NonHiddenDeviceGroupPredicate());
             List<String> mappingList = new MappingList<DeviceGroup, String>(allGroups, new ObjectMapper<DeviceGroup, String>() {
+                @Override
                 public String map(DeviceGroup from) {
                     return from.getFullName();
                 }
@@ -328,9 +313,10 @@ public class ReportFuncs
             
             if( allPaos != null) {
                 for (LiteYukonPAObject lPao : allPaos) {
-                    if((DeviceTypesFuncs.isRTU(lPao.getPaoType().getDeviceTypeId())  || lPao.getPaoType().getDeviceTypeId() == PAOGroups.DAVISWEATHER)
-                        && !DeviceTypesFuncs.isIon(lPao.getPaoType().getDeviceTypeId()) )                        
-                    rtus.add(lPao);
+                    
+                    if (lPao.getPaoType().isRtu() || lPao.getPaoType() == PaoType.DAVISWEATHER) {
+                        rtus.add(lPao);
+                    }
                 }
             }
             return rtus;

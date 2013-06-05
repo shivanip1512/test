@@ -79,8 +79,14 @@
     <!-- Device Readings Model -->
    <bean id="deviceReadingsModel" class="com.cannontech.analysis.tablemodel.DeviceReadingsModel" scope="prototype"/>
 
+	<!-- Meter Outage Log Model -->
+	<bean id="meterOutageModel" class="com.cannontech.analysis.tablemodel.MeterOutageModel" scope="prototype"/>
+
     <!-- Meter Usage Model -->
    <bean id="meterUsageModel" class="com.cannontech.analysis.tablemodel.MeterUsageModel" scope="prototype"/>
+
+	<!-- Disconnect Status Model -->
+	<bean id="disconnectModel" class="com.cannontech.analysis.tablemodel.DisconnectModel" scope="prototype"/>
 
     <!-- Meter Read Percentage Model -->
    <bean id="meterReadPercentageModel" class="com.cannontech.analysis.tablemodel.MeterReadPercentageModel" scope="prototype"/>
