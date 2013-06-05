@@ -86,9 +86,11 @@ public class OperatorLoginController {
     private LoginBackingBean loginBackingBeanFromYukonUser(LiteYukonUser user) {
         LoginBackingBean login = new LoginBackingBean();
         
-        LiteUserGroup userResidentialUserGroup = userGroupDao.getLiteUserGroup(user.getUserGroupId());
-        if (userResidentialUserGroup != null) {
-            login.setUserGroupName(userResidentialUserGroup.getUserGroupName());
+        if(user.getUserGroupId() != null){
+            LiteUserGroup userResidentialUserGroup = userGroupDao.getLiteUserGroup(user.getUserGroupId());
+            if (userResidentialUserGroup != null) {
+                login.setUserGroupName(userResidentialUserGroup.getUserGroupName());
+            }
         }
         
         login.setLoginEnabled(user.getLoginStatus());
@@ -241,7 +243,7 @@ public class OperatorLoginController {
         
         //save login
         LiteYukonUser liteUser = yukonUserDao.getLiteYukonUser(operatorLogin.getUserId());
-        LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserGroupName(operatorLogin.getUserGroupName());
+        LiteUserGroup userGroup = userGroupDao.findLiteUserGroupByUserGroupName(operatorLogin.getUserGroupName());
         StarsAdminUtil.updateLogin(liteUser, operatorLogin.getUsername(), operatorLogin.getPassword1(),
             operatorLogin.getLoginStatus(), userGroup);
         

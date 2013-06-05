@@ -202,14 +202,16 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
     
     @Override
     public LiteUserGroup getLiteUserGroupByUserId(int userId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT UG.*");
-        sql.append("FROM UserGroup UG");
-        sql.append("  JOIN YukonUser YU ON UG.UserGroupId = YU.UserGroupId");
-        sql.append("WHERE YU.UserId").eq(userId);
-        
-        LiteUserGroup userGroup = yukonJdbcTemplate.queryForObject(sql, new LiteUserGroupRowMapper());
-        return userGroup;
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT UG.*");
+            sql.append("FROM UserGroup UG");
+            sql.append("  JOIN YukonUser YU ON UG.UserGroupId = YU.UserGroupId");
+            sql.append("WHERE YU.UserId").eq(userId);
+            LiteUserGroup userGroup = yukonJdbcTemplate.queryForObject(sql, new LiteUserGroupRowMapper());
+            return userGroup;
+        } catch (EmptyResultDataAccessException e) {}
+        return null;
     }
 
     @Override

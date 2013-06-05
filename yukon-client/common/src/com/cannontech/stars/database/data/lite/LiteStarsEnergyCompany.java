@@ -379,6 +379,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     }
 
     public LiteYukonGroup getOperatorAdminGroup() {
+        LiteYukonGroup adminGroup = null;
         if (operDftGroupID < YukonGroup.EDITABLE_MIN_GROUP_ID) {
 
             List<LiteYukonGroup> groups = yukonGroupDao.getGroupsForUser(user);
@@ -386,12 +387,14 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
                 LiteYukonGroup group = groups.get(i);
                 if (roleDao.getRolesForGroup(group.getGroupID()).contains(YukonRole.OPERATOR_ADMINISTRATOR)) {
                     operDftGroupID = group.getGroupID();
-                    return group;
+                    adminGroup = group;
+                    break;
                 }
             }
+        } else {
+            adminGroup = yukonGroupDao.getLiteYukonGroup(operDftGroupID);
         }
-
-        return yukonGroupDao.getLiteYukonGroup(operDftGroupID);
+        return adminGroup;
     }
     
     /**

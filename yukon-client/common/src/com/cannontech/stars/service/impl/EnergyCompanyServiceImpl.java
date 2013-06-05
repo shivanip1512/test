@@ -30,6 +30,7 @@ import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.EnergyCompanyNameUnavailableException;
+import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -105,6 +106,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Autowired private AccountService accountService;
     @Autowired private UserGroupDao userGroupDao ;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private YukonGroupDao yukonGroupDao;
 
     @Override
     @Transactional(rollbackFor = {ConfigurationException.class, RuntimeException.class})
@@ -372,9 +374,9 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
 
         deleteAllCustomerSelectionLists(energyCompany);
         
-        LiteYukonGroup liteGroup = deleteEnergyCompanyBase(energyCompany, dbAlias);
+        deleteEnergyCompanyBase(energyCompany, dbAlias);
         
-        deletePrivilegeGroupsAndDefaultOperatorLogin(energyCompany, liteGroup);
+        deletePrivilegeGroupsAndDefaultOperatorLogin(energyCompany);
         
         starsEventLogService.deleteEnergyCompany(user, energyCompanyName);
         log.info("Deleting energy company " + energyCompany.getName() + " id# " + energyCompanyId + " completed.");
@@ -393,7 +395,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
      * @param energyCompany
      * @param liteGroup
      */
-    private void deletePrivilegeGroupsAndDefaultOperatorLogin(LiteStarsEnergyCompany energyCompany, LiteYukonGroup liteGroup) {
+    private void deletePrivilegeGroupsAndDefaultOperatorLogin(LiteStarsEnergyCompany energyCompany) {
         // Delete the default operator login
         int defaultUserId = energyCompany.getUser().getUserID();
         if (defaultUserId != com.cannontech.user.UserUtils.USER_ADMIN_ID &&
@@ -407,8 +409,9 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
                                             DbChangeType.DELETE);
         }
         
-        // Delete the privilege group of the default operator login as long as it's not a system group and ends with with 'Admin Grp' 
-        if (liteGroup != null && liteGroup.getGroupName().endsWith(StarsAdminUtil.ROLE_GROUP_EXTENSION) && liteGroup.getGroupID() > -1) {
+        LiteYukonGroup liteGroup = yukonGroupDao.getLiteYukonGroupByName(energyCompany.getName() + " "+ StarsAdminUtil.ROLE_GROUP_EXTENSION);
+        // Delete role group
+        if (liteGroup != null) {
             YukonGroup dftGroup = new YukonGroup();
             dftGroup.setGroupID(new Integer(liteGroup.getGroupID()));
 
@@ -434,7 +437,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
      * @throws CommandExecutionException
      * @throws TransactionException
      */
-    private LiteYukonGroup deleteEnergyCompanyBase(LiteStarsEnergyCompany energyCompany, String dbAlias) {
+    private void deleteEnergyCompanyBase(LiteStarsEnergyCompany energyCompany, String dbAlias) {
         log.info("Deleting energy company base id# " + energyCompany.getEnergyCompanyId());
         String sql;
         // Delete all other generic mappings
@@ -458,10 +461,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         if (energyCompany.getDefaultRouteId() >= 0) {
             defaultRouteService.removeDefaultRoute(energyCompany);
         }
-        
-        // Get the privilege group before the default login is deleted
-        LiteYukonGroup liteGroup = energyCompany.getOperatorAdminGroup();
-        
+                
         // Delete the energy company!
         
         EnergyCompanyBase ec = new EnergyCompanyBase();
@@ -482,7 +482,6 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
                                                 DbChangeType.DELETE);
             }catch(EmptyResultDataAccessException ignore) {}
         }
-        return liteGroup;
     }
 
     /**

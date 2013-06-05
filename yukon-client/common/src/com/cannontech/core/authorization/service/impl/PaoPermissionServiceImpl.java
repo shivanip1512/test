@@ -86,7 +86,9 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
 
     @Override
     public AuthorizationResponse hasPermission(LiteYukonUser user, YukonPao pao, Permission permission) {
-        if(!permission.isSettablePerPao()) {
+        // Get all groups that the user is in
+        LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserId(user.getUserID());
+        if(!permission.isSettablePerPao() || userGroup == null) {
             return AuthorizationResponse.UNKNOWN;
         }
         
@@ -95,8 +97,6 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
             return ret;
         }
 
-        // Get all groups that the user is in
-        LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserId(user.getUserID());
         ret = userGroupPaoPermissionDao.hasPermissionForPao(userGroup, pao, permission);
         
         return ret;
@@ -106,7 +106,9 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
     public Multimap<AuthorizationResponse, PaoIdentifier> getPaoAuthorizations(Collection<PaoIdentifier> paos,
                                                                                LiteYukonUser user, Permission permission) {
 
-        if(!permission.isSettablePerPao()) {
+        // Get group pao authorizations for the user
+        LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserId(user.getUserID());
+        if(!permission.isSettablePerPao() || userGroup == null) {
             // Authorization unknown for all paos
             Multimap<AuthorizationResponse, PaoIdentifier> result = ArrayListMultimap.create();     
             result.putAll(AuthorizationResponse.UNKNOWN, paos);
@@ -117,8 +119,6 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
         Multimap<AuthorizationResponse, PaoIdentifier> userPaoAuthorizations = 
             userPaoPermissionDao.getPaoAuthorizations(paos, user, permission);
         
-        // Get group pao authorizations for the user
-        LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserId(user.getUserID());
         Collection<PaoIdentifier> unknownUserPaos = 
             userPaoAuthorizations.get(AuthorizationResponse.UNKNOWN);
         Multimap<AuthorizationResponse, PaoIdentifier> groupPaoAuthorizations = 
@@ -198,13 +198,14 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
 
         // Get paos for user's groups
         LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserId(user.getUserID());
-        List<Integer> groupPaoIdList = userGroupPaoPermissionDao.getPaosForPermission(userGroup, permission);
-        Set<Integer> groupPaoIdSet = Sets.newHashSet(groupPaoIdList);
-
-        // Combine the user's paos with all of the paos from the groups
-        paoIdSet.addAll(groupPaoIdSet);
+        if(userGroup != null){
+            List<Integer> groupPaoIdList = userGroupPaoPermissionDao.getPaosForPermission(userGroup, permission);
+            // Combine the user's paos with all of the paos from the groups
+            paoIdSet.addAll(groupPaoIdList);
+        }
         return paoIdSet;
     }
+    
     
     @Override
     public Set<Integer> getPaoIdsForUserPermissionNoGroup(LiteYukonUser user, Permission permission) {

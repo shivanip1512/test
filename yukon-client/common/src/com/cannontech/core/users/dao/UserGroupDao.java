@@ -22,7 +22,8 @@ public interface UserGroupDao {
     public LiteUserGroup getLiteUserGroup(int userGroupId);
     
     /**
-     * This method returns the lite user group associated with the supplied user id.
+     * This method returns the lite user group associated with the supplied user id, null is
+     * returned if lite user group was not found
      */
     public LiteUserGroup getLiteUserGroupByUserId(int userId);
 

@@ -106,6 +106,7 @@
     <entry key="yukon.web.modules.adminSetup.generalInfo.memberRemoveSuccessful">Member Removed Successfully</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.confirmDelete.title">Delete Energy Company {0}</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.confirmDelete.message"></entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.missingUserGroup">Operator Group needs to be added to the operator user {0}.</entry>
     
     <entry key="yukon.web.modules.adminSetup.deleteEnergyCompanyConfirm.disclaimer"><![CDATA[
         Are you sure you want to delete the energy company {0}?  Deleting this energy company will result in deleting all of the following associated with that energy company:
@@ -135,8 +136,8 @@
 
     <entry key="yukon.web.modules.adminSetup.serviceAndStorage.VIEW.pageName">Service And Storage</entry>
     <entry key="yukon.web.modules.adminSetup.serviceAndStorage.VIEW.pageDescription">{0}</entry>
-
-
+    
+    
     <!-- routesAndSubstations.jsp -->
     <entry key="yukon.web.modules.adminSetup.routesAndSubstations.title">Substation and Routes</entry>
     <entry key="yukon.web.modules.adminSetup.routesAndSubstations.VIEW.pageName">Substations And Routes</entry>

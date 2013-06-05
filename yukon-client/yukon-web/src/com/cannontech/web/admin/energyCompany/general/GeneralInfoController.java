@@ -33,6 +33,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.util.StarsAdminUtil;
@@ -64,25 +65,36 @@ public class GeneralInfoController {
     @Autowired private YukonGroupService yukonGroupService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private EnergyCompanyDao energyCompanyDao;
 
     /* View Page*/
     @RequestMapping
-    public String view(YukonUserContext context, ModelMap model, int ecId, EnergyCompanyInfoFragment fragment) {
+    public String view(YukonUserContext context, FlashScope flashScope, ModelMap model, int ecId, EnergyCompanyInfoFragment fragment) {
         energyCompanyService.verifyViewPageAccess(context.getYukonUser(), ecId);
         
         setupModelMap(model, context.getYukonUser(), ecId, fragment);
         model.addAttribute("mode", PageEditMode.VIEW);
+        LiteYukonUser user = energyCompanyDao.getEnergyCompanyUser(ecId);
+        if (user.getUserGroupId() == null) {
+            flashScope.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.generalInfo.missingUserGroup",
+                                                             user.getUsername()));
+        }
         
         return "energyCompany/generalInfo.jsp";
     }
     
     /* Edit Page */
     @RequestMapping(value="update", params="edit", method=RequestMethod.POST)
-    public String edit(YukonUserContext context, ModelMap model, int ecId, EnergyCompanyInfoFragment fragment) {
+    public String edit(YukonUserContext context, FlashScope flashScope, ModelMap model, int ecId, EnergyCompanyInfoFragment fragment) {
         energyCompanyService.verifyEditPageAccess(context.getYukonUser(), ecId);
         
         setupModelMap(model, context.getYukonUser(), ecId, fragment);
         model.addAttribute("mode", PageEditMode.EDIT);
+        LiteYukonUser user = energyCompanyDao.getEnergyCompanyUser(ecId);
+        if(user.getUserGroupId() == null){
+            flashScope.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.generalInfo.missingUserGroup",
+                                                             user.getUsername()));
+        }
         
         return "energyCompany/generalInfo.jsp";
     }

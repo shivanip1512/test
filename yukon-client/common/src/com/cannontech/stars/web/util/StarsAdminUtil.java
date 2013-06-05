@@ -564,10 +564,12 @@ public class StarsAdminUtil {
 		energyCompanySettingDao.updateSettingValue(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, false, user, energyCompany.getEnergyCompanyId());
 		energyCompanySettingDao.updateSettingValue(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, false, user, member.getEnergyCompanyId());
 
-		DaoFactory.getRoleDao().updateGroupRoleProperty(energyCompany.getOperatorAdminGroup(),
-		                                                AdministratorRole.ROLEID,
-		                                                AdministratorRole.ADMIN_MANAGE_MEMBERS,
-		                                                CtiUtilities.TRUE_STRING);
+		if(energyCompany.getOperatorAdminGroup() != null){
+            DaoFactory.getRoleDao().updateGroupRoleProperty(energyCompany.getOperatorAdminGroup(),
+                                                            AdministratorRole.ROLEID,
+                                                            AdministratorRole.ADMIN_MANAGE_MEMBERS,
+                                                            CtiUtilities.TRUE_STRING);
+		}
 
 		handleDBChange(energyCompany.getOperatorAdminGroup(), DbChangeType.UPDATE);
 
