@@ -233,7 +233,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         for (Meter meter : meters) {
             List<PointValueQualityHolder> pointData = attributeData.get(meter.getPaoIdentifier());
             for (PointValueQualityHolder pointValueQualityHolder : pointData) {
-                String reportRow = generateReportRow(format, meter, attribute, pointValueQualityHolder, userContext, reportTZ);
+                String reportRow = generateReportRow(format, meter, attribute, pointValueQualityHolder, userContext);
                 if (!reportRow.equals(SKIP_RECORD)) {
                     reportRows.add(reportRow);
                 }
@@ -246,7 +246,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
      */
     private String generateReportRow(ExportFormat format, Meter meter, Attribute attribute, 
                                      PointValueQualityHolder pointValueQualityHolder, 
-                                     YukonUserContext userContext, DateTimeZone reportTZ) {
+                                     YukonUserContext userContext) {
 
         StringBuilder reportRow = new StringBuilder();
         
