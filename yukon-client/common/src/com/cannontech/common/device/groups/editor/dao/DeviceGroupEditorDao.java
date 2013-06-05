@@ -127,4 +127,9 @@ public interface DeviceGroupEditorDao {
      */
     public StoredDeviceGroup getStoredGroup(SystemGroupEnum systemGroupEnum, String groupName, boolean create)
             throws NotFoundException;
+    
+    /**
+     * This method will return full path for a SystemGroupEnum. For SystemGroupEnum = METERS, /Meters/ will be returned.
+     */
+    public String getFullPath(SystemGroupEnum systemGroupEnum);
 }

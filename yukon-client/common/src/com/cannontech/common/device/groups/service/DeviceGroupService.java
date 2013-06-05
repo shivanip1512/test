@@ -130,10 +130,9 @@ public interface DeviceGroupService {
      * This method will return the DeviceGroup for a SystemGroupEnum.
      */
     public DeviceGroup resolveGroupName(SystemGroupEnum systemGroupEnum);
-
+    
     /**
      * This method will return full path for a SystemGroupEnum. For SystemGroupEnum = METERS, /Meters/ will be returned.
      */
     public String getFullPath(SystemGroupEnum systemGroupEnum);
-
 }

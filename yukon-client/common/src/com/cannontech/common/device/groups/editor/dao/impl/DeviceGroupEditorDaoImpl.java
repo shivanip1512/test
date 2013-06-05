@@ -2,10 +2,14 @@ package com.cannontech.common.device.groups.editor.dao.impl;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -68,6 +72,34 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     @Autowired private DeviceGroupService deviceGroupService;
     
     private StoredDeviceGroup rootGroupCache = null;
+    private Map<SystemGroupEnum, String> systemGroupPaths = new HashMap<>();
+    
+    @PostConstruct
+    private void initialize() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select dg.*");
+        sql.append("from DeviceGroup dg");
+        sql.append("where dg.SystemGroupEnum is not null");
+        List<PartialDeviceGroup> groups = jdbcTemplate.query(sql, new PartialDeviceGroupRowMapper());
+        Map<Integer, PartialDeviceGroup> groupsById = new HashMap<>();
+
+        for (PartialDeviceGroup group : groups) {
+            groupsById.put(group.getStoredDeviceGroup().getId(), group);
+        }
+
+        for (PartialDeviceGroup group : groups) {
+            SystemGroupEnum systemGroupEnum = group.getStoredDeviceGroup().getSystemGroupEnum();
+            Integer parentProupId = group.getParentGroupId();
+            String path = group.getStoredDeviceGroup().getName() + "/";
+            while (parentProupId != null) {
+                PartialDeviceGroup parentGroup = groupsById.get(parentProupId);
+                parentProupId = parentGroup.getParentGroupId();
+                path = parentGroup.getStoredDeviceGroup().getName() + "/" + path;
+            }
+            log.info(systemGroupEnum + "=" + path.toString());
+            systemGroupPaths.put(systemGroupEnum, path);
+        }
+    }
     
     private final SqlStatementBuilder deviceGroupMemberInsertSql = new SqlStatementBuilder();
     {
@@ -78,13 +110,13 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     }
     
     @Override
-    @Transactional(propagation=Propagation.REQUIRED)
+    @Transactional
     public void addDevices(StoredDeviceGroup group, Iterable<? extends YukonPao> yukonPaos) {
         addDevices(group, yukonPaos.iterator());
     }
     
     @Override
-    @Transactional(propagation=Propagation.REQUIRED)
+    @Transactional
     public void addDevices(StoredDeviceGroup group, Iterator<? extends YukonPao> yukonPaos) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(deviceGroupMemberInsertSql);
@@ -391,7 +423,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     }
 
     @Override
-    @Transactional(propagation=Propagation.REQUIRED)
+    @Transactional
     public void updateGroup(StoredDeviceGroup group) throws IllegalGroupNameException {
         Validate.isTrue(group.getParent() != null, "The root group cannot be updated.");
         
@@ -556,7 +588,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     }
     
     @Override
-    @Transactional(propagation=Propagation.REQUIRED)
+    @Transactional
     public StoredDeviceGroup getStoredGroup(DeviceGroup group) throws NotFoundException {
         if (group instanceof StoredDeviceGroup) {
             // to be safe, we'll copy the group
@@ -583,7 +615,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     }
     
     @Override
-    @Transactional(propagation=Propagation.REQUIRED)
+    @Transactional
     public StoredDeviceGroup getStoredGroup(SystemGroupEnum systemGroupEnum, String groupName, boolean create) throws NotFoundException {
         
         String basePath = deviceGroupService.getFullPath(systemGroupEnum);
@@ -647,6 +679,17 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         }
         
         return sql.toString();
+    }
+    
+    @Override
+    public String getFullPath(SystemGroupEnum systemGroupEnum) {
+        String fullPath = systemGroupPaths.get(systemGroupEnum);
+
+        if (fullPath == null) {
+            throw new NotFoundException("Full path was not found for SystemGroupEnum = " + systemGroupEnum);
+        }
+
+        return fullPath;
     }
     
     @Required

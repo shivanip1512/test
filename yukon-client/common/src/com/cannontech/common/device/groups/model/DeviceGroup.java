@@ -32,6 +32,9 @@ public abstract class DeviceGroup implements Comparable<DeviceGroup> {
 
     public abstract DeviceGroupType getType();
     
+    /**
+     * For a group that is not a system group null will be returned otherwise SystemGroupEnum should be returned.
+     */
     public abstract SystemGroupEnum getSystemGroupEnum();
     
     protected void clearNameCache() {
