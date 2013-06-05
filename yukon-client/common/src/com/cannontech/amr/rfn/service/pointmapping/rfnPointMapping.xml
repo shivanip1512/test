@@ -703,7 +703,7 @@
         </point>
         <point name="Avg Power Factor">
             <uom>PF</uom>
-            <multiplier value="1.0"/>
+            <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Quadrant 1</modifier>
@@ -730,7 +730,7 @@
         </point>
         <point name="Rate A Avg Power Factor">
             <uom>PF</uom>
-            <multiplier value="1.0"/>
+            <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>TOU Rate A</modifier>
@@ -741,7 +741,7 @@
         </point>
         <point name="Rate B Avg Power Factor">
             <uom>PF</uom>
-            <multiplier value="1.0"/>
+            <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>TOU Rate B</modifier>
@@ -752,7 +752,7 @@
         </point>
         <point name="Rate C Avg Power Factor">
             <uom>PF</uom>
-            <multiplier value="1.0"/>
+            <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>TOU Rate C</modifier>
@@ -763,7 +763,7 @@
         </point>
         <point name="Rate D Avg Power Factor">
             <uom>PF</uom>
-            <multiplier value="1.0"/>
+            <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>TOU Rate D</modifier>
@@ -1036,7 +1036,7 @@
 
         <point name="Phase A Power Factor">
             <uom>PF</uom>
-            <multiplier value="1.0"/>
+            <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Phase A</modifier>
@@ -1044,7 +1044,7 @@
         </point>
         <point name="Phase B Power Factor">
             <uom>PF</uom>
-            <multiplier value="1.0"/>
+            <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Phase B</modifier>
@@ -1052,7 +1052,7 @@
         </point>
         <point name="Phase C Power Factor">
             <uom>PF</uom>
-            <multiplier value="1.0"/>
+            <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Phase C</modifier>
@@ -1110,6 +1110,7 @@
 
     <pointGroup>
         <paoType value="RFN430A3R"/>
+        <paoType value="RFN430A3K"/>
         <paoType value="RFN430KV"/>
 <!-- existed for ALL + requested ONLY for A3R + BUT found on device...? -->
         <point name="Delivered kVArh"> 
