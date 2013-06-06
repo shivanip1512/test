@@ -59,22 +59,22 @@
 
     function toggleField(element){
         var selection = jQuery(element.attr("data-selection")).val();
-        var fieldToDispay = jQuery(element.attr("data-field-to-display"));
+        var fieldToDisplay = jQuery(element.attr("data-field-to-display"));
         var skipDisable = element.attr("data-skip-disable");
         
         if(!skipDisable){
-            fieldToDispay.attr("disabled", "disabled");
+            fieldToDisplay.attr("disabled", "disabled");
         }else{
-            fieldToDispay.removeAttr("disabled");
+            fieldToDisplay.removeAttr("disabled");
         }
         
-        fieldToDispay.hide();
+        fieldToDisplay.hide();
         if (selection == 'LEFT' || selection == 'RIGHT'){
-            fieldToDispay.focus();
-            fieldToDispay.show().removeAttr("disabled");
+            fieldToDisplay.focus();
+            fieldToDisplay.show().removeAttr("disabled");
         }
         if (selection == 'LEAVE_BLANK' || selection == 'SKIP_RECORD'){
-            fieldToDispay.val("");
+            fieldToDisplay.val("");
         }
     }
     
@@ -312,19 +312,19 @@
                 <tags:nameValue2 nameKey=".delimiter">
                     <select name="delimiterSelect" id="delimiterSelect" data-selection="#delimiterSelect" data-field-to-display="#delimiter" data-skip-disable="true">
                         <option value="," <c:if test="${backingBean.format.delimiter == ','}"> selected="selected" </c:if>>
-                            <i:inline key=".comma" />
+                            <cti:msg2 key=".comma" />
                         </option>
                         <option value=";" <c:if test="${backingBean.format.delimiter == ';'}"> selected="selected" </c:if>>
-                            <i:inline key=".semicolon" />
+                            <cti:msg2 key=".semicolon" />
                         </option>
                         <option value=":" <c:if test="${backingBean.format.delimiter == ':'}"> selected="selected" </c:if>>
-                            <i:inline key=".colon" />
+                            <cti:msg2 key=".colon" />
                         </option>
                         <option value=" " <c:if test="${backingBean.format.delimiter == ' '}"> selected="selected" </c:if>>
-                            <i:inline key=".spaceDelim" />
+                            <cti:msg2 key=".spaceDelim" />
                         </option>
                         <option value="" <c:if test="${backingBean.format.delimiter == ''}"> selected="selected" </c:if>>
-                            <i:inline key=".noneDelim" />
+                            <cti:msg2 key=".noneDelim" />
                         </option>
                         <option value="Custom"
                             <c:if test="${backingBean.format.delimiter != ',' && 
@@ -332,7 +332,7 @@
                                 backingBean.format.delimiter != ':' && 
                                 backingBean.format.delimiter != ' ' &&
                                 backingBean.format.delimiter != ''}"> selected="selected" </c:if>>
-                            <i:inline key=".custom" />
+                            <cti:msg2 key=".custom" />
                         </option>
                     </select>
                     <tags:input id="delimiter" path="format.delimiter" size="1" maxlength="1" />
