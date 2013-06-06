@@ -8,11 +8,11 @@ import com.cannontech.common.gui.util.TreeViewPanel;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DBDeletionDao;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.model.DBTreeNode;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author rneuharth
@@ -102,7 +102,7 @@ public class TreeItemDeleter
 				LiteFactory.convertLiteToDBPers( (LiteBase)nodes[i].getUserObject() );
 				
 			//get the info about this possible deletion candidate
-			delRes = DaoFactory.getDbDeletionDao().getDeleteInfo( 
+			delRes = YukonSpringHook.getBean(DBDeletionDao.class).getDeleteInfo( 
 							deletables[i], nodes[i].getUserObject().toString() );
 	 		
 	   
@@ -110,7 +110,7 @@ public class TreeItemDeleter
 			{
 				try
 				{	
-		         deleteVal = DaoFactory.getDbDeletionDao().deletionAttempted( delRes );
+		         deleteVal = YukonSpringHook.getBean(DBDeletionDao.class).deletionAttempted( delRes );
 		         //dbDeletionWarning = DaoFactory.getDbDeletionDao().getTheWarning().toString();
 		         
 		         //as soon as we can NOT delete, preserve that false value

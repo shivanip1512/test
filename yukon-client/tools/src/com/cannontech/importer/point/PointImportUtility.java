@@ -22,12 +22,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointLimit;
 import com.cannontech.database.db.point.calculation.CalcComponent;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 
@@ -99,7 +100,7 @@ public class PointImportUtility
 			 * LowLimit1,Duration1,HiLimit2,LowLimit2,Duration2,Archivetype,ArchInterval,NonUpdate,
 			 * RateOfChange,LimitSet1,LimitSet2,HighReasonablility,LowReasonability
 			 */
-			Integer pointID = DaoFactory.getPointDao().getNextPointId();
+			Integer pointID = YukonSpringHook.getBean(PointDao.class).getNextPointId();
 			
 			String pointName = tokenizer.nextElement().toString();
 			if(emptyField(pointName))
@@ -538,7 +539,7 @@ public class PointImportUtility
              * LowLimit1,Duration1,HiLimit2,LowLimit2,Duration2,Archivetype,ArchInterval,NonUpdate,
              * RateOfChange,LimitSet1,LimitSet2,HighReasonablility,LowReasonability
              */
-            Integer pointID = DaoFactory.getPointDao().getNextPointId();
+            Integer pointID = YukonSpringHook.getBean(PointDao.class).getNextPointId();
             
             String pointName = tokenizer.nextElement().toString();
             if(emptyField(pointName))
@@ -957,7 +958,7 @@ public class PointImportUtility
              * LimitSet1,LimitSet2,HighReasonablility,LowReasonability,
              * {(CALC STUFF)[FunctionType],[Operand(Devicename/pointname)],[OperationType]}(repeat for more)
              */
-            Integer pointID = DaoFactory.getPointDao().getNextPointId();
+            Integer pointID = YukonSpringHook.getBean(PointDao.class).getNextPointId();
             
             String pointName = tokenizer.nextElement().toString();
             if(emptyField(pointName))
@@ -1434,7 +1435,7 @@ public class PointImportUtility
 
 			com.cannontech.database.data.point.StatusPoint statusPoint = new com.cannontech.database.data.point.StatusPoint();
 			
-			Integer pointID = DaoFactory.getPointDao().getNextPointId();
+			Integer pointID = YukonSpringHook.getBean(PointDao.class).getNextPointId();
 				
 			String pointName = tokenizer.nextElement().toString();
 			if(emptyField(pointName))

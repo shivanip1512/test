@@ -11,8 +11,8 @@ import java.util.HashMap;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -20,6 +20,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.state.YukonImage;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tdc.utils.TDCDefines;
 
 public class PointValues 
@@ -301,7 +302,7 @@ private LitePoint getLitePoint()
 	LitePoint litePoint = LitePoint.NONE_LITE_PT;
 	if( getPointID() != TDCDefines.ROW_BREAK_ID ) {
 		try {
-			litePoint = DaoFactory.getPointDao().getLitePoint( getPointID() );
+			litePoint = YukonSpringHook.getBean(PointDao.class).getLitePoint( getPointID() );
 		} catch (NotFoundException e) {
 			// This case occurs when a Device is deleted and one of it's points was in a display
 			// ignore and return the default NONE_LITE_PT object
@@ -313,11 +314,11 @@ private LitePoint getLitePoint()
 private LiteStateGroup getLiteStateGroup()
 {
 	//if the LitePoint is null OR we have an Invalid type 
-	LitePoint lPoint = DaoFactory.getPointDao().getLitePoint( getPointID() );
+	LitePoint lPoint = YukonSpringHook.getBean(PointDao.class).getLitePoint( getPointID() );
 	if( lPoint == null || getPointType() == PointTypes.INVALID_POINT )
 		return null;
 	else
-		return DaoFactory.getPointDao().getStateGroup( lPoint.getStateGroupID() );
+		return YukonSpringHook.getBean(PointDao.class).getStateGroup( lPoint.getStateGroupID() );
 }
 
 /**

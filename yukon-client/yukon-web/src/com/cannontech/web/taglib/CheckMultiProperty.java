@@ -9,8 +9,9 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ReflectivePropertySearcher;
 
 /**
@@ -38,7 +39,7 @@ public class CheckMultiProperty extends BodyTagSupport {
 		while (st.hasMoreTokens()) {
 			try {
 				int pid = Integer.parseInt( st.nextToken() );
-				if (DaoFactory.getAuthDao().checkRoleProperty(user, pid)) return EVAL_BODY_INCLUDE;
+				if (YukonSpringHook.getBean(AuthDao.class).checkRoleProperty(user, pid)) return EVAL_BODY_INCLUDE;
 			}
 			catch (NumberFormatException e) {
 				throw new JspException( e.getMessage() );

@@ -12,7 +12,7 @@ import java.util.Properties;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.GraphDao;
 import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
@@ -20,6 +20,7 @@ import com.cannontech.database.db.graph.GraphRenderers;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.persist.PersistDynamicGraphElement;
 import com.cannontech.graph.Graph;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 import com.loox.jloox.LxAbstractRectangle;
  
@@ -97,7 +98,7 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	 * @return LiteGraphDefinition
 	 */
 	public LiteGraphDefinition getGraphDefinition() {
-		return DaoFactory.getGraphDao().getLiteGraphDefinition(getGraphDefinitionID());
+		return YukonSpringHook.getBean(GraphDao.class).getLiteGraphDefinition(getGraphDefinitionID());
 	}
 
 	public int getGraphDefinitionID() {
@@ -214,7 +215,7 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	}
 	
 	public void updateGraph() {
-		LiteGraphDefinition lGDef = DaoFactory.getGraphDao().getLiteGraphDefinition(getGraphDefinitionID());		
+		LiteGraphDefinition lGDef = YukonSpringHook.getBean(GraphDao.class).getLiteGraphDefinition(getGraphDefinitionID());		
 		if(lGDef == null) {
 			CTILogger.info(getClass().getName() + "::updateGraph() - Couldn't find a graph in the cache with graphdefinitionid: " + getGraphDefinitionID() + ", perhaps it has been deleted?");
 			return;

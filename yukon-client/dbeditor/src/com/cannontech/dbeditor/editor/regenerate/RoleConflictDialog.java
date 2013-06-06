@@ -13,13 +13,14 @@ import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.TitleBorder;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.data.route.RouteUsageHelper;
 import com.cannontech.database.data.route.RouteRole;
 import com.cannontech.database.db.route.RepeaterRoute;
+import com.cannontech.spring.YukonSpringHook;
 
 public class RoleConflictDialog extends javax.swing.JDialog implements java.awt.event.ActionListener {
 
@@ -236,7 +237,7 @@ public class RoleConflictDialog extends javax.swing.JDialog implements java.awt.
                 field.setText(new Integer(rptVarBit).toString());
                 String routeName = "";
                 try {
-                    routeName = DaoFactory.getPaoDao().getYukonPAOName(rr.getDeviceID().intValue());
+                    routeName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(rr.getDeviceID().intValue());
                 } catch (Exception e) {
                     routeName = route.getPAOName();
                 }

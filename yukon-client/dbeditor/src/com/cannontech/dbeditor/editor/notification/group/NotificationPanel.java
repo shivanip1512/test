@@ -26,7 +26,9 @@ import com.cannontech.common.gui.tree.CheckNode;
 import com.cannontech.common.gui.tree.CheckNodeSelectionListener;
 import com.cannontech.common.gui.tree.CheckRenderer;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.ContactNotificationDao;
+import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteBase;
@@ -43,6 +45,7 @@ import com.cannontech.database.data.notification.NotificationGroup;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.model.DummyTreeNode;
 import com.cannontech.dbeditor.editor.user.LiteBaseNode;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 
@@ -272,7 +275,7 @@ private javax.swing.JTree getJTreeNotifs() {
 			    root.add( custNode );
 
 
-			    List<LiteContact> tempConts = DaoFactory.getCustomerDao().getAllContacts(lCust);
+			    List<LiteContact> tempConts = YukonSpringHook.getBean(CustomerDao.class).getAllContacts(lCust);
 			    if( tempConts != null )
 			    {
 			        Collections.sort( tempConts, LiteComparators.liteStringComparator );
@@ -293,7 +296,7 @@ private javax.swing.JTree getJTreeNotifs() {
 			int[] contIDs = Contact.getOrphanedContacts();
 			for( int i = 0; i < contIDs.length; i++ )
 			{
-			    LiteContact lcont = DaoFactory.getContactDao().getContact( contIDs[i] );
+			    LiteContact lcont = YukonSpringHook.getBean(ContactDao.class).getContact( contIDs[i] );
 			    LiteBaseNode lbNode = new LiteBaseNode( lcont );
 			    lbNode.setUserValue( NotifMap.DEF_ATTRIBS );	
 
@@ -323,10 +326,10 @@ private void addContactNotifsToTree( LiteContact contact, LiteBaseNode parent )
 {
 	if (contact == null || parent == null) return;
 	
-	List<LiteContactNotification> notificationsForContact = DaoFactory.getContactNotificationDao().getNotificationsForContact(contact);
+	List<LiteContactNotification> notificationsForContact = YukonSpringHook.getBean(ContactNotificationDao.class).getNotificationsForContact(contact);
 
 	for (LiteContactNotification lcn : notificationsForContact) {
-		YukonListDao yukonListDao = DaoFactory.getYukonListDao();
+		YukonListDao yukonListDao = YukonSpringHook.getBean(YukonListDao.class);
         if ( lcn.getNotificationCategoryID() != 0 && 
                 (yukonListDao.isPhoneNumber(lcn.getNotificationCategoryID())
                         || yukonListDao.isEmail(lcn.getNotificationCategoryID()) 
@@ -495,7 +498,7 @@ public void setValue(Object o)
 	for( int i = 0; i < notifGrp.getNotifDestinationMap().length; i++ )
 	{
 		LiteContactNotification lContNotif =
-			(LiteContactNotification)DaoFactory.getContactNotificationDao().getContactNotification(
+			(LiteContactNotification)YukonSpringHook.getBean(ContactNotificationDao.class).getContactNotification(
 				notifGrp.getNotifDestinationMap()[i].getRecipientID());
 
 		//set the selected node
@@ -519,7 +522,7 @@ public void setValue(Object o)
 
 		//set the selected node
 		DefaultMutableTreeNode tnode = getJTreeModel().findNode( 
-			new TreePath(getJTreeModel().getRoot()), DaoFactory.getCustomerDao().getLiteCICustomer(custID) );
+			new TreePath(getJTreeModel().getRoot()), YukonSpringHook.getBean(CustomerDao.class).getLiteCICustomer(custID) );
 			
 		if( tnode != null )
 		{
@@ -539,7 +542,7 @@ public void setValue(Object o)
 
 		//set the selected node
 		DefaultMutableTreeNode tnode = getJTreeModel().findNode(
-			new TreePath(getJTreeModel().getRoot()), DaoFactory.getContactDao().getContact(contID) );
+			new TreePath(getJTreeModel().getRoot()), YukonSpringHook.getBean(ContactDao.class).getContact(contID) );
 
 		if( tnode != null )
 		{
@@ -637,7 +640,7 @@ public void nodeSelectionChanged( boolean checkBoxCliked )
 				{
 					//only allow phone number definitions to be changed
 					YukonListEntry entry =
-						DaoFactory.getYukonListDao().getYukonListEntry( ((LiteContactNotification)lb).getNotificationCategoryID() );
+						YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( ((LiteContactNotification)lb).getNotificationCategoryID() );
 			
 					getJCheckBoxPhoneCall().setEnabled(
 						entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_PHONE );

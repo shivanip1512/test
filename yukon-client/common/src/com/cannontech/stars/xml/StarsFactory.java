@@ -3,11 +3,12 @@ package com.cannontech.stars.xml;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.customer.Address;
 import com.cannontech.database.db.web.YukonWebConfiguration;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.database.db.customer.AccountSite;
 import com.cannontech.stars.database.db.customer.CustomerAccount;
@@ -156,7 +157,7 @@ public class StarsFactory {
 			starsCall.setDescription( callDB.getDescription() );
 			starsCall.setTakenBy( callDB.getTakenBy() );
 			
-			YukonListEntry callType = DaoFactory.getYukonListDao().getYukonListEntry( callDB.getCallTypeID().intValue() );
+			YukonListEntry callType = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( callDB.getCallTypeID().intValue() );
 			starsCall.setCallType( (CallType)newStarsCustListEntry(callType, CallType.class) );
 			
 			return starsCall;
@@ -197,7 +198,7 @@ public class StarsFactory {
 			callRprts[i].setDescription( StarsUtils.forceNotNull(calls[i].getDescription()) );
         	
 			CallType callType = new CallType();
-			StarsLiteFactory.setStarsCustListEntry( callType, DaoFactory.getYukonListDao().getYukonListEntry(calls[i].getCallTypeID().intValue()) );
+			StarsLiteFactory.setStarsCustListEntry( callType, YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(calls[i].getCallTypeID().intValue()) );
 			callRprts[i].setCallType( callType );
 		}
         

@@ -4,10 +4,12 @@ import java.util.*;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NotificationTypeChecker;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.*;
 import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.i18n.ThemeUtils;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.user.SimpleYukonUserContext;
 import com.cannontech.user.YukonUserContext;
 
@@ -46,7 +48,7 @@ public class Contactable {
             String tzString = _contactableBase.getContactableCustomer().getTimeZone();
             return CtiUtilities.getValidTimeZone(tzString);
         } catch (UnknownCustomerException e) {
-            return DaoFactory.getAuthDao().getUserTimeZone(getLiteYukonUser());
+            return YukonSpringHook.getBean(AuthDao.class).getUserTimeZone(getLiteYukonUser());
         }
     }
 
@@ -74,19 +76,19 @@ public class Contactable {
         try {
             LiteCICustomer customer = _contactableBase.getContactableCustomer();
             int primaryContactID = customer.getPrimaryContactID();
-            yukonUser = DaoFactory.getContactDao().getYukonUser(primaryContactID);
+            yukonUser = YukonSpringHook.getBean(ContactDao.class).getYukonUser(primaryContactID);
         } catch (UnknownCustomerException e) {
             LiteEnergyCompany energyCompany = getEnergyCompany();
             int userID;
             userID = energyCompany.getUserID();
-            yukonUser = DaoFactory.getYukonUserDao().getLiteYukonUser(userID);
+            yukonUser = YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(userID);
         }
         return yukonUser;
     }
     /**
      * Determines the appropriate LiteEnergyCompany by first finding the parent
      * customer. When the parent customer cannot be found, the default energy
-     * company will be returned (DaoFactory.getEnergyCompanyDao().DEFAULT_ENERGY_COMPANY_ID).
+     * company will be returned.
      * 
      * @return a valid LiteEnergyCompany for this Contactable
      */
@@ -96,9 +98,9 @@ public class Contactable {
             energyCompanyID = _contactableBase.getContactableCustomer()
                     .getEnergyCompanyID();
         } catch (UnknownCustomerException e) {
-            energyCompanyID = DaoFactory.getEnergyCompanyDao().DEFAULT_ENERGY_COMPANY_ID;
+            energyCompanyID = YukonSpringHook.getBean(EnergyCompanyDao.class).DEFAULT_ENERGY_COMPANY_ID;
         }
-        return DaoFactory.getEnergyCompanyDao().getEnergyCompany(energyCompanyID);
+        return YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(energyCompanyID);
     }
 
     public String toString() {

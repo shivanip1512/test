@@ -19,7 +19,8 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
@@ -243,8 +244,8 @@ public class CommandDeviceBean implements DBChangeListener
         
                 if (thisVal.equalsIgnoreCase(anotherVal))
                 {
-                    thisVal = DaoFactory.getPaoDao().getYukonPAOName(lcbc1.getCbcID());
-                    anotherVal = DaoFactory.getPaoDao().getYukonPAOName(lcbc2.getCbcID());
+                    thisVal = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(lcbc1.getCbcID());
+                    anotherVal = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(lcbc2.getCbcID());
                 }
             }
             return (thisVal.compareToIgnoreCase(anotherVal));
@@ -267,12 +268,12 @@ public class CommandDeviceBean implements DBChangeListener
 			if (PAOGroups.INVALID == o1.getRouteID())
 				thisVal = NULL_OBJECT_STRING;
 			else
-				thisVal = DaoFactory.getPaoDao().getYukonPAOName(o1.getRouteID());
+				thisVal = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(o1.getRouteID());
 
 			if (PAOGroups.INVALID == o2.getRouteID())
 				anotherVal = NULL_OBJECT_STRING;
 			else
-				anotherVal = DaoFactory.getPaoDao().getYukonPAOName(o2.getRouteID());
+				anotherVal = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(o2.getRouteID());
 
 			if (thisVal.equalsIgnoreCase(anotherVal))
 			{
@@ -299,8 +300,8 @@ public class CommandDeviceBean implements DBChangeListener
 		{
 			String thisVal = null, anotherVal = null;
 
-			LiteDeviceMeterNumber ldmn1 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(o1.getYukonID());
-			LiteDeviceMeterNumber ldmn2 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(o2.getYukonID());
+			LiteDeviceMeterNumber ldmn1 = YukonSpringHook.getBean(DeviceDao.class).getLiteDeviceMeterNumber(o1.getYukonID());
+			LiteDeviceMeterNumber ldmn2 = YukonSpringHook.getBean(DeviceDao.class).getLiteDeviceMeterNumber(o2.getYukonID());
 
 			thisVal = (ldmn1 != null ? ldmn1.getMeterNumber() : NULL_OBJECT_STRING);
 			anotherVal = (ldmn2 != null ? ldmn2.getMeterNumber() : NULL_OBJECT_STRING);
@@ -326,8 +327,8 @@ public class CommandDeviceBean implements DBChangeListener
 		{
 			String thisVal = null, anotherVal = null;
 
-			thisVal = DaoFactory.getPaoDao().getYukonPAOName(o1.getYukonID());
-			anotherVal = DaoFactory.getPaoDao().getYukonPAOName(o2.getYukonID());
+			thisVal = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(o1.getYukonID());
+			anotherVal = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(o2.getYukonID());
 
 			if (thisVal.equalsIgnoreCase(anotherVal))
 			{
@@ -359,13 +360,13 @@ public class CommandDeviceBean implements DBChangeListener
 			YCLiteLoadGroup llg2 = getLoadGroupIDToLiteLoadGroupsMap().get(o2.getYukonID());
 			if (llg1 != null && llg2 != null)
 			{
-				thisVal = DaoFactory.getPaoDao().getYukonPAOName(llg1.getRouteID());
-				anotherVal = DaoFactory.getPaoDao().getYukonPAOName(llg2.getRouteID());
+				thisVal = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(llg1.getRouteID());
+				anotherVal = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(llg2.getRouteID());
 		
 				if (thisVal.equalsIgnoreCase(anotherVal))
 				{
-					thisVal = DaoFactory.getPaoDao().getYukonPAOName(llg1.getPaoIdentifier().getPaoId());
-					anotherVal = DaoFactory.getPaoDao().getYukonPAOName(llg2.getPaoIdentifier().getPaoId());
+					thisVal = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(llg1.getPaoIdentifier().getPaoId());
+					anotherVal = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(llg2.getPaoIdentifier().getPaoId());
 				}
 			}
 			return (thisVal.compareToIgnoreCase(anotherVal));
@@ -392,8 +393,8 @@ public class CommandDeviceBean implements DBChangeListener
 		
 				if (thisVal.equalsIgnoreCase(anotherVal))
 				{
-					thisVal = DaoFactory.getPaoDao().getYukonPAOName(llg1.getPaoIdentifier().getPaoId());
-					anotherVal = DaoFactory.getPaoDao().getYukonPAOName(llg2.getPaoIdentifier().getPaoId());
+					thisVal = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(llg1.getPaoIdentifier().getPaoId());
+					anotherVal = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(llg2.getPaoIdentifier().getPaoId());
 				}
 			}
 			return (thisVal.compareToIgnoreCase(anotherVal));
@@ -420,8 +421,8 @@ public class CommandDeviceBean implements DBChangeListener
 				
 				if (thisVal == anotherVal)
 				{
-					String thisValStr = DaoFactory.getPaoDao().getYukonPAOName(llg1.getPaoIdentifier().getPaoId());
-					String anotherValStr = DaoFactory.getPaoDao().getYukonPAOName(llg2.getPaoIdentifier().getPaoId());
+					String thisValStr = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(llg1.getPaoIdentifier().getPaoId());
+					String anotherValStr = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(llg2.getPaoIdentifier().getPaoId());
 					return (thisValStr.compareToIgnoreCase(anotherValStr));
 				}
 			}
@@ -468,7 +469,7 @@ public class CommandDeviceBean implements DBChangeListener
 							isValid = String.valueOf(lPao.getAddress()).toLowerCase().startsWith(getSearchValue().toLowerCase());
 						else if( getSearchBy().equalsIgnoreCase(METER_NUMBER_STRING))
 						{
-							LiteDeviceMeterNumber ldmn = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(lPao.getYukonID());
+							LiteDeviceMeterNumber ldmn = YukonSpringHook.getBean(DeviceDao.class).getLiteDeviceMeterNumber(lPao.getYukonID());
 							if (ldmn != null) 
 								isValid = ldmn.getMeterNumber().toLowerCase().startsWith(getSearchValue().toLowerCase());
 						}
@@ -1008,19 +1009,19 @@ public class CommandDeviceBean implements DBChangeListener
 		}
 		else if( valueString.equalsIgnoreCase(METER_NUMBER_STRING))
 		{
-			LiteDeviceMeterNumber ldmn = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(lPao.getYukonID());
+			LiteDeviceMeterNumber ldmn = YukonSpringHook.getBean(DeviceDao.class).getLiteDeviceMeterNumber(lPao.getYukonID());
 			if (ldmn != null)
 				return ldmn.getMeterNumber().trim();
 		}
 		else if( valueString.equalsIgnoreCase(ROUTE_STRING))
 		{
 			if (lPao.getRouteID() != PAOGroups.INVALID)
-				return DaoFactory.getPaoDao().getYukonPAOName(lPao.getRouteID());
+				return YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(lPao.getRouteID());
 		}
 		else if( valueString.equalsIgnoreCase(COMM_CHANNEL_STRING))
 		{
 			if (lPao.getPortID() != PAOGroups.INVALID)
-				return DaoFactory.getPaoDao().getYukonPAOName(lPao.getPortID());
+				return YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(lPao.getPortID());
 		}
         else if(valueString.equalsIgnoreCase(CBC_SERIAL_STRING))
         {
@@ -1049,7 +1050,7 @@ public class CommandDeviceBean implements DBChangeListener
 				}
 				else if( valueString.equalsIgnoreCase(LMGROUP_ROUTE_STRING))
 				{
-					return (llg.getRouteID() >= 0 ? DaoFactory.getPaoDao().getYukonPAOName(llg.getRouteID()) : NULL_OBJECT_STRING);
+					return (llg.getRouteID() >= 0 ? YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(llg.getRouteID()) : NULL_OBJECT_STRING);
 				}
                 else if( valueString.equalsIgnoreCase(LMGROUP_TYPE_STRING))
                 {

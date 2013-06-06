@@ -3,9 +3,10 @@ package com.cannontech.dbeditor.wizard.point;
 import java.util.List;
 
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.CalcStatusPoint;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -231,7 +232,7 @@ public Object getValue(Object val) {
 		point.getPoint().setPointOffset(new Integer(0));
 
         List<LiteUnitMeasure> unitMeasures = 
-            DaoFactory.getUnitMeasureDao().getLiteUnitMeasures();
+            YukonSpringHook.getBean(UnitMeasureDao.class).getLiteUnitMeasures();
         //Better be at least 1!
         point.getPointUnit().setUomID(unitMeasures.get(0).getUomID());
 		point.getPointUnit().setDecimalPlaces(new Integer(com.cannontech.dbeditor.DatabaseEditor.getDecimalPlaces()));

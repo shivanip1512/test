@@ -13,12 +13,13 @@ import com.cannontech.analysis.report.SimpleYukonReportBase;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.Lists;
 
 /**
@@ -230,7 +231,7 @@ public class CapControlEventLogModel extends FilterObjectsReportModelBase<Object
 				case STATUS_VALUE_COLUMN:
 					if( ccStatData.getEventType().intValue() == 4)//4 is for OpCount
 						return new String("OpCount: " + ccStatData.getControlStatus().toString());
-					return DaoFactory.getStateDao().findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, ccStatData.getControlStatus().intValue());
+					return YukonSpringHook.getBean(StateDao.class).findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, ccStatData.getControlStatus().intValue());
 					
 				case EVENT_TEXT_COLUMN:
 					return ccStatData.getEventText();
@@ -361,7 +362,7 @@ public class CapControlEventLogModel extends FilterObjectsReportModelBase<Object
 		html += "        <tr>" + LINE_SEPARATOR;
 		html += "          <td class='TitleHeader'>&nbsp;Ending Bank Status</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
-		LiteState [] liteStates = DaoFactory.getStateDao().getLiteStates( StateGroupUtils.STATEGROUPID_CAPBANK );
+		LiteState [] liteStates = YukonSpringHook.getBean(StateDao.class).getLiteStates( StateGroupUtils.STATEGROUPID_CAPBANK );
 		for (int i = 0; i < liteStates.length; i++)
 		{
 			html += "        <tr>" + LINE_SEPARATOR;

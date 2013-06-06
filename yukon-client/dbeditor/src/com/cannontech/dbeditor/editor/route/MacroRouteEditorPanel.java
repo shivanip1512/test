@@ -8,12 +8,12 @@ import java.util.List;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.db.route.RepeaterRoute;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
@@ -26,8 +26,8 @@ public class MacroRouteEditorPanel extends com.cannontech.common.gui.util.DataIn
 	private javax.swing.JTextField ivjNameTextField = null;
 	private int rightListItemIndex = getRoutesAddRemovePanel().rightListGetSelectedIndex();
 	private boolean rightListDragging = false;
-	private PaoDao paoDao = DaoFactory.getPaoDao();
-	private DBPersistentDao persistantDao = DaoFactory.getDbPersistentDao();
+	private PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
+	private DBPersistentDao persistantDao = YukonSpringHook.getBean(DBPersistentDao.class);
 public MacroRouteEditorPanel() {
 	super();
 	initialize();

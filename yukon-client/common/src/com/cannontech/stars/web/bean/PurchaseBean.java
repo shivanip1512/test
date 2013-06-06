@@ -6,9 +6,10 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.operator.AdministratorRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.db.hardware.Warehouse;
 import com.cannontech.stars.database.db.purchasing.DeliverySchedule;
@@ -81,7 +82,7 @@ public class PurchaseBean
     
     public boolean getManageMembers()
     {
-        return DaoFactory.getAuthDao().checkRoleProperty(currentUser, AdministratorRole.ADMIN_MANAGE_MEMBERS) && (energyCompany.hasChildEnergyCompanies());
+        return YukonSpringHook.getBean(AuthDao.class).checkRoleProperty(currentUser, AdministratorRole.ADMIN_MANAGE_MEMBERS) && (energyCompany.hasChildEnergyCompanies());
     }
     
     public List<LiteStarsEnergyCompany> getAvailableMembers()

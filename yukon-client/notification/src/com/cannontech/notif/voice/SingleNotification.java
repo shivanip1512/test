@@ -9,10 +9,11 @@ import org.apache.log4j.Logger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.concurrent.PropertyChangeMulticaster;
 import com.cannontech.common.util.NotificationTypeChecker;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.notif.outputs.Contactable;
 import com.cannontech.notif.outputs.Notification;
+import com.cannontech.spring.YukonSpringHook;
 
 
 /**
@@ -30,7 +31,7 @@ public class SingleNotification {
     
     static public final NotificationTypeChecker checker = new NotificationTypeChecker() {
         public boolean validNotifcationType(int notificationCategoryId) {
-            return DaoFactory.getYukonListDao().isPhoneNumber(notificationCategoryId);
+            return YukonSpringHook.getBean(YukonListDao.class).isPhoneNumber(notificationCategoryId);
         };
     };
         

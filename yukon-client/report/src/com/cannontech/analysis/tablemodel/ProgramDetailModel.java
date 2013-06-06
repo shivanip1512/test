@@ -9,7 +9,7 @@ import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.data.stars.ProgramDetail;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -219,7 +219,7 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 					return pd.getProgramName();
 				case CONTACT_COLUMN:
 				{
-					LiteContact contact = DaoFactory.getCustomerDao().getPrimaryContact(pd.getCustID().intValue());
+					LiteContact contact = YukonSpringHook.getBean(CustomerDao.class).getPrimaryContact(pd.getCustID().intValue());
 					if (contact == null)
 						return "(n/a)";
 

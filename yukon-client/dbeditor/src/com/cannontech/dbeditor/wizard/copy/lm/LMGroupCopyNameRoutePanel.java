@@ -13,7 +13,6 @@ import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoUtils;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.device.lm.IGroupRoute;
@@ -21,6 +20,7 @@ import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 /*
@@ -217,7 +217,7 @@ public Object getValue(Object o)
 	LMGroup group = (LMGroup)o;
 	int previousGroupID = group.getPAObjectID().intValue();
 	
-    PaoDao paoDao = DaoFactory.getPaoDao();
+    PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
 	group.setPAObjectID(paoDao.getNextPaoId());
 	
 	group.setPAOName( getJTextFieldName().getText() );
@@ -232,8 +232,8 @@ public Object getValue(Object o)
 	com.cannontech.database.data.multi.MultiDBPersistent objectsToAdd = new com.cannontech.database.data.multi.MultiDBPersistent();
 	objectsToAdd.getDBPersistentVector().add(group);
 	
-    List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(previousGroupID);
-	PointDao pointDao = DaoFactory.getPointDao();
+    List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(previousGroupID);
+	PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
 
     for (LitePoint litePoint : points) {
 		PointBase pointBase = (PointBase) com.cannontech.database.data.lite.LiteFactory.createDBPersistent(litePoint);

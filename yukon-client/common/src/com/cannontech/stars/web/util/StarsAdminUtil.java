@@ -20,9 +20,10 @@ import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.service.AuthenticationService;
+import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.RoleDao;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -63,6 +64,7 @@ import com.cannontech.stars.database.db.report.ServiceCompanyDesignationCode;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ECUtils;
@@ -176,7 +178,7 @@ public class StarsAdminUtil {
 				new com.cannontech.stars.database.data.report.ServiceCompany();
 		StarsLiteFactory.setServiceCompany( servCompany, liteCompany );
 
-		LiteContact liteContact = DaoFactory.getContactDao().getContact( liteCompany.getPrimaryContactID() );
+		LiteContact liteContact = YukonSpringHook.getBean(ContactDao.class).getContact( liteCompany.getPrimaryContactID() );
 		
 		Transaction.createTransaction( Transaction.DELETE, servCompany ).execute();
 		
@@ -444,7 +446,7 @@ public class StarsAdminUtil {
 					int oldEntryID = rset.getInt(1);
 					if (oldEntryID == 0) continue;
 					
-					YukonListEntry oldEntry = DaoFactory.getYukonListDao().getYukonListEntry( oldEntryID );
+					YukonListEntry oldEntry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( oldEntryID );
 					int newEntryID = 0;
 					
 					for (int j = 0; j < newList.getYukonListEntries().size(); j++) {
@@ -564,12 +566,12 @@ public class StarsAdminUtil {
 		energyCompanySettingDao.updateSettingValue(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, false, user, energyCompany.getEnergyCompanyId());
 		energyCompanySettingDao.updateSettingValue(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, false, user, member.getEnergyCompanyId());
 
-		if(energyCompany.getOperatorAdminGroup() != null){
-            DaoFactory.getRoleDao().updateGroupRoleProperty(energyCompany.getOperatorAdminGroup(),
-                                                            AdministratorRole.ROLEID,
-                                                            AdministratorRole.ADMIN_MANAGE_MEMBERS,
-                                                            CtiUtilities.TRUE_STRING);
-		}
+	      if(energyCompany.getOperatorAdminGroup() != null){
+	          YukonSpringHook.getBean(RoleDao.class).updateGroupRoleProperty(energyCompany.getOperatorAdminGroup(),
+	                                                            AdministratorRole.ROLEID,
+	                                                            AdministratorRole.ADMIN_MANAGE_MEMBERS,
+	                                                            CtiUtilities.TRUE_STRING);
+	        }
 
 		handleDBChange(energyCompany.getOperatorAdminGroup(), DbChangeType.UPDATE);
 
@@ -602,9 +604,9 @@ public class StarsAdminUtil {
 			
 			for (int i = 0; i < loginIDs.size(); i++) {
 				Integer loginID = loginIDs.get(i);
-				LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser( loginID.intValue() );
+				LiteYukonUser liteUser = YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser( loginID.intValue() );
 				
-				if (DaoFactory.getEnergyCompanyDao().getEnergyCompany( liteUser ).getEnergyCompanyID() == member.getLiteID()) {
+				if (YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany( liteUser ).getEnergyCompanyID() == member.getLiteID()) {
 					map.setItemID( loginID );
 					map.setMappingCategory(EcMappingCategory.MEMBER_LOGIN);
 					Transaction.createTransaction( Transaction.DELETE, map ).execute();
@@ -647,7 +649,7 @@ public class StarsAdminUtil {
 		LiteYukonGroup liteGroup = new LiteYukonGroup( newGroup.getGroupID().intValue() );
 		handleDBChange( liteGroup, DbChangeType.ADD );
 		
-		return DaoFactory.getRoleDao().getGroup( liteGroup.getGroupID() );
+		return YukonSpringHook.getBean(RoleDao.class).getGroup( liteGroup.getGroupID() );
 	}
 	
 	public static com.cannontech.database.db.user.UserGroup createOperatorAdminUserGroup(final String userGroupName, int primaryOperatorUserGroupId, final boolean topLevelEc)

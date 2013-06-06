@@ -32,16 +32,19 @@ import org.joda.time.ReadableInstant;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteLMProgramWebPublishing;
 import com.cannontech.stars.database.data.lite.LiteServiceCompany;
 import com.cannontech.stars.database.data.lite.LiteSubstation;
 import com.cannontech.stars.database.data.lite.LiteWebConfiguration;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsInventories;
@@ -305,7 +308,7 @@ public class StarsUtils {
 		if (StringUtils.isBlank(progName) || progName.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
 		    if (liteProg.getDeviceID() > 0) {
 		        try {
-		            progName = DaoFactory.getPaoDao().getYukonPAOName(liteProg.getDeviceID());
+		            progName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(liteProg.getDeviceID());
 		        } catch(NotFoundException e) {
 		            CTILogger.error(e.getMessage(), e);
 		        }
@@ -334,7 +337,7 @@ public class StarsUtils {
 	@Deprecated
 	public static boolean isOperator(LiteYukonUser user) {
 	    return !isResidentialCustomer(user) &&
-	    DaoFactory.getEnergyCompanyDao().getEnergyCompany(user) != null;
+	    YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(user) != null;
 	}
 
     /**
@@ -342,7 +345,7 @@ public class StarsUtils {
      */
 	@Deprecated
 	public static boolean isResidentialCustomer(LiteYukonUser user) {
-		return DaoFactory.getAuthDao().checkRole(user, ResidentialCustomerRole.ROLEID);
+		return YukonSpringHook.getBean(AuthDao.class).checkRole(user, ResidentialCustomerRole.ROLEID);
 	}
 	
 	public static String getStarsTempDir() {

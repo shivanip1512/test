@@ -22,7 +22,6 @@ import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.model.CompleteRegulator;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.ExtraPaoPointMapping;
 import com.cannontech.core.dao.PaoDao;
@@ -52,7 +51,7 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
     @Override
     public void add() throws SQLException {
         if (getPAObjectID() == null) {
-            PaoDao paoDao = DaoFactory.getPaoDao();   
+            PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);   
             setCapControlPAOID(paoDao.getNextPaoId());   
         }
 

@@ -1,6 +1,5 @@
 package com.cannontech.database.data.device;
 
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;

@@ -4,15 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 
 /**
  * @author rneuharth
@@ -77,16 +80,16 @@ public class StarsRequestPword extends RequestPword {
 					LiteAccountInfo lCustInf = 
 						(LiteAccountInfo)allCustAccts.get(0);
 
-					LiteContact lc = DaoFactory.getContactDao().getContact( lCustInf.getCustomer().getPrimaryContactID() );
+					LiteContact lc = YukonSpringHook.getBean(ContactDao.class).getContact( lCustInf.getCustomer().getPrimaryContactID() );
 
-					LiteYukonUser user = DaoFactory.getYukonUserDao().getLiteYukonUser( lc.getLoginID() );
+					LiteYukonUser user = YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser( lc.getLoginID() );
 					
 					foundData.add( " Username: " + user.getUsername() );					
 					foundData.add( " Contact Name: " + lc.getContFirstName() + " " + lc.getContLastName() );					
 					
 					//we must get the Yukon lite energy company for the stars lite energy company
 					LiteEnergyCompany lEnrgy =
-						DaoFactory.getEnergyCompanyDao().getEnergyCompany( eComp.getEnergyCompanyId());
+						YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany( eComp.getEnergyCompanyId());
 
 					processEnergyCompanies( new LiteEnergyCompany[] { lEnrgy } );
 				}
@@ -138,10 +141,10 @@ public class StarsRequestPword extends RequestPword {
 	}
 	
 	protected LiteEnergyCompany[] processContact( LiteContact lCont_ ) {
-		LiteCustomer liteCust = DaoFactory.getContactDao().getCustomer( lCont_.getContactID() );
+		LiteCustomer liteCust = YukonSpringHook.getBean(ContactDao.class).getCustomer( lCont_.getContactID() );
 		
 		if (liteCust.getEnergyCompanyID() != -1) {
-			LiteEnergyCompany liteComp = DaoFactory.getEnergyCompanyDao().getEnergyCompany( liteCust.getEnergyCompanyID() );
+			LiteEnergyCompany liteComp = YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany( liteCust.getEnergyCompanyID() );
 			return new LiteEnergyCompany[] { liteComp };
 		}
 		

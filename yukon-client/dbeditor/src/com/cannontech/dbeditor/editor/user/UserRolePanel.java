@@ -50,7 +50,7 @@ import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -436,7 +436,7 @@ public class UserRolePanel extends DataInputPanel implements TreeSelectionListen
 				LiteYukonRole role = (LiteYukonRole) rNode.getUserObject();
 
 				try {
-					LiteYukonRoleProperty[] props = DaoFactory.getRoleDao()
+					LiteYukonRoleProperty[] props = YukonSpringHook.getBean(RoleDao.class)
 							.getRoleProperties(role.getRoleID());
 					for (LiteYukonRoleProperty prop : props) {
 						// modifies o role vector
@@ -521,7 +521,7 @@ public class UserRolePanel extends DataInputPanel implements TreeSelectionListen
 
 	private String getRolePropertyValue(int rolePropID_, String defValue_) {
 		if (getRoleContainer() instanceof YukonGroup) {
-			return DaoFactory.getRoleDao().getRolePropValueGroup(
+			return YukonSpringHook.getBean(RoleDao.class).getRolePropValueGroup(
 					getRoleContainer().getID(), rolePropID_, defValue_);
 		} else if (getRoleContainer() == null) {
 			return defValue_;
@@ -585,7 +585,7 @@ public class UserRolePanel extends DataInputPanel implements TreeSelectionListen
 				getJTextPaneDescription().setText(ly.getDescription());
 
 				getJTablePropertyModel().clear();
-				LiteYukonRoleProperty[] props = DaoFactory.getRoleDao()
+				LiteYukonRoleProperty[] props = YukonSpringHook.getBean(RoleDao.class)
 						.getRoleProperties(ly.getRoleID());
 
 				// sort by keys
@@ -795,7 +795,7 @@ public class UserRolePanel extends DataInputPanel implements TreeSelectionListen
 			if (tnode != null)
 				((CheckNode) tnode).setSelected(true);
 
-			LiteYukonRoleProperty[] props = DaoFactory.getRoleDao()
+			LiteYukonRoleProperty[] props = YukonSpringHook.getBean(RoleDao.class)
 					.getRoleProperties(yukonGroupRole.getRoleID().intValue());
 
 			// (none) or empty string value means we use the default, don't do

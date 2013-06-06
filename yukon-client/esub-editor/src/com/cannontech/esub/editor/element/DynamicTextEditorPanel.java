@@ -21,12 +21,13 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.PointAttributes;
 import com.cannontech.esub.editor.Util;
 import com.cannontech.esub.element.DynamicText;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Creation date: (12/18/2001 2:05:01 PM)
@@ -942,7 +943,7 @@ public void setValue(Object o) {
         getEnableControlPointLabel().setEnabled(true);
         getEnableControlPointButton().setEnabled(true);
         int controlPointId = dynamicText.getControlPointId();
-        LitePoint controlPoint = DaoFactory.getPointDao().getLitePoint(controlPointId);
+        LitePoint controlPoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(controlPointId);
         getEnableControlPointPanel().getPointSelectionPanel().selectPoint(controlPoint);
         getEnableControlPointLabel().setText(controlPoint.getPointName());
         getEnableControlPointLabel().setForeground(Color.black);
@@ -991,7 +992,7 @@ public void setValue(Object o) {
         getColorButton().setBackground(java.awt.Color.LIGHT_GRAY);
         LitePoint litePoint = null;
         try {
-            litePoint = DaoFactory.getPointDao().getLitePoint(dynamicText.getColorPointID());
+            litePoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(dynamicText.getColorPointID());
         }catch(NotFoundException nfe) {
             CTILogger.error("The color point (pointId:"+ dynamicText.getColorPointID() + ") for this DynamicText might have been deleted!", nfe);
         }
@@ -1020,7 +1021,7 @@ public void setValue(Object o) {
         
         LitePoint litePoint = null;
         try {
-            litePoint = DaoFactory.getPointDao().getLitePoint(dynamicText.getBlinkPointID());
+            litePoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(dynamicText.getBlinkPointID());
         }catch(NotFoundException nfe) {
             CTILogger.error("The blink point (pointId:"+ dynamicText.getBlinkPointID() + ") for this DynamicText might have been deleted!", nfe);
         }

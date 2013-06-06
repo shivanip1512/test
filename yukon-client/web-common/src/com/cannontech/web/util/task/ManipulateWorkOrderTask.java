@@ -9,7 +9,7 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -127,7 +127,7 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 			YukonListEntry listEntry = null;
 			if( changeServiceStatusID != null && workOrderBase.getWorkOrderBase().getCurrentStateID().intValue() != changeServiceStatusID.intValue())
 			{
-				listEntry = DaoFactory.getYukonListDao().getYukonListEntry(changeServiceStatusID.intValue());
+				listEntry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(changeServiceStatusID.intValue());
 				workOrderBase.getWorkOrderBase().setCurrentStateID(changeServiceStatusID);
 				isChanged = true;
 				isStatusChanged = true;

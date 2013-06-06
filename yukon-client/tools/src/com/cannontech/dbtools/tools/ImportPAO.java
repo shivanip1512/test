@@ -9,7 +9,7 @@ import java.sql.Connection;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.capcontrol.CapControlYukonPAOBase;
 import com.cannontech.database.data.device.DeviceBase;
@@ -22,6 +22,7 @@ import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.data.state.GroupState;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author aaron
@@ -73,7 +74,7 @@ public class ImportPAO {
 		
 		for(int i = 0; i < stateGroups.length; i++) {
 			id = ((GroupState) stateGroups[i]).getStateGroup().getStateGroupID().intValue();
-			if(DaoFactory.getStateDao().getLiteStateGroup(id + idOffset) == null) {
+			if(YukonSpringHook.getBean(StateDao.class).getLiteStateGroup(id + idOffset) == null) {
 				CTILogger.info("stategroupid: " + id + " -> " + (id+idOffset));
 				((GroupState) stateGroups[i]).setStateGroupID(new Integer(id+idOffset));
 				String newName = ((GroupState) stateGroups[i]).getStateGroup().getName() + idOffset;

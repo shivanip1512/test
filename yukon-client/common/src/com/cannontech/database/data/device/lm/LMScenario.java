@@ -8,12 +8,12 @@ package com.cannontech.database.data.device.lm;
 
 import java.util.Vector;
 
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.database.db.NestedDBPersistentComparators;
 import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author jdayton
@@ -37,7 +37,7 @@ public class LMScenario extends YukonPAObject implements com.cannontech.database
 	{
 		if( getScenarioID() == null )
 		{
-            PaoDao paoDao = DaoFactory.getPaoDao();
+            PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
 			setScenarioID(paoDao.getNextPaoId());
 			if(getAllThePrograms() != null)
 			{

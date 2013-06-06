@@ -7,10 +7,11 @@
 package com.cannontech.analysis.data.stars;
 
 import com.cannontech.analysis.data.device.MeterAndPointData;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author stacey
@@ -70,7 +71,7 @@ public class StarsAMRDetail
     {
         if (litePrimaryContact == null)
         {
-            litePrimaryContact = DaoFactory.getCustomerDao().getPrimaryContact(getCustomerID().intValue());
+            litePrimaryContact = YukonSpringHook.getBean(CustomerDao.class).getPrimaryContact(getCustomerID().intValue());
         }
         return litePrimaryContact;
     }

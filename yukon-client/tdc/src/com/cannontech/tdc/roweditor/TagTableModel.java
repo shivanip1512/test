@@ -5,8 +5,9 @@ import java.awt.Color;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.gui.table.ICTITableRenderer;
 import com.cannontech.common.gui.util.Colors;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.TagDao;
 import com.cannontech.database.data.lite.LiteTag;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tags.Tag;
 
 /**
@@ -95,7 +96,7 @@ public class TagTableModel extends javax.swing.table.AbstractTableModel implemen
 	 */
 	public java.awt.Color getCellForegroundColor(int row, int col) 
 	{
-		LiteTag tagGrp = DaoFactory.getTagDao().getLiteTag( 
+		LiteTag tagGrp = YukonSpringHook.getBean(TagDao.class).getLiteTag( 
 				getRowAt(row).getTagID() );
 
 		return Colors.getColor( tagGrp.getColorID() );
@@ -144,7 +145,7 @@ public class TagTableModel extends javax.swing.table.AbstractTableModel implemen
 	public Object getValueAt(int row, int col) 
 	{
 		Tag tag = getRowAt(row);
-		LiteTag tagGrp = DaoFactory.getTagDao().getLiteTag( tag.getTagID() );
+		LiteTag tagGrp = YukonSpringHook.getBean(TagDao.class).getLiteTag( tag.getTagID() );
 		
 		if( tag == null || tagGrp == null )
 			return null;

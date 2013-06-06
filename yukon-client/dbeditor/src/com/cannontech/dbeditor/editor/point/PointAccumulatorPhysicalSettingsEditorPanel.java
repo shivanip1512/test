@@ -3,9 +3,10 @@ package com.cannontech.dbeditor.editor.point;
 import java.util.List;
 import java.util.Vector;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.spring.YukonSpringHook;
 
 
 /**
@@ -660,7 +661,7 @@ public void setValue(Object val) {
 		getPointOffsetSpinner().setValue( new Integer(0) );
 	}
     
-    List<LitePoint> points = DaoFactory.getPointDao()
+    List<LitePoint> points = YukonSpringHook.getBean(PointDao.class)
                                            .getLitePointsByPaObjectId(point.getPoint().getPaoID());
         usedPointOffsetsVector = new Vector<LitePoint>(points.size());
         for (LitePoint currPoint : points) {

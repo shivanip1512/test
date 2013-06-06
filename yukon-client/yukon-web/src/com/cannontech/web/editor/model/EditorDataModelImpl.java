@@ -9,11 +9,12 @@ import javax.servlet.http.HttpSession;
 
 
 import com.cannontech.cbc.model.EditorDataModel;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.CapControlDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFUtil;
 
@@ -39,7 +40,7 @@ public class EditorDataModelImpl implements EditorDataModel {
     }
     
     public List <LitePoint> getPaoPoints () {
-        return DaoFactory.getCapControlDao().getPaoPoints(((YukonPAObject)dbObj) );
+        return YukonSpringHook.getBean(CapControlDao.class).getPaoPoints(((YukonPAObject)dbObj) );
     }
 
 

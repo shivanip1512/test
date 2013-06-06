@@ -1,9 +1,11 @@
 <%@ page language="java" session="true" %>
-<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.database.data.lite.LiteCICustomer" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>
+<%@ page import="com.cannontech.spring.YukonSpringHook"%> 
+<%@ page import="com.cannontech.core.dao.YukonUserDao"%>
+<%@ page import="com.cannontech.core.dao.ContactDao"%>
 <%@ page import="com.cannontech.util.ServletUtil" %>
 <%@ page import="com.cannontech.roles.application.TrendingRole"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
@@ -20,8 +22,8 @@
     java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
     String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 
-	LiteContact liteContact = DaoFactory.getYukonUserDao().getLiteContact(liteYukonUser.getLiteID());
-	LiteCICustomer liteCICustomer = DaoFactory.getContactDao().getCICustomer(liteContact.getContactID());
+	LiteContact liteContact = YukonSpringHook.getBean(YukonUserDao.class).getLiteContact(liteYukonUser.getLiteID());
+	LiteCICustomer liteCICustomer = YukonSpringHook.getBean(ContactDao.class).getCICustomer(liteContact.getContactID());
 
 	int customerID = liteCICustomer.getCustomerID();
 

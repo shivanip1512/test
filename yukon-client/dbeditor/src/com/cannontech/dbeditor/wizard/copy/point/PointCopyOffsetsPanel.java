@@ -8,7 +8,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
@@ -16,6 +16,7 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.StatusPoint;
+import com.cannontech.spring.YukonSpringHook;
 
 public class PointCopyOffsetsPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ItemListener {
 	private JLabel ivjControlOffsetLabel = null;
@@ -582,7 +583,7 @@ public void setCopyValue(Object val, int newDeviceID)
 	getUsedPointOffsetLabel().setText("");
 	usedPointOffsetsVector = new Vector<LitePoint>();
 
-    List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(newDeviceID);
+    List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(newDeviceID);
     for (LitePoint point : points) {
         if(point.getPointType() == PointTypes.getType(thePoint.getPoint().getPointType())) {
             usedPointOffsetsVector.add(point);

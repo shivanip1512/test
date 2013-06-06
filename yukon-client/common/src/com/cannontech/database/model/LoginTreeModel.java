@@ -8,7 +8,6 @@ import javax.swing.ProgressMonitor;
 import javax.swing.SwingWorker;
 
 import com.cannontech.common.util.SimpleCallback;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
@@ -61,7 +60,7 @@ public synchronized void doUpdate(final Runnable onCompletion) {
 
     final ProgressMonitor monitor = new ProgressMonitor(frame, "Loading contents", "", 0, 0);
 
-    final YukonUserDao yukonUserDao = DaoFactory.getYukonUserDao();
+    final YukonUserDao yukonUserDao = YukonSpringHook.getBean(YukonUserDao.class);
     worker = new SwingWorker<Object, LiteYukonUser>() {
         private int count = 0;
         private volatile int userCount = 0;

@@ -6,7 +6,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.LMDao;
 import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.data.ILMData;
@@ -19,6 +19,7 @@ import com.cannontech.loadcontrol.data.LMScenarioWrapper;
 import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.message.dispatch.message.Multi;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author rneuharth
@@ -735,7 +736,7 @@ public final class LMCmdMsgFactory
 
 
 				LiteLMProgScenario[] programs = 
-						DaoFactory.getLmDao().getLMScenarioProgs( lmScenario.getYukonID().intValue() );
+						YukonSpringHook.getBean(LMDao.class).getLMScenarioProgs( lmScenario.getYukonID().intValue() );
 
 				for( int i = 0; i < programs.length; i++ )
 				{
@@ -780,7 +781,7 @@ public final class LMCmdMsgFactory
 
 
 				LiteLMProgScenario[] programs = 
-						DaoFactory.getLmDao().getLMScenarioProgs( lmScenario.getYukonID().intValue() );
+						YukonSpringHook.getBean(LMDao.class).getLMScenarioProgs( lmScenario.getYukonID().intValue() );
 
 				for( int i = 0; i < programs.length; i++ )
 				{

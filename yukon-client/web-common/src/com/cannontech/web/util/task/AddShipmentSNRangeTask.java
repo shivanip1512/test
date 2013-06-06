@@ -8,9 +8,10 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.activity.ActivityLogActions;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.db.hardware.Warehouse;
 import com.cannontech.stars.util.EventUtils;
@@ -123,7 +124,7 @@ public class AddShipmentSNRangeTask extends TimeConsumingTask {
 		}
 		
 		String logMsg = "Serial Range:" + String.valueOf(snFrom) + " - " + String.valueOf(snTo)
-				+ ",Device Type:" + DaoFactory.getYukonListDao().getYukonListEntry(devTypeID.intValue()).getEntryText();
+				+ ",Device Type:" + YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(devTypeID.intValue()).getEntryText();
 
         ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.INVENTORY_ADD_RANGE, logMsg );
 		

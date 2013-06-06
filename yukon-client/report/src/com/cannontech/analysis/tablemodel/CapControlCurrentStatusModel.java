@@ -15,7 +15,8 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteState;
@@ -23,6 +24,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Created on Nov 11, 2005
@@ -83,7 +85,7 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
 	
 	/** A string for the title of the data */
 	private static String title = "Cap Control Current Status Report";
-	private AuthDao authDao = DaoFactory.getAuthDao();
+	private AuthDao authDao = YukonSpringHook.getBean(AuthDao.class);
 	LiteYukonUser user = null;
 		
 	public Comparator ccStatusDataComparator = new java.util.Comparator()
@@ -122,8 +124,8 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
                 String val2 = data2.getOperationalState();
                 return (val1.compareToIgnoreCase(val2));
             }else if ( ORDER_TYPE_STRINGS[3].equals(getOrderBy()) ) {
-                String val1 = DaoFactory.getStateDao().findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, data1.getControlStatus().intValue()).toString();
-                String val2 = DaoFactory.getStateDao().findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, data2.getControlStatus().intValue()).toString();
+                String val1 = YukonSpringHook.getBean(StateDao.class).findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, data1.getControlStatus().intValue()).toString();
+                String val2 = YukonSpringHook.getBean(StateDao.class).findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, data2.getControlStatus().intValue()).toString();
                 return (val1.compareToIgnoreCase(val2));
             }else {
                 Date date1 = data1.getChangeDateTime();
@@ -170,7 +172,7 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
                 operationalState = authDao.getRolePropertyValue(user, CBCOnelineSettingsRole.CAP_BANK_FIXED_TEXT);
             }
             Integer controlOrder = new Integer(rset.getInt(7));
-            LiteYukonPAObject lite = DaoFactory.getPaoDao().getLiteYukonPAO(capBankPaoID.intValue());
+            LiteYukonPAObject lite = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(capBankPaoID.intValue());
             String capAddress = lite.getPaoDescription();
             String capDriveDir = rset.getString(8);
             String disableFlag = lite.getDisableFlag();
@@ -347,7 +349,7 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
 					return ccStatData.getBankName();
 					
 				case CONTROL_STATUS_COLUMN:
-					return DaoFactory.getStateDao().findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, ccStatData.getControlStatus().intValue());
+					return YukonSpringHook.getBean(StateDao.class).findLiteState(StateGroupUtils.STATEGROUPID_CAPBANK, ccStatData.getControlStatus().intValue());
 
 				case LAST_STATUS_CHANGE_TIME_COLUMN:
 					return ccStatData.getChangeDateTime();
@@ -484,7 +486,7 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
 		html += "        <tr>" + LINE_SEPARATOR;
 		html += "          <td class='TitleHeader'>&nbsp;Control Status</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
-		LiteState [] liteStates = DaoFactory.getStateDao().getLiteStates( StateGroupUtils.STATEGROUPID_CAPBANK );
+		LiteState [] liteStates = YukonSpringHook.getBean(StateDao.class).getLiteStates( StateGroupUtils.STATEGROUPID_CAPBANK );
 		for (int i = 0; i < liteStates.length; i++)
 		{
 			html += "        <tr>" + LINE_SEPARATOR;

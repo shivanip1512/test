@@ -10,9 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.YukonImageDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -20,6 +21,7 @@ import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.persist.PersistStateImage;
 import com.cannontech.esub.util.Util;
+import com.cannontech.spring.YukonSpringHook;
 import com.loox.jloox.LxAbstractImage;
 
 /**
@@ -63,7 +65,7 @@ public StateImage() {
  */
 public LitePoint getPoint() {
     try {
-        return DaoFactory.getPointDao().getLitePoint(pointID);
+        return YukonSpringHook.getBean(PointDao.class).getLitePoint(pointID);
     } catch(NotFoundException nfe) {
         //this is OK
     }
@@ -149,7 +151,7 @@ public void setPointID(int pointID) {
 			if(customImageId != null) {
 				imageId = customImageId.intValue();
 			}
-			return DaoFactory.getYukonImageDao().getLiteYukonImage(imageId);
+			return YukonSpringHook.getBean(YukonImageDao.class).getLiteYukonImage(imageId);
 		}
 		return null;
 	}
@@ -166,7 +168,7 @@ public void setPointID(int pointID) {
             return imageNames;
         }
         
-		LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
+		LiteStateGroup lsg = YukonSpringHook.getBean(StateDao.class).getLiteStateGroup(point.getStateGroupID());
 		List<LiteState> states = lsg.getStatesList();
 		for(int i = 0; i < states.size(); i++) {
 			Integer imgIdObj = customImageMap.get(new Integer(i));
@@ -177,7 +179,7 @@ public void setPointID(int pointID) {
 			else {
 				imgId = states.get(i).getImageID();
 			}
-			LiteYukonImage lyi = DaoFactory.getYukonImageDao().getLiteYukonImage(imgId); 
+			LiteYukonImage lyi = YukonSpringHook.getBean(YukonImageDao.class).getLiteYukonImage(imgId); 
 			if(lyi != null) {
 				imageNames.add(lyi.getImageName());
 			}
@@ -305,7 +307,7 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
 
     @Override
     public boolean fixIds() {
-        PointDao pointDao = DaoFactory.getPointDao();
+        PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
         if(getPointID() != -1) {
             try {
                 pointDao.getLitePoint(pointID);

@@ -24,8 +24,8 @@ import javax.swing.tree.TreeSelectionModel;
 import com.cannontech.common.gui.tree.CheckNode;
 import com.cannontech.common.gui.tree.CheckNodeSelectionListener;
 import com.cannontech.common.gui.tree.CheckRenderer;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -33,6 +33,7 @@ import com.cannontech.database.model.AlarmCategoryCheckBoxTreeModel;
 import com.cannontech.database.model.DeviceCheckBoxTreeModel;
 import com.cannontech.esub.editor.Util;
 import com.cannontech.esub.element.AlarmTextElement;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Insert the type's description here.
@@ -817,7 +818,7 @@ public void setValue(Object o) {
         // Find the device for this point and load the device's tree node.
         int deviceId;
         try {
-            deviceId = DaoFactory.getPointDao().getLitePoint(pointids[i]).getPaobjectID();
+            deviceId = YukonSpringHook.getBean(PointDao.class).getLitePoint(pointids[i]).getPaobjectID();
         }catch(NotFoundException nfe ) {
             // skip points that don't exist
             continue;

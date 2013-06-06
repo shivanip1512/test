@@ -15,9 +15,11 @@ import javax.swing.UIManager;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.TagDao;
+import com.cannontech.core.dao.YukonImageDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteTag;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tags.Tag;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
@@ -57,7 +59,7 @@ public class TagWizardPanel extends ManualEntryJPanel implements RowEditorDialog
 				{
 					setIcon( 
 						new ImageIcon(java.awt.Toolkit.getDefaultToolkit().createImage(
-							DaoFactory.getYukonImageDao().getLiteYukonImage(tag.getImageID()).getImageValue()) ) );
+							YukonSpringHook.getBean(YukonImageDao.class).getLiteYukonImage(tag.getImageID()).getImageValue()) ) );
 				}
 				else
 					setIcon( null );
@@ -692,7 +694,7 @@ public void setTag( Tag theTag )
 	if( theTag != null )
 	{
 		getJComboBoxTag().setSelectedItem( 
-				DaoFactory.getTagDao().getLiteTag(theTag.getTagID()) );
+				YukonSpringHook.getBean(TagDao.class).getLiteTag(theTag.getTagID()) );
 	
 		getJEditorPaneDesc().setText( theTag.getDescriptionStr() );		
 	}

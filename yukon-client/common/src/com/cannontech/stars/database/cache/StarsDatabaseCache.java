@@ -21,8 +21,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.database.Transaction;
@@ -317,7 +318,7 @@ public class StarsDatabaseCache implements DBChangeListener {
              *together more firmly with Yukon in the future.  (Example might be MCT inventory contents.) 
              */
             if(msg.getDbChangeType() != DbChangeType.DELETE)
-                litePao = DaoFactory.getPaoDao().getLiteYukonPAO( msg.getId() );
+                litePao = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO( msg.getId() );
             else {
                 CTILogger.debug("DBChangeMsg for a deleted PAO: " + msg);
                 return;
@@ -375,7 +376,7 @@ public class StarsDatabaseCache implements DBChangeListener {
     	}
 		else if (msg.getDatabase() == DBChangeMsg.CHANGE_YUKON_USER_DB) {
 			if (msg.getCategory().equals( DBChangeMsg.CAT_YUKON_USER )) {
-				LiteContact liteContact = DaoFactory.getYukonUserDao().getLiteContact( msg.getId() );
+				LiteContact liteContact = YukonSpringHook.getBean(YukonUserDao.class).getLiteContact( msg.getId() );
 				if (liteContact != null) {
 						CustomerAccountDao customerAccountDao = YukonSpringHook.getBean("customerAccountDao", CustomerAccountDao.class);
 						CustomerAccount customerAccount = null;
@@ -532,7 +533,7 @@ public class StarsDatabaseCache implements DBChangeListener {
                     {
 						try
                         {
-						    program.setYukonName( DaoFactory.getPaoDao().getYukonPAOName(liteProg.getDeviceID()) );
+						    program.setYukonName( YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(liteProg.getDeviceID()) );
                         }
                         catch(NotFoundException e)
                         {
@@ -596,7 +597,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 				
 			case UPDATE:
 				if (starsAcctInfo.getStarsUser().getUserID() == msg.getId()) {
-					LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser( msg.getId() );
+					LiteYukonUser liteUser = YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser( msg.getId() );
 					starsAcctInfo.setStarsUser(liteUser);
 				}
 				

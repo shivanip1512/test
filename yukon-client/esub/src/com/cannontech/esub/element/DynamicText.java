@@ -14,15 +14,16 @@ import java.util.Map;
 import java.util.Properties;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.PointAttributes;
 import com.cannontech.esub.element.persist.PersistDynamicText;
+import com.cannontech.spring.YukonSpringHook;
 import com.loox.jloox.LxAbstractText;
 import com.loox.jloox.LxContainer;
 
@@ -258,7 +259,7 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
         
     	LitePoint lp;
         try {
-            lp = DaoFactory.getPointDao().getLitePoint( newPointId );
+            lp = YukonSpringHook.getBean(PointDao.class).getLitePoint( newPointId );
             point = lp;
         } catch (NotFoundException e) {
             // this point must have been deleted
@@ -280,7 +281,7 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
      */
     public void setControlPointId(int newPointId)  {
         try {
-        LitePoint lp = DaoFactory.getPointDao().getLitePoint( newPointId );
+        LitePoint lp = YukonSpringHook.getBean(PointDao.class).getLitePoint( newPointId );
         if(lp != null) {
             controlPoint = lp;
         }
@@ -363,7 +364,7 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
         
         LitePoint point = null;
         try {
-            point = DaoFactory.getPointDao().getLitePoint(getColorPointID());
+            point = YukonSpringHook.getBean(PointDao.class).getLitePoint(getColorPointID());
         }catch(NotFoundException nfe) {
             // this point may have been deleted.
             CTILogger.error("The point (pointId:"+ getColorPointID() + ") for this DynamicText might have been deleted!", nfe);
@@ -373,7 +374,7 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
             textColors.add(getPaint());
         }else {
         
-            LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
+            LiteStateGroup lsg = YukonSpringHook.getBean(StateDao.class).getLiteStateGroup(point.getStateGroupID());
             List<LiteState> states = lsg.getStatesList();
             for(int i = 0; i < states.size(); i++) {
                 Color colorObj = customColorMap.get(i);
@@ -395,7 +396,7 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
         
         LitePoint point = null;
         try {
-            point = DaoFactory.getPointDao().getLitePoint(getPointId());
+            point = YukonSpringHook.getBean(PointDao.class).getLitePoint(getPointId());
         }catch(NotFoundException nfe) {
             // this point may have been deleted.
             CTILogger.error("The point (pointId:"+ getPointId() + ") for this DynamicText might have been deleted!", nfe);
@@ -405,7 +406,7 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
             textStrings.add(getText());
         }else {
         
-            LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
+            LiteStateGroup lsg = YukonSpringHook.getBean(StateDao.class).getLiteStateGroup(point.getStateGroupID());
             List<LiteState> states = lsg.getStatesList();
             for(int i = 0; i < states.size(); i++) {
                 String textObj = customTextMap.get(i);
@@ -552,7 +553,7 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
         
         LitePoint point = null;
         try {
-            point = DaoFactory.getPointDao().getLitePoint(getBlinkPointID());
+            point = YukonSpringHook.getBean(PointDao.class).getLitePoint(getBlinkPointID());
         }catch(NotFoundException nfe) {
             // this point may have been deleted.
             CTILogger.error("The point (pointId:"+ getBlinkPointID() + ") for this DynamicText might have been deleted!", nfe);
@@ -562,7 +563,7 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
             return textBlinks;
         }else {
         
-            LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
+            LiteStateGroup lsg = YukonSpringHook.getBean(StateDao.class).getLiteStateGroup(point.getStateGroupID());
             List<LiteState> states = lsg.getStatesList();
             for(int i = 0; i < states.size(); i++) {
                 Integer blinkObj = customBlinkMap.get(new Integer(i));
@@ -582,7 +583,7 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
     @Override
     public boolean fixIds() {
         boolean needsAttention = false;
-        PointDao pointDao = DaoFactory.getPointDao();
+        PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
         if(getPointId() == INVALID_POINT) {
             setText("BROKEN DYNAMIC TEXT");
             needsAttention = true;

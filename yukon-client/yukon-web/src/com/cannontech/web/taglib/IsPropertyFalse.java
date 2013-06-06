@@ -5,9 +5,11 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ReflectivePropertySearcher;
 
 /**
@@ -33,11 +35,11 @@ public class IsPropertyFalse extends BodyTagSupport
 			(LiteYukonUser) pageContext.getSession().getAttribute("YUKON_USER");
 	
 		LiteYukonRoleProperty liteProp =
-			DaoFactory.getRoleDao().getRoleProperty(propertyid);
+			YukonSpringHook.getBean(RoleDao.class).getRoleProperty(propertyid);
 
 		if( user != null && liteProp != null ) {
 			
-			boolean val = DaoFactory.getAuthDao().checkRoleProperty(
+			boolean val = YukonSpringHook.getBean(AuthDao.class).checkRoleProperty(
 					user,
 					liteProp.getRolePropertyID() );
 				

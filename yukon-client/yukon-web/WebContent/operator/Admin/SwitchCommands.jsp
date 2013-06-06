@@ -6,14 +6,16 @@
 <%@ page import="com.cannontech.stars.database.data.lite.LiteLmHardwareBase" %>
 <%@ page import="com.cannontech.stars.util.SwitchCommandQueue" %>
 <%@ page import="com.cannontech.stars.core.dao.InventoryBaseDao" %>
+<%@ page import="com.cannontech.spring.YukonSpringHook"%> 
+<%@ page import="com.cannontech.core.dao.AuthDao" %>
 <jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
 <%
-    if (!DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_VIEW_BATCH_COMMANDS)) {
+    if (!YukonSpringHook.getBean(AuthDao.class).checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_VIEW_BATCH_COMMANDS)) {
 	    response.sendRedirect("../Operations.jsp");
 	    return;
 	}
 
-	boolean showEnergyCompany = liteEC.hasChildEnergyCompanies() && DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS);
+	boolean showEnergyCompany = liteEC.hasChildEnergyCompanies() && YukonSpringHook.getBean(AuthDao.class).checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS);
 	List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants(liteEC);
 	
 	int memberID = -1;

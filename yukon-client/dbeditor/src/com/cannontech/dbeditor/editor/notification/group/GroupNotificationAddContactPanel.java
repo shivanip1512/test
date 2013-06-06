@@ -3,10 +3,11 @@ package com.cannontech.dbeditor.editor.notification.group;
 import java.util.Collections;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.ContactDao;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.notification.NotifDestinationMap;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -309,7 +310,7 @@ public void setValue(Object val)
 	synchronized(cache)
 	{
 		//locations
-		java.util.List cntctNotifs = DaoFactory.getContactDao().getAllContactNotifications();
+		java.util.List cntctNotifs = YukonSpringHook.getBean(ContactDao.class).getAllContactNotifications();
 		Collections.sort( cntctNotifs, LiteComparators.liteStringComparator );
 
 		for(int i = 0; i < notifDestMap.length; i++)

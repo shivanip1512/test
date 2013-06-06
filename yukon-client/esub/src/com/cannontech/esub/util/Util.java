@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 import javax.swing.JComponent;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
@@ -29,6 +28,7 @@ import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.DynamicGraphElement;
 import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.element.RectangleElement;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.SystemUserContext;
 import com.google.common.collect.Lists;
 import com.loox.jloox.LxGraph;
@@ -268,7 +268,7 @@ public class Util {
 	}
 	
 	public static boolean isStatusPoint(int pointID) {
-		LitePoint lp = DaoFactory.getPointDao().getLitePoint(pointID);		
+		LitePoint lp = YukonSpringHook.getBean(PointDao.class).getLitePoint(pointID);		
 		return (lp != null && lp.getPointType() == PointTypes.STATUS_POINT);	
 	}
 	
@@ -325,7 +325,7 @@ public class Util {
     }
 	
 	public static int[] fixDeviceIds(int[] oldArray){
-        PaoDao paoDao = DaoFactory.getPaoDao();
+        PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
         List<Integer> newDeviceIds = Lists.newArrayList();
         for(int deviceId : oldArray){
             try {
@@ -345,7 +345,7 @@ public class Util {
     }
     
     public static int[] fixPointIds(int[] oldArray){
-        PointDao pointDao = DaoFactory.getPointDao();
+        PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
         List<Integer> newPointIds = Lists.newArrayList();
         for(int pointId : oldArray){
             try {

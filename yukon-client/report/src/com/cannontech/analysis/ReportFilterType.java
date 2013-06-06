@@ -8,8 +8,9 @@ import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.common.util.StringUtils;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.spring.YukonSpringHook;
 import com.google.common.base.Function;
 
 public enum ReportFilterType {
@@ -26,7 +27,7 @@ public enum ReportFilterType {
             loadPao(model, filterValueList, new Function<String, LiteYukonPAObject>() {
                 @Override
                 public LiteYukonPAObject apply(String from) {
-                    return DaoFactory.getDeviceDao().getLiteYukonPaobjectByMeterNumber(from);
+                    return YukonSpringHook.getBean(DeviceDao.class).getLiteYukonPaobjectByMeterNumber(from);
                 }
             });
         }
@@ -39,7 +40,7 @@ public enum ReportFilterType {
             loadPao(model, filterValueList, new Function<String, LiteYukonPAObject>() {
                 @Override
                 public LiteYukonPAObject apply(String from) {
-                    return DaoFactory.getDeviceDao().getLiteYukonPaobjectByDeviceName(from);
+                    return YukonSpringHook.getBean(DeviceDao.class).getLiteYukonPaobjectByDeviceName(from);
                 }
             });
         }

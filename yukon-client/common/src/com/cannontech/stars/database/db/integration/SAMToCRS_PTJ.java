@@ -9,11 +9,13 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.data.hardware.MeterHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
@@ -258,7 +260,7 @@ public void setExtract(Character extract) {
  */
 public static void handleCRSIntegration(int stateYukDefID, WorkOrderBase workOrderBase, LiteAccountInfo liteStarsCustAcctInfo, LiteStarsEnergyCompany liteStarsEC, int userID, String meterNumber) throws TransactionException
 {
-    YukonListEntry workTypeEntry = DaoFactory.getYukonListDao().getYukonListEntry(workOrderBase.getWorkOrderBase().getWorkTypeID().intValue());
+    YukonListEntry workTypeEntry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(workOrderBase.getWorkOrderBase().getWorkTypeID().intValue());
     
 //  Only run through the SAMToCRS process if workOrder came from CRS Integration.  The CRS PJT number is stored in the AdditionalOrderNumber field
     if(workOrderBase.getWorkOrderBase().getAdditionalOrderNumber() != null && 
@@ -280,7 +282,7 @@ public static void handleCRSIntegration(int stateYukDefID, WorkOrderBase workOrd
             try{
                 samToCrs_ptj.setPTJID(Integer.valueOf(workOrderBase.getWorkOrderBase().getAdditionalOrderNumber()));
             }catch(NumberFormatException nfe){}
-            samToCrs_ptj.setStarsUserName(DaoFactory.getYukonUserDao().getLiteYukonUser(userID).getUsername());
+            samToCrs_ptj.setStarsUserName(YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(userID).getUsername());
             samToCrs_ptj.setStatusCode(samToCrsStatus);
             samToCrs_ptj.setDateTime_Completed(new Date());
             samToCrs_ptj.setWorkOrderNumber(workOrderBase.getWorkOrderBase().getOrderNumber());

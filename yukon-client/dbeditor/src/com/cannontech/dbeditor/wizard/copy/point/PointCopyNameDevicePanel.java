@@ -7,10 +7,11 @@ package com.cannontech.dbeditor.wizard.copy.point;
  import java.awt.Dimension;
 import java.util.ArrayList;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
   public class PointCopyNameDevicePanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.CaretListener {
@@ -239,7 +240,7 @@ public Object getValue(Object val)
 	com.cannontech.database.data.lite.LiteYukonPAObject liteDevice = (com.cannontech.database.data.lite.LiteYukonPAObject) getDeviceComboBox().getSelectedItem();
 	String nameString = getNameTextField().getText();
 
-    int nextId = DaoFactory.getPointDao().getNextPointId();
+    int nextId = YukonSpringHook.getBean(PointDao.class).getNextPointId();
 	point.setPointID(nextId);
 	point.getPoint().setPointName(nameString);
 	point.getPoint().setPaoID(new Integer(liteDevice.getYukonID()));

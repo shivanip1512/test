@@ -1,12 +1,12 @@
 package com.cannontech.database.data.device;
 
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.db.customer.DeviceCustomerList;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.database.db.device.DynamicDeviceScanData;
 import com.cannontech.database.db.device.DynamicVerification;
+import com.cannontech.spring.YukonSpringHook;
 
 
 /**
@@ -30,7 +30,7 @@ public DeviceBase() {
 public void add() throws java.sql.SQLException 
 {
 	if( getDevice().getDeviceID() == null ) {
-	    PaoDao paoDao = DaoFactory.getPaoDao();   
+	    PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);   
         setDeviceID(paoDao.getNextPaoId());
         if( this instanceof GridAdvisorBase ){
            ((GridAdvisorBase)this).setDefaultPort();

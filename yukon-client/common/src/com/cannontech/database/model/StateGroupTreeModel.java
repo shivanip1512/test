@@ -1,8 +1,9 @@
 package com.cannontech.database.model;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -36,7 +37,7 @@ public void update() {
 
 	synchronized(cache)
 	{
-		LiteStateGroup[] stateGroups = DaoFactory.getStateDao().getAllStateGroups();
+		LiteStateGroup[] stateGroups = YukonSpringHook.getBean(StateDao.class).getAllStateGroups();
 
 		DBTreeNode rootNode = (DBTreeNode) getRoot();
 		rootNode.removeAllChildren();

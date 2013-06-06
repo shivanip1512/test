@@ -6,12 +6,14 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;
@@ -90,13 +92,13 @@ public class RequestPword
             //we may continue after this, remove all the stored data
             foundData.clear();
             
-            LiteContact lc = DaoFactory.getContactDao().getContactByEmailNotif( email );
+            LiteContact lc = YukonSpringHook.getBean(ContactDao.class).getContactByEmailNotif( email );
             if( lc == null )
                 setState( RET_FAILED, "EMAIL_NOT_FOUND" );
             else
             {
                 foundData.add( " Contact Name: " + lc.getContFirstName() + " " + lc.getContLastName() );
-                foundData.add( " Username: " + DaoFactory.getYukonUserDao().getLiteYukonUser(lc.getLoginID()).getUsername() );
+                foundData.add( " Username: " + YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(lc.getLoginID()).getUsername() );
 
                 LiteEnergyCompany[] cmps = processContact( lc );
                 processEnergyCompanies( cmps );
@@ -113,14 +115,14 @@ public class RequestPword
             //we may continue after this, remove all the stored data
             foundData.clear();
             
-            LiteYukonUser user = DaoFactory.getYukonUserDao().findUserByUsername( userName );
+            LiteYukonUser user = YukonSpringHook.getBean(YukonUserDao.class).findUserByUsername( userName );
             if( user == null )
                 setState( RET_FAILED, "USER_NOT_FOUND" );
             else
             {
                 foundData.add( " Username: " + user.getUsername() );                   
 
-                LiteContact lc = DaoFactory.getYukonUserDao().getLiteContact( user.getUserID() );
+                LiteContact lc = YukonSpringHook.getBean(YukonUserDao.class).getLiteContact( user.getUserID() );
                 if( lc == null )
                 {
                     setState( RET_FAILED, "CONTACT_NOT_FOUND" );
@@ -180,7 +182,7 @@ public class RequestPword
 	
 	protected LiteEnergyCompany[] processContact( LiteContact lCont_ )
 	{
-		LiteCICustomer lCust = DaoFactory.getContactDao().getCICustomer( lCont_.getContactID() );
+		LiteCICustomer lCust = YukonSpringHook.getBean(ContactDao.class).getCICustomer( lCont_.getContactID() );
 
 		//no customer found, we have some issues
 		if( lCust == null )
@@ -196,7 +198,7 @@ public class RequestPword
 		foundData.add( " Customer Name: " + lCust.getCompanyName() );					
 
 		LiteEnergyCompany[] cmp = 
-			DaoFactory.getEnergyCompanyDao().getEnergyCompaniesByCustomer( lCust.getCustomerID() );
+			YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompaniesByCustomer( lCust.getCustomerID() );
 	
 		return cmp;		
 	}
@@ -222,7 +224,7 @@ public class RequestPword
 			foundData.add( " Energy Company Name: " + comps_[0].getName() );					
 			
 			String[] emails =
-					DaoFactory.getContactDao().getAllEmailAddresses( comps_[0].getPrimaryContactID() );
+					YukonSpringHook.getBean(ContactDao.class).getAllEmailAddresses( comps_[0].getPrimaryContactID() );
 
 			for( int i = 0; i < emails.length; i++ )
 			{

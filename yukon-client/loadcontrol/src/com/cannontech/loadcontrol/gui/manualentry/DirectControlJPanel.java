@@ -25,7 +25,8 @@ import com.cannontech.common.gui.util.ComboBoxTableRenderer;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.LMDao;
 import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.lm.GearControlMethod;
@@ -38,6 +39,7 @@ import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.loadcontrol.popup.ControlAreaPopUpMenu;
 import com.cannontech.roles.loadcontrol.DirectLoadcontrolRole;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Insert the type's description here.
@@ -133,7 +135,7 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 		if( litePAO != null )
 		{
 			LiteLMProgScenario[] programs = 
-					DaoFactory.getLmDao().getLMScenarioProgs( litePAO.getYukonID() );
+					YukonSpringHook.getBean(LMDao.class).getLMScenarioProgs( litePAO.getYukonID() );
 
 			ArrayList selPrgs = new ArrayList( programs.length );
 
@@ -599,12 +601,12 @@ public javax.swing.JComboBox getJComboBoxConstraints() {
 			ivjJComboBoxConstraints.setEditor(new javax.swing.plaf.metal.MetalComboBoxEditor.UIResource());
 			ivjJComboBoxConstraints.setRenderer(new javax.swing.plaf.basic.BasicComboBoxRenderer.UIResource());
 
-			if( DaoFactory.getAuthDao().checkRoleProperty( ClientSession.getInstance().getUser(),
+			if( YukonSpringHook.getBean(AuthDao.class).checkRoleProperty( ClientSession.getInstance().getUser(),
 						DirectLoadcontrolRole.ALLOW_OBSERVE_CONSTRAINTS) )
 				ivjJComboBoxConstraints.addItem( 
 					LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_USE] );
 
-			if( DaoFactory.getAuthDao().checkRoleProperty( ClientSession.getInstance().getUser(),
+			if( YukonSpringHook.getBean(AuthDao.class).checkRoleProperty( ClientSession.getInstance().getUser(),
 					DirectLoadcontrolRole.ALLOW_CHECK_CONSTRAINTS) )
 				ivjJComboBoxConstraints.addItem(
 					LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_CHECK] );
@@ -613,7 +615,7 @@ public javax.swing.JComboBox getJComboBoxConstraints() {
 				//set our initial selection to be the value specified in our
 				// role property
 				String defSel = 
-					DaoFactory.getAuthDao().getRolePropertyValue(
+					YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(
 						ClientSession.getInstance().getUser(),
 						DirectLoadcontrolRole.DEFAULT_CONSTRAINT_SELECTION);
 	
@@ -672,7 +674,7 @@ public javax.swing.JComboBox getJComboBoxConstraints() {
 			
 			if( _isScenario )
 			{
-				LiteYukonPAObject[] scenarios = DaoFactory.getLmDao().getAllLMScenarios();
+				LiteYukonPAObject[] scenarios = YukonSpringHook.getBean(LMDao.class).getAllLMScenarios();
 				for( int i = 0; i < scenarios.length; i++ )
 				{
 					ivjJComboBoxScenario.addItem( scenarios[i] );
@@ -1657,7 +1659,7 @@ private void initialize() {
 				getJLabelGear().setVisible(false);
 
                 canSpecifyStopGear = 
-                    DaoFactory.getAuthDao().checkRoleProperty(
+                    YukonSpringHook.getBean(AuthDao.class).checkRoleProperty(
                         ClientSession.getInstance().getUser(),
                         DirectLoadcontrolRole.ALLOW_STOP_GEAR_ACCESS);
                 if(canSpecifyStopGear) {
@@ -1786,7 +1788,7 @@ private void initialize() {
                     
                     if(isScenario) {
                         LiteYukonPAObject litePao = (LiteYukonPAObject) getJComboBoxScenario().getSelectedItem();
-                        int startGear = DaoFactory.getLmDao().getStartingGearForScenarioAndProgram(base.getYukonID(), litePao.getLiteID());
+                        int startGear = YukonSpringHook.getBean(LMDao.class).getStartingGearForScenarioAndProgram(base.getYukonID(), litePao.getLiteID());
                         combModel.setSelectedItem(progGear.getDirectGearVector().get(startGear-1));
                     }
                     
@@ -1816,7 +1818,7 @@ private void initialize() {
                 
                 if(isScenario) {
                     LiteYukonPAObject litePao = (LiteYukonPAObject) getJComboBoxScenario().getSelectedItem();
-                    int startGear = DaoFactory.getLmDao().getStartingGearForScenarioAndProgram(base.getYukonID(), litePao.getLiteID());
+                    int startGear = YukonSpringHook.getBean(LMDao.class).getStartingGearForScenarioAndProgram(base.getYukonID(), litePao.getLiteID());
                     combModel.setSelectedItem(progGear.getDirectGearVector().get(startGear-1));
                 }
                 

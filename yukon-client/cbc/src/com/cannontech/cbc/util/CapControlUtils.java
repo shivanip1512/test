@@ -17,8 +17,9 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.roleproperties.UserNotInRoleException;
@@ -672,7 +673,7 @@ public final class CapControlUtils {
        if(areaID < 0 ) {
            return "(none)";
        }else {
-           return DaoFactory.getPaoDao().getYukonPAOName(areaID);
+           return YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(areaID);
        }
     }
     
@@ -729,7 +730,7 @@ public final class CapControlUtils {
         LiteYukonPAObject lite = null;
         try{
         
-            lite = DaoFactory.getPaoDao().getLiteYukonPAO(id);
+            lite = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(id);
         }
         catch(NotFoundException nfe)
         {
@@ -741,7 +742,7 @@ public final class CapControlUtils {
     public static boolean isPoint(int id) {
         try
        {
-            DaoFactory.getPointDao().getLitePoint(id);
+            YukonSpringHook.getBean(PointDao.class).getLitePoint(id);
        }
        catch(NotFoundException nfe)
        {

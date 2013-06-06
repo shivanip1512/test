@@ -11,10 +11,11 @@ import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.EventNotif;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.Iso8601DateUtil;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.enums.NotificationState;
 import com.cannontech.notif.outputs.*;
+import com.cannontech.spring.YukonSpringHook;
 
 public abstract class EventScheduler {
 
@@ -62,7 +63,7 @@ public abstract class EventScheduler {
                     notif.setState(NotificationState.PENDING);
                     updateNotif(notif);
                     Integer customerId = notif.getCustomer().getId();
-                    LiteCICustomer liteCICustomer = DaoFactory.getCustomerDao().getLiteCICustomer(customerId);
+                    LiteCICustomer liteCICustomer = YukonSpringHook.getBean(CustomerDao.class).getLiteCICustomer(customerId);
                     ContactableCustomer cc = new ContactableCustomer(liteCICustomer);
                     Contactable contactable = new SingleNotifContactable(cc, notif.getNotifType());
                     

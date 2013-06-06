@@ -8,9 +8,10 @@ package com.cannontech.clientutils.commander;
 
 import java.util.Vector;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.CommandDao;
 import com.cannontech.database.data.command.DeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteCommand;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author stacey
@@ -147,7 +148,7 @@ public class DeviceTypeCommandsTableModel extends javax.swing.table.AbstractTabl
 	 */
 	public Object getAttribute(int index, DeviceTypeCommand devTypeCmd_)
 	{
-		LiteCommand lc = (LiteCommand)DaoFactory.getCommandDao().getCommand(devTypeCmd_.getCommandID().intValue());		
+		LiteCommand lc = (LiteCommand)YukonSpringHook.getBean(CommandDao.class).getCommand(devTypeCmd_.getCommandID().intValue());		
 		switch( index )
 		{
 //			case COMMANDID_COLUMN:

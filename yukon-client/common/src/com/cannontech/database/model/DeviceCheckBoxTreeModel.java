@@ -11,12 +11,13 @@ import java.util.ListIterator;
 import java.util.Vector;
 
 import com.cannontech.common.gui.tree.CheckNode;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class DeviceCheckBoxTreeModel extends AbstractDeviceTreeModel implements Checkable
@@ -255,7 +256,7 @@ public class DeviceCheckBoxTreeModel extends AbstractDeviceTreeModel implements 
             {
                 node.removeAllChildren();
                 pointTempList.clear();
-                pointTempList = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceDevID);
+                pointTempList = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(deviceDevID);
                 ListIterator<LitePoint> iter = pointTempList.listIterator();
                 while(iter.hasPrevious()) {
                     LitePoint p = iter.previous();

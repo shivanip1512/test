@@ -13,10 +13,11 @@ import com.cannontech.billing.record.WLT_40PulseDataRecord;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.RawPointHistory;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Insert the type's description here.
@@ -475,7 +476,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups)
 				Vector<Integer> unitOfMeasureCodeVector = new Vector<Integer>();
 				for(int k=0;k<unitOfMeasureIdVector.size();k++)
 				{
-					String unitMeasureName = DaoFactory.getUnitMeasureDao().getLiteUnitMeasure(unitOfMeasureIdVector.get(k).intValue()).getUnitMeasureName();
+					String unitMeasureName = YukonSpringHook.getBean(UnitMeasureDao.class).getLiteUnitMeasure(unitOfMeasureIdVector.get(k).intValue()).getUnitMeasureName();
 					if( unitMeasureName.equalsIgnoreCase("kWh") )
 					{
 						unitOfMeasureCodeVector.addElement(new Integer(1));

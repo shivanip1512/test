@@ -7,13 +7,14 @@ import java.util.Map;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.support.Identifiable;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.customer.CustomerFactory;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.db.customer.CICustomerPointType;
+import com.cannontech.spring.YukonSpringHook;
 
 public class CICustomerStub implements Comparable<CICustomerStub>, Identifiable {
     private Integer id;
@@ -37,7 +38,7 @@ public class CICustomerStub implements Comparable<CICustomerStub>, Identifiable 
     }
     
     public LiteCICustomer getLite() {
-        LiteCICustomer liteCICustomer = DaoFactory.getCustomerDao().getLiteCICustomer(id);
+        LiteCICustomer liteCICustomer = YukonSpringHook.getBean(CustomerDao.class).getLiteCICustomer(id);
         if (liteCICustomer == null) {
             throw new RuntimeException("Unable to get LiteCICustomer for stub (id=" + id + ")");
         }

@@ -1,3 +1,5 @@
+<%@ page import="com.cannontech.spring.YukonSpringHook"%> 
+<%@ page import="com.cannontech.core.dao.PaoDao"%>
 <%@ page import="com.cannontech.core.dao.NotFoundException" %>
 <html>
 <!-- Java script needed for the Calender Function--->
@@ -99,7 +101,7 @@ MM_reloadPage(true);
                         String paoName;
                         try
                         {
-                             paoName = DaoFactory.getPaoDao().getYukonPAOName(dcl.getDeviceID().intValue());
+                             paoName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(dcl.getDeviceID().intValue());
                         }
                         catch(NotFoundException e)
                         {

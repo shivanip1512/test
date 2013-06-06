@@ -23,8 +23,8 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.gui.util.ComboBoxTableRenderer;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -426,7 +426,7 @@ private javax.swing.JComboBox getJComboBoxNotifyType() {
 			ivjJComboBoxNotifyType.setToolTipText("Set the way this contact is to be notified");
 
 			YukonSelectionList contactSelectionList = 
-			    DaoFactory.getYukonListDao().getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_ID_CONTACT_TYPE);
+			    YukonSpringHook.getBean(YukonListDao.class).getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_ID_CONTACT_TYPE);
 			List<YukonListEntry> listOfEntries = contactSelectionList.getYukonListEntries();
 
 			Collections.sort(listOfEntries, new Comparator<YukonListEntry>() {
@@ -909,7 +909,7 @@ public Object getValue(Object val)
 	cnt.getContact().setLogInID(new Integer(
 		((LiteYukonUser)getJComboBoxLoginUser().getSelectedItem()).getLiteID()));
 
-	YukonListDao yukonListDao = DaoFactory.getYukonListDao();
+	YukonListDao yukonListDao = YukonSpringHook.getBean(YukonListDao.class);
 	PhoneNumberFormattingService phoneService = YukonSpringHook.getBean(PhoneNumberFormattingService.class);
 	Vector<ContactNotification> holder = new Vector<ContactNotification>();
 	for(int i = 0; i < getTableModel().getRowCount(); i++) {
@@ -972,7 +972,7 @@ private void initUserCombo(int currID)
 	for(int i = 0; i < availUserids.length; i++)
 	{
 		getJComboBoxLoginUser().addItem(
-			DaoFactory.getYukonUserDao().getLiteYukonUser(availUserids[i]));
+			YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(availUserids[i]));
 	}
 
 }
@@ -1106,7 +1106,7 @@ public boolean isInputValid() {
  */
 public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-    YukonListDao yukonListDao = DaoFactory.getYukonListDao();
+    YukonListDao yukonListDao = YukonSpringHook.getBean(YukonListDao.class);
 	Object o = getJComboBoxNotifyType().getSelectedItem();
 	PhoneNumberFormattingService phoneService = YukonSpringHook.getBean(PhoneNumberFormattingService.class);
 	
@@ -1206,7 +1206,7 @@ private void checkEntry()
 		
 		//is there a good input into the text field?		
 		getJButtonAdd().setEnabled(
-				DaoFactory.getYukonListDao().isListEntryValid(
+				YukonSpringHook.getBean(YukonListDao.class).isListEntryValid(
 						entry.getYukonDefID(),
 						getJTextFieldAddress().getText()));
 	}	
@@ -1217,7 +1217,7 @@ private void checkEntry()
  * of the first invalid notification is returned.
  */
 private String isAllEntryFieldsValid() {
-    YukonListDao yukonListDao = DaoFactory.getYukonListDao();
+    YukonListDao yukonListDao = YukonSpringHook.getBean(YukonListDao.class);
 	for(int i = 0; i < getTableModel().getRowCount(); i++) {
 		ContactNotification notif = getTableModel().getContactNotificationRow(i);
 		YukonListEntry listEntry = (YukonListEntry) getTableModel().getValueAt(i, ContactNotificationTableModel.COLUMN_TYPE);

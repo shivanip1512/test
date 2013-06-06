@@ -3,8 +3,9 @@ package com.cannontech.notif.outputs;
 import java.util.*;
 
 import com.cannontech.common.util.NotificationTypeChecker;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.database.data.lite.*;
+import com.cannontech.spring.YukonSpringHook;
 
 public class ContactableCustomer extends ContactableBase {
     private List<ContactableBase> _contactList = new LinkedList<ContactableBase>();
@@ -16,7 +17,7 @@ public class ContactableCustomer extends ContactableBase {
      */
     public ContactableCustomer(LiteCICustomer customer) {
         _liteCustomer = customer;
-        List contacts = DaoFactory.getCustomerDao().getAllContacts(customer);
+        List contacts = YukonSpringHook.getBean(CustomerDao.class).getAllContacts(customer);
         for (Iterator iter = contacts.iterator(); iter.hasNext();) {
             LiteContact contact = (LiteContact) iter.next();
             _contactList.add(new ContactableContact(contact));

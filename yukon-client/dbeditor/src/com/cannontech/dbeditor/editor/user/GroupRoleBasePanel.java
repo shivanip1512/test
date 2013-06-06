@@ -15,7 +15,6 @@ import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.SimpleCallback;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -552,7 +551,7 @@ public void setValue(Object o) {
 
     getGroupIDValueField().setText(group.getGroupID().toString());
 
-    final YukonUserDao yukonUserDao = DaoFactory.getYukonUserDao();
+    final YukonUserDao yukonUserDao = YukonSpringHook.getBean(YukonUserDao.class);
     final DefaultListModel listModel = new DefaultListModel();
     getJListMembers().setModel(listModel);
     final LiteYukonGroup liteGroup = (LiteYukonGroup)LiteFactory.createLite(group.getYukonGroup());

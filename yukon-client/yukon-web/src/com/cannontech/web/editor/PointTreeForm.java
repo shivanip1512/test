@@ -14,8 +14,9 @@ import org.apache.myfaces.custom.tree2.TreeNode;
 import org.apache.myfaces.custom.tree2.TreeNodeBase;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LitePoint;
@@ -26,6 +27,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.capcontrol.CCSessionInfo;
 import com.cannontech.web.editor.point.PointForm;
 import com.cannontech.web.util.JSFParamUtil;
@@ -53,7 +55,7 @@ public class PointTreeForm {
     public void init(int paoId) {
         LiteYukonPAObject litePAO = null;
         try {
-            litePAO = DaoFactory.getPaoDao().getLiteYukonPAO(paoId);
+            litePAO = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(paoId);
         } catch(NotFoundException nfe) {
             // might be coming from a schedule or someother crazy nonpao
         }
@@ -104,7 +106,7 @@ public class PointTreeForm {
             TreeNode accum = new TreeNodeBase("pointtype","Accumulator", false);
             if (device != null) {
                 int deviceId = device.getPAObjectID();
-                List<LitePoint> litePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceId);
+                List<LitePoint> litePoints = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(deviceId);
         
                 TreeSet<LitePoint> statusSet = new TreeSet<LitePoint>();
                 TreeSet<LitePoint> analogSet = new TreeSet<LitePoint>();
@@ -215,7 +217,7 @@ public class PointTreeForm {
         saveState(getPointTree());        
         try {
             Integer paoID = getPao().getPAObjectID();
-            List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(paoID.intValue());
+            List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(paoID.intValue());
             String attribVal  = "";
             for (LitePoint point : points) {
                 attribVal += "value=" + point.getLiteID() + "&";

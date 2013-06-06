@@ -11,7 +11,7 @@ import java.util.Vector;
 import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
@@ -47,7 +47,7 @@ public class PointBase extends DBPersistent implements CTIDbChange, EditorPanel 
      */
     public void add() throws SQLException {
         if( getPoint().getPointID() == null ) {
-            int nextId = DaoFactory.getPointDao().getNextPointId();
+            int nextId = YukonSpringHook.getBean(PointDao.class).getNextPointId();
             setPointID(nextId);
         }
     

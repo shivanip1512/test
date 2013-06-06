@@ -2,9 +2,11 @@ package com.cannontech.clientutils.commander;
 
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.roles.application.CommanderRole;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Insert the type's description here.
@@ -138,9 +140,9 @@ public class CommandPanel extends javax.swing.JPanel
                 
                 // Check property to see if manual commands are allowed
                 LiteYukonRoleProperty liteProp =
-                    DaoFactory.getRoleDao().getRoleProperty(CommanderRole.EXECUTE_MANUAL_COMMAND);
+                    YukonSpringHook.getBean(RoleDao.class).getRoleProperty(CommanderRole.EXECUTE_MANUAL_COMMAND);
 
-                String val = DaoFactory.getAuthDao().getRolePropertyValue(
+                String val = YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(
                     ClientSession.getInstance().getUser(),
                     liteProp.getRolePropertyID() );
                 

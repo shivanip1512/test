@@ -21,7 +21,8 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDeviceMeterGroup;
@@ -886,8 +887,8 @@ public Object getValue(Object val)
 		String meterNumber = getMeterNumberTextField().getText();
 		String billingGroup = (String)getJComboBoxBillingGroup().getSelectedItem();
 	    
-	    LiteYukonPAObject liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(dmg.getDeviceID());
-	    SimpleDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(liteYuk);
+	    LiteYukonPAObject liteYuk = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(dmg.getDeviceID());
+	    SimpleDevice yukonDevice = YukonSpringHook.getBean(DeviceDao.class).getYukonDevice(liteYuk);
 	    
 	    billingGroup = hacker.setGroup(FixedDeviceGroups.BILLINGGROUP, yukonDevice, billingGroup);
 	    getJComboBoxBillingGroup().setSelectedItem(billingGroup);
@@ -1175,8 +1176,8 @@ public void setValue(Object val)
 		
 		getMeterNumberTextField().setText( dmg.getMeterNumber() );
 	    
-	    LiteYukonPAObject liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(dmg.getDeviceID());
-	    SimpleDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(liteYuk);
+	    LiteYukonPAObject liteYuk = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(dmg.getDeviceID());
+	    SimpleDevice yukonDevice = YukonSpringHook.getBean(DeviceDao.class).getYukonDevice(liteYuk);
 	    String billingGroup = hacker.getGroupForDevice(FixedDeviceGroups.BILLINGGROUP, yukonDevice);
 	    String alternateGroup = hacker.getGroupForDevice(FixedDeviceGroups.TESTCOLLECTIONGROUP, yukonDevice);
 	    String collectionGroup = hacker.getGroupForDevice(FixedDeviceGroups.COLLECTIONGROUP, yukonDevice);

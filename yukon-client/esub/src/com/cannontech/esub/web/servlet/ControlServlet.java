@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;

@@ -7,7 +7,6 @@ package com.cannontech.datagenerator.point;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
@@ -21,6 +20,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.spring.YukonSpringHook;
 public class PowerFailPointCreate extends PointCreate
 {
 	/**
@@ -64,7 +64,7 @@ public class PowerFailPointCreate extends PointCreate
 		multi.setCreateNewPAOIDs( false );
 	
 		int addCount = 0;
-		PointDao pointDao = DaoFactory.getPointDao();
+		PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
 		for (LiteYukonPAObject litePaobject : powerFailDevices) {
 			
 			int pointID = pointDao.getNextPointId();

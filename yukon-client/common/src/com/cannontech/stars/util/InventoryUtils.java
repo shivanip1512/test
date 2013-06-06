@@ -4,7 +4,8 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
@@ -23,7 +24,7 @@ public class InventoryUtils {
      */
     @Deprecated
 	public static int getInventoryCategoryID(int deviceTypeID, LiteStarsEnergyCompany energyCompany) {
-		YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( deviceTypeID );
+		YukonListEntry entry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( deviceTypeID );
 		
 		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_XCOM ||
 			entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_VCOM ||
@@ -65,19 +66,19 @@ public class InventoryUtils {
      */
     @Deprecated
 	public static boolean isLMHardware(int categoryID) {
-		YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( categoryID );
+		YukonListEntry entry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( categoryID );
 		return (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC ||
 				entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC);
 	}
 	
 	public static boolean isMCT(int categoryID) {
-		YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( categoryID );
+		YukonListEntry entry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( categoryID );
 		return (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT);
 	}
 	
 	public static boolean is3102(int devTypeId) {
 		
-		int devTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry(devTypeId).getYukonDefID(); 
+		int devTypeDefID = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(devTypeId).getYukonDefID(); 
 		if (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3102) {
 			return true;
 		}

@@ -2,9 +2,9 @@ package com.cannontech.dbeditor.wizard.copy.device;
 
 import java.util.List;
 
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.Lists;
 
 /**
@@ -397,7 +397,7 @@ public void pointNumberSpinner_ValueChanged(com.klg.jclass.util.value.JCValueEve
         ids[i] = startingPointNumber+i; 
     }
     
-    List<LitePoint> pointsInRange = DaoFactory.getPointDao().getLitePoints(Lists.newArrayList(ids));
+    List<LitePoint> pointsInRange = YukonSpringHook.getBean(PointDao.class).getLitePoints(Lists.newArrayList(ids));
     if(pointsInRange.size() > 0) {
         getUsedPointNumberLabel().setText("IDs Already Assigned in Range");
     }
@@ -414,7 +414,7 @@ public void pointNumberSpinner_ValueChanged(com.klg.jclass.util.value.JCValueEve
 @Override
 public void setValue(Object val) {
 
-    PointDao pointDao = DaoFactory.getPointDao();
+    PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
     int deviceId = ((com.cannontech.database.data.device.DeviceBase)val).getDevice().getDeviceID();
     List<LitePoint> points = pointDao.getLitePointsByPaObjectId(deviceId);
     numberOfDevicePoints = points.size();

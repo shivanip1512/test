@@ -17,10 +17,11 @@ import com.cannontech.common.gui.util.CheckBoxTableHeader;
 import com.cannontech.common.gui.util.CheckBoxTableRenderer;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.roles.loadcontrol.DirectLoadcontrolRole;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Shows the response from the server for LMProgram constraints
@@ -192,7 +193,7 @@ private void initJTableCellComponents()
 
 	//allow the override check box if the user has the roleproperty defined
 	boolean canOverride = 
-		DaoFactory.getAuthDao().checkRoleProperty(
+		YukonSpringHook.getBean(AuthDao.class).checkRoleProperty(
 			ClientSession.getInstance().getUser(),
 			DirectLoadcontrolRole.ALLOW_OVERRIDE_CONSTRAINT);
 

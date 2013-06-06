@@ -19,8 +19,8 @@ import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.wizard.CancelInsertException;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -447,7 +447,7 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 		int previousDeviceID = deviceBase.getDevice().getDeviceID().intValue();
 		RouteBase newRoute = null;
 	
-        PaoDao paoDao = DaoFactory.getPaoDao();   
+        PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);   
 		deviceBase.setDeviceID(paoDao.getNextPaoId());
 	
 		boolean hasRoute = false;
@@ -554,7 +554,7 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 			Vector<PointBase> devicePoints = new Vector();
             
             PointBase pointBase = null;
-            List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(previousDeviceID);
+            List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(previousDeviceID);
             for (LitePoint point : points) {
                 pointBase = (PointBase) LiteFactory.createDBPersistent(point);
                 try {
@@ -570,7 +570,7 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 			Integer newDeviceID = deviceBase.getDevice().getDeviceID();
 
 			for (PointBase devicePoint: devicePoints) {
-				devicePoint.setPointID(DaoFactory.getPointDao().getNextPointId());
+				devicePoint.setPointID(YukonSpringHook.getBean(PointDao.class).getNextPointId());
 				devicePoint.getPoint().setPaoID(newDeviceID);
 				objectsToAdd.getDBPersistentVector().add(devicePoint);
 			}
@@ -731,7 +731,7 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 	
 		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized(cache) {
-            List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceBase.getDevice().getDeviceID());
+            List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(deviceBase.getDevice().getDeviceID());
             if(points.size() > 0) {
                 getPointCopyCheckBox().setEnabled(true);
                 getPointCopyCheckBox().setSelected(true);                

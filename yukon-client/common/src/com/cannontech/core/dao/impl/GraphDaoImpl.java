@@ -9,7 +9,6 @@ import java.util.List;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.GraphDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
@@ -17,6 +16,7 @@ import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.graph.GraphDataSeries;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -57,8 +57,8 @@ public final class GraphDaoImpl implements GraphDao {
 		GraphDataSeries[] allSeries = GraphDataSeries.getAllGraphDataSeries(new Integer(gDefID));
 		java.util.List liteYukonPaobjectsVector = new java.util.Vector(allSeries.length);
 		
-        PointDao pointDao = DaoFactory.getPointDao();
-        PaoDao paoDao = DaoFactory.getPaoDao();
+        PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
+        PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
         
         for (int i = 0; i < allSeries.length; i++) {
             int pointId = allSeries[i].getPointID();

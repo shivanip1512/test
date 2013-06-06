@@ -10,10 +10,11 @@ import java.util.Vector;
 
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.Pair;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.db.graph.GraphDataSeries;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author snebben
@@ -132,7 +133,7 @@ public class TrendSerie
 	 */
 	public int getDecimalPlaces() {
 	    try {
-	        LitePointUnit pointUnit = DaoFactory.getPointDao().getPointUnit(gds.getPointID());
+	        LitePointUnit pointUnit = YukonSpringHook.getBean(PointDao.class).getPointUnit(gds.getPointID());
 	        return pointUnit.getDecimalPlaces();
 	    }catch (NotFoundException e) {
 	        return 3;  //default to three if not available.

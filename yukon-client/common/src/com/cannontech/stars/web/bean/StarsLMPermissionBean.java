@@ -9,7 +9,8 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.LMDao;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -89,20 +90,20 @@ public class StarsLMPermissionBean
     }
     
     private List<Integer> determineTypeAndReturnChildIDs(Integer paoID, List<Integer> currentList) {
-        LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO(paoID);
+        LiteYukonPAObject litePao = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(paoID);
         List<Integer> unconvertedYukonPaoIDs = new ArrayList<Integer>();
         PaoDefinitionDao paoDefinitionDao = YukonSpringHook.getBean("paoDefinitionDao", PaoDefinitionDao.class);
         if(paoDefinitionDao.isTagSupported(litePao.getPaoType(), PaoTag.LM_PROGRAM)) {
             unconvertedYukonPaoIDs.add(paoID);
         }
         else if(litePao.getPaoType() == PaoType.LM_CONTROL_AREA) {
-            List<Integer> areaProgs = DaoFactory.getLmDao().getProgramsForControlArea(paoID);
+            List<Integer> areaProgs = YukonSpringHook.getBean(LMDao.class).getProgramsForControlArea(paoID);
             for(Integer progID : areaProgs) {
                 unconvertedYukonPaoIDs.add(progID);
             }
         }
         else if(litePao.getPaoType() == PaoType.LM_SCENARIO) {
-            LiteLMProgScenario[] scenarioProgs = DaoFactory.getLmDao().getLMScenarioProgs(paoID);
+            LiteLMProgScenario[] scenarioProgs = YukonSpringHook.getBean(LMDao.class).getLMScenarioProgs(paoID);
             for(LiteLMProgScenario prog : scenarioProgs) {
                 unconvertedYukonPaoIDs.add(prog.getProgramID());
             }

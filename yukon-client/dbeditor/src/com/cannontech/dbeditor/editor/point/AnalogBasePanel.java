@@ -7,11 +7,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.PointArchiveType;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.klg.jclass.field.JCSpinField;
 
@@ -513,7 +515,7 @@ private void initialize() {
 
     //Load the unit of measure combo box with default possible values
     List<LiteUnitMeasure> unitMeasures = 
-        DaoFactory.getUnitMeasureDao().getLiteUnitMeasures();
+        YukonSpringHook.getBean(UnitMeasureDao.class).getLiteUnitMeasures();
     for (LiteUnitMeasure lum : unitMeasures) {
         getUnitOfMeasureComboBox().addItem(lum);
     }
@@ -629,7 +631,7 @@ public void setValue(Object val) {
     IDatabaseCache cache = DefaultDatabaseCache.getInstance();
     synchronized(cache)
     {
-        LiteStateGroup[] allStateGroups = DaoFactory.getStateDao().getAllStateGroups();
+        LiteStateGroup[] allStateGroups = YukonSpringHook.getBean(StateDao.class).getAllStateGroups();
 
         //Load the state table combo box
         for(int i=0;i<allStateGroups.length;i++)

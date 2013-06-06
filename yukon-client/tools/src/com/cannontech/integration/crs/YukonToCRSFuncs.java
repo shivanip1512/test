@@ -13,7 +13,7 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LogWriter;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -888,13 +888,13 @@ public class YukonToCRSFuncs
 //      MNC = Municipal
 		YukonListEntry returnEntry = null;
 		if( custType.equalsIgnoreCase("CO"))
-			returnEntry = DaoFactory.getYukonListDao().getYukonListEntry(ciCustTypeList, "commercial");
+			returnEntry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(ciCustTypeList, "commercial");
 		else if( custType.equalsIgnoreCase("IN"))
-			returnEntry = DaoFactory.getYukonListDao().getYukonListEntry(ciCustTypeList, "industrial");
+			returnEntry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(ciCustTypeList, "industrial");
 		else if( custType.equalsIgnoreCase("MFG"))
-			returnEntry = DaoFactory.getYukonListDao().getYukonListEntry(ciCustTypeList, "manufacturing");
+			returnEntry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(ciCustTypeList, "manufacturing");
 		else if( custType.equalsIgnoreCase("MNC"))
-			returnEntry = DaoFactory.getYukonListDao().getYukonListEntry(ciCustTypeList, "municipal");
+			returnEntry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(ciCustTypeList, "municipal");
 		return returnEntry;
 	}    
 	

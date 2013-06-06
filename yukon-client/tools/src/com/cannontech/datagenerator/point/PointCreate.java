@@ -8,13 +8,14 @@ import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 abstract class PointCreate 
 {
@@ -230,7 +231,7 @@ abstract class PointCreate
 					
 					int deviceDevID = litePaobject.getLiteID();
                     boolean foundPoint = false;
-					List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceDevID);
+					List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(deviceDevID);
                     for (LitePoint point : points) {
                         if(isPointCreated(point)) {
                            foundPoint = true;

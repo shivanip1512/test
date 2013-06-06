@@ -11,7 +11,7 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.activity.ActivityLogActions;
@@ -377,7 +377,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 				requests.add( enrollment );
 			}
 			
-            LiteYukonUser currentUser = DaoFactory.getYukonUserDao().getLiteYukonUser(userID);
+            LiteYukonUser currentUser = YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(userID);
             
             ProgramEnrollmentService programEnrollmentService = YukonSpringHook.getBean("starsProgramEnrollmentService", ProgramEnrollmentService.class);            
 			hwsToConfig = programEnrollmentService.applyEnrollmentRequests(customerAccount, requests, liteHw, currentUser);

@@ -3,12 +3,14 @@
 <%@ page import="com.cannontech.analysis.tablemodel.ReportModelBase" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="com.cannontech.analysis.*" %>
-<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.db.device.DeviceMeterGroup"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject"%>
 <%@ page import="com.cannontech.database.data.lite.LiteDeviceMeterNumber"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.database.db.capcontrol.LiteCapControlStrategy" %>
+<%@ page import="com.cannontech.spring.YukonSpringHook" %>
+<%@ page import="com.cannontech.core.dao.AuthDao" %>
+<%@ page import="com.cannontech.stars.energyCompany.dao.EnergyCompanyDao" %>
 <%@ page import="com.cannontech.analysis.ReportFilter"%>
 <%@ page import="com.cannontech.roles.application.CommanderRole" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
@@ -35,7 +37,7 @@
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
 %>
 <jsp:useBean id="REPORT_BEAN" class="com.cannontech.analysis.gui.ReportBean" scope="session"/>
-<jsp:setProperty name="REPORT_BEAN" property="energyCompanyID" value="<%=(DaoFactory.getEnergyCompanyDao().getEnergyCompany(lYukonUser)== null?EnergyCompany.DEFAULT_ENERGY_COMPANY_ID:DaoFactory.getEnergyCompanyDao().getEnergyCompany(lYukonUser).getEnergyCompanyID())%>"/>
+<jsp:setProperty name="REPORT_BEAN" property="energyCompanyID" value="<%=(YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(lYukonUser)== null?EnergyCompany.DEFAULT_ENERGY_COMPANY_ID:YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(lYukonUser).getEnergyCompanyID())%>"/>
 
 <%-- Grab the search criteria --%>
 <jsp:setProperty name="REPORT_BEAN" property="groupType" param="groupType"/>
@@ -231,10 +233,10 @@ function makeFirstSelectedFilterValueVisible() {
 <%
 	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat((String)pageContext.getAttribute("dateFormat"));
 		
-	String bulletImg = "<img src='../WebConfig/" + DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='9' height='9'>";
-	String bulletImgExp = "<img src='../WebConfig/" + DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_EXPAND) + "' width='9' height='9'>";
-	String connImgMid = "<img src='../WebConfig/" + DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_CONNECTOR_MIDDLE) + "' width='10' height='12'>";
-	String connImgBtm = "<img src='../WebConfig/" + DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_CONNECTOR_BOTTOM) + "' width='10' height='12'>";
+	String bulletImg = "<img src='../WebConfig/" + YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='9' height='9'>";
+	String bulletImgExp = "<img src='../WebConfig/" + YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_EXPAND) + "' width='9' height='9'>";
+	String connImgMid = "<img src='../WebConfig/" + YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(lYukonUser, WebClientRole.NAV_CONNECTOR_MIDDLE) + "' width='10' height='12'>";
+	String connImgBtm = "<img src='../WebConfig/" + YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(lYukonUser, WebClientRole.NAV_CONNECTOR_BOTTOM) + "' width='10' height='12'>";
 	
 	String linkHtml = null;
 	String linkImgExp = null;

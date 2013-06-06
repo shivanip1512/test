@@ -34,7 +34,10 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AddressDao;
+import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.ContactNotificationDao;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -522,14 +525,14 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 		contactIdList.addAll(contactIdSet);
 		contactIdList.addAll(energyContactIdSet);
 
-		final Map<Integer, LiteContact> contactMap = DaoFactory.getContactDao().getContacts(contactIdList);
+		final Map<Integer, LiteContact> contactMap = YukonSpringHook.getBean(ContactDao.class).getContacts(contactIdList);
 		
 		for (final Integer contactId : energyContactIdSet) {
 		    LiteContact ecContact = contactMap.get(contactId);
 		    addressIdSet.add(ecContact.getAddressID());
 		}
 
-		final Map<Integer, LiteAddress> addressMap = DaoFactory.getAddressDao().getAddresses(new ArrayList<Integer>(addressIdSet));
+		final Map<Integer, LiteAddress> addressMap = YukonSpringHook.getBean(AddressDao.class).getAddresses(new ArrayList<Integer>(addressIdSet));
 		
 		/* Round 2 - build AdditionalInformation objects and attach them to the WorkOrder
 		 *           when getAttribute() is called the WorkOrder will contain anything it needs in memory. 
@@ -623,7 +626,7 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
                             if (StarsUtils.forceNotNone(lAddr.getZipCode()).length() > 0)
                                 returnStr += " " + StarsUtils.forceNotNone(lAddr.getZipCode());
 						}
-						LiteContactNotification notification = DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(lc_ec, ContactNotificationType.PHONE);
+						LiteContactNotification notification = YukonSpringHook.getBean(ContactNotificationDao.class).getFirstNotificationForContactByType(lc_ec, ContactNotificationType.PHONE);
                         if(  notification != null)
 							returnStr += "\r\n" + notification;
 					}
@@ -633,12 +636,12 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 				case DATE_TIME_TODAY_COLUMN:
 					return ServletUtils.formatDate( new Date(), dateFormatter );
 				case RECENT_EVENT_COLUMN:
-					YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry(lOrder.getCurrentStateID());
+					YukonListEntry entry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(lOrder.getCurrentStateID());
 					return (entry != null ? entry.getEntryText() : "");
 				case DATE_TIME_RECENT_EVENT_COLUMN:
 					return ServletUtils.formatDate( new Date(lOrder.getDateReported()), dateFormatter );
 				case SERVICE_TYPE_COLUMN:
-					return DaoFactory.getYukonListDao().getYukonListEntry(lOrder.getWorkTypeID()).getEntryText();
+					return YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(lOrder.getWorkTypeID()).getEntryText();
 				case SERVICE_COMPANY_COLUMN:
 					LiteServiceCompany sc = ec.getServiceCompany( lOrder.getServiceCompanyID() );
 					if (sc != null)
@@ -658,7 +661,7 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
                     if (lAcctInfo != null){
                         if( lAcctInfo.getCustomer() instanceof LiteCICustomer && lAcctInfo.getCustomer().getCustomerTypeID() == CustomerTypes.CUSTOMER_CI)
     					{
-    						YukonListEntry coTypeEntry = DaoFactory.getYukonListDao().getYukonListEntry(((LiteCICustomer)lAcctInfo.getCustomer()).getCICustType());
+    						YukonListEntry coTypeEntry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(((LiteCICustomer)lAcctInfo.getCustomer()).getCICustType());
     						return (coTypeEntry != null ? coTypeEntry.getEntryText() : "");
     					}
     					else {
@@ -673,17 +676,17 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 						return "";
 				case PHONE_HOME_COLUMN:
 					if (liteContact != null)
-						return DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(liteContact, ContactNotificationType.HOME_PHONE);
+						return YukonSpringHook.getBean(ContactNotificationDao.class).getFirstNotificationForContactByType(liteContact, ContactNotificationType.HOME_PHONE);
 					else
 						return "";
 				case PHONE_WORK_COLUMN:
 					if (liteContact != null)
-						return DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(liteContact, ContactNotificationType.WORK_PHONE);
+						return YukonSpringHook.getBean(ContactNotificationDao.class).getFirstNotificationForContactByType(liteContact, ContactNotificationType.WORK_PHONE);
 					else
 						return "";
 				case PHONE_CONTACT_COLUMN:
 					if (liteContact != null)
-						return DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(liteContact, ContactNotificationType.CALL_BACK_PHONE);
+						return YukonSpringHook.getBean(ContactNotificationDao.class).getFirstNotificationForContactByType(liteContact, ContactNotificationType.CALL_BACK_PHONE);
 					else
 						return "";
                 case PRESENCE_REQUIRED_COLUMN:
@@ -775,9 +778,9 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 					if (liteInvBase != null)
 					{
 						if( liteInvBase instanceof LiteLmHardwareBase)
-							return DaoFactory.getYukonListDao().getYukonListEntry(((LiteLmHardwareBase)liteInvBase).getLmHardwareTypeID()).getEntryText();
+							return YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(((LiteLmHardwareBase)liteInvBase).getLmHardwareTypeID()).getEntryText();
 						else if( liteInvBase instanceof LiteMeterHardwareBase)
-							return DaoFactory.getYukonListDao().getYukonListEntry(liteInvBase.getCategoryID()).getEntryText();
+							return YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteInvBase.getCategoryID()).getEntryText();
 					}
 					return "";
 				case INSTALL_DATE_COLUMN:
@@ -797,7 +800,7 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
                         return "";
                 case DEVICE_STATUS_COLUMN:
                     if (liteInvBase != null) {
-                        return DaoFactory.getYukonListDao().getYukonListEntry(liteInvBase.getCurrentStateID()).getEntryText();
+                        return YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteInvBase.getCurrentStateID()).getEntryText();
                     }
                     return "";
                 case DEBTOR_NUM_COLUMN:

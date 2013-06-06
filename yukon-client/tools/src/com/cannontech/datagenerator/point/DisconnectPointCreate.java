@@ -7,7 +7,7 @@ package com.cannontech.datagenerator.point;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.MCT400SeriesBase;
@@ -19,6 +19,7 @@ import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointOffsets;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.spring.YukonSpringHook;
 public class DisconnectPointCreate extends PointCreate
 {
 	/**
@@ -31,7 +32,7 @@ public class DisconnectPointCreate extends PointCreate
 	public boolean isDeviceValid(LiteYukonPAObject litePaobject_ ) {
 		int type = litePaobject_.getPaoType().getDeviceTypeId();
 	    if( DeviceTypesFuncs.isMCT4XX(type)) {
-	        MCT400SeriesBase mct = (MCT400SeriesBase)DaoFactory.getDbPersistentDao().retrieveDBPersistent(litePaobject_);
+	        MCT400SeriesBase mct = (MCT400SeriesBase)YukonSpringHook.getBean(DBPersistentDao.class).retrieveDBPersistent(litePaobject_);
 	        if( mct.getDeviceMCT400Series().getDisconnectAddress().intValue() > -1)
 	            return true;
 	    }
@@ -68,7 +69,7 @@ public class DisconnectPointCreate extends PointCreate
 		// if this is not set to false it will create its own PointIDs
 		multi.setCreateNewPAOIDs( false );
 	
-        PointDao pointDao = DaoFactory.getPointDao();
+        PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
 		int addCount = 0;
 		for (LiteYukonPAObject litePaobject: disconnectDevices) {
 			

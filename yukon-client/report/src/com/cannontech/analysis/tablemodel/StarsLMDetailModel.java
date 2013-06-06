@@ -14,9 +14,10 @@ import com.cannontech.analysis.data.stars.StarsLMDetail;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonDefinition;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Created on May 20, 2005
@@ -272,17 +273,17 @@ public class StarsLMDetailModel extends ReportModelBase<StarsLMDetail>
 				    return details.getSerialNumber();
 				case DEVICE_TYPE_COLUMN:
 				    if( details.getDeviceType() != null)
-				        return DaoFactory.getYukonListDao().getYukonListEntry(details.getDeviceType().intValue());
+				        return YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(details.getDeviceType().intValue());
 				    break;
 				case APPLIANCE_TYPE_COLUMN:
 				    if (details.getApplianceType() != null)
-					    return DaoFactory.getYukonListDao().getYukonListEntry(details.getApplianceType().intValue());
+					    return YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(details.getApplianceType().intValue());
 				    break;
 				case APPLIANCE_KW_CAPACITY_COLUMN:
 				    return details.getApplianceCapacity();
 				case CURRENT_STATE_COLUMN:
 				    if( details.getEnrollStatus() != null )
-				        return DaoFactory.getYukonListDao().getYukonListEntry(details.getEnrollStatus().intValue());
+				        return YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(details.getEnrollStatus().intValue());
 				    break;
 			}
 		}

@@ -7,13 +7,13 @@ import java.util.List;
 
 import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 import com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment;
 import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
+import com.cannontech.spring.YukonSpringHook;
 
 public class CapControlSubstation extends CapControlYukonPAOBase implements EditorPanel {
     private com.cannontech.database.db.capcontrol.CapControlSubstation CapControlSubstation;
@@ -56,7 +56,7 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements Edit
     @Override
     public void add() throws SQLException {
         if (getPAObjectID() == null) {
-            PaoDao paoDao = DaoFactory.getPaoDao();
+            PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
             setCapControlPAOID(paoDao.getNextPaoId());
         }
         super.add();

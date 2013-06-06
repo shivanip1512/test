@@ -5,7 +5,8 @@ package com.cannontech.clientutils;
 
 import java.util.Vector;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteContact;
@@ -13,6 +14,8 @@ import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.activity.ActivityLog;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 
 /**
  * ActivityLogger provides a mechanism for applications to log interesting things that
@@ -78,9 +81,9 @@ public class ActivityLogger {
 		if (userID != -1) {
 			if(energyCompanyID == -1)
 			{	
-				LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser( userID );
+				LiteYukonUser liteUser = YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser( userID );
 				if (liteUser != null) {
-				    LiteEnergyCompany liteComp = DaoFactory.getEnergyCompanyDao().getEnergyCompany( liteUser );
+				    LiteEnergyCompany liteComp = YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany( liteUser );
 				    if (liteComp != null)
 				    { 			
 				        energyCompanyID = liteComp.getEnergyCompanyID();
@@ -90,9 +93,9 @@ public class ActivityLogger {
 			
 			if(customerID == -1 || energyCompanyID == -1 || accountID == -1)
 			{		
-				LiteContact liteContact = DaoFactory.getYukonUserDao().getLiteContact( userID );
+				LiteContact liteContact = YukonSpringHook.getBean(YukonUserDao.class).getLiteContact( userID );
 				if (liteContact != null) {
-					LiteCustomer liteCust = DaoFactory.getContactDao().getCustomer( liteContact.getContactID() );
+					LiteCustomer liteCust = YukonSpringHook.getBean(ContactDao.class).getCustomer( liteContact.getContactID() );
 					
 					if (liteCust != null) {
 						if(customerID == -1)

@@ -35,7 +35,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.TableColumn;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.device.DeviceFactory;
@@ -55,6 +55,7 @@ import com.cannontech.fdemulator.model.ValmetPointTableModel;
 import com.cannontech.fdemulator.protocols.ACSPoint;
 import com.cannontech.fdemulator.protocols.RdexPoint;
 import com.cannontech.fdemulator.protocols.ValmetPoint;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author ASolberg
@@ -1500,8 +1501,8 @@ public class PointEditor extends JFrame implements ActionListener
 		if (virtDevice == null)
 		{
 			virtDevice = (VirtualDevice) DeviceFactory.createDevice(DeviceTypes.VIRTUAL_SYSTEM);
-			Integer id = DaoFactory.getPaoDao().getNextPaoId();
-            DaoFactory.getPaoDao().getNextPaoId();
+			Integer id = YukonSpringHook.getBean(PaoDao.class).getNextPaoId();
+            YukonSpringHook.getBean(PaoDao.class).getNextPaoId();
 			System.out.println("PAO Name: FDEmulator" + id);
 			virtDevice.setPAOName("FDEmulator" + id.toString());
 		}

@@ -13,7 +13,9 @@ import java.util.Map;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
@@ -21,6 +23,7 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author aaron
@@ -45,8 +48,8 @@ public class ExportPAO {
 		int id = Integer.parseInt(args[0]);
 		String fileName = args[1];
 
-		LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO(id);
-        List<LitePoint> litePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(id);
+		LiteYukonPAObject litePao = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(id);
+        List<LitePoint> litePoints = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(id);
 		
 		DBPersistent dbPao = LiteFactory.createDBPersistent(litePao);
 		CTILogger.info("paoid: " + id);
@@ -63,7 +66,7 @@ public class ExportPAO {
 			dbPoints[i].setDbConnection(conn);
 			dbPoints[i].retrieve();
 			
-			LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(((PointBase)dbPoints[i]).getPoint().getStateGroupID().intValue());
+			LiteStateGroup lsg = YukonSpringHook.getBean(StateDao.class).getLiteStateGroup(((PointBase)dbPoints[i]).getPoint().getStateGroupID().intValue());
 			if(lsg != null) {				
 				stateGroupMap.put(new Integer(lsg.getStateGroupID()), LiteFactory.createDBPersistent(lsg));
 			}

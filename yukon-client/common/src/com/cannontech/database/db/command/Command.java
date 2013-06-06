@@ -5,7 +5,7 @@ import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.CommandDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -16,6 +16,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -386,7 +387,7 @@ public void update() throws java.sql.SQLException
 		if( dbChangeType == DbChangeType.DELETE )
 		{
 			//get all the deviceCommandIds that have this Command
-		    Vector<LiteDeviceTypeCommand> liteDevTypeCmds = DaoFactory.getCommandDao().getAllDevTypeCommands(getCommandID().intValue());
+		    Vector<LiteDeviceTypeCommand> liteDevTypeCmds = YukonSpringHook.getBean(CommandDao.class).getAllDevTypeCommands(getCommandID().intValue());
 			
 		    for (LiteDeviceTypeCommand liteDeviceTypeCommand : liteDevTypeCmds) {
             	DBChangeMsg msg = new DBChangeMsg(

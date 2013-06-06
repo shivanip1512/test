@@ -1,4 +1,3 @@
-<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonRoleProperty" %>
 <%@ page import="com.cannontech.database.data.lite.LiteComparators" %>
 <%@ page import="java.util.Arrays" %>

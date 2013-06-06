@@ -17,13 +17,16 @@ import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.YukonImageDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.state.YukonImage;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tdc.alarms.gui.AlarmingRow;
 import com.cannontech.tdc.alarms.gui.AlarmingRowVector;
 import com.cannontech.tdc.alarms.gui.RowBlinker;
@@ -1918,7 +1921,7 @@ private void setCorrectRowValue( PointValues point, int location )
 
 				if( imgID > YukonImage.NONE_IMAGE_ID )
 					img = java.awt.Toolkit.getDefaultToolkit().createImage(
-						DaoFactory.getYukonImageDao().getLiteYukonImage( imgID ).getImageValue() );
+						YukonSpringHook.getBean(YukonImageDao.class).getLiteYukonImage( imgID ).getImageValue() );
 			}
 			catch( Exception e ) {}
 			
@@ -2126,7 +2129,7 @@ private Vector setRowForEventViewer( Signal signal )
 	for( int i = 0; i < COLUMN_COUNT; i++ )
 		aRow.addElement( "" );  // put these into the vector just as dummy values
 
-	LitePoint lPoint = DaoFactory.getPointDao().getLitePoint( signal.getPointID() );
+	LitePoint lPoint = YukonSpringHook.getBean(PointDao.class).getLitePoint( signal.getPointID() );
 	LiteYukonPAObject lDevice = null;
 
 	//we may not have a valid point
@@ -2135,7 +2138,7 @@ private Vector setRowForEventViewer( Signal signal )
 		lPoint = LitePoint.NONE_LITE_PT;		
 	}
 
-	lDevice = DaoFactory.getPaoDao().getLiteYukonPAO( lPoint.getPaobjectID() );
+	lDevice = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO( lPoint.getPaobjectID() );
 	if( lDevice == null )
 	{
 		lDevice = LiteYukonPAObject.LITEPAOBJECT_SYSTEM;

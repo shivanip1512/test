@@ -15,7 +15,8 @@ import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.device.lm.LMGroupExpressCom;
@@ -28,6 +29,7 @@ import com.cannontech.database.data.point.PointOffsets;
 import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class LMGroupBaseWizardPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
@@ -324,7 +326,7 @@ private void createExtraObjects( LMGroup lmGroup, SmartMultiDBPersistent smartDB
 		com.cannontech.database.data.point.PointBase historyPoint =
 			com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.STATUS_POINT);
 
-		int[] ids = DaoFactory.getPointDao().getNextPointIds(6);
+		int[] ids = YukonSpringHook.getBean(PointDao.class).getNextPointIds(6);
 		
 		//set default for point tables
 		historyPoint = PointFactory.createNewPoint(
@@ -1104,7 +1106,7 @@ public Object getValue(Object val)
 		//some status points are needed for control history
 		com.cannontech.database.data.multi.SmartMultiDBPersistent smartDB = new com.cannontech.database.data.multi.SmartMultiDBPersistent();
 		
-        int groupId = DaoFactory.getPaoDao().getNextPaoId();
+        int groupId = YukonSpringHook.getBean(PaoDao.class).getNextPaoId();
         lmGroup.setDeviceID(groupId);
         
         smartDB.addDBPersistent( lmGroup );

@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.cttp.data.CttpCmd;
 import com.cannontech.cttp.db.CttpCmdGroup;
 import com.cannontech.database.PoolManager;
@@ -26,6 +26,7 @@ import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOFactory;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Keeps track of cttp commands and load groups.
@@ -100,7 +101,7 @@ public class CttpCmdCache implements Serializable {
 	 * @return
 	 */
 	public LMGroup retrieveGroup(int lmgroupid) {
-		LiteYukonPAObject lmg = DaoFactory.getPaoDao().getLiteYukonPAO(lmgroupid);
+		LiteYukonPAObject lmg = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(lmgroupid);
 		if(lmg == null)
 			return null;
 		

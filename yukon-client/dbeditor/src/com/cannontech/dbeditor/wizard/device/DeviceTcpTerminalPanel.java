@@ -19,7 +19,6 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.DeviceBase;
@@ -148,7 +147,7 @@ public class DeviceTcpTerminalPanel extends DataInputPanel implements ActionList
         ipc.getPortSettings().setBaudRate(baudRate);
         ipc.getPortSettings().setLineSettings("8N1");
         
-        PaoDao paoDao = DaoFactory.getPaoDao();
+        PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
         ipc.setDeviceID(paoDao.getNextPaoId());
 
         SmartMultiDBPersistent smartDB = createSmartDBPersistent(ipc);

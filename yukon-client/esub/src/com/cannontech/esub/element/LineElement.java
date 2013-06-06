@@ -12,16 +12,17 @@ import java.util.Map;
 import java.util.Properties;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.persist.PersistLineElement;
 import com.cannontech.esub.svg.BaseSVGGenerator;
+import com.cannontech.spring.YukonSpringHook;
 import com.loox.jloox.LxAbstractLine;
 import com.loox.jloox.LxArrowElement;
 
@@ -115,7 +116,7 @@ public class LineElement extends LxAbstractLine implements DrawingElement, IdAtt
         List<Color> lineColors = new ArrayList<Color>(6);
         LitePoint point = null;
         try {
-            point = DaoFactory.getPointDao().getLitePoint(getColorPointID());
+            point = YukonSpringHook.getBean(PointDao.class).getLitePoint(getColorPointID());
         }catch(NotFoundException nfe) {
             // this point may have been deleted.
             CTILogger.error("The point (pointId:"+ getColorPointID() + ") for this line might have been deleted!", nfe);
@@ -124,7 +125,7 @@ public class LineElement extends LxAbstractLine implements DrawingElement, IdAtt
             lineColors.add(getLineColor());
         }else {
         
-            LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
+            LiteStateGroup lsg = YukonSpringHook.getBean(StateDao.class).getLiteStateGroup(point.getStateGroupID());
             List<LiteState> states = lsg.getStatesList();
             for(int i = 0; i < states.size(); i++) {
                 Color colorObj = customColorMap.get(new Integer(i));
@@ -146,7 +147,7 @@ public class LineElement extends LxAbstractLine implements DrawingElement, IdAtt
         
         LitePoint point = null;
         try {
-            point = DaoFactory.getPointDao().getLitePoint(getThicknessPointID());
+            point = YukonSpringHook.getBean(PointDao.class).getLitePoint(getThicknessPointID());
         }catch(NotFoundException nfe) {
             // this point may have been deleted.
             CTILogger.error("The point (pointId:"+ getThicknessPointID() + ") for this line might have been deleted!", nfe);
@@ -156,7 +157,7 @@ public class LineElement extends LxAbstractLine implements DrawingElement, IdAtt
             lineWidths.add(new Float(getLineThickness()));
         }else {
         
-            LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
+            LiteStateGroup lsg = YukonSpringHook.getBean(StateDao.class).getLiteStateGroup(point.getStateGroupID());
             List<LiteState> states = lsg.getStatesList();
             for(int i = 0; i < states.size(); i++) {
                 Float widthObj = customThicknessMap.get(new Integer(i));
@@ -178,7 +179,7 @@ public class LineElement extends LxAbstractLine implements DrawingElement, IdAtt
         
         LitePoint point = null;
         try {
-            point = DaoFactory.getPointDao().getLitePoint(getArrowPointID());
+            point = YukonSpringHook.getBean(PointDao.class).getLitePoint(getArrowPointID());
         }catch(NotFoundException nfe) {
             // this point may have been deleted.
             CTILogger.error("The point (pointId:"+ getArrowPointID() + ") for this line might have been deleted!", nfe);
@@ -188,7 +189,7 @@ public class LineElement extends LxAbstractLine implements DrawingElement, IdAtt
             return lineArrows;
         }else {
             int originalArrowInt = getLineArrow();
-            LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
+            LiteStateGroup lsg = YukonSpringHook.getBean(StateDao.class).getLiteStateGroup(point.getStateGroupID());
             List<LiteState> states = lsg.getStatesList();
             for(int i = 0; i < states.size(); i++) {
                 Integer arrowObj = customArrowMap.get(new Integer(i));
@@ -215,7 +216,7 @@ public class LineElement extends LxAbstractLine implements DrawingElement, IdAtt
         
         LitePoint point = null;
         try {
-            point = DaoFactory.getPointDao().getLitePoint(getOpacityPointID());
+            point = YukonSpringHook.getBean(PointDao.class).getLitePoint(getOpacityPointID());
         }catch(NotFoundException nfe) {
             // this point may have been deleted.
             CTILogger.error("The point (pointId:"+ getOpacityPointID() + ") for this line might have been deleted!", nfe);
@@ -226,7 +227,7 @@ public class LineElement extends LxAbstractLine implements DrawingElement, IdAtt
             return lineOpacities;
         }else {
         
-            LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
+            LiteStateGroup lsg = YukonSpringHook.getBean(StateDao.class).getLiteStateGroup(point.getStateGroupID());
             List<LiteState> states = lsg.getStatesList();
             for(int i = 0; i < states.size(); i++) {
                 Float opacityObj = customOpacityMap.get(new Integer(i));
@@ -248,7 +249,7 @@ public class LineElement extends LxAbstractLine implements DrawingElement, IdAtt
         
         LitePoint point = null;
         try {
-            point = DaoFactory.getPointDao().getLitePoint(getBlinkPointID());
+            point = YukonSpringHook.getBean(PointDao.class).getLitePoint(getBlinkPointID());
         }catch(NotFoundException nfe) {
             // this point may have been deleted.
             CTILogger.error("The point (pointId:"+ getBlinkPointID() + ") for this line might have been deleted!", nfe);
@@ -258,7 +259,7 @@ public class LineElement extends LxAbstractLine implements DrawingElement, IdAtt
             return lineBlinks;
         }else {
         
-            LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
+            LiteStateGroup lsg = YukonSpringHook.getBean(StateDao.class).getLiteStateGroup(point.getStateGroupID());
             List<LiteState> states = lsg.getStatesList();
             for(int i = 0; i < states.size(); i++) {
                 Integer blinkObj = customBlinkMap.get(new Integer(i));
@@ -594,7 +595,7 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
 
     @Override
     public boolean fixIds() {
-        PointDao pointDao = DaoFactory.getPointDao();
+        PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
         
         if(colorPointID != -1){
             try {

@@ -11,7 +11,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
@@ -20,6 +20,7 @@ import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointLogicalGroups;
 import com.cannontech.database.data.point.StatusPoint;
+import com.cannontech.spring.YukonSpringHook;
 
 public class PointBaseEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JPanel ivjBasePanel = null;
@@ -639,7 +640,7 @@ public void setValue(Object val)
 
 
 	//Load the device
-	LiteYukonPAObject litePAO = DaoFactory.getPaoDao().getLiteYukonPAO( pointDeviceID );
+	LiteYukonPAObject litePAO = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO( pointDeviceID );
 	getDeviceNameActualLabel().setText( litePAO.getPaoName() );
 
 

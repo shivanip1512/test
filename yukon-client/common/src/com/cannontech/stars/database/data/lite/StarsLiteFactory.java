@@ -18,8 +18,12 @@ import com.cannontech.common.constants.YukonSelectionListOrder;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.data.customer.CustomerTypes;
@@ -741,7 +745,7 @@ public class StarsLiteFactory {
                 /*Need to handle Yukon meters which are JUST LiteInventoryBase and don't have a specific liteType
                  * Shouldn't truly make this the default, though, in case something else comes through here, so we'll still check
                  */
-                YukonListEntry listEntry = DaoFactory.getYukonListDao().getYukonListEntry(((LiteInventoryBase)lite).getCategoryID());
+                YukonListEntry listEntry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(((LiteInventoryBase)lite).getCategoryID());
                 if(lite instanceof LiteInventoryBase && listEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT) {
                     db = new InventoryBase(((LiteInventoryBase)lite).getInventoryID());
                     ((InventoryBase)db).setAccountID(((LiteInventoryBase)lite).getAccountID());
@@ -1186,7 +1190,7 @@ public class StarsLiteFactory {
 	}
 	
 	public static void setStarsLMCustomerEvent(StarsLMCustomerEvent starsEvent, LiteLMCustomerEvent liteEvent) {
-		YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( liteEvent.getActionID() );
+		YukonListEntry entry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteEvent.getActionID() );
 		starsEvent.setEventAction( entry.getEntryText() );
 		starsEvent.setEventDateTime( new Date(liteEvent.getEventDateTime()) );
 		starsEvent.setNotes( StarsUtils.forceNotNull(liteEvent.getNotes()) );
@@ -1201,47 +1205,47 @@ public class StarsLiteFactory {
 	
 	public static void setStarsCustResidence(StarsCustResidence starsRes, LiteCustomerResidence liteRes) {
 		ResidenceType resType = new ResidenceType();
-		setStarsCustListEntry( resType, DaoFactory.getYukonListDao().getYukonListEntry(liteRes.getResidenceTypeID()) );
+		setStarsCustListEntry( resType, YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteRes.getResidenceTypeID()) );
 		starsRes.setResidenceType( resType );
 		
 		ConstructionMaterial material = new ConstructionMaterial();
-		setStarsCustListEntry( material, DaoFactory.getYukonListDao().getYukonListEntry(liteRes.getConstructionMaterialID()) );
+		setStarsCustListEntry( material, YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteRes.getConstructionMaterialID()) );
 		starsRes.setConstructionMaterial( material );
 		
 		DecadeBuilt decade = new DecadeBuilt();
-		setStarsCustListEntry( decade, DaoFactory.getYukonListDao().getYukonListEntry(liteRes.getDecadeBuiltID()) );
+		setStarsCustListEntry( decade, YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteRes.getDecadeBuiltID()) );
 		starsRes.setDecadeBuilt( decade );
 		
 		SquareFeet sqrFeet = new SquareFeet();
-		setStarsCustListEntry( sqrFeet, DaoFactory.getYukonListDao().getYukonListEntry(liteRes.getSquareFeetID()) );
+		setStarsCustListEntry( sqrFeet, YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteRes.getSquareFeetID()) );
 		starsRes.setSquareFeet( sqrFeet );
 		
 		InsulationDepth depth = new InsulationDepth();
-		setStarsCustListEntry( depth, DaoFactory.getYukonListDao().getYukonListEntry(liteRes.getInsulationDepthID()) );
+		setStarsCustListEntry( depth, YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteRes.getInsulationDepthID()) );
 		starsRes.setInsulationDepth( depth );
 		
 		GeneralCondition condition = new GeneralCondition();
-		setStarsCustListEntry( condition, DaoFactory.getYukonListDao().getYukonListEntry(liteRes.getGeneralConditionID()) );
+		setStarsCustListEntry( condition, YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteRes.getGeneralConditionID()) );
 		starsRes.setGeneralCondition( condition );
 		
 		MainCoolingSystem coolSys = new MainCoolingSystem();
-		setStarsCustListEntry( coolSys, DaoFactory.getYukonListDao().getYukonListEntry(liteRes.getMainCoolingSystemID()) );
+		setStarsCustListEntry( coolSys, YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteRes.getMainCoolingSystemID()) );
 		starsRes.setMainCoolingSystem( coolSys );
 		
 		MainHeatingSystem heatSys = new MainHeatingSystem();
-		setStarsCustListEntry( heatSys, DaoFactory.getYukonListDao().getYukonListEntry(liteRes.getMainHeatingSystemID()) );
+		setStarsCustListEntry( heatSys, YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteRes.getMainHeatingSystemID()) );
 		starsRes.setMainHeatingSystem( heatSys );
 		
 		NumberOfOccupants number = new NumberOfOccupants();
-		setStarsCustListEntry( number, DaoFactory.getYukonListDao().getYukonListEntry(liteRes.getNumberOfOccupantsID()) );
+		setStarsCustListEntry( number, YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteRes.getNumberOfOccupantsID()) );
 		starsRes.setNumberOfOccupants( number );
 		
 		OwnershipType ownType = new OwnershipType();
-		setStarsCustListEntry( ownType, DaoFactory.getYukonListDao().getYukonListEntry(liteRes.getOwnershipTypeID()) );
+		setStarsCustListEntry( ownType, YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteRes.getOwnershipTypeID()) );
 		starsRes.setOwnershipType( ownType );
 		
 		MainFuelType fuelType = new MainFuelType();
-		setStarsCustListEntry( fuelType, DaoFactory.getYukonListDao().getYukonListEntry(liteRes.getMainFuelTypeID()) );
+		setStarsCustListEntry( fuelType, YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteRes.getMainFuelTypeID()) );
 		starsRes.setMainFuelType( fuelType );
 		
 		starsRes.setNotes( liteRes.getNotes() );
@@ -1292,7 +1296,7 @@ public class StarsLiteFactory {
 		LiteCustomer liteCustomer = liteAcctInfo.getCustomer();
 		LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
 		LiteSiteInformation liteSiteInfo = liteAcctInfo.getSiteInformation();
-		LiteContact liteContact = DaoFactory.getContactDao().getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
+		LiteContact liteContact = YukonSpringHook.getBean(ContactDao.class).getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
 		
 		StarsCustomerAccount starsAccount = new StarsCustomerAccount();
 		starsAccount.setAccountID( liteAccount.getAccountID() );
@@ -1377,7 +1381,7 @@ public class StarsLiteFactory {
 		
 		if (liteContact.getLoginID() != com.cannontech.user.UserUtils.USER_DEFAULT_ID &&
 			liteContact.getLoginID() != com.cannontech.user.UserUtils.USER_ADMIN_ID) {
-			LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser( liteContact.getLoginID() );
+			LiteYukonUser liteUser = YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser( liteContact.getLoginID() );
 			starsAcctInfo.setStarsUser(liteUser);
 		}
 		
@@ -1417,16 +1421,16 @@ public class StarsLiteFactory {
 		starsCompany.setTimeZone( liteCompany.getDefaultTimeZone().getID() );
 		
 		if (liteCompany.getPrimaryContactID() != CtiUtilities.NONE_ZERO_ID) {
-			LiteContact liteContact = DaoFactory.getContactDao().getContact( liteCompany.getPrimaryContactID() );
+			LiteContact liteContact = YukonSpringHook.getBean(ContactDao.class).getContact( liteCompany.getPrimaryContactID() );
 			
 			if (liteContact != null) {
-				LiteContactNotification liteNotifPhone = DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType( liteContact, ContactNotificationType.PHONE );
+				LiteContactNotification liteNotifPhone = YukonSpringHook.getBean(ContactNotificationDao.class).getFirstNotificationForContactByType( liteContact, ContactNotificationType.PHONE );
 				starsCompany.setMainPhoneNumber( StarsUtils.getNotification(liteNotifPhone) );
 				
-				LiteContactNotification liteNotifFax = DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType( liteContact, ContactNotificationType.FAX );
+				LiteContactNotification liteNotifFax = YukonSpringHook.getBean(ContactNotificationDao.class).getFirstNotificationForContactByType( liteContact, ContactNotificationType.FAX );
 				starsCompany.setMainFaxNumber( StarsUtils.getNotification(liteNotifFax) );
 				
-				LiteContactNotification liteNotifEmail = DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType( liteContact, ContactNotificationType.EMAIL );
+				LiteContactNotification liteNotifEmail = YukonSpringHook.getBean(ContactNotificationDao.class).getFirstNotificationForContactByType( liteContact, ContactNotificationType.EMAIL );
 				starsCompany.setEmail( StarsUtils.getNotification(liteNotifEmail) );
 				
 				if (liteContact.getAddressID() != CtiUtilities.NONE_ZERO_ID) {
@@ -1456,7 +1460,7 @@ public class StarsLiteFactory {
 		}
 		
 		if (liteCompany.getPrimaryContactID() != CtiUtilities.NONE_ZERO_ID) {
-			LiteContact liteContact = DaoFactory.getContactDao().getContact( liteCompany.getPrimaryContactID() );
+			LiteContact liteContact = YukonSpringHook.getBean(ContactDao.class).getContact( liteCompany.getPrimaryContactID() );
 			PrimaryContact primContact = new PrimaryContact();
 			setStarsCustomerContact( primContact, liteContact );
 			starsCompany.setPrimaryContact( primContact );
@@ -1537,7 +1541,7 @@ public class StarsLiteFactory {
 	public static void setStarsInv(StarsInv starsInv, LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) {
 		starsInv.setInventoryID( liteInv.getInventoryID() );
 		starsInv.setDeviceID( liteInv.getDeviceID() );
-		starsInv.setCategory( DaoFactory.getYukonListDao().getYukonListEntry(liteInv.getCategoryID()).getEntryText() );
+		starsInv.setCategory( YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteInv.getCategoryID()).getEntryText() );
 		starsInv.setDeviceLabel( StarsUtils.forceNotNull(liteInv.getDeviceLabel()) );
 		
 		InstallationCompany company = new InstallationCompany();
@@ -1557,7 +1561,7 @@ public class StarsLiteFactory {
 		
 		Voltage volt = new Voltage();
 		volt.setEntryID( liteInv.getVoltageID() );
-		volt.setContent( DaoFactory.getYukonListDao().getYukonListEntry(liteInv.getVoltageID()).getEntryText() );
+		volt.setContent( YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteInv.getVoltageID()).getEntryText() );
 		starsInv.setVoltage( volt );
 		
 		starsInv.setNotes( StarsUtils.forceNotNull(liteInv.getNotes()) );
@@ -1582,12 +1586,12 @@ public class StarsLiteFactory {
 		}
 		
 		starsInv.setDeviceStatus( (DeviceStatus) StarsFactory.newStarsCustListEntry(
-				DaoFactory.getYukonListDao().getYukonListEntry( liteInv.getCurrentStateID() ), DeviceStatus.class) );
+				YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteInv.getCurrentStateID() ), DeviceStatus.class) );
 
 		if (liteInv instanceof LiteLmHardwareBase) {
 			LiteLmHardwareBase liteHw = (LiteLmHardwareBase) liteInv;
 			starsInv.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry(liteHw.getLmHardwareTypeID()),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteHw.getLmHardwareTypeID()),
 					DeviceType.class) );
 			
 			LMHardware hw = new LMHardware();
@@ -1615,7 +1619,7 @@ public class StarsLiteFactory {
             {
 				try
                 {
-				    mct.setDeviceName( DaoFactory.getPaoDao().getYukonPAOName(liteInv.getDeviceID()) );
+				    mct.setDeviceName( YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(liteInv.getDeviceID()) );
                 }
 				catch(NotFoundException e) 
                 {
@@ -1682,7 +1686,7 @@ public class StarsLiteFactory {
 		
 		starsOrder.setServiceType(
 			(ServiceType) StarsFactory.newStarsCustListEntry(
-				DaoFactory.getYukonListDao().getYukonListEntry(liteOrder.getWorkTypeID()),
+				YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteOrder.getWorkTypeID()),
 				ServiceType.class)
 		);
 		
@@ -1697,7 +1701,7 @@ public class StarsLiteFactory {
 		
 		starsOrder.setCurrentState(
 			(CurrentState) StarsFactory.newStarsCustListEntry(
-				DaoFactory.getYukonListDao().getYukonListEntry(liteOrder.getCurrentStateID()),
+				YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteOrder.getCurrentStateID()),
 				CurrentState.class)
 		);
 		
@@ -1728,7 +1732,7 @@ public class StarsLiteFactory {
 		for (int i = liteAcctInfo.getProgramHistory().size() - 1; i >= 0; i--) {
 			LiteLMProgramEvent liteEvent = liteAcctInfo.getProgramHistory().get(i);
 			if (liteEvent.getProgramID() == liteProg.getProgramID()) {
-				YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( liteEvent.getActionID() );
+				YukonListEntry entry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteEvent.getActionID() );
 				if (entry != null && entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_SIGNUP) {
 					starsProg.setDateEnrolled( new Date(liteEvent.getEventDateTime()) );
 					break;
@@ -1764,7 +1768,7 @@ public class StarsLiteFactory {
 					if (liteEvent2.getProgramID() != liteEvent.getProgramID())
 						continue;
 					
-					YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( liteEvent2.getActionID() );
+					YukonListEntry entry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteEvent2.getActionID() );
 					
 					if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION
 						|| entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED
@@ -1878,7 +1882,7 @@ public class StarsLiteFactory {
 		starsProg.removeAllAddressingGroup();
 		
 		for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
-		    YukonPao yukonPao = DaoFactory.getPaoDao().getYukonPao(liteProg.getGroupIDs()[j]);
+		    YukonPao yukonPao = YukonSpringHook.getBean(PaoDao.class).getYukonPao(liteProg.getGroupIDs()[j]);
 			
 			if (yukonPao.getPaoIdentifier().getPaoType().getDeviceTypeId() == PAOGroups.MACRO_GROUP) {
 			    java.sql.Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
@@ -1890,7 +1894,7 @@ public class StarsLiteFactory {
                     for (GenericMacro group : groups) {
                         paoIds.add(group.getChildID());
                     }
-                    Map<Integer, String> paoMap = DaoFactory.getPaoDao()
+                    Map<Integer, String> paoMap = YukonSpringHook.getBean(PaoDao.class)
                                                             .getYukonPAONames(paoIds);
                     for (GenericMacro group : groups) {
                         AddressingGroup addrGroup = new AddressingGroup();
@@ -1912,7 +1916,7 @@ public class StarsLiteFactory {
 			else {
 			    AddressingGroup addrGroup = new AddressingGroup();
 			    addrGroup.setEntryID( liteProg.getGroupIDs()[j] );
-			    addrGroup.setContent( DaoFactory.getPaoDao().getYukonPAOName(yukonPao.getPaoIdentifier().getPaoId()) );
+			    addrGroup.setContent( YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(yukonPao.getPaoIdentifier().getPaoId()) );
 			    starsProg.addAddressingGroup( addrGroup );
 			}
 		}
@@ -1943,7 +1947,7 @@ public class StarsLiteFactory {
 		}
 		
 		StarsDatabaseCache starsDatabaseCache = StarsDatabaseCache.getInstance();
-		Map<Integer, String> nameMap = DaoFactory.getPaoDao().getYukonPAONames(deviceIds);
+		Map<Integer, String> nameMap = YukonSpringHook.getBean(PaoDao.class).getYukonPAONames(deviceIds);
 		
 		for (final LiteLMProgramWebPublishing liteProg : programs) {
 		    int deviceId = liteProg.getDeviceID();
@@ -1968,7 +1972,7 @@ public class StarsLiteFactory {
 			
 			if (liteProg.getChanceOfControlID() != 0) {
 				starsProg.setChanceOfControl( (ChanceOfControl) StarsFactory.newStarsCustListEntry(
-						DaoFactory.getYukonListDao().getYukonListEntry(liteProg.getChanceOfControlID()), ChanceOfControl.class) );
+						YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteProg.getChanceOfControlID()), ChanceOfControl.class) );
 			}
 			
 			starsAppCat.addStarsEnrLMProgram( starsProg );
@@ -1998,16 +2002,16 @@ public class StarsLiteFactory {
 			starsApp.setYearManufactured( liteApp.getYearManufactured() );
        	
 		Manufacturer manu = new Manufacturer();
-		setStarsCustListEntry( manu, DaoFactory.getYukonListDao().getYukonListEntry(liteApp.getManufacturerID()) );
+		setStarsCustListEntry( manu, YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteApp.getManufacturerID()) );
 		starsApp.setManufacturer( manu );
         
 		Location loc = new Location();
-		setStarsCustListEntry( loc, DaoFactory.getYukonListDao().getYukonListEntry(liteApp.getLocationID()) );
+		setStarsCustListEntry( loc, YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteApp.getLocationID()) );
 		starsApp.setLocation( loc );
         
 		starsApp.setServiceCompany( new ServiceCompany() );
 	    
-		int appCatDefID = DaoFactory.getYukonListDao().getYukonListEntry( energyCompany.getApplianceCategory(liteApp.getApplianceCategory().getApplianceCategoryId()).getCategoryID() ).getYukonDefID();
+		int appCatDefID = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( energyCompany.getApplianceCategory(liteApp.getApplianceCategory().getApplianceCategoryId()).getCategoryID() ).getYukonDefID();
 		
 		if (liteApp.getAirConditioner() != null || appCatDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER) {
 			LiteStarsAppliance.AirConditioner liteAC = liteApp.getAirConditioner();
@@ -2016,12 +2020,12 @@ public class StarsLiteFactory {
 			AirConditioner ac = new AirConditioner();
 			ac.setTonnage(
 				(Tonnage) StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry( liteAC.getTonnageID() ),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteAC.getTonnageID() ),
 					Tonnage.class)
 			);
 			ac.setAcType(
 				(ACType) StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry( liteAC.getTypeID() ),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteAC.getTypeID() ),
 					ACType.class)
 			);
 			starsApp.setAirConditioner( ac );
@@ -2033,17 +2037,17 @@ public class StarsLiteFactory {
             DualStageAC ac = new DualStageAC();
             ac.setTonnage(
                 (Tonnage) StarsFactory.newStarsCustListEntry(
-                    DaoFactory.getYukonListDao().getYukonListEntry( liteAC.getStageOneTonnageID() ),
+                    YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteAC.getStageOneTonnageID() ),
                     Tonnage.class)
             );
             ac.setStageTwoTonnage(
                   (Tonnage) StarsFactory.newStarsCustListEntry(
-                      DaoFactory.getYukonListDao().getYukonListEntry( liteAC.getStageTwoTonnageID() ),
+                      YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteAC.getStageTwoTonnageID() ),
                       Tonnage.class)
             );
             ac.setAcType(
                 (ACType) StarsFactory.newStarsCustListEntry(
-                    DaoFactory.getYukonListDao().getYukonListEntry( liteAC.getTypeID() ),
+                    YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteAC.getTypeID() ),
                     ACType.class)
             );
             starsApp.setDualStageAC( ac );
@@ -2055,12 +2059,12 @@ public class StarsLiteFactory {
             Chiller chill = new Chiller();
             chill.setTonnage(
                 (Tonnage) StarsFactory.newStarsCustListEntry(
-                    DaoFactory.getYukonListDao().getYukonListEntry( liteChill.getTonnageID() ),
+                    YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteChill.getTonnageID() ),
                     Tonnage.class)
             );
             chill.setAcType(
                 (ACType) StarsFactory.newStarsCustListEntry(
-                    DaoFactory.getYukonListDao().getYukonListEntry( liteChill.getTypeID() ),
+                    YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteChill.getTypeID() ),
                     ACType.class)
             );
             starsApp.setChiller( chill );
@@ -2072,12 +2076,12 @@ public class StarsLiteFactory {
 			WaterHeater wh = new WaterHeater();
 			wh.setNumberOfGallons(
 				(NumberOfGallons) StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry( liteWH.getNumberOfGallonsID() ),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteWH.getNumberOfGallonsID() ),
 					NumberOfGallons.class)
 			);
 			wh.setEnergySource(
 				(EnergySource) StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry( liteWH.getEnergySourceID() ),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteWH.getEnergySourceID() ),
 					EnergySource.class)
 			);
 			if (liteWH.getNumberOfElements() > 0)
@@ -2091,14 +2095,14 @@ public class StarsLiteFactory {
 			DualFuel df = new DualFuel();
 			df.setSwitchOverType(
 				(SwitchOverType) StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry( liteDF.getSwitchOverTypeID() ),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteDF.getSwitchOverTypeID() ),
 					SwitchOverType.class)
 			);
 			if (liteDF.getSecondaryKWCapacity() > 0)
 				df.setSecondaryKWCapacity( liteDF.getSecondaryKWCapacity() );
 			df.setSecondaryEnergySource(
 				(SecondaryEnergySource) StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry( liteDF.getSecondaryEnergySourceID() ),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteDF.getSecondaryEnergySourceID() ),
 					SecondaryEnergySource.class)
 			);
 			starsApp.setDualFuel( df );
@@ -2110,12 +2114,12 @@ public class StarsLiteFactory {
 			Generator gen = new Generator();
 			gen.setTransferSwitchType(
 				(TransferSwitchType) StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry( liteGen.getTransferSwitchTypeID() ),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteGen.getTransferSwitchTypeID() ),
 					TransferSwitchType.class)
 			);
 			gen.setTransferSwitchManufacturer(
 				(TransferSwitchManufacturer) StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry( liteGen.getTransferSwitchMfgID() ),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteGen.getTransferSwitchMfgID() ),
 					TransferSwitchManufacturer.class)
 			);
 			if (liteGen.getPeakKWCapacity() > 0)
@@ -2133,27 +2137,27 @@ public class StarsLiteFactory {
 			GrainDryer gd = new GrainDryer();
 			gd.setDryerType(
 				(DryerType) StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry( liteGDry.getDryerTypeID() ),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteGDry.getDryerTypeID() ),
 					DryerType.class)
 			);
 			gd.setBinSize(
 				(BinSize) StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry( liteGDry.getBinSizeID() ),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteGDry.getBinSizeID() ),
 					BinSize.class)
 			);
 			gd.setBlowerEnergySource(
 				(BlowerEnergySource) StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry( liteGDry.getBlowerEnergySourceID() ),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteGDry.getBlowerEnergySourceID() ),
 					BlowerEnergySource.class)
 			);
 			gd.setBlowerHorsePower(
 				(BlowerHorsePower) StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry( liteGDry.getBlowerHorsePowerID() ),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteGDry.getBlowerHorsePowerID() ),
 					BlowerHorsePower.class)
 			);
 			gd.setBlowerHeatSource(
 				(BlowerHeatSource) StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry( liteGDry.getBlowerHeatSourceID() ),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteGDry.getBlowerHeatSourceID() ),
 					BlowerHeatSource.class)
 			);
 			starsApp.setGrainDryer( gd );
@@ -2165,7 +2169,7 @@ public class StarsLiteFactory {
 			StorageHeat sh = new StorageHeat();
 			sh.setStorageType(
 				(StorageType) StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry( liteSH.getStorageTypeID() ),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteSH.getStorageTypeID() ),
 					StorageType.class)
 			);
 			if (liteSH.getPeakKWCapacity() > 0)
@@ -2181,17 +2185,17 @@ public class StarsLiteFactory {
 			HeatPump hp = new HeatPump();
 			hp.setPumpType(
 				(PumpType) StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry( liteHP.getPumpTypeID() ),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteHP.getPumpTypeID() ),
 					PumpType.class)
 			);
 			hp.setPumpSize(
 				(PumpSize) StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry( liteHP.getPumpSizeID() ),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteHP.getPumpSizeID() ),
 					PumpSize.class)
 			);
 			hp.setStandbySource(
 				(StandbySource) StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry( liteHP.getStandbySourceID() ),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteHP.getStandbySourceID() ),
 					StandbySource.class)
 			);
 			if (liteHP.getSecondsDelayToRestart() > 0)
@@ -2205,32 +2209,32 @@ public class StarsLiteFactory {
 			Irrigation irr = new Irrigation();
 			irr.setIrrigationType(
 				(IrrigationType) StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry( liteIrr.getIrrigationTypeID() ),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteIrr.getIrrigationTypeID() ),
 					IrrigationType.class)
 			);
 			irr.setHorsePower(
 				(HorsePower) StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry( liteIrr.getHorsePowerID() ),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteIrr.getHorsePowerID() ),
 					HorsePower.class)
 			);
 			irr.setEnergySource(
 				(EnergySource) StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry( liteIrr.getEnergySourceID() ),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteIrr.getEnergySourceID() ),
 					EnergySource.class)
 			);
 			irr.setSoilType(
 				(SoilType) StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry( liteIrr.getSoilTypeID() ),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteIrr.getSoilTypeID() ),
 					SoilType.class)
 			);
 			irr.setMeterLocation(
 				(MeterLocation) StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry( liteIrr.getMeterLocationID() ),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteIrr.getMeterLocationID() ),
 					MeterLocation.class)
 			);
 			irr.setMeterVoltage(
 				(MeterVoltage) StarsFactory.newStarsCustListEntry(
-					DaoFactory.getYukonListDao().getYukonListEntry( liteIrr.getMeterVoltageID() ),
+					YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteIrr.getMeterVoltageID() ),
 					MeterVoltage.class)
 			);
 			starsApp.setIrrigation( irr );

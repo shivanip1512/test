@@ -29,13 +29,14 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.tree.CheckNode;
 import com.cannontech.common.gui.tree.CheckNodeSelectionListener;
 import com.cannontech.common.gui.tree.CheckRenderer;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.model.AlarmCategoryCheckBoxTreeModel;
 import com.cannontech.database.model.DeviceCheckBoxTreeModel;
+import com.cannontech.spring.YukonSpringHook;
 
 
 /**
@@ -728,7 +729,7 @@ public void setValue(Object o) {
         // Find the device for this point and load the device's tree node.
         LitePoint litePoint = null;
         try {
-            litePoint = DaoFactory.getPointDao().getLitePoint(pointids[i]);
+            litePoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(pointids[i]);
         }catch(NotFoundException nfe) {
             CTILogger.error("The point (pointId:"+ pointids[i] + ") for this AlarmTable might have been deleted!", nfe);
             continue;

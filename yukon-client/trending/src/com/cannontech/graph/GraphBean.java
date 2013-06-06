@@ -13,7 +13,8 @@ import java.util.GregorianCalendar;
 import java.util.Vector;
 
 import com.cannontech.clientutils.ActivityLogger;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.activity.ActivityLogSummary;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
@@ -26,6 +27,8 @@ import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.roles.application.TrendingRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.util.SessionAttribute;
 
@@ -293,7 +296,7 @@ public class GraphBean extends Graph
 	 */
 	public SessionAttribute getDataNow(LiteYukonUser liteYukonUser, String[] custDevices)
 	{
-		LiteEnergyCompany liteEC = DaoFactory.getEnergyCompanyDao().getEnergyCompany(liteYukonUser);
+		LiteEnergyCompany liteEC = YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(liteYukonUser);
 		int ecId = -1;
 		if (liteEC != null)
 			ecId = liteEC.getEnergyCompanyID();
@@ -306,14 +309,14 @@ public class GraphBean extends Graph
 			ActivityLogSummary.LogSummary logSummary = (ActivityLogSummary.LogSummary)actLogSummary.getLogSummaryVector().get(i); 
 			if( logSummary.action.equals(ActivityLogActions.SCAN_DATA_NOW_ACTION))
 			{
-				if( logSummary.count >= Integer.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(liteYukonUser, TrendingRole.MAXIMUM_DAILY_SCANS)).intValue())
+				if( logSummary.count >= Integer.valueOf(YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(liteYukonUser, TrendingRole.MAXIMUM_DAILY_SCANS)).intValue())
 				{
 					return new SessionAttribute( ServletUtil.ATT_ERROR_MESSAGE, "Maximum Scans allowed for today exceeded" );
 				}
 							
 				Date now = new Date();
 				long sinceLast = now.getTime() - logSummary.maxTimeStamp.getTime();
-				long duration = Long.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(liteYukonUser, TrendingRole.MINIMUM_SCAN_FREQUENCY)).longValue() * 36000;
+				long duration = Long.valueOf(YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(liteYukonUser, TrendingRole.MINIMUM_SCAN_FREQUENCY)).longValue() * 36000;
 				if (sinceLast <= duration)
 				{
 					long waitTime = duration - sinceLast;
@@ -326,7 +329,7 @@ public class GraphBean extends Graph
 		String logDesc = "Forced alternate scan of deviceID(s): ";
 		for (int i = 0; i < custDevices.length; i++)
 		{
-			LiteYukonPAObject litePAO = DaoFactory.getPaoDao().getLiteYukonPAO(Integer.valueOf(custDevices[i]).intValue());
+			LiteYukonPAObject litePAO = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(Integer.valueOf(custDevices[i]).intValue());
 			paObjects.add(litePAO);
 			logDesc += litePAO.getYukonID() + ", ";
 		}

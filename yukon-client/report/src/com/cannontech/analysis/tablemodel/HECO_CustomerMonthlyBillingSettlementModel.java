@@ -8,8 +8,10 @@ import java.util.Vector;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.lm.LMEvent;
 import com.cannontech.analysis.data.lm.SettlementCustomer;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.CustomerDao;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 
 /**
@@ -140,7 +142,7 @@ public class HECO_CustomerMonthlyBillingSettlementModel extends HECO_SettlementM
 					return settleCust.getCICustomerBase().getCustomer().getCustomerNumber();
 				case ACCOUNT_NUMBER_DATA:
 				{
-					LiteCustomer liteCust = DaoFactory.getCustomerDao().getLiteCustomer(settleCust.getCustomerID().intValue());
+					LiteCustomer liteCust = YukonSpringHook.getBean(CustomerDao.class).getLiteCustomer(settleCust.getCustomerID().intValue());
 					Vector acctIDs = liteCust.getAccountIDs();
 					if( acctIDs != null && !acctIDs.isEmpty())
 					{
@@ -153,7 +155,7 @@ public class HECO_CustomerMonthlyBillingSettlementModel extends HECO_SettlementM
 				case DSM_APPLICATION_NUMBER_DATA:
 					return settleCust.getCICustomerBase().getCustomer().getAltTrackingNumber();
 				case RATE_SCHEDULE_DATA:
-					return DaoFactory.getYukonListDao().getYukonListEntry(settleCust.getCICustomerBase().getCustomer().getRateScheduleID().intValue()).getEntryText();
+					return YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(settleCust.getCICustomerBase().getCustomer().getRateScheduleID().intValue()).getEntryText();
 				case CIDLC_DEMAND_CHARGE_DATA:
 					return decimalFormat.format(settleCust.getCIDLCDemandCharge());
 				case FIRM_SERVICE_LEVEL_DATA:

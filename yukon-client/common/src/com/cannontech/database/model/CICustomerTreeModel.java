@@ -12,8 +12,8 @@ import javax.swing.SwingWorker;
 import javax.swing.tree.TreePath;
 
 import com.cannontech.common.util.SimpleCallback;
+import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.CustomerDao;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
@@ -57,7 +57,7 @@ public boolean insertTreeObject( LiteBase lb )
 	{
 		int contactID = ((LiteContact)lb).getContactID();
 
-		LiteCICustomer ownerCst = DaoFactory.getContactDao().getOwnerCICustomer( contactID );
+		LiteCICustomer ownerCst = YukonSpringHook.getBean(ContactDao.class).getOwnerCICustomer( contactID );
 
 		rootNode = findLiteObject( null, ownerCst );
 
@@ -126,7 +126,7 @@ public synchronized void treePathWillExpand(javax.swing.tree.TreePath path)
 		
 		int primaryContactId = ciCust.getPrimaryContactID();
 		if (primaryContactId > 0) {
-		    LiteContact primaryContact = DaoFactory.getContactDao().getContact(primaryContactId);
+		    LiteContact primaryContact = YukonSpringHook.getBean(ContactDao.class).getContact(primaryContactId);
 		    node.add(new DBTreeNode(primaryContact));
 		}
 		
@@ -176,7 +176,7 @@ public void doUpdate(final Runnable onCompletion) {
     rootNode.removeAllChildren();
     nodeStructureChanged(rootNode);
 
-    final CustomerDao customerDao = DaoFactory.getCustomerDao();
+    final CustomerDao customerDao = YukonSpringHook.getBean(CustomerDao.class);
     
     final ProgressMonitor monitor = new ProgressMonitor(frame, "Loading contents", "---", 0, 0);
 

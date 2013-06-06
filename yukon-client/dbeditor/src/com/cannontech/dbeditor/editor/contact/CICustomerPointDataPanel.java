@@ -14,7 +14,8 @@ import javax.swing.JTextField;
 import javax.swing.event.CaretEvent;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -22,6 +23,7 @@ import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.customer.CICustomerPointData;
 import com.cannontech.database.db.customer.CICustomerPointType;
+import com.cannontech.spring.YukonSpringHook;
 
 public class CICustomerPointDataPanel extends JPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener 
 
@@ -156,7 +158,7 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
     {     
         if( comboBox == null ) return;
         
-        List<LitePoint> points = DaoFactory.getPointDao().
+        List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).
             getLitePointsBy(new Integer[] { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT },
                                 null, null, null, null);
         
@@ -167,7 +169,7 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
                 //use the validPt boolean to see if this point is worthy
                 if( isPointValid(litePoint) )
                 {
-                    LiteYukonPAObject liteDevice = DaoFactory.getPaoDao().getLiteYukonPAO( litePoint.getPaobjectID() );
+                    LiteYukonPAObject liteDevice = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO( litePoint.getPaobjectID() );
 
                     if( DeviceClasses.isCoreDeviceClass(liteDevice.getPaoType().getPaoClass().getPaoClassId()) )
                         paoSet.add( liteDevice );
@@ -186,7 +188,7 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
      */
     public void setPointComboBox( int ptId, JComboBox pointCombo, JComboBox deviceCombo ) 
     {   
-        LitePoint litePoint = DaoFactory.getPointDao().getLitePoint( ptId );
+        LitePoint litePoint = YukonSpringHook.getBean(PointDao.class).getLitePoint( ptId );
 
         if( litePoint == null )
         {
@@ -194,7 +196,7 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
         }
         else
         {
-            deviceCombo.setSelectedItem( DaoFactory.getPaoDao().getLiteYukonPAO(litePoint.getPaobjectID()) );
+            deviceCombo.setSelectedItem( YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(litePoint.getPaobjectID()) );
             pointCombo.setSelectedItem( litePoint );
         }
         
@@ -484,7 +486,7 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
         }
 
         //add the point to the pointCombo if the point is valid
-        List<LitePoint> litePts = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceID);
+        List<LitePoint> litePts = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(deviceID);
         Collections.sort(litePts, LiteComparators.liteStringComparator);
         for (LitePoint point : litePts) {
             if( isPointValid(point) ) {

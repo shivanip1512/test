@@ -3,9 +3,10 @@ package com.cannontech.notif.outputs;
 import java.util.*;
 
 import com.cannontech.common.util.NotificationTypeChecker;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.ContactDao;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.spring.YukonSpringHook;
 
 public class ContactableNotification extends ContactableBase {
     List _noChildren = new ArrayList(0);
@@ -20,7 +21,7 @@ public class ContactableNotification extends ContactableBase {
         if (_customer != null) {
             return _customer;
         }
-        _customer = DaoFactory.getContactDao().getCICustomer(_liteNotif.getContactID());
+        _customer = YukonSpringHook.getBean(ContactDao.class).getCICustomer(_liteNotif.getContactID());
         if (_customer == null) {
             throw new UnknownCustomerException("Can't return LiteCustomer for contact id " + _liteNotif.getContactID());
         }

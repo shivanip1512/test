@@ -2,8 +2,9 @@ package com.cannontech.dbeditor.wizard.point;
 
 import java.util.List;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -387,7 +388,7 @@ public void reinitialize(Integer pointDeviceID, int pointType) {
 
 	getUsedPointOffsetLabel().setText("");
 	
-    List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(pointDeviceID);
+    List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(pointDeviceID);
     usedPointOffsetsVector = new java.util.Vector(points.size());
     for (LitePoint point : points) {
         if(pointType == point.getPointType()) {

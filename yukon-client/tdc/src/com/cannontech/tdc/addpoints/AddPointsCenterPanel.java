@@ -14,10 +14,11 @@ import javax.swing.ListSelectionModel;
 import com.cannontech.common.gui.dnd.DAndDDevicePointTable;
 import com.cannontech.common.gui.tree.TreeFindDialog;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.model.DBTreeNode;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 
@@ -510,7 +511,7 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 					if( userObject instanceof LiteYukonPAObject )
 					{
                         int paoId = ((LiteYukonPAObject)userObject).getYukonID();
-                        List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(paoId);
+                        List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(paoId);
                         
 						getRightTable().addDevice(points);
 					} 

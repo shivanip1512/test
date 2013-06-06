@@ -8,8 +8,8 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.capcontrol.CapBankController;
@@ -1204,7 +1204,7 @@ public static Object changeType (String newType,
 						PointFactory.createPulseAccumPoint(
 						   "kWh",
 						   ((DeviceBase) val).getDevice().getDeviceID(),
-						   DaoFactory.getPointDao().getNextPointId(),
+						   YukonSpringHook.getBean(PointDao.class).getNextPointId(),
 						   PointOffsets.PT_OFFSET_TOTAL_KWH,
 						   UnitOfMeasure.KWH.getId(),
 						   0.1, StateGroupUtils.STATEGROUP_ANALOG,
@@ -1219,7 +1219,7 @@ public static Object changeType (String newType,
 						PointFactory.createPulseAccumPoint(
 						   "Blink Count",
 						   ((DeviceBase) val).getDevice().getDeviceID(),
-                           DaoFactory.getPointDao().getNextPointId(),
+                           YukonSpringHook.getBean(PointDao.class).getNextPointId(),
 						   PointOffsets.PT_OFFSET_BLINK_COUNT,
 						   UnitOfMeasure.COUNTS.getId(),
 						   1.0, StateGroupUtils.STATEGROUP_ANALOG,
@@ -1234,7 +1234,7 @@ public static Object changeType (String newType,
 						PointFactory.createDmdAccumPoint(
 						   "kW-LP",
 						   ((DeviceBase) val).getDevice().getDeviceID(),
-                           DaoFactory.getPointDao().getNextPointId(),
+                           YukonSpringHook.getBean(PointDao.class).getNextPointId(),
 						   PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND,
 						   UnitOfMeasure.KW.getId(),
 						   0.1, StateGroupUtils.STATEGROUP_ANALOG,
@@ -1247,7 +1247,7 @@ public static Object changeType (String newType,
 					PointFactory.createDmdAccumPoint(
 						"Voltage-LP",
 						((DeviceBase) val).getDevice().getDeviceID(),
-                        DaoFactory.getPointDao().getNextPointId(),                        
+                        YukonSpringHook.getBean(PointDao.class).getNextPointId(),                        
 						PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND,
 						UnitOfMeasure.VOLTS.getId(),
 						0.1, StateGroupUtils.STATEGROUP_ANALOG,
@@ -1260,7 +1260,7 @@ public static Object changeType (String newType,
     					PointFactory.createDmdAccumPoint(
     						"Peak kW",
     						((DeviceBase) val).getDevice().getDeviceID(),
-                            DaoFactory.getPointDao().getNextPointId(),                                                
+                            YukonSpringHook.getBean(PointDao.class).getNextPointId(),                                                
     						PointOffsets.PT_OFFSET_PEAK_KW_DEMAND,
     						UnitOfMeasure.KW.getId(),
     						0.1,StateGroupUtils.STATEGROUP_ANALOG,
@@ -1274,7 +1274,7 @@ public static Object changeType (String newType,
     					PointFactory.createDmdAccumPoint(
     						"Max Volts",
     						((DeviceBase) val).getDevice().getDeviceID(),
-                            DaoFactory.getPointDao().getNextPointId(),                                                                        
+                            YukonSpringHook.getBean(PointDao.class).getNextPointId(),                                                                        
     						PointOffsets.PT_OFFSET_MAX_VOLT_DEMAND,
     						UnitOfMeasure.VOLTS.getId(),
     						0.1, StateGroupUtils.STATEGROUP_ANALOG,
@@ -1288,7 +1288,7 @@ public static Object changeType (String newType,
     					PointFactory.createDmdAccumPoint(
     						"Min Volts",
     						((DeviceBase) val).getDevice().getDeviceID(),
-                            DaoFactory.getPointDao().getNextPointId(),                                                                                                
+                            YukonSpringHook.getBean(PointDao.class).getNextPointId(),                                                                                                
     						PointOffsets.PT_OFFSET_MIN_VOLT_DEMAND,
     						UnitOfMeasure.VOLTS.getId(),
     						0.1, StateGroupUtils.STATEGROUP_ANALOG,
@@ -1301,7 +1301,7 @@ public static Object changeType (String newType,
 					PointFactory.createDmdAccumPoint(
 						"Frozen Peak Demand",
 						((DeviceBase) val).getDevice().getDeviceID(),
-                        DaoFactory.getPointDao().getNextPointId(),
+                        YukonSpringHook.getBean(PointDao.class).getNextPointId(),
 						PointOffsets.PT_OFFSET_FROZEN_PEAK_DEMAND,
 						UnitOfMeasure.KW.getId(),
 						0.1, StateGroupUtils.STATEGROUP_ANALOG,
@@ -1313,7 +1313,7 @@ public static Object changeType (String newType,
 					PointFactory.createDmdAccumPoint(
 						"Frozen Max Volts",
 						((DeviceBase) val).getDevice().getDeviceID(),
-                        DaoFactory.getPointDao().getNextPointId(),
+                        YukonSpringHook.getBean(PointDao.class).getNextPointId(),
 						PointOffsets.PT_OFFSET_FROZEN_MAX_VOLT,
 						UnitOfMeasure.VOLTS.getId(),
 						0.1, StateGroupUtils.STATEGROUP_ANALOG,
@@ -1325,7 +1325,7 @@ public static Object changeType (String newType,
 					PointFactory.createDmdAccumPoint(
 						"Frozen Min Volts",
 						((DeviceBase) val).getDevice().getDeviceID(),
-                        DaoFactory.getPointDao().getNextPointId(),                        
+                        YukonSpringHook.getBean(PointDao.class).getNextPointId(),                        
 						PointOffsets.PT_OFFSET_FROZEN_MIN_VOLT,
 						UnitOfMeasure.VOLTS.getId(),
 						0.1, StateGroupUtils.STATEGROUP_ANALOG,
@@ -1338,7 +1338,7 @@ public static Object changeType (String newType,
     					PointFactory.createDmdAccumPoint(
     						"kW",
     						((DeviceBase) val).getDevice().getDeviceID(),
-                            DaoFactory.getPointDao().getNextPointId(),                        
+                            YukonSpringHook.getBean(PointDao.class).getNextPointId(),                        
     						PointOffsets.PT_OFFSET_KW_DEMAND,
     						UnitOfMeasure.KW.getId(),
     						0.1, StateGroupUtils.STATEGROUP_ANALOG,
@@ -1352,7 +1352,7 @@ public static Object changeType (String newType,
     					PointFactory.createDmdAccumPoint(
     						"Voltage",
     						((DeviceBase) val).getDevice().getDeviceID(),
-                            DaoFactory.getPointDao().getNextPointId(),                        
+                            YukonSpringHook.getBean(PointDao.class).getNextPointId(),                        
     						PointOffsets.PT_OFFSET_VOLTAGE_DEMAND,
     						UnitOfMeasure.VOLTS.getId(),
     						0.1, StateGroupUtils.STATEGROUP_ANALOG,
@@ -1379,7 +1379,7 @@ public static Object changeType (String newType,
         {
             //TODO delete old 410 points
             int deviceId = currentDevice.getPAObjectID();
-            List<LitePoint> ltPoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceId);
+            List<LitePoint> ltPoints = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(deviceId);
 
             for (LitePoint point : ltPoints) {
                 if( (point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT

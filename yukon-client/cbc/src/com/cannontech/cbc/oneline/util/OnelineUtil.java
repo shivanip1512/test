@@ -21,8 +21,8 @@ import com.cannontech.cbc.oneline.OnelineHTMLGenerator;
 import com.cannontech.cbc.oneline.view.CapControlOnelineCanvas;
 import com.cannontech.cbc.oneline.view.OneLineDrawing;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.YukonImageDao;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonImage;
@@ -37,6 +37,7 @@ import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.message.capcontrol.streamable.SubBus;
+import com.cannontech.spring.YukonSpringHook;
 import com.loox.jloox.LxComponent;
 
 public class OnelineUtil {
@@ -96,7 +97,7 @@ public class OnelineUtil {
     public static final Color ORANGE = new Color(255,165,0);
     
     public static LiteStateGroup getOnelineStateGroup(String groupName) {
-        LiteStateGroup[] groups = DaoFactory.getStateDao().getAllStateGroups();
+        LiteStateGroup[] groups = YukonSpringHook.getBean(StateDao.class).getAllStateGroups();
         for (int i = 0; i < groups.length; i++) {
             LiteStateGroup group = groups[i];
             if (group.getStateGroupName().equalsIgnoreCase(groupName))
@@ -121,7 +122,7 @@ public class OnelineUtil {
     }
 
     public static List<LiteYukonImage> getAdditionalImages() {
-        StateDao stateDao = DaoFactory.getStateDao();
+        StateDao stateDao = YukonSpringHook.getBean(StateDao.class);
         // we need images from state groups: CapBankStatus, 1LNSUBSTATE,
         // 1LNVERIFY
         List<LiteYukonImage> additionalImages = new ArrayList<LiteYukonImage>(0);
@@ -135,7 +136,7 @@ public class OnelineUtil {
                 for (int j = 0; j < liteStates.length; j++) {
                     LiteState state = liteStates[j];
                     int imageID = state.getImageID();
-                    LiteYukonImage liteYukonImage = DaoFactory.getYukonImageDao()
+                    LiteYukonImage liteYukonImage = YukonSpringHook.getBean(YukonImageDao.class)
                                                               .getLiteYukonImage(imageID);
                     additionalImages.add(liteYukonImage);
                 }

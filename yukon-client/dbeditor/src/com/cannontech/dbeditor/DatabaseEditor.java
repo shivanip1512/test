@@ -78,7 +78,7 @@ import com.cannontech.common.wizard.WizardPanel;
 import com.cannontech.common.wizard.WizardPanelEvent;
 import com.cannontech.common.wizard.WizardPanelListener;
 import com.cannontech.core.dao.DBDeleteResult;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DBDeletionDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.DatabaseTypes;
@@ -922,12 +922,12 @@ public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
 
 
 		DBDeleteResult delRes = new DBDeleteResult(
-				((PointBase) userObject).getPoint().getPointID().intValue(), DaoFactory.getDbDeletionDao().POINT_TYPE);
+				((PointBase) userObject).getPoint().getPointID().intValue(), YukonSpringHook.getBean(DBDeletionDao.class).POINT_TYPE);
 			
-         byte deleteVal = DaoFactory.getDbDeletionDao().deletionAttempted( delRes );
+         byte deleteVal = YukonSpringHook.getBean(DBDeletionDao.class).deletionAttempted( delRes );
          
-         if( deleteVal == DaoFactory.getDbDeletionDao().STATUS_ALLOW
-             || deleteVal == DaoFactory.getDbDeletionDao().STATUS_CONFIRM )
+         if( deleteVal == YukonSpringHook.getBean(DBDeletionDao.class).STATUS_ALLOW
+             || deleteVal == YukonSpringHook.getBean(DBDeletionDao.class).STATUS_CONFIRM )
          {
 			   showChangeTypeWizardPanel(new PointChangeTypeWizardPanel(userObject));
 			}

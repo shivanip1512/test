@@ -19,7 +19,6 @@ import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.wizard.CancelInsertException;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.Transaction;
@@ -267,7 +266,7 @@ private void checkAddress()
 
         if (DeviceTypesFuncs.isTransmitter( devType )) {
 
-            PaoDao paoDao = DaoFactory.getPaoDao();
+            PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
             ((DeviceBase) val).setDeviceID(paoDao.getNextPaoId());
 
             // checks device type and accordingly sets route type
@@ -330,7 +329,7 @@ private void checkAddress()
 
             return newVal;
         } else if (DeviceTypesFuncs.isMeter(devType)) {
-            PaoDao paoDao = DaoFactory.getPaoDao();
+            PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
             ((DeviceBase) val).setDeviceID(paoDao.getNextPaoId());
 
             SmartMultiDBPersistent smartDB = createSmartDBPersistent((DeviceBase) val);

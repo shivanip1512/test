@@ -7,12 +7,14 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author ryan
@@ -46,7 +48,7 @@ public class PointLists {
      */
     public LiteYukonPAObject[] getPAOsByUofMPoints(Integer[] uofmIDs) {
         Integer[] pointTypes = new Integer[] { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT };
-        List<LiteYukonPAObject> paos = DaoFactory.getPaoDao().getLiteYukonPAObjectBy(null, null,DeviceClasses.CORE_DEVICE_CLASSES,pointTypes,uofmIDs);
+        List<LiteYukonPAObject> paos = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAObjectBy(null, null,DeviceClasses.CORE_DEVICE_CLASSES,pointTypes,uofmIDs);
         
         Collections.sort(paos, LiteComparators.liteStringComparator);
         return paos.toArray(new LiteYukonPAObject[paos.size()]);
@@ -64,7 +66,7 @@ public class PointLists {
         //         return new LitePoint[0];
 
         //ensures uniqueness and ordering by name
-        List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(paoID);
+        List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(paoID);
         ListIterator<LitePoint> iter = points.listIterator();
         while(iter.hasPrevious()) {
             LitePoint p = iter.previous();
@@ -80,7 +82,7 @@ public class PointLists {
 
 
     public static TreeSet<LitePoint> getAllTwoStateStatusPoints() {
-        List<LitePoint> twoStatePoints = DaoFactory.getPointDao().getLitePointsByNumStates(2);
+        List<LitePoint> twoStatePoints = YukonSpringHook.getBean(PointDao.class).getLitePointsByNumStates(2);
         ListIterator<LitePoint> iter = twoStatePoints.listIterator();
         while(iter.hasPrevious()) {
             LitePoint p = iter.previous();

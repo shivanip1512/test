@@ -11,11 +11,13 @@ import java.util.Vector;
 import javax.swing.JComboBox;
 
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.AnalogControlType;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.spring.YukonSpringHook;
 
 public class PointAnalogPhysicalSettingsEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.awt.event.ItemListener, javax.swing.event.CaretListener, com.klg.jclass.util.value.JCValueListener
 {
@@ -996,7 +998,7 @@ public void setValue(Object val)
 	getUsedPointOffsetLabel().setText("");
     
 
-        List<LitePoint> points = DaoFactory.getPointDao()
+        List<LitePoint> points = YukonSpringHook.getBean(PointDao.class)
                                            .getLitePointsByPaObjectId(point.getPoint().getPaoID());
         usedPointOffsetsVector = new Vector<LitePoint>(points.size());
         for (LitePoint currPoint : points) {
@@ -1044,7 +1046,7 @@ public void setValue(Object val)
 		getDeadbandSpinner().setValue( new Integer(deadband.intValue()) );
 		
 		//Only display the Deadband panel for RTU Welco device types.
-        LiteYukonPAObject pao = DaoFactory.getPaoDao().getLiteYukonPAO(point.getPoint().getPaoID());
+        LiteYukonPAObject pao = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(point.getPoint().getPaoID());
         if (pao.getPaoType() != PaoType.RTUWELCO) {
             getDeadbandPanel().setVisible(false);
         }

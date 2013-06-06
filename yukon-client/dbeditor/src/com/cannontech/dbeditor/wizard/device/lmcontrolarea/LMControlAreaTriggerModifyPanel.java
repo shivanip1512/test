@@ -13,11 +13,14 @@ import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class LMControlAreaTriggerModifyPanel extends DataInputPanel implements ActionListener, PropertyChangeListener, CaretListener {
@@ -1243,16 +1246,16 @@ private javax.swing.JTextField getJTextFieldATKU() {
 		com.cannontech.database.data.lite.LiteState liteState = null;
 		
 		// look for the litePoint here 
-		litePoint = DaoFactory.getPointDao().getLitePoint(trigger.getPointID().intValue());
+		litePoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(trigger.getPointID().intValue());
 		
 		if( litePoint == null )
 			throw new RuntimeException("Unable to find the point (ID= " + trigger.getPointID() + ") associated with the LMTrigger of type '" + trigger.getTriggerType() + "'" );
 	
 		// look for the litePAO here 
-		litePAO = DaoFactory.getPaoDao().getLiteYukonPAO( litePoint.getPaobjectID() );
+		litePAO = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO( litePoint.getPaobjectID() );
 	
 		//set the states for the row
-		liteState = DaoFactory.getStateDao().findLiteState( ((com.cannontech.database.data.lite.LitePoint)litePoint).getStateGroupID(), trigger.getNormalState().intValue() );
+		liteState = YukonSpringHook.getBean(StateDao.class).findLiteState( ((com.cannontech.database.data.lite.LitePoint)litePoint).getStateGroupID(), trigger.getNormalState().intValue() );
 	
 		if( trigger.getTriggerType().equalsIgnoreCase(IlmDefines.TYPE_STATUS) )
 		{
@@ -1273,7 +1276,7 @@ private javax.swing.JTextField getJTextFieldATKU() {
 			if( trigger.getTriggerType().equalsIgnoreCase(IlmDefines.TYPE_THRESHOLD_POINT) ) {
 				
 				LitePoint lp =
-					DaoFactory.getPointDao().getLitePoint( trigger.getThresholdPointID().intValue() );
+					YukonSpringHook.getBean(PointDao.class).getLitePoint( trigger.getThresholdPointID().intValue() );
 				getJPanelThresholdID().setSelectedLitePAO( lp.getPaobjectID() );
 				getJPanelThresholdID().setSelectedLitePoint( lp.getPointID() );
 			}
@@ -1293,7 +1296,7 @@ private javax.swing.JTextField getJTextFieldATKU() {
 		if( trigger.getPeakPointID().intValue() > 0 )
 		{
 			com.cannontech.database.data.lite.LitePoint lp =
-					DaoFactory.getPointDao().getLitePoint( trigger.getPeakPointID().intValue() );
+					YukonSpringHook.getBean(PointDao.class).getLitePoint( trigger.getPeakPointID().intValue() );
 					
 			getJPanelDevicePointPeak().setSelectedLitePAO( lp.getPaobjectID() );
 			getJPanelDevicePointPeak().setSelectedLitePoint( lp.getPointID() );

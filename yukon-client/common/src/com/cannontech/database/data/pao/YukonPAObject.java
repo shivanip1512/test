@@ -6,7 +6,7 @@ import java.util.Vector;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authorization.service.PaoPermissionService;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.DBPersistent;
@@ -104,7 +104,7 @@ public void deletePartial() throws java.sql.SQLException
  */
 private void deletePoints() throws java.sql.SQLException
 {
-    List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(getPAObjectID());
+    List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(getPAObjectID());
     for (LitePoint point : points) {
         com.cannontech.database.data.point.PointBase chubbyPt = com.cannontech.database.data.point.PointFactory.createPoint( point.getPointType() );
         chubbyPt.setPointID(point.getPointID());
@@ -136,7 +136,7 @@ public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
 	if( dbChangeType == DbChangeType.DELETE )
 	{
 		//get all the point ids and their types that are owned by this PAObject
-		int[][] idsAndTypes = DaoFactory.getPointDao().getAllPointIDsAndTypesForPAObject(getPAObjectID());
+		int[][] idsAndTypes = YukonSpringHook.getBean(PointDao.class).getAllPointIDsAndTypesForPAObject(getPAObjectID());
 
 		//add a new message for each point
 		for( int i = 0; i < idsAndTypes.length; i++ )

@@ -7,12 +7,14 @@ package com.cannontech.dbeditor.editor.point;
 import java.util.List;
 
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.data.point.PointArchiveType;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class CalcBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener {
@@ -641,7 +643,7 @@ private void initialize() {
 
 	//load unit of measure combo box with all possible values
     List<LiteUnitMeasure> unitMeasures = 
-         DaoFactory.getUnitMeasureDao().getLiteUnitMeasures();
+         YukonSpringHook.getBean(UnitMeasureDao.class).getLiteUnitMeasures();
     for (LiteUnitMeasure lum : unitMeasures) {
         getUnitOfMeasureComboBox().addItem(lum);
     }
@@ -809,7 +811,7 @@ public void setValue(Object val) {
     IDatabaseCache cache = DefaultDatabaseCache.getInstance();
     synchronized(cache)
     {
-        LiteStateGroup[] allStateGroups = DaoFactory.getStateDao().getAllStateGroups();
+        LiteStateGroup[] allStateGroups = YukonSpringHook.getBean(StateDao.class).getAllStateGroups();
 
         //Load the state table combo box
         for(int i=0;i<allStateGroups.length;i++)

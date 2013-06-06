@@ -19,7 +19,8 @@ import org.w3c.dom.Element;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.GraphDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
@@ -44,6 +45,7 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.util.Command;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
@@ -333,7 +335,7 @@ public void setGraphDefinition(LiteGraphDefinition liteGraphDefinition)
 public void setGraphDefinition(int liteGraphDefinitionID)
 {
 	if( liteGraphDefinitionID > 0) {
-		LiteGraphDefinition liteGraphDef = DaoFactory.getGraphDao().getLiteGraphDefinition(liteGraphDefinitionID);
+		LiteGraphDefinition liteGraphDef = YukonSpringHook.getBean(GraphDao.class).getLiteGraphDefinition(liteGraphDefinitionID);
 		setGraphDefinition(liteGraphDef);
 	} else {
 		graphDefinition = null;
@@ -651,7 +653,7 @@ public void update()
 			LitePoint [] lps = new LitePoint[pointIDs.length];
 			for(int i = 0; i < pointIDs.length; i++)
 			{
-				LitePoint lp = DaoFactory.getPointDao().getLitePoint(pointIDs[i]);
+				LitePoint lp = YukonSpringHook.getBean(PointDao.class).getLitePoint(pointIDs[i]);
 				lps[i] = lp;
 				if( i > 0)
 					chartTitle += ", ";

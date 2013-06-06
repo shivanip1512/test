@@ -18,7 +18,10 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AlarmCatDao;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.TransactionException;
@@ -157,7 +160,7 @@ public class PointForm extends DBEditorForm {
      */
     public SelectItem[] getUofMs() {
         if (uofms == null) {
-            List<LiteUnitMeasure> allUnitMeasures = DaoFactory.getUnitMeasureDao().getLiteUnitMeasures();
+            List<LiteUnitMeasure> allUnitMeasures = YukonSpringHook.getBean(UnitMeasureDao.class).getLiteUnitMeasures();
             uofms = new SelectItem[allUnitMeasures.size()];
             for (int i = 0; i < allUnitMeasures.size(); i++) {
                 LiteUnitMeasure lu = allUnitMeasures.get(i);
@@ -175,7 +178,7 @@ public class PointForm extends DBEditorForm {
 
         if( alarmCategories == null ) {
 
-            List<LiteAlarmCategory> allAlarmStates = DaoFactory.getAlarmCatDao().getAlarmCategories();                
+            List<LiteAlarmCategory> allAlarmStates = YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategories();                
             alarmCategories = new SelectItem[ allAlarmStates.size() ];
             for( int i=0; i < allAlarmStates.size(); i++ ) {
 
@@ -220,7 +223,7 @@ public class PointForm extends DBEditorForm {
         
         if( stateGroups == null ) {         
             
-            LiteStateGroup[] allStateGroups = DaoFactory.getStateDao().getAllStateGroups();
+            LiteStateGroup[] allStateGroups = YukonSpringHook.getBean(StateDao.class).getAllStateGroups();
             
             stateGroups = new SelectItem[ allStateGroups.length ];
             for( int i = 0; i < allStateGroups.length; i++) {
@@ -254,7 +257,7 @@ public class PointForm extends DBEditorForm {
      */
     public void initItem( int id ) {
 
-        PointBase pointDB = (PointBase)LiteFactory.createDBPersistent( DaoFactory.getPointDao().getLitePoint(id) );
+        PointBase pointDB = (PointBase)LiteFactory.createDBPersistent( YukonSpringHook.getBean(PointDao.class).getLitePoint(id) );
         setDbPersistent( pointDB );
         resetForm();
         initItem();
@@ -413,7 +416,7 @@ public class PointForm extends DBEditorForm {
         
         if(ev == null || ev.getNewValue() == null) return;
 
-        LiteState[] lStates = DaoFactory.getStateDao().getLiteStates( ((Integer)ev.getNewValue()).intValue() );
+        LiteState[] lStates = YukonSpringHook.getBean(StateDao.class).getLiteStates( ((Integer)ev.getNewValue()).intValue() );
         initialStates = new SelectItem[ lStates.length ];
         for( int i = 0; i < lStates.length; i++ )
             initialStates[i] =
@@ -475,7 +478,7 @@ public class PointForm extends DBEditorForm {
         if( ptType == PointTypes.STATUS_POINT || ptType == PointTypes.CALCULATED_STATUS_POINT ) {
             alarm_cats = IAlarmDefs.STATUS_ALARM_STATES;
         }
-        LiteStateGroup stateGroup = DaoFactory.getStateDao().getLiteStateGroup( getPointBase().getPoint().getStateGroupID().intValue() );
+        LiteStateGroup stateGroup = YukonSpringHook.getBean(StateDao.class).getLiteStateGroup( getPointBase().getPoint().getStateGroupID().intValue() );
 
         String[] stateNames = new String[stateGroup.getStatesList().size()];
         for( int j = 0; j < stateGroup.getStatesList().size(); j++ ) {
@@ -555,7 +558,7 @@ public class PointForm extends DBEditorForm {
             
             AlarmTableEntry entry = getAlarmTableEntries().get(i);
             
-            alarmStates += (char)DaoFactory.getAlarmCatDao().getAlarmCategoryId( entry.getGenerate() );           
+            alarmStates += (char)YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategoryId( entry.getGenerate() );           
             exclNotify += PointAlarming.getExcludeNotifyChar( entry.getExcludeNotify() );
         }
 
@@ -727,7 +730,7 @@ public class PointForm extends DBEditorForm {
         int type = PointTypes.getType (getPointBase().getPoint().getPointType());
         Integer paoId = getWizData().getParentId();
         //make sure we are not erroring out because of the same offset
-        LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(getPointBase().getPoint().getPointID().intValue());
+        LitePoint litePoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(getPointBase().getPoint().getPointID().intValue());
         
         if (!checkPointLimits())   
             throw new InvalidPointLimits ("High point limit can't be lower than Low point Limit");

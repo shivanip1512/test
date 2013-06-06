@@ -7,16 +7,16 @@ import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.user.YukonGroup;
+import com.cannontech.spring.YukonSpringHook;
 
 public class CreateYukonUsers {
-    static private DBPersistentDao dbPersistentDao = DaoFactory.getDbPersistentDao();
+    static private DBPersistentDao dbPersistentDao = YukonSpringHook.getBean(DBPersistentDao.class);
     
     /**
      * This was written to "clean up" the ISOC database because Contacts kept getting created

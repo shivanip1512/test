@@ -3,8 +3,9 @@ package com.cannontech.dbeditor.wizard.point;
 import java.util.List;
 
 import javax.swing.JLabel;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -297,7 +298,7 @@ private javax.swing.JComboBox getUnitOfMeasureComboBox() {
             
 			//Add units of measure to the Unit of Measure combo box
             List<LiteUnitMeasure> unitMeasures = 
-                 DaoFactory.getUnitMeasureDao().getLiteUnitMeasures();
+                 YukonSpringHook.getBean(UnitMeasureDao.class).getLiteUnitMeasures();
             for (LiteUnitMeasure lum : unitMeasures) {
                 getUnitOfMeasureComboBox().addItem(lum);
             }			

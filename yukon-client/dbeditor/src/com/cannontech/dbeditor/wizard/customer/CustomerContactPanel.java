@@ -11,7 +11,6 @@ import javax.swing.ListSelectionModel;
 import org.apache.commons.lang.ArrayUtils;
 
 import com.cannontech.core.dao.ContactDao;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.customer.Customer;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
@@ -156,7 +155,7 @@ private javax.swing.JComboBox getJComboBoxContacts() {
 			ivjJComboBoxContacts.setToolTipText("Contacts that are not already assigned to an existing customer");
 
 			//only make the unassigned contacts available
-			LiteContact[] contacts = DaoFactory.getContactDao().getUnassignedContacts();
+			LiteContact[] contacts = YukonSpringHook.getBean(ContactDao.class).getUnassignedContacts();
 			for( int i = 0; i < contacts.length; i++ ) {
 				getJComboBoxContacts().addItem( contacts[i] );
 			}
@@ -575,7 +574,7 @@ public void setValue(Object o)
 
 	for( int i = 0; i < customer.getCustomerContactIDs().length; i++ )
 	{
-		LiteContact liteContact = DaoFactory.getContactDao().getContact( customer.getCustomerContactIDs()[i] );
+		LiteContact liteContact = YukonSpringHook.getBean(ContactDao.class).getContact( customer.getCustomerContactIDs()[i] );
 		
 		getJTableModel().addRow( liteContact );
 	}

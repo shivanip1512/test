@@ -5,13 +5,14 @@ package com.cannontech.loadcontrol.gui.manualentry;
  * Creation date: (4/19/2001 3:54:21 PM)
  * @author: 
  */
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.dr.controlarea.model.TriggerType;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.loadcontrol.messages.LMCommand;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class ControlAreaTriggerJPanel extends com.cannontech.common.gui.util.ConfirmationJPanel implements java.awt.event.ActionListener, java.util.Observer {
@@ -753,7 +754,7 @@ public void setLmControlArea(com.cannontech.loadcontrol.data.LMControlArea newLm
 		LMControlAreaTrigger trigger = (LMControlAreaTrigger)getLmControlArea().getTriggerVector().get(i);
 
 		//get the point used for this trigger
-		com.cannontech.database.data.lite.LitePoint point = DaoFactory.getPointDao().getLitePoint(
+		com.cannontech.database.data.lite.LitePoint point = YukonSpringHook.getBean(PointDao.class).getLitePoint(
 				trigger.getPointId().intValue() );
 
 		

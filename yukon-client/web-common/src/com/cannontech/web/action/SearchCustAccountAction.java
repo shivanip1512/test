@@ -14,8 +14,10 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.Pair;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.roles.operator.AdministratorRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
@@ -99,7 +101,7 @@ public class SearchCustAccountAction implements ActionBase {
         	LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
         	
             StarsSearchCustomerAccount searchAccount = reqOper.getStarsSearchCustomerAccount();
-            int searchByDefID = DaoFactory.getYukonListDao().getYukonListEntry( searchAccount.getSearchBy().getEntryID() ).getYukonDefID();
+            int searchByDefID = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( searchAccount.getSearchBy().getEntryID() ).getYukonDefID();
 
             //Require at least 2 characters for all searches except accountnumber.
             if (!(searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ACCT_NO) && searchAccount.getSearchValue().trim().length() < 2) {
@@ -112,7 +114,7 @@ public class SearchCustAccountAction implements ActionBase {
             	return SOAPUtil.buildSOAPMessage( respOper );
             }
            
-			boolean searchMembers = DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
+			boolean searchMembers = YukonSpringHook.getBean(AuthDao.class).checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
 					&& (energyCompany.hasChildEnergyCompanies());
             List<Object> accountList = null;
             

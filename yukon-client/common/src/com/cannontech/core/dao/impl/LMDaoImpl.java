@@ -11,7 +11,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.LMDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.JdbcTemplateHelper;
@@ -20,6 +20,7 @@ import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
@@ -102,7 +103,7 @@ public final class LMDaoImpl implements LMDao {
 
             for (int i = 0; i < lmScenarios.size(); i++) {
                 LiteYukonPAObject litePao = (LiteYukonPAObject) lmScenarios.get(i);
-                if (DaoFactory.getAuthDao()
+                if (YukonSpringHook.getBean(AuthDao.class)
                               .userHasAccessPAO(yukUser, litePao.getYukonID()))
                     scenarioList.add(litePao);
             }

@@ -6,9 +6,9 @@ package com.cannontech.dbeditor.wizard.copy.lm;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.pao.PaoUtils;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.lm.LMScenario;
+import com.cannontech.spring.YukonSpringHook;
 
 public class LMScenarioCopyNameSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjJLabelName = null;
@@ -300,7 +300,7 @@ public Object getValue(Object o)
 {
 	LMScenario scenario = (LMScenario)o;
 	
-    PaoDao paoDao = DaoFactory.getPaoDao();
+    PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
 	scenario.setScenarioID(paoDao.getNextPaoId());
 
 	scenario.setScenarioName( getJTextFieldName().getText() );

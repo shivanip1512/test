@@ -8,7 +8,7 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.RepeaterRoleCollisionData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -16,6 +16,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.data.route.RouteUsageHelper;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 
 public class RepeaterRoleCollisionModel extends ReportModelBase {
     
@@ -55,7 +56,7 @@ public class RepeaterRoleCollisionModel extends ReportModelBase {
                 if(dups != null) {
                     Enumeration enummers = dups.elements();
                     while(enummers.hasMoreElements()) {
-                        LiteYukonPAObject liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(((Integer)enummers.nextElement()).intValue());
+                        LiteYukonPAObject liteYuk = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(((Integer)enummers.nextElement()).intValue());
                         DBPersistent heavyRoute = LiteFactory.createDBPersistent(liteYuk);
                         java.sql.Connection conn = null;
                         try {
@@ -69,7 +70,7 @@ public class RepeaterRoleCollisionModel extends ReportModelBase {
                         	SqlUtils.close(conn);
                         }
                         int deviceID = ((RouteBase)heavyRoute).getDeviceID().intValue();
-                        String ccuName = DaoFactory.getPaoDao().getYukonPAOName(deviceID);
+                        String ccuName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(deviceID);
                         String routeName = liteYuk.getPaoName();
                         Integer fixedBit = new Integer(i);
                         Integer variableBit = new Integer(j);

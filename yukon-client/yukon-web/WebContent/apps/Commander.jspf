@@ -1,4 +1,5 @@
-<%@ page import="com.cannontech.core.dao.DaoFactory"%>
+<%@ page import="com.cannontech.spring.YukonSpringHook"%> 
+<%@ page import="com.cannontech.core.dao.CommandDao" %>
 <%@ page import="com.cannontech.database.data.lite.LiteDeviceTypeCommand"%> 
 <%@ page import="com.cannontech.database.data.lite.LiteCommand"%> 
 <%@ page import="com.cannontech.database.db.command.CommandCategory"%>
@@ -121,7 +122,7 @@ div.scroll { font-size: 12px;
 	String tempCommand = YC_BEAN.getCommandString().replaceAll("noqueue", "").trim();
     for (int i = 0; i < YC_BEAN.getLiteDeviceTypeCommandsVector().size(); i++) {
 		LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand)YC_BEAN.getLiteDeviceTypeCommandsVector().get(i);
-		LiteCommand lc = DaoFactory.getCommandDao().getCommand(ldtc.getCommandID());
+		LiteCommand lc = YukonSpringHook.getBean(CommandDao.class).getCommand(ldtc.getCommandID());
 		String commandString = StringEscapeUtils.escapeHtml(lc.getCommand());
         if( ldtc.isVisible() && YC_BEAN.isAllowCommand(commandString, lYukonUser, commandObject)) {
 %>

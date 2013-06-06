@@ -7,9 +7,10 @@ package com.cannontech.common.gui.dnd;
  */
 import java.util.List;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.spring.YukonSpringHook;
 
 public class DAndDDevicePointTable extends DragAndDropTable implements java.awt.dnd.DropTargetListener, java.awt.dnd.DragGestureListener
 {
@@ -36,7 +37,7 @@ public class DAndDDevicePointTable extends DragAndDropTable implements java.awt.
 	 */
 	private void addDevice(LiteYukonPAObject device)
 	{
-        List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(device.getYukonID());
+        List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(device.getYukonID());
         for (LitePoint point : points) {
             addPoint(point);
         }

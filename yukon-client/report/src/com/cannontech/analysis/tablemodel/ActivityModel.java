@@ -8,12 +8,15 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.activity.ActivityLog;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.CustomerDao;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 
 public class ActivityModel extends ReportModelBase
 {
@@ -275,14 +278,14 @@ public class ActivityModel extends ReportModelBase
 				while( rset.next())
 				{
 					Integer ecID = new Integer(rset.getInt(1));
-					LiteEnergyCompany lec = DaoFactory.getEnergyCompanyDao().getEnergyCompany(ecID.intValue());
+					LiteEnergyCompany lec = YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(ecID.intValue());
 					String ecName = "(delete)";
 					if( lec != null)
 						ecName = lec.getName();
 					
 					Integer userID = new Integer(rset.getInt(2));
 					String userName = "";
-					LiteYukonUser user = DaoFactory.getYukonUserDao().getLiteYukonUser(userID.intValue());
+					LiteYukonUser user = YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(userID.intValue());
 					if (user == null)
 					{
 						if( userID.intValue() == -1)
@@ -334,14 +337,14 @@ public class ActivityModel extends ReportModelBase
 		try
 		{
 			Integer ecID = new Integer(rset.getInt(1));
-			LiteEnergyCompany lec = DaoFactory.getEnergyCompanyDao().getEnergyCompany(ecID.intValue());
+			LiteEnergyCompany lec = YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(ecID.intValue());
 			String ecName = "(delete)";
 			if( lec != null)
 				ecName = lec.getName();
 
 			Integer userID = new Integer(rset.getInt(2));
 			String userName = "";
-			LiteYukonUser user = DaoFactory.getYukonUserDao().getLiteYukonUser(userID.intValue());
+			LiteYukonUser user = YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(userID.intValue());
 			if (user == null)
 			{
 				if( userID.intValue() == -1)
@@ -401,7 +404,7 @@ public class ActivityModel extends ReportModelBase
 					return al.getUserName();
 				case CONTACT_COLUMN:
 				{
-					LiteContact contact = DaoFactory.getCustomerDao().getPrimaryContact(al.getCustID().intValue());
+					LiteContact contact = YukonSpringHook.getBean(CustomerDao.class).getPrimaryContact(al.getCustID().intValue());
 					if (contact == null)
 						return "(n/a)";
 

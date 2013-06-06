@@ -10,11 +10,12 @@ import javax.swing.JCheckBox;
 import javax.swing.event.CaretEvent;
 
 import com.cannontech.common.gui.util.CheckBoxTableRenderer;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.RTM;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.DeviceVerification;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -637,7 +638,7 @@ public void setValue(Object o)
 	{
 		DeviceVerification veryDevice = (DeviceVerification)deviceVerifications.elementAt(j);
 		Integer devID = veryDevice.getTransmitterID();
-		LiteYukonPAObject thePAO = DaoFactory.getPaoDao().getLiteYukonPAO(devID.intValue());
+		LiteYukonPAObject thePAO = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(devID.intValue());
 		
 		disabled = veryDevice.getDisable().equalsIgnoreCase("Y");
 		

@@ -26,7 +26,6 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonListDao;
@@ -34,6 +33,7 @@ import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
@@ -311,7 +311,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             if (hardwareType.getInventoryCategory() == InventoryCategory.MCT) {
                 if (StringUtils.isBlank(liteInventoryBase.getDeviceLabel())) {
                     LiteYukonPAObject device =
-                        DaoFactory.getPaoDao().getLiteYukonPAO(liteInventoryBase.getDeviceID());
+                        YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(liteInventoryBase.getDeviceID());
                     liteInventoryBase.setDeviceLabel(device.getPaoName());
                 }
                 inventoryBaseDao.saveInventoryBase(liteInventoryBase, ec.getEnergyCompanyId());
@@ -715,7 +715,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         setInventoryFieldsFromDto(liteInventoryBase, hardware);
         
         if(StringUtils.isBlank(liteInventoryBase.getDeviceLabel())){
-            LiteYukonPAObject device = DaoFactory.getPaoDao().getLiteYukonPAO(liteInventoryBase.getDeviceID());
+            LiteYukonPAObject device = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(liteInventoryBase.getDeviceID());
             liteInventoryBase.setDeviceLabel(device.getPaoName());
         }
         

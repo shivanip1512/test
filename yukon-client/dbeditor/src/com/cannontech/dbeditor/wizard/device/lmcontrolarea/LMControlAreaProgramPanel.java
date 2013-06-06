@@ -19,7 +19,6 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -1110,7 +1109,7 @@ public void setValue(Object o)
 		com.cannontech.database.data.lite.LiteYukonPAObject liteDevice = null;
 
 		//find the LMProgram that this list item points at
-		liteDevice = DaoFactory.getPaoDao().getLiteYukonPAO( programList.getLmProgramDeviceID().intValue() );
+		liteDevice = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO( programList.getLmProgramDeviceID().intValue() );
 		
 		if( liteDevice == null )
 			throw new RuntimeException("Unable to find the LMProgram with deviceID " 

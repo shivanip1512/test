@@ -2,7 +2,7 @@ package com.cannontech.database.data.lite;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.command.DeviceTypeCommand;
@@ -23,6 +23,7 @@ import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.cannontech.database.db.user.YukonGroup;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -399,7 +400,7 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 
 	}
 	else if (val instanceof DeviceMeterGroupBase) {
-        YukonPao yukonPao = DaoFactory.getPaoDao().getYukonPao(((DeviceMeterGroupBase)val).getDeviceMeterGroup().getDeviceID().intValue());
+        YukonPao yukonPao = YukonSpringHook.getBean(PaoDao.class).getYukonPao(((DeviceMeterGroupBase)val).getDeviceMeterGroup().getDeviceID().intValue());
 		returnLite = new LiteDeviceMeterNumber(
 				((DeviceMeterGroupBase)val).getDeviceMeterGroup().getDeviceID().intValue(),
 				((DeviceMeterGroupBase)val).getDeviceMeterGroup().getMeterNumber(),
@@ -498,7 +499,7 @@ public static DBPersistent convertLiteToDBPers( LiteBase lBase )
 	if( lBase instanceof LiteDeviceMeterNumber )
 	{					
 		userObject = com.cannontech.database.data.lite.LiteFactory.createDBPersistent(
-			DaoFactory.getPaoDao().getLiteYukonPAO( lBase.getLiteID() ) );
+			YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO( lBase.getLiteID() ) );
 	}
 	else
  		userObject = com.cannontech.database.data.lite.LiteFactory.createDBPersistent( lBase );
@@ -513,7 +514,7 @@ public static DBPersistent convertLiteToDBPersAndRetrieve( LiteBase lBase ) {
 	if( lBase instanceof LiteDeviceMeterNumber )
 	{					
 		userObject = com.cannontech.database.data.lite.LiteFactory.createDBPersistent(
-			DaoFactory.getPaoDao().getLiteYukonPAO( lBase.getLiteID() ) );
+			YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO( lBase.getLiteID() ) );
 	}
 	else
  		userObject = com.cannontech.database.data.lite.LiteFactory.createDBPersistent( lBase );

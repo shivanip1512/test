@@ -28,8 +28,9 @@ import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.capcontrol.CapBankController;
@@ -77,7 +78,7 @@ public class CBControllerEditor implements ICBControllerModel {
     }
     
     private void init(int paoId){
-        LiteYukonPAObject litePAO = DaoFactory.getPaoDao().getLiteYukonPAO(paoId);
+        LiteYukonPAObject litePAO = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(paoId);
         deviceCBC = PAOFactory.createPAObject(litePAO);
         setPaoCBC(deviceCBC);
         retrieveDB();
@@ -164,7 +165,7 @@ public class CBControllerEditor implements ICBControllerModel {
 	        TreeNode accum = new TreeNodeBase("pointtype","Accumulator", false);
 	        if (deviceCBC != null) {
                 int deviceId = deviceCBC.getPAObjectID();
-                List<LitePoint> litePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceId);
+                List<LitePoint> litePoints = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(deviceId);
 		
 		        Comparator<LitePoint> pointOffsetComparator = 
 		            new Comparator<LitePoint>(){
@@ -263,7 +264,7 @@ public class CBControllerEditor implements ICBControllerModel {
                 commPortId = ((CapBankControllerDNP) getPaoCBC()).getDeviceDirectCommSettings().getPortID();
             }
             
-            DeviceDao deviceDao = DaoFactory.getDeviceDao();
+            DeviceDao deviceDao = YukonSpringHook.getBean(DeviceDao.class);
             
             List devicesWithSameAddress = deviceDao.getDevicesByDeviceAddress(currentDeviceAddress.getMasterAddress(), currentDeviceAddress.getSlaveAddress());
             List devicesByPort = deviceDao.getDevicesByPort(commPortId.intValue());         
@@ -280,11 +281,11 @@ public class CBControllerEditor implements ICBControllerModel {
                 for (int i = 0; i < devicesWithSameAddress.size(); i++) {
                     Integer paoId = (Integer) devicesWithSameAddress.get(i);
                     if (devicesByPort.contains(paoId)) {
-                        LiteYukonPAObject litePAO = DaoFactory.getPaoDao().getLiteYukonPAO(paoId.intValue());
+                        LiteYukonPAObject litePAO = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(paoId.intValue());
                         throw new MultipleDevicesOnPortException(litePAO.getPaoName());
                     }
                 }
-                LiteYukonPAObject litePAO = DaoFactory.getPaoDao().getLiteYukonPAO(((Integer) devicesWithSameAddress.get(0)).intValue());
+                LiteYukonPAObject litePAO = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(((Integer) devicesWithSameAddress.get(0)).intValue());
                 throw new SameMasterSlaveCombinationException(litePAO.getPaoName());
             }
         }
@@ -398,7 +399,7 @@ public class CBControllerEditor implements ICBControllerModel {
         saveState(getPointTree());        
         try {
             Integer paoID = getPaoCBC().getPAObjectID();
-            List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(paoID.intValue());
+            List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(paoID.intValue());
             String attribVal  = "";
             for (LitePoint point : points) {
                 attribVal += "value=" + point.getLiteID() + "&";

@@ -25,6 +25,7 @@ import com.cannontech.message.notif.NotifAlarmMsg;
 import com.cannontech.message.util.Message;
 import com.cannontech.notif.outputs.*;
 import com.cannontech.notif.server.NotifServerConnection;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 
 public class AlarmMessageHandler extends NotifHandler implements MessageHandler<NotifAlarmMsg> {
@@ -44,7 +45,7 @@ public class AlarmMessageHandler extends NotifHandler implements MessageHandler<
 
         for (int i = 0; i < msg.notifGroupIds.length; i++) {
             int notifGroupId = msg.notifGroupIds[i];
-            LiteNotificationGroup liteNotifGroup = DaoFactory.getNotificationGroupDao().getLiteNotificationGroup(notifGroupId);
+            LiteNotificationGroup liteNotifGroup = YukonSpringHook.getBean(NotificationGroupDao.class).getLiteNotificationGroup(notifGroupId);
             
             NotificationBuilder notifFormatter = createNotificationBuilder(msg, liteNotifGroup);
             outputNotification(notifFormatter, liteNotifGroup);
@@ -64,13 +65,13 @@ public class AlarmMessageHandler extends NotifHandler implements MessageHandler<
                 
                 notif.addData("notificationgroup", liteNotifGroup.getNotificationGroupName());
                 
-                LitePoint point = DaoFactory.getPointDao().getLitePoint(msg.pointId);
+                LitePoint point = YukonSpringHook.getBean(PointDao.class).getLitePoint(msg.pointId);
                 notif.addData("pointid", Integer.toString(point.getPointID()));
                 notif.addData("pointname", point.getPointName());
                 notif.addData("rawvalue", Double.toString(msg.value));
                 notif.addData("pointtype", PointTypes.getType(point.getPointType()));
                 int pAObjectId = point.getPaobjectID();
-                PaoDao paoDao = DaoFactory.getPaoDao();
+                PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
                 LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(pAObjectId);
                 notif.addData("paoname", liteYukonPAO.getPaoName());
                 notif.addData("paodescription", liteYukonPAO.getPaoDescription());
@@ -105,7 +106,7 @@ public class AlarmMessageHandler extends NotifHandler implements MessageHandler<
                 String conditionText = AlarmUtils.getAlarmConditionText(msg.condition, point);
                 notif.addData("condition", conditionText);
                 
-                String categoryText = DaoFactory.getAlarmCatDao().getAlarmCategoryName(msg.alarmCategoryId);
+                String categoryText = YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategoryName(msg.alarmCategoryId);
                 notif.addData("category", categoryText);
                 
                 DateFormat dateFormatter = new SimpleDateFormat("EEEE, MMMM d"); // e.g. "Tuesday, May 31"
@@ -122,14 +123,14 @@ public class AlarmMessageHandler extends NotifHandler implements MessageHandler<
                 String uofm = "";
                 if (point.getPointTypeEnum().isStatus()) {
                     // handle as status
-                    LiteState liteState = DaoFactory.getStateDao().findLiteState(point.getStateGroupID(), (int)msg.value);
+                    LiteState liteState = YukonSpringHook.getBean(StateDao.class).findLiteState(point.getStateGroupID(), (int)msg.value);
                     notif.addData("value", liteState.getStateText());
                 } else {
                     // handle as analog
                     NumberFormat numberInstance = NumberFormat.getNumberInstance();
                     numberInstance.setMaximumFractionDigits(8); // seems to cut off most crazy floats
                     notif.addData("value", numberInstance.format(msg.value));
-                    LiteUnitMeasure liteUnitMeasureByPointID = DaoFactory.getUnitMeasureDao().getLiteUnitMeasureByPointID(msg.pointId);
+                    LiteUnitMeasure liteUnitMeasureByPointID = YukonSpringHook.getBean(UnitMeasureDao.class).getLiteUnitMeasureByPointID(msg.pointId);
                     if (liteUnitMeasureByPointID != null) {
                         uofm = liteUnitMeasureByPointID.getUnitMeasureName();
                     }

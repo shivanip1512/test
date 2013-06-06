@@ -1,6 +1,5 @@
 <%@ page import="java.text.DecimalFormat" %>
 
-<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.database.data.lite.LitePoint" %>
 <%@ page import="com.cannontech.database.data.lite.LitePointUnit" %>
@@ -10,6 +9,10 @@
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.core.dynamic.DynamicDataSource" %>
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
+<%@ page import="com.cannontech.core.dao.PointDao" %>
+<%@ page import="com.cannontech.core.dao.StateDao" %>
+<%@ page import="com.cannontech.core.dao.AuthDao" %>
+<%@ page import="com.cannontech.core.dao.UnitMeasureDao"%>
 <%@ page import="com.cannontech.database.data.point.PointTypes" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
 <%@ page import="com.cannontech.esub.util.UpdateUtil" %>
@@ -28,8 +31,8 @@
 	int pointID = Integer.parseInt(request.getParameter("pointid"));
 	int controlPointId = Integer.parseInt(request.getParameter("controlPointId"));
 	boolean allowControl = Boolean.parseBoolean(request.getParameter("allowControl"));
-	LitePoint lPoint = DaoFactory.getPointDao().getLitePoint(pointID);	
-	LitePoint liteControlPoint = DaoFactory.getPointDao().getLitePoint(controlPointId);	
+	LitePoint lPoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(pointID);	
+	LitePoint liteControlPoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(controlPointId);	
 	String pointName = lPoint.getPointName();
 	int pointOffset = lPoint.getPointOffset();
 	DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
@@ -41,23 +44,23 @@
 	String uOfM = null; 
 	String currentState = null;
 	if(PointTypes.STATUS_POINT == lPoint.getPointType()) {
-		LiteState[] ls = DaoFactory.getStateDao().getLiteStates(lPoint.getStateGroupID());
+		LiteState[] ls = YukonSpringHook.getBean(StateDao.class).getLiteStates(lPoint.getStateGroupID());
 		LiteState lState = ls[(int)dds.getPointData(pointID).getValue()];
 		currentState = lState.getStateText();
 	} 
 	else { // analog
-		LiteUnitMeasure lUOfM = DaoFactory.getUnitMeasureDao().getLiteUnitMeasureByPointID(pointID);
+		LiteUnitMeasure lUOfM = YukonSpringHook.getBean(UnitMeasureDao.class).getLiteUnitMeasureByPointID(pointID);
 		if(lUOfM != null) {
 			uOfM = lUOfM.getUnitMeasureName();		
 		}
-	    LitePointUnit lpu = DaoFactory.getPointDao().getPointUnit(pointID);	
+	    LitePointUnit lpu = YukonSpringHook.getBean(PointDao.class).getPointUnit(pointID);	
 		valueFormatter.setMaximumFractionDigits(lpu.getDecimalPlaces());
 		valueFormatter.setMinimumFractionDigits(lpu.getDecimalPlaces());	    		
 	}
 	
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
     boolean offerControl = (PointTypes.STATUS_POINT == liteControlPoint.getPointType() 
-    	&& DaoFactory.getAuthDao().checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.CONTROL) 
+    	&& YukonSpringHook.getBean(AuthDao.class).checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.CONTROL) 
     	&& allowControl);
 %>
 <html>

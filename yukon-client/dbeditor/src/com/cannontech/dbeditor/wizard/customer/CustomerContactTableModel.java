@@ -6,9 +6,11 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.common.gui.dnd.IDroppableTableModel;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.ContactNotificationDao;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Insert the type's description here.
@@ -139,7 +141,7 @@ public class CustomerContactTableModel extends javax.swing.table.AbstractTableMo
 	
 			//may be a performance hit doing this every time after each refresh!!??
 			case COLUMN_LOGIN:
-				return DaoFactory.getYukonUserDao().getLiteYukonUser(
+				return YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(
 								con.getLoginID()).getUsername();
 	
 			case COLUMN_NOTIFICATION:
@@ -151,7 +153,7 @@ public class CustomerContactTableModel extends javax.swing.table.AbstractTableMo
 	
 	private String getNotificationsStringForContact(LiteContact contact) {
 	    List<String> notificationStrings = new ArrayList<String>();
-	    List<LiteContactNotification> notificationsForContact = DaoFactory.getContactNotificationDao().getNotificationsForContact(contact);
+	    List<LiteContactNotification> notificationsForContact = YukonSpringHook.getBean(ContactNotificationDao.class).getNotificationsForContact(contact);
 	    for (LiteContactNotification liteContactNotification : notificationsForContact) {
             notificationStrings.add(liteContactNotification.getNotification());
         }

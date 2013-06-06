@@ -5,8 +5,9 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ReflectivePropertySearcher;
 
 /**
@@ -26,7 +27,7 @@ public class CheckProperty extends BodyTagSupport {
 		LiteYukonUser user = 
 			(LiteYukonUser) pageContext.getSession().getAttribute("YUKON_USER");
 			
-		return (user == null || !DaoFactory.getAuthDao().checkRoleProperty(user,propertyid)) ?
+		return (user == null || !YukonSpringHook.getBean(AuthDao.class).checkRoleProperty(user,propertyid)) ?
 					SKIP_BODY :
 					EVAL_BODY_INCLUDE;
 	}

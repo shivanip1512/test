@@ -21,13 +21,14 @@ import javax.swing.event.ListSelectionListener;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonImageDao;
 import com.cannontech.database.data.lite.LiteTag;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.TagMsg;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tags.Tag;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.alarms.gui.AlarmingRow;
@@ -61,7 +62,7 @@ public class TagsEditorPanel extends ManualEntryJPanel implements RowEditorDialo
 				{
 					setIcon( 
 						new ImageIcon(java.awt.Toolkit.getDefaultToolkit().createImage(
-							DaoFactory.getYukonImageDao().getLiteYukonImage(tag.getImageID()).getImageValue()) ) );
+							YukonSpringHook.getBean(YukonImageDao.class).getLiteYukonImage(tag.getImageID()).getImageValue()) ) );
 				}
 				else
 					setIcon( null );

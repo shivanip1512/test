@@ -4,8 +4,9 @@ import javax.swing.JPopupMenu;
 
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonImageDao;
 import com.cannontech.database.data.lite.LiteYukonImage;
+import com.cannontech.spring.YukonSpringHook;
 /**
  * @author rneuharth
  * Aug 26, 2002 at 12:05:00 PM
@@ -64,7 +65,7 @@ class ImagePopup extends JPopupMenu implements java.awt.event.ActionListener
    private void jButtonActionPerformed_Delete( java.awt.event.ActionEvent ev )
    {
       String stateGroup = 
-            DaoFactory.getYukonImageDao().yukonImageUsage( getSelectedLiteImage().getImageID() );
+            YukonSpringHook.getBean(YukonImageDao.class).yukonImageUsage( getSelectedLiteImage().getImageID() );
 
       if( stateGroup != null )
       {

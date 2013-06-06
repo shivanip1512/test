@@ -7,7 +7,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.customer.CustomerTypes;
@@ -110,7 +110,7 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 		
 		status = STATUS_RUNNING;
 		
-		boolean searchMembers = DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
+		boolean searchMembers = YukonSpringHook.getBean(AuthDao.class).checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
 				&& energyCompany.hasChildEnergyCompanies();
 		hwsToAdjust = new ArrayList<LiteLmHardwareBase>();
         

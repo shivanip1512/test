@@ -2,7 +2,6 @@ package com.cannontech.datagenerator.point;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
@@ -13,6 +12,7 @@ import com.cannontech.database.data.point.PointOffsets;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.spring.YukonSpringHook;
 public class OutageLogPointCreate extends PointCreate
 {
 	/**
@@ -53,7 +53,7 @@ public class OutageLogPointCreate extends PointCreate
 		// if this is not set to false it will create its own PointIDs
 		multi.setCreateNewPAOIDs( false );
 	
-        PointDao pointDao = DaoFactory.getPointDao();
+        PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
 		int addCount = 0;
 
 		for (LiteYukonPAObject litePaobject : outageLogDevices) {

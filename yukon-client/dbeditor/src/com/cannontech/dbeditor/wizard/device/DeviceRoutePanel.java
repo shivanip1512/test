@@ -18,7 +18,6 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.Transaction;
@@ -213,7 +212,7 @@ public class DeviceRoutePanel
             MultiDBPersistent newVal = new MultiDBPersistent();
             newVal.getDBPersistentVector().add((DBPersistent) value);
 
-            PaoDao paoDao = DaoFactory.getPaoDao();
+            PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
             ((DeviceBase) value).setDeviceID(paoDao.getNextPaoId());
 
             // Automatically add default points

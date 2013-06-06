@@ -5,9 +5,10 @@ package com.cannontech.loadcontrol.datamodels;
  * Creation date: (7/25/2001 11:52:00 AM)
  * @author: 
  */
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.dr.controlarea.model.TriggerType;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
+import com.cannontech.spring.YukonSpringHook;
 
 public class ControlAreaRowData 
 {
@@ -33,7 +34,7 @@ public java.lang.String getCurrentValue()
 		//Returns the current value of the point
 		if( getLitePoint().getPointType() == com.cannontech.database.data.point.PointTypes.STATUS_POINT )
 		{
-			currentValue = DaoFactory.getStateDao().findLiteState(
+			currentValue = YukonSpringHook.getBean(StateDao.class).findLiteState(
 					 			getLitePoint().getStateGroupID(), getTrigger().getPointValue().intValue() ).getStateText();
 		}
 		else
@@ -73,7 +74,7 @@ public java.lang.String getTriggerValue()
 		//Returns the value of the trigger
 		if( getTrigger().getTriggerType() == TriggerType.STATUS )
 		{
-			triggerValue = DaoFactory.getStateDao().findLiteState( getLitePoint().getStateGroupID(), 
+			triggerValue = YukonSpringHook.getBean(StateDao.class).findLiteState( getLitePoint().getStateGroupID(), 
 					getTrigger().getNormalState().intValue()).getStateText();
 		}
 		else if( getTrigger().getTriggerType() == TriggerType.THRESHOLD ||

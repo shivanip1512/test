@@ -21,9 +21,10 @@ import org.springframework.util.FileCopyUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.util.StringUtils;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AlarmDao;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Returns true if alarm audio should be active.
@@ -73,7 +74,7 @@ public class AlarmAudioServlet extends HttpServlet {
         List<Signal> allSigs = new LinkedList<Signal>();
 
         try {
-            List<Signal> deviceSigs = DaoFactory.getAlarmDao().getSignalsForPaos(deviceIds);
+            List<Signal> deviceSigs = YukonSpringHook.getBean(AlarmDao.class).getSignalsForPaos(deviceIds);
             allSigs.addAll(deviceSigs);
         } catch (DynamicDataAccessException e){
             Throwable cause = e.getCause();
@@ -85,7 +86,7 @@ public class AlarmAudioServlet extends HttpServlet {
         }
 
         try {
-            List<Signal> pointSigs = DaoFactory.getAlarmDao().getSignalsForPoints(pointIds);
+            List<Signal> pointSigs = YukonSpringHook.getBean(AlarmDao.class).getSignalsForPoints(pointIds);
             allSigs.addAll(pointSigs);
         } catch (DynamicDataAccessException e){
             Throwable cause = e.getCause();
@@ -96,7 +97,7 @@ public class AlarmAudioServlet extends HttpServlet {
             }
         }
         
-        List<Signal> alarmCategorySigs = DaoFactory.getAlarmDao().getSignalsForAlarmCategories(alarmCategoryIds);
+        List<Signal> alarmCategorySigs = YukonSpringHook.getBean(AlarmDao.class).getSignalsForAlarmCategories(alarmCategoryIds);
         allSigs.addAll(alarmCategorySigs);
         Date lastAlarmTimestamp = findLatestTimestamp(allSigs);
 

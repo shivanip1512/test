@@ -15,7 +15,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.ContactDao;
 import com.cannontech.database.AbstractRowCallbackHandler;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
@@ -25,6 +25,7 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.db.customer.CICustomerBase;
 import com.cannontech.database.db.customer.Customer;
+import com.cannontech.spring.YukonSpringHook;
 
 public class CICustomerLoader implements Runnable 
 {
@@ -122,7 +123,7 @@ public class CICustomerLoader implements Runnable
                 int custumerId = rs.getInt("CustomerID");
                 LiteCustomer liteCustomer = allCICustomersMap.get(custumerId);
                 // for the following to be efficient, the contacts should have been cached already
-                LiteContact contact = DaoFactory.getContactDao().getContact(rs.getInt("ContactID"));
+                LiteContact contact = YukonSpringHook.getBean(ContactDao.class).getContact(rs.getInt("ContactID"));
                 Vector<LiteContact> contactList = temporaryAdditionalContacts.get(liteCustomer);
                 if (contactList == null) {
                     contactList = new Vector<LiteContact>();

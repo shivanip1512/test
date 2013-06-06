@@ -2,11 +2,14 @@ package com.cannontech.stars.web;
 
 import java.util.Vector;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.util.StarsUtils;
 
 /**
@@ -69,17 +72,17 @@ public class StarsYukonUser {
 	
 	private void init() throws InstantiationException {
 		if (StarsUtils.isOperator(this.getYukonUser())) {
-			LiteEnergyCompany energyCompany = DaoFactory.getEnergyCompanyDao().getEnergyCompany( getYukonUser() );
+			LiteEnergyCompany energyCompany = YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany( getYukonUser() );
 			if (energyCompany == null)
 				throw new InstantiationException( "Cannot find the energy company for user id = " + getYukonUser().getUserID() );
 			
 			energyCompanyID = energyCompany.getEnergyCompanyID();
 		}
 		else if (StarsUtils.isResidentialCustomer(this.getYukonUser())) {
-			LiteContact liteContact = DaoFactory.getYukonUserDao().getLiteContact( getUserID() );
+			LiteContact liteContact = YukonSpringHook.getBean(YukonUserDao.class).getLiteContact( getUserID() );
 			if (liteContact == null)
 				throw new InstantiationException( "Cannot find contact information for user id = " + getYukonUser().getUserID() );
-			customer = DaoFactory.getContactDao().getCustomer( liteContact.getContactID() );
+			customer = YukonSpringHook.getBean(ContactDao.class).getCustomer( liteContact.getContactID() );
 			if (customer == null)
 				throw new InstantiationException( "Cannot find customer information for user id = " + getYukonUser().getUserID() );
 			

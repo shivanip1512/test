@@ -39,7 +39,6 @@ import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.service.AuthenticationService;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.users.dao.UserGroupDao;
@@ -649,7 +648,7 @@ public class UserLoginBasePanel extends DataInputPanel {
             return false;
         }
 
-        LiteYukonUser liteYukonUser = DaoFactory.getYukonUserDao().findUserByUsername(userName);
+        LiteYukonUser liteYukonUser = YukonSpringHook.getBean(YukonUserDao.class).findUserByUsername(userName);
 
         // if we are trying to enter a username to one that already exists
         if (!userName.equals(initialUsername) && liteYukonUser != null) {

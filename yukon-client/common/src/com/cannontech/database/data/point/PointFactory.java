@@ -10,7 +10,7 @@ import com.cannontech.common.pao.definition.model.CalcPointComponent;
 import com.cannontech.common.pao.definition.model.CalcPointInfo;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.PoolManager;
@@ -525,7 +525,7 @@ public final class PointFactory {
         try {
             connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
             point.setDbConnection(connection);
-            DaoFactory.getDbPersistentDao().performDBChange(point, TransactionType.INSERT);
+            YukonSpringHook.getBean(DBPersistentDao.class).performDBChange(point, TransactionType.INSERT);
         } catch (PersistenceException te) {
             CTILogger.error(te);
         }

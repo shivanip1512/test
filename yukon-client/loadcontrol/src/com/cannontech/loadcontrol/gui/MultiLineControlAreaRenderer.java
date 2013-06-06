@@ -9,12 +9,14 @@ import java.awt.BorderLayout;
 
 import javax.swing.JTable;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.dr.controlarea.model.TriggerType;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.datamodels.ControlAreaTableModel;
+import com.cannontech.spring.YukonSpringHook;
 
 public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements javax.swing.table.TableCellRenderer 
 {
@@ -207,12 +209,12 @@ public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements 
 		{
 			case ControlAreaTableModel.VALUE_THRESHOLD:
 			{
-				LitePoint point = DaoFactory.getPointDao().getLitePoint( trigger.getPointId().intValue() );
+				LitePoint point = YukonSpringHook.getBean(PointDao.class).getLitePoint( trigger.getPointId().intValue() );
 			
 				if( trigger.getTriggerType() == TriggerType.STATUS )
 				{
-					LiteState lsVal = DaoFactory.getStateDao().findLiteState( point.getStateGroupID(), trigger.getPointValue().intValue() );
-					LiteState lsThresh = DaoFactory.getStateDao().findLiteState( point.getStateGroupID(), trigger.getThreshold().intValue() );
+					LiteState lsVal = YukonSpringHook.getBean(StateDao.class).findLiteState( point.getStateGroupID(), trigger.getPointValue().intValue() );
+					LiteState lsThresh = YukonSpringHook.getBean(StateDao.class).findLiteState( point.getStateGroupID(), trigger.getThreshold().intValue() );
 					
 					strBuf.append(
 						(lsVal == null ? "(Unknown State)" : lsVal.getStateText()) +

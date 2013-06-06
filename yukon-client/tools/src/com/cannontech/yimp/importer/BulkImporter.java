@@ -40,8 +40,9 @@ import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
@@ -425,7 +426,7 @@ public void runImport(List<ImportData> imps) {
             log.error("Unable to import or update device with address " + address + " and name " + name + ".");
 		}
 		else if( updateDeviceID != null) {
-            LiteYukonPAObject liteYukonPaobject = DaoFactory.getPaoDao().getLiteYukonPAO(updateDeviceID);
+            LiteYukonPAObject liteYukonPaobject = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(updateDeviceID);
             YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(liteYukonPaobject);
 			boolean updateTransaction = false;
 			
@@ -488,7 +489,7 @@ public void runImport(List<ImportData> imps) {
 		}
 		//actual 410 creation
 		else {
-			Integer deviceID = DaoFactory.getPaoDao().getNextPaoId();
+			Integer deviceID = YukonSpringHook.getBean(PaoDao.class).getNextPaoId();
 			GregorianCalendar now = new GregorianCalendar();
 			lastImportTime = now;
 			Integer templateID = template400SeriesBase.getPAObjectID();
@@ -521,7 +522,7 @@ public void runImport(List<ImportData> imps) {
 			//grab the points we need off the template
 			Vector<PointBase> points = DBFuncs.getPointsForPAO(templateID);
 			for (int i = 0; i < points.size(); i++) {
-				points.get(i).setPointID(DaoFactory.getPointDao().getNextPointId());
+				points.get(i).setPointID(YukonSpringHook.getBean(PointDao.class).getNextPointId());
 				points.get(i).getPoint().setPaoID(deviceID);
 				pointsToAdd.getDBPersistentVector().add(points.get(i));
 				log.debug("Added object to Add: Device(" + current400Series.getPAObjectID() + ") Point(" + points.get(i).getPoint().getPointID()+").");
@@ -755,7 +756,7 @@ private void porterWorker() {
                             else if(routeIDsFromSub.size() > 0) {
                                 //send first one right off
                                 int routeID = routeIDsFromSub.get(0).intValue();
-                                routeName = DaoFactory.getPaoDao().getYukonPAOName(routeID);
+                                routeName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(routeID);
                                 
                                 porterRequest = new Request( pc.getPendingID().intValue(), LOOP_COMMAND, currentMessageID );
                                 porterRequest.setRouteID(routeIDsFromSub.get(0).intValue());
@@ -765,7 +766,7 @@ private void porterWorker() {
                                 messageIDToRouteIDMap.put(new Long(porterRequest.getUserMessageID()), routeID);
                                 for(int i = 1; i < routeIDsFromSub.size(); i++) {
                                     routeID = routeIDsFromSub.get(i).intValue();
-                                    routeName = DaoFactory.getPaoDao().getYukonPAOName(routeID);
+                                    routeName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(routeID);
                                 
                                     porterRequest = new Request( pc.getPendingID().intValue(), LOOP_COMMAND, currentMessageID );
                                     generateMessageID();
@@ -926,7 +927,7 @@ public void writeToPorter(Request porterRequest) {
 
 private void handleSuccessfulLocate(Return returnMsg) {
     Integer routeID = messageIDToRouteIDMap.get(new Long(returnMsg.getUserMessageID()));
-    String routeName = DaoFactory.getPaoDao().getYukonPAOName(routeID.intValue());
+    String routeName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(routeID.intValue());
     
     MCT400SeriesBase retMCT = new MCT400SeriesBase();
     retMCT.setDeviceID(new Integer(returnMsg.getDeviceID()));

@@ -11,7 +11,7 @@ import javax.swing.event.ListSelectionEvent;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.CommandDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
@@ -27,6 +27,7 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.command.Command;
 import com.cannontech.database.db.command.CommandCategory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.BasicServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -766,7 +767,7 @@ constraintsDeviceTypeCommandSetupPanel.gridheight = 6;
 				DeviceTypeCommand tempValue = model.getRow(i);
 				
 				//Get the deviceTypeCommand from cache to see if it has changed at all.
-				LiteDeviceTypeCommand cacheLdtc = DaoFactory.getCommandDao().getDeviceTypeCommand(tempValue.getDeviceCommandID().intValue());
+				LiteDeviceTypeCommand cacheLdtc = YukonSpringHook.getBean(CommandDao.class).getDeviceTypeCommand(tempValue.getDeviceCommandID().intValue());
 				//store the original value for comparison, this way we only save to db those that have actually changed
 				int origOrder = tempValue.getDeviceTypeCommand().getDisplayOrder().intValue();
 				if(origOrder != newIndex  || tempValue.getVisibleFlag().charValue() != cacheLdtc.getVisibleFlag())
@@ -917,9 +918,9 @@ public void setDeviceType(String string)
 			setDeviceType((String)getCategoryList().getSelectedValue());
 			Vector objects = null;
 			if( CommandCategory.isCommandCategory(getDeviceType()))
-				objects = DaoFactory.getCommandDao().getAllCommandsByCategory(getDeviceType());
+				objects = YukonSpringHook.getBean(CommandDao.class).getAllCommandsByCategory(getDeviceType());
 			else
-				objects = DaoFactory.getCommandDao().getAllDevTypeCommands(deviceType);
+				objects = YukonSpringHook.getBean(CommandDao.class).getAllDevTypeCommands(deviceType);
 			setValue(objects);
 		}
 		else if( e.getSource() == getDandDCommandTable().getSelectionModel())

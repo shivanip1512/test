@@ -5,8 +5,9 @@ import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.Transaction;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteApplianceCategory;
 import com.cannontech.stars.database.data.lite.LiteLMProgramWebPublishing;
@@ -65,7 +66,7 @@ public class SendOddsForControlAction implements ActionBase {
 								StarsEnrLMProgram enrProg = new StarsEnrLMProgram();
 								enrProg.setProgramID( program.getProgramID() );
 								ChanceOfControl ctrlOdds = (ChanceOfControl) StarsFactory.newStarsCustListEntry(
-										DaoFactory.getYukonListDao().getYukonListEntry( Integer.parseInt(controlOdds[i]) ),
+										YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( Integer.parseInt(controlOdds[i]) ),
 										ChanceOfControl.class );
 								enrProg.setChanceOfControl( ctrlOdds );
 			        			

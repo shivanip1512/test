@@ -1,13 +1,15 @@
 package com.cannontech.web.lite;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.UnitOfMeasure;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author ryan
@@ -95,7 +97,7 @@ public class LiteWrapper
 		int id = CtiUtilities.NONE_ZERO_ID;
 		if( (id = getParentID()) != CtiUtilities.NONE_ZERO_ID ) {
 			return 
-				DaoFactory.getPaoDao().getLiteYukonPAO(id).getPaoName();
+				YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(id).getPaoName();
 		}
 		else
 			return NO_DATA;
@@ -135,7 +137,7 @@ public class LiteWrapper
 			if( ((LitePoint)_getLiteBase()).getUofmID() > UnitOfMeasure.INVALID.getId() )
 			{
 				retVal =
-					DaoFactory.getUnitMeasureDao().getLiteUnitMeasure(
+					YukonSpringHook.getBean(UnitMeasureDao.class).getLiteUnitMeasure(
 						((LitePoint)_getLiteBase()).getUofmID() ).toString();
 			}
 

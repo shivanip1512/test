@@ -3,10 +3,11 @@ package com.cannontech.web.cc;
 import java.util.TimeZone;
 
 import com.cannontech.core.dao.AuthDao;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.operator.AdministratorRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 
 public class CommercialCurtailmentBean {
     private LiteYukonUser yukonUser;
@@ -49,7 +50,7 @@ public class CommercialCurtailmentBean {
     }
     
     public LiteEnergyCompany getEnergyCompany() {
-        return DaoFactory.getEnergyCompanyDao().getEnergyCompany(getYukonUser());
+        return YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(getYukonUser());
     }
     
     public void setAuthDao(AuthDao authDao) {

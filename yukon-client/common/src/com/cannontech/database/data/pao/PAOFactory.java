@@ -1,12 +1,13 @@
 package com.cannontech.database.data.pao;
 
 import com.cannontech.common.pao.PaoCategory;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.capcontrol.CCYukonPAOFactory;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.lm.LMFactory;
 import com.cannontech.database.data.port.PortFactory;
 import com.cannontech.database.data.route.RouteFactory;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Insert the type's description here.
@@ -82,7 +83,7 @@ public static YukonPAObject createPAObject( com.cannontech.database.data.lite.Li
  */
 public static YukonPAObject createPAObject( int paoID )
 {
-	return createPAObject( DaoFactory.getPaoDao().getLiteYukonPAO(paoID) );
+	return createPAObject( YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(paoID) );
 }
 
 }

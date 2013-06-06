@@ -9,9 +9,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.StatusControlType;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -540,7 +541,7 @@ public void reinitialize(Integer pointDeviceID, int pointType)
 	getUsedPointOffsetLabel().setText("");
 	usedPointOffsetsVector = new Vector<LitePoint>();
 	
-    List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(pointDeviceID);
+    List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(pointDeviceID);
     for (LitePoint point : points) {
         if(point.getPointType() == pointType) {
             usedPointOffsetsVector.add(point);

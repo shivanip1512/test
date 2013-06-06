@@ -3,7 +3,6 @@ package com.cannontech.database.data.route;
 import java.sql.SQLException;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.device.lm.LMGroupExpressCom;
@@ -12,6 +11,7 @@ import com.cannontech.database.db.device.lm.LMGroupVersacom;
 import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.db.route.RepeaterRoute;
 import com.cannontech.database.db.route.Route;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -34,7 +34,7 @@ public RouteBase()
 public void add() throws java.sql.SQLException 
 {
 	if( getRoute().getRouteID() == null ) {
-        PaoDao paoDao = DaoFactory.getPaoDao();
+        PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
         setRouteID(paoDao.getNextPaoId());
     }
 

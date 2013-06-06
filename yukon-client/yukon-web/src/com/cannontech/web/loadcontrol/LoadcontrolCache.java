@@ -25,7 +25,8 @@ import java.util.concurrent.TimeUnit;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ScheduledExecutor;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.LMDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.LMComparators;
@@ -354,7 +355,7 @@ public Iterator<LMControlArea> getAllControlAreas( LiteYukonUser yukUser, boolea
     while( iter.hasNext() )
     {
         LMControlArea area = iter.next();
-        if( DaoFactory.getAuthDao().userHasAccessPAO(yukUser, area.getYukonID().intValue()) || overridePaoRestrictions )
+        if( YukonSpringHook.getBean(AuthDao.class).userHasAccessPAO(yukUser, area.getYukonID().intValue()) || overridePaoRestrictions )
             paoList.add( area );
     }
 
@@ -396,7 +397,7 @@ public LMGroupBase getGroup( Integer grpID )
  */
 public LMScenarioWrapper getScenario( Integer scenarioID )
 {
-	LiteYukonPAObject[] scenarios = DaoFactory.getLmDao().getAllLMScenarios();
+	LiteYukonPAObject[] scenarios = YukonSpringHook.getBean(LMDao.class).getAllLMScenarios();
 	for( int i = 0; i < scenarios.length; i++ )
 	{
 		if( scenarios[i].getYukonID() == scenarioID.intValue() )

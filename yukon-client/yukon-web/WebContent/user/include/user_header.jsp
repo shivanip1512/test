@@ -1,15 +1,17 @@
 <%@ page language="java" %>
 <%@ page import="java.util.*" %>
 
-<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.roles.application.*"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.database.data.lite.LiteCICustomer" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.db.customer.DeviceCustomerList"%>
 <%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>
-<%@page import="com.cannontech.servlet.YukonUserContextUtils"%>
-<%@page import="com.cannontech.user.YukonUserContext"%>
+<%@ page import="com.cannontech.servlet.YukonUserContextUtils"%>
+<%@ page import="com.cannontech.user.YukonUserContext"%>
+<%@ page import="com.cannontech.spring.YukonSpringHook"%> 
+<%@ page import="com.cannontech.core.dao.YukonUserDao"%>
+<%@ page import="com.cannontech.core.dao.ContactDao"%>
 
 <%@ page import="com.cannontech.util.ServletUtil" %>
 <%@ page import="com.cannontech.analysis.*"%> 	
@@ -19,13 +21,13 @@
 	LiteYukonUser liteYukonUser = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
 	int liteYukonUserID = liteYukonUser.getLiteID();
 
-	LiteContact liteContact = DaoFactory.getYukonUserDao().getLiteContact(liteYukonUserID);
+	LiteContact liteContact = YukonSpringHook.getBean(YukonUserDao.class).getLiteContact(liteYukonUserID);
 	LiteCICustomer liteCICustomer = null;
 	int customerID = -1;	//default?
 
 	//Attempt to populate this information.  If setup correctly we should never get null values.
 	if( liteContact != null)
-		liteCICustomer = DaoFactory.getContactDao().getCICustomer(liteContact.getContactID());
+		liteCICustomer = YukonSpringHook.getBean(ContactDao.class).getCICustomer(liteContact.getContactID());
 
 	if (liteCICustomer != null)
 		customerID = liteCICustomer.getCustomerID();

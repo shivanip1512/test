@@ -6,8 +6,8 @@ import java.util.List;
 
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.common.editor.EditorPanel;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -38,7 +38,7 @@ public class CapControlSubBus extends CapControlYukonPAOBase implements EditorPa
     @Override
     public void add() throws SQLException  {
         if( getCapControlPAOID() == null ) {
-            PaoDao paoDao = DaoFactory.getPaoDao();
+            PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
             setCapControlPAOID(paoDao.getNextPaoId());
         }
 
@@ -69,7 +69,7 @@ public class CapControlSubBus extends CapControlYukonPAOBase implements EditorPa
     }
     
     private void deleteAllPoints() throws SQLException {
-        List<LitePoint> litePointsByPaObjectId = DaoFactory.getPointDao().getLitePointsByPaObjectId(getCapControlPAOID());
+        List<LitePoint> litePointsByPaObjectId = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(getCapControlPAOID());
         for (LitePoint point : litePointsByPaObjectId) {
             PointBase pointPers = (PointBase) LiteFactory.convertLiteToDBPers(point);
             pointPers.setDbConnection(getDbConnection());

@@ -7,12 +7,13 @@ import javax.swing.JComboBox;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.StatusControlType;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class PointStatusPhysicalSettingsEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, java.awt.event.ItemListener, javax.swing.event.CaretListener {
@@ -1270,7 +1271,7 @@ public void setValue(Object val)
 
 	getUsedPointOffsetLabel().setText("");
 
-    List<LitePoint> points = DaoFactory.getPointDao()
+    List<LitePoint> points = YukonSpringHook.getBean(PointDao.class)
                                            .getLitePointsByPaObjectId(point.getPoint().getPaoID());
         usedPointOffsetsVector = new Vector<LitePoint>(points.size());
         for (LitePoint currPoint : points) {

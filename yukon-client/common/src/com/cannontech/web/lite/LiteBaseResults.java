@@ -4,11 +4,13 @@ import java.util.Collections;
 import java.util.List;
 
 import com.cannontech.common.pao.PaoClass;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.spring.YukonSpringHook;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
@@ -31,8 +33,8 @@ public class LiteBaseResults {
 		if (getCriteria() != null && getCriteria().length() > 0) {
 
 			//Objects and points of Class CAPCONTROL
-            final List<LiteYukonPAObject> paoListCC = DaoFactory.getPaoDao().searchByName(getCriteria(), PaoClass.CAPCONTROL.getDbString());
-            final List<LitePoint> pointListCC = DaoFactory.getPointDao().searchByName(getCriteria(), PaoClass.CAPCONTROL.getDbString());
+            final List<LiteYukonPAObject> paoListCC = YukonSpringHook.getBean(PaoDao.class).searchByName(getCriteria(), PaoClass.CAPCONTROL.getDbString());
+            final List<LitePoint> pointListCC = YukonSpringHook.getBean(PointDao.class).searchByName(getCriteria(), PaoClass.CAPCONTROL.getDbString());
             
             final Function<LiteBase, LiteWrapper> toLiteWrapper = new Function<LiteBase, LiteWrapper>() {
                 public LiteWrapper apply(LiteBase liteBase) {

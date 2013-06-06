@@ -5,8 +5,9 @@ import javax.servlet.jsp.JspException;
 
 import org.springframework.web.util.ExpressionEvaluationUtils;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ReflectivePropertySearcher;
 import com.cannontech.util.ServletUtil;
 /**
@@ -56,7 +57,7 @@ public int doStartTag() throws JspException {
             } else {
                 propId = ReflectivePropertySearcher.getRoleProperty().getIntForName(property);
             }
-			String text = DaoFactory.getAuthDao().getRolePropertyValueEx(user, propId);
+			String text = YukonSpringHook.getBean(AuthDao.class).getRolePropertyValueEx(user, propId);
 			String fmat = getFormat();
 			if (fmat != null) {
 				if (fmat.equalsIgnoreCase( ServletUtil.FORMAT_UPPER ))

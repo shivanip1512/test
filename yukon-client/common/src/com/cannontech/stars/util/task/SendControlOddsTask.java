@@ -11,7 +11,9 @@ import org.apache.commons.lang.StringUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.ContactNotificationDao;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.spring.YukonSpringHook;
@@ -87,8 +89,8 @@ public class SendControlOddsTask implements Runnable {
 					LiteAccountInfo accountInfo =
 						starsCustAccountInformationDao.getById(accountID, energyCompanyID);
 					
-					LiteContact primContact = DaoFactory.getContactDao().getContact( accountInfo.getCustomer().getPrimaryContactID() );
-					LiteContactNotification email = DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(
+					LiteContact primContact = YukonSpringHook.getBean(ContactDao.class).getContact( accountInfo.getCustomer().getPrimaryContactID() );
+					LiteContactNotification email = YukonSpringHook.getBean(ContactNotificationDao.class).getFirstNotificationForContactByType(
 							primContact, ContactNotificationType.EMAIL );
 					if (email == null || email.getDisableFlag().equalsIgnoreCase("Y"))
 						continue;
@@ -113,7 +115,7 @@ public class SendControlOddsTask implements Runnable {
 					for (int j = 0; j < activeProgs.size(); j++) {
 						LiteStarsLMProgram program = (LiteStarsLMProgram) activeProgs.get(j);
 						String progName = StarsUtils.getPublishedProgramName( program.getPublishedProgram() );
-						String ctrlOdds = DaoFactory.getYukonListDao().getYukonListEntry( program.getPublishedProgram().getChanceOfControlID() ).getEntryText();
+						String ctrlOdds = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( program.getPublishedProgram().getChanceOfControlID() ).getEntryText();
 						
 						int currentProgramNameLength = progName.length();
 						if(currentProgramNameLength > maxProgramNameLength) {

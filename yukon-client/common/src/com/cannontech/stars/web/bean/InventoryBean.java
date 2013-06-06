@@ -11,8 +11,11 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -20,10 +23,10 @@ import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
-import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.database.db.hardware.Warehouse;
 import com.cannontech.stars.util.ECUtils;
@@ -188,7 +191,7 @@ public class InventoryBean {
 	    StarsYukonUser user = (StarsYukonUser) request.getSession(false).getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 	    
 	    boolean showEnergyCompany = false;
-        boolean manageMembers = DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS);
+        boolean manageMembers = YukonSpringHook.getBean(AuthDao.class).checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS);
         boolean hasChildren = getEnergyCompany().hasChildEnergyCompanies();
         
         int style = getHtmlStyle();
@@ -211,7 +214,7 @@ public class InventoryBean {
 		StarsYukonUser user = (StarsYukonUser) req.getSession().getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
         
 		boolean showEnergyCompany = isShowEnergyCompany(req);
-		boolean manageMembers = DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS);
+		boolean manageMembers = YukonSpringHook.getBean(AuthDao.class).checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS);
 
 		int style = getHtmlStyle();
 		
@@ -371,11 +374,11 @@ public class InventoryBean {
 			String deviceType = "(none)";
 			String deviceName = "(none)";
 			if (liteInv instanceof LiteLmHardwareBase) {
-				deviceType = DaoFactory.getYukonListDao().getYukonListEntry( ((LiteLmHardwareBase)liteInv).getLmHardwareTypeID() ).getEntryText();
+				deviceType = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( ((LiteLmHardwareBase)liteInv).getLmHardwareTypeID() ).getEntryText();
 				deviceName = ((LiteLmHardwareBase)liteInv).getManufacturerSerialNumber();
 			}
 			else if (liteInv.getDeviceID() > 0) {
-				LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO( liteInv.getDeviceID() );
+				LiteYukonPAObject litePao = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO( liteInv.getDeviceID() );
 				deviceType = litePao.getPaoType().getDbString();
 				deviceName = litePao.getPaoName();
 			}
@@ -385,7 +388,7 @@ public class InventoryBean {
 					deviceName = liteInv.getDeviceLabel();
 			}
         	
-			String currentDeviceState = DaoFactory.getYukonListDao().getYukonListEntry(liteInv.getCurrentStateID()).getEntryText();
+			String currentDeviceState = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteInv.getCurrentStateID()).getEntryText();
             
 			htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
             
@@ -428,7 +431,7 @@ public class InventoryBean {
 			else {
 				LiteAccountInfo liteAcctInfo = 
 				    starsCustAccountInformationDao.getById(liteInv.getAccountID(), member.getEnergyCompanyId());
-				LiteContact liteCont = DaoFactory.getContactDao().getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
+				LiteContact liteCont = YukonSpringHook.getBean(ContactDao.class).getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
 				LiteAddress liteAddr = member.getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
             	
 				String name = StarsUtils.formatName(liteCont.getContFirstName(), liteCont.getContLastName());

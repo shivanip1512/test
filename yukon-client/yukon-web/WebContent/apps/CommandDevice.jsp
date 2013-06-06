@@ -6,7 +6,6 @@
 
 <%@ page import="java.util.*" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
-<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.data.pao.YukonPAObject"%>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
 <%@ page import="com.cannontech.database.db.command.CommandCategory"%>

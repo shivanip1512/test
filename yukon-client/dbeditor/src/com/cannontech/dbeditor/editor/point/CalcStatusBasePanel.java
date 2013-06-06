@@ -1,9 +1,10 @@
 package com.cannontech.dbeditor.editor.point;
 
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -673,7 +674,7 @@ public void setValue(Object val)
 	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized(cache)
 	{
-		LiteStateGroup[] allStateGroups = DaoFactory.getStateDao().getAllStateGroups();
+		LiteStateGroup[] allStateGroups = YukonSpringHook.getBean(StateDao.class).getAllStateGroups();
 
 		//Load the state table combo box
 		for(int i=0;i<allStateGroups.length;i++)

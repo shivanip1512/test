@@ -5,13 +5,14 @@ import java.util.GregorianCalendar;
 
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.graph.GDSTypes;
 import com.cannontech.database.db.graph.GDSTypesFuncs;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.database.db.graph.GraphRenderers;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 
 /**
@@ -166,7 +167,7 @@ public Object getGDSAttribute(int index, GraphDataSeries gds) {
 			if( id.intValue() == PointTypes.SYS_PID_THRESHOLD)
 				return "Marker";
 			
-			LitePoint pt = DaoFactory.getPointDao().getLitePoint( id.intValue() );
+			LitePoint pt = YukonSpringHook.getBean(PointDao.class).getLitePoint( id.intValue() );
 			if( pt != null )
 				return pt.getPointName();	
 		break;

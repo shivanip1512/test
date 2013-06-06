@@ -8,10 +8,11 @@ import java.util.Vector;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.ContactDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.customer.Customer;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author yao
@@ -115,7 +116,7 @@ public class LiteCustomer extends LiteBase {
             additionalContacts.removeAllElements();
             
             while(rset.next()) //add the LiteContact to this Customer
-                additionalContacts.add( DaoFactory.getContactDao().getContact( rset.getInt(1)) );
+                additionalContacts.add( YukonSpringHook.getBean(ContactDao.class).getContact( rset.getInt(1)) );
 
         } catch (Exception e) {
             CTILogger.error( e.getMessage(), e );

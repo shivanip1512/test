@@ -19,7 +19,9 @@ import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commander.YC;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.CommandDao;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.RouteTypes;
@@ -166,14 +168,14 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	}	
 	
 	public void setDeviceType(int devID) {
-		LiteYukonPAObject lPao = DaoFactory.getPaoDao().getLiteYukonPAO(devID);
+		LiteYukonPAObject lPao = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(devID);
 		deviceType = lPao.getPaoType().getDbString();
 		CTILogger.debug(" DEVICE TYPE for command lookup: " + deviceType);
-		setLiteDeviceTypeCommandsVector(DaoFactory.getCommandDao().getAllDevTypeCommands(deviceType));
+		setLiteDeviceTypeCommandsVector(YukonSpringHook.getBean(CommandDao.class).getAllDevTypeCommands(deviceType));
 	}
 
 	public final LiteYukonPAObject[] getValidRoutes() {
-		return DaoFactory.getPaoDao().getRoutesByType(validRouteTypes);
+		return YukonSpringHook.getBean(PaoDao.class).getRoutesByType(validRouteTypes);
 	}
 
     public int getUserID() {
@@ -182,7 +184,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
     
     public void setUserID(int userID) {
         this.userID = userID;
-        setLiteUser(DaoFactory.getYukonUserDao().getLiteYukonUser(userID));
+        setLiteUser(YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(userID));
     }
 
     // Adds an element to the previously viewed devices

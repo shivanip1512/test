@@ -20,6 +20,8 @@ public interface DeviceDao {
      * @param pointID int
      * 
      * @deprecated replaced by DaoFactory.getPaoDao().getLiteYukonPAO( deviceID )
+     * 6/4/13: DaoFactory no longer exists, use YukonSpringHook.getBean() instead.
+     *         See also YUK-11881.
      */
     public LiteYukonPAObject getLiteDevice(final int deviceID);
 

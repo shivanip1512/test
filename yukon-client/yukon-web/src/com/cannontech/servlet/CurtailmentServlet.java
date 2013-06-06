@@ -16,9 +16,11 @@ package com.cannontech.servlet;
  */
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 
 public class CurtailmentServlet extends javax.servlet.http.HttpServlet {
@@ -112,19 +114,19 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 		String initials      = req.getParameter("initials");
 		String redirectURI   = req.getParameter("redirect");
 		 
-		LiteContact contact = DaoFactory.getYukonUserDao().getLiteContact(user.getUserID());
+		LiteContact contact = YukonSpringHook.getBean(YukonUserDao.class).getLiteContact(user.getUserID());
 				
 		// Confirm that the customer id passed here and the id stored
 		// in the session are the same
 		if( contact == null || 
-			DaoFactory.getContactDao().getCICustomer(contact.getContactID()).getCustomerID() != Integer.parseInt(customerIDStr) ) {
+			YukonSpringHook.getBean(ContactDao.class).getCICustomer(contact.getContactID()).getCustomerID() != Integer.parseInt(customerIDStr) ) {
 				CTILogger.error("Customer id of the current user doesn't match that of the request");
 				return;				
 			}
 
 		if( 
 		!doAck( 	user.getUsername(), 
-			DaoFactory.getContactDao().getCICustomer(contact.getContactID()).getCustomerID(),
+			YukonSpringHook.getBean(ContactDao.class).getCICustomer(contact.getContactID()).getCustomerID(),
 			Integer.parseInt(curtailIDStr), 	
 			new java.util.Date( Long.parseLong(ackTimeStr)), 
 			req.getRemoteAddr(),

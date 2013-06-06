@@ -1,3 +1,5 @@
+<%@page import="com.cannontech.core.dao.AuthDao"%>
+<%@page import="com.cannontech.spring.YukonSpringHook"%>
 <script language="JavaScript">
 function dispStatusMsg(msgStr) 
 {
@@ -5,7 +7,6 @@ function dispStatusMsg(msgStr)
   document.statVal = true;
 }
 </script>
-<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%
 	//index vars for LinkPairs
 	int FILE = 0;
@@ -21,7 +22,7 @@ function dispStatusMsg(msgStr)
   						  {"user_reporting.jsp", "Reporting", "/user/CILC/"},
   						  {"user_get_data_now.jsp", "Get Data Now", "/user/CILC/"},
 						 };
-	String bulletImg = "<img src='../../WebConfig/" + DaoFactory.getAuthDao().getRolePropertyValue(liteYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='9' height='9'>";
+	String bulletImg = "<img src='../../WebConfig/" + YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(liteYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='9' height='9'>";
 	
 	// List of String[] (link image, link html)
 	Hashtable links = new Hashtable();

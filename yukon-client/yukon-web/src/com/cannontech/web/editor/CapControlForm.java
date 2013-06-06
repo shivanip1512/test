@@ -60,7 +60,7 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.CapControlDao;
 import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -115,6 +115,7 @@ import com.cannontech.database.model.Season;
 import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.editor.data.CBCSpecialAreaData;
@@ -1595,7 +1596,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 
     public LiteYukonPAObject[] getSubBusList() {
 		if (subBusList == null) {
-			subBusList = DaoFactory.getCapControlDao().getAllSubsForUser (JSFParamUtil.getYukonUser());
+			subBusList = YukonSpringHook.getBean(CapControlDao.class).getAllSubsForUser (JSFParamUtil.getYukonUser());
 		}
 		return subBusList.toArray(new LiteYukonPAObject[subBusList.size()]);
 	}

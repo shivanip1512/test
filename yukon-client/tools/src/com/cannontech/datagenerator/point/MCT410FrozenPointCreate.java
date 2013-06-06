@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -19,6 +18,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 /**
  * Creates all Frozen MCT10 points (frozen peak demand, frozen min volts, frozen max volts for every MCT410 type in the database.
@@ -59,7 +59,7 @@ public class MCT410FrozenPointCreate extends PointCreate
 	
 		double multiplier = 0.1;
 		int addCount = 0;
-		PointDao pointDao = DaoFactory.getPointDao();
+		PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
         
         for (LiteYukonPAObject litePaobject : devicesVector) {
 
@@ -178,7 +178,7 @@ public class MCT410FrozenPointCreate extends PointCreate
 		synchronized (cache)
 		{
 			List<LiteYukonPAObject> mcts = cache.getAllMCTs();
-            PointDao pointDao = DaoFactory.getPointDao();
+            PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
 
 			createPointHashtable = new java.util.Hashtable<Integer, CreatePointList>(mcts.size());
 

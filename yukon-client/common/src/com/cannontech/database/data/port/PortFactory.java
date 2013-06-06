@@ -4,10 +4,10 @@ package com.cannontech.database.data.port;
  * This type was created in VisualAge.
  */
 
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.db.port.CommPort;
+import com.cannontech.spring.YukonSpringHook;
  
 public final class PortFactory {
 /**
@@ -158,7 +158,7 @@ public static DirectPort createPort( int typeOfPort )
 	}
 
 	//Grab a unique id
-    PaoDao paoDao = DaoFactory.getPaoDao();
+    PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
 	port.setPortID(paoDao.getNextPaoId());
 	port.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_PORT );
 	port.setPAOClass( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_PORT );

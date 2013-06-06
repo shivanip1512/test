@@ -9,7 +9,6 @@ import javax.swing.SwingWorker;
 
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.ContactDao;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -49,7 +48,7 @@ public void doUpdate(final Runnable onCompletion) {
 
     final ProgressMonitor monitor = new ProgressMonitor(frame, "Loading contents", "", 0, 0);
 
-    final ContactDao contactDao = DaoFactory.getContactDao();
+    final ContactDao contactDao = YukonSpringHook.getBean(ContactDao.class);
     worker = new SwingWorker<Object, LiteContact>() {
         private int count = 0;
         private volatile int contactCount = 0;

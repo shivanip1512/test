@@ -49,7 +49,9 @@ import com.cannontech.common.gui.util.SortTableModelWrapper;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.TagDao;
+import com.cannontech.core.dao.YukonImageDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
@@ -61,6 +63,7 @@ import com.cannontech.graph.model.TrendModel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.message.util.Command;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tags.Tag;
 import com.cannontech.tdc.commandevents.AckAlarm;
 import com.cannontech.tdc.data.ColumnData;
@@ -2695,7 +2698,7 @@ public void jPopupMenu_PopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEve
 		{
 			if( TagUtils.isAlarmUnacked(sigs[i].getTags()) )
 			{
-				LitePoint lPoint = DaoFactory.getPointDao().getLitePoint( pv.getPointID() );
+				LitePoint lPoint = YukonSpringHook.getBean(PointDao.class).getLitePoint( pv.getPointID() );
 				
 				//if there is more than one alarm, add the all alarms ack to the top
 				if( i == 1 )
@@ -2826,7 +2829,7 @@ private void addTagMenuItems( int selRow )
 	while( it.hasNext() )
 	{
 		Tag aTag = (Tag)it.next();
-		LiteTag liteTag = DaoFactory.getTagDao().getLiteTag( aTag.getTagID() );
+		LiteTag liteTag = YukonSpringHook.getBean(TagDao.class).getLiteTag( aTag.getTagID() );
 
 		JMenuItem mi = new JMenuItem(
 				liteTag.getTagName() + " (Level: " + liteTag.getTagLevel() + ")" );
@@ -2838,7 +2841,7 @@ private void addTagMenuItems( int selRow )
 		if( liteTag.getImageID() > CtiUtilities.NONE_ZERO_ID )
 			mi.setIcon( 
 				new ImageIcon(java.awt.Toolkit.getDefaultToolkit().createImage(
-					DaoFactory.getYukonImageDao().getLiteYukonImage(liteTag.getImageID()).getImageValue()) ) );
+					YukonSpringHook.getBean(YukonImageDao.class).getLiteYukonImage(liteTag.getImageID()).getImageValue()) ) );
 
 		//be sure any click on a specific tag takes the user to the
 		// tag editor

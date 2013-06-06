@@ -6,7 +6,7 @@ import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -16,6 +16,7 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.route.RepeaterRoute;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
@@ -164,7 +165,7 @@ public class RouteUsageHelper {
             
                 if (!(otherID == -1)) {
                     
-                    LiteYukonPAObject liteYukker = DaoFactory.getPaoDao().getLiteYukonPAO(otherID);
+                    LiteYukonPAObject liteYukker = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(otherID);
                     DBPersistent heavyRoute = LiteFactory.createDBPersistent(liteYukker);
                     java.sql.Connection conn = null;
                 
@@ -179,7 +180,7 @@ public class RouteUsageHelper {
                     }
                     
                     int deviceID = ((RouteBase) heavyRoute).getDeviceID();
-                    LiteYukonPAObject liteCCUYuk = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
+                    LiteYukonPAObject liteCCUYuk = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(deviceID);
                     
                     if (avoidCCUs.contains(liteCCUYuk)) {
                         return false;
@@ -375,7 +376,7 @@ public class RouteUsageHelper {
                     
                     if (matrix[successFixedBit % 32][j] > -1) {
                         
-                        LiteYukonPAObject liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(matrix[successFixedBit % 32][j]);
+                        LiteYukonPAObject liteYuk = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(matrix[successFixedBit % 32][j]);
                         DBPersistent heavyRoute = LiteFactory.createDBPersistent(liteYuk);
                         java.sql.Connection conn = null;
                         
@@ -390,7 +391,7 @@ public class RouteUsageHelper {
                         }
                         
                         int deviceID = ((RouteBase)heavyRoute).getDeviceID();
-                        LiteYukonPAObject liteCCUYuk = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
+                        LiteYukonPAObject liteCCUYuk = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(deviceID);
                         
                         if (!duplicates.contains(liteCCUYuk)){
                             duplicates.add(liteCCUYuk);
@@ -450,7 +451,7 @@ public class RouteUsageHelper {
         
         for (int i = 0; i < ids.size(); i++) {
             
-            LiteYukonPAObject liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(((Integer)ids.get(i)));
+            LiteYukonPAObject liteYuk = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(((Integer)ids.get(i)));
             DBPersistent heavyRoute = LiteFactory.createDBPersistent(liteYuk);
             java.sql.Connection conn = null;
             try {
@@ -464,7 +465,7 @@ public class RouteUsageHelper {
             }
             
             int deviceID = ((RouteBase)heavyRoute).getDeviceID();
-            LiteYukonPAObject liteCCUYuk = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
+            LiteYukonPAObject liteCCUYuk = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(deviceID);
             
             if (!conflicts.contains(liteCCUYuk)){
                 conflicts.add(liteCCUYuk);

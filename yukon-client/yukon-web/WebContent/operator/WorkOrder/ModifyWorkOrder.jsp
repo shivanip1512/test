@@ -9,6 +9,8 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="com.cannontech.stars.web.util.WorkOrderManagerUtil" %>
 <%@ page import="com.cannontech.common.util.Pair" %>
+<%@page import="com.cannontech.core.dao.ContactDao"%>
+<%@page import="com.cannontech.core.dao.YukonListDao"%>
 <%@ page import="com.cannontech.stars.core.dao.StarsWorkOrderBaseDao"%>
 <%@ page import="com.cannontech.stars.dr.event.dao.EventWorkOrderDao"%>
 <%@ page import="com.cannontech.spring.YukonSpringHook"%>
@@ -383,7 +385,7 @@ function sendWorkOrder() {
 	                                for (int i = 0; i < eventBases.size(); i++) {
 	                            %>
 	                            <tr> 
-	                              <td width="40%" class="TableCell">&nbsp;<%=DaoFactory.getYukonListDao().getYukonListEntry(eventBases.get(i).getActionId()).getEntryText()%>&nbsp;</td>
+	                              <td width="40%" class="TableCell">&nbsp;<%=YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(eventBases.get(i).getActionId()).getEntryText()%>&nbsp;</td>
 	                              <td width="60%" class="TableCell">&nbsp;<%=ServletUtils.formatInstant(eventBases.get(i).getEventTimestamp(), datePart)%>&nbsp;-&nbsp;<%=ServletUtils.formatInstant(eventBases.get(i).getEventTimestamp(), timeFormat)%></td>
 	                            </tr>
 	                            <%
@@ -408,13 +410,13 @@ function sendWorkOrder() {
      if (liteOrder.getAccountID() > 0) {
  		LiteAccountInfo liteAcctInfo = starsCustAccountInformationDao.getById(liteOrder.getAccountID(), liteEC.getEnergyCompanyID());
  		LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
- 		LiteContact liteContact = DaoFactory.getContactDao().getContact(liteAcctInfo.getCustomer().getPrimaryContactID());
+ 		LiteContact liteContact = YukonSpringHook.getBean(ContactDao.class).getContact(liteAcctInfo.getCustomer().getPrimaryContactID());
  		LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
  		LiteAddress liteAddr = liteEC.getAddress(liteAcctSite.getStreetAddressID());
  		
  		String name = StarsUtils.formatName(liteContact.getContFirstName(), liteContact.getContLastName());
- 		String homePhone = StarsUtils.getNotification(DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(liteContact, ContactNotificationType.HOME_PHONE));
- 		String workPhone = StarsUtils.getNotification(DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(liteContact, ContactNotificationType.WORK_PHONE));
+ 		String homePhone = StarsUtils.getNotification(YukonSpringHook.getBean(ContactNotificationDao.class).getFirstNotificationForContactByType(liteContact, ContactNotificationType.HOME_PHONE));
+ 		String workPhone = StarsUtils.getNotification(YukonSpringHook.getBean(ContactNotificationDao.class).getFirstNotificationForContactByType(liteContact, ContactNotificationType.WORK_PHONE));
  		String mapNo = StarsUtils.forceNotNone(liteAcctSite.getSiteNumber());
  		
  		StreetAddress starsAddr = new StreetAddress();

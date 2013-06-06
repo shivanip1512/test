@@ -2,12 +2,12 @@ package com.cannontech.database.data.device.lm;
 
 import java.util.Vector;
 
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.database.db.NestedDBPersistentComparators;
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
+import com.cannontech.spring.YukonSpringHook;
 /**
  * Insert the type's description here.
  * Creation date: (12/6/00 3:54:11 PM)
@@ -36,7 +36,7 @@ public LMControlArea() {
 public void add() throws java.sql.SQLException 
 {
 	if( getPAObjectID() == null ) {
-        PaoDao paoDao = DaoFactory.getPaoDao();   
+        PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);   
 		setPAObjectID(paoDao.getNextPaoId());
     }
     

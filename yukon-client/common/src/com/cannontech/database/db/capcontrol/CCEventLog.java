@@ -2,7 +2,9 @@ package com.cannontech.database.db.capcontrol;
 
 import java.util.Date;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.spring.YukonSpringHook;
 
 public class CCEventLog implements RecentControls{
 
@@ -113,7 +115,7 @@ public String getEvent() {
 
 public String getItem() {
     int id = (getFeederId().intValue() > 0)  ? getFeederId().intValue() : getSubId().intValue(); 
-    return DaoFactory.getPaoDao().getYukonPAOName(id);
+    return YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(id);
 }
 
 public Date getTimestamp() {
@@ -133,7 +135,7 @@ public String getUser() {
 }
 
 public String getDeviceControlled() {
-    return DaoFactory.getPaoDao().getYukonPAOName(DaoFactory.getPointDao().getLitePoint(getPointId().intValue()).getPaobjectID());
+    return YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(YukonSpringHook.getBean(PointDao.class).getLitePoint(getPointId().intValue()).getPaobjectID());
 }
 
 

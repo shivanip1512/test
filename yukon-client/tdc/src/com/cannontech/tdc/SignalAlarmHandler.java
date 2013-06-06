@@ -3,10 +3,13 @@ package com.cannontech.tdc;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AlarmCatDao;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.roles.application.TDCRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tdc.bookmark.BookMarkBase;
 import com.cannontech.tdc.bookmark.BookMarkSelectionListener;
 import com.cannontech.tdc.data.Display;
@@ -106,10 +109,10 @@ class SignalAlarmHandler
                         SignalAlarmHandler.class.getName(), sig );
                   
                   LitePoint lp =      
-                     DaoFactory.getPointDao().getLitePoint( (int)sig.getPointID() );
+                     YukonSpringHook.getBean(PointDao.class).getLitePoint( (int)sig.getPointID() );
                   
                   menuItem.setText(
-								"(" + DaoFactory.getPaoDao().getYukonPAOName(lp.getPaobjectID()) +
+								"(" + YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(lp.getPaobjectID()) +
                         " / " + lp.getPointName() + ") " + 
 								sig.getDescription() +
 								(TagUtils.isAlarmUnacked(sig.getTags())
@@ -214,10 +217,10 @@ class SignalAlarmHandler
    		return;
 
 		LitePoint lp =      
-			DaoFactory.getPointDao().getLitePoint( (int)sig.getPointID() );
+			YukonSpringHook.getBean(PointDao.class).getLitePoint( (int)sig.getPointID() );
 
 		javax.swing.JMenuItem newItem = new javax.swing.JMenuItem(
-			"(" + DaoFactory.getPaoDao().getYukonPAOName(lp.getPaobjectID()) +
+			"(" + YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(lp.getPaobjectID()) +
 			" / " + lp.getPointName() + ") " + 
 			sig.getDescription() +
 			(TagUtils.isAlarmUnacked(sig.getTags())
@@ -234,7 +237,7 @@ class SignalAlarmHandler
       newItem.putClientProperty( TDCMainPanel.PROP_BOOKMARK, 
             Display.DISPLAY_TYPES[Display.ALARMS_AND_EVENTS_TYPE_INDEX] +
             BookMarkBase.BOOKMARK_TOKEN +
-            DaoFactory.getAlarmCatDao().getAlarmCategoryName(
+            YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategoryName(
                   (int)sig.getCategoryID()) );
 
 

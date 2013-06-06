@@ -9,8 +9,9 @@ import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.db.contact.ContactNotification;
+import com.cannontech.spring.YukonSpringHook;
 
 public class ContactNotificationTableModel extends javax.swing.table.AbstractTableModel 
 {
@@ -129,7 +130,7 @@ public Object getValueAt(int row, int col)
 				return cntNotif.getNotification();
 
 		 	case COLUMN_TYPE:
-				return DaoFactory.getYukonListDao().getYukonListEntry(
+				return YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(
 						cntNotif.getNotificationCatID().intValue());
 
 		 	case COLUMN_DISABLED:

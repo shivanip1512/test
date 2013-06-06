@@ -1,5 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<%@ page import="com.cannontech.core.dao.DaoFactory" %>
+<%@page import="com.cannontech.core.dao.TagDao"%>
+<%@page import="com.cannontech.core.dao.StateDao"%>
+<%@page import="com.cannontech.core.dao.PaoDao"%>
+<%@page import="com.cannontech.core.dao.PointDao"%>
 <%@ page import="com.cannontech.core.dynamic.DynamicDataSource" %>
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
@@ -43,9 +46,9 @@
 		state = Integer.parseInt(stateStr);
 	}
 
-	LitePoint lPoint = DaoFactory.getPointDao().getLitePoint(pointID);
-	LiteYukonPAObject lDevice = DaoFactory.getPaoDao().getLiteYukonPAO(lPoint.getPaobjectID());	
-	LiteState[] ls = DaoFactory.getStateDao().getLiteStates(lPoint.getStateGroupID());
+	LitePoint lPoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(pointID);
+	LiteYukonPAObject lDevice = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(lPoint.getPaobjectID());	
+	LiteState[] ls = YukonSpringHook.getBean(StateDao.class).getLiteStates(lPoint.getStateGroupID());
 	DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
 	LiteState lState = ls[(int)dds.getPointData(pointID).getValue()];
 	String controlDenyMsg = null;
@@ -58,7 +61,7 @@
 	Iterator tagIter = tagSet.iterator();
 	while(tagIter.hasNext()) {
 		Tag t = (Tag) tagIter.next();
-		LiteTag lt = DaoFactory.getTagDao().getLiteTag(t.getTagID());
+		LiteTag lt = YukonSpringHook.getBean(TagDao.class).getLiteTag(t.getTagID());
 		if(lt.isInhibit()) {
 			controlDenyMsg = "Control is inhibited by due to tags";
 		}
@@ -277,7 +280,7 @@ TAGS</div>
 	tagIter = tagSet.iterator();
 	while(tagIter.hasNext()) {
 		Tag tag = (Tag) tagIter.next();
-		LiteTag lt = DaoFactory.getTagDao().getLiteTag(tag.getTagID());
+		LiteTag lt = YukonSpringHook.getBean(TagDao.class).getLiteTag(tag.getTagID());
 %>	      
       
           <tr>

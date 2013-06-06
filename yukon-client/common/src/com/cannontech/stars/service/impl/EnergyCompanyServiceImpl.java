@@ -28,7 +28,6 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.EnergyCompanyNameUnavailableException;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonListDao;
@@ -55,6 +54,7 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.SiteInformationDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
@@ -474,7 +474,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         StarsDatabaseCache.getInstance().deleteEnergyCompany( energyCompany.getLiteID() );
         if (energyCompany.getPrimaryContactID() != CtiUtilities.NONE_ZERO_ID) {
             try {
-                LiteContact liteContact = DaoFactory.getContactDao().getContact(energyCompany.getPrimaryContactID());
+                LiteContact liteContact = YukonSpringHook.getBean(ContactDao.class).getContact(energyCompany.getPrimaryContactID());
                 dbChangeManager.processDbChange(liteContact.getContactID(),
                                                 DBChangeMsg.CHANGE_CONTACT_DB,
                                                 DBChangeMsg.CAT_CUSTOMERCONTACT,

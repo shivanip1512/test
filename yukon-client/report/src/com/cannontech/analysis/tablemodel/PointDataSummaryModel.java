@@ -28,11 +28,12 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointOffsets;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.NaturalOrderComparator;
 
 public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
@@ -414,7 +415,7 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
                             long totalTime  = (endTime - getStartDate().getTime())/1000; //convert to seconds
                             int intervals = 0;
 
-                            LitePoint lp = DaoFactory.getPointDao().getLitePoint(currentPointid);
+                            LitePoint lp = YukonSpringHook.getBean(PointDao.class).getLitePoint(currentPointid);
                             if (lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND && voltageDemandRate != null) {
                                 intervals = (int) (totalTime / Integer.valueOf(voltageDemandRate).intValue());
                             } else if (lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND && lpDemandRate != null) {
@@ -475,7 +476,7 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
                 long totalTime  = (endTime - getStartDate( ).getTime())/1000; //convert to seconds
                 int intervals = 0;
 
-                LitePoint lp = DaoFactory.getPointDao().getLitePoint(currentPointid);							
+                LitePoint lp = YukonSpringHook.getBean(PointDao.class).getLitePoint(currentPointid);							
                 if( lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND && voltageDemandRate != null)
                     intervals = (int) (totalTime / Integer.valueOf(voltageDemandRate).intValue());
                 else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND && lpDemandRate != null)
@@ -547,7 +548,7 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 				    return lpMeterData.getMeterAndPointData().getPointName();
 				case CHANNEL_NUMBER_COLUMN:
 				{
-				    LitePoint lp = DaoFactory.getPointDao().getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());
+				    LitePoint lp = YukonSpringHook.getBean(PointDao.class).getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());
 				    if( lp != null && 
 				            (lp.getPointOffset() >= PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND && lp.getPointOffset() <= PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND))
 				    {
@@ -557,7 +558,7 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 				}
 				case CHANNEL_INTERVAL_COLUMN:
 				{
-				    LitePoint lp = DaoFactory.getPointDao().getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());
+				    LitePoint lp = YukonSpringHook.getBean(PointDao.class).getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());
 				    if( lp != null)
 				    {
 				    	if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT) {
@@ -646,7 +647,7 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 				case INTERVALS_PER_HOUR:	//NOT A REAL COLUMN!!!
 				{
 				    int divisor = -1;
-				    LitePoint lp = DaoFactory.getPointDao().getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());
+				    LitePoint lp = YukonSpringHook.getBean(PointDao.class).getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());
 				    if( lp != null)
 				    {
 				    	if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT) {
@@ -674,7 +675,7 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 				case INTERVALS_PER_DAY://NOT A REAL COLUMN!!!
 				{
 				    int divisor = -1;
-				    LitePoint lp = DaoFactory.getPointDao().getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());
+				    LitePoint lp = YukonSpringHook.getBean(PointDao.class).getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());
 				    if( lp != null)
 				    {
 				    	if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT) {

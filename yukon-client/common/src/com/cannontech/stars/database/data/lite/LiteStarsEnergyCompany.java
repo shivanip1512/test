@@ -31,12 +31,14 @@ import com.cannontech.common.util.IterableUtils;
 import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AddressDao;
+import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -61,6 +63,7 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.operator.ConsumerInfoRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
@@ -233,7 +236,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         setLiteID( energyCompany.getEnergyCompanyId().intValue() );
         setName( energyCompany.getName() );
         setPrimaryContactID( energyCompany.getPrimaryContactId().intValue() );
-        setUser(DaoFactory.getYukonUserDao().getLiteYukonUser(energyCompany.getUserId()));
+        setUser(YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(energyCompany.getUserId()));
     }
     
     public void initialize() {
@@ -853,7 +856,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         }
         
         try {
-            String value = DaoFactory.getAuthDao().getRolePropertyValue(user, ConsumerInfoRole.ORDER_NUMBER_AUTO_GEN);
+            String value = YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(user, ConsumerInfoRole.ORDER_NUMBER_AUTO_GEN);
             if (value != null && value.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
                 value = "";
             }
@@ -1386,7 +1389,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
      * otherwise it returns a list of LiteStarsCustAccountInformation.
      */
     public List<Object> searchAccountByPhoneNo(String phoneNo, boolean searchMembers) {
-        LiteContact[] contacts = DaoFactory.getContactDao().getContactsByPhoneNo(
+        LiteContact[] contacts = YukonSpringHook.getBean(ContactDao.class).getContactsByPhoneNo(
                 phoneNo, new int[] {YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE}, true );
         
 		int[] contactIDs = new int[ contacts.length ];

@@ -1,7 +1,9 @@
 <%@ page language="java" %>
 <%@ page import="java.util.*" %>
 
-<%@ page import="com.cannontech.core.dao.DaoFactory" %>
+
+<%@ page import="com.cannontech.spring.YukonSpringHook"%> 
+<%@ page import="com.cannontech.stars.energyCompany.dao.EnergyCompanyDao" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole"%>
 <%@ page import="com.cannontech.roles.application.TrendingRole "%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
@@ -28,8 +30,8 @@
 	{
 	}
 	Integer energyCompanyID = null;
-	if(liteYukonUser != null && DaoFactory.getEnergyCompanyDao().getEnergyCompany(liteYukonUser) != null)
-		energyCompanyID = new Integer( DaoFactory.getEnergyCompanyDao().getEnergyCompany(liteYukonUser).getEnergyCompanyID());
+	if(liteYukonUser != null && YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(liteYukonUser) != null)
+		energyCompanyID = new Integer( YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(liteYukonUser).getEnergyCompanyID());
 		
     Class[] types = { Integer.class,String.class };    
     java.lang.String sqlString =  "SELECT DISTINCT GDEF.GRAPHDEFINITIONID, GDEF.NAME " +

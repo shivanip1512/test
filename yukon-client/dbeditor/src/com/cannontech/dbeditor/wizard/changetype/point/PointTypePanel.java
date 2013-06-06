@@ -3,10 +3,11 @@ package com.cannontech.dbeditor.wizard.changetype.point;
 import java.util.List;
 
 import com.cannontech.common.pao.PaoClass;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -708,7 +709,7 @@ public Object getValue(Object val)
 
 		//fill vector with points of same deviceID
         int deviceId = ((PointBase)val).getPoint().getPaoID();
-        List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceId);
+        List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(deviceId);
         for (LitePoint p : points) {
             if(type == p.getPointType()) {
                 usedPointOffsetsVector.add(p);

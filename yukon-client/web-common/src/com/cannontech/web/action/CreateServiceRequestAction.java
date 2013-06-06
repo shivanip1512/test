@@ -12,7 +12,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.spring.YukonSpringHook;
@@ -258,7 +258,7 @@ public class CreateServiceRequestAction implements ActionBase {
 
        	if (VersionTools.crsPtjIntegrationExists())
        	{
-           	YukonListEntry listEntry = DaoFactory.getYukonListDao().getYukonListEntry(workOrder.getWorkOrderBase().getCurrentStateID().intValue());
+           	YukonListEntry listEntry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(workOrder.getWorkOrderBase().getCurrentStateID().intValue());
             SAMToCRS_PTJ.handleCRSIntegration(listEntry.getYukonDefID(), workOrder, liteAcctInfo, energyCompany, userID, null);
        	}
        	

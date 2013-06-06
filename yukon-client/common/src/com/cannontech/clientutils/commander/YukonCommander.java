@@ -56,7 +56,9 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.FileFilter;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.CommandDao;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -265,7 +267,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			if( getCommandPanel().getAvailableCommandsComboBox().getSelectedIndex() > 0) //0 is default "select"
 			{
 				String rawCommandString = getYC().getCommandFromLabel(getCommandPanel().getAvailableCommandsComboBox().getSelectedItem().toString() );
-				String commandString = DaoFactory.getCommandDao().loadPromptValue(rawCommandString.trim(), this);
+				String commandString = YukonSpringHook.getBean(CommandDao.class).loadPromptValue(rawCommandString.trim(), this);
 	            if( commandString != null) { //null is a cancel from prompt
     				getCommandPanel().getExecuteCommandComboBoxTextField().setText( commandString );
     				getCommandPanel().getExecuteButton().requestFocusInWindow();
@@ -1483,7 +1485,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		if( event.getKeyCode() == KeyEvent.VK_ENTER && event.getSource() == getCommandPanel().getExecuteCommandComboBoxTextField() ||
 				event.getKeyCode() == KeyEvent.VK_ENTER && event.getSource() == getCommandPanel().getExecuteButton())
 		{
-			String commandString = DaoFactory.getCommandDao().loadPromptValue((String) getCommandPanel().getExecuteCommandComboBoxTextField().getText().trim(), this);
+			String commandString = YukonSpringHook.getBean(CommandDao.class).loadPromptValue((String) getCommandPanel().getExecuteCommandComboBoxTextField().getText().trim(), this);
 			if (commandString != null)	//null is a cancel from prompt
 			{
 			    try {
@@ -2008,7 +2010,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 				lpao = (LiteYukonPAObject) selectedItem;
 			}
 			else if( selectedItem instanceof LiteDeviceMeterNumber){
-				lpao = DaoFactory.getPaoDao().getLiteYukonPAO(((LiteDeviceMeterNumber)selectedItem).getDeviceID());
+				lpao = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(((LiteDeviceMeterNumber)selectedItem).getDeviceID());
 			}
 			
 			if (lpao != null) {
@@ -2033,7 +2035,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		for (int i = 0; i < getYC().getLiteDeviceTypeCommandsVector().size(); i++)
 		{
 			LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand)getYC().getLiteDeviceTypeCommandsVector().get(i);
-			LiteCommand  lc = DaoFactory.getCommandDao().getCommand(ldtc.getCommandID());
+			LiteCommand  lc = YukonSpringHook.getBean(CommandDao.class).getCommand(ldtc.getCommandID());
 			if( ldtc.isVisible() && yc.isAllowCommand(lc.getCommand()))
 				getCommandPanel().getAvailableCommandsComboBox().addItem( lc.getLabel());
 		}
@@ -2178,25 +2180,25 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			boolean needDefault = true;
 			ClientSession session = ClientSession.getInstance();
 
-			DaoFactory.getAuthDao().getRolePropertyValue(session.getUser(), CommanderRole.COMMAND_MSG_PRIORITY);
+			YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(session.getUser(), CommanderRole.COMMAND_MSG_PRIORITY);
 						
 			
-			if( Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(session.getUser(), CommanderRole.DCU_SA305_SERIAL_MODEL)).booleanValue())
+			if( Boolean.valueOf(YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(session.getUser(), CommanderRole.DCU_SA305_SERIAL_MODEL)).booleanValue())
 			{
 				tempModel.add( TreeModelEnum.EDITABLE_SA305_SERIAL);
 				needDefault = false;
 			}
-			if( Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(session.getUser(), CommanderRole.DCU_SA205_SERIAL_MODEL)).booleanValue())
+			if( Boolean.valueOf(YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(session.getUser(), CommanderRole.DCU_SA205_SERIAL_MODEL)).booleanValue())
 			{
 				tempModel.add( TreeModelEnum.EDITABLE_SA205_SERIAL);
 				needDefault = false;
 			}
-			if( Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(session.getUser(), CommanderRole.EXPRESSCOM_SERIAL_MODEL)).booleanValue())
+			if( Boolean.valueOf(YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(session.getUser(), CommanderRole.EXPRESSCOM_SERIAL_MODEL)).booleanValue())
 			{
 				tempModel.add( TreeModelEnum.EDITABLE_EXPRESSCOM_SERIAL);
 				needDefault = false;
 			}
-			if( Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(session.getUser(), CommanderRole.VERSACOM_SERIAL_MODEL)).booleanValue())
+			if( Boolean.valueOf(YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(session.getUser(), CommanderRole.VERSACOM_SERIAL_MODEL)).booleanValue())
 			{
 				tempModel.add( TreeModelEnum.EDITABLE_VERSACOM_SERIAL);
 				needDefault = false;

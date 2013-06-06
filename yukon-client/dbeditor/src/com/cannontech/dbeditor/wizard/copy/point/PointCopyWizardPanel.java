@@ -4,12 +4,13 @@ package com.cannontech.dbeditor.wizard.copy.point;
  * This type was created in VisualAge.
  */
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.spring.YukonSpringHook;
 
 public class PointCopyWizardPanel extends com.cannontech.common.wizard.WizardPanel {
 	private PointCopyNameDevicePanel pointCopyNameDevicePanel;
@@ -182,7 +183,7 @@ public void setPointDeviceID(Object val)
 {
 	PointBase point = (PointBase)val;
 
-	LitePoint lPoint = DaoFactory.getPointDao().getLitePoint( point.getPoint().getPointID().intValue() );
+	LitePoint lPoint = YukonSpringHook.getBean(PointDao.class).getLitePoint( point.getPoint().getPointID().intValue() );
 	
 	pointDeviceID = lPoint.getPaobjectID();
 }

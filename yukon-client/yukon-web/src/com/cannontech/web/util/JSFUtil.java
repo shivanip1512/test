@@ -16,9 +16,10 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 
 public abstract class JSFUtil {
@@ -84,7 +85,7 @@ public abstract class JSFUtil {
     }
     
     private static SelectItem[] convertSelectionList(int selectionListId, boolean byName) {
-        YukonSelectionList yukonSelectionList = DaoFactory.getYukonListDao()
+        YukonSelectionList yukonSelectionList = YukonSpringHook.getBean(YukonListDao.class)
                                                           .getYukonSelectionList(selectionListId);
         List<YukonListEntry> yukonListEntries = yukonSelectionList.getYukonListEntries();
         SelectItem[] items = new SelectItem[yukonListEntries.size()];

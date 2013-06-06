@@ -4,7 +4,7 @@ import java.awt.Frame;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.data.lite.LiteBase;
@@ -300,7 +300,7 @@ public class LocateRouteDialog extends javax.swing.JDialog implements java.awt.e
 	 */
 	private LiteYukonPAObject[] getAllRoutes() {
         if( allRoutes == null) {
-            allRoutes = DaoFactory.getPaoDao().getAllLiteRoutes();
+            allRoutes = YukonSpringHook.getBean(PaoDao.class).getAllLiteRoutes();
             for (LiteYukonPAObject route : allRoutes) {
                 getRouteComboBox().addItem(route);
             }

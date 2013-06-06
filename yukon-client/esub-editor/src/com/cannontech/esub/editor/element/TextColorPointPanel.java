@@ -22,14 +22,16 @@ import javax.swing.event.TreeSelectionListener;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TitleBorder;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.esub.editor.Util;
 import com.cannontech.esub.element.DynamicText;
+import com.cannontech.spring.YukonSpringHook;
 
 public class TextColorPointPanel extends DataInputPanel implements ActionListener, TreeSelectionListener {
     private javax.swing.JPanel pointPanel = null;
@@ -462,7 +464,7 @@ public void setValue(Object o)
     int lpid = dynamicText.getColorPointID();
     LitePoint litePoint = null;
     try {
-        litePoint = DaoFactory.getPointDao().getLitePoint(lpid);
+        litePoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(lpid);
     }catch(NotFoundException nfe) {
         CTILogger.error("The color point (pointId:"+ lpid + ") for this DynamicText might have been deleted!", nfe);
     }
@@ -490,7 +492,7 @@ public void resetPreviewPanelColors(LitePoint p)
     List<JLabel> colors = new ArrayList<JLabel>(12);
     if(p != null)
     {
-        LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(p.getStateGroupID());
+        LiteStateGroup lsg = YukonSpringHook.getBean(StateDao.class).getLiteStateGroup(p.getStateGroupID());
         List<LiteState> states = lsg.getStatesList();
         
         for(int i = 0; i < states.size(); i++) 
@@ -537,7 +539,7 @@ public void resetPreviewPanelColors(LitePoint p)
 public void setPreviewPanelColors(LitePoint p) 
 {
     List colors = new ArrayList(12);
-    LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(p.getStateGroupID());
+    LiteStateGroup lsg = YukonSpringHook.getBean(StateDao.class).getLiteStateGroup(p.getStateGroupID());
     List states = lsg.getStatesList();
     
     for(int i = 0; i < states.size(); i++) 

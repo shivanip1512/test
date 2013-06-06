@@ -2,7 +2,8 @@ package com.cannontech.database.data.lite;
 
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.spring.YukonSpringHook;
 
 /*
  * This class exists so Objects (specifically Vectors) of RawPointHistory do not need to be so heavy.
@@ -40,7 +41,7 @@ public class LiteRawPointHistory
 	 */
 	public String toString()
 	{
-		return DaoFactory.getPointDao().getPointName(getPointID()) + ":" + getTimeStamp() + ":" + getValue();
+		return YukonSpringHook.getBean(PointDao.class).getPointName(getPointID()) + ":" + getTimeStamp() + ":" + getValue();
 	}
 
 	/**

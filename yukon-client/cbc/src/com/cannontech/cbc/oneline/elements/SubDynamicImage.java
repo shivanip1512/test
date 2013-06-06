@@ -4,12 +4,13 @@ import org.apache.commons.lang.Validate;
 
 import com.cannontech.cbc.oneline.states.OnelineState;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.message.capcontrol.streamable.SubBus;
+import com.cannontech.spring.YukonSpringHook;
 
 public class SubDynamicImage extends StateImage implements OnelineLxElement {
     SubBus subBusMsg;
@@ -38,7 +39,7 @@ public class SubDynamicImage extends StateImage implements OnelineLxElement {
         int state = -1;
         state = dynamicState.getLiteStateId(subBusMsg, state);
 
-        ls = DaoFactory.getStateDao().findLiteState(group.getStateGroupID(),
+        ls = YukonSpringHook.getBean(StateDao.class).findLiteState(group.getStateGroupID(),
                                                    state);
 
         if (ls != null) {

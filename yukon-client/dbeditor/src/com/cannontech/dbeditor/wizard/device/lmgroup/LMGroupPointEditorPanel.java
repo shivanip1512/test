@@ -2,12 +2,13 @@ package com.cannontech.dbeditor.wizard.device.lmgroup;
 
 import java.util.List;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -332,7 +333,7 @@ private void initComboBoxes()
 			     || liteDevice.getPaoType().isCbc()
 				 || DeviceTypesFuncs.isMCT(liteDevice.getPaoType().getDeviceTypeId()) )
 			{
-                List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(liteDevice.getYukonID());
+                List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(liteDevice.getYukonID());
 				
 				//pointList gets inserted into the hashtable
 				java.util.ArrayList pointList = new java.util.ArrayList(points.size() / 2);

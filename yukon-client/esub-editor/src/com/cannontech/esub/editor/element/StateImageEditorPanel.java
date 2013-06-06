@@ -28,7 +28,8 @@ import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.DataInputPanelListener;
 import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.YukonImageDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteBase;
@@ -43,6 +44,7 @@ import com.cannontech.esub.element.FunctionElement;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.conns.ConnPool;
 
 /**
@@ -565,7 +567,7 @@ public void resetPreviewPanelImages(LitePoint p)
     List images = new ArrayList(12);
     if(p != null)
     {
-        LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(p.getStateGroupID());
+        LiteStateGroup lsg = YukonSpringHook.getBean(StateDao.class).getLiteStateGroup(p.getStateGroupID());
         List states = lsg.getStatesList();
         
         for(int i = 0; i < states.size(); i++) 
@@ -574,7 +576,7 @@ public void resetPreviewPanelImages(LitePoint p)
             LiteState state = (LiteState)states.get(i);
             int rawStateNumber = state.getStateRawState();
             
-            LiteYukonImage lyi = DaoFactory.getYukonImageDao().getLiteYukonImage(imgId); 
+            LiteYukonImage lyi = YukonSpringHook.getBean(YukonImageDao.class).getLiteYukonImage(imgId); 
             ImageIcon icon; 
             if(lyi == null)
             {
@@ -625,7 +627,7 @@ public void resetPreviewPanelImages(LitePoint p)
 public void setPreviewPanelImages(LitePoint p) 
 {
     List images = new ArrayList(12);
-    LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(p.getStateGroupID());
+    LiteStateGroup lsg = YukonSpringHook.getBean(StateDao.class).getLiteStateGroup(p.getStateGroupID());
     List states = lsg.getStatesList();
     
     for(int i = 0; i < states.size(); i++) 
@@ -640,7 +642,7 @@ public void setPreviewPanelImages(LitePoint p)
             imgId = new Integer((Integer)map.get(rawStateNumber)).intValue();
         }
         
-        LiteYukonImage lyi = DaoFactory.getYukonImageDao().getLiteYukonImage(imgId); 
+        LiteYukonImage lyi = YukonSpringHook.getBean(YukonImageDao.class).getLiteYukonImage(imgId); 
         ImageIcon icon; 
         if(lyi == null)
         {

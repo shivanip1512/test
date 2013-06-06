@@ -12,8 +12,8 @@ import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.GridAdvisorBase;
@@ -200,7 +200,7 @@ public Dimension getPreferredSize() {
 public Object getValue(Object val) 
 {
 	com.cannontech.database.data.device.DeviceBase device = (com.cannontech.database.data.device.DeviceBase)val;
-	int groupId = DaoFactory.getPaoDao().getNextPaoId();
+	int groupId = YukonSpringHook.getBean(PaoDao.class).getNextPaoId();
 	
 	String nameString = getJTextFieldName().getText();
 	device.setPAOName( nameString );

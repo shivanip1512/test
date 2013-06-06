@@ -14,11 +14,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.util.HTMLGenerator;
 import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 
 /**
@@ -83,7 +84,7 @@ public class HTMLFilter implements Filter {
 		 
 			//Check if this user has access to this drawing!	
 
-			if( DaoFactory.getAuthDao().getRole(user, d.getMetaElement().getRoleID()) != null) {
+			if( YukonSpringHook.getBean(AuthDao.class).getRole(user, d.getMetaElement().getRoleID()) != null) {
 				htmlGenerator.generate(hres.getWriter(), d);
 			}
 		}

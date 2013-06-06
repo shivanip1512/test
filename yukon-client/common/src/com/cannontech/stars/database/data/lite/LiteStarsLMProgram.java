@@ -6,7 +6,8 @@ import java.util.List;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author yao
@@ -84,7 +85,7 @@ public class LiteStarsLMProgram {
 			if (liteEvent.getProgramID() != getProgramID())
 				continue;
 			
-			YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( liteEvent.getActionID() );
+			YukonListEntry entry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( liteEvent.getActionID() );
 			
 			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED ||
 				entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_SIGNUP)

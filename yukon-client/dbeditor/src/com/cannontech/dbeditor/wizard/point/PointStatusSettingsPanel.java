@@ -1,8 +1,9 @@
 package com.cannontech.dbeditor.wizard.point;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -248,7 +249,7 @@ private void setInitialComboBoxes()
 		getJComboBoxInitialState().removeAllItems();
 	
 	//Load all the states for the stategroup
-	LiteState[] states = DaoFactory.getStateDao().getLiteStates(stateGroupID);
+	LiteState[] states = YukonSpringHook.getBean(StateDao.class).getLiteStates(stateGroupID);
 	for(int j=0;j<states.length;j++)
 	{				
 		getJComboBoxInitialState().addItem(states[j]);
@@ -266,7 +267,7 @@ public void setValue(Object val) {
 		getStateTableComboBox().removeAllItems();
 
 
-	LiteStateGroup[] allStateGroups = DaoFactory.getStateDao().getAllStateGroups();
+	LiteStateGroup[] allStateGroups = YukonSpringHook.getBean(StateDao.class).getAllStateGroups();
 	for(int i=0;i<allStateGroups.length;i++)
 	{
 		LiteStateGroup grp = (LiteStateGroup)allStateGroups[i];

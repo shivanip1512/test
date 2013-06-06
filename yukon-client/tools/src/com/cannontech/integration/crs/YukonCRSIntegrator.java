@@ -13,7 +13,7 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.LogWriter;
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -368,7 +368,7 @@ public final class YukonCRSIntegrator
 	        	if( workTypeEntry == null)
 	        		errorMsg.append("Invalid PTJType found: " + ptjType + "; ");
 	        	
-	        	liteYukonUser = DaoFactory.getYukonUserDao().findUserByUsername(crsLoggedUser);
+	        	liteYukonUser = YukonSpringHook.getBean(YukonUserDao.class).findUserByUsername(crsLoggedUser);
 	        	if( liteYukonUser == null)
 	        		errorMsg.append("Invalid CRSLoggedUser found: " + crsLoggedUser + "; ");
         	}
@@ -714,7 +714,7 @@ public final class YukonCRSIntegrator
 	        	if( workTypeEntry == null)
 	        		errorMsg.append("Invalid Work Order Type found (No match for EnergyCompany): " + woType + "; ");
 	        	
-	        	liteYukonUser = DaoFactory.getYukonUserDao().findUserByUsername(username);
+	        	liteYukonUser = YukonSpringHook.getBean(YukonUserDao.class).findUserByUsername(username);
 	        	if( liteYukonUser == null)
 	        		errorMsg.append("Invalid UserName found: " + username + "; ");
         	}

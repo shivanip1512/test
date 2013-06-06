@@ -4,7 +4,9 @@ import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
@@ -19,6 +21,7 @@ import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 
 
 public class CBCCopyUtils {
@@ -29,11 +32,11 @@ public class CBCCopyUtils {
 	}
 
 	public static void copyAllPointsForPAO(Integer fromID, Integer toID) {
-        List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(fromID);
+        List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(fromID);
 		MultiDBPersistent dbPersistentVector = new MultiDBPersistent();
         
         for (LitePoint point : points) {
-			DBPersistent pointCopy = copy(DaoFactory.getDbPersistentDao()
+			DBPersistent pointCopy = copy(YukonSpringHook.getBean(DBPersistentDao.class)
 					.retrieveDBPersistent(point));
 			((PointBase) pointCopy).getPoint().setPaoID(toID);
 			dbPersistentVector.getDBPersistentVector().add(pointCopy);
@@ -129,16 +132,16 @@ public class CBCCopyUtils {
 		DBPersistent originalDbPers = null;
 		if (type == 0 || type == 1)
         {
-            LiteBase  lite= DaoFactory.getPaoDao().getLiteYukonPAO(copyObjectID);
+            LiteBase  lite= YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(copyObjectID);
            if(lite != null)
            {
-               originalDbPers = DaoFactory.getDbPersistentDao().retrieveDBPersistent(lite);
+               originalDbPers = YukonSpringHook.getBean(DBPersistentDao.class).retrieveDBPersistent(lite);
            }
         }
          else  if (type  == 2){
-			LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(copyObjectID);
+			LitePoint litePoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(copyObjectID);
 			if (litePoint != null) {
-				originalDbPers = DaoFactory.getDbPersistentDao().retrieveDBPersistent(litePoint);
+				originalDbPers = YukonSpringHook.getBean(DBPersistentDao.class).retrieveDBPersistent(litePoint);
 			}
 		}
 		return originalDbPers;

@@ -1,4 +1,3 @@
-<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@page import="com.cannontech.system.GlobalSettingType"%>
 <%@page import="com.cannontech.spring.YukonSpringHook" %>
 <%@page import="com.cannontech.system.dao.GlobalSettingDao" %>

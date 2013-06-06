@@ -6,7 +6,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
@@ -24,6 +25,7 @@ import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.operator.MeteringRole;
 import com.cannontech.roles.operator.OddsForControlRole;
+import com.cannontech.spring.YukonSpringHook;
 
 /*
  * Created on May 22, 2003
@@ -117,7 +119,7 @@ public class DumpRoles {
 		System.out.println("\nRoles defined but not in the database");
 		for(Iterator i = roleIDList.iterator(); i.hasNext();) {
 			Integer id = (Integer) i.next();
-			if(DaoFactory.getAuthDao().getRole(id.intValue()) == null) {
+			if(YukonSpringHook.getBean(AuthDao.class).getRole(id.intValue()) == null) {
 				System.out.println(roleIDMap.get(id));		
 			}
 		}
@@ -125,7 +127,7 @@ public class DumpRoles {
 		System.out.println("\nProperties defined but not in the database");
 		for(Iterator i = propIDList.iterator(); i.hasNext();) {
 			Integer id = (Integer) i.next();
-			if(DaoFactory.getRoleDao().getRoleProperty(id.intValue()) == null) {
+			if(YukonSpringHook.getBean(RoleDao.class).getRoleProperty(id.intValue()) == null) {
 				System.out.println(propIDMap.get(id));
 			}
 		}

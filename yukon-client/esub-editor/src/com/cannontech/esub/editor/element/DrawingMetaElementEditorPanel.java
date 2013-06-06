@@ -19,11 +19,12 @@ import javax.swing.SpinnerNumberModel;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.esub.editor.EditorPrefs;
 import com.cannontech.esub.element.DrawingMetaElement;
 import com.cannontech.roles.operator.EsubDrawingsRole;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Creation date: (12/5/2002 4:16:03 PM)
@@ -335,7 +336,7 @@ public class DrawingMetaElementEditorPanel extends DataInputPanel {
             try {
                 ivjYukonRoleComboBox = new JComboBox<>();
                 ivjYukonRoleComboBox.setName("YukonRoleComboBox");
-                LiteYukonRole r = DaoFactory.getAuthDao().getRole(EsubDrawingsRole.ROLEID);
+                LiteYukonRole r = YukonSpringHook.getBean(AuthDao.class).getRole(EsubDrawingsRole.ROLEID);
                 ivjYukonRoleComboBox.addItem(r);
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
@@ -445,7 +446,7 @@ public class DrawingMetaElementEditorPanel extends DataInputPanel {
         getWidthSpinner().setValue(new Integer(e.getDrawingWidth()));
         getHeightSpinner().setValue(new Integer(e.getDrawingHeight()));
         getColorButton().setBackground(new Color(e.getDrawingRGBColor()));
-        getYukonRoleComboBox().setSelectedItem(DaoFactory.getAuthDao().getRole(e.getRoleID()));		
+        getYukonRoleComboBox().setSelectedItem(YukonSpringHook.getBean(AuthDao.class).getRole(e.getRoleID()));		
     }
 
     /**

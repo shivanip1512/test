@@ -8,9 +8,10 @@ import java.util.TimerTask;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.tags.TagUtils;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AlarmDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointService;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -138,7 +139,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
         if (colorPoint > 0) {
             LitePoint liteColorPoint = null;
             try {
-                liteColorPoint = DaoFactory.getPointDao().getLitePoint(colorPoint);
+                liteColorPoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(colorPoint);
             }catch(NotFoundException nfe) {
                 //this point may have been deleted
                 CTILogger.error("LineElement Error: color pointid: " + colorPoint + " not found.");
@@ -161,7 +162,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                     PointValueHolder pData = dynamicDataSource.getPointValue(liteColorPoint.getLiteID());
 
                     if (pData != null) {
-                        LiteState ls = DaoFactory.getStateDao().findLiteState(liteColorPoint.getStateGroupID(), (int) pData.getValue());
+                        LiteState ls = YukonSpringHook.getBean(StateDao.class).findLiteState(liteColorPoint.getStateGroupID(), (int) pData.getValue());
                         if (ls != null) {
                             le.setCurrentColorState(ls);
                             le.updateColor();
@@ -175,7 +176,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
             
             LitePoint liteThicknessPoint = null;
             try {
-                liteThicknessPoint = DaoFactory.getPointDao().getLitePoint(thicknessPoint);
+                liteThicknessPoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(thicknessPoint);
             }catch(NotFoundException nfe) {
                 //this point may have been deleted
                 CTILogger.error("LineElement Error: thickness pointid: " + thicknessPoint + " not found.");
@@ -196,7 +197,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                     PointValueHolder pData = dynamicDataSource.getPointValue(liteThicknessPoint.getLiteID());
 
                     if (pData != null) {
-                        LiteState ls = DaoFactory.getStateDao().findLiteState(liteThicknessPoint.getStateGroupID(), (int) pData.getValue());
+                        LiteState ls = YukonSpringHook.getBean(StateDao.class).findLiteState(liteThicknessPoint.getStateGroupID(), (int) pData.getValue());
                         if (ls != null) {
                             le.setCurrentThicknessState(ls);
                             le.updateThickness();
@@ -210,7 +211,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
             
             LitePoint liteArrowPoint = null;
             try {
-                liteArrowPoint = DaoFactory.getPointDao().getLitePoint(arrowPoint);
+                liteArrowPoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(arrowPoint);
             }catch(NotFoundException nfe) {
                 //this point may have been deleted
                 CTILogger.error("LineElement Error: arrow pointid: " + arrowPoint + " not found.");
@@ -231,7 +232,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                     PointValueHolder pData = dynamicDataSource.getPointValue(liteArrowPoint.getLiteID());
 
                     if (pData != null) {
-                        LiteState ls = DaoFactory.getStateDao().findLiteState(liteArrowPoint.getStateGroupID(), (int) pData.getValue());
+                        LiteState ls = YukonSpringHook.getBean(StateDao.class).findLiteState(liteArrowPoint.getStateGroupID(), (int) pData.getValue());
                         if (ls != null) {
                             le.setCurrentArrowState(ls);
                             le.updateArrow();
@@ -244,7 +245,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
         if (opacityPoint > 0) {
             LitePoint liteOpacityPoint = null;
             try {
-                liteOpacityPoint = DaoFactory.getPointDao().getLitePoint(opacityPoint);
+                liteOpacityPoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(opacityPoint);
             }catch(NotFoundException nfe) {
                 //this point may have been deleted
                 CTILogger.error("LineElement Error: opacity pointid: " + opacityPoint + " not found.");
@@ -265,7 +266,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                     PointValueHolder pData = dynamicDataSource.getPointValue(liteOpacityPoint.getLiteID());
 
                     if (pData != null) {
-                        LiteState ls = DaoFactory.getStateDao().findLiteState(liteOpacityPoint.getStateGroupID(), (int) pData.getValue());
+                        LiteState ls = YukonSpringHook.getBean(StateDao.class).findLiteState(liteOpacityPoint.getStateGroupID(), (int) pData.getValue());
                         if (ls != null) {
                             le.setCurrentOpacityState(ls);
                             le.updateOpacity();
@@ -289,7 +290,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
             paoIdsList.add(paoId);
         }
         try {
-            List<Signal> deviceSignals = DaoFactory.getAlarmDao().getSignalsForPaos(paoIdsList);
+            List<Signal> deviceSignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForPaos(paoIdsList);
             for (Iterator<Signal> iter = deviceSignals.iterator(); iter.hasNext();) {
                 Signal signal = iter.next();
                 // find out why there is a null in the list!
@@ -315,7 +316,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
         }
         
         try {
-            List<Signal> pointSignals = DaoFactory.getAlarmDao().getSignalsForPoints(pointIdsList);
+            List<Signal> pointSignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForPoints(pointIdsList);
             for (Iterator<Signal> iter = pointSignals.iterator(); iter.hasNext();) {
                 Signal signal = iter.next();
                 //find out why there is a null in the list!
@@ -338,7 +339,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
             
         int[] alarmCategoryIds = te.getAlarmCategoryIds();
         for (int j = 0; !inAlarm && j < alarmCategoryIds.length; j++) {
-            List<Signal> alarmCategorySignals = DaoFactory.getAlarmDao().getSignalsForAlarmCategory(alarmCategoryIds[j]);
+            List<Signal> alarmCategorySignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForAlarmCategory(alarmCategoryIds[j]);
             for (Iterator<Signal> iter = alarmCategorySignals.iterator(); iter.hasNext();) {
                 Signal signal = iter.next();
                 if (TagUtils.isAlarmUnacked(signal.getTags())) {
@@ -391,7 +392,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
         }
         
         LitePoint lp = null;
-        PointDao pointDao = DaoFactory.getPointDao();
+        PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
         try { 
             lp = pointDao.getLitePoint(si.getPointID());
 
@@ -408,7 +409,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
             } else {
                 PointValueHolder pData = dynamicDataSource.getPointValue(lp.getLiteID());
                 if (pData != null) {
-                    LiteState ls = DaoFactory.getStateDao().findLiteState(lp.getStateGroupID(), (int) pData.getValue());
+                    LiteState ls = YukonSpringHook.getBean(StateDao.class).findLiteState(lp.getStateGroupID(), (int) pData.getValue());
                     if (ls != null) {
                         si.setCurrentState(ls);
                         si.updateImage();
@@ -442,7 +443,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
         }
         if (colorPoint > 0) {
             try {
-                LitePoint liteColorPoint = DaoFactory.getPointDao().getLitePoint(colorPoint);
+                LitePoint liteColorPoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(colorPoint);
                 if (liteColorPoint.getPointType() == PointTypes.ANALOG_POINT
                     || liteColorPoint.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
                     || liteColorPoint.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT
@@ -457,7 +458,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                     PointValueHolder pData = dynamicDataSource.getPointValue(liteColorPoint.getLiteID());
 
                     if (pData != null) {
-                        LiteState ls = DaoFactory.getStateDao().findLiteState(liteColorPoint.getStateGroupID(), (int) pData.getValue());
+                        LiteState ls = YukonSpringHook.getBean(StateDao.class).findLiteState(liteColorPoint.getStateGroupID(), (int) pData.getValue());
                         if (ls != null) {
                             dt.setCurrentColorState(ls);
                             dt.updateColor();
@@ -473,7 +474,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
         
         if (textPoint > 0) {
             try {
-                LitePoint liteTextPoint = DaoFactory.getPointDao().getLitePoint(textPoint);
+                LitePoint liteTextPoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(textPoint);
 
                 if (liteTextPoint.getPointType() == PointTypes.ANALOG_POINT
                     || liteTextPoint.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
@@ -489,7 +490,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                     PointValueHolder pData = dynamicDataSource.getPointValue(liteTextPoint.getLiteID());
 
                     if (pData != null) {
-                        LiteState ls = DaoFactory.getStateDao()
+                        LiteState ls = YukonSpringHook.getBean(StateDao.class)
                             .findLiteState(liteTextPoint.getStateGroupID(),
                                           (int) pData.getValue());
                         if (ls != null) {

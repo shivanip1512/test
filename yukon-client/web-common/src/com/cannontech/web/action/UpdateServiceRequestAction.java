@@ -10,7 +10,7 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.spring.YukonSpringHook;
@@ -130,7 +130,7 @@ public class UpdateServiceRequestAction implements ActionBase {
 //TODO if serviceCompany changes, change state?
 	           	if (VersionTools.crsPtjIntegrationExists())
 	           	{
-	           		YukonListEntry listEntry = DaoFactory.getYukonListDao().getYukonListEntry(updateOrder.getCurrentState().getEntryID());
+	           		YukonListEntry listEntry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(updateOrder.getCurrentState().getEntryID());
                     SAMToCRS_PTJ.handleCRSIntegration(listEntry.getYukonDefID(), order, liteAcctInfo, liteStarsEC, user.getUserID(), null);
 	           	}
 			}

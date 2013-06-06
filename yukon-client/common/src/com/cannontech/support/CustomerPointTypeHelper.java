@@ -13,7 +13,6 @@ import com.cannontech.cc.model.CICustomerPointData;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.common.exception.PointException;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.SimplePointAccessDao;
@@ -32,6 +31,7 @@ import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.spring.YukonSpringHook;
 
 public class CustomerPointTypeHelper {
     private CustomerPointTypeLookup pointTypeLookup;
@@ -125,7 +125,7 @@ public class CustomerPointTypeHelper {
         int pointId = 0;
         boolean found = false;
         // see if point already exists
-        List<LitePoint> litePointsForPaObject = DaoFactory.getPointDao().getLitePointsByPaObjectId(customerDevice.getLiteID());
+        List<LitePoint> litePointsForPaObject = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(customerDevice.getLiteID());
         for (LitePoint point : litePointsForPaObject) {
             if (point.getPointName().equals(pointName)) {
                 pointId = point.getPointID();
@@ -134,7 +134,7 @@ public class CustomerPointTypeHelper {
             }
         }
         if (!found) {
-            pointId = DaoFactory.getPointDao().getNextPointId();
+            pointId = YukonSpringHook.getBean(PointDao.class).getNextPointId();
             PointBase point = PointFactory.createAnalogPoint(pointName, 
                                                              customerDevice.getYukonID(), 
                                                              pointId, 

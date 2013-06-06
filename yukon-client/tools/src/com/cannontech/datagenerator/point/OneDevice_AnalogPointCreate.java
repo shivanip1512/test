@@ -5,7 +5,7 @@ package com.cannontech.datagenerator.point;
  * @author: 
  */
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -13,6 +13,7 @@ import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.spring.YukonSpringHook;
 public class OneDevice_AnalogPointCreate extends PointCreate
 {
 	int deviceID = -1;
@@ -33,7 +34,7 @@ public class OneDevice_AnalogPointCreate extends PointCreate
 	public boolean create()  {
 		CTILogger.info("Starting One Device Analog Point creation process...");
 
-		LiteYukonPAObject litePaobject = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
+		LiteYukonPAObject litePaobject = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(deviceID);
 	
 		//create an object to hold all of our DBPersistant objects
 		SmartMultiDBPersistent multi = new SmartMultiDBPersistent();
@@ -42,7 +43,7 @@ public class OneDevice_AnalogPointCreate extends PointCreate
 		multi.setCreateNewPAOIDs( false );
 	
 		int addCount = 0;
-		PointDao pointDao = DaoFactory.getPointDao();
+		PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
 		for (int i = 1; i < createCount+1; i++)
 		{
 		    int pointID = pointDao.getNextPointId();

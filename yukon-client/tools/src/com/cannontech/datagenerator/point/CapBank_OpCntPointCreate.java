@@ -16,7 +16,6 @@ import java.util.Vector;
 
 import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
@@ -71,7 +70,7 @@ public class CapBank_OpCntPointCreate extends PointCreate
 		// if this is not set to false it will create its own PointIDs
 		multi.setCreateNewPAOIDs( false );
 	
-        PointDao pointDao = DaoFactory.getPointDao();
+        PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
 		int addCount = 0;
 		for (LiteYukonPAObject litePaobject: opCountDevices) {
 			

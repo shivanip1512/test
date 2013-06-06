@@ -2,7 +2,6 @@ package com.cannontech.dbeditor;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.PropertyPanel;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.db.DBPersistent;

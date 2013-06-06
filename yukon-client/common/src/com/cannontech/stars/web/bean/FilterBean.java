@@ -11,7 +11,7 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.operator.AdministratorRole;
@@ -88,7 +88,7 @@ public class FilterBean
     
     public boolean getManageMembers()
     {
-        return DaoFactory.getAuthDao().checkRoleProperty(currentUser, AdministratorRole.ADMIN_MANAGE_MEMBERS) && (energyCompany.hasChildEnergyCompanies());
+        return YukonSpringHook.getBean(AuthDao.class).checkRoleProperty(currentUser, AdministratorRole.ADMIN_MANAGE_MEMBERS) && (energyCompany.hasChildEnergyCompanies());
     }
     
     public YukonSelectionList getAvailableFilters() {

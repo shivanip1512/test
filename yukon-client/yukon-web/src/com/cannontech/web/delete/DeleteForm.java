@@ -10,7 +10,6 @@ import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DBDeletionDao;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -153,10 +152,10 @@ public abstract class DeleteForm extends DBEditorForm {
 
         try {
             //get the info about this possible deletion candidate
-            delRes = DaoFactory.getDbDeletionDao().getDeleteInfo( 
+            delRes = YukonSpringHook.getBean(DBDeletionDao.class).getDeleteInfo( 
                     delItem.getDbPersistent(), delItem.getDbPersistent().toString());
                 
-            int res = DaoFactory.getDbDeletionDao().deletionAttempted( delRes );
+            int res = YukonSpringHook.getBean(DBDeletionDao.class).deletionAttempted( delRes );
             delItem.setDeleteAllowed( DBDeletionDao.STATUS_DISALLOW != res );
             
             delItem.setWarningMsg(

@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.util.StringUtils;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -73,7 +73,7 @@ public class ClearAlarm extends HttpServlet {
 	 * @param user
 	 */
 	private void ackDevice(int deviceId, Command cmd) {
-        List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceId);
+        List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(deviceId);
         for (LitePoint point : points) {
 			ackPoint(point.getPointID(), cmd);	
 		}

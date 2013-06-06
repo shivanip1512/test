@@ -17,7 +17,7 @@ import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.gui.util.TreeFindPanel;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.data.lite.LiteBase;
@@ -25,6 +25,7 @@ import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -718,7 +719,7 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 	for(int h = 0; h < availablePrograms.length; h++)
 	{
 		Integer programID = new Integer(((LiteYukonPAObject)availablePrograms[h]).getLiteID());
-		LiteYukonPAObject thePAO = DaoFactory.getPaoDao().getLiteYukonPAO(programID.intValue());
+		LiteYukonPAObject thePAO = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(programID.intValue());
 		
 		DefaultComboBoxModel comboModel = new DefaultComboBoxModel();
 		//do the gears, man
@@ -889,7 +890,7 @@ public void setValue(Object o)
 	{
 		LMControlScenarioProgram lightProgram = (LMControlScenarioProgram)assignedPrograms.elementAt(j);
 		Integer progID = lightProgram.getProgramID();
-		LiteYukonPAObject thePAO = DaoFactory.getPaoDao().getLiteYukonPAO(progID.intValue());
+		LiteYukonPAObject thePAO = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(progID.intValue());
 		LiteGear startingGear = null;
 				
 		//do the gears, man

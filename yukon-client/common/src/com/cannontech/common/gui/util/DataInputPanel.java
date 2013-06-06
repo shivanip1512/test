@@ -9,9 +9,10 @@ import javax.swing.JPanel;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.editor.PropertyPanelEvent;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 
 public abstract class DataInputPanel extends JPanel {
     private List<DataInputPanelListener> listeners = new Vector<DataInputPanelListener>();
@@ -92,7 +93,7 @@ public abstract class DataInputPanel extends JPanel {
      * If thisPaobjectId is the same as a paobjectId, then still considered unique.
      */
     protected boolean isUniquePao(String paoName, String category, String paoClass, int thisPaobjectId) {
-        LiteYukonPAObject liteYukonPAObject = DaoFactory.getPaoDao().findUnique(paoName, category, paoClass);
+        LiteYukonPAObject liteYukonPAObject = YukonSpringHook.getBean(PaoDao.class).findUnique(paoName, category, paoClass);
 
         // if one is found, compare it to deviceBase to see if its this.
         if (liteYukonPAObject != null) {

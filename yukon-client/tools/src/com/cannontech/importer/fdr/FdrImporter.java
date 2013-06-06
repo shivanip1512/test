@@ -8,7 +8,6 @@ import java.util.List;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.fdr.FdrTranslation;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.FdrTranslationDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -146,7 +145,7 @@ public class FdrImporter {
             
             ImporterVirtualDevice  vs = base.getDevice();
             if( vs != null ){
-                List<LitePoint> pnts = DaoFactory.getPointDao().getLitePointsByPaObjectId(vs.getPAObjectID());
+                List<LitePoint> pnts = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(vs.getPAObjectID());
                 int highestOffset = 0;
                 boolean statusPoint = base.getPointParameter("POINTTYPE").equalsIgnoreCase("Status");
                 for( LitePoint p2 : pnts )

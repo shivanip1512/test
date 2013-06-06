@@ -28,8 +28,8 @@ import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DBDeletionDao;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
@@ -235,13 +235,13 @@ public class InventoryManagerUtil {
 		if (liteInv.getDeviceID() > 0 && deleteFromYukon) {
 			
 			DBDeleteResult delRes = new DBDeleteResult( liteInv.getDeviceID(), DBDeletionDao.DEVICE_TYPE );
-			byte status = DaoFactory.getDbDeletionDao().deletionAttempted( delRes );
+			byte status = YukonSpringHook.getBean(DBDeletionDao.class).deletionAttempted( delRes );
 
 			if (status == DBDeletionDao.STATUS_DISALLOW) {
 				throw new NotAuthorizedException(delRes.getDescriptionMsg().toString());
 			}
 			
-			LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO( liteInv.getDeviceID() );
+			LiteYukonPAObject litePao = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO( liteInv.getDeviceID() );
 			DBPersistent dbPer = LiteFactory.convertLiteToDBPers( litePao );
 			dbPersistentDao.performDBChange(dbPer, TransactionType.DELETE);
 		}

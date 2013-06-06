@@ -2,10 +2,12 @@ package com.cannontech.dbeditor.wizard.point;
 
 import java.util.List;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -167,7 +169,7 @@ public Object getValue(Object val) {
 	String name = getNameTextField().getText();
 	com.cannontech.database.data.lite.LiteYukonPAObject liteDevice = (com.cannontech.database.data.lite.LiteYukonPAObject) getDeviceComboBox().getSelectedItem();
 
-    int nextId = DaoFactory.getPointDao().getNextPointId();
+    int nextId = YukonSpringHook.getBean(PointDao.class).getNextPointId();
 	point.setPointID(nextId);
 	point.getPoint().setPointName(name);
 	point.getPoint().setPaoID( new Integer(liteDevice.getYukonID()) );
@@ -367,7 +369,7 @@ public void setValueCore(Object val, Integer initialPAOId)
         }
     }else
     {
-        getDeviceComboBox().addItem(DaoFactory.getPaoDao().getLiteYukonPAO(0));
+        getDeviceComboBox().addItem(YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(0));
         getDeviceComboBox().setEnabled(false);
     }
     

@@ -9,11 +9,12 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.element.FunctionElement;
 //import com.cannontech.esub.element.FunctionElement;
+import com.cannontech.spring.YukonSpringHook;
 
 public class FunctionElementEditorPanel  extends com.cannontech.common.gui.util.DataInputPanel implements TreeSelectionListener{
     
@@ -227,7 +228,7 @@ public class FunctionElementEditorPanel  extends com.cannontech.common.gui.util.
                     getRawStateComboBox().setSelectedIndex(new Integer(rawState).intValue());
                     LitePoint litePoint = null;
                     try {
-                        DaoFactory.getPointDao().getLitePoint(pointID);
+                        YukonSpringHook.getBean(PointDao.class).getLitePoint(pointID);
                     }catch(NotFoundException nfe) {
                         CTILogger.error("The point (pointId:"+ pointID + ") for this Function might have been deleted!", nfe);
                     }

@@ -7,8 +7,9 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.UserUtils;
 
 public class UserLuceneSearcher extends AbstractLuceneSearcher<UltraLightYukonUser> implements UserSearcher {
@@ -41,7 +42,7 @@ public class UserLuceneSearcher extends AbstractLuceneSearcher<UltraLightYukonUs
     }
     
     public String getGroupNamesFromUser(int userid) {
-        List<LiteYukonGroup> groups = DaoFactory.getYukonGroupDao().getGroupsForUser(userid);
+        List<LiteYukonGroup> groups = YukonSpringHook.getBean(YukonGroupDao.class).getGroupsForUser(userid);
         if (groups.size() == 0) { 
             return "";
         }

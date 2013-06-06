@@ -21,7 +21,6 @@
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
 <%@ page import="com.cannontech.yukon.IMACSConnection" %>
 
-<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="java.util.TreeMap" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.ArrayList" %> 

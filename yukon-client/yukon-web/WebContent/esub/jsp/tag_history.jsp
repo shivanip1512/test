@@ -2,10 +2,13 @@
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 
-<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.data.lite.LiteTag" %>
 <%@ page import="com.cannontech.database.data.lite.LitePoint" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
+<%@page import="com.cannontech.core.dao.TagDao"%>
+<%@page import="com.cannontech.core.dao.PointDao"%>
+<%@page import="com.cannontech.core.dao.PaoDao"%>
+<%@page import="com.cannontech.spring.YukonSpringHook"%>
 <%@ page import="com.cannontech.tags.TagManager" %>
 <%@ page import="com.cannontech.database.db.point.TAGLog" %>
 
@@ -18,8 +21,8 @@
 	
 	int pointID = Integer.parseInt(pointIDStr);
 	
-	LitePoint lPoint = DaoFactory.getPointDao().getLitePoint(pointID);
-	LiteYukonPAObject lDevice = DaoFactory.getPaoDao().getLiteYukonPAO(lPoint.getPaobjectID());	
+	LitePoint lPoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(pointID);
+	LiteYukonPAObject lDevice = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(lPoint.getPaobjectID());	
 	
 	List tagLogList = TagManager.getInstance().getTagLog(pointID);
 	java.util.Collections.reverse(tagLogList);
@@ -102,7 +105,7 @@ location="control.jsp?pointid=" + id + "&action=display";
 	Iterator tagLogIter = tagLogList.iterator();
 	while(tagLogIter.hasNext()) {
 		TAGLog tag = (TAGLog) tagLogIter.next();
-		LiteTag lt = DaoFactory.getTagDao().getLiteTag(tag.getTagID().intValue());
+		LiteTag lt = YukonSpringHook.getBean(TagDao.class).getLiteTag(tag.getTagID().intValue());
 %>	      
       
           <tr>

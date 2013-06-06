@@ -1,5 +1,7 @@
-              
-              <tr>
+<%@page import="com.cannontech.core.dao.YukonListDao"%>
+<%@page import="com.cannontech.core.dao.ContactDao"%>
+<%@page import="com.cannontech.spring.YukonSpringHook"%>
+<tr>
                 <td>
                   <br>
                   <!--<CLIP>-->
@@ -14,7 +16,7 @@
                 com.cannontech.database.data.lite.LiteContact liteContact = null;
                 Integer primContID = cust.getCustomer().getPrimaryContactID();
                 if( primContID != null)
-                  liteContact = DaoFactory.getContactDao().getContact(primContID.intValue());
+                  liteContact = YukonSpringHook.getBean(ContactDao.class).getContact(primContID.intValue());
                 if( liteContact != null){
               %>
               <tr>
@@ -28,7 +30,7 @@
                     for (int j = 0; j < notifications.size(); j++){
                       com.cannontech.database.data.lite.LiteContactNotification liteNot = (com.cannontech.database.data.lite.LiteContactNotification)notifications.get(j);
                   %>
-                  <%=DaoFactory.getYukonListDao().getYukonListEntry(liteNot.getNotificationCategoryID()) + ": " + liteNot.getNotification() %><br>
+                  <%=YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteNot.getNotificationCategoryID()) + ": " + liteNot.getNotification() %><br>
                   <%}%>
                   </div>
                   </p>
@@ -45,7 +47,7 @@
                   <div align="center" class="MainText">
                     <%
                       for (int i = 0; i < contactids.length; i++){
-                        liteContact = DaoFactory.getContactDao().getContact(contactids[i]);
+                        liteContact = YukonSpringHook.getBean(ContactDao.class).getContact(contactids[i]);
                     %>
 		            <%= liteContact.getContFirstName() + " " + liteContact.getContLastName() %><br clear="ALL">
                         <%
@@ -53,7 +55,7 @@
                         for (int j = 0; j < notifications.size(); j++){
                           com.cannontech.database.data.lite.LiteContactNotification liteNot = (com.cannontech.database.data.lite.LiteContactNotification)notifications.get(j);
                           %>
-                          <%= DaoFactory.getYukonListDao().getYukonListEntry(liteNot.getNotificationCategoryID()) + ": " + liteNot.getNotification() %><br>
+                          <%= YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(liteNot.getNotificationCategoryID()) + ": " + liteNot.getNotification() %><br>
 		    	      <%}%>
 		    	  <br>
 		            <%}

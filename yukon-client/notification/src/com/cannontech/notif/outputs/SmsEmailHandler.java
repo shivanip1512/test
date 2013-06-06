@@ -1,14 +1,15 @@
 package com.cannontech.notif.outputs;
 
 import com.cannontech.common.util.NotificationTypeChecker;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.notification.NotifType;
+import com.cannontech.spring.YukonSpringHook;
 
 public class SmsEmailHandler extends GenericEmailHandler {
     
     static public final NotificationTypeChecker checker = new NotificationTypeChecker() {
         public boolean validNotifcationType(int notificationCategoryId) {
-            return DaoFactory.getYukonListDao().isShortEmail(notificationCategoryId);
+            return YukonSpringHook.getBean(YukonListDao.class).isShortEmail(notificationCategoryId);
         };
     };
 

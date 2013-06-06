@@ -21,7 +21,8 @@ import java.util.TimeZone;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.cttp.schema.cttp_FailureType;
 import com.cannontech.cttp.schema.cttp_OperationType;
 import com.cannontech.cttp.schema.cttp_UserLoginType;
@@ -33,6 +34,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.pao.PAOowner;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author aaron
@@ -119,7 +121,7 @@ public class Cttp {
 		//TODO: redundant code here?
 		String username = userLogin.getuserID().toString().trim();
 		String password = userLogin.getuserPassword().toString().trim();
-		LiteYukonUser user = DaoFactory.getAuthDao().login(username,password);
+		LiteYukonUser user = YukonSpringHook.getBean(AuthDao.class).login(username,password);
 		
 //		if(user == null) {
 			//CTILogger.info("cttp-UserLogin failure, userid: " + username + " password: " + password + " utilityid: " + userLogin.getutilityID().toString());
@@ -182,7 +184,7 @@ public class Cttp {
 		  if(pao != null) {
 			  for(int i = 0; i < pao.length; i++) {
 				  Integer childID = pao[i].getChildID();
-				  LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO(childID.intValue());
+				  LiteYukonPAObject litePao = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(childID.intValue());
 				  if(litePao != null) {
 				  	 
 					if(litePao.getPaoType() == PaoType.LM_GROUP_VERSACOM ||
@@ -207,7 +209,7 @@ public class Cttp {
 		Iterator mIter = mg.getMacroGroupVector().iterator();
 		while(mIter.hasNext()) {
 			GenericMacro genMac = (GenericMacro) mIter.next();
-			LiteYukonPAObject lg = DaoFactory.getPaoDao().getLiteYukonPAO(genMac.getChildID().intValue());
+			LiteYukonPAObject lg = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(genMac.getChildID().intValue());
 			retList.add(lg);
 		}
 		return retList;

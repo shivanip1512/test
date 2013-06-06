@@ -3,10 +3,11 @@ package com.cannontech.dbeditor.wizard.point;
 import java.util.List;
 
 import com.cannontech.common.pao.PaoClass;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -98,7 +99,7 @@ private void connEtoC4(java.awt.event.ItemEvent arg1) {
 public void deviceComboBox_ItemStateChanged(java.awt.event.ItemEvent itemEvent) {
 
 	getUsedPointIDLabel().setText("");
-    int nextPointId = DaoFactory.getPointDao().getNextPointId();
+    int nextPointId = YukonSpringHook.getBean(PointDao.class).getNextPointId();
     getPointIDSpinner().setValue(new Integer(nextPointId));
   
     revalidate();
@@ -462,7 +463,7 @@ public void PointIDSpinner_ValueChanged(com.klg.jclass.util.value.JCValueEvent a
         pointId = (Integer) pointIdVal;
     }
 
-    LitePoint lp = DaoFactory.getPointDao().getLitePoint(pointId);
+    LitePoint lp = YukonSpringHook.getBean(PointDao.class).getLitePoint(pointId);
     if(lp != null) {
         getUsedPointIDLabel().setText("ID Already Assigned");
     }
@@ -511,7 +512,7 @@ public void setValueCore(Object val, Integer initialPAOId )
 		getUsedPointIDLabel().setText("");
 	}
 
-    int nextId = DaoFactory.getPointDao().getNextPointId();
+    int nextId = YukonSpringHook.getBean(PointDao.class).getNextPointId();
 	getPointIDSpinner().setValue(nextId);
 }
 /**
@@ -546,7 +547,7 @@ public void setValueLM(Object val, Integer initialPAOId)
 		}
 	}
 
-    int nextId = DaoFactory.getPointDao().getNextPointId();
+    int nextId = YukonSpringHook.getBean(PointDao.class).getNextPointId();
 	getPointIDSpinner().setValue(nextId);
 }
 

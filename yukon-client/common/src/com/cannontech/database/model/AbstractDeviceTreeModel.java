@@ -14,7 +14,7 @@ import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteBase;
@@ -23,6 +23,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 public abstract class AbstractDeviceTreeModel extends DBTreeModel 
@@ -181,7 +182,7 @@ public boolean insertTreeObject( LiteBase lb )
 	{
 		int devID = ((LitePoint)lb).getPaobjectID();
 
-		LiteYukonPAObject pao = DaoFactory.getPaoDao().getLiteYukonPAO( devID );
+		LiteYukonPAObject pao = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO( devID );
 
 		//in order to find our lite object we need to first populate our TreeModel
 		updateIfNothingHasBeenLoaded();
@@ -233,7 +234,7 @@ public boolean isTreePrimaryForObject(LiteBase lb) {
         paoType = ((LiteYukonPAObject) lb).getPaoIdentifier().getPaoType();
     } else if (lb instanceof LitePoint) {
         int paobjectID = ( (LitePoint) lb).getPaobjectID();
-        YukonPao yukonPao = DaoFactory.getPaoDao().getYukonPao( paobjectID );
+        YukonPao yukonPao = YukonSpringHook.getBean(PaoDao.class).getYukonPao( paobjectID );
         paoType = yukonPao.getPaoIdentifier().getPaoType();
     } else {
         return false;
@@ -351,7 +352,7 @@ public synchronized void treePathWillExpand(javax.swing.tree.TreePath path)
 				node.removeAllChildren();
 				pointTempList.clear();
 				
-                PointDao pointDao = DaoFactory.getPointDao();
+                PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
                 pointTempList = pointDao.getLitePointsByPaObjectId(deviceDevID);
 
 				//sorts the pointList according to name or offset, (default is set to sort by name)

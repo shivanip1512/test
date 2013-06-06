@@ -4,9 +4,10 @@ import java.util.List;
 
 import javax.swing.JLabel;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.UnitOfMeasure;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -342,7 +343,7 @@ private void initialize() {
 		handleException(ivjExc);
 	}
 
-    List<LiteUnitMeasure> unitMeasures = DaoFactory.getUnitMeasureDao().getLiteUnitMeasures();
+    List<LiteUnitMeasure> unitMeasures = YukonSpringHook.getBean(UnitMeasureDao.class).getLiteUnitMeasures();
     for (LiteUnitMeasure um : unitMeasures) {
         getUnitOfMeasureComboBox().addItem(um);
         if(um.getUomID() == UnitOfMeasure.KW.getId()) {

@@ -1,6 +1,7 @@
 package com.cannontech.dbeditor.wizard.state;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonImageDao;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -152,7 +153,7 @@ private javax.swing.JComboBox getJComboBoxCategory() {
 
          getJComboBoxCategory().addItem( com.cannontech.common.util.CtiUtilities.STRING_NONE );
 
-			String[] cats = DaoFactory.getYukonImageDao().getAllCategoris();
+			String[] cats = YukonSpringHook.getBean(YukonImageDao.class).getAllCategoris();
 			for( int i = 0; i < cats.length; i++ )
 				getJComboBoxCategory().addItem( cats[i] );
 

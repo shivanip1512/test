@@ -8,12 +8,12 @@ package com.cannontech.database.data.device.lm;
 import java.util.Vector;
 
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.db.device.lm.DeviceListItem;
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
 import com.cannontech.database.db.device.lm.LMProgramControlWindow;
+import com.cannontech.spring.YukonSpringHook;
 
 public abstract class LMProgramBase extends com.cannontech.database.data.pao.YukonPAObject implements com.cannontech.common.editor.EditorPanel
 {
@@ -45,7 +45,7 @@ protected abstract PaoType getProgramPaoType();
 public void add() throws java.sql.SQLException 
 {
 	if( getPAObjectID() == null ) {
-        PaoDao paoDao = DaoFactory.getPaoDao();
+        PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
         setPAObjectID(paoDao.getNextPaoId());
     }
 

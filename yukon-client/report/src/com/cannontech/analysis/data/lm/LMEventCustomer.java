@@ -12,10 +12,11 @@ import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.Pair;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.db.company.SettlementConfig;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.SettlementConfigFuncs;
 
 /**
@@ -197,7 +198,7 @@ public class LMEventCustomer
     			{
     				List<Pair<Integer, String>> demandCharges = SettlementConfigFuncs.getLiteSettlementConfigs(SettlementConfig.HECO_RATE_DEMAND_CHARGE_STRING);
     				double demandCharge = 0;
-    				LiteCustomer liteCust = DaoFactory.getCustomerDao().getLiteCustomer(getCustomerID().intValue());
+    				LiteCustomer liteCust = YukonSpringHook.getBean(CustomerDao.class).getLiteCustomer(getCustomerID().intValue());
     				for (Pair<Integer, String> pair : demandCharges) {
     					if(pair.getFirst() == liteCust.getRateScheduleID())
     						demandCharge = Double.valueOf(pair.getSecond());

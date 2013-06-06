@@ -5,8 +5,12 @@ import java.util.Date;
 import java.util.Iterator;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.UnitMeasureDao;
+import com.cannontech.core.dao.YukonImageDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointService;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -39,7 +43,7 @@ public class UpdateUtil {
         if(pointID != INVALID_POINTID){
             try {
                 try{
-                    lp = DaoFactory.getPointDao().getLitePoint(pointID);
+                    lp = YukonSpringHook.getBean(PointDao.class).getLitePoint(pointID);
                 } catch (NotFoundException e ){
                     CTILogger.error("LineElement Error: pointid: " + pointID + " not found.");
                     return text;
@@ -54,7 +58,7 @@ public class UpdateUtil {
                     PointValueHolder pData = dynamicDataSource.getPointValue(pointID);
             
                     if (pData != null) {
-                        LiteState ls = DaoFactory.getStateDao().findLiteState(lp.getStateGroupID(), (int) pData.getValue()); 
+                        LiteState ls = YukonSpringHook.getBean(StateDao.class).findLiteState(lp.getStateGroupID(), (int) pData.getValue()); 
                         if( ls != null ) {          
                             text += ls.getStateRawState();
                             prev = true;
@@ -93,7 +97,7 @@ public class UpdateUtil {
             return "BROKEN DYNAMIC TEXT";
         } else {
             try {
-                lp = DaoFactory.getPointDao().getLitePoint(pointID);
+                lp = YukonSpringHook.getBean(PointDao.class).getLitePoint(pointID);
             } catch (NotFoundException e) {
                 String endMessage = referrer != null ? " on page: " + referrer : ".";
                 CTILogger.error("DynamicText Error: pointid: " + pointID + " not found" + endMessage);
@@ -112,7 +116,7 @@ public class UpdateUtil {
     			if (pData != null) {
     				DecimalFormat f = new DecimalFormat();
                     try {
-                        LitePointUnit lpu = DaoFactory.getPointDao().getPointUnit(pointID);
+                        LitePointUnit lpu = YukonSpringHook.getBean(PointDao.class).getPointUnit(pointID);
         				if (lpu != null) {
         					f.setMaximumFractionDigits(lpu.getDecimalPlaces());
         					f.setMinimumFractionDigits(lpu.getDecimalPlaces());
@@ -135,7 +139,7 @@ public class UpdateUtil {
     			if( prev ) 
     				text += " ";
         			
-    			LiteUnitMeasure lum = DaoFactory.getUnitMeasureDao().getLiteUnitMeasureByPointID(pointID);
+    			LiteUnitMeasure lum = YukonSpringHook.getBean(UnitMeasureDao.class).getLiteUnitMeasureByPointID(pointID);
     			if( lum != null ) {
     				text += lum.getUnitMeasureName();
     				prev = true;
@@ -146,7 +150,7 @@ public class UpdateUtil {
     			if( prev ) 
     				text += " ";
         			
-    			String name = DaoFactory.getPointDao().getPointName(pointID);
+    			String name = YukonSpringHook.getBean(PointDao.class).getPointName(pointID);
     			if(name != null) 
     				text += name;
     			else 
@@ -158,7 +162,7 @@ public class UpdateUtil {
     			if( prev ) 
     				text += " ";
     			
-				text += DaoFactory.getPaoDao().getYukonPAOName(lp.getPaobjectID());
+				text += YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(lp.getPaobjectID());
 				prev = true;
     		}
     									
@@ -175,8 +179,8 @@ public class UpdateUtil {
     		}	
     		
     		if( (displayAttrib & PointAttributes.LOW_LIMIT) != 0 ) {
-    		    LitePointLimit lpl = DaoFactory.getPointDao().getPointLimit(pointID);
-                LitePointUnit lpu = DaoFactory.getPointDao().getPointUnit(pointID);
+    		    LitePointLimit lpl = YukonSpringHook.getBean(PointDao.class).getPointLimit(pointID);
+                LitePointUnit lpu = YukonSpringHook.getBean(PointDao.class).getPointUnit(pointID);
     			
 				DecimalFormat f = new DecimalFormat();
 				f.setMaximumFractionDigits(lpu.getDecimalPlaces());
@@ -186,8 +190,8 @@ public class UpdateUtil {
     		}
     		
     		if( (displayAttrib & PointAttributes.HIGH_LIMIT) != 0 ) {
-    			LitePointLimit lpl = DaoFactory.getPointDao().getPointLimit(pointID);
-                LitePointUnit lpu = DaoFactory.getPointDao().getPointUnit(pointID);
+    			LitePointLimit lpl = YukonSpringHook.getBean(PointDao.class).getPointLimit(pointID);
+                LitePointUnit lpu = YukonSpringHook.getBean(PointDao.class).getPointUnit(pointID);
 				DecimalFormat f = new DecimalFormat();
 				f.setMaximumFractionDigits(lpu.getDecimalPlaces());
 				f.setMinimumFractionDigits(lpu.getDecimalPlaces());
@@ -197,20 +201,20 @@ public class UpdateUtil {
     		
     		if( (displayAttrib & PointAttributes.LIMIT_DURATION) != 0 ) {
     			// always convert seconds -> minutes!	
-    			LitePointLimit lpl = DaoFactory.getPointDao().getPointLimit(pointID);
+    			LitePointLimit lpl = YukonSpringHook.getBean(PointDao.class).getPointLimit(pointID);
 				int min = lpl.getLimitDuration() / 60;
 				text += Integer.toString(min);		
 				prev = true;	
     		}
     		
     		if( (displayAttrib & PointAttributes.MULTIPLIER) != 0 ) {
-    		    double mult = DaoFactory.getPointDao().getPointMultiplier(lp);
+    		    double mult = YukonSpringHook.getBean(PointDao.class).getPointMultiplier(lp);
                 text += Double.toString(mult);
                 prev = true;
     		}
     		
     		if( (displayAttrib & PointAttributes.DATA_OFFSET) != 0 ) {
-		        int offset = DaoFactory.getPointDao().getPointDataOffset(lp);
+		        int offset = YukonSpringHook.getBean(PointDao.class).getPointDataOffset(lp);
                 text += Integer.toString(offset);
                 prev = true;
     		}
@@ -244,7 +248,7 @@ public class UpdateUtil {
                     PointValueHolder pData = dynamicDataSource.getPointValue(pointID);
                     
                     if (pData != null) {
-                        LiteState ls = DaoFactory.getStateDao().findLiteState(lp.getStateGroupID(), (int) pData.getValue()); 
+                        LiteState ls = YukonSpringHook.getBean(StateDao.class).findLiteState(lp.getStateGroupID(), (int) pData.getValue()); 
                         if( ls != null ) {
                             text += ls.getStateText();
                             prev = true;
@@ -267,7 +271,7 @@ public class UpdateUtil {
                     PointValueHolder pData = dynamicDataSource.getPointValue(pointID);
                     
                     if (pData != null) {
-                        LiteState ls = DaoFactory.getStateDao().findLiteState(lp.getStateGroupID(), (int) pData.getValue()); 
+                        LiteState ls = YukonSpringHook.getBean(StateDao.class).findLiteState(lp.getStateGroupID(), (int) pData.getValue()); 
                         if( ls != null ) {
                             text += ls.getStateRawState();
                             prev = true;
@@ -303,20 +307,20 @@ public class UpdateUtil {
 	        return Util.DEFAULT_IMAGE_NAME;
 	    }
 	    try{
-    		LitePoint lp = DaoFactory.getPointDao().getLitePoint(pointID);
+    		LitePoint lp = YukonSpringHook.getBean(PointDao.class).getLitePoint(pointID);
             DynamicDataSource dynamicDataSource = 
                 (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
             PointValueHolder pData = dynamicDataSource.getPointValue(pointID);
             LiteYukonImage img;
             if (lp.getPointType() == PointTypes.STATUS_POINT)
             {
-        		LiteState ls = DaoFactory.getStateDao().findLiteState(lp.getStateGroupID(), (int) pData.getValue());
-        		img = DaoFactory.getYukonImageDao().getLiteYukonImage(ls.getImageID());
+        		LiteState ls = YukonSpringHook.getBean(StateDao.class).findLiteState(lp.getStateGroupID(), (int) pData.getValue());
+        		img = YukonSpringHook.getBean(YukonImageDao.class).getLiteYukonImage(ls.getImageID());
             }else 
             {
                 PointService pointService = YukonSpringHook.getBean("pointService", PointService.class);
                 LiteState ls = pointService.getCurrentState(pointID);
-                img = DaoFactory.getYukonImageDao().getLiteYukonImage(ls.getImageID());
+                img = YukonSpringHook.getBean(YukonImageDao.class).getLiteYukonImage(ls.getImageID());
             }
     		return img.getImageName();
 	    } catch (NotFoundException e){

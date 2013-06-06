@@ -8,11 +8,12 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.capcontrol.CapControlArea;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.util.CBCDBUtil;
 
 public class CBCTestUtil {
@@ -56,7 +57,7 @@ public class CBCTestUtil {
    
 
     public static Integer getSubIDToUpdate() {
-        List<LiteYukonPAObject> buses = DaoFactory.getPaoDao().getAllCapControlSubBuses();
+        List<LiteYukonPAObject> buses = YukonSpringHook.getBean(PaoDao.class).getAllCapControlSubBuses();
         Integer newSubID = null;
         for (LiteYukonPAObject bus : buses) {
             if (bus.getLiteID() != CBCTestUtil.getValidSubId().intValue())
@@ -67,7 +68,7 @@ public class CBCTestUtil {
     }
 
     public static ArrayList<CCSubAreaAssignment> getFirstFourSubs(Integer areaID) {
-        List<LiteYukonPAObject> buses = DaoFactory.getPaoDao()
+        List<LiteYukonPAObject> buses = YukonSpringHook.getBean(PaoDao.class)
                                                   .getAllCapControlSubBuses();
         ArrayList<CCSubAreaAssignment> subArea = new ArrayList<CCSubAreaAssignment>();
         for (LiteYukonPAObject bus : buses.subList(0, 4)) {

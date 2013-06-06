@@ -15,12 +15,13 @@ import javax.swing.JTextField;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.gui.util.TitleBorder;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.data.route.RouteUsageHelper;
 import com.cannontech.database.data.route.RouteRole;
 import com.cannontech.database.db.route.RepeaterRoute;
+import com.cannontech.spring.YukonSpringHook;
 
 @SuppressWarnings("serial")
 public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements ActionListener,  FocusListener{
@@ -151,7 +152,7 @@ public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements Act
         this.owner = owner;
         routeMaster = new RouteUsageHelper();
         route = route_;
-        myCCUName = DaoFactory.getPaoDao().getYukonPAOName(route.getDeviceID());
+        myCCUName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(route.getDeviceID());
         routeName = route.getPAOName();
         initialize();
     }
@@ -395,7 +396,7 @@ public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements Act
             }
         }
         //always add my own ccu to my blackList
-        LiteYukonPAObject myCCU = DaoFactory.getPaoDao().getLiteYukonPAO(route.getDeviceID());
+        LiteYukonPAObject myCCU = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(route.getDeviceID());
         if(!blackList.contains(myCCU)) {
             blackList.add(myCCU);
         }
@@ -482,7 +483,7 @@ public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements Act
         for(int i = 0; i < route.getRepeaterVector().size(); i++) {
             RepeaterRoute rr = (RepeaterRoute)rptVector.get(i);
             int deviceID = rr.getDeviceID().intValue();
-            String rptName = DaoFactory.getPaoDao().getYukonPAOName(deviceID);
+            String rptName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(deviceID);
             repeaterLabelArray[i].setText(rptName);
             if(rr.getVariableBits().intValue() != 7) {
                 rptVariables[i] = rr.getVariableBits().intValue();

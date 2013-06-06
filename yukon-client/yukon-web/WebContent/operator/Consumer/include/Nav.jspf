@@ -1,5 +1,7 @@
 <%@ page import="com.cannontech.stars.database.data.hardware.MeterHardwareBase" %>
 <%@ page import="com.cannontech.spring.YukonSpringHook"%>
+<%@ page import="com.cannontech.core.dao.GraphDao"%>
+<%@ page import="com.cannontech.core.dao.AuthDao"%>
 <%@ page import="com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao"%>
 <%@ page import="com.cannontech.stars.energyCompany.EnergyCompanySettingType"%>
 
@@ -25,10 +27,10 @@
 						  {"AccountLog.jsp", "Account Log"}
 						 };
 
-	String bulletImg = "<img src='../../WebConfig/" + DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='9' height='9'>";
-	String bulletImgExp = "<img src='../../WebConfig/" + DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_EXPAND) + "' width='9' height='9'>";
-	String connImgMid = "<img src='../../WebConfig/" + DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_CONNECTOR_MIDDLE) + "' width='10' height='12'>";
-	String connImgBtm = "<img src='../../WebConfig/" + DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_CONNECTOR_BOTTOM) + "' width='10' height='12'>";
+	String bulletImg = "<img src='../../WebConfig/" + YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='9' height='9'>";
+	String bulletImgExp = "<img src='../../WebConfig/" + YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_EXPAND) + "' width='9' height='9'>";
+	String connImgMid = "<img src='../../WebConfig/" + YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(lYukonUser, WebClientRole.NAV_CONNECTOR_MIDDLE) + "' width='10' height='12'>";
+	String connImgBtm = "<img src='../../WebConfig/" + YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(lYukonUser, WebClientRole.NAV_CONNECTOR_BOTTOM) + "' width='10' height='12'>";
 	
 	// List of String[] (link image, link html)
 	Hashtable links = new Hashtable();
@@ -596,7 +598,7 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
 			String className = "navmenu1";
 			String indicator = "&nbsp;&nbsp;&nbsp;";
 			GraphCustomerList gcl = (GraphCustomerList) custGraphs.get(i);
-			LiteGraphDefinition lGDef = DaoFactory.getGraphDao().getLiteGraphDefinition(gcl.getGraphDefinitionID().intValue());
+			LiteGraphDefinition lGDef = YukonSpringHook.getBean(GraphDao.class).getLiteGraphDefinition(gcl.getGraphDefinitionID().intValue());
 			if( lGDef.getGraphDefinitionID() == graphBean.getGdefid())
 			{
 				className = "navmenu2";

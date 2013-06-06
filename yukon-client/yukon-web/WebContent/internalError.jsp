@@ -1,5 +1,5 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<%@page import="com.cannontech.core.dao.DaoFactory" %>
+<%@page import="com.cannontech.core.dao.AuthDao"%>
 <%@page import="com.cannontech.spring.YukonSpringHook" %>
 <%@page import="com.cannontech.util.ServletUtil"%>
 <%@page import="com.cannontech.database.data.lite.LiteYukonUser"%>
@@ -20,7 +20,7 @@
 String homeUrl = "/";
 try {
     LiteYukonUser user = ServletUtil.getYukonUser(request);
-    homeUrl = ServletUtil.createSafeUrl(request, DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.HOME_URL));
+    homeUrl = ServletUtil.createSafeUrl(request, YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(user, WebClientRole.HOME_URL));
 } catch (NotLoggedInException ignore) { }    
 
 
@@ -41,7 +41,7 @@ Object request_uri = request.getAttribute("javax.servlet.error.request_uri");
 request_uri = ObjectUtils.defaultIfNull(request_uri, "no request uri");
 
 boolean showStack = true;
-String suppressStackStr = DaoFactory.getAuthDao().getRolePropertyValue( ServletUtil.getYukonUser(request), WebClientRole.SUPPRESS_ERROR_PAGE_DETAILS );
+String suppressStackStr = YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue( ServletUtil.getYukonUser(request), WebClientRole.SUPPRESS_ERROR_PAGE_DETAILS );
 showStack = !BooleanUtils.toBoolean(suppressStackStr);
 
 String friendlyExceptionMessage = ErrorHelperFilter.getFriendlyExceptionMessage(pageContext.getServletContext(), throwable);

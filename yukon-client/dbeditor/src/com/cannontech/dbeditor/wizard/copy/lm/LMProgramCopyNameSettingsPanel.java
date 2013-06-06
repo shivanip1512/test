@@ -9,7 +9,8 @@ import java.util.List;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.pao.PaoUtils;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.device.lm.LMProgramBase;
 import com.cannontech.database.data.device.lm.LMProgramDirect;
@@ -19,6 +20,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class LMProgramCopyNameSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
@@ -447,18 +449,18 @@ public Object getValue(Object o)
 	int oldProgramID = program.getPAObjectID();
 	
 	//new paobjectid for the new copy
-	Integer newProgramID = DaoFactory.getPaoDao().getNextPaoId();
+	Integer newProgramID = YukonSpringHook.getBean(PaoDao.class).getNextPaoId();
 	program.setPAObjectID(newProgramID);
 
 	// get all of the original program's points (should just be the Status point for now)
 	// and copy them over to the new program
-	List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(oldProgramID);
+	List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(oldProgramID);
 	for (LitePoint litePoint : points) {
 		PointBase pointBase = (PointBase) LiteFactory.convertLiteToDBPers(litePoint);
 		try {
             Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, pointBase);
             t.execute();
-            pointBase.setPointID(DaoFactory.getPointDao().getNextPointId());
+            pointBase.setPointID(YukonSpringHook.getBean(PointDao.class).getNextPointId());
     		pointBase.getPoint().setPaoID(newProgramID);
     		smartMulti.addDBPersistent(pointBase);
         } catch (com.cannontech.database.TransactionException e) {

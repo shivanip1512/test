@@ -10,12 +10,12 @@ import org.springframework.jdbc.core.JdbcOperations;
 import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
+import com.cannontech.spring.YukonSpringHook;
 
 public class CapControlArea extends CapControlYukonPAOBase implements EditorPanel {
 
@@ -61,7 +61,7 @@ public class CapControlArea extends CapControlYukonPAOBase implements EditorPane
     public void add() throws SQLException {
 
         if (getPAObjectID() == null) {
-            PaoDao paoDao = DaoFactory.getPaoDao();
+            PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
             setCapControlPAOID(paoDao.getNextPaoId());
         }
 

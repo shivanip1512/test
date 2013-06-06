@@ -8,7 +8,9 @@ import java.util.Collections;
 import java.util.List;
 
 import com.cannontech.common.constants.YukonSelectionList;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteBaseline;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -18,6 +20,7 @@ import com.cannontech.database.data.point.CalcStatusPoint;
 import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
@@ -244,7 +247,7 @@ public void componentTypeComboBox_ActionPerformed(java.awt.event.ActionEvent act
 		getPointComboBox().setEnabled(true);
 		getUsePointCheckBox().setSelected(true);
 		
-		YukonSelectionList funcList = DaoFactory.getYukonListDao().getYukonSelectionList(CalcComponentTypes.CALC_FUNCTION_LIST_ID);
+		YukonSelectionList funcList = YukonSpringHook.getBean(YukonListDao.class).getYukonSelectionList(CalcComponentTypes.CALC_FUNCTION_LIST_ID);
 		if(funcList == null)
 		{
 			for( int i = 0; i < CalcComponentTypes.CALC_FUNCTIONS.length; i++ )
@@ -437,7 +440,7 @@ public void deviceComboBox_ActionPerformed(java.awt.event.ActionEvent actionEven
 	if( getPointComboBox().getModel().getSize() > 0 )
 		getPointComboBox().removeAllItems();
 
-    List<LitePoint> paoPoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceID);
+    List<LitePoint> paoPoints = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(deviceID);
     for (LitePoint point : paoPoints) {
 		getPointComboBox().addItem(point);
     }
@@ -652,7 +655,7 @@ private javax.swing.JComboBox getDeviceComboBox() {
 					ivjDeviceComboBox.addItem( pao );
 
 					if( i == 0 ) {
-                        List<LitePoint> paoPoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(pao.getYukonID());
+                        List<LitePoint> paoPoints = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(pao.getYukonID());
                         for (LitePoint point : paoPoints) {
 							getPointComboBox().addItem(point);
                         }
@@ -1342,10 +1345,10 @@ public void setValue(Object val)
 			{
 				componentPointID = singleCalcComponent.getComponentPointID().intValue();
 
-				litePoint = DaoFactory.getPointDao().getLitePoint(componentPointID);
+				litePoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(componentPointID);
 
 				operand = new DevicePointOperandLite(
-									DaoFactory.getPaoDao().getLiteYukonPAO( litePoint.getPaobjectID() ), 
+									YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO( litePoint.getPaobjectID() ), 
 									litePoint);
 
 				calcComponentEntry.addElement( operand );
@@ -1367,10 +1370,10 @@ public void setValue(Object val)
 				componentPointID = singleCalcComponent.getComponentPointID().intValue();
 				if (componentPointID > 0)
 				{
-					litePoint = DaoFactory.getPointDao().getLitePoint(componentPointID);
+					litePoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(componentPointID);
 
 					operand = new DevicePointOperandLite(
-										DaoFactory.getPaoDao().getLiteYukonPAO( litePoint.getPaobjectID() ), 
+										YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO( litePoint.getPaobjectID() ), 
 										litePoint);
 
 				}

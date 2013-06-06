@@ -45,7 +45,8 @@ import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.GraphDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DBChangeListener;
@@ -526,7 +527,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	}
 	else if( event.getSource() == getTrendMenu().getGetDataNowSelectedTrendMenuItem())
 	{
-		List<LiteYukonPAObject> trendPaobjects = DaoFactory.getGraphDao().getLiteYukonPaobjects(getGraph().getGraphDefinition().getGraphDefinition().getGraphDefinitionID().intValue());
+		List<LiteYukonPAObject> trendPaobjects = YukonSpringHook.getBean(GraphDao.class).getLiteYukonPaobjects(getGraph().getGraphDefinition().getGraphDefinition().getGraphDefinitionID().intValue());
 		getGraph().getDataNow(trendPaobjects);
 	}else
 	{
@@ -1998,7 +1999,7 @@ private void initialize()
 	{
 		// Setup Role Property to create/edit trends.
 		ClientSession session = ClientSession.getInstance();
-		boolean graphEdit = Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(session.getUser(), TrendingRole.GRAPH_EDIT_GRAPHDEFINITION)).booleanValue();
+		boolean graphEdit = Boolean.valueOf(YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(session.getUser(), TrendingRole.GRAPH_EDIT_GRAPHDEFINITION)).booleanValue();
 		if( !graphEdit )
 		{
 			getTrendMenu().getCreateMenuItem().setEnabled(false);

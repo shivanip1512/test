@@ -18,7 +18,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -30,6 +30,7 @@ import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.importer.ImportPendingComm;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yimp.importer.BulkImporter;
 import com.cannontech.yukon.IServerConnection;
 
@@ -135,7 +136,7 @@ public class DBFuncs {
     }
 	
 	public static Vector getPointsForPAO( Integer paoID ) {
-        List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(paoID);
+        List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(paoID);
 
 		Vector daPoints = new Vector(points.size());
 		

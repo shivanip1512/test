@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -20,6 +19,7 @@ import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 /**
  * @author snebben
@@ -59,7 +59,7 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 		multi.setCreateNewPAOIDs( false );
 	
 		int addCount = 0;
-		PointDao pointDao = DaoFactory.getPointDao();
+		PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
 		
 		for (LiteYukonPAObject litePaobject: devicesVector) {
 	
@@ -217,7 +217,7 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 		synchronized (cache)
 		{
 			List<LiteYukonPAObject> groups = cache.getAllLoadManagement();
-            PointDao pointDao = DaoFactory.getPointDao();
+            PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
 
 			createPointHashtable = new Hashtable<Integer, CreatePointList>(groups.size());
 			

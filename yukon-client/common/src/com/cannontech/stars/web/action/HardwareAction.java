@@ -9,8 +9,8 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.activity.ActivityLogActions;
@@ -347,7 +347,7 @@ public class HardwareAction {
         LiteAccountInfo liteAcctInfo = null;
         List<LiteLmHardwareBase> hwsToConfig = null;
 
-        LiteYukonUser currentUser = DaoFactory.getYukonUserDao().getLiteYukonUser(userID);
+        LiteYukonUser currentUser = YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(userID);
     
         // save configuration first, so its available to compute groupID later
         // on

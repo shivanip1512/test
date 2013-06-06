@@ -9,7 +9,7 @@ import javax.swing.tree.TreePath;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -17,6 +17,7 @@ import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 // This models has the following:
@@ -115,7 +116,7 @@ public class CommChannelTreeModel extends DBTreeModel {
         if (lb instanceof LiteYukonPAObject && ((LiteYukonPAObject) lb).getPortID() > PAOGroups.INVALID) {
             int devID = ((LiteYukonPAObject) lb).getPortID();
 
-            rootNode = findLiteObject(null, DaoFactory.getPaoDao().getLiteYukonPAO(devID));
+            rootNode = findLiteObject(null, YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(devID));
 
             if (rootNode != null) {
 

@@ -2,8 +2,9 @@ package com.cannontech.common.gui.util;
 
 import java.util.List;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -378,7 +379,7 @@ public void jComboBoxDevice_ActionPerformed(java.awt.event.ActionEvent actionEve
 		com.cannontech.database.data.lite.LiteYukonPAObject selectedDevice = 
 				(com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxDevice().getSelectedItem();
 		
-        List<LitePoint> devicePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(selectedDevice.getYukonID());
+        List<LitePoint> devicePoints = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(selectedDevice.getYukonID());
         for (LitePoint point : devicePoints) {
             getJComboBoxPoint().addItem(point);
         }

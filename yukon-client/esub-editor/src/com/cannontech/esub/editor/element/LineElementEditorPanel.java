@@ -21,11 +21,12 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.gui.util.SimpleLabel;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.editor.Util;
 import com.cannontech.esub.element.LineElement;
+import com.cannontech.spring.YukonSpringHook;
 
 public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements ActionListener, ChangeListener {
     
@@ -561,7 +562,7 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
                 
                 LitePoint litePoint = null;
                 try {
-                    litePoint = DaoFactory.getPointDao().getLitePoint(lineElement.getColorPointID());
+                    litePoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(lineElement.getColorPointID());
                 }catch(NotFoundException nfe) {
                     CTILogger.error("The color point (pointId:"+ lineElement.getColorPointID() + ") for this line might have been deleted!", nfe);
                 }
@@ -580,7 +581,7 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
                 
                 LitePoint litePoint = null;
                 try {
-                    litePoint = DaoFactory.getPointDao().getLitePoint(lineElement.getThicknessPointID());
+                    litePoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(lineElement.getThicknessPointID());
                 }catch(NotFoundException nfe) {
                     CTILogger.error("The thickness point (pointId:"+ lineElement.getThicknessPointID() + ") for this line might have been deleted!", nfe);
                 }
@@ -599,7 +600,7 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
                 
                 LitePoint litePoint = null;
                 try {
-                    litePoint = DaoFactory.getPointDao().getLitePoint(lineElement.getArrowPointID());
+                    litePoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(lineElement.getArrowPointID());
                 }catch(NotFoundException nfe) {
                     CTILogger.error("The arrow point (pointId:"+ lineElement.getArrowPointID() + ") for this line might have been deleted!", nfe);
                 }
@@ -618,7 +619,7 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
                 
                 LitePoint litePoint = null;
                 try {
-                    litePoint = DaoFactory.getPointDao().getLitePoint(lineElement.getOpacityPointID());
+                    litePoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(lineElement.getOpacityPointID());
                 }catch(NotFoundException nfe) {
                     CTILogger.error("The opacity point (pointId:"+ lineElement.getOpacityPointID() + ") for this line might have been deleted!", nfe);
                 }
@@ -637,7 +638,7 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
                 
                 LitePoint litePoint = null;
                 try {
-                    litePoint = DaoFactory.getPointDao().getLitePoint(lineElement.getBlinkPointID());
+                    litePoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(lineElement.getBlinkPointID());
                 }catch(NotFoundException nfe) {
                     CTILogger.error("The blink point (pointId:"+ lineElement.getBlinkPointID() + ") for this line might have been deleted!", nfe);
                 }

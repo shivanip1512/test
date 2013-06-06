@@ -5,13 +5,14 @@ import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
 import com.cannontech.common.util.Iso8601DateUtil;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.*;
 import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.message.notif.NotifLMControlMsg;
 import com.cannontech.message.util.Message;
 import com.cannontech.notif.outputs.*;
 import com.cannontech.notif.server.NotifServerConnection;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * 
@@ -64,7 +65,7 @@ public class LoadManagementMessageHandler extends NotifHandler implements Messag
             public Notification buildNotification(Contactable contact) {
                 Notification notif = new Notification("loadmanagement");
                 
-                LiteYukonPAObject liteYukonPAO = DaoFactory.getPaoDao().getLiteYukonPAO(msg.programId);
+                LiteYukonPAObject liteYukonPAO = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(msg.programId);
                 notif.addData("programname", liteYukonPAO.getPaoName());
                 notif.addData("customername", contact.getCustomerName());
 
@@ -111,7 +112,7 @@ public class LoadManagementMessageHandler extends NotifHandler implements Messag
 
         for(int i = 0; i < msg.notifGroupIds.length; i++) {
             LiteNotificationGroup notificationGroup = 
-                DaoFactory.getNotificationGroupDao().getLiteNotificationGroup(msg.notifGroupIds[i]);
+                YukonSpringHook.getBean(NotificationGroupDao.class).getLiteNotificationGroup(msg.notifGroupIds[i]);
             
             outputNotification(notifFormatter, notificationGroup);
         }

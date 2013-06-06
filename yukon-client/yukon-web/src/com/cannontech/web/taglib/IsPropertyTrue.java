@@ -5,9 +5,10 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ReflectivePropertySearcher;
 
 /**
@@ -34,7 +35,7 @@ public class IsPropertyTrue extends BodyTagSupport
 	
 		if (user != null)
 		{
-			boolean val = DaoFactory.getAuthDao().checkRoleProperty(user, propertyid);
+			boolean val = YukonSpringHook.getBean(AuthDao.class).checkRoleProperty(user, propertyid);
 			
 			if(val) {
 				return EVAL_BODY_INCLUDE;

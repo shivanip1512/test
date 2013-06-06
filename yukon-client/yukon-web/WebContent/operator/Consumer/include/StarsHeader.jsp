@@ -4,7 +4,6 @@
 <%@ page import="javax.xml.soap.SOAPMessage" %>
 <%@ page import="java.text.*" %>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
-<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.common.constants.YukonListEntry" %>
 <%@ page import="com.cannontech.common.constants.YukonListEntryTypes" %>
 <%@ page import="com.cannontech.common.constants.YukonSelectionList" %>

@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;

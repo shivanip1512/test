@@ -9,10 +9,11 @@ import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.util.Command;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 
@@ -307,7 +308,7 @@ public void JButtonCancelAction_actionPerformed(java.util.EventObject newEvent)
  */
 public void JButtonSendAction_actionPerformed(java.util.EventObject newEvent) 
 {
-	LiteYukonPAObject paobject = DaoFactory.getPaoDao().getLiteYukonPAO( getEditorData().getDeviceID() );
+	LiteYukonPAObject paobject = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO( getEditorData().getDeviceID() );
 	
 	if( paobject != null
 		 && DeviceTypesFuncs.hasDeviceScanRate(paobject.getPaoType().getDeviceTypeId()) )

@@ -34,8 +34,9 @@ import com.cannontech.common.util.KeysAndValuesFile;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.authorization.service.LMCommandAuthorizationService;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
@@ -304,7 +305,7 @@ public class YC extends Observable implements MessageListener
 	public Object[] getAllRoutes()
 	{
 		if( allRoutes == null)
-			allRoutes = DaoFactory.getPaoDao().getAllLiteRoutes();
+			allRoutes = YukonSpringHook.getBean(PaoDao.class).getAllLiteRoutes();
 		return allRoutes;
 	}
 	/**
@@ -770,7 +771,7 @@ public class YC extends Observable implements MessageListener
     {
         deviceType = typeString;
         CTILogger.debug(" DEVICE TYPE for command lookup: " + deviceType);
-        setLiteDeviceTypeCommandsVector(DaoFactory.getCommandDao().getAllDevTypeCommands(deviceType));
+        setLiteDeviceTypeCommandsVector(YukonSpringHook.getBean(CommandDao.class).getAllDevTypeCommands(deviceType));
     }
     
 	/**
@@ -886,7 +887,7 @@ public class YC extends Observable implements MessageListener
 				{
 					LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand)getLiteDeviceTypeCommandsVector().get(i);
 					if (ldtc.isVisible()) {
-    					LiteCommand lc = DaoFactory.getCommandDao().getCommand(ldtc.getCommandID());
+    					LiteCommand lc = YukonSpringHook.getBean(CommandDao.class).getCommand(ldtc.getCommandID());
     					if (lc.getLabel().trim().equalsIgnoreCase(friendlyCommand) ||
     						lc.getCommand().trim().equalsIgnoreCase(friendlyCommand)) {
     						return lc.getCommand();
@@ -908,7 +909,7 @@ public class YC extends Observable implements MessageListener
 
 		String log = "";
 		if( request_.getDeviceID() > 0)
-			log = " Device \'" + DaoFactory.getPaoDao().getYukonPAOName(request_.getDeviceID()) + "\'";
+			log = " Device \'" + YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(request_.getDeviceID()) + "\'";
 		else
 			log = " Serial # \'" + serialNumber + "\'";
 
@@ -994,7 +995,7 @@ public class YC extends Observable implements MessageListener
 				if( prevUserID != returnMsg.getUserMessageID())
 				{
 					//textColor = java.awt.Color.black;
-					debugOutput = "<BR>["+ displayFormat.format(returnMsg.getTimeStamp()) + "]-{" + returnMsg.getUserMessageID() +"} {Device: " +  DaoFactory.getPaoDao().getYukonPAOName(returnMsg.getDeviceID()) + "} Return from \'" + returnMsg.getCommandString() + "\'";
+					debugOutput = "<BR>["+ displayFormat.format(returnMsg.getTimeStamp()) + "]-{" + returnMsg.getUserMessageID() +"} {Device: " +  YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(returnMsg.getDeviceID()) + "} Return from \'" + returnMsg.getCommandString() + "\'";
 					writeOutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, MessageType.INFO);
 					debugOutput = "";
 					prevUserID = returnMsg.getUserMessageID();
@@ -1034,10 +1035,10 @@ public class YC extends Observable implements MessageListener
 				if( returnMsg.getExpectMore() == 0) {
 					String routeName = null;
 					if (returnMsg.getRouteOffset() > 0)
-						routeName = DaoFactory.getPaoDao().getYukonPAOName(returnMsg.getRouteOffset());																				
+						routeName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(returnMsg.getRouteOffset());																				
 					
 					if( routeName == null)
-						routeName = DaoFactory.getPaoDao().getYukonPAOName(returnMsg.getDeviceID());
+						routeName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(returnMsg.getDeviceID());
 
 					displayOutput = "Route:   " + routeName;
 					int tabCount = (60 - displayOutput.length())/ 24;
@@ -1607,7 +1608,7 @@ public class YC extends Observable implements MessageListener
             commandStr.startsWith("putstatus") || commandStr.startsWith("putvalue") )
         {
             int pointID = PointTypes.SYS_PID_SYSTEM;
-            LiteYukonPAObject liteYukonPAObject = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);            
+            LiteYukonPAObject liteYukonPAObject = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(deviceID);            
             logDescr = liteYukonPAObject.getPaoType().getPaoClass() + ": " +
                         liteYukonPAObject.getPaoName() + 
                         " (ID:" + liteYukonPAObject.getLiteID() + ")";
@@ -1633,7 +1634,7 @@ public class YC extends Observable implements MessageListener
     
     private int getLogPointID( int pointType, int pointOffset)
     {
-        List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(liteYukonPao.getLiteID());
+        List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(liteYukonPao.getLiteID());
         for (LitePoint point : points) {
             if(point.getPointType() == pointType && point.getPointOffset() == pointOffset) {
                 return point.getPointID();

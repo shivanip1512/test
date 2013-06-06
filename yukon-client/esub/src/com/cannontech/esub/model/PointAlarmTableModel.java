@@ -6,8 +6,10 @@ import javax.swing.table.AbstractTableModel;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.tags.TagUtils;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AlarmDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.*;
@@ -148,7 +150,7 @@ public class PointAlarmTableModel extends AbstractTableModel {
         }
         
         try{
-    		List<Signal> deviceSignals = DaoFactory.getAlarmDao().getSignalsForPaos(paoIdsList);
+    		List<Signal> deviceSignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForPaos(paoIdsList);
             allSignals.addAll(deviceSignals);
     	} catch (DynamicDataAccessException e){
             Throwable cause = e.getCause();
@@ -166,7 +168,7 @@ public class PointAlarmTableModel extends AbstractTableModel {
             pointIdsList.add(pointId);
         }
         try {
-            List<Signal> pointSignals = DaoFactory.getAlarmDao().getSignalsForPoints(pointIdsList);
+            List<Signal> pointSignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForPoints(pointIdsList);
             allSignals.addAll(pointSignals);
         } catch (DynamicDataAccessException e){
             Throwable cause = e.getCause();
@@ -183,7 +185,7 @@ public class PointAlarmTableModel extends AbstractTableModel {
 		
 		for (int i = 0; i < _alarmCategoryIds.length; i++) {
 			int alarmCategoryId = _alarmCategoryIds[i];
-			List<Signal> alarmCategorySignals = DaoFactory.getAlarmDao().getSignalsForAlarmCategory(alarmCategoryId);
+			List<Signal> alarmCategorySignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForAlarmCategory(alarmCategoryId);
 			allSignals.addAll(alarmCategorySignals);
 		}
 		Iterator<Signal> iter = allSignals.iterator();
@@ -210,7 +212,7 @@ public class PointAlarmTableModel extends AbstractTableModel {
             LitePoint point = null;
             
             try {
-                point = DaoFactory.getPointDao().getLitePoint(pointID);
+                point = YukonSpringHook.getBean(PointDao.class).getLitePoint(pointID);
             }catch(NotFoundException nfe) {
                 // this point may have been deleted.
                 CTILogger.error("The point (pointId:"+ pointID + ") for this AlarmTable might have been deleted!", nfe);
@@ -226,7 +228,7 @@ public class PointAlarmTableModel extends AbstractTableModel {
                 }
                 
                 int devID = point.getPaobjectID();
-                LiteYukonPAObject device = DaoFactory.getPaoDao().getLiteYukonPAO(devID);
+                LiteYukonPAObject device = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(devID);
                 String activeAcknowledgedFlags = (TagUtils.isConditionActive(s.getTags()) ? "True / " : "False / ") + (!TagUtils.isAlarmUnacked(s.getTags()) ? "True" : "False");
                 AlarmRow newrow = new AlarmRow();
                 newrow.timeStamp = s.getTimeStamp();

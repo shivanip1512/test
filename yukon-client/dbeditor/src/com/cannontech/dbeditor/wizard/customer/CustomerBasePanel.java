@@ -19,7 +19,6 @@ import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.CustomerDao;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.customer.Customer;
@@ -580,7 +579,7 @@ public void jButtonNewContact_ActionPerformed(java.awt.event.ActionEvent actionE
 			
 			// Holds on to a temp copy of the new contact 
 			// so it can be set as the new primary contact in the panel.
-			ContactDao contactDao = DaoFactory.getContactDao();
+			ContactDao contactDao = YukonSpringHook.getBean(ContactDao.class);
 			newContact = contactDao.getContact(cnt.getContact().getContactID());
 			
 		}
@@ -605,8 +604,8 @@ private void refillContactComboBox()
 
     final ProgressMonitor monitor = new ProgressMonitor(this, "Loading contents", "", 0, 0);
 
-    final ContactDao contactDao = DaoFactory.getContactDao();
-    final CustomerDao customerDao = DaoFactory.getCustomerDao();
+    final ContactDao contactDao = YukonSpringHook.getBean(ContactDao.class);
+    final CustomerDao customerDao = YukonSpringHook.getBean(CustomerDao.class);
 
     SwingWorker<Object, LiteContact> worker = new SwingWorker<Object, LiteContact>() {
         private int count = 0;

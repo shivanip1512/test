@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.InventoryRole;
@@ -70,8 +70,8 @@ public class ConfigBean
         /*Let's take some precautions that this person should be able to reset static load group mappings
          * 
          */
-        hasResetPermission = DaoFactory.getAuthDao().checkRoleProperty(getCurrentUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS)
-                            && DaoFactory.getAuthDao().checkRoleProperty(getCurrentUser(), InventoryRole.SN_CONFIG_RANGE);
+        hasResetPermission = YukonSpringHook.getBean(AuthDao.class).checkRoleProperty(getCurrentUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS)
+                            && YukonSpringHook.getBean(AuthDao.class).checkRoleProperty(getCurrentUser(), InventoryRole.SN_CONFIG_RANGE);
         return hasResetPermission;
     }
 

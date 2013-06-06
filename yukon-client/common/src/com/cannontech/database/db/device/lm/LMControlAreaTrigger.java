@@ -1,10 +1,12 @@
 package com.cannontech.database.db.device.lm;
 
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -537,7 +539,7 @@ private LitePoint getLtPoint()
 		litePt = null;
 	}
 	else if( litePt == null )	
-		litePt = DaoFactory.getPointDao().getLitePoint( getPointID().intValue() );
+		litePt = YukonSpringHook.getBean(PointDao.class).getLitePoint( getPointID().intValue() );
 		
 	return litePt;
 }
@@ -556,7 +558,7 @@ private LiteYukonPAObject getLtPao()
 	}
 	else if( liteDev == null )
 	{		
-		liteDev = DaoFactory.getDeviceDao().getLiteDevice( getLtPoint().getPaobjectID() );
+		liteDev = YukonSpringHook.getBean(DeviceDao.class).getLiteDevice( getLtPoint().getPaobjectID() );
 	}
 		
 	return liteDev;
