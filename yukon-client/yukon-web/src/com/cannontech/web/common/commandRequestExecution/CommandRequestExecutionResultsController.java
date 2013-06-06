@@ -1,18 +1,17 @@
 package com.cannontech.web.common.commandRequestExecution;
 
-import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang.time.DateUtils;
+import org.joda.time.DateTime;
+import org.joda.time.Instant;
+import org.joda.time.Months;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
@@ -29,232 +28,183 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.commandRequestExecution.CommandRequestExecutionWrapperFactory.CommandRequestExecutionWrapper;
 import com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory;
 import com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory.ScheduledGroupRequestExecutionJobWrapper;
+import com.cannontech.web.input.DatePropertyEditorFactory;
+import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
+import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.updater.commandRequestExecution.CommandRequestExecutionUpdaterTypeEnum;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
-public class CommandRequestExecutionResultsController extends MultiActionController {
-	
-	private CommandRequestExecutionDao commandRequestExecutionDao;
-	private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
-	private DateFormattingService dateFormattingService;
-	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
-	private TemporaryDeviceGroupService temporaryDeviceGroupService;
-	private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-	private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-	private CommandRequestExecutionWrapperFactory commandRequestExecutionWrapperFactory;
-	private ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory;
-	
-	// LIST
-	public ModelAndView list(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-		
-		ModelAndView mav = new ModelAndView("commandRequestExecution/list.jsp");
-		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-		String error = null;
-		
-		int commandRequestExecutionId = ServletRequestUtils.getIntParameter(request, "commandRequestExecutionId", 0);
-		int jobId = ServletRequestUtils.getIntParameter(request, "jobId", 0);
-		
-		// FILTER DEFAULTS
-		Date toDate = new Date();
-		Date fromDate = DateUtils.addMonths(toDate, -1);
-		DeviceRequestType typeFilter = null;
-		
-		// FILTERS
-		String fromDateStr = ServletRequestUtils.getStringParameter(request, "fromDate", null);
-		if (fromDateStr != null) {
-			try {
-				fromDate = dateFormattingService.flexibleDateParser(fromDateStr, DateOnlyMode.START_OF_DAY, userContext);
-			} catch (ParseException e) {
-				error = "Invalid From Date: " + fromDateStr;
-			}
+@Controller
+@RequestMapping("/commandRequestExecutionResults/*")
+public class CommandRequestExecutionResultsController {
+
+	@Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
+	@Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
+	@Autowired private DateFormattingService dateFormattingService;
+	@Autowired private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
+	@Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
+	@Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+	@Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+	@Autowired private CommandRequestExecutionWrapperFactory commandRequestExecutionWrapperFactory;
+	@Autowired private ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory;
+	@Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+
+	public static class ListBackingBean {
+	    private int requestId = 0;
+        private int jobId = 0;
+        private String typeFilter;
+        private Instant fromDate;
+        private Instant toDate = Instant.now();
+	    public int getCommandRequestExecutionId() {return requestId;}
+        public void setCommandRequestExecutionId(int requestId) {this.requestId = requestId;}
+        public int getJobId() {return jobId;}
+        public void setJobId(int jobId) {this.jobId = jobId;}
+        public String getTypeFilter() {return typeFilter;}
+        public void setTypeFilter(String typeFilter) {this.typeFilter = typeFilter;}
+        public Instant getFromDate() {return fromDate;}
+        public void setFromDate(Instant fromDate) {this.fromDate = fromDate;}
+        public Instant getToDate() {return toDate;}
+        public void setToDate(Instant toDate) {this.toDate = toDate;}
+	}
+
+	@RequestMapping
+	public String list(ModelMap model, ListBackingBean listBackingBean, YukonUserContext userContext) {
+
+        Instant fromDate = listBackingBean.getFromDate();
+        Instant toDate = listBackingBean.getToDate();
+	    String typeFilter = listBackingBean.getTypeFilter();
+	    int commandRequestExecutionId = listBackingBean.getCommandRequestExecutionId();
+	    int jobId = listBackingBean.getJobId();
+
+		if (fromDate == null) {
+			fromDate = new DateTime(toDate).minus(Months.ONE).toInstant();
 		}
-		
-		String toDateStr = ServletRequestUtils.getStringParameter(request, "toDate", null);
-		if (toDateStr != null) {
-			try {
-				toDate = dateFormattingService.flexibleDateParser(toDateStr, DateOnlyMode.END_OF_DAY, userContext);
-			} catch (ParseException e) {
-				error = "Invalid To Date: " + toDateStr;
-			}
+
+		DeviceRequestType deviceRequestType = null;
+
+		if (typeFilter != null && !typeFilter.equals("ANY")) {
+			deviceRequestType = DeviceRequestType.valueOf(typeFilter);
 		}
-		
-		String typeFilterStr = ServletRequestUtils.getStringParameter(request, "typeFilter", null);
-		if (typeFilterStr != null && !typeFilterStr.equals("ANY")) {
-			typeFilter = DeviceRequestType.valueOf(typeFilterStr);
-		}
-		
-		// PARAMS
-		mav.addObject("commandRequestExecutionId", commandRequestExecutionId);
-		mav.addObject("jobId", jobId);
-		mav.addObject("fromDate", fromDate);
-		mav.addObject("toDate", toDate);
-		mav.addObject("typeFilter", typeFilter);
-		mav.addObject("error", error);
-		
-		// TYPES
-		DeviceRequestType[] commandRequestExecutionTypes = DeviceRequestType.values();
-		mav.addObject("commandRequestExecutionTypes", commandRequestExecutionTypes);
+
+		model.addAttribute("commandRequestExecutionId", commandRequestExecutionId);
+		model.addAttribute("jobId", jobId);
+		model.addAttribute("fromDate", fromDate);
+		model.addAttribute("toDate", toDate);
+		model.addAttribute("typeFilter", deviceRequestType);
+		model.addAttribute("commandRequestExecutionTypes", DeviceRequestType.values());
+
 		if (jobId > 0) {
 			ScheduledGroupRequestExecutionJobWrapper jobWrapper = scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(jobId, null, null, userContext);
-			String singleJobType = jobWrapper.getCommandRequestTypeShortName();
-			mav.addObject("singleJobType", singleJobType);
+			model.addAttribute("singleJobType", jobWrapper.getCommandRequestTypeShortName());
 		}
-		
-		// CRES
+
 		List<CommandRequestExecution> cres;
 		if (jobId > 0) {
-			cres = scheduledGroupRequestExecutionDao.getCommandRequestExecutionsByJobId(jobId, fromDate, toDate, false);
+			cres = scheduledGroupRequestExecutionDao.getCommandRequestExecutionsByJobId(jobId, fromDate.toDate(), toDate.toDate(), false);
 		} else {
-			cres = commandRequestExecutionDao.findByRange(commandRequestExecutionId, fromDate, toDate, typeFilter, false);
+			cres = commandRequestExecutionDao.findByRange(commandRequestExecutionId, fromDate.toDate(), toDate.toDate(), deviceRequestType, false);
 		}
-		
+
 		List<CommandRequestExecutionWrapper> creWrappers = Lists.newArrayListWithCapacity(cres.size());
 		for (CommandRequestExecution cre : cres) {
 			CommandRequestExecutionWrapper commandRequestExecutionWrapper = commandRequestExecutionWrapperFactory.createCommandRequestExecutionWrapper(cre);
 			creWrappers.add(commandRequestExecutionWrapper);
 		}
-		
-		mav.addObject("creWrappers", creWrappers);
-		
-		return mav;
+
+		model.addAttribute("creWrappers", creWrappers);
+
+		return "commandRequestExecution/list.jsp";
 	}
-	
-	// DETAIL
-	public ModelAndView detail(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+
+	@RequestMapping
+	public String detail(ModelMap model,
+			int commandRequestExecutionId,
+			@RequestParam(defaultValue = "0") int jobId) {
+
+		model.addAttribute("commandRequestExecutionId", commandRequestExecutionId);
+		model.addAttribute("jobId", jobId);
 		
-		ModelAndView mav = new ModelAndView("commandRequestExecution/detail.jsp");
-		
-		int commandRequestExecutionId = ServletRequestUtils.getRequiredIntParameter(request, "commandRequestExecutionId");
-		int jobId = ServletRequestUtils.getIntParameter(request, "jobId", 0);
-        mav.addObject("commandRequestExecutionId", commandRequestExecutionId);
-        mav.addObject("jobId", jobId);
-        
-        CommandRequestExecution cre = commandRequestExecutionDao.getById(commandRequestExecutionId);
-        mav.addObject("cre", cre);
-        
+        model.addAttribute("cre", commandRequestExecutionDao.getById(commandRequestExecutionId));
         int requestCount = commandRequestExecutionDao.getRequestCountByCreId(commandRequestExecutionId);
         int successCount = commandRequestExecutionResultDao.getSucessCountByExecutionId(commandRequestExecutionId);
         int failCount = commandRequestExecutionResultDao.getFailCountByExecutionId(commandRequestExecutionId);
         boolean isComplete = commandRequestExecutionDao.isComplete(commandRequestExecutionId);
-        mav.addObject("requestCount", requestCount);
-        mav.addObject("successCount", successCount);
-        mav.addObject("failCount", failCount);
-        mav.addObject("isComplete", isComplete);
-        
-        
-        mav.addObject("resultsFilterTypes", CommandRequestExecutionResultsFilterType.values());
-        
-        return mav;
+        model.addAttribute("requestCount", requestCount);
+        model.addAttribute("successCount", successCount);
+        model.addAttribute("failCount", failCount);
+        model.addAttribute("isComplete", isComplete);
+
+        model.addAttribute("resultsFilterTypes", CommandRequestExecutionResultsFilterType.values());
+
+        return "commandRequestExecution/detail.jsp";
 	}
 	
-	// DETAILS REPORT
-	public ModelAndView detailsReport(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-		
-		ModelAndView mav = new ModelAndView("commandRequestExecution/detailsReport.jsp");
-		
-		int commandRequestExecutionId = ServletRequestUtils.getRequiredIntParameter(request, "commandRequestExecutionId");
-		String resultsFilterType = ServletRequestUtils.getRequiredStringParameter(request, "resultsFilterType");
-		
-        mav.addObject("commandRequestExecutionId", commandRequestExecutionId);
-        mav.addObject("resultsFilterType", resultsFilterType);
-        
-        return mav;
+	@RequestMapping
+	public String detailsReport(ModelMap model, 
+			@RequestParam int commandRequestExecutionId,
+			@RequestParam String resultsFilterType) {
+
+		model.addAttribute("commandRequestExecutionId", commandRequestExecutionId);
+		model.addAttribute("resultsFilterType", resultsFilterType);
+
+        return "commandRequestExecution/detailsReport.jsp";
 	}
 	
-	// FAILURE STATS REPORT
-	public ModelAndView failureStatsReport(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-		
-		ModelAndView mav = new ModelAndView("commandRequestExecution/failureStatsReport.jsp");
-		
-		int commandRequestExecutionId = ServletRequestUtils.getRequiredIntParameter(request, "commandRequestExecutionId");
-        mav.addObject("commandRequestExecutionId", commandRequestExecutionId);
-        
-        return mav;
+	@RequestMapping
+	public String failureStatsReport(ModelMap model,
+			@RequestParam int commandRequestExecutionId) {
+
+		model.addAttribute("commandRequestExecutionId", commandRequestExecutionId);
+
+		return "commandRequestExecution/failureStatsReport.jsp";
 	}
 	
-	// PROCESS DEVICES
-	public ModelAndView processDevices(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-		
-		ModelAndView mav = new ModelAndView("redirect:/bulk/collectionActions");
-		
-		int commandRequestExecutionId = ServletRequestUtils.getRequiredIntParameter(request, "commandRequestExecutionId");
-		String commandRequestExecutionUpdaterTypeStr = ServletRequestUtils.getRequiredStringParameter(request, "commandRequestExecutionUpdaterType");
-		CommandRequestExecutionUpdaterTypeEnum commandRequestExecutionType = CommandRequestExecutionUpdaterTypeEnum.valueOf(commandRequestExecutionUpdaterTypeStr);
-		
+	@RequestMapping
+	public String processDevices(ModelMap model,
+			@RequestParam("commandRequestExecutionId") int commandRequestExecutionId,
+			CommandRequestExecutionUpdaterTypeEnum commandRequestExecutionUpdaterType) {
+
 		List<PaoIdentifier> paoIdentifiers;
-		
-		if (commandRequestExecutionType.equals(CommandRequestExecutionUpdaterTypeEnum.REQUEST_COUNT)) {
-			paoIdentifiers = commandRequestExecutionResultDao.getDeviceIdsByExecutionId(commandRequestExecutionId);
-		} else if (commandRequestExecutionType.equals(CommandRequestExecutionUpdaterTypeEnum.SUCCESS_RESULTS_COUNT)) {
-			paoIdentifiers = commandRequestExecutionResultDao.getSucessDeviceIdsByExecutionId(commandRequestExecutionId);
-		} else if (commandRequestExecutionType.equals(CommandRequestExecutionUpdaterTypeEnum.FAILURE_RESULTS_COUNT)) {
-			paoIdentifiers = commandRequestExecutionResultDao.getFailDeviceIdsByExecutionId(commandRequestExecutionId);
-		} else {
-			throw new IllegalArgumentException("Invalid commandRequestExecutionUpdaterType parameter: " + commandRequestExecutionUpdaterTypeStr);
+
+		switch(commandRequestExecutionUpdaterType) {
+			case REQUEST_COUNT:
+				paoIdentifiers = commandRequestExecutionResultDao.getDeviceIdsByExecutionId(commandRequestExecutionId);
+				break;
+			case SUCCESS_RESULTS_COUNT:
+				paoIdentifiers = commandRequestExecutionResultDao.getSucessDeviceIdsByExecutionId(commandRequestExecutionId);
+				break;
+			case FAILURE_RESULTS_COUNT:
+				paoIdentifiers = commandRequestExecutionResultDao.getFailDeviceIdsByExecutionId(commandRequestExecutionId);
+				break;
+			default:
+				throw new IllegalArgumentException("Invalid commandRequestExecutionUpdaterType: " + commandRequestExecutionUpdaterType);
 		}
-		
+
 		StoredDeviceGroup tempGroup = temporaryDeviceGroupService.createTempGroup();
 		ImmutableList<YukonDevice> deviceList = PaoUtils.asDeviceList(paoIdentifiers);
 		deviceGroupMemberEditorDao.addDevices(tempGroup, deviceList);
-		
+
 		DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tempGroup);
-		mav.addAllObjects(deviceCollection.getCollectionParameters());
-        
-        return mav;
+		model.addAllAttributes(deviceCollection.getCollectionParameters());
+
+        return "redirect:/bulk/collectionActions";
 	}
-	
-	
-	@Autowired
-	public void setCommandRequestExecutionDao(CommandRequestExecutionDao commandRequestExecutionDao) {
-		this.commandRequestExecutionDao = commandRequestExecutionDao;
-	}
-	
-	@Autowired
-	public void setCommandRequestExecutionResultDao(
-			CommandRequestExecutionResultDao commandRequestExecutionResultDao) {
-		this.commandRequestExecutionResultDao = commandRequestExecutionResultDao;
-	}
-	
-	@Autowired
-	public void setDateFormattingService(DateFormattingService dateFormattingService) {
-		this.dateFormattingService = dateFormattingService;
-	}
-	
-	@Autowired
-	public void setScheduledGroupRequestExecutionDao(
-			ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao) {
-		this.scheduledGroupRequestExecutionDao = scheduledGroupRequestExecutionDao;
-	}
-	
-	@Autowired
-	public void setTemporaryDeviceGroupService(TemporaryDeviceGroupService temporaryDeviceGroupService) {
-		this.temporaryDeviceGroupService = temporaryDeviceGroupService;
-	}
-	
-	@Autowired
-	public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
-		this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
-	}
-	
-	@Autowired
-	public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
-        this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
+
+    @InitBinder
+    public void initBinder(WebDataBinder webDataBinder, final YukonUserContext context) {
+        EnumPropertyEditor.register(webDataBinder, CommandRequestExecutionUpdaterTypeEnum.class);
+        webDataBinder.registerCustomEditor(Instant.class, "fromDate",
+                   datePropertyEditorFactory.getInstantPropertyEditor(DateFormatEnum.DATE,
+                                          context, BlankMode.NULL, DateOnlyMode.START_OF_DAY));
+        webDataBinder.registerCustomEditor(Instant.class, "toDate",
+                   datePropertyEditorFactory.getInstantPropertyEditor(DateFormatEnum.DATE,
+                                      context, BlankMode.CURRENT, DateOnlyMode.END_OF_DAY));
     }
-	
-	@Autowired
-	public void setCommandRequestExecutionWrapperFactory(CommandRequestExecutionWrapperFactory commandRequestExecutionWrapperFactory) {
-		this.commandRequestExecutionWrapperFactory = commandRequestExecutionWrapperFactory;
-	}
-	
-	@Autowired
-	public void setScheduledGroupRequestExecutionJobWrapperFactory(ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory) {
-		this.scheduledGroupRequestExecutionJobWrapperFactory = scheduledGroupRequestExecutionJobWrapperFactory;
-	}
 }

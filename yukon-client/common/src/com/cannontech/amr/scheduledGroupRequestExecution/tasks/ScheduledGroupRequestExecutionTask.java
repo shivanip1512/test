@@ -51,15 +51,15 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     private CommandCompletionCallback<? super CommandRequestDevice> currentCallback = null;
     
     // Injected services and daos
-    private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
-    private DeviceGroupService deviceGroupService;
-    private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-    private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionResultsDao;
-    private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
+    @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
+    @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    @Autowired private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionResultsDao;
+    @Autowired private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
 
     @Override
     public void start() {
-        startTask(getJobContext().getJob().getId());
+        startTask();
     }
     
     @Override
@@ -71,15 +71,15 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     	log.info("Stopped job with id " + jobId + ". " + commandsCancelled + " commands were cancelled.");
     }
     
-    private void startTask(int jobId){
+    private void startTask(){
     	
     	LiteYukonUser user = getYukonUser();
     	
     	log.info("Starting scheduled group command execution. user = " + user.getUsername() + ".");
         
         try {
-        	DeviceGroup deviceGroup = getDeviceGroup();
-            if (deviceGroup == null) {
+        	DeviceGroup taskDeviceGroup = getDeviceGroup();
+            if (taskDeviceGroup == null) {
                 throw new IllegalArgumentException("DeviceGroup does not exist, task cannot run.");
             }
             
@@ -95,7 +95,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
         	
             if (getCommand() != null) {
             	Set<SimpleDevice> devices = deviceGroupService.getDevices(Collections.singletonList(getDeviceGroup()));
-                List<CommandRequestDevice> commandRequests = new ArrayList<CommandRequestDevice>();
+                List<CommandRequestDevice> commandRequests = new ArrayList<>();
                 for (SimpleDevice device : devices) {
                     
                     CommandRequestDevice cmdReq = new CommandRequestDevice();
@@ -106,8 +106,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
                 }
 
                 CommandRequestRetryExecutor<CommandRequestDevice> retryExecutor = 
-                    new CommandRequestRetryExecutor<CommandRequestDevice>(commandRequestDeviceExecutor, 
-                            getRetryParameters());
+                    new CommandRequestRetryExecutor<>(commandRequestDeviceExecutor, getRetryParameters());
                 executionObjects = retryExecutor.execute(commandRequests, dummyCallback, getCommandRequestExecutionType(), user);
                 currentExecutor = commandRequestDeviceExecutor;
                 currentCallback = executionObjects.getCallback();
@@ -116,11 +115,8 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
             	DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(getDeviceGroup());
     	        
     	        executionObjects = plcDeviceAttributeReadService.backgroundReadDeviceCollection(deviceCollection, 
-    	                                                                                 attributes, 
-    	                                                                                 getCommandRequestExecutionType(), 
-    	                                                                                 dummyCallback, 
-    	                                                                                 user, 
-    	                                                                                 getRetryParameters());
+                                                     attributes, getCommandRequestExecutionType(), dummyCallback, 
+                                                     user, getRetryParameters());
     	        
     	        currentExecutor = executionObjects.getCommandRequestExecutor();
     	        currentCallback = executionObjects.getCallback();
@@ -229,30 +225,4 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
 	public void setTurnOffQueuingAfterRetryCount(Integer turnOffQueuingAfterRetryCount) {
 		this.turnOffQueuingAfterRetryCount = turnOffQueuingAfterRetryCount;
 	}
-	
-    // Setters for injected services and daos
-	@Autowired
-    public void setCommandRequestDeviceExecutor(CommandRequestDeviceExecutor commandRequestDeviceExecutor) {
-		this.commandRequestDeviceExecutor = commandRequestDeviceExecutor;
-	}
-	
-    @Autowired
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-		this.deviceGroupService = deviceGroupService;
-	}
-    
-    @Autowired
-    public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
-		this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
-	}
-    
-    @Autowired
-    public void setScheduledGroupRequestExecutionResultsDao(
-			ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionResultsDao) {
-		this.scheduledGroupRequestExecutionResultsDao = scheduledGroupRequestExecutionResultsDao;
-	}
-    @Autowired
-    public void setPlcDeviceAttributeReadService(PlcDeviceAttributeReadService plcDeviceAttributeReadService) {
-        this.plcDeviceAttributeReadService = plcDeviceAttributeReadService;
-    }
 }

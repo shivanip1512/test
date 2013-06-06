@@ -27,12 +27,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGeneratorService {
+    private Logger log = YukonLogManager.getLogger(MeterReadCommandGeneratorServiceImpl.class);
 
-	private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
 	
-	private Logger log = YukonLogManager.getLogger(MeterReadCommandGeneratorServiceImpl.class);
-	
-	public List<CommandRequestDevice> getCommandRequests(final Iterable<PaoMultiPointIdentifier> pointsToRead) {
+	@Override
+    public List<CommandRequestDevice> getCommandRequests(final Iterable<PaoMultiPointIdentifier> pointsToRead) {
 
 	    List<CommandRequestDevice> result = Lists.newArrayListWithExpectedSize(IterableUtils.guessSize(pointsToRead));
 	    
@@ -62,7 +62,8 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
 	    return result;
 	}
 	
-	public boolean isReadable(final Iterable<PaoMultiPointIdentifier> pointsToRead) {
+	@Override
+    public boolean isReadable(final Iterable<PaoMultiPointIdentifier> pointsToRead) {
 	    if (Iterables.isEmpty(pointsToRead)) return false;
 	    
         // the following loop mimics what getCommandRequests does, but because we don't need
@@ -74,13 +75,12 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
         }
         
         return false;
-
 	}
 	
 	private Set<CommandWrapper> getMinimalCommandSet(PaoIdentifier device, Set<PointIdentifier> pointSet) {
         Set<CommandDefinition> allPossibleCommands = paoDefinitionDao.getCommandsThatAffectPoints(device.getPaoType(), pointSet);
         
-        Set<CommandWrapper> wrappedCommands = new HashSet<CommandWrapper>(allPossibleCommands.size());
+        Set<CommandWrapper> wrappedCommands = new HashSet<>(allPossibleCommands.size());
         for (CommandDefinition definition : allPossibleCommands) {
             wrappedCommands.add(new CommandWrapper(definition));
         }
@@ -90,9 +90,4 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
         LogHelper.debug(log, "Reduced %s on %s to: %s", pointSet, device, minimalCommands);
         return minimalCommands;
     }
-	
-	@Autowired
-	public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-		this.paoDefinitionDao = paoDefinitionDao;
-	}
 }

@@ -73,22 +73,25 @@ import com.cannontech.yukon.BasicServerConnection;
 @ManagedResource
 public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> implements
         CommandRequestExecutor<T> {
+
+    private static final Logger log = YukonLogManager.getLogger(CommandRequestExecutorBase.class);
+
+    @Autowired private PorterRequestCancelService porterRequestCancelService;
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
+    @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
+	@Autowired private NextValueHelper nextValueHelper;
+	@Autowired private CommandRequestExecutorEventLogService commandRequestExecutorEventLogService;
+	@Autowired private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
+    
     private BasicServerConnection porterConnection;
     private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     private CommandPermissionConverter commandPermissionConverter;
-    private PorterRequestCancelService porterRequestCancelService;
-    private Set<Permission> loggableCommandPermissions = new HashSet<Permission>();
-    private ConfigurationSource configurationSource;
+    private Set<Permission> loggableCommandPermissions = new HashSet<>();
     private Executor executor;
-    private CommandRequestExecutionDao commandRequestExecutionDao;
-	private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
-	private NextValueHelper nextValueHelper;
-	private CommandRequestExecutorEventLogService commandRequestExecutorEventLogService;
-	private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
+	
+    private Map<CommandCompletionCallback<? super T>, CommandResultMessageListener> msgListeners = new ConcurrentHashMap<>();
     
-    private Map<CommandCompletionCallback<? super T>, CommandResultMessageListener> msgListeners = new ConcurrentHashMap<CommandCompletionCallback<? super T>, CommandResultMessageListener>();
-    
-    private static final Logger log = YukonLogManager.getLogger(CommandRequestExecutorBase.class);
     private static final int CANCEL_PRIORITY = 8;
 
     // COMMAND RESULT MESSAGE LISTENER
@@ -109,7 +112,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
             this.groupMessageId = groupMessageId;
             this.commandRequestExecution = commandRequestExecution;
             
-            pendingUserMessageIds = new HashMap<Long, T>(requests.size());
+            pendingUserMessageIds = new HashMap<>(requests.size());
             for (RequestHolder requestHolder : requests) {
                 pendingUserMessageIds.put(requestHolder.request.getUserMessageID(), requestHolder.command);
             }
@@ -119,6 +122,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         	return commandRequestExecution;
         }
         
+        @Override
         public synchronized void messageReceived(MessageEvent e) {
         	
             boolean debug = log.isDebugEnabled();
@@ -276,10 +280,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     	commandRequestExecutionResult.setCommandRequestExecutionId(commandRequestExecution.getId());
     	commandRequestExecutionResult.setCommand(returnMsgCommand);
     	commandRequestExecutionResult.setCompleteTime(new Date());
-    	
-    	if (status != 0) {
-    		commandRequestExecutionResult.setErrorCode(status);
-    	}
+		commandRequestExecutionResult.setErrorCode(status);
     	
     	applyIdsToCommandRequestExecutionResult(command, commandRequestExecutionResult);
         
@@ -287,6 +288,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     }
 
     // EXECUTE SINGLE, WAIT (wraps single command in list then calls execute-multiple-wait)
+    @Override
     public CommandResultHolder execute(T command, DeviceRequestType type, LiteYukonUser user) throws CommandCompletionException {
         
         return execute(Collections.singletonList(command), type, user);
@@ -294,6 +296,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     
 
     // EXECUTE MULTIPLE, WAIT (makes a waitable callback then calls execute-multiple-with-callback)
+    @Override
     public CommandResultHolder execute(List<T> commands, DeviceRequestType type, LiteYukonUser user) throws CommandCompletionException {
         
         CollectingCommandCompletionCallback callback = new CollectingCommandCompletionCallback();
@@ -313,6 +316,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     }
     
     // EXECUTE MULTIPLE, CALLBACK (creates a one time use parameterDto and calls executeWithParameterDto)
+    @Override
     public CommandRequestExecutionIdentifier execute(final List<T> commands,
                                                      final CommandCompletionCallback<? super T> callback, 
                                                      DeviceRequestType type, 
@@ -324,6 +328,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     
     
     // EXECUTE MULTIPLE, CALLBACK, parameterDto
+    @Override
     public CommandRequestExecutionIdentifier executeWithParameterDto(final List<T> commands,
                                                                 final CommandCompletionCallback<? super T> callback, 
                                                                 final CommandRequestExecutionParameterDto parameterDto) {
@@ -332,7 +337,6 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 
         // parameterDto
         final LiteYukonUser user = parameterDto.getUser();
-        final boolean noqueue = parameterDto.isNoqueue();
         // This method also handles the overriding of command priorities. 
         int commandPriority;
         try{
@@ -364,10 +368,11 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         // execute
         executor.execute(new Runnable() {
         	
-        	public void run() {
+        	@Override
+            public void run() {
 
 		        // build up a list of command requests
-		        final List<RequestHolder> commandRequests = new ArrayList<RequestHolder>(commands.size());
+		        final List<RequestHolder> commandRequests = new ArrayList<>(commands.size());
 		        int groupMessageId = RandomUtils.nextInt();
 		        
 		        for (T command : commands) {
@@ -408,67 +413,67 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 		            // write requests
 		        	log.debug("Starting commandRequests loop. groupMessageId = " + groupMessageId);
 		            for (RequestHolder requestHolder : commandRequests) {
-		            	
+
 		            	currentRequestHolder = requestHolder;
-		            	
+
 		            	if (!messageListener.isCanceled()) {
-		            	
+
 			                porterConnection.write(requestHolder.request);
 			                nothingWritten = false;
-			                
+
 			                if (commandRequiresLogging(requestHolder.request)) {
 			                    logCommand(requestHolder.request, user);
 			                }
 			                if (log.isDebugEnabled()) {
 			                    log.debug("Sent request to porter: " + requestHolder.request);
 			                }
-			                
+
 		            	} else {
 		            		log.debug("Not sending request due to cancel: " + requestHolder.request);
 		            	}
 		            }
 		            log.debug("Finished commandRequests loop. groupMessageId = " + groupMessageId);
-		        
+
 		        } catch (ConnectionException e) {
 		        	exceptionOccured = true;
 		        	String error = "No porter connection.";
 		        	callback.processingExceptionOccured(error);
 		        	completeAndRemoveListener = true;
 		        	log.debug("Removing porter message listener because an exception occured: " + messageListener);
-		        	
+
 		        	commandRequestExecutorEventLogService.commandFailedToTransmit(commandRequestExecution.getId(), contextId.getId(), type, currentRequestHolder.request.getCommandString(), error, user);
-		        	
+
 		        } catch (Exception e) {
-		        	
 		        	exceptionOccured = true;
 		        	callback.processingExceptionOccured(e.getMessage());
 		        	completeAndRemoveListener = true;
 		        	log.debug("Removing porter message listener because an exception occured (" + e.getMessage() + "): " + messageListener);
-		        	
+
 		        	commandRequestExecutorEventLogService.commandFailedToTransmit(commandRequestExecution.getId(), contextId.getId(), type, currentRequestHolder.request.getCommandString(), e.getMessage(), user);
-		        	
+
 		        } finally {
 		            if (nothingWritten && !messageListener.isCanceled()) {
 		            	completeAndRemoveListener = true;
 		                log.debug("Removing porter message listener because nothing was written: " + messageListener);
 		            }
-		            
+
 		            if (completeAndRemoveListener) {
 		            	callback.complete();
 		            	messageListener.removeListener();
 		            	completeCommandRequestExecutionRecord(commandRequestExecution, exceptionOccured ? CommandRequestExecutionStatus.FAILED : CommandRequestExecutionStatus.COMPLETE);
 		            }
-		            
+
 		            messageListener.getCommandsAreWritingLatch().countDown();
 		            log.debug("Latch counted down. groupMessageId = " + groupMessageId);
 		        }
         	}
         });
-        
+
         return commandRequestExecutionIdentifier;
     }
     
     // CANCEL
+    @Override
     public long cancelExecution(CommandCompletionCallback<? super T> callback, LiteYukonUser user) {
         
         if(msgListeners.isEmpty()){
@@ -520,6 +525,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     }
     
     // EXECUTION TEMPLATE
+    @Override
     public CommandRequestExecutionTemplate<T> getExecutionTemplate(DeviceRequestType type, final LiteYukonUser user) {
         
         CommandRequestExecutionContextId contextId = new CommandRequestExecutionContextId(nextValueHelper.getNextValue("CommandRequestExec"));
@@ -542,25 +548,25 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         @Override
         public CommandRequestExecutionContextId getContextId() {
             return this.parameterDto.getContextId();
-        };
+        }
         
         @Override
         public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback) {
             return executeWithParameterDto(commands, callback, this.parameterDto);
-        };
+        }
 
         @Override
-        public CommandRequestExecutionIdentifier execute(List<T> commands,CommandCompletionCallback<? super T> callback, boolean noqueue) {
+        public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback, boolean noqueue) {
             return executeWithParameterDto(commands, callback, this.parameterDto.withNoqueue(noqueue));
         }
         
         @Override
-        public CommandRequestExecutionIdentifier execute(List<T> commands,CommandCompletionCallback<? super T> callback,int priority) {
+        public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback, int priority) {
             return executeWithParameterDto(commands, callback, this.parameterDto.withPriority(priority));
         }
         
         @Override
-        public CommandRequestExecutionIdentifier execute(List<T> commands,CommandCompletionCallback<? super T> callback, boolean noqueue, int priority) {
+        public CommandRequestExecutionIdentifier execute(List<T> commands, CommandCompletionCallback<? super T> callback, boolean noqueue, int priority) {
             return executeWithParameterDto(commands, callback, this.parameterDto.withNoqueue(noqueue).withPriority(priority));
         }
         
@@ -585,15 +591,12 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         return result;
     }
     
-    // ABSTRACT METHODS
     protected abstract void adjustRequest(Request request, T commandRequest);
     
     protected abstract CommandRequestType getCommandRequestType();
     
     protected abstract void applyIdsToCommandRequestExecutionResult(T commandRequest, CommandRequestExecutionResult commandRequestExecutionResult);
 
-    
-    // INJECTED DEPENDANCIES
     @Required
     public void setPorterConnection(BasicServerConnection porterConnection) {
         this.porterConnection = porterConnection;
@@ -624,52 +627,13 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         this.commandPermissionConverter = commandPermissionConverter;
     }
     
-    @Autowired
-    public void setPorterRequestCancelService(
-            PorterRequestCancelService porterRequestCancelService) {
-        this.porterRequestCancelService = porterRequestCancelService;
-    }
-    
-    @Autowired
-    public void setConfigurationSource(ConfigurationSource configurationSource) {
-        this.configurationSource = configurationSource;
-    }
-    
     @Resource(name="globalScheduledExecutor")
     public void setExecutor(Executor executor) {
 		this.executor = executor;
 	}
     
-    @Autowired
-    public void setCommandRequestExecutionDao(
-			CommandRequestExecutionDao commandRequestExecutionDao) {
-		this.commandRequestExecutionDao = commandRequestExecutionDao;
-	}
-    
-    @Autowired
-    public void setCommandRequestExecutionResultDao(
-			CommandRequestExecutionResultDao commandRequestExecutionResultDao) {
-		this.commandRequestExecutionResultDao = commandRequestExecutionResultDao;
-	}
-    
     @ManagedAttribute
     public int getPendingRequestCount() {
         return msgListeners.size();
-    }
-
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-    
-    @Autowired
-    public void setCommandRequestExecutorEventLogService(CommandRequestExecutorEventLogService commandRequestExecutorEventLogService) {
-		this.commandRequestExecutorEventLogService = commandRequestExecutorEventLogService;
-	}
-
-    @Autowired
-    public void setWaitableCommandCompletionCallbackFactory(
-            WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory) {
-        this.waitableCommandCompletionCallbackFactory = waitableCommandCompletionCallbackFactory;
     }
 }

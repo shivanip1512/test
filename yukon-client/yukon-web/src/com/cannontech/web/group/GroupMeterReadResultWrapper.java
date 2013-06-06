@@ -14,25 +14,25 @@ import com.cannontech.user.YukonUserContext;
 public class GroupMeterReadResultWrapper {
 
 	private GroupMeterReadResult result;
-	
+
 	public GroupMeterReadResultWrapper(GroupMeterReadResult groupMeterReadResult) {
 		this.result = groupMeterReadResult;
 	}
-	
+
 	public GroupMeterReadResult getResult() {
 		return this.result;
 	}
-	
+
 	public String getAttributesDescription(YukonUserContext userContext, ObjectFormattingService objectFormattingService) {
 
 		Set<? extends Attribute> attributes = this.result.getAttributes();
-		List<String> descriptions = new ArrayList<String>();
+		List<String> descriptions = new ArrayList<>();
 		String name;
 		for (Attribute attribute : attributes) {
 		    name = objectFormattingService.formatObjectAsString(attribute.getMessage(), userContext);
 			descriptions.add(name);
 		}
-		
+
 		return StringUtils.join(descriptions, ", ");
 	}
 }

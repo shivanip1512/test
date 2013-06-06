@@ -66,6 +66,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     };
     
     // INSERT
+    @Override
     public void insert(ScheduledGroupRequestExecutionPair pair) {
         template.insert(pair);
     }
@@ -73,6 +74,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     
     
     // LATEST CRE FOR JOB ID
+    @Override
     public CommandRequestExecution findLatestCommandRequestExecutionForJobId(int jobId, Date cutoff) {
     	
     	SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -90,22 +92,17 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     	
     	if (cres.size() > 0) {
     		return cres.get(0);
-    	} else {
-    		return null;
     	}
+
+        return null;
     }
     
     // GET JOBS BY RANGE
     @Override
-	public List<ScheduledRepeatingJob> getJobs(int jobId, 
-												Date startTime, 
-												Date stopTime, 
-												List<DeviceRequestType> types, 
-												ScheduleGroupRequestExecutionDaoEnabledFilter enabled, 
-												ScheduleGroupRequestExecutionDaoPendingFilter pending,
-												ScheduleGroupRequestExecutionDaoOnetimeFilter onetime,
-												boolean ascendingJobIds) {
-		
+	public List<ScheduledRepeatingJob> getJobs(int jobId, Date startTime, Date stopTime, List<DeviceRequestType> types, 
+    		ScheduleGroupRequestExecutionDaoEnabledFilter enabled, ScheduleGroupRequestExecutionDaoPendingFilter pending,
+    		ScheduleGroupRequestExecutionDaoOnetimeFilter onetime, boolean ascendingJobIds) {
+
 		SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append("SELECT DISTINCT Job.*, JSR.* FROM Job");
         sql.append("JOIN JobScheduledRepeating JSR ON (Job.JobId = JSR.JobId)");
@@ -113,100 +110,72 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
         if (types != null) {
         	sql.append("INNER JOIN JOBPROPERTY JP ON (Job.JobId = JP.JobId)");
         }
-        
-        sql.append("WHERE Job.BeanName = ").appendArgument(scheduledGroupRequestExecutionJobDefinition.getName());
+
+        sql.append("WHERE Job.BeanName").eq(scheduledGroupRequestExecutionJobDefinition.getName());
         
         // single job
         if (jobId > 0) {
-    		sql.append("AND Job.JobId = ").appendArgument(jobId);
+    		sql.append("AND Job.JobId").eq(jobId);
         }
         
         // start stop / pending (start time will get ignored if PENDING_ONLY is set)
         if (startTime != null) {
-        	
         	if (pending.equals(ScheduleGroupRequestExecutionDaoPendingFilter.ANY)) {
-        		
-        		sql.append("AND (JS.StartTime >= ").appendArgument(startTime).append(" OR JS.StartTime IS NULL)");
-        	
+        		sql.append("AND (JS.StartTime").gte(startTime).append(" OR JS.StartTime IS NULL)");
         	} else if (pending.equals(ScheduleGroupRequestExecutionDaoPendingFilter.PENDING_ONLY)) {
-        		
         		sql.append("AND JS.StartTime IS NULL");
-        	
         	} else if (pending.equals(ScheduleGroupRequestExecutionDaoPendingFilter.EXECUTED_ONLY)) {
-        		
-        		sql.append("AND JS.StartTime >= ").appendArgument(startTime);
+        		sql.append("AND JS.StartTime").gte(startTime);
         	}
-        	
         } else {
-        	
         	if (pending.equals(ScheduleGroupRequestExecutionDaoPendingFilter.PENDING_ONLY)) {
-        		
         		sql.append("AND JS.StartTime IS NULL");
-        	
         	} else if (pending.equals(ScheduleGroupRequestExecutionDaoPendingFilter.EXECUTED_ONLY)) {
-        		
         		sql.append("AND JS.StartTime IS NOT NULL");
         	}
         }
         
         // stop time (stop time will get ignored if PEDNING_ONLY is set)
         if (stopTime != null) {
-        	
         	if (pending.equals(ScheduleGroupRequestExecutionDaoPendingFilter.ANY)) {
-        		
-        		sql.append("AND (JS.StopTime < ").appendArgument(stopTime).append(" OR JS.StopTime IS NULL)");
-        	
+        		sql.append("AND (JS.StopTime").lt(stopTime).append(" OR JS.StopTime IS NULL)");
         	} else if (pending.equals(ScheduleGroupRequestExecutionDaoPendingFilter.PENDING_ONLY)) {
-        		
         		sql.append("AND JS.StopTime IS NULL");
-        	
         	} else if (pending.equals(ScheduleGroupRequestExecutionDaoPendingFilter.EXECUTED_ONLY)) {
-        		
-        		sql.append("AND JS.StopTime < ").appendArgument(stopTime);
+        		sql.append("AND JS.StopTime").lt(stopTime);
         	}
-
         } else {
-        	
         	// stop time can be whatever unless PENDING_ONLY is set, we know it can only have a null value
         	// (although the start time check should have already excluded the record)
         	if (pending.equals(ScheduleGroupRequestExecutionDaoPendingFilter.PENDING_ONLY)) {
-        		
         		sql.append("AND JS.StopTime IS NULL");
-        	
         	}
         }
         
         // enabled disabled status
-        sql.append("AND Job.Disabled != ").appendArgument(JobDisabledStatus.D.name());
+        sql.append("AND Job.Disabled").neq(JobDisabledStatus.D.name());
         if (enabled.equals(ScheduleGroupRequestExecutionDaoEnabledFilter.ENABLED_ONLY)) {
-        	sql.append("AND Job.Disabled = ").appendArgument(JobDisabledStatus.N.name());
+        	sql.append("AND Job.Disabled").eq(JobDisabledStatus.N.name());
         }
         else if (enabled.equals(ScheduleGroupRequestExecutionDaoEnabledFilter.DISABLED_ONLY)) {
-        	sql.append("AND Job.Disabled = ").appendArgument(JobDisabledStatus.Y.name());
+        	sql.append("AND Job.Disabled").eq(JobDisabledStatus.Y.name());
         }
         
         // type
         if (types != null) {
-        	
         	if (types.size() == 1) {
-        		
-        		sql.append("AND JP.Value = ").appendArgument(types.get(0).name());
-        	
+        		sql.append("AND JP.Value").eq(types.get(0).name());
         	} else if (types.size() > 1) {
         		
         		sql.append("AND JP.Value IN (");
         		
-        		List<String> typeStrs = new ArrayList<String>();
+        		List<String> typeStrs = new ArrayList<>();
         		for (DeviceRequestType type : types) {
         			typeStrs.add(type.name());
         		}
-        		
             	sql.appendArgumentList(typeStrs);
-            	
             	sql.append(")");
-        		
         	}
-        	
         }
         
         // order
@@ -215,85 +184,86 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
         } else {
         	sql.append("ORDER BY Job.JobID DESC");
         }
-	    
+
     	List<ScheduledRepeatingJob> potentialJobs = yukonJdbcTemplate.query(sql, scheduledRepeatingJobDao.getJobRowMapper());
     	List<ScheduledRepeatingJob> jobs = Lists.newArrayListWithExpectedSize(potentialJobs.size());
-    	
+
     	for (ScheduledRepeatingJob job : potentialJobs) {
-    		
     		Date nextRun = null;
 			try {
 				nextRun = this.jobManager.getNextRuntime(job, new Date());
 			} catch (ScheduleException e) {
 				// has no next run time, leave as null
 			}
-			
+
 			if (onetime.equals(ScheduleGroupRequestExecutionDaoOnetimeFilter.INCLUDE_ONETIME) || nextRun != null) {
 				jobs.add(job);
 			}
     	}
-    	
+
     	return jobs;
 	}
-	
-    
+
     // GET CRES BY JOB ID
+    @Override
     public List<CommandRequestExecution> getCommandRequestExecutionsByJobId(int jobId, Date startTime, Date stopTime, boolean acsending) {
-    	
+
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append("SELECT CRE.* FROM ScheduledGrpCommandRequest SGCR");
         sql.append("JOIN CommandRequestExec CRE ON (SGCR.CommandRequestExecContextId = CRE.CommandRequestExecContextId)");
-        
+
         if (jobId > 0) {
-    		sql.append("WHERE SGCR.JobId = ").appendArgument(jobId);
+    		sql.append("WHERE SGCR.JobId").eq(jobId);
         } else {
         	sql.append("WHERE SGCR.JobId > 0");
         }
-    	
+
         if (startTime != null) {
-        	sql.append("AND CRE.StartTime >= ").appendArgument(startTime);
+        	sql.append("AND CRE.StartTime").gte(startTime);
         }
-        
+
         if (stopTime != null) {
-        	sql.append("AND CRE.StartTime <= ").appendArgument(stopTime);
+        	sql.append("AND CRE.StartTime").lte(stopTime);
         }
-    	
+
         if (acsending) {
         	sql.append("ORDER BY CRE.StartTime");
         } else {
         	sql.append("ORDER BY CRE.StartTime DESC");
         }
-        
+
         List<CommandRequestExecution> cres = yukonJdbcTemplate.query(sql, new CommandRequestExecutionRowAndFieldMapper());
     	return cres;
     }
-    
+
     // CRE COUNT BY JOB ID
+    @Override
     public int getDistinctCreCountByJobId(int jobId, Date startTime, Date stopTime) {
-    	
+
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append("SELECT COUNT(DISTINCT CRE.CommandRequestExecContextId) AS distinctCreCount");
     	sql.append("FROM ScheduledGrpCommandRequest SGCR");
         sql.append("JOIN CommandRequestExec CRE ON (SGCR.CommandRequestExecContextId = CRE.CommandRequestExecContextId)");
-        
+
         if (jobId > 0) {
-    		sql.append("WHERE SGCR.JobId = ").appendArgument(jobId);
+    		sql.append("WHERE SGCR.JobId").eq(jobId);
         } else {
         	sql.append("WHERE SGCR.JobId > 0");
         }
-    	
+
         if (startTime != null) {
-        	sql.append("AND CRE.StartTime >= ").appendArgument(startTime);
+        	sql.append("AND CRE.StartTime").gte(startTime);
         }
-        
+
         if (stopTime != null) {
-        	sql.append("AND CRE.StartTime <= ").appendArgument(stopTime);
+        	sql.append("AND CRE.StartTime").lte(stopTime);
         }
-        
+
         int creCount = yukonJdbcTemplate.queryForInt(sql);
     	return creCount;
     }
     
+    @Override
     public ScheduledGroupExecutionCounts getExecutionCountsForJobId(int jobId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(CASE WHEN CRER.ErrorCode !=0 THEN 1 END) failureCount");
@@ -319,6 +289,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
         return execCounts;
     }
 	
+    @Override
     public ScheduledGroupRequestExecutionStatus getStatusByJobId(int jobId) {
     	JobDisabledStatus jobDisabledStatus = jobManager.getJobDisabledStatus(jobId);
 		
@@ -336,7 +307,9 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
 				Date stopTime = latestCre.getStopTime();
 				CommandRequestExecutionStatus commandRequestExecutionStatus = latestCre.getCommandRequestExecutionStatus();
 				
-				if (startTime != null && now.compareTo(startTime) >= 0 && (stopTime == null || now.compareTo(stopTime) <= 0) && commandRequestExecutionStatus != CommandRequestExecutionStatus.FAILED) {
+				if (startTime != null && now.compareTo(startTime) >= 0 
+				        && (stopTime == null || now.compareTo(stopTime) <= 0) 
+				        && commandRequestExecutionStatus != CommandRequestExecutionStatus.FAILED) {
 					return ScheduledGroupRequestExecutionStatus.RUNNING;
 				}
 			}
@@ -346,22 +319,24 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     }
 
 	private FieldMapper<ScheduledGroupRequestExecutionPair> fieldMapper = new FieldMapper<ScheduledGroupRequestExecutionPair>() {
+        @Override
         public void extractValues(MapSqlParameterSource p, ScheduledGroupRequestExecutionPair pair) {
             p.addValue("JobId", pair.getJobId());
             
         }
+        @Override
         public Number getPrimaryKey(ScheduledGroupRequestExecutionPair pair) {
             return pair.getCommandRequestExecutionContextId().getId();
         }
+        @Override
         public void setPrimaryKey(ScheduledGroupRequestExecutionPair pair, int value) {
         	pair.setCommandRequestExecutionContextId(new CommandRequestExecutionContextId(value));
         }
     };
     
-	public void afterPropertiesSet() throws Exception {
-        template = 
-            new SimpleTableAccessTemplate<ScheduledGroupRequestExecutionPair>(yukonJdbcTemplate, 
-                                                                               nextValueHelper);
+	@Override
+    public void afterPropertiesSet() throws Exception {
+        template = new SimpleTableAccessTemplate<>(yukonJdbcTemplate,nextValueHelper);
         template.setTableName("ScheduledGrpCommandRequest");
         template.setPrimaryKeyField("CommandRequestExecContextId");
         template.setFieldMapper(fieldMapper); 
@@ -371,19 +346,23 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
 		this.nextValueHelper = nextValueHelper;
 	}
+
 	@Autowired
 	public void setScheduledRepeatingJobDao(
 			ScheduledRepeatingJobDao scheduledRepeatingJobDao) {
 		this.scheduledRepeatingJobDao = scheduledRepeatingJobDao;
 	}
+
 	@Resource(name="jobManager")
 	public void setJobManager(JobManager jobManager) {
 		this.jobManager = jobManager;
 	}
+
 	@Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
+
 	@Resource(name="scheduledGroupRequestExecutionJobDefinition")
     public void setScheduledGroupRequestExecutionjobDefinition(
             YukonJobDefinition<ScheduledGroupRequestExecutionTask> scheduledGroupRequestExecutionJobDefinition) {

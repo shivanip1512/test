@@ -20,7 +20,6 @@
             <props>
                 <prop key="/alert/*">alertController</prop>
                 <prop key="/deviceDefinition.xml">DeviceDefinitionViewerController</prop>
-                <prop key="/commandRequestExecutionResults/*">CommandRequestExecutionResultsController</prop>
             </props>
         </property>
         <property name="order" value="2"/>
@@ -35,9 +34,6 @@
         <property name="alertService" ref="alertService"/>
     </bean>
     
-    <bean id="DeviceDefinitionViewerController" class="com.cannontech.web.util.DeviceDefinitionViewerController">
-    </bean>
-    
-    <bean id="CommandRequestExecutionResultsController" class="com.cannontech.web.common.commandRequestExecution.CommandRequestExecutionResultsController"/>
+    <bean id="DeviceDefinitionViewerController" class="com.cannontech.web.util.DeviceDefinitionViewerController"/>
 
 </beans>
