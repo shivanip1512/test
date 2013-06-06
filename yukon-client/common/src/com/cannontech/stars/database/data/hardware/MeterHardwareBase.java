@@ -25,35 +25,41 @@ public class MeterHardwareBase extends InventoryBase {
 		super();
 	}
 
-	public void setInventoryID(Integer newID) {
+	@Override
+    public void setInventoryID(Integer newID) {
 		super.setInventoryID(newID);
 		getMeterHardwareBase().setInventoryID(newID);
 	}
 
-	public void setDbConnection(java.sql.Connection conn) {
+	@Override
+    public void setDbConnection(java.sql.Connection conn) {
 		super.setDbConnection(conn);
 		getMeterHardwareBase().setDbConnection(conn);
 	}
 
-	public void delete() throws java.sql.SQLException {
+	@Override
+    public void delete() throws java.sql.SQLException {
 		delete( "LMHardwareToMeterMapping", "MeterInventoryID", getInventoryBase().getInventoryID() );
 		getMeterHardwareBase().delete();
 		super.deleteInventoryBase();
 	}
 
-	public void add() throws java.sql.SQLException {
+	@Override
+    public void add() throws java.sql.SQLException {
 		super.add();
         
 		getMeterHardwareBase().setInventoryID( getInventoryBase().getInventoryID() );
 		getMeterHardwareBase().add();
 	}
 
-	public void update() throws java.sql.SQLException {
+	@Override
+    public void update() throws java.sql.SQLException {
 		super.update();
 		getMeterHardwareBase().update();
 	}
 
-	public void retrieve() throws java.sql.SQLException {
+	@Override
+    public void retrieve() throws java.sql.SQLException {
 		super.retrieve();
 		getMeterHardwareBase().retrieve();
 	}
@@ -251,29 +257,6 @@ public class MeterHardwareBase extends InventoryBase {
         }
         
         return meterHardwareBase;
-    }
-    
-    public static boolean hasSwitchAssigned(int meterInvenID)
-    {
-        boolean truth = false;
-        
-        SqlStatement stmt = new SqlStatement("SELECT LMHARDWAREINVENTORYID FROM LMHARDWARETOMETERMAPPING WHERE METERINVENTORYID = " + meterInvenID, CtiUtilities.getDatabaseAlias());
-        
-        try
-        {
-            stmt.execute();
-            
-            if( stmt.getRowCount() > 0 )
-            {
-                truth = true;
-            }
-        }
-        catch( Exception e )
-        {
-            e.printStackTrace();
-        }
-        
-        return truth;
     }
     
     public static ArrayList<LMHardwareBase> retrieveAssignedSwitches(int meterInvenID)

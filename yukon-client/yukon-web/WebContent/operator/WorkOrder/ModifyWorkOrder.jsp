@@ -504,12 +504,6 @@ function sendWorkOrder() {
                   </tr>
                 </table>
               </form>
-              <form name="cusForm" method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient">
-                <input type="hidden" name="action" value="GetCustAccount">
-                <input type="hidden" name="AccountID" value="<%= liteOrder.getAccountID() %>">
-                <input type="hidden" name="REDIRECT" value="<%=request.getContextPath()%>/operator/Consumer/Update.jsp">
-                <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
-              </form>
               <p>&nbsp;</p>
               </div>
           </td>

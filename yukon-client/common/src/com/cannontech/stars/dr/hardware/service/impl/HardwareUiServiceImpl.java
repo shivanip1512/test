@@ -36,6 +36,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.core.dao.MeterHardwareBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
 import com.cannontech.stars.core.service.StarsInventoryBaseService;
@@ -73,6 +74,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     @Autowired private PaoDao paoDao;
     @Autowired private LMCustomerEventBaseDao lmCustomerEventBaseDao;
     @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private MeterHardwareBaseDao meterHardwareBaseDao;
     @Autowired private DeviceCreationService deviceCreationService;
     @Autowired private StarsSearchDao starsSearchDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
@@ -195,7 +197,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             hardware.setDisplayName(deviceType + " " + meterNumber);
             hardware.setDisplayType(deviceType);
             
-            List<Integer> assignedIds = inventoryBaseDao.getSwitchAssignmentsForMeter(inventoryId);
+            List<Integer> assignedIds = meterHardwareBaseDao.getSwitchAssignmentsForMeter(inventoryId);
             
             int accountId = inventoryDao.getAccountIdForInventory(inventoryId);
             if (accountId > 0) {

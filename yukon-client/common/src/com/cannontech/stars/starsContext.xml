@@ -130,6 +130,7 @@
     <bean id="lmProgramWebPublishingDao" class="com.cannontech.stars.core.dao.impl.LMProgramWebPublishingDaoImpl"/>
 
     <bean id="inventoryBaseDao" class="com.cannontech.stars.core.dao.impl.InventoryBaseDaoImpl"/>
+    <bean class="com.cannontech.stars.core.dao.impl.MeterHardwareBaseDaoImpl"/>
 
     <bean id="starsControllableDeviceHelper" class="com.cannontech.stars.ws.StarsControllableDeviceHelperImpl"/>
             

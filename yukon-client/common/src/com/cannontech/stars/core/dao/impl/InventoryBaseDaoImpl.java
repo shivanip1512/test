@@ -30,7 +30,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.impl.YukonPaoRowMapper;
 import com.cannontech.database.FieldMapper;
-import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -189,17 +189,7 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao, InitializingBean 
                 return hw;
             }});
     }
-    
-    @Override
-    public List<Integer> getSwitchAssignmentsForMeter(int meterId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select LMHardwareInventoryId");
-        sql.append("from LMHardwareToMeterMapping");
-        sql.append("where MeterInventoryId ").eq(meterId);
-        
-        return yukonJdbcTemplate.query(sql, new IntegerRowMapper());
-    }
-    
+
     @Override
     @Transactional(readOnly = true)
     public LiteInventoryBase getByDeviceId(final int deviceId) {
@@ -651,7 +641,7 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao, InitializingBean 
         sql.append("SELECT InventoryId");
         sql.append("FROM InventoryBase");
         sql.append("WHERE AccountId").eq(accountId);
-        List<Integer> inventoryIdList = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+        List<Integer> inventoryIdList = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
         return inventoryIdList;
     }
     

@@ -20,13 +20,14 @@ public class SwitchReplacement extends DBPersistent {
 
     public static final String SETTER_COLUMNS[] = { "ReplacementID", "SerialNumber", "WOType", "DeviceType", "UserName"};
 
-    public static final String TABLE_NAME = "SwitchReplacement";
+    private static final String TABLE_NAME = "SwitchReplacement";
 
 
 public SwitchReplacement() {
     super();
 }
 
+@Override
 public void add() throws java.sql.SQLException 
 {
     Object setValues[] = { getReplacementID(), getSerialNumber(), getWOType(), getDeviceType(), getUserName()};
@@ -35,9 +36,11 @@ public void add() throws java.sql.SQLException
 }
 
 
+@Override
 public void setDbConnection(Connection newValue) {
 	super.setDbConnection(newValue);
 }
+@Override
 public void delete() throws java.sql.SQLException 
 {
     Object constraintValues[] = { getReplacementID() };
@@ -46,6 +49,7 @@ public void delete() throws java.sql.SQLException
 }
 
 
+@Override
 public void retrieve() throws java.sql.SQLException 
 {
     Object constraintValues[] = { getReplacementID() };
@@ -65,6 +69,7 @@ public void retrieve() throws java.sql.SQLException
 }
 
 
+@Override
 public void update() throws java.sql.SQLException 
 {
     Object setValues[] = { getReplacementID(), getSerialNumber(), getWOType(), getDeviceType(), getUserName()}; 

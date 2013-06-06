@@ -266,7 +266,8 @@ public class AccountServiceImpl implements AccountService {
         	liteCustomer.setRateScheduleID(CtiUtilities.NONE_ZERO_ID);
         }
         liteCustomer.setAltTrackingNumber(accountDto.getAltTrackingNumber());
-        String tempUnit = energyCompanySettingDao.getEnum(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT, TemperatureUnit.class, yukonEnergyCompany.getEnergyCompanyId()).getLetter();
+        String tempUnit = energyCompanySettingDao.getEnum(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT,
+            TemperatureUnit.class, yukonEnergyCompany.getEnergyCompanyId()).getLetter();
         liteCustomer.setTemperatureUnit(tempUnit);
         customerDao.addCustomer(liteCustomer);
         dbChangeManager.processDbChange(liteCustomer.getLiteID(),

@@ -118,11 +118,6 @@ public interface InventoryBaseDao {
     public List<PaoIdentifier> getPaosNotOnAnAccount(Collection<YukonEnergyCompany> yecList);
 
     /**
-     * Returns a list of switch inventory id's assigned to the meter.
-     */
-    public List<Integer> getSwitchAssignmentsForMeter(int meterId);
-
-    /**
      * Returns a list of DisplayableLmHardware's of the specified LMHardwareClass on this account.
      */
     public List<DisplayableLmHardware> getLmHardwareForAccount(int accountId,HardwareClass lmHardwareClass);

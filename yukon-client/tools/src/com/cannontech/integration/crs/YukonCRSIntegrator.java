@@ -5,15 +5,19 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LogWriter;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -24,6 +28,7 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.core.dao.MeterHardwareBaseDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.customer.CustomerAccount;
 import com.cannontech.stars.database.data.event.EventWorkOrder;
@@ -102,7 +107,8 @@ public final class YukonCRSIntegrator
     {
     	Runnable runner = new Runnable()
     	{
-    		public void run()
+    		@Override
+            public void run()
     		{
     			CTILogger.info("Yukon to CRS Integration Task starting.");
     			logger = YukonToCRSFuncs.writeToImportLog(logger, 'N', "Yukon to CRS Integration Task starting.", "", "");
@@ -235,7 +241,9 @@ public final class YukonCRSIntegrator
                         
                         if(oldMeterNumber.compareTo(newMeterNumber) != 0)
                         {
-                            MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(oldMeterNumber, customerAccount.getEnergyCompanyID().intValue());
+                            MeterHardwareBase meterHardwareBase =
+                                    MeterHardwareBase.retrieveMeterHardwareBase(oldMeterNumber,
+                                        customerAccount.getEnergyCompanyID().intValue());
                             if( meterHardwareBase == null)
                                 errorMsg.append("MeterNumber (" + oldMeterNumber + ") not found for account " + accountNumber + "; ");
                             else
@@ -378,8 +386,12 @@ public final class YukonCRSIntegrator
 				YukonToCRSFuncs.moveToFailureCRSToSAM_PTJ(currentEntry, errorMsg.toString());
         		continue;
         	}
-        	//Get the customer account from accountNumber
-			MeterHardwareBase meterHardwareBase = null;
+
+			InventoryBaseDao inventoryBaseDao = YukonSpringHook.getBean(InventoryBaseDao.class);
+			MeterHardwareBaseDao meterHardwareBaseDao = YukonSpringHook.getBean(MeterHardwareBaseDao.class);
+
+			//Get the customer account from accountNumber
+			Integer meterId = null;
         	CustomerAccount customerAccount = YukonToCRSFuncs.retrieveCustomerAccount(accountNumber);
     		if( ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_INSTALL_STRING) ||
        				ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_REPAIR_STRING) ||
@@ -424,15 +436,23 @@ public final class YukonCRSIntegrator
 	    				if(ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_REPAIR_STRING) ||
 	    	        			ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_OTHER_STRING))	//Per Sharon, INSTL doesn't care if meter number exists.
 	    				{
-		    				meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(customerAccount.getCustomerAccount().getAccountID().intValue(), meterNumber, customerAccount.getEnergyCompanyID().intValue());
-		            		if( meterHardwareBase == null)
-		            			errorMsg.append("MeterNumber (" + meterNumber + ") Not found for account " + accountNumber + "; ");
+	    				    try {
+	    				        meterId = meterHardwareBaseDao.getInventoryId(
+	    				            customerAccount.getCustomerAccount().getAccountID(), meterNumber,
+	    				            customerAccount.getEnergyCompanyID());
+	    	                } catch (IncorrectResultSizeDataAccessException dae) {
+	    	                    errorMsg.append("MeterNumber (" + meterNumber + ") Not found for account " + accountNumber + "; ");
+	    				    }
 		                	for (int i = 0; i < currentEntry.getAdditionalMeters().size(); i++)
 		                	{
 		                		CRSToSAM_PTJAdditionalMeters additionalMeter = currentEntry.getAdditionalMeters().get(i);
-		                		MeterHardwareBase addtlMeterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(customerAccount.getCustomerAccount().getAccountID().intValue(), additionalMeter.getMeterNumber(), customerAccount.getEnergyCompanyID().intValue());
-			            		if( addtlMeterHardwareBase == null)
-               		       			errorMsg.append("Additional MeterNumber (" + additionalMeter.getMeterNumber() + ") Not found for account " + accountNumber + "; ");
+		                		try {
+		                		    meterHardwareBaseDao.getInventoryId(
+		                		        customerAccount.getCustomerAccount().getAccountID(),
+		                		        additionalMeter.getMeterNumber(), customerAccount.getEnergyCompanyID());
+		                        } catch (IncorrectResultSizeDataAccessException dae) {
+		                            errorMsg.append("Additional MeterNumber (" + additionalMeter.getMeterNumber() + ") Not found for account " + accountNumber + "; ");
+		                        }
 		                	}
 	    				}
 	    				//Stop here, too many error to update anything data.
@@ -479,28 +499,33 @@ public final class YukonCRSIntegrator
 		        	if( ecID_customer != ecID_workOrder)
 		        		errorMsg.append("Customer EnergyCompany (" + ecID_customer+") does not match Service Company Energy Company ("+ecID_workOrder+");");
 	        	}
-	        	
-    			meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(customerAccount.getCustomerAccount().getAccountID().intValue(), meterNumber, customerAccount.getEnergyCompanyID().intValue());
-        		if( meterHardwareBase == null)
-        			errorMsg.append("MeterNumber (" + meterNumber + ") Not found for account " + accountNumber + "; ");
-        		else	//check controllable device is attached to meter
-        		{
-        			boolean switchAssigned = MeterHardwareBase.hasSwitchAssigned(meterHardwareBase.getInventoryBase().getInventoryID().intValue());
-        			if (!switchAssigned)
-        				errorMsg.append("MeterNumber (" + meterNumber + ") has no controllable device attached for account " + accountNumber + "; ");
-        		}
+
+    			try {
+    			    meterId = meterHardwareBaseDao.getInventoryId(customerAccount.getCustomerAccount().getAccountID(),
+    			        meterNumber, customerAccount.getEnergyCompanyID());
+                    // check controllable device is attached to meter
+                    boolean switchAssigned = meterHardwareBaseDao.hasSwitchAssigned(meterId);
+                    if (!switchAssigned) {
+                        errorMsg.append("MeterNumber (" + meterNumber + ") has no controllable device attached for "
+                                + "account " + accountNumber + "; ");
+                    }
+    			} catch (IncorrectResultSizeDataAccessException dae) {
+    			    errorMsg.append("MeterNumber (" + meterNumber + ") Not found for account " + accountNumber + "; ");
+    			}
             	for (int i = 0; i < currentEntry.getAdditionalMeters().size(); i++)
             	{
             		CRSToSAM_PTJAdditionalMeters additionalMeter = currentEntry.getAdditionalMeters().get(i);
-            		MeterHardwareBase addtlMeterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(customerAccount.getCustomerAccount().getAccountID().intValue(), additionalMeter.getMeterNumber(), customerAccount.getEnergyCompanyID().intValue());
-            		if( addtlMeterHardwareBase == null)
-            			errorMsg.append("Additional MeterNumber (" + additionalMeter.getMeterNumber() + ") Not found for account " + accountNumber + "; ");
-            		else	//check controllable device is attached to meter
-            		{
-            			boolean switchAssigned = MeterHardwareBase.hasSwitchAssigned(addtlMeterHardwareBase.getInventoryBase().getInventoryID().intValue());
-            			if (!switchAssigned)
-            				errorMsg.append("Additional MeterNumber (" + additionalMeter.getMeterNumber() + ") has no controllable device attached for account " + accountNumber + "; ");
-            		}
+            		try {
+            		    int additionalMeterId = meterHardwareBaseDao.getInventoryId(
+            		        customerAccount.getCustomerAccount().getAccountID(),
+            		        additionalMeter.getMeterNumber(), customerAccount.getEnergyCompanyID());
+            		    // check controllable device is attached to meter
+            		    boolean switchAssigned = meterHardwareBaseDao.hasSwitchAssigned(additionalMeterId);
+            		    if (!switchAssigned)
+            		        errorMsg.append("Additional MeterNumber (" + additionalMeter.getMeterNumber() + ") has no controllable device attached for account " + accountNumber + "; ");
+                    } catch (IncorrectResultSizeDataAccessException dae) {
+                        errorMsg.append("Additional MeterNumber (" + additionalMeter.getMeterNumber() + ") Not found for account " + accountNumber + "; ");
+                    }
             	}
             	
 				//Stop here, too many error to update anything data.
@@ -554,9 +579,8 @@ public final class YukonCRSIntegrator
                	workOrder.getEventWorkOrders().add(0, eventWorkOrder);
                	
                	/* Handle config for Deactivation PTJ*/
-               	if( meterHardwareBase != null)
-               	{
-	               	ArrayList<LMHardwareBase> lmHardwares = MeterHardwareBase.retrieveAssignedSwitches(meterHardwareBase.getInventoryBase().getInventoryID().intValue());
+                if (meterId != null) {
+	               	ArrayList<LMHardwareBase> lmHardwares = MeterHardwareBase.retrieveAssignedSwitches(meterId);
 	               	if( lmHardwares.size() > 0)
 	               	{
 	               		YukonListEntry devStateEntry = null;
@@ -573,8 +597,6 @@ public final class YukonCRSIntegrator
                             }
 		        		}
 		               	
-		               	InventoryBaseDao inventoryBaseDao = 
-		        			YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
 		               	for (int i = 0; i < lmHardwares.size(); i++)
 		               	{
 		               		try{
@@ -828,5 +850,24 @@ public final class YukonCRSIntegrator
     
     	//System.exit(0);
     }
-    
+
+    private static boolean hasSwitchAssigned(int meterInvenID) {
+        boolean truth = false;
+
+        SqlStatement stmt =
+            new SqlStatement("SELECT LMHARDWAREINVENTORYID FROM LMHARDWARETOMETERMAPPING WHERE METERINVENTORYID = "
+                + meterInvenID, CtiUtilities.getDatabaseAlias());
+
+        try {
+            stmt.execute();
+
+            if (stmt.getRowCount() > 0) {
+                truth = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return truth;
+    }
 }
