@@ -10,6 +10,7 @@
 <%@ page import="com.cannontech.stars.web.util.WorkOrderManagerUtil" %>
 <%@ page import="com.cannontech.common.util.Pair" %>
 <%@page import="com.cannontech.core.dao.ContactDao"%>
+<%@page import="com.cannontech.core.dao.ContactNotificationDao"%>
 <%@page import="com.cannontech.core.dao.YukonListDao"%>
 <%@ page import="com.cannontech.stars.core.dao.StarsWorkOrderBaseDao"%>
 <%@ page import="com.cannontech.stars.dr.event.dao.EventWorkOrderDao"%>
