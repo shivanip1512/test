@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/3/2013 1:44:07 PM                          */
+/* Created on:     6/5/2013 4:01:01 PM                          */
 /*==============================================================*/
 
 
@@ -483,10 +483,11 @@ create index Indx_ArchValExportFld_FormatId on ArchiveValuesExportField (
 create table ArchiveValuesExportFormat  (
    FormatId             NUMBER                          not null,
    FormatName           VARCHAR2(100)                   not null,
-   Delimiter            VARCHAR2(20)                    not null,
+   Delimiter            VARCHAR2(20),
    Header               VARCHAR2(255),
    Footer               VARCHAR2(255),
    FormatType           VARCHAR2(40)                    not null,
+   TimeZoneFormat       VARCHAR2(20)                    not null,
    constraint PK_ArchiveValuesExpFormat primary key (FormatId)
 );
 

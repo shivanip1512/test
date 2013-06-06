@@ -185,6 +185,22 @@ FROM (SELECT MAX(DG.DeviceGroupId) + 1 AS DeviceGroupId
 /* @error ignore-end */
 /* End YUK-12201 */
 
+/* Start YUK-12218 */
+/* @error ignore-begin */
+ALTER TABLE ArchiveValuesExportFormat
+ADD TimeZoneFormat VARCHAR2(20);
+
+UPDATE ArchiveValuesExportFormat
+SET TimeZoneFormat = 'LOCALTZ';
+
+ALTER TABLE ArchiveValuesExportFormat
+MODIFY TimeZoneFormat VARCHAR2(20) NOT NULL;
+
+ALTER TABLE ArchiveValuesExportFormat
+MODIFY Delimiter VARCHAR2(20) NULL;
+/* @error ignore-end */
+/* End YUK-12218 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
