@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/6/2013 10:53:28 AM                         */
+/* Created on:     6/6/2013 1:44:43 PM                          */
 /*==============================================================*/
 
 
@@ -8107,7 +8107,6 @@ insert into YukonGroupRole values (-1094,-2, -108, -10805, ' ');
 insert into YukonGroupRole values (-1095,-2, -108, -10806, ' ');
 insert into YukonGroupRole values (-1096,-2, -108, -10807, ' ');
 insert into YukonGroupRole values (-1097,-2, -108, -10808, ' ');
-insert into YukonGroupRole values (-1098,-2, -108, -10811, ' ');
 
 /* Give admin super user access to system administrator group */
 insert into YukonGroupRole values (-2000, -2, -200, -20019, 'true');
