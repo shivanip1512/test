@@ -201,6 +201,11 @@ MODIFY Delimiter VARCHAR2(20) NULL;
 /* @error ignore-end */
 /* End YUK-12218 */
 
+/* Start YUK-12233 */
+DELETE FROM YukonGroupRole    WHERE RolePropertyId = -10811;
+DELETE FROM YukonRoleProperty WHERE RolePropertyId = -10811;
+/* End YUK-12233 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
