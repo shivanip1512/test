@@ -252,7 +252,8 @@ jQuery(function() {
     										<cti:url var="deleteUrl" value="deleteJob">
     											<cti:param name="jobId" value="${job.id}"/>
     										</cti:url>
-    										<cti:button nameKey="remove" renderMode="image" href="${deleteUrl}"/>
+                                            <cti:button id="deleteScheduleItem_${job.id}" nameKey="remove" renderMode="image" href="${deleteUrl}"/>
+                                            <dialog:confirm on="#deleteScheduleItem_${job.id}" nameKey="confirmDelete" argument="${job.name}"/>
     									</td>
     								</tr>
     							</c:forEach>

@@ -3,6 +3,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
 
 <%@ attribute name="searchResult" required="true" type="com.cannontech.common.search.SearchResult" %>
 <%@ attribute name="jobType" required="true" type="com.cannontech.common.fileExportHistory.FileExportType" %>
@@ -49,7 +50,8 @@
 						<cti:url var="finalDeleteUrl" value="${deleteUrl}">
 							<cti:param name="jobId" value="${job.id}"/>
 						</cti:url>
-						<cti:button nameKey="delete" renderMode="image" href="${finalDeleteUrl}"/>
+						<cti:button id="deleteItem_${job.id}" nameKey="delete" renderMode="image" href="${finalDeleteUrl}"/>
+                        <dialog:confirm on="#deleteItem_${job.id}" nameKey="confirmDelete" argument="${job.name}"/>
 					</td>
 				</tr>
 			</c:forEach>
