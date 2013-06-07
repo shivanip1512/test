@@ -104,15 +104,13 @@ public class DisconnectController extends ReportControllerBase {
         sb.append("        <tr>" + LINE_SEPARATOR);
         sb.append("          <td class='TitleHeader'>&nbsp;Disconnect State</td>" +LINE_SEPARATOR);
         sb.append("        </tr>" + LINE_SEPARATOR);
-        sb.append("        <tr>" + LINE_SEPARATOR);
-        sb.append("          <td><input type='radio' name='" +ATT_DISCONNECT_STATE+ "' value='"+DiscStatusStateFilter.CONNECTED_STATE+"'>Show All Connected</td>" + LINE_SEPARATOR);
-        sb.append("        </tr>" + LINE_SEPARATOR);
-        sb.append("        <tr>" + LINE_SEPARATOR);     
-        sb.append("          <td><input type='radio' name='" +ATT_DISCONNECT_STATE+ "' value='"+DiscStatusStateFilter.DISCONNECTED_STATE+"'>Show All Disconnected</td>" + LINE_SEPARATOR);
-        sb.append("        </tr>" + LINE_SEPARATOR);
-        sb.append("        <tr>" + LINE_SEPARATOR);     
-        sb.append("          <td><input type='radio' name='" +ATT_DISCONNECT_STATE + "' value='"+DiscStatusStateFilter.ALL_STATES+"' checked>Show All</td>" + LINE_SEPARATOR);
-        sb.append("        </tr>" + LINE_SEPARATOR);
+        
+        for (DiscStatusStateFilter discState : DiscStatusStateFilter.values()) {
+            sb.append("        <tr>" + LINE_SEPARATOR);
+            sb.append("          <td><input type='radio' name='"+ATT_DISCONNECT_STATE+"' value='" + discState + "' ");
+            sb.append((discState == DiscStatusStateFilter.ALL_STATES ? "checked" : "") + ">" + discState.getDisplayName() + "</td>" + LINE_SEPARATOR);
+            sb.append("        </tr>" + LINE_SEPARATOR);
+        }
         sb.append("      </table>" + LINE_SEPARATOR);
         sb.append("    </td>" + LINE_SEPARATOR);
 
@@ -124,8 +122,7 @@ public class DisconnectController extends ReportControllerBase {
         for (DiscStatusOrderByFilter orderBy : DiscStatusOrderByFilter.values()) {
             sb.append("        <tr>" + LINE_SEPARATOR);
             sb.append("          <td><input type='radio' name='"+ATT_ORDER_BY+"' value='" + orderBy + "' ");  
-            sb.append((orderBy == DiscStatusOrderByFilter.DEVICE_NAME ? "checked" : "") + ">" + orderBy.getDisplayName()+ LINE_SEPARATOR);
-            sb.append("          </td>" + LINE_SEPARATOR);
+            sb.append((orderBy == DiscStatusOrderByFilter.DEVICE_NAME ? "checked" : "") + ">" + orderBy.getDisplayName() + "</td>" + LINE_SEPARATOR);
             sb.append("        </tr>" + LINE_SEPARATOR);
         }
         sb.append("      </table>" + LINE_SEPARATOR);

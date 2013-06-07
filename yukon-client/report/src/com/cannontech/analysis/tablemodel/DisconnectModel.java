@@ -47,10 +47,18 @@ public class DisconnectModel extends FilteredReportModelBase<DisconnectModel.Dis
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 
     public enum DiscStatusStateFilter {
-        DISCONNECTED_STATE,
-        CONNECTED_STATE,
-        ALL_STATES,
+        CONNECTED_STATE("Show All Connected"),
+        DISCONNECTED_STATE("Show All Disconnected"),
+        ALL_STATES("Show All"),
         ;
+        private String displayName;
+        DiscStatusStateFilter (String displayName) {
+            this.displayName = displayName;
+        }
+        
+        public String getDisplayName() {
+            return displayName;
+        }
     }
 
     public enum DiscStatusOrderByFilter {
