@@ -6614,10 +6614,17 @@ void CtiVanGogh::activatePointAlarm(int alarm, CtiMultiWrapper &aWrap, const Cti
 
         unsigned sigtags = (dpd.getDispatch().getTags() & ~SIGNAL_MANAGER_MASK) | TAG_REPORT_MSG_TO_ALARM_CLIENTS;
 
+        //  If we're activating the alarm, we've already sent an alarm signal via
+        //    updateDynTagsForSignalMsg(), so we should block this one from sending anything
         if(activate)
         {
             sigtags = TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL;
         }
+        //  If we're deactivating, and:
+        //    * any of TAG_UNACKNOWLEDGED_ALARM, TAG_ACTIVE_ALARM, or TAG_ACTIVE_CONDITION are set
+        //    OR
+        //    * we do not notify on clear
+        //  then block the email.
         else if( (dpd.getDispatch().getTags() & SIGNAL_MANAGER_MASK) || !PointMgr.getAlarming(point).getNotifyOnClear() )
         {
             sigtags |= TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL;
