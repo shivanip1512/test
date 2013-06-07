@@ -350,9 +350,9 @@
     <entry key="yukon.web.modules.amr.archivedValueExporter.dataRangeType.DAYS_PREVIOUS">Days Previous</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.dataRangeType.SINCE_LAST_CHANGE_ID">Since Last Run</entry>
 
-    <entry key="yukon.web.modules.amr.archivedValueExporter.tzDisplayOption.LOCALTZ">Local</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.tzDisplayOption.LOCALTZ_NO_DST">Standard (no DST)</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.tzDisplayOption.UTCTZ">UTC (GMT)</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.tzDisplayOption.LOCAL">Local</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.tzDisplayOption.LOCAL_NO_DST">Standard (no DST)</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.tzDisplayOption.UTC">UTC (GMT)</entry>
 
     <!-- preview  -->
     <entry key="yukon.web.modules.amr.archivedValueExporter.previewUOMValue">kWh</entry>

@@ -38,7 +38,7 @@ import org.junit.Test;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportTimeZoneFormat;
+import com.cannontech.amr.archivedValueExporter.model.TimeZoneFormat;
 import com.cannontech.amr.archivedValueExporter.model.AttributeField;
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
 import com.cannontech.amr.archivedValueExporter.model.ExportField;
@@ -73,7 +73,7 @@ public class ExporterReportGeneratorServiceImplTest {
     private RfnDeviceDao rfnDeviceDao = new MockRfnDeviceDaoImpl();
     private RawPointHistoryDao rawPointHistoryDao = new MockRawPointHistoryDaoImpl();
     private UnitMeasureDao unitMeasureDao = new MockUnitMeasureDaoImpl();
-    private ArchivedValuesExportTimeZoneFormat tzFormat = ArchivedValuesExportTimeZoneFormat.LOCALTZ;
+    private TimeZoneFormat tzFormat = TimeZoneFormat.LOCAL;
     
     StaticMessageSource messageSource = new StaticMessageSource();
     {
@@ -128,7 +128,7 @@ public class ExporterReportGeneratorServiceImplTest {
         basicFixedFormatExport.setFields(Lists.newArrayList(deviceNameExportField, meterNumberField, earliestUsageAttriubteExportField_value,
                                                        earliestUsageAttriubteExportField_ts, maxPeakDemandAttributeExportField, plainTextField));
         basicFixedFormatExport.setFooter("End File");
-        basicFixedFormatExport.setDateTimeZoneFormat(ArchivedValuesExportTimeZoneFormat.LOCALTZ);
+        basicFixedFormatExport.setDateTimeZoneFormat(TimeZoneFormat.LOCAL);
     }
 
     private final ExportFormat basicDyanamicFormatExport = new ExportFormat();
@@ -146,7 +146,7 @@ public class ExporterReportGeneratorServiceImplTest {
         basicDyanamicFormatExport.setFields(Lists.newArrayList(deviceNameExportField, routeExportField, attributeNameExportField,
                                                                pointValueExportField, pointTimestampExportField, plainTextExportField));
         basicDyanamicFormatExport.setFooter("End File");
-        basicDyanamicFormatExport.setDateTimeZoneFormat(ArchivedValuesExportTimeZoneFormat.LOCALTZ);
+        basicDyanamicFormatExport.setDateTimeZoneFormat(TimeZoneFormat.LOCAL);
     }
 
     @Test

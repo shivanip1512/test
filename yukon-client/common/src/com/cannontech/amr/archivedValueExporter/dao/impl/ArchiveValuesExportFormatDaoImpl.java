@@ -12,7 +12,7 @@ import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportAttribute
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFieldDao;
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFormatDao;
 import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
-import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportTimeZoneFormat;
+import com.cannontech.amr.archivedValueExporter.model.TimeZoneFormat;
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
 import com.cannontech.amr.archivedValueExporter.model.ExportField;
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
@@ -143,7 +143,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
                 format.setFormatType(rs.getEnum("FormatType", ArchivedValuesExportFormatType.class));
                 format.setAttributes(archiveValuesExportAttributeDao.getByFormatId(format.getFormatId()));
                 format.setFields(archiveValuesExportFieldDao.getByFormatId(format.getFormatId()));
-                format.setDateTimeZoneFormat(rs.getEnum("TimeZoneFormat", ArchivedValuesExportTimeZoneFormat.class));
+                format.setDateTimeZoneFormat(rs.getEnum("TimeZoneFormat", TimeZoneFormat.class));
                 return format ;
             }
         };

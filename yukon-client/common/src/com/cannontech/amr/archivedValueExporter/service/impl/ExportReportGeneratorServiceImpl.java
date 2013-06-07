@@ -16,7 +16,7 @@ import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
-import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportTimeZoneFormat;
+import com.cannontech.amr.archivedValueExporter.model.TimeZoneFormat;
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
 import com.cannontech.amr.archivedValueExporter.model.ExportField;
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
@@ -85,7 +85,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         Meter previewMeter = getDefaultMeter(userContext);
         addHeader(format, preview);
 
-        ArchivedValuesExportTimeZoneFormat tzFormat = format.getDateTimeZoneFormat();
+        TimeZoneFormat tzFormat = format.getDateTimeZoneFormat();
         DateTimeZone reportTZ = getReportTZ(tzFormat, userContext);
 
         if (format.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE) {
@@ -105,7 +105,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         List<String> reportResults = new ArrayList<>();
 
         addHeader(format, reportResults);
-        ArchivedValuesExportTimeZoneFormat tzFormat = format.getDateTimeZoneFormat();
+        TimeZoneFormat tzFormat = format.getDateTimeZoneFormat();
         DateTimeZone reportTZ = getReportTZ(tzFormat, userContext);
 
         switch (dataRange.getDataRangeType()) {
@@ -172,17 +172,17 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     /**
      * Determines the time zone to use for the report.
      */
-    private DateTimeZone getReportTZ(ArchivedValuesExportTimeZoneFormat tzFormat, YukonUserContext userContext) {
+    private DateTimeZone getReportTZ(TimeZoneFormat tzFormat, YukonUserContext userContext) {
     
         DateTimeZone reportTZ = null;
         switch (tzFormat) { 
-            case LOCALTZ:
+            case LOCAL:
                 reportTZ = userContext.getJodaTimeZone();
                 break;
-            case LOCALTZ_NO_DST:
+            case LOCAL_NO_DST:
                 reportTZ = userContext.getJodaTimeZone();
                 break;
-            case UTCTZ:
+            case UTC:
                 reportTZ = DateTimeZone.UTC;
                 break;
         }
@@ -280,7 +280,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
      * This method translates the information supplied along with the export field to get the desired data from the report row.
      */
     public String getValue(ExportField field, Meter meter, Attribute attribute, PointValueQualityHolder pointValueQualityHolder, 
-                           YukonUserContext userContext, ArchivedValuesExportTimeZoneFormat tzFormat) {
+                           YukonUserContext userContext, TimeZoneFormat tzFormat) {
         switch (field.getFieldType()) {
             case METER_NUMBER:
                 return meter.getMeterNumber();
@@ -516,14 +516,14 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
      * Gets the timestamp. Returns "" if the timestamp was not found.
      */
     private String getTimestamp(ExportField field, PointValueQualityHolder pointValueQualityHolder, 
-                                YukonUserContext userContext, ArchivedValuesExportTimeZoneFormat tzFormat) {
+                                YukonUserContext userContext, TimeZoneFormat tzFormat) {
         if (pointValueQualityHolder == null) {
             return "";
         }
 
         DateTimeZone timeZone = getReportTZ(tzFormat, userContext);
         DateTime dateTime = new DateTime(pointValueQualityHolder.getPointDataTimeStamp()).withZone(timeZone);
-        if (tzFormat == ArchivedValuesExportTimeZoneFormat.LOCALTZ_NO_DST && !timeZone.isStandardOffset(dateTime.getMillis())) {
+        if (tzFormat == TimeZoneFormat.LOCAL_NO_DST && !timeZone.isStandardOffset(dateTime.getMillis())) {
             long stdOffset = timeZone.getStandardOffset(dateTime.getMillis());
             DateTimeZone timeZoneWithoutDST = DateTimeZone.forOffsetMillis((int) stdOffset);
             dateTime = dateTime.withZone(timeZoneWithoutDST);
