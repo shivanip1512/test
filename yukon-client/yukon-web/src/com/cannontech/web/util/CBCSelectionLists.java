@@ -326,7 +326,7 @@ public class CBCSelectionLists {
 			selItems = new SelectItem[ports.size()];
 			for( int i = 0; i < ports.size(); i++ ) {
 				LiteYukonPAObject litePort = ports.get(i);
-				selItems[i] = new SelectItem(new Integer(litePort.getYukonID()), litePort.getPaoName() );
+				selItems[i] = new SelectItem(new Integer(litePort.getYukonId()), litePort.getPaoName() );
 			}
 
 		}
@@ -358,7 +358,7 @@ public class CBCSelectionLists {
 			selItems = new SelectItem[routes.size()];
 			for( int i = 0; i < routes.size(); i++ ) {
 				LiteYukonPAObject liteRoute = routes.get(i);
-				selItems[i] = new SelectItem(new Integer(liteRoute.getYukonID()), liteRoute.getPaoName() );
+				selItems[i] = new SelectItem(new Integer(liteRoute.getYukonId()), liteRoute.getPaoName() );
 			}
 		}
 		

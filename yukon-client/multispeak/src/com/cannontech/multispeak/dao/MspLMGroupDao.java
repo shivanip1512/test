@@ -3,11 +3,11 @@ package com.cannontech.multispeak.dao;
 import java.util.List;
 import java.util.Set;
 
-import com.cannontech.loadcontrol.data.LMGroupBase;
-import com.cannontech.loadcontrol.data.LMGroupEmetcon;
-import com.cannontech.loadcontrol.data.LMGroupExpresscom;
-import com.cannontech.loadcontrol.data.LMGroupVersacom;
-import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.messaging.message.loadcontrol.data.GroupBase;
+import com.cannontech.messaging.message.loadcontrol.data.GroupEmetcon;
+import com.cannontech.messaging.message.loadcontrol.data.GroupExpresscom;
+import com.cannontech.messaging.message.loadcontrol.data.GroupVersacom;
+import com.cannontech.messaging.message.loadcontrol.data.Program;
 import com.cannontech.multispeak.db.MspLMGroupCommunications;
 import com.cannontech.multispeak.db.MspLMGroupCommunications.MspLMGroupStatus;
 import com.cannontech.multispeak.db.MspLMGroupCommunications.MspLMProgramMode;
@@ -18,19 +18,19 @@ public interface MspLMGroupDao {
      * Returns a list of all LMGroupEmetcon devices and their communications setup  
      * @return
      */
-    public List<MspLMGroupCommunications> getLMGroupEmetconCommunications(LMGroupEmetcon lmGroupEmetcon);
+    public List<MspLMGroupCommunications> getLMGroupEmetconCommunications(GroupEmetcon lmGroupEmetcon);
     
     /**
      * Returns a list of all LMGroupExpresscom devices and their communications setup  
      * @return
      */
-    public List<MspLMGroupCommunications> getLMGroupExpresscomCommunications(LMGroupExpresscom lmGroupExpresscom);
+    public List<MspLMGroupCommunications> getLMGroupExpresscomCommunications(GroupExpresscom lmGroupExpresscom);
     
     /**
      * Returns a list of all LMGroupVersacom devices and their communications setup  
      * @return
      */
-    public List<MspLMGroupCommunications> getLMGroupVerscomCommunications(LMGroupVersacom lmGroupVersacom);
+    public List<MspLMGroupCommunications> getLMGroupVerscomCommunications(GroupVersacom lmGroupVersacom);
     
     /**
      * Returns a list of all lmGroup devices and their communications setup  
@@ -38,7 +38,7 @@ public interface MspLMGroupDao {
      * @return
      * @throws IllegalArgumentException
      */
-    public List<MspLMGroupCommunications> getLMGroupCommunications(LMGroupBase lmGroupBase) throws IllegalArgumentException;
+    public List<MspLMGroupCommunications> getLMGroupCommunications(GroupBase lmGroupBase) throws IllegalArgumentException;
     
 
     /**
@@ -68,7 +68,7 @@ public interface MspLMGroupDao {
      * @param lmProgramBase
      * @return
      */
-    public MspLMProgramMode getMode(LMProgramBase lmProgramBase);
+    public MspLMProgramMode getMode(Program lmProgramBase);
     
     /**
      * Returns the most prominent mode of all modes 

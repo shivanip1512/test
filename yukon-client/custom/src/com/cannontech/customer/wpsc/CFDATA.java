@@ -148,7 +148,7 @@ protected void handleFile(java.io.InputStream in)
 			{
 				com.cannontech.clientutils.CTILogger.info("CFDATA: " + decoded);
 				WPSCMain.logMessage(" ** CFDATA:  "+ decoded, com.cannontech.common.util.LogWriter.DEBUG);
-				com.cannontech.message.porter.message.Request req = new com.cannontech.message.porter.message.Request( 0, decoded, 1L );
+				com.cannontech.messaging.message.porter.RequestMessage req = new com.cannontech.messaging.message.porter.RequestMessage( 0, decoded, 1L );
 				porterConn.write(req);
 				countSent++;
 				Thread.sleep(500);

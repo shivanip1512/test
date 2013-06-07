@@ -60,13 +60,13 @@ import com.cannontech.database.db.importer.ImportData;
 import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.importer.ImportPendingComm;
 import com.cannontech.device.range.DlcAddressRangeService;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.message.porter.message.Request;
-import com.cannontech.message.porter.message.Return;
-import com.cannontech.message.util.Message;
-import com.cannontech.message.util.MessageEvent;
-import com.cannontech.message.util.MessageListener;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.BaseMessage;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.messaging.message.porter.RequestMessage;
+import com.cannontech.messaging.message.porter.ReturnMessage;
+import com.cannontech.messaging.util.MessageEvent;
+import com.cannontech.messaging.util.MessageListener;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -88,7 +88,7 @@ public final class BulkImporter extends Observable implements MessageListener
     private Map<Long, Integer> messageIDToRouteIDMap = new HashMap<Long, Integer>();
     /* Singleton incrementor for messageIDs to send to porter connection */
     private static volatile long currentMessageID = 1;
-    private List<Request> cmdMultipleRouteList = new ArrayList<Request>();
+    private List<RequestMessage> cmdMultipleRouteList = new ArrayList<RequestMessage>();
     
     /* flag indicating more looping required*/
     //public volatile int loopRouteCounter = 0;
@@ -735,7 +735,7 @@ private void porterWorker() {
     					}
     					
                         log.info("Porter worker thread has obtained " + pending.size() + " MCT IDs.  Communication attempt.");
-                        Request porterRequest = null;
+                        RequestMessage porterRequest = null;
 						for(int j = 0; j < pending.size(); j++) {
 							//locate attempt (only if given multiple routes via substation)
                             ImportPendingComm pc = pending.get(j);
@@ -747,39 +747,39 @@ private void porterWorker() {
                                  * Proper route has already been attached by the bulk importer.  Why use an extra db connection finding
                                  * out what we already know?
                                  */
-                                porterRequest = new Request( pc.getPendingID().intValue(), LOOP_COMMAND, currentMessageID );
+                                porterRequest = new RequestMessage( pc.getPendingID().intValue(), LOOP_COMMAND, currentMessageID );
                                 Integer routeID = DBFuncs.getRouteFromName(routeName);
-                                log.info("Locate attempt written to porter: device " + porterRequest.getDeviceID() + " on route " + routeName +" ("+ routeID+").");
+                                log.info("Locate attempt written to porter: device " + porterRequest.getDeviceId() + " on route " + routeName +" ("+ routeID+").");
                                 writeToPorter(porterRequest);
-                                messageIDToRouteIDMap.put(new Long(porterRequest.getUserMessageID()), routeID);
+                                messageIDToRouteIDMap.put(new Long(porterRequest.getUserMessageId()), routeID);
                             }
                             else if(routeIDsFromSub.size() > 0) {
                                 //send first one right off
                                 int routeID = routeIDsFromSub.get(0).intValue();
                                 routeName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(routeID);
                                 
-                                porterRequest = new Request( pc.getPendingID().intValue(), LOOP_COMMAND, currentMessageID );
-                                porterRequest.setRouteID(routeIDsFromSub.get(0).intValue());
+                                porterRequest = new RequestMessage( pc.getPendingID().intValue(), LOOP_COMMAND, currentMessageID );
+                                porterRequest.setRouteId(routeIDsFromSub.get(0).intValue());
                                 cmdMultipleRouteList.add(porterRequest);
-                                log.info("Locate attempt written to porter: device " + porterRequest.getDeviceID() + " on route " + routeName +" ("+ routeID+").");
+                                log.info("Locate attempt written to porter: device " + porterRequest.getDeviceId() + " on route " + routeName +" ("+ routeID+").");
                                 writeToPorter(porterRequest);
-                                messageIDToRouteIDMap.put(new Long(porterRequest.getUserMessageID()), routeID);
+                                messageIDToRouteIDMap.put(new Long(porterRequest.getUserMessageId()), routeID);
                                 for(int i = 1; i < routeIDsFromSub.size(); i++) {
                                     routeID = routeIDsFromSub.get(i).intValue();
                                     routeName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(routeID);
                                 
-                                    porterRequest = new Request( pc.getPendingID().intValue(), LOOP_COMMAND, currentMessageID );
+                                    porterRequest = new RequestMessage( pc.getPendingID().intValue(), LOOP_COMMAND, currentMessageID );
                                     generateMessageID();
-                                    porterRequest.setRouteID(routeID);
+                                    porterRequest.setRouteId(routeID);
                                     cmdMultipleRouteList.add(porterRequest);
-                                    messageIDToRouteIDMap.put(new Long(porterRequest.getUserMessageID()), routeID);
-                                    log.info("Locate attempt queued: device " + porterRequest.getDeviceID() + " on route " + routeName +" ("+ routeID+").");
+                                    messageIDToRouteIDMap.put(new Long(porterRequest.getUserMessageId()), routeID);
+                                    log.info("Locate attempt queued: device " + porterRequest.getDeviceId() + " on route " + routeName +" ("+ routeID+").");
                                 }
                             }
                             //going to have to do a general loop locate to find it; we apparently don't know a possible route
                             else {
-                                porterRequest = new Request( pc.getPendingID().intValue(), LOOP_LOCATE_COMMAND, currentMessageID );
-                                log.info("General location loop attempt written to porter: device " + porterRequest.getDeviceID() + " on route " + routeName);
+                                porterRequest = new RequestMessage( pc.getPendingID().intValue(), LOOP_LOCATE_COMMAND, currentMessageID );
+                                log.info("General location loop attempt written to porter: device " + porterRequest.getDeviceId() + " on route " + routeName);
                                 writeToPorter(porterRequest);
                             }
 						}
@@ -802,36 +802,36 @@ public void update(Observable o, Object arg)
  * to determine whether meter interval sends are successful.
  */
 public void messageReceived(MessageEvent e) {
-    Message in = e.getMessage();        
+    BaseMessage in = e.getMessage();        
     
-    if(in instanceof Return) {
-        Return returnMsg = (Return) in;
+    if(in instanceof ReturnMessage) {
+        ReturnMessage returnMsg = (ReturnMessage) in;
         synchronized(this) {
-            CTILogger.debug("Message Received [ID:"+ returnMsg.getUserMessageID() + 
-                            " DevID:" + returnMsg.getDeviceID() + 
+            CTILogger.debug("Message Received [ID:"+ returnMsg.getUserMessageId() + 
+                            " DevID:" + returnMsg.getDeviceId() + 
                             " Command:" + returnMsg.getCommandString() +
                             " Result:" + returnMsg.getResultString() + 
                             " Status:" + returnMsg.getStatus() +
                             " More:" + returnMsg.getExpectMore()+"]");
             
-            if( !porterMessageIDs.contains( new Long(returnMsg.getUserMessageID()))) {
-                log.info("Unknown Message: "+ returnMsg.getUserMessageID() +" Command [" + returnMsg.getCommandString()+"]");
-                log.info("Unknown Message: "+ returnMsg.getUserMessageID() +" Result [" + returnMsg.getResultString()+"]");
+            if( !porterMessageIDs.contains( new Long(returnMsg.getUserMessageId()))) {
+                log.info("Unknown Message: "+ returnMsg.getUserMessageId() +" Command [" + returnMsg.getCommandString()+"]");
+                log.info("Unknown Message: "+ returnMsg.getUserMessageId() +" Result [" + returnMsg.getResultString()+"]");
                 return;
             }
             else {
                 //Remove the messageID from the set of stored ids.
-                if(returnMsg.getExpectMore() == 0) { //nothing more is coming, remove from list.
-                    getPorterMessageIDs().remove( new Long(returnMsg.getUserMessageID()));
-                    Request nextRouteLoop = null;
+                if(returnMsg.getExpectMore() == false) { //nothing more is coming, remove from list.
+                    getPorterMessageIDs().remove( new Long(returnMsg.getUserMessageId()));
+                    RequestMessage nextRouteLoop = null;
                     boolean removed = false;
                     for(int j = 0; j < cmdMultipleRouteList.size(); j++) {
-                        if(removed && returnMsg.getDeviceID() == cmdMultipleRouteList.get(j).getDeviceID()) {
+                        if(removed && returnMsg.getDeviceId() == cmdMultipleRouteList.get(j).getDeviceId()) {
                             nextRouteLoop = cmdMultipleRouteList.get(j);
-                            log.info("NextRoute("+ nextRouteLoop.getRouteID() +") to process for device(" + nextRouteLoop.getDeviceID() + ").");
+                            log.info("NextRoute("+ nextRouteLoop.getRouteId() +") to process for device(" + nextRouteLoop.getDeviceId() + ").");
                             break;
                         }
-                        if(returnMsg.getUserMessageID() == cmdMultipleRouteList.get(j).getUserMessageID()) {
+                        if(returnMsg.getUserMessageId() == cmdMultipleRouteList.get(j).getUserMessageId()) {
                             cmdMultipleRouteList.remove(j);
                             removed = true;
                             j--;
@@ -842,10 +842,10 @@ public void messageReceived(MessageEvent e) {
                     
                     //message was not successful and it was the only one for this device
                     if(!commSuccessful && nextRouteLoop == null) {
-                        if(DBFuncs.writePendingCommToFail(ImportFuncs.FAIL_COMMUNICATION, "Unable to communicate with device.", new Integer(returnMsg.getDeviceID())))
-                            log.info("Communication failure with device " + returnMsg.getDeviceID() + ".");
+                        if(DBFuncs.writePendingCommToFail(ImportFuncs.FAIL_COMMUNICATION, "Unable to communicate with device.", new Integer(returnMsg.getDeviceId())))
+                            log.info("Communication failure with device " + returnMsg.getDeviceId() + ".");
                         else
-                            log.error("Could not move pending communication to fail table, but communication failure occurred with device " + returnMsg.getDeviceID() + ".");
+                            log.error("Could not move pending communication to fail table, but communication failure occurred with device " + returnMsg.getDeviceId() + ".");
                         return;
                     }
                     //it was a loop locate (checking all available routes) and succeeded, save the route and then write the interval out
@@ -860,7 +860,7 @@ public void messageReceived(MessageEvent e) {
                             //there were multiple routes specified; remove later attempts
                             if(nextRouteLoop != null) {
                                 for(int j = 0; j < cmdMultipleRouteList.size(); j++) {
-                                    if(removed && returnMsg.getDeviceID() == cmdMultipleRouteList.get(j).getDeviceID()) {
+                                    if(removed && returnMsg.getDeviceId() == cmdMultipleRouteList.get(j).getDeviceId()) {
                                         cmdMultipleRouteList.remove(j);
                                         j--;
                                     }
@@ -869,19 +869,19 @@ public void messageReceived(MessageEvent e) {
                         }
                         //failed, on to the next one
                         else if (nextRouteLoop!= null ) {
-                            log.info("Locate attempt written to porter: device " + nextRouteLoop.getDeviceID() + " on route with ID " + nextRouteLoop.getRouteID());
+                            log.info("Locate attempt written to porter: device " + nextRouteLoop.getDeviceId() + " on route with ID " + nextRouteLoop.getRouteId());
                             writeToPorter(nextRouteLoop);
                         }
                     }
                     //must be an interval command if it has made it this far
                     else if(returnMsg.getCommandString().lastIndexOf(INTERVAL_COMMAND) > -1) {
-                        log.info("Intervals successfully written to device " + returnMsg.getDeviceID());
+                        log.info("Intervals successfully written to device " + returnMsg.getDeviceId());
                     }
                     
                     /*it made it this far, communicationg succeeded, we can remove it from the pending table 
                      *and from the failure table if it still happens to be there
                      */
-                    DBFuncs.removeFromPendingAndFailed(returnMsg.getDeviceID());
+                    DBFuncs.removeFromPendingAndFailed(returnMsg.getDeviceId());
                 }
             }
         }
@@ -896,11 +896,11 @@ public void setPorterMessageIDs(Set<Long> porterMessageIDs) {
     this.porterMessageIDs = porterMessageIDs;
 }
 
-public List<Request> getCmdMultipleRouteList() {
+public List<RequestMessage> getCmdMultipleRouteList() {
     return cmdMultipleRouteList;
 }
 
-public void setCmdMultipleRouteList(List<Request> cmdList) {
+public void setCmdMultipleRouteList(List<RequestMessage> cmdList) {
     this.cmdMultipleRouteList = cmdList;
 }
 						
@@ -911,54 +911,54 @@ private synchronized long generateMessageID() {
     return currentMessageID;
 }
 
-public void writeToPorter(Request porterRequest) {
+public void writeToPorter(RequestMessage porterRequest) {
     porterRequest.setPriority(PORTER_PRIORITY);
     if( getPorterConnection().isValid() ) {
         getPorterConnection().write( porterRequest );
-        porterMessageIDs.add(new Long(porterRequest.getUserMessageID()));
-        log.info("Locate sent to porter: device (" + porterRequest.getDeviceID() + "); route ("+ porterRequest.getRouteID()+").");
+        porterMessageIDs.add(new Long(porterRequest.getUserMessageId()));
+        log.info("Locate sent to porter: device (" + porterRequest.getDeviceId() + "); route ("+ porterRequest.getRouteId()+").");
     }
     else {
-        log.info(porterRequest.getUserMessageID() + " REQUEST NOT SENT: CONNECTION TO PORTER IS NULL");
-        log.error("("+ porterRequest.getUserMessageID() + ")REQUEST NOT SENT: CONNECTION TO PORTER IS NULL");
+        log.info(porterRequest.getUserMessageId() + " REQUEST NOT SENT: CONNECTION TO PORTER IS NULL");
+        log.error("("+ porterRequest.getUserMessageId() + ")REQUEST NOT SENT: CONNECTION TO PORTER IS NULL");
     }
     generateMessageID();
 }
 
-private void handleSuccessfulLocate(Return returnMsg) {
-    Integer routeID = messageIDToRouteIDMap.get(new Long(returnMsg.getUserMessageID()));
+private void handleSuccessfulLocate(ReturnMessage returnMsg) {
+    Integer routeID = messageIDToRouteIDMap.get(new Long(returnMsg.getUserMessageId()));
     String routeName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(routeID.intValue());
     
     MCT400SeriesBase retMCT = new MCT400SeriesBase();
-    retMCT.setDeviceID(new Integer(returnMsg.getDeviceID()));
-    Request porterRequest = null;
+    retMCT.setDeviceID(new Integer(returnMsg.getDeviceId()));
+    RequestMessage porterRequest = null;
     
     try {
-        porterRequest = new Request( retMCT.getPAObjectID().intValue(), INTERVAL_COMMAND, currentMessageID );
-        log.info("Successful location of device " + returnMsg.getDeviceID() + " on route " + routeName +" ("+ routeID+").");
+        porterRequest = new RequestMessage( retMCT.getPAObjectID().intValue(), INTERVAL_COMMAND, currentMessageID );
+        log.info("Successful location of device " + returnMsg.getDeviceId() + " on route " + routeName +" ("+ routeID+").");
         retMCT = (MCT400SeriesBase) Transaction.createTransaction(TransactionType.RETRIEVE, retMCT).execute();
         if(routeID != null)
             retMCT.getDeviceRoutes().setRouteID(routeID);
         else
-            throw new TransactionException("Route not found for a message ID of " + returnMsg.getUserMessageID());
+            throw new TransactionException("Route not found for a message ID of " + returnMsg.getUserMessageId());
 
         log.info(retMCT.getPAOType() + "with name " + retMCT.getPAOName() + " was successfully located on route " + routeName +" ("+ routeID+").");
         Transaction.createTransaction(TransactionType.UPDATE, retMCT).execute();
-        DBChangeMsg retMCTChange = new DBChangeMsg(retMCT.getPAObjectID().intValue(), DBChangeMsg.CHANGE_PAO_DB, 
+        DBChangeMessage retMCTChange = new DBChangeMessage(retMCT.getPAObjectID().intValue(), DBChangeMessage.CHANGE_PAO_DB, 
         		retMCT.getPAOCategory(), retMCT.getPAOType(), DbChangeType.UPDATE);
 			
 		getDispatchConnection().write(retMCTChange);
 		
         //interval write
-        log.info("Interval write attempted: device " + returnMsg.getDeviceID() + " on route with ID " + routeID + ".");
+        log.info("Interval write attempted: device " + returnMsg.getDeviceId() + " on route with ID " + routeID + ".");
         writeToPorter(porterRequest);
-        log.info("Interval write sent to porter: device " + returnMsg.getDeviceID() + " on route " + routeName +" ("+ routeID+").");
+        log.info("Interval write sent to porter: device " + returnMsg.getDeviceId() + " on route " + routeName +" ("+ routeID+").");
     }
     catch( TransactionException e ) {
         if(DBFuncs.writePendingCommToFail(ImportFuncs.FAIL_DATABASE, e.toString(), retMCT.getPAObjectID()))
             log.info("Could not assign device " + retMCT.getPAObjectID() + " the route " + routeName +" ("+ routeID+").");
         else
-            log.error("Could not move pending communication to fail table, but failure occurred assigning device " + porterRequest.getDeviceID() + " the route " + routeName +" ("+ routeID+").");
+            log.error("Could not move pending communication to fail table, but failure occurred assigning device " + porterRequest.getDeviceId() + " the route " + routeName +" ("+ routeID+").");
     }
 }
 

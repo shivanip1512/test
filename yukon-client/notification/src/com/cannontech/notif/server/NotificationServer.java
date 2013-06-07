@@ -1,12 +1,19 @@
 package com.cannontech.notif.server;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.messaging.connection.Connection;
+import com.cannontech.messaging.connection.ListenerConnection;
+import com.cannontech.messaging.connection.Connection.ConnectionState;
+import com.cannontech.messaging.connection.event.ConnectionEventHandler;
+import com.cannontech.messaging.connection.event.InboundConnectionEventHandler;
+import com.cannontech.messaging.util.*;
 import com.cannontech.notif.outputs.OutputHandlerHelper;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSettingType;
@@ -15,10 +22,8 @@ import com.cannontech.util.MBeanUtil;
 
 /**
  * The server used for accepting and creating notification messages.
- * 
  */
-public class NotificationServer implements Runnable, NotificationServerMBean
-{
+public class NotificationServer implements NotificationServerMBean {
     private static final Logger log = YukonLogManager.getLogger(NotificationServer.class);
 
     // The port the web server listens on
@@ -31,19 +36,21 @@ public class NotificationServer implements Runnable, NotificationServerMBean
     private int backlog = 50;
 
     // The servers listening socket
-    private ServerSocket server = null;
+    // private ServerSocket server = null;
+    ListenerConnection server;
 
     // The thread accept any incoming connections
-    private Thread acceptThread = null;
+    // private Thread acceptThread = null;
 
-    @Autowired private NotificationMessageHandler messageHandler;
-    @Autowired private OutputHandlerHelper outputHelper;
-    @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired
+    private NotificationMessageHandler messageHandler;
+    @Autowired
+    private OutputHandlerHelper outputHelper;
+    @Autowired
+    private GlobalSettingDao globalSettingDao;
 
     /**
-     * Start the notification server.
-     * If this fails with an exception, no threads will have been started.
-     * 
+     * Start the notification server. If this fails with an exception, no threads will have been started.
      * @throws IOException
      */
     public void start() {
@@ -55,24 +62,34 @@ public class NotificationServer implements Runnable, NotificationServerMBean
             setBindAddress(bindAddress);
             setPort(port);
 
-            server = new ServerSocket(getPort(), getBacklog(), null);
+            ListenerConnectionFactory notifListenerFactory =
+                ConnectionFactoryService.getInstance().findListenerConnectionFactory("NotifListener");
+
+            server = notifListenerFactory.createListenerConnection(getPort());
+            server.setName("NotifListener");
+            server.getInboundConnectionEvent().registerHandler(eventHandler);
+            server.getConnectionEvent().registerHandler(eventHandler);
+            
+
+            server.start();
+
+            // server = new ServerSocket(getPort(), getBacklog(), null);
 
             // start output handlers
             outputHelper.startup();
 
-            acceptThread = new Thread(this, "NotifListener");
-            acceptThread.start();
-
             log.info("Started Notification server: " + server);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             try {
                 if (server != null) {
                     server.close();
                 }
-            } catch (IOException e1) {
+            }
+            catch (Throwable e1) {
                 // No op
             }
-            
+
             throw new RuntimeException(e);
         }
 
@@ -85,14 +102,14 @@ public class NotificationServer implements Runnable, NotificationServerMBean
         try {
 
             if (server != null) {
-                ServerSocket temp = server;
+                server.close();
                 server = null;
-                temp.close();
             }
 
             // shutdown voice handler
             outputHelper.shutdown();
-        } catch (Exception e) {}
+        }
+        catch (Exception e) {}
 
         log.info("Stopped Notification server: " + server);
 
@@ -100,43 +117,6 @@ public class NotificationServer implements Runnable, NotificationServerMBean
 
     public boolean isRunning() {
         return server != null;
-    }
-
-    /**
-     * Listen threads entry point. Here we accept a client connection
-     */
-    public void run() {
-        for (;;)
-        {
-            // Return if the server has been stopped
-            if (server == null) {
-                return;
-            }
-
-            // Accept a connection
-            Socket socket = null;
-            try {
-                socket = server.accept();
-            } catch (IOException e) {
-                // If the server is not null meaning we were not stopped report the error
-                if (server != null) {
-                    log.error("Failed to accept connection", e);
-                }
-
-                server = null;
-                return;
-            }
-
-            // we have a connection, pass it off to another thread to process it
-            try {
-                // start handling the message here
-                NotifServerConnection conn = new NotifServerConnection(socket, messageHandler);
-
-                conn.connectWithoutWait(); // passes control to another thread
-            } catch (Exception ex) {
-                log.error("error handling socket connection", ex);
-            }
-        }
     }
 
     public static void main(String[] argsv) {
@@ -150,10 +130,21 @@ public class NotificationServer implements Runnable, NotificationServerMBean
             MBeanUtil.tryRegisterMBean("type=notificationserver", ns);
 
             ns.start();
-        } catch (Throwable t) {
+        }
+        catch (Throwable t) {
             log.error("There was an error starting up the Notification Server", t);
         }
     }
+
+    @Override
+    public final String toString() {
+        return "ListenerConnection[name=" + "NotifListener" + ", host=" + server != null ? server.getName()
+            : "unknown" + ", port=" + getPort() + "]";
+    }
+
+    /**************************************************************************
+     * NotificationServerMBean interface implementation *
+     **************************************************************************/
 
     public int getBacklog() {
         return backlog;
@@ -188,10 +179,55 @@ public class NotificationServer implements Runnable, NotificationServerMBean
             if (host != null) {
                 bindAddress = InetAddress.getByName(host);
             }
-        } catch (UnknownHostException e) {
+        }
+        catch (UnknownHostException e) {
             String msg = "Invalid host address specified: " + host;
             log.error(msg, e);
         }
     }
 
+    /**************************************************************************
+     * ConnectionEventHandler inner class
+     **************************************************************************/
+    private final ClientConnectionEventHandler eventHandler = new ClientConnectionEventHandler();
+
+    private class ClientConnectionEventHandler implements InboundConnectionEventHandler, ConnectionEventHandler {
+
+        @Override
+        public void onConnectionEvent(Connection source, ConnectionState state) {
+            log.info("Connection state changed to <" + state + "> for " + NotificationServer.this);
+
+            switch (state) {
+                case New:
+                case Connecting:
+                case Connected:
+                    break;
+
+                // case Closed:
+                // case Disconnected:
+                // case Error:
+                default:
+                    // If the server is not null meaning we were not stopped report the error
+                    if (server != null) {
+                        log.error("Failed to accept connection");
+                    }
+                    server = null;
+                    break;
+            }
+        }
+
+        @Override
+        public void onInboundConnectionEvent(ListenerConnection source, Connection newServerConnection) {
+            // we have a connection, pass it off to another thread to process it
+            try {
+                // start handling the message here
+                NotifServerConnection conn = new NotifServerConnection(newServerConnection, messageHandler);
+
+                conn.connectWithoutWait(); // passes control to another thread
+            }
+            catch (Exception ex) {
+                log.error("error handling incomming connection", ex);
+            }
+        }
+    }
 }

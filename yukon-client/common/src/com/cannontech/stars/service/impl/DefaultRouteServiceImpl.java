@@ -28,9 +28,9 @@ import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
-import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeCategory;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.util.DbChangeManager;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.service.DefaultRouteService;
 

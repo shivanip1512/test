@@ -12,8 +12,8 @@ import java.rmi.RemoteException;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.message.porter.message.Return;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.messaging.message.porter.ReturnMessage;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.deploy.service.CB_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.LoadActionCode;
@@ -106,9 +106,9 @@ public class CDEvent extends MultispeakEvent{
     }
     
     @Override
-    public boolean messageReceived(Return returnMsg)
+    public boolean messageReceived(ReturnMessage returnMsg)
     {
-        YukonMeter meter = meterDao.getYukonMeterForId(returnMsg.getDeviceID());
+        YukonMeter meter = meterDao.getYukonMeterForId(returnMsg.getDeviceId());
         setMeterNumber(meter.getMeterNumber());
         setResultMessage(returnMsg.getResultString());
 
@@ -117,9 +117,9 @@ public class CDEvent extends MultispeakEvent{
             if( returnMsg.getVector().size() > 0){
                 for (int i = 0; i < returnMsg.getVector().size(); i++) {    //assuming only 1 in vector
                     Object o = returnMsg.getVector().elementAt(i);
-                    if (o instanceof PointData)
+                    if (o instanceof PointDataMessage)
                     {
-                        PointData pd = (PointData) o;
+                        PointDataMessage pd = (PointDataMessage) o;
                         setResultMessage(pd.getStr());
                         if ( pd.getStr().length() > 0 ){
                             setLoadActionCode(pd.getValue());

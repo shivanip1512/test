@@ -351,7 +351,7 @@ public Object getValue(Object val) {
 	   Integer deviceID = null;
 	   for( int i = 0; i < getRepeatersAddRemovePanel().rightListGetModel().getSize(); i++ )
 	   {
-	      deviceID = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getRepeatersAddRemovePanel().rightListGetModel().getElementAt(i)).getYukonID());
+	      deviceID = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getRepeatersAddRemovePanel().rightListGetModel().getElementAt(i)).getYukonId());
 
 	      com.cannontech.database.db.route.RepeaterRoute rr = new com.cannontech.database.db.route.RepeaterRoute(
 	                                                                           route.getRouteID(),
@@ -757,7 +757,7 @@ public void setValue(Object val) {
             if( DeviceTypesFuncs.isRepeater(liteDevice.getPaoType().getDeviceTypeId()) )
             {
                repeaterRouteDeviceID = ((RepeaterRoute)repeaterRoutes.get(i)).getDeviceID().intValue();
-               if( repeaterRouteDeviceID == liteDevice.getYukonID() )
+               if( repeaterRouteDeviceID == liteDevice.getYukonId() )
                {
                   assignedRepeaters.addElement(liteDevice);
                   break;
@@ -772,8 +772,8 @@ public void setValue(Object val) {
          {
             for(int j=0;j<assignedRepeaters.size();j++)
             {
-               if( ((LiteYukonPAObject)assignedRepeaters.get(j)).getYukonID() ==
-                     liteDevice.getYukonID() )
+               if( ((LiteYukonPAObject)assignedRepeaters.get(j)).getYukonId() ==
+                     liteDevice.getYukonId() )
                   alreadyAssigned = true;
             }
             if( !alreadyAssigned )

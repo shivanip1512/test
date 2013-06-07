@@ -6,7 +6,7 @@ import java.util.List;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
-import com.cannontech.loadcontrol.messages.LMManualControlRequest;
+import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
 import com.cannontech.roles.loadcontrol.DirectLoadcontrolRole;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -43,12 +43,12 @@ public class LMSession
 		if( YukonSpringHook.getBean(AuthDao.class).checkRoleProperty( user,
 				DirectLoadcontrolRole.ALLOW_OBSERVE_CONSTRAINTS) )
 			constList.add(
-				LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_USE] );
+				ManualControlRequestMessage.CONSTRAINT_FLAG_STRS[ManualControlRequestMessage.CONSTRAINTS_FLAG_USE] );
 
 		if( YukonSpringHook.getBean(AuthDao.class).checkRoleProperty( user,
 				DirectLoadcontrolRole.ALLOW_CHECK_CONSTRAINTS) )
 			constList.add(
-				LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_CHECK] );	
+				ManualControlRequestMessage.CONSTRAINT_FLAG_STRS[ManualControlRequestMessage.CONSTRAINTS_FLAG_CHECK] );	
 
 		return constList;
 	}

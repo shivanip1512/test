@@ -10,13 +10,13 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.dr.DemandResponseBackingField;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
 import com.cannontech.user.YukonUserContext;
 
 /**
  * Abstract Base Class for control area backing fields 
  */
-public abstract class ControlAreaBackingFieldBase implements DemandResponseBackingField<LMControlArea> {
+public abstract class ControlAreaBackingFieldBase implements DemandResponseBackingField<ControlAreaItem> {
 
     private final static String baseKey = "yukon.web.modules.dr.controlArea.value";
     protected final static MessageSourceResolvable blankFieldResolvable = 
@@ -31,13 +31,13 @@ public abstract class ControlAreaBackingFieldBase implements DemandResponseBacki
      * @return Value of this field for the given control area (Should be one of: String, 
      *                                                  MessageSourceResolvable, ResolvableTemplate)
      */
-    public abstract Object getControlAreaValue(LMControlArea controlArea, 
+    public abstract Object getControlAreaValue(ControlAreaItem controlArea, 
                                                YukonUserContext userContext);
 
     @Override
-    public Object getValue(LMControlArea controlArea, YukonUserContext userContext) {
+    public Object getValue(ControlAreaItem controlArea, YukonUserContext userContext) {
         if(controlArea != null || handlesNull()) {
-            return getControlAreaValue((LMControlArea) controlArea, userContext);
+            return getControlAreaValue((ControlAreaItem) controlArea, userContext);
         } else {
             return blankFieldResolvable;
         }
@@ -49,7 +49,7 @@ public abstract class ControlAreaBackingFieldBase implements DemandResponseBacki
         return null;
     }
     
-    protected LMControlArea getControlAreaFromYukonPao(YukonPao from){
+    protected ControlAreaItem getControlAreaFromYukonPao(YukonPao from){
         return controlAreaService.getControlAreaForPao(from);
     }
     

@@ -44,9 +44,9 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.messaging.util.DbChangeManager;
 import com.cannontech.yukon.IDatabaseCache;
 
 public final class ContactDaoImpl implements ContactDao {
@@ -583,9 +583,9 @@ public final class ContactDaoImpl implements ContactDao {
                                                            contact.getLiteContactNotifications());
         
         dbChangeManager.processDbChange(contactId,
-                                        DBChangeMsg.CHANGE_CONTACT_DB,
-                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                        DBChangeMessage.CHANGE_CONTACT_DB,
+                                        DBChangeMessage.CAT_CUSTOMERCONTACT,
+                                        DBChangeMessage.CAT_CUSTOMERCONTACT,
                                         dbChangeType);
     }
     
@@ -626,9 +626,9 @@ public final class ContactDaoImpl implements ContactDao {
 
         // db change
         dbChangeManager.processDbChange(contactId,
-                                        DBChangeMsg.CHANGE_CONTACT_DB,
-                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                        DBChangeMessage.CHANGE_CONTACT_DB,
+                                        DBChangeMessage.CAT_CUSTOMERCONTACT,
+                                        DBChangeMessage.CAT_CUSTOMERCONTACT,
                                         DbChangeType.DELETE);
     }
     
@@ -663,9 +663,9 @@ public final class ContactDaoImpl implements ContactDao {
         yukonJdbcTemplate.update(sql.toString(), customerId, contactId, order);
         
         dbChangeManager.processDbChange(contactId,
-                                        DBChangeMsg.CHANGE_CONTACT_DB,
-                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                        DBChangeMessage.CHANGE_CONTACT_DB,
+                                        DBChangeMessage.CAT_CUSTOMERCONTACT,
+                                        DBChangeMessage.CAT_CUSTOMERCONTACT,
                                         DbChangeType.UPDATE);
     	
     }

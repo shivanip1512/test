@@ -44,7 +44,7 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -334,7 +334,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     private ListMultimap<PaoIdentifier, PointValueQualityHolder> getDynamicPreviewAttributeData(ExportFormat format, Meter previewMeter) {
         ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeDataValues = ArrayListMultimap.create();
 
-        PointData pointData = new PointData();
+        PointDataMessage pointData = new PointDataMessage();
         pointData.setPointQuality(previewQuality);
         pointData.setTime(new Date());
         pointData.setValue(previewValue);

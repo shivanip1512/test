@@ -18,8 +18,8 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.database.db.web.EnergyCompanyOperatorLoginList;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 import com.cannontech.spring.YukonSpringHook;
 
 /*** 
@@ -259,14 +259,14 @@ public class YukonUser extends DBPersistent implements CTIDbChange, EditorPanel
 	 * @see com.cannontech.database.db.CTIDbChange#getDBChangeMsgs(int)
 	 */
 	@Override
-    public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+	public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType) {
 		
-	    DBChangeMsg[] msgs = {
-	            new DBChangeMsg(
+	    DBChangeMessage[] msgs = {
+	            new DBChangeMessage(
 	                            getYukonUser().getUserID().intValue(),
-	                            DBChangeMsg.CHANGE_YUKON_USER_DB,
-	                            DBChangeMsg.CAT_YUKON_USER,
-	                            DBChangeMsg.CAT_YUKON_USER,
+	                            DBChangeMessage.CHANGE_YUKON_USER_DB,
+	                            DBChangeMessage.CAT_YUKON_USER,
+	                            DBChangeMessage.CAT_YUKON_USER,
 	                            dbChangeType)
 		};
 

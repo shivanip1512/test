@@ -32,10 +32,10 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.dispatch.DbChangeType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.messaging.util.DbChangeManager;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -216,8 +216,8 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         }
         
         dbChangeManager.processDbChange(liteYukonGroup.getGroupID(),
-                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
-                                        DBChangeMsg.CAT_YUKON_USER_GROUP,
+                                        DBChangeMessage.CHANGE_YUKON_USER_DB,
+                                        DBChangeMessage.CAT_YUKON_USER_GROUP,
                                         "",
                                         DbChangeType.UPDATE);
     }
@@ -233,8 +233,8 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         yukonJdbcOperations.update(sql);
         
         dbChangeManager.processDbChange(groupId,
-                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
-                                        DBChangeMsg.CAT_YUKON_USER_GROUP,
+                                        DBChangeMessage.CHANGE_YUKON_USER_DB,
+                                        DBChangeMessage.CAT_YUKON_USER_GROUP,
                                         "",
                                         DbChangeType.UPDATE);
     }
@@ -249,8 +249,8 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         }
         
         dbChangeManager.processDbChange(collection.getLiteYukonGroup().getGroupID(),
-                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
-                                        DBChangeMsg.CAT_YUKON_USER_GROUP,
+                                        DBChangeMessage.CHANGE_YUKON_USER_DB,
+                                        DBChangeMessage.CAT_YUKON_USER_GROUP,
                                         "",
                                         DbChangeType.UPDATE);
     }

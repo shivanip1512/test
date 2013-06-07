@@ -68,7 +68,7 @@
 <script language="JavaScript" type="text/javascript"  src="/JavaScript/yukonGeneral.js"></script>
  
 <%
-     final StarsCustAccountInformationDao starsCustAccountInformationDao = YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
+      final StarsCustAccountInformationDao starsCustAccountInformationDao = YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
       final DateFormattingService dateFormattingService = YukonSpringHook.getBean("dateFormattingService", DateFormattingService.class);
       final AuthDao authDao = YukonSpringHook.getBean("authDao", AuthDao.class);
       final RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);

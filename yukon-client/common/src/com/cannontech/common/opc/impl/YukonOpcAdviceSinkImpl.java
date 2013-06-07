@@ -11,7 +11,7 @@ import com.cannontech.common.opc.service.OpcService;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
-import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
 import com.netmodule.jpc.driver.opc.OpcAdviseSink;
 import com.netmodule.jpc.driver.opc.OpcGroup;
 import com.netmodule.jpc.driver.opc.OpcItem;
@@ -109,7 +109,7 @@ public class YukonOpcAdviceSinkImpl extends OpcAdviseSink {
             }
         }
 
-        PointData pointData = new PointData();
+        PointDataMessage pointData = new PointDataMessage();
         pointData.setId(yOpcItem.getPointId());
         pointData.setPointQuality(goodQuality ? PointQuality.Normal: PointQuality.Unknown);
         pointData.setType(yOpcItem.getPointType());

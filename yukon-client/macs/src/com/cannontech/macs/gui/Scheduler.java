@@ -12,9 +12,9 @@ import javax.swing.JRootPane;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.ClientRights;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.message.macs.message.MACSCategoryChange;
-import com.cannontech.message.util.ConnStateChange;
-import com.cannontech.message.util.MessageEvent;
+import com.cannontech.messaging.message.ConnStateChangeMessage;
+import com.cannontech.messaging.message.macs.CategoryChangeEvent;
+import com.cannontech.messaging.util.MessageEvent;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.conns.ConnPool;
@@ -466,7 +466,7 @@ public void setInitialTitle()
 	//  is being observed
     mainPanel.messageReceived(
             new MessageEvent(this,
-                    new ConnStateChange(getIMACSConnection().isValid())) );    
+                    new ConnStateChangeMessage(getIMACSConnection().isValid())) );    
 }
 
 /**
@@ -502,13 +502,13 @@ public void silenceAlarms() {}
 public synchronized void update(java.util.Observable source, Object obj )
 {
 	if( source instanceof IMACSConnection
-		 && obj instanceof MACSCategoryChange )
+		 && obj instanceof CategoryChangeEvent )
 	{
-		final MACSCategoryChange msg = (MACSCategoryChange)obj;
+		final CategoryChangeEvent msg = (CategoryChangeEvent)obj;
 
 		if( getComboBox() != null )
 		{				
-			if( msg.id == MACSCategoryChange.INSERT )
+			if( msg.id == CategoryChangeEvent.INSERT )
 			{
 				boolean fnd = false;
 				for( int i = 0; i < getComboBox().getItemCount(); i++ )
@@ -521,11 +521,11 @@ public synchronized void update(java.util.Observable source, Object obj )
 				if( !fnd )
 					getComboBox().addItem( msg.arg.toString() );
 			}
-			else if( msg.id == MACSCategoryChange.DELETE )
+			else if( msg.id == CategoryChangeEvent.DELETE )
 			{
 				getComboBox().removeItem( msg.arg.toString() );
 			}
-			else if( msg.id == MACSCategoryChange.DELETE_ALL ) // remove all items
+			else if( msg.id == CategoryChangeEvent.DELETE_ALL ) // remove all items
 			{
 				getComboBox().setSelectedIndex(-1);
 				getComboBox().removeAllItems();

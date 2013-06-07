@@ -2,7 +2,7 @@ package com.cannontech.web.updater.capcontrol;
 
 import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.message.capcontrol.streamable.Area;
+import com.cannontech.messaging.message.capcontrol.streamable.Area;
 import com.cannontech.user.YukonUserContext;
 
 public class AreaFormattingService extends AbstractAreaFormatingService<Area> {
@@ -11,7 +11,7 @@ public class AreaFormattingService extends AbstractAreaFormatingService<Area> {
     protected String getState(final Area latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
         String prefix = "yukon.web.modules.capcontrol.";
         String key = "";
-        if (latestValue.getDisableFlag()) {
+        if (latestValue.getCcDisableFlag()) {
             key = prefix + "disabled";
         } else {
             key = prefix + "enabled";

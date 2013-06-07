@@ -10,7 +10,7 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.program.service.ProgramService;
-import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.messaging.message.loadcontrol.data.Program;
 
 public class PriorityFilter implements UiFilter<DisplayablePao> {
     private ProgramService programService;
@@ -30,7 +30,7 @@ public class PriorityFilter implements UiFilter<DisplayablePao> {
 
             @Override
             public boolean matches(DisplayablePao pao) {
-                LMProgramBase program = programService.getProgramForPao(pao);
+                Program program = programService.getProgramForPao(pao);
                 // TODO:  this logic is duplicated in ProgramDisplayField
                 return program != null && filter.intersects(program.getStartPriority() <= 0
                                                             ? 1 : program.getStartPriority());

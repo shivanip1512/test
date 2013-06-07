@@ -6,10 +6,10 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
-import com.cannontech.message.dispatch.message.DbChangeHelper;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeCategory;
+import com.cannontech.dispatch.DbChangeHelper;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 import com.cannontech.spring.YukonSpringHook;
 
 public class YukonListEntry extends DBPersistent implements CTIDbChange {
@@ -196,9 +196,9 @@ public class YukonListEntry extends DBPersistent implements CTIDbChange {
 	}
 
     @Override
-    public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+    public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType) {
         
-        DBChangeMsg[] msgs = {
+        DBChangeMessage[] msgs = {
             DbChangeHelper.newDbChange(dbChangeType, DbChangeCategory.YUKON_LIST_ENTRY, entryID)
         };
 

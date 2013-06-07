@@ -13,7 +13,7 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
 import com.cannontech.yukon.IServerConnection;
 
 public class PointDataGenerator implements PointValueUpdater {
@@ -38,7 +38,7 @@ public class PointDataGenerator implements PointValueUpdater {
             return;
         }
         if(holder.point.getPointID() != 0) {
-            PointData pointData = new PointData();
+            PointDataMessage pointData = new PointDataMessage();
             pointData.setId(holder.point.getPointID());
             pointData.setPointQuality(PointQuality.Normal);
             pointData.setType(type);

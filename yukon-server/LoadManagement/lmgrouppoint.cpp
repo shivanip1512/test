@@ -23,7 +23,7 @@ using std::endl;
 
 extern ULONG _LM_DEBUG;
 
-RWDEFINE_COLLECTABLE( CtiLMGroupPoint, CTILMGROUPPOINT_ID )
+DEFINE_COLLECTABLE( CtiLMGroupPoint, CTILMGROUPPOINT_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -181,37 +181,6 @@ CtiRequestMsg* CtiLMGroupPoint::createMasterCycleRequestMsg(LONG offTime, LONG p
         dout << CtiTime() << " - Can not do this to an Load Management Point Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return NULL;
-}
-
-
-/*-------------------------------------------------------------------------
-    restoreGuts
-
-    Restore self's state from the given stream
---------------------------------------------------------------------------*/
-void CtiLMGroupPoint::restoreGuts(RWvistream& istrm)
-{
-    CtiLMGroupBase::restoreGuts( istrm );
-
-    istrm >> _deviceidusage
-          >> _pointidusage
-          >> _startcontrolrawstate;
-}
-
-/*---------------------------------------------------------------------------
-    saveGuts
-
-    Save self's state onto the given stream
----------------------------------------------------------------------------*/
-void CtiLMGroupPoint::saveGuts(RWvostream& ostrm ) const
-{
-    CtiLMGroupBase::saveGuts( ostrm );
-
-    ostrm << _deviceidusage
-          << _pointidusage
-          << _startcontrolrawstate;
-
-    return;
 }
 
 /*---------------------------------------------------------------------------

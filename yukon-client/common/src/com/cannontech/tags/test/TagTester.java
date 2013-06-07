@@ -44,8 +44,8 @@ public class TagTester implements Runnable {
 			while(iter.hasNext()) {
 				Thread.sleep(7000);
 				Tag t = (Tag) iter.next();
-				t.setDescriptionStr("Tag " + t.getInstanceID() + " updated by TagTest for id " + pointid);
-				CTILogger.info("Updating tag " + t.getInstanceID() + " for point id: " + pointid);
+				t.setDescriptionStr("Tag " + t.getInstanceId() + " updated by TagTest for id " + pointid);
+				CTILogger.info("Updating tag " + t.getInstanceId() + " for point id: " + pointid);
 				tm.updateTag(t, CtiUtilities.getUserName());
 				
 			}
@@ -56,8 +56,8 @@ public class TagTester implements Runnable {
 			while(iter.hasNext()) {
 				Thread.sleep(7000);
 				Tag t = (Tag) iter.next();
-				t.setDescriptionStr("Tag " + t.getInstanceID() + " removed by TagTest for id " + pointid);
-				CTILogger.info("Removing tag " + t.getInstanceID() + " for point id: " + pointid);
+				t.setDescriptionStr("Tag " + t.getInstanceId() + " removed by TagTest for id " + pointid);
+				CTILogger.info("Removing tag " + t.getInstanceId() + " for point id: " + pointid);
 				tm.removeTag(t, CtiUtilities.getUserName());
 			}
 			

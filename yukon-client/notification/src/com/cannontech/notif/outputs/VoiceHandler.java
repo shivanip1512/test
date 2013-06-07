@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.notification.NotifType;
-import com.cannontech.message.notif.NotifCallEvent;
+import com.cannontech.messaging.message.notif.CallStatus;
 import com.cannontech.notif.voice.*;
 
 /**
@@ -94,7 +94,7 @@ public class VoiceHandler implements OutputHandler {
         return call;
     }
 
-	public void callStatus(String token, NotifCallEvent status) {
+	public void callStatus(String token, CallStatus status) {
 	    log.debug("received " + status + " for " + token);
         try {
             Call call = notificationQueue.getCall(token);

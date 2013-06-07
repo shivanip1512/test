@@ -30,7 +30,7 @@ import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.model.PointAlarmTableModel;
 import com.cannontech.esub.table.Table;
-import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.messaging.message.dispatch.SignalMessage;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.loox.jloox.LxComponent;
@@ -290,9 +290,9 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
             paoIdsList.add(paoId);
         }
         try {
-            List<Signal> deviceSignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForPaos(paoIdsList);
-            for (Iterator<Signal> iter = deviceSignals.iterator(); iter.hasNext();) {
-                Signal signal = iter.next();
+            List<SignalMessage> deviceSignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForPaos(paoIdsList);
+            for (Iterator<SignalMessage> iter = deviceSignals.iterator(); iter.hasNext();) {
+                SignalMessage signal = iter.next();
                 // find out why there is a null in the list!
                 if(signal != null) {
                     if (TagUtils.isAlarmUnacked(signal.getTags())) {
@@ -316,9 +316,9 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
         }
         
         try {
-            List<Signal> pointSignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForPoints(pointIdsList);
-            for (Iterator<Signal> iter = pointSignals.iterator(); iter.hasNext();) {
-                Signal signal = iter.next();
+            List<SignalMessage> pointSignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForPoints(pointIdsList);
+            for (Iterator<SignalMessage> iter = pointSignals.iterator(); iter.hasNext();) {
+                SignalMessage signal = iter.next();
                 //find out why there is a null in the list!
                 if(signal != null) {
                     if (TagUtils.isAlarmUnacked(signal.getTags())) {
@@ -339,9 +339,9 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
             
         int[] alarmCategoryIds = te.getAlarmCategoryIds();
         for (int j = 0; !inAlarm && j < alarmCategoryIds.length; j++) {
-            List<Signal> alarmCategorySignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForAlarmCategory(alarmCategoryIds[j]);
-            for (Iterator<Signal> iter = alarmCategorySignals.iterator(); iter.hasNext();) {
-                Signal signal = iter.next();
+            List<SignalMessage> alarmCategorySignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForAlarmCategory(alarmCategoryIds[j]);
+            for (Iterator<SignalMessage> iter = alarmCategorySignals.iterator(); iter.hasNext();) {
+                SignalMessage signal = iter.next();
                 if (TagUtils.isAlarmUnacked(signal.getTags())) {
                     inAlarm = true;
                 }

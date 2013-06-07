@@ -104,7 +104,7 @@ public final class LMDaoImpl implements LMDao {
             for (int i = 0; i < lmScenarios.size(); i++) {
                 LiteYukonPAObject litePao = (LiteYukonPAObject) lmScenarios.get(i);
                 if (YukonSpringHook.getBean(AuthDao.class)
-                              .userHasAccessPAO(yukUser, litePao.getYukonID()))
+                              .userHasAccessPAO(yukUser, litePao.getYukonId()))
                     scenarioList.add(litePao);
             }
         }

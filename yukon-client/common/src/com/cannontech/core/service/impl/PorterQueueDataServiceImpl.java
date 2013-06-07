@@ -4,10 +4,10 @@ import org.apache.commons.lang.math.RandomUtils;
 
 import com.cannontech.common.util.Checker;
 import com.cannontech.core.service.PorterQueueDataService;
-import com.cannontech.message.porter.message.QueueData;
-import com.cannontech.message.porter.message.Request;
-import com.cannontech.message.util.ServerRequestBlocker;
-import com.cannontech.message.util.TimeoutException;
+import com.cannontech.messaging.message.porter.QueueDataMessage;
+import com.cannontech.messaging.message.porter.RequestMessage;
+import com.cannontech.messaging.util.ServerRequestBlocker;
+import com.cannontech.messaging.util.TimeoutException;
 import com.cannontech.yukon.BasicServerConnection;
 
 public class PorterQueueDataServiceImpl implements PorterQueueDataService {
@@ -17,21 +17,21 @@ public class PorterQueueDataServiceImpl implements PorterQueueDataService {
     private final long timeout = 30000;
 
     public long getMessageCountForRequest(long requestId) {
-        Request req = new Request();
+        RequestMessage req = new RequestMessage();
         final int randomId = RandomUtils.nextInt();
         req.setCommandString(commandString);
-        req.setUserMessageID(randomId);
-        req.setGroupMessageID(requestId);
+        req.setUserMessageId(randomId);
+        req.setGroupMessageId(requestId);
         
-        ServerRequestBlocker<QueueData> blocker = 
-            new ServerRequestBlocker<QueueData>(porterConnection, QueueData.class, new Checker<QueueData>() {
-            public boolean check(QueueData msg) {
+        ServerRequestBlocker<QueueDataMessage> blocker = 
+            new ServerRequestBlocker<QueueDataMessage>(porterConnection, QueueDataMessage.class, new Checker<QueueDataMessage>() {
+            public boolean check(QueueDataMessage msg) {
                 return msg.getUserMessageId() == randomId;
             }
         });
         
         try {
-            QueueData response = blocker.execute(req, timeout);
+            QueueDataMessage response = blocker.execute(req, timeout);
             return response.getRequestIdCount();
         } catch (TimeoutException e) {
             throw new RuntimeException("Unable to get message count for request", e);

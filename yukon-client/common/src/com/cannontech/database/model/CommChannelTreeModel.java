@@ -81,7 +81,7 @@ public class CommChannelTreeModel extends DBTreeModel {
             for (int i = 0; i < ports.size(); i++) {
                 DBTreeNode portNode = new DBTreeNode(ports.get(i));
                 rootNode.add(portNode);
-                portID = ((LiteYukonPAObject) ports.get(i)).getYukonID();
+			portID = ((com.cannontech.database.data.lite.LiteYukonPAObject)ports.get(i)).getYukonId();
 
                 boolean devicesFound = false;
 
@@ -217,7 +217,7 @@ public class CommChannelTreeModel extends DBTreeModel {
             IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 
             synchronized (cache) {
-                int portID = ((LiteYukonPAObject) node.getUserObject()).getYukonID();
+			int portID = ((LiteYukonPAObject)node.getUserObject()).getYukonId();
                 List<LiteYukonPAObject> paos = cache.getAllYukonPAObjects();
 
                 // change our dummy points device ID to the current DeviceID

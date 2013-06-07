@@ -4,13 +4,13 @@ import java.util.List;
 
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.WebUpdatedPAObjectMap;
-import com.cannontech.message.capcontrol.streamable.Area;
-import com.cannontech.message.capcontrol.streamable.CapBankDevice;
-import com.cannontech.message.capcontrol.streamable.Feeder;
-import com.cannontech.message.capcontrol.streamable.SpecialArea;
-import com.cannontech.message.capcontrol.streamable.SubBus;
-import com.cannontech.message.capcontrol.streamable.SubStation;
-import com.cannontech.message.capcontrol.streamable.VoltageRegulatorFlags;
+import com.cannontech.messaging.message.capcontrol.streamable.Area;
+import com.cannontech.messaging.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.messaging.message.capcontrol.streamable.Feeder;
+import com.cannontech.messaging.message.capcontrol.streamable.SpecialArea;
+import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
+import com.cannontech.messaging.message.capcontrol.streamable.SubStation;
+import com.cannontech.messaging.message.capcontrol.streamable.VoltageRegulatorFlags;
 import com.cannontech.spring.YukonSpringHook;
 
 public class CBCWebUpdatedObjectMap extends WebUpdatedPAObjectMap<Integer>{
@@ -20,19 +20,19 @@ public class CBCWebUpdatedObjectMap extends WebUpdatedPAObjectMap<Integer>{
 	}
 	
 	public void handleCBCChangeEvent(Area area) {
-	    List<SubStation> subList = capControlCache.getSubstationsByArea(area.getPaoId());
+	    List<SubStation> subList = capControlCache.getSubstationsByArea(area.getCcId());
 	    for (final SubStation substation : subList) {
 	        handleCBCChangeEvent(substation);
 	    }
-	    updateMap(area.getPaoId());
+	    updateMap(area.getCcId());
 	}
 	
 	public void handleCBCChangeEvent(SpecialArea specialArea) {
-	    List<SubStation> substationList = capControlCache.getSubstationsBySpecialArea(specialArea.getPaoId());
+	    List<SubStation> substationList = capControlCache.getSubstationsBySpecialArea(specialArea.getCcId());
 	    for (final SubStation subStation : substationList) {
 	        handleCBCChangeEvent(subStation);
 	    }
-	    updateMap(specialArea.getPaoId());
+	    updateMap(specialArea.getCcId());
 	}
 	
 	public void handleCBCChangeEvent(SubStation subStation) {

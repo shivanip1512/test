@@ -333,7 +333,7 @@ DlcCommand::request_ptr Mct410HourlyReadCommand::error(const CtiTime now, const 
 {
     if( description.empty() )
     {
-        description = GetError(error_code);
+        description = GetErrorString(error_code);
     }
 
     description += "\n";

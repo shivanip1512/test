@@ -5,7 +5,8 @@
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 
-#include "connection.h"
+#include "connection_client.h"
+#include "amq_constants.h"
 #include "ctinexus.h"
 #include "message.h"
 #include "msg_multi.h"
@@ -68,7 +69,8 @@ void main(int argc, char **argv)
             return;
         }
 
-        CtiConnection Connect(VANGOGHNEXUS, argv[1]);
+        CtiClientConnection Connect( Cti::Messaging::ActiveMQ::Queue::dispatch );
+        Connect.start();
 
         //  write the registration message (this is only done once, because if the database changes,
         //    the program name and such doesn't change - only our requested points.)
@@ -99,7 +101,7 @@ void main(int argc, char **argv)
 
         //  tell Dispatch we're going away, then leave
         Connect.WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 0) );
-        Connect.ShutdownConnection();
+        Connect.close();
     }
     catch( RWxmsg &msg )
     {

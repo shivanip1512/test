@@ -16,15 +16,15 @@ import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.notification.NotifType;
-import com.cannontech.message.notif.ProgramActionMsg;
-import com.cannontech.message.util.Message;
+import com.cannontech.messaging.message.BaseMessage;
+import com.cannontech.messaging.message.notif.ProgramActionMessage;
 import com.cannontech.notif.outputs.*;
 import com.cannontech.notif.server.NotifServerConnection;
 
 /**
  * 
  */
-public class ProgramActionMessageHandler extends NotifHandler implements MessageHandler<ProgramActionMsg> {
+public class ProgramActionMessageHandler extends NotifHandler implements MessageHandler<ProgramActionMessage> {
     
     private static final Logger log = YukonLogManager.getLogger(NotifEmailMessageHandler.class);
     
@@ -36,17 +36,17 @@ public class ProgramActionMessageHandler extends NotifHandler implements Message
     private static final DateFormat _timeFormatter = new SimpleDateFormat("h:mm a"); // e.g. "3:45 PM"
 
     @Override
-    public Class<ProgramActionMsg> getSupportedMessageType() {
-        return ProgramActionMsg.class;
+    public Class<ProgramActionMessage> getSupportedMessageType() {
+        return ProgramActionMessage.class;
     }
 
     @Override
-    public void handleMessage(NotifServerConnection connection,  Message message) {
-        final ProgramActionMsg msg = (ProgramActionMsg) message;
+    public void handleMessage(NotifServerConnection connection,  BaseMessage message) {
+        final ProgramActionMessage msg = (ProgramActionMessage) message;
         
         log.info("Got into the ProgramActionMessageHandler");
         
-        long durationMillis = msg.stopTime.getTime() - msg.startTime.getTime();
+        long durationMillis = msg.getStopTime().getTime() - msg.getStartTime().getTime();
         long durationMinutes = durationMillis / 1000 / 60;
         long durationHours = durationMinutes / 60;
         long remainingMinutes = durationMinutes % 60;
@@ -54,11 +54,11 @@ public class ProgramActionMessageHandler extends NotifHandler implements Message
         final String durationHoursStr = Long.toString(durationHours);
         final String remainingMinutesStr = Long.toString(remainingMinutes);
         
-        final Program program = programDao.getForId(msg.programId);
+        final Program program = programDao.getForId(msg.getProgramId());
         
         final List<String> customerNames = new ArrayList<String>();
-        for (int i = 0; i < msg.customerIds.length; i++) {
-            int customerId = msg.customerIds[i];
+        for (int i = 0; i < msg.getCustomerIds().length; i++) {
+            int customerId = msg.getCustomerIds()[i];
             LiteCICustomer liteCICustomer = customerDao.getLiteCICustomer(customerId);
             customerNames.add(liteCICustomer.getCompanyName());
         }
@@ -70,7 +70,7 @@ public class ProgramActionMessageHandler extends NotifHandler implements Message
                 
                 notif.addData("programname", program.getName());
                 notif.addData("programtype", program.getProgramType().getName());
-                notif.addData("eventname", msg.eventDisplayName);
+                notif.addData("eventname", msg.getEventDisplayName());
 
                 TimeZone timeZone = contact.getTimeZone();
                 
@@ -80,22 +80,22 @@ public class ProgramActionMessageHandler extends NotifHandler implements Message
                     
                     notif.addData("timezone", timeZone.getDisplayName());
                     
-                    notif.addData("starttime", _timeFormatter.format(msg.startTime));
-                    notif.addData("startdate", _dateFormatter.format(msg.startTime));
-                    notif.addData("startdatetime", Iso8601DateUtil.formatIso8601Date(msg.startTime, timeZone));
-                    notif.addData("stoptime", _timeFormatter.format(msg.stopTime));
-                    notif.addData("stopdate", _dateFormatter.format(msg.stopTime));
-                    notif.addData("stopdatetime", Iso8601DateUtil.formatIso8601Date(msg.stopTime, timeZone));
-                    notif.addData("notiftime", _timeFormatter.format(msg.notificationTime));
-                    notif.addData("notifdate", _dateFormatter.format(msg.notificationTime));
-                    notif.addData("notifdatetime", Iso8601DateUtil.formatIso8601Date(msg.notificationTime, timeZone));
+                    notif.addData("starttime", _timeFormatter.format(msg.getStartTime()));
+                    notif.addData("startdate", _dateFormatter.format(msg.getStartTime()));
+                    notif.addData("startdatetime", Iso8601DateUtil.formatIso8601Date(msg.getStartTime(), timeZone));
+                    notif.addData("stoptime", _timeFormatter.format(msg.getStopTime()));
+                    notif.addData("stopdate", _dateFormatter.format(msg.getStopTime()));
+                    notif.addData("stopdatetime", Iso8601DateUtil.formatIso8601Date(msg.getStopTime(), timeZone));
+                    notif.addData("notiftime", _timeFormatter.format(msg.getNotificationTime()));
+                    notif.addData("notifdate", _dateFormatter.format(msg.getNotificationTime()));
+                    notif.addData("notifdatetime", Iso8601DateUtil.formatIso8601Date(msg.getNotificationTime(), timeZone));
                 }
                 
                 notif.addData("durationminutes", durationMinutesStr);
                 notif.addData("durationhours", durationHoursStr);
                 notif.addData("remainingminutes", remainingMinutesStr);
                 
-                notif.addData("action", msg.action);
+                notif.addData("action", msg.getAction());
 
                 notif.addData("customers", customersString);
                 notif.addCollection("customerlist", customerNames);

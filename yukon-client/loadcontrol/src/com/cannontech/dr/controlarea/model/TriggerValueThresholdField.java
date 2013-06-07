@@ -10,7 +10,7 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
-import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
+import com.cannontech.messaging.message.loadcontrol.data.ControlAreaTriggerItem;
 import com.cannontech.user.YukonUserContext;
 
 public class TriggerValueThresholdField extends TriggerBackingFieldBase {
@@ -23,7 +23,7 @@ public class TriggerValueThresholdField extends TriggerBackingFieldBase {
     }
     
     @Override
-    public Object getTriggerValue(LMControlAreaTrigger trigger, YukonUserContext userContext) {
+    public Object getTriggerValue(ControlAreaTriggerItem trigger, YukonUserContext userContext) {
 
         TriggerType triggerType = trigger.getTriggerType();
 
@@ -51,7 +51,7 @@ public class TriggerValueThresholdField extends TriggerBackingFieldBase {
             @Override
             public int triggerCompare(
                     TriggerType triggerType,
-                    LMControlAreaTrigger trigger1, LMControlAreaTrigger trigger2) {
+                    ControlAreaTriggerItem trigger1, ControlAreaTriggerItem trigger2) {
 
                 if (triggerType == TriggerType.STATUS) {
                     return getTriggerStateValue(trigger1).compareTo(getTriggerStateValue(trigger2));
@@ -60,7 +60,7 @@ public class TriggerValueThresholdField extends TriggerBackingFieldBase {
             }};
     }
 
-    private String getTriggerStateValue(LMControlAreaTrigger trigger) {
+    private String getTriggerStateValue(ControlAreaTriggerItem trigger) {
         String result = null;
         LitePoint point = pointDao.getLitePoint( trigger.getPointId().intValue() );
         if (trigger.getTriggerType() == TriggerType.STATUS) {
@@ -70,7 +70,7 @@ public class TriggerValueThresholdField extends TriggerBackingFieldBase {
         return result;
     }
     
-    private String getTriggerStateThreshold(LMControlAreaTrigger trigger) {
+    private String getTriggerStateThreshold(ControlAreaTriggerItem trigger) {
         String result = null;
         LitePoint point = pointDao.getLitePoint( trigger.getPointId().intValue() );
         if (trigger.getTriggerType() == TriggerType.STATUS) {

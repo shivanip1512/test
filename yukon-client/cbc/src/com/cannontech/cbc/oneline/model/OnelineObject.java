@@ -3,7 +3,7 @@ package com.cannontech.cbc.oneline.model;
 import com.cannontech.cbc.oneline.view.OneLineDrawing;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.message.capcontrol.streamable.SubBus;
+import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.loox.jloox.LxLine;

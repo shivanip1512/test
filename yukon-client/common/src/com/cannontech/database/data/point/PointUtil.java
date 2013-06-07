@@ -28,8 +28,8 @@ import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.point.calculation.CalcBase;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.state.StateGroupUtils;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.Lists;
 
@@ -114,7 +114,7 @@ public class PointUtil {
                                                                            pointVector)
                                                         .execute();
             
-                DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance()
+                DBChangeMessage[] dbChange = DefaultDatabaseCache.getInstance()
                                                              .createDBChangeMessages((CTIDbChange) pointVector,
                                                                                      DbChangeType.ADD);
                 //make sure we update the cache

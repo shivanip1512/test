@@ -1,12 +1,14 @@
 #pragma once
 
 #include "dlldefs.h"
-
 #include "msg_multi.h"
 
 class IM_EX_MSG CtiReturnMsg : public CtiMultiMsg
 {
-private:
+public:
+    DECLARE_COLLECTABLE( CtiReturnMsg )
+
+public:
 
     long       _device_id;
     std::string  _command_string;        // Replica of the original request (only first 80 characters)
@@ -15,14 +17,13 @@ private:
     int        _routeid;               // Route ID which just succeeded, or failed.
     int        _macro_offset;          // Offset into a macro which should/could be tried next, Zero if there are no more.
     int        _attempt_num;           // Number of attempts before we succeeded or failed.. Therefore, should always be at least one.
-    int        _expectMore;            // Another message shall be coming related to the request which caused this message. listen for more!
+    bool       _expectMore;            // Another message shall be coming related to the request which caused this message. listen for more!
     long       _group_message_id;      // A replica of the request's _group_message_id
     long       _user_message_id;       // A replica of the request's _user_message_id
 
     typedef CtiMultiMsg Inherited;
 
 public:
-    RWDECLARE_COLLECTABLE( CtiReturnMsg );
 
     CtiReturnMsg();
 
@@ -48,8 +49,7 @@ public:
 
 
     CtiReturnMsg& operator=(const CtiReturnMsg& aRef);
-    void saveGuts(RWvostream &aStream) const;
-    void restoreGuts(RWvistream& aStream);
+
     CtiMessage* replicateMessage() const;
 
     long DeviceId() const;

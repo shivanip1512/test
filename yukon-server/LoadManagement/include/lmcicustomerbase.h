@@ -9,7 +9,7 @@
 #include "msg_pcrequest.h"
 #include "row_reader.h"
                 
-class CtiLMCICustomerBase : public RWCollectable
+class CtiLMCICustomerBase
 {
 
 public:
@@ -35,11 +35,6 @@ public:
     CtiLMCICustomerBase& setCurtailmentAgreement(const std::string& agreement);
     CtiLMCICustomerBase& setTimeZone(const std::string& timezone);
     CtiLMCICustomerBase& setCustomerOrder(LONG order);
-
-    
-    //Members inherited from RWCollectable
-    void restoreGuts(RWvistream& );
-    void saveGuts(RWvostream& ) const;
 
     CtiLMCICustomerBase& operator=(const CtiLMCICustomerBase& right);
 

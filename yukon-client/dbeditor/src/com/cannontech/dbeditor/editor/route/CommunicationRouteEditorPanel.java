@@ -341,7 +341,7 @@ private javax.swing.JLabel getSignalTransmitterLabel() {
  */
 public Object getValue(Object val) {
 	String routeName = getRouteNameTextField().getText();
-	Integer injectorID = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getSignalTransmitterComboBox().getSelectedItem()).getYukonID());
+	Integer injectorID = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getSignalTransmitterComboBox().getSelectedItem()).getYukonId());
 
 	if( routeName != null )
 		((com.cannontech.database.data.route.RouteBase) val).setRouteName(routeName);
@@ -588,7 +588,7 @@ public void setValue(Object val) {
 
 	for( int i = 0; i < getSignalTransmitterComboBox().getItemCount(); i++ )
 	{
-		if( ((com.cannontech.database.data.lite.LiteYukonPAObject) getSignalTransmitterComboBox().getItemAt(i)).getYukonID() == injectorID )
+		if( ((com.cannontech.database.data.lite.LiteYukonPAObject) getSignalTransmitterComboBox().getItemAt(i)).getYukonId() == injectorID )
 		{
 			getSignalTransmitterComboBox().setSelectedIndex(i);
 			break;

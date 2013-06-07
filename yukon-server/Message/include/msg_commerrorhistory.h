@@ -5,7 +5,10 @@
 
 class IM_EX_MSG CtiCommErrorHistoryMsg : public CtiMessage
 {
-protected:
+public:
+    DECLARE_COLLECTABLE( CtiCommErrorHistoryMsg )
+
+public:
 
    long        _commErrorId;        // .
    long        _paoId;              // .
@@ -16,12 +19,7 @@ protected:
    std::string   _outMessage;         // .
    std::string   _inMessage;          // .
 
-private:
-
 public:
-
-   RWDECLARE_COLLECTABLE( CtiCommErrorHistoryMsg );
-
    typedef CtiMessage Inherited;
 
    CtiCommErrorHistoryMsg(
@@ -57,16 +55,14 @@ public:
    CtiCommErrorHistoryMsg& setErrorNumber( const long number );
 
    const std::string& getCommand() const;
-   CtiCommErrorHistoryMsg& setCommand(const string& string);
+   CtiCommErrorHistoryMsg& setCommand(const std::string& aString);
 
    const std::string& getOutMessage() const;
-   CtiCommErrorHistoryMsg& setOutMessage(const string& string);
+   CtiCommErrorHistoryMsg& setOutMessage(const std::string& aString);
 
    const std::string& getInMessage() const;
-   CtiCommErrorHistoryMsg& setInMessage(const string& string);
+   CtiCommErrorHistoryMsg& setInMessage(const std::string& aString);
 
-   virtual void saveGuts(RWvostream &aStream) const;
-   virtual void restoreGuts(RWvistream& aStream);
    virtual CtiMessage* replicateMessage() const;
 
    virtual void dump() const;

@@ -39,11 +39,11 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.device.DeviceLoadProfile;
-import com.cannontech.message.porter.message.Request;
-import com.cannontech.message.porter.message.Return;
-import com.cannontech.message.util.Message;
-import com.cannontech.message.util.MessageEvent;
-import com.cannontech.message.util.MessageListener;
+import com.cannontech.messaging.message.BaseMessage;
+import com.cannontech.messaging.message.porter.RequestMessage;
+import com.cannontech.messaging.message.porter.ReturnMessage;
+import com.cannontech.messaging.util.MessageEvent;
+import com.cannontech.messaging.util.MessageListener;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.BasicServerConnection;
 
@@ -76,9 +76,9 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     public void initialize() {
         porterConnection.addMessageListener(new MessageListener() {
             public void messageReceived(MessageEvent e) {
-                Message message = e.getMessage();
-                if (message instanceof Return) {
-                    Return returnMsg = (Return) message;
+                BaseMessage message = e.getMessage();
+                if (message instanceof ReturnMessage) {
+                    ReturnMessage returnMsg = (ReturnMessage) message;
                     handleReturnMessage(returnMsg);
                 }
             }
@@ -92,7 +92,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         Validate.isTrue(paoDefinitionDao.isTagSupported(device.getPaoType(), PaoTag.LOAD_PROFILE), "Device must support 4 channel load profile (DeviceTypesFuncs.isLoadProfile4Channel)");
 
         // build command
-        Request req = new Request();
+        RequestMessage req = new RequestMessage();
         StringBuilder formatString = new StringBuilder("getvalue lp channel ");
         formatString.append(channel);
         formatString.append(" ");
@@ -110,9 +110,9 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         
         // setup request
         req.setCommandString(formatString.toString());
-        req.setDeviceID(device.getLiteID());
+        req.setDeviceId(device.getLiteID());
         long requestId = RandomUtils.nextInt();
-        req.setUserMessageID(requestId);
+        req.setUserMessageId(requestId);
         
         // get interval
         YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(device);
@@ -164,7 +164,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     }
 
     private synchronized void handleOutgoingMessage(ProfileRequestInfo info) {
-        int deviceId = info.request.getDeviceID();
+        int deviceId = info.request.getDeviceId();
         if (currentDeviceRequests.containsKey(deviceId)) {
             log.info("ongoing request for device id " + deviceId + " already in progress, queueing command");
             pendingDeviceRequests.offer(deviceId,info);
@@ -189,9 +189,9 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         try {
             info.request.setTimeStamp(new Date());
             log.debug("updated request time to " + info.request.getTimeStamp() + " for request id " 
-                      + info.request.getUserMessageID() + " for device id " + deviceId + ": " 
+                      + info.request.getUserMessageId() + " for device id " + deviceId + ": " 
                       + info.request.getCommandString());
-            log.debug("sending request id " + info.request.getUserMessageID() 
+            log.debug("sending request id " + info.request.getUserMessageId() 
                       + " for device id " + deviceId + ": " + info.request.getCommandString());
             if (queue) {
                 porterConnection.queue(info.request);
@@ -216,7 +216,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     }
     
     public synchronized void checkRequestStatus(final ProfileRequestInfo info) {
-        long requestId = info.request.getUserMessageID();
+        long requestId = info.request.getUserMessageId();
         // see if request is still pending
         if (!currentRequestIds.containsKey(requestId)) {
             // request has already completed
@@ -239,7 +239,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
                 // our request has probably died, cancel it
                 log.warn("porter indicates abandonded request id " + requestId + ", failing");
                 currentRequestIds.remove(requestId);
-                int deviceId = info.request.getDeviceID();
+                int deviceId = info.request.getDeviceId();
                 currentDeviceRequests.remove(deviceId);
                 expectedReturnCount.remove(info.requestId);
                 receivedReturnsCount.remove(info.requestId);
@@ -269,10 +269,10 @@ public class LoadProfileServiceImpl implements LoadProfileService {
 
     
 
-    private synchronized void handleReturnMessage(Return returnMsg) {
+    private synchronized void handleReturnMessage(ReturnMessage returnMsg) {
         
         // unique requestId of the request this return is for
-        long requestId = returnMsg.getUserMessageID();
+        long requestId = returnMsg.getUserMessageId();
         
         // was this request recently canceled?
         if(recentlyCanceledRequestIds.containsKey(requestId)){
@@ -304,10 +304,10 @@ public class LoadProfileServiceImpl implements LoadProfileService {
             }
             
             // check for expect more
-            boolean finished = returnMsg.getExpectMore() == 0;
+            boolean finished = !returnMsg.getExpectMore();
             if (finished) {
                 
-                int deviceId = returnMsg.getDeviceID();
+                int deviceId = returnMsg.getDeviceId();
                 
                 final CompletionCallback runnable = currentRequestIds.remove(requestId);
                 final int returnStatus = returnMsg.getStatus();
@@ -437,13 +437,13 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     
     public synchronized void sendCancelCommand(long requestIdToBeCanceled, int deviceId){
         
-        Request req = new Request();
+        RequestMessage req = new RequestMessage();
         StringBuilder formatString = new StringBuilder("getvalue lp cancel update noqueue");
         req.setCommandString(formatString.toString());
         
-        req.setDeviceID(deviceId);
+        req.setDeviceId(deviceId);
         long requestIdOfCancelCommand = RandomUtils.nextInt();
-        req.setUserMessageID(requestIdOfCancelCommand);
+        req.setUserMessageId(requestIdOfCancelCommand);
         
         log.info("sending cancel command for device id " + deviceId + ", request id " + requestIdToBeCanceled + "; this is request id " + requestIdOfCancelCommand);
         
@@ -558,7 +558,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
                                                                         DateFormattingService.DateFormatEnum.DATE,
                                                                         userContext));
             data.put("command", info.request.getCommandString());
-            data.put("requestId", Long.toString(info.request.getUserMessageID()));
+            data.put("requestId", Long.toString(info.request.getUserMessageId()));
             data.put("channel", ((Integer) info.channel).toString());
             data.put("userName", info.userName);
             data.put("percentDone", info.percentDone.toString());

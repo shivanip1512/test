@@ -53,6 +53,9 @@
         <constructor-arg ref="jdbcTemplate"/>
     </bean>
     
+    <import resource="classpath:com/cannontech/messaging/connectionContext.xml"/>
+    <import resource="classpath:com/cannontech/messaging/loadcontrolConnectionContext.xml"/>  
+                                
     <bean id="databaseVendorResolver" class="com.cannontech.database.vendor.MetaDataDatabaseVendorResolver"/>
     <bean id="vendorSpecificSqlBuilderFactory" class="com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory"/>
 
@@ -341,7 +344,7 @@
     <bean id="bulkPointDataInjectionService" class="com.cannontech.development.service.impl.BulkPointDataInjectionServiceImpl"/>
     <bean class="com.cannontech.development.service.impl.RfnEventTestingServiceImpl"/>
     
-    <bean class="com.cannontech.message.impl.DbChangeManagerImpl"/>
+    <bean class="com.cannontech.messaging.util.impl.DbChangeManagerImpl"/>
     
     <bean class="com.cannontech.common.scheduledFileExport.dao.impl.ScheduledFileExportDaoImpl"/>
     
@@ -349,5 +352,7 @@
     <bean id="archiveValuesExportFormatDao" class="com.cannontech.amr.archivedValueExporter.dao.impl.ArchiveValuesExportFormatDaoImpl"/>
     <bean id="archiveValuesExportAttributeDao" class="com.cannontech.amr.archivedValueExporter.dao.impl.ArchiveValuesExportAttributeDaoImpl"/>
     <bean id="archiveValuesExportFieldDao" class="com.cannontech.amr.archivedValueExporter.dao.impl.ArchiveValuesExportFieldDaoImpl"/>
-    
+   
+  
+   
 </beans>

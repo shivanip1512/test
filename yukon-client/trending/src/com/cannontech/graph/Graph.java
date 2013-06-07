@@ -35,16 +35,16 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.graph.GraphRenderers;
+import com.cannontech.dispatch.DbChangeType;
 import com.cannontech.graph.buffer.html.PeakHtml;
 import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.exportdata.ExportDataFile;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendProperties;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.message.dispatch.message.Multi;
-import com.cannontech.message.util.Command;
+import com.cannontech.messaging.message.CommandMessage;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.messaging.message.dispatch.MultiMessage;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.yukon.IDatabaseCache;
@@ -681,7 +681,7 @@ public void update()
  **/
 public void getDataNow(java.util.List paobjects)
 {
-	Multi multi = new Multi();
+	MultiMessage multi = new MultiMessage();
 
 	if( paobjects == null)
 	{	
@@ -695,8 +695,8 @@ public void getDataNow(java.util.List paobjects)
 		if(DeviceTypesFuncs.hasDeviceScanRate(paobject.getPaoType().getDeviceTypeId()))
 		{
 			CTILogger.info("Alternate Scan Rate Command Message for DEVICE ID: " + paobject.getLiteID() + " Name: " + paobject.getPaoName());
-			Command messageCommand = new Command();
-			messageCommand.setOperation(Command.ALTERNATE_SCAN_RATE);
+			CommandMessage messageCommand = new CommandMessage();
+			messageCommand.setOperation(CommandMessage.ALTERNATE_SCAN_RATE);
 			messageCommand.setPriority(14);
 			
             List<Integer> opArgList = new ArrayList<Integer>(4);
@@ -748,7 +748,7 @@ public void getDataNow(java.util.List paobjects)
 				item = t.execute();
 
 				//write the DBChangeMessage out to Dispatch since it was a Successfull ADD
-				DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, DbChangeType.ADD);
+				DBChangeMessage[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, DbChangeType.ADD);
 			
 				for( int i = 0; i < dbChange.length; i++)
 				{
@@ -773,7 +773,7 @@ public void getDataNow(java.util.List paobjects)
 			item = t.execute();
 			
 			//write the DBChangeMessage out to Dispatch since it was a Successfull DELETE
-			DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, DbChangeType.DELETE);
+			DBChangeMessage[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, DbChangeType.DELETE);
 					
 			for( int i = 0; i < dbChange.length; i++)
 			{
@@ -810,7 +810,7 @@ public void getDataNow(java.util.List paobjects)
 			item = (GraphDefinition)t.execute();
 			
 			//write the DBChangeMessage out to Dispatch since it was a Successfull UPDATE
-			DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, DbChangeType.UPDATE);
+			DBChangeMessage[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, DbChangeType.UPDATE);
 					
 			for( int i = 0; i < dbChange.length; i++)
 			{

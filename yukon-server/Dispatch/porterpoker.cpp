@@ -40,11 +40,12 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "msg_cmd.h"
 #include "msg_reg.h"
 #include "msg_dbchg.h"
-#include "connection.h"
+#include "connection_client.h"
 #include "counter.h"
 #include "pointtypes.h"
 #include "numstr.h"
 #include "pt_accum.h"
+#include "amq_constants.h"
 
 BOOL           bQuit = FALSE;
 
@@ -150,7 +151,12 @@ void main(int argc, char **argv)
             int command = (int)strtoul(argv[2], &pch, 0);
             int dblvl = 0;
 
-            CtiConnection  Connect(VANGOGHNEXUS, argv[1]);
+            // Create client cticonnection
+            CtiClientConnection Connect( Cti::Messaging::ActiveMQ::Queue::dispatch );
+
+            // start the connection
+            Connect.start();
+
             Connect.WriteConnQue(new CtiRegistrationMsg(argv[0], rwThreadId(), FALSE));
             CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_NOTHING);
             Connect.WriteConnQue(PtRegMsg);

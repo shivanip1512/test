@@ -5,6 +5,8 @@ package com.cannontech.loadcontrol.data;
  */
 import java.util.Date;
 
+import com.cannontech.messaging.message.loadcontrol.data.DirectGroupBase;
+import com.cannontech.messaging.message.loadcontrol.data.GroupBase;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -34,7 +36,7 @@ public com.roguewave.tools.v2_0.Comparator getComparator()
 	{
 		public int compare(Object x, Object y) 
 		{
-			return (int) (((LMGroupBase)x).getYukonID().intValue() - ((LMGroupBase)y).getYukonID().intValue() );
+			return (int) (((GroupBase)x).getYukonId().intValue() - ((GroupBase)y).getYukonId().intValue() );
 		}
 	};
 	
@@ -64,7 +66,7 @@ public Class getJavaClass()
 {
 	Exception e = new Exception(this.getClass().getName() + ".getJavaClass() should Never be called");
 	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	return LMDirectGroupBase.class;
+	return DirectGroupBase.class;
 }
 /**
  * restoreGuts method comment.
@@ -73,7 +75,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 {
 	super.restoreGuts( obj, vstr, polystr );
 
-	LMDirectGroupBase lmDirectGroup = (LMDirectGroupBase) obj;
+	DirectGroupBase lmDirectGroup = (DirectGroupBase) obj;
 	
 	lmDirectGroup.setChildOrder( new Integer( (int)vstr.extractUnsignedInt() ) );
 	lmDirectGroup.setAlarmInhibit( new Boolean( ((int)vstr.extractUnsignedInt())>0 ) );

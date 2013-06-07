@@ -9,7 +9,7 @@ import com.cannontech.cbc.oneline.model.TagView;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.esub.element.StaticText;
-import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.messaging.message.capcontrol.streamable.CapBankDevice;
 import com.loox.jloox.LxAbstractView;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;

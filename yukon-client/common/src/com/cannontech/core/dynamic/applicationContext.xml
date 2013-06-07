@@ -21,7 +21,7 @@
 	 	<property name="dispatchProxy" ref="dispatchProxy"/>
 	 	<property name="pointDao" ref="pointDao"/>
 	 </bean>	 
-	 <bean id="serverRequest" class="com.cannontech.message.util.ServerRequestImpl" scope="prototype"/>
+	 <bean id="serverRequest" class="com.cannontech.messaging.util.ServerRequestImpl" scope="prototype"/>
 	 <bean id="dynamicDataCache" class="com.cannontech.core.dynamic.impl.DynamicDataCache">
 	 	<property name="dispatchConnection" ref="dispatchConnection"/>
 	 </bean>

@@ -8,6 +8,7 @@ import java.util.GregorianCalendar;
 import java.util.Vector;
 
 import com.cannontech.message.util.CollectionExtracter;
+import com.cannontech.messaging.message.loadcontrol.data.ProgramDirect;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
@@ -28,7 +29,7 @@ public DefColl_LMProgramDirect()
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new LMProgramDirect();
+	return new ProgramDirect();
 }
 /**
  * getCxxClassId method comment.
@@ -49,7 +50,7 @@ public String getCxxStringId()
  */
 public Class getJavaClass()
 {
-	return LMProgramDirect.class;
+	return ProgramDirect.class;
 }
 /**
  * restoreGuts method comment.
@@ -58,7 +59,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 {
 	super.restoreGuts( obj, vstr, polystr );
 
-	LMProgramDirect lmProgramDirect = (LMProgramDirect) obj;
+	ProgramDirect lmProgramDirect = (ProgramDirect) obj;
 	
 	lmProgramDirect.setCurrentGearNumber( new Integer( (int)vstr.extractUnsignedInt() ) );
 	lmProgramDirect.setLastGroupControlled( new Integer( (int)vstr.extractUnsignedInt() ) );

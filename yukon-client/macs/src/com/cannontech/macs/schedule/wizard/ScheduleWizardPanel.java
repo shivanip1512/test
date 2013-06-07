@@ -5,7 +5,7 @@ package com.cannontech.macs.schedule.wizard;
  */
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.wizard.WizardPanel;
-import com.cannontech.message.macs.message.Schedule;
+import com.cannontech.messaging.message.macs.ScheduleMessage;
 
 public class ScheduleWizardPanel extends WizardPanel 
 {
@@ -49,7 +49,7 @@ protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
 	}
 	else if( currentInputPanel == getScheduleBasePanel() )
 	{
-		if( getScheduleBasePanel().getScheduleType().equalsIgnoreCase( Schedule.SCRIPT_TYPE ) )
+		if( getScheduleBasePanel().getScheduleType().equalsIgnoreCase( ScheduleMessage.SCRIPT_TYPE ) )
 		{
 		    //default the script file name to the scheduleName<.ctl>
 		    getScriptScheduleSetupPanel().setScriptNameText(getScheduleBasePanel().getJTextFieldScheduleName().getText()+ ".ctl");

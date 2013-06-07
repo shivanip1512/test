@@ -18,7 +18,7 @@
 using namespace std;
 /*=== CtiMCUpdateSchedule ===*/
 
-RWDEFINE_COLLECTABLE( CtiMCUpdateSchedule, MSG_MC_UPDATE_SCHEDULE );
+DEFINE_COLLECTABLE( CtiMCUpdateSchedule, MSG_MC_UPDATE_SCHEDULE );
 
 CtiMCUpdateSchedule::CtiMCUpdateSchedule()
 {
@@ -73,26 +73,10 @@ CtiMCUpdateSchedule& CtiMCUpdateSchedule::setScript(const string& script)
     return *this;
 }
 
-void CtiMCUpdateSchedule::saveGuts(RWvostream &aStream) const
-{
-    CtiMessage::saveGuts(aStream);
-    aStream     <<  _schedule
-                <<  _script ;
-}
-
-void CtiMCUpdateSchedule::restoreGuts(RWvistream& aStream)
-{
-    string temp_str;
-    CtiMessage::restoreGuts(aStream);
-    aStream     >>  _schedule
-                >>  temp_str;
-
-    _script = temp_str;
-}
 
 /*=== CtiMCAddSchedule ===*/
 
-RWDEFINE_COLLECTABLE( CtiMCAddSchedule, MSG_MC_ADD_SCHEDULE );
+DEFINE_COLLECTABLE( CtiMCAddSchedule, MSG_MC_ADD_SCHEDULE );
 
 CtiMCAddSchedule::CtiMCAddSchedule()
 {
@@ -146,27 +130,10 @@ CtiMCAddSchedule& CtiMCAddSchedule::setScript(const string& script)
     return *this;
 }
 
-void CtiMCAddSchedule::saveGuts(RWvostream &aStream) const
-{
-    CtiMessage::saveGuts(aStream);
-    aStream     << _schedule
-                << _script ;
-}
-
-void CtiMCAddSchedule::restoreGuts(RWvistream& aStream)
-{
-    string temp_str;
-
-    CtiMessage::restoreGuts(aStream);
-    aStream     >> _schedule
-                >> temp_str;
-
-    _script = temp_str;
-}
 
 /*=== CtiMCDeleteSchedule ===*/
 
-RWDEFINE_COLLECTABLE( CtiMCDeleteSchedule, MSG_MC_DELETE_SCHEDULE );
+DEFINE_COLLECTABLE( CtiMCDeleteSchedule, MSG_MC_DELETE_SCHEDULE );
 
 CtiMCDeleteSchedule::CtiMCDeleteSchedule()
     : _id(0)
@@ -207,21 +174,10 @@ CtiMCDeleteSchedule& CtiMCDeleteSchedule::setScheduleID(long id)
     return *this;
 }
 
-void CtiMCDeleteSchedule::saveGuts(RWvostream &aStream) const
-{
-    CtiMessage::saveGuts(aStream);
-    aStream << _id;
-}
-
-void CtiMCDeleteSchedule::restoreGuts(RWvistream& aStream)
-{
-    CtiMessage::restoreGuts(aStream);
-    aStream >> _id;
-}
 
 /*=== CtiMCRetrieveSchedule ===*/
 
-RWDEFINE_COLLECTABLE( CtiMCRetrieveSchedule, MSG_MC_RETRIEVE_SCHEDULE );
+DEFINE_COLLECTABLE( CtiMCRetrieveSchedule, MSG_MC_RETRIEVE_SCHEDULE );
 
 CtiMCRetrieveSchedule::CtiMCRetrieveSchedule()
     : _id(0)
@@ -263,21 +219,10 @@ CtiMCRetrieveSchedule& CtiMCRetrieveSchedule::setScheduleID(long id)
     return *this;
 }
 
-void CtiMCRetrieveSchedule::saveGuts(RWvostream &aStream) const
-{
-    CtiMessage::saveGuts(aStream);
-    aStream << _id;
-}
-
-void CtiMCRetrieveSchedule::restoreGuts(RWvistream& aStream)
-{
-    CtiMessage::restoreGuts(aStream);
-    aStream >> _id;
-}
 
 /*=== CtiMCRetrieveScript ===*/
 
-RWDEFINE_COLLECTABLE( CtiMCRetrieveScript, MSG_MC_RETRIEVE_SCRIPT );
+DEFINE_COLLECTABLE( CtiMCRetrieveScript, MSG_MC_RETRIEVE_SCRIPT );
 
 CtiMCRetrieveScript::CtiMCRetrieveScript()
 {
@@ -319,26 +264,10 @@ CtiMCRetrieveScript::setScriptName(const string& name)
     return *this;
 }
 
-void CtiMCRetrieveScript::saveGuts(RWvostream &aStream) const
-{
-    CtiMessage::saveGuts(aStream);
-    aStream  <<  string( _name );
-
-}
-
-void CtiMCRetrieveScript::restoreGuts(RWvistream& aStream)
-{
-    string _rw_name;
-
-    CtiMessage::restoreGuts(aStream);
-    aStream  >>  _rw_name;
-
-    _name = _rw_name;
-}
 
 /*=== CtiMCVerifyScript ===*/
 
-RWDEFINE_COLLECTABLE( CtiMCVerifyScript, MSG_MC_VERIFY_SCRIPT );
+DEFINE_COLLECTABLE( CtiMCVerifyScript, MSG_MC_VERIFY_SCRIPT );
 
 CtiMCVerifyScript::CtiMCVerifyScript()
 {
@@ -380,26 +309,10 @@ CtiMCVerifyScript::setScriptName(const string& name)
     return *this;
 }
 
-void CtiMCVerifyScript::saveGuts(RWvostream &aStream) const
-{
-    CtiMessage::saveGuts(aStream);
-    aStream  <<  string(  _name );
-
-}
-
-void CtiMCVerifyScript::restoreGuts(RWvistream& aStream)
-{
-    string _rw_name;
-
-    CtiMessage::restoreGuts(aStream);
-    aStream >> _rw_name;
-
-    _name = _rw_name;
-}
 
 /*=== CtiMCOverrideRequest ===*/
 
-RWDEFINE_COLLECTABLE( CtiMCOverrideRequest, MSG_MC_OVERRIDE_REQUEST );
+DEFINE_COLLECTABLE( CtiMCOverrideRequest, MSG_MC_OVERRIDE_REQUEST );
 
 CtiMCOverrideRequest::CtiMCOverrideRequest()
     : _action(Start), _id(0)        // debug build initialized these to zero - in the enum: Start == 0
@@ -475,32 +388,10 @@ CtiMCOverrideRequest& CtiMCOverrideRequest::setStopTime(const CtiTime& aTime)
     return *this;
 }
 
-void CtiMCOverrideRequest::saveGuts(RWvostream &aStream) const
-{
-    CtiMessage::saveGuts(aStream);
-    aStream     <<  (unsigned int) _action
-                <<  _id
-                <<  _start_time
-                <<  _stop_time;
-}
-
-void CtiMCOverrideRequest::restoreGuts(RWvistream& aStream)
-{
-    unsigned int uint_action;
-
-    CtiMessage::restoreGuts(aStream);
-    aStream     >>  uint_action
-                >>  _id
-                >>  _start_time
-                >>  _stop_time;
-
-    _action = (Action) uint_action;
-}
-
 
 /*=== CtiMCInfo ===*/
 
-RWDEFINE_COLLECTABLE( CtiMCInfo, MSG_MC_INFO )
+DEFINE_COLLECTABLE( CtiMCInfo, MSG_MC_INFO );
 
 CtiMCInfo::CtiMCInfo()
     : _id(0)
@@ -549,20 +440,5 @@ CtiMCInfo& CtiMCInfo::setInfo(const string& info)
 {
     _info = info;
     return *this;
-}
-
-void CtiMCInfo::saveGuts(RWvostream &aStream) const
-{
-    CtiMessage::saveGuts(aStream);
-    aStream     <<  _id
-                <<  _info ;
-
-}
-
-void CtiMCInfo::restoreGuts(RWvistream& aStream)
-{
-    CtiMessage::restoreGuts(aStream);
-    aStream     >>  _id
-                >>  _info;
 }
 

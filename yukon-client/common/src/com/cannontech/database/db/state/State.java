@@ -240,7 +240,7 @@ public void initialize(
       Integer foregroundColor, Integer backgroundColor, Integer imageID_ ) 
 {
 
-	setStateGroupID(stateGroupID);
+	setStateGroupId(stateGroupID);
 	setRawState(rawState);
 	setText(text);
 	setForegroundColor(foregroundColor);
@@ -258,7 +258,7 @@ public void retrieve() throws java.sql.SQLException
 
 	if( results.length == SETTER_COLUMNS.length )
 	{
-		setStateGroupID( (Integer) results[0] );
+		setStateGroupId( (Integer) results[0] );
 		setRawState( (Integer) results[1] );
 		setText( (String) results[2] );
 		setForegroundColor( (Integer) results[3] );
@@ -293,7 +293,7 @@ public void setRawState(Integer newValue) {
  * This method was created in VisualAge.
  * @param newValue java.lang.Integer
  */
-public void setStateGroupID(Integer newValue) {
+public void setStateGroupId(Integer newValue) {
 	this.stateGroupID = newValue;
 }
 /**

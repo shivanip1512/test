@@ -9,7 +9,7 @@ class CtiLMGroupSADigital : public CtiLMGroupBase
 {
 public:
 
-RWDECLARE_COLLECTABLE( CtiLMGroupSADigital )
+DECLARE_COLLECTABLE( CtiLMGroupSADigital );
 
     CtiLMGroupSADigital();
     CtiLMGroupSADigital(Cti::RowReader &rdr);
@@ -27,10 +27,6 @@ RWDECLARE_COLLECTABLE( CtiLMGroupSADigital )
     int getNominalTimeout() const;
     CtiLMGroupSADigital& setNominalTimeout(int nominal_timeout);
     
-    //Members inherited from RWCollectable
-    void restoreGuts(RWvistream& );
-    void saveGuts(RWvostream& ) const;
-
     CtiLMGroupSADigital& operator=(const CtiLMGroupSADigital& right);
 
     int operator==(const CtiLMGroupSADigital& right) const;

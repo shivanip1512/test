@@ -10,12 +10,12 @@ import com.cannontech.amr.rfn.service.processor.RfnEventConditionDataProcessorHe
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
 
 public class RfnOverVoltageEventProcessor extends RfnEventConditionDataProcessorHelper implements RfnArchiveRequestProcessor {
 
     @Override
-    public <T extends RfnEvent> void process(RfnDevice device, T event, List<? super PointData> pointDatas) {
+    public <T extends RfnEvent> void process(RfnDevice device, T event, List<? super PointDataMessage> pointDatas) {
         final Long threshold = (Long) getEventDataWithType(event, RfnConditionDataType.THRESHOLD_VALUE);
         final Long measured = (Long) getEventDataWithType(event, RfnConditionDataType.MEASURED_VALUE);
 

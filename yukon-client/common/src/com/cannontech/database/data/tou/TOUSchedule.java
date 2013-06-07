@@ -7,8 +7,8 @@
 package com.cannontech.database.data.tou;
 
 import com.cannontech.database.db.tou.TOUDayMapping;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 
 /**
  * @author jdayton
@@ -102,14 +102,14 @@ public void delete() throws java.sql.SQLException
  * Creation date: (9/22/2004 10:35:21 AM)
  * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
  */
-public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType) {
     
-    DBChangeMsg[] msgs = {
-            new DBChangeMsg(
+    DBChangeMessage[] msgs = {
+            new DBChangeMessage(
                             getScheduleID().intValue(),
-                            DBChangeMsg.CHANGE_TOU_SCHEDULE_DB,
-                            DBChangeMsg.CAT_TOU_SCHEDULE,
-                            DBChangeMsg.CAT_TOU_SCHEDULE,
+                            DBChangeMessage.CHANGE_TOU_SCHEDULE_DB,
+                            DBChangeMessage.CAT_TOU_SCHEDULE,
+                            DBChangeMessage.CAT_TOU_SCHEDULE,
                             dbChangeType)
 	};
 	return msgs;

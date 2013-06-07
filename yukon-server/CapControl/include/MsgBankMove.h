@@ -1,9 +1,11 @@
-#include "MsgItemCommand.h"
+#pragma once
 
+#include "MsgItemCommand.h"
 
 class CtiCCCapBankMoveMsg : public ItemCommand
 {
-    RWDECLARE_COLLECTABLE( CtiCCCapBankMoveMsg )
+    public:
+        DECLARE_COLLECTABLE( CtiCCCapBankMoveMsg )
 
     private:
         typedef ItemCommand Inherited;
@@ -19,14 +21,26 @@ class CtiCCCapBankMoveMsg : public ItemCommand
         float getCloseOrder() const;
         float getTripOrder() const;
 
-        void restoreGuts(RWvistream&);
-        void saveGuts(RWvostream&) const;
-
         CtiCCCapBankMoveMsg& operator=(const CtiCCCapBankMoveMsg& right);
+
+
+        CtiCCCapBankMoveMsg( int   permanentflag,
+                             long  oldfeederid,
+                             long  newfeederid,
+                             float capswitchingorder,
+                             float closeOrder,
+                             float tripOrder ) :
+            _permanentflag      ( permanentflag ),
+            _oldfeederid        ( oldfeederid ),
+            _newfeederid        ( newfeederid ),
+            _capswitchingorder  ( capswitchingorder ),
+            _closeOrder         ( closeOrder ),
+            _tripOrder          ( tripOrder)
+        {};
 
     private:
         //provided for polymorphic persitence only
-        CtiCCCapBankMoveMsg(){};
+        CtiCCCapBankMoveMsg( ){};
 
         int _permanentflag;
         long _oldfeederid;

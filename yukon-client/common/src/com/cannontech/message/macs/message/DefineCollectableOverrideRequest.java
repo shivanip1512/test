@@ -6,6 +6,7 @@ package com.cannontech.message.macs.message;
  * @author: 
  */
 
+import com.cannontech.messaging.message.macs.OverrideRequestMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -24,7 +25,7 @@ public DefineCollectableOverrideRequest() {
  * create method comment.
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new OverrideRequest();
+	return new OverrideRequestMessage();
 }
 /**
  * getComparator method comment.
@@ -55,7 +56,7 @@ public String getCxxStringId() {
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return com.cannontech.message.macs.message.OverrideRequest.class;
+	return OverrideRequestMessage.class;
 }
 /**
  * restoreGuts method comment.
@@ -70,7 +71,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 
 	super.saveGuts(obj, vstr, polystr);
 	
-	OverrideRequest msg = (OverrideRequest) obj;
+	OverrideRequestMessage msg = (OverrideRequestMessage) obj;
 	vstr.insertInt( msg.getAction() );
 	vstr.insertLong( msg.getSchedId() );
 	vstr.saveObject( msg.getStart(), SimpleMappings.Time );

@@ -21,11 +21,11 @@ import com.cannontech.core.service.CachingPointFormattingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
-import com.cannontech.message.capcontrol.streamable.CapBankDevice;
-import com.cannontech.message.capcontrol.streamable.Feeder;
-import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
-import com.cannontech.message.capcontrol.streamable.SubBus;
-import com.cannontech.message.capcontrol.streamable.SubStation;
+import com.cannontech.messaging.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.messaging.message.capcontrol.streamable.Feeder;
+import com.cannontech.messaging.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
+import com.cannontech.messaging.message.capcontrol.streamable.SubStation;
 import com.cannontech.web.updater.point.PointUpdateBackingService;
 
 @Controller
@@ -68,7 +68,7 @@ public class CapBankWebController {
 		    if (additionInfo != null) {
 		        BankLocation location = new BankLocation(capBank.getCcName(),
 		                                                 additionInfo.getSerialNumber(),
-		                                                 capBank.getCcArea(),
+		                                                 capBank.getCcDescription(),
 		                                                 additionInfo.getDrivingDirections());
 		        bankLocationList.add(location);
 		    } else {
@@ -80,12 +80,12 @@ public class CapBankWebController {
 		StreamableCapObject area;
 		if (type == CapControlType.SUBBUS) {
 			SubBus bus = cache.getSubBus(value);
-			substation = cache.getSubstation(bus.getParentID());
+			substation = cache.getSubstation(bus.getParentId());
 			area = getArea(specialArea, cache, substation);
 		} else if (type == CapControlType.FEEDER) {
 			Feeder feeder = cache.getFeeder(value);
-			SubBus bus = cache.getSubBus(feeder.getParentID());			
-			substation = cache.getSubstation(bus.getParentID());
+			SubBus bus = cache.getSubBus(feeder.getParentId());			
+			substation = cache.getSubstation(bus.getParentId());
 			area = getArea(specialArea, cache, substation);
 		} else { //Station
 			//If this is not a station, a not found exception will be thrown from cache
@@ -124,7 +124,7 @@ public class CapBankWebController {
         if (specialArea) {
             return cache.getCBCSpecialArea(substation.getSpecialAreaId());
         } else {
-            return cache.getCBCArea(substation.getParentID());
+            return cache.getCBCArea(substation.getParentId());
         }
     }
 	

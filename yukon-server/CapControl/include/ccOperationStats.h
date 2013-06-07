@@ -31,12 +31,7 @@ namespace capcontrol
 
 class CtiCCOperationStats  
 {
-
 public:
-
-  //RWDECLARE_COLLECTABLE( CtiCCOperationStats )
-
-
     CtiCCOperationStats();
     CtiCCOperationStats(const CtiCCOperationStats& cap);
 

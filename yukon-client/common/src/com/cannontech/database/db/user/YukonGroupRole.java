@@ -7,8 +7,8 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -244,13 +244,13 @@ public class YukonGroupRole extends DBPersistent implements CTIDbChange {
 	}
 
     @Override
-    public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
-        DBChangeMsg[] msgs =
+    public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType) {
+        DBChangeMessage[] msgs =
         {
-            new DBChangeMsg(getGroupID().intValue(),
-                            DBChangeMsg.CHANGE_YUKON_USER_DB,
-                            DBChangeMsg.CAT_YUKON_USER_GROUP,
-                            DBChangeMsg.CAT_YUKON_USER,
+            new DBChangeMessage(getGroupID().intValue(),
+                            DBChangeMessage.CHANGE_YUKON_USER_DB,
+                            DBChangeMessage.CAT_YUKON_USER_GROUP,
+                            DBChangeMessage.CAT_YUKON_USER,
                             dbChangeType)
         };
 

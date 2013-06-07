@@ -3,16 +3,16 @@ package com.cannontech.database.dbchange;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 
 public class DbChangeMessageHolder {
-    private List<DBChangeMsg> dbChanges = new ArrayList<DBChangeMsg>();
+    private List<DBChangeMessage> dbChanges = new ArrayList<DBChangeMessage>();
     
-    public void addDbChange(DBChangeMsg dbChangeMsg) {
+    public void addDbChange(DBChangeMessage dbChangeMsg) {
         dbChanges.add(dbChangeMsg);
     }
     
-    public List<DBChangeMsg> getDbChanges() {
+    public List<DBChangeMessage> getDbChanges() {
         return dbChanges;
     }
 }

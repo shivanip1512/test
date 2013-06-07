@@ -3,12 +3,12 @@ package com.cannontech.web.capcontrol.util.service;
 import java.util.List;
 
 import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.message.capcontrol.streamable.Area;
-import com.cannontech.message.capcontrol.streamable.CapBankDevice;
-import com.cannontech.message.capcontrol.streamable.Feeder;
-import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
-import com.cannontech.message.capcontrol.streamable.SubBus;
-import com.cannontech.message.capcontrol.streamable.SubStation;
+import com.cannontech.messaging.message.capcontrol.streamable.Area;
+import com.cannontech.messaging.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.messaging.message.capcontrol.streamable.Feeder;
+import com.cannontech.messaging.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
+import com.cannontech.messaging.message.capcontrol.streamable.SubStation;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.models.NavigableArea;
 import com.cannontech.web.capcontrol.models.NavigableCapBank;

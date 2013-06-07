@@ -3,6 +3,7 @@ import java.io.IOException;
 
 import com.cannontech.enums.EconomicEventAction;
 import com.cannontech.message.util.DefineCollectableMessage;
+import com.cannontech.messaging.message.notif.EconomicEventMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
@@ -14,7 +15,7 @@ public class DefColl_EconomicEventMsg extends DefineCollectableMessage {
     public static final int MSG_ID = 712;
 
     public Object create(VirtualInputStream vstr) throws IOException {
-        return new EconomicEventMsg();
+        return new EconomicEventMessage();
     }
 
     public Comparator getComparator() {
@@ -38,28 +39,28 @@ public class DefColl_EconomicEventMsg extends DefineCollectableMessage {
     }
 
     public Class getJavaClass() {
-        return EconomicEventMsg.class;
+        return EconomicEventMessage.class;
     }
 
     public void restoreGuts(Object obj, VirtualInputStream vstr,
             CollectableStreamer polystr) throws IOException {
         super.restoreGuts(obj, vstr, polystr);
-        EconomicEventMsg msg = (EconomicEventMsg) obj;
+        EconomicEventMessage msg = (EconomicEventMessage) obj;
 
-        msg.economicEventId = vstr.extractInt();
-        msg.revisionNumber = vstr.extractInt();
+        msg.setEconomicEventId(vstr.extractInt());
+        msg.setRevisionNumber(vstr.extractInt());
         int actionOrdinal = vstr.extractInt();
-        msg.action = EconomicEventAction.values()[actionOrdinal];
+        msg.setAction(EconomicEventAction.values()[actionOrdinal]);
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr,
             CollectableStreamer polystr) throws IOException {
         super.saveGuts(obj, vstr, polystr);
-        EconomicEventMsg msg = (EconomicEventMsg) obj;
+        EconomicEventMessage msg = (EconomicEventMessage) obj;
 
-        vstr.insertInt(msg.economicEventId);
-        vstr.insertInt(msg.revisionNumber);
-        vstr.insertInt(msg.action.ordinal());
+        vstr.insertInt(msg.getEconomicEventId());
+        vstr.insertInt(msg.getRevisionNumber());
+        vstr.insertInt(msg.getAction().ordinal());
     }
 
 }

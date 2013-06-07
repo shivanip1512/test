@@ -473,7 +473,7 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
             return;
         }else
         {
-            deviceID = pao.getYukonID();   
+            deviceID = pao.getYukonId();   
         }
         pointCombo.removeAllItems();
 

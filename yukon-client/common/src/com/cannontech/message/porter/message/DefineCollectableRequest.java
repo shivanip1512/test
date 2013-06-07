@@ -6,6 +6,7 @@ package com.cannontech.message.porter.message;
  * @author: 
  */
 
+import com.cannontech.messaging.message.porter.RequestMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -26,7 +27,7 @@ public DefineCollectableRequest() {
  * @exception java.io.IOException The exception description.
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new Request();
+	return new RequestMessage();
 }
 /**
  * Insert the method's description here.
@@ -65,7 +66,7 @@ public String getCxxStringId() {
  * @return java.lang.Class
  */
 public Class getJavaClass() {
-	return Request.class;
+	return RequestMessage.class;
 }
 /**
  * Insert the method's description here.
@@ -91,15 +92,15 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 {
 	super.saveGuts(obj, vstr, polystr );
 
-	Request req = (Request) obj;
+	RequestMessage req = (RequestMessage) obj;
 
-	vstr.insertLong( req.getDeviceID() );
+	vstr.insertLong( req.getDeviceId() );
 	vstr.saveObject( req.getCommandString(), SimpleMappings.CString );
-	vstr.insertLong( req.getRouteID() );
+	vstr.insertLong( req.getRouteId() );
 	vstr.insertInt( req.getMacroOffset() );
 	vstr.insertInt( req.getAttemptNum() );
-	vstr.insertLong( req.getGroupMessageID() );
-	vstr.insertLong( req.getUserMessageID() );
+	vstr.insertLong( req.getGroupMessageId() );
+	vstr.insertLong( req.getUserMessageId() );
 	vstr.insertInt( req.getOptionsField() );
 }
 }

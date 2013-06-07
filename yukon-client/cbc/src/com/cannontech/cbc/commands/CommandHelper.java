@@ -7,30 +7,30 @@ import com.cannontech.capcontrol.model.BankMoveBean;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.message.capcontrol.model.BankMove;
-import com.cannontech.message.capcontrol.model.CapControlCommand;
-import com.cannontech.message.capcontrol.model.ChangeOpState;
-import com.cannontech.message.capcontrol.model.CommandType;
-import com.cannontech.message.capcontrol.model.ItemCommand;
-import com.cannontech.message.capcontrol.model.VerifyBanks;
-import com.cannontech.message.capcontrol.model.VerifyInactiveBanks;
-import com.cannontech.message.capcontrol.model.VerifySelectedBank;
-import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.messaging.message.capcontrol.BankMoveMessage;
+import com.cannontech.messaging.message.capcontrol.ChangeOpStateMessage;
+import com.cannontech.messaging.message.capcontrol.CommandMessage;
+import com.cannontech.messaging.message.capcontrol.CommandType;
+import com.cannontech.messaging.message.capcontrol.ItemCommandMessage;
+import com.cannontech.messaging.message.capcontrol.VerifyBanksMessage;
+import com.cannontech.messaging.message.capcontrol.VerifyInactiveBanksMessage;
+import com.cannontech.messaging.message.capcontrol.VerifySelectedBankMessage;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
 
 public class CommandHelper {
     
-    public static CapControlCommand buildCommand(CommandType type, LiteYukonUser user) {
+    public static CommandMessage buildCommand(CommandType type, LiteYukonUser user) {
         
-        CapControlCommand command = new CapControlCommand();
+        CommandMessage command = new CommandMessage();
         command.setCommandId(type.getCommandId());
         command.setUserName(user.getUsername());
         
         return command;
     }
 
-    public static ItemCommand buildItemCommand(int commandId, int paoId, LiteYukonUser user) {
+    public static ItemCommandMessage buildItemCommand(int commandId, int paoId, LiteYukonUser user) {
       
-        ItemCommand command = new ItemCommand();
+        ItemCommandMessage command = new ItemCommandMessage();
         command.setCommandId(commandId);
         command.setItemId(paoId);
         command.setUserName(user.getUsername());
@@ -38,17 +38,17 @@ public class CommandHelper {
         return command;
     }
     
-    public static ChangeOpState buildChangeOpStateCommand(LiteYukonUser user, int bankId, BankOpState state) {
-        ChangeOpState command = new ChangeOpState(bankId);
+    public static ChangeOpStateMessage buildChangeOpStateCommand(LiteYukonUser user, int bankId, BankOpState state) {
+        ChangeOpStateMessage command = new ChangeOpStateMessage(bankId);
         command.setUserName(user.getUsername());
         command.setState(state);
         
         return command;
     }
     
-    public static BankMove buildBankMove(LiteYukonUser user, BankMoveBean bean, boolean permanentMove) {
+    public static BankMoveMessage buildBankMove(LiteYukonUser user, BankMoveBean bean, boolean permanentMove) {
         
-        BankMove command = new BankMove();
+        BankMoveMessage command = new BankMoveMessage();
         
         command.setUserName(user.getUsername());
         command.setItemId(bean.getBankId());
@@ -63,8 +63,8 @@ public class CommandHelper {
         return command;
     }
     
-    public static VerifyBanks buildVerifyBanks(LiteYukonUser user, CommandType type, int itemId, boolean disableOvUv) {
-        VerifyBanks command = new VerifyBanks();
+    public static VerifyBanksMessage buildVerifyBanks(LiteYukonUser user, CommandType type, int itemId, boolean disableOvUv) {
+        VerifyBanksMessage command = new VerifyBanksMessage();
         command.setUserName(user.getUsername());
         command.setCommandId(type.getCommandId());
         command.setItemId(itemId);
@@ -73,8 +73,8 @@ public class CommandHelper {
         return command;
     }
     
-    public static VerifyBanks buildStopVerifyBanks(LiteYukonUser user, CommandType type, int itemId) { 
-        VerifyBanks command = new VerifyBanks();
+    public static VerifyBanksMessage buildStopVerifyBanks(LiteYukonUser user, CommandType type, int itemId) { 
+        VerifyBanksMessage command = new VerifyBanksMessage();
         command.setUserName(user.getUsername());
         command.setCommandId(type.getCommandId());
         command.setItemId(itemId);
@@ -83,13 +83,13 @@ public class CommandHelper {
         return command;
     }
     
-    public static VerifyInactiveBanks buildVerifyInactiveBanks(LiteYukonUser user, 
+    public static VerifyInactiveBanksMessage buildVerifyInactiveBanks(LiteYukonUser user, 
                                                                CommandType type, 
                                                                int itemId, 
                                                                boolean disableOvUv, 
                                                                long inactiveTime) {
         
-        VerifyInactiveBanks command = new VerifyInactiveBanks();
+        VerifyInactiveBanksMessage command = new VerifyInactiveBanksMessage();
         command.setItemId(itemId);
         command.setUserName(user.getUsername());
         command.setCommandId(type.getCommandId());
@@ -99,13 +99,13 @@ public class CommandHelper {
         return command;
     }
     
-    public static VerifySelectedBank buildVerifySelectedBank(LiteYukonUser user, 
+    public static VerifySelectedBankMessage buildVerifySelectedBank(LiteYukonUser user, 
                                                                CommandType type, 
                                                                int itemId, 
                                                                int bankId,
                                                                boolean disableOvUv) {
         
-        VerifySelectedBank command = new VerifySelectedBank();
+        VerifySelectedBankMessage command = new VerifySelectedBankMessage();
         command.setUserName(user.getUsername());
         command.setCommandId(type.getCommandId());
         command.setDisableOvUv(disableOvUv);
@@ -115,9 +115,9 @@ public class CommandHelper {
         return command;
     }
     
-    public static PointData buildManualStateChange(LiteYukonUser user, int pointId, int itemId, int state) {
+    public static PointDataMessage buildManualStateChange(LiteYukonUser user, int pointId, int itemId, int state) {
         Date now = new Date();
-        PointData command = new PointData();
+        PointDataMessage command = new PointDataMessage();
         command.setId(pointId);
         command.setPointQuality(PointQuality.Manual);
         command.setStr("Manual change occurred using CBC Web Client");
@@ -130,9 +130,9 @@ public class CommandHelper {
         return command;
     }
     
-    public static PointData buildResetOpCount(LiteYukonUser user, int pointId, int itemId, int count) {
+    public static PointDataMessage buildResetOpCount(LiteYukonUser user, int pointId, int itemId, int count) {
         Date now = new Date();
-        PointData command = new PointData();
+        PointDataMessage command = new PointDataMessage();
         command.setId(pointId);
         command.setPointQuality(PointQuality.Manual);
         command.setStr("Capacitor Bank OP_COUNT change from CBC Client");

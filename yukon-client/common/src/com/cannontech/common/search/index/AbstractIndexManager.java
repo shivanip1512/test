@@ -46,8 +46,8 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.search.TopDocsCallbackHandler;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 
 /**
  * Abstract class which manages index building and updating.
@@ -210,7 +210,7 @@ public abstract class AbstractIndexManager implements IndexManager {
 
     }
 
-    public void dbChangeReceived(DBChangeMsg dbChange) {
+    public void dbChangeReceived(DBChangeMessage dbChange) {
 
         try {
             IndexUpdateInfo info = this.processDBChange(dbChange.getDbChangeType(),

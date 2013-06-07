@@ -26,7 +26,7 @@ import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveResponse;
 import com.cannontech.dr.rfn.service.ExiParsingService;
 import com.cannontech.dr.rfn.service.RfnLcrDataMappingService;
-import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
@@ -83,7 +83,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 }
                 
                 /** Handle point data */
-                List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
+                List<PointDataMessage> messagesToSend = Lists.newArrayListWithExpectedSize(16);
                 messagesToSend = rfnLcrDataMappingService.mapPointData(readingArchiveRequest, decodedPayload);
                 dynamicDataSource.putValues(messagesToSend);
                 archivedReadings.addAndGet(messagesToSend.size());

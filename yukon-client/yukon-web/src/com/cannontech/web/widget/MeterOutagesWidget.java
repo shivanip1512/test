@@ -30,7 +30,7 @@ import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ExpireLRUMap;
@@ -205,11 +205,11 @@ public class MeterOutagesWidget extends WidgetControllerBase {
                 PointValueHolder timestamp = holder;
 
                 // based on the string returned from porter, parse out the outage index
-                int outageStrIndex = ((PointData)holder).getStr().indexOf("/ Outage ");
+                int outageStrIndex = ((PointDataMessage)holder).getStr().indexOf("/ Outage ");
                 int beginIndex = outageStrIndex + 9;   // 9 = num chars from "/ Outage " to the log index in the log
                 
                 // Substring from the outage log index to the end of the string
-                String outageLogIndexSubStr = ((PointData)holder).getStr().substring(beginIndex);
+                String outageLogIndexSubStr = ((PointDataMessage)holder).getStr().substring(beginIndex);
                 
                 // Read the index value with a Scanner
                 Scanner scanner = new Scanner(outageLogIndexSubStr);

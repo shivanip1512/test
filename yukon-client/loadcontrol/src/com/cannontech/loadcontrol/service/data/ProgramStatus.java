@@ -7,15 +7,15 @@ import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.dr.program.service.ConstraintContainer;
 import com.cannontech.loadcontrol.ProgramUtils;
-import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.messaging.message.loadcontrol.data.Program;
 import com.google.common.collect.Lists;
 
 public class ProgramStatus {
 
-    private LMProgramBase program;
+    private Program program;
     private List<ConstraintContainer> constraintViolations = Lists.newArrayList();
     
-    public ProgramStatus(LMProgramBase program) {
+    public ProgramStatus(Program program) {
         this.program = program;
     }
     
@@ -28,7 +28,7 @@ public class ProgramStatus {
         this.constraintViolations.addAll(constraintViolations);
     }
     
-    public void setProgram(LMProgramBase program) {
+    public void setProgram(Program program) {
         this.program = program;
     }
     

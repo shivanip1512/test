@@ -27,19 +27,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "logger.h"
 #include "utility.h"
 
-RWDEFINE_COLLECTABLE( CtiMultiMsg, MSG_MULTI );
+using boost::shared_ptr;
 
-void CtiMultiMsg::restoreGuts(RWvistream& aStream)
-{
-   Inherited::restoreGuts( aStream );
-   aStream >> _bag;
-}
-
-void CtiMultiMsg::saveGuts(RWvostream &aStream) const
-{
-   Inherited::saveGuts( aStream );
-   aStream << _bag;
-}
+DEFINE_COLLECTABLE( CtiMultiMsg, MSG_MULTI );
 
 void CtiMultiMsg::dump() const
 {
@@ -55,17 +45,17 @@ CtiMultiMsg&  CtiMultiMsg::setData(const CtiMultiMsg_vec& Data)
 {
    for(int i = 0; i < Data.size(); i++)
    {
-      RWCollectable *pNew = Data[i]->copy();
+       auto_ptr<CtiMessage> pNew( Data[i]->replicateMessage() ); // CBM TODO: check if there a reason we should use replicate message?
 
-      if(pNew != NULL)
-      {
-         _bag.push_back(pNew);
-      }
-      else
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << CtiTime() << " setPointData failed to copy an element of type " << Data[i]->isA() << endl;
-      }
+       if( pNew.get() != NULL )
+       {
+          _bag.push_back( pNew.release() );
+       }
+       else
+       {
+          CtiLockGuard<CtiLogger> doubt_guard(dout);
+          dout << CtiTime() << " setPointData failed to copy an element of type " << Data[i]->isA() << endl;
+       }
    }
 
    return *this;
@@ -155,7 +145,7 @@ void CtiMultiMsg::clear()
    _bag.clear();
 }
 
-void CtiMultiMsg::insert(RWCollectable* a)
+void CtiMultiMsg::insert(CtiMessage* a)
 {
    _bag.push_back(a);
 }

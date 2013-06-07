@@ -7,9 +7,9 @@ import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.message.capcontrol.streamable.CapBankDevice;
-import com.cannontech.message.capcontrol.streamable.SpecialArea;
-import com.cannontech.message.capcontrol.streamable.SubStation;
+import com.cannontech.messaging.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.messaging.message.capcontrol.streamable.SpecialArea;
+import com.cannontech.messaging.message.capcontrol.streamable.SubStation;
 import com.cannontech.user.YukonUserContext;
 
 public class SpecialAreaFormattingService extends AbstractAreaFormatingService<SpecialArea> {
@@ -18,7 +18,7 @@ public class SpecialAreaFormattingService extends AbstractAreaFormatingService<S
     protected String getState(final SpecialArea latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         String state = "";
-        if (latestValue.getDisableFlag()) {
+        if (latestValue.getCcDisableFlag()) {
             state = accessor.getMessage("yukon.web.modules.capcontrol.disabled");
         } else {
             state = accessor.getMessage("yukon.web.modules.capcontrol.enabled");

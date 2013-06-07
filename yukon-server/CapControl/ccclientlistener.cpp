@@ -12,60 +12,38 @@
 
 #include <rw/toolpro/inetaddr.h>
 
+#include "amq_constants.h"
+
 using std::endl;
 
 extern unsigned long _CC_DEBUG;
 
 using Cti::ThreadStatusKeeper;
 
-CtiCCClientListener* CtiCCClientListener::_instance = NULL;
+/*------------------------------------------------------------------------
+    static _instance
+
+
+---------------------------------------------------------------------------*/
+CtiCCClientListener CtiCCClientListener::_instance = CtiCCClientListener();
+
 
 /*------------------------------------------------------------------------
     getInstance
 
     Returns a pointer to the singleton instance of the client listener.
 ---------------------------------------------------------------------------*/
-CtiCCClientListener* CtiCCClientListener::getInstance()
+CtiCCClientListener& CtiCCClientListener::getInstance()
 {
-    if ( _instance == NULL )
-    {
-        string str;
-        char var[128];
-        long capcontrolclientsport = CAPCONTROLNEXUS;
-
-        strcpy(var, "CAP_CONTROL_PORT");
-        if( !(str = gConfigParms.getValueAsString(var)).empty() )
-        {
-            capcontrolclientsport = atoi(str.c_str());
-            if( _CC_DEBUG & CC_DEBUG_STANDARD )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << var << ":  " << capcontrolclientsport << endl;
-            }
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-        }
-
-        _instance = new CtiCCClientListener(capcontrolclientsport);
-    }
-
     return _instance;
 }
-
-std::vector<CtiCCClientConnection*>& CtiCCClientListener::getClientConnectionList()
-{
-
-  return _connections;
-}
-
 
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiCCClientListener::CtiCCClientListener(long port) : _port(port), _doquit(false), _socketListener(NULL)
+CtiCCClientListener::CtiCCClientListener() :
+    _doquit(false),
+    _listenerConnection( Cti::Messaging::ActiveMQ::Queue::capcontrol )
 {
 }
 
@@ -74,12 +52,7 @@ CtiCCClientListener::CtiCCClientListener(long port) : _port(port), _doquit(false
 ---------------------------------------------------------------------------*/
 CtiCCClientListener::~CtiCCClientListener()
 {
-    _socketListener = NULL;
-    if( _instance != NULL )
-    {
-        delete _instance;
-        _instance = NULL;
-    }
+    stop();
 }
 
 /*---------------------------------------------------------------------------
@@ -108,16 +81,29 @@ void CtiCCClientListener::stop()
 {
     try
     {
-        _doquit = true;
-        if (_socketListener != NULL)
+        if( _CC_DEBUG & CC_DEBUG_CLIENT )
         {
-            //This delete must happen to interupt the thread.
-            delete _socketListener;
-            _socketListener = NULL;
-
-            _listenerthr.join();
-            _checkthr.join();
+            CtiLockGuard< CtiLogger > guard(dout);
+            dout << CtiTime() << " - Shutting down client listener thread..." << endl;
         }
+
+        _doquit = true;
+
+        try{
+            _listenerConnection.close();
+        }
+        catch(...)
+        {
+            if( _CC_DEBUG & CC_DEBUG_CLIENT )
+            {
+                CtiLockGuard< CtiLogger > guard(dout);
+                dout << CtiTime() << " Unknown exception in CtiCCClientListener::stop()" << endl;
+            }
+        }
+
+        // wait for the threads to stop
+        _listenerthr.join();
+        _checkthr.join();
     }
     catch(RWxmsg& msg)
     {
@@ -145,7 +131,7 @@ void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
 
                 try
                 {
-                     testValid = _connections[i]->isValid();
+                     testValid = _connections[i].isValid();
                 }
                 catch(...)
                 {
@@ -180,7 +166,7 @@ void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
                     }
                     try
                     {
-                        _connections[i]->write(replicated_msg);
+                        _connections[i].write(replicated_msg);
                     }
                     catch(...)
                     {
@@ -218,60 +204,58 @@ void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
 ---------------------------------------------------------------------------*/
 void CtiCCClientListener::_listen()
 {
-    //This must remain a member variable so it can be deleted to trigger an interupt.
-    _socketListener = new RWSocketListener( RWInetAddr( (int) _port )  );
-
-    do
+    try
     {
-        try
+        // main loop
+        for(;!_doquit;)
         {
+            if( _listenerConnection.verifyConnection() != NORMAL )
             {
-                RWPortal portal = (*_socketListener)();
+                removeAllConnections();
 
-                CtiCCClientConnection* conn = new CtiCCClientConnection(portal);
+                // proceed with (re)connection
+                _listenerConnection.establishConnection();
+            }
+
+            if( _listenerConnection.acceptClient() == NORMAL )
+            {
+                // Create new connection manager
+                std::auto_ptr<CtiCCClientConnection> new_conn( CTIDBG_new CtiCCClientConnection( _listenerConnection ));
+
+                // Kick off the connection's communication threads.
+                new_conn->start();
+
+                _connections.push_back( new_conn.release() );
 
                 {
-                    RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
-                    _connections.push_back(conn);
+                    CtiLockGuard< CtiLogger > logger_guard(dout);
+                    dout << CtiTime() << " New connection established." << endl;
                 }
             }
         }
-        catch(RWSockErr& msg)
-        {
-            if( msg.errorNumber() == 10004 )
-            {
-                /*CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "CtiCCClientListener thread interupted" << endl;*/
-                break;
-            }
-            else
-            {
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << "CtiCCClientListener hickup: " << msg.errorNumber() << endl;
-                }
-            }
-        }
-        catch(RWxmsg& msg)
-        {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "CtiCCClientListener hickup (RWxmsg&): " << msg.why() << endl;
-            }
-        }
-        catch(...)
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
+    }
+    catch(RWxmsg& msg)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << "CtiCCClientListener hickup (RWxmsg&): " << msg.why() << endl;
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
 
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime()  << " Closing all client connections."  << endl;
+    }
 
-
-    } while ( !_doquit );
-
-
+    removeAllConnections();
 }
 
+/*---------------------------------------------------------------------------
+    check for any connection that are not valid and remove them
+---------------------------------------------------------------------------*/
 void CtiCCClientListener::_check()
 {
     ThreadStatusKeeper threadStatus("CapControl _clientCheck");
@@ -283,20 +267,19 @@ void CtiCCClientListener::_check()
             {
                 RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
 
-                std::vector<CtiCCClientConnection*>::iterator itr = _connections.begin();
+                CtiCCConnectionVec::iterator itr = _connections.begin();
                 while( itr != _connections.end() )
                 {
-                    CtiCCClientConnection* toDelete = *itr;
-                    if ( !toDelete->isValid() )
+                    if ( (*itr).isValid() != TRUE )
                     {
                         if( _CC_DEBUG & CC_DEBUG_CLIENT )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime()  << " - Removing Client Connection: " << toDelete->getPeerName() << endl;
+                            dout << CtiTime()  << " - Removing Client Connection: " << endl;
                         }
+
+                        // return an iterator pointing to the new location of the element that followed the last element erased
                         itr = _connections.erase(itr);
-                        delete toDelete;
-                        break;
                     }
                     else
                     {
@@ -316,10 +299,15 @@ void CtiCCClientListener::_check()
 
     } while ( !_doquit );
 
+    //Before we exit try to close all the connections
+    removeAllConnections();
+}
+
+
+void CtiCCClientListener::removeAllConnections()
+{
     {
         RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
-        delete_container(_connections);
         _connections.clear();
     }
 }
-

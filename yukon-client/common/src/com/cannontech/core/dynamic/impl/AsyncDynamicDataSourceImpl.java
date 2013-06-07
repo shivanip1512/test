@@ -30,18 +30,18 @@ import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
-import com.cannontech.message.dispatch.message.DbChangeHelper;
-import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.message.dispatch.message.Multi;
-import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.message.dispatch.message.Signal;
-import com.cannontech.message.server.ServerResponseMsg;
-import com.cannontech.message.util.ConnStateChange;
-import com.cannontech.message.util.MessageEvent;
-import com.cannontech.message.util.MessageListener;
+import com.cannontech.dispatch.DatabaseChangeEvent;
+import com.cannontech.dispatch.DbChangeCategory;
+import com.cannontech.dispatch.DbChangeHelper;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.ConnStateChangeMessage;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.messaging.message.dispatch.MultiMessage;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.messaging.message.dispatch.SignalMessage;
+import com.cannontech.messaging.message.server.ServerResponseMessage;
+import com.cannontech.messaging.util.MessageEvent;
+import com.cannontech.messaging.util.MessageListener;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
 import com.google.common.collect.ImmutableSet;
@@ -218,7 +218,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     public void addDatabaseChangeEventListener(final DatabaseChangeEventListener listener) {
         addDBChangeListener(new DBChangeListener() {
             @Override
-            public void dbChangeReceived(DBChangeMsg dbChange) {
+            public void dbChangeReceived(DBChangeMessage dbChange) {
                 DatabaseChangeEvent event = DbChangeHelper.convertToEvent(dbChange);
                 if (event != null) {
                     listener.eventReceived(event);
@@ -238,7 +238,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
                                                 final DatabaseChangeEventListener listener) {
         addDBChangeListener(new DBChangeListener() {
             @Override
-            public void dbChangeReceived(DBChangeMsg dbChange) {
+            public void dbChangeReceived(DBChangeMessage dbChange) {
                 DatabaseChangeEvent event = DbChangeHelper.findMatchingEvent(dbChange, types, changeCategory);
                 if (event != null) {
                     listener.eventReceived(event);
@@ -254,33 +254,33 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     }
 
     private void handleIncoming(Object o) {
-        if(o instanceof PointData) {
-            handlePointData((PointData)o);
+        if(o instanceof PointDataMessage) {
+            handlePointData((PointDataMessage)o);
         }
-        else if(o instanceof Signal) {
-            handleSignal((Signal)o);
+        else if(o instanceof SignalMessage) {
+            handleSignal((SignalMessage)o);
         }
-        else if(o instanceof DBChangeMsg) {
-            handleDBChange((DBChangeMsg)o);
+        else if(o instanceof DBChangeMessage) {
+            handleDBChange((DBChangeMessage)o);
         }
-        else if(o instanceof ServerResponseMsg) {
-            handleIncoming(((ServerResponseMsg)o).getPayload());
+        else if(o instanceof ServerResponseMessage) {
+            handleIncoming(((ServerResponseMessage)o).getPayload());
         }
-        else if(o instanceof Multi<?>) {
-            Multi<?> multi = (Multi<?>) o;
+        else if(o instanceof MultiMessage<?>) {
+            MultiMessage<?> multi = (MultiMessage<?>) o;
             for(Object obj : multi.getVector()) {
                 handleIncoming(obj);
             }
         }
-        else if(o instanceof ConnStateChange) {
-            ConnStateChange csc = (ConnStateChange) o;
+        else if(o instanceof ConnStateChangeMessage) {
+            ConnStateChangeMessage csc = (ConnStateChangeMessage) o;
             if(csc.isConnected()) {
                reRegisterForEverything(); 
             }
         }
     }
     
-    public void handlePointData(PointData pointData) {
+    public void handlePointData(PointDataMessage pointData) {
         Set<PointDataListener> listeners = Sets.newHashSet(allPointListeners);
         // lock pointIdPointDataListeners (the object is the lock used internally)
         synchronized (pointIdPointDataListeners) {
@@ -290,7 +290,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         
         // make sure we release the lock before calling the listeners
         for (PointDataListener listener : listeners) {
-            boolean newData = (pointData.getTags() & PointData.TAG_POINT_OLD_TIMESTAMP) == 0;
+            boolean newData = (pointData.getTags() & PointDataMessage.TAG_POINT_OLD_TIMESTAMP) == 0;
             boolean listenerWantsAll = listener instanceof AllPointDataListener;
             if (newData || listenerWantsAll ) {
                 listener.pointDataReceived(pointData);
@@ -298,11 +298,11 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         }
     }
     
-    private void handleSignal(Signal signal) {
+    private void handleSignal(SignalMessage signal) {
         Set<SignalListener> listeners;
         // lock pointIdSignalListeners (the object is the lock used internally)
         synchronized (pointIdSignalListeners) {
-            listeners = pointIdSignalListeners.get(signal.getPointID());
+            listeners = pointIdSignalListeners.get(signal.getPointId());
             listeners = ImmutableSet.copyOf(listeners);
         }
         // make sure we release the lock before calling the listeners
@@ -320,7 +320,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         }
     }
     
-    private void handleDBChange(DBChangeMsg dbChange) {
+    private void handleDBChange(DBChangeMessage dbChange) {
         // Don't process message if we know it was sent through
         // our own publishDbChange method. 
         if (!dbChange.getSource().equals(applicationSourceIdentifier)) {
@@ -328,7 +328,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         }
     }
 
-    private void processDbChange(DBChangeMsg dbChange) {
+    private void processDbChange(DBChangeMessage dbChange) {
         // the databaseCache call usually happened after the dbChangeListeners were processed
         // but, because several dbChangeLiteListeners have been converted to dbChangeListeners
         // it seems like a good idea to ensure things still happen in the expected order
@@ -345,7 +345,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     }
     
     @Override
-    public void publishDbChange(DBChangeMsg dbChange) {
+    public void publishDbChange(DBChangeMessage dbChange) {
         // set the source here so that when the changes comes back 
         // through this class we know that it must have started
         // in this method

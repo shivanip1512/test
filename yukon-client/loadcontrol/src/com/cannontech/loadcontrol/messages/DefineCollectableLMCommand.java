@@ -3,6 +3,7 @@ package com.cannontech.loadcontrol.messages;
 /**
  * This type was created in VisualAge.
  */
+import com.cannontech.messaging.message.loadcontrol.CommandMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 
@@ -21,7 +22,7 @@ public DefineCollectableLMCommand()
  * create method comment.
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new LMCommand();
+	return new CommandMessage();
 }
 /**
  * getComparator method comment.
@@ -52,7 +53,7 @@ public String getCxxStringId() {
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return LMCommand.class;
+	return CommandMessage.class;
 }
 /**
  * restoreGuts method comment.
@@ -70,10 +71,10 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 {
 	super.saveGuts( obj, vstr, polystr );
 
-	LMCommand cmd = (LMCommand) obj;
+	CommandMessage cmd = (CommandMessage) obj;
 
 	vstr.insertUnsignedInt( (long) cmd.getCommand() );
-	vstr.insertUnsignedInt( (long) cmd.getYukonID() );
+	vstr.insertUnsignedInt( (long) cmd.getYukonId() );
 	vstr.insertUnsignedInt( (long) cmd.getNumber() );
 	vstr.insertDouble( cmd.getValue() );
 	

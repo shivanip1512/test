@@ -24,8 +24,8 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.state.YukonImage;
-import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.messaging.message.dispatch.SignalMessage;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tdc.alarms.gui.AlarmingRow;
 import com.cannontech.tdc.alarms.gui.AlarmingRowVector;
@@ -176,7 +176,7 @@ protected boolean addBlankRowIfNeeded()
  * Creation date: (3/22/00 1:56:48 PM)
  * @param point com.cannontech.message.dispatch.message.Signal
  */
-private int addColumnDefinedRow( Signal signal )
+private int addColumnDefinedRow( SignalMessage signal )
 {
 	synchronized( getAlarmingRowVector() )
 	{		
@@ -208,7 +208,7 @@ private int addColumnDefinedRow( Signal signal )
  * Creation date: (3/22/00 1:56:48 PM)
  * @param point com.cannontech.message.dispatch.message.Signal
  */
-private int addColumnDefinedRow( Signal signal, int pageNumber )
+private int addColumnDefinedRow( SignalMessage signal, int pageNumber )
 {
 	synchronized( getAlarmingRowVector() )
 	{		
@@ -419,14 +419,14 @@ protected void createDummyPointValue( int location )
  * Version: <version>
  * @param id long
  */
-private void createPsuedoPointValue( int location, Signal signal ) 
+private void createPsuedoPointValue( int location, SignalMessage signal ) 
 {
 	if( location >= getRowCount() )
 		return;  // cant add it off the chart
 
 	PointValues psuedoValue =
 		new PointValues(
-			(signal == null ? TDCDefines.ROW_BREAK_ID : signal.getPointID()),
+			(signal == null ? TDCDefines.ROW_BREAK_ID : signal.getPointId()),
 			PointTypes.INVALID_POINT,
 			"", "", "" );	
 
@@ -479,7 +479,7 @@ protected void createDummyPointValue( long id, long timeStamp, String deviceName
  * Version: <version>
  * @return java.util.Vector
  */
-private void createRowForEventViewer( Signal signal )
+private void createRowForEventViewer( SignalMessage signal )
 {
 	//set all the date for this row
 	Vector newRow = setRowForEventViewer( signal );
@@ -985,7 +985,7 @@ public int getRowNumber( final long pointid )
 /**
  * This method was created in VisualAge.
  */
-private boolean signalInTable( Signal signal_ ) 
+private boolean signalInTable( SignalMessage signal_ ) 
 {
 	if( pointValues != null )
 	{
@@ -1002,7 +1002,7 @@ private boolean signalInTable( Signal signal_ )
 /**
  * This method was created in VisualAge.
  */
-public int getRowNumber( final Signal signal_ ) 
+public int getRowNumber( final SignalMessage signal_ ) 
 {
 	if( pointValues != null )
 	{
@@ -1043,7 +1043,7 @@ public Object getValueAt(int aRow, int aColumn)
  * Creation date: (7/27/00 12:14:50 PM)
  * @param point com.cannontech.message.dispatch.message.Signal
  */
-private void handleAlarm(Signal signal) 
+private void handleAlarm(SignalMessage signal) 
 {
 	// check if we have an alarm (11 or 01 or 10)
 	if( TagUtils.isAnyAlarm(signal.getTags()) )
@@ -1057,7 +1057,7 @@ private void handleAlarm(Signal signal)
 				addColumnDefinedRow( signal );
 			else if( !Display.isHistoryDisplay(getCurrentDisplay().getDisplayNumber()) )
 			{
-				int rNum = getRowNumber(signal.getPointID());
+				int rNum = getRowNumber(signal.getPointId());
 				if( rNum >= 0 )
 					getPointValue(rNum).updateSignal( signal );
 				
@@ -1100,9 +1100,9 @@ private void handleAlarm(Signal signal)
  * Creation date: (7/27/00 12:14:50 PM)
  * @param point com.cannontech.message.dispatch.message.Signal
  */
-private void handleDisablity( Signal point )
+private void handleDisablity( SignalMessage point )
 {
-	if( (point.getTags() & Signal.MASK_ANY_DISABLE) != 0 )  // check if we have an disablement
+	if( (point.getTags() & SignalMessage.MASK_ANY_DISABLE) != 0 )  // check if we have an disablement
 	{
 		//check for a point having its service disabled
 		if( TagUtils.isPointOutOfService(point.getTags()) )
@@ -1111,14 +1111,14 @@ private void handleDisablity( Signal point )
 		}
 		
 		//check for a point having its alarming disabled		
-		if( (point.getTags() & Signal.MASK_ANY_ALARM_DISABLE) != 0 )
+		if( (point.getTags() & SignalMessage.MASK_ANY_ALARM_DISABLE) != 0 )
 		{
 
 			
 		}
 		
 		//check for a point having its control disabled(Status points only)		
-		if( (point.getTags() & Signal.MASK_ANY_CONTROL_DISABLE) != 0 )
+		if( (point.getTags() & SignalMessage.MASK_ANY_CONTROL_DISABLE) != 0 )
 		{
 			
 		}
@@ -1274,21 +1274,21 @@ private boolean isDateInCurrentDay( Date date_ )
  * Version: <version>
  * @param point java.lang.Object
  */
-protected void insertAlarmDisplayAlarmedRow( Signal signal )
+protected void insertAlarmDisplayAlarmedRow( SignalMessage signal )
 {
-	if( signal.getPointID() < 0 || signal.getCategoryID() < Signal.EVENT_SIGNAL )
+	if( signal.getPointId() < 0 || signal.getCategoryId() < SignalMessage.EVENT_SIGNAL )
 		return;
 
 	long alarmPage = 0;
-	if( signal.getCategoryID() > Signal.EVENT_SIGNAL && signal.getCategoryID() <= Signal.MAX_DISPLAYABLE_ALARM_SIGNAL )
-		alarmPage = Display.GLOBAL_ALARM_DISPLAY + (signal.getCategoryID() - Signal.EVENT_SIGNAL);
-	else if( signal.getCategoryID() == Signal.EVENT_SIGNAL ) //if we have a Signal.EVENT_SIGNAL, then we want every display possibly handle this Signal
+	if( signal.getCategoryId() > SignalMessage.EVENT_SIGNAL && signal.getCategoryId() <= SignalMessage.MAX_DISPLAYABLE_ALARM_SIGNAL )
+		alarmPage = Display.GLOBAL_ALARM_DISPLAY + (signal.getCategoryId() - SignalMessage.EVENT_SIGNAL);
+	else if( signal.getCategoryId() == SignalMessage.EVENT_SIGNAL ) //if we have a Signal.EVENT_SIGNAL, then we want every display possibly handle this Signal
 		alarmPage = getCurrentDisplay().getDisplayNumber();
 
 	// all alarms display	
 	if( (getCurrentDisplay().getDisplayNumber() == Display.GLOBAL_ALARM_DISPLAY 
 	       || alarmPage == getCurrentDisplay().getDisplayNumber()) 
-		 && isValidAlarm(signal.getCategoryID()) )
+		 && isValidAlarm(signal.getCategoryId()) )
 	{
 		synchronized( getAlarmingRowVector() )
 		{
@@ -1298,10 +1298,10 @@ protected void insertAlarmDisplayAlarmedRow( Signal signal )
 				{
 					int rNum = getRowNumber(signal);
 
-					if( signal.getCategoryID() > Signal.EVENT_SIGNAL )
+					if( signal.getCategoryId() > SignalMessage.EVENT_SIGNAL )
 					{
 						getAlarmingRowVector().getAlarmingRow(rNum).setAlarmColor(
-								getAlarmColor((int)signal.getCategoryID()) );
+								getAlarmColor((int)signal.getCategoryId()) );
 					}
 
 
@@ -1327,7 +1327,7 @@ protected void insertAlarmDisplayAlarmedRow( Signal signal )
 				// if the point isn't alarming and its an EVENT_SIGNAL, we do not want to add it.
 				// This means that some other app besides Dispatch has ACKED or CLEARED an existing alarm.
 				// If we didnt do this, all AKED alarms would show up on every display!!!
-				if( signal.getCategoryID() != Signal.EVENT_SIGNAL )
+				if( signal.getCategoryId() != SignalMessage.EVENT_SIGNAL )
 				{
 					int rowLoc = getRowNumber(signal);
 
@@ -1338,7 +1338,7 @@ protected void insertAlarmDisplayAlarmedRow( Signal signal )
 						fireTableRowsInserted( getRowCount()-addedRows, getRowCount()-1 );
 					}
 
-					int rNum = getRowNumber(signal.getPointID());
+					int rNum = getRowNumber(signal.getPointId());
 					getPointValue(rNum).updateSignal( signal );
 					setRowAlarmed( signal );
 				}
@@ -1401,7 +1401,7 @@ public void silenceAlarms()
  * @return boolean
  * @param rowNumber int
  */
-public boolean isSignalAlarmed( Signal signal_ )
+public boolean isSignalAlarmed( SignalMessage signal_ )
 {
 	return getAlarmingRowVector().containsSignal( signal_ );
 }
@@ -1442,7 +1442,7 @@ public boolean isRowSelectedBlank( int location )
  */
 private boolean isValidAlarm(long alarmState) 
 {
-	return (alarmState >= Signal.EVENT_SIGNAL && alarmState <= Signal.ALARM_SIGNAL );
+	return (alarmState >= SignalMessage.EVENT_SIGNAL && alarmState <= SignalMessage.ALARM_SIGNAL );
 }
 /**
  * This method creates the table
@@ -1529,7 +1529,7 @@ public boolean pointExists(String ptID)
 /**
  * This method was created in VisualAge.
  */
-public synchronized void processPointDataReceived( PointData point )
+public synchronized void processPointDataReceived( PointDataMessage point )
 {
 	// make sure we have a PointData and the display is a user defined one
 	if ( point == null || pointValues == null || pointValues.size() < 1 
@@ -1568,7 +1568,7 @@ public synchronized void processPointDataReceived( PointData point )
 			rowLocation + 1 );	
 }
 
-private boolean checkFilter( Signal signal )
+private boolean checkFilter( SignalMessage signal )
 {	
 	if( signal == null ) 
 		return false;
@@ -1606,7 +1606,7 @@ private boolean checkFilter( Signal signal )
  *    ONLY SIGNALS SHOULD BE ALLOWED IN HERE
  */
 @SuppressWarnings("unchecked")
-public synchronized void processSignalReceived( Signal signal, int pageNumber )
+public synchronized void processSignalReceived( SignalMessage signal, int pageNumber )
 {
 	// make sure we have a point and we are not a LOG display
 	if( (!checkFilter(signal) && !signalInTable(signal))
@@ -1627,7 +1627,7 @@ public synchronized void processSignalReceived( Signal signal, int pageNumber )
 		handleAlarm( signal );
 		
 		// set all fields that overlap in the PointData() and Signal() data structures
-		int rowNum = getRowNumber(signal) > -1 ? getRowNumber(signal) : getRowNumber(signal.getPointID());
+		int rowNum = getRowNumber(signal) > -1 ? getRowNumber(signal) : getRowNumber(signal.getPointId());
 		if( getPointValue(rowNum) != null)
 		{
 			rNum = rowNum;
@@ -1657,7 +1657,7 @@ public synchronized void processSignalReceived( Signal signal, int pageNumber )
 	else  //handle EVENTS here (these signals should never be in our table)
 	{
 		// find the row number that has this pointid
-		rNum = getRowNumber(signal.getPointID());
+		rNum = getRowNumber(signal.getPointId());
 		PointValues ptVal = getPointValue(rNum);
 
 
@@ -1665,8 +1665,8 @@ public synchronized void processSignalReceived( Signal signal, int pageNumber )
 		if( ptVal != null && ptVal.getPointID() != PointTypes.SYS_PID_SYSTEM )
 		{
 			ptVal.setTags( 
-				(ptVal.getTags() & Signal.MASK_ANY_ALARM)
-				| (signal.getTags() & ~Signal.MASK_ANY_ALARM) );
+				(ptVal.getTags() & SignalMessage.MASK_ANY_ALARM)
+				| (signal.getTags() & ~SignalMessage.MASK_ANY_ALARM) );
 		
 			//we must change our tables row value
 			setCorrectRowValue( 
@@ -2059,17 +2059,17 @@ public void setLimboPointsValue(Object[] points)
  * Tells a row that contains the given Signal or the given Signals PointID to alarm.
  * Creation date: (3/29/00 2:23:38 PM)
  */
-public void setRowAlarmed( Signal signal ) 
+public void setRowAlarmed( SignalMessage signal ) 
 {
 	//do not process EVENT_SIGNAL messages
-	if( signal.getCategoryID() <= Signal.EVENT_SIGNAL )
+	if( signal.getCategoryId() <= SignalMessage.EVENT_SIGNAL )
 		return;
 
 	
 	//first try to find the alarm by the signal object, then by the pointID
 	int rowLoc = getRowNumber(signal);
 	if( rowLoc < 0 )
-		rowLoc = getRowNumber(signal.getPointID());
+		rowLoc = getRowNumber(signal.getPointId());
 
 
 	// see if the point is in our display
@@ -2081,7 +2081,7 @@ public void setRowAlarmed( Signal signal )
 			{
 				AlarmingRow alRow = new AlarmingRow( 
 										rowLoc,
-										getAlarmColor((int)signal.getCategoryID()), 
+										getAlarmColor((int)signal.getCategoryId()), 
 										getRowBackgroundColor(rowLoc) );
 
 				alRow.updateSignal( signal );
@@ -2091,7 +2091,7 @@ public void setRowAlarmed( Signal signal )
 			else
 			{
 				getAlarmingRowVector().getAlarmingRow(rowLoc).setAlarmColor( 
-						getAlarmColor((int)signal.getCategoryID()) );
+						getAlarmColor((int)signal.getCategoryId()) );
 				
 				getAlarmingRowVector().getAlarmingRow(rowLoc).updateSignal( signal );
 			}
@@ -2116,7 +2116,7 @@ public void setRowAlarmed( Signal signal )
  * Version: <version>
  * @return java.util.Vector
  */
-private Vector setRowForEventViewer( Signal signal )
+private Vector setRowForEventViewer( SignalMessage signal )
 {
 	if( signal == null )
 		return new Vector();
@@ -2129,7 +2129,7 @@ private Vector setRowForEventViewer( Signal signal )
 	for( int i = 0; i < COLUMN_COUNT; i++ )
 		aRow.addElement( "" );  // put these into the vector just as dummy values
 
-	LitePoint lPoint = YukonSpringHook.getBean(PointDao.class).getLitePoint( signal.getPointID() );
+	LitePoint lPoint = YukonSpringHook.getBean(PointDao.class).getLitePoint( signal.getPointId() );
 	LiteYukonPAObject lDevice = null;
 
 	//we may not have a valid point
@@ -2180,14 +2180,14 @@ private Vector setRowForEventViewer( Signal signal )
  * @return the row number affected 
  * Creation date: (3/29/00 2:23:38 PM)
  */
-private int setRowUnalarmed( Signal signal_, Integer rowNum_ ) 
+private int setRowUnalarmed( SignalMessage signal_, Integer rowNum_ ) 
 {
 	//first try to look for the signal, then look by the pointID
 	if( rowNum_ == null )
 	{
 		int rNum = getRowNumber(signal_);	
 		if( rNum < 0 && signal_ != null )
-			rNum = getRowNumber( signal_.getPointID() );
+			rNum = getRowNumber( signal_.getPointId() );
 		
 		rowNum_ = new Integer(rNum);
 	}

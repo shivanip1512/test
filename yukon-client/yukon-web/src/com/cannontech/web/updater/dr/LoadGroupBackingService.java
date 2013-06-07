@@ -6,32 +6,32 @@ import com.cannontech.common.util.DatedObject;
 import com.cannontech.dr.DemandResponseBackingField;
 import com.cannontech.dr.loadgroup.service.LoadGroupFieldService;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
-import com.cannontech.loadcontrol.data.LMDirectGroupBase;
+import com.cannontech.messaging.message.loadcontrol.data.DirectGroupBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingServiceBase;
 
-public class LoadGroupBackingService extends UpdateBackingServiceBase<LMDirectGroupBase> {
+public class LoadGroupBackingService extends UpdateBackingServiceBase<DirectGroupBase> {
     private LoadGroupService loadGroupService = null;
     private LoadGroupFieldService loadGroupFieldService;
 
     @Override
-    public DatedObject<LMDirectGroupBase> getDatedObject(int loadGroupId) {
+    public DatedObject<DirectGroupBase> getDatedObject(int loadGroupId) {
         @SuppressWarnings("unchecked")
-        DatedObject<LMDirectGroupBase> datedGroup = 
-            (DatedObject<LMDirectGroupBase>) loadGroupService.findDatedGroup(loadGroupId);
+        DatedObject<DirectGroupBase> datedGroup = 
+            (DatedObject<DirectGroupBase>) loadGroupService.findDatedGroup(loadGroupId);
         return datedGroup;
     }
     
     @Override
-    public Object getValue(DatedObject<LMDirectGroupBase> datedObject, String[] idBits,
+    public Object getValue(DatedObject<DirectGroupBase> datedObject, String[] idBits,
                            YukonUserContext userContext) {
 
         String fieldName = idBits[1];
 
-        DemandResponseBackingField<LMDirectGroupBase> backingField = 
+        DemandResponseBackingField<DirectGroupBase> backingField = 
             loadGroupFieldService.getBackingField(fieldName);
         
-        LMDirectGroupBase group = null;
+        DirectGroupBase group = null;
         if (datedObject != null) {
             group = datedObject.getObject();
         }

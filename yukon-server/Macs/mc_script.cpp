@@ -17,7 +17,7 @@ using std::string;
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-RWDEFINE_COLLECTABLE( CtiMCScript, MSG_MC_SCRIPT )
+DEFINE_COLLECTABLE( CtiMCScript, MSG_MC_SCRIPT );
 
 string CtiMCScript::_path("..\\scripts");
 const unsigned CtiMCScript::_io_buf_size = 8192;
@@ -126,25 +126,6 @@ CtiMessage* CtiMCScript::replicateMessage() const
     CtiMCScript* aCopy = new CtiMCScript();
     *aCopy = *this;
     return aCopy;
-}
-
-void CtiMCScript::restoreGuts(RWvistream &strm)
-{
-    string temp_str;
-
-    CtiMessage::restoreGuts(strm);
-    strm    >> temp_str;
-    _name = temp_str;
-
-    strm    >> temp_str;
-    _contents = temp_str;
-}
-
-void CtiMCScript::saveGuts(RWvostream &strm) const
-{
-    CtiMessage::saveGuts(strm);
-    strm    <<  _name
-            <<  _contents;
 }
 
 const string& CtiMCScript::getScriptPath()

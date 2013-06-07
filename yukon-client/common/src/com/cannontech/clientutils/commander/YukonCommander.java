@@ -82,8 +82,8 @@ import com.cannontech.database.model.LiteBaseTreeModel;
 import com.cannontech.database.model.TransmitterTreeModel;
 import com.cannontech.database.model.TreeModelEnum;
 import com.cannontech.debug.gui.AboutDialog;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 import com.cannontech.roles.application.CommanderRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
@@ -227,7 +227,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		{
 			Object selected = getSerialRoutePanel().getRouteComboBox().getSelectedItem();
 			if( selected instanceof LiteYukonPAObject)
-				setRouteID(((LiteYukonPAObject)selected).getYukonID());
+				setRouteID(((LiteYukonPAObject)selected).getYukonId());
 			else
 				setRouteID(-1);	//set it to an invalid route
 				
@@ -340,7 +340,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 
 			Object selected = getLocateRouteDialog().getRouteComboBox().getSelectedItem();
 			if( selected instanceof LiteYukonPAObject)
-				setRouteID(((LiteYukonPAObject)selected).getYukonID());
+				setRouteID(((LiteYukonPAObject)selected).getYukonId());
 		}
 		else if( event.getSource() == getYCCommandMenu().downloadSchedule)
 		{
@@ -375,7 +375,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		{
 			Object selected = getLocateRouteDialog().getRouteComboBox().getSelectedItem();
 			if( selected instanceof LiteYukonPAObject)
-				setRouteID(((LiteYukonPAObject)selected).getYukonID());
+				setRouteID(((LiteYukonPAObject)selected).getYukonId());
 		}
 
 		else if( event.getSource() == getYCFileMenu().printMenuItem || 
@@ -1258,15 +1258,15 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	}
 	
     /**
-     * @see com.cannontech.database.cache.DBChangeListener#handleDBChangeMsg(DBChangeMsg, LiteBase)
+     * @see com.cannontech.database.cache.DBChangeListener#handleDBChangeMsg(DBChangeMessage, LiteBase)
      */
-    public void handleDBChangeMsg(final DBChangeMsg msg, final LiteBase object) {
+    public void handleDBChangeMsg(final DBChangeMessage msg, final LiteBase object) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 Cursor savedCursor = null;
                 try {
         
-                    if (DBChangeMsg.CAT_YUKON_USER_GROUP.equals(msg.getCategory())) {
+                    if (DBChangeMessage.CAT_YUKON_USER_GROUP.equals(msg.getCategory())) {
                         updateCommandSelection();
                     }
                     
@@ -1288,9 +1288,9 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
                     }
                     
                     // Update TOUSchedule list if a tou schedule msg is received
-                    if (msg.getDatabase() == DBChangeMsg.CHANGE_TOU_SCHEDULE_DB
-                            && msg.getCategory().equals(DBChangeMsg.CAT_TOU_SCHEDULE)
-                            && msg.getObjectType().equals(DBChangeMsg.CAT_TOU_SCHEDULE)) {
+                    if (msg.getDatabase() == DBChangeMessage.CHANGE_TOU_SCHEDULE_DB
+                            && msg.getCategory().equals(DBChangeMessage.CAT_TOU_SCHEDULE)
+                            && msg.getObjectType().equals(DBChangeMessage.CAT_TOU_SCHEDULE)) {
                         getDownloadTOUDialog().addItems();
                     }
                     

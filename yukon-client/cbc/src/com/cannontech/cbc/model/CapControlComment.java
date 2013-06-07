@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.core.dao.YukonUserDao;
-import com.cannontech.message.capcontrol.model.CommandType;
+import com.cannontech.messaging.message.capcontrol.CommandType;
 import com.cannontech.spring.YukonSpringHook;
 
 public class CapControlComment {

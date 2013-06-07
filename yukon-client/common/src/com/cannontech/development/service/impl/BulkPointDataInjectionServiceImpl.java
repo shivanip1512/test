@@ -23,7 +23,7 @@ import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.development.model.BulkFakePointInjectionDto;
 import com.cannontech.development.service.BulkPointDataInjectionService;
-import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -48,7 +48,7 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
         Instant iterableInstant = new Instant(bulkInjection.getStart());
         while (iterableInstant.isBefore(bulkInjection.getStop())) {
             for (LitePoint litePoint : litePoints) {
-                PointData pointData = new PointData();
+                PointDataMessage pointData = new PointDataMessage();
                 pointData.setId(litePoint.getPointID());
                 long randWindow = (long) getRandomWithinRange(0, bulkInjection.getPeriodWindow()
                         .toStandardDuration().getMillis());
@@ -102,7 +102,7 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
                 log.debug("[Bulk injector] #" + ++deviceCount + " Device " + device.getPaoIdentifier());
                 LitePoint point = getLitePointsFromSimpleDevicesWithAttribute(device, bulkInjection.getAttribute());
                 List<LitePoint> litePoints = Lists.newArrayList(point);
-                List<PointData> data = getPointData(bulkInjection, litePoints);
+                List<PointDataMessage> data = getPointData(bulkInjection, litePoints);
                 dynamicDataSource.putValues(data);
                 bulkInjection.setInjectionCount(bulkInjection.getInjectionCount() + data.size());
                 log.debug("[Bulk injector] Points injected "+ data.size());
@@ -112,15 +112,15 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
     }
 
     
-    private List<PointData> getPointData(BulkFakePointInjectionDto bulkInjection, List<LitePoint> litePoints){
-        List<PointData> data = Lists.newArrayList();
+    private List<PointDataMessage> getPointData(BulkFakePointInjectionDto bulkInjection, List<LitePoint> litePoints){
+        List<PointDataMessage> data = Lists.newArrayList();
         Random rand = new Random();
         Instant iterableInstant = new Instant(bulkInjection.getStart());
         Duration duration = bulkInjection.getPeriod().toStandardDuration();
         double incrementalValue = 0;
         while (iterableInstant.isBefore(bulkInjection.getStop())) {
             for (LitePoint litePoint : litePoints) {
-                PointData pointData = new PointData();
+                PointDataMessage pointData = new PointDataMessage();
                 pointData.setId(litePoint.getPointID());
                 long randWindow = (long) getRandomWithinRange(0, bulkInjection.getPeriodWindow()
                         .toStandardDuration().getMillis());

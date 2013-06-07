@@ -4,6 +4,7 @@ package com.cannontech.loadcontrol.data;
  * Creation date: (5/29/2001 10:29:39 AM)
  * @author: Aaron Lauinger
  */
+import com.cannontech.messaging.message.loadcontrol.data.EnergyExchangeHourlyCustomer;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 
@@ -30,7 +31,7 @@ public DefColl_LMEnergyExchangeHourlyCustomer() {
 	* to be out of sync and the results could be catastrophic.
 	*/
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new LMEnergyExchangeHourlyCustomer();
+	return new EnergyExchangeHourlyCustomer();
 }
  /**
 	* Return a Comparator object for the Java class being mapped.
@@ -74,7 +75,7 @@ public String getCxxStringId() {
 	* being mapped.  It is used by CollectableStreamer during registration.
 	*/
 public Class getJavaClass() {
-	return LMEnergyExchangeHourlyCustomer.class;
+	return EnergyExchangeHourlyCustomer.class;
 }
  /**
 	* This method will be called by CollectableStreamer to restore the guts,
@@ -84,7 +85,7 @@ public Class getJavaClass() {
 	*/
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMEnergyExchangeHourlyCustomer hCust = (LMEnergyExchangeHourlyCustomer) obj;
+	EnergyExchangeHourlyCustomer hCust = (EnergyExchangeHourlyCustomer) obj;
 	
 	hCust.setCustomerID( new Integer((int)vstr.extractUnsignedInt()) );
 	hCust.setOfferID( new Integer((int)vstr.extractUnsignedInt()) );
@@ -101,11 +102,11 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	*/
 public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMEnergyExchangeHourlyCustomer hCust = (LMEnergyExchangeHourlyCustomer) obj;
+	EnergyExchangeHourlyCustomer hCust = (EnergyExchangeHourlyCustomer) obj;
 
-	vstr.insertUnsignedLong( hCust.getCustomerID().longValue() );
-	vstr.insertUnsignedLong( hCust.getOfferID().longValue() );
-	vstr.insertUnsignedLong( hCust.getHour().longValue() );
-	vstr.insertUnsignedLong( hCust.getAmountCommitted().longValue() );
+	vstr.insertUnsignedLong( hCust.getCustomerID() );
+	vstr.insertUnsignedLong( hCust.getOfferID() );
+	vstr.insertUnsignedLong( hCust.getHour() );
+	vstr.insertUnsignedLong( (long)hCust.getAmountCommitted());
 }
 }

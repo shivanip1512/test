@@ -237,7 +237,7 @@ public Object getValue(Object val)
 		PAOowner childPort = new PAOowner();
 		childPort.setOwnerID( portID );
 		childPort.setChildID( new Integer(((LiteYukonPAObject)
-									getAddRemovePanelPorts().rightListGetModel().getElementAt(i)).getYukonID()) );
+									getAddRemovePanelPorts().rightListGetModel().getElementAt(i)).getYukonId()) );
 		
 		//apparently order of ports is NOT important??!!
 		//childPort.setPortOrder( new Integer(i+1) );
@@ -558,7 +558,7 @@ public void setValue(Object val)
 			singlePortID = ((PAOowner)macroPortsVector.get(i)).getChildID().intValue();
 			for(int j=0;j<allPorts.size();j++)
 			{
-				if( ((LiteYukonPAObject)allPorts.get(j)).getYukonID() == singlePortID )
+				if( ((LiteYukonPAObject)allPorts.get(j)).getYukonId() == singlePortID )
 				{
 					assignedPorts.addElement( allPorts.get(j) );
 					break;

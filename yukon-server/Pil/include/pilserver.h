@@ -23,11 +23,14 @@
 #include <iostream>
 #include <set>
 
+#include "connection_listener.h"
+#include "amq_constants.h"
+
 class IM_EX_CTIPIL CtiPILServer : public CtiServer
 {
    BOOL                 bServerClosing;
-   BOOL                 ListenerAvailable;
-   RWSocket             _listenerSocket;
+
+   CtiListenerConnection _listenerConnection;
 
    CtiDeviceManager    *DeviceManager;
    CtiPointManager     *PointManager;
@@ -70,10 +73,10 @@ public:
       PointManager (PM),
       RouteManager (RM),
       ConfigManager(CM),
-      ListenerAvailable(0),
       bServerClosing(FALSE),
       _currentParse(""),
-      _currentUserMessageId(0)
+      _currentUserMessageId(0),
+      _listenerConnection( Cti::Messaging::ActiveMQ::Queue::pil )
    {}
 
    virtual ~CtiPILServer()

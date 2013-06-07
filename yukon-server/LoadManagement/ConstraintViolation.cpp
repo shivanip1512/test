@@ -8,7 +8,7 @@
 
 using std::string;
 
-RWDEFINE_COLLECTABLE( ConstraintViolation, CTILMCONSTRAINTVIOLATION_ID )
+DEFINE_COLLECTABLE( ConstraintViolation, CTILMCONSTRAINTVIOLATION_ID )
 
 ConstraintViolation::ConstraintViolation(CV_Type_Double error, double value) :
    _errorCode(error)
@@ -90,22 +90,22 @@ int ConstraintViolation::getErrorCode() const
     return _errorCode;
 }
 
-std::vector<double> ConstraintViolation::getDoubleParams() const
+const std::vector<double>& ConstraintViolation::getDoubleParams() const
 {
     return _doubleParams;
 }
 
-std::vector<int> ConstraintViolation::getIntegerParams() const
+const std::vector<int>& ConstraintViolation::getIntegerParams() const
 {
     return _integerParams;
 }
 
-std::vector<string> ConstraintViolation::getStringParams() const
+const std::vector<string>& ConstraintViolation::getStringParams() const
 {
     return _stringParams;
 }
 
-std::vector<CtiTime> ConstraintViolation::getDateTimeParams() const
+const std::vector<CtiTime>& ConstraintViolation::getDateTimeParams() const
 {
     return _datetimeParams;
 }
@@ -123,22 +123,4 @@ bool ConstraintViolation::operator==(const ConstraintViolation &rhs) const
              equal( _integerParams.begin(),  _integerParams.end(),  rhs.getIntegerParams().begin()) &&
              equal(  _stringParams.begin(),   _stringParams.end(),   rhs.getStringParams().begin()) &&
              equal(_datetimeParams.begin(), _datetimeParams.end(), rhs.getDateTimeParams().begin()) );
-}
-
-void ConstraintViolation::restoreGuts(RWvistream& strm)
-{
-    strm >> _errorCode
-         >> _doubleParams
-         >> _integerParams
-         >> _stringParams
-         >> _datetimeParams;
-}
-
-void ConstraintViolation::saveGuts(RWvostream& strm) const
-{
-    strm << _errorCode
-         << _doubleParams
-         << _integerParams
-         << _stringParams
-         << _datetimeParams;
 }

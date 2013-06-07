@@ -38,4 +38,3 @@ private:
 
     StrategyManager * _strategyManager;
 };
-

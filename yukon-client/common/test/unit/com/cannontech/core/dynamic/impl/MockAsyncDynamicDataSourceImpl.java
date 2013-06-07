@@ -10,9 +10,9 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.SignalListener;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DBChangeLiteListener;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeCategory;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 
 public class MockAsyncDynamicDataSourceImpl implements AsyncDynamicDataSource {
 
@@ -96,7 +96,7 @@ public class MockAsyncDynamicDataSourceImpl implements AsyncDynamicDataSource {
     }
 
     @Override
-    public void publishDbChange(DBChangeMsg dbChange) {
+    public void publishDbChange(DBChangeMessage dbChange) {
         throw new MethodNotImplementedException();
     }
 

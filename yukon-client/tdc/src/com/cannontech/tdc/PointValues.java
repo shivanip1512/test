@@ -18,15 +18,15 @@ import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.state.YukonImage;
-import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.messaging.message.dispatch.SignalMessage;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tdc.utils.TDCDefines;
 
 public class PointValues 
 {
 	//pointData can NOT be null
-	private PointData pointData = null;
+	private PointDataMessage pointData = null;
 
 	//signals can be null 
 	private HashMap signalHash = null;
@@ -55,7 +55,7 @@ public class PointValues
 public PointValues( int pointid, int ptType ) 
 {
 	super();
-	setPointData( new PointData() );	
+	setPointData( new PointDataMessage() );	
 	getPointData().setId( pointid );
 	getPointData().setType( ptType );
 }
@@ -73,7 +73,7 @@ public PointValues( int pointid, int ptType, String devName,
 	pointState = ptState.toString();
 	deviceType = devType.toString();
 	
-	setPointData( new PointData() );	
+	setPointData( new PointDataMessage() );	
 	getPointData().setTime( new java.util.Date() );
 	getPointData().setId( pointid );
 	getPointData().setType( ptType );
@@ -85,13 +85,13 @@ public PointValues( int pointid, int ptType, String devName,
  * PointValues constructor comment.
  * Used to make PSUEDO pointValues ONLY
  */
-public PointValues( Signal signal_, int ptType )
+public PointValues( SignalMessage signal_, int ptType )
 {
 	super();
 
-	setPointData( new PointData() );
+	setPointData( new PointDataMessage() );
 	getPointData().setTime( new java.util.Date() );		
-	getPointData().setId( signal_.getPointID() );
+	getPointData().setId( signal_.getPointId() );
 	getPointData().setType( ptType );
 	getPointData().setTime( new java.util.Date() );
 	getPointData().setTags( signal_.getTags() );
@@ -226,7 +226,7 @@ public int getOriginalBackgroundColor()
  * Creation date: (8/15/00 4:58:43 PM)
  * @return PointData
  */
-private PointData getPointData() {
+private PointDataMessage getPointData() {
 	return pointData;
 }
 
@@ -399,7 +399,7 @@ public void setDeviceType(String newDeviceType) {
  * Creation date: (8/15/00 4:58:43 PM)
  * @param newPointData PointData
  */
-public void setPointData(PointData newPointData) 
+public void setPointData(PointDataMessage newPointData) 
 {
 	if( newPointData == null )
 		throw new IllegalStateException("A setter PointData method can not take a null value");
@@ -478,7 +478,7 @@ public String toString()
 		getPointData().setTime( newDate_ );
 	}
 
-	public boolean containsSignal( Signal signal_ )
+	public boolean containsSignal( SignalMessage signal_ )
 	{
 		return ( getSignalHash().get(signal_) != null );
 	}
@@ -500,17 +500,17 @@ public String toString()
 	 * Gets an array of the signals
 	 * @return a Zero length array of no signals are present.
 	 */
-	public Signal[] getAllSignals()
+	public SignalMessage[] getAllSignals()
 	{
-		Signal[] sigs = new Signal[ getSignalHash().values().size() ];
-		return (Signal[])getSignalHash().values().toArray( sigs );
+		SignalMessage[] sigs = new SignalMessage[ getSignalHash().values().size() ];
+		return (SignalMessage[])getSignalHash().values().toArray( sigs );
 	}
 
 	/**
 	 * @param signal
 	 * deny our EVENT signals from being in here
 	 */
-	public void updateSignal(Signal signal)
+	public void updateSignal(SignalMessage signal)
 	{
 		if( signal != null && signal.getCondition() >= IAlarmDefs.MIN_CONDITION_ID )
 			getSignalHash().put( signal, signal );
@@ -520,7 +520,7 @@ public String toString()
 	 * @param signal
 	 * get that signal gone
 	 */
-	public void removeSignal(Signal signal)
+	public void removeSignal(SignalMessage signal)
 	{
 		getSignalHash().remove( signal );
 	}

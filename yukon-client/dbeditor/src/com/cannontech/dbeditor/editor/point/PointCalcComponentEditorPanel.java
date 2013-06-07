@@ -435,7 +435,7 @@ private void connEtoC7(java.awt.event.MouseEvent arg1) {
  */
 public void deviceComboBox_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 {
-	int deviceID = ((LiteYukonPAObject) getDeviceComboBox().getSelectedItem()).getYukonID();
+	int deviceID = ((LiteYukonPAObject) getDeviceComboBox().getSelectedItem()).getYukonId();
 
 	if( getPointComboBox().getModel().getSize() > 0 )
 		getPointComboBox().removeAllItems();
@@ -655,7 +655,7 @@ private javax.swing.JComboBox getDeviceComboBox() {
 					ivjDeviceComboBox.addItem( pao );
 
 					if( i == 0 ) {
-                        List<LitePoint> paoPoints = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(pao.getYukonID());
+                        List<LitePoint> paoPoints = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(pao.getYukonId());
                         for (LitePoint point : paoPoints) {
 							getPointComboBox().addItem(point);
                         }

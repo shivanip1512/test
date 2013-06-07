@@ -109,7 +109,7 @@ public PaoType getPaoType() {
 	return paoType;
 }
 
-public int getYukonID() {
+public int getYukonId() {
 	return getLiteID();
 }
 

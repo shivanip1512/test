@@ -6,13 +6,12 @@
 #include "connection.h"
 #include "observe.h"
 
-class CtiCCState : public RWCollectable
+class CtiCCState
 {
+public:
+    DECLARE_COLLECTABLE( CtiCCState );
 
 public:
-
-RWDECLARE_COLLECTABLE( CtiCCState )
-
     CtiCCState();
     CtiCCState(Cti::RowReader& rdr);
     CtiCCState(const CtiCCState& state);
@@ -26,10 +25,6 @@ RWDECLARE_COLLECTABLE( CtiCCState )
     CtiCCState& setText(const std::string& text);
     CtiCCState& setForegroundColor(long foregroundcolor);
     CtiCCState& setBackgroundColor(long backgroundcolor);
-
-    //Members inherited from RWCollectable
-    void restoreGuts(RWvistream& );
-    void saveGuts(RWvostream& ) const;
 
     CtiCCState& operator=(const CtiCCState& right);
 

@@ -38,9 +38,9 @@ import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.dr.scenario.service.ScenarioService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.loadcontrol.data.IGearProgram;
-import com.cannontech.loadcontrol.data.LMProgramBase;
-import com.cannontech.loadcontrol.data.LMProgramDirectGear;
+import com.cannontech.messaging.message.loadcontrol.data.GearProgram;
+import com.cannontech.messaging.message.loadcontrol.data.Program;
+import com.cannontech.messaging.message.loadcontrol.data.ProgramDirectGear;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -339,15 +339,15 @@ public class ProgramController extends ProgramControllerBase {
         List<String> gears = Lists.newArrayListWithCapacity(programs.size());
         List<ProgramState> states = Lists.newArrayListWithCapacity(programs.size());
         for(DisplayablePao program : programs) {
-            DatedObject<LMProgramBase> datedObject = programService.findDatedProgram(program.getPaoIdentifier().getPaoId());
-            LMProgramBase programBase = datedObject.getObject();
-            LMProgramDirectGear gear = null;
+            DatedObject<Program> datedObject = programService.findDatedProgram(program.getPaoIdentifier().getPaoId());
+            Program programBase = datedObject.getObject();
+            ProgramDirectGear gear = null;
             
             ProgramState state = programBase.getProgramState();
             states.add(state);
             
-            if (programBase instanceof IGearProgram) {
-                gear = ((IGearProgram) programBase).getCurrentGear();
+            if (programBase instanceof GearProgram) {
+                gear = ((GearProgram) programBase).getCurrentGear();
             }
             if (gear != null) {
                 gears.add(gear.getGearName());

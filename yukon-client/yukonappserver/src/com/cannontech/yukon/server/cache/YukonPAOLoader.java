@@ -58,7 +58,7 @@ public class YukonPAOLoader implements Runnable
 	        public void processRow(ResultSet rs) throws SQLException {
 	            LiteYukonPAObject pao = rowMapper.mapRow(rs, row++);
 	            allPAObjects.add(pao);
-	            allPAOsMap.put(pao.getYukonID(), pao);
+	            allPAOsMap.put(pao.getYukonId(), pao);
 	        }
 	    });              
 

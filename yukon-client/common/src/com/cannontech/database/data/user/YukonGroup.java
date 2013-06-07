@@ -17,8 +17,8 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.user.YukonGroupRole;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -189,11 +189,11 @@ public class YukonGroup extends DBPersistent implements CTIDbChange, EditorPanel
 	 * @see com.cannontech.database.db.CTIDbChange#getDBChangeMsgs(int)
 	 */
 	@Override
-    public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+    public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType) {
 		
-	    DBChangeMsg[] msgs = {
-	            new DBChangeMsg(getYukonGroup().getGroupID().intValue(), DBChangeMsg.CHANGE_YUKON_USER_DB,
-	                            DBChangeMsg.CAT_YUKON_USER_GROUP, DBChangeMsg.CAT_YUKON_USER, dbChangeType)
+	    DBChangeMessage[] msgs = {
+	            new DBChangeMessage(getYukonGroup().getGroupID().intValue(), DBChangeMessage.CHANGE_YUKON_USER_DB,
+	                            DBChangeMessage.CAT_YUKON_USER_GROUP, DBChangeMessage.CAT_YUKON_USER, dbChangeType)
 		};
 
 		return msgs;

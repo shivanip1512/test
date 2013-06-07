@@ -1,19 +1,19 @@
 <%@ include file="include/oper_header.jspf" %>
 
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
-<%@ page import="com.cannontech.loadcontrol.data.LMProgramEnergyExchange" %>
-<%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeOffer" %>
-<%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeOfferRevision" %>
-<%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeHourlyOffer" %>
-<%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeCustomer" %>
-<%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeCustomerReply" %>
-<%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeHourlyCustomer" %>
+<%@ page import="com.cannontech.messaging.message.loadcontrol.data.ProgramEnergyExchange" %>
+<%@ page import="com.cannontech.messaging.message.loadcontrol.data.EnergyExchangeOffer" %>
+<%@ page import="com.cannontech.messaging.message.loadcontrol.data.EnergyExchangeOfferRevision" %>
+<%@ page import="com.cannontech.messaging.message.loadcontrol.data.EnergyExchangeHourlyOffer" %>
+<%@ page import="com.cannontech.messaging.message.loadcontrol.data.EnergyExchangeCustomer" %>
+<%@ page import="com.cannontech.messaging.message.loadcontrol.data.EnergyExchangeCustomerReply" %>
+<%@ page import="com.cannontech.messaging.message.loadcontrol.data.EnergyExchangeHourlyCustomer" %>
  
 <%@ taglib uri="/WEB-INF/struts.tld" prefix="struts" %>
   
 <jsp:useBean id="checker" scope="session" class="com.cannontech.web.validate.PageBean"/>
 
-<%   
+<%
     String tab = request.getParameter("tab");
     tab = request.getParameter("tab");
  
@@ -69,12 +69,12 @@
 	}
 	if (tab.equalsIgnoreCase("new"))
 	{
-		LMProgramEnergyExchange[] programs = cache.getEnergyCompanyEnergyExchangePrograms(energyCompanyID);
+		ProgramEnergyExchange[] programs = cache.getEnergyCompanyEnergyExchangePrograms(energyCompanyID);
         programNames = new String[programs.length];
         programIds = new String[programs.length];
 		for (int i = 0; i < programs.length; i++) {
 			programNames[i] = programs[i].getYukonName();
-			programIds[i] = programs[i].getYukonID().toString();
+			programIds[i] = programs[i].getYukonId().toString();
 		}
 	
 		if (request.getParameter("error") == null) {
@@ -243,8 +243,8 @@ System.out.println("sending- EndOf Offer Date : " + endOfOfferDate);
 			{
 				if (checker == null) {
 					response.sendRedirect("oper_ee.jsp");
-                    return;
-                }
+    return;
+        }
 				checker.setError("expiretime", "Expiration time must be earlier than the end of offer day");
 				response.sendRedirect("oper_ee.jsp?tab=new&error=true");
 				return;
@@ -253,16 +253,16 @@ System.out.println("sending- EndOf Offer Date : " + endOfOfferDate);
 			{
 				if (checker == null) {
 					response.sendRedirect("oper_ee.jsp");
-                    return;
-                }
+    return;
+        }
 				checker.setError("offertooearly", "Warning: First hourly offer is earlier than the notification time");
 			}			
 		}
 		else {
-			com.cannontech.loadcontrol.messages.LMEnergyExchangeControlMsg msg =
-				new com.cannontech.loadcontrol.messages.LMEnergyExchangeControlMsg();
-            msg.setCommand(new Integer( com.cannontech.loadcontrol.messages.LMEnergyExchangeControlMsg.NEW_OFFER ));
-            msg.setYukonID(new Integer( request.getParameter("program") ));
+			com.cannontech.messaging.message.loadcontrol.EnergyExchangeControlMessage msg =
+				new com.cannontech.messaging.message.loadcontrol.EnergyExchangeControlMessage();
+    msg.setCommand(new Integer( com.cannontech.messaging.message.loadcontrol.EnergyExchangeControlMessage.NEW_OFFER ));
+    msg.setYukonId(new Integer( request.getParameter("program") ));
 			msg.setAdditionalInfo("(none)");
 
 			java.util.Date offerDate = ServletUtil.parseDateStringLiberally(request.getParameter("date") + " 00:00");
@@ -273,7 +273,7 @@ System.out.println("sending- Offer Date  : " + offerDate);
 System.out.println("sending- Notify Date : " + notifyDateTime);
 System.out.println("sending- Expire Date : " + expireDateTime);
 
-            msg.setOfferID(new Integer(0) ); //irrelevant
+    msg.setOfferId(new Integer(0) ); //irrelevant
 			msg.setOfferDate( offerDate );
 			msg.setNotificationDateTime( notifyDateTime );
 			msg.setExpirationDateTime( expireDateTime );
@@ -330,7 +330,7 @@ System.out.println("sending- Expire Date : " + expireDateTime);
 			if (request.getParameter("submitted") == null)
 			{                
 				checker.clear();
-             
+     
 				checker.set("prog", request.getParameter("prog"));
 				checker.set("offer", request.getParameter("offer"));
 				checker.set("rev", request.getParameter("rev"));
@@ -367,7 +367,7 @@ System.out.println("sending- Expire Date : " + expireDateTime);
 		if (request.getParameter("confirmed") == null) {
 			programStr = checker.get("progname");           
 			dateStr = checker.get("date");
-            
+    
 			progIdStr = checker.get("prog");
 			offerIdStr = checker.get("offer");
 			revNumStr = checker.get("rev");
@@ -482,8 +482,8 @@ System.out.println("sending- EndOf Offer Date : " + endOfOfferDate);
 			{
 				if (checker == null) {
 					response.sendRedirect("oper_ee.jsp");
-                    return;
-                }
+    return;
+        }
 				checker.setError("expiretime", "Expiration time must be earlier than the end of offer day");
 				response.sendRedirect("oper_ee.jsp?tab=new&error=true");
 				return;
@@ -492,23 +492,23 @@ System.out.println("sending- EndOf Offer Date : " + endOfOfferDate);
 			{
 				if (checker == null) {
 					response.sendRedirect("oper_ee.jsp");
-                    return;
-                }
+    return;
+        }
 				checker.setError("offertooearly", "Warning: First hourly offer is earlier than the notification time");
 			}			
 		}
 		else {
-			com.cannontech.loadcontrol.messages.LMEnergyExchangeControlMsg msg =
-				new com.cannontech.loadcontrol.messages.LMEnergyExchangeControlMsg();
-            msg.setCommand(new Integer( com.cannontech.loadcontrol.messages.LMEnergyExchangeControlMsg.OFFER_REVISION ));
-            msg.setYukonID(new Integer( request.getParameter("prog") ));            
+			com.cannontech.messaging.message.loadcontrol.EnergyExchangeControlMessage msg =
+				new com.cannontech.messaging.message.loadcontrol.EnergyExchangeControlMessage();
+    msg.setCommand(new Integer( com.cannontech.messaging.message.loadcontrol.EnergyExchangeControlMessage.OFFER_REVISION ));
+    msg.setYukonId(new Integer( request.getParameter("prog") ));            
 			msg.setAdditionalInfo("(none)");
 
 			java.util.Date offerDate = eeDateTimeFormat.parse(request.getParameter("date") + " 00:00");
 			java.util.Date notifyDateTime = eeDateTimeFormat.parse(request.getParameter("notifydate") + " " + request.getParameter("notifytime"));
 			java.util.Date expireDateTime = eeDateTimeFormat.parse(request.getParameter("expiredate") + " " + request.getParameter("expiretime"));
 			
-            msg.setOfferID(new Integer(checker.getObject("offer").toString()));
+    msg.setOfferId(new Integer(checker.getObject("offer").toString()));
 			msg.setOfferDate( offerDate );
 			msg.setNotificationDateTime( notifyDateTime );
 			msg.setExpirationDateTime( expireDateTime );
@@ -551,7 +551,7 @@ System.out.println("sending- EndOf Offer Date : " + endOfOfferDate);
 
 			com.cannontech.loadcontrol.LoadControlClientConnection conn = cs.getConnection();
 			conn.write(msg);
-               
+       
 			if (checker != null)
 				checker.clear();
 			response.sendRedirect("oper_ee.jsp?pending=revise");
@@ -561,9 +561,9 @@ System.out.println("sending- EndOf Offer Date : " + endOfOfferDate);
 	else if (tab.equalsIgnoreCase("close"))
 	{
 		Integer offerID = new Integer( request.getParameter("offer") );
-		LMEnergyExchangeOffer offer = null;
+		EnergyExchangeOffer offer = null;
 	
-		LMProgramEnergyExchange[] programs = cache.getEnergyCompanyEnergyExchangePrograms(energyCompanyID);
+		ProgramEnergyExchange[] programs = cache.getEnergyCompanyEnergyExchangePrograms(energyCompanyID);
 		boolean foundOffer = false;
 
 		if( programs != null )
@@ -574,9 +574,9 @@ System.out.println("sending- EndOf Offer Date : " + endOfOfferDate);
 
 				for( int j = 0; j < offers.size(); j++ )
 				{
-					LMEnergyExchangeOffer o = (LMEnergyExchangeOffer) offers.elementAt(j);
+					EnergyExchangeOffer o = (EnergyExchangeOffer) offers.elementAt(j);
 
-					if( o.getOfferID().intValue() == offerID.intValue() )
+					if( o.getOfferId() == offerID )
 					{
 						offer = o;
 						foundOffer = true;
@@ -590,11 +590,11 @@ System.out.println("sending- EndOf Offer Date : " + endOfOfferDate);
 		}
 		// should found offer
 
-		com.cannontech.loadcontrol.messages.LMEnergyExchangeControlMsg msg =
-			new com.cannontech.loadcontrol.messages.LMEnergyExchangeControlMsg();
-		msg.setCommand(new Integer( com.cannontech.loadcontrol.messages.LMEnergyExchangeControlMsg.CLOSE_OFFER ));
-		msg.setYukonID(new Integer( request.getParameter("prog") ));
-        msg.setOfferID(offerID);
+		com.cannontech.messaging.message.loadcontrol.EnergyExchangeControlMessage msg =
+			new com.cannontech.messaging.message.loadcontrol.EnergyExchangeControlMessage();
+		msg.setCommand(new Integer( com.cannontech.messaging.message.loadcontrol.EnergyExchangeControlMessage.CLOSE_OFFER ));
+		msg.setYukonId(new Integer( request.getParameter("prog") ));
+        msg.setOfferId(offerID);
 		msg.setOfferDate( offer.getOfferDate() );        
 		msg.setAdditionalInfo( "(none)" );
         msg.setNotificationDateTime( new java.util.Date() );
@@ -604,8 +604,8 @@ System.out.println("sending- EndOf Offer Date : " + endOfOfferDate);
         Integer[] prices = new Integer[24];
         for (int i = 0; i < 24; i++)
         {
-            amount[i] = new Double(0.0);
-            prices[i] = new Integer(0);
+    amount[i] = new Double(0.0);
+    prices[i] = new Integer(0);
         }
 
         msg.setAmountRequested(amount);
@@ -626,66 +626,66 @@ System.out.println("sending- EndOf Offer Date : " + endOfOfferDate);
 
 <body text="#000000" link="#000000" vlink="#000000" alink="#000000"> 
 <%
-            // Determine which tab was selected and include the appropriate file
-            if( tab.equalsIgnoreCase("new") )
-            {
-            %>
+     // Determine which tab was selected and include the appropriate file
+        if( tab.equalsIgnoreCase("new") )
+        {
+ %>
 <%@ include file="include/oper_ee_new.jspf" %>
 <%
-            }
-            else
-            if( tab.equalsIgnoreCase("newconfirm") )
-            {
-            %>
+    }
+    else
+    if( tab.equalsIgnoreCase("newconfirm") )
+    {
+%>
 <%@ include file="include/oper_ee_new_confirm.jspf" %>
 <%
-            }
-            else
-            if( tab.equalsIgnoreCase("programs") )
-            {
-            %>
+    }
+    else
+    if( tab.equalsIgnoreCase("programs") )
+    {
+%>
 <%@ include file="include/oper_ee_programs.jspf" %>
 <%
-            }
-            else
-            if( tab.equalsIgnoreCase("profile") )
-            {
-            %>
+    }
+    else
+    if( tab.equalsIgnoreCase("profile") )
+    {
+%>
 <%@ include file="include/customer_ee_profile.jspf" %>
 <%
-            }
-            else
-            if( tab.equalsIgnoreCase("history") )
-            {
-            %>
+    }
+    else
+    if( tab.equalsIgnoreCase("history") )
+    {
+%>
 <%@ include file="include/oper_ee_history.jspf" %>
-<% 
-			} 
+<%
+    } 
 			else
 			if( tab.equalsIgnoreCase("historydetail" ) )
 			{
-			%>
+%>
 <%@ include file="include/oper_ee_history_detail.jspf" %>
 <%
-			}
+    }
 			else
 			if( tab.equalsIgnoreCase("historyresponse" ) )
 			{
-			%>
+%>
 <%@ include file="include/oper_ee_history_response.jspf" %>
 <%
-            }
-            else
-            if( tab.equalsIgnoreCase("current" ) )
-            {
-            %>
+    }
+    else
+    if( tab.equalsIgnoreCase("current" ) )
+    {
+%>
 <%@ include file="include/oper_ee_current.jspf" %>
 <%
-            }
-            else
-            if( tab.equalsIgnoreCase("revise") )
-            {
-            %>
+	}
+    else
+    if( tab.equalsIgnoreCase("revise") )
+    {
+%>
 <%@ include file="include/oper_ee_revise.jspf" %>
 <%
             }

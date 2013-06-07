@@ -5,8 +5,8 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 import com.cannontech.spring.YukonSpringHook;
 
 public class StaticPaoInfo extends DBPersistent implements CTIDbChange 
@@ -95,12 +95,12 @@ public class StaticPaoInfo extends DBPersistent implements CTIDbChange
     }
 
     @Override
-    public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+    public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType) {
         
-        DBChangeMsg[] msgs = { new DBChangeMsg(
+        DBChangeMessage[] msgs = { new DBChangeMessage(
                                                 paobjectId,
-                                                DBChangeMsg.CHANGE_STATIC_PAO_INFO_DB,
-                                                DBChangeMsg.CAT_STATIC_PAO_INFO_DB,
+                                                DBChangeMessage.CHANGE_STATIC_PAO_INFO_DB,
+                                                DBChangeMessage.CAT_STATIC_PAO_INFO_DB,
                                                dbChangeType)
         };
 

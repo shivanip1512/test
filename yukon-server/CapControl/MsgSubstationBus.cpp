@@ -7,7 +7,7 @@ extern unsigned long _CC_DEBUG;
 
 using std::endl;
 
-RWDEFINE_COLLECTABLE( CtiCCSubstationBusMsg, CTICCSUBSTATIONBUS_MSG_ID )
+DEFINE_COLLECTABLE( CtiCCSubstationBusMsg, CTICCSUBSTATIONBUS_MSG_ID )
 
 CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, unsigned long bitMask) : Inherited(), _ccSubstationBuses(NULL), _msgInfoBitMask(bitMask)
 {
@@ -120,25 +120,6 @@ CtiCCSubstationBusMsg& CtiCCSubstationBusMsg::operator=(const CtiCCSubstationBus
     }
 
     return *this;
-}
-
-void CtiCCSubstationBusMsg::restoreGuts(RWvistream& strm)
-{
-    Inherited::restoreGuts(strm);
-    strm >> _msgInfoBitMask
-         >> _ccSubstationBuses;
-}
-
-/*---------------------------------------------------------------------------
-    saveGuts
-
-    Saves the state of self into the given RWvostream
----------------------------------------------------------------------------*/
-void CtiCCSubstationBusMsg::saveGuts(RWvostream& strm) const
-{
-    Inherited::saveGuts(strm);
-    strm << _msgInfoBitMask
-         << _ccSubstationBuses;
 }
 
 // Static Members

@@ -42,9 +42,9 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
-import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.messaging.util.DbChangeManager;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
@@ -107,7 +107,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
         jdbcOps.update(sql, new Object[] { disableFlag, device.getPaoIdentifier().getPaoId() });
 
         dbChangeManager.processDbChange(device.getPaoIdentifier().getPaoId(),
-                                        DBChangeMsg.CHANGE_PAO_DB,
+                                        DBChangeMessage.CHANGE_PAO_DB,
                                         PaoCategory.DEVICE.getDbString(),
                                         device.getPaoIdentifier().getPaoType().getDbString(),
                                         DbChangeType.UPDATE);
@@ -135,7 +135,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
 
     @Override
     public SimpleDevice getYukonDevice(LiteYukonPAObject yukonPAObject) {
-        SimpleDevice device = new SimpleDevice(yukonPAObject.getYukonID(), yukonPAObject.getPaoType());
+        SimpleDevice device = new SimpleDevice(yukonPAObject.getYukonId(), yukonPAObject.getPaoType());
         return device;
     }
 

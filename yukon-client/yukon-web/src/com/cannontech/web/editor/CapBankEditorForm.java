@@ -50,7 +50,7 @@ import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.point.stategroup.TrueFalse;
-import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.messaging.message.capcontrol.streamable.Feeder;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.util.CBCDBUtil;
 import com.cannontech.web.util.CBCSelectionLists;
@@ -92,7 +92,7 @@ public class CapBankEditorForm extends DBEditorForm {
     }
     
     public boolean isIntegratedVoltVarControlled(){
-        Feeder feeder = cache.getFeeder(cache.getCapBankDevice(getCapBank().getCapBank().getDeviceID()).getParentID());
+        Feeder feeder = cache.getFeeder(cache.getCapBankDevice(getCapBank().getCapBank().getDeviceID()).getParentId());
         if(feeder.getControlUnits() == ControlAlgorithm.INTEGRATED_VOLT_VAR) {
             return true;
         }
@@ -214,8 +214,8 @@ public class CapBankEditorForm extends DBEditorForm {
         
         if (fdrId != 0) {
             Feeder feeder = cache.getFeeder(fdrId);
-            monitorPoint.setLowerBandwidth(feeder.getPeakLag().floatValue());
-            monitorPoint.setUpperBandwidth(feeder.getPeakLead().floatValue());
+            monitorPoint.setLowerBandwidth((float)feeder.getPeakLag());
+            monitorPoint.setUpperBandwidth((float)feeder.getPeakLead());
         }
     }
 

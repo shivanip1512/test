@@ -965,7 +965,7 @@ public Object getValue(Object val)
 	if( lmGroup instanceof IGroupRoute )
 	{
 		((IGroupRoute) val).setRouteID( 
-			new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getRouteComboBox().getSelectedItem()).getYukonID()) );
+			new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getRouteComboBox().getSelectedItem()).getYukonId()) );
 	}
 
 	//only set the priority for certain LmGroups
@@ -1236,7 +1236,7 @@ public void setValue(Object val)
 			int assignedRouteID = ((IGroupRoute)lmGroup).getRouteID().intValue();
 
 			for( int i = 0 ; i < routes.size(); i++ )
-				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i)).getYukonID() == assignedRouteID )
+				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i)).getYukonId() == assignedRouteID )
 					getRouteComboBox().setSelectedItem((com.cannontech.database.data.lite.LiteYukonPAObject)routes.get(i));
       }
 	}

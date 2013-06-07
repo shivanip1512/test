@@ -64,7 +64,7 @@ public class OutageLogPointCreate extends PointCreate
 		    multi.addDBPersistent(
 			        PointFactory.createAnalogPoint(
 			        	"Outages", 
-						new Integer(litePaobject.getYukonID()), 
+						new Integer(litePaobject.getYukonId()), 
                         new Integer(pointID), 
                         PointOffsets.PT_OFFSET_OUTAGE, 
                         UnitOfMeasure.SECONDS.getId(),

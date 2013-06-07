@@ -72,7 +72,7 @@ public class PowerFailPointCreate extends PointCreate
 		    multi.addDBPersistent(
 			        PointFactory.createPulseAccumPoint(
 					   "Blink Count",
-					   new Integer(litePaobject.getYukonID()),
+					   new Integer(litePaobject.getYukonId()),
 					   new Integer(pointID),
 					   PointOffsets.PT_OFFSET_BLINK_COUNT,
 					   UnitOfMeasure.COUNTS.getId(),

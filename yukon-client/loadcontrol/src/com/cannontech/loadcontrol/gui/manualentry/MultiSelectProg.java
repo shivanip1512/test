@@ -1,7 +1,7 @@
 package com.cannontech.loadcontrol.gui.manualentry;
 
-import com.cannontech.loadcontrol.data.IGearProgram;
-import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.messaging.message.loadcontrol.data.GearProgram;
+import com.cannontech.messaging.message.loadcontrol.data.Program;
 
 /**
  * @author rneuharth
@@ -11,7 +11,7 @@ import com.cannontech.loadcontrol.data.LMProgramBase;
  */
 public class MultiSelectProg 
 {
-	private LMProgramBase baseProgram = null;
+	private Program baseProgram = null;
 	private boolean hasDirectGears = false;
 	
 	
@@ -34,20 +34,20 @@ public class MultiSelectProg
 	/**
 	 * Constructor for MultiSelectProg.
 	 */
-	public MultiSelectProg( LMProgramBase prgBase_ ) 
+	public MultiSelectProg( Program prgBase_ ) 
 	{
 		this();
 
 		setBaseProgram( prgBase_ );
 
 		//may have to change if more program types are added that have gears!
-		setHasDirectGears( prgBase_ instanceof IGearProgram );
+		setHasDirectGears( prgBase_ instanceof GearProgram );
 		
 		
 		if( hasDirectGears() )
 		{
 			setGearNum( 
-				((IGearProgram)prgBase_).getCurrentGearNumber() );
+				((GearProgram)prgBase_).getCurrentGearNumber() );
 		}
 		
 	}
@@ -73,7 +73,7 @@ public class MultiSelectProg
 
 
 		//should work all the time
-		IGearProgram dirPrg = (IGearProgram)getBaseProgram();
+		GearProgram dirPrg = (GearProgram)getBaseProgram();
 		
 		if( gearNumIndx_.intValue() <= 0 
 			 || gearNumIndx_.intValue() > dirPrg.getDirectGearVector().size() )
@@ -107,7 +107,7 @@ public class MultiSelectProg
 	 * Returns the baseProgram.
 	 * @return LMProgramBase
 	 */
-	public LMProgramBase getBaseProgram()
+	public Program getBaseProgram()
 	{
 		return baseProgram;
 	}
@@ -116,7 +116,7 @@ public class MultiSelectProg
 	 * Sets the baseProgram.
 	 * @param baseProgram The baseProgram to set
 	 */
-	private void setBaseProgram(LMProgramBase baseProgram)
+	private void setBaseProgram(Program baseProgram)
 	{
 		this.baseProgram = baseProgram;
 	}

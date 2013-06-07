@@ -16,7 +16,7 @@ extern bool _LOG_MAPID_INFO;
 using std::endl;
 using Cti::CapControl::CapControlType;
 using Cti::CapControl::ConvertIntToVerificationStrategy;
-
+using Cti::CapControl::EventLogEntry;
 
 VerificationExecutor::VerificationExecutor(VerifyBanks* command)
 {
@@ -225,7 +225,7 @@ void VerificationExecutor::startVerification()
             currentSubstationBus->setEventSequence(seqId);
             long stationId, areaId, spAreaId;
             store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlEnableVerification, currentSubstationBus->getEventSequence(), 1, text, "cap control"));
+            CtiCapController::submitEventLogEntry(EventLogEntry(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlEnableVerification, currentSubstationBus->getEventSequence(), 1, text, "cap control"));
         }
     }
 
@@ -263,7 +263,7 @@ void VerificationExecutor::startVerification()
                 currentSubstationBus->setEventSequence(seqId);
                 long stationId, areaId, spAreaId;
                 store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlEnableVerification, currentSubstationBus->getEventSequence(), 1, text, "cap control"));
+                CtiCapController::submitEventLogEntry(EventLogEntry(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlEnableVerification, currentSubstationBus->getEventSequence(), 1, text, "cap control"));
 
                 if( _CC_DEBUG & CC_DEBUG_STANDARD )
                 {
@@ -285,7 +285,7 @@ void VerificationExecutor::startVerification()
     {
         bank->setSelectedForVerificationFlag(true);
     }
-    
+
     currentSubstationBus->setBusUpdatedFlag(true);
 
     string text = currentSubstationBus->getVerificationString();
@@ -306,7 +306,7 @@ void VerificationExecutor::startVerification()
     currentSubstationBus->setEventSequence(seqId);
     long stationId, areaId, spAreaId;
     store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-    CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlEnableVerification, currentSubstationBus->getEventSequence(), 1, text, "cap control"));
+    CtiCapController::submitEventLogEntry(EventLogEntry(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlEnableVerification, currentSubstationBus->getEventSequence(), 1, text, "cap control"));
 
     if (currentSubstationBus->getVerificationDisableOvUvFlag())
     {
@@ -326,7 +326,7 @@ void VerificationExecutor::stopVerification(bool forceStopImmediately)
 
     CapControlType type = store->determineTypeById(_deviceId);
     CtiCCSubstationBus_vec buses = store->getAllSubBusesByIdAndType(_deviceId, type);
-    
+
     for each (CtiCCSubstationBus* currentSubstationBus in buses)
     {
         if (!forceStopImmediately && currentSubstationBus->getPerformingVerificationFlag())
@@ -376,7 +376,7 @@ void VerificationExecutor::stopVerification(bool forceStopImmediately)
 
             long stationId, areaId, spAreaId;
             store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text, "cap control"));
+            CtiCapController::submitEventLogEntry(EventLogEntry(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text, "cap control"));
 
             if( _CC_DEBUG & CC_DEBUG_STANDARD )
             {
@@ -434,7 +434,7 @@ void VerificationExecutor::stopVerification(bool forceStopImmediately)
 
             long stationId, areaId, spAreaId;
             store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlDisableVerification, currentSubstationBus->getEventSequence(), 0, text, "cap control"));
+            CtiCapController::submitEventLogEntry(EventLogEntry(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlDisableVerification, currentSubstationBus->getEventSequence(), 0, text, "cap control"));
 
         }
     }

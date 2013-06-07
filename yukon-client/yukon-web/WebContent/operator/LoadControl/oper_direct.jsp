@@ -7,7 +7,7 @@
 <jsp:directive.page import="java.util.Set"/>
 <jsp:directive.page import="com.cannontech.core.authorization.support.Permission"/>
 <%
-	/*
+    /*
 	 *oper_direct.jsp
      *	
 	 *Lists all of the lm direct programs and macs schedules associated with the the currently logged in operator.
@@ -16,9 +16,9 @@
 
 <%@ include file="include/oper_header.jspf" %>  
 <cti:verifyRolesAndProperties value="LM_DIRECT_LOADCONTROL"/>
-<%@ page import="com.cannontech.message.macs.message.Schedule" %>
-<%@ page import="com.cannontech.loadcontrol.data.LMProgramBase" %>
-<%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
+<%@ page import="com.cannontech.messaging.message.macs.ScheduleMessage" %>
+<%@ page import="com.cannontech.messaging.message.loadcontrol.data.Program" %>
+<%@ page import="com.cannontech.messaging.message.loadcontrol.data.ProgramDirect" %>
 <%@ page import="com.cannontech.yukon.IMACSConnection" %>
 
 <%@ page import="java.util.TreeMap" %>
@@ -29,9 +29,9 @@
 <%@ page import="java.util.Collections" %>
 
  
-<cti:isPropertyTrue propertyid="<%= DirectLoadcontrolRole.DIRECT_CONTROL %>">
+<cti:isPropertyTrue propertyid="<%=DirectLoadcontrolRole.DIRECT_CONTROL%>">
 <%
-   String pending = request.getParameter("pending");
+    String pending = request.getParameter("pending");
       
    /*
    	*	Update quickly if a command was just sent
@@ -45,7 +45,7 @@
     dlcDateFormat.setTimeZone(tz);
      
     session = request.getSession(false);
-                            
+    
     // list to put this customers programs in, contains LMProgramDirect and Schedule objects
     ArrayList ourPrograms = new ArrayList();
 	PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
@@ -54,12 +54,12 @@
 	/*
 	 * Determine which lm programs we need to display
 	 */
-    LMProgramBase[] allPrograms = cache.getDirectPrograms();
+    Program[] allPrograms = cache.getDirectPrograms();
     boolean progsFoundInPermissions = false; 
     // Match our program ids with the actual programs in the cache so we know what to display
     for( int i = 0; i < allPrograms.length; i++ )
     {
-        if(permittedPaoIDs.contains(allPrograms[i].getYukonID())) {
+        if(permittedPaoIDs.contains(allPrograms[i].getYukonId())) {
         	progsFoundInPermissions = true;
         	ourPrograms.add(allPrograms[i]);
         }
@@ -105,21 +105,21 @@
     
     if( conn != null && schedIDs != null )
     {
-        Schedule[] allSchedules = conn.retrieveSchedules();
+        ScheduleMessage[] allSchedules = conn.retrieveSchedules();
           
         for( int i = 0; i < schedIDs.length; i++ )
         {
-            if( schedIDs[0] != null )
-            {
-                for( int j = 0; j < allSchedules.length; j++ )
-                {                    
-                    if( allSchedules[j].getId() == ((Integer)schedIDs[i][0]).intValue() )
-                    {                
-                    	ourPrograms.add(allSchedules[j]);    
-                    }
-                }
-                
-            }
+    if( schedIDs[0] != null )
+    {
+        for( int j = 0; j < allSchedules.length; j++ )
+        {                    
+    if( allSchedules[j].getId() == ((Integer)schedIDs[i][0]).intValue() )
+    {                
+    	ourPrograms.add(allSchedules[j]);    
+    }
+        }
+        
+    }
         }
     }
     
@@ -133,24 +133,24 @@
     		{
     			String s1 = "";
     			String s2 = "";
-    			if(o1 instanceof LMProgramDirect)
+    			if(o1 instanceof ProgramDirect)
     			{
-    				s1 = ((LMProgramDirect) o1).getYukonName();
+    				s1 = ((ProgramDirect) o1).getYukonName();
     			}
     			else
-    			if(o1 instanceof Schedule)
+    			if(o1 instanceof ScheduleMessage)
     			{
-    				s1 = ((Schedule) o1).getScheduleName();
+    				s1 = ((ScheduleMessage) o1).getScheduleName();
     			}
     			
-    			if(o2 instanceof LMProgramDirect) 
+    			if(o2 instanceof ProgramDirect) 
     			{
-    				s2 = ((LMProgramDirect) o2).getYukonName();
+    				s2 = ((ProgramDirect) o2).getYukonName();
     			}
     			else
-    			if(o2 instanceof Schedule) 
+    			if(o2 instanceof ScheduleMessage) 
     			{
-    				s2 = ((Schedule) o2).getScheduleName();
+    				s2 = ((ScheduleMessage) o2).getScheduleName();
     			}
     			
     			return s1.compareTo(s2);
@@ -174,7 +174,7 @@
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
               </tr>
               <tr> 
                 <td width="253" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Load 
@@ -235,12 +235,12 @@
       <p> 
       
       <%
-         if( pending != null )
-         {
-      %>
+                 if( pending != null )
+                                {
+             %>
       <center><font color="red">Request sent, please wait...</font></center>
       <%
-         }
+          }
       %>
 
 
@@ -259,76 +259,75 @@
                         <div align="center">Stop Date/Time </div>
                       </td>
                     </tr>
-                    <%        
-            Iterator iter = ourPrograms.iterator();
-            while( iter.hasNext() )
-            {
-            	Object val = iter.next();
-            	if(val instanceof LMProgramDirect) 
-            	{
-                	LMProgramDirect p = (LMProgramDirect) val;
+                    <%
+                        Iterator iter = ourPrograms.iterator();
+                                                while( iter.hasNext() )
+                                                {
+                                                	Object val = iter.next();
+                                                	if(val instanceof ProgramDirect) 
+                                                	{
+                                                    	ProgramDirect p = (ProgramDirect) val;
 
-	                String status = p.getProgramStatusString( p.getProgramStatus().intValue());
-   		            String startStr = "-";               
-   	    	        String stopStr = "-"; 
-                	String actionURI = "oper_direct.jsp";
+                                            	                String status = p.getProgramStatusString( p.getProgramStatus().intValue());
+                                               		            String startStr = "-";               
+                                               	    	        String stopStr = "-"; 
+                                                    	String actionURI = "oper_direct.jsp";
 
 
-                	if( p.getStartTime().getTime().getTime() > com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
-                    	startStr = dlcDateFormat.format(p.getStartTime().getTime()) + " " + tz.getDisplayName(tz.inDaylightTime(p.getStartTime().getTime()), TimeZone.SHORT);
+                                                    	if( p.getStartTime().getTime().getTime() > com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
+                                                        	startStr = dlcDateFormat.format(p.getStartTime().getTime()) + " " + tz.getDisplayName(tz.inDaylightTime(p.getStartTime().getTime()), TimeZone.SHORT);
 
-                	if( p.getStopTime().getTime().getTime() > com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
-                    	stopStr =  dlcDateFormat.format(p.getStopTime().getTime()) + " " + tz.getDisplayName(tz.inDaylightTime(p.getStopTime().getTime()), TimeZone.SHORT);
+                                                    	if( p.getStopTime().getTime().getTime() > com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
+                                                        	stopStr =  dlcDateFormat.format(p.getStopTime().getTime()) + " " + tz.getDisplayName(tz.inDaylightTime(p.getStopTime().getTime()), TimeZone.SHORT);
 
-                	if( pending != null )
-                    	actionURI = "oper_direct.jsp";
-                	else
-                	if( status.equalsIgnoreCase("inactive") )
+                                                    	if( pending != null )
+                                                        	actionURI = "oper_direct.jsp";
+                                                    	else
+                                                    	if( status.equalsIgnoreCase("inactive") )
 
-                    	actionURI = "oper_direct_start.jsp?id=" + p.getYukonID();               
-                	else
-                	if( status.equalsIgnoreCase("manual active") ||
-                		status.equalsIgnoreCase("scheduled") )                
-                    	actionURI = "oper_direct_stop.jsp?id=" + p.getYukonID(); 
-        %>
+                                                        	actionURI = "oper_direct_start.jsp?id=" + p.getYukonId();               
+                                                    	else
+                                                    	if( status.equalsIgnoreCase("manual active") ||
+                                                    		status.equalsIgnoreCase("scheduled") )                
+                                                        	actionURI = "oper_direct_stop.jsp?id=" + p.getYukonId();
+                    %>
                     <tr> 
                       <td width="25%" class="TableCell">
-                          <a href="<%= actionURI %>" class="Link1"><%= p.getYukonName() %></a>
+                          <a href="<%=actionURI%>" class="Link1"><%=p.getYukonName()%></a>
                       </td>
                       <td width="25%" class="TableCell">
                         <center>
-                          <%= status %>
+                          <%=status%>
                         </center>
                       </td>
                       <td width="25%" class="TableCell">
                         <center>
-                          <%= startStr %>
+                          <%=startStr%>
                         </center>
                       </td>
                       <td width="25%" class="TableCell">
                         <center>
-                          <%= stopStr %>
+                          <%=stopStr%>
                         </center>
                       </td>
                     </tr>
                     <%
-               } //end if program is an LMProgramDirect
-               else
-               if(val instanceof Schedule) 
-               {
-               		Schedule sched = (Schedule) val;
-	                String actionUrl;
-					
-                	if( sched.getCurrentState().equals(Schedule.STATE_WAITING) )
-                   		actionUrl = "start_schedule.jsp?id=" + sched.getId();
-                	else
-                  	if( sched.getCurrentState().equalsIgnoreCase(Schedule.STATE_RUNNING) ||
-                   		sched.getCurrentState().equalsIgnoreCase(Schedule.STATE_PENDING)  )
-                        actionUrl = "stop_schedule.jsp?id=" + sched.getId();
-                  	else    
-                        actionUrl = "oper_direct.jsp";                    
-              
-        %>
+                        } //end if program is an LMProgramDirect
+                           else
+                           if(val instanceof ScheduleMessage) 
+                           {
+                           		ScheduleMessage sched = (ScheduleMessage) val;
+                    	                String actionUrl;
+                    					
+                            	if( sched.getCurrentState().equals(ScheduleMessage.STATE_WAITING) )
+                               		actionUrl = "start_schedule.jsp?id=" + sched.getId();
+                            	else
+                              	if( sched.getCurrentState().equalsIgnoreCase(ScheduleMessage.STATE_RUNNING) ||
+                               		sched.getCurrentState().equalsIgnoreCase(ScheduleMessage.STATE_PENDING)  )
+                                    actionUrl = "stop_schedule.jsp?id=" + sched.getId();
+                              	else    
+                                    actionUrl = "oper_direct.jsp";
+                    %>
                     <tr> 
                       <td width="150" class="TableCell"> 
                           <a href="<%= actionUrl %>" class="Link1"><%= sched.getScheduleName() %></a> 

@@ -1,5 +1,6 @@
 package com.cannontech.loadcontrol.data;
 
+import com.cannontech.messaging.message.loadcontrol.data.GroupEmetcon;
 /**
  * This type was created in VisualAge.
  */
@@ -22,7 +23,7 @@ public DefColl_LMGroupEmetcon()
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new LMGroupEmetcon();
+	return new GroupEmetcon();
 }
 /**
  * getCxxClassId method comment.
@@ -43,7 +44,7 @@ public String getCxxStringId()
  */
 public Class getJavaClass()
 {
-	return LMGroupEmetcon.class;
+	return GroupEmetcon.class;
 }
 /**
  * restoreGuts method comment.
@@ -52,7 +53,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 {
 	super.restoreGuts( obj, vstr, polystr );
 
-	LMGroupEmetcon lmGroupEmetcon = (LMGroupEmetcon) obj;	
+	GroupEmetcon lmGroupEmetcon = (GroupEmetcon) obj;	
 }
 /**
  * saveGuts method comment.

@@ -3,13 +3,19 @@
 #include "thread.h"
 #include "critical_section.h"
 
-#include "activemq/library/activemqcpp.h"
-#include "cms/connection.h"
-
 #include <boost/scoped_ptr.hpp>
 #include <boost/ptr_container/ptr_map.hpp>
 
 #include <queue>
+
+#include "boost/scoped_ptr.hpp"
+#include "boost/ptr_container/ptr_map.hpp"
+
+namespace cms {
+class Connection;
+class Session;
+class MessageProducer;
+}
 
 namespace Cti {
 namespace Messaging {
@@ -46,8 +52,6 @@ private:
     cms::MessageProducer *getProducer(cms::Session &session, const std::string &queue);
 
     std::string getQueueName(Queues queue) const;
-
-    bool _initialized;
 
     unsigned _delay;
 

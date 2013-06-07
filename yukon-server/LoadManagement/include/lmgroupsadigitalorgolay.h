@@ -9,7 +9,7 @@ class CtiLMGroupSADigitalORGolay : public CtiLMGroupBase
 {
 public:
 
-RWDECLARE_COLLECTABLE( CtiLMGroupSADigitalORGolay )
+DECLARE_COLLECTABLE( CtiLMGroupSADigitalORGolay );
 
     CtiLMGroupSADigitalORGolay();
     CtiLMGroupSADigitalORGolay(Cti::RowReader &rdr);
@@ -23,10 +23,6 @@ RWDECLARE_COLLECTABLE( CtiLMGroupSADigitalORGolay )
     virtual CtiRequestMsg* createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, int priority) const;
     virtual CtiRequestMsg* createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const;
     virtual CtiRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const;
-
-    //Members inherited from RWCollectable
-    void restoreGuts(RWvistream& );
-    void saveGuts(RWvostream& ) const;
 
     CtiLMGroupSADigitalORGolay& operator=(const CtiLMGroupSADigitalORGolay& right);
 

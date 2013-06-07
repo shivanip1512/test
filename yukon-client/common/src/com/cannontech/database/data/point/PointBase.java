@@ -26,8 +26,8 @@ import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.point.fdr.FDRTranslation;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 import com.cannontech.spring.YukonSpringHook;
 
 public class PointBase extends DBPersistent implements CTIDbChange, EditorPanel {
@@ -103,11 +103,11 @@ public class PointBase extends DBPersistent implements CTIDbChange, EditorPanel 
         }
     }
     
-    public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
-        DBChangeMsg[] msgs = { new DBChangeMsg(
+    public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType) {
+        DBChangeMessage[] msgs = { new DBChangeMessage(
             getPoint().getPointID().intValue(),
-            DBChangeMsg.CHANGE_POINT_DB,
-            DBChangeMsg.CAT_POINT,
+            DBChangeMessage.CHANGE_POINT_DB,
+            DBChangeMessage.CAT_POINT,
             getPoint().getPointType(),
             dbChangeType)
         };

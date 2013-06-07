@@ -1,7 +1,7 @@
 package com.cannontech.web.updater.capcontrol;
 
 import com.cannontech.cbc.util.UpdaterHelper;
-import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.messaging.message.capcontrol.streamable.Feeder;
 import com.cannontech.user.YukonUserContext;
 
 public class FeederFormattingService extends AbstractFormattingService<Feeder> {

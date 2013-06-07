@@ -12,8 +12,8 @@ package com.cannontech.servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
-import com.cannontech.message.util.MessageEvent;
-import com.cannontech.message.util.MessageListener;
+import com.cannontech.messaging.util.MessageEvent;
+import com.cannontech.messaging.util.MessageListener;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 

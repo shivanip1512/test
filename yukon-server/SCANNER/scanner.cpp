@@ -30,7 +30,8 @@
 
 #include "c_port_interface.h"
 #include "cparms.h"
-#include "connection.h"
+#include "connection_client.h"
+#include "amq_constants.h"
 
 #include "utility.h"
 #include "dllyukon.h"
@@ -81,8 +82,9 @@ CtiPointManager             ScannerPointManager;
 
 extern BOOL ScannerQuit;
 
-CtiConnection     VanGoghConnection;
-ULONG             ScannerDebugLevel = 0;
+CtiClientConnection VanGoghConnection( Cti::Messaging::ActiveMQ::Queue::dispatch );
+
+ULONG ScannerDebugLevel = 0;
 
 HANDLE hLockArray[] = {
     hScannerSyncs[S_QUIT_EVENT],
@@ -214,7 +216,7 @@ static void applyGenerateScanRequests(const long key, CtiDeviceSPtr pBase, void 
             if((nRet = DeviceRecord->initiateGeneralScan(scanOMs)) > 0)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " General Scan Fail to Device: " << DeviceRecord->getName() << ". Error " << nRet << ": " << GetError(nRet) << endl;
+                dout << CtiTime() << " General Scan Fail to Device: " << DeviceRecord->getName() << ". Error " << nRet << ": " << GetErrorString(nRet) << endl;
             }
             else
             {
@@ -263,7 +265,7 @@ static void applyDLCLPScan(const long key, CtiDeviceSPtr pBase, void *d)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Load Profile Scan Fail to Device: " << pBase->getName() << endl;
-                dout << "\tError " << nRet << ": " << GetError(nRet) << endl;
+                dout << "\tError " << nRet << ": " << GetErrorString(nRet) << endl;
             }
             else
             {
@@ -385,8 +387,8 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
 
     // Initialize the connection to VanGogh....
-    VanGoghConnection.doConnect(VANGOGHNEXUS, VanGoghMachine);
-    VanGoghConnection.setName("Dispatch");
+    VanGoghConnection.setName("Scanner to Dispatch");
+    VanGoghConnection.start();
     VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(SCANNER_REGISTRATION_NAME, rwThreadId(), TRUE));
 
     do
@@ -857,7 +859,7 @@ void ResultThread (void *Arg)
                 if(ScannerDebugLevel & SCANNER_DEBUG_INREPLIES)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " InMessage from " << pBase->getName() << " " << FormatError(InMessage->EventCode & 0x3fff) << endl;
+                    dout << CtiTime() << " InMessage from " << pBase->getName() << " " << GetErrorString(InMessage->EventCode & 0x3fff) << endl;
                 }
 
                 if(pBase && pBase->isSingle())
@@ -1020,7 +1022,7 @@ void ScannerCleanUp ()
 
     VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
     Sleep(2000);
-    VanGoghConnection.ShutdownConnection();
+    VanGoghConnection.close();
 
 
     dout << CtiTime() << " Scanner terminated!" << endl;

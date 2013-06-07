@@ -21,7 +21,7 @@ class CtiLMProgramBase;
 
 typedef boost::shared_ptr< CtiLMProgramBase > CtiLMProgramBaseSPtr;
 
-class CtiLMProgramBase : public CtiMemDBObject, public RWCollectable
+class CtiLMProgramBase : public CtiMemDBObject
 {
 
 public:
@@ -67,6 +67,7 @@ public:
     const CtiTime& getLastControlSent() const;
     BOOL getManualControlReceivedFlag() const;
     std::vector<CtiLMProgramControlWindow*>& getLMProgramControlWindows();
+    const std::vector<CtiLMProgramControlWindow*>& getLMProgramControlWindows() const;
 
     CtiLMProgramBase& setPAOId(LONG id);
     CtiLMProgramBase& setPAOCategory(const std::string& category);
@@ -99,6 +100,10 @@ public:
     CtiLMControlArea* getControlArea();
     virtual CtiLMProgramBase& setProgramState(LONG progstate);
 
+    CtiLMProgramBase& setPaoTypeString           ( const std::string& typeString );
+    CtiLMProgramBase& setLMProgramControlWindows ( const std::vector<CtiLMProgramControlWindow*>& lmProgramControlWindows );
+    CtiLMProgramBase& setPaoType                 ( const LONG paoType );
+
     BOOL isAvailableToday();
     BOOL isWithinValidControlWindow(LONG secondsFromBeginningOfDay);
 
@@ -123,10 +128,6 @@ public:
     virtual void setDirty(BOOL b=TRUE);
     virtual void setChangeReason(const std::string& reason);
     virtual void setLastUser(const std::string& user);
-
-    //Members inherited from RWCollectable
-    void restoreGuts(RWvistream& );
-    void saveGuts(RWvostream& ) const;
 
     CtiLMProgramBase& operator=(const CtiLMProgramBase& right);
 

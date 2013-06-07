@@ -23,11 +23,11 @@
 		Integer fid = Integer.valueOf(feederID);
 		Feeder feederobj = capControlCache.getFeeder(fid);
 		feederName = feederobj.getCcName();
-		SubBus sub = capControlCache.getSubBus(feederobj.getParentID());
+		SubBus sub = capControlCache.getSubBus(feederobj.getParentId());
 		subName = sub.getCcName();
-		substationID = sub.getParentID();
+		substationID = sub.getParentId();
 		SubStation substation = capControlCache.getSubstation(substationID);
-		areaID = substation.getParentID();
+		areaID = substation.getParentId();
 	}
 %>
 

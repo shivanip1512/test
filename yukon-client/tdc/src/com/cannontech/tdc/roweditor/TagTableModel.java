@@ -97,7 +97,7 @@ public class TagTableModel extends javax.swing.table.AbstractTableModel implemen
 	public java.awt.Color getCellForegroundColor(int row, int col) 
 	{
 		LiteTag tagGrp = YukonSpringHook.getBean(TagDao.class).getLiteTag( 
-				getRowAt(row).getTagID() );
+				getRowAt(row).getTagId() );
 
 		return Colors.getColor( tagGrp.getColorID() );
 	}
@@ -145,7 +145,7 @@ public class TagTableModel extends javax.swing.table.AbstractTableModel implemen
 	public Object getValueAt(int row, int col) 
 	{
 		Tag tag = getRowAt(row);
-		LiteTag tagGrp = YukonSpringHook.getBean(TagDao.class).getLiteTag( tag.getTagID() );
+		LiteTag tagGrp = YukonSpringHook.getBean(TagDao.class).getLiteTag( tag.getTagId() );
 		
 		if( tag == null || tagGrp == null )
 			return null;

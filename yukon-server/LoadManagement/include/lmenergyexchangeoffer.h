@@ -10,12 +10,12 @@
 #include "row_reader.h"
 #include "rwutil.h"
 
-class CtiLMEnergyExchangeOffer : public RWCollectable
+class CtiLMEnergyExchangeOffer
 {
 
 public:
 
-RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeOffer )
+DECLARE_COLLECTABLE( CtiLMEnergyExchangeOffer );
 
     CtiLMEnergyExchangeOffer();
     CtiLMEnergyExchangeOffer(Cti::RowReader &rdr);
@@ -28,6 +28,7 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeOffer )
     const std::string& getRunStatus() const;
     const CtiTime& getOfferDate() const;
     std::vector<CtiLMEnergyExchangeOfferRevision*>& getLMEnergyExchangeOfferRevisions();
+    const std::vector<CtiLMEnergyExchangeOfferRevision*>& getLMEnergyExchangeOfferRevisions() const;
 
     CtiLMEnergyExchangeOffer& setPAOId(LONG paoid);
     CtiLMEnergyExchangeOffer& setOfferId(LONG offid);
@@ -43,10 +44,6 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeOffer )
     CtiLMEnergyExchangeOfferRevision* getCurrentOfferRevision();
 
     CtiLMEnergyExchangeOffer* replicate() const;
-
-    //Members inherited from RWCollectable
-    void restoreGuts(RWvistream& );
-    void saveGuts(RWvostream& ) const;
 
     CtiLMEnergyExchangeOffer& operator=(const CtiLMEnergyExchangeOffer& right);
 

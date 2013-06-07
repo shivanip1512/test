@@ -5,7 +5,7 @@
 
 using std::string;
 
-RWDEFINE_COLLECTABLE( ChangeOpState, CHANGE_OP_STATE_MSG_ID )
+DEFINE_COLLECTABLE( ChangeOpState, CHANGE_OP_STATE_MSG_ID )
 
 ChangeOpState::ChangeOpState() :
     Inherited()
@@ -30,7 +30,7 @@ ChangeOpState::~ChangeOpState()
 
 }
 
-const string& ChangeOpState::getOpStateName()
+const string& ChangeOpState::getOpStateName() const
 {
     return _opStateName;
 }
@@ -38,24 +38,6 @@ const string& ChangeOpState::getOpStateName()
 void ChangeOpState::setOpStateName(const string& opStateName)
 {
     _opStateName = opStateName;
-}
-
-void ChangeOpState::restoreGuts(RWvistream& iStream)
-{
-    Inherited::restoreGuts(iStream);
-
-    iStream >> _opStateName;
-
-    return;
-}
-
-void ChangeOpState::saveGuts(RWvostream& oStream) const
-{
-    Inherited::saveGuts(oStream);
-
-    oStream << _opStateName;
-
-    return;
 }
 
 ChangeOpState& ChangeOpState::operator=(const ChangeOpState& right)

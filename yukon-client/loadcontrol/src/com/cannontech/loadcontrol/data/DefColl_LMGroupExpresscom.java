@@ -1,5 +1,6 @@
 package com.cannontech.loadcontrol.data;
 
+import com.cannontech.messaging.message.loadcontrol.data.GroupExpresscom;
 /**
  * This type was created in VisualAge.
  */
@@ -22,7 +23,7 @@ public DefColl_LMGroupExpresscom()
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new LMGroupExpresscom();
+	return new GroupExpresscom();
 }
 /**
  * getCxxClassId method comment.
@@ -43,7 +44,7 @@ public String getCxxStringId()
  */
 public Class getJavaClass()
 {
-	return LMGroupExpresscom.class;
+	return GroupExpresscom.class;
 }
 /**
  * restoreGuts method comment.
@@ -52,7 +53,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 {
 	super.restoreGuts( obj, vstr, polystr );
 
-	LMGroupExpresscom lmGroupExpresscom = (LMGroupExpresscom) obj;	
+	GroupExpresscom lmGroupExpresscom = (GroupExpresscom) obj;	
 }
 
 /**

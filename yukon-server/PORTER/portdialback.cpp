@@ -13,7 +13,7 @@
 
 #include "cparms.h"
 #include "dsm2.h"
-#include "connection.h"
+#include "connection_client.h"
 #include "mgr_device.h"
 #include "mgr_port.h"
 #include "msg_cmd.h"
@@ -26,10 +26,10 @@ using namespace std;
 
 void PortDialbackThread(void *pid)
 {
-    extern CtiConnection    VanGoghConnection;
-    extern CtiPILServer     PIL;
-    extern CtiPortManager   PortManager;
-    extern CtiDeviceManager DeviceManager;
+    extern CtiClientConnection  VanGoghConnection;
+    extern CtiPILServer         PIL;
+    extern CtiPortManager       PortManager;
+    extern CtiDeviceManager     DeviceManager;
 
     INT            i, status = NORMAL;
     LONG           portid = (LONG)pid;      // NASTY CAST HERE!!!

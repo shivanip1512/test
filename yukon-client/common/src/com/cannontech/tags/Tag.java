@@ -28,14 +28,14 @@ public class Tag {
 	/**
 	 * @return
 	 */
-	public int getInstanceID() {
+	public int getInstanceId() {
 		return instanceID;
 	}
 
 	/**
 	 * @return
 	 */
-	public int getPointID() {
+	public int getPointId() {
 		return pointID;
 	}
 
@@ -56,7 +56,7 @@ public class Tag {
 	/**
 	 * @return
 	 */
-	public int getTagID() {
+	public int getTagId() {
 		return tagID;
 	}
 
@@ -77,14 +77,14 @@ public class Tag {
 	/**
 	 * @param i
 	 */
-	public void setInstanceID(int i) {
+	public void setInstanceId(int i) {
 		instanceID = i;
 	}
 
 	/**
 	 * @param i
 	 */
-	public void setPointID(int i) {
+	public void setPointId(int i) {
 		pointID = i;
 	}
 
@@ -105,7 +105,7 @@ public class Tag {
 	/**
 	 * @param i
 	 */
-	public void setTagID(int i) {
+	public void setTagId(int i) {
 		tagID = i;
 	}
 
@@ -119,7 +119,7 @@ public class Tag {
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {		
-		return getInstanceID();
+		return getInstanceId();
 	}
 
 	/* (non-Javadoc)
@@ -127,14 +127,14 @@ public class Tag {
 	 */
 	public boolean equals(Object obj) {
 		return (obj instanceof Tag &&
-				((Tag)obj).getInstanceID() == getInstanceID());
+				((Tag)obj).getInstanceId() == getInstanceId());
 	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return "Tag instanceID: " + getInstanceID() + " pointID: " + getPointID();
+		return "Tag instanceID: " + getInstanceId() + " pointID: " + getPointId();
 	}
 
 	/**

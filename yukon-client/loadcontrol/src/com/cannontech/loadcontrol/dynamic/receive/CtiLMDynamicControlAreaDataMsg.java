@@ -8,6 +8,8 @@ package com.cannontech.loadcontrol.dynamic.receive;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cannontech.messaging.message.loadcontrol.dynamic.receive.ControlAreaChanged;
+import com.cannontech.messaging.message.loadcontrol.dynamic.receive.TriggerChanged;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -22,13 +24,13 @@ public class CtiLMDynamicControlAreaDataMsg implements com.roguewave.vsj.DefineC
     }
     
     public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-    	return new LMControlAreaChanged();
+    	return new ControlAreaChanged();
     }
     
     public com.roguewave.tools.v2_0.Comparator getComparator() {
     	return new Comparator() {
     		public int compare(Object x, Object y) {
-    			return (((LMControlAreaChanged)x).getPaoID().intValue() - ((LMControlAreaChanged)y).getPaoID().intValue() );
+    			return (((ControlAreaChanged)x).getPaoId()- ((ControlAreaChanged)y).getPaoId() );
     		}
     	};
     }
@@ -42,13 +44,13 @@ public class CtiLMDynamicControlAreaDataMsg implements com.roguewave.vsj.DefineC
     }
     
     public Class getJavaClass() {
-    	return LMControlAreaChanged.class;
+    	return ControlAreaChanged.class;
     }
     
     public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {
-    	LMControlAreaChanged lmControlAreaChanged = (LMControlAreaChanged) obj;
+    	ControlAreaChanged lmControlAreaChanged = (ControlAreaChanged) obj;
     	
-    	lmControlAreaChanged.setPaoID((int)vstr.extractUnsignedInt());
+    	lmControlAreaChanged.setPaoId((int)vstr.extractUnsignedInt());
     	lmControlAreaChanged.setDisableFlag(vstr.extractUnsignedInt() > 0);
         java.util.GregorianCalendar nextCheckTime = new java.util.GregorianCalendar();
         nextCheckTime.setTime((java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );
@@ -60,9 +62,9 @@ public class CtiLMDynamicControlAreaDataMsg implements com.roguewave.vsj.DefineC
         
         //deal with triggers
         int totalTriggers = (int) vstr.extractUnsignedInt();
-        List<LMTriggerChanged> triggers = new ArrayList<LMTriggerChanged>(totalTriggers);
+        List<TriggerChanged> triggers = new ArrayList<TriggerChanged>(totalTriggers);
         for (int i = 0; i < totalTriggers; i++) {
-            triggers.add((LMTriggerChanged)vstr.restoreObject(polystr));
+            triggers.add((TriggerChanged)vstr.restoreObject(polystr));
         }
         lmControlAreaChanged.setTriggers(triggers);
     }

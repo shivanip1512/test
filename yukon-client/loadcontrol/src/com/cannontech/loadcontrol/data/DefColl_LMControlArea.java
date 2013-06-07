@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.message.util.CollectionExtracter;
+import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -27,7 +28,7 @@ public DefColl_LMControlArea() {
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new LMControlArea();
+	return new ControlAreaItem();
 }
 /**
  * getComparator method comment.
@@ -38,7 +39,7 @@ public com.roguewave.tools.v2_0.Comparator getComparator()
 	{
 		public int compare(Object x, Object y) 
 		{
-			return (int) (((LMControlArea)x).getYukonID().intValue() - ((LMControlArea)y).getYukonID().intValue() );
+			return (int) (((ControlAreaItem)x).getYukonId().intValue() - ((ControlAreaItem)y).getYukonId().intValue() );
 		}
 	};
 	
@@ -59,14 +60,14 @@ public String getCxxStringId() {
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return LMControlArea.class;
+	return ControlAreaItem.class;
 }
 /**
  * restoreGuts method comment.
  */
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMControlArea lmControlArea = (LMControlArea) obj;
+	ControlAreaItem lmControlArea = (ControlAreaItem) obj;
 	
 	Integer yukonID = new Integer( (int)vstr.extractUnsignedInt() );
 	String yukonCategory = (String) vstr.restoreObject( SimpleMappings.CString );	// No longer used, but still needs to be restored. Replaced by PaoType.paoCategory
@@ -93,7 +94,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
     Vector triggerVector = CollectionExtracter.extractVector(vstr, polystr);
     Vector lmProgramVector = CollectionExtracter.extractVector(vstr, polystr);
 
-	lmControlArea.setYukonID(yukonID);
+	lmControlArea.setYukonId(yukonID);
 	lmControlArea.setYukonName(yukonName);
 	lmControlArea.setYukonType(PaoType.getForDbString(yukonType));
 	lmControlArea.setYukonDescription(yukonDescription);
@@ -113,7 +114,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	lmControlArea.setCurrentDailyStartTime(currentDailyStartTime);
 	lmControlArea.setCurrentDailyStopTime(currentDailyStopTime);
 	lmControlArea.setTriggerVector(triggerVector);
-	lmControlArea.setLmProgramVector(lmProgramVector);
+	lmControlArea.setProgramVector(lmProgramVector);
 }
 /**
  * saveGuts method comment.

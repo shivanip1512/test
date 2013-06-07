@@ -25,11 +25,11 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.dr.loadgroup.filter.MacroLoadGroupForLoadGroupFilter;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
-import com.cannontech.loadcontrol.data.LMDirectGroupBase;
-import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
-import com.cannontech.loadcontrol.messages.LMCommand;
-import com.cannontech.message.util.Message;
+import com.cannontech.messaging.message.BaseMessage;
+import com.cannontech.messaging.message.loadcontrol.CommandMessage;
+import com.cannontech.messaging.message.loadcontrol.data.DirectGroupBase;
+import com.cannontech.messaging.message.loadcontrol.data.GroupBase;
 import com.cannontech.user.YukonUserContext;
 
 public class LoadGroupServiceImpl implements LoadGroupService {
@@ -39,18 +39,18 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     private DemandResponseEventLogService demandResponseEventLogService;
     
     @Override
-    public LMDirectGroupBase getGroupForPao(YukonPao from) {
-        LMDirectGroupBase group = null;
-        DatedObject<LMGroupBase> datedGroup = 
+    public DirectGroupBase getGroupForPao(YukonPao from) {
+        DirectGroupBase group = null;
+        DatedObject<GroupBase> datedGroup = 
             loadControlClientConnection.getDatedGroup(from.getPaoIdentifier().getPaoId());
-        if (datedGroup != null && datedGroup.getObject() instanceof LMDirectGroupBase) {
-            group = (LMDirectGroupBase) datedGroup.getObject();
+        if (datedGroup != null && datedGroup.getObject() instanceof DirectGroupBase) {
+            group = (DirectGroupBase) datedGroup.getObject();
         }
         return group;
     }
 
     @Override
-    public DatedObject<? extends LMGroupBase> findDatedGroup(int loadGroupId) {
+    public DatedObject<? extends GroupBase> findDatedGroup(int loadGroupId) {
         return loadControlClientConnection.getDatedGroup(loadGroupId);
     }
 
@@ -83,7 +83,7 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     @Override
     public void sendShed(int loadGroupId, int durationInSeconds) {
 
-        Message msg = new LMCommand(LMCommand.SHED_GROUP, loadGroupId,
+        BaseMessage msg = new CommandMessage(CommandMessage.SHED_GROUP, loadGroupId,
                                     durationInSeconds, 0.0);
         loadControlClientConnection.write(msg);
         
@@ -95,7 +95,7 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     @Override
     public void sendRestore(int loadGroupId) {
 
-        Message msg = new LMCommand(LMCommand.RESTORE_GROUP, loadGroupId,
+        BaseMessage msg = new CommandMessage(CommandMessage.RESTORE_GROUP, loadGroupId,
                                     0, 0.0);
         loadControlClientConnection.write(msg);
 
@@ -106,9 +106,9 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     @Override
     public void setEnabled(int loadGroupId, boolean isEnabled) {
 
-        int loadControlCommand = isEnabled ? LMCommand.ENABLE_GROUP
-                : LMCommand.DISABLE_GROUP;
-        Message msg = new LMCommand(loadControlCommand, loadGroupId, 0, 0.0);
+        int loadControlCommand = isEnabled ? CommandMessage.ENABLE_GROUP
+                : CommandMessage.DISABLE_GROUP;
+        BaseMessage msg = new CommandMessage(loadControlCommand, loadGroupId, 0, 0.0);
         loadControlClientConnection.write(msg);
         
         DisplayablePao loadGroup = this.getLoadGroup(loadGroupId);
@@ -122,7 +122,7 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     
     @Override
     public boolean isEnabled(int loadGroupId) {
-        LMGroupBase group = this.loadControlClientConnection.getGroup(loadGroupId);
+        GroupBase group = this.loadControlClientConnection.getGroup(loadGroupId);
         Boolean disableFlag = group.getDisableFlag();
         return !disableFlag;
     }

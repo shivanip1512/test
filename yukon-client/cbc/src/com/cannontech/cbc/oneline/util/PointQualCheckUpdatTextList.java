@@ -2,7 +2,7 @@ package com.cannontech.cbc.oneline.util;
 
 import com.cannontech.cbc.oneline.model.UpdatableStats;
 import com.cannontech.cbc.util.CapControlUtils;
-import com.cannontech.message.capcontrol.streamable.PointQualityCheckable;
+import com.cannontech.messaging.message.capcontrol.streamable.PointQualityCheckable;
 
 public class PointQualCheckUpdatTextList extends UpdatableTextList implements
         PointQualityCheckable, ExtraUpdatableTextElement {

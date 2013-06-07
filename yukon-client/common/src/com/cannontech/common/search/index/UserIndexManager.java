@@ -12,8 +12,8 @@ import org.apache.lucene.index.Term;
 
 import com.cannontech.common.search.YukonObjectAnalyzer;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 import com.cannontech.user.UserUtils;
 
 /**
@@ -81,8 +81,8 @@ public class UserIndexManager extends AbstractIndexManager {
     }
 
     protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category, String type) {
-        if (database == DBChangeMsg.CHANGE_YUKON_USER_DB
-                && ! DBChangeMsg.CAT_YUKON_USER_GROUP.equalsIgnoreCase(category)) {
+        if (database == DBChangeMessage.CHANGE_YUKON_USER_DB
+                && ! DBChangeMessage.CAT_YUKON_USER_GROUP.equalsIgnoreCase(category)) {
             // yukon user change msg
             return this.processUserChange(id);
         }

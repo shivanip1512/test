@@ -17,10 +17,11 @@
 class IM_EX_MSG CtiServerResponseMsg : public CtiMessage
 {
 public:
+    DECLARE_COLLECTABLE( CtiServerResponseMsg )
 
-    RWDECLARE_COLLECTABLE( CtiServerResponseMsg );
+public:
 
-    typedef  CtiMessage Inherited;
+    typedef  CtiMessage  Inherited;
 
     /* Possible values for status */
     enum {
@@ -48,8 +49,6 @@ public:
     CtiMessage* getPayload() const;
     CtiServerResponseMsg& setPayload(CtiMessage* payload);
     CtiMessage* releasePayload();                               // Removes from response and claims ownership of the memory.
-    virtual void saveGuts(RWvostream &aStream) const;
-    virtual void restoreGuts(RWvistream& aStream);
 
     virtual CtiMessage* replicateMessage() const;
 

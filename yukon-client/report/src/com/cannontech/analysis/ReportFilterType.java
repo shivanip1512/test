@@ -97,7 +97,7 @@ public enum ReportFilterType {
 	        String meterNumber = st.nextToken().trim();
 	        LiteYukonPAObject lPao = lookup.apply(meterNumber);
 	        if( lPao != null) {
-	            idsArray[i++] = lPao.getYukonID();
+	            idsArray[i++] = lPao.getYukonId();
 	        }
 	    }
 	    if( idsArray.length > 0 ) {

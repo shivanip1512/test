@@ -5,7 +5,7 @@ import com.cannontech.common.gui.unchanging.DoubleRangeDocument;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.alarms.gui.AlarmingRow;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
@@ -251,7 +251,7 @@ public class AnalogManualEntryPanel extends ManualEntryJPanel implements RowEdit
         try {
             if (!getJTextFieldValue().getText().equals("")) {
                 // Create new point Here
-                PointData pt = new PointData();
+                PointDataMessage pt = new PointDataMessage();
                 pt.setId(getEditorData().getPointID());
                 pt.setTags(getEditorData().getTags());
                 pt.setTimeStamp(new java.util.Date());

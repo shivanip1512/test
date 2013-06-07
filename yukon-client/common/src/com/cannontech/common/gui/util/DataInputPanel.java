@@ -97,7 +97,7 @@ public abstract class DataInputPanel extends JPanel {
 
         // if one is found, compare it to deviceBase to see if its this.
         if (liteYukonPAObject != null) {
-            return liteYukonPAObject.getYukonID() == thisPaobjectId;
+            return liteYukonPAObject.getYukonId() == thisPaobjectId;
         }
 
         // liteYukonPaobject will be null if matching object was not found.

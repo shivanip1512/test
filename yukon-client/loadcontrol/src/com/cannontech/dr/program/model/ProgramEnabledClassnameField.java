@@ -1,6 +1,6 @@
 package com.cannontech.dr.program.model;
 
-import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.messaging.message.loadcontrol.data.Program;
 import com.cannontech.user.YukonUserContext;
 
 public class ProgramEnabledClassnameField extends ProgramBackingFieldBase {
@@ -11,7 +11,7 @@ public class ProgramEnabledClassnameField extends ProgramBackingFieldBase {
     }
 
     @Override
-    public Object getProgramValue(LMProgramBase program,
+    public Object getProgramValue(Program program,
             YukonUserContext userContext) {
         return program.getDisableFlag() ? "drDisabled" : "drEnabled";
     }

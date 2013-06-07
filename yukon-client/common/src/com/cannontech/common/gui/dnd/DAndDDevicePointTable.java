@@ -37,7 +37,7 @@ public class DAndDDevicePointTable extends DragAndDropTable implements java.awt.
 	 */
 	private void addDevice(LiteYukonPAObject device)
 	{
-        List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(device.getYukonID());
+        List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(device.getYukonId());
         for (LitePoint point : points) {
             addPoint(point);
         }

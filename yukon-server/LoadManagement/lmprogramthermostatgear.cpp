@@ -104,58 +104,6 @@ float CtiLMProgramThermoStatGear::getRampRate() const
     return _rampRate;
 }
 
-/*-------------------------------------------------------------------------
-    restoreGuts
-
-    Restore self's state from the given stream
---------------------------------------------------------------------------*/
-/*void CtiLMProgramThermoStatGear::restoreGuts(RWvistream& istrm)
-{
-    CtiLMProgramDirectGear::restoreGuts( istrm );
-
-    istrm >> _settings
-    >> _minvalue
-    >> _maxvalue
-    >> _valueb
-    >> _valued
-    >> _valuef
-    >> _random
-    >> _valueta
-    >> _valuetb
-    >> _valuetc
-    >> _valuetd
-    >> _valuete
-    >> _valuetf
-    >> _rampRate;
-}*/
-
-/*---------------------------------------------------------------------------
-    saveGuts
-
-    Save self's state onto the given stream
----------------------------------------------------------------------------*/
-/*void CtiLMProgramThermoStatGear::saveGuts(RWvostream& ostrm ) const
-{
-    CtiLMProgramDirectGear::saveGuts( ostrm );
-
-    ostrm << _settings
-    << _minvalue
-    << _maxvalue
-    << _valueb
-    << _valued
-    << _valuef
-    << _random
-    << _valueta
-    << _valuetb
-    << _valuetc
-    << _valuetd
-    << _valuete
-    << _valuetf
-    << _rampRate;
-
-    return;
-}*/
-
 /*---------------------------------------------------------------------------
     operator=
 ---------------------------------------------------------------------------*/

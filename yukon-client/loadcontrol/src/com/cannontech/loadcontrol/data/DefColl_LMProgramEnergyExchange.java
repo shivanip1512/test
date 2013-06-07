@@ -7,6 +7,7 @@ package com.cannontech.loadcontrol.data;
 
 import com.cannontech.message.util.CollectionExtracter;
 import com.cannontech.message.util.CollectionInserter;
+import com.cannontech.messaging.message.loadcontrol.data.ProgramEnergyExchange;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -34,7 +35,7 @@ public DefColl_LMProgramEnergyExchange() {
 	* to be out of sync and the results could be catastrophic.
 	*/
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new LMProgramEnergyExchange();
+	return new ProgramEnergyExchange();
 }
  /**
 	* Return a Comparator object for the Java class being mapped.
@@ -78,7 +79,7 @@ public String getCxxStringId() {
 	* being mapped.  It is used by CollectableStreamer during registration.
 	*/
 public Class getJavaClass() {
-	return LMProgramEnergyExchange.class;
+	return ProgramEnergyExchange.class;
 }
  /**
 	* This method will be called by CollectableStreamer to restore the guts,
@@ -90,7 +91,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 {
 	super.restoreGuts(obj,vstr,polystr);
 
-	LMProgramEnergyExchange prog = (LMProgramEnergyExchange) obj;
+	ProgramEnergyExchange prog = (ProgramEnergyExchange) obj;
 
 	prog.setMinNotifyTime( new Integer((int)vstr.extractUnsignedInt()) );
 	prog.setHeading( (String) vstr.restoreObject( SimpleMappings.CString ));
@@ -113,7 +114,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 {
 	super.saveGuts(obj,vstr,polystr);
 
-	LMProgramEnergyExchange prog = (LMProgramEnergyExchange) obj;
+	ProgramEnergyExchange prog = (ProgramEnergyExchange) obj;
 
 	vstr.insertUnsignedLong( prog.getMinNotifyTime().longValue() );
 	vstr.saveObject( prog.getHeading(), SimpleMappings.CString );

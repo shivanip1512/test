@@ -1,5 +1,6 @@
 package com.cannontech.loadcontrol.data;
 
+import com.cannontech.messaging.message.loadcontrol.data.GroupMCT;
 /**
  * This type was created in VisualAge.
  */
@@ -22,7 +23,7 @@ public DefColl_LMGroupMCT()
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new LMGroupMCT();
+	return new GroupMCT();
 }
 /**
  * getCxxClassId method comment.
@@ -43,7 +44,7 @@ public String getCxxStringId()
  */
 public Class getJavaClass()
 {
-	return LMGroupMCT.class;
+	return GroupMCT.class;
 }
 /**
  * restoreGuts method comment.
@@ -52,7 +53,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 {
 	super.restoreGuts( obj, vstr, polystr );
 
-	LMGroupMCT lmGroupMCT = (LMGroupMCT) obj;	
+	GroupMCT lmGroupMCT = (GroupMCT) obj;	
 }
 /**
  * saveGuts method comment.

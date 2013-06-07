@@ -11,7 +11,7 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.program.service.ProgramService;
-import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.messaging.message.loadcontrol.data.Program;
 
 public class StartStopFilter implements UiFilter<DisplayablePao> {
     private ProgramService programService;
@@ -34,7 +34,7 @@ public class StartStopFilter implements UiFilter<DisplayablePao> {
 
             @Override
             public boolean matches(DisplayablePao pao) {
-                LMProgramBase program = programService.getProgramForPao(pao);
+                Program program = programService.getProgramForPao(pao);
                 boolean retVal = program != null && filter.intersects((isStart
                         ? program.getStartTime() : program.getStopTime()).getTime());
                 return retVal;

@@ -15,8 +15,8 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
-import com.cannontech.message.capcontrol.streamable.Area;
-import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.messaging.message.capcontrol.streamable.Area;
+import com.cannontech.messaging.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.UserUtils;
 

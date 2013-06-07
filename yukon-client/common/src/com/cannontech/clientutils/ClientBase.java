@@ -11,13 +11,13 @@ package com.cannontech.clientutils;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.message.dispatch.message.PointRegistration;
-import com.cannontech.message.dispatch.message.Signal;
-import com.cannontech.message.util.Message;
-import com.cannontech.message.util.MessageEvent;
-import com.cannontech.message.util.MessageListener;
+import com.cannontech.messaging.message.BaseMessage;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.messaging.message.dispatch.PointRegistrationMessage;
+import com.cannontech.messaging.message.dispatch.SignalMessage;
+import com.cannontech.messaging.util.MessageEvent;
+import com.cannontech.messaging.util.MessageListener;
 import com.cannontech.yukon.BasicServerConnection;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
@@ -72,10 +72,10 @@ protected IServerConnection getConnection() {
  * Version: <version>
  * @return com.cannontech.message.dispatch.message.PointRegistration
  */
-public PointRegistration getPointRegistration( Long[] ptIDs )
+public PointRegistrationMessage getPointRegistration( Long[] ptIDs )
 {
 	//Register for points
-	PointRegistration pReg = new PointRegistration();	
+	PointRegistrationMessage pReg = new PointRegistrationMessage();	
     List<Integer> list = new ArrayList<Integer>();
 	
 	if( ptIDs != null )
@@ -88,9 +88,9 @@ public PointRegistration getPointRegistration( Long[] ptIDs )
 	}
 	else
 	{	// just register for everything
-		pReg.setRegFlags( PointRegistration.REG_ALL_PTS_MASK | 
-					  PointRegistration.REG_EVENTS | 
-					  PointRegistration.REG_ALARMS );
+		pReg.setRegFlags( PointRegistrationMessage.REG_ALL_PTS_MASK | 
+					  PointRegistrationMessage.REG_EVENTS | 
+					  PointRegistrationMessage.REG_ALARMS );
 	}
 	
 	return pReg;
@@ -140,21 +140,21 @@ public void reRegister( Long[] ptIDs )
 //private void handleMessage( Object in )
 public void messageReceived( MessageEvent e )
 {
-	Message in = e.getMessage();
+	BaseMessage in = e.getMessage();
 
-	if( in instanceof PointData )
+	if( in instanceof PointDataMessage )
    {           
-      PointData point = (PointData) in;            
+      PointDataMessage point = (PointDataMessage) in;            
       receivedPointData( point );
    }
-   else if( in instanceof Signal )
+   else if( in instanceof SignalMessage )
    {           
-      Signal sig = (Signal) in;           
+      SignalMessage sig = (SignalMessage) in;           
       receivedSignal( sig );
    }
-   else if( in instanceof DBChangeMsg )
+   else if( in instanceof DBChangeMessage )
    {
-      DBChangeMsg dbChange = (DBChangeMsg) in;
+      DBChangeMessage dbChange = (DBChangeMessage) in;
       receivedDBChangMsg( dbChange );
    }
 
@@ -165,7 +165,7 @@ public void messageReceived( MessageEvent e )
  * Creation date: (1/24/2001 1:47:59 PM)
  * @param obj java.lang.Object
  */
-public void write(Message obj) {
+public void write(BaseMessage obj) {
     BasicServerConnection conn = getConnection();
 	if(conn.isValid()) { 
 		getConnection().write( obj);

@@ -88,11 +88,11 @@ import com.cannontech.core.substation.dao.SubstationToRouteMappingDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
-import com.cannontech.message.porter.message.Request;
-import com.cannontech.message.porter.message.Return;
-import com.cannontech.message.util.Message;
-import com.cannontech.message.util.MessageEvent;
-import com.cannontech.message.util.MessageListener;
+import com.cannontech.messaging.message.BaseMessage;
+import com.cannontech.messaging.message.porter.RequestMessage;
+import com.cannontech.messaging.message.porter.ReturnMessage;
+import com.cannontech.messaging.util.MessageEvent;
+import com.cannontech.messaging.util.MessageListener;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -240,11 +240,11 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 	@Override
 	public void messageReceived(MessageEvent e)
 	{
-		Message in = e.getMessage();		
-		if(in instanceof Return)
+		BaseMessage in = e.getMessage();		
+		if(in instanceof ReturnMessage)
 		{
-			final Return returnMsg = (Return) in;
-			final MultispeakEvent event = getEventsMap().get(new Long (returnMsg.getUserMessageID()) );
+			final ReturnMessage returnMsg = (ReturnMessage) in;
+			final MultispeakEvent event = getEventsMap().get(new Long (returnMsg.getUserMessageId()) );
 			
 			if(event != null) {
 			    
@@ -254,16 +254,16 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     			    @Override
     			    public void run() {
                         
-                        eLogger.info("Message Received [ID:"+ returnMsg.getUserMessageID() + 
-                                        " DevID:" + returnMsg.getDeviceID() + 
+                        eLogger.info("Message Received [ID:"+ returnMsg.getUserMessageId() + 
+                                        " DevID:" + returnMsg.getDeviceId() + 
                                         " Command:" + returnMsg.getCommandString() +
                                         " Result:" + returnMsg.getResultString() + 
                                         " Status:" + returnMsg.getStatus() +
                                         " More:" + returnMsg.getExpectMore()+"]");
         
-                        if(returnMsg.getExpectMore() == 0) {
+                        if(returnMsg.getExpectMore() == false) {
                             
-        					eLogger.info("Received Message From ID:" + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
+        					eLogger.info("Received Message From ID:" + returnMsg.getDeviceId() + " - " + returnMsg.getResultString());
         
                             boolean doneProcessing = event.messageReceived(returnMsg);
                             if (doneProcessing)
@@ -968,22 +968,22 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      */
     private void writePilRequest(YukonMeter meter, String commandStr, long id, int priority) {
         
-        Request pilRequest = setupPilRequest(meter, commandStr, id, priority);
+        RequestMessage pilRequest = setupPilRequest(meter, commandStr, id, priority);
         doWritePilRequest(pilRequest);
     }
     
-    private Request setupPilRequest(YukonMeter meter, String commandStr, long id, int priority) {
+    private RequestMessage setupPilRequest(YukonMeter meter, String commandStr, long id, int priority) {
         
-        Request pilRequest = null;
+        RequestMessage pilRequest = null;
         commandStr += " update";
         commandStr += " noqueue";
-        pilRequest = new Request(meter.getPaoIdentifier().getPaoId(), commandStr, id);
+        pilRequest = new RequestMessage(meter.getPaoIdentifier().getPaoId(), commandStr, id);
         pilRequest.setPriority(priority);
         
         return pilRequest;
     }
     
-    private void doWritePilRequest(Request pilRequest) {
+    private void doWritePilRequest(RequestMessage pilRequest) {
         porterConnection.write(pilRequest);
     }
     

@@ -112,7 +112,7 @@ import com.cannontech.database.db.pao.PAOScheduleAssign;
 import com.cannontech.database.db.season.SeasonSchedule;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.database.model.Season;
-import com.cannontech.message.capcontrol.streamable.SubStation;
+import com.cannontech.messaging.message.capcontrol.streamable.SubStation;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.spring.YukonSpringHook;
@@ -958,7 +958,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             for(CBCSpecialAreaData data: assignedAreas) {
                 try {
                     SubStation substation = capControlCache.getSubstation(data.getSubID());
-                    if(substation.getSpecialAreaEnabled() && substation.getSpecialAreaId().intValue() != area.getPAObjectID().intValue()) {
+                    if(substation.getSpecialAreaEnabled() && substation.getSpecialAreaId() != area.getPAObjectID().intValue()) {
                         duplicates.add(capControlCache.getCBCSpecialArea(substation.getSpecialAreaId()).getCcName() + ": " + substation.getCcName());
                     }
                 } catch(NotFoundException nfe) {
@@ -1220,14 +1220,14 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             }
         } else if (getDbPersistent() instanceof CapControlSubBus) {
             try{
-                parentID = capControlCache.getSubBus(itemId).getParentID();
+                 parentID = capControlCache.getSubBus(itemId).getParentId();
             }catch( NotFoundException e ){
                 //do nothing
                 parentID = 0;
             }
         } else if (getDbPersistent() instanceof CapControlSubstation) {
             try{
-                parentID = capControlCache.getSubstation(itemId).getParentID();
+                parentID = capControlCache.getSubstation(itemId).getParentId();
             }catch( NotFoundException e ){
                 //do nothing
                 parentID = 0;

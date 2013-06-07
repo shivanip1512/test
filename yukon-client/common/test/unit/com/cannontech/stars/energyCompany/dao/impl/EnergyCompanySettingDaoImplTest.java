@@ -28,10 +28,10 @@ import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeCategory;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.messaging.util.DbChangeManager;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.model.EnergyCompanySetting;
 
@@ -52,7 +52,7 @@ public class EnergyCompanySettingDaoImplTest {
         DbChangeManager mockDbChangeManager = new DbChangeManager() {
             @Override public void processPaoDbChange(YukonPao pao, DbChangeType changeType) { }
             @Override public void processDbChange(DbChangeType type, DbChangeCategory category, int primaryKey) {}
-            @Override public void processDbChange(DBChangeMsg dbChange) { }
+            @Override public void processDbChange(DBChangeMessage dbChange) { }
             @Override public void processDbChange(int id, int database, String category, DbChangeType dbChangeType) { }
             @Override public void processDbChange(int id, int database, String category, String objectType, DbChangeType dbChangeType) { }
         };

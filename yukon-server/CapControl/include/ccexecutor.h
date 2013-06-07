@@ -97,7 +97,7 @@ class CtiCCCommandExecutor : public CtiCCExecutor
         void CloseCapBank(long bankId, bool confirmImmediately = false);
         void ConfirmOpen();
         void ConfirmClose();
-        void doConfirmImmediately(CtiCCSubstationBus* currentSubstationBus, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, long controllerId);
+        void doConfirmImmediately(CtiCCSubstationBus* currentSubstationBus, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, long controllerId);
         void SendAllData();
         void ReturnCapToOriginalFeeder();
         void ReturnFeederToOriginalSubBus();
@@ -122,22 +122,22 @@ class CtiCCCommandExecutor : public CtiCCExecutor
 
         // Local Control Command Funtions
         void sendLocalControl();
-        void enableOvUv(long bankId, std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
-        void disableOvUv(long bankId, std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
-        void enableTempControl(long bankId, std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
-        void disableTempControl(long bankId, std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
-        void enableVarControl(long bankId, std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
-        void disableVarControl(long bankId, std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
-        void enableTimeControl(long bankId, std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
-        void disableTimeControl(long bankId, std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
+        void enableOvUv        (long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, std::vector<CtiRequestMsg*>& requests);
+        void disableOvUv       (long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, std::vector<CtiRequestMsg*>& requests);
+        void enableTempControl (long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, std::vector<CtiRequestMsg*>& requests);
+        void disableTempControl(long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, std::vector<CtiRequestMsg*>& requests);
+        void enableVarControl  (long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, std::vector<CtiRequestMsg*>& requests);
+        void disableVarControl (long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, std::vector<CtiRequestMsg*>& requests);
+        void enableTimeControl (long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, std::vector<CtiRequestMsg*>& requests);
+        void disableTimeControl(long bankId, std::vector<CtiSignalMsg*>& signals, Cti::CapControl::EventLogEntries &events, std::vector<CtiRequestMsg*>& requests);
 
         void sendVoltageRegulatorCommands(const long command);
 
     private:
         //Helper Functions
-        void setParentOvUvFlags(int paoId, Cti::CapControl::CapControlType type, bool ovuvFlag, CtiMultiMsg_vec& modifiedSubBuses);
+        void setParentOvUvFlags(int paoId, Cti::CapControl::CapControlType type, bool ovuvFlag, CtiCCSubstationBus_vec& modifiedSubBuses); //TODO CBM
         void printOutEventLogsByIdAndType(int paoId, Cti::CapControl::CapControlType type, const string& actionText, const string& userName,
-                                          CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
+                                          CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents);
 
         AttributeService* _attributeService;
 

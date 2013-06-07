@@ -9,13 +9,13 @@ import com.cannontech.amr.rfn.service.processor.RfnArchiveRequestProcessor;
 import com.cannontech.amr.rfn.service.processor.RfnEventConditionDataProcessorHelper;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
 
 public class RfnRestoreBlinkEventArchiveRequestProcessor extends RfnEventConditionDataProcessorHelper
         implements RfnArchiveRequestProcessor {
     
     @Override
-    public <T extends RfnEvent> void process(RfnDevice device, T event, List<? super PointData> pointDatas) {
+    public <T extends RfnEvent> void process(RfnDevice device, T event, List<? super PointDataMessage> pointDatas) {
         Long count = (Long) getEventDataWithType(event, RfnConditionDataType.COUNT);
         rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.RFN_BLINK_RESTORE_COUNT, event.getTimeStamp(), count);
     }

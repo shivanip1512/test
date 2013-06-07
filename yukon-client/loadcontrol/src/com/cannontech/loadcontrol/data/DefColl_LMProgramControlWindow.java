@@ -3,6 +3,7 @@ package com.cannontech.loadcontrol.data;
 /**
  * This type was created in VisualAge.
  */
+import com.cannontech.messaging.message.loadcontrol.data.ProgramControlWindow;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 
@@ -23,7 +24,7 @@ public DefColl_LMProgramControlWindow()
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new LMProgramControlWindow();
+	return new ProgramControlWindow();
 }
 /**
  * getComparator method comment.
@@ -34,7 +35,7 @@ public com.roguewave.tools.v2_0.Comparator getComparator()
 	{
 		public int compare(Object x, Object y) 
 		{
-			return (int) (((LMProgramControlWindow)x).getYukonID().intValue() - ((LMProgramControlWindow)y).getYukonID().intValue() );
+			return (int) (((ProgramControlWindow)x).getYukonId() - ((ProgramControlWindow)y).getYukonId());
 		}
 	};
 	
@@ -58,21 +59,21 @@ public String getCxxStringId()
  */
 public Class getJavaClass()
 {
-	return LMProgramControlWindow.class;
+	return ProgramControlWindow.class;
 }
 /**
  * restoreGuts method comment.
  */
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMProgramControlWindow lmProgramControlWindow = (LMProgramControlWindow) obj;
+	ProgramControlWindow lmProgramControlWindow = (ProgramControlWindow) obj;
 
 	Integer yukonID = new Integer( (int)vstr.extractUnsignedInt() );
 	Integer windowNumber = new Integer( (int)vstr.extractUnsignedInt() );
 	Integer availableStartTime = new Integer( (int)vstr.extractUnsignedInt() );
 	Integer availableStopTime = new Integer( (int)vstr.extractUnsignedInt() );
 
-	lmProgramControlWindow.setYukonID(yukonID);
+	lmProgramControlWindow.setYukonId(yukonID);
 	lmProgramControlWindow.setWindowNumber(windowNumber);
 	lmProgramControlWindow.setAvailableStartTime(availableStartTime);
 	lmProgramControlWindow.setAvailableStopTime(availableStopTime);

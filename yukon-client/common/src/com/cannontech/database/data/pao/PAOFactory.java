@@ -39,7 +39,7 @@ public static YukonPAObject createPAObject( com.cannontech.database.data.lite.Li
 	if (paoCategory == PaoCategory.DEVICE)
 	{
 		returnObject = DeviceFactory.createDevice(litePAObject.getPaoType());
-		((com.cannontech.database.data.device.DeviceBase)returnObject).setDeviceID( new Integer( litePAObject.getYukonID() ) );
+		((com.cannontech.database.data.device.DeviceBase)returnObject).setDeviceID( new Integer( litePAObject.getYukonId() ) );
 		returnObject.setPAOName( litePAObject.getPaoName() );
 	}
 	else if (paoCategory == PaoCategory.LOADMANAGEMENT)
@@ -47,28 +47,28 @@ public static YukonPAObject createPAObject( com.cannontech.database.data.lite.Li
 		returnObject = LMFactory.createLoadManagement(litePAObject.getPaoType().getDeviceTypeId());
 		
 		if( returnObject instanceof com.cannontech.database.data.device.DeviceBase )
-			((com.cannontech.database.data.device.DeviceBase)returnObject).setDeviceID( new Integer( litePAObject.getYukonID() ) );
+			((com.cannontech.database.data.device.DeviceBase)returnObject).setDeviceID( new Integer( litePAObject.getYukonId() ) );
 		else
-			returnObject.setPAObjectID( new Integer( litePAObject.getYukonID() ) );
+			returnObject.setPAObjectID( new Integer( litePAObject.getYukonId() ) );
 		
 		returnObject.setPAOName( litePAObject.getPaoName() );
 	}
 	else if (paoCategory == PaoCategory.PORT)
 	{
 		returnObject = PortFactory.createPort(litePAObject.getPaoType().getDeviceTypeId());
-		((com.cannontech.database.data.port.DirectPort)returnObject).setPortID( new Integer( litePAObject.getYukonID() ) );
+		((com.cannontech.database.data.port.DirectPort)returnObject).setPortID( new Integer( litePAObject.getYukonId() ) );
 		((com.cannontech.database.data.port.DirectPort)returnObject).setPortName( litePAObject.getPaoName() );
 	}
 	else if (paoCategory == PaoCategory.ROUTE)
 	{
 		returnObject = RouteFactory.createRoute(litePAObject.getPaoType().getDeviceTypeId());
-		((com.cannontech.database.data.route.RouteBase)returnObject).setRouteID( new Integer( litePAObject.getYukonID() ) );
+		((com.cannontech.database.data.route.RouteBase)returnObject).setRouteID( new Integer( litePAObject.getYukonId() ) );
 		((com.cannontech.database.data.route.RouteBase)returnObject).setRouteName( litePAObject.getPaoName() );
 	}
 	else if (paoCategory == PaoCategory.CAPCONTROL)
 	{
 		returnObject = CCYukonPAOFactory.createCapControlPAO(litePAObject.getPaoType().getDeviceTypeId());
-		((com.cannontech.database.data.capcontrol.CapControlYukonPAOBase)returnObject).setCapControlPAOID( new Integer( litePAObject.getYukonID() ) );
+		((com.cannontech.database.data.capcontrol.CapControlYukonPAOBase)returnObject).setCapControlPAOID( new Integer( litePAObject.getYukonId() ) );
 		((com.cannontech.database.data.capcontrol.CapControlYukonPAOBase)returnObject).setName( litePAObject.getPaoName() );
 	}
 	else

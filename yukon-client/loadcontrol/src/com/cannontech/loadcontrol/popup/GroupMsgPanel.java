@@ -7,7 +7,7 @@ import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.loadcontrol.messages.LMCommand;
+import com.cannontech.messaging.message.loadcontrol.CommandMessage;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -341,9 +341,9 @@ private javax.swing.JLabel getPercentLabel() {
  */
 public Object getValue(Object val) 
 {
-	LMCommand cmd = (LMCommand)val;
+	CommandMessage cmd = (CommandMessage)val;
 	if( cmd == null )
-		cmd = new LMCommand();
+		cmd = new CommandMessage();
 	
 
 	Integer cnt = (Integer)getJComboBoxPeriodCnt().getSelectedItem();
@@ -365,7 +365,7 @@ public Object getValue(Object val)
 	if( getJTextFieldCyclePercent().isVisible() )	
 		cmd.setCount( cnt.intValue() );  //number of cycle periods
 
-	cmd.setAuxid( (liteRoute == null ? 0 : liteRoute.getYukonID()) );//this auxid will be used for the alt routeID soon
+	cmd.setAuxid( (liteRoute == null ? 0 : liteRoute.getYukonId()) );//this auxid will be used for the alt routeID soon
 	
 	return cmd;
 }

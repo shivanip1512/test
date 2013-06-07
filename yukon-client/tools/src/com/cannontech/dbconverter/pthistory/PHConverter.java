@@ -5,10 +5,10 @@ import java.io.File;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.message.dispatch.message.Multi;
-import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.message.dispatch.message.Registration;
+import com.cannontech.dispatch.DispatchClientConnection;
+import com.cannontech.messaging.message.dispatch.MultiMessage;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.messaging.message.dispatch.RegistrationMessage;
 
 /**
 * Import DSM/2 point history into yukon via Dispatch.
@@ -25,8 +25,8 @@ class PHConverter {
 public PHConverter() {
 	super();
 }
-private static ClientConnection connect() throws java.io.IOException {
-	ClientConnection conn;
+private static DispatchClientConnection connect() throws java.io.IOException {
+	DispatchClientConnection conn;
 	String host;
 	int port;
 
@@ -56,11 +56,11 @@ private static ClientConnection connect() throws java.io.IOException {
 
 	System.out.println("Connecting to dispatch @" + host + ":" + port);
 
-	conn = new ClientConnection();
+	conn = new DispatchClientConnection();
 	conn.setHost(host);
 	conn.setPort(port);
 
-	Registration reg = new Registration();
+	RegistrationMessage reg = new RegistrationMessage();
 	
 	reg.setAppName( CtiUtilities.getAppRegistration() );
 	reg.setAppIsUnique(0);	
@@ -92,7 +92,7 @@ public void convert(String dsm2Root) throws Exception {
 	}
 
 	//connect to dispatch
-	ClientConnection conn = connect();
+	DispatchClientConnection conn = connect();
 
 	if( conn == null ) {
 		System.out.println("Couldn't connect to dispatch, check config.properties and make sure dispatch is running");
@@ -288,18 +288,18 @@ public static void main(String[] args) throws Exception {
  * @param data com.cannontech.dbconverter.pthistory.DSM2PointData
  * @param multiplier float
  */
-private static void sendPointData(ClientConnection conn, int id, float multiplier, DSM2PointData[] data)
+private static void sendPointData(DispatchClientConnection conn, int id, float multiplier, DSM2PointData[] data)
 {	
 	java.util.Date now = new java.util.Date();
 
-	Multi multi = new Multi();
+	MultiMessage multi = new MultiMessage();
 	
 	for( int i = 0; i < data.length; i++ ) {
 
 		if( data[i] == null )
 			continue;
 
-		PointData pData = new PointData();
+		PointDataMessage pData = new PointDataMessage();
 		
         pData.setTags(0x00002000);
 		pData.setType(PointTypes.INVALID_POINT);
@@ -316,7 +316,7 @@ private static void sendPointData(ClientConnection conn, int id, float multiplie
     	if( i != 0 && i % 500 == 0 ) {
 	    	System.out.println("Sending 500 to dispatch");
 			conn.write(multi);
-			multi = new Multi();
+			multi = new MultiMessage();
 
 			try {
 			//Thread.sleep(3000); 
@@ -345,7 +345,7 @@ private static void sendPointData(ClientConnection conn, int id, float multiplie
  * @param pData com.cannontech.vangogh.messages.PointData
  * @param dsmQuality short
  */
-private static void setQuality(PointData pData, short dsmQuality) {
+private static void setQuality(PointDataMessage pData, short dsmQuality) {
 
 	PointQuality yukonQuality;
 	

@@ -17,8 +17,8 @@ import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.util.Util;
-import com.cannontech.message.dispatch.message.Signal;
-import com.cannontech.message.util.Command;
+import com.cannontech.messaging.message.CommandMessage;
+import com.cannontech.messaging.message.dispatch.SignalMessage;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -52,7 +52,7 @@ public class ClearAlarm extends HttpServlet {
 		
 		// A single Command message can ackknowledge any number of Signals(alarms)
 		// Create one, fill it up, then send it to Dispatch
-		Command cmd = createAckCommand(user);
+		CommandMessage cmd = createAckCommand(user);
 		for(int i = 0; i < deviceIds.length; i++) {
 			ackDevice(deviceIds[i], cmd);
 		}
@@ -72,7 +72,7 @@ public class ClearAlarm extends HttpServlet {
 	 * @param deviceID
 	 * @param user
 	 */
-	private void ackDevice(int deviceId, Command cmd) {
+	private void ackDevice(int deviceId, CommandMessage cmd) {
         List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(deviceId);
         for (LitePoint point : points) {
 			ackPoint(point.getPointID(), cmd);	
@@ -84,9 +84,9 @@ public class ClearAlarm extends HttpServlet {
 	 * @param pointId
 	 * @param cmd
 	 */
-	private void ackPoint(int pointId, Command cmd) {
+	private void ackPoint(int pointId, CommandMessage cmd) {
         DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
-		List sigList = new ArrayList<Signal>(dds.getSignals(pointId));
+		List sigList = new ArrayList<SignalMessage>(dds.getSignals(pointId));
 		ackSignals(sigList, cmd);
 	}
 	
@@ -96,9 +96,9 @@ public class ClearAlarm extends HttpServlet {
 	 * @param alarmCategoryId
 	 * @param cmd
 	 */
-	private void ackAlarmCategory(int alarmCategoryId, Command cmd) {
+	private void ackAlarmCategory(int alarmCategoryId, CommandMessage cmd) {
         DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
-		List<Signal> sigList = new ArrayList<Signal>(dds.getSignalsByCategory(alarmCategoryId));		
+		List<SignalMessage> sigList = new ArrayList<SignalMessage>(dds.getSignalsByCategory(alarmCategoryId));		
 		ackSignals(sigList, cmd);
 	}
 	
@@ -108,13 +108,13 @@ public class ClearAlarm extends HttpServlet {
 	 * @param signalList
 	 * @param cmd
 	 */
-	private void ackSignals(List signalList, Command cmd) {
+	private void ackSignals(List signalList, CommandMessage cmd) {
 		List<Integer> argList = cmd.getOpArgList();
 		if(signalList != null) {
 			Iterator iter = signalList.iterator();
 			while(iter.hasNext()) {
-				Signal sig = (Signal) iter.next();
-				argList.add(sig.getPointID());
+				SignalMessage sig = (SignalMessage) iter.next();
+				argList.add(sig.getPointId());
 				argList.add(sig.getCondition());
 			}
 		}				
@@ -125,9 +125,9 @@ public class ClearAlarm extends HttpServlet {
 	 * @param user	Yukon user to attach to the Command
 	 * @return
 	 */
-	private Command createAckCommand(LiteYukonUser user) {
-		Command cmd = new Command();
-		cmd.setOperation(Command.ACKNOWLEGDE_ALARM);
+	private CommandMessage createAckCommand(LiteYukonUser user) {
+		CommandMessage cmd = new CommandMessage();
+		cmd.setOperation(CommandMessage.ACKNOWLEGDE_ALARM);
         List<Integer> argList = new ArrayList<Integer>(1);
         argList.add(-1);
         

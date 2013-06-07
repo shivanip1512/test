@@ -13,7 +13,7 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.*;
-import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.messaging.message.dispatch.SignalMessage;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
@@ -135,7 +135,7 @@ public class PointAlarmTableModel extends AbstractTableModel {
         // Since a given signal can be for a device, point, and alarm category
         // we need to only accept each signal once.
         // Use a hashset that only accepts unique objects
-        HashSet<Signal> allSignals = new HashSet<Signal>();
+        HashSet<SignalMessage> allSignals = new HashSet<SignalMessage>();
 		rows = new ArrayList<AlarmRow>();
 		
 		boolean needsAttention = false;
@@ -150,7 +150,7 @@ public class PointAlarmTableModel extends AbstractTableModel {
         }
         
         try{
-    		List<Signal> deviceSignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForPaos(paoIdsList);
+    		List<SignalMessage> deviceSignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForPaos(paoIdsList);
             allSignals.addAll(deviceSignals);
     	} catch (DynamicDataAccessException e){
             Throwable cause = e.getCause();
@@ -168,7 +168,7 @@ public class PointAlarmTableModel extends AbstractTableModel {
             pointIdsList.add(pointId);
         }
         try {
-            List<Signal> pointSignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForPoints(pointIdsList);
+            List<SignalMessage> pointSignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForPoints(pointIdsList);
             allSignals.addAll(pointSignals);
         } catch (DynamicDataAccessException e){
             Throwable cause = e.getCause();
@@ -185,12 +185,12 @@ public class PointAlarmTableModel extends AbstractTableModel {
 		
 		for (int i = 0; i < _alarmCategoryIds.length; i++) {
 			int alarmCategoryId = _alarmCategoryIds[i];
-			List<Signal> alarmCategorySignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForAlarmCategory(alarmCategoryId);
+			List<SignalMessage> alarmCategorySignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForAlarmCategory(alarmCategoryId);
 			allSignals.addAll(alarmCategorySignals);
 		}
-		Iterator<Signal> iter = allSignals.iterator();
+		Iterator<SignalMessage> iter = allSignals.iterator();
         while(iter.hasNext()) {
-            Signal signal = iter.next();
+            SignalMessage signal = iter.next();
             if( TagUtils.isAnyAlarm(signal.getTags()) )
             {
                 addSignal(signal);
@@ -205,10 +205,10 @@ public class PointAlarmTableModel extends AbstractTableModel {
 	 * Add a row to the table based on this signal
 	 * @param s
 	 */
-	private void addSignal(Signal s) {
+	private void addSignal(SignalMessage s) {
 	    // find out why there is a null in the list!
 	    if(s != null) {	   
-	        int pointID = s.getPointID();
+	        int pointID = s.getPointId();
             LitePoint point = null;
             
             try {
@@ -221,8 +221,8 @@ public class PointAlarmTableModel extends AbstractTableModel {
                 
                 // Only add signals which pass the filtering criteria set in the dialog.
                 // Note that rows is empty upon the call to refresh().
-                if( (isHideEvents() && s.getCategoryID() <= Signal.EVENT_SIGNAL) ||
-                    (isHideAcknowledged() && (s.getCategoryID() > Signal.EVENT_SIGNAL) && !TagUtils.isAlarmUnacked(s.getTags())) ||
+                if( (isHideEvents() && s.getCategoryId() <= SignalMessage.EVENT_SIGNAL) ||
+                    (isHideAcknowledged() && (s.getCategoryId() > SignalMessage.EVENT_SIGNAL) && !TagUtils.isAlarmUnacked(s.getTags())) ||
                     (isHideInactive() && !TagUtils.isConditionActive(s.getTags())) ) {
                     return;
                 }

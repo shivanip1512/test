@@ -1,5 +1,6 @@
 package com.cannontech.loadcontrol.data;
 
+import com.cannontech.messaging.message.loadcontrol.data.GroupRipple;
 /**
  * This type was created in VisualAge.
  */
@@ -22,7 +23,7 @@ public DefColl_LMGroupRipple()
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new LMGroupRipple();
+	return new GroupRipple();
 }
 /**
  * getCxxClassId method comment.
@@ -43,7 +44,7 @@ public String getCxxStringId()
  */
 public Class getJavaClass()
 {
-	return LMGroupRipple.class;
+	return GroupRipple.class;
 }
 /**
  * restoreGuts method comment.
@@ -52,7 +53,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 {
 	super.restoreGuts( obj, vstr, polystr );
 
-	LMGroupRipple lmGroupRipple = (LMGroupRipple) obj;
+	GroupRipple lmGroupRipple = (GroupRipple) obj;
 	lmGroupRipple.setShedTime( new Integer( (int)vstr.extractUnsignedInt() ) );
 }
 /**

@@ -9,14 +9,14 @@ import org.apache.commons.lang.Validate;
 
 import com.cannontech.amr.macsscheduler.service.MACSScheduleService;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.message.macs.message.OverrideRequest;
-import com.cannontech.message.macs.message.Schedule;
+import com.cannontech.messaging.message.macs.OverrideRequestMessage;
+import com.cannontech.messaging.message.macs.ScheduleMessage;
 import com.cannontech.yukon.IMACSConnection;
 
-public class MACSScheduleServiceImpl implements MACSScheduleService<Schedule> {
+public class MACSScheduleServiceImpl implements MACSScheduleService<ScheduleMessage> {
     private IMACSConnection connection;
 
-    public void start(final Schedule schedule, final Date startDate, final Date stopDate) throws IOException {
+    public void start(final ScheduleMessage schedule, final Date startDate, final Date stopDate) throws IOException {
         Validate.notNull(schedule, "schedule cannot be null");
         Validate.notNull(startDate, "startDate cannot be null");
         Validate.notNull(stopDate, "stopDate cannot be null");
@@ -26,39 +26,39 @@ public class MACSScheduleServiceImpl implements MACSScheduleService<Schedule> {
         }
 
         schedule.setUpdatingState(true);
-        connection.sendStartStopSchedule(schedule, startDate, stopDate, OverrideRequest.OVERRIDE_START);
+        connection.sendStartStopSchedule(schedule, startDate, stopDate, OverrideRequestMessage.OVERRIDE_START);
     }
 
-    public void stop(final Schedule schedule, final Date stopDate) throws IOException {
+    public void stop(final ScheduleMessage schedule, final Date stopDate) throws IOException {
         Validate.notNull(schedule, "schedule cannot be null");
         Validate.notNull(stopDate, "stopDate cannot be null");
 
         schedule.setUpdatingState(true);
-        connection.sendStartStopSchedule(schedule, stopDate, stopDate, OverrideRequest.OVERRIDE_STOP);
+        connection.sendStartStopSchedule(schedule, stopDate, stopDate, OverrideRequestMessage.OVERRIDE_STOP);
     }
     
-    public void enable(final Schedule schedule) throws IOException {
+    public void enable(final ScheduleMessage schedule) throws IOException {
         Validate.notNull(schedule, "schedule cannot be null");
         
         schedule.setUpdatingState(true);
         connection.sendEnableDisableSchedule(schedule);
     }
     
-    public void disable(final Schedule schedule) throws IOException {
+    public void disable(final ScheduleMessage schedule) throws IOException {
         Validate.notNull(schedule, "schedule cannot be null");
         
         schedule.setUpdatingState(true);
         connection.sendEnableDisableSchedule(schedule);
     }
 
-    public Schedule getById(final int scheduleId) throws NotFoundException,IOException {
-        for (final Schedule schedule : connection.retrieveSchedules()) {
+    public ScheduleMessage getById(final int scheduleId) throws NotFoundException,IOException {
+        for (final ScheduleMessage schedule : connection.retrieveSchedules()) {
             if (schedule.getId() == scheduleId) return schedule;
         }
         throw new NotFoundException("Schedule with ID " + scheduleId + " not found!");
     }
 
-    public List<Schedule> getAll() throws IOException {
+    public List<ScheduleMessage> getAll() throws IOException {
         return Arrays.asList(connection.retrieveSchedules());
     }
 

@@ -3,6 +3,7 @@ package com.cannontech.loadcontrol.messages;
 /**
  * This type was created in VisualAge.
  */
+import com.cannontech.messaging.message.loadcontrol.LmMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -21,7 +22,7 @@ public DefineCollectableLMMessage() {
  * create method comment.
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new LMMessage();
+	return new LmMessage();
 }
 /**
  * getComparator method comment.
@@ -54,7 +55,7 @@ public String getCxxStringId()
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return LMMessage.class;
+	return LmMessage.class;
 }
 /**
  * restoreGuts method comment.
@@ -64,14 +65,14 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	super.restoreGuts( obj, vstr, polystr );
 	String message = (String) vstr.restoreObject( SimpleMappings.CString );
 
-	((LMMessage) obj).setMessage( message );
+	((LmMessage) obj).setMessage( message );
 }
 /**
  * saveGuts method comment.
  */
 public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {
 	super.saveGuts( obj, vstr, polystr );
-	String message = ((LMMessage) obj).getMessage();
+	String message = ((LmMessage) obj).getMessage();
 
 	vstr.saveObject( message, SimpleMappings.CString );	
 }

@@ -37,12 +37,12 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceLoadProfile;
-import com.cannontech.message.porter.message.Request;
-import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.ConnectionException;
-import com.cannontech.message.util.Message;
-import com.cannontech.message.util.MessageEvent;
-import com.cannontech.message.util.MessageListener;
+import com.cannontech.messaging.message.BaseMessage;
+import com.cannontech.messaging.message.porter.RequestMessage;
+import com.cannontech.messaging.message.porter.ReturnMessage;
+import com.cannontech.messaging.util.MessageEvent;
+import com.cannontech.messaging.util.MessageListener;
 import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.BasicServerConnection;
@@ -50,7 +50,7 @@ import com.cannontech.yukon.BasicServerConnection;
 public class LongLoadProfileServiceImplTest {
     private final class PorterConnection implements BasicServerConnection {
         public Set<MessageListener> listeners = new HashSet<MessageListener>();
-        private final BlockingQueue<Message> writtenOut = new LinkedBlockingQueue<Message>();
+        private final BlockingQueue<BaseMessage> writtenOut = new LinkedBlockingQueue<BaseMessage>();
         private boolean failMode = false;
 
         @Override
@@ -64,7 +64,7 @@ public class LongLoadProfileServiceImplTest {
         }
 
         @Override
-        public void queue(Message o) {
+        public void queue(BaseMessage o) {
             writtenOut.add(o);
         }
 
@@ -74,7 +74,7 @@ public class LongLoadProfileServiceImplTest {
         }
 
         @Override
-        public void write(Message o) {
+        public void write(BaseMessage o) {
             if (failMode) {
                 throw new ConnectionException("Unable to write message");
             } else {
@@ -83,7 +83,7 @@ public class LongLoadProfileServiceImplTest {
             
         }
         
-        public void respond(Message m) {
+        public void respond(BaseMessage m) {
             for (MessageListener listener : listeners) {
                 listener.messageReceived(new MessageEvent(this,m));
             }
@@ -251,8 +251,8 @@ public class LongLoadProfileServiceImplTest {
         service.initiateLoadProfile(myDevice, channel, start, stop, incrementingRunner, userContext);
         
         // get message that was written
-        Message message = porterConnection.writtenOut.remove();
-        Request reqMsg = (Request)message; // implicit instanceof check
+        BaseMessage message = porterConnection.writtenOut.remove();
+        RequestMessage reqMsg = (RequestMessage)message; // implicit instanceof check
         
         // check command string
         String expectedCmd = "getvalue lp channel 4 05/05/2005 16:30 10/09/2006 01:50";
@@ -301,22 +301,22 @@ public class LongLoadProfileServiceImplTest {
         Assert.assertEquals("runner should not have run", 0, successRan);
         
         // get message that was written
-        Message message = porterConnection.writtenOut.remove();
-        Request reqMsg = (Request)message; // implicit instanceof check
+        BaseMessage message = porterConnection.writtenOut.remove();
+        RequestMessage reqMsg = (RequestMessage)message; // implicit instanceof check
         
         // check command string
         String expectedCmd = "getvalue lp channel 1 10/13/2006 13:50 12/13/2006 13:50";
         Assert.assertEquals("command is different than expected", expectedCmd, reqMsg.getCommandString());
         
         // send expect more response
-        Return retMsg = createReturn(reqMsg, true);
+        ReturnMessage retMsg = createReturn(reqMsg, true);
         porterConnection.respond(retMsg);
         
         // check that runner hasn't run
         Assert.assertEquals("runner should not have run", 0, successRan);
         
         // send final response
-        retMsg.setExpectMore(0);
+        retMsg.setExpectMore(false);
         porterConnection.respond(retMsg);
         
         // check that runner has run
@@ -338,11 +338,11 @@ public class LongLoadProfileServiceImplTest {
         testInitiateLongLoadProfileBasic(new Locale("pt", "BR"));
     }
 
-    private Return createReturn(Request reqMsg, boolean expectMore) {
-        Return retMsg = new Return();
-        retMsg.setExpectMore(expectMore ? 1 : 0);
-        retMsg.setUserMessageID(reqMsg.getUserMessageID());
-        retMsg.setDeviceID(reqMsg.getDeviceID());
+    private ReturnMessage createReturn(RequestMessage reqMsg, boolean expectMore) {
+        ReturnMessage retMsg = new ReturnMessage();
+        retMsg.setExpectMore(expectMore);
+        retMsg.setUserMessageId(reqMsg.getUserMessageId());
+        retMsg.setDeviceId(reqMsg.getDeviceId());
         return retMsg;
     }
 
@@ -402,15 +402,15 @@ public class LongLoadProfileServiceImplTest {
         // suck up all messages
         while (!porterConnection.writtenOut.isEmpty()) {
             // get message that was written
-            Message message = porterConnection.writtenOut.remove();
-            Request reqMsg = (Request)message; // implicit instanceof check
+            BaseMessage message = porterConnection.writtenOut.remove();
+            RequestMessage reqMsg = (RequestMessage)message; // implicit instanceof check
             
             // check that id is unique
-            boolean uniq = usedIds.add(reqMsg.getUserMessageID());
-            Assert.assertTrue("Non unique userMessageId " + reqMsg.getUserMessageID() + " in " + usedIds, uniq);
+            boolean uniq = usedIds.add(reqMsg.getUserMessageId());
+            Assert.assertTrue("Non unique userMessageId " + reqMsg.getUserMessageId() + " in " + usedIds, uniq);
             
             // send final response
-            Return retMsg = createReturn(reqMsg, false);
+            ReturnMessage retMsg = createReturn(reqMsg, false);
             porterConnection.respond(retMsg);
             responses++;
             
@@ -507,8 +507,8 @@ public class LongLoadProfileServiceImplTest {
         Assert.assertEquals("runner should not have run", 0, cancelRan);
         
         // eat the two requests
-        Request temp1 = (Request) porterConnection.writtenOut.remove(); 
-        Request temp2 = (Request) porterConnection.writtenOut.remove(); 
+        RequestMessage temp1 = (RequestMessage) porterConnection.writtenOut.remove(); 
+        RequestMessage temp2 = (RequestMessage) porterConnection.writtenOut.remove(); 
         
         // some time has passed and porter hasn't responded, run timers
         queueDataService.setReturnValue(0); // forgotten messagess...
@@ -522,13 +522,13 @@ public class LongLoadProfileServiceImplTest {
         Assert.assertEquals("runner should not have run", 2, failureRan);
         
         // respond to each
-        Message message = porterConnection.writtenOut.remove();
-        Request reqMsg = (Request)message; // implicit instanceof check
-        Return retMsg = createReturn(reqMsg, true);
+        BaseMessage message = porterConnection.writtenOut.remove();
+        RequestMessage reqMsg = (RequestMessage)message; // implicit instanceof check
+        ReturnMessage retMsg = createReturn(reqMsg, true);
         porterConnection.respond(retMsg);
 
         message = porterConnection.writtenOut.remove();
-        reqMsg = (Request)message; // implicit instanceof check
+        reqMsg = (RequestMessage)message; // implicit instanceof check
         retMsg = createReturn(reqMsg, true);
         porterConnection.respond(retMsg);
         

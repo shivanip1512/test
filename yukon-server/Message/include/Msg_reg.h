@@ -8,6 +8,9 @@
 
 class IM_EX_MSG CtiRegistrationMsg : public CtiMessage
 {
+public:
+    DECLARE_COLLECTABLE( CtiRegistrationMsg )
+
 private:
 
    std::string      _appName;
@@ -18,9 +21,8 @@ private:
    int            _appExpirationDelay;     // How many seconds till I believe this guy is DEAD.
 
 public:
-   RWDECLARE_COLLECTABLE( CtiRegistrationMsg );
 
-   typedef CtiMessage Inherited;
+   typedef  CtiMessage  Inherited;
 
    CtiRegistrationMsg();
    CtiRegistrationMsg(std::string str, int id, RWBoolean bUnique, int port = -1, int delay = 900);
@@ -29,10 +31,7 @@ public:
    // Assignement operator
    CtiRegistrationMsg& CtiRegistrationMsg::operator=(const CtiRegistrationMsg& aRef);
 
-   void saveGuts(RWvostream &aStream) const;
-   void restoreGuts(RWvistream& aStream);
    virtual CtiMessage* replicateMessage() const;
-
 
    std::string   getAppName() const;
    std::string&  getAppName();

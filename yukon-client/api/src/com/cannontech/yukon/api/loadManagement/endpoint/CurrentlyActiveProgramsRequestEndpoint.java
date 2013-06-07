@@ -19,8 +19,8 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
-import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.ConnectionException;
+import com.cannontech.messaging.util.BadServerResponseException;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 

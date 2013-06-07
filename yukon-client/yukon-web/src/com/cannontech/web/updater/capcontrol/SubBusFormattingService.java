@@ -4,7 +4,7 @@ import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.message.capcontrol.streamable.SubBus;
+import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
 import com.cannontech.user.YukonUserContext;
 
 public class SubBusFormattingService extends AbstractFormattingService<SubBus> {
@@ -140,7 +140,7 @@ public class SubBusFormattingService extends AbstractFormattingService<SubBus> {
     
     @Override
     protected String getVerificationFlag(SubBus latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
-        String value = latestValue.getVerificationFlag().toString();
+        String value = String.valueOf(latestValue.getVerificationFlag());
         return value;
     }
     

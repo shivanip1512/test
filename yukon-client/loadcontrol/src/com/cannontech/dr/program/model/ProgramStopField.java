@@ -5,7 +5,7 @@ import java.util.Comparator;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ResolvableTemplate;
-import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.messaging.message.loadcontrol.data.Program;
 import com.cannontech.user.YukonUserContext;
 
 public class ProgramStopField extends ProgramBackingFieldBase {
@@ -16,7 +16,7 @@ public class ProgramStopField extends ProgramBackingFieldBase {
     }
     
     @Override
-    public Object getProgramValue(LMProgramBase program, YukonUserContext userContext) {
+    public Object getProgramValue(Program program, YukonUserContext userContext) {
         // return dashes if stop time is null, <1990 or >= 2035
         if (hasBlankStopTime(program)) {
             return blankFieldResolvable;
@@ -33,8 +33,8 @@ public class ProgramStopField extends ProgramBackingFieldBase {
 
             @Override
             public int compare(DisplayablePao pao1, DisplayablePao pao2) {
-                LMProgramBase program1 = getProgramFromYukonPao(pao1);
-                LMProgramBase program2 = getProgramFromYukonPao(pao2);
+                Program program1 = getProgramFromYukonPao(pao1);
+                Program program2 = getProgramFromYukonPao(pao2);
 
                 if (hasBlankStopTime(program1)) {
                     program1 = null;
@@ -59,7 +59,7 @@ public class ProgramStopField extends ProgramBackingFieldBase {
             }};
     }        
 
-    private boolean hasBlankStopTime(LMProgramBase program) {
+    private boolean hasBlankStopTime(Program program) {
         return program == null || program.getDisableFlag()
             || program.getStopTime() == null
             || program.getStopTime().before(CtiUtilities.get1990GregCalendar())

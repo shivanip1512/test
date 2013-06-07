@@ -12,7 +12,7 @@ import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.AdjustablePosition;
 import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.database.data.point.UnitOfMeasure;
-import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.messaging.message.capcontrol.streamable.Feeder;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.user.YukonUserContext;
 import com.loox.jloox.LxAbstractGraph;

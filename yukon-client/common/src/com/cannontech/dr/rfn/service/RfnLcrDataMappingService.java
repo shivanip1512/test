@@ -8,7 +8,7 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.dr.dao.ExpressComReportedAddress;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
-import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
 
 public interface RfnLcrDataMappingService {
     
@@ -20,7 +20,7 @@ public interface RfnLcrDataMappingService {
      * @param message The decoded payload represented as an XPath template.
      * @return A list of all PointData that can be extracted from the decoded message.
      */
-    public List<PointData> mapPointData(RfnLcrReadingArchiveRequest request, SimpleXPathTemplate data);
+    public List<PointDataMessage> mapPointData(RfnLcrReadingArchiveRequest request, SimpleXPathTemplate data);
 
     /**
      * Stores the LM addressing data reported by the device if it is not equivalent to the

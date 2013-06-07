@@ -5,9 +5,9 @@ package com.cannontech.database.db;
  * with it should implement this interface.
  */
 
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 
 public interface CTIDbChange {
-    public abstract DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType);
+    public abstract DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType);
 }

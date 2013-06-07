@@ -20,8 +20,8 @@ import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -158,7 +158,7 @@ public abstract class DBEditorForm {
      */
     protected void generateDBChangeMsg(DBPersistent object, DbChangeType dbChangeType) {
         if (object instanceof CTIDbChange) {
-            DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance()
+            DBChangeMessage[] dbChange = DefaultDatabaseCache.getInstance()
                                                          .createDBChangeMessages((CTIDbChange) object,
                                                                                  dbChangeType);
 
@@ -174,7 +174,7 @@ public abstract class DBEditorForm {
                 ConnPool.getInstance().getDefDispatchConn().write(dbChange[i]);
             }
         } else {
-            throw new IllegalArgumentException("Non " + CTIDbChange.class.getName() + " class tried to generate a " + DBChangeMsg.class.getName() + " its class was : " + object.getClass()
+            throw new IllegalArgumentException("Non " + CTIDbChange.class.getName() + " class tried to generate a " + DBChangeMessage.class.getName() + " its class was : " + object.getClass()
                                                                                                                                                                                 .getName());
         }
 

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.cannontech.message.util.Command;
+import com.cannontech.messaging.message.CommandMessage;
 import com.cannontech.tdc.roweditor.SendData;
 
 public class ClearAlarm 
@@ -41,9 +41,9 @@ public static void send( int[] pointids, int[] conditions )
 		data.add(conditions[i]);
 	}
 
-	Command cmd = new Command();
+	CommandMessage cmd = new CommandMessage();
 	cmd.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
-	cmd.setOperation( Command.CLEAR_ALARM );
+	cmd.setOperation( CommandMessage.CLEAR_ALARM );
 	cmd.setOpArgList( data );
 	cmd.setTimeStamp( new Date() );
 

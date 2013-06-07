@@ -1,7 +1,7 @@
 package com.cannontech.web.loadcontrol;
 
-import com.cannontech.loadcontrol.data.ILMData;
-import com.cannontech.message.util.Message;
+import com.cannontech.messaging.message.BaseMessage;
+import com.cannontech.messaging.message.loadcontrol.data.Data;
 
 /**
  * @author rneuharth
@@ -12,10 +12,10 @@ public class WebCmdMsg
 {
 	private String _htmlTextMsg = "Are you sure?";
 	private String _cmd = "Unknown";
-	private ILMData _lmData = null;
+	private Data _lmData = null;
 
 	//dynamically created message for the load control server
-	private Message _genLCMsg = null;
+	private BaseMessage _genLCMsg = null;
 	
 	
 	/**
@@ -49,7 +49,7 @@ public class WebCmdMsg
 	}
 
 
-	public Message genLCCmdMsg()
+	public BaseMessage genLCCmdMsg()
 	{
 		return _genLCMsg;
 	}
@@ -81,7 +81,7 @@ public class WebCmdMsg
 	/**
 	 * @return
 	 */
-	public ILMData getLMData()
+	public Data getLMData()
 	{
 		return _lmData;
 	}
@@ -89,7 +89,7 @@ public class WebCmdMsg
 	/**
 	 * @return
 	 */
-	protected void setLMData( ILMData lmData )
+	protected void setLMData( Data lmData )
 	{
 		_lmData = lmData;
 	}
@@ -98,7 +98,7 @@ public class WebCmdMsg
 	/**
 	 * @return
 	 */
-	protected void setGenLCMsg( Message lmMsg )
+	protected void setGenLCMsg( BaseMessage lmMsg )
 	{
 		_genLCMsg = lmMsg;
 	}

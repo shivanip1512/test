@@ -4,6 +4,7 @@ package com.cannontech.loadcontrol.data;
  * This type was created in VisualAge.
  */
 import com.cannontech.message.util.CollectionExtracter;
+import com.cannontech.messaging.message.loadcontrol.data.ProgramCurtailment;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
@@ -24,7 +25,7 @@ public DefColl_LMProgramCurtailment()
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new LMProgramCurtailment();
+	return new ProgramCurtailment();
 }
 /**
  * getCxxClassId method comment.
@@ -45,7 +46,7 @@ public String getCxxStringId()
  */
 public Class getJavaClass()
 {
-	return LMProgramCurtailment.class;
+	return ProgramCurtailment.class;
 }
 /**
  * restoreGuts method comment.
@@ -54,7 +55,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 {
 	super.restoreGuts( obj, vstr, polystr );
 
-	LMProgramCurtailment lmProgramCurtailment = (LMProgramCurtailment) obj;
+	ProgramCurtailment lmProgramCurtailment = (ProgramCurtailment) obj;
 	
 	Integer minNotifyTime = new Integer( (int)vstr.extractUnsignedInt() );
 	String heading = (String) vstr.restoreObject( SimpleMappings.CString );

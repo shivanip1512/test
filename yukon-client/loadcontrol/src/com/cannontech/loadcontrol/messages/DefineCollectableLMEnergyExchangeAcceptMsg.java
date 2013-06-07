@@ -4,6 +4,7 @@ package com.cannontech.loadcontrol.messages;
  * Creation date: (5/29/2001 12:06:26 PM)
  * @author: Aaron Lauinger
  */
+import com.cannontech.messaging.message.loadcontrol.EnergyExchangeAcceptMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -22,7 +23,7 @@ public DefineCollectableLMEnergyExchangeAcceptMsg() {
  * create method comment. 
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new LMEnergyExchangeAcceptMsg();
+	return new EnergyExchangeAcceptMessage();
 }
 /**
  * getComparator method comment.
@@ -53,7 +54,7 @@ public String getCxxStringId() {
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return LMEnergyExchangeAcceptMsg.class;
+	return EnergyExchangeAcceptMessage.class;
 }
 /**
  * restoreGuts method comment.
@@ -70,14 +71,14 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 {
 	super.saveGuts( obj, vstr, polystr );
 
-	LMEnergyExchangeAcceptMsg msg = (LMEnergyExchangeAcceptMsg) obj;
+	EnergyExchangeAcceptMessage msg = (EnergyExchangeAcceptMessage) obj;
 
-	vstr.insertUnsignedLong( msg.getYukonID().longValue() );
-	vstr.insertUnsignedLong( msg.getOfferID().longValue() );
+	vstr.insertUnsignedLong( msg.getYukonId().longValue() );
+	vstr.insertUnsignedLong( msg.getOfferId().longValue() );
 	vstr.insertUnsignedLong( msg.getRevisionNumber().longValue() );
 	vstr.saveObject( msg.getAcceptStatus(), SimpleMappings.CString );
 	vstr.saveObject( msg.getIpAddressOfCustomer(), SimpleMappings.CString );
-	vstr.saveObject( msg.getUserIDName(), SimpleMappings.CString );
+	vstr.saveObject( msg.getUserIdName(), SimpleMappings.CString );
 	vstr.saveObject( msg.getNameOfAcceptPerson(), SimpleMappings.CString );
 	vstr.saveObject( msg.getEnergyExchangeNotes(), SimpleMappings.CString );
 

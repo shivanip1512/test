@@ -1,5 +1,6 @@
 package com.cannontech.loadcontrol.data;
 
+import com.cannontech.messaging.message.loadcontrol.data.GroupDigiSep;
 /**
  * This type was created in VisualAge.
  */
@@ -14,7 +15,7 @@ public class DefColl_LMGroupDigiSep extends DefColl_LMDirectGroupBase {
     }
 
     public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-        return new LMGroupDigiSep();
+        return new GroupDigiSep();
     }
 
     public int getCxxClassId() {
@@ -26,7 +27,7 @@ public class DefColl_LMGroupDigiSep extends DefColl_LMDirectGroupBase {
     }
 
     public Class getJavaClass() {
-        return LMGroupDigiSep.class;
+        return GroupDigiSep.class;
     }
 
     public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr,

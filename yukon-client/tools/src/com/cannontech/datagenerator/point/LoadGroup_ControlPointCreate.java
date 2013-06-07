@@ -145,7 +145,7 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 						PointOffsets.PT_OFFSET_CONTROL_COUNTDOWN,
 						UnitOfMeasure.COUNTS.getId(),
 						StateGroupUtils.STATEGROUP_ANALOG));
-				CTILogger.info("Adding CONTROL_COUNTDOWN PointId " + pointID + " to Device ID" + litePaobject.getYukonID());
+				CTILogger.info("Adding CONTROL_COUNTDOWN PointId " + pointID + " to Device ID" + litePaobject.getYukonId());
 				addCount++;
 			}
 		}

@@ -21,7 +21,7 @@ import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
 import com.cannontech.services.calculated.CalculatedPointDataProducer;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -51,7 +51,7 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
         @Override
         public void processData(RfnDevice device, RfnMeterReadingArchiveRequest request) {
             RfnMeterPlusReadingData meterPlusReadingData = new RfnMeterPlusReadingData(device, request.getData());
-            List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(5);
+            List<PointDataMessage> messagesToSend = Lists.newArrayListWithExpectedSize(5);
             List<CalculationData> toCalculate = pointDataProducer.convert(meterPlusReadingData, messagesToSend);
 
             dynamicDataSource.putValues(messagesToSend);
@@ -93,7 +93,7 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
         
         @Override
         public void process(List<CalculationData> toCalculate) {
-            List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(5);
+            List<PointDataMessage> messagesToSend = Lists.newArrayListWithExpectedSize(5);
             calculatedProducer.calculate(toCalculate, messagesToSend);
 
             dynamicDataSource.putValues(messagesToSend);

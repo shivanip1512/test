@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observer;
 
-import com.cannontech.message.util.Message;
-import com.cannontech.message.util.MessageListener;
+import com.cannontech.messaging.message.BaseMessage;
+import com.cannontech.messaging.util.MessageListener;
 import com.cannontech.yukon.IServerConnection;
 
 public class MockDispatchConnection implements IServerConnection {
 
-    public List<Message> messagesWritten = new ArrayList<Message>();
+    public List<BaseMessage> messagesWritten = new ArrayList<BaseMessage>();
     
-    public void write(Message o) {
+    public void write(BaseMessage o) {
         messagesWritten.add(o);
     }
     
-    public void queue(Message o) {
+    public void queue(BaseMessage o) {
         messagesWritten.add(o);
     }
   

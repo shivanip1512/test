@@ -21,8 +21,8 @@ import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.util.DbChangeManager;
 
 public class SubstationDaoImpl implements SubstationDao {	
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;

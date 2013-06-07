@@ -6,11 +6,11 @@ package com.cannontech.loadcontrol.gui.manualentry;
  * @author: 
  */
 import com.cannontech.loadcontrol.LCUtils;
-import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
 
 public class ControlAreaTimeChangeJPanel extends com.cannontech.common.gui.util.ConfirmationJPanel implements com.cannontech.common.gui.util.OkCancelPanelListener, java.awt.event.ActionListener 
 {
-	private LMControlArea lmControlArea = null;
+	private ControlAreaItem lmControlArea = null;
 	private javax.swing.JCheckBox ivjJCheckBoxStartTime = null;
 	private javax.swing.JCheckBox ivjJCheckBoxStopTime = null;
 	private com.cannontech.common.gui.util.TimeComboJPanel ivjTimeComboStart = null;
@@ -208,7 +208,7 @@ private com.cannontech.common.gui.util.OkCancelPanel getJPanelOkCancel() {
  * Creation date: (5/16/2002 10:20:30 AM)
  * @return com.cannontech.loadcontrol.data.LMControlArea
  */
-public com.cannontech.loadcontrol.data.LMControlArea getLmControlArea() {
+public com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem getLmControlArea() {
 	return lmControlArea;
 }
 /**
@@ -220,7 +220,7 @@ public int getStartTime()
 	if( getJCheckBoxStartTime().isSelected() )
 		return getTimeComboStart().getTimeInSeconds();
 	else
-		return LMControlArea.INVALID_INT;
+		return ControlAreaItem.INVALID_INT;
 }
 /**
  * Insert the method's description here.
@@ -231,7 +231,7 @@ public int getStopTime()
 	if( getJCheckBoxStopTime().isSelected() )
 		return getTimeComboStop().getTimeInSeconds();
 	else
-		return LMControlArea.INVALID_INT;
+		return ControlAreaItem.INVALID_INT;
 }
 /**
  * Return the TimeComboStart property value.
@@ -369,11 +369,11 @@ private void initialize() {
 private boolean isTimeInDefaultLCWindow(int time) {
     boolean insideDefaultLoadControlStartWindow =
         (getLmControlArea().getDefDailyStartTime() <= time || 
-         getLmControlArea().getDefDailyStartTime() == LMControlArea.INVALID_INT);
+         getLmControlArea().getDefDailyStartTime() == ControlAreaItem.INVALID_INT);
 
     boolean insideDefaultLoadControlStopWindow =
         (getLmControlArea().getDefDailyStopTime() >= time || 
-         getLmControlArea().getDefDailyStopTime() == LMControlArea.INVALID_INT);
+         getLmControlArea().getDefDailyStopTime() == ControlAreaItem.INVALID_INT);
 
     return (insideDefaultLoadControlStartWindow && insideDefaultLoadControlStopWindow);
     
@@ -385,20 +385,20 @@ private boolean isTimeInDefaultLCWindow(int time) {
  */
 private boolean isNewDailyTimeValid() 
 {
-	if( getStartTime() == LMControlArea.INVALID_INT 
-		 && getStopTime() == LMControlArea.INVALID_INT )
+	if( getStartTime() == ControlAreaItem.INVALID_INT 
+		 && getStopTime() == ControlAreaItem.INVALID_INT )
 		return true;
 
 	//we only have a stop time selected and that stop time >= DefDailStartTime
-	if( getStartTime() == LMControlArea.INVALID_INT
-	    && getStopTime() != LMControlArea.INVALID_INT ) {
+	if( getStartTime() == ControlAreaItem.INVALID_INT
+	    && getStopTime() != ControlAreaItem.INVALID_INT ) {
 
 	    return isTimeInDefaultLCWindow(getStopTime());
 	}
 
 	//we only have a start time selected and that start time >= DefDailStopTime
-	if( getStopTime() == LMControlArea.INVALID_INT
-		 && getStartTime() != LMControlArea.INVALID_INT ) {
+	if( getStopTime() == ControlAreaItem.INVALID_INT
+		 && getStartTime() != ControlAreaItem.INVALID_INT ) {
 	    
         return isTimeInDefaultLCWindow(getStartTime());
 	}
@@ -414,10 +414,10 @@ private boolean isTimeValid()
 {
 	//if the start or stop time == -1, then make sure the startTime > stopTime
     return ((getStartTime() < getStopTime() &&
-             getStartTime() != LMControlArea.INVALID_INT) ||
-            (getStartTime() == LMControlArea.INVALID_INT &&
+             getStartTime() != ControlAreaItem.INVALID_INT) ||
+            (getStartTime() == ControlAreaItem.INVALID_INT &&
              LCUtils.decodeStartWindow(getLmControlArea()) < getStopTime()) || 
-            (getStopTime() == LMControlArea.INVALID_INT &&
+            (getStopTime() == ControlAreaItem.INVALID_INT &&
              getStartTime() < LCUtils.decodeStopWindow(getLmControlArea())));
     
 }
@@ -549,7 +549,7 @@ public static void main(java.lang.String[] args) {
  * Creation date: (5/16/2002 10:20:30 AM)
  * @param newLmControlArea com.cannontech.loadcontrol.data.LMControlArea
  */
-public void setLmControlArea(com.cannontech.loadcontrol.data.LMControlArea newLmControlArea) 
+public void setLmControlArea(com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem newLmControlArea) 
 {
 	lmControlArea = newLmControlArea;
 

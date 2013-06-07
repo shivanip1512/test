@@ -23,37 +23,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "collectable.h"
 #include "dllbase.h"
 
-RWDEFINE_COLLECTABLE( CtiRequestMsg, MSG_PCREQUEST );
-
-void CtiRequestMsg::saveGuts(RWvostream &aStream) const
-{
-    CtiMessage::saveGuts(aStream);
-
-    aStream <<
-       DeviceId() <<
-       CommandString() <<
-       RouteId() <<
-       MacroOffset() <<
-       AttemptNum() <<
-       GroupMessageId()  <<
-       UserMessageId() <<
-       OptionsField();
-}
-
-void CtiRequestMsg::restoreGuts(RWvistream& aStream)
-{
-    CtiMessage::restoreGuts(aStream);
-
-    aStream >>
-       _device_id >>
-       _command_string >>
-       _route_id >>
-       _macro_offset >>
-       _attempt_num >>
-       _group_message_id >>
-       _user_message_id >>
-       _options_field;
-}
+DEFINE_COLLECTABLE( CtiRequestMsg, MSG_PCREQUEST );
 
 long CtiRequestMsg::DeviceId() const
 {

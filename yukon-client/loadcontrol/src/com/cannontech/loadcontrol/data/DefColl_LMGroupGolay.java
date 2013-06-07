@@ -1,5 +1,6 @@
 package com.cannontech.loadcontrol.data;
 
+import com.cannontech.messaging.message.loadcontrol.data.GroupGolay;
 import com.roguewave.vsj.DefineCollectable;
 
 /**
@@ -15,7 +16,7 @@ public class DefColl_LMGroupGolay extends DefColl_LMDirectGroupBase {
 	}
 
 	public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-		return new LMGroupGolay();
+		return new GroupGolay();
 	}
 
 	public int getCxxClassId() {
@@ -27,7 +28,7 @@ public class DefColl_LMGroupGolay extends DefColl_LMDirectGroupBase {
 	}
 
 	public Class getJavaClass() {
-		return LMGroupGolay.class;
+		return GroupGolay.class;
 	}
 
 	public void restoreGuts(

@@ -7,7 +7,7 @@ import com.cannontech.amr.monitors.impl.StatusPointMonitorProcessorFactory;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitorProcessor;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitorStateType;
 import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
 
 public class StatusPointMonitorProcessorFactoryTest {
     
@@ -396,8 +396,8 @@ public class StatusPointMonitorProcessorFactoryTest {
         Assert.assertEquals(true, shouldSendMessage);
     }
     
-    private PointData createPoint(double value) {
-        PointData pointDataMsg = new PointData();
+    private PointDataMessage createPoint(double value) {
+        PointDataMessage pointDataMsg = new PointDataMessage();
         pointDataMsg.setValue(value);
         return pointDataMsg;
     }

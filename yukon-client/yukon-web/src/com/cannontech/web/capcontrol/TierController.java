@@ -23,14 +23,14 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.WebMessageSourceResolvable;
-import com.cannontech.message.capcontrol.model.CommandType;
-import com.cannontech.message.capcontrol.streamable.Area;
-import com.cannontech.message.capcontrol.streamable.CapBankDevice;
-import com.cannontech.message.capcontrol.streamable.Feeder;
-import com.cannontech.message.capcontrol.streamable.SpecialArea;
-import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
-import com.cannontech.message.capcontrol.streamable.SubBus;
-import com.cannontech.message.capcontrol.streamable.SubStation;
+import com.cannontech.messaging.message.capcontrol.CommandType;
+import com.cannontech.messaging.message.capcontrol.streamable.Area;
+import com.cannontech.messaging.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.messaging.message.capcontrol.streamable.Feeder;
+import com.cannontech.messaging.message.capcontrol.streamable.SpecialArea;
+import com.cannontech.messaging.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
+import com.cannontech.messaging.message.capcontrol.streamable.SubStation;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.models.ViewableArea;
@@ -162,7 +162,7 @@ public class TierController {
             bc_areaName = specialArea.getCcName();
 		    bc_areaId = specialArea.getCcId();
 		} else {
-		    Area area = cache.getCBCArea(cachedSubstation.getParentID());
+		    Area area = cache.getCBCArea(cachedSubstation.getParentId());
             bc_areaName = area.getCcName();
 		    bc_areaId = area.getCcId();
 		}
@@ -170,7 +170,7 @@ public class TierController {
 		model.addAttribute("bc_areaId", bc_areaId);
 		model.addAttribute("substationName", substation.getName());
 		model.addAttribute("substationId", substationId);
-		model.addAttribute("areaId", cachedSubstation.getParentID());
+		model.addAttribute("areaId", cachedSubstation.getParentId());
 		model.addAttribute("specialAreaId", cachedSubstation.getSpecialAreaId());
 		model.addAttribute("isSpecialArea", isSpecialArea);
 		
@@ -210,7 +210,7 @@ public class TierController {
 		
 		for (ViewableSubBus subbus : viewableSubBusList) {
 	        if (!CapControlUtils.isStrategyAttachedToSubBusOrSubBusParentArea(subbus.getSubBus())) {
-	            SubStation subBusSubstation = cache.getSubstation(subbus.getSubBus().getParentID());
+	            SubStation subBusSubstation = cache.getSubstation(subbus.getSubBus().getParentId());
 	            int parentAreaId;
 	            if (subBusSubstation.getSpecialAreaEnabled()) {
 	                parentAreaId = subBusSubstation.getSpecialAreaId();

@@ -37,7 +37,7 @@ import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.pao.YukonPAObject;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -235,8 +235,8 @@ public class CommandDeviceBean implements DBChangeListener
         {
             String thisVal = null, anotherVal = null;
 
-            YCLiteCBC lcbc1 = getCBCIDToLiteCBCMap().get(o1.getYukonID());
-            YCLiteCBC lcbc2 = getCBCIDToLiteCBCMap().get(o2.getYukonID());
+            YCLiteCBC lcbc1 = getCBCIDToLiteCBCMap().get(o1.getYukonId());
+            YCLiteCBC lcbc2 = getCBCIDToLiteCBCMap().get(o2.getYukonId());
             if (lcbc1 != null && lcbc2 != null)
             {
                 thisVal = lcbc1.getSerial();
@@ -300,8 +300,8 @@ public class CommandDeviceBean implements DBChangeListener
 		{
 			String thisVal = null, anotherVal = null;
 
-			LiteDeviceMeterNumber ldmn1 = YukonSpringHook.getBean(DeviceDao.class).getLiteDeviceMeterNumber(o1.getYukonID());
-			LiteDeviceMeterNumber ldmn2 = YukonSpringHook.getBean(DeviceDao.class).getLiteDeviceMeterNumber(o2.getYukonID());
+			LiteDeviceMeterNumber ldmn1 = YukonSpringHook.getBean(DeviceDao.class).getLiteDeviceMeterNumber(o1.getYukonId());
+			LiteDeviceMeterNumber ldmn2 = YukonSpringHook.getBean(DeviceDao.class).getLiteDeviceMeterNumber(o2.getYukonId());
 
 			thisVal = (ldmn1 != null ? ldmn1.getMeterNumber() : NULL_OBJECT_STRING);
 			anotherVal = (ldmn2 != null ? ldmn2.getMeterNumber() : NULL_OBJECT_STRING);
@@ -327,13 +327,13 @@ public class CommandDeviceBean implements DBChangeListener
 		{
 			String thisVal = null, anotherVal = null;
 
-			thisVal = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(o1.getYukonID());
-			anotherVal = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(o2.getYukonID());
+			thisVal = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(o1.getYukonId());
+			anotherVal = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(o2.getYukonId());
 
 			if (thisVal.equalsIgnoreCase(anotherVal))
 			{
-				YCLiteLoadGroup llg1 = getLoadGroupIDToLiteLoadGroupsMap().get(o1.getYukonID());
-				YCLiteLoadGroup llg2 = getLoadGroupIDToLiteLoadGroupsMap().get(o2.getYukonID());
+				YCLiteLoadGroup llg1 = getLoadGroupIDToLiteLoadGroupsMap().get(o1.getYukonId());
+				YCLiteLoadGroup llg2 = getLoadGroupIDToLiteLoadGroupsMap().get(o2.getYukonId());
 				if (llg1 != null && llg2 != null)
 				{
 					//if the types are equal, we need to sort by serialNumber
@@ -356,8 +356,8 @@ public class CommandDeviceBean implements DBChangeListener
 		{
 			String thisVal = null, anotherVal = null;
 
-			YCLiteLoadGroup llg1 = getLoadGroupIDToLiteLoadGroupsMap().get(o1.getYukonID());
-			YCLiteLoadGroup llg2 = getLoadGroupIDToLiteLoadGroupsMap().get(o2.getYukonID());
+			YCLiteLoadGroup llg1 = getLoadGroupIDToLiteLoadGroupsMap().get(o1.getYukonId());
+			YCLiteLoadGroup llg2 = getLoadGroupIDToLiteLoadGroupsMap().get(o2.getYukonId());
 			if (llg1 != null && llg2 != null)
 			{
 				thisVal = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(llg1.getRouteID());
@@ -384,8 +384,8 @@ public class CommandDeviceBean implements DBChangeListener
 		{
 			String thisVal = null, anotherVal = null;
 
-			YCLiteLoadGroup llg1 = getLoadGroupIDToLiteLoadGroupsMap().get(o1.getYukonID());
-			YCLiteLoadGroup llg2 = getLoadGroupIDToLiteLoadGroupsMap().get(o2.getYukonID());
+			YCLiteLoadGroup llg1 = getLoadGroupIDToLiteLoadGroupsMap().get(o1.getYukonId());
+			YCLiteLoadGroup llg2 = getLoadGroupIDToLiteLoadGroupsMap().get(o2.getYukonId());
 			if (llg1 != null && llg2 != null)
 			{
 				thisVal = llg1.getSerial();
@@ -412,8 +412,8 @@ public class CommandDeviceBean implements DBChangeListener
 			double thisVal = 0;
 			double anotherVal = 0;
 		    
-			YCLiteLoadGroup llg1 = getLoadGroupIDToLiteLoadGroupsMap().get(o1.getYukonID());
-			YCLiteLoadGroup llg2 = getLoadGroupIDToLiteLoadGroupsMap().get(o2.getYukonID());
+			YCLiteLoadGroup llg1 = getLoadGroupIDToLiteLoadGroupsMap().get(o1.getYukonId());
+			YCLiteLoadGroup llg2 = getLoadGroupIDToLiteLoadGroupsMap().get(o2.getYukonId());
 			if (llg1 != null && llg2 != null)
 			{
 				thisVal = llg1.getKwCapacity();
@@ -469,7 +469,7 @@ public class CommandDeviceBean implements DBChangeListener
 							isValid = String.valueOf(lPao.getAddress()).toLowerCase().startsWith(getSearchValue().toLowerCase());
 						else if( getSearchBy().equalsIgnoreCase(METER_NUMBER_STRING))
 						{
-							LiteDeviceMeterNumber ldmn = YukonSpringHook.getBean(DeviceDao.class).getLiteDeviceMeterNumber(lPao.getYukonID());
+							LiteDeviceMeterNumber ldmn = YukonSpringHook.getBean(DeviceDao.class).getLiteDeviceMeterNumber(lPao.getYukonId());
 							if (ldmn != null) 
 								isValid = ldmn.getMeterNumber().toLowerCase().startsWith(getSearchValue().toLowerCase());
 						}
@@ -497,12 +497,12 @@ public class CommandDeviceBean implements DBChangeListener
 					}
 					else if( getSortBy() == DeviceClasses.GROUP)
 					{
-						if( getLoadGroupIDToLiteLoadGroupsMap().get(new Integer(lPao.getYukonID())) == null) 
+						if( getLoadGroupIDToLiteLoadGroupsMap().get(new Integer(lPao.getYukonId())) == null) 
 							isValid = false;                            
 					}
                     else if( getSortBy() == PAOGroups.CAT_CAPCONTROL)
                     {
-                        if( getCBCIDToLiteCBCMap().get(new Integer(lPao.getYukonID())) == null) 
+                        if( getCBCIDToLiteCBCMap().get(new Integer(lPao.getYukonId())) == null) 
                             isValid = false;                            
                     }                    
                     /*else if( getSortBy() == DeviceTypes.CAPBANKCONTROLLER)
@@ -765,7 +765,7 @@ public class CommandDeviceBean implements DBChangeListener
 			{
 				html += "          <td width=\'"+getColumnWidth(columns[j])+"%\'>";
 				if ( j == 0)
-					html += "<a method='post' href='CommandDevice.jsp?deviceID=" + lPao.getYukonID() +"'>" + getDeviceAttributeValue(columns[j], lPao) + "</a>";
+					html += "<a method='post' href='CommandDevice.jsp?deviceID=" + lPao.getYukonId() +"'>" + getDeviceAttributeValue(columns[j], lPao) + "</a>";
 				else
 					html += getDeviceAttributeValue(columns[j], lPao);
 				html += "          </td>" + LINE_SEPARATOR;
@@ -1009,7 +1009,7 @@ public class CommandDeviceBean implements DBChangeListener
 		}
 		else if( valueString.equalsIgnoreCase(METER_NUMBER_STRING))
 		{
-			LiteDeviceMeterNumber ldmn = YukonSpringHook.getBean(DeviceDao.class).getLiteDeviceMeterNumber(lPao.getYukonID());
+			LiteDeviceMeterNumber ldmn = YukonSpringHook.getBean(DeviceDao.class).getLiteDeviceMeterNumber(lPao.getYukonId());
 			if (ldmn != null)
 				return ldmn.getMeterNumber().trim();
 		}
@@ -1025,7 +1025,7 @@ public class CommandDeviceBean implements DBChangeListener
 		}
         else if(valueString.equalsIgnoreCase(CBC_SERIAL_STRING))
         {
-            YCLiteCBC lcbc = (YCLiteCBC)getCBCIDToLiteCBCMap().get(new Integer(lPao.getYukonID()));
+            YCLiteCBC lcbc = (YCLiteCBC)getCBCIDToLiteCBCMap().get(new Integer(lPao.getYukonId()));
             if (lcbc != null)
             {
                 if( valueString.equalsIgnoreCase(CBC_SERIAL_STRING))
@@ -1037,7 +1037,7 @@ public class CommandDeviceBean implements DBChangeListener
         }        
 		else
 		{
-			YCLiteLoadGroup llg = (YCLiteLoadGroup)getLoadGroupIDToLiteLoadGroupsMap().get(new Integer(lPao.getYukonID()));
+			YCLiteLoadGroup llg = (YCLiteLoadGroup)getLoadGroupIDToLiteLoadGroupsMap().get(new Integer(lPao.getYukonId()));
 			if (llg != null)
 			{
 				if( valueString.equalsIgnoreCase(LMGROUP_SERIAL_STRING))
@@ -1306,8 +1306,8 @@ public class CommandDeviceBean implements DBChangeListener
     }
 
 	@Override
-	public void dbChangeReceived(DBChangeMsg msg) {
-	    if( msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB )
+	public void dbChangeReceived(DBChangeMessage msg) {
+	    if( msg.getDatabase() == DBChangeMessage.CHANGE_PAO_DB )
 	        setChanged(true);
 	}
 }

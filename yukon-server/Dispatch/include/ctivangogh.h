@@ -36,6 +36,7 @@
 #include "tbl_ci_cust.h"
 #include "tbl_contact_notification.h"
 #include "rtdb.h"
+#include "connection_client.h"
 
 class CtiPointRegistrationMsg;
 class CtiPointBase;
@@ -74,8 +75,6 @@ private:
     RWThreadFunction  _appMonitorThread;
     RWThreadFunction  _cacheHandlerThread1, _cacheHandlerThread2, _cacheHandlerThread3;
 
-    RWSocket _listenerSocket;
-
     CtiFIFOQueue< CtiSignalMsg > _signalMsgPostQueue;   // Messages are processed out of this queue for emailing.
 
     CtiFIFOQueue< CtiSignalMsg > _signalMsgQueue;
@@ -92,7 +91,7 @@ private:
     CtiSignalManager           _signalManager;
     CtiTagManager              _tagManager;
 
-    CtiConnection* _notificationConnection;
+    CtiClientConnection*       _notificationConnection;
     bool ShutdownOnThreadTimeout;
 
     UINT writeRawPointHistory(bool justdoit, int maxrowstowrite);
@@ -143,6 +142,10 @@ private:
     void loadStalePointMaps(int pointID = 0);
     void processStalePoint(const CtiPointBase &point, CtiDynamicPointDispatch &dpd, int updateType, const CtiPointDataMsg &aPD, CtiMultiWrapper& wrap );
     void checkForStalePoints(CtiMultiWrapper &aWrap);
+
+
+    // handles dispatcher activemq static queue to receive client request to connect
+    CtiListenerConnection _listenerConnection;
 
 public:
 

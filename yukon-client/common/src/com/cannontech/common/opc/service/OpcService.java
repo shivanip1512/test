@@ -33,9 +33,9 @@ import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -305,7 +305,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
     }
 
     private void sendStatusUpdate(Integer statusPointId, double status) {
-        PointData pointData = new PointData();
+        PointDataMessage pointData = new PointDataMessage();
         pointData.setId(statusPointId);
         pointData.setPointQuality(PointQuality.Normal);
         pointData.setType(PointTypes.STATUS_POINT);
@@ -326,11 +326,11 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
      * All other messages from dispatch are ignored.
      */
     @Override
-    public void dbChangeReceived(final DBChangeMsg dbChange) {
+    public void dbChangeReceived(final DBChangeMessage dbChange) {
         // List for the points to reload.
         final List<FdrTranslation> translationList = new ArrayList<FdrTranslation>();
 
-        if (dbChange.getDatabase() == DBChangeMsg.CHANGE_POINT_DB) {
+        if (dbChange.getDatabase() == DBChangeMessage.CHANGE_POINT_DB) {
             // This is a single change, so the id in the message is the point id
             int pid = dbChange.getId();
             log.debug(" OPC dispatch event with ID: " + pid);
@@ -359,7 +359,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
                 conn.removeItem(item);
             }
 
-        } else if (dbChange.getDatabase() == DBChangeMsg.CHANGE_PAO_DB
+        } else if (dbChange.getDatabase() == DBChangeMessage.CHANGE_PAO_DB
                    && dbChange.getDbChangeType() != DbChangeType.DELETE) {
             // This is for a device, need to grab all point id's related to it.
             int paoId = dbChange.getId();

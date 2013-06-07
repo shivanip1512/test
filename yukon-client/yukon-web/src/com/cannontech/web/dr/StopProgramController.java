@@ -34,7 +34,7 @@ import com.cannontech.dr.program.filter.ForScenarioFilter;
 import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.loadcontrol.messages.LMManualControlRequest;
+import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -431,7 +431,7 @@ public class StopProgramController extends ProgramControllerBase {
            String defaultConstraint =
                rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DEFAULT_CONSTRAINT_SELECTION, user);
            if (fromBack == null || !fromBack) {
-               backingBean.setAutoObserveConstraints(defaultConstraint.equalsIgnoreCase(LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_USE]));
+               backingBean.setAutoObserveConstraints(defaultConstraint.equalsIgnoreCase(ManualControlRequestMessage.CONSTRAINT_FLAG_STRS[ManualControlRequestMessage.CONSTRAINTS_FLAG_USE]));
            }
        }
    }

@@ -2,8 +2,8 @@ package com.cannontech.tools.dispatch;
 
 import java.io.IOException;
 
-import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.message.dispatch.message.PointRegistration;
+import com.cannontech.dispatch.DispatchClientConnection;
+import com.cannontech.messaging.message.dispatch.PointRegistrationMessage;
 
 public class VGConnPounder {
 
@@ -40,7 +40,7 @@ public class VGConnPounder {
     }
 
     class PounderThr implements Runnable {
-        ClientConnection conn;
+        DispatchClientConnection conn;
 
         public void run() {
             try {
@@ -77,21 +77,21 @@ public class VGConnPounder {
 
             int port = 1510;
 
-            conn = new com.cannontech.message.dispatch.ClientConnection();
+            conn = new com.cannontech.dispatch.DispatchClientConnection();
             conn.setHost(VGConnPounder.this.host);
             conn.setPort(port);
 
-            com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
+            com.cannontech.messaging.message.dispatch.RegistrationMessage reg = new com.cannontech.messaging.message.dispatch.RegistrationMessage();
             reg.setAppName("VGPounder " + Thread.currentThread().getId());
 
             reg.setAppIsUnique(0);
             reg.setAppKnownPort(0);
             reg.setAppExpirationDelay(5000);
-            PointRegistration pReg = new PointRegistration();
-            pReg.setRegFlags(PointRegistration.REG_ALL_PTS_MASK
-                    | PointRegistration.REG_ALARMS);
+            PointRegistrationMessage pReg = new PointRegistrationMessage();
+            pReg.setRegFlags(PointRegistrationMessage.REG_ALL_PTS_MASK
+                    | PointRegistrationMessage.REG_ALARMS);
 
-            com.cannontech.message.dispatch.message.Multi multi = new com.cannontech.message.dispatch.message.Multi();
+            com.cannontech.messaging.message.dispatch.MultiMessage multi = new com.cannontech.messaging.message.dispatch.MultiMessage();
             multi.getVector().addElement(reg);
             multi.getVector().addElement(pReg);
             conn.setRegistrationMsg(multi);

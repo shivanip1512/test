@@ -7,11 +7,11 @@
 #include <rw/toolpro/sockport.h>
 #include <rw/toolpro/inetaddr.h>
 
-#include "connection.h"
+#include "connection_server.h"
 #include "ctibase.h"
 #include "string_utility.h"
 
-class IM_EX_CTISVR CtiConnectionManager : public CtiConnection
+class IM_EX_CTISVR CtiConnectionManager : public CtiServerConnection
 {
 protected:
 
@@ -29,24 +29,16 @@ protected:
 
    int              _serverRequestId;
 
-   CtiConnectionManager() :
-      ClientRegistered(FALSE),
-      ClientName("DEFAULT")
-   {
-      std::cout << "Default Constructor may break things!" << FO(__FILE__) << " " << __LINE__ << std::endl;
-      std::cout << "**** Connection Manager!!! *****" << std::endl;
-   }
-
    virtual void writeIncomingMessageToQueue(CtiMessage *msgPtr);
+
 public:
 
    typedef CtiConnection Inherited;
 
-   CtiConnectionManager( const INT &Port, const std::string &HostMachine, Que_t *inQ = NULL );
-
-   CtiConnectionManager(CtiExchange *xchg, Que_t *inQ = NULL);
+   CtiConnectionManager( CtiListenerConnection& listenerConn, Que_t *inQ = NULL );
 
    virtual ~CtiConnectionManager();
+
    int         getClientAppId() const;//              { return ClientAppId; }
    int         setClientAppId(int id);//       { return ClientAppId = id; }
 

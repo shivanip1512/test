@@ -27,7 +27,7 @@ using std::string;
 
 extern ULONG _LM_DEBUG;
 
-RWDEFINE_COLLECTABLE( CtiLMProgramDirectGear, CTILMPROGRAMDIRECTGEAR_ID )
+DEFINE_COLLECTABLE( CtiLMProgramDirectGear, CTILMPROGRAMDIRECTGEAR_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -636,78 +636,6 @@ CtiLMProgramDirectGear& CtiLMProgramDirectGear::setKWReduction(DOUBLE kw)
 {
     _kw_reduction = kw;
     return *this;
-}
-
-
-/*-------------------------------------------------------------------------
-    restoreGuts
-
-    Restore self's state from the given stream
---------------------------------------------------------------------------*/
-void CtiLMProgramDirectGear::restoreGuts(RWvistream& istrm)
-{
-    RWCollectable::restoreGuts( istrm );
-
-    istrm >> _program_paoid
-    >> _gearname
-    >> _gearnumber
-    >> _controlmethod
-    >> _methodrate
-    >> _methodperiod
-    >> _methodratecount
-    >> _cyclerefreshrate
-    >> _methodstoptype
-    >> _changecondition
-    >> _changeduration
-    >> _changepriority
-    >> _changetriggernumber
-    >> _changetriggeroffset
-    >> _percentreduction
-    >> _groupselectionmethod
-    >> _methodoptiontype
-    >> _methodoptionmax
-    >> _rampininterval
-    >> _rampinpercent
-    >> _rampoutinterval
-    >> _rampoutpercent
-    >> _kw_reduction;
-}
-
-/*---------------------------------------------------------------------------
-    saveGuts
-
-    Save self's state onto the given stream
----------------------------------------------------------------------------*/
-void CtiLMProgramDirectGear::saveGuts(RWvostream& ostrm ) const
-{
-    RWCollectable::saveGuts( ostrm );
-
-    ostrm << _program_paoid
-    << _gearname
-    << _gearnumber
-    << _controlmethod
-    << _methodrate
-    << _methodperiod
-    << _methodratecount
-    << _cyclerefreshrate
-    << _methodstoptype
-    << _changecondition
-    << _changeduration
-    << _changepriority
-    << _changetriggernumber
-    << _changetriggeroffset
-    << _percentreduction
-    << _groupselectionmethod
-    << _methodoptiontype
-    << _methodoptionmax
-    << _rampininterval
-    << _rampinpercent
-    << _rampoutinterval
-    << _rampoutpercent
-    << _kw_reduction;
-
-
-    return;
 }
 
 /*---------------------------------------------------------------------------

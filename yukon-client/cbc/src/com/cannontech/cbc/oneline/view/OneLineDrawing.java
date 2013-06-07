@@ -10,7 +10,7 @@ import com.cannontech.cbc.oneline.model.cap.OnelineCap;
 import com.cannontech.cbc.oneline.model.feeder.OnelineFeeder;
 import com.cannontech.cbc.oneline.model.sub.OnelineSub;
 import com.cannontech.esub.Drawing;
-import com.cannontech.message.capcontrol.streamable.SubBus;
+import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
 import com.cannontech.user.YukonUserContext;
 
 public class OneLineDrawing {

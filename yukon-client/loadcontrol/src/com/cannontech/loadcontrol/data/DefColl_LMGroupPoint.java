@@ -1,5 +1,6 @@
 package com.cannontech.loadcontrol.data;
 
+import com.cannontech.messaging.message.loadcontrol.data.GroupPoint;
 /**
  * This type was created in VisualAge.
  */
@@ -22,7 +23,7 @@ public DefColl_LMGroupPoint()
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new LMGroupPoint();
+	return new GroupPoint();
 }
 /**
  * getCxxClassId method comment.
@@ -43,7 +44,7 @@ public String getCxxStringId()
  */
 public Class getJavaClass()
 {
-	return LMGroupPoint.class;
+	return GroupPoint.class;
 }
 /**
  * restoreGuts method comment.
@@ -52,7 +53,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 {
 	super.restoreGuts( obj, vstr, polystr );
 
-	LMGroupPoint lmGroupPoint = (LMGroupPoint) obj;
+	GroupPoint lmGroupPoint = (GroupPoint) obj;
 	
 	Integer devID = new Integer( (int)vstr.extractUnsignedInt() );
 	Integer ptID = new Integer( (int)vstr.extractUnsignedInt() );

@@ -29,7 +29,7 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.importer.ImportPendingComm;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yimp.importer.BulkImporter;
 import com.cannontech.yukon.IServerConnection;

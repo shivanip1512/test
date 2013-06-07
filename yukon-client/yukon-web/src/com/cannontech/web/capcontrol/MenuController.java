@@ -28,14 +28,14 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.message.capcontrol.model.CommandType;
-import com.cannontech.message.capcontrol.streamable.Area;
-import com.cannontech.message.capcontrol.streamable.CapBankDevice;
-import com.cannontech.message.capcontrol.streamable.Feeder;
-import com.cannontech.message.capcontrol.streamable.SpecialArea;
-import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
-import com.cannontech.message.capcontrol.streamable.SubBus;
-import com.cannontech.message.capcontrol.streamable.SubStation;
+import com.cannontech.messaging.message.capcontrol.CommandType;
+import com.cannontech.messaging.message.capcontrol.streamable.Area;
+import com.cannontech.messaging.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.messaging.message.capcontrol.streamable.Feeder;
+import com.cannontech.messaging.message.capcontrol.streamable.SpecialArea;
+import com.cannontech.messaging.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
+import com.cannontech.messaging.message.capcontrol.streamable.SubStation;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
@@ -173,7 +173,7 @@ public class MenuController {
     }
 
     public void setupCapBankModel(ModelMap model, LiteYukonUser user, CapBankDevice capBank) {
-        int cbcDeviceId = capBank.getControlDeviceID();
+        int cbcDeviceId = capBank.getControlDeviceId();
         LiteYukonPAObject cbcPaoObject = paoDao.getLiteYukonPAO(cbcDeviceId);
         
         boolean isClosed = CapBankDevice.isInAnyCloseState(capBank);

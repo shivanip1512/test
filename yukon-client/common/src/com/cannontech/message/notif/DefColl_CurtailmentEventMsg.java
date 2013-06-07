@@ -3,6 +3,7 @@ import java.io.IOException;
 
 import com.cannontech.enums.CurtailmentEventAction;
 import com.cannontech.message.util.DefineCollectableMessage;
+import com.cannontech.messaging.message.notif.CurtailmentEventMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
@@ -14,7 +15,7 @@ public class DefColl_CurtailmentEventMsg extends DefineCollectableMessage {
     public static final int MSG_ID = 710;
 
     public Object create(VirtualInputStream vstr) throws IOException {
-        return new CurtailmentEventMsg();
+        return new CurtailmentEventMessage();
     }
 
     public Comparator getComparator() {
@@ -38,26 +39,26 @@ public class DefColl_CurtailmentEventMsg extends DefineCollectableMessage {
     }
 
     public Class getJavaClass() {
-        return CurtailmentEventMsg.class;
+        return CurtailmentEventMessage.class;
     }
 
     public void restoreGuts(Object obj, VirtualInputStream vstr,
             CollectableStreamer polystr) throws IOException {
         super.restoreGuts(obj, vstr, polystr);
-        CurtailmentEventMsg msg = (CurtailmentEventMsg) obj;
+        CurtailmentEventMessage msg = (CurtailmentEventMessage) obj;
 
-        msg.curtailmentEventId = vstr.extractInt();
+        msg.setCurtailmentEventId(vstr.extractInt());
         int actionOrdinal = vstr.extractInt();
-        msg.action = CurtailmentEventAction.values()[actionOrdinal];
+        msg.setAction(CurtailmentEventAction.values()[actionOrdinal]);
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr,
             CollectableStreamer polystr) throws IOException {
         super.saveGuts(obj, vstr, polystr);
-        CurtailmentEventMsg msg = (CurtailmentEventMsg) obj;
+        CurtailmentEventMessage msg = (CurtailmentEventMessage) obj;
 
-        vstr.insertInt(msg.curtailmentEventId);
-        vstr.insertInt(msg.action.ordinal());
+        vstr.insertInt(msg.getCurtailmentEventId());
+        vstr.insertInt(msg.getAction().ordinal());
     }
 
 }

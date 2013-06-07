@@ -41,14 +41,14 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PaoScheduleAssignment;
+import com.cannontech.dispatch.DbChangeType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.capcontrol.model.CapControlCommand;
-import com.cannontech.message.capcontrol.model.CommandType;
-import com.cannontech.message.capcontrol.model.VerifyBanks;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.messaging.message.capcontrol.CommandMessage;
+import com.cannontech.messaging.message.capcontrol.CommandType;
+import com.cannontech.messaging.message.capcontrol.VerifyBanksMessage;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.messaging.util.DbChangeManager;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -185,7 +185,7 @@ public class ScheduleController {
         
         if (isCommandValid) {
             
-            CapControlCommand command;
+            CommandMessage command;
             if (schedCommand == ScheduleCommand.VerifyNotOperatedIn) {
                 //VerifyNotOperatedIn command is special.  It has a time value associated
                 //with it that must be parsed from the command string.
@@ -278,7 +278,7 @@ public class ScheduleController {
             
             //send stop command
             if (stopApplicable) {
-                VerifyBanks command = CommandHelper.buildStopVerifyBanks(context.getYukonUser(), CommandType.STOP_VERIFICATION, deviceId);
+                VerifyBanksMessage command = CommandHelper.buildStopVerifyBanks(context.getYukonUser(), CommandType.STOP_VERIFICATION, deviceId);
                 try {
                     executor.execute(command);
                     commandsSentCount++;
@@ -350,12 +350,13 @@ public class ScheduleController {
         boolean success = paoScheduleDao.unassignCommandByEventId(eventId);
         
         if (success) {
-            //Send DB Change for affected bus.
-            DBChangeMsg dbChange = new DBChangeMsg(paoId,
-                                                   DBChangeMsg.CHANGE_PAO_DB,
-                                                   PaoType.CAP_CONTROL_SUBBUS.getPaoCategory().getDbString(),
-                                                   PaoType.CAP_CONTROL_SUBBUS.getDbString(),
-                                                   DbChangeType.UPDATE);
+            // Send DB Change for affected bus.
+            DBChangeMessage dbChange = new DBChangeMessage(paoId,
+                                                           DBChangeMessage.CHANGE_PAO_DB, 
+                                                           PaoType.CAP_CONTROL_SUBBUS.getPaoCategory().getDbString(),
+                                                           PaoType.CAP_CONTROL_SUBBUS.getDbString(), 
+                                                           DbChangeType.UPDATE);
+
             dbChangeManager.processDbChange(dbChange);
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.scheduleAssignments.deleteSuccess"));
         } else {
@@ -375,11 +376,11 @@ public class ScheduleController {
             //These can only be assigned to sub bus objects right now, if that changes, this needs to change with it.
             for (PaoScheduleAssignment assignment : assignments) {
                 //Each assignment is a bus to be reloaded.
-                DBChangeMsg dbChange = new DBChangeMsg(assignment.getPaoId(),
-                                                       DBChangeMsg.CHANGE_PAO_DB,
-                                                       PaoType.CAP_CONTROL_SUBBUS.getPaoCategory().getDbString(),
-                                                       PaoType.CAP_CONTROL_SUBBUS.getDbString(),
-                                                       DbChangeType.UPDATE);
+                DBChangeMessage dbChange = new DBChangeMessage(assignment.getPaoId(),
+                                                               DBChangeMessage.CHANGE_PAO_DB,
+                                                               PaoType.CAP_CONTROL_SUBBUS.getPaoCategory().getDbString(),
+                                                               PaoType.CAP_CONTROL_SUBBUS.getDbString(),
+                                                               DbChangeType.UPDATE);
                 dbChangeManager.processDbChange(dbChange);
             }
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.schedules.deleteSuccess"));
@@ -440,11 +441,11 @@ public class ScheduleController {
     				//These can only be assigned to sub bus objects right now, if that changes, this needs to change with it.
                     for (Integer paoId : paoIds) {
                         //Each paoId is a bus to be reloaded.
-                        DBChangeMsg dbChange = new DBChangeMsg(paoId,
-                                                               DBChangeMsg.CHANGE_PAO_DB,
-                                                               PaoType.CAP_CONTROL_SUBBUS.getPaoCategory().getDbString(),
-                                                               PaoType.CAP_CONTROL_SUBBUS.getDbString(),
-                                                               DbChangeType.UPDATE);
+                        DBChangeMessage dbChange = new DBChangeMessage(paoId,
+                                                                       DBChangeMessage.CHANGE_PAO_DB,
+                                                                       PaoType.CAP_CONTROL_SUBBUS.getPaoCategory().getDbString(),
+                                                                       PaoType.CAP_CONTROL_SUBBUS.getDbString(),
+                                                                       DbChangeType.UPDATE);
                         dbChangeManager.processDbChange(dbChange);
                     }
     				

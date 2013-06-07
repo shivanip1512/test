@@ -129,10 +129,11 @@ test_mgr_ptclients.obj:	mgr_ptclients.h dlldefs.h mgr_point.h \
 		pointdefs.h smartmap.h boostutil.h readers_writer_lock.h \
 		critical_section.h msg_pdata.h message.h collectable.h \
 		rwutil.h database_connection.h database_reader.h boost_time.h \
-		ptconnect.h hashkey.h hash_functions.h con_mgr.h connection.h \
-		exchange.h logger.h thread.h CtiPCPtrQueue.h string_utility.h \
-		msg_multi.h msg_ptreg.h msg_reg.h queue.h cparms.h \
-		configkey.h configval.h ctibase.h ctinexus.h server_b.h \
+		ptconnect.h hashkey.h hash_functions.h con_mgr.h \
+		connection_server.h connection.h exchange.h logger.h thread.h \
+		CtiPCPtrQueue.h string_utility.h msg_multi.h msg_ptreg.h \
+		msg_reg.h queue.h cparms.h configkey.h configval.h \
+		connection_listener.h ctibase.h ctinexus.h server_b.h \
 		pt_dyn_dispatch.h tbl_pt_alarm.h tbl_ptdispatch.h \
 		tbl_pt_limit.h rtdb.h tbl_rawpthistory.h tbl_pt_property.h \
 		pt_status.h tbl_pt_status.h tbl_pt_status_control.h \
@@ -147,18 +148,19 @@ test_signalmanager.obj:	tbl_pt_alarm.h dlldefs.h dllbase.h dsm2.h \
 		message.h collectable.h rwutil.h database_connection.h \
 		database_reader.h boost_time.h boostutil.h msg_multi.h \
 		msg_pdata.h pointdefs.h
-test_vangogh.obj:	ctivangogh.h con_mgr.h connection.h dlldefs.h \
-		exchange.h dllbase.h dsm2.h cticonnect.h yukon.h types.h \
-		ctidbgmem.h netports.h mutex.h guard.h utility.h ctitime.h \
-		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
-		optional.h logger.h thread.h CtiPCPtrQueue.h string_utility.h \
-		message.h collectable.h rwutil.h database_connection.h \
-		dbaccess.h database_reader.h row_reader.h boost_time.h \
-		boostutil.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
-		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
-		configval.h ctibase.h ctinexus.h con_mgr_vg.h vgexe_factory.h \
-		executor.h exe_ptchg.h executorfactory.h exe_cmd.h exe_reg.h \
-		msg_cmd.h server_b.h critical_Section.h smartmap.h \
+test_vangogh.obj:	ctivangogh.h con_mgr.h connection_server.h \
+		connection.h dlldefs.h exchange.h dllbase.h dsm2.h \
+		cticonnect.h yukon.h types.h ctidbgmem.h netports.h mutex.h \
+		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
+		numstr.h dsm2err.h words.h optional.h logger.h thread.h \
+		CtiPCPtrQueue.h string_utility.h message.h collectable.h \
+		rwutil.h database_connection.h dbaccess.h database_reader.h \
+		row_reader.h boost_time.h boostutil.h msg_multi.h msg_pdata.h \
+		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
+		cparms.h configkey.h configval.h connection_listener.h \
+		ctibase.h ctinexus.h con_mgr_vg.h vgexe_factory.h executor.h \
+		exe_ptchg.h executorfactory.h exe_cmd.h exe_reg.h msg_cmd.h \
+		server_b.h critical_Section.h smartmap.h \
 		readers_writer_lock.h dev_base_lite.h dbmemobject.h \
 		msg_dbchg.h msg_multiwrap.h msg_pcreturn.h \
 		msg_commerrorhistory.h msg_lmcontrolhistory.h msg_tag.h \
@@ -173,6 +175,6 @@ test_vangogh.obj:	ctivangogh.h con_mgr.h connection.h dlldefs.h \
 		tbl_alm_ngroup.h tbl_commerrhist.h tbl_pt_limit.h \
 		tbl_rawpthistory.h tbl_signal.h tbl_ci_cust.h \
 		tbl_contact_notification.h rtdb.h hashkey.h hash_functions.h \
-		ctidate.h
+		connection_client.h ctidate.h
 #ENDUPDATE#
 

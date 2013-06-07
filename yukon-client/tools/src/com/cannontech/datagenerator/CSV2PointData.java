@@ -22,7 +22,7 @@ import org.apache.commons.lang.Validate;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dynamic.DynamicDataSource;
-import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
 
 /**
  * @author nmeverden
@@ -62,8 +62,8 @@ public class CSV2PointData {
         this.file = file;
     }
 
-    private List<PointData> parseFile(File file) throws IOException {
-        List<PointData> list = new ArrayList<PointData>();
+    private List<PointDataMessage> parseFile(File file) throws IOException {
+        List<PointDataMessage> list = new ArrayList<PointDataMessage>();
 
         BufferedReader in = 
             new BufferedReader(new FileReader(file));
@@ -80,7 +80,7 @@ public class CSV2PointData {
             }
             
             try {
-                PointData pData = new PointData();
+                PointDataMessage pData = new PointDataMessage();
                 pData.setId(Integer.parseInt(split[0].trim()));
                 pData.setTime(Timestamp.valueOf(split[1].trim()));
                 pData.setPointQuality(PointQuality.getPointQuality(Integer.parseInt(split[2].trim())));
@@ -97,13 +97,13 @@ public class CSV2PointData {
     }
 
     public void writeOut() throws IOException {
-        List<PointData> list = parseFile(file);
+        List<PointDataMessage> list = parseFile(file);
         
         long time = 0;
         long lastLoggedDate = 0;
         
         for (int x = 0; x < list.size(); x++) {
-            final PointData pData = list.get(x);
+            final PointDataMessage pData = list.get(x);
             long loggedDate = pData.getPointDataTimeStamp().getTime();
             long diff = loggedDate - lastLoggedDate;
             lastLoggedDate = loggedDate;

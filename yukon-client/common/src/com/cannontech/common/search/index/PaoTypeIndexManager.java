@@ -13,8 +13,8 @@ import org.apache.lucene.index.Term;
 
 import com.cannontech.common.search.YukonObjectAnalyzer;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 
 /**
  * Class which manages point device lucene index creation and update.
@@ -91,7 +91,7 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
     }
 
     protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category, String type) {
-        if (database == DBChangeMsg.CHANGE_PAO_DB) {
+        if (database == DBChangeMessage.CHANGE_PAO_DB) {
             // Device change msg
             
             if(id == 0) {

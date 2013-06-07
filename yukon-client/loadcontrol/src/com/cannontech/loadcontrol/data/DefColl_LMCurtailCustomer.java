@@ -5,6 +5,7 @@ package com.cannontech.loadcontrol.data;
  */
 import java.util.Date;
 
+import com.cannontech.messaging.message.loadcontrol.data.CurtailCustomer;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
@@ -24,7 +25,7 @@ public DefColl_LMCurtailCustomer() {
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new LMCurtailCustomer();
+	return new CurtailCustomer();
 }
 /**
  * getCxxClassId method comment.
@@ -42,7 +43,7 @@ public String getCxxStringId() {
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return LMCurtailCustomer.class;
+	return CurtailCustomer.class;
 }
 /**
  * restoreGuts method comment.
@@ -50,7 +51,7 @@ public Class getJavaClass() {
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
 	super.restoreGuts( obj, vstr, polystr );
-	LMCurtailCustomer lmCurtailCustomer = (LMCurtailCustomer) obj;
+	CurtailCustomer lmCurtailCustomer = (CurtailCustomer) obj;
 
 	Boolean reqAck = (vstr.extractUnsignedInt() > 0 ? Boolean.TRUE : Boolean.FALSE);
 	Long curtailRefID = new Long(vstr.extractLong());
@@ -63,7 +64,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	Boolean ackLateFlag = (vstr.extractUnsignedInt() > 0 ? Boolean.TRUE : Boolean.FALSE);
 	
 	lmCurtailCustomer.setRequireAck(reqAck);
-	lmCurtailCustomer.setCurtailRefID(curtailRefID);
+	lmCurtailCustomer.setCurtailRefId(curtailRefID);
 	lmCurtailCustomer.setAckStatus(ackStatus);
 	lmCurtailCustomer.setAckDateTime(ackDateTime);
 	lmCurtailCustomer.setIpAddress(ipAddress);

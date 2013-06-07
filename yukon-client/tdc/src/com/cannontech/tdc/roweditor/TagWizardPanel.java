@@ -656,7 +656,7 @@ public void jButtonUpdate_ActionEvents()
 		{
 			LiteTag liteTag = (LiteTag)getJComboBoxTag().getSelectedItem();
 			
-			theTag.setTagID( liteTag.getTagID() );
+			theTag.setTagId( liteTag.getTagID() );
 			theTag.setDescriptionStr( getJEditorPaneDesc().getText() );
 			
 			SendData.getInstance().getTagMgr().updateTag(
@@ -694,7 +694,7 @@ public void setTag( Tag theTag )
 	if( theTag != null )
 	{
 		getJComboBoxTag().setSelectedItem( 
-				YukonSpringHook.getBean(TagDao.class).getLiteTag(theTag.getTagID()) );
+				YukonSpringHook.getBean(TagDao.class).getLiteTag(theTag.getTagId()) );
 	
 		getJEditorPaneDesc().setText( theTag.getDescriptionStr() );		
 	}

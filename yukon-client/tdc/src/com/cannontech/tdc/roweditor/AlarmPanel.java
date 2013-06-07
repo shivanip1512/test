@@ -9,7 +9,7 @@ package com.cannontech.tdc.roweditor;
 import javax.swing.JPanel;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.messaging.message.dispatch.SignalMessage;
 import com.cannontech.tdc.commandevents.AckAlarm;
 import com.cannontech.tdc.commandevents.ClearAlarm;
 
@@ -25,7 +25,7 @@ public class AlarmPanel extends javax.swing.JPanel implements java.awt.event.Act
 	private javax.swing.JLabel ivjJLabelDescText = null;
 	private javax.swing.JLabel ivjJLabelUserText = null;
 
-	private Signal signal = null;
+	private SignalMessage signal = null;
 
 /**
  * AlarmPanel constructor comment.
@@ -320,12 +320,12 @@ private void initialize() {
 	// user code end
 }
 
-public Signal getSignal()
+public SignalMessage getSignal()
 {
 	return signal;
 }
 
-public void setSignal( Signal signal_ )
+public void setSignal( SignalMessage signal_ )
 {
 	signal = signal_;
 
@@ -343,7 +343,7 @@ public void setSignal( Signal signal_ )
 public void jButtonAck_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 	if( getSignal() != null )
-		AckAlarm.send( getSignal().getPointID(), getSignal().getCondition() );
+		AckAlarm.send( getSignal().getPointId(), getSignal().getCondition() );
 
 	return;
 }
@@ -353,7 +353,7 @@ public void jButtonAck_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 public void jButtonClearAlarm_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 	if( getSignal() != null )
-		ClearAlarm.send( getSignal().getPointID(), getSignal().getCondition() );
+		ClearAlarm.send( getSignal().getPointId(), getSignal().getCondition() );
 
 	return;
 }
@@ -407,9 +407,9 @@ public void setParentPanel(javax.swing.JPanel panel)
  */
 public void update( java.util.Observable originator, Object newValue ) 
 {
-	if( newValue instanceof Signal )
+	if( newValue instanceof SignalMessage )
 	{
-		Signal sig = (Signal)newValue;
+		SignalMessage sig = (SignalMessage)newValue;
 
 		if( sig.equals(getSignal()) )
 		{
@@ -433,9 +433,9 @@ public void update( java.util.Observable originator, Object newValue )
  * Creation date: (7/28/00 4:00:30 PM)
  * @param signal com.cannontech.message.dispatch.message.Signal
  */
-private void updateNonVisiblePanel(Signal signal) 
+private void updateNonVisiblePanel(SignalMessage signal) 
 {
-	if( (signal.getTags() & Signal.TAG_ACTIVE_ALARM) > 0 )
+	if( (signal.getTags() & SignalMessage.TAG_ACTIVE_ALARM) > 0 )
 	{
 		getJLabelDescText().setText( signal.getDescription() );
 		getJLabelUserText().setText( signal.getUserName() );
@@ -447,10 +447,10 @@ private void updateNonVisiblePanel(Signal signal)
  * Creation date: (7/28/00 4:01:07 PM)
  * @param signal com.cannontech.message.dispatch.message.Signal
  */
-private void updateVisiblePanel(Signal signal) 
+private void updateVisiblePanel(SignalMessage signal) 
 {
 	// if some user acknowledged the alarm
-	if( (signal.getTags() & Signal.TAG_ACTIVE_ALARM) > 0 )
+	if( (signal.getTags() & SignalMessage.TAG_ACTIVE_ALARM) > 0 )
 	{					
 		// update the text fields just in case
 		getJLabelDescText().setText( signal.getDescription() );

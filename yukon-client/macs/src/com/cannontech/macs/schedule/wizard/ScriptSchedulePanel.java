@@ -421,7 +421,7 @@ private javax.swing.JTextField getJTextFieldFileName() {
  */
 public Object getValue(Object val)
 {
-	com.cannontech.message.macs.message.Schedule sch = (com.cannontech.message.macs.message.Schedule)val;
+	com.cannontech.messaging.message.macs.ScheduleMessage sch = (com.cannontech.messaging.message.macs.ScheduleMessage)val;
 
 	sch.setScriptFileName( getJTextFieldFileName().getText() );
 	sch.getNonPersistantData().getScript().setFileName( getJTextFieldFileName().getText() );
@@ -664,7 +664,7 @@ private void setScriptText(String text)
  * Creation date: (3/12/2001 5:13:39 PM)
  * @param file com.cannontech.message.macs.message.ScriptFile
  */
-public void setScriptValues(final com.cannontech.message.macs.message.ScriptFile file) 
+public void setScriptValues(final com.cannontech.messaging.message.macs.ScriptFileMessage file) 
 {
 	try
 	{
@@ -719,7 +719,7 @@ CTILogger.info("		** Sleeping until ScriptEditor isVisible()");
  */
 public void setValue(Object o) 
 {
-	com.cannontech.message.macs.message.Schedule sched = (com.cannontech.message.macs.message.Schedule)o;
+	com.cannontech.messaging.message.macs.ScheduleMessage sched = (com.cannontech.messaging.message.macs.ScheduleMessage)o;
 
 	javax.swing.SwingUtilities.invokeLater( new Runnable()
 	{

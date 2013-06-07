@@ -11,8 +11,5 @@ class CapControlMessage : public CtiMessage
         CapControlMessage();
         virtual ~CapControlMessage();
 
-        void restoreGuts(RWvistream& iStream);
-        void saveGuts(RWvostream& oStream) const;
-
         CapControlMessage& operator=(const CapControlMessage& right);
 };

@@ -25,7 +25,7 @@ public class WPSCMain implements Runnable
 	private final String VERSION = "2.1.12";
 	static boolean DEBUG = true;
 	
-	private com.cannontech.message.dispatch.ClientConnection dispatchConn = null;
+	private com.cannontech.dispatch.DispatchClientConnection dispatchConn = null;
 
 	private CFDATA CFDATAInstance = null;
 	private LDCNTSUM LDCNTSUMInstance = null;
@@ -77,7 +77,7 @@ public class WPSCMain implements Runnable
 public WPSCMain(String dispatchHost, int dispatchPort, String porterHost, int porterPort, String CFDATADir, String CFDATAFileExt, long CFDATACheckFreq, String outputFile) {
 	super();
 	
-	dispatchConn = (com.cannontech.message.dispatch.ClientConnection) ConnPool.getInstance().getDefDispatchConn();
+	dispatchConn = (com.cannontech.dispatch.DispatchClientConnection) ConnPool.getInstance().getDefDispatchConn();
 	dispatchConn.setQueueMessages( true );
 
 	CFDATAInstance = new CFDATA(CFDATADir, CFDATAFileExt );
@@ -199,16 +199,16 @@ public void run()
 	try
 	{
 		//Build up a registration message to Dispatch
-		com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
+		com.cannontech.messaging.message.dispatch.RegistrationMessage reg = new com.cannontech.messaging.message.dispatch.RegistrationMessage();
 		reg.setAppName( CtiUtilities.getAppRegistration() );
 		reg.setAppIsUnique(0);
 		reg.setAppKnownPort(0);
 		reg.setAppExpirationDelay( 1000000 );
 
-		com.cannontech.message.dispatch.message.PointRegistration pointReg = new com.cannontech.message.dispatch.message.PointRegistration();
-		pointReg.setRegFlags( com.cannontech.message.dispatch.message.PointRegistration.REG_EVENTS | com.cannontech.message.dispatch.message.PointRegistration.REG_ALARMS );
+		com.cannontech.messaging.message.dispatch.PointRegistrationMessage pointReg = new com.cannontech.messaging.message.dispatch.PointRegistrationMessage();
+		pointReg.setRegFlags( com.cannontech.messaging.message.dispatch.PointRegistrationMessage.REG_EVENTS | com.cannontech.messaging.message.dispatch.PointRegistrationMessage.REG_ALARMS );
 
-		com.cannontech.message.dispatch.message.Multi multiReg = new com.cannontech.message.dispatch.message.Multi();
+		com.cannontech.messaging.message.dispatch.MultiMessage multiReg = new com.cannontech.messaging.message.dispatch.MultiMessage();
 		multiReg.getVector().addElement(reg);
 		multiReg.getVector().addElement(pointReg);
 		

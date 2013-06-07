@@ -1,7 +1,7 @@
 package com.cannontech.web.updater.capcontrol;
 
 import com.cannontech.cbc.util.UpdaterHelper;
-import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.messaging.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.user.YukonUserContext;
 
 public class CapBankFormattingService extends AbstractFormattingService<CapBankDevice> {
@@ -111,7 +111,7 @@ public class CapBankFormattingService extends AbstractFormattingService<CapBankD
     
     @Override
     protected String getCBSize(CapBankDevice latestValue, UpdaterHelper updaterHelper) {
-        String value = latestValue.getBankSize().toString();
+        String value = String.valueOf(latestValue.getBankSize());
         return value;
     }
     

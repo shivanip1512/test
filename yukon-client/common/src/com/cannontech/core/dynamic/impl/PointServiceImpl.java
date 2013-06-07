@@ -15,7 +15,7 @@ import com.cannontech.core.dynamic.PointService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.messaging.message.dispatch.SignalMessage;
 
 /**
  * Implementation of PointService
@@ -39,14 +39,14 @@ public class PointServiceImpl implements PointService
     {
         
         LitePoint lp = pointDao.getLitePoint(pointId);
-        Set<Signal>  signalSet = dynamicDataSource.getSignals(pointId);
+        Set<SignalMessage>  signalSet = dynamicDataSource.getSignals(pointId);
         if(!signalSet.isEmpty())
         {
-            Iterator<Signal> iter = signalSet.iterator();
+            Iterator<SignalMessage> iter = signalSet.iterator();
             int highestPriorityCondition = -1;
             while(iter.hasNext())
             {
-                Signal sig = iter.next();
+                SignalMessage sig = iter.next();
                 if(TagUtils.isConditionActive(sig.getTags()))
                 {
                     int nextCondition = sig.getCondition();

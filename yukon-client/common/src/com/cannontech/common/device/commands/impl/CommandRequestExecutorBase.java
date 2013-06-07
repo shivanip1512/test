@@ -56,14 +56,14 @@ import com.cannontech.core.service.PorterRequestCancelService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.message.dispatch.message.SystemLogHelper;
-import com.cannontech.message.porter.message.Request;
-import com.cannontech.message.porter.message.Return;
+import com.cannontech.dispatch.SystemLogHelper;
 import com.cannontech.message.util.ConnectionException;
-import com.cannontech.message.util.Message;
-import com.cannontech.message.util.MessageEvent;
-import com.cannontech.message.util.MessageListener;
+import com.cannontech.messaging.message.BaseMessage;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.messaging.message.porter.RequestMessage;
+import com.cannontech.messaging.message.porter.ReturnMessage;
+import com.cannontech.messaging.util.MessageEvent;
+import com.cannontech.messaging.util.MessageListener;
 import com.cannontech.yukon.BasicServerConnection;
 
 /**
@@ -114,7 +114,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
             
             pendingUserMessageIds = new HashMap<>(requests.size());
             for (RequestHolder requestHolder : requests) {
-                pendingUserMessageIds.put(requestHolder.request.getUserMessageID(), requestHolder.command);
+                pendingUserMessageIds.put(requestHolder.request.getUserMessageId(), requestHolder.command);
             }
         }
         
@@ -127,12 +127,12 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         	
             boolean debug = log.isDebugEnabled();
             
-            Message message = e.getMessage();
+            BaseMessage message = e.getMessage();
             
-            if (message instanceof Return) {
+            if (message instanceof ReturnMessage) {
             
-            	Return retMessage = (Return) message;
-                long userMessageId = retMessage.getUserMessageID();
+            	ReturnMessage retMessage = (ReturnMessage) message;
+                long userMessageId = retMessage.getUserMessageId();
                 
                 // this is one of ours
                 if (pendingUserMessageIds.containsKey(userMessageId)) {
@@ -156,8 +156,8 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
                     // grab point data and give it to the callback
                     Vector<?> resultVector = retMessage.getVector();
                     for (Object aResult : resultVector) {
-                        if (aResult instanceof PointData) {
-                            PointData pData = (PointData) aResult;
+                        if (aResult instanceof PointDataMessage) {
+                            PointDataMessage pData = (PointDataMessage) aResult;
                             if (debug) {
                                 log.debug("Calling receivedValue on " + callback + " for " + retMessage);
                             }
@@ -168,7 +168,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
                     }
 
                     // last results
-                    if (retMessage.getExpectMore() == 0) {
+                    if (retMessage.getExpectMore() == false) {
 
                         if (specificErrorDescription != null) {
                             if (debug) {
@@ -378,10 +378,10 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 		        for (T command : commands) {
 		            
 		            // build basic request
-		            Request request = new Request();
+		            RequestMessage request = new RequestMessage();
 		            String commandStr = command.getCommandCallback().generateCommand(parameterDto);
                     request.setCommandString(commandStr);
-                    request.setGroupMessageID(groupMessageId);
+                    request.setGroupMessageId(groupMessageId);
                     request.setPriority(priority);
                     
 		            // allow executor to adjust request (set deviceId, routeId, etc)
@@ -580,18 +580,18 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     }
 
     // HELPERS
-    private void logCommand(Request request, LiteYukonUser user) {
-        new SystemLogHelper(PointTypes.SYS_PID_SYSTEM).log("Manual: " + request.getCommandString(), "ID: " + request.getDeviceID() + ", Route: " + request.getRouteID(), user);
+    private void logCommand(RequestMessage request, LiteYukonUser user) {
+        new SystemLogHelper(PointTypes.SYS_PID_SYSTEM).log("Manual: " + request.getCommandString(), "ID: " + request.getDeviceId() + ", Route: " + request.getRouteId(), user);
     }
 
-    private boolean commandRequiresLogging(Request request) {
+    private boolean commandRequiresLogging(RequestMessage request) {
         String commandString = request.getCommandString();
         Permission permission = commandPermissionConverter.getPermission(commandString);
         boolean result = loggableCommandPermissions.contains(permission);
         return result;
     }
     
-    protected abstract void adjustRequest(Request request, T commandRequest);
+    protected abstract void adjustRequest(RequestMessage request, T commandRequest);
     
     protected abstract CommandRequestType getCommandRequestType();
     
@@ -609,7 +609,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     }
 
     private class RequestHolder {
-        public Request request;
+        public RequestMessage request;
         public T command;
     }
 

@@ -1,6 +1,6 @@
 package com.cannontech.cbc.dao;
 
-import com.cannontech.message.capcontrol.model.CommandType;
+import com.cannontech.messaging.message.capcontrol.CommandType;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 

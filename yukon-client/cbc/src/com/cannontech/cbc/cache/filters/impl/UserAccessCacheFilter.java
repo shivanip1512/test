@@ -7,9 +7,9 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.message.capcontrol.streamable.Area;
-import com.cannontech.message.capcontrol.streamable.SpecialArea;
-import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.messaging.message.capcontrol.streamable.Area;
+import com.cannontech.messaging.message.capcontrol.streamable.SpecialArea;
+import com.cannontech.messaging.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.spring.YukonSpringHook;
 
 public class UserAccessCacheFilter implements CacheFilter<StreamableCapObject>

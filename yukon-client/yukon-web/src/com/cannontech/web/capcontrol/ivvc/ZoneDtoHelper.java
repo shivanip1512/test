@@ -21,7 +21,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.ZoneType;
 import com.cannontech.enums.Phase;
-import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.messaging.message.capcontrol.streamable.CapBankDevice;
 import com.google.common.collect.Lists;
 
 public class ZoneDtoHelper {
@@ -95,7 +95,7 @@ public class ZoneDtoHelper {
     public ZoneAssignmentCapBankRow getBankAssignmentFromMapping(CapBankToZoneMapping bankToZone, CapControlCache cache) {
         int bankId = bankToZone.getDeviceId();
         CapBankDevice bank = cache.getCapBankDevice(bankId);
-        LiteYukonPAObject controller = paoDao.getLiteYukonPAO(bank.getControlDeviceID());
+        LiteYukonPAObject controller = paoDao.getLiteYukonPAO(bank.getControlDeviceId());
 
         ZoneAssignmentCapBankRow row = new ZoneAssignmentCapBankRow();
         row.setId(bankId);        

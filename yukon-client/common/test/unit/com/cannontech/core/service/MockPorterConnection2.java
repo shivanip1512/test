@@ -13,24 +13,24 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.ScheduledExecutor;
-import com.cannontech.message.porter.message.Request;
-import com.cannontech.message.porter.message.Return;
-import com.cannontech.message.util.Message;
-import com.cannontech.message.util.MessageEvent;
-import com.cannontech.message.util.MessageListener;
+import com.cannontech.messaging.message.BaseMessage;
+import com.cannontech.messaging.message.porter.RequestMessage;
+import com.cannontech.messaging.message.porter.ReturnMessage;
+import com.cannontech.messaging.util.MessageEvent;
+import com.cannontech.messaging.util.MessageListener;
 import com.cannontech.yukon.BasicServerConnection;
 
 public class MockPorterConnection2 implements BasicServerConnection, InitializingBean {
     List<MessageListener> listeners = new ArrayList<MessageListener>();
     Timer timer = new Timer();
-    LinkedBlockingQueue<Return> outputQueue = new LinkedBlockingQueue<Return>();
+    LinkedBlockingQueue<ReturnMessage> outputQueue = new LinkedBlockingQueue<ReturnMessage>();
     private ScheduledExecutor scheduledExecutor;
 
     public void addMessageListener(MessageListener l) {
         listeners.add(l);
     }
 
-    public void queue(Message o) {
+    public void queue(BaseMessage o) {
         write(o);
     }
 
@@ -38,20 +38,20 @@ public class MockPorterConnection2 implements BasicServerConnection, Initializin
         listeners.remove(l);
     }
 
-    public void write(Message o) {
-        if (!(o instanceof Request)) return;
-        final Request req = (Request) o;
+    public void write(BaseMessage o) {
+        if (!(o instanceof RequestMessage)) return;
+        final RequestMessage req = (RequestMessage) o;
         CTILogger.info("Received message: " + req);
-        Return retMsg1 = new Return();
-        retMsg1.setExpectMore(1);
-        retMsg1.setUserMessageID(req.getUserMessageID());
-        retMsg1.setDeviceID(req.getDeviceID());
+        ReturnMessage retMsg1 = new ReturnMessage();
+        retMsg1.setExpectMore(true);
+        retMsg1.setUserMessageId(req.getUserMessageId());
+        retMsg1.setDeviceId(req.getDeviceId());
         outputQueue.add(retMsg1);
         
-        Return retMsg2 = new Return();
-        retMsg2.setExpectMore(0);
-        retMsg2.setUserMessageID(req.getUserMessageID());
-        retMsg2.setDeviceID(req.getDeviceID());
+        ReturnMessage retMsg2 = new ReturnMessage();
+        retMsg2.setExpectMore(false);
+        retMsg2.setUserMessageId(req.getUserMessageId());
+        retMsg2.setDeviceId(req.getDeviceId());
         retMsg2.setResultString("Mock porter result");
         retMsg2.setStatus(getErrorCode());
         outputQueue.add(retMsg2);
@@ -70,7 +70,7 @@ public class MockPorterConnection2 implements BasicServerConnection, Initializin
         }
     }
     
-    private void returnMessage(Message m) {
+    private void returnMessage(BaseMessage m) {
         CTILogger.info("Sending mock return message: " + m);
         MessageEvent e = new MessageEvent(this, m);
         
@@ -91,7 +91,7 @@ public class MockPorterConnection2 implements BasicServerConnection, Initializin
         scheduledExecutor.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
-                Return poll = outputQueue.poll();
+                ReturnMessage poll = outputQueue.poll();
                 if (poll != null) returnMessage(poll);
             }
             

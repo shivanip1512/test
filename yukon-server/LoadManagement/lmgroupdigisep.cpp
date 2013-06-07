@@ -11,7 +11,7 @@ using std::endl;
 
 extern ULONG _LM_DEBUG;
 
-RWDEFINE_COLLECTABLE( LMGroupDigiSEP, LMGROUPDIGISEP_ID )
+DEFINE_COLLECTABLE( LMGroupDigiSEP, LMGROUPDIGISEP_ID )
 
 /*---------------------------------------------------------------------------
     Constructors

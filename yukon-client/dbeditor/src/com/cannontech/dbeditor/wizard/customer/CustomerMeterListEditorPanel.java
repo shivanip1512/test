@@ -170,7 +170,7 @@ public Object getValue(Object val)
 		
 		deviceCustomerItem.setCustomerID( customer.getCustomerID());
 		deviceCustomerItem.setDeviceID(new Integer( 
-				 ((com.cannontech.database.data.lite.LiteYukonPAObject)getMeterListAddRemovePanel().rightListGetModel().getElementAt(i)).getYukonID()) );
+				 ((com.cannontech.database.data.lite.LiteYukonPAObject)getMeterListAddRemovePanel().rightListGetModel().getElementAt(i)).getYukonId()) );
 		
 		customer.getDeviceVector().addElement( deviceCustomerItem);
 	}
@@ -452,7 +452,7 @@ public void setValue(Object val)
 				for( int j = 0; j < customer.getDeviceVector().size(); j++ )
 				{				
 					com.cannontech.database.db.customer.DeviceCustomerList deviceCustomerValue = ((com.cannontech.database.db.customer.DeviceCustomerList)customer.getDeviceVector().elementAt(j));
-					if( deviceCustomerValue.getDeviceID().intValue() == liteDevice.getYukonID() )
+					if( deviceCustomerValue.getDeviceID().intValue() == liteDevice.getYukonId() )
 					{
 						availableMeters.remove( devices.get(i) );
 						usedMeters.add( devices.get(i) );

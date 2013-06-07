@@ -1,6 +1,6 @@
 package com.cannontech.dr.program.model;
 
-import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.messaging.message.loadcontrol.data.Program;
 import com.cannontech.user.YukonUserContext;
 
 public class ProgramShowActionField extends ProgramBackingFieldBase {
@@ -11,7 +11,7 @@ public class ProgramShowActionField extends ProgramBackingFieldBase {
     }
     
     @Override
-    public Object getProgramValue(LMProgramBase program, YukonUserContext userContext) {
+    public Object getProgramValue(Program program, YukonUserContext userContext) {
         
         // Check null first - load management doesn't know about this group
         if (program == null) {
@@ -20,9 +20,9 @@ public class ProgramShowActionField extends ProgramBackingFieldBase {
 
         // Check manual active
         int programState = program.getProgramStatus();
-        boolean running = programState == LMProgramBase.STATUS_MANUAL_ACTIVE
-            || programState == LMProgramBase.STATUS_TIMED_ACTIVE;
-        boolean scheduled = programState == LMProgramBase.STATUS_SCHEDULED;
+        boolean running = programState == Program.STATUS_MANUAL_ACTIVE
+            || programState == Program.STATUS_TIMED_ACTIVE;
+        boolean scheduled = programState == Program.STATUS_SCHEDULED;
         boolean disabled = program.getDisableFlag();
 
         if (running && disabled) {

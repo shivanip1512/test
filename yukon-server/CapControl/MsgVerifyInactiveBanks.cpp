@@ -4,7 +4,7 @@
 #include "MsgVerifyInactiveBanks.h"
 #include "ccid.h"
 
-RWDEFINE_COLLECTABLE( VerifyInactiveBanks, VERIFY_INACTIVE_BANKS_MSG_ID )
+DEFINE_COLLECTABLE( VerifyInactiveBanks, VERIFY_INACTIVE_BANKS_MSG_ID )
 
 VerifyInactiveBanks::VerifyInactiveBanks() :
     Inherited()
@@ -29,7 +29,7 @@ VerifyInactiveBanks::~VerifyInactiveBanks()
 
 }
 
-long VerifyInactiveBanks::getBankInactiveTime()
+long VerifyInactiveBanks::getBankInactiveTime() const
 {
     return _bankInactiveTime;
 }
@@ -37,24 +37,6 @@ long VerifyInactiveBanks::getBankInactiveTime()
 void VerifyInactiveBanks::setBankInactiveTime(long bankInactiveTime)
 {
     _bankInactiveTime = bankInactiveTime;
-}
-
-void VerifyInactiveBanks::restoreGuts(RWvistream& iStream)
-{
-    Inherited::restoreGuts(iStream);
-
-    iStream >> _bankInactiveTime;
-
-    return;
-}
-
-void VerifyInactiveBanks::saveGuts(RWvostream& oStream) const
-{
-    Inherited::saveGuts(oStream);
-
-    oStream << _bankInactiveTime;
-
-    return;
 }
 
 VerifyInactiveBanks& VerifyInactiveBanks::operator=(const VerifyInactiveBanks& right)

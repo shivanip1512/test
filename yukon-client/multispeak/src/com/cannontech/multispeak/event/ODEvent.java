@@ -6,7 +6,7 @@ import java.util.GregorianCalendar;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.message.porter.message.Return;
+import com.cannontech.messaging.message.porter.ReturnMessage;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
@@ -69,9 +69,9 @@ public class ODEvent extends MultispeakEvent{
      * @param returnMsg The Pil return message
      */
     @Override
-    public boolean messageReceived(Return returnMsg) {
+    public boolean messageReceived(ReturnMessage returnMsg) {
 
-        YukonMeter meter = meterDao.getYukonMeterForId(returnMsg.getDeviceID());
+        YukonMeter meter = meterDao.getYukonMeterForId(returnMsg.getDeviceId());
         OutageDetectionEvent ode = new OutageDetectionEvent();
         String meterNumber = meter.getMeterNumber();
         

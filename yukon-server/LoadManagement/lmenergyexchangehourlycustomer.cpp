@@ -26,7 +26,7 @@ using std::endl;
 
 extern ULONG _LM_DEBUG;
 
-RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeHourlyCustomer, CTILMENERGYEXCHANGEHOURLYCUSTOMER_ID )
+DEFINE_COLLECTABLE( CtiLMEnergyExchangeHourlyCustomer, CTILMENERGYEXCHANGEHOURLYCUSTOMER_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -172,45 +172,6 @@ CtiLMEnergyExchangeHourlyCustomer& CtiLMEnergyExchangeHourlyCustomer::setAmountC
 
     _amountcommitted = committed;
     return *this;
-}
-
-
-/*-------------------------------------------------------------------------
-    restoreGuts
-
-    Restore self's state from the given stream
---------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeHourlyCustomer::restoreGuts(RWvistream& istrm)
-{
-
-
-
-    RWCollectable::restoreGuts( istrm );
-
-    istrm >> _customerid
-    >> _offerid
-    >> _revisionnumber
-    >> _hour
-    >> _amountcommitted;
-}
-
-/*---------------------------------------------------------------------------
-    saveGuts
-
-    Save self's state onto the given stream
----------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeHourlyCustomer::saveGuts(RWvostream& ostrm ) const
-{
-
-
-
-    RWCollectable::saveGuts( ostrm );
-
-    ostrm << _customerid
-    << _offerid
-    << _revisionnumber
-    << _hour
-    << _amountcommitted;
 }
 
 /*---------------------------------------------------------------------------

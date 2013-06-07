@@ -8,8 +8,8 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.DeviceCustomerList;
 import com.cannontech.database.db.graph.GraphCustomerList;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 
 public class Customer extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange {	
 	private com.cannontech.database.db.customer.Customer customer = null;
@@ -213,15 +213,15 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 		}
 	}
 
-	public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
-		String categoryType = DBChangeMsg.CAT_CUSTOMER;
+	public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType) {
+		String categoryType = DBChangeMessage.CAT_CUSTOMER;
 		if( getCustomer().getCustomerTypeID().intValue() == CustomerTypes.CUSTOMER_CI)
-			categoryType= DBChangeMsg.CAT_CI_CUSTOMER;
+			categoryType= DBChangeMessage.CAT_CI_CUSTOMER;
 			
-		DBChangeMsg[] msgs = new DBChangeMsg[ 1 ];
-		msgs[0] = new DBChangeMsg(
+		DBChangeMessage[] msgs = new DBChangeMessage[ 1 ];
+		msgs[0] = new DBChangeMessage(
 						getCustomerID().intValue(),
-						DBChangeMsg.CHANGE_CUSTOMER_DB,
+						DBChangeMessage.CHANGE_CUSTOMER_DB,
 						categoryType,
 						categoryType,
 						dbChangeType);

@@ -212,7 +212,7 @@ void CtiLMService::OnStop()
 
     try
     {
-        CtiLMClientListener::getInstance()->stop();
+        CtiLMClientListener::getInstance().stop();
     }
     catch( ... )
     {
@@ -303,8 +303,7 @@ void CtiLMService::Run()
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime().asString() << " - Starting client listener thread..." << endl;
         }
-        CtiLMClientListener* clientListener = CtiLMClientListener::getInstance();
-        clientListener->start();
+        CtiLMClientListener::getInstance().start();
 
         /*{
             CtiLockGuard<CtiLogger> logger_guard(dout);

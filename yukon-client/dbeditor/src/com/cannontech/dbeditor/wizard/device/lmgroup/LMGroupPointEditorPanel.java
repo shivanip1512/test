@@ -287,7 +287,7 @@ public Object getValue(Object o)
 	if( group != null )
 	{
 		group.getLMGroupPoint().setDeviceIDUsage( new Integer(
-			((com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxControlDevice().getSelectedItem()).getYukonID() ) );
+			((com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxControlDevice().getSelectedItem()).getYukonId() ) );
 		
 		group.getLMGroupPoint().setPointIDUsage( new Integer( 
 			((com.cannontech.database.data.lite.LitePoint)getJComboBoxControlPoint().getSelectedItem()).getPointID() ) );
@@ -333,7 +333,7 @@ private void initComboBoxes()
 			     || liteDevice.getPaoType().isCbc()
 				 || DeviceTypesFuncs.isMCT(liteDevice.getPaoType().getDeviceTypeId()) )
 			{
-                List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(liteDevice.getYukonID());
+                List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(liteDevice.getYukonId());
 				
 				//pointList gets inserted into the hashtable
 				java.util.ArrayList pointList = new java.util.ArrayList(points.size() / 2);
@@ -573,7 +573,7 @@ public void setValue(Object o)
 		com.cannontech.database.data.device.lm.LMGroupPoint group = (com.cannontech.database.data.device.lm.LMGroupPoint) o;
 
 		for( int i = 0; i < getJComboBoxControlDevice().getItemCount(); i++)
-				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxControlDevice().getItemAt(i)).getYukonID()
+				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxControlDevice().getItemAt(i)).getYukonId()
 					 == group.getLMGroupPoint().getDeviceIDUsage().intValue() )
 				{
 					getJComboBoxControlDevice().setSelectedIndex(i);

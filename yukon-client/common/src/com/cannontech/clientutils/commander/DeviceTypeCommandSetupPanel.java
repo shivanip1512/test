@@ -26,7 +26,7 @@ import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.command.Command;
 import com.cannontech.database.db.command.CommandCategory;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.BasicServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
@@ -789,7 +789,7 @@ constraintsDeviceTypeCommandSetupPanel.gridheight = 6;
 				item = t.execute();
 
 				//write the DBChangeMessage out to Dispatch since it was a Successful ADD
-				DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, transactionType.getDbChangeType());
+				DBChangeMessage[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)item, transactionType.getDbChangeType());
 			
 				for( int i = 0; i < dbChange.length; i++)
 				{

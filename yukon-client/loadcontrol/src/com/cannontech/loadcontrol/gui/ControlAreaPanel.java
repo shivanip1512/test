@@ -6,11 +6,10 @@ package com.cannontech.loadcontrol.gui;
  * @author: 
  */
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.datamodels.ControlAreaRowData;
 import com.cannontech.loadcontrol.datamodels.ControlAreaTriggerTableModel;
+import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
 import com.cannontech.spring.YukonSpringHook;
-
 public class ControlAreaPanel extends javax.swing.JPanel 
 {
 	private ControlAreaTriggerTableModel tableModel = null;
@@ -829,7 +828,7 @@ private void setGUIDefaults()
  * Creation date: (4/6/2001 2:32:36 PM)
  * @param controlArea com.cannontech.loadcontrol.data.LMControlArea
  */
-public void setGUIValues(final com.cannontech.loadcontrol.data.LMControlArea controlArea) 
+public void setGUIValues(final com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem controlArea) 
 {
 	if( controlArea == null )
 		return;
@@ -863,16 +862,16 @@ public void setGUIValues(final com.cannontech.loadcontrol.data.LMControlArea con
 			getJLabelActualStopTime().setText( new com.cannontech.clientutils.commonutils.ModifiedDate(stop.getTime().getTime()).toString() );
 
 			//set the color of our state text
-			getJLabelActualControl().setForeground(LMControlArea.getControlAreaStateColor(controlArea));			
+			getJLabelActualControl().setForeground(ControlAreaItem.getControlAreaStateColor(controlArea));			
 				
 			getJLabelActualControl().setText( (controlArea.getDisableFlag().booleanValue() ? "Disabled : " : "") +
-								LMControlArea.getControlAreaStateString(controlArea.getControlAreaState().intValue()) );
+								ControlAreaItem.getControlAreaStateString(controlArea.getControlAreaState().intValue()) );
 
 			if( controlArea.getTriggerVector() != null && controlArea.getTriggerVector().size() > 0 )
 			{
 				for( int i = 0; i < controlArea.getTriggerVector().size(); i++ )
 				{
-					com.cannontech.loadcontrol.data.LMControlAreaTrigger trigger = (com.cannontech.loadcontrol.data.LMControlAreaTrigger)controlArea.getTriggerVector().get(i);					
+					com.cannontech.messaging.message.loadcontrol.data.ControlAreaTriggerItem trigger = (com.cannontech.messaging.message.loadcontrol.data.ControlAreaTriggerItem)controlArea.getTriggerVector().get(i);					
 					com.cannontech.database.data.lite.LitePoint pt = YukonSpringHook.getBean(PointDao.class).getLitePoint( trigger.getPointId().intValue() );
 				  	ControlAreaRowData data = new ControlAreaRowData();
 				  	data.setLitePoint(pt);

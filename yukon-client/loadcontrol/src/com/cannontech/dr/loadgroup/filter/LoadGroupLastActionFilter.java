@@ -11,7 +11,7 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
-import com.cannontech.loadcontrol.data.LMDirectGroupBase;
+import com.cannontech.messaging.message.loadcontrol.data.DirectGroupBase;
 
 public class LoadGroupLastActionFilter implements UiFilter<DisplayablePao> {
     private LoadGroupService loadGroupService;
@@ -32,7 +32,7 @@ public class LoadGroupLastActionFilter implements UiFilter<DisplayablePao> {
 
             @Override
             public boolean matches(DisplayablePao pao) {
-                LMDirectGroupBase group = loadGroupService.getGroupForPao(pao);
+                DirectGroupBase group = loadGroupService.getGroupForPao(pao);
                 boolean retVal = group != null && filter.intersects(group.getGroupTime());
                 return retVal;
             }});

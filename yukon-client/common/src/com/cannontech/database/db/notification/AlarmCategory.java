@@ -1,8 +1,8 @@
 package com.cannontech.database.db.notification;
 
 import com.cannontech.database.SqlUtils;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 
 /**
  * This type was created in VisualAge.
@@ -132,14 +132,14 @@ public java.lang.String getCategoryName() {
  * Creation date: (12/19/2001 1:45:25 PM)
  * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
  */
-public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
+public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType)
 {
-	DBChangeMsg[] msgs = { 
-	        new DBChangeMsg(
+	DBChangeMessage[] msgs = { 
+	        new DBChangeMessage(
 	                        getAlarmCategoryID().intValue(),
-	                        DBChangeMsg.CHANGE_ALARM_CATEGORY_DB,
-	                        DBChangeMsg.CAT_ALARMCATEGORY,
-	                        DBChangeMsg.CAT_ALARMCATEGORY,
+	                        DBChangeMessage.CHANGE_ALARM_CATEGORY_DB,
+	                        DBChangeMessage.CAT_ALARMCATEGORY,
+	                        DBChangeMessage.CAT_ALARMCATEGORY,
 	                        dbChangeType)
 	};
 

@@ -11,7 +11,7 @@ import java.util.Iterator;
 
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
-import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.messaging.message.dispatch.SignalMessage;
 
 public class AlarmingRow 
 {
@@ -97,7 +97,7 @@ public int getRowNumber()
 	return rowNumber;
 }
 
-public boolean containsSignal( Signal signal_ )
+public boolean containsSignal( SignalMessage signal_ )
 {
 	return ( getSignalHash().get(signal_) != null );
 }
@@ -155,7 +155,7 @@ public void setRowNumber( int rowNum )
  * @param signal
  * deny our EVENT signals from being in here
  */
-public synchronized void updateSignal(Signal signal)
+public synchronized void updateSignal(SignalMessage signal)
 {
 	if( signal != null && signal.getCondition() >= IAlarmDefs.MIN_CONDITION_ID )
 	{
@@ -175,7 +175,7 @@ private synchronized void updateBlinkingState()
 	Iterator iter = getSignalHash().values().iterator();
 	while( iter.hasNext() )
 	{
-		Signal sig = (Signal)iter.next();
+		SignalMessage sig = (SignalMessage)iter.next();
 		
 		//we may or may not need to blink, if we are blinking, remain blinking
 		isBlinking |= TagUtils.isAlarmUnacked(sig.getTags());
@@ -186,7 +186,7 @@ private synchronized void updateBlinkingState()
  * @param signal
  * get that signal gone
  */
-public synchronized void removeSignal(Signal signal)
+public synchronized void removeSignal(SignalMessage signal)
 {
 	if( signal == null )
 		return;

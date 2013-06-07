@@ -24,16 +24,16 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "utility.h"
 #include "msg_notif_email.h"
 
-RWDEFINE_COLLECTABLE( CtiNotifEmailMsg, NOTIF_EMAIL_MSG_ID );
+DEFINE_COLLECTABLE( CtiNotifEmailMsg, NOTIF_EMAIL_MSG_ID );
 
+//REGISTER_MSG_FACTORY( CtiNotifEmailMsg );
 
 //=====================================================================================================================
 //=====================================================================================================================
 
 CtiNotifEmailMsg::CtiNotifEmailMsg() :
-_notifGroupID(0), _notifAttachment(0)
+_notifGroupID(0)
 {
-
 }
 
 //=====================================================================================================================
@@ -41,40 +41,6 @@ _notifGroupID(0), _notifAttachment(0)
 
 CtiNotifEmailMsg::~CtiNotifEmailMsg()
 {
-    delete_container( _attachments );
-    _attachments.clear();
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-void CtiNotifEmailMsg::saveGuts( RWvostream &aStream ) const
-{
-   CtiMessage::saveGuts( aStream );
-
-   aStream << _to
-            << _notifGroupID
-            << _subject
-            << _body
-            << _toCC
-            << _toBCC
-            << _attachments;
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-void CtiNotifEmailMsg::restoreGuts( RWvistream& aStream )
-{
-   CtiMessage::restoreGuts( aStream );
-
-   aStream >> _to
-            >> _notifGroupID
-            >> _subject
-            >> _body
-            >> _toCC
-            >> _toBCC
-            >> _attachments;
 }
 
 //=====================================================================================================================
@@ -95,25 +61,7 @@ void CtiNotifEmailMsg::dump() const
 //=====================================================================================================================
 //=====================================================================================================================
 
-std::vector<CtiNotifEmailAttachmentMsg*>& CtiNotifEmailMsg::getAttachments( void )
-{
-   return( _attachments );
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-void CtiNotifEmailMsg::setAttachment( string file )
-{
-   _notifAttachment = new CtiNotifEmailAttachmentMsg( file );
-   _notifAttachment->dump();
-   _attachments.push_back( _notifAttachment );
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-int CtiNotifEmailMsg::getNotifGroupId( void )
+int CtiNotifEmailMsg::getNotifGroupId() const
 {
    return( _notifGroupID );
 }
@@ -129,7 +77,7 @@ void CtiNotifEmailMsg::setNotifGroupId( int id )
 //=====================================================================================================================
 //=====================================================================================================================
 
-string CtiNotifEmailMsg::getTo( void )
+string CtiNotifEmailMsg::getTo() const
 {
    return( _to );
 }
@@ -145,7 +93,7 @@ void CtiNotifEmailMsg::setTo( string to )
 //=====================================================================================================================
 //=====================================================================================================================
 
-string CtiNotifEmailMsg::getSubject( void )
+string CtiNotifEmailMsg::getSubject() const
 {
    return( _subject );
 }
@@ -161,7 +109,7 @@ void CtiNotifEmailMsg::setSubject( string sub )
 //=====================================================================================================================
 //=====================================================================================================================
 
-string CtiNotifEmailMsg::getBody( void )
+string CtiNotifEmailMsg::getBody() const
 {
    return( _body );
 }
@@ -177,7 +125,7 @@ void CtiNotifEmailMsg::setBody( string body )
 //=====================================================================================================================
 //=====================================================================================================================
 
-string CtiNotifEmailMsg::getToCC( void )
+string CtiNotifEmailMsg::getToCC() const
 {
    return( _toCC );
 }
@@ -193,7 +141,7 @@ void CtiNotifEmailMsg::setToCC( string toCC )
 //=====================================================================================================================
 //=====================================================================================================================
 
-string CtiNotifEmailMsg::getToBCC( void )
+string CtiNotifEmailMsg::getToBCC() const
 {
    return( _toBCC );
 }
@@ -219,16 +167,15 @@ CtiMessage* CtiNotifEmailMsg::replicateMessage() const
 
 /* Start of deprecated email msg*/
 
-RWDEFINE_COLLECTABLE( CtiCustomerNotifEmailMsg, NOTIF_CUST_EMAIL_MSG_ID );
+DEFINE_COLLECTABLE( CtiCustomerNotifEmailMsg, NOTIF_CUST_EMAIL_MSG_ID );
 
 
 //=====================================================================================================================
 //=====================================================================================================================
 
 CtiCustomerNotifEmailMsg::CtiCustomerNotifEmailMsg() :
-_customerID(0), _notifAttachment(0)
+_customerID(0)
 {
-
 }
 
 //=====================================================================================================================
@@ -236,39 +183,6 @@ _customerID(0), _notifAttachment(0)
 
 CtiCustomerNotifEmailMsg::~CtiCustomerNotifEmailMsg()
 {
-   _attachments.clearAndDestroy();
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-void CtiCustomerNotifEmailMsg::saveGuts( RWvostream &aStream ) const
-{
-   CtiMessage::saveGuts( aStream );
-
-   aStream << _to
-            << _customerID
-            << _subject
-            << _body
-            << _toCC
-            << _toBCC
-            << _attachments;
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-void CtiCustomerNotifEmailMsg::restoreGuts( RWvistream& aStream )
-{
-   CtiMessage::restoreGuts( aStream );
-
-   aStream >> _to
-            >> _customerID
-            >> _subject
-            >> _body
-            >> _toCC
-            >> _toBCC
-            >> _attachments;
 }
 
 //=====================================================================================================================
@@ -289,25 +203,7 @@ void CtiCustomerNotifEmailMsg::dump() const
 //=====================================================================================================================
 //=====================================================================================================================
 
-RWOrdered& CtiCustomerNotifEmailMsg::getAttachments( void )
-{
-   return( _attachments );
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-void CtiCustomerNotifEmailMsg::setAttachment( string file )
-{
-   _notifAttachment = new CtiNotifEmailAttachmentMsg( file );
-   _notifAttachment->dump();
-   _attachments.insert( _notifAttachment );
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-int CtiCustomerNotifEmailMsg::getCustomerId( void )
+int CtiCustomerNotifEmailMsg::getCustomerId() const
 {
    return( _customerID );
 }
@@ -323,7 +219,7 @@ void CtiCustomerNotifEmailMsg::setCustomerId( int id )
 //=====================================================================================================================
 //=====================================================================================================================
 
-string CtiCustomerNotifEmailMsg::getTo( void )
+string CtiCustomerNotifEmailMsg::getTo() const
 {
    return( _to );
 }
@@ -339,7 +235,7 @@ void CtiCustomerNotifEmailMsg::setTo( string to )
 //=====================================================================================================================
 //=====================================================================================================================
 
-string CtiCustomerNotifEmailMsg::getSubject( void )
+string CtiCustomerNotifEmailMsg::getSubject() const
 {
    return( _subject );
 }
@@ -355,7 +251,7 @@ void CtiCustomerNotifEmailMsg::setSubject( string sub )
 //=====================================================================================================================
 //=====================================================================================================================
 
-string CtiCustomerNotifEmailMsg::getBody( void )
+string CtiCustomerNotifEmailMsg::getBody() const
 {
    return( _body );
 }
@@ -371,7 +267,7 @@ void CtiCustomerNotifEmailMsg::setBody( string body )
 //=====================================================================================================================
 //=====================================================================================================================
 
-string CtiCustomerNotifEmailMsg::getToCC( void )
+string CtiCustomerNotifEmailMsg::getToCC() const
 {
    return( _toCC );
 }
@@ -387,7 +283,7 @@ void CtiCustomerNotifEmailMsg::setToCC( string toCC )
 //=====================================================================================================================
 //=====================================================================================================================
 
-string CtiCustomerNotifEmailMsg::getToBCC( void )
+string CtiCustomerNotifEmailMsg::getToBCC() const
 {
    return( _toBCC );
 }

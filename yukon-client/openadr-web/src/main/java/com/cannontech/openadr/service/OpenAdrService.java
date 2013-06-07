@@ -1,6 +1,6 @@
 package com.cannontech.openadr.service;
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkArgument;
 import ietf.params.xml.ns.icalendar_2.Properties;
 
 import java.io.IOException;
@@ -58,7 +58,7 @@ import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.message.util.ConnectionException;
-import com.cannontech.message.util.TimeoutException;
+import com.cannontech.messaging.util.TimeoutException;
 import com.cannontech.openadr.OadrResponseCode;
 import com.cannontech.openadr.dao.OpenAdrEventDao;
 import com.cannontech.openadr.exception.OpenAdrConfigurationException;

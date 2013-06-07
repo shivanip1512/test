@@ -10,15 +10,15 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.dr.DemandResponseBackingField;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.loadcontrol.data.LMControlArea;
-import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
+import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
+import com.cannontech.messaging.message.loadcontrol.data.ControlAreaTriggerItem;
 import com.cannontech.user.YukonUserContext;
 
 /**
  * Abstract Base Class for trigger backing fields 
  */
 public abstract class TriggerBackingFieldBase implements 
-                DemandResponseBackingField<LMControlAreaTrigger> {
+                DemandResponseBackingField<ControlAreaTriggerItem> {
 
     private final static String baseKey = "yukon.web.modules.dr.controlAreaTrigger.value";
     protected final static MessageSourceResolvable blankFieldResolvable = 
@@ -31,8 +31,8 @@ public abstract class TriggerBackingFieldBase implements
 
         @Override
         public int compare(DisplayablePao pao1, DisplayablePao pao2) {
-            LMControlArea controlArea1 = getControlAreaFromYukonPao(pao1);
-            LMControlArea controlArea2 = getControlAreaFromYukonPao(pao2);
+            ControlAreaItem controlArea1 = getControlAreaFromYukonPao(pao1);
+            ControlAreaItem controlArea2 = getControlAreaFromYukonPao(pao2);
 
             if (controlArea1 == controlArea2) {
                 return 0;
@@ -45,8 +45,8 @@ public abstract class TriggerBackingFieldBase implements
                 return 1;
             }
 
-            LMControlAreaTrigger trigger1 = controlArea1.getTrigger(1);
-            LMControlAreaTrigger trigger2 = controlArea2.getTrigger(1);
+            ControlAreaTriggerItem trigger1 = controlArea1.getTrigger(1);
+            ControlAreaTriggerItem trigger2 = controlArea2.getTrigger(1);
 
             if (trigger1 == trigger2) {
                 return 0;
@@ -70,7 +70,7 @@ public abstract class TriggerBackingFieldBase implements
 
         public abstract int triggerCompare(
                 TriggerType triggerType,
-                LMControlAreaTrigger trigger1, LMControlAreaTrigger trigger2);
+                ControlAreaTriggerItem trigger1, ControlAreaTriggerItem trigger2);
     }
 
     /**
@@ -80,13 +80,13 @@ public abstract class TriggerBackingFieldBase implements
      * @return Value of this field for the given trigger (Should be one of: String, 
      *                                                  MessageSourceResolvable, ResolvableTemplate)
      */
-    public abstract Object getTriggerValue(LMControlAreaTrigger trigger, 
+    public abstract Object getTriggerValue(ControlAreaTriggerItem trigger, 
                                            YukonUserContext userContext);
 
     @Override
-    public Object getValue(LMControlAreaTrigger trigger, YukonUserContext userContext) {
+    public Object getValue(ControlAreaTriggerItem trigger, YukonUserContext userContext) {
         if(trigger != null) {
-            return getTriggerValue((LMControlAreaTrigger) trigger, userContext);
+            return getTriggerValue((ControlAreaTriggerItem) trigger, userContext);
         } else {
             // This can happen if a trigger is deleted.  In the future, we'll
             // have to deal with this better.
@@ -100,7 +100,7 @@ public abstract class TriggerBackingFieldBase implements
         return null;
     }
 
-    protected LMControlArea getControlAreaFromYukonPao(YukonPao from){
+    protected ControlAreaItem getControlAreaFromYukonPao(YukonPao from){
         return controlAreaService.getControlAreaForPao(from);
     }
 

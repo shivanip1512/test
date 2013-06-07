@@ -12,7 +12,7 @@ using namespace Cti::CapControl;
 
 extern unsigned long _CC_DEBUG;
 
-RWDEFINE_COLLECTABLE( CtiCCAreaBase, CTICCAREABASE_ID )
+DEFINE_COLLECTABLE( CtiCCAreaBase, CTICCAREABASE_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -102,16 +102,6 @@ CtiCCAreaBase& CtiCCAreaBase::operator=(const CtiCCAreaBase& right)
     return *this;
 }
 
-/*---------------------------------------------------------------------------
-    saveGuts
-
-    Save self's state onto the given stream
----------------------------------------------------------------------------*/
-void CtiCCAreaBase::saveGuts(RWvostream& ostrm ) const
-{
-    RWCollectable::saveGuts( ostrm );
-    CapControlPao::saveGuts(ostrm);
-}
 
 /*---------------------------------------------------------------------------
     restore

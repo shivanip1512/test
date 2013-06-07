@@ -4,10 +4,10 @@ import java.sql.SQLException;
 
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
-import com.cannontech.message.dispatch.message.DbChangeHelper;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeCategory;
+import com.cannontech.dispatch.DbChangeHelper;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 
 /**
  * @author yao
@@ -85,8 +85,8 @@ public class YukonSelectionList extends DBPersistent implements CTIDbChange {
 	}
 
     @Override
-    public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
-        DBChangeMsg[] msgs = {
+    public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType) {
+        DBChangeMessage[] msgs = {
             DbChangeHelper.newDbChange(dbChangeType, DbChangeCategory.YUKON_SELECTION_LIST, yukonSelectionList.getListID())
         };
 

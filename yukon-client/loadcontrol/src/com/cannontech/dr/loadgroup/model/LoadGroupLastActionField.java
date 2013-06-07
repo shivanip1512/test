@@ -6,7 +6,7 @@ import java.util.Date;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ResolvableTemplate;
-import com.cannontech.loadcontrol.data.LMDirectGroupBase;
+import com.cannontech.messaging.message.loadcontrol.data.DirectGroupBase;
 import com.cannontech.user.YukonUserContext;
 
 public class LoadGroupLastActionField extends LoadGroupBackingFieldBase {
@@ -17,7 +17,7 @@ public class LoadGroupLastActionField extends LoadGroupBackingFieldBase {
     }
     
     @Override
-    public Object getGroupValue(LMDirectGroupBase group, YukonUserContext userContext) {
+    public Object getGroupValue(DirectGroupBase group, YukonUserContext userContext) {
         Date lastActionTime = group.getGroupTime();
         if (lastActionTime.after(CtiUtilities.get1990GregCalendar().getTime())) {
             ResolvableTemplate template = new ResolvableTemplate(getKey(getFieldName()));
@@ -33,8 +33,8 @@ public class LoadGroupLastActionField extends LoadGroupBackingFieldBase {
 
             @Override
             public int compare(DisplayablePao pao1, DisplayablePao pao2) {
-                LMDirectGroupBase group1 = getGroupFromYukonPao(pao1);
-                LMDirectGroupBase group2 = getGroupFromYukonPao(pao2);
+                DirectGroupBase group1 = getGroupFromYukonPao(pao1);
+                DirectGroupBase group2 = getGroupFromYukonPao(pao2);
                 if (group1 == group2) {
                     return 0;
                 }

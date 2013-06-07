@@ -39,7 +39,7 @@ import com.cannontech.database.TransactionTemplateHelper;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
@@ -88,8 +88,8 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     
         asyncDynamicDataSource.addDBChangeListener(new DBChangeListener() {
             @Override
-            public void dbChangeReceived(DBChangeMsg dbChange) {
-                if (dbChange.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
+            public void dbChangeReceived(DBChangeMessage dbChange) {
+                if (dbChange.getDatabase() == DBChangeMessage.CHANGE_PAO_DB) {
                     // no reason to be too delicate here
                     recentlyUncreatableTemplates.invalidateAll();
                 }

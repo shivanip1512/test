@@ -9,6 +9,7 @@ package com.cannontech.message.server;
 import java.io.IOException;
 
 import com.cannontech.message.util.DefineCollectableMessage;
+import com.cannontech.messaging.message.server.ServerRequestMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
@@ -27,7 +28,7 @@ public class DefineCollectableServerRequest extends DefineCollectableMessage {
 	 * @see com.roguewave.vsj.DefineCollectable#create(com.roguewave.vsj.VirtualInputStream)
 	 */
 	public Object create(VirtualInputStream arg0) throws IOException {
-		return new ServerRequestMsg();
+		return new ServerRequestMessage();
 	}
 
 	/* (non-Javadoc)
@@ -62,7 +63,7 @@ public class DefineCollectableServerRequest extends DefineCollectableMessage {
 	 * @see com.roguewave.vsj.DefineCollectable#getJavaClass()
 	 */
 	public Class getJavaClass() {
-		return ServerRequestMsg.class;
+		return ServerRequestMessage.class;
 	}
 
 	/* (non-Javadoc)
@@ -70,7 +71,7 @@ public class DefineCollectableServerRequest extends DefineCollectableMessage {
 	 */
 	public void restoreGuts(Object o, VirtualInputStream vistr, CollectableStreamer strmr) throws IOException {
 		super.restoreGuts(o, vistr, strmr);
-        ServerRequestMsg msg = (ServerRequestMsg)o;
+        ServerRequestMessage msg = (ServerRequestMessage)o;
         msg.setId(vistr.extractInt());
         msg.setPayload(vistr.restoreObject(strmr));
 	}
@@ -80,7 +81,7 @@ public class DefineCollectableServerRequest extends DefineCollectableMessage {
 	 */
 	public void saveGuts(Object o, VirtualOutputStream vostr, CollectableStreamer strmr) throws IOException {
 		super.saveGuts(o,vostr,strmr);
-		ServerRequestMsg msg = (ServerRequestMsg) o;
+		ServerRequestMessage msg = (ServerRequestMessage) o;
 		vostr.insertInt(msg.getId());
 		vostr.saveObject(msg.getPayload(), strmr);
 	}

@@ -331,7 +331,7 @@ public class GraphBean extends Graph
 		{
 			LiteYukonPAObject litePAO = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(Integer.valueOf(custDevices[i]).intValue());
 			paObjects.add(litePAO);
-			logDesc += litePAO.getYukonID() + ", ";
+			logDesc += litePAO.getYukonId() + ", ";
 		}
 		ActivityLogger.logEvent(liteYukonUser.getUserID(), ActivityLogActions.SCAN_DATA_NOW_ACTION, logDesc);
 		getDataNow(paObjects);

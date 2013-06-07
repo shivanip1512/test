@@ -510,7 +510,7 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 					// handle the selected device
 					if( userObject instanceof LiteYukonPAObject )
 					{
-                        int paoId = ((LiteYukonPAObject)userObject).getYukonID();
+                        int paoId = ((LiteYukonPAObject)userObject).getYukonId();
                         List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(paoId);
                         
 						getRightTable().addDevice(points);

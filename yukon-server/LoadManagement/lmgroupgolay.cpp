@@ -23,7 +23,7 @@ using std::endl;
 
 extern ULONG _LM_DEBUG;
 
-RWDEFINE_COLLECTABLE( CtiLMGroupGolay, CTILMGROUPGOLAY_ID )
+DEFINE_COLLECTABLE( CtiLMGroupGolay, CTILMGROUPGOLAY_ID )
 
 /*---------------------------------------------------------------------------
   Constructors
@@ -150,26 +150,6 @@ CtiLMGroupGolay& CtiLMGroupGolay::setNominalTimeout(int nominal_timeout)
 {
     _nominal_timeout = nominal_timeout;
     return *this;
-}
-
-/*-------------------------------------------------------------------------
-  restoreGuts
-
-  Restore self's state from the given stream
-  --------------------------------------------------------------------------*/
-void CtiLMGroupGolay::restoreGuts(RWvistream& istrm)
-{
-    CtiLMGroupBase::restoreGuts( istrm );
-}
-
-/*---------------------------------------------------------------------------
-  saveGuts
-
-  Save self's state onto the given stream
-  ---------------------------------------------------------------------------*/
-void CtiLMGroupGolay::saveGuts(RWvostream& ostrm ) const
-{
-    CtiLMGroupBase::saveGuts( ostrm );
 }
 
 /*---------------------------------------------------------------------------

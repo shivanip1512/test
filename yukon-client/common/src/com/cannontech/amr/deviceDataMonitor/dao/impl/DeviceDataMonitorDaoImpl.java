@@ -35,9 +35,10 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeCategory;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.util.DbChangeManager;
+
 
 public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
 

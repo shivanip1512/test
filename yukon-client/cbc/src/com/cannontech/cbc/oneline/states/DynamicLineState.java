@@ -2,9 +2,9 @@ package com.cannontech.cbc.oneline.states;
 
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.util.CapControlUtils;
-import com.cannontech.message.capcontrol.streamable.Feeder;
-import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
-import com.cannontech.message.capcontrol.streamable.SubBus;
+import com.cannontech.messaging.message.capcontrol.streamable.Feeder;
+import com.cannontech.messaging.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
 
 public class DynamicLineState implements OnelineState {
 
@@ -15,15 +15,15 @@ public class DynamicLineState implements OnelineState {
         if (o instanceof SubBus) {
             SubBus subBus = (SubBus) o;
             
-            if (subBus.getCcDisableFlag().booleanValue()) {
+            if (subBus.getCcDisableFlag()) {
                 state = OnelineUtil.SUB_ST_DIS;
-            } else if (subBus.getRecentlyControlledFlag().booleanValue()) {
+            } else if (subBus.getRecentlyControlledFlag()) {
 
-                if (subBus.getRecentlyControlledFlag().booleanValue()) {
+                if (subBus.getRecentlyControlledFlag()) {
                     state = OnelineUtil.SUB_ST_PENDING;
                 }
 
-            } else if (subBus.getSwitchOverStatus().booleanValue() && CapControlUtils.isDualBusEnabled(subBus)) {
+            } else if (subBus.getSwitchOverStatus() && CapControlUtils.isDualBusEnabled(subBus)) {
                 state = OnelineUtil.SUB_ST_EN_ALBUS;
             }
 
@@ -35,11 +35,11 @@ public class DynamicLineState implements OnelineState {
             Feeder feeder = (Feeder)o;
             
             
-            if( feeder.getCcDisableFlag().booleanValue() )
+            if( feeder.getCcDisableFlag())
             {
                state = OnelineUtil.SUB_ST_DIS;
             }
-            else if( feeder.getRecentlyControlledFlag().booleanValue() )
+            else if( feeder.getRecentlyControlledFlag())
             {
                 if ( CapControlUtils.getFeederPendingState( feeder ) != null)
                 {

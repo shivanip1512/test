@@ -55,7 +55,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
-import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
 import com.cannontech.roles.operator.MeteringRole;
 
 public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
@@ -397,13 +397,13 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
      */
     public void insertDataPoint(PointValueHolder pvh, double calculatedValue,
             Date calculatedDate) {
-        PointData pointData = new PointData();
+        PointDataMessage pointData = new PointDataMessage();
         pointData.setId(pvh.getId());
         pointData.setType(pvh.getType());
         pointData.setPointQuality(PointQuality.Estimated);
         pointData.setTime(new Date(calculatedDate.getTime() + 1));
         pointData.setValue(calculatedValue);
-        pointData.setTags(PointData.TAG_POINT_MUST_ARCHIVE);
+        pointData.setTags(PointDataMessage.TAG_POINT_MUST_ARCHIVE);
         pointData.setMillis(0);
         dynamicDataSource.putValue(pointData);
     }

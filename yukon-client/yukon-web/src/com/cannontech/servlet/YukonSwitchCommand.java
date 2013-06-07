@@ -260,8 +260,8 @@ private void sendCommand(String command)
 
 		if( conn != null )
 		{
-			com.cannontech.message.porter.message.Request req = // no need for deviceid so send 0
-				new com.cannontech.message.porter.message.Request( 0, command, userMessageIDCounter++ );
+			com.cannontech.messaging.message.porter.RequestMessage req = // no need for deviceid so send 0
+				new com.cannontech.messaging.message.porter.RequestMessage( 0, command, userMessageIDCounter++ );
 
 			conn.write(req);
 

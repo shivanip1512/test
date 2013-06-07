@@ -9,10 +9,10 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.message.dispatch.message.PointRegistration;
-import com.cannontech.message.util.MessageEvent;
-import com.cannontech.message.util.MessageListener;
+import com.cannontech.dispatch.DispatchClientConnection;
+import com.cannontech.messaging.message.dispatch.PointRegistrationMessage;
+import com.cannontech.messaging.util.MessageEvent;
+import com.cannontech.messaging.util.MessageListener;
 
 public class PointGenerator implements MessageListener 
 {
@@ -91,9 +91,9 @@ public static void main(String[] args)
 
 
 	boolean forever = ( numChanges == -1);
-	ClientConnection conn = new ClientConnection();
-	PointRegistration pr = new PointRegistration();
-	pr.setRegFlags( PointRegistration.REG_ALL_PTS_MASK );
+	DispatchClientConnection conn = new DispatchClientConnection();
+	PointRegistrationMessage pr = new PointRegistrationMessage();
+	pr.setRegFlags( PointRegistrationMessage.REG_ALL_PTS_MASK );
 	conn.setRegistrationMsg( pr );
 	conn.addMessageListener( new PointGenerator() );
 	
@@ -114,7 +114,7 @@ public static void main(String[] args)
 
 	//First do a registration
 	CTILogger.info("Registering client with vangogh");
-	com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
+	com.cannontech.messaging.message.dispatch.RegistrationMessage reg = new com.cannontech.messaging.message.dispatch.RegistrationMessage();
 	reg.setAppName( CtiUtilities.getAppRegistration() );
 	reg.setAppIsUnique(0);
 	reg.setAppKnownPort(0);
@@ -138,11 +138,11 @@ public static void main(String[] args)
 	while( forever || numSent < numChanges )
 	{
 
-		com.cannontech.message.dispatch.message.Multi outMsg = new com.cannontech.message.dispatch.message.Multi();
+		com.cannontech.messaging.message.dispatch.MultiMessage outMsg = new com.cannontech.messaging.message.dispatch.MultiMessage();
 		
 		for( int j = 0; j < id.length; j++ )
 		{				
-			com.cannontech.message.dispatch.message.PointData pData = new com.cannontech.message.dispatch.message.PointData();	
+			com.cannontech.messaging.message.dispatch.PointDataMessage pData = new com.cannontech.messaging.message.dispatch.PointDataMessage();	
 
 			pData.setType(type[j]);
 			

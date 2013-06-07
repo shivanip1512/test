@@ -14,11 +14,11 @@ import java.util.Timer;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.Pair;
-import com.cannontech.message.dispatch.message.Multi;
-import com.cannontech.message.porter.message.Request;
-import com.cannontech.message.porter.message.Return;
-import com.cannontech.message.util.MessageEvent;
-import com.cannontech.message.util.MessageListener;
+import com.cannontech.messaging.message.dispatch.MultiMessage;
+import com.cannontech.messaging.message.porter.RequestMessage;
+import com.cannontech.messaging.message.porter.ReturnMessage;
+import com.cannontech.messaging.util.MessageEvent;
+import com.cannontech.messaging.util.MessageListener;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -100,8 +100,8 @@ public class PILCommandCache implements MessageListener, Observer {
 	 * @param reqMsg
 	 * @return messageID
 	 */
-	public int write(Request reqMsg) {
-		Multi multi = new Multi();
+	public int write(RequestMessage reqMsg) {
+		MultiMessage multi = new MultiMessage();
 		multi.getVector().add(reqMsg);
 		return write(multi);
 	}
@@ -112,14 +112,14 @@ public class PILCommandCache implements MessageListener, Observer {
 	 * @param messageID
 	 * @return
 	 */
-	public int write(Multi reqMsgList) {
+	public int write(MultiMessage reqMsgList) {
 		int id = generateMessageID();
 
 		synchronized(reqRetMap) {
 			Iterator mIter = reqMsgList.getVector().iterator();
 			while(mIter.hasNext()) {
-				Request req = (Request) mIter.next();
-				req.setUserMessageID(id);
+				RequestMessage req = (RequestMessage) mIter.next();
+				req.setUserMessageId(id);
 			}
 
 			Pair reqEntry = new Pair(reqMsgList.getVector().subList(0, reqMsgList.getVector().size()), new ArrayList());
@@ -162,15 +162,15 @@ public class PILCommandCache implements MessageListener, Observer {
 	 * Connection will let us know when a message comes in.
 	 */
 	public void messageReceived(MessageEvent e) {
-		if(e.getMessage() instanceof Return) {
-			Return returnMsg = (Return) e.getMessage();
+		if(e.getMessage() instanceof ReturnMessage) {
+			ReturnMessage returnMsg = (ReturnMessage) e.getMessage();
 	 		synchronized(reqRetMap) {
-				List respList = getReturnMessages((int) returnMsg.getUserMessageID());
+				List respList = getReturnMessages((int) returnMsg.getUserMessageId());
 				if(respList != null) {
 					respList.add(returnMsg);
 				}
 				else {
-					CTILogger.warn("received an unkown PIL return messageid: " + returnMsg.getUserMessageID());
+					CTILogger.warn("received an unkown PIL return messageid: " + returnMsg.getUserMessageId());
 				}
 			}
 		}

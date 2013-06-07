@@ -23,7 +23,7 @@ import com.cannontech.cttp.schema.cttp_SubmitCommandRequestType;
 import com.cannontech.cttp.schema.cttp_SubmitCommandResponseType;
 import com.cannontech.cttp.schema.cttp_TargetGroupType;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.message.porter.message.Request;
+import com.cannontech.messaging.message.porter.RequestMessage;
 
 /**
  * @author aaron
@@ -167,8 +167,8 @@ public class SubmitCommandRequestHandler implements CttpMessageHandler {
 	}
 	
 	private void sendCommand(String cmd) {
-		Request pilReq = new Request();
-		pilReq.setDeviceID(0);
+		RequestMessage pilReq = new RequestMessage();
+		pilReq.setDeviceId(0);
 		pilReq.setCommandString(cmd);			
 		int pilMsgID = PILCommandCache.getInstance().write(pilReq);
 		CTILogger.info("CTTP command going to PIL: " + cmd + " msgid: " + pilMsgID);

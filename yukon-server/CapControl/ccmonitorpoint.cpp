@@ -35,7 +35,7 @@ extern bool _MONITOR_POINT_DEBUGGING;
 
 using Cti::CapControl::setVariableIfDifferent;
 
-RWDEFINE_COLLECTABLE( CtiCCMonitorPoint, CTICCMONITORPOINT_ID )
+DEFINE_COLLECTABLE( CtiCCMonitorPoint, CTICCMONITORPOINT_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -311,49 +311,10 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setScanInProgress(bool flag)
     _dirty |= setVariableIfDifferent(_scanInProgress, flag);
     return *this;
 }
-/*---------------------------------------------------------------------------
-
-/*-------------------------------------------------------------------------
-    restoreGuts
-
-    Restore self's state from the given stream
---------------------------------------------------------------------------*/
-void CtiCCMonitorPoint::restoreGuts(RWvistream& istrm)
-{
-    long tempTime1;
-    RWCollectable::restoreGuts( istrm );
-
-    istrm >> _pointId
-        >> _deviceId
-        >> _value
-        >> tempTime1
-        >> _scanInProgress;
-
-    _timeStamp = CtiTime(tempTime1);
-}
-
-/*---------------------------------------------------------------------------
-    saveGuts
-
-    Save self's state onto the given stream
----------------------------------------------------------------------------*/
-void CtiCCMonitorPoint::saveGuts(RWvostream& ostrm ) const
-{
-    RWCollectable::saveGuts( ostrm );
-    long tempTime = _timeStamp.seconds();
-    ostrm << _pointId
-        << _deviceId
-        << _value
-        << tempTime
-        << _scanInProgress;
-
-
-}
 
 /*---------------------------------------------------------------------------
     operator=
 ---------------------------------------------------------------------------*/
-
 CtiCCMonitorPoint& CtiCCMonitorPoint::operator=(const CtiCCMonitorPoint& rght)
 {
     if( this != &rght )
@@ -487,15 +448,6 @@ boost::shared_ptr<CtiCCMonitorPoint> CtiCCMonitorPoint::replicate() const
     return(CtiCCMonitorPointPtr(new CtiCCMonitorPoint(*this)));
 }
 
-/*---------------------------------------------------------------------------
-    compareTo
-
-    Used for ordering cap banks within a feeder by control order.
----------------------------------------------------------------------------*/
-int CtiCCMonitorPoint::compareTo(const RWCollectable* rght) const
-{
-    return 1;// _controlorder == ((CtiCCMonitorPointPtr)rght)->getDisplayOrder() ? 0 : (_controlorder > ((CtiCCMonitorPointPtr)rght)->getControlOrder() ? 1 : -1);
-}
 
 /*---------------------------------------------------------------------------
     isDirty

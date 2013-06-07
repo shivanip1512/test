@@ -2,6 +2,7 @@ package com.cannontech.message.notif;
 import java.io.IOException;
 
 import com.cannontech.message.util.DefineCollectableMessage;
+import com.cannontech.messaging.message.notif.AlarmMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
@@ -14,7 +15,7 @@ public class DefColl_NotifAlarmMsg extends DefineCollectableMessage {
     public static final int MSG_ID = 706;
 
     public Object create(VirtualInputStream vstr) throws IOException {
-        return new NotifAlarmMsg();
+        return new AlarmMessage();
     }
 
     public Comparator getComparator() {
@@ -38,43 +39,43 @@ public class DefColl_NotifAlarmMsg extends DefineCollectableMessage {
     }
 
     public Class getJavaClass() {
-        return NotifAlarmMsg.class;
+        return AlarmMessage.class;
     }
 
     public void restoreGuts(Object obj, VirtualInputStream vstr,
             CollectableStreamer polystr) throws IOException {
         super.restoreGuts(obj, vstr, polystr);
-        NotifAlarmMsg msg = (NotifAlarmMsg) obj;
+        AlarmMessage msg = (AlarmMessage) obj;
 
-        msg.notifGroupIds = new int[vstr.extractInt()];
-        for(int i = 0; i < msg.notifGroupIds.length; i++) {
-        	msg.notifGroupIds[i] = vstr.extractInt();
+        msg.setNotifGroupIds(new int[vstr.extractInt()]);
+        for(int i = 0; i < msg.getNotifGroupIds().length; i++) {
+        	msg.getNotifGroupIds()[i] = vstr.extractInt();
         }       
-        msg.alarmCategoryId = vstr.extractInt();
-        msg.pointId = vstr.extractInt();
-        msg.condition = vstr.extractInt();
-        msg.value = vstr.extractDouble();
-        msg.alarmTimestamp = (java.util.Date) vstr.restoreObject( SimpleMappings.Time );
-        msg.acknowledged = (vstr.extractInt() != 0);
-        msg.abnormal = (vstr.extractInt()  != 0);
+        msg.setAlarmCategoryId(vstr.extractInt());
+        msg.setPointId(vstr.extractInt());
+        msg.setCondition(vstr.extractInt());
+        msg.setValue(vstr.extractDouble());
+        msg.setAlarmTimestamp((java.util.Date) vstr.restoreObject( SimpleMappings.Time ));
+        msg.setAcknowledged((vstr.extractInt() != 0));
+        msg.setAbnormal((vstr.extractInt()  != 0));
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr,
             CollectableStreamer polystr) throws IOException {
         super.saveGuts(obj, vstr, polystr);
-        NotifAlarmMsg msg = (NotifAlarmMsg) obj;
+        AlarmMessage msg = (AlarmMessage) obj;
 
-        vstr.insertInt(msg.notifGroupIds.length);
-        for(int i = 0; i < msg.notifGroupIds.length; i++) {
-        	vstr.insertInt(msg.notifGroupIds[i]);
+        vstr.insertInt(msg.getNotifGroupIds().length);
+        for(int i = 0; i < msg.getNotifGroupIds().length; i++) {
+        	vstr.insertInt(msg.getNotifGroupIds()[i]);
         }        
-        vstr.insertInt(msg.alarmCategoryId);
-        vstr.insertInt(msg.pointId);
-        vstr.insertInt(msg.condition);
-        vstr.insertDouble(msg.value);
-        vstr.saveObject( msg.alarmTimestamp, SimpleMappings.Time );
-        vstr.insertUnsignedInt(msg.acknowledged ? 1 : 0);
-        vstr.insertUnsignedInt(msg.abnormal ? 1 : 0);
+        vstr.insertInt(msg.getAlarmCategoryId());
+        vstr.insertInt(msg.getPointId());
+        vstr.insertInt(msg.getCondition());
+        vstr.insertDouble(msg.getValue());
+        vstr.saveObject( msg.getAlarmTimestamp(), SimpleMappings.Time );
+        vstr.insertUnsignedInt(msg.isAcknowledged() ? 1 : 0);
+        vstr.insertUnsignedInt(msg.isAbnormal() ? 1 : 0);
     }
 
 }

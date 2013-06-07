@@ -13,8 +13,8 @@ import com.cannontech.common.pao.dao.PaoPersistenceDao;
 import com.cannontech.common.pao.model.CompleteYukonPao;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.database.data.point.PointBase;
-import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.util.DbChangeManager;
 
 public class PaoPersistenceServiceImpl implements PaoPersistenceService {
     private static final Logger log = YukonLogManager.getLogger(PaoPersistenceServiceImpl.class);

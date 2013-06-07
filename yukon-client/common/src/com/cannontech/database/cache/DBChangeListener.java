@@ -1,7 +1,7 @@
 package com.cannontech.database.cache;
 
-import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 
 public interface DBChangeListener {
-    public void dbChangeReceived(DBChangeMsg dbChange);
+    public void dbChangeReceived(DBChangeMessage dbChange);
 }

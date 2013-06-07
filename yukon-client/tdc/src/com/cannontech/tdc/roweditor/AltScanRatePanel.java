@@ -12,7 +12,7 @@ import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.message.util.Command;
+import com.cannontech.messaging.message.CommandMessage;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
@@ -318,12 +318,12 @@ public void JButtonSendAction_actionPerformed(java.util.EventObject newEvent)
         if (getJComboBoxTime().getSelectedIndex() > 0)
             duration = SwingUtil.getIntervalComboBoxSecondsValue(getJComboBoxTime()).longValue();
 
-		Command cmdMsg = new Command();
-		cmdMsg.setOperation( Command.ALTERNATE_SCAN_RATE );
+		CommandMessage cmdMsg = new CommandMessage();
+		cmdMsg.setOperation( CommandMessage.ALTERNATE_SCAN_RATE );
 		cmdMsg.setPriority(14);
 			
         List<Integer> opArgList = new ArrayList<Integer>(4);     
-		opArgList.add(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN);
+		opArgList.add(CommandMessage.DEFAULT_CLIENT_REGISTRATION_TOKEN);
 		opArgList.add(paobject.getLiteID());	//deviceID
 		opArgList.add(-1);	//open?
 		opArgList.add((int)duration);	//duration in secs

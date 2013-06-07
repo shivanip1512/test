@@ -5,6 +5,7 @@ package com.cannontech.loadcontrol.data;
  */
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.message.util.CollectionExtracter;
+import com.cannontech.messaging.message.loadcontrol.data.Program;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -34,7 +35,7 @@ public com.roguewave.tools.v2_0.Comparator getComparator()
 	{
 		public int compare(Object x, Object y) 
 		{
-			return (int) (((LMProgramBase)x).getYukonID().intValue() - ((LMProgramBase)y).getYukonID().intValue() );
+			return (int) (((Program)x).getYukonId().intValue() - ((Program)y).getYukonId().intValue() );
 		}
 	};
 	
@@ -64,14 +65,14 @@ public Class getJavaClass()
 {
 	Exception e = new Exception("com.cannontech.loadcontrol.data.DefineCollectableLMProgramBase.getJavaClass() should Never be called");
 	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	return LMProgramBase.class;
+	return Program.class;
 }
 /**
  * restoreGuts method comment.
  */
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMProgramBase lmProgramBase = (LMProgramBase) obj;
+	Program lmProgramBase = (Program) obj;
 	
 	Integer yukonID = new Integer( (int)vstr.extractUnsignedInt() );
 	String yukonCategory = (String) vstr.restoreObject( SimpleMappings.CString );	// No longer used, but still needs to be restored. Replaced by PaoType.paoCategory
@@ -102,7 +103,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	//java.util.Vector controlWindowVector = (java.util.Vector) vstr.restoreObject( polystr );
     java.util.Vector controlWindowVector = CollectionExtracter.extractVector(vstr, polystr);
 
-	lmProgramBase.setYukonID(yukonID);
+	lmProgramBase.setYukonId(yukonID);
 	lmProgramBase.setYukonName(yukonName);
 	lmProgramBase.setYukonType(PaoType.getForDbString(yukonType));
 	lmProgramBase.setYukonDescription(yukonDescription);
@@ -117,7 +118,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	lmProgramBase.setMaxHoursAnnually(maxHoursAnnually);
 	lmProgramBase.setMinActivateTime(minActivateTime);
 	lmProgramBase.setMinResponseTime(minRestartTime);
-	lmProgramBase.setProgramStatusPointID(programStatusPointId);
+	lmProgramBase.setProgramStatusPointId(programStatusPointId);
 	lmProgramBase.setProgramStatus(programStatus);
 	lmProgramBase.setReductionAnalogPointId(reductionAnalogPointId);
 	lmProgramBase.setReductionTotal(reductionTotal);

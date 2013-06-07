@@ -1,6 +1,6 @@
 package com.cannontech.dr.loadgroup.model;
 
-import com.cannontech.loadcontrol.data.LMDirectGroupBase;
+import com.cannontech.messaging.message.loadcontrol.data.DirectGroupBase;
 import com.cannontech.user.YukonUserContext;
 
 public class LoadGroupEnabledField extends LoadGroupBackingFieldBase {
@@ -11,7 +11,7 @@ public class LoadGroupEnabledField extends LoadGroupBackingFieldBase {
     }
 
     @Override
-    public Object getGroupValue(LMDirectGroupBase loadGroup,
+    public Object getGroupValue(DirectGroupBase loadGroup,
             YukonUserContext userContext) {
         if (loadGroup == null) {
             return "";

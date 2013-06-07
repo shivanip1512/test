@@ -5,6 +5,7 @@ package com.cannontech.loadcontrol.data;
  * @author: Aaron Lauinger
  */
 
+import com.cannontech.messaging.message.loadcontrol.data.EnergyExchangeHourlyOffer;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 
@@ -30,7 +31,7 @@ public DefColl_LMEnergyExchangeHourlyOffer() {
 	* to be out of sync and the results could be catastrophic.
 	*/
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new LMEnergyExchangeHourlyOffer();
+	return new EnergyExchangeHourlyOffer();
 }
  /**
 	* Return a Comparator object for the Java class being mapped.
@@ -74,7 +75,7 @@ public String getCxxStringId() {
 	* being mapped.  It is used by CollectableStreamer during registration.
 	*/
 public Class getJavaClass() {
-	return LMEnergyExchangeHourlyOffer.class;
+	return EnergyExchangeHourlyOffer.class;
 }
  /**
 	* This method will be called by CollectableStreamer to restore the guts,
@@ -84,9 +85,9 @@ public Class getJavaClass() {
 	*/
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMEnergyExchangeHourlyOffer hOffer = (LMEnergyExchangeHourlyOffer) obj;
+	EnergyExchangeHourlyOffer hOffer = (EnergyExchangeHourlyOffer) obj;
 
-	hOffer.setOfferID( new Integer((int)vstr.extractUnsignedInt()) );
+	hOffer.setOfferId( new Integer((int)vstr.extractUnsignedInt()) );
 	hOffer.setRevisionNumber( new Integer((int)vstr.extractUnsignedInt()) );
 	hOffer.setHour( new Integer((int)vstr.extractUnsignedInt()) );
 	hOffer.setPrice( new Double(vstr.extractDouble()) );
@@ -100,12 +101,12 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	*/
 public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMEnergyExchangeHourlyOffer hOffer = (LMEnergyExchangeHourlyOffer) obj;
+	EnergyExchangeHourlyOffer hOffer = (EnergyExchangeHourlyOffer) obj;
 
-	vstr.insertUnsignedLong( hOffer.getOfferID().longValue() );
-	vstr.insertUnsignedLong( hOffer.getRevisionNumber().longValue() );
-	vstr.insertUnsignedLong( hOffer.getHour().longValue() );
-	vstr.insertDouble( hOffer.getPrice().doubleValue() );
-	vstr.insertDouble( hOffer.getAmountRequested().doubleValue() );
+	vstr.insertUnsignedLong( hOffer.getOfferId());
+	vstr.insertUnsignedLong( hOffer.getRevisionNumber());
+	vstr.insertUnsignedLong( hOffer.getHour());
+	vstr.insertDouble( hOffer.getPrice());
+	vstr.insertDouble( hOffer.getAmountRequested());
 }
 }

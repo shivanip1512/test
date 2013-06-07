@@ -24,8 +24,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.Customer;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.MeterHardwareBaseDao;
@@ -253,11 +253,11 @@ public final class YukonCRSIntegrator
                                 Transaction.createTransaction(Transaction.UPDATE, meterHardwareBase).execute();
                             }
                             successCounter++;
-                            DBChangeMsg dbChangeMessage = new DBChangeMsg(
+                            DBChangeMessage dbChangeMessage = new DBChangeMessage(
                                 customerAccount.getCustomerAccount().getAccountID(),
-                                DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
-                                DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-                                DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+                                DBChangeMessage.CHANGE_CUSTOMER_ACCOUNT_DB,
+                                DBChangeMessage.CAT_CUSTOMER_ACCOUNT,
+                                DBChangeMessage.CAT_CUSTOMER_ACCOUNT,
                                 DbChangeType.UPDATE
                             );
 				            dbChangeMessage.setSource("RunCRSToSam_PremiseMeterChange:ForceHandleDBChange");	//TODO verify if StarsDBCache handles
@@ -642,11 +642,11 @@ public final class YukonCRSIntegrator
         		workOrder.getWorkOrderBase().setDateReported(eventWorkOrder.getEventBase().getEventTimestamp());	//set the work order DateReported with the most recent event date.
             	workOrder = Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
             	newWorkOrderCount++;
-	            DBChangeMsg dbChangeMessage = new DBChangeMsg(
+	            DBChangeMessage dbChangeMessage = new DBChangeMessage(
     				workOrder.getWorkOrderBase().getOrderID(),
-    				DBChangeMsg.CHANGE_WORK_ORDER_DB,
-    				DBChangeMsg.CAT_WORK_ORDER,
-    				DBChangeMsg.CAT_WORK_ORDER,
+    				DBChangeMessage.CHANGE_WORK_ORDER_DB,
+    				DBChangeMessage.CAT_WORK_ORDER,
+    				DBChangeMessage.CAT_WORK_ORDER,
     				DbChangeType.ADD
     			);
 	            dbChangeMessage.setSource("RunCRSToSam_PTJ:ForceHandleDBChange");	//TODO verify if StarsDBCache handles
@@ -783,11 +783,11 @@ public final class YukonCRSIntegrator
         		workOrder.getWorkOrderBase().setDateReported(eventWorkOrder.getEventBase().getEventTimestamp());	//set the work order DateReported with the most recent event date.
             	workOrder = Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
 
-	            DBChangeMsg dbChangeMessage = new DBChangeMsg(
+	            DBChangeMessage dbChangeMessage = new DBChangeMessage(
     				workOrder.getWorkOrderBase().getOrderID(),
-    				DBChangeMsg.CHANGE_WORK_ORDER_DB,
-    				DBChangeMsg.CAT_WORK_ORDER,
-    				DBChangeMsg.CAT_WORK_ORDER,
+    				DBChangeMessage.CHANGE_WORK_ORDER_DB,
+    				DBChangeMessage.CAT_WORK_ORDER,
+    				DBChangeMessage.CAT_WORK_ORDER,
     				DbChangeType.ADD
     			);
 	            dbChangeMessage.setSource("RunSwitchReplacement:ForceHandleDBChange");	//TODO verify if StarsDBCache handles

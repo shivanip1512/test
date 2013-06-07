@@ -9,19 +9,18 @@
 
 class IM_EX_MSG CtiTraceMsg : public CtiMessage
 {
+public:
+    DECLARE_COLLECTABLE( CtiTraceMsg )
+
 protected:
 
     bool _end;
     INT _attributes;        // FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED default
     std::string _trace;
 
-private:
-
 public:
 
-    RWDECLARE_COLLECTABLE( CtiTraceMsg );
-
-    typedef  CtiMessage Inherited;
+    typedef  CtiMessage  Inherited;
 
     CtiTraceMsg();
     CtiTraceMsg(const CtiTraceMsg& aRef);
@@ -35,8 +34,6 @@ public:
     CtiTraceMsg& setAttributes(const INT& attr);
     CtiTraceMsg& setTrace(const std::string& str);
 
-    void saveGuts(RWvostream &aStream) const;
-    void restoreGuts(RWvistream& aStream);
     CtiMessage* replicateMessage() const;
 
     virtual void dump() const;

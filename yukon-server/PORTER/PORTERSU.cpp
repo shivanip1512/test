@@ -27,7 +27,7 @@
 #include <string.h>
 
 #include "color.h"
-#include "connection.h"
+#include "connection_client.h"
 #include "queues.h"
 #include "dsm2.h"
 #include "dsm2err.h"
@@ -60,7 +60,7 @@ HCTIQUEUE*   QueueHandle(LONG pid);
 
 void AddCommErrorEntry(OUTMESS *OutMessage, INMESS *InMessage, INT ErrorCode)
 {
-    extern CtiConnection VanGoghConnection;
+    extern CtiClientConnection VanGoghConnection;
 
     if( OutMessage != 0 &&
         ErrorCode != NORMAL &&
@@ -196,7 +196,7 @@ INT SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " DeviceID / TargetID " << OutMessage->DeviceID << " / " << OutMessage->TargetID << ", Error " << ErrorCode << " " << FormatError(ErrorCode) << endl;
+            dout << CtiTime() << " DeviceID / TargetID " << OutMessage->DeviceID << " / " << OutMessage->TargetID << ", Error " << ErrorCode << " " << GetErrorString(ErrorCode) << endl;
         }
     }
 

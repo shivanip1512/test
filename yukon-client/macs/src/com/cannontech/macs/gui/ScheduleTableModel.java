@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.macs.events.MACSGenericTableModelEvent;
-import com.cannontech.message.macs.message.DeleteSchedule;
-import com.cannontech.message.macs.message.Schedule;
-import com.cannontech.message.util.Message;
-import com.cannontech.message.util.MessageEvent;
-import com.cannontech.message.util.MessageListener;
+import com.cannontech.messaging.message.BaseMessage;
+import com.cannontech.messaging.message.macs.DeleteScheduleMessage;
+import com.cannontech.messaging.message.macs.ScheduleMessage;
+import com.cannontech.messaging.util.MessageEvent;
+import com.cannontech.messaging.util.MessageListener;
 
 public class ScheduleTableModel extends javax.swing.table.AbstractTableModel implements MessageListener, com.cannontech.common.gui.util.SortableTableModel 
 {
@@ -67,8 +67,8 @@ public class ScheduleTableModel extends javax.swing.table.AbstractTableModel imp
 	{
 		public int compare(Object o1, Object o2)
 		{
-			String thisVal = ((Schedule)o1).getCategoryName();
-			String anotherVal = ((Schedule)o2).getCategoryName();
+			String thisVal = ((ScheduleMessage)o1).getCategoryName();
+			String anotherVal = ((ScheduleMessage)o2).getCategoryName();
 			return( thisVal.compareToIgnoreCase(anotherVal) );
 		}
 	};
@@ -146,7 +146,7 @@ public java.awt.Color getCellBackgroundColor(int row, int col)
  */
 public java.awt.Color getCellForegroundColor(int row, int col) 
 {
-	Schedule schedule = getSchedule(row);
+	ScheduleMessage schedule = getSchedule(row);
 
 	if( schedule != null && col < COLUMN_NAMES.length )
 	{
@@ -154,22 +154,22 @@ public java.awt.Color getCellForegroundColor(int row, int col)
 		{			
 			String status = schedule.getCurrentState();
 
-			if( status.equals(Schedule.STATE_WAITING) )
+			if( status.equals(ScheduleMessage.STATE_WAITING) )
 			{
 				return cellColors[0];	
 			}
 			else
-			if( status.equals(Schedule.STATE_RUNNING) )
+			if( status.equals(ScheduleMessage.STATE_RUNNING) )
 			{
 				return cellColors[1];
 			}
 			else
-			if( status.equals(Schedule.STATE_DISABLED) )
+			if( status.equals(ScheduleMessage.STATE_DISABLED) )
 			{
 				return cellColors[2];
 			}
 			else
-			if( status.equals(Schedule.STATE_PENDING ) )
+			if( status.equals(ScheduleMessage.STATE_PENDING ) )
 			{
 				return cellColors[3];
 			}
@@ -224,13 +224,13 @@ public int getRowCount()
  * @return com.cannontech.macs.Schedule
  * @param rowIndex int
  */
-public Schedule getSchedule(int rowIndex) 
+public ScheduleMessage getSchedule(int rowIndex) 
 {
 	
 	if( rowIndex < 0 || rowIndex >= getRowCount() )
 		return null;
 
-	return (Schedule)getCurrentSchedules().get(rowIndex);		
+	return (ScheduleMessage)getCurrentSchedules().get(rowIndex);		
 }
 
 private synchronized Vector getAllSchedules()
@@ -254,7 +254,7 @@ private List getCurrentSchedules()
  */
 public Object getValueAt(int row, int col) 
 {
-	Schedule sched = getSchedule( row );
+	ScheduleMessage sched = getSchedule( row );
 
 
 	switch( col )
@@ -273,16 +273,16 @@ public Object getValueAt(int row, int col)
 			
 		case START_TIME:
 			String dateString;
-			if( sched.getCurrentState().equals( Schedule.STATE_RUNNING ) )
+			if( sched.getCurrentState().equals( ScheduleMessage.STATE_RUNNING ) )
 			{
-				if( sched.getLastRunTime().getTime() <= Schedule.INVALID_DATE )
+				if( sched.getLastRunTime().getTime() <= ScheduleMessage.INVALID_DATE )
 					return " ----";
 				else
 					dateString = formatter.format( sched.getLastRunTime() );
 			}
 			else
 			{
-				if( sched.getNextRunTime().getTime() <= Schedule.INVALID_DATE )
+				if( sched.getNextRunTime().getTime() <= ScheduleMessage.INVALID_DATE )
 					return " ----";
 				else
 					dateString = formatter.format( sched.getNextRunTime() );
@@ -292,7 +292,7 @@ public Object getValueAt(int row, int col)
 			return dateString;
 			
 		case STOP_TIME:
-			if( sched.getNextStopTime().getTime() <= Schedule.INVALID_DATE )
+			if( sched.getNextStopTime().getTime() <= ScheduleMessage.INVALID_DATE )
 				return " ----";
 			else
 			{
@@ -361,7 +361,7 @@ public void setFilter(java.lang.String newFilter)
 		int start = -1, stop = getAllSchedules().size();
 		for( int i = 0; i < getAllSchedules().size(); i++ )
 		{
-			Schedule realSched = (Schedule)getAllSchedules().get(i);
+			ScheduleMessage realSched = (ScheduleMessage)getAllSchedules().get(i);
 			if( start <= -1 && realSched.getCategoryName().equalsIgnoreCase(getFilter()) )
 			{
 				start = i;
@@ -403,7 +403,7 @@ public void setModelFont(String name, int size)
 	modelFont = new Font( name, Font.PLAIN, size );
 }
 
-private int findScheduleIndx( Schedule s )
+private int findScheduleIndx( ScheduleMessage s )
 {
 	for( int i = 0; i < getRowCount(); i++ )
 		if( s.getId() == getSchedule(i).getId() )
@@ -419,23 +419,23 @@ private int findScheduleIndx( Schedule s )
 //public synchronized void update(Observable source, Object obj )
 public void messageReceived( MessageEvent e ) 
 {
-	Message in = e.getMessage();
+	BaseMessage in = e.getMessage();
 
-	if( in instanceof Schedule
-	    || in instanceof DeleteSchedule )
+	if( in instanceof ScheduleMessage
+	    || in instanceof DeleteScheduleMessage )
 	{		
 		int oldRowCount = getRowCount();		
 		boolean changeSize = false;
 		
-		if( in instanceof Schedule )
+		if( in instanceof ScheduleMessage )
 		{		
-			Schedule sched = (Schedule)in;
+			ScheduleMessage sched = (ScheduleMessage)in;
 				
 			boolean found = false;
 	
 			for( int j = 0 ; j < getAllSchedules().size(); j++ )
 			{
-				Schedule row = (Schedule)getAllSchedules().get(j);
+				ScheduleMessage row = (ScheduleMessage)getAllSchedules().get(j);
 				if( row.equals(sched) )
 				{
 					//we may have to redo our Sublists if the Category changed
@@ -469,13 +469,13 @@ public void messageReceived( MessageEvent e )
 			}
 	
 		}
-		else if( in instanceof DeleteSchedule )
+		else if( in instanceof DeleteScheduleMessage )
 		{
-			DeleteSchedule dSched = (DeleteSchedule)in;
+			DeleteScheduleMessage dSched = (DeleteScheduleMessage)in;
 
 			for( int j = 0 ; j < getAllSchedules().size(); j++ )
 			{
-				Schedule row = (Schedule)getAllSchedules().get(j);
+				ScheduleMessage row = (ScheduleMessage)getAllSchedules().get(j);
 				if( row.getId() == dSched.getScheduleId() )
 				{
 					changeSize = true;

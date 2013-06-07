@@ -5,7 +5,7 @@ import java.util.Comparator;
 import org.apache.commons.lang.builder.CompareToBuilder;
 
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.loadcontrol.data.LMDirectGroupBase;
+import com.cannontech.messaging.message.loadcontrol.data.DirectGroupBase;
 import com.cannontech.user.YukonUserContext;
 
 public class LoadGroupStateField extends LoadGroupBackingFieldBase {
@@ -16,7 +16,7 @@ public class LoadGroupStateField extends LoadGroupBackingFieldBase {
     }
     
     @Override
-    public Object getGroupValue(LMDirectGroupBase group, YukonUserContext userContext) {
+    public Object getGroupValue(DirectGroupBase group, YukonUserContext userContext) {
         LoadGroupState state = LoadGroupState.valueOf(group.getGroupControlState());
         return buildResolvable(getFieldName()  + "." + state.name());
     }
@@ -27,8 +27,8 @@ public class LoadGroupStateField extends LoadGroupBackingFieldBase {
 
             @Override
             public int compare(DisplayablePao pao1, DisplayablePao pao2) {
-                LMDirectGroupBase loadGroup1 = getGroupFromYukonPao(pao1);
-                LMDirectGroupBase loadGroup2 = getGroupFromYukonPao(pao2);
+                DirectGroupBase loadGroup1 = getGroupFromYukonPao(pao1);
+                DirectGroupBase loadGroup2 = getGroupFromYukonPao(pao2);
                 if (loadGroup1 == loadGroup2) {
                     return 0;
                 }

@@ -3,7 +3,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <%@ include file="include/oper_header.jspf" %>
 
-<%@ page import="com.cannontech.message.macs.message.Schedule" %>
+<%@ page import="com.cannontech.messaging.message.macs.ScheduleMessage" %>
 <%@ page import="com.cannontech.yukon.IMACSConnection" %>
 <%@ page import="com.cannontech.yukon.conns.ConnPool" %>
 
@@ -11,7 +11,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <jsp:useBean id="checker" scope="session" class="com.cannontech.web.validate.PageBean"/>
 <%
-/* Parameters:
+    /* Parameters:
    id - the id of the schedule to stop
    
    Attempts to get a reference to the schedule with scheduleid == id
@@ -22,7 +22,7 @@
    java.text.SimpleDateFormat timeFormat = new java.text.SimpleDateFormat("HH:mm");
    timeFormat.setTimeZone(tz);
    
-   Schedule schedule = null;  
+   ScheduleMessage schedule = null;  
    java.util.Date now = new java.util.Date();
       
     //What program are we dealing with?
@@ -99,7 +99,7 @@
 
 	if( conn != null )
 	{
-		Schedule[] allSchedules = conn.retrieveSchedules();
+		ScheduleMessage[] allSchedules = conn.retrieveSchedules();
 		for( int i = 0; i < allSchedules.length; i++ )
 		{
 			if( allSchedules[i].getId() == scheduleID )
@@ -110,7 +110,6 @@
 		}
 	}
    // !Check for null schedule!
-
 %>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">

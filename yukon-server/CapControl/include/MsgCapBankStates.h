@@ -5,9 +5,11 @@
 
 class CtiCCCapBankStatesMsg : public CapControlMessage
 {
+    public:
+        DECLARE_COLLECTABLE( CtiCCCapBankStatesMsg )
+
     private:
         typedef CapControlMessage Inherited;
-        RWDECLARE_COLLECTABLE( CtiCCCapBankStatesMsg )
 
     public:
         CtiCCCapBankStatesMsg(CtiCCState_vec& ccCapBankStates);
@@ -18,9 +20,6 @@ class CtiCCCapBankStatesMsg : public CapControlMessage
         CtiCCState_vec* getCCCapBankStates() const     { return _ccCapBankStates; }
 
         virtual CtiMessage* replicateMessage() const;
-
-        void restoreGuts( RWvistream& iStream);
-        void saveGuts( RWvostream& oStream) const;
 
         CtiCCCapBankStatesMsg& operator=(const CtiCCCapBankStatesMsg& right);
 

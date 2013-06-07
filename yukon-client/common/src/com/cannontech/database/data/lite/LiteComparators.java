@@ -127,8 +127,8 @@ public final class LiteComparators
 	{
 		public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2)
 		{
-			int thisVal = o1.getYukonID();
-			int anotherVal = o2.getYukonID();
+			int thisVal = o1.getYukonId();
+			int anotherVal = o2.getYukonId();
 			return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
 		}
 		public boolean equals(LiteYukonPAObject obj)

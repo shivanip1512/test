@@ -204,7 +204,7 @@ public Object getValue(Object val)
 	{
 		com.cannontech.database.db.route.MacroRoute mRoute = new com.cannontech.database.db.route.MacroRoute();
 		mRoute.setRouteID(routeID);
-		mRoute.setSingleRouteID( new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)rightListModel.getElementAt(i)).getYukonID()) );
+		mRoute.setSingleRouteID( new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)rightListModel.getElementAt(i)).getYukonId()) );
 		mRoute.setRouteOrder( new Integer(i+1) );
 
 		macroRouteVector.addElement( mRoute );	
@@ -424,7 +424,7 @@ public void setValue(Object val ) {
 			singleRouteID = ((com.cannontech.database.db.route.MacroRoute)macroRoutesVector.get(i)).getSingleRouteID().intValue();
 			for(int j=0;j<allRoutes.size();j++)
 			{
-				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)allRoutes.get(j)).getYukonID() == singleRouteID )
+				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)allRoutes.get(j)).getYukonId() == singleRouteID )
 				{
 					assignedRoutes.addElement(allRoutes.get(j));
 					break;

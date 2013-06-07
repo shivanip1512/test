@@ -43,14 +43,14 @@ import com.cannontech.macs.gui.popup.SchedulerPopUpMenu;
 import com.cannontech.macs.schedule.editor.ScheduleEditorPanel;
 import com.cannontech.macs.schedule.editor.ScheduleViewPanel;
 import com.cannontech.macs.schedule.wizard.ScheduleWizardPanel;
-import com.cannontech.message.macs.message.Info;
-import com.cannontech.message.macs.message.OverrideRequest;
-import com.cannontech.message.macs.message.Schedule;
-import com.cannontech.message.macs.message.ScriptFile;
-import com.cannontech.message.util.ConnStateChange;
-import com.cannontech.message.util.Message;
-import com.cannontech.message.util.MessageEvent;
-import com.cannontech.message.util.MessageListener;
+import com.cannontech.messaging.message.ConnStateChangeMessage;
+import com.cannontech.messaging.message.BaseMessage;
+import com.cannontech.messaging.message.macs.InfoMessage;
+import com.cannontech.messaging.message.macs.OverrideRequestMessage;
+import com.cannontech.messaging.message.macs.ScheduleMessage;
+import com.cannontech.messaging.message.macs.ScriptFileMessage;
+import com.cannontech.messaging.util.MessageEvent;
+import com.cannontech.messaging.util.MessageListener;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.TDCMainPanel;
 import com.cannontech.tdc.data.Display;
@@ -76,7 +76,7 @@ public class SchedulerMainPanel extends javax.swing.JPanel implements ActionList
 
 	// crutch to remember the last schedule that was selected
 	//so that we can reselect it if the table has to be updated
-	private Schedule lastSelected = null;
+	private ScheduleMessage lastSelected = null;
 
 	// Flag for connection to macs server
 	private boolean lastConnectionStatus = false;
@@ -205,11 +205,11 @@ private void executeCreateButton_ActionPerformed( ActionEvent event )
  */
 private void executeDeleteButton_ActionPerformed( ActionEvent event )
 {
-	Schedule selected = getSelectedSchedule();
+	ScheduleMessage selected = getSelectedSchedule();
 	
 	//Nothing we can do if there isn't something selected
 	//in fact we should never have gotten here in that case
-	if( selected == null || selected.getCurrentState().equals(Schedule.STATE_PENDING) )
+	if( selected == null || selected.getCurrentState().equals(ScheduleMessage.STATE_PENDING) )
 		return;
 
 	if (JOptionPane.showConfirmDialog(SwingUtil.getParentFrame(this), "Do you really want to delete '" + selected.getScheduleName() + "'?", "Schedule Deletion", JOptionPane.YES_NO_OPTION ) == JOptionPane.NO_OPTION) {
@@ -252,10 +252,10 @@ private void executeEnableDisableButton_ActionPerformed( ActionEvent event )
 {
 	try
 	{
-		Schedule selected = getSelectedSchedule();
+		ScheduleMessage selected = getSelectedSchedule();
 		//Nothing we can do if there isn't something selected
 		//in fact we should never have gotten here in that case
-		if( selected == null || selected.getCurrentState().equals(Schedule.STATE_PENDING) )
+		if( selected == null || selected.getCurrentState().equals(ScheduleMessage.STATE_PENDING) )
 			return;
 		
 		String actionString = "Are you sure you want to " + enableDisableButton.getText().toLowerCase() +
@@ -284,16 +284,16 @@ private void executeStartStopButton_ActionPerformed( ActionEvent event )
 {
 	try
 	{
-		Schedule selected = getSelectedSchedule();
+		ScheduleMessage selected = getSelectedSchedule();
 		//Nothing we can do if there isn't something selected
 		//in fact we should never have gotten here in that case
-		if( selected == null || selected.getCurrentState().equalsIgnoreCase(Schedule.STATE_DISABLED) )
+		if( selected == null || selected.getCurrentState().equalsIgnoreCase(ScheduleMessage.STATE_DISABLED) )
 			return;
 
 		final JDialog d = new JDialog(SwingUtil.getParentFrame(this));
 		ManualChangeJPanel panel = null;
 		
-		if( selected.getCurrentState().equalsIgnoreCase(Schedule.STATE_WAITING) )
+		if( selected.getCurrentState().equalsIgnoreCase(ScheduleMessage.STATE_WAITING) )
 		{
 			d.setTitle("Start schedule " + selected.getScheduleName() );
 			panel = new ManualChangeJPanel()
@@ -331,13 +331,13 @@ private void executeStartStopButton_ActionPerformed( ActionEvent event )
 									selected, 
 									null, 
 									panel.getStopTime(), 
-									(panel.isStopStartNowSelected() ? OverrideRequest.OVERRIDE_STOP_NOW : OverrideRequest.OVERRIDE_STOP) );
+									(panel.isStopStartNowSelected() ? OverrideRequestMessage.OVERRIDE_STOP_NOW : OverrideRequestMessage.OVERRIDE_STOP) );
 			else
 				getIMACSConnection().sendStartStopSchedule( 
 									selected, 
 									panel.getStartTime(), 
 									panel.getStopTime(), 
-									(panel.isStopStartNowSelected() ? OverrideRequest.OVERRIDE_START_NOW : OverrideRequest.OVERRIDE_START) );
+									(panel.isStopStartNowSelected() ? OverrideRequestMessage.OVERRIDE_START_NOW : OverrideRequestMessage.OVERRIDE_START) );
 		}
 
 		//destroy the JDialog
@@ -640,7 +640,7 @@ public ScheduleTableModel getScheduleTableModel()
  * This method was created in VisualAge.
  * @return Schedule
  */
-protected Schedule getSelectedSchedule() 
+protected ScheduleMessage getSelectedSchedule() 
 {
 	ListSelectionModel lsm = getScheduleTable().getSelectionModel();
 	
@@ -651,7 +651,7 @@ protected Schedule getSelectedSchedule()
 	if( selectedRow < 0 )
 		return null;
 		
-	Schedule selected = getScheduleTableModel().getSchedule( selectedRow );
+	ScheduleMessage selected = getScheduleTableModel().getSchedule( selectedRow );
 
 	return selected;
 }
@@ -920,7 +920,7 @@ public void selectionPerformed( PropertyPanelEvent event)
 		{
 			// use a clone of the Schedule passed into the panel.setValue(Object) call
 			// since we do not want our client to change its meaning of the Schedule
-			Schedule object = (Schedule) panel.getValue( null );
+			ScheduleMessage object = (ScheduleMessage) panel.getValue( null );
 
 			getIMACSConnection().sendUpdateSchedule( object );
 		}
@@ -970,17 +970,17 @@ public void selectionPerformed(WizardPanelEvent event)
 	{
 		WizardPanel p = (WizardPanel) event.getSource();
 
-		Schedule newItem = (Schedule)p.getValue(null);
+		ScheduleMessage newItem = (ScheduleMessage)p.getValue(null);
 
 		try
 		{
 			// send the new schedule
 			getIMACSConnection().sendCreateSchedule( newItem );				
-			getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, "Created new schedule '" + ((Schedule)newItem).getScheduleName() + "' successfully", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
+			getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, "Created new schedule '" + ((ScheduleMessage)newItem).getScheduleName() + "' successfully", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
 		}
 		catch( java.io.IOException e )
 		{
-			getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, "Unable to create schedule '" + ((Schedule)newItem).getScheduleName() + "'", com.cannontech.common.util.MessageEvent.ERROR_MESSAGE));
+			getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, "Unable to create schedule '" + ((ScheduleMessage)newItem).getScheduleName() + "'", com.cannontech.common.util.MessageEvent.ERROR_MESSAGE));
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
@@ -1029,7 +1029,7 @@ private void showDebugInfo( )
  * This method was created in VisualAge.
  * @param event java.awt.event.MouseEvent
  */
-public void showEditViewPanel( final Schedule selectedSchedule, PropertyPanel editViewPanel ) 
+public void showEditViewPanel( final ScheduleMessage selectedSchedule, PropertyPanel editViewPanel ) 
 {
 	if( selectedSchedule == null )
 		return;
@@ -1055,14 +1055,14 @@ public void showEditViewPanel( final Schedule selectedSchedule, PropertyPanel ed
 
 		// use a clone of the desired Schedule since we do not want our client
 		// to change its meaning of the Schedule
-		Schedule tempSched = (Schedule)CtiUtilities.copyObject(selectedSchedule);
+		ScheduleMessage tempSched = (ScheduleMessage)CtiUtilities.copyObject(selectedSchedule);
 		tempSched.getNonPersistantData().setCategories( getIMACSConnection().getCategoryNames().keys() );
 		editViewPanel.setValue( tempSched );
 
 		frame.validate();
 	
 		// IF ITS A SCRIPT SCHEDULE, WE MUST GET THE SCRIPT TEXT HERE
-		if( Schedule.SCRIPT_TYPE.equalsIgnoreCase(selectedSchedule.getType()) )
+		if( ScheduleMessage.SCRIPT_TYPE.equalsIgnoreCase(selectedSchedule.getType()) )
 			getIMACSConnection().sendRetrieveScriptText( selectedSchedule.getScriptFileName() );		
 	}
 	catch( java.io.IOException e )
@@ -1093,7 +1093,7 @@ private void showWizardPanel(WizardPanel wizard)
 	frame.setLocation( getCreateScheduleButton().getLocation() );
 
 	// create a new schedule with the current categories available and other data
-	Schedule tempSched = new Schedule();
+	ScheduleMessage tempSched = new ScheduleMessage();
 	tempSched.getNonPersistantData().setCategories( getIMACSConnection().getCategoryNames().keys() );
 	wizard.setValue( tempSched );
 	
@@ -1105,7 +1105,7 @@ private void showWizardPanel(WizardPanel wizard)
  * This method was created in VisualAge.
  * @param selected Schedule
  */
-private void synchTableAndButtons(Schedule selected) {
+private void synchTableAndButtons(ScheduleMessage selected) {
 	if (startStopButton == null || editButton == null
 			|| enableDisableButton == null)
 		return;
@@ -1117,17 +1117,17 @@ private void synchTableAndButtons(Schedule selected) {
 	getViewButton().setEnabled(true);
 	getStartStopButton().setEnabled(true);
 
-	if (selected.getCurrentState().equals(Schedule.STATE_WAITING)) {
+	if (selected.getCurrentState().equals(ScheduleMessage.STATE_WAITING)) {
 		getStartStopButton().setText("Start");
 		getEnableDisableButton().setText("Disable");
-	} else if (selected.getCurrentState().equals(Schedule.STATE_RUNNING)) {
+	} else if (selected.getCurrentState().equals(ScheduleMessage.STATE_RUNNING)) {
 		getStartStopButton().setText("Stop");
 		getEnableDisableButton().setText("Disable");
-	} else if (selected.getCurrentState().equals(Schedule.STATE_DISABLED)) {
+	} else if (selected.getCurrentState().equals(ScheduleMessage.STATE_DISABLED)) {
 		getStartStopButton().setText("Start");
 		getEnableDisableButton().setText("Enable");
 		getStartStopButton().setEnabled(false);
-	} else if (selected.getCurrentState().equals(Schedule.STATE_PENDING)) {
+	} else if (selected.getCurrentState().equals(ScheduleMessage.STATE_PENDING)) {
 		getStartStopButton().setText("Stop");
 	}
 	// revalidate();
@@ -1159,7 +1159,7 @@ public void tableChanged(TableModelEvent event )
 
 	revalidate();
 	
-	Schedule selected = getSelectedSchedule();
+	ScheduleMessage selected = getSelectedSchedule();
 
 	if( selected != null )
 		synchTableAndButtons( selected );
@@ -1169,15 +1169,15 @@ public void tableChanged(TableModelEvent event )
 
 public void messageReceived( MessageEvent e ) 
 {
-	Message in = e.getMessage();
+	BaseMessage in = e.getMessage();
 
-	if( in instanceof Info )
+	if( in instanceof InfoMessage )
 	{
 		getMessagePanel().messageEvent(
 				new com.cannontech.common.util.MessageEvent(
-					this, ((Info)in).getInfo(), com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
+					this, ((InfoMessage)in).getInfo(), com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
 	}
-	else if( in instanceof ScriptFile )
+	else if( in instanceof ScriptFileMessage )
 	{
 		for( int i = 0; i < getFrames().size(); i++ )
 		{
@@ -1188,12 +1188,12 @@ public void messageReceived( MessageEvent e )
 			{
 				ScheduleEditorPanel pane = (ScheduleEditorPanel)f.getContentPane();
 
-				pane.updateScriptText( (ScriptFile)in );
+				pane.updateScriptText( (ScriptFileMessage)in );
 			}
 
 		}
 	}
-    else if( in instanceof ConnStateChange )
+    else if( in instanceof ConnStateChangeMessage )
     {
 		TDCMainPanel tdcMainPanel= (TDCMainPanel)getParent();
 		Display display = tdcMainPanel.getCurrentDisplay();
@@ -1212,7 +1212,7 @@ public void messageReceived( MessageEvent e )
 	        });
 		}
 		
-        ConnStateChange csMsg = (ConnStateChange)in;
+        ConnStateChangeMessage csMsg = (ConnStateChangeMessage)in;
 		getCreateScheduleButton().setEnabled( csMsg.isConnected() );
 
         //remove any editors or wizards for schedules if we have been disconnected
@@ -1248,7 +1248,7 @@ public void valueChanged(ListSelectionEvent event) {
 		return;
 	else
 	{		
-		Schedule selected = getSelectedSchedule();
+		ScheduleMessage selected = getSelectedSchedule();
 
 		lastSelected = selected;
 
@@ -1259,8 +1259,8 @@ public void valueChanged(ListSelectionEvent event) {
 
 private boolean isScheduleEditable() {
 	String currentState = getSelectedSchedule().getCurrentState();
-	if (currentState.equals(Schedule.STATE_WAITING) ||
-			currentState.equals(Schedule.STATE_DISABLED)) {
+	if (currentState.equals(ScheduleMessage.STATE_WAITING) ||
+			currentState.equals(ScheduleMessage.STATE_DISABLED)) {
 		return true;
 	}
 	return false;

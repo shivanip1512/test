@@ -14,26 +14,26 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.dr.program.service.ConstraintContainer;
-import com.cannontech.loadcontrol.data.IGearProgram;
-import com.cannontech.loadcontrol.data.ILMGroup;
-import com.cannontech.loadcontrol.data.LMControlArea;
-import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
-import com.cannontech.loadcontrol.data.LMCurtailCustomer;
-import com.cannontech.loadcontrol.data.LMGroupBase;
-import com.cannontech.loadcontrol.data.LMProgramBase;
-import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.datamodels.ControlAreaTableModel;
 import com.cannontech.loadcontrol.datamodels.GroupTableModel;
 import com.cannontech.loadcontrol.datamodels.ProgramTableModel;
 import com.cannontech.loadcontrol.displays.ControlAreaActionListener;
 import com.cannontech.loadcontrol.gui.MultiLineControlAreaRenderer;
 import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
-import com.cannontech.loadcontrol.messages.ConstraintViolation;
-import com.cannontech.loadcontrol.messages.LMManualControlRequest;
-import com.cannontech.loadcontrol.messages.LMManualControlResponse;
-import com.cannontech.message.server.ServerResponseMsg;
-import com.cannontech.message.util.ServerRequest;
-import com.cannontech.message.util.ServerRequestImpl;
+import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
+import com.cannontech.messaging.message.loadcontrol.ManualControlResponseMessage;
+import com.cannontech.messaging.message.loadcontrol.data.ConstraintViolation;
+import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
+import com.cannontech.messaging.message.loadcontrol.data.ControlAreaTriggerItem;
+import com.cannontech.messaging.message.loadcontrol.data.CurtailCustomer;
+import com.cannontech.messaging.message.loadcontrol.data.GroupBase;
+import com.cannontech.messaging.message.loadcontrol.data.GearProgram;
+import com.cannontech.messaging.message.loadcontrol.data.Group;
+import com.cannontech.messaging.message.loadcontrol.data.Program;
+import com.cannontech.messaging.message.loadcontrol.data.ProgramDirectGear;
+import com.cannontech.messaging.message.server.ServerResponseMessage;
+import com.cannontech.messaging.util.ServerRequest;
+import com.cannontech.messaging.util.ServerRequestImpl;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -98,7 +98,7 @@ public class LCUtils
 	}
 
 
-	public static synchronized String getFgColor( LMControlArea area ) 
+	public static synchronized String getFgColor( ControlAreaItem area ) 
 	{
 		Color retColor = Color.BLACK;
 		
@@ -108,19 +108,19 @@ public class LCUtils
 			{
 				retColor = CELL_COLORS[3];
 			}
-			else if( area.getControlAreaState().intValue() == LMControlArea.STATE_INACTIVE )
+			else if( area.getControlAreaState().intValue() == ControlAreaItem.STATE_INACTIVE )
 			{
 				retColor = CELL_COLORS[0];
 			}
-			else if( area.getControlAreaState().intValue() == LMControlArea.STATE_PARTIALLY_ACTIVE
-						|| area.getControlAreaState().intValue() == LMControlArea.STATE_FULLY_ACTIVE
-						|| area.getControlAreaState().intValue() == LMControlArea.STATE_MANUAL_ACTIVE )
+			else if( area.getControlAreaState().intValue() == ControlAreaItem.STATE_PARTIALLY_ACTIVE
+						|| area.getControlAreaState().intValue() == ControlAreaItem.STATE_FULLY_ACTIVE
+						|| area.getControlAreaState().intValue() == ControlAreaItem.STATE_MANUAL_ACTIVE )
 			{
 				retColor = CELL_COLORS[1];
 			}
-			else if( area.getControlAreaState().intValue() == LMControlArea.STATE_CNTRL_ATTEMPT
-					    || area.getControlAreaState().intValue() == LMControlArea.STATE_FULLY_SCHEDULED
-					    || area.getControlAreaState().intValue() == LMControlArea.STATE_PARTIALLY_SCHEDULED )
+			else if( area.getControlAreaState().intValue() == ControlAreaItem.STATE_CNTRL_ATTEMPT
+					    || area.getControlAreaState().intValue() == ControlAreaItem.STATE_FULLY_SCHEDULED
+					    || area.getControlAreaState().intValue() == ControlAreaItem.STATE_PARTIALLY_SCHEDULED )
 			{
 				retColor = CELL_COLORS[2];
 			}
@@ -131,7 +131,7 @@ public class LCUtils
 	}
 
 
-	public static synchronized String getFgColor( LMProgramBase prg ) 
+	public static synchronized String getFgColor( Program prg ) 
 	{
 		Color retColor = Color.BLACK;
 		
@@ -141,28 +141,28 @@ public class LCUtils
 			{
 				retColor = CELL_COLORS[3];
 			}
-			else if( prg.getProgramStatus().intValue() == LMProgramBase.STATUS_INACTIVE
-			 			 || prg.getProgramStatus().intValue() == LMProgramBase.STATUS_NON_CNTRL )
+			else if( prg.getProgramStatus().intValue() == Program.STATUS_INACTIVE
+			 			 || prg.getProgramStatus().intValue() == Program.STATUS_NON_CNTRL )
 			{
 				retColor = CELL_COLORS[0];
 			}
-			else if( prg.getProgramStatus().intValue() == LMProgramBase.STATUS_ACTIVE
-						|| prg.getProgramStatus().intValue() == LMProgramBase.STATUS_FULL_ACTIVE
-						|| prg.getProgramStatus().intValue() == LMProgramBase.STATUS_MANUAL_ACTIVE
-						|| prg.getProgramStatus().intValue() == LMProgramBase.STATUS_TIMED_ACTIVE )
+			else if( prg.getProgramStatus().intValue() == Program.STATUS_ACTIVE
+						|| prg.getProgramStatus().intValue() == Program.STATUS_FULL_ACTIVE
+						|| prg.getProgramStatus().intValue() == Program.STATUS_MANUAL_ACTIVE
+						|| prg.getProgramStatus().intValue() == Program.STATUS_TIMED_ACTIVE )
 			{
 				retColor = CELL_COLORS[1];
 			}
-			else if( prg.getProgramStatus().intValue() == LMProgramBase.STATUS_NOTIFIED)
+			else if( prg.getProgramStatus().intValue() == Program.STATUS_NOTIFIED)
 			{
 				retColor = CELL_COLORS[4];
 			}
-			else if( prg.getProgramStatus().intValue() == LMProgramBase.STATUS_SCHEDULED
-						 || prg.getProgramStatus().intValue() == LMProgramBase.STATUS_CNTRL_ATTEMPT )
+			else if( prg.getProgramStatus().intValue() == Program.STATUS_SCHEDULED
+						 || prg.getProgramStatus().intValue() == Program.STATUS_CNTRL_ATTEMPT )
 			{
 				retColor = CELL_COLORS[5];
 			}
-			else if( prg.getProgramStatus().intValue() == LMProgramBase.STATUS_STOPPING )
+			else if( prg.getProgramStatus().intValue() == Program.STATUS_STOPPING )
 			{
 				retColor = CELL_COLORS[2];
 			}
@@ -171,7 +171,7 @@ public class LCUtils
 		return "#" + ServletUtil.getHTMLColor(retColor);
 	}
 
-	public static synchronized String getFgColor( ILMGroup grp ) 
+	public static synchronized String getFgColor( Group grp ) 
 	{
 		Color retColor = Color.BLACK;
 
@@ -183,23 +183,23 @@ public class LCUtils
 			{
 				retColor = CELL_COLORS[3];	
 			}
-			else if( state.equalsIgnoreCase(LMGroupBase.CURRENT_STATES[LMGroupBase.STATE_INACTIVE])
-						|| state.equalsIgnoreCase(LMCurtailCustomer.ACK_UNACKNOWLEDGED) )
+			else if( state.equalsIgnoreCase(GroupBase.CURRENT_STATES[GroupBase.STATE_INACTIVE])
+						|| state.equalsIgnoreCase(CurtailCustomer.ACK_UNACKNOWLEDGED) )
 			{
 				retColor = CELL_COLORS[0];
 			}
-			else if( state.equalsIgnoreCase(LMGroupBase.CURRENT_STATES[LMGroupBase.STATE_ACTIVE])
-						|| state.equalsIgnoreCase(LMCurtailCustomer.ACK_ACKNOWLEDGED) )
+			else if( state.equalsIgnoreCase(GroupBase.CURRENT_STATES[GroupBase.STATE_ACTIVE])
+						|| state.equalsIgnoreCase(CurtailCustomer.ACK_ACKNOWLEDGED) )
 			{
 				retColor = CELL_COLORS[1];
 			}
-			else if( state.equalsIgnoreCase(LMGroupBase.CURRENT_STATES[LMGroupBase.STATE_ACTIVE_PENDING])
-						|| state.equalsIgnoreCase(LMCurtailCustomer.ACK_NOT_REQUIRED) )
+			else if( state.equalsIgnoreCase(GroupBase.CURRENT_STATES[GroupBase.STATE_ACTIVE_PENDING])
+						|| state.equalsIgnoreCase(CurtailCustomer.ACK_NOT_REQUIRED) )
 			{
 				retColor = CELL_COLORS[2];
 			}
-			else if( state.equalsIgnoreCase(LMGroupBase.CURRENT_STATES[LMGroupBase.STATE_INACTIVE_PENDING])
-						|| state.equalsIgnoreCase(LMCurtailCustomer.ACK_VERBAL) )
+			else if( state.equalsIgnoreCase(GroupBase.CURRENT_STATES[GroupBase.STATE_INACTIVE_PENDING])
+						|| state.equalsIgnoreCase(CurtailCustomer.ACK_VERBAL) )
 			{
 				retColor = CELL_COLORS[4];
 			}
@@ -208,7 +208,7 @@ public class LCUtils
 		return "#" + ServletUtil.getHTMLColor(retColor);
 	}
 
-	public static String getTriggerText( final LMControlArea value, final int col )
+	public static String getTriggerText( final ControlAreaItem value, final int col )
 	{
 		StringBuffer topStrBuf = new StringBuffer();
 		StringBuffer botStrBuf = new StringBuffer();
@@ -217,8 +217,8 @@ public class LCUtils
 		{			
 			for( int i = 0; i < value.getTriggerVector().size(); i++ )
 			{
-				LMControlAreaTrigger trigger = 
-						(LMControlAreaTrigger)value.getTriggerVector().get(i);
+				ControlAreaTriggerItem trigger = 
+						(ControlAreaTriggerItem)value.getTriggerVector().get(i);
 	
 	
 				if( trigger.getTriggerNumber().intValue() == 1 )
@@ -245,7 +245,7 @@ public class LCUtils
 		return topStrBuf.toString() + "<BR>" + botStrBuf.toString();
 	}
 	
-	public static synchronized Object getProgramValueAt(LMProgramBase program, int col, YukonUserContext userContext) 
+	public static synchronized Object getProgramValueAt(Program program, int col, YukonUserContext userContext) 
 	{
         DateFormattingService dateFormattingService =
             (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
@@ -258,9 +258,9 @@ public class LCUtils
 
 			case ProgramTableModel.CURRENT_STATUS:
 				if( program.getDisableFlag().booleanValue() )				
-					return "DISABLED: " + LMProgramBase.getProgramStatusString( program.getProgramStatus().intValue() );
+					return "DISABLED: " + Program.getProgramStatusString( program.getProgramStatus().intValue() );
 				else
-					return LMProgramBase.getProgramStatusString( program.getProgramStatus().intValue() );
+					return Program.getProgramStatusString( program.getProgramStatus().intValue() );
 	
 			case ProgramTableModel.START_TIME:
 				if( program.getDisableFlag().booleanValue() ) {
@@ -277,9 +277,9 @@ public class LCUtils
 
 			case ProgramTableModel.CURRENT_GEAR:
 			{
-				if( program instanceof IGearProgram ) 
+				if( program instanceof GearProgram ) 
 				{
-					return getCurrentGear( (IGearProgram)program );
+					return getCurrentGear( (GearProgram)program );
 				}
 				else
 					return CtiUtilities.STRING_DASH_LINE;
@@ -324,7 +324,7 @@ public class LCUtils
 	/**
 	 * getValueAt method comment.
 	 */
-	public static synchronized Object getGroupValueAt( ILMGroup grpVal, int col, YukonUserContext userContext) 
+	public static synchronized Object getGroupValueAt( Group grpVal, int col, YukonUserContext userContext) 
 	{
 		switch( col )
 		{
@@ -365,16 +365,16 @@ public class LCUtils
 
 	}
 
-	private static String getCurrentGear( IGearProgram dPrg )
+	private static String getCurrentGear( GearProgram dPrg )
 	{
-		LMProgramDirectGear gear = null;
+		ProgramDirectGear gear = null;
 		
 		//get the current gear we are in
 		for( int i = 0; i < dPrg.getDirectGearVector().size(); i++ )
 		{			
-			gear = (LMProgramDirectGear)dPrg.getDirectGearVector().get(i);
+			gear = (ProgramDirectGear)dPrg.getDirectGearVector().get(i);
 	
-			if( dPrg.getCurrentGearNumber().intValue() == gear.getGearNumber().intValue() )
+			if( dPrg.getCurrentGearNumber().intValue() == gear.getGearNumber() )
 			{
 				return gear.getGearName();
 			}			
@@ -395,7 +395,7 @@ public class LCUtils
 	 * @param userContext 
 	 * @param currentUser TODO
 	 */
-	public static synchronized Object getControlAreaValueAt(LMControlArea lmCntrArea, int col, YukonUserContext userContext) 
+	public static synchronized Object getControlAreaValueAt(ControlAreaItem lmCntrArea, int col, YukonUserContext userContext) 
 	{
 	
 		switch( col )
@@ -406,9 +406,9 @@ public class LCUtils
 			case ControlAreaTableModel.CURRENT_STATE:
 			{
 				if( lmCntrArea.getDisableFlag().booleanValue() )
-					return "DISABLED: " + LMControlArea.getControlAreaStateString( lmCntrArea.getControlAreaState().intValue() );
+					return "DISABLED: " + ControlAreaItem.getControlAreaStateString( lmCntrArea.getControlAreaState().intValue() );
 				else
-					return LMControlArea.getControlAreaStateString( lmCntrArea.getControlAreaState().intValue() );
+					return ControlAreaItem.getControlAreaStateString( lmCntrArea.getControlAreaState().intValue() );
 			}
 
 			case ControlAreaTableModel.VALUE_THRESHOLD:
@@ -543,22 +543,22 @@ public class LCUtils
 	}
 
 
-	public static synchronized String getProgAvailChgStr( LMProgramBase prog )
+	public static synchronized String getProgAvailChgStr( Program prog )
 	{
 		switch( prog.getProgramStatus().intValue() )
 		{
-			case LMProgramBase.STATUS_ACTIVE:
-			case LMProgramBase.STATUS_MANUAL_ACTIVE:
-			case LMProgramBase.STATUS_FULL_ACTIVE:
-			case LMProgramBase.STATUS_NOTIFIED:
-			case LMProgramBase.STATUS_SCHEDULED:
-			case LMProgramBase.STATUS_CNTRL_ATTEMPT:
-			case LMProgramBase.STATUS_TIMED_ACTIVE:
+			case Program.STATUS_ACTIVE:
+			case Program.STATUS_MANUAL_ACTIVE:
+			case Program.STATUS_FULL_ACTIVE:
+			case Program.STATUS_NOTIFIED:
+			case Program.STATUS_SCHEDULED:
+			case Program.STATUS_CNTRL_ATTEMPT:
+			case Program.STATUS_TIMED_ACTIVE:
 				return "Stop...";
 		
-			case LMProgramBase.STATUS_INACTIVE:
-			case LMProgramBase.STATUS_NON_CNTRL:
-			case LMProgramBase.STATUS_STOPPING: /*only used by the server*/
+			case Program.STATUS_INACTIVE:
+			case Program.STATUS_NON_CNTRL:
+			case Program.STATUS_STOPPING: /*only used by the server*/
 				return "Start...";
 
 			default:
@@ -568,28 +568,28 @@ public class LCUtils
 
 	}
 	
-	public static synchronized int decodeStartWindow( LMControlArea cntrlArea )
+	public static synchronized int decodeStartWindow( ControlAreaItem cntrlArea )
 	{		
 		if( cntrlArea == null )
-			return LMControlArea.INVALID_INT;
+			return ControlAreaItem.INVALID_INT;
 		else
 			return 
 				(cntrlArea.getCurrentDailyStartTime() == null 
 					? (cntrlArea.getDefDailyStartTime() == null
-						? LMControlArea.INVALID_INT
+						? ControlAreaItem.INVALID_INT
 						: cntrlArea.getDefDailyStartTime().intValue())
 					: cntrlArea.getCurrentDailyStartTime().intValue() );
 	}
 
-	public static synchronized int decodeStopWindow( LMControlArea cntrlArea )
+	public static synchronized int decodeStopWindow( ControlAreaItem cntrlArea )
 	{		
 		if( cntrlArea == null )
-			return LMControlArea.INVALID_INT;
+			return ControlAreaItem.INVALID_INT;
 		else
 			return
 				(cntrlArea.getCurrentDailyStopTime() == null 
 					? (cntrlArea.getDefDailyStopTime() == null
-						? LMControlArea.INVALID_INT
+						? ControlAreaItem.INVALID_INT
 						: cntrlArea.getDefDailyStopTime().intValue())
 					: cntrlArea.getCurrentDailyStopTime().intValue() );
 	}
@@ -599,12 +599,12 @@ public class LCUtils
 	 * Creation date: (5/14/2002 10:50:02 AM)
 	 * @param
 	 */
-	public static synchronized LMManualControlRequest createProgMessage(
+	public static synchronized ManualControlRequestMessage createProgMessage(
 				boolean doItNow, boolean isStop,
-				Date startTime, Date stopTime, LMProgramBase program,
+				Date startTime, Date stopTime, Program program,
 				Integer gearNum, int constraintFlag ) 
 	{
-		LMManualControlRequest msg = null;
+		ManualControlRequestMessage msg = null;
 		
 		//create the new message
 		if( isStop )
@@ -632,10 +632,10 @@ public class LCUtils
 	}
 
 
-    public static LMManualControlRequest createStartMessage(boolean doItNow, 
-            Date startTime, Date stopTime, LMProgramBase program, Integer gearNum, 
+    public static ManualControlRequestMessage createStartMessage(boolean doItNow, 
+            Date startTime, Date stopTime, Program program, Integer gearNum, 
             int constraintFlag, String addtionalInfo) {
-        LMManualControlRequest msg;
+        ManualControlRequestMessage msg;
         if( doItNow )
         	msg = program.createStartStopNowMsg(
         				stopTime,
@@ -657,8 +657,8 @@ public class LCUtils
 	 * the given start/stop time to the current time.
 	 * @return
 	 */
-	public static synchronized LMManualControlRequest createScenarioMessage( 
-			LMProgramBase program,
+	public static synchronized ManualControlRequestMessage createScenarioMessage( 
+			Program program,
 			boolean isStop, boolean isNow, int startDelay,
 			int stopOffset, int gearNum, Date startTime,
 			Date stopTime, int constraintFlag )
@@ -686,7 +686,7 @@ public class LCUtils
 		startGC.add( GregorianCalendar.SECOND, startDelay );
 		stopGC.add( GregorianCalendar.SECOND, stopOffset );
 		
-		LMManualControlRequest msg = LCUtils.createProgMessage(
+		ManualControlRequestMessage msg = LCUtils.createProgMessage(
 			doItNow, isStop, startGC.getTime(), stopGC.getTime(),
 			program, (isStop ? null : new Integer(gearNum)), constraintFlag );
 
@@ -721,14 +721,14 @@ public class LCUtils
 		try
 		{ 
 			ServerRequest serverRequest = new ServerRequestImpl();
-			ServerResponseMsg[] responseMsgs =
-					new ServerResponseMsg[ programResp.length ];
+			ServerResponseMessage[] responseMsgs =
+					new ServerResponseMessage[ programResp.length ];
 
 			for( int i = 0; i < responseMsgs.length; i++ )
 			{
-                LMManualControlRequest lmRequest = programResp[i].getLmRequest();
+                ManualControlRequestMessage lmRequest = programResp[i].getLmRequest();
                 CTILogger.info("cmd-" + lmRequest.getCommand() + "," +
-                               "program- " + lmRequest.getYukonID() + "," +
+                               "program- " + lmRequest.getYukonId() + "," +
                                lmRequest.getAddditionalInfo());
                 responseMsgs[i] = 
                     serverRequest.makeServerRequest(LoadControlClientConnection.getInstance(), lmRequest); 
@@ -741,7 +741,7 @@ public class LCUtils
 				// some type of error occurred
 				programResp[i].setStatus( responseMsgs[i].getStatus() );
                 
-				LMManualControlResponse lmResp = (LMManualControlResponse) responseMsgs[i].getPayload();
+				ManualControlResponseMessage lmResp = (ManualControlResponseMessage) responseMsgs[i].getPayload();
 				programResp[i].setViolations(convertViolationsToContainers(lmResp.getConstraintViolations()));
                 
 				success &= programResp[i].getViolations().isEmpty();

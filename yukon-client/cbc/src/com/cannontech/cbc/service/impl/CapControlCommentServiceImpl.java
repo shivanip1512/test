@@ -11,7 +11,7 @@ import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.cbc.model.CapControlComment;
 import com.cannontech.cbc.service.CapControlCommentService;
 import com.cannontech.database.data.pao.CapControlType;
-import com.cannontech.message.capcontrol.model.CommandType;
+import com.cannontech.messaging.message.capcontrol.CommandType;
 
 public class CapControlCommentServiceImpl implements CapControlCommentService {
     private static final String defaultReason = "";

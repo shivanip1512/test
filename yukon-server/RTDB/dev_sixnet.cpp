@@ -1797,7 +1797,7 @@ INT CtiDeviceSixnet::ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow
     INT retCode = NORMAL;
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
                                             string(InMessage.Return.CommandStr),
-                                            FormatError(InMessage.EventCode & 0x7fff),
+                                            GetErrorString(InMessage.EventCode & 0x7fff),
                                             InMessage.EventCode & 0x7fff,
                                             InMessage.Return.RouteID,
                                             InMessage.Return.MacroOffset,

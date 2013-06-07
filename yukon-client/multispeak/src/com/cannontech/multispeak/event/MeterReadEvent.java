@@ -15,8 +15,8 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.message.porter.message.Return;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.messaging.message.porter.ReturnMessage;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.data.MeterReadFactory;
@@ -103,16 +103,16 @@ public class MeterReadEvent extends MultispeakEvent{
     }
 
     @Override
-    public boolean messageReceived(Return returnMsg) {
+    public boolean messageReceived(ReturnMessage returnMsg) {
 
-        YukonMeter yukonMeter = meterDao.getYukonMeterForId(returnMsg.getDeviceID());
+        YukonMeter yukonMeter = meterDao.getYukonMeterForId(returnMsg.getDeviceId());
         
         if( returnMsg.getStatus() != 0) {
             
             String result = "MeterReadEvent(" + yukonMeter.getMeterNumber() + ") - Reading Failed (ERROR:" + returnMsg.getStatus() + ") " + returnMsg.getResultString();
             CTILogger.info(result);
             //TODO Should we send old data if a new reading fails?
-            getDevice().populateWithPointData(returnMsg.getDeviceID());
+            getDevice().populateWithPointData(returnMsg.getDeviceId());
             getDevice().getMeterRead().setErrorString(result);
             
         }
@@ -126,8 +126,8 @@ public class MeterReadEvent extends MultispeakEvent{
                 {
                     Object o = returnMsg.getVector().elementAt(i);
                     //TODO SN - Hoping at this point that only one value comes back in the point data vector 
-                    if (o instanceof PointData) {
-                        PointData pointData = (PointData) o;
+                    if (o instanceof PointDataMessage) {
+                        PointDataMessage pointData = (PointDataMessage) o;
                         LitePoint lPoint = pointDao.getLitePoint(pointData.getId());
                         PointIdentifier pointIdentifier = PointIdentifier.createPointIdentifier(lPoint);
                         getDevice().populate(pointIdentifier, pointData.getPointDataTimeStamp(), pointData.getValue());
@@ -136,7 +136,7 @@ public class MeterReadEvent extends MultispeakEvent{
             }
         }
         
-        if(returnMsg.getExpectMore() == 0){
+        if(returnMsg.getExpectMore() == false){
             updateReturnMessageCount();
             if( getReturnMessages() == 0) {
                 eventNotification();

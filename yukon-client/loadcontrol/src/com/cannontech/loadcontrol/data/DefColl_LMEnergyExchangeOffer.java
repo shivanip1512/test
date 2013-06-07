@@ -8,6 +8,7 @@ import java.util.Date;
 
 import com.cannontech.message.util.CollectionExtracter;
 import com.cannontech.message.util.CollectionInserter;
+import com.cannontech.messaging.message.loadcontrol.data.EnergyExchangeOffer;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -35,7 +36,7 @@ public DefColl_LMEnergyExchangeOffer() {
 	* to be out of sync and the results could be catastrophic.
 	*/
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new LMEnergyExchangeOffer();
+	return new EnergyExchangeOffer();
 }
  /**
 	* Return a Comparator object for the Java class being mapped.
@@ -49,7 +50,7 @@ public com.roguewave.tools.v2_0.Comparator getComparator() {
 	{
 		public int compare(Object x, Object y) 
 		{
-			return (int) (((LMEnergyExchangeOffer)x).getYukonID().intValue() - ((LMEnergyExchangeOffer)y).getYukonID().intValue() );
+			return (int) (((EnergyExchangeOffer)x).getYukonId() - ((EnergyExchangeOffer)y).getYukonId() );
 		}
 	};
 }
@@ -78,7 +79,7 @@ public String getCxxStringId() {
 	* being mapped.  It is used by CollectableStreamer during registration.
 	*/
 public Class getJavaClass() {
-	return LMEnergyExchangeOffer.class;
+	return EnergyExchangeOffer.class;
 }
  /**
 	* This method will be called by CollectableStreamer to restore the guts,
@@ -88,10 +89,10 @@ public Class getJavaClass() {
 	*/
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMEnergyExchangeOffer offer = (LMEnergyExchangeOffer) obj;
+	EnergyExchangeOffer offer = (EnergyExchangeOffer) obj;
 	
 	offer.setYukonID( new Integer((int)vstr.extractUnsignedInt()) );
-	offer.setOfferID( new Integer((int)vstr.extractUnsignedInt()) );
+	offer.setOfferId( new Integer((int)vstr.extractUnsignedInt()) );
 	offer.setRunStatus( (String) vstr.restoreObject(SimpleMappings.CString) );
 	offer.setOfferDate( (Date) vstr.restoreObject(SimpleMappings.Time) );
 	//offer.setEnergyExchangeOfferRevisions( (Vector) vstr.restoreObject(polystr) );
@@ -106,10 +107,10 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	*/
 public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMEnergyExchangeOffer offer = (LMEnergyExchangeOffer) obj;
+	EnergyExchangeOffer offer = (EnergyExchangeOffer) obj;
 	
-	vstr.insertUnsignedLong( offer.getYukonID().longValue() );
-	vstr.insertUnsignedLong( offer.getOfferID().longValue() );
+	vstr.insertUnsignedLong( offer.getYukonId() );
+	vstr.insertUnsignedLong( offer.getOfferId() );
 	vstr.saveObject( offer.getRunStatus(), SimpleMappings.CString );
 	vstr.saveObject( offer.getOfferDate(), SimpleMappings.Time );
 	//vstr.saveObject( offer.getEnergyExchangeOfferRevisions(), polystr );

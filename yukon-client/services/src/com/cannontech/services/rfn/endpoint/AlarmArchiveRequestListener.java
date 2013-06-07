@@ -17,7 +17,7 @@ import com.cannontech.amr.rfn.service.RfnMeterEventService;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
@@ -41,7 +41,7 @@ public class AlarmArchiveRequestListener extends ArchiveRequestListenerBase<RfnA
         protected void processData(RfnDevice device, RfnAlarmArchiveRequest archiveRequest) {
             /** Only process events for meters at this time */
             if (device.getPaoIdentifier().getPaoType().isMeter()) {
-                List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(3);
+                List<PointDataMessage> messagesToSend = Lists.newArrayListWithExpectedSize(3);
                 rfnMeterEventService.processEvent(device, archiveRequest.getAlarm(), messagesToSend);
     
                 // Save analog value(s) to db

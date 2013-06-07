@@ -1,367 +1,242 @@
 #include "precompiled.h"
 
-// These next few are required for Win32
-#include <iostream>
-using namespace std;
-
-#include <rw/tvsldict.h>
-
-#include "os2_2w32.h"
-#include "cticalls.h"
-
-#include <stdlib.h>
-
-#include <stdio.h>
-#include "dsm2.h"
 #include "dsm2err.h"
-#include "dllbase.h"
-#include "logger.h"
+#include "yukon.h"
 
-static bool beenInitialized = false;
+#include <boost/assign/list_of.hpp>
 
-static RWTValSlistDictionary< USHORT, ERRSTRUCT > CtiErrors;
+//  keep these definitions local to this file
+namespace {
 
-ERRSTRUCT CTIErrors[] = {
-    { NORMAL,               NORMAL_TXT,                NORMAL_TYPE                }, // 0
-    { NOTNORMAL,            NOTNORMAL_TXT,             NOTNORMAL_TYPE             }, // 1
-    { BADBCH,               BADBCH_TXT,                ERRTYPEPROTOCOL            }, // 100 now...
-    { NODWORD,              NODWORD_TXT,               ERRTYPEPROTOCOL            },
-    { BADTYPE,              BADTYPE_TXT,               ERRTYPEPROTOCOL            },
-    { DLENGTH,              DLENGTH_TXT,               ERRTYPEPROTOCOL            },
-    { BADLOAD,              BADLOAD_TXT,               BADLOAD_TYPE               },//  5
-    { BADTIME,              BADTIME_TXT,               BADTIME_TYPE               },
-    { BADLEVEL,             BADLEVEL_TXT,              BADLEVEL_TYPE              },
-    { BADID,                BADID_TXT,                 BADID_TYPE                 },
-    { BADRANGE,             BADRANGE_TXT,              BADRANGE_TYPE              },
-    { MISPARAM,             MISPARAM_TXT,              MISPARAM_TYPE              },// 10
-    { SYNTAX,               SYNTAX_TXT,                SYNTAX_TYPE                },
-    { BADLATCH,             BADLATCH_TXT,              BADLATCH_TYPE              },
-    { FNI,                  FNI_TXT,                   FNI_TYPE                   },
-    { BADSTATE,             BADSTATE_TXT,              BADSTATE_TYPE              },
-    { BADPARITY,            BADPARITY_TXT,             BADPARITY_TYPE             },//  15
-    { BADCCU,               BADCCU_TXT,                BADCCU_TYPE                },
-    { NACK1,                NACK1_TXT,                 NACK1_TYPE                 },
-    { NACK2,                NACK2_TXT,                 NACK2_TYPE                 },
-    { NACK3,                NACK3_TXT,                 NACK3_TYPE                 },
-    { NACKPAD1,             NACKPAD1_TXT,              NACKPAD1_TYPE              },// 20
-    { NACKPAD2,             NACKPAD2_TXT,              NACKPAD2_TYPE              },
-    { NACKPAD3,             NACKPAD3_TXT,              NACKPAD3_TYPE              },
-    { BADCCUTYPE,           BADCCUTYPE_TXT,            BADCCUTYPE_TYPE            },
-    { BADCOUNT,             BADCOUNT_TXT,              BADCOUNT_TYPE              },
-    { BADPAUSE,             BADPAUSE_TXT,              BADPAUSE_TYPE              },
-    { BADPARAM,             BADPARAM_TXT,              BADPARAM_TYPE              },
-    { BADROUTE,             BADROUTE_TXT,              BADROUTE_TYPE              },
-    { BADBUSS,              BADBUSS_TXT,               BADBUSS_TYPE               },
-    { BADAMP,               BADAMP_TXT,                BADAMP_TYPE                },
-    { READERR,              READERR_TXT,               READERR_TYPE               },// 30
-    { READTIMEOUT,          READTIMEOUT_TXT,           READTIMEOUT_TYPE           },
-    { BADSEQUENCE,          BADSEQUENCE_TXT,           BADSEQUENCE_TYPE           },
-    { FRAMEERR,             FRAMEERR_TXT,              FRAMEERR_TYPE              },
-    { BADCRC,               BADCRC_TXT,                BADCRC_TYPE                },
-    { BADLENGTH,            BADLENGTH_TXT,             BADLENGTH_TYPE             },
-    { BADUA,                BADUA_TXT,                 BADUA_TYPE                 },
-    { ERRUNKNOWN,           UNKNOWN_TXT,               UNKNOWN_TYPE               },
-    { BADADDRESS,           BADADDRESS_TXT,            BADADDRESS_TYPE            },
-    { BADROLE,              BADROLE_TXT,               BADROLE_TYPE               },
-    { INVALIDFIX,           INVALIDFIX_TXT,            INVALIDFIX_TYPE            },// 40
-    { INVALIDVOU,           INVALIDVOU_TXT,            INVALIDVOU_TYPE            },
-    { INVALIDVIN,           INVALIDVIN_TXT,            INVALIDVIN_TYPE            },
-    { INVALIDSTG,           INVALIDSTG_TXT,            INVALIDSTG_TYPE            },
-    { 44,                   BLANK_TXT,                 NORMAL_TYPE                },
-    { BADFILE,              BADFILE_TXT,               BADFILE_TYPE               },
-    { REQACK,               REQACK_TXT,                REQACK_TYPE                },
-    { RTFERR,               RTFERR_TXT,                RTFERR_TYPE                },
-    { NOTR,                 NOTR_TXT,                  NOTR_TYPE                  },
-    { RTNF,                 RTNF_TXT,                  RTNF_TYPE                  },
-    { FNO,                  FNO_TXT,                   FNO_TYPE                   },//  50
-    { RONF,                 RONF_TXT,                  RONF_TYPE                  },
-    { ROFERR,               ROFERR_TXT,                ROFERR_TYPE                },
-    { DBFERR,               DBFERR_TXT,                DBFERR_TYPE                },
-    { IDNF,                 IDNF_TXT,                  IDNF_TYPE                  },
-    { TYFERR,               TYFERR_TXT,                TYFERR_TYPE                },
-    { TYNF,                 TYNF_TXT,                  TYNF_TYPE                  },
-    { EWORDRCV,             EWORDRCV_TXT,              EWORDRCV_TYPE              },
-    { BADFILL,              BADFILL_TXT,               BADFILL_TYPE               },
-    { SYSTEM,               SYSTEM_TXT,                SYSTEM_TYPE                },
-    { BADPORT,              BADPORT_TXT,               BADPORT_TYPE               },//  60
-    { QUEUE_READ,           QUEUE_READ_TXT,            QUEUE_READ_TYPE            },
-    { QUEUE_WRITE,          QUEUE_WRITE_TXT,           QUEUE_WRITE_TYPE           },
-    { MEMORY,               MEMORY_TXT,                MEMORY_TYPE                },
-    { SEMAPHORE,            SEMAPHORE_TXT,             SEMAPHORE_TYPE             },
-    { NODCD,                NODCD_TXT,                 NODCD_TYPE                 },
-    { WRITETIMEOUT,         WRITETIMEOUT_TXT,          WRITETIMEOUT_TYPE          },
-    { PORTREAD,             PORTREAD_TXT,              PORTREAD_TYPE              },
-    { PORTWRITE,            PORTWRITE_TXT,             PORTWRITE_TYPE             },
-    { PIPEWRITE,            PIPEWRITE_TXT,             PIPEWRITE_TYPE             },
-    { PIPEREAD,             PIPEREAD_TXT,              PIPEREAD_TYPE              },//  70
-    { QUEUEEXEC,            QUEUEEXEC_TXT,             QUEUEEXEC_TYPE             },
-    { DLCTIMEOUT,           DLCTIMEOUT_TXT,            DLCTIMEOUT_TYPE            },
-    { NOATTEMPT,            NOATTEMPT_TXT,             NOATTEMPT_TYPE             },
-    { ROUTEFAILED,          ROUTEFAILED_TXT,           ROUTEFAILED_TYPE           },
-    { TRANSFAILED,          TRANSFAILED_TXT,           TRANSFAILED_TYPE           },
-    { JWORDRCV,             JWORDRCV_TXT,              JWORDRCV_TYPE              },
-    { NOREMOTEPORTER,       NOREMOTEPORTER_TXT,        NOREMOTEPORTER_TYPE        },
-    { REMOTEINHIBITED,      REMOTEINHIBITED_TXT,       REMOTEINHIBITED_TYPE       },
-    { QUEUEFLUSHED,         QUEUEFLUSHED_TXT,          QUEUEFLUSHED_TYPE          },
-    { PIPEBROKEN,           PIPEBROKEN_TXT,            PIPEBROKEN_TYPE            },//  80
-    { PIPEWASBROKEN,        PIPEWASBROKEN_TXT,         PIPEWASBROKEN_TYPE         },
-    { PIPEOPEN,             PIPEOPEN_TXT,              PIPEOPEN_TYPE              },
-    { PORTINHIBITED,        PORTINHIBITED_TXT,         PORTINHIBITED_TYPE         },
-    { ACCUMSNOTSUPPORTED,   ACCUMSNOTSUPPORTED_TXT,    ACCUMSNOTSUPPORTED_TYPE    },
-    { DEVICEINHIBITED,      DEVICEINHIBITED_TXT ,      DEVICEINHIBITED_TYPE       },
-    { POINTINHIBITED,       POINTINHIBITED_TXT,        POINTINHIBITED_TYPE        },
-    { DIALUPERROR,          DIALUPERROR_TXT,           DIALUPERROR_TYPE           },
-    { WRONGADDRESS,         WRONGADDRESS_TXT,          WRONGADDRESS_TYPE          },
-    { TCPCONNECTERROR,      TCPCONNECTERROR_TXT,       TCPCONNECTERROR_TYPE       },
-    { TCPWRITEERROR,        TCPWRITEERROR_TXT,         TCPWRITEERROR_TYPE         },//  90
-    { TCPREADERROR,         TCPREADERROR_TXT,          TCPREADERROR_TYPE          },
-    { ADDRESSERROR,         ADDRESSERROR_TXT,          ADDRESSERROR_TYPE          },
-    { ALPHABUFFERERROR,     ALPHABUFFERERROR_TXT,      ALPHABUFFERERROR_TYPE      }, // 93
-    { MISCONFIG,            MISCONFIG_TXT,             MISCONFIG_TYPE             },
-    { 95,                   BLANK_TXT,                 NORMAL                     },
-    { 96,                   BLANK_TXT,                 NORMAL                     },
-    { 97,                   BLANK_TXT,                 NORMAL                     },
-    { BADSOCK,              BADSOCK_TXT,               BADSOCK_TYPE               },
-    { SOCKWRITE,            SOCKWRITE_TXT,             SOCKWRITE_TYPE             },
+struct error_info {
+    ErrorTypes type;
+    std::string description;
 
-    { 200,                          "Yukon Base Error",                             ERRTYPESYSTEM   },
-    { MemoryError,                  "Memory Error",                                 ERRTYPESYSTEM   },
-    { NoMethod,                     "No Method",                                    ERRTYPESYSTEM   },
-    { NoRefreshMethod,              "No Refresh Method",                            ERRTYPESYSTEM   },
-    { NoGeneralScanMethod,          "No General Scan Method",                       ERRTYPESYSTEM   },
-    { NoIntegrityScanMethod,        "No Integrity Scan Method",                     ERRTYPESYSTEM   },
-    { NoAccumulatorScanMethod,      "No Accum Scan Method",                         ERRTYPESYSTEM   },
-    { NoProcessResultMethod,        "No Process Result Method",                     ERRTYPESYSTEM   },
-    { NoExecuteRequestMethod,       "No Exec. Req. Method",                         ERRTYPESYSTEM   },
-    { NoResultDecodeMethod,         "No Result Decode Method",                      ERRTYPESYSTEM   },
-    { NoErrorDecodeMethod,          "No ErrorDecode Method",                        ERRTYPESYSTEM   },
-    { NoHandShakeMethod,            "No Handshake Method",                          ERRTYPESYSTEM   },
-    { NoGenerateCmdMethod,          "No Generate Command Method",                   ERRTYPESYSTEM   },
-    { NoDecodeResponseMethod,       "No DecodeResponse Method",                     ERRTYPESYSTEM   },
-    { NoDataCopyMethod,             "No Data Copy Method",                          ERRTYPESYSTEM   },
-    { NotNumeric,                   "Not Numeric",                                  ERRTYPESYSTEM   },
-    { NoConfigData,                 "No Config Data Found",                         ERRTYPESYSTEM   },
-    { NoRouteGroupDevice,           "No Route for Group Dev.",                      ERRTYPESYSTEM   },
-    { NoRoutesInMacro,              "No Routes for Macro Rte",                      ERRTYPESYSTEM   },
-    { RouteOffsetOutOfRange,        "Macro Offset does not exist in Macro Rte",     ERRTYPESYSTEM   },
-    { SubRouteIsMacro,              "Macro Offset refers to a macro sub-rte",       ERRTYPESYSTEM   },
-    { ControlInhibitedOnDevice,     "Device is control disabled",                   ERRTYPESYSTEM   },
-    { ControlInhibitedOnPoint,      "Point is control disabled",                    ERRTYPESYSTEM   },
-    { ControlRequestComplete,       "Control Completed",                            ERRTYPESYSTEM   },
-    { ErrRequestExpired,            "Requested operation expired due to time",      ERRTYPESYSTEM   },
-    { ErrorNexusRead,               "Error Reading Nexus",                          ERRTYPESYSTEM   },
-
-    { InThreadTerminated,           "CtiConnection: InThread Terminated",           ERRTYPESYSTEM   },
-    { OutThreadTerminated,          "CtiConnection: OutThread Terminated",          ERRTYPESYSTEM   },
-    { InboundSocketBad,             "CtiConnection: Inbound Socket Bad",            ERRTYPESYSTEM   },
-    { OutboundSocketBad,            "CtiConnection: Outbound Socket Bad",           ERRTYPESYSTEM   },
-    { ErrPortInitFailed,            "Port Init Failed",                             ERRTYPESYSTEM   },
-    { ErrPortDialupConnect_Port,    "Dialup connection failed. Port in error",      ERRTYPECOMM     },
-    { ErrPortDialupConnect_Device,  "Dialup connection failed. Device in error",    ERRTYPESYSTEM   },
-    { ErrPortSimulated,             "Port is simulated, no inbound data available", ERRTYPEPROTOCOL },
-    { ErrPortEchoResponse,          "Port echoed request bytes",                    ERRTYPECOMM     },
-
-    { RETRY_SUBMITTED,              "Retry Resubmitted",                            ERRTYPESYSTEM   },
-    { SCAN_ERROR_DEVICE_INHIBITED,  "Scanned device is inhibited",                  ERRTYPESYSTEM   },
-    { SCAN_ERROR_GLOBAL_ADDRESS,    "Illegal scan of global device",                ERRTYPESYSTEM   },
-    { SCAN_ERROR_DEVICE_WINDOW_CLOSED,  "Device window is closed",                  ERRTYPESYSTEM   },
-    { ErrorPageRS,                  "Invalid transaction, typ. bad pager id or password",   ERRTYPESYSTEM   },
-    { ErrorPageNAK,                 "TAP Repeat Requested, but retries exhausted",  ERRTYPESYSTEM   },
-    { ErrorPageNoResponse,          "No response from TAP terminal",                ERRTYPESYSTEM   },
-
-    { ErrorHttpResponse,            "Invalid or unsuccessful HTTP response",        ERRTYPESYSTEM   },
-    { ErrorXMLParser,               "XML parser initialization failed",             ERRTYPESYSTEM   },
-    { ErrorWctpResponse,            "Invalid WCTP response format",                 ERRTYPESYSTEM   },
-    { ErrorWctpTimeout,             "Time out when receiving WCTP response",        ERRTYPESYSTEM   },
-    { ErrorWctp300Series,           "Protocol Error 300 Series",                    ERRTYPESYSTEM   },
-    { ErrorWctp400Series,           "Protocol Error 400 Series",                    ERRTYPESYSTEM   },
-    { ErrorWctp500Series,           "Protocol Error 500 Series",                    ERRTYPESYSTEM   },
-    { ErrorWctp600Series,           "Protocol Error 600 Series",                    ERRTYPESYSTEM   },
-
-    { ErrorQueuePurged,             "Queue purged to limit memory usage",           ERRTYPESYSTEM   },
-    { ErrorRequestCancelled,        "Request was cancelled",                        ERRTYPESYSTEM   },
-
-    { ErrorInvalidTimestamp,        "Invalid time returned OR time outside of requested range.", ERRTYPESYSTEM   },
-    { ErrorInvalidChannel,          "Invalid channel returned by daily read.",                   ERRTYPESYSTEM   },
-
-    { ErrorDeviceIPUnknown,         "Device has not reported in, outbound IP unknown",  ERRTYPESYSTEM   },
-
-    { ErrorMACSTimeout,             "MACS timed out on this message",               ERRTYPESYSTEM   },
-
-    { ErrorInvalidFrozenReadingParity,  "The freeze check bit in the frozen reading does not match the last recorded freeze sent to the device.", ERRTYPEPROTOCOL },
-    { ErrorInvalidFrozenPeakTimestamp,  "The frozen peak timestamp is outside of the expected range.",                                            ERRTYPEPROTOCOL },
-    { ErrorInvalidFreezeCounter,        "The freeze counter is less than the expected value.",                                                    ERRTYPEPROTOCOL },
-
-    { ErrorInvalidData,             "Invalid data was was received for one or more data points.",   ERRTYPEPROTOCOL },
-
-    { ErrorFreezeNotRecorded,       "There is no record of the last freeze sent to this device.",   ERRTYPEPROTOCOL },
-
-    { ErrorInvalidRequest,          "Invalid/Incomplete Request",                   ERRTYPESYSTEM   },
-
-    { ErrorInvalidSSPEC,            "Insufficient SSPEC/Firmware Revision",         ERRTYPESYSTEM   },
-    { ErrorVerifySSPEC,             "Verify SSPEC/Firmware Revision",               ERRTYPESYSTEM   },
-
-    { ErrorTransmitterBusy,         "Transmitter is busy",                          ERRTYPEPROTOCOL },
-    { ErrorUnsupportedDevice,       "Device Not Supported",                         ERRTYPESYSTEM   },
-    { ErrorPortNotInitialized,      "Port not initialized",                         ERRTYPECOMM },
-
-    { ErrorCommandAlreadyInProgress,"Command already in progress",                  ERRTYPESYSTEM   },
-
-    { ErrorDeviceNotConnected,      "Device is not connected",                      ERRTYPESYSTEM   },
-
-    { ErrorNoDisconnect,            "No disconnect configured on this device",      ERRTYPESYSTEM   },
-
-    { ErrorTransmitterOverheating,  "Transmitter is overheating",                   ERRTYPEPROTOCOL },
-
-    { ErrorNeedsChannelConfig,      "Command needs channel config to continue.",    ERRTYPESYSTEM   },
-
-    { ErrorInvalidStartDate,        "Command requires a valid date.",               ERRTYPESYSTEM   },
-
-    { ErrorDnsLookupFailed,         "Failed to resolve an IP for the given DNS name.",  ERRTYPESYSTEM },
-
-    { ErrorPointLookupFailed,       "Failed to find a point for the given device.",     ERRTYPESYSTEM },
-
-    { UnknownError,                 "Unknown Error",                                ERRTYPESYSTEM   },
-
+    error_info(ErrorTypes type_, std::string desc_) :
+        type(type_), description(desc_)
+    {}
 };
 
-/* Routine to open up the error file */
-INT InitError (void)
-{
-    INT rc, i;
+typedef std::map<int, error_info> ErrorLookup;
 
-    CtiErrors.clear();
+static const ErrorLookup CtiErrors = boost::assign::map_list_of
+    //  0
+    (NORMAL,        error_info(ERRTYPENONE,     "Normal (Success) Return"))
+    (NOTNORMAL,     error_info(ERRTYPESYSTEM,   "Not Normal (Unsuccessful) Return"))
+    (NODWORD,       error_info(ERRTYPEPROTOCOL, "No D word"))
+    (BADTYPE,       error_info(ERRTYPEPROTOCOL, "Bad Message Type"))
+    (DLENGTH,       error_info(ERRTYPEPROTOCOL, "D Word Wrong length"))
+    (BADLOAD,       error_info(ERRTYPESYSTEM,   "Bad Load Specification"))
+    (BADTIME,       error_info(ERRTYPESYSTEM,   "Bad Time Specification"))
+    (BADLEVEL,      error_info(ERRTYPESYSTEM,   "Bad Level Specification"))
+    (BADID,         error_info(ERRTYPESYSTEM,   "Bad ID Specification"))
+    (BADRANGE,      error_info(ERRTYPESYSTEM,   "Parameter out of Range"))
+    //  10
+    (MISPARAM,      error_info(ERRTYPESYSTEM,   "Missing Parameter"))
+    (SYNTAX,        error_info(ERRTYPESYSTEM,   "Syntax Error"))
+    (BADLATCH,      error_info(ERRTYPESYSTEM,   "Bad Latch Control Specification"))
+    (FNI,           error_info(ERRTYPESYSTEM,   "Feature Not Implemented"))
+    (BADSTATE,      error_info(ERRTYPESYSTEM,   "Bad State Specification"))
+    (BADPARITY,     error_info(ERRTYPECOMM,     "Parity Error"))
+    (BADCCU,        error_info(ERRTYPECOMM,     "Bad CCU Specification"))
+    (NACK1,         error_info(ERRTYPEPROTOCOL, "Word 1 NACK"))
+    (NACK2,         error_info(ERRTYPEPROTOCOL, "Word 2 NACK"))
+    (NACK3,         error_info(ERRTYPEPROTOCOL, "Word 3 NACK"))
+    //  20
+    (NACKPAD1,      error_info(ERRTYPEPROTOCOL, "Word 1 NACK Padded"))
+    (NACKPAD2,      error_info(ERRTYPEPROTOCOL, "Word 2 NACK Padded"))
+    (NACKPAD3,      error_info(ERRTYPEPROTOCOL, "Word 3 NACK Padded"))
+    (BADCCUTYPE,    error_info(ERRTYPESYSTEM,   "Bad CCU Type"))
+    (BADCOUNT,      error_info(ERRTYPESYSTEM,   "Bad Repeat Count Specification"))
+    (BADPAUSE,      error_info(ERRTYPESYSTEM,   "Bad Pause Interval Specification"))
+    (BADPARAM,      error_info(ERRTYPESYSTEM,   "Bad Parameter"))
+    (BADROUTE,      error_info(ERRTYPESYSTEM,   "Bad Route Specification"))
+    (BADBUSS,       error_info(ERRTYPESYSTEM,   "Bad Bus Specification"))
+    (BADAMP,        error_info(ERRTYPESYSTEM,   "Bad Amp Specification"))
+    //  30
+    (READERR,       error_info(ERRTYPESYSTEM,   "Read Error"))
+    (READTIMEOUT,   error_info(ERRTYPECOMM,     "Timeout Reading from Port"))
+    (BADSEQUENCE,   error_info(ERRTYPECOMM,     "Sequence Reject Frame Received... Sequencing Adjusted"))
+    (FRAMEERR,      error_info(ERRTYPECOMM,     "Framing Error"))
+    (BADCRC,        error_info(ERRTYPECOMM,     "Bad CRC on Message"))
+    (BADLENGTH,     error_info(ERRTYPESYSTEM,   "Bad Length Specification"))
+    (BADUA,         error_info(ERRTYPECOMM,     "Bad HDLC UA Frame"))
+    (ERRUNKNOWN,    error_info(ERRTYPESYSTEM,   "Unknown Error"))
+    (BADADDRESS,    error_info(ERRTYPESYSTEM,   "Bad Unique Repeater Address"))
+    (BADROLE,       error_info(ERRTYPESYSTEM,   "Bad Repeater Role Number"))
+    //  40
+    (INVALIDFIX,    error_info(ERRTYPESYSTEM,   "Invalid Repeater Fixed Number"))
+    (INVALIDVOU,    error_info(ERRTYPESYSTEM,   "Invalid Repeater Out Value"))
+    (INVALIDVIN,    error_info(ERRTYPESYSTEM,   "Invalid Repeater In Value"))
+    (INVALIDSTG,    error_info(ERRTYPESYSTEM,   "Invalid Repeater Stages"))
+    (44,            error_info(ERRTYPEUNKNOWN,  "Error table entry not defined"))
+    (BADFILE,       error_info(ERRTYPESYSTEM,   "Bad or Missing File"))
+    (REQACK,        error_info(ERRTYPECOMM,     "REQACK Flag set-- Frame Unexecutable"))
+    (RTFERR,        error_info(ERRTYPESYSTEM,   "Route File Error"))
+    (NOTR,          error_info(ERRTYPESYSTEM,   "No Time Routes Found"))
+    (RTNF,          error_info(ERRTYPESYSTEM,   "Route Not Found"))
+    //  50
+    (FNO,           error_info(ERRTYPESYSTEM,   "File Not Open"))
+    (RONF,          error_info(ERRTYPESYSTEM,   "Role Not Found"))
+    (ROFERR,        error_info(ERRTYPESYSTEM,   "Role File Error"))
+    (DBFERR,        error_info(ERRTYPESYSTEM,   "DataBase File Error"))
+    (IDNF,          error_info(ERRTYPESYSTEM,   "ID Not Found"))
+    (TYFERR,        error_info(ERRTYPESYSTEM,   "Type File Error"))
+    (TYNF,          error_info(ERRTYPESYSTEM,   "Function and/or Type Not Found"))
+    (EWORDRCV,      error_info(ERRTYPEPROTOCOL, "E-Word Received in Returned Message"))
+    (BADFILL,       error_info(ERRTYPESYSTEM,   "Error Filling Fill Area of Command"))
+    (SYSTEM,        error_info(ERRTYPESYSTEM,   "OS or System Error"))
+    //  60
+    (BADPORT,       error_info(ERRTYPESYSTEM,   "Bad Port Specification"))
+    (QUEUE_READ,    error_info(ERRTYPESYSTEM,   "Error Reading Queue"))
+    (QUEUE_WRITE,   error_info(ERRTYPESYSTEM,   "Error Writing Queue"))
+    (MEMORY,        error_info(ERRTYPESYSTEM,   "Error Allocating or Manipulating Memory"))
+    (SEMAPHORE,     error_info(ERRTYPESYSTEM,   "Error Handling Semaphore"))
+    (NODCD,         error_info(ERRTYPECOMM,     "No DCD on Return Message"))
+    (WRITETIMEOUT,  error_info(ERRTYPECOMM,     "Timeout Writing to Port"))
+    (PORTREAD,      error_info(ERRTYPECOMM,     "Error Reading from Port"))
+    (PORTWRITE,     error_info(ERRTYPECOMM,     "Error Writing to Port"))
+    (PIPEWRITE,     error_info(ERRTYPESYSTEM,   "Error Writing to Named Pipe"))
+    //  70
+    (PIPEREAD,      error_info(ERRTYPESYSTEM,   "Error Reading from Named Pipe"))
+    (QUEUEEXEC,     error_info(ERRTYPEPROTOCOL, "Error Executing CCU Queue Entry"))
+    (DLCTIMEOUT,    error_info(ERRTYPEPROTOCOL, "DLC Read Timeout on CCU Queue Entry"))
+    (NOATTEMPT,     error_info(ERRTYPESYSTEM,   "No Attempt Made on CCU Queue Entry"))
+    (ROUTEFAILED,   error_info(ERRTYPEPROTOCOL, "Route Failed on CCU Queue Entry"))
+    (TRANSFAILED,   error_info(ERRTYPEPROTOCOL, "Transponder Communication Failed on CCU Queue Entry"))
+    (JWORDRCV,          error_info(ERRTYPEPROTOCOL, "J-Word Received in Returned Message"))
+    (NOREMOTEPORTER,    error_info(ERRTYPESYSTEM,   "Remote Porter Can Not be Reached"))
+    (REMOTEINHIBITED,   error_info(ERRTYPESYSTEM,   "Communications Attempted With Inhibited Remote"))
+    (QUEUEFLUSHED,      error_info(ERRTYPESYSTEM,   "CCU Queue was Flushed... Entries Lost in Drain"))
+    //  80
+    (PIPEBROKEN,        error_info(ERRTYPESYSTEM,   "Pipe Connect is Broken"))
+    (PIPEWASBROKEN,     error_info(ERRTYPESYSTEM,   "Pipe Connect was Broken"))
+    (PIPEOPEN,          error_info(ERRTYPESYSTEM,   "Pipe Not Opened"))
+    (PORTINHIBITED,     error_info(ERRTYPESYSTEM,   "Communications Attempted Over Inhibited Port"))
+    (ACCUMSNOTSUPPORTED,    error_info(ERRTYPESYSTEM,   "Device Does Not Support Accumulators"))
+    (DEVICEINHIBITED,   error_info(ERRTYPESYSTEM,   "Operation Attempted on Inhibited Device"))
+    (POINTINHIBITED,    error_info(ERRTYPESYSTEM,   "Operation Attempted on Inhibited Point"))
+    (DIALUPERROR,       error_info(ERRTYPECOMM,     "Error Dialing Up Remote"))
+    (WRONGADDRESS,      error_info(ERRTYPECOMM,     "Wrong Unique Address Received"))
+    (TCPCONNECTERROR,   error_info(ERRTYPECOMM,     "Error Connecting to TCP socket"))
+    //  90
+    (TCPWRITEERROR,     error_info(ERRTYPECOMM,     "Error Writing to TCP socket"))
+    (TCPREADERROR,      error_info(ERRTYPECOMM,     "Error Reading from TCP socket"))
+    (ADDRESSERROR,      error_info(ERRTYPESYSTEM,   "Address Does Not Match Expected Value"))
+    (ALPHABUFFERERROR,  error_info(ERRTYPESYSTEM,   "Bad Data Buffer for IED"))
+    (MISCONFIG,         error_info(ERRTYPESYSTEM,   "Missing Required Configuration Entry"))
+    (95,                error_info(ERRTYPEUNKNOWN,  "Error table entry not defined"))
+    (96,                error_info(ERRTYPEUNKNOWN,  "Error table entry not defined"))
+    (97,                error_info(ERRTYPEUNKNOWN,  "Error table entry not defined"))
+    (BADSOCK,           error_info(ERRTYPESYSTEM,   "Bad Nexus Specification"))
+    (SOCKWRITE,         error_info(ERRTYPESYSTEM,   "Error Writing to Nexus"))
+    //  1000
+    (BADBCH,            error_info(ERRTYPEPROTOCOL, "Bad BCH"))
 
-    for(i = 0 ; i < (sizeof(CTIErrors)/ sizeof(ERRSTRUCT)); i++)
-    {
-        CtiErrors.insertKeyAndValue( (CTIErrors[i].Error), CTIErrors[i]);
-    }
-
-    beenInitialized = true;
-    return(NORMAL);
+    (200,                           error_info(ERRTYPESYSTEM,   "Yukon Base Error"))
+    (MemoryError,                   error_info(ERRTYPESYSTEM,   "Memory Error"))
+    (NoMethod,                      error_info(ERRTYPESYSTEM,   "No Method"))
+    (NoRefreshMethod,               error_info(ERRTYPESYSTEM,   "No Refresh Method"))
+    (NoGeneralScanMethod,           error_info(ERRTYPESYSTEM,   "No General Scan Method"))
+    (NoIntegrityScanMethod,         error_info(ERRTYPESYSTEM,   "No Integrity Scan Method"))
+    (NoAccumulatorScanMethod,       error_info(ERRTYPESYSTEM,   "No Accum Scan Method"))
+    (NoProcessResultMethod,         error_info(ERRTYPESYSTEM,   "No Process Result Method"))
+    (NoExecuteRequestMethod,        error_info(ERRTYPESYSTEM,   "No Exec. Req. Method"))
+    (NoResultDecodeMethod,          error_info(ERRTYPESYSTEM,   "No Result Decode Method"))
+    (NoErrorDecodeMethod,           error_info(ERRTYPESYSTEM,   "No ErrorDecode Method"))
+    (NoHandShakeMethod,             error_info(ERRTYPESYSTEM,   "No Handshake Method"))
+    (NoGenerateCmdMethod,           error_info(ERRTYPESYSTEM,   "No Generate Command Method"))
+    (NoDecodeResponseMethod,        error_info(ERRTYPESYSTEM,   "No DecodeResponse Method"))
+    (NoDataCopyMethod,              error_info(ERRTYPESYSTEM,   "No Data Copy Method"))
+    (NotNumeric,                    error_info(ERRTYPESYSTEM,   "Not Numeric"))
+    (NoConfigData,                  error_info(ERRTYPESYSTEM,   "No Config Data Found"))
+    (NoRouteGroupDevice,            error_info(ERRTYPESYSTEM,   "No Route for Group Dev."))
+    (NoRoutesInMacro,               error_info(ERRTYPESYSTEM,   "No Routes for Macro Rte"))
+    (RouteOffsetOutOfRange,         error_info(ERRTYPESYSTEM,   "Macro Offset does not exist in Macro Rte"))
+    (SubRouteIsMacro,               error_info(ERRTYPESYSTEM,   "Macro Offset refers to a macro sub-rte"))
+    (ControlInhibitedOnDevice,      error_info(ERRTYPESYSTEM,   "Device is control disabled"))
+    (ControlInhibitedOnPoint,       error_info(ERRTYPESYSTEM,   "Point is control disabled"))
+    (ControlRequestComplete,        error_info(ERRTYPESYSTEM,   "Control Completed"))
+    (ErrRequestExpired,             error_info(ERRTYPESYSTEM,   "Requested operation expired due to time"))
+    (ErrorNexusRead,                error_info(ERRTYPESYSTEM,   "Error Reading Nexus"))
+    (InThreadTerminated,            error_info(ERRTYPESYSTEM,   "CtiConnection: InThread Terminated"))
+    (OutThreadTerminated,           error_info(ERRTYPESYSTEM,   "CtiConnection: OutThread Terminated"))
+    (InboundSocketBad,              error_info(ERRTYPESYSTEM,   "CtiConnection: Inbound Socket Bad"))
+    (OutboundSocketBad,             error_info(ERRTYPESYSTEM,   "CtiConnection: Outbound Socket Bad"))
+    (ErrPortInitFailed,             error_info(ERRTYPESYSTEM,   "Port Init Failed"))
+    (ErrPortDialupConnect_Port,     error_info(ERRTYPECOMM,     "Dialup connection failed. Port in error"))
+    (ErrPortDialupConnect_Device,   error_info(ERRTYPESYSTEM,   "Dialup connection failed. Device in error"))
+    (ErrPortSimulated,              error_info(ERRTYPEPROTOCOL, "Port is simulated, no inbound data available"))
+    (ErrPortEchoResponse,           error_info(ERRTYPECOMM,     "Port echoed request bytes"))
+    (RETRY_SUBMITTED,               error_info(ERRTYPESYSTEM,   "Retry Resubmitted"))
+    (SCAN_ERROR_DEVICE_INHIBITED,   error_info(ERRTYPESYSTEM,   "Scanned device is inhibited"))
+    (SCAN_ERROR_GLOBAL_ADDRESS,     error_info(ERRTYPESYSTEM,   "Illegal scan of global device"))
+    (SCAN_ERROR_DEVICE_WINDOW_CLOSED,error_info(ERRTYPESYSTEM,  "Device window is closed"))
+    (ErrorPageRS,                   error_info(ERRTYPESYSTEM,   "Invalid transaction, typ. bad pager id or password"))
+    (ErrorPageNAK,                  error_info(ERRTYPESYSTEM,   "TAP Repeat Requested, but retries exhausted"))
+    (ErrorPageNoResponse,           error_info(ERRTYPESYSTEM,   "No response from TAP terminal"))
+    (ErrorHttpResponse,             error_info(ERRTYPESYSTEM,   "Invalid or unsuccessful HTTP response"))
+    (ErrorXMLParser,                error_info(ERRTYPESYSTEM,   "XML parser initialization failed"))
+    (ErrorWctpResponse,             error_info(ERRTYPESYSTEM,   "Invalid WCTP response format"))
+    (ErrorWctpTimeout,              error_info(ERRTYPESYSTEM,   "Time out when receiving WCTP response"))
+    (ErrorWctp300Series,            error_info(ERRTYPESYSTEM,   "Protocol Error 300 Series"))
+    (ErrorWctp400Series,            error_info(ERRTYPESYSTEM,   "Protocol Error 400 Series"))
+    (ErrorWctp500Series,            error_info(ERRTYPESYSTEM,   "Protocol Error 500 Series"))
+    (ErrorWctp600Series,            error_info(ERRTYPESYSTEM,   "Protocol Error 600 Series"))
+    (ErrorQueuePurged,              error_info(ERRTYPESYSTEM,   "Queue purged to limit memory usage"))
+    (ErrorRequestCancelled,         error_info(ERRTYPESYSTEM,   "Request was cancelled"))
+    (ErrorInvalidTimestamp,         error_info(ERRTYPESYSTEM,   "Invalid time returned OR time outside of requested range."))
+    (ErrorInvalidChannel,           error_info(ERRTYPESYSTEM,   "Invalid channel returned by daily read."))
+    (ErrorDeviceIPUnknown,          error_info(ERRTYPESYSTEM,   "Device has not reported in, outbound IP unknown"))
+    (ErrorMACSTimeout,              error_info(ERRTYPESYSTEM,   "MACS timed out on this message"))
+    (ErrorInvalidFrozenReadingParity,error_info(ERRTYPEPROTOCOL, "The freeze check bit in the frozen reading does not match the last recorded freeze sent to the device."))
+    (ErrorInvalidFrozenPeakTimestamp,error_info(ERRTYPEPROTOCOL, "The frozen peak timestamp is outside of the expected range."))
+    (ErrorInvalidFreezeCounter,     error_info(ERRTYPEPROTOCOL, "The freeze counter is less than the expected value."))
+    (ErrorInvalidData,              error_info(ERRTYPEPROTOCOL, "Invalid data was was received for one or more data points."))
+    (ErrorFreezeNotRecorded,        error_info(ERRTYPEPROTOCOL, "There is no record of the last freeze sent to this device."))
+    (ErrorInvalidRequest,           error_info(ERRTYPESYSTEM,   "Invalid/Incomplete Request"))
+    (ErrorInvalidSSPEC,             error_info(ERRTYPESYSTEM,   "Insufficient SSPEC/Firmware Revision"))
+    (ErrorVerifySSPEC,              error_info(ERRTYPESYSTEM,   "Verify SSPEC/Firmware Revision"))
+    (ErrorTransmitterBusy,          error_info(ERRTYPEPROTOCOL, "Transmitter is busy"))
+    (ErrorUnsupportedDevice,        error_info(ERRTYPESYSTEM,   "Device Not Supported"))
+    (ErrorPortNotInitialized,       error_info(ERRTYPECOMM,     "Port not initialized"))
+    (ErrorCommandAlreadyInProgress, error_info(ERRTYPESYSTEM,   "Command already in progress"))
+    (ErrorDeviceNotConnected,       error_info(ERRTYPESYSTEM,   "Device is not connected"))
+    (ErrorNoDisconnect,             error_info(ERRTYPESYSTEM,   "No disconnect configured on this device"))
+    (ErrorTransmitterOverheating,   error_info(ERRTYPEPROTOCOL, "Transmitter is overheating"))
+    (ErrorNeedsChannelConfig,       error_info(ERRTYPESYSTEM,   "Command needs channel config to continue."))
+    (ErrorInvalidStartDate,         error_info(ERRTYPESYSTEM,   "Command requires a valid date."))
+    (ErrorDnsLookupFailed,          error_info(ERRTYPESYSTEM,   "Failed to resolve an IP for the given DNS name."))
+    (ErrorPointLookupFailed,        error_info(ERRTYPESYSTEM,   "Failed to find a point for the given device."))
+    (UnknownError,                  error_info(ERRTYPESYSTEM,   "Unknown Error"))
+    ;
 }
 
 
-/* Routine to retrive and print an error message in C */
-IM_EX_CTIBASE INT PrintError (USHORT Error)
+//  Returns the error's description
+IM_EX_CTIBASE std::string GetErrorString(int errorNumber)
 {
-    ERRSTRUCT ESt;
+    ErrorLookup::const_iterator itr = CtiErrors.find(errorNumber);
 
-    if( !CtiErrors.findValue( Error, ESt) )
+    if( itr != CtiErrors.end() )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " Error in Error Message Routine with error " << Error << endl;
-        }
-        return(!NORMAL);
+        return itr->second.description;
     }
 
-    /* and print it */
-    printf ("Error %04hd:  %s\n", Error, ESt.ErrorMessage);
-
-    return(NORMAL);
-}
-
-IM_EX_CTIBASE string FormatError(USHORT Error)
-{
-    char err[256];
-
-    GetErrorString(Error, err);
-
-    return string(err);
-}
-
-/* Routine to retrive and return an error message's text */
-IM_EX_CTIBASE INT GetErrorString (USHORT Error, char *ErrStr)
-{
-    ERRSTRUCT ESt;
-    SHORT i;
-
-    ESt.Error = Error;
-
-    GetErrorStruct( ESt );
-
-    /* and copy it */
-    strcpy(ErrStr, ESt.ErrorMessage);
-
-    return(NORMAL);
+    return "Unknown Error";
 }
 
 
-/* routine to retrieve error messages from error message file */
-IM_EX_CTIBASE INT GetErrorStruct(ERRSTRUCT &ESt)
+//  Returns the error's type
+IM_EX_CTIBASE ErrorTypes GetErrorType(int errorNumber)
 {
-    INT status = NORMAL;
-    USHORT err = ESt.Error;
+    ErrorLookup::const_iterator itr = CtiErrors.find(errorNumber);
 
-    if(!beenInitialized)
+    if( itr != CtiErrors.end() )
     {
-        InitError();
+        return itr->second.type;
     }
 
-    if( !CtiErrors.findValue( err, ESt ) )
-    {
-        SetUnknown(ESt);
-        status = !NORMAL;
-    }
-
-    return(status);
+    return ERRTYPESYSTEM;
 }
 
-
-/* routine to retrieve error messages from error message file */
-IM_EX_CTIBASE CHAR* GetError (INT err)
-{
-
-    USHORT enumber = (USHORT) err;
-    if(!beenInitialized)
-    {
-        InitError();
-    }
-
-    if( CtiErrors.contains( enumber ) )
-    {
-        // It is in there
-        return CtiErrors[ enumber ].ErrorMessage;
-    }
-    else if(CtiErrors.contains( ERRUNKNOWN ))
-    {
-        return CtiErrors[ ERRUNKNOWN ].ErrorMessage;
-    }
-    else
-    {
-        return NULL;
-    }
-
-    return NULL;
-}
-
-/* routine to retrieve error messages from error message file */
-IM_EX_CTIBASE INT GetErrorType(INT err)
-{
-    USHORT enumber = (USHORT) err;
-    if(!beenInitialized)
-    {
-        InitError();
-    }
-
-    if( CtiErrors.contains( enumber ) )
-    {
-        return CtiErrors[ enumber ].Type;
-    }
-    else if(CtiErrors.contains( ERRUNKNOWN ))
-    {
-        return CtiErrors[ ERRUNKNOWN ].Type;
-    }
-
-    return 0;
-}
-
-INT SetUnknown( ERRSTRUCT &ESt )
-{
-    strcpy(ESt.ErrorMessage, UNKNOWN_TXT);
-    ESt.Type          = UNKNOWN_TYPE;
-
-    return NORMAL;
-}

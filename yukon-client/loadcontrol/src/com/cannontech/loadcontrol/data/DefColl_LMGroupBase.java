@@ -4,6 +4,7 @@ package com.cannontech.loadcontrol.data;
  * This type was created in VisualAge.
  */
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.messaging.message.loadcontrol.data.GroupBase;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -33,7 +34,7 @@ public com.roguewave.tools.v2_0.Comparator getComparator()
 	{
 		public int compare(Object x, Object y) 
 		{
-			return (int) (((LMGroupBase)x).getYukonID().intValue() - ((LMGroupBase)y).getYukonID().intValue() );
+			return (int) (((GroupBase)x).getYukonId().intValue() - ((GroupBase)y).getYukonId().intValue() );
 		}
 	};
 	
@@ -63,16 +64,16 @@ public Class getJavaClass()
 {
 	Exception e = new Exception("com.cannontech.loadcontrol.data.DefineCollectableLMProgramBase.getJavaClass() should Never be called");
 	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	return LMGroupBase.class;
+	return GroupBase.class;
 }
 /**
  * restoreGuts method comment.
  */
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMGroupBase lmGroupBase = (LMGroupBase) obj;
+	GroupBase lmGroupBase = (GroupBase) obj;
 
-	lmGroupBase.setYukonID( new Integer((int)vstr.extractUnsignedInt()) );
+	lmGroupBase.setYukonId( new Integer((int)vstr.extractUnsignedInt()) );
 	String yukonCategoryStr = (String) vstr.restoreObject(SimpleMappings.CString);	// No longer used, but still needs to be restored. Replaced by PaoType.paoCategory
 	String yukonClassStr = (String) vstr.restoreObject(SimpleMappings.CString);	// No longer used, but still needs to be restored. Replaced by PaoType.paoCategory
 	lmGroupBase.setYukonName( (String) vstr.restoreObject(SimpleMappings.CString) );

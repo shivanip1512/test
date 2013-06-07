@@ -19,11 +19,11 @@ import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
-import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
-import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.ConnectionException;
-import com.cannontech.message.util.TimeoutException;
+import com.cannontech.messaging.message.loadcontrol.data.Program;
+import com.cannontech.messaging.util.BadServerResponseException;
+import com.cannontech.messaging.util.TimeoutException;
 import com.cannontech.user.YukonUserContext;
 
 public class ProgramServiceAdapter implements ProgramService {
@@ -34,17 +34,17 @@ public class ProgramServiceAdapter implements ProgramService {
     }
 
     @Override
-    public LMProgramBase getProgramForPao(YukonPao from) {
+    public Program getProgramForPao(YukonPao from) {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
-    public LMProgramBase getProgramForPaoSafe(YukonPao from) {
+    public Program getProgramForPaoSafe(YukonPao from) {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
-    public DatedObject<LMProgramBase> findDatedProgram(int programId) {
+    public DatedObject<Program> findDatedProgram(int programId) {
         throw new UnsupportedOperationException("Not Implemented");
     }
 

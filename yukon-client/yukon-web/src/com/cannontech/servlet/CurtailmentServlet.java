@@ -47,19 +47,19 @@ private boolean doAck(String username, int customerID, int curtailEventID, java.
 
 	LCConnectionServlet connServlet = (LCConnectionServlet) getServletContext().getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
 
-	com.cannontech.loadcontrol.messages.LMCurtailmentAcknowledgeMsg msg =
-	 	new com.cannontech.loadcontrol.messages.LMCurtailmentAcknowledgeMsg();
+	com.cannontech.messaging.message.loadcontrol.CurtailmentAcknowledgeMessage msg =
+	 	new com.cannontech.messaging.message.loadcontrol.CurtailmentAcknowledgeMessage();
 
-	msg.setAcknowledgeStatus(com.cannontech.loadcontrol.messages.LMCurtailmentAcknowledgeMsg.ACKNOWLEDGED);
+	msg.setAcknowledgeStatus(com.cannontech.messaging.message.loadcontrol.CurtailmentAcknowledgeMessage.ACKNOWLEDGED);
 	
 	if( initials != null )
 		msg.setNameOfAckPerson(initials);
 	else		
 		msg.setNameOfAckPerson("-");
 		
-	msg.setCurtailReferenceID(curtailEventID);
+	msg.setCurtailReferenceId(curtailEventID);
 	msg.setIpAddressOfAckUser(clientInfo);
-	msg.setYukonID(customerID);
+	msg.setYukonId(customerID);
 	msg.setUserIdName(username);
 	msg.setCurtailmentNotes("-");
 		
@@ -69,9 +69,9 @@ private boolean doAck(String username, int customerID, int curtailEventID, java.
  	{
  		CTILogger.debug("Sending ack");
 		CTILogger.debug("name: " + msg.getNameOfAckPerson() );
-		CTILogger.debug("ref id: " + msg.getCurtailReferenceID() );
+		CTILogger.debug("ref id: " + msg.getCurtailReferenceId() );
 		CTILogger.debug("ip addy: " + msg.getIpAddressOfAckUser() );
-		CTILogger.debug("dev id: " + msg.getYukonID() );
+		CTILogger.debug("dev id: " + msg.getYukonId() );
 		CTILogger.debug("username: " + msg.getUserName() );
 		CTILogger.debug("notes: " + msg.getUserName() );
 	 	

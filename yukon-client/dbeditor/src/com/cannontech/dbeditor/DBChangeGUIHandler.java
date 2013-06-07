@@ -5,8 +5,8 @@ import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 
 /**
  * @author rneuharth
@@ -18,13 +18,13 @@ public class DBChangeGUIHandler {
 	private StringBuffer txtMsg = null;
 
 	public static final int[] HANDLED_DBS =	{ 
-		DBChangeMsg.CHANGE_PAO_DB,
-		DBChangeMsg.CHANGE_POINT_DB,
-		DBChangeMsg.CHANGE_STATE_GROUP_DB,
-		DBChangeMsg.CHANGE_GRAPH_DB,
-		DBChangeMsg.CHANGE_NOTIFICATION_GROUP_DB,
-		DBChangeMsg.CHANGE_ALARM_CATEGORY_DB,
-		DBChangeMsg.CHANGE_CONTACT_DB
+		DBChangeMessage.CHANGE_PAO_DB,
+		DBChangeMessage.CHANGE_POINT_DB,
+		DBChangeMessage.CHANGE_STATE_GROUP_DB,
+		DBChangeMessage.CHANGE_GRAPH_DB,
+		DBChangeMessage.CHANGE_NOTIFICATION_GROUP_DB,
+		DBChangeMessage.CHANGE_ALARM_CATEGORY_DB,
+		DBChangeMessage.CHANGE_CONTACT_DB
 	};
 		
 	/**
@@ -45,7 +45,7 @@ public class DBChangeGUIHandler {
 		return false;
 	}
 	
-	public void handleGUIChange( DBChangeMsg msg ) {
+	public void handleGUIChange( DBChangeMessage msg ) {
 
 	    //Check change type first, only create lite object from panel if change type is one we care about.
         if( (msg.getDbChangeType() == DbChangeType.DELETE || 

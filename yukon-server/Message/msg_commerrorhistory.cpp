@@ -21,22 +21,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "logger.h"
 #include "msg_commerrorhistory.h"
 
-RWDEFINE_COLLECTABLE( CtiCommErrorHistoryMsg, MSG_COMMERRORHISTORY );
-
-void CtiCommErrorHistoryMsg::saveGuts(RWvostream &aStream) const
-{
-    Inherited::saveGuts(aStream);
-    aStream << getCommErrorId() << getPAOId() << getDateTime() << getErrorType()
-            << getErrorNumber() << getCommand() << getOutMessage() << getInMessage();
-}
-
-void CtiCommErrorHistoryMsg::restoreGuts(RWvistream& aStream)
-{
-    Inherited::restoreGuts(aStream);
-
-    aStream >> _commErrorId >> _paoId >> _dateTime >> _errorType >> _errorNumber >> _command
-            >> _outMessage >> _inMessage;
-}
+DEFINE_COLLECTABLE( CtiCommErrorHistoryMsg, MSG_COMMERRORHISTORY );
 
 long CtiCommErrorHistoryMsg::getCommErrorId() const
 {

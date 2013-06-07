@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.message.capcontrol.streamable.VoltageRegulatorFlags;
+import com.cannontech.messaging.message.capcontrol.streamable.VoltageRegulatorFlags;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.capcontrol.VoltageRegulatorUpdaterTypeEnum;
 

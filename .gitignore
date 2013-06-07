@@ -56,6 +56,7 @@ yukon-client/monitor/build
 yukon-client/multispeak/build
 yukon-client/notification/bin
 yukon-client/notification/build
+yukon-client/openadr-web/build
 yukon-client/palm/.cvsignore
 yukon-client/palm/bin
 yukon-client/palm/build

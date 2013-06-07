@@ -33,6 +33,8 @@ using Cti::CapControl::createBankCloseRequest;
 using Cti::CapControl::createBankFlipRequest;
 using Cti::CapControl::setVariableIfDifferent;
 using Cti::CapControl::sendCapControlOperationMessage;
+using Cti::CapControl::EventLogEntry;
+using Cti::CapControl::EventLogEntries;
 using namespace Cti::Messaging::CapControl;
 using std::endl;
 
@@ -54,7 +56,7 @@ extern bool _RETRY_ADJUST_LAST_OP_TIME;
 extern unsigned long _REFUSAL_TIMEOUT;
 extern bool _USE_PHASE_INDICATORS;
 
-RWDEFINE_COLLECTABLE( CtiCCFeeder, CTICCFEEDER_ID )
+DEFINE_COLLECTABLE( CtiCCFeeder, CTICCFEEDER_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -255,6 +257,11 @@ CtiCCConfirmationStats& CtiCCFeeder::getConfirmationStats()
 }
 
 CtiCCOriginalParent& CtiCCFeeder::getOriginalParent()
+{
+    return _originalParent;
+}
+
+const CtiCCOriginalParent& CtiCCFeeder::getOriginalParent() const
 {
     return _originalParent;
 }
@@ -836,6 +843,13 @@ CtiCCCapBank_SVector& CtiCCFeeder::getCCCapBanks()
 {
     return _cccapbanks;
 }
+
+const CtiCCCapBank_SVector& CtiCCFeeder::getCCCapBanks() const
+{
+    return _cccapbanks;
+}
+
+
 
 std::list<int> CtiCCFeeder::getAllCapBankIds()
 {
@@ -1536,7 +1550,7 @@ bool CtiCCFeeder::removeMaxKvar( long bankId )
     Creates a CtiRequestMsg to open the next cap bank to increase the
     var level for a strategy.
 ---------------------------------------------------------------------------*/
-CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
+CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
                                                      string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue)
 {
     if( capBank == NULL )
@@ -1596,7 +1610,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
         string stateInfo = capBank->getControlStatusQualityString();
         long stationId, areaId, spAreaId;
         store->getFeederParentInfo(this, spAreaId, areaId, stationId);
-        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0,
+        ccEvents.push_back(EventLogEntry(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0,
                                                 capBank->getIpAddress(), capBank->getActionId(), stateInfo, varAValue, varBValue, varCValue));
         sendCapControlOperationMessage( CapControlOperationMessage::createOpenBankMessage( capBank->getPaoId(), CtiTime() ) );
     }
@@ -1614,7 +1628,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
 
         long stationId, areaId, spAreaId;
         store->getFeederParentInfo(this, spAreaId, areaId, stationId);
-        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control"));
+        ccEvents.push_back(EventLogEntry(0, capBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control"));
     }
 
     if  (capBank->getTwoWayPoints() != NULL)
@@ -1639,7 +1653,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
     return reqMsg.release();
 }
 
-CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
+CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
                                                                  string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue )
 {
     if( capBank == NULL )
@@ -1699,7 +1713,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
         store->getFeederParentInfo(this, spAreaId, areaId, stationId);
         capBank->setActionId( CCEventActionIdGen(capBank->getStatusPointId()) + 1);
         string stateInfo = capBank->getControlStatusQualityString();
-        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0,
+        ccEvents.push_back(EventLogEntry(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0,
                                                 capBank->getIpAddress(), capBank->getActionId(), stateInfo, varAValue, varBValue, varCValue));
     }
     else
@@ -1716,7 +1730,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
 
         long stationId, areaId, spAreaId;
         store->getFeederParentInfo(this, spAreaId, areaId, stationId);
-        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control verification"));
+        ccEvents.push_back(EventLogEntry(0, capBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control verification"));
     }
 
     std::auto_ptr<CtiRequestMsg> reqMsg;
@@ -1734,7 +1748,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
     return reqMsg.release();
 }
 
-CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
+CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
                                                                  string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue )
 {
     if( capBank == NULL )
@@ -1794,7 +1808,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
         store->getFeederParentInfo(this, spAreaId, areaId, stationId);
         capBank->setActionId( CCEventActionIdGen(capBank->getStatusPointId()) + 1);
         string stateInfo = capBank->getControlStatusQualityString();
-        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0,
+        ccEvents.push_back(EventLogEntry(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0,
                                                 capBank->getIpAddress(), capBank->getActionId(), stateInfo, varAValue, varBValue, varCValue));
     }
     else
@@ -1811,7 +1825,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
 
         long stationId, areaId, spAreaId;
         store->getFeederParentInfo(this, spAreaId, areaId, stationId);
-        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control verification"));
+        ccEvents.push_back(EventLogEntry(0, capBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control verification"));
     }
 
     std::auto_ptr<CtiRequestMsg> reqMsg;
@@ -1838,7 +1852,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
 ---------------------------------------------------------------------------*/
 
 
-CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
+CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
                                                      string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue)
 {
     if( capBank == NULL )
@@ -1897,7 +1911,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
         store->getFeederParentInfo(this, spAreaId, areaId, stationId);
         capBank->setActionId( CCEventActionIdGen(capBank->getStatusPointId()) + 1);
         string stateInfo = capBank->getControlStatusQualityString();
-        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0,
+        ccEvents.push_back(EventLogEntry(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0,
                                                 capBank->getIpAddress(), capBank->getActionId(), stateInfo, varAValue, varBValue, varCValue));
 
         sendCapControlOperationMessage( CapControlOperationMessage::createCloseBankMessage( capBank->getPaoId(), CtiTime() ) );
@@ -1916,7 +1930,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
 
         long stationId, areaId, spAreaId;
         store->getFeederParentInfo(this, spAreaId, areaId, stationId);
-        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control"));
+        ccEvents.push_back(EventLogEntry(0, capBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control"));
     }
 
     if  (capBank->getTwoWayPoints() != NULL)
@@ -1947,7 +1961,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
     Creates a CtiRequestMsg to close the next cap bank to decrease the
     var level for a strategy.
 ---------------------------------------------------------------------------*/
-CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, int action, string typeOfControl)
+CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, int action, string typeOfControl)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
@@ -2016,7 +2030,7 @@ CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMul
         store->getFeederParentInfo(this, spAreaId, areaId, stationId);
         capBank->setActionId( CCEventActionIdGen(capBank->getStatusPointId()) + 1);
         string stateInfo = capBank->getControlStatusQualityString();
-        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0, capBank->getIpAddress(), capBank->getActionId(), stateInfo));
+        ccEvents.push_back(EventLogEntry(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0, capBank->getIpAddress(), capBank->getActionId(), stateInfo));
     }
     else
     {
@@ -2032,7 +2046,7 @@ CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMul
 
         long stationId, areaId, spAreaId;
         store->getFeederParentInfo(this, spAreaId, areaId, stationId);
-        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control"));
+        ccEvents.push_back(EventLogEntry(0, capBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control"));
     }
 
     if  (capBank->getTwoWayPoints() != NULL)
@@ -2065,7 +2079,7 @@ CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMul
     return reqMsg.release();
 }
 
-void CtiCCFeeder::createForcedVarConfirmation(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string typeOfControl)
+void CtiCCFeeder::createForcedVarConfirmation(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, string typeOfControl)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
@@ -2078,7 +2092,7 @@ void CtiCCFeeder::createForcedVarConfirmation(CtiCCCapBank* capBank, CtiMultiMsg
     long stationId, areaId, spAreaId;
     store->getFeederParentInfo(this, spAreaId, areaId, stationId);
     string stateInfo = capBank->getControlStatusQualityString();
-    ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capBankStateUpdate, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0, capBank->getIpAddress(), capBank->getActionId(), stateInfo));
+    ccEvents.push_back(EventLogEntry(0, capBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capBankStateUpdate, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0, capBank->getIpAddress(), capBank->getActionId(), stateInfo));
 
 }
 
@@ -2384,7 +2398,7 @@ void CtiCCFeeder::figureAndSetTargetVarValue(const string& controlMethod, const 
 
 
 ---------------------------------------------------------------------------*/
-bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, bool peakTimeFlag, long decimalPlaces, const string& controlUnits, bool dailyMaxOpsHitFlag)
+bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages, bool peakTimeFlag, long decimalPlaces, const string& controlUnits, bool dailyMaxOpsHitFlag)
 {
     bool returnBoolean = false;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -2721,7 +2735,7 @@ bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
     return returnBoolean;
 }
 
-bool CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, long minConfirmPercent, long failurePercent,
+bool CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, long minConfirmPercent, long failurePercent,
                                              double varValueBeforeControl, double currentVarLoadPointValue, long currentVarPointQuality,
                                              double varAValue, double varBValue, double varCValue, const CtiRegression& reg)
 {
@@ -3019,7 +3033,7 @@ bool CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
 
     Returns a boolean if the current day of the week can be a peak day
 ---------------------------------------------------------------------------*/
-bool CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, long minConfirmPercent,
+bool CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, long minConfirmPercent,
                                                      long failurePercent, long currentVarPointQuality, double varAValueBeforeControl,
                                                      double varBValueBeforeControl, double varCValueBeforeControl,
                                                      double varAValue, double varBValue, double varCValue,
@@ -3325,7 +3339,7 @@ bool CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
     return returnBoolean;
 }
 
-bool CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, long minConfirmPercent, long failurePercent,
+bool CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, long minConfirmPercent, long failurePercent,
                                                   double varAValue, double varBValue, double varCValue)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -3668,7 +3682,7 @@ bool CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
     return returnBoolean;
 }
 
-bool CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, long minConfirmPercent, long failPercent)
+bool CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, long minConfirmPercent, long failPercent)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
@@ -4047,7 +4061,7 @@ bool CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
 }
 
 
-bool CtiCCFeeder::startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
+bool CtiCCFeeder::startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
 {
     //get CapBank to perform verification on...subbus stores, currentCapBankToVerifyId
 
@@ -4105,7 +4119,7 @@ bool CtiCCFeeder::startVerificationOnCapBank(const CtiTime& currentDateTime, Cti
     return retVal;
 }
 
-CtiRequestMsg*  CtiCCFeeder::createCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
+CtiRequestMsg*  CtiCCFeeder::createCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
                                       CtiMultiMsg_vec& pilMessages, CtiCCCapBank* currentCapBank, int control)
 {
 
@@ -4150,7 +4164,7 @@ CtiRequestMsg*  CtiCCFeeder::createCapBankVerificationControl(const CtiTime& cur
 
 
 
-bool CtiCCFeeder::sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
+bool CtiCCFeeder::sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
 {
     bool retVal = false;
     CtiRequestMsg* request = NULL;
@@ -4621,7 +4635,7 @@ bool CtiCCFeeder::isVerificationAlreadyControlled(long minConfirmPercent, long q
 
     Returns a .
 ---------------------------------------------------------------------------*/
-bool CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, long maxConfirmTime)
+bool CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages, long maxConfirmTime)
 {
     bool returnBoolean = false;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -4661,7 +4675,7 @@ bool CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
 
                             long stationId, areaId, spAreaId;
                             store->getFeederParentInfo(this, spAreaId, areaId, stationId);
-                            ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlCommandRetrySent, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control"));
+                            ccEvents.push_back(EventLogEntry(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlCommandRetrySent, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control"));
                         }
                         else
                         {
@@ -4704,7 +4718,7 @@ bool CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
 
                             long stationId, areaId, spAreaId;
                             store->getFeederParentInfo(this, spAreaId, areaId, stationId);
-                            ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlCommandRetrySent, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control"));
+                            ccEvents.push_back(EventLogEntry(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlCommandRetrySent, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control"));
                         }
                         else
                         {
@@ -4742,7 +4756,7 @@ bool CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
     return returnBoolean;
 }
 
-bool CtiCCFeeder::checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, long maxConfirmTime, long sendRetries)
+bool CtiCCFeeder::checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages, long maxConfirmTime, long sendRetries)
 {
    bool returnBoolean = false;
    if (getVerificationFlag() && getPerformingVerificationFlag() &&
@@ -5140,7 +5154,7 @@ const string& CtiCCFeeder::getSolution() const
 
 }
 
-bool CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec& pilMessages)
+bool CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMultiMsg_vec &pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
 {
     bool retVal = false;
     CtiCCCapBank* bestBank = NULL;
@@ -6012,87 +6026,6 @@ void CtiCCFeeder::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTi
 }
 
 /*---------------------------------------------------------------------------
-    saveGuts
-
-    Save self's state onto the given stream
----------------------------------------------------------------------------*/
-void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
-{
-    RWCollectable::saveGuts(ostrm);
-    CapControlPao::saveGuts(ostrm);
-
-    double temppowerfactorvalue = _powerfactorvalue;
-    double tempestimatedpowerfactorvalue = _estimatedpowerfactorvalue;
-
-    if( _powerfactorvalue > 1 )
-    {
-        temppowerfactorvalue = _powerfactorvalue - 2;
-    }
-    if( _estimatedpowerfactorvalue > 1 )
-    {
-        tempestimatedpowerfactorvalue = _estimatedpowerfactorvalue - 2;
-    }
-
-    // make strategy values returned through getPeak...()/getOffPeak...() good for IVVC too.
-    getStrategy()->setPeakTimeFlag(_peakTimeFlag);
-
-    ostrm   << _parentId
-            << getStrategy()->getMaxDailyOperation()
-            << getStrategy()->getMaxOperationDisableFlag()
-            << _currentvarloadpointid
-            << _currentvarloadpointvalue
-            << _currentwattloadpointid
-            << _currentwattloadpointvalue
-            << _maplocationid
-            << _displayorder
-            << _newpointdatareceivedflag
-            << _lastcurrentvarpointupdatetime
-            << _estimatedvarloadpointid
-            << _estimatedvarloadpointvalue
-            << _dailyoperationsanalogpointid
-            << _powerfactorpointid
-            << _estimatedpowerfactorpointid
-            << _currentdailyoperations
-            << (_recentlycontrolledflag || _performingVerificationFlag)
-            << _lastoperationtime
-            << _varvaluebeforecontrol
-            << temppowerfactorvalue
-            << tempestimatedpowerfactorvalue
-            << _currentvarpointquality
-            << _waivecontrolflag
-            << getStrategy()->getControlUnits()
-            << _decimalPlaces
-            << _peakTimeFlag
-            << getStrategy()->getPeakLag()
-            << getStrategy()->getOffPeakLag()
-            << getStrategy()->getPeakLead()
-            << getStrategy()->getOffPeakLead()
-            << _currentvoltloadpointid
-            << _currentvoltloadpointvalue
-            << _currentwattpointquality
-            << _currentvoltpointquality
-            << _targetvarvalue
-            << _solution
-            << _ovUvDisabledFlag
-            << getStrategy()->getPeakPFSetPoint()
-            << getStrategy()->getOffPeakPFSetPoint()
-            << getStrategy()->getControlMethod()
-            << _phaseAvalue
-            << _phaseBvalue
-            << _phaseCvalue
-            << _likeDayControlFlag
-            << _usePhaseData
-            << _originalParent.getOriginalParentId();
-
-
-    ostrm << _cccapbanks.size();
-    for(long i=0;i<_cccapbanks.size();i++)
-    {
-        ostrm << (CtiCCCapBank*)_cccapbanks[i];
-    }
-}
-
-/*---------------------------------------------------------------------------
     operator=
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
@@ -6764,7 +6697,7 @@ CtiCCCapBank* CtiCCFeeder::getMonitorPointParentBank(CtiCCMonitorPointPtr point)
 }
 
 bool CtiCCFeeder::checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime,
-                        CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
+                        CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
 {
     bool retVal = false;
     CtiRequestMsg* request = NULL;
@@ -7061,7 +6994,7 @@ string CtiCCFeeder::getPhaseIndicatorString(long capState, double ratioA, double
     return retStr;
 }
 
-void CtiCCFeeder::createCannotControlBankText(string text, string commandString, CtiMultiMsg_vec& ccEvents)
+void CtiCCFeeder::createCannotControlBankText(string text, string commandString, EventLogEntries &ccEvents)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
@@ -7090,7 +7023,7 @@ void CtiCCFeeder::createCannotControlBankText(string text, string commandString,
 
         long stationId, areaId, spAreaId;
         store->getFeederParentInfo(this, spAreaId, areaId, stationId);
-        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
+        ccEvents.push_back(EventLogEntry(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
     }
 
 }

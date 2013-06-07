@@ -11,7 +11,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.capcontrol.CCEventLog;
-import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.messaging.message.capcontrol.streamable.StreamableCapObject;
 
 public interface CapControlDao {
     

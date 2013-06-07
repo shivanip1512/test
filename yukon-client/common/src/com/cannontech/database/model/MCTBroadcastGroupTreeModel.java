@@ -95,7 +95,7 @@ public void update() {
 		for( int i = 0; i < broadcastersList.size(); i++ )
 		{
 			DBTreeNode broadcastGroupNode = new DBTreeNode( broadcastersList.get(i));	
-			mctBroadcastID =  ((com.cannontech.database.data.lite.LiteYukonPAObject)broadcastersList.get(i)).getYukonID();
+			mctBroadcastID =  ((com.cannontech.database.data.lite.LiteYukonPAObject)broadcastersList.get(i)).getYukonId();
 
 			try
 			{
@@ -103,7 +103,7 @@ public void update() {
 				
 				for( int j = 0; j < mctList.size(); j++ )
 				{
-					if(mctIDIntList.contains(((com.cannontech.database.data.lite.LiteYukonPAObject)mctList.elementAt(j)).getYukonID()))
+					if(mctIDIntList.contains(((com.cannontech.database.data.lite.LiteYukonPAObject)mctList.elementAt(j)).getYukonId()))
 						{
 							broadcastGroupNode.add( new DBTreeNode( ((com.cannontech.database.data.lite.LiteYukonPAObject)mctList.elementAt(j) )));
 						}

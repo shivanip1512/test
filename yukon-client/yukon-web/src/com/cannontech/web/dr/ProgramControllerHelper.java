@@ -43,7 +43,7 @@ import com.cannontech.dr.program.filter.StateFilter.FilteredState;
 import com.cannontech.dr.program.model.ProgramNameField;
 import com.cannontech.dr.program.service.ProgramFieldService;
 import com.cannontech.dr.program.service.ProgramService;
-import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.messaging.message.loadcontrol.data.Program;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.util.ListBackingBean;
@@ -209,7 +209,7 @@ public class ProgramControllerHelper {
         if (!StringUtils.isEmpty(backingBean.getSort())) {
             // If there is a custom sorter, add it
             
-            DemandResponseBackingField<LMProgramBase> sortField = 
+            DemandResponseBackingField<Program> sortField = 
                 programFieldService.getBackingField(backingBean.getSort());
             
             sorter = sortField.getSorter(userContext);

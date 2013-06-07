@@ -39,9 +39,9 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.user.UserGroup;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.messaging.util.DbChangeManager;
 import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
@@ -78,9 +78,9 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	    systemEventLogService.usernameChanged(changingUser, modifiedUser.getUsername(), newUsername);
 	    
 	    dbChangeManager.processDbChange(modifiedUserId,
-                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
-                                        DBChangeMsg.CAT_YUKON_USER,
-                                        DBChangeMsg.CAT_YUKON_USER,
+                                        DBChangeMessage.CHANGE_YUKON_USER_DB,
+                                        DBChangeMessage.CAT_YUKON_USER,
+                                        DBChangeMessage.CAT_YUKON_USER,
                                         DbChangeType.UPDATE);
 	}
 	
@@ -105,9 +105,9 @@ public class YukonUserDaoImpl implements YukonUserDao {
 
 	    DbChangeType changeType = update ? DbChangeType.UPDATE : DbChangeType.ADD;
 	    dbChangeManager.processDbChange(user.getUserID(),
-                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
-                                        DBChangeMsg.CAT_YUKON_USER,
-                                        DBChangeMsg.CAT_YUKON_USER,
+                                        DBChangeMessage.CHANGE_YUKON_USER_DB,
+                                        DBChangeMessage.CAT_YUKON_USER,
+                                        DBChangeMessage.CAT_YUKON_USER,
                                         changeType);
     }
 	
@@ -297,9 +297,9 @@ public class YukonUserDaoImpl implements YukonUserDao {
         yukonJdbcTemplate.update(deleteYukonUser, userId);
         
         dbChangeManager.processDbChange(userId,
-                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
-                                        DBChangeMsg.CAT_YUKON_USER,
-                                        DBChangeMsg.CAT_YUKON_USER,
+                                        DBChangeMessage.CHANGE_YUKON_USER_DB,
+                                        DBChangeMessage.CAT_YUKON_USER,
+                                        DBChangeMessage.CAT_YUKON_USER,
                                         DbChangeType.DELETE);       
 	}
 
@@ -354,9 +354,9 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	    yukonJdbcTemplate.update(sql);
 	    
 	    dbChangeManager.processDbChange(userId,
-                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
-                                        DBChangeMsg.CAT_YUKON_USER,
-                                        DBChangeMsg.CAT_YUKON_USER,
+                                        DBChangeMessage.CHANGE_YUKON_USER_DB,
+                                        DBChangeMessage.CAT_YUKON_USER,
+                                        DBChangeMessage.CAT_YUKON_USER,
                                         DbChangeType.UPDATE);
     }
 
@@ -373,9 +373,9 @@ public class YukonUserDaoImpl implements YukonUserDao {
         }
 
         dbChangeManager.processDbChange(userId,
-                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
-                                        DBChangeMsg.CAT_YUKON_USER,
-                                        DBChangeMsg.CAT_YUKON_USER,
+                                        DBChangeMessage.CHANGE_YUKON_USER_DB,
+                                        DBChangeMessage.CAT_YUKON_USER,
+                                        DBChangeMessage.CAT_YUKON_USER,
                                         DbChangeType.ADD);
     }
     
@@ -455,9 +455,9 @@ public class YukonUserDaoImpl implements YukonUserDao {
         yukonJdbcTemplate.update(sql);
         
         dbChangeManager.processDbChange(userId,
-                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
-                                        DBChangeMsg.CAT_YUKON_USER,
-                                        DBChangeMsg.CAT_YUKON_USER,
+                                        DBChangeMessage.CHANGE_YUKON_USER_DB,
+                                        DBChangeMessage.CAT_YUKON_USER,
+                                        DBChangeMessage.CAT_YUKON_USER,
                                         DbChangeType.UPDATE);
     }
 

@@ -40,7 +40,7 @@ using std::endl;
 *  send service commands, etc
 ****************************
 */
-bool DecodePMSIFile(const string& fileName, std::vector<RWCollectableString*>* commandList)
+bool DecodePMSIFile(const string& fileName, std::vector<std::string*>* commandList)
 {
     FILE* fptr;
     char workBuffer[500];  // not real sure how long each line possibly is
@@ -68,7 +68,7 @@ bool DecodePMSIFile(const string& fileName, std::vector<RWCollectableString*>* c
         *  ASCII command string built from the PMSI line
         ******************
         */
-        RWCollectableString* decodedCommand = new RWCollectableString();
+        std::string *decodedCommand = new std::string();
 
         if( true == isValidPMSILine( workBuffer, command, serialNum, programming ))
         {
@@ -101,7 +101,7 @@ bool DecodePMSIFile(const string& fileName, std::vector<RWCollectableString*>* c
                         *decodedCommand += " service in";
                         commandList->push_back(decodedCommand);
 
-                        RWCollectableString* programCommand = new RWCollectableString();
+                        std::string *programCommand = new std::string();
 
                         // send the programming
                         *programCommand = "PutConfig versacom serial ";

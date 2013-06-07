@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(test_cannot_control_bank_text)
     store->addSubBusToPaoMap(bus);
 
     bus->setCorrectionNeededNoBankAvailFlag(false);
-    CtiMultiMsg_vec ccEvents;
+    Cti::CapControl::EventLogEntries ccEvents;
     bus->createCannotControlBankText("Increase Var", "Open", ccEvents);
     BOOST_CHECK_EQUAL(bus->getCorrectionNeededNoBankAvailFlag(), true);
     BOOST_CHECK_EQUAL(ccEvents.size(), 1);
@@ -336,11 +336,10 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
     CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
     CtiMultiMsg* multiCapMsg = new CtiMultiMsg();
-    CtiMultiMsg* multiCCEventMsg = new CtiMultiMsg();
     CtiMultiMsg_vec& pointChanges = multiDispatchMsg->getData();
     CtiMultiMsg_vec& pilMessages = multiPilMsg->getData();
     CtiMultiMsg_vec& capMessages = multiCapMsg->getData();
-    CtiMultiMsg_vec& ccEvents = multiCCEventMsg->getData();
+    Cti::CapControl::EventLogEntries ccEvents;
 
     CtiCCArea *area = create_object<CtiCCArea>(1, "Area-1");
     CtiCCSubstation *station = create_object<CtiCCSubstation>(2, "Substation-A");

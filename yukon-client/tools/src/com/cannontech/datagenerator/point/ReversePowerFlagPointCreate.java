@@ -68,7 +68,7 @@ public class ReversePowerFlagPointCreate extends PointCreate
 		    PointBase pointBase = PointFactory.createNewPoint(pointID,
                     PointTypes.STATUS_POINT,
                     "Reverse Power",
-                    litePaobject.getYukonID(),
+                    litePaobject.getYukonId(),
                     REVERSE_POWER_FLAG_POINT_OFFSET);
 
 		    pointBase.getPoint().setStateGroupID(new Integer(StateGroupUtils.STATEGROUP_TRUEFALSE));

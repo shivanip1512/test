@@ -4,6 +4,7 @@ package com.cannontech.loadcontrol.data;
  * This type was created in VisualAge.
  */
 import com.cannontech.database.db.device.lm.GearControlMethod;
+import com.cannontech.messaging.message.loadcontrol.data.ProgramDirectGear;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -25,7 +26,7 @@ public DefColl_LMProgramDirectGear()
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new LMProgramDirectGear();
+	return new ProgramDirectGear();
 }
 /**
  * getComparator method comment.
@@ -36,7 +37,7 @@ public com.roguewave.tools.v2_0.Comparator getComparator()
 	{
 		public int compare(Object x, Object y) 
 		{
-			return (int) (((LMProgramDirectGear)x).getYukonID().intValue() - ((LMProgramDirectGear)y).getYukonID().intValue() );
+			return (int) (((ProgramDirectGear)x).getYukonId() - ((ProgramDirectGear)y).getYukonId());
 		}
 	};
 	
@@ -60,14 +61,14 @@ public String getCxxStringId()
  */
 public Class getJavaClass()
 {
-	return LMProgramDirectGear.class;
+	return ProgramDirectGear.class;
 }
 /**
  * restoreGuts method comment.
  */
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMProgramDirectGear lmProgramDirectGear = (LMProgramDirectGear) obj;
+	ProgramDirectGear lmProgramDirectGear = (ProgramDirectGear) obj;
 
 	Integer yukonID = new Integer( (int)vstr.extractUnsignedInt() );
 	String gearName = (String) vstr.restoreObject( SimpleMappings.CString );
@@ -93,7 +94,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	Integer rampOutPercent = new Integer( (int) vstr.extractUnsignedInt() );
     Double kwReduction = new Double (vstr.extractDouble());
 
-	lmProgramDirectGear.setYukonID(yukonID);
+	lmProgramDirectGear.setYukonId(yukonID);
 	lmProgramDirectGear.setGearName(gearName);
 	lmProgramDirectGear.setGearNumber(gearNumber);
 	lmProgramDirectGear.setControlMethod(GearControlMethod.valueOf(controlMethod));

@@ -18,26 +18,26 @@ import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
-import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.messaging.message.loadcontrol.data.Program;
+import com.cannontech.messaging.util.BadServerResponseException;
+import com.cannontech.messaging.util.TimeoutException;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
-import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.ConnectionException;
-import com.cannontech.message.util.TimeoutException;
 import com.cannontech.user.YukonUserContext;
 
 public interface ProgramService {
 
     public DisplayablePao getProgram(int programId);
     
-    public LMProgramBase getProgramForPao(YukonPao from);
+    public Program getProgramForPao(YukonPao from);
     
     /**
      * Finds the LMProgramBase object from a Pao. Will throw if the client
      * connection is not valid or if there is no program found for the given pao.
      */
-    public LMProgramBase getProgramForPaoSafe(YukonPao from);
+    public Program getProgramForPaoSafe(YukonPao from);
     
-    public DatedObject<LMProgramBase> findDatedProgram(int programId);
+    public DatedObject<Program> findDatedProgram(int programId);
 
     public List<DisplayablePao> findProgramsForLoadGroup(int loadGroupId, 
                                                          YukonUserContext userContext);

@@ -18,8 +18,8 @@ import com.cannontech.common.gui.util.CheckBoxTableRenderer;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.core.dao.AuthDao;
-import com.cannontech.loadcontrol.messages.LMManualControlRequest;
-import com.cannontech.message.server.ServerResponseMsg;
+import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
+import com.cannontech.messaging.message.server.ServerResponseMessage;
 import com.cannontech.roles.loadcontrol.DirectLoadcontrolRole;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -228,8 +228,8 @@ public Object getValue(Object obj)
 		
 		prg.getLmRequest().setConstraintFlag(
 			prg.getOverride().booleanValue()
-			? LMManualControlRequest.CONSTRAINTS_FLAG_OVERRIDE
-			: LMManualControlRequest.CONSTRAINTS_FLAG_USE );
+			? ManualControlRequestMessage.CONSTRAINTS_FLAG_OVERRIDE
+			: ManualControlRequestMessage.CONSTRAINTS_FLAG_USE );
 
 		progList.add( prg );
 	}
@@ -285,7 +285,7 @@ public void setValue(Object obj)
 	for( int i = 0; i < respProgs.length; i++ )
 	{
 		//we only care about the violators!!!!
-		if( respProgs[i].getStatus() != ServerResponseMsg.STATUS_UNINIT )
+		if( respProgs[i].getStatus() != ServerResponseMessage.STATUS_UNINIT )
 			getTableModelCons().addRow( respProgs[i] );
 	}
 

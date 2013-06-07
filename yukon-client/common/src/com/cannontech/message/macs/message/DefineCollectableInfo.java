@@ -6,6 +6,7 @@ package com.cannontech.message.macs.message;
  * @author: 
  */
 
+import com.cannontech.messaging.message.macs.InfoMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -24,7 +25,7 @@ public DefineCollectableInfo() {
  * create method comment.
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new Info();
+	return new InfoMessage();
 }
 /**
  * getComparator method comment.
@@ -55,7 +56,7 @@ public String getCxxStringId() {
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return com.cannontech.message.macs.message.Info.class;
+	return InfoMessage.class;
 }
 /**
  * restoreGuts method comment.
@@ -63,7 +64,7 @@ public Class getJavaClass() {
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {
 	super.restoreGuts( obj, vstr, polystr );
 
-	Info info = (Info) obj;
+	InfoMessage info = (InfoMessage) obj;
 	
 	info.setId( vstr.extractLong() );
 	info.setInfo((String) vstr.restoreObject( SimpleMappings.CString ));

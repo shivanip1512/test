@@ -156,7 +156,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
                                         PaoCategory.PORT.getCategoryId(), PaoClass.PORT.getPaoClassId(),
                                         PaoType.TSERVER_SHARED.getDeviceTypeId());
 
-        Integer portID = new Integer(commChan.getYukonID());
+        Integer portID = new Integer(commChan.getYukonId());
 
         CCU711 ccu = new CCU711();
         ccu.applyTypeToPao(PaoType.CCU711);

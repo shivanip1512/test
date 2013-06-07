@@ -43,15 +43,15 @@ import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.messaging.message.capcontrol.streamable.Area;
+import com.cannontech.messaging.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.messaging.message.capcontrol.streamable.Feeder;
+import com.cannontech.messaging.message.capcontrol.streamable.PointQualityCheckable;
+import com.cannontech.messaging.message.capcontrol.streamable.SpecialArea;
+import com.cannontech.messaging.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
+import com.cannontech.messaging.message.capcontrol.streamable.SubStation;
 import com.cannontech.database.model.Season;
-import com.cannontech.message.capcontrol.streamable.Area;
-import com.cannontech.message.capcontrol.streamable.CapBankDevice;
-import com.cannontech.message.capcontrol.streamable.Feeder;
-import com.cannontech.message.capcontrol.streamable.PointQualityCheckable;
-import com.cannontech.message.capcontrol.streamable.SpecialArea;
-import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
-import com.cannontech.message.capcontrol.streamable.SubBus;
-import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.CapControlConst;
 import com.cannontech.web.lite.LiteWrapper;
@@ -78,8 +78,8 @@ public final class CapControlUtils {
         @Override
         public int compare(Area o1, Area o2) {
             try {
-                String thisArea = o1.getPaoName();
-                String anotherArea = o2.getPaoName();
+                String thisArea = o1.getCcName();
+                String anotherArea = o2.getCcName();
 
                 return (thisArea.compareToIgnoreCase(anotherArea));
 
@@ -95,8 +95,8 @@ public final class CapControlUtils {
         @Override
         public int compare(SpecialArea o1, SpecialArea o2) {
             try {
-                String thisArea = o1.getPaoName();
-                String anotherArea = o2.getPaoName();
+                String thisArea = o1.getCcName();
+                String anotherArea = o2.getCcName();
 
                 return (thisArea.compareToIgnoreCase(anotherArea));
 
@@ -112,8 +112,8 @@ public final class CapControlUtils {
         @Override
         public int compare(SubBus o1, SubBus o2) {
             try {
-                String thisArea = o1.getCcArea();
-                String anotherArea = o2.getCcArea();
+                String thisArea = o1.getCcDescription();
+                String anotherArea = o2.getCcDescription();
 
                 if (!thisArea.equalsIgnoreCase(anotherArea))
                     return (thisArea.compareToIgnoreCase(anotherArea));
@@ -208,9 +208,8 @@ public final class CapControlUtils {
         for (int i = 0; i < numberOfSubs; i++) {
             SubBus subBus = subs[i];
             if (subBus != null) {
-                sumOfVars += subBus.getCurrentVarLoadPointValue().doubleValue();
-                sumOfWatts += Math.abs(subBus.getCurrentWattLoadPointValue()
-                                             .doubleValue());
+                sumOfVars += subBus.getCurrentVarLoadPointValue();
+                sumOfWatts += Math.abs(subBus.getCurrentWattLoadPointValue());
             }
         }
         retVal = sumOfWatts / (Math.sqrt(Math.pow(sumOfVars, 2.0) + Math.pow(sumOfWatts,
@@ -239,8 +238,8 @@ public final class CapControlUtils {
             List<SubBus> subBuses = ccCache.getSubBusesBySubStation(sub);
             for (SubBus subBus : subBuses) {
                 if (subBus != null) {
-                    sumOfVars += subBus.getCurrentVarLoadPointValue().doubleValue();
-                    sumOfWatts += Math.abs(subBus.getCurrentWattLoadPointValue().doubleValue());
+                    sumOfVars += subBus.getCurrentVarLoadPointValue();
+                    sumOfWatts += Math.abs(subBus.getCurrentWattLoadPointValue());
                 }
             }
         }
@@ -270,8 +269,8 @@ public final class CapControlUtils {
 
         for (int i = 0; i < numberOfSubs; i++) {
             if(subs[i] != null) {
-                sumOfVars += subs[i].getEstimatedVarLoadPointValue().doubleValue();
-                sumOfWatts += Math.abs(subs[i].getCurrentWattLoadPointValue().doubleValue());
+                sumOfVars += subs[i].getEstimatedVarLoadPointValue();
+                sumOfWatts += Math.abs(subs[i].getCurrentWattLoadPointValue());
             }
 
         }
@@ -300,8 +299,8 @@ public final class CapControlUtils {
             List<SubBus> buses = ccCache.getSubBusesBySubStation(sub);
             for (SubBus bus: buses) {
                 if( bus != null) {
-                    sumOfVars += bus.getEstimatedVarLoadPointValue().doubleValue();
-                    sumOfWatts += Math.abs(bus.getCurrentWattLoadPointValue().doubleValue());
+                    sumOfVars += bus.getEstimatedVarLoadPointValue();
+                    sumOfWatts += Math.abs(bus.getCurrentWattLoadPointValue());
                 }
             }
         }
@@ -346,10 +345,10 @@ public final class CapControlUtils {
     public static String getAreaNameForSubStationIdFromCache(int subID) {	
     	String ret = "(none)";
     	SubStation station  = ccCache.getSubstation(subID);
-		int areaId = station.getParentID();
+		int areaId = station.getParentId();
 		Area area = ccCache.getCBCArea(areaId);
 		if( area != null ) {
-			ret = area.getPaoName();
+			ret = area.getCcName();
 		}
         return ret;
     }
@@ -357,7 +356,7 @@ public final class CapControlUtils {
     public static String getAreaNameForSubStationBusIdFromCache(int subID) {	
     	SubBus bus  = ccCache.getSubBus(subID);
 
-		int stationId = bus.getParentID();
+		int stationId = bus.getParentId();
 		return getAreaNameForSubStationIdFromCache(stationId);
     }
     public static Integer getStateGroupIDByGroupName(String groupName) {
@@ -657,11 +656,11 @@ public final class CapControlUtils {
     }
 
     public static boolean isEnabled(StreamableCapObject object) {
-        return object.getCcDisableFlag().equals(Boolean.FALSE);
+        return !object.getCcDisableFlag();
     }
 
     public static boolean isDisabled(StreamableCapObject object) {
-        return object.getCcDisableFlag().equals(Boolean.TRUE);
+        return object.getCcDisableFlag();
     }
 
     public static boolean isSwitched(CapBankDevice capBank) {
@@ -769,7 +768,7 @@ public final class CapControlUtils {
     }
     
     public static boolean isStrategyAttachedToSubBusOrSubBusParentArea(SubBus subBus) {
-        SubStation subBusSubstation = ccCache.getSubstation(subBus.getParentID());
+        SubStation subBusSubstation = ccCache.getSubstation(subBus.getParentId());
         int parentAreaId;
         if (subBusSubstation.getSpecialAreaEnabled()) {
             parentAreaId = subBusSubstation.getSpecialAreaId();
@@ -801,8 +800,7 @@ public final class CapControlUtils {
      * @return
      */
     public static boolean isDualBusEnabled(SubBus subBus) {
-        DBPersistent pao = PAOFactory.createPAObject(subBus.getCcId()
-                                                     .intValue());
+        DBPersistent pao = PAOFactory.createPAObject(subBus.getCcId());
         Connection conn = null;
 
         try {
@@ -834,10 +832,10 @@ public final class CapControlUtils {
         for (int j = 0; j < size; j++) {
             CapBankDevice capBank = feeder.getCcCapBanks().elementAt(j);
 
-            if (capBank.getControlStatus().intValue() == CapControlConst.BANK_CLOSE_PENDING)
+            if (capBank.getControlStatus() == CapControlConst.BANK_CLOSE_PENDING)
                 return CapControlUtils.getCBCStateNames()[CapControlConst.BANK_CLOSE_PENDING].getStateText();
 
-            if (capBank.getControlStatus().intValue() == CapControlConst.BANK_OPEN_PENDING)
+            if (capBank.getControlStatus() == CapControlConst.BANK_OPEN_PENDING)
                 return CapControlUtils.getCBCStateNames()[CapControlConst.BANK_OPEN_PENDING].getStateText();
         }
 

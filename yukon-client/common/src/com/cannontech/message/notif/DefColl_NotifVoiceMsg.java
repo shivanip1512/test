@@ -3,6 +3,7 @@ package com.cannontech.message.notif;
 /**
  * This type was created in VisualAge.
  */
+import com.cannontech.messaging.message.notif.VoiceMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 
@@ -22,7 +23,7 @@ public class DefColl_NotifVoiceMsg extends com.cannontech.message.util.DefineCol
 	 * create method comment.
 	 */
 	public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-		return new NotifVoiceMsg();
+		return new VoiceMessage();
 	}
 	/**
 	 * getComparator method comment.
@@ -55,7 +56,7 @@ public class DefColl_NotifVoiceMsg extends com.cannontech.message.util.DefineCol
 	 * getJavaClass method comment.
 	 */
 	public Class getJavaClass() {
-		return NotifVoiceMsg.class;
+		return VoiceMessage.class;
 	}
 	/**
 	 * restoreGuts method comment.
@@ -63,10 +64,10 @@ public class DefColl_NotifVoiceMsg extends com.cannontech.message.util.DefineCol
 	public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 	{	
 		super.restoreGuts( obj, vstr, polystr );
-		NotifVoiceMsg msg = (NotifVoiceMsg) obj;
+		VoiceMessage msg = (VoiceMessage) obj;
 
 
-		msg.setNotifProgramID( vstr.extractInt() );
+		msg.setNotifProgramId( vstr.extractInt() );
 	}
 	
 	/**
@@ -75,9 +76,9 @@ public class DefColl_NotifVoiceMsg extends com.cannontech.message.util.DefineCol
 	public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 	{
 		super.saveGuts( obj, vstr, polystr );
-		NotifVoiceMsg msg = (NotifVoiceMsg) obj;
+		VoiceMessage msg = (VoiceMessage) obj;
 		
 		
-		vstr.insertInt( msg.getNotifProgramID() );
+		vstr.insertInt( msg.getNotifProgramId() );
 	}
 }

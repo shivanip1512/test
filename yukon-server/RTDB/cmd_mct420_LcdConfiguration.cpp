@@ -111,7 +111,7 @@ DlcCommand::request_ptr Mct420LcdConfigurationCommand::decode(const CtiTime now,
 DlcCommand::request_ptr Mct420LcdConfigurationCommand::error(const CtiTime now, const int error_code, std::string &description)
 {
     //  This should probably be the default for all commands unless otherwise specified.
-    throw CommandException(error_code, GetError(error_code));
+    throw CommandException(error_code, GetErrorString(error_code));
 }
 
 DlcCommand::request_ptr Mct420LcdConfigurationCommand::doCommand()

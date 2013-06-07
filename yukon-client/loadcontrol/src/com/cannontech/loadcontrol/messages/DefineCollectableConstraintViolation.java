@@ -3,6 +3,8 @@ package com.cannontech.loadcontrol.messages;
 import java.util.Date;
 
 import com.cannontech.message.util.CollectionExtracter;
+import com.cannontech.messaging.message.loadcontrol.data.ConstraintError;
+import com.cannontech.messaging.message.loadcontrol.data.ConstraintViolation;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
 

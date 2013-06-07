@@ -8,7 +8,7 @@ import java.awt.Color;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.loadcontrol.datamodels.ISelectableLMTableModel;
 import com.cannontech.loadcontrol.events.LCGenericTableModelEvent;
-import com.cannontech.message.server.ServerResponseMsg;
+import com.cannontech.messaging.message.server.ServerResponseMessage;
 
 public class ConstraintTableModel extends javax.swing.table.AbstractTableModel implements javax.swing.event.TableModelListener, ISelectableLMTableModel
 {
@@ -94,7 +94,7 @@ public class ConstraintTableModel extends javax.swing.table.AbstractTableModel i
 	{
 		ResponseProg prog = getRowAt( row );
 
-		if( prog.getStatus() == ServerResponseMsg.STATUS_UNINIT ) {
+		if( prog.getStatus() == ServerResponseMessage.STATUS_UNINIT ) {
 			return CELL_COLORS[1];
 		}
 		else if( prog.getOverride().booleanValue() ) {
@@ -198,7 +198,7 @@ public class ConstraintTableModel extends javax.swing.table.AbstractTableModel i
 					
                 //not implemented
                 case COL_STATUS:
-                return ServerResponseMsg.getStatusStr(prg.getStatus());
+                return ServerResponseMessage.getStatusStr(prg.getStatus());
                 
 				case COL_ACTION:
 				return prg.getAction();

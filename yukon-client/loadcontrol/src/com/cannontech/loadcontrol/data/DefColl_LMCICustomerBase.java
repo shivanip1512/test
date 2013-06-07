@@ -2,6 +2,8 @@ package com.cannontech.loadcontrol.data;
 
 /**
  */
+import com.cannontech.messaging.message.loadcontrol.data.CurtailCustomer;
+import com.cannontech.messaging.message.loadcontrol.data.CiCustomerBase;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -24,7 +26,7 @@ public com.roguewave.tools.v2_0.Comparator getComparator()
 	{
 		public int compare(Object x, Object y) 
 		{
-			return (int) (((LMCICustomerBase)x).getCustomerID().longValue() - ((LMCICustomerBase)y).getCustomerID().longValue() );
+			return (int) (((CiCustomerBase)x).getCustomerId() - ((CiCustomerBase)y).getCustomerId());
 		}
 	};
 	
@@ -36,7 +38,7 @@ public com.roguewave.tools.v2_0.Comparator getComparator()
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new LMCurtailCustomer();
+	return new CurtailCustomer();
 }
 /**
  * getCxxClassId method comment.
@@ -60,14 +62,14 @@ public String getCxxStringId() {
 public Class getJavaClass() {
 	Exception e = new Exception(this.getClass().getName() + ".getJavaClass() should Never be called");
 	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	return LMCICustomerBase.class;
+	return CiCustomerBase.class;
 }
 /**
  * restoreGuts method comment.
  */
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMCICustomerBase custBase = (LMCICustomerBase) obj;
+	CiCustomerBase custBase = (CiCustomerBase) obj;
 	
 	Long customerID = new Long(vstr.extractLong());
 	String companyName = (String) vstr.restoreObject(SimpleMappings.CString);
@@ -77,7 +79,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	String timeZone = (String) vstr.restoreObject(SimpleMappings.CString);
 	Long customerOrder = new Long(vstr.extractLong());
 	
-	custBase.setCustomerID(customerID);
+	custBase.setCustomerId(customerID);
 	custBase.setCompanyName(companyName);
 	custBase.setCustomerDemandLevel(customerDemandLevel);
 	custBase.setCurtailAmount(curtailAmount);

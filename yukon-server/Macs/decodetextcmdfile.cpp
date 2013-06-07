@@ -59,7 +59,7 @@ using std::endl;
 int decodeTextCommandFile(const string& fileName,
                                 int aCommandsToPerform,
                                 int aProtocolFlag,
-                                std::vector<RWCollectableString*>* commandList)
+                                std::vector<std::string*>* commandList)
 {
     FILE* fptr;
     char workBuffer[500];  // not real sure how long each line possibly is
@@ -125,7 +125,7 @@ int decodeTextCommandFile(const string& fileName,
                     *  ASCII command string built from the text line
                     ******************
                     */
-                    RWCollectableString* decodedCommand = new RWCollectableString();
+                    std::string *decodedCommand = new std::string();
 
                     if( true == validateAndDecodeLine( commandVector[lineCnt], aProtocolFlag, decodedCommand, fileName ))
                     {
@@ -372,7 +372,7 @@ bool outputCommandFile (const string &aFileName, int aLineCnt, vector<string> &a
 }
 
 
-bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableString* programming, string aFileName)
+bool validateAndDecodeLine( string &input, int aProtocolFlag, string* programming, string aFileName)
 {
     string serialNum;
     string tempString1;
@@ -1461,7 +1461,7 @@ bool decodeDsm2Lines( string &aFunction,
                       string &aRoute,
                       string &aSerialNum,
                       string &aCmd,
-                      RWCollectableString* programming)
+                      string* programming)
 {
     bool retCode = true;
     string route,function,serialNum,cmd;
@@ -1638,7 +1638,7 @@ bool getToken (char **InBuffer,
 }
 
 
-int decodeDSM2VconfigFile(const string& fileName, std::vector<RWCollectableString*>* commandList)
+int decodeDSM2VconfigFile(const string& fileName, std::vector<std::string *>* commandList)
 {
     FILE* fptr;
     char workBuffer[500];  // not real sure how long each line possibly is
@@ -1693,7 +1693,7 @@ int decodeDSM2VconfigFile(const string& fileName, std::vector<RWCollectableStrin
                     *  ASCII command string built from the text line
                     ******************
                     */
-                    RWCollectableString* decodedCommand = new RWCollectableString();
+                    std::string *decodedCommand = new std::string();
 
                     if( true == decodeDsm2Lines( commandVector[lineCnt],
                                                  commandVector[lineCnt+1],

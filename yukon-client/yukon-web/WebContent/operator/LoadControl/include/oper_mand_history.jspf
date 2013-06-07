@@ -89,7 +89,7 @@
           </tr>
           <%
 	com.cannontech.web.history.CurtailHistory history = null;
-	 LMProgramCurtailment[] curtailProgs = cache.getEnergyCompanyCurtailmentPrograms(energyCompanyID);
+	 ProgramCurtailment[] curtailProgs = cache.getEnergyCompanyCurtailmentPrograms(energyCompanyID);
  
 	try { 
 		history = new com.cannontech.web.history.CurtailHistory(dbAlias); 
@@ -100,7 +100,7 @@
 			for(int j = 0; curtailProgs != null && j < curtailProgs.length; j++ ) 
 			{				
 				com.cannontech.web.history.HCurtailProgram program = activities[i].getCurtailProgram();				
-				if(program.getDeviceId() == curtailProgs[j].getYukonID().longValue()) {
+				if(program.getDeviceId() == curtailProgs[j].getYukonId().longValue()) {
             	String link = "oper_mand.jsp?tab=historydetail&prog=" + program.getDeviceId() + "&ref=" + activities[i].getCurtailReferenceId();                        
 	%>  
           <tr> 

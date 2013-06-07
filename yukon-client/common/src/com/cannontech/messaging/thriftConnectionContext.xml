@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <import resource="serialization/thrift/thriftContext.xml" />
+
+
+    <!-- Connection factories -->
+
+    <bean id="messaging.CapcontrolConnectionFactory" lazy-init="true"
+        class="com.cannontech.messaging.util.impl.AmqConnectionFactory">
+        <constructor-arg ref="messaging.thrift.CapcontrolMessageFactory" />
+        <constructor-arg value="capcontrol" />
+    </bean>
+
+    <bean id="messaging.DispatchConnectionFactory" lazy-init="true"
+        class="com.cannontech.messaging.util.impl.AmqConnectionFactory">
+        <constructor-arg ref="messaging.thrift.DisptachMessageFactory" />
+        <constructor-arg value="dispatch" />
+    </bean>
+
+    <bean id="messaging.MacConnectionFactory" lazy-init="true"
+        class="com.cannontech.messaging.util.impl.AmqConnectionFactory">
+        <constructor-arg ref="messaging.thrift.MacMessageFactory" />
+        <constructor-arg value="macs" />
+    </bean>
+
+    <bean id="messaging.NotifConnectionFactory" lazy-init="true"
+        class="com.cannontech.messaging.util.impl.AmqConnectionFactory">
+        <constructor-arg ref="messaging.thrift.NotifMessageFactory" />
+        <constructor-arg value="notification" />
+    </bean>
+
+    <bean id="messaging.NotifListenerConnectionFactory" lazy-init="true"
+        class="com.cannontech.messaging.util.impl.AmqConnectionListenerFactory">
+        <constructor-arg ref="messaging.thrift.NotifMessageFactory" />
+        <constructor-arg value="notification" />
+    </bean>
+
+
+    <bean id="messaging.PorterConnectionFactory" lazy-init="true"
+        class="com.cannontech.messaging.util.impl.AmqConnectionFactory">
+        <constructor-arg ref="messaging.thrift.PorterMessageFactory" />
+        <constructor-arg value="pil" />
+    </bean>
+
+    <bean id="messaging.ConnectionFactoryService" init-method="init"
+        class="com.cannontech.messaging.util.ConnectionFactoryService" />
+
+    <!-- Nameless bean (we don't want to retrieve this bean, it is just needed to initialize the ConnectionFactoryService) -->
+    <bean init-method="init"
+        class="com.cannontech.messaging.util.ConnectionFactoryService.ConnectionFactoryServiceInitializer">
+        <constructor-arg index="0">
+            <map>
+                <entry key="CBC">
+                    <idref local="messaging.CapcontrolConnectionFactory" />
+                </entry>
+                <entry key="Dispatch">
+                    <idref local="messaging.DispatchConnectionFactory" />
+                </entry>
+                <entry key="MACS">
+                    <idref local="messaging.MacConnectionFactory" />
+                </entry>
+                <entry key="Notification">
+                    <idref local="messaging.NotifConnectionFactory" />
+                </entry>
+                <entry key="Porter">
+                    <idref local="messaging.PorterConnectionFactory" />
+                </entry>
+            </map>
+        </constructor-arg>
+        <constructor-arg index="1">
+            <map>
+                <entry key="NotifListener">
+                    <idref local="messaging.NotifListenerConnectionFactory" />
+                </entry>
+            </map>
+        </constructor-arg>
+    </bean>
+</beans>

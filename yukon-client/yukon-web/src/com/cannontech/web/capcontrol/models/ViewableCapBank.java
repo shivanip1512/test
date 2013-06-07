@@ -1,7 +1,7 @@
 package com.cannontech.web.capcontrol.models;
 
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.messaging.message.capcontrol.streamable.CapBankDevice;
 
 public class ViewableCapBank implements Comparable<ViewableCapBank>{
 	

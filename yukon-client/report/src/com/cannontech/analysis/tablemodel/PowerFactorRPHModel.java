@@ -16,8 +16,8 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.message.capcontrol.streamable.Feeder;
-import com.cannontech.message.capcontrol.streamable.SubBus;
+import com.cannontech.messaging.message.capcontrol.streamable.Feeder;
+import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
 import com.cannontech.user.YukonUserContext;
 
 public class PowerFactorRPHModel extends BareReportModelBase<PowerFactorRPHModel.ModelRow> implements ReportModelMetaInfo {
@@ -61,8 +61,8 @@ public class PowerFactorRPHModel extends BareReportModelBase<PowerFactorRPHModel
     	}
     	else if(capControlCache.isFeeder(targetId)) {
     		Feeder feeder = capControlCache.getFeeder(targetId);
-    		powerFactorPointId = feeder.getPowerFactorPointID();		
-    		estimatedPowerFactorPointId = feeder.getEstimatedPowerFactorPointID();
+    		powerFactorPointId = feeder.getPowerFactorPointId();		
+    		estimatedPowerFactorPointId = feeder.getEstimatedPowerFactorPointId();
     	}
         
         // gather point data

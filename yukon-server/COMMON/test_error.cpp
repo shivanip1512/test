@@ -213,48 +213,13 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of
     ("Failed to find a point for the given device.")
     .repeat(68, "Unknown Error");
 
-BOOST_AUTO_TEST_CASE(test_GetError)
-{
-    std::vector<std::string> results;
-
-    for( int i = 0; i < 350; i++ )
-    {
-        results.push_back(GetError(i));
-    }
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(
-        ErrorStrings.begin(), ErrorStrings.end(),
-        results.begin(), results.end());
-}
-
 BOOST_AUTO_TEST_CASE(test_GetErrorString)
 {
     std::vector<std::string> results;
 
     for( int i = 0; i < 350; i++ )
     {
-        char e[200];
-        char sentinel = 1;
-
-        GetErrorString(i, e);
-
-        BOOST_REQUIRE_EQUAL(sentinel, 1);  //  make sure we didn't overflow our bounds
-
-        results.push_back(e);
-    }
-
-    BOOST_CHECK_EQUAL_COLLECTIONS(
-        ErrorStrings.begin(), ErrorStrings.end(),
-        results.begin(), results.end());
-}
-
-BOOST_AUTO_TEST_CASE(test_FormatError)
-{
-    std::vector<std::string> results;
-
-    for( int i = 0; i < 350; i++ )
-    {
-        results.push_back(FormatError(i));
+        results.push_back(GetErrorString(i));
     }
 
     BOOST_CHECK_EQUAL_COLLECTIONS(

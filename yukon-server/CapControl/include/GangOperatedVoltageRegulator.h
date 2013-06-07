@@ -8,16 +8,14 @@ namespace CapControl    {
 class GangOperatedVoltageRegulator : public VoltageRegulator
 {
 public:
+    DECLARE_COLLECTABLE( GangOperatedVoltageRegulator );
 
-    RWDECLARE_COLLECTABLE( GangOperatedVoltageRegulator )
-
+public:
     GangOperatedVoltageRegulator();
     GangOperatedVoltageRegulator(Cti::RowReader & rdr);
     GangOperatedVoltageRegulator(const GangOperatedVoltageRegulator & toCopy);
 
     GangOperatedVoltageRegulator & operator=(const GangOperatedVoltageRegulator & rhs);
-
-    virtual void saveGuts(RWvostream & ostrm) const;
 
     virtual void loadAttributes(AttributeService * service);
 
@@ -34,6 +32,10 @@ public:
     virtual void executeDisableRemoteControl();
 
     virtual IDSet getVoltagePointIDs();
+
+    virtual bool          getRecentTapOperation()         const { return _recentTapOperation; }
+    virtual OperatingMode getLastOperatingMode()          const { return _lastOperatingMode; }
+    virtual OperatingMode getLastCommandedOperatingMode() const { return _lastCommandedOperatingMode; }
 
 protected:
 

@@ -29,7 +29,7 @@ import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
-import com.cannontech.message.util.TimeoutException;
+import com.cannontech.messaging.util.TimeoutException;
 import com.cannontech.yukon.api.loadManagement.adapters.LoadControlProgramDaoAdapter;
 import com.cannontech.yukon.api.loadManagement.adapters.ProgramServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.adapters.RolePropertyDaoAdapter;

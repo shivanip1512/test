@@ -8,15 +8,15 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.dr.controlarea.model.ControlArea;
-import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
 import com.cannontech.user.YukonUserContext;
 
 public interface ControlAreaService {
 
     
-    public LMControlArea getControlAreaForPao(YukonPao from);
+    public ControlAreaItem getControlAreaForPao(YukonPao from);
     
-    public DatedObject<LMControlArea> getDatedControlArea(int controlAreaId);
+    public DatedObject<ControlAreaItem> getDatedControlArea(int controlAreaId);
 
     public DisplayablePao findControlAreaForProgram(YukonUserContext userContext, int programId);
 

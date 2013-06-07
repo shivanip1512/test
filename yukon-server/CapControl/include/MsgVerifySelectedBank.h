@@ -5,7 +5,8 @@
 
 class VerifySelectedBank : public VerifyBanks
 {
-    RWDECLARE_COLLECTABLE( VerifySelectedBank )
+    public:
+        DECLARE_COLLECTABLE( VerifySelectedBank );
 
     private:
         typedef VerifyBanks Inherited;
@@ -16,11 +17,8 @@ class VerifySelectedBank : public VerifyBanks
         VerifySelectedBank(const VerifySelectedBank& msg);
         ~VerifySelectedBank();
 
-        long getBankId();
+        long getBankId() const;
         void setBankId(long bankIId);
-
-        void restoreGuts(RWvistream& iStream);
-        void saveGuts(RWvostream& oStream) const;
 
         VerifySelectedBank& operator=(const VerifySelectedBank& right);
 

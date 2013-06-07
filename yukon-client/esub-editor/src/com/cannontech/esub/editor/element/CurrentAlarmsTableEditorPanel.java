@@ -570,7 +570,7 @@ public Object getValue(Object o) {
         if(currentDeviceNode.isSelected())
         {
             LiteYukonPAObject device = (LiteYukonPAObject) currentDeviceNode.getUserObject();
-            deviceids.add(device.getYukonID());
+            deviceids.add(device.getYukonId());
             
         }else
         {

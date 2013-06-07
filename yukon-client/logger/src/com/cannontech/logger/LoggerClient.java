@@ -12,14 +12,14 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.database.SqlStatement;
-import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.Multi;
-import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.message.dispatch.message.PointRegistration;
-import com.cannontech.message.dispatch.message.Registration;
-import com.cannontech.message.dispatch.message.Signal;
-import com.cannontech.message.util.Message;
+import com.cannontech.dispatch.DispatchClientConnection;
+import com.cannontech.messaging.message.BaseMessage;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.messaging.message.dispatch.MultiMessage;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.messaging.message.dispatch.PointRegistrationMessage;
+import com.cannontech.messaging.message.dispatch.RegistrationMessage;
+import com.cannontech.messaging.message.dispatch.SignalMessage;
 
 public class LoggerClient extends com.cannontech.clientutils.ClientBase
 {
@@ -27,7 +27,7 @@ public class LoggerClient extends com.cannontech.clientutils.ClientBase
 	private Enumeration pointEnum = null;
 	private Logger outStream = null;
 		
-	private ClientConnection connection = null;
+	private DispatchClientConnection connection = null;
 	private Thread runningThread = null;
 	
 
@@ -54,20 +54,20 @@ private void registerForPoints() {
 /**
  * This method was created in VisualAge.
  */
-public Message buildRegistrationMessage() 
+public BaseMessage buildRegistrationMessage() 
 {		
 	//First do a registration
-	Registration reg = new Registration();
+	RegistrationMessage reg = new RegistrationMessage();
 	reg.setAppName( BootstrapUtils.getApplicationName() );
 	reg.setAppIsUnique(0);
 	reg.setAppKnownPort(0);
 	reg.setAppExpirationDelay( 500 );
 
 	// create our own point registration
-	PointRegistration pReg = new PointRegistration();	
+	PointRegistrationMessage pReg = new PointRegistrationMessage();	
 	pReg.setRegFlags( outStream.getPointReg() );
 
-	Multi multiReg = new Multi();
+	MultiMessage multiReg = new MultiMessage();
 	multiReg.getVector().addElement( reg );
 	multiReg.getVector().addElement( pReg );
 
@@ -80,7 +80,7 @@ public Message buildRegistrationMessage()
  * @return java.lang.String
  * @param type int
  */
-private String determinePointValue( PointData point ) 
+private String determinePointValue( PointDataMessage point ) 
 {
 	java.text.DecimalFormat formatter = 
 				new java.text.DecimalFormat("####.##");
@@ -147,7 +147,7 @@ private Object[] getDeviceNameAndPointName( long id )
  * Creation date: (3/22/00 3:02:24 PM)
  * @param mpc com.cannontech.message.dispatch.message.Multi
  */
-public void receivedDBChangMsg( DBChangeMsg msg ) 
+public void receivedDBChangMsg( DBChangeMessage msg ) 
 {
 /*	com.cannontech.clientutils.CTILogger.info("DATABASE CHANGE RECEIVED DB = "+ msg.getDatabase() );
 	com.cannontech.clientutils.CTILogger.info("				     DbType = " + msg.getDBType() );
@@ -162,7 +162,7 @@ public void receivedDBChangMsg( DBChangeMsg msg )
  * Creation date: (3/22/00 3:02:24 PM)
  * @param mpc com.cannontech.message.dispatch.message.Multi
  */
-public void receivedPointData( PointData point ) 
+public void receivedPointData( PointDataMessage point ) 
 {   
 /*  com.cannontech.clientutils.CTILogger.info("POINTDATA RECEIVED -- PointID = " + point.getId() );
     com.cannontech.clientutils.CTILogger.info("                     Value = " + point.getValue() );
@@ -199,7 +199,7 @@ public void receivedPointData( PointData point )
  * Creation date: (3/22/00 3:02:24 PM)
  * @param mpc com.cannontech.message.dispatch.message.Multi
  */
-public void receivedSignal( Signal point ) 
+public void receivedSignal( SignalMessage point ) 
 {
 /*  com.cannontech.clientutils.CTILogger.info("SIGNAL RECEIVED for ptID = "+ point.getId() );
     com.cannontech.clientutils.CTILogger.info("           classification = "+ point.getClassification());
@@ -213,10 +213,10 @@ public void receivedSignal( Signal point )
     com.cannontech.clientutils.CTILogger.info("                     User = "+ point.getUser());
 */
 
-    if((point.getTags() & Signal.MASK_ANY_ALARM) != 0) 
+    if((point.getTags() & SignalMessage.MASK_ANY_ALARM) != 0) 
     {
         
-        Object[] names = getDeviceNameAndPointName( point.getPointID() );       
+        Object[] names = getDeviceNameAndPointName( point.getPointId() );       
         
         // make sure we have a device name and point name
         if( names[0] != null && names[1] != null )
@@ -225,15 +225,15 @@ public void receivedSignal( Signal point )
                 CommonUtils.formatString( CommonUtils.formatDate( point.getTimeStamp() ), Logger.TIMESTAMP_LENGTH ) + " " +
                 CommonUtils.formatString( names[0].toString(), Logger.DEVICENAME_LENGTH ) + " " +
                 CommonUtils.formatString( names[1].toString(), Logger.POINTNAME_LENGTH ),
-                point.getCategoryID() );
+                point.getCategoryId() );
             
-             CTILogger.info(names[0] +" "+ names[1]+ " " + point.getDescription()+ " "+ point.getAction()+ " "+ point.getCategoryID());
+             CTILogger.info(names[0] +" "+ names[1]+ " " + point.getDescription()+ " "+ point.getAction()+ " "+ point.getCategoryId());
             
              outStream.printTextLine(
                 "                     " +
                 CommonUtils.formatString( point.getDescription(), Logger.DESCRIPTION_LENGTH ) + " " +
                 CommonUtils.formatString( point.getAction(), Logger.ACTION_LENGTH ),
-                point.getCategoryID() );
+                point.getCategoryId() );
             
         }
         try

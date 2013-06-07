@@ -5,11 +5,11 @@ package com.cannontech.macs.debug;
  * Creation date: (3/5/2001 10:36:05 AM)
  * @author: 
  */
-import com.cannontech.message.macs.message.Schedule;
+import com.cannontech.messaging.message.macs.ScheduleMessage;
 
 public class ScheduleDebugViewer extends com.cannontech.debug.gui.AbstractListDataViewer 
 {
-	private Schedule schedule = null;
+	private ScheduleMessage schedule = null;
 /**
  * ScheduleDebugViewer constructor comment.
  */
@@ -93,7 +93,7 @@ public Object getValue() {
  */
 public void setValue(Object o) 
 {
-	schedule = (Schedule)o;
+	schedule = (ScheduleMessage)o;
 	java.util.Vector data = new java.util.Vector(30);
 
 	try

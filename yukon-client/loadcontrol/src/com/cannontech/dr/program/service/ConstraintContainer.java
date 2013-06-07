@@ -3,8 +3,8 @@ package com.cannontech.dr.program.service;
 import java.util.Map;
 
 import com.cannontech.common.util.ResolvableTemplate;
-import com.cannontech.loadcontrol.messages.ConstraintError;
-import com.cannontech.loadcontrol.messages.ConstraintViolation;
+import com.cannontech.messaging.message.loadcontrol.data.ConstraintError;
+import com.cannontech.messaging.message.loadcontrol.data.ConstraintViolation;
 
 public class ConstraintContainer {
 	

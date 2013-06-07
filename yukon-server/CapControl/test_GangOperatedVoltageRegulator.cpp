@@ -30,10 +30,6 @@ struct TestCtiCapController : public CtiCapController
         {
             delete p;
         }
-        for each ( CtiMessage *p in eventMessages )
-        {
-            delete p;
-        }
     }
 
     virtual void sendMessageToDispatch(CtiMessage* message)
@@ -44,14 +40,14 @@ struct TestCtiCapController : public CtiCapController
     {
         requestMessages.push_back(pilRequest);
     }
-    virtual void sendEventLogMessage(CtiMessage* message)
+    virtual void enqueueEventLogEntry(const Cti::CapControl::EventLogEntry &event)
     {
-        eventMessages.push_back(message);
+        eventMessages.push_back(event);
     }
 
     std::vector<CtiMessage*>    signalMessages;
     std::vector<CtiRequestMsg*> requestMessages;
-    std::vector<CtiMessage*>    eventMessages;
+    Cti::CapControl::EventLogEntries eventMessages;
 };
 
 
@@ -210,12 +206,10 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_TapUp_Success)
 
     BOOST_REQUIRE_EQUAL( 1, capController.eventMessages.size() );
 
-    CtiCCEventLogMsg * eventMsg = dynamic_cast<CtiCCEventLogMsg *>( capController.eventMessages.front() );
+    const Cti::CapControl::EventLogEntry eventMsg = capController.eventMessages.front();
 
-    BOOST_REQUIRE( eventMsg );
-
-    BOOST_CHECK_EQUAL( capControlIvvcTapOperation, eventMsg->getEventType() );
-    BOOST_CHECK_EQUAL( "Raise Tap Position", eventMsg->getText() );
+    BOOST_CHECK_EQUAL( capControlIvvcTapOperation, eventMsg.eventType );
+    BOOST_CHECK_EQUAL( "Raise Tap Position", eventMsg.text );
 }
 
 
@@ -274,12 +268,10 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_TapDown_Success)
 
     BOOST_REQUIRE_EQUAL( 1, capController.eventMessages.size() );
 
-    CtiCCEventLogMsg * eventMsg = dynamic_cast<CtiCCEventLogMsg *>( capController.eventMessages.front() );
+    const Cti::CapControl::EventLogEntry eventMsg = capController.eventMessages.front();
 
-    BOOST_REQUIRE( eventMsg );
-
-    BOOST_CHECK_EQUAL( capControlIvvcTapOperation, eventMsg->getEventType() );
-    BOOST_CHECK_EQUAL( "Lower Tap Position", eventMsg->getText() );
+    BOOST_CHECK_EQUAL( capControlIvvcTapOperation, eventMsg.eventType );
+    BOOST_CHECK_EQUAL( "Lower Tap Position", eventMsg.text );
 }
 
 
@@ -464,12 +456,10 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableRemoteControl_Succe
 
     BOOST_REQUIRE_EQUAL( 1, capController.eventMessages.size() );
 
-    CtiCCEventLogMsg * eventMsg = dynamic_cast<CtiCCEventLogMsg *>( capController.eventMessages.front() );
+    const Cti::CapControl::EventLogEntry eventMsg = capController.eventMessages.front();
 
-    BOOST_REQUIRE( eventMsg );
-
-    BOOST_CHECK_EQUAL( capControlIvvcRemoteControlEvent, eventMsg->getEventType() );
-    BOOST_CHECK_EQUAL( "Enable Remote Control", eventMsg->getText() );
+    BOOST_CHECK_EQUAL( capControlIvvcRemoteControlEvent, eventMsg.eventType );
+    BOOST_CHECK_EQUAL( "Enable Remote Control", eventMsg.text );
 }
 
 
@@ -538,12 +528,10 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableRemoteControl_Succ
 
     BOOST_REQUIRE_EQUAL( 1, capController.eventMessages.size() );
 
-    CtiCCEventLogMsg * eventMsg = dynamic_cast<CtiCCEventLogMsg *>( capController.eventMessages.front() );
+    const Cti::CapControl::EventLogEntry eventMsg = capController.eventMessages.front();
 
-    BOOST_REQUIRE( eventMsg );
-
-    BOOST_CHECK_EQUAL( capControlIvvcRemoteControlEvent, eventMsg->getEventType() );
-    BOOST_CHECK_EQUAL( "Disable Remote Control", eventMsg->getText() );
+    BOOST_CHECK_EQUAL( capControlIvvcRemoteControlEvent, eventMsg.eventType );
+    BOOST_CHECK_EQUAL( "Disable Remote Control", eventMsg.text );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

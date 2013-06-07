@@ -1,5 +1,6 @@
 package com.cannontech.loadcontrol.data;
 
+import com.cannontech.messaging.message.loadcontrol.data.GroupSA305;
 import com.roguewave.vsj.DefineCollectable;
 
 /**
@@ -15,7 +16,7 @@ public class DefColl_LMGroupSA305 extends DefColl_LMDirectGroupBase {
 	}
 
 	public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-		return new LMGroupSA305();
+		return new GroupSA305();
 	}
 
 	public int getCxxClassId() {
@@ -27,7 +28,7 @@ public class DefColl_LMGroupSA305 extends DefColl_LMDirectGroupBase {
 	}
 
 	public Class getJavaClass() {
-		return LMGroupSA305.class;
+		return GroupSA305.class;
 	}
 
 	public void restoreGuts(

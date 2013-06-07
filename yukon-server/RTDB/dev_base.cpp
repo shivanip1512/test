@@ -139,7 +139,7 @@ INT CtiDeviceBase::beginExecuteRequestFromTemplate(CtiRequestMsg *pReq,
 
                 CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
                                                              string(OutMessage->Request.CommandStr),
-                                                             getName() + string(": ") + FormatError(status),
+                                                             getName() + string(": ") + GetErrorString(status),
                                                              status,
                                                              OutMessage->Request.RouteID,
                                                              OutMessage->Request.MacroOffset,
@@ -818,7 +818,7 @@ INT CtiDeviceBase::checkForInhibitedDevice(CtiMessageList &retList, const OUTMES
 
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,          // 20050922 CGP.  TargetId should be used in case the target is an MCT, not the CCU. // getID(),
                                                      string(OutMessage->Request.CommandStr),
-                                                     getName() + string(": ") + FormatError(status),
+                                                     getName() + string(": ") + GetErrorString(status),
                                                      status,
                                                      OutMessage->Request.RouteID,
                                                      OutMessage->Request.MacroOffset,

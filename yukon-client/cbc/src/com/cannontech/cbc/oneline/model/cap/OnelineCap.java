@@ -19,9 +19,9 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
-import com.cannontech.message.capcontrol.streamable.CapBankDevice;
-import com.cannontech.message.capcontrol.streamable.Feeder;
-import com.cannontech.message.capcontrol.streamable.SubBus;
+import com.cannontech.messaging.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.messaging.message.capcontrol.streamable.Feeder;
+import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.loox.jloox.LxComponent;
@@ -109,7 +109,7 @@ public class OnelineCap extends OnelineObject {
         tmStmpImage.setX(infoImage.getX());
         tmStmpImage.setY(infoImage.getY() + 30);
         tmStmpImage.setLinkTo("javascript:void(0)");
-        tmStmpImage.setName(CommandPopups.CAP_TMSTMP + "_" + getStreamable().getControlDeviceID());
+        tmStmpImage.setName(CommandPopups.CAP_TMSTMP + "_" + getStreamable().getControlDeviceId());
     }
 
     private void initCapBankName() {
@@ -151,7 +151,7 @@ public class OnelineCap extends OnelineObject {
         stateImage = new StateImage();
         Feeder feeder = subBus.getCcFeeders().get(currFdrIndex);
         CapBankDevice cap = feeder.getCcCapBanks().get(currentCapIdx);
-        stateImage.setPointID(cap.getStatusPointID().intValue());
+        stateImage.setPointID(cap.getStatusPointId());
         stateImage.setX(imgXPos);
         stateImage.setName(getName());
         stateImage.setCenterY(xImgYPos + 30);
@@ -224,7 +224,7 @@ public class OnelineCap extends OnelineObject {
     }
 
     public boolean isOVUVDisabled() {
-        return getStreamable().getOvUVDisabled().booleanValue();
+        return getStreamable().getOvUVDisabled();
     }
 
     public boolean isStandalone() {

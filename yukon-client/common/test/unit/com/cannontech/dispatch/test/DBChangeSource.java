@@ -1,0 +1,83 @@
+package com.cannontech.dispatch.test;
+
+/**
+ * This type was created in VisualAge.
+ */
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.dispatch.DispatchClientConnection;
+
+public class DBChangeSource {
+/**
+ * This method was created in VisualAge.
+ * @param args java.lang.String[]
+ */
+public static void main(String[] args) {
+
+	if( args.length != 4 )
+	{
+		CTILogger.info("Usage:  DBChangeSource vangoghmachine port numberofchanges delay");
+		CTILogger.info("specify numberofchanges = -1 to keep sending changes forever");
+		CTILogger.info("note that port 1510 has been the default");
+		System.exit(0);
+	}
+
+	String vanGogh = args[0];
+	int port = (Integer.decode(args[1])).intValue();
+	int numChanges = (Integer.decode(args[2])).intValue();
+	int delay = (Integer.decode(args[3])).intValue();
+
+	boolean forever = false;
+
+	if( numChanges == -1 )
+	 	forever = true;
+	
+	DispatchClientConnection conn = new DispatchClientConnection();
+
+	conn.setHost(vanGogh);
+	conn.setPort(port);
+
+	try
+	{
+		conn.connect();
+	}
+	catch( java.io.IOException e )
+	{
+		CTILogger.error( e.getMessage(), e );
+		System.exit(0);
+	}
+
+	//First do a registration
+	CTILogger.info("Registering client with vangogh");
+	com.cannontech.messaging.message.dispatch.RegistrationMessage reg = new com.cannontech.messaging.message.dispatch.RegistrationMessage();
+	reg.setAppName("Datbase Change Source - Java" + (new java.util.Date()).getTime() );
+	reg.setAppIsUnique(0);
+	reg.setAppKnownPort(0);
+	reg.setAppExpirationDelay( 1000000 );
+
+	conn.write( reg );
+
+	//Send changes
+	int numSent = 0;
+	
+	while( forever || numSent < numChanges )
+	{
+		//com.cannontech.message.dispatch.message.DBChangeMsg dbChange = new com.cannontech.message.dispatch.message.DBChangeMsg();
+		//dbChange.setDatabase(com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_ALL_DB);
+		//dbChange.setDBType(com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD);
+		//conn.write( dbChange );
+		numSent++;
+		CTILogger.info("Sent change #" + numSent);
+		try
+		{
+			Thread.sleep(delay);
+		}
+		catch( InterruptedException e )
+		{
+			CTILogger.error( e.getMessage(), e );
+		}
+	}
+
+	System.exit(0);
+
+}
+}

@@ -8,7 +8,7 @@
 
 using std::endl;
 
-RWDEFINE_COLLECTABLE( ItemCommand, ITEM_COMMAND_MSG_ID )
+DEFINE_COLLECTABLE( ItemCommand, ITEM_COMMAND_MSG_ID )
 
 ItemCommand::ItemCommand() :
     Inherited()
@@ -33,7 +33,7 @@ ItemCommand::~ItemCommand()
 
 }
 
-int ItemCommand::getItemId()
+int ItemCommand::getItemId() const
 {
     return _itemId;
 }
@@ -41,24 +41,6 @@ int ItemCommand::getItemId()
 void ItemCommand::setItemId(int itemId)
 {
     _itemId = itemId;
-}
-
-void ItemCommand::restoreGuts(RWvistream& iStream)
-{
-    Inherited::restoreGuts(iStream);
-
-    iStream >> _itemId;
-
-    return;
-}
-
-void ItemCommand::saveGuts(RWvostream& oStream) const
-{
-    Inherited::saveGuts(oStream);
-
-    oStream << _itemId;
-
-    return;
 }
 
 ItemCommand& ItemCommand::operator=(const ItemCommand& right)

@@ -10,7 +10,7 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
-import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
 
 public class PriorityFilter implements UiFilter<DisplayablePao> {
     private ControlAreaService controlAreaService;
@@ -30,7 +30,7 @@ public class PriorityFilter implements UiFilter<DisplayablePao> {
 
             @Override
             public boolean matches(DisplayablePao pao) {
-                LMControlArea controlArea = controlAreaService.getControlAreaForPao(pao);
+                ControlAreaItem controlArea = controlAreaService.getControlAreaForPao(pao);
                 return controlArea != null
                     && filter.intersects(controlArea.getCurrentPriority() <= 0
                                          ? 1 : controlArea.getCurrentPriority());

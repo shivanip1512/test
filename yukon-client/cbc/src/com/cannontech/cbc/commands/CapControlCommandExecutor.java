@@ -9,20 +9,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.common.util.CommandExecutionException;
-import com.cannontech.message.capcontrol.model.CapControlResponseType;
-import com.cannontech.message.capcontrol.model.CapControlServerResponse;
-import com.cannontech.message.capcontrol.model.CommandResultParticipant;
+import com.cannontech.messaging.message.BaseMessage;
+import com.cannontech.messaging.message.capcontrol.ResponseType;
+import com.cannontech.messaging.message.capcontrol.CommandResultParticipant;
 import com.cannontech.message.util.ConnectionException;
-import com.cannontech.message.util.Message;
-import com.cannontech.message.util.MessageEvent;
-import com.cannontech.message.util.MessageListener;
+import com.cannontech.messaging.message.capcontrol.ServerResponseMessage;
+import com.cannontech.messaging.util.MessageEvent;
+import com.cannontech.messaging.util.MessageListener;
 
 public class CapControlCommandExecutor {
     
 	private CapControlCache cache;
 	private Executor executor;
 
-    public void execute(final Message message) throws CommandExecutionException {
+    public void execute(final BaseMessage message) throws CommandExecutionException {
         try {
             cache.getConnection().write(message);
         } catch (ConnectionException e) {
@@ -30,7 +30,7 @@ public class CapControlCommandExecutor {
         }
     }
     
-    public <T extends Message & CommandResultParticipant> void execute(final T message, final CommandResultCallback callback) {
+    public <T extends BaseMessage & CommandResultParticipant> void execute(final T message, final CommandResultCallback callback) {
         executor.execute(new Runnable() {
             public void run() {
                 
@@ -47,20 +47,20 @@ public class CapControlCommandExecutor {
         });
     }
     
-    public <Q extends Message & CommandResultParticipant, R extends CapControlServerResponse> R blockingExecute(Q messageToSend, Class<R> returnType, CommandResultCallback callback) {
+    public <Q extends BaseMessage & CommandResultParticipant, R extends ServerResponseMessage> R blockingExecute(Q messageToSend, Class<R> returnType, CommandResultCallback callback) {
         
         WaitableCommandResultCallback waitable = new WaitableCommandResultCallback(callback);
         execute(messageToSend, waitable);
         try {
             if (!waitable.await(60)) {
-                CapControlServerResponse timeout = new CapControlServerResponse();
+                ServerResponseMessage timeout = new ServerResponseMessage();
                 timeout.setMessageId(messageToSend.getMessageId());
-                timeout.setResponseType(CapControlResponseType.TIMEOUT);
+                timeout.setResponseType(ResponseType.TIMEOUT);
                 return returnType.cast(timeout);
             }
         } catch (InterruptedException e) {/* Ignore */}
         
-        Message response = waitable.getResponse();
+        BaseMessage response = waitable.getResponse();
         if (returnType.isInstance(response)) {
             R message = returnType.cast(response);
             return message;
@@ -79,8 +79,8 @@ public class CapControlCommandExecutor {
         
         @Override
         public void messageReceived(MessageEvent e) {
-            if (e.getMessage() instanceof CapControlServerResponse) {
-                CapControlServerResponse message = (CapControlServerResponse)e.getMessage();
+            if (e.getMessage() instanceof ServerResponseMessage) {
+                ServerResponseMessage message = (ServerResponseMessage)e.getMessage();
                 if (message.getMessageId() == messageId) {
                     callback.recievedResponse(message);
                     this.removeListener();

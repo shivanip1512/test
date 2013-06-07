@@ -5,8 +5,8 @@ import java.awt.event.ActionListener;
 
 import javax.swing.Timer;
 
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 import com.cannontech.tdc.data.Display;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 
@@ -58,28 +58,28 @@ class TDCDBChangeHandler implements ActionListener
 
 	}
 
-	private boolean hasChangedItem( DBChangeMsg msg, TDCMainPanel tdcPan )
+	private boolean hasChangedItem( DBChangeMessage msg, TDCMainPanel tdcPan )
 	{
-		if( (msg.getDatabase() == DBChangeMsg.CHANGE_ALARM_CATEGORY_DB ||
-			  msg.getDatabase() == DBChangeMsg.CHANGE_POINT_DB ||
-			  msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB ||
-			  msg.getDatabase() == DBChangeMsg.CHANGE_STATE_GROUP_DB) && 
+		if( (msg.getDatabase() == DBChangeMessage.CHANGE_ALARM_CATEGORY_DB ||
+			  msg.getDatabase() == DBChangeMessage.CHANGE_POINT_DB ||
+			  msg.getDatabase() == DBChangeMessage.CHANGE_PAO_DB ||
+			  msg.getDatabase() == DBChangeMessage.CHANGE_STATE_GROUP_DB) && 
 			 (msg.getDbChangeType() == DbChangeType.DELETE ||
 			  msg.getDbChangeType() == DbChangeType.UPDATE) )
 		{
 	
 			//search for specific IDs here
-			if( msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB 
-	          || msg.getDatabase() == DBChangeMsg.CHANGE_POINT_DB )
+			if( msg.getDatabase() == DBChangeMessage.CHANGE_PAO_DB 
+	          || msg.getDatabase() == DBChangeMessage.CHANGE_POINT_DB )
 			{
 				boolean found = false;
 				for( int i = 0; i < tdcPan.getTableDataModel().getRowCount(); i++ )
 				{
-					if( msg.getDatabase() == DBChangeMsg.CHANGE_POINT_DB )
+					if( msg.getDatabase() == DBChangeMessage.CHANGE_POINT_DB )
 						found |= (tdcPan.getTableDataModel().getPointValue(i).getPointID() 
 									 == msg.getId());
 	
-					if( msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB )
+					if( msg.getDatabase() == DBChangeMessage.CHANGE_PAO_DB )
 						found |= (tdcPan.getTableDataModel().getPointValue(i).getDeviceID() 
 									 == msg.getId());
 									 
@@ -99,7 +99,7 @@ class TDCDBChangeHandler implements ActionListener
 	 * Insert the method's description here.
 	 * Creation date: (1/21/00 11:46:00 AM)
 	 */
-	public void processDBChangeMsg( DBChangeMsg msg )
+	public void processDBChangeMsg( DBChangeMessage msg )
 	{	
 		TDCMainFrame.messageLog.addMessage(
 				"Received a Database Change Message from : " +  msg.getUserName() + 
@@ -109,7 +109,7 @@ class TDCDBChangeHandler implements ActionListener
 		//be sure the display we are looking at has data that changed and
 		// it is not a TDC specific change 
 		if( !hasChangedItem(msg, tdcPan) 
-			&& msg.getDatabase() != DBChangeMsg.CHANGE_TDC_DB )
+			&& msg.getDatabase() != DBChangeMessage.CHANGE_TDC_DB )
 		{
 			return;
 		}
@@ -120,8 +120,8 @@ class TDCDBChangeHandler implements ActionListener
 		{
 			synchronized( tdcPan.getTableDataModel() )
 			{
-	         if( msg.getDatabase() == DBChangeMsg.CHANGE_ALARM_CATEGORY_DB
-	         	 || msg.getDatabase() == DBChangeMsg.CHANGE_TDC_DB )
+	         if( msg.getDatabase() == DBChangeMessage.CHANGE_ALARM_CATEGORY_DB
+	         	 || msg.getDatabase() == DBChangeMessage.CHANGE_TDC_DB )
 	         {
 	            //just a try, work in nearly all cases!
 	            Object o = tdcPan.getJComboCurrentDisplay().getSelectedItem();

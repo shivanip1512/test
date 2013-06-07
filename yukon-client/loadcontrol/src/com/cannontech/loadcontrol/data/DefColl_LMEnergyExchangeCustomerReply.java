@@ -8,6 +8,7 @@ import java.util.Date;
 
 import com.cannontech.message.util.CollectionExtracter;
 import com.cannontech.message.util.CollectionInserter;
+import com.cannontech.messaging.message.loadcontrol.data.EnergyExchangeCustomerReply;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -35,7 +36,7 @@ public DefColl_LMEnergyExchangeCustomerReply() {
 	* to be out of sync and the results could be catastrophic.
 	*/
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new LMEnergyExchangeCustomerReply();
+	return new EnergyExchangeCustomerReply();
 }
  /**
 	* Return a Comparator object for the Java class being mapped.
@@ -79,7 +80,7 @@ public String getCxxStringId() {
 	* being mapped.  It is used by CollectableStreamer during registration.
 	*/
 public Class getJavaClass() {
-	return LMEnergyExchangeCustomerReply.class;
+	return EnergyExchangeCustomerReply.class;
 }
  /**
 	* This method will be called by CollectableStreamer to restore the guts,
@@ -89,15 +90,15 @@ public Class getJavaClass() {
 	*/
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMEnergyExchangeCustomerReply reply = (LMEnergyExchangeCustomerReply) obj;
+	EnergyExchangeCustomerReply reply = (EnergyExchangeCustomerReply) obj;
 
-	reply.setCustomerID( new Integer((int)vstr.extractUnsignedInt()) );
-	reply.setOfferID( new Integer((int)vstr.extractUnsignedInt()) );
+	reply.setCustomerId( new Integer((int)vstr.extractUnsignedInt()) );
+	reply.setOfferId( new Integer((int)vstr.extractUnsignedInt()) );
 	reply.setAcceptStatus( (String) vstr.restoreObject(SimpleMappings.CString));
 	reply.setAcceptDateTime( (Date) vstr.restoreObject(SimpleMappings.Time));
 	reply.setRevisionNumber( new Integer((int)vstr.extractUnsignedInt()) );
 	reply.setIpAddressOfAcceptUser( (String) vstr.restoreObject(SimpleMappings.CString));
-	reply.setUserIDName( (String) vstr.restoreObject(SimpleMappings.CString));
+	reply.setUserIdName( (String) vstr.restoreObject(SimpleMappings.CString));
 	reply.setNameOfAcceptPerson( (String) vstr.restoreObject(SimpleMappings.CString));
 	reply.setEnergyExchangeNotes( (String) vstr.restoreObject(SimpleMappings.CString));
     reply.setEnergyExchangeHourlyCustomer( CollectionExtracter.extractVector(vstr, polystr) );
@@ -111,15 +112,15 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	*/
 public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMEnergyExchangeCustomerReply reply = (LMEnergyExchangeCustomerReply) obj;
+	EnergyExchangeCustomerReply reply = (EnergyExchangeCustomerReply) obj;
 	
-	vstr.insertUnsignedLong( reply.getCustomerID().longValue() );
-	vstr.insertUnsignedLong( reply.getOfferID().longValue() );
+	vstr.insertUnsignedLong( reply.getCustomerId() );
+	vstr.insertUnsignedLong( reply.getOfferId());
 	vstr.saveObject( reply.getAcceptStatus(), SimpleMappings.CString );
 	vstr.saveObject( reply.getAcceptDateTime(), SimpleMappings.Time );
-	vstr.insertUnsignedLong( reply.getRevisionNumber().longValue() );
+	vstr.insertUnsignedLong( reply.getRevisionNumber());
 	vstr.saveObject( reply.getIpAddressOfAcceptUser(), SimpleMappings.CString );
-	vstr.saveObject( reply.getUserIDName(), SimpleMappings.CString );
+	vstr.saveObject( reply.getUserIdName(), SimpleMappings.CString );
 	vstr.saveObject( reply.getNameOfAcceptPerson(), SimpleMappings.CString );
 	vstr.saveObject( reply.getEnergyExchangeNotes(), SimpleMappings.CString );
 	//vstr.saveObject( reply.getEnergyExchangeHourlyCustomer(), polystr );

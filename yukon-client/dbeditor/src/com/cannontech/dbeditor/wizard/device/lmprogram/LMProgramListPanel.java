@@ -116,7 +116,7 @@ public Object getValue(Object o)
 		group.setDeviceID( program.getPAObjectID() );
 		group.setGroupOrder( new Integer(i+1) );
 		group.setLmGroupDeviceID( new Integer(
-					((com.cannontech.database.data.lite.LiteYukonPAObject)getAddRemovePanel().rightListGetModel().getElementAt(i)).getYukonID() ) );
+					((com.cannontech.database.data.lite.LiteYukonPAObject)getAddRemovePanel().rightListGetModel().getElementAt(i)).getYukonId() ) );
 		
 		program.getLmProgramStorageVector().addElement( group );
 	}
@@ -486,7 +486,7 @@ public void setValue(Object o)
 		
 		for( int j = 0; j < allItems.size(); j++ )
 		{
-			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)allItems.get(j)).getYukonID() ==
+			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)allItems.get(j)).getYukonId() ==
 				 group.getLmGroupDeviceID().intValue() )
 			{
 				usedItems.add( allItems.get(j) );

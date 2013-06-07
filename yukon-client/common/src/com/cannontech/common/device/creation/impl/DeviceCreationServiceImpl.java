@@ -32,8 +32,8 @@ import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.RfnBase;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.device.range.DlcAddressRangeService;
-import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.util.DbChangeManager;
 
 public class DeviceCreationServiceImpl implements DeviceCreationService {
 

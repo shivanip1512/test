@@ -3,6 +3,8 @@ package com.cannontech.message.notif;
 import java.io.IOException;
 
 import com.cannontech.message.util.DefineCollectableMessage;
+import com.cannontech.messaging.message.notif.CallStatus;
+import com.cannontech.messaging.message.notif.VoiceCompletedMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
@@ -15,7 +17,7 @@ public class DefColl_NotifCompletedMsg extends DefineCollectableMessage {
     public static final int MSG_ID = 705;
 
     public Object create(VirtualInputStream vstr) throws IOException {
-        return new NotifCompletedMsg();
+        return new VoiceCompletedMessage();
     }
 
     public Comparator getComparator() {
@@ -39,27 +41,26 @@ public class DefColl_NotifCompletedMsg extends DefineCollectableMessage {
     }
 
     public Class getJavaClass() {
-        return NotifCompletedMsg.class;
+        return VoiceCompletedMessage.class;
     }
 
     public void restoreGuts(Object obj, VirtualInputStream vstr,
             CollectableStreamer polystr) throws IOException {
         super.restoreGuts(obj, vstr, polystr);
-        NotifCompletedMsg msg = (NotifCompletedMsg) obj;
+        VoiceCompletedMessage msg = (VoiceCompletedMessage) obj;
 
-        msg.token = (String) vstr.restoreObject(SimpleMappings.CString);
+        msg.setCallToken ((String) vstr.restoreObject(SimpleMappings.CString));
         String callStateStr = (String) vstr.restoreObject(SimpleMappings.CString);
-		msg.status = 
-            NotifCallEvent.valueOf(callStateStr);
+		msg.setCallStatus(CallStatus.valueOf(callStateStr));
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr,
             CollectableStreamer polystr) throws IOException {
         super.saveGuts(obj, vstr, polystr);
-        NotifCompletedMsg msg = (NotifCompletedMsg) obj;
+        VoiceCompletedMessage msg = (VoiceCompletedMessage) obj;
 
-        vstr.saveObject(msg.token, SimpleMappings.CString);
-        vstr.saveObject(msg.status.name(), SimpleMappings.CString);
+        vstr.saveObject(msg.getCallToken(), SimpleMappings.CString);
+        vstr.saveObject(msg.getCallStatus().name(), SimpleMappings.CString);
 
     }
 

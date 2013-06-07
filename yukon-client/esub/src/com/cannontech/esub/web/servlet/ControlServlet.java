@@ -18,7 +18,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.util.UpdateUtil;
-import com.cannontech.message.util.Command;
+import com.cannontech.messaging.message.CommandMessage;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
@@ -101,9 +101,9 @@ public class ControlServlet extends HttpServlet {
 		opArgList.add(pointID);
 		opArgList.add(rawstate);
 			
-		Command cmd = new Command();
+		CommandMessage cmd = new CommandMessage();
 		cmd.setUserName(user.getUsername());
-		cmd.setOperation( Command.CONTROL_REQUEST );
+		cmd.setOperation( CommandMessage.CONTROL_REQUEST );
 		cmd.setOpArgList( opArgList );
 		cmd.setTimeStamp( new java.util.Date() );
 		

@@ -95,7 +95,7 @@
           <%
                         {
                         
-                                LMProgramCurtailment[] curtailProgs = cache.getEnergyCompanyCurtailmentPrograms(energyCompanyID);
+                                ProgramCurtailment[] curtailProgs = cache.getEnergyCompanyCurtailmentPrograms(energyCompanyID);
 
                                 for( int i = 0; i < curtailProgs.length; i++ )
                                 {
@@ -112,7 +112,7 @@
                           %>
           <tr> 
            
-            <td width="25%" class="TableCell"><a href="oper_mand.jsp?tab=current&prog=<%= curtailProgs[i].getYukonID() %>" class="Link1"><%= curtailProgs[i].getYukonName() %></a></td>
+            <td width="25%" class="TableCell"><a href="oper_mand.jsp?tab=current&prog=<%= curtailProgs[i].getYukonId() %>" class="Link1"><%= curtailProgs[i].getYukonName() %></a></td>
             <td width="25%" class="TableCell"><%= timePart.format(curtailProgs[i].getNotificationDateTime().getTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(curtailProgs[i].getNotificationDateTime().getTime()) %></td>
             <td width="25%" class="TableCell"><%= timePart.format(curtailProgs[i].getCurtailmentStartTime().getTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(curtailProgs[i].getCurtailmentStartTime().getTime()) %></td>
             <td width="25%" class="TableCell"><%= curtailProgs[i].getDuration() / 60 %></td>
@@ -136,11 +136,11 @@
         </tr>
         <%  
                         {                        
-                                LMProgramCurtailment[] curtailProgs = cache.getEnergyCompanyCurtailmentPrograms(energyCompanyID);
+                                ProgramCurtailment[] curtailProgs = cache.getEnergyCompanyCurtailmentPrograms(energyCompanyID);
 								
                                 for( int i = 0; i < curtailProgs.length; i++ )
                                 {
-                                	LMProgramCurtailment prog = curtailProgs[i];
+                                	ProgramCurtailment prog = curtailProgs[i];
                                  	
                                     // Check if it is tomorrow                                   
                                     GregorianCalendar nowCal = new GregorianCalendar();
@@ -155,7 +155,7 @@
                           %>
         <tr> 
          
-          <td width="25%" height="23" class="TableCell"><a href="oper_mand.jsp?tab=current&prog=<%= curtailProgs[i].getYukonID() %>" class="Link1"><%= curtailProgs[i].getYukonName() %></a></td>
+          <td width="25%" height="23" class="TableCell"><a href="oper_mand.jsp?tab=current&prog=<%= curtailProgs[i].getYukonId() %>" class="Link1"><%= curtailProgs[i].getYukonName() %></a></td>
           <td width="25%" height="23" class="TableCell"><%= timePart.format(curtailProgs[i].getNotificationDateTime().getTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(curtailProgs[i].getNotificationDateTime().getTime()) %></td>
           <td width="25%" height="23" class="TableCell"><%= timePart.format(curtailProgs[i].getCurtailmentStartTime().getTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(curtailProgs[i].getCurtailmentStartTime().getTime()) %></td>
           <td width="25%" height="23" class="TableCell"><%= curtailProgs[i].getDuration() / 60 %></td>

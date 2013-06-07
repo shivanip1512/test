@@ -157,9 +157,9 @@ import com.cannontech.dbeditor.wizard.user.LoginGroupWizardPanel;
 import com.cannontech.dbeditor.wizard.user.UserGroupWizardPanel;
 import com.cannontech.dbeditor.wizard.user.YukonUserWizardPanel;
 import com.cannontech.debug.gui.AboutDialog;
-import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.dispatch.DispatchClientConnection;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.spring.YukonSpringHook;
@@ -574,7 +574,7 @@ private void displayAWizardPanel(JMenuItem item)
 		if (selectedItem instanceof LiteYukonPAObject )
 		{
 			showWizardPanel(
-				new PointWizardPanel(new Integer( ((LiteYukonPAObject) selectedItem).getYukonID()) ) );
+				new PointWizardPanel(new Integer( ((LiteYukonPAObject) selectedItem).getYukonId()) ) );
 		}
 		else if (selectedItem instanceof LitePoint )
 		{
@@ -616,7 +616,7 @@ private void displayAWizardPanel(JMenuItem item)
 		if (selectedItem instanceof LiteYukonPAObject )
 		{
 			showWizardPanel(
-				new LMPointWizardPanel(new Integer( ((LiteYukonPAObject) selectedItem).getYukonID()) ) );
+				new LMPointWizardPanel(new Integer( ((LiteYukonPAObject) selectedItem).getYukonId()) ) );
 		}
 		else if (selectedItem instanceof LitePoint )
 		{
@@ -1034,7 +1034,7 @@ private void deleteDBPersistent( DBPersistent deletable )
 	{
 	    // get dbChangeMsgs BEFORE execute
         // this may be a delete and the dbChangeMsgs may not be retrievable after execute
-	    DBChangeMsg[] msgs = getDBChangeMsgs(deletable, DbChangeType.DELETE);
+	    DBChangeMessage[] msgs = getDBChangeMsgs(deletable, DbChangeType.DELETE);
 	    
 		Transaction t = Transaction.createTransaction(Transaction.DELETE, deletable);
 		
@@ -1372,15 +1372,15 @@ public void fireMessage(MessageEvent event) {
  * @param changeType
  * @return
  */
-private DBChangeMsg[] getDBChangeMsgs(DBPersistent object, DbChangeType dbChangeType) {
+private DBChangeMessage[] getDBChangeMsgs(DBPersistent object, DbChangeType dbChangeType) {
     
-    DBChangeMsg[] dbChanges = null;
+    DBChangeMessage[] dbChanges = null;
     
     if( object instanceof CTIDbChange ) {
         dbChanges = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)object, dbChangeType );
     } else {
         throw new IllegalArgumentException("Non " +CTIDbChange.class.getName() + 
-         " class tried to generate a " + DBChangeMsg.class.getName() + " its class was : " + object.getClass().getName() );
+         " class tried to generate a " + DBChangeMessage.class.getName() + " its class was : " + object.getClass().getName() );
     }
     
     return dbChanges;
@@ -1392,7 +1392,7 @@ private DBChangeMsg[] getDBChangeMsgs(DBPersistent object, DbChangeType dbChange
  * @param changeType
  * @param dbChange
  */
-private void queueDBChangeMsgs(DBPersistent object, DbChangeType dbChangeType, DBChangeMsg[] dbChange) 
+private void queueDBChangeMsgs(DBPersistent object, DbChangeType dbChangeType, DBChangeMessage[] dbChange) 
 {
 	for( int i = 0; i < dbChange.length; i++ )
 	{
@@ -1406,7 +1406,7 @@ private void queueDBChangeMsgs(DBPersistent object, DbChangeType dbChangeType, D
 		}
 
         // Special case for point deletion
-        if (lBase == null && dbChange[i].getDatabase() == DBChangeMsg.CHANGE_POINT_DB
+        if (lBase == null && dbChange[i].getDatabase() == DBChangeMessage.CHANGE_POINT_DB
 		        && dbChangeType == DbChangeType.DELETE && object instanceof PointBase) {
 		    
 		    lBase = LiteFactory.createLite(object);
@@ -1427,7 +1427,7 @@ private void queueDBChangeMsgs(DBPersistent object, DbChangeType dbChangeType, D
  */
 private void generateDBChangeMsg( DBPersistent object, DbChangeType dbChangeType  ) {
     
-    DBChangeMsg[] msgs = getDBChangeMsgs(object, dbChangeType);
+    DBChangeMessage[] msgs = getDBChangeMsgs(object, dbChangeType);
     queueDBChangeMsgs(object, dbChangeType, msgs);
 }
 	
@@ -1817,7 +1817,7 @@ private int getVisibleEditorFrames()
  * Handles incoming database change messages.
  */
 @Override
-public void handleDBChangeMsg( final DBChangeMsg msg, final LiteBase liteBase ) {
+public void handleDBChangeMsg( final DBChangeMessage msg, final LiteBase liteBase ) {
 	//see if the message originated from us
 	if( !(msg.getSource().equals(CtiUtilities.DEFAULT_MSG_SOURCE) ) ) {
 	    SwingUtilities.invokeLater(new Runnable() {
@@ -1845,7 +1845,7 @@ public void handleDBChangeMsg( final DBChangeMsg msg, final LiteBase liteBase ) 
         		}
         
         		//If we get an id of zero, then refresh the whole thing including cache.
-        		if(msg.getId() == DBChangeMsg.RELOAD_ALL) {
+        		if(msg.getId() == DBChangeMessage.RELOAD_ALL) {
         			//refresh the cache and the connections state
         			DefaultDatabaseCache.getInstance().releaseAllCache();
         				
@@ -1857,7 +1857,7 @@ public void handleDBChangeMsg( final DBChangeMsg msg, final LiteBase liteBase ) 
         		}
         
         		//display a message on the message panel telling us about this event...Only if its a Device Change OR INSERT/UPDATE...other wise don't bother printing out Point Add messages.
-        		if(msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB  || 
+        		if(msg.getDatabase() == DBChangeMessage.CHANGE_PAO_DB  || 
         		        msg.getDbChangeType() == DbChangeType.DELETE ||
         		        msg.getDbChangeType() == DbChangeType.UPDATE ) {
         		    fireMessage( new MessageEvent( DatabaseEditor.this, txtMsg.toString(), MessageEvent.INFORMATION_MESSAGE) );
@@ -2853,7 +2853,7 @@ private void showWizardPanel(WizardPanel wizard) {
 @Override
 public void update(java.util.Observable o, Object arg) 
 {
-	if( o instanceof ClientConnection )
+	if( o instanceof DispatchClientConnection )
 	{
 		updateConnectionStatus((IServerConnection) o);
 	}

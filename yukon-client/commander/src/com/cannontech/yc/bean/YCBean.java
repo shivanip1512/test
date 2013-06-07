@@ -25,11 +25,11 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.RouteTypes;
-import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.message.porter.message.Return;
-import com.cannontech.message.util.Message;
-import com.cannontech.message.util.MessageEvent;
-import com.cannontech.message.util.MessageListener;
+import com.cannontech.messaging.message.BaseMessage;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.messaging.message.porter.ReturnMessage;
+import com.cannontech.messaging.util.MessageEvent;
+import com.cannontech.messaging.util.MessageListener;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 
@@ -100,10 +100,10 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	 */
 	public void messageReceived(MessageEvent e)
 	{
-		Message in = e.getMessage();
-		if( in instanceof Return) {
+		BaseMessage in = e.getMessage();
+		if( in instanceof ReturnMessage) {
 		    
-			Return returnMsg = (Return)in;
+			ReturnMessage returnMsg = (ReturnMessage)in;
 			if ( returnMsg.getStatus() != 0) {	//Error Message!
 
 				if( getErrorMsg().indexOf(returnMsg.getCommandString()) < 0) {	//command string not displayed yet
@@ -126,7 +126,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 				    
 					Object o = returnMsg.getVector().elementAt(i);
 					
-					if (o instanceof PointData) {
+					if (o instanceof PointDataMessage) {
 						//Clear the Error Message Log, we did eventually read the meter
 						//This is a request from Jeff W. to only display the error messages when no data is returned.
 						clearErrorMsg();

@@ -9,7 +9,7 @@ import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
-import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
 
 public class StateFilter implements UiFilter<DisplayablePao> {
     private ControlAreaService controlAreaService;
@@ -31,10 +31,10 @@ public class StateFilter implements UiFilter<DisplayablePao> {
 
             @Override
             public boolean matches(DisplayablePao pao) {
-                LMControlArea controlArea = controlAreaService.getControlAreaForPao(pao);
+                ControlAreaItem controlArea = controlAreaService.getControlAreaForPao(pao);
                 return controlArea != null
-                    && (controlArea.getControlAreaState() != LMControlArea.STATE_INACTIVE && showActive
-                    || controlArea.getControlAreaState() == LMControlArea.STATE_INACTIVE && !showActive);
+                    && (controlArea.getControlAreaState() != ControlAreaItem.STATE_INACTIVE && showActive
+                    || controlArea.getControlAreaState() == ControlAreaItem.STATE_INACTIVE && !showActive);
             }});
         return retVal;
     }

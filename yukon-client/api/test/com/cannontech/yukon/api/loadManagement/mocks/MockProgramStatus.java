@@ -3,8 +3,8 @@ package com.cannontech.yukon.api.loadManagement.mocks;
 import java.util.Date;
 
 import com.cannontech.common.util.Iso8601DateUtil;
-import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
+import com.cannontech.messaging.message.loadcontrol.data.Program;
 
 public class MockProgramStatus extends ProgramStatus {
 
@@ -30,7 +30,7 @@ public class MockProgramStatus extends ProgramStatus {
         return programName;
     }
     public boolean isActive() {
-        return programStatus == LMProgramBase.STATUS_ACTIVE;
+        return programStatus == Program.STATUS_ACTIVE;
     }
     public Date getStartTime() {
         return startDateTime;

@@ -26,7 +26,7 @@ using std::endl;
     Base class for all Load Management messages
 ===========================================================================*/
 
-RWDEFINE_COLLECTABLE( CtiLMMessage, CTILMMESSAGE_ID )
+DEFINE_COLLECTABLE( CtiLMMessage, CTILMMESSAGE_ID )
 
 /*---------------------------------------------------------------------------
     getMessage
@@ -36,35 +36,6 @@ RWDEFINE_COLLECTABLE( CtiLMMessage, CTILMMESSAGE_ID )
 const string& CtiLMMessage::getMessage() const
 {
     return _message;
-}
-
-
-/*---------------------------------------------------------------------------
-    restoreGuts
-
-    Restores the state of self given a RWvistream
----------------------------------------------------------------------------*/
-void CtiLMMessage::restoreGuts(RWvistream& strm)
-{
-    CtiMessage::restoreGuts(strm);
-
-    strm >> _message;
-
-    return;
-}
-
-/*---------------------------------------------------------------------------
-    saveGuts
-
-    Saves the state of self into the given RWvostream
----------------------------------------------------------------------------*/
-void CtiLMMessage::saveGuts(RWvostream& strm) const
-{
-    CtiMessage::saveGuts(strm);
-
-    strm << _message;
-
-    return;
 }
 
 /*---------------------------------------------------------------------------
@@ -81,7 +52,7 @@ CtiLMMessage::CtiLMMessage(const string& message) :  _message(message)
     Represents a command message to Load Management
 ===========================================================================*/
 
-RWDEFINE_COLLECTABLE( CtiLMCommand, CTILMCOMMAND_ID )
+DEFINE_COLLECTABLE( CtiLMCommand, CTILMCOMMAND_ID )
 
 /*---------------------------------------------------------------------------
     Destructor
@@ -150,43 +121,6 @@ LONG CtiLMCommand::getAuxId() const
     return _auxid;
 }
 
-/*-------------------------------------------------------------------------
-    restoreGuts
-
-    Restores the state of self from the given RWvistream
----------------------------------------------------------------------------*/
-void CtiLMCommand::restoreGuts(RWvistream& strm)
-{
-    CtiLMMessage::restoreGuts(strm);
-    strm >> _command
-    >> _paoid
-    >> _number
-    >> _value
-    >> _count
-    >> _auxid;
-
-    return;
-}
-
-/*---------------------------------------------------------------------------
-    saveGuts
-
-    Saves the state of self into the given RWvostream
----------------------------------------------------------------------------*/
-void CtiLMCommand::saveGuts(RWvostream& strm) const
-{
-    CtiLMMessage::saveGuts(strm);
-
-    strm << _command
-    << _paoid
-    << _number
-    << _value
-    << _count
-    << _auxid;
-
-    return;
-}
-
 /*---------------------------------------------------------------------------
     operator=
 ---------------------------------------------------------------------------*/
@@ -213,7 +147,7 @@ CtiLMCommand& CtiLMCommand::operator=(const CtiLMCommand& right)
     Client
 ===========================================================================*/
 
-RWDEFINE_COLLECTABLE( CtiLMManualControlRequest, CTILMMANUALCONTROLREQUEST_ID )
+DEFINE_COLLECTABLE( CtiLMManualControlRequest, CTILMMANUALCONTROLREQUEST_ID )
 
 CtiLMManualControlRequest::CtiLMManualControlRequest(LONG cmd,
                                                      LONG pao_id,
@@ -380,56 +314,6 @@ CtiMessage* CtiLMManualControlRequest::replicateMessage() const
     return CTIDBG_new CtiLMManualControlRequest(*this);
 }
 
-/*-------------------------------------------------------------------------
-    restoreGuts
-
-    Restores the state of self from the given RWvistream
----------------------------------------------------------------------------*/
-void CtiLMManualControlRequest::restoreGuts(RWvistream& strm)
-{
-    CtiLMMessage::restoreGuts(strm);
-    CtiTime tempTime1;
-    CtiTime tempTime2;
-    CtiTime tempTime3;
-
-    strm >> _command
-    >> _paoid
-    >> tempTime1
-    >> tempTime2
-    >> tempTime3
-    >> _startgear
-    >> _startpriority
-    >> _additionalinfo
-    >>_constraint_cmd;
-
-    _notifytime = CtiTime(tempTime1);
-    _starttime = CtiTime(tempTime2);
-    _stoptime = CtiTime(tempTime3);
-    return;
-}
-
-/*---------------------------------------------------------------------------
-    saveGuts
-
-    Saves the state of self into the given RWvostream
----------------------------------------------------------------------------*/
-void CtiLMManualControlRequest::saveGuts(RWvostream& strm) const
-{
-    CtiLMMessage::saveGuts(strm);
-
-    strm << _command
-    << _paoid
-    << _notifytime
-    << _starttime
-    << _stoptime
-    << _startgear
-    << _startpriority
-    << _additionalinfo
-    << _constraint_cmd;
-
-    return;
-}
-
 /*---------------------------------------------------------------------------
     operator=
 ---------------------------------------------------------------------------*/
@@ -459,7 +343,7 @@ CtiLMManualControlRequest& CtiLMManualControlRequest::operator=(const CtiLMManua
     Server
 ===========================================================================*/
 
-RWDEFINE_COLLECTABLE( CtiLMManualControlResponse, CTILMMANUALCONTROLRESPONSE_ID )
+DEFINE_COLLECTABLE( CtiLMManualControlResponse, CTILMMANUALCONTROLRESPONSE_ID )
 
 CtiLMManualControlResponse::CtiLMManualControlResponse(const CtiLMManualControlResponse& resp)
 {
@@ -472,39 +356,6 @@ CtiLMManualControlResponse::CtiLMManualControlResponse(const CtiLMManualControlR
 CtiMessage* CtiLMManualControlResponse::replicateMessage() const
 {
     return CTIDBG_new CtiLMManualControlResponse(*this);
-}
-
-/*-------------------------------------------------------------------------
-    restoreGuts
-
-    Restores the state of self from the given RWvistream
----------------------------------------------------------------------------*/
-void CtiLMManualControlResponse::restoreGuts(RWvistream& strm)
-{
-    CtiLMMessage::restoreGuts(strm);
-    _constraintViolations.clear();
-
-    strm >> _paoid;
-    strm >> _constraintViolations;
-    strm >> _best_fit_action;
-
-    return;
-}
-
-/*---------------------------------------------------------------------------
-    saveGuts
-
-    Saves the state of self into the given RWvostream
----------------------------------------------------------------------------*/
-void CtiLMManualControlResponse::saveGuts(RWvostream& strm) const
-{
-    CtiLMMessage::saveGuts(strm);
-
-    strm << _paoid;
-    strm << _constraintViolations;
-    strm << _best_fit_action;
-
-    return;
 }
 
 /*---------------------------------------------------------------------------
@@ -591,7 +442,7 @@ CtiLMManualControlResponse& CtiLMManualControlResponse::setConstraintViolations(
     Client
 ===========================================================================*/
 
-RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeControlMsg, CTILMENERGYEXCHANGECONTROLMSG_ID )
+DEFINE_COLLECTABLE( CtiLMEnergyExchangeControlMsg, CTILMENERGYEXCHANGECONTROLMSG_ID )
 
 /*---------------------------------------------------------------------------
     Destructor
@@ -706,70 +557,44 @@ LONG CtiLMEnergyExchangeControlMsg::getPriceOffered(int i) const
     }
 }
 
-/*-------------------------------------------------------------------------
-    restoreGuts
-
-    Restores the state of self from the given RWvistream
----------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeControlMsg::restoreGuts(RWvistream& strm)
+vector<DOUBLE> CtiLMEnergyExchangeControlMsg::getAmountsRequested() const
 {
-    CtiLMMessage::restoreGuts(strm);
-    CtiTime tempTime1;
-    CtiTime tempTime2;
-    CtiTime tempTime3;
-
-    strm >> _command
-    >> _paoid
-    >> _offerid
-    >> tempTime1
-    >> tempTime2
-    >> tempTime3
-    >> _additionalinfo;
-
-    for( LONG i=0;i<HOURS_IN_DAY;i++ )
-    {
-        strm >> _amountsrequested[i];
-    }
-
-    for( LONG j=0;j<HOURS_IN_DAY;j++ )
-    {
-        strm >> _pricesoffered[j];
-    }
-
-    _offerdate = CtiTime(tempTime1);
-    _notificationdatetime = CtiTime(tempTime2);
-    _expirationdatetime = CtiTime(tempTime3);
-    return;
+    return vector<DOUBLE>( _amountsrequested, _amountsrequested + HOURS_IN_DAY );
 }
 
-/*---------------------------------------------------------------------------
-    saveGuts
-
-    Saves the state of self into the given RWvostream
----------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeControlMsg::saveGuts(RWvostream& strm) const
+vector<LONG> CtiLMEnergyExchangeControlMsg::getPricesOffered() const
 {
-    CtiLMMessage::saveGuts(strm);
+    return vector<LONG>( _pricesoffered, _pricesoffered + HOURS_IN_DAY );
+}
 
-    strm << _command
-    << _paoid
-    << _offerid
-    << _offerdate
-    << _notificationdatetime
-    << _expirationdatetime
-    << _additionalinfo;
-
-    for( LONG i=0;i<HOURS_IN_DAY;i++ )
+CtiLMEnergyExchangeControlMsg::CtiLMEnergyExchangeControlMsg( LONG command,
+                                                              LONG paoid,
+                                                              LONG offerid,
+                                                              const CtiTime& offerdate,
+                                                              const CtiTime& notificationdatetime,
+                                                              const CtiTime& expirationdatetime,
+                                                              const string& additionalinfo,
+                                                              const vector<DOUBLE>& amountsrequested,
+                                                              const vector<LONG>& pricesoffered ) :
+    _command( command ),
+    _paoid( paoid ),
+    _offerid( offerid ),
+    _offerdate( offerdate ),
+    _notificationdatetime( notificationdatetime ),
+    _expirationdatetime( expirationdatetime ),
+    _additionalinfo( additionalinfo ),
+    _amountsrequested(),
+    _pricesoffered()
+{
+    for( int hour=0; hour<HOURS_IN_DAY && hour<amountsrequested.size(); hour++ )
     {
-        strm << _amountsrequested[i];
+        _amountsrequested[hour] = amountsrequested[hour];
     }
 
-    for( LONG j=0;j<HOURS_IN_DAY;j++ )
+    for( int hour=0; hour<HOURS_IN_DAY && hour<pricesoffered.size(); hour++ )
     {
-        strm << _pricesoffered[j];
+        _pricesoffered[hour] = pricesoffered[hour];
     }
-
-    return;
 }
 
 /*---------------------------------------------------------------------------
@@ -809,7 +634,7 @@ CtiLMEnergyExchangeControlMsg& CtiLMEnergyExchangeControlMsg::operator=(const Ct
     Client
 ===========================================================================*/
 
-RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeAcceptMsg, CTILMENERGYEXCHANGEACCEPTMSG_ID )
+DEFINE_COLLECTABLE( CtiLMEnergyExchangeAcceptMsg, CTILMENERGYEXCHANGEACCEPTMSG_ID )
 
 /*---------------------------------------------------------------------------
     Destructor
@@ -920,58 +745,34 @@ DOUBLE CtiLMEnergyExchangeAcceptMsg::getAmountCommitted(int i) const
     }
 }
 
-/*-------------------------------------------------------------------------
-    restoreGuts
-
-    Restores the state of self from the given RWvistream
----------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeAcceptMsg::restoreGuts(RWvistream& strm)
+vector<DOUBLE> CtiLMEnergyExchangeAcceptMsg::getAmountsCommitted() const
 {
-    CtiLMMessage::restoreGuts(strm);
-    //CtiTime tempTime1;
-
-    strm >> _paoid
-    >> _offerid
-    >> _revisionnumber
-    >> _acceptstatus
-    >> _ipaddressofacceptuser
-    >> _useridname
-    >> _nameofacceptperson
-    >> _energyexchangenotes;
-
-    for( LONG i=0;i<HOURS_IN_DAY;i++ )
-    {
-        strm >> _amountscommitted[i];
-    }
-
-    //_offerdate = CtiTime(tempTime1);
-    return;
+    return vector<DOUBLE>( _amountscommitted, _amountscommitted + HOURS_IN_DAY );
 }
 
-/*---------------------------------------------------------------------------
-    saveGuts
-
-    Saves the state of self into the given RWvostream
----------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeAcceptMsg::saveGuts(RWvostream& strm) const
+CtiLMEnergyExchangeAcceptMsg::CtiLMEnergyExchangeAcceptMsg( LONG paoid,
+                                                            LONG offerid,
+                                                            LONG revisionnumber,
+                                                            const string& acceptstatus,
+                                                            const string& ipaddressofacceptuser,
+                                                            const string& useridname,
+                                                            const string& nameofacceptperson,
+                                                            const string& energyexchangenotes,
+                                                            const vector<DOUBLE>& amountscommitted ) :
+    _paoid( paoid ),
+    _offerid( offerid ),
+    _revisionnumber( revisionnumber ),
+    _acceptstatus( acceptstatus ),
+    _ipaddressofacceptuser( ipaddressofacceptuser ),
+    _useridname( useridname ),
+    _nameofacceptperson( nameofacceptperson ),
+    _energyexchangenotes( energyexchangenotes ),
+    _amountscommitted()
 {
-    CtiLMMessage::saveGuts(strm);
-
-    strm << _paoid
-    << _offerid
-    << _revisionnumber
-    << _acceptstatus
-    << _ipaddressofacceptuser
-    << _useridname
-    << _nameofacceptperson
-    << _energyexchangenotes;
-
-    for( LONG i=0;i<HOURS_IN_DAY;i++ )
+    for( int hour=0; hour<HOURS_IN_DAY && hour<amountscommitted.size(); hour++ )
     {
-        strm << _amountscommitted[i];
+        _amountscommitted[hour] = amountscommitted[hour];
     }
-
-    return;
 }
 
 /*---------------------------------------------------------------------------
@@ -1004,7 +805,7 @@ CtiLMEnergyExchangeAcceptMsg& CtiLMEnergyExchangeAcceptMsg::operator=(const CtiL
     CtiLMControlAreaMsg
 ===========================================================================*/
 
-RWDEFINE_COLLECTABLE( CtiLMControlAreaMsg, CTILMCONTROLAREA_MSG_ID )
+DEFINE_COLLECTABLE( CtiLMControlAreaMsg, CTILMCONTROLAREA_MSG_ID )
 
 /*---------------------------------------------------------------------------
     Constuctors
@@ -1066,29 +867,6 @@ CtiLMControlAreaMsg& CtiLMControlAreaMsg::operator=(const CtiLMControlAreaMsg& r
     return *this;
 }
 
-/*---------------------------------------------------------------------------
-    restoreGuts
-
-    Restores the state of self fromt he given RWvistream
----------------------------------------------------------------------------*/
-void CtiLMControlAreaMsg::restoreGuts(RWvistream& strm)
-{
-    CtiLMMessage::restoreGuts(strm);
-    strm >> _msgInfoBitMask
-    >> _controlAreas;
-}
-
-/*---------------------------------------------------------------------------
-    saveGuts
-
-    Saves the state of self into the given RWvostream
----------------------------------------------------------------------------*/
-void CtiLMControlAreaMsg::saveGuts(RWvostream& strm) const
-{
-    CtiLMMessage::saveGuts(strm);
-    strm << _msgInfoBitMask
-    << _controlAreas;
-}
 
 // Static Members
 ULONG CtiLMControlAreaMsg::AllControlAreasSent = 0x00000001;
@@ -1101,7 +879,7 @@ ULONG CtiLMControlAreaMsg::ControlAreaDeleted  = 0x00000002;
     Represents a curtailment acknowledge message to Load Management
 ===========================================================================*/
 
-RWDEFINE_COLLECTABLE( CtiLMCurtailmentAcknowledgeMsg, CTILMCURTAILMENTACK_MSG_ID )
+DEFINE_COLLECTABLE( CtiLMCurtailmentAcknowledgeMsg, CTILMCURTAILMENTACK_MSG_ID )
 
 /*---------------------------------------------------------------------------
     Destructor
@@ -1185,44 +963,22 @@ const string& CtiLMCurtailmentAcknowledgeMsg::getCurtailmentNotes() const
     return _curtailmentnotes;
 }
 
-/*-------------------------------------------------------------------------
-    restoreGuts
+CtiLMCurtailmentAcknowledgeMsg::CtiLMCurtailmentAcknowledgeMsg( LONG paoid,
+                                                                LONG curtailreferenceid,
+                                                                const string& acknowledgestatus,
+                                                                const string& ipaddressofackuser,
+                                                                const string& useridname,
+                                                                const string& nameofackperson,
+                                                                const string& curtailmentnotes ) :
+_paoid( paoid ),
+_curtailreferenceid( curtailreferenceid ),
+_acknowledgestatus( acknowledgestatus ),
+_ipaddressofackuser( ipaddressofackuser ),
+_useridname( useridname ),
+_nameofackperson( nameofackperson ),
+_curtailmentnotes( curtailmentnotes )
+{}
 
-    Restores the state of self from the given RWvistream
----------------------------------------------------------------------------*/
-void CtiLMCurtailmentAcknowledgeMsg::restoreGuts(RWvistream& strm)
-{
-    CtiLMMessage::restoreGuts(strm);
-    strm >> _paoid
-    >> _curtailreferenceid
-    >> _acknowledgestatus
-    >> _ipaddressofackuser
-    >> _useridname
-    >> _nameofackperson
-    >> _curtailmentnotes;
-
-    return;
-}
-
-/*---------------------------------------------------------------------------
-    saveGuts
-
-    Saves the state of self into the given RWvostream
----------------------------------------------------------------------------*/
-void CtiLMCurtailmentAcknowledgeMsg::saveGuts(RWvostream& strm) const
-{
-    CtiLMMessage::saveGuts(strm);
-
-    strm << _paoid
-    << _curtailreferenceid
-    << _acknowledgestatus
-    << _ipaddressofackuser
-    << _useridname
-    << _nameofackperson
-    << _curtailmentnotes;
-
-    return;
-}
 
 /*---------------------------------------------------------------------------
     operator=
@@ -1244,91 +1000,11 @@ CtiLMCurtailmentAcknowledgeMsg& CtiLMCurtailmentAcknowledgeMsg::operator=(const 
 }
 
 
-RWDEFINE_COLLECTABLE( CtiLMDynamicGroupDataMsg, CTILMDYNAMICGROUPMSG_ID )
-RWDEFINE_COLLECTABLE( CtiLMDynamicProgramDataMsg, CTILMDYNAMICPROGRAMMSG_ID )
-RWDEFINE_COLLECTABLE( CtiLMDynamicControlAreaDataMsg, CTILMDYNAMICCONTROLAREAMSG_ID )
-RWDEFINE_COLLECTABLE( CtiLMDynamicTriggerDataMsg, CTILMDYNAMICLMTRIGGERMSG_ID )
+DEFINE_COLLECTABLE( CtiLMDynamicGroupDataMsg, CTILMDYNAMICGROUPMSG_ID )
+DEFINE_COLLECTABLE( CtiLMDynamicProgramDataMsg, CTILMDYNAMICPROGRAMMSG_ID )
+DEFINE_COLLECTABLE( CtiLMDynamicControlAreaDataMsg, CTILMDYNAMICCONTROLAREAMSG_ID )
+DEFINE_COLLECTABLE( CtiLMDynamicTriggerDataMsg, CTILMDYNAMICLMTRIGGERMSG_ID )
 
-/* ==========================================================================
-   Save Guts
-   ==========================================================================*/
-
-/*---------------------------------------------------------------------------
-    CtiLMDynamicGroupDataMsg::saveGuts
-
-    Saves the state of self into the given RWvostream
----------------------------------------------------------------------------*/
-void CtiLMDynamicGroupDataMsg::saveGuts(RWvostream& strm) const
-{
-    strm << _paoid
-    << _disableflag
-    << _groupcontrolstate
-    << _currenthoursdaily
-    << _currenthoursmonthly
-    << _currenthoursseasonal
-    << _currenthoursannually
-    << _lastcontrolsent
-    << _controlstarttime
-    << _controlcompletetime
-    << _next_control_time
-    << _internalState //What the heck is this???
-    << _daily_ops;
-}
-
-/*---------------------------------------------------------------------------
-    CtiLMDynamicProgramDataMsg::saveGuts
-
-    Saves the state of self into the given RWvostream
----------------------------------------------------------------------------*/
-void CtiLMDynamicProgramDataMsg::saveGuts(RWvostream& strm) const
-{
-    strm << _paoid
-    << _disableflag
-    << _currentgearnumber + 1
-    << _lastgroupcontrolled
-    << _programstate
-    << _reductiontotal
-    << _directstarttime
-    << _directstoptime
-    << _notify_active_time
-    << _notify_inactive_time
-    << _startedrampingouttime;
-}
-
-/*---------------------------------------------------------------------------
-    CtiLMDynamicControlAreaDataMsg::saveGuts
-
-    Saves the state of self into the given RWvostream
----------------------------------------------------------------------------*/
-void CtiLMDynamicControlAreaDataMsg::saveGuts(RWvostream& strm) const
-{
-    strm << _paoid
-    << _disableflag
-    << _nextchecktime
-    << _controlareastate
-    << _currentpriority
-    << _currentdailystarttime
-    << _currentdailystoptime
-    << _triggers;
-}
-
-/*---------------------------------------------------------------------------
-    CtiLMDynamicControlAreaDataMsg::saveGuts
-
-    Saves the state of self into the given RWvostream
----------------------------------------------------------------------------*/
-void CtiLMDynamicTriggerDataMsg::saveGuts(RWvostream& strm) const
-{
-    strm << _paoid
-    << _triggernumber
-    << _pointvalue
-    << _lastpointvaluetimestamp
-    << _normalstate
-    << _threshold
-    << _peakpointvalue
-    << _lastpeakpointvaluetimestamp
-    << _projectedpointvalue;
-}
 
 /* ==========================================================================
    Constructors

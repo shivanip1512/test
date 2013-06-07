@@ -242,7 +242,7 @@ public Object getValue(Object val)
 			GenericMacro mGroup = new GenericMacro();
 			mGroup.setOwnerID(ownerID);
 			mGroup.setChildID( new Integer(((LiteYukonPAObject)
-									getLoadGroupsAddRemovePanel().rightListGetModel().getElementAt(i)).getYukonID()) );
+									getLoadGroupsAddRemovePanel().rightListGetModel().getElementAt(i)).getYukonId()) );
 			mGroup.setChildOrder(new Integer(i+1) );
 			mGroup.setMacroType(MacroTypes.GROUP);
 			macroGroupVector.addElement( mGroup );	
@@ -503,7 +503,7 @@ public void setValue(Object val )
 			childID = ((GenericMacro)macroGroupsVector.get(i)).getChildID().intValue();
 			for(int j=0;j<allDevices.size();j++)
 			{
-			    if(allDevices.get(j).getYukonID() == childID 
+			    if(allDevices.get(j).getYukonId() == childID 
 			            && allDevices.get(j).getLiteID() != 
 				((MacroGroup)val).getPAObjectID().intValue())
 				{

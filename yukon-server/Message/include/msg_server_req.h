@@ -18,29 +18,28 @@
 class IM_EX_MSG CtiServerRequestMsg : public CtiMessage
 {
 public:
+    DECLARE_COLLECTABLE( CtiServerRequestMsg )
 
-    RWDECLARE_COLLECTABLE( CtiServerRequestMsg );
+public:
 
-    typedef  CtiMessage Inherited;
+    typedef  CtiMessage  Inherited;
 
     CtiServerRequestMsg();
     CtiServerRequestMsg(const CtiServerRequestMsg& req);
-    CtiServerRequestMsg(int id, RWCollectable* payload);
+    CtiServerRequestMsg(int id, CtiMessage* payload);
     virtual ~CtiServerRequestMsg();
 
     int getID() const;
     CtiServerRequestMsg& setID(int id);
 
-    RWCollectable* getPayload() const;
-    CtiServerRequestMsg& setPayload(RWCollectable* payload);
+    CtiMessage* getPayload() const;
+    CtiServerRequestMsg& setPayload(CtiMessage* payload);
 
-    virtual void saveGuts(RWvostream &aStream) const;
-    virtual void restoreGuts(RWvistream& aStream);
     virtual CtiMessage* replicateMessage() const;
 
     virtual void dump() const;
 
 protected:
     int _id;
-    RWCollectable* _payload;
+    CtiMessage* _payload;
 };

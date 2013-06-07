@@ -13,7 +13,7 @@ class CtiLMGroupRipple : public CtiLMGroupBase
 
 public:
 
-RWDECLARE_COLLECTABLE( CtiLMGroupRipple )
+DECLARE_COLLECTABLE( CtiLMGroupRipple );
 
     CtiLMGroupRipple();
     CtiLMGroupRipple(Cti::RowReader &rdr);
@@ -32,10 +32,6 @@ RWDECLARE_COLLECTABLE( CtiLMGroupRipple )
     virtual CtiRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const;
 
     virtual BOOL doesMasterCycleNeedToBeUpdated(CtiTime currentTime, CtiTime controlEndTime, ULONG offTime);
-
-    //Members inherited from RWCollectable
-    void restoreGuts(RWvistream& );
-    void saveGuts(RWvostream& ) const;
 
     CtiLMGroupRipple& operator=(const CtiLMGroupRipple& right);
 

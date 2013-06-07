@@ -3,8 +3,8 @@ package com.cannontech.loadcontrol.datamodels;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
-import com.cannontech.loadcontrol.data.LMControlArea;
-import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
+import com.cannontech.messaging.message.loadcontrol.data.Program;
 
 /**
  * @author rneuharth
@@ -18,14 +18,14 @@ public interface IProgramTableModel extends TableModel, TableModelListener, ISel
 {
 	void clear();
 
-	LMProgramBase getProgramAt(int rowIndex);
+	Program getProgramAt(int rowIndex);
 
-	void setCurrentControlArea( LMControlArea newCurrentControlArea );
+	void setCurrentControlArea( ControlAreaItem newCurrentControlArea );
 	
 	TableModelListener[] getTableModelListeners();
 	
 	//tells us if we should display a waiting messaging while updating the model
-	boolean showWaiting( LMControlArea newCntrlArea );
+	boolean showWaiting( ControlAreaItem newCntrlArea );
 	
 	Object getRowAt(int row);
 }

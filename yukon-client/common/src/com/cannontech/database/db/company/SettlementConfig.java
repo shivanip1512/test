@@ -4,8 +4,8 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.CTIDbChange;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 
 /**
  * This type was created in VisualAge.
@@ -223,15 +223,15 @@ public class SettlementConfig extends com.cannontech.database.db.DBPersistent im
 	 * Generates a DBChange msg.
 	 * 
 	 */
-	public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
+	public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType)
 	{
-		DBChangeMsg[] dbChange = new DBChangeMsg[1];
+		DBChangeMessage[] dbChange = new DBChangeMessage[1];
 
 		//add the basic change method
-		dbChange[0] = new DBChangeMsg(
+		dbChange[0] = new DBChangeMessage(
 						getConfigID().intValue(),
-						DBChangeMsg.CHANGE_SETTLEMENT_DB,
-						DBChangeMsg.CAT_SETTLEMENT,
+						DBChangeMessage.CHANGE_SETTLEMENT_DB,
+						DBChangeMessage.CAT_SETTLEMENT,
 						dbChangeType);
 
 		return dbChange;

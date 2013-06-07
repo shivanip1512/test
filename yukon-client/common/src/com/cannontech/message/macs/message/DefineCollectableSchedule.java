@@ -3,6 +3,7 @@ package com.cannontech.message.macs.message;
 /**
  * This type was created in VisualAge.
  */
+import com.cannontech.messaging.message.macs.ScheduleMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -23,7 +24,7 @@ public DefineCollectableSchedule() {
  * of Schedule.
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new Schedule();
+	return new ScheduleMessage();
 }
 /**
  * getComparator method comment.
@@ -31,7 +32,7 @@ public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.I
 public com.roguewave.tools.v2_0.Comparator getComparator() {
 	return new Comparator() {
 	  public int compare(Object x, Object y) {
-	return (int) (((Schedule)x).getId() - ((Schedule)y).getId());
+	return (int) (((ScheduleMessage)x).getId() - ((ScheduleMessage)y).getId());
 	  }
 	};
 	
@@ -52,7 +53,7 @@ public String getCxxStringId() {
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return Schedule.class;
+	return ScheduleMessage.class;
 }
 /**
  *  Changed scheduleId and holidayId to extract long instead of int.
@@ -62,7 +63,7 @@ public Class getJavaClass() {
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
 	super.restoreGuts( obj, vstr, polystr );
-	Schedule schedule = (Schedule) obj;
+	ScheduleMessage schedule = (ScheduleMessage) obj;
 
 	int scheduleId = (int) vstr.extractLong(); // watch cast!
 	String scheduleName = (String) vstr.restoreObject( SimpleMappings.CString );
@@ -126,7 +127,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
 	super.saveGuts( obj, vstr, polystr );
-	Schedule schedule = (Schedule) obj;
+	ScheduleMessage schedule = (ScheduleMessage) obj;
 
 	vstr.insertLong( schedule.getId() ); //changed to long
 	

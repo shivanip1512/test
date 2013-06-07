@@ -8,6 +8,7 @@ import java.util.Date;
 
 import com.cannontech.message.util.CollectionExtracter;
 import com.cannontech.message.util.CollectionInserter;
+import com.cannontech.messaging.message.loadcontrol.data.EnergyExchangeOfferRevision;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -35,7 +36,7 @@ public DefColl_LMEnergyExchangeOfferRevision() {
 	* to be out of sync and the results could be catastrophic.
 	*/
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new LMEnergyExchangeOfferRevision();
+	return new EnergyExchangeOfferRevision();
 }
  /**
 	* Return a Comparator object for the Java class being mapped.
@@ -50,8 +51,8 @@ public com.roguewave.tools.v2_0.Comparator getComparator() {
 		// If the revisions have the same offer id then compare by revision number
 		public int compare(Object x, Object y) 
 		{
-			int ret = (int)(((LMEnergyExchangeOfferRevision) x).getOfferID().intValue() -
-			          		((LMEnergyExchangeOfferRevision) y).getOfferID().intValue());
+			int ret = (int)(((EnergyExchangeOfferRevision) x).getOfferId().intValue() -
+			          		((EnergyExchangeOfferRevision) y).getOfferId().intValue());
 			
 			if( ret != 0 )
 			{
@@ -59,8 +60,8 @@ public com.roguewave.tools.v2_0.Comparator getComparator() {
 			}
 			else
 			{
-				return (int) (((LMEnergyExchangeOfferRevision) x).getRevisionNumber().intValue() -
-					          ((LMEnergyExchangeOfferRevision) y).getRevisionNumber().intValue());
+				return (int) (((EnergyExchangeOfferRevision) x).getRevisionNumber().intValue() -
+					          ((EnergyExchangeOfferRevision) y).getRevisionNumber().intValue());
 			}	
 		}
 	};
@@ -90,7 +91,7 @@ public String getCxxStringId() {
 	* being mapped.  It is used by CollectableStreamer during registration.
 	*/
 public Class getJavaClass() {
-	return LMEnergyExchangeOfferRevision.class;
+	return EnergyExchangeOfferRevision.class;
 }
  /**
 	* This method will be called by CollectableStreamer to restore the guts,
@@ -100,9 +101,9 @@ public Class getJavaClass() {
 	*/
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMEnergyExchangeOfferRevision rev = (LMEnergyExchangeOfferRevision) obj;
+	EnergyExchangeOfferRevision rev = (EnergyExchangeOfferRevision) obj;
 	
-	rev.setOfferID( new Integer((int)vstr.extractUnsignedInt()) );
+	rev.setOfferId( new Integer((int)vstr.extractUnsignedInt()) );
 	rev.setRevisionNumber( new Integer((int)vstr.extractUnsignedInt()) );
 	rev.setActionDateTime( (Date) vstr.restoreObject( SimpleMappings.Time ));
 	rev.setNotificationDateTime( (Date) vstr.restoreObject( SimpleMappings.Time ));
@@ -119,9 +120,9 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	*/
 public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMEnergyExchangeOfferRevision rev = (LMEnergyExchangeOfferRevision) obj;
+	EnergyExchangeOfferRevision rev = (EnergyExchangeOfferRevision) obj;
 	
-	vstr.insertUnsignedLong( rev.getOfferID().longValue() );
+	vstr.insertUnsignedLong( rev.getOfferId().longValue() );
 	vstr.insertUnsignedLong( rev.getRevisionNumber().longValue() );
 	vstr.saveObject( rev.getActionDateTime(), SimpleMappings.Time );
 	vstr.saveObject( rev.getNotificationDateTime(), SimpleMappings.Time );

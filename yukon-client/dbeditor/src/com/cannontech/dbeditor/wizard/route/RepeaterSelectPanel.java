@@ -212,7 +212,7 @@ public Object getValue(Object val)
 	   {
 	      com.cannontech.database.db.route.RepeaterRoute rRoute = new com.cannontech.database.db.route.RepeaterRoute();
 	      rRoute.setRouteID(routeID);
-	      rRoute.setDeviceID( new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getRepeatersAddRemovePanel().rightListGetModel().getElementAt(i)).getYukonID()) );
+	      rRoute.setDeviceID( new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getRepeatersAddRemovePanel().rightListGetModel().getElementAt(i)).getYukonId()) );
 	      rRoute.setVariableBits(new Integer(7));
 	      rRoute.setRepeaterOrder(new Integer( i + 1 ) );
 	      

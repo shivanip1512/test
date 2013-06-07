@@ -766,7 +766,7 @@ public class LMGroupMCTEditorPanel extends com.cannontech.common.gui.util.DataIn
 	
 			
 			group.getLmGroupMCT().setMctDeviceID( new Integer(
-				((LiteYukonPAObject)getJComboBoxMCTAddress().getSelectedItem()).getYukonID()) );
+				((LiteYukonPAObject)getJComboBoxMCTAddress().getSelectedItem()).getYukonId()) );
 		}
 	
 		return o;
@@ -999,7 +999,7 @@ public class LMGroupMCTEditorPanel extends com.cannontech.common.gui.util.DataIn
 				LiteYukonPAObject mct = 
 							(LiteYukonPAObject)getJComboBoxMCTAddress().getItemAt(i);
 				
-				if( mct.getYukonID() == group.getLmGroupMCT().getMctDeviceID().intValue() )
+				if( mct.getYukonId() == group.getLmGroupMCT().getMctDeviceID().intValue() )
 				{
 					getJComboBoxMCTAddress().setSelectedIndex( i );
 					break;

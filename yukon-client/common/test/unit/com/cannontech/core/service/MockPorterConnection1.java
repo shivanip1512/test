@@ -6,11 +6,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.message.porter.message.Request;
-import com.cannontech.message.porter.message.Return;
-import com.cannontech.message.util.Message;
-import com.cannontech.message.util.MessageEvent;
-import com.cannontech.message.util.MessageListener;
+import com.cannontech.messaging.message.BaseMessage;
+import com.cannontech.messaging.message.porter.RequestMessage;
+import com.cannontech.messaging.message.porter.ReturnMessage;
+import com.cannontech.messaging.util.MessageEvent;
+import com.cannontech.messaging.util.MessageListener;
 import com.cannontech.yukon.BasicServerConnection;
 
 public class MockPorterConnection1 implements BasicServerConnection {
@@ -21,7 +21,7 @@ public class MockPorterConnection1 implements BasicServerConnection {
         listeners.add(l);
     }
 
-    public void queue(Message o) {
+    public void queue(BaseMessage o) {
         write(o);
     }
 
@@ -29,18 +29,18 @@ public class MockPorterConnection1 implements BasicServerConnection {
         listeners.remove(l);
     }
 
-    public void write(Message o) {
-        if (!(o instanceof Request)) return;
-        final Request req = (Request) o;
+    public void write(BaseMessage o) {
+        if (!(o instanceof RequestMessage)) return;
+        final RequestMessage req = (RequestMessage) o;
         CTILogger.info("Received message: " + req);
         // send first response in 15 seconds
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Return retMsg = new Return();
-                retMsg.setExpectMore(1);
-                retMsg.setUserMessageID(req.getUserMessageID());
-                retMsg.setDeviceID(req.getDeviceID());
+                ReturnMessage retMsg = new ReturnMessage();
+                retMsg.setExpectMore(true);
+                retMsg.setUserMessageId(req.getUserMessageId());
+                retMsg.setDeviceId(req.getDeviceId());
                 returnMessage(retMsg);
             }
         }, 15000);
@@ -48,17 +48,17 @@ public class MockPorterConnection1 implements BasicServerConnection {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Return retMsg = new Return();
-                retMsg.setExpectMore(0);
-                retMsg.setUserMessageID(req.getUserMessageID());
-                retMsg.setDeviceID(req.getDeviceID());
+                ReturnMessage retMsg = new ReturnMessage();
+                retMsg.setExpectMore(false);
+                retMsg.setUserMessageId(req.getUserMessageId());
+                retMsg.setDeviceId(req.getDeviceId());
                 retMsg.setResultString("Mock porter result");
                 returnMessage(retMsg);
             }
         }, 50000);
     }
     
-    private void returnMessage(Message m) {
+    private void returnMessage(BaseMessage m) {
         CTILogger.info("Sending mock return message: " + m);
         MessageEvent e = new MessageEvent(this, m);
         

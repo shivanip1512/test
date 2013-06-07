@@ -19,10 +19,10 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.pao.EncryptedRoute;
 import com.cannontech.database.db.security.EncryptionKey;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.dispatch.DbChangeType;
 import com.cannontech.encryption.EncryptedRouteDao;
-import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.messaging.util.DbChangeManager;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.Lists;
 
@@ -72,7 +72,7 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
         yukonJdbcTemplate.update(sql);
 
         dbChangeManager.processDbChange(encryptedRoute.getPaobjectId(),
-                                        DBChangeMsg.CHANGE_YUKON_PAOBJECT_ENCRYPTION_KEY_DB,
+                                        DBChangeMessage.CHANGE_YUKON_PAOBJECT_ENCRYPTION_KEY_DB,
                                         PAOGroups.STRING_CAT_ROUTE,
                                         DbChangeType.UPDATE);
     }
@@ -86,7 +86,7 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
 
         yukonJdbcTemplate.update(sql);
         dbChangeManager.processDbChange(encryptedRoute.getPaobjectId(),
-                                        DBChangeMsg.CHANGE_YUKON_PAOBJECT_ENCRYPTION_KEY_DB,
+                                        DBChangeMessage.CHANGE_YUKON_PAOBJECT_ENCRYPTION_KEY_DB,
                                         PAOGroups.STRING_CAT_ROUTE,
                                         DbChangeType.UPDATE);    
     }
@@ -128,8 +128,8 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
             yukonJdbcTemplate.update(sql);
 
             dbChangeManager.processDbChange(encryptionKeyId,
-                                            DBChangeMsg.CHANGE_ENCRYPTION_KEY_DB,
-                                            DBChangeMsg.CAT_ENCRYPTION_KEY_DB,
+                                            DBChangeMessage.CHANGE_ENCRYPTION_KEY_DB,
+                                            DBChangeMessage.CAT_ENCRYPTION_KEY_DB,
                                             DbChangeType.ADD);
             
     }
@@ -144,8 +144,8 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
             yukonJdbcTemplate.update(sql);
             
             dbChangeManager.processDbChange(encryptionKeyId,
-                                            DBChangeMsg.CHANGE_ENCRYPTION_KEY_DB,
-                                            DBChangeMsg.CAT_ENCRYPTION_KEY_DB,
+                                            DBChangeMessage.CHANGE_ENCRYPTION_KEY_DB,
+                                            DBChangeMessage.CAT_ENCRYPTION_KEY_DB,
                                             DbChangeType.DELETE);   
             
     }

@@ -5,9 +5,10 @@ package com.cannontech.loadcontrol.messages;
  */
 import java.util.List;
 
-import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.message.util.CollectionExtracter;
 import com.cannontech.message.util.CollectionInserter;
+import com.cannontech.messaging.message.loadcontrol.ControlAreaMessage;
+import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
 import com.roguewave.tools.v2_0.Comparator;
 
 public class DefineCollectableLMControlAreaMsg extends DefineCollectableLMMessage
@@ -26,7 +27,7 @@ public DefineCollectableLMControlAreaMsg()
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new LMControlAreaMsg();
+	return new ControlAreaMessage();
 }
 /**
  * getComparator method comment.
@@ -52,7 +53,7 @@ public int getCxxClassId() {
  */
 public Class getJavaClass()
 {
-	return LMControlAreaMsg.class;
+	return ControlAreaMessage.class;
 }
 /**
  * restoreGuts method comment.
@@ -61,13 +62,13 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 
 	super.restoreGuts( obj, vstr, polystr );
 
-	LMControlAreaMsg lmControlAreaMsg = (LMControlAreaMsg) obj;
+	ControlAreaMessage lmControlAreaMsg = (ControlAreaMessage) obj;
 
 	lmControlAreaMsg.setMsgInfoBitMask( new Integer( (int)vstr.extractUnsignedInt() ) );
 	//java.util.Vector controlAreaVector = (java.util.Vector)vstr.restoreObject( polystr );
     java.util.Vector controlAreaVector = CollectionExtracter.extractVector(vstr,polystr);
 
-	((LMControlAreaMsg)obj).setLMControlAreaVector(controlAreaVector);
+	((ControlAreaMessage)obj).setLMControlAreaVector(controlAreaVector);
 }
 /**
  * saveGuts method comment.
@@ -76,10 +77,10 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 {
 	super.saveGuts( obj, vstr, polystr );
 
-	LMControlAreaMsg lmControlAreaMsg = (LMControlAreaMsg) obj;
+	ControlAreaMessage lmControlAreaMsg = (ControlAreaMessage) obj;
 
 	vstr.insertUnsignedInt( lmControlAreaMsg.getMsgInfoBitMask().intValue() );
-	List<LMControlArea> areaVector = lmControlAreaMsg.getLMControlAreaVector();
+	List<ControlAreaItem> areaVector = lmControlAreaMsg.getLMControlAreaVector();
 	//vstr.saveObject( areaVector, com.roguewave.vsj.streamer.CollectableMappings.allCollectables );
     CollectionInserter.insertVector(areaVector, vstr, polystr);
 }

@@ -8,13 +8,13 @@ package com.cannontech.tdc;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.Multi;
-import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.message.dispatch.message.PointRegistration;
-import com.cannontech.message.dispatch.message.Registration;
-import com.cannontech.message.dispatch.message.Signal;
-import com.cannontech.message.util.Message;
+import com.cannontech.messaging.message.BaseMessage;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.messaging.message.dispatch.MultiMessage;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.messaging.message.dispatch.PointRegistrationMessage;
+import com.cannontech.messaging.message.dispatch.RegistrationMessage;
+import com.cannontech.messaging.message.dispatch.SignalMessage;
 import com.cannontech.tdc.data.Display;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 
@@ -52,9 +52,9 @@ private java.lang.Long[] getPointIDArray() {
  * Creation date: (6/20/00 4:16:59 PM)
  * @return com.cannontech.message.dispatch.message.PointRegistration
  */
-private PointRegistration getPtRegMsg() 
+private PointRegistrationMessage getPtRegMsg() 
 {
-	PointRegistration pReg = new PointRegistration();
+	PointRegistrationMessage pReg = new PointRegistrationMessage();
 	String displayName = "(null)";
 	
 	if( caller.getCurrentDisplay() != null )
@@ -64,14 +64,14 @@ private PointRegistration getPtRegMsg()
 	if( Display.isAlarmDisplay(callerModel.getCurrentDisplay().getDisplayNumber()) )
 	{
 		TDCMainFrame.messageLog.addMessage("Registering display " + displayName + " for ALARMS", MessageBoxFrame.INFORMATION_MSG);
-		pReg.setRegFlags( PointRegistration.REG_ALARMS );
+		pReg.setRegFlags( PointRegistrationMessage.REG_ALARMS );
 	}
 	else if( Display.isReadOnlyDisplay(callerModel.getCurrentDisplay().getDisplayNumber()) )
 	{
 		TDCMainFrame.messageLog.addMessage("Registering display " + displayName + " for ALARMS, EVENTS and NO_UPLOAD", MessageBoxFrame.INFORMATION_MSG);
-		pReg.setRegFlags( PointRegistration.REG_EVENTS | 
-						  PointRegistration.REG_ALARMS |
-			 			  PointRegistration.REG_NO_UPLOAD );
+		pReg.setRegFlags( PointRegistrationMessage.REG_EVENTS | 
+						  PointRegistrationMessage.REG_ALARMS |
+			 			  PointRegistrationMessage.REG_NO_UPLOAD );
 	}
 	else // must be a user defined display
 	{
@@ -86,7 +86,7 @@ private PointRegistration getPtRegMsg()
 			pReg = super.getPointRegistration( getPointIDArray() );
 		}
 			
-		pReg.setRegFlags( pReg.getRegFlags() | PointRegistration.REG_ALARMS );
+		pReg.setRegFlags( pReg.getRegFlags() | PointRegistrationMessage.REG_ALARMS );
 
 		TDCMainFrame.messageLog.addMessage(buf.toString(), MessageBoxFrame.INFORMATION_MSG);
 	}
@@ -99,7 +99,7 @@ private PointRegistration getPtRegMsg()
  * Creation date: (3/22/00 3:02:24 PM)
  * @param mpc com.cannontech.message.dispatch.message.Multi
  */
-public void receivedDBChangMsg( DBChangeMsg msg ) 
+public void receivedDBChangMsg( DBChangeMessage msg ) 
 {
 	String display = caller.getCurrentDisplay().getName() != null ? 
 			caller.getCurrentDisplay().getName() : "#" + caller.getCurrentDisplay().getDisplayNumber();
@@ -107,7 +107,7 @@ public void receivedDBChangMsg( DBChangeMsg msg )
 	CTILogger.info("DATABASE CHANGE RECEIVED = " + msg.toString() + " Display = " + display );
 	
 	DefaultDatabaseCache.getInstance().handleDBChangeMessage(
-			(com.cannontech.message.dispatch.message.DBChangeMsg)msg);
+			(com.cannontech.messaging.message.dispatch.DBChangeMessage)msg);
 
 	//No need to handle any DBChanges that originated from this process (our self)
 	if( !(msg.getSource().equals(CtiUtilities.DEFAULT_MSG_SOURCE) ) )
@@ -119,7 +119,7 @@ public void receivedDBChangMsg( DBChangeMsg msg )
  * Creation date: (3/22/00 3:02:24 PM)
  * @param mpc com.cannontech.message.dispatch.message.Multi
  */
-public void receivedPointData( PointData point ) 
+public void receivedPointData( PointDataMessage point ) 
 {
 	String display = caller.getCurrentDisplay().getName() != null ? 
 			caller.getCurrentDisplay().getName() : "#" + caller.getCurrentDisplay().getDisplayNumber();
@@ -136,13 +136,13 @@ public void receivedPointData( PointData point )
  * Creation date: (3/22/00 3:02:24 PM)
  * @param mpc com.cannontech.message.dispatch.message.Multi
  */
-public void receivedSignal( Signal signal ) 
+public void receivedSignal( SignalMessage signal ) 
 {
 	String display = caller.getCurrentDisplay().getName() != null ? 
 			caller.getCurrentDisplay().getName() : "#" + caller.getCurrentDisplay().getDisplayNumber();
 
 	CTILogger.info(
-		"SIGNAL RECEIVED for PtID="+ signal.getPointID() + ",AlarmStateID="+ signal.getCategoryID() + ",Tags(hex)=" + Integer.toHexString(signal.getTags()) +
+		"SIGNAL RECEIVED for PtID="+ signal.getPointId() + ",AlarmStateID="+ signal.getCategoryId() + ",Tags(hex)=" + Integer.toHexString(signal.getTags()) +
 		",Condition=" + signal.getCondition() +
 		",Display=" + display );
 	
@@ -156,7 +156,7 @@ public void reRegister( Long[] pointIDs)
 {
 	setPointIDArray( pointIDs );
 
-	PointRegistration pReg = getPtRegMsg();
+	PointRegistrationMessage pReg = getPtRegMsg();
 	
 	super.write( pReg );
 }
@@ -165,8 +165,8 @@ public void reRegister( Long[] pointIDs)
  */
 public void reRegisterForNothing()
 {
-	PointRegistration pReg = new PointRegistration();	
-	pReg.setRegFlags( PointRegistration.REG_NOTHING );
+	PointRegistrationMessage pReg = new PointRegistrationMessage();	
+	pReg.setRegFlags( PointRegistrationMessage.REG_NOTHING );
 	
 	super.write( pReg );
 }

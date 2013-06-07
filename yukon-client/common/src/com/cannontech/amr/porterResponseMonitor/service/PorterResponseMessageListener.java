@@ -33,10 +33,10 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
-import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.dispatch.DatabaseChangeEvent;
+import com.cannontech.dispatch.DbChangeCategory;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -207,7 +207,7 @@ public class PorterResponseMessageListener implements MessageListener {
             return;
         }
 
-        PointData pointData = new PointData();
+        PointDataMessage pointData = new PointDataMessage();
         pointData.setId(litePoint.getPointID());
         pointData.setPointQuality(PointQuality.Normal);
         pointData.setValue(rule.getStateInt());

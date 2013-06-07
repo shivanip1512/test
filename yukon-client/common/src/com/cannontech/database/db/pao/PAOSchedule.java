@@ -11,8 +11,8 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.ImmutableMap;
 
@@ -243,14 +243,14 @@ public class PAOSchedule extends DBPersistent implements CTIDbChange, Comparable
 	/**
 	 * Generates a DB Change message for this db object
 	 */
-	public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
+	public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType)
 	{
-		DBChangeMsg[] msgs = {
-			new DBChangeMsg(
+		DBChangeMessage[] msgs = {
+			new DBChangeMessage(
 				getScheduleID().intValue(),
-				DBChangeMsg.CHANGE_PAO_SCHEDULE_DB,
-				DBChangeMsg.CAT_PAO_SCHEDULE,
-				DBChangeMsg.CAT_PAO_SCHEDULE,
+				DBChangeMessage.CHANGE_PAO_SCHEDULE_DB,
+				DBChangeMessage.CAT_PAO_SCHEDULE,
+				DBChangeMessage.CAT_PAO_SCHEDULE,
 				dbChangeType)
 		};
 

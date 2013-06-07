@@ -341,7 +341,7 @@ public synchronized void treePathWillExpand(javax.swing.tree.TreePath path)
 
 		synchronized (cache)
 		{
-			int deviceDevID = ((LiteYukonPAObject)node.getUserObject()).getYukonID();
+			int deviceDevID = ((LiteYukonPAObject)node.getUserObject()).getYukonId();
 
 			//change our dummy points device ID to the current DeviceID
 			DUMMY_LITE_POINT.setPaobjectID(deviceDevID);

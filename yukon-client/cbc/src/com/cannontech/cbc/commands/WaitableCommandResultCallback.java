@@ -3,7 +3,7 @@ package com.cannontech.cbc.commands;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import com.cannontech.message.capcontrol.model.CapControlServerResponse;
+import com.cannontech.messaging.message.capcontrol.ServerResponseMessage;
 
 public class WaitableCommandResultCallback implements CommandResultCallback {
     
@@ -21,7 +21,7 @@ public class WaitableCommandResultCallback implements CommandResultCallback {
 
 
     @Override
-    public void recievedResponse(CapControlServerResponse response) {
+    public void recievedResponse(ServerResponseMessage response) {
         delegate.recievedResponse(response);
         completeLatch.countDown();
     }
@@ -33,7 +33,7 @@ public class WaitableCommandResultCallback implements CommandResultCallback {
     }
 
     @Override
-    public CapControlServerResponse getResponse() {
+    public ServerResponseMessage getResponse() {
         return delegate.getResponse();
     }
 

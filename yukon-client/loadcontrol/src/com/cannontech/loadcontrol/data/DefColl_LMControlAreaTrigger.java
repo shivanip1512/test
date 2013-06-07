@@ -6,6 +6,7 @@ package com.cannontech.loadcontrol.data;
 import java.util.Date;
 
 import com.cannontech.dr.controlarea.model.TriggerType;
+import com.cannontech.messaging.message.loadcontrol.data.ControlAreaTriggerItem;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -27,7 +28,7 @@ public DefColl_LMControlAreaTrigger()
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new LMControlAreaTrigger();
+	return new ControlAreaTriggerItem();
 }
 /**
  * getComparator method comment.
@@ -38,7 +39,7 @@ public com.roguewave.tools.v2_0.Comparator getComparator()
 	{
 		public int compare(Object x, Object y) 
 		{
-			return (int) (((LMControlAreaTrigger)x).getYukonID().intValue() - ((LMControlAreaTrigger)y).getYukonID().intValue() );
+			return (int) (((ControlAreaTriggerItem)x).getYukonId().intValue() - ((ControlAreaTriggerItem)y).getYukonId().intValue() );
 		}
 	};
 	
@@ -62,14 +63,14 @@ public String getCxxStringId()
  */
 public Class<?> getJavaClass()
 {
-	return LMControlAreaTrigger.class;
+	return ControlAreaTriggerItem.class;
 }
 /**
  * restoreGuts method comment.
  */
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
-	LMControlAreaTrigger lmTrigger = (LMControlAreaTrigger) obj;
+	ControlAreaTriggerItem lmTrigger = (ControlAreaTriggerItem) obj;
 
 	Integer yukonID = new Integer( (int)vstr.extractUnsignedInt() );
 	Integer triggerNumber = new Integer( (int)vstr.extractUnsignedInt() );
@@ -89,7 +90,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	Date lastPeakPointValueTimeStamp = (Date) vstr.restoreObject( SimpleMappings.Time );
  	Double projectedPointValue = new Double( vstr.extractDouble() );
  	
-	lmTrigger.setYukonID(yukonID);
+	lmTrigger.setYukonId(yukonID);
 	lmTrigger.setTriggerNumber(triggerNumber);
 	lmTrigger.setTriggerType(TriggerType.getForDbString(triggerType));
 	lmTrigger.setPointId(pointID);

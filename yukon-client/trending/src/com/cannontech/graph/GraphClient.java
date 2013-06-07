@@ -74,7 +74,7 @@ import com.cannontech.graph.menu.ViewMenu;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendProperties;
 import com.cannontech.jfreechart.chart.YukonChartPanel;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 import com.cannontech.roles.application.TrendingRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
@@ -1952,7 +1952,7 @@ public AdvancedOptionsPanel getAdvOptsPanel()
  * Creation date: (12/20/2001 5:12:47 PM)
  * @param msg com.cannontech.message.dispatch.message.DBChangeMsg
  */
-public void dbChangeReceived(final DBChangeMsg msg)
+public void dbChangeReceived(final DBChangeMessage msg)
 {
 	if (!msg.getSource().equals(CtiUtilities.DEFAULT_MSG_SOURCE))
 	{

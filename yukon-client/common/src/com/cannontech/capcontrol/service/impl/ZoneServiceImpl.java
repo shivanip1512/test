@@ -24,10 +24,10 @@ import com.cannontech.capcontrol.model.ZoneAssignmentPointRow;
 import com.cannontech.capcontrol.model.ZoneHierarchy;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.dispatch.DbChangeType;
 import com.cannontech.enums.Phase;
-import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.messaging.util.DbChangeManager;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -290,7 +290,7 @@ public class ZoneServiceImpl implements ZoneService {
     
     private void sendZoneChangeDbMessage(int zoneId, DbChangeType dbChangeType) {
         dbChangeManager.processDbChange(zoneId,
-                                        DBChangeMsg.CHANGE_IVVC_ZONE,
+                                        DBChangeMessage.CHANGE_IVVC_ZONE,
                                         PaoCategory.CAPCONTROL.getDbString(),
                                         "Zone",
                                         dbChangeType);

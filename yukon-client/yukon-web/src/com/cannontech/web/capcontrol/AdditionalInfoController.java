@@ -11,7 +11,7 @@ import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.capcontrol.model.CapbankAdditional;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.message.capcontrol.streamable.SubBus;
+import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
 import com.cannontech.web.capcontrol.models.ViewableSubBus;
 import com.cannontech.web.capcontrol.util.service.CapControlWebUtilsService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;

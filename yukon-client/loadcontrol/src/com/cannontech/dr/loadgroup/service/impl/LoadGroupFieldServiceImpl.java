@@ -8,17 +8,17 @@ import com.cannontech.dr.DemandResponseBackingField;
 import com.cannontech.dr.loadgroup.model.LoadGroupBackingFieldBase;
 import com.cannontech.dr.loadgroup.service.LoadGroupFieldService;
 import com.cannontech.dr.service.impl.DemandResponseFieldServiceBase;
-import com.cannontech.loadcontrol.data.LMDirectGroupBase;
+import com.cannontech.messaging.message.loadcontrol.data.DirectGroupBase;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
-public class LoadGroupFieldServiceImpl extends DemandResponseFieldServiceBase<LMDirectGroupBase> 
+public class LoadGroupFieldServiceImpl extends DemandResponseFieldServiceBase<DirectGroupBase> 
                 implements LoadGroupFieldService {
     
     @Autowired
     public void setBackingFieldList(List<LoadGroupBackingFieldBase> backingFieldList) {
-        Builder<String, DemandResponseBackingField<LMDirectGroupBase>> builder = 
-            new ImmutableMap.Builder<String, DemandResponseBackingField<LMDirectGroupBase>>();
+        Builder<String, DemandResponseBackingField<DirectGroupBase>> builder = 
+            new ImmutableMap.Builder<String, DemandResponseBackingField<DirectGroupBase>>();
         for(LoadGroupBackingFieldBase backingField : backingFieldList) {
             builder.put(backingField.getFieldName(), backingField);
         }

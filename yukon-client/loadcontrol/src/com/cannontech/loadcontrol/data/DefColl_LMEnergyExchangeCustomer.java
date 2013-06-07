@@ -5,6 +5,7 @@ package com.cannontech.loadcontrol.data;
  * @author: Aaron Lauinger
  */
 import com.cannontech.message.util.CollectionExtracter;
+import com.cannontech.messaging.message.loadcontrol.data.EnergyExchangeCustomer;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 
@@ -25,7 +26,7 @@ public class DefColl_LMEnergyExchangeCustomer extends DefColl_LMCICustomerBase
 	* to be out of sync and the results could be catastrophic.
 	*/
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new LMEnergyExchangeCustomer();
+	return new EnergyExchangeCustomer();
 }
  /**
 	* Return a Comparator object for the Java class being mapped.
@@ -39,7 +40,7 @@ public com.roguewave.tools.v2_0.Comparator getComparator() {
 	{
 		public int compare(Object x, Object y) 
 		{
-			return (int) (((LMEnergyExchangeCustomer)x).getCustomerID().longValue() - ((LMEnergyExchangeCustomer)y).getCustomerID().longValue() );
+			return (int) (((EnergyExchangeCustomer)x).getCustomerId() - ((EnergyExchangeCustomer)y).getCustomerId());
 		}
 	};
 }
@@ -68,7 +69,7 @@ public String getCxxStringId() {
 	* being mapped.  It is used by CollectableStreamer during registration.
 	*/
 public Class getJavaClass() {
-	return LMEnergyExchangeCustomer.class;
+	return EnergyExchangeCustomer.class;
 }
  /**
 	* This method will be called by CollectableStreamer to restore the guts,
@@ -85,7 +86,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 {
 	super.restoreGuts(obj,vstr,polystr);
 	
-	LMEnergyExchangeCustomer cust = (LMEnergyExchangeCustomer) obj;
+	EnergyExchangeCustomer cust = (EnergyExchangeCustomer) obj;
 	//cust.setEnergyExchangeCustomerReplies( (Vector) vstr.restoreObject(polystr) );
     cust.setEnergyExchangeCustomerReplies( CollectionExtracter.extractVector(vstr, polystr) );
 }

@@ -7,10 +7,10 @@
 	Integer revisionNumber = new Integer( checker.get("rev") );
 
 	//Now locate the specific offer and revision
-	LMProgramEnergyExchange[] programs = cache.getEnergyCompanyEnergyExchangePrograms(energyCompanyID);
-	LMProgramEnergyExchange program = null;
-	LMEnergyExchangeOffer offer = null;
-	LMEnergyExchangeOfferRevision revision = null;
+	ProgramEnergyExchange[] programs = cache.getEnergyCompanyEnergyExchangePrograms(energyCompanyID);
+	ProgramEnergyExchange program = null;
+	EnergyExchangeOffer offer = null;
+	EnergyExchangeOfferRevision revision = null;
 
 	if( programs != null ) 
 	{
@@ -20,16 +20,16 @@
 
 			for( int l = 0; l < offers.size(); l++ )
 			{
-				LMEnergyExchangeOffer o = (LMEnergyExchangeOffer) offers.elementAt(l);
-				if( o.getOfferID().intValue() == offerID.intValue() )
+				EnergyExchangeOffer o = (EnergyExchangeOffer) offers.elementAt(l);
+				if( o.getOfferId() == offerID )
 				{
 					java.util.Vector revisions = o.getEnergyExchangeOfferRevisions();
 					if( revisions != null )
 					{
 						for( int m = 0; m < revisions.size(); m++ )
 						{
-							LMEnergyExchangeOfferRevision r = (LMEnergyExchangeOfferRevision) revisions.elementAt(m);
-							if( r.getRevisionNumber().intValue() == revisionNumber.intValue() )
+							EnergyExchangeOfferRevision r = (EnergyExchangeOfferRevision) revisions.elementAt(m);
+							if( r.getRevisionNumber() == revisionNumber )
 							{
 								program = programs[k];
 								offer = o;
@@ -48,13 +48,13 @@
 
 	for (int i = 0; i < 24; i++)
 	{
-		double price = ((LMEnergyExchangeHourlyOffer) hrOffers.elementAt(i)).getPrice().doubleValue() / 100;
+		double price = ((EnergyExchangeHourlyOffer) hrOffers.elementAt(i)).getPrice() / 100;
 		if (price == 0)
 			priceStrs[i] = "----";
 		else
 			priceStrs[i] = priceFormat.format( price );
 
-		double amount = ((LMEnergyExchangeHourlyOffer) hrOffers.elementAt(i)).getAmountRequested().doubleValue();
+		double amount = ((EnergyExchangeHourlyOffer) hrOffers.elementAt(i)).getAmountRequested();
 		if (amount == 0)
 			amountStrs[i] = "----";
 		else
@@ -65,13 +65,13 @@
 	{
 		for( int i = 0; i < 24; i++ )
 		{  
-			double price = ((LMEnergyExchangeHourlyOffer) hrOffers.elementAt(i)).getPrice().doubleValue() / 100;
+			double price = ((EnergyExchangeHourlyOffer) hrOffers.elementAt(i)).getPrice() / 100;
 			if (price == 0)
 				newPriceStrs[i] = "0";
 			else
 				newPriceStrs[i] = priceFormat.format( price );
 
-			double amount = ((LMEnergyExchangeHourlyOffer) hrOffers.elementAt(i)).getAmountRequested().doubleValue();
+			double amount = ((EnergyExchangeHourlyOffer) hrOffers.elementAt(i)).getAmountRequested();
 			if (amount == 0)
 				newAmountStrs[i] = "0";
 			else
@@ -91,7 +91,7 @@
 <SCRIPT LANGUAGE="JAVASCRIPT" TYPE="TEXT/JAVASCRIPT">
   <!-- Hide the script from older browsers
    function goBack() {
-  location = "<%=request.getContextPath()%>/operator/LoadControl/oper_ee.jsp?tab=current&prog=<%= program.getYukonID() %>&offer=<%= offerID %>&rev=<%= revisionNumber %>"
+  location = "<%=request.getContextPath()%>/operator/LoadControl/oper_ee.jsp?tab=current&prog=<%= program.getYukonId() %>&offer=<%= offerID %>&rev=<%= revisionNumber %>"
   }
   //End hiding script -->
 

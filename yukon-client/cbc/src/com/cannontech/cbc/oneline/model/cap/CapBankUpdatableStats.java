@@ -11,7 +11,7 @@ import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.AdjustablePosition;
 import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.esub.element.StaticText;
-import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.messaging.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.user.YukonUserContext;
 import com.loox.jloox.LxAbstractGraph;

@@ -32,12 +32,12 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.loadcontrol.LCUtils;
-import com.cannontech.loadcontrol.data.IGearProgram;
-import com.cannontech.loadcontrol.data.LMProgramBase;
-import com.cannontech.loadcontrol.data.LMProgramDirect;
-import com.cannontech.loadcontrol.data.LMProgramDirectGear;
-import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.loadcontrol.popup.ControlAreaPopUpMenu;
+import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
+import com.cannontech.messaging.message.loadcontrol.data.GearProgram;
+import com.cannontech.messaging.message.loadcontrol.data.Program;
+import com.cannontech.messaging.message.loadcontrol.data.ProgramDirect;
+import com.cannontech.messaging.message.loadcontrol.data.ProgramDirectGear;
 import com.cannontech.roles.loadcontrol.DirectLoadcontrolRole;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -135,7 +135,7 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 		if( litePAO != null )
 		{
 			LiteLMProgScenario[] programs = 
-					YukonSpringHook.getBean(LMDao.class).getLMScenarioProgs( litePAO.getYukonID() );
+					YukonSpringHook.getBean(LMDao.class).getLMScenarioProgs( litePAO.getYukonId() );
 
 			ArrayList selPrgs = new ArrayList( programs.length );
 
@@ -143,8 +143,8 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 			{
 				LiteLMProgScenario p = programs[i];
 				
-				LMProgramBase lmProg = 
-					(LMProgramBase)allPrograms.get( new Integer(p.getProgramID()) );
+				Program lmProg = 
+					(Program)allPrograms.get( new Integer(p.getProgramID()) );
 					
 				if( lmProg != null )
 				{
@@ -286,22 +286,22 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 	 * Creation date: (5/14/2002 10:50:02 AM)
 	 * @param
 	 */
-	public synchronized LMManualControlRequest createMessage( LMProgramBase program, Integer gearNum ) 
+	public synchronized ManualControlRequestMessage createMessage( Program program, Integer gearNum ) 
 	{
 		int constID =
-			LMManualControlRequest.getConstraintID( getJComboBoxConstraints().getSelectedItem().toString() );
+			ManualControlRequestMessage.getConstraintId( getJComboBoxConstraints().getSelectedItem().toString() );
 
 		if (getMode() == MODE_STOP) 
         {
-            LMManualControlRequest cmd = LCUtils.createProgMessage(
+            ManualControlRequestMessage cmd = LCUtils.createProgMessage(
                                             isStopStartNowSelected(),
                                             getMode() == MODE_STOP,
                                             getStartTime(), getStopTime(),
                                             program, gearNum, constID );
             
             if(canSpecifyStopGear && !getJCheckBoxStartStopNow().isSelected()) {
-                cmd.setStartGear(((LMProgramDirectGear)getSelectedStopGear()).getGearNumber());
-                cmd.setCommand(LMManualControlRequest.CHANGE_GEAR);
+                cmd.setStartGear(((ProgramDirectGear)getSelectedStopGear()).getGearNumber());
+                cmd.setCommand(ManualControlRequestMessage.CHANGE_GEAR);
             }
             
             return cmd;
@@ -310,10 +310,10 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
         {
             //special case when we create a start message dro direct program, with
             //target cycle gear
-            if (program instanceof LMProgramDirect) {
-                List<LMProgramDirectGear> gears = ((LMProgramDirect)program).getDirectGearVector();
+            if (program instanceof ProgramDirect) {
+                List<ProgramDirectGear> gears = ((ProgramDirect)program).getDirectGearVector();
                 for (Iterator iter = gears.iterator(); iter.hasNext();) {
-                    LMProgramDirectGear lmProgramDirectGear = (LMProgramDirectGear) iter.next();
+                    ProgramDirectGear lmProgramDirectGear = (ProgramDirectGear) iter.next();
                     if (isTargetCycleGear(lmProgramDirectGear)) {
                         String additionalInfo = null;
                         if (getGearConfigJPanel() != null)
@@ -345,10 +345,10 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 	 *
 	 * @param
 	 */
-	public synchronized LMManualControlRequest createScenarioMessage( MultiSelectProg program ) 
+	public synchronized ManualControlRequestMessage createScenarioMessage( MultiSelectProg program ) 
 	{
 		int constID =
-			LMManualControlRequest.getConstraintID( getJComboBoxConstraints().getSelectedItem().toString() );
+			ManualControlRequestMessage.getConstraintId( getJComboBoxConstraints().getSelectedItem().toString() );
 		
 		boolean doItNow = false;
 		if( getMode() == MODE_STOP )
@@ -604,12 +604,12 @@ public javax.swing.JComboBox getJComboBoxConstraints() {
 			if( YukonSpringHook.getBean(AuthDao.class).checkRoleProperty( ClientSession.getInstance().getUser(),
 						DirectLoadcontrolRole.ALLOW_OBSERVE_CONSTRAINTS) )
 				ivjJComboBoxConstraints.addItem( 
-					LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_USE] );
+					ManualControlRequestMessage.CONSTRAINT_FLAG_STRS[ManualControlRequestMessage.CONSTRAINTS_FLAG_USE] );
 
 			if( YukonSpringHook.getBean(AuthDao.class).checkRoleProperty( ClientSession.getInstance().getUser(),
 					DirectLoadcontrolRole.ALLOW_CHECK_CONSTRAINTS) )
 				ivjJComboBoxConstraints.addItem(
-					LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_CHECK] );
+					ManualControlRequestMessage.CONSTRAINT_FLAG_STRS[ManualControlRequestMessage.CONSTRAINTS_FLAG_CHECK] );
 
 			if( ivjJComboBoxConstraints.getItemCount() > 0 ) {
 				//set our initial selection to be the value specified in our
@@ -625,7 +625,7 @@ public javax.swing.JComboBox getJComboBoxConstraints() {
 				// observe them for now
 				ivjJComboBoxConstraints.setEnabled( false );
 				ivjJComboBoxConstraints.addItem( 
-					LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_USE] );				
+					ManualControlRequestMessage.CONSTRAINT_FLAG_STRS[ManualControlRequestMessage.CONSTRAINTS_FLAG_USE] );				
 			}
 
 		} catch (java.lang.Throwable ivjExc) {
@@ -1506,10 +1506,10 @@ private void initialize() {
 		return;
 	}
     private void resetForNonTargetCycleGear(Object gear) {
-        if (gear instanceof LMProgramDirectGear) 
+        if (gear instanceof ProgramDirectGear) 
         {
             //unless we selected target cycle disable the adjustment config
-            LMProgramDirectGear directGear = (LMProgramDirectGear) gear;
+            ProgramDirectGear directGear = (ProgramDirectGear) gear;
             if (!isTargetCycleGear(directGear)) {
                 getGearConfigJPanel().setAdditonalInfo(null);
             }
@@ -1533,8 +1533,8 @@ private void initialize() {
         int selectedIndex = getJComboBoxGear().getSelectedIndex();
         Object selectedGear = getJComboBoxGear().getItemAt( selectedIndex);
         if (!isMulti) {
-            if (selectedGear instanceof LMProgramDirectGear) {
-                if (!isTargetCycleGear((LMProgramDirectGear) selectedGear)) {
+            if (selectedGear instanceof ProgramDirectGear) {
+                if (!isTargetCycleGear((ProgramDirectGear) selectedGear)) {
                     getTargetAdjustButton().setEnabled(false);
                 }
 
@@ -1591,9 +1591,9 @@ private void initialize() {
 			getMultiSelectPrgModel().setAllGearNumbers(
 					new Integer(getJComboBoxGear().getSelectedIndex()+1) );
 		}
-        if (gear instanceof LMProgramDirectGear) {
+        if (gear instanceof ProgramDirectGear) {
             //unless we selected target cycle disable the adjustment config
-            LMProgramDirectGear directGear = (LMProgramDirectGear) gear;
+            ProgramDirectGear directGear = (ProgramDirectGear) gear;
             getTargetAdjustButton().setEnabled(isTargetCycleGear(directGear));
         }
 
@@ -1604,7 +1604,7 @@ private void initialize() {
 	 * Creation date: (7/17/2001 9:24:14 AM)
 	 * @param gears java.util.Vector
 	 */
-	public void setGearList(List<LMProgramDirectGear> gears) 
+	public void setGearList(List<ProgramDirectGear> gears) 
 	{
 		getJComboBoxGear().removeAllItems();
         getJComboBoxStopGear().removeAllItems();
@@ -1693,8 +1693,8 @@ private void initialize() {
 			default:  //done for completness
                 Object gear = getSelectedGear();
                 getTargetAdjustButton().setEnabled(false);
-                if (gear instanceof LMProgramDirectGear) {
-                	getTargetAdjustButton().setEnabled(isTargetCycleGear((LMProgramDirectGear)gear));
+                if (gear instanceof ProgramDirectGear) {
+                	getTargetAdjustButton().setEnabled(isTargetCycleGear((ProgramDirectGear)gear));
                 }
                 break;
 		}
@@ -1713,7 +1713,7 @@ private void initialize() {
         return gear;
     }
 
-    private boolean isTargetCycleGear (LMProgramDirectGear gear) {
+    private boolean isTargetCycleGear (ProgramDirectGear gear) {
     	return gear.getControlMethod() == GearControlMethod.TargetCycle;
     }
 
@@ -1722,7 +1722,7 @@ private void initialize() {
 	 * Creation date: (1/21/2001 5:32:52 PM)
 	 * @param newLoadControlProgram LMProgramBase
 	 */
-	public boolean setMultiSelectObject( LMProgramBase[] rows ) 
+	public boolean setMultiSelectObject( Program[] rows ) 
 	{
 		if( rows == null )
 			return false;
@@ -1731,7 +1731,7 @@ private void initialize() {
 		//get all the programs and copy the needed values into a different object
 		MultiSelectProg[] prgs = new MultiSelectProg[ rows.length ]; 
 		for( int i = 0; i < rows.length; i++ )
-			prgs[i] = new MultiSelectProg( (LMProgramBase)rows[i] );
+			prgs[i] = new MultiSelectProg( (Program)rows[i] );
 	
 			
 		return setMultiSelectObject( prgs, false );
@@ -1777,9 +1777,9 @@ private void initialize() {
         
             DefaultComboBoxModel[] models = new DefaultComboBoxModel[ rows.length ];
             for( int i = 0; i < rows.length; i++ ) {
-                if( rows[i].getBaseProgram() instanceof IGearProgram ) {
-                    LMProgramBase base = rows[i].getBaseProgram();
-                    IGearProgram progGear =(IGearProgram)rows[i].getBaseProgram();
+                if( rows[i].getBaseProgram() instanceof GearProgram ) {
+                    Program base = rows[i].getBaseProgram();
+                    GearProgram progGear =(GearProgram)rows[i].getBaseProgram();
                     
                     DefaultComboBoxModel combModel = new DefaultComboBoxModel();
                     for( int j = 0; j < progGear.getDirectGearVector().size(); j++ ) {
@@ -1788,7 +1788,7 @@ private void initialize() {
                     
                     if(isScenario) {
                         LiteYukonPAObject litePao = (LiteYukonPAObject) getJComboBoxScenario().getSelectedItem();
-                        int startGear = YukonSpringHook.getBean(LMDao.class).getStartingGearForScenarioAndProgram(base.getYukonID(), litePao.getLiteID());
+                        int startGear = YukonSpringHook.getBean(LMDao.class).getStartingGearForScenarioAndProgram(base.getYukonId(), litePao.getLiteID());
                         combModel.setSelectedItem(progGear.getDirectGearVector().get(startGear-1));
                     }
                     
@@ -1800,16 +1800,16 @@ private void initialize() {
             gearColumn.setCellRenderer( new MultiJComboCellRenderer(models) );
             gearColumn.setCellEditor( new MultiJComboCellEditor(models) );
 		}
-		else if( rows.length == 1 && rows[0].getBaseProgram() instanceof IGearProgram ) {
+		else if( rows.length == 1 && rows[0].getBaseProgram() instanceof GearProgram ) {
 			//only 1 program, lets just show the gears for this program
 		    MultiSelectProg msp = rows[0];
-			setGearList( ((IGearProgram)msp.getBaseProgram()).getDirectGearVector() );
+			setGearList( ((GearProgram)msp.getBaseProgram()).getDirectGearVector() );
 			TableColumn gearColumn = getJPanelMultiSelect().getTableColumn( MultiSelectPrgModel.COL_GEAR );
 			DefaultComboBoxModel[] models = new DefaultComboBoxModel[ rows.length ];
-			LMProgramBase base = rows[0].getBaseProgram();
+			Program base = rows[0].getBaseProgram();
 			
-			if( msp.getBaseProgram() instanceof IGearProgram ) {
-                IGearProgram progGear = (IGearProgram)msp.getBaseProgram();
+			if( msp.getBaseProgram() instanceof GearProgram ) {
+                GearProgram progGear = (GearProgram)msp.getBaseProgram();
 
                 DefaultComboBoxModel combModel = new DefaultComboBoxModel();
                 for( int j = 0; j < progGear.getDirectGearVector().size(); j++ ) {
@@ -1818,7 +1818,7 @@ private void initialize() {
                 
                 if(isScenario) {
                     LiteYukonPAObject litePao = (LiteYukonPAObject) getJComboBoxScenario().getSelectedItem();
-                    int startGear = YukonSpringHook.getBean(LMDao.class).getStartingGearForScenarioAndProgram(base.getYukonID(), litePao.getLiteID());
+                    int startGear = YukonSpringHook.getBean(LMDao.class).getStartingGearForScenarioAndProgram(base.getYukonId(), litePao.getLiteID());
                     combModel.setSelectedItem(progGear.getDirectGearVector().get(startGear-1));
                 }
                 

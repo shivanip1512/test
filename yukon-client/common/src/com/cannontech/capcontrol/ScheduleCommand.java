@@ -3,7 +3,7 @@ package com.cannontech.capcontrol;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.message.capcontrol.model.CommandType;
+import com.cannontech.messaging.message.capcontrol.CommandType;
 
 public enum ScheduleCommand {
 	

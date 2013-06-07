@@ -5,9 +5,9 @@ import java.util.Iterator;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.message.dispatch.message.Multi;
-import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.dispatch.DispatchClientConnection;
+import com.cannontech.messaging.message.dispatch.MultiMessage;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
 
 /**
  * FDRLight sends point changes from one dispatch to another.  
@@ -30,24 +30,24 @@ public class FDRLight {
 		FDRLightArgs args = getArgs();
 		
 		// set up the connections
-		ClientConnection srcConn = new ClientConnection();
+		DispatchClientConnection srcConn = new DispatchClientConnection();
 		srcConn.setHost(args.getSrcHost());
 		srcConn.setPort(args.getSrcPort());
 		
-		com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
+		com.cannontech.messaging.message.dispatch.RegistrationMessage reg = new com.cannontech.messaging.message.dispatch.RegistrationMessage();
 		reg.setAppName( CtiUtilities.getAppRegistration() );
 		reg.setAppIsUnique(0);
 		reg.setAppKnownPort(0);
 		reg.setAppExpirationDelay(5000);
-		com.cannontech.message.dispatch.message.PointRegistration pReg = new com.cannontech.message.dispatch.message.PointRegistration();
-		pReg.setRegFlags(com.cannontech.message.dispatch.message.PointRegistration.REG_ALL_PTS_MASK );
-		com.cannontech.message.dispatch.message.Multi multi = new com.cannontech.message.dispatch.message.Multi();
+		com.cannontech.messaging.message.dispatch.PointRegistrationMessage pReg = new com.cannontech.messaging.message.dispatch.PointRegistrationMessage();
+		pReg.setRegFlags(com.cannontech.messaging.message.dispatch.PointRegistrationMessage.REG_ALL_PTS_MASK );
+		com.cannontech.messaging.message.dispatch.MultiMessage multi = new com.cannontech.messaging.message.dispatch.MultiMessage();
 		multi.getVector().addElement(reg);
 		multi.getVector().addElement(pReg);
 		srcConn.setRegistrationMsg(multi);
 		srcConn.setAutoReconnect(true);
 		
-		ClientConnection destConn = new ClientConnection();
+		DispatchClientConnection destConn = new DispatchClientConnection();
 		destConn.setHost(args.getDestHost());
 		destConn.setPort(args.getDestPort());
 		
@@ -85,17 +85,17 @@ public class FDRLight {
 
 	}
 
-	private void handleMessage(ClientConnection dest, Object msg) {
-		if( msg instanceof Multi ) {
-			Multi multi = (Multi) msg;
+	private void handleMessage(DispatchClientConnection dest, Object msg) {
+		if( msg instanceof MultiMessage ) {
+			MultiMessage multi = (MultiMessage) msg;
 			Iterator iter = multi.getVector().iterator();
 			while( iter.hasNext() ) {
 				handleMessage(dest, iter.next());
 			}
 		}
 		else 
-		if( msg instanceof PointData ) {
-			PointData pData = (PointData) msg;
+		if( msg instanceof PointDataMessage ) {
+			PointDataMessage pData = (PointDataMessage) msg;
 			CTILogger.info("forwarding id: " + pData.getId() + " value: " + pData.getValue());
 			dest.write(pData);	
 		}

@@ -1,7 +1,8 @@
 #include "precompiled.h"
 
 #include "dbaccess.h"
-#include "connection.h"
+#include "connection_client.h"
+#include "amq_constants.h"
 #include "ccmessage.h"
 #include "msg_multi.h"
 #include "msg_cmd.h"
@@ -35,6 +36,7 @@
 
 #include "ccclientconn.h"
 #include "ccclientlistener.h"
+#include "millisecond_timer.h"
 #include <rw/thr/prodcons.h>
 
 
@@ -49,6 +51,8 @@ extern long  _VOLT_REDUCTION_SYSTEM_POINTID;
 
 using Cti::ThreadStatusKeeper;
 using std::endl;
+using Cti::CapControl::EventLogEntry;
+using Cti::CapControl::EventLogEntries;
 
 //DLLEXPORT bool  bGCtrlC = false;
 
@@ -103,10 +107,8 @@ void CtiCapController::setInstance(CtiCapController* controller)
     Private to ensure that only one CtiCapController is available through the
     instance member function
 ---------------------------------------------------------------------------*/
-CtiCapController::CtiCapController() : control_loop_delay(500), control_loop_inmsg_delay(0), control_loop_outmsg_delay(0)
+CtiCapController::CtiCapController()
 {
-    _dispatchConnection.reset();
-    _pilConnection = NULL;
 }
 
 /*---------------------------------------------------------------------------
@@ -117,9 +119,6 @@ CtiCapController::CtiCapController() : control_loop_delay(500), control_loop_inm
 ---------------------------------------------------------------------------*/
 CtiCapController::~CtiCapController()
 {
-
-    _dispatchConnection.reset();
-    _pilConnection = NULL;
     if( _instance != NULL )
     {
         _instance = NULL;
@@ -238,7 +237,7 @@ void CtiCapController::stop()
             {
                 _dispatchConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
             }
-            _dispatchConnection->ShutdownConnection();
+            _dispatchConnection->close();
         }
     }
     catch(...)
@@ -249,11 +248,14 @@ void CtiCapController::stop()
 
     try
     {
-        if( _pilConnection!=NULL && _pilConnection->valid() )
+        if( _pilConnection )
         {
-            _pilConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+            if( _pilConnection->valid() )
+            {
+                _pilConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+            }
+            _pilConnection->close();
         }
-        _pilConnection->ShutdownConnection();
     }
     catch(...)
     {
@@ -349,12 +351,12 @@ void CtiCapController::messageSender()
 
                         if (currentStation->getStationUpdatedFlag())
                         {
-                            store->updateSubstationObjectSet(currentStation->getPaoId(), (CtiMultiMsg_set&)stationChanges);
+                            store->updateSubstationObjectSet(currentStation->getPaoId(), (CapControlPaoPtr_set&)stationChanges);
                             currentStation->setStationUpdatedFlag(false);
                         }
                         if (currentArea->getAreaUpdatedFlag())
                         {
-                            store->updateAreaObjectSet(currentArea->getPaoId(),(CtiMultiMsg_set&)areaChanges);
+                            store->updateAreaObjectSet(currentArea->getPaoId(),(CapControlPaoPtr_set&)areaChanges);
                             currentArea->setAreaUpdatedFlag(false);
                         }
                         subStationBusChanges.push_back(currentSubstationBus);
@@ -476,9 +478,6 @@ void CtiCapController::controlLoop()
         CtiPAOScheduleManager* scheduleMgr = CtiPAOScheduleManager::getInstance();
         scheduleMgr->start();
 
-        // 3 cparms, set for control loop wait scenerios - main, rcv msgs, send msgs
-        loadControlLoopCParms();
-
         CtiTime currentDateTime;
         CtiTime registerTimeElapsed;
         CtiCCSubstation_set stationChanges;
@@ -486,7 +485,6 @@ void CtiCapController::controlLoop()
         CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
         CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
         CtiMultiMsg* multiCapMsg = new CtiMultiMsg();
-        CtiMultiMsg* multiCCEventMsg = new CtiMultiMsg();
         long lastThreadPulse = 0;
         CtiDate lastDailyResetDate;     // == CtiDate::now()
         bool waitToBroadCastEverything = false;
@@ -502,7 +500,6 @@ void CtiCapController::controlLoop()
 
         while(true)
         {
-            long main_wait = control_loop_delay;
             bool received_message = false;
             {
 
@@ -513,7 +510,7 @@ void CtiCapController::controlLoop()
                 CtiMultiMsg_vec& pointChanges = multiDispatchMsg->getData();
                 CtiMultiMsg_vec& pilMessages = multiPilMsg->getData();
                 CtiMultiMsg_vec& capMessages = multiCapMsg->getData();
-                CtiMultiMsg_vec& ccEvents = multiCCEventMsg->getData();
+                EventLogEntries ccEvents;
                 try
                 {
 
@@ -705,12 +702,12 @@ void CtiCapController::controlLoop()
                                         currentStation->checkAndUpdateRecentlyControlledFlag();
                                         if (currentStation->getStationUpdatedFlag())
                                         {
-                                            store->updateSubstationObjectSet(currentStation->getPaoId(), (CtiMultiMsg_set&)stationChanges);
+                                            store->updateSubstationObjectSet(currentStation->getPaoId(), (CapControlPaoPtr_set&)stationChanges);
                                             currentStation->setStationUpdatedFlag(false);
                                         }
                                         if (currentArea->getAreaUpdatedFlag())
                                         {
-                                            store->updateAreaObjectSet(currentArea->getPaoId(),(CtiMultiMsg_set&)areaChanges);
+                                            store->updateAreaObjectSet(currentArea->getPaoId(),(CapControlPaoPtr_set&)areaChanges);
                                             currentArea->setAreaUpdatedFlag(false);
                                         }
 
@@ -863,16 +860,9 @@ void CtiCapController::controlLoop()
                 try
                 {
                     //send ccEvents to EventLOG!
-                    if( ccEvents.size() > 0)
-                    {
-                        _ccEventMsgQueue.write(multiCCEventMsg->replicateMessage());
-                        delete multiCCEventMsg;
-                        multiCCEventMsg = new CtiMultiMsg();
-                    }
-                    if (_ccEventMsgQueue.canRead())
-                    {
-                        processCCEventMsgs();
-                    }
+                    enqueueEventLogEntries(ccEvents);
+
+                    writeEventLogsToDatabase();
                 }
                 catch(...)
                 {
@@ -950,7 +940,7 @@ void CtiCapController::controlLoop()
 }
 
 void CtiCapController::checkBusForNeededControl(CtiCCAreaPtr currentArea,  CtiCCSubstation* currentStation, CtiCCSubstationBusPtr currentSubstationBus, const CtiTime& currentDateTime,
-                            CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
+                            CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
 {
 
     try
@@ -989,7 +979,7 @@ void CtiCapController::checkBusForNeededControl(CtiCCAreaPtr currentArea,  CtiCC
 void CtiCapController::readClientMsgQueue()
 {
     CtiTime tempTime;
-    RWCollectable* clientMsg = NULL;
+    CtiMessage* clientMsg = NULL;
 
     tempTime.now();
     while(_inClientMsgQueue.canRead())
@@ -999,7 +989,7 @@ void CtiCapController::readClientMsgQueue()
         {
             try
             {
-                CtiCCExecutorFactory::createExecutor( (CtiMessage*) clientMsg )->execute();
+                CtiCCExecutorFactory::createExecutor( clientMsg )->execute();
             }
             catch(...)
             {
@@ -1072,7 +1062,7 @@ void CtiCapController::broadcastMessagesToClient(CtiCCSubstationBus_vec& substat
 }
 
 void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubstationBus, const CtiTime& currentDateTime,
-                            CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages,
+                            CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages,
                             CtiMultiMsg_vec& capMessages)
 {
     try
@@ -1269,13 +1259,13 @@ void CtiCapController::outClientMsgs()
 
         while (true)
         {
-            RWCollectable* msg = NULL;
+            CtiMessage* msg = NULL;
             bool retVal = getOutClientMsgQueueHandle().read(msg,5000);
             int totalEntries = getOutClientMsgQueueHandle().entries();
 
             if (retVal)
             {
-                CtiCCClientListener::getInstance()->BroadcastMessage((CtiMessage*)msg);
+                CtiCCClientListener::getInstance().BroadcastMessage( msg );
                 delete msg;
             }
 
@@ -1309,61 +1299,22 @@ void CtiCapController::outClientMsgs()
     }
 }
 
-void CtiCapController::processCCEventMsgs()
+void CtiCapController::writeEventLogsToDatabase()
 {
-    try
+    Cti::Timing::MillisecondTimer timer;
+
+    int entries = 0;
+
+    while( ++entries < 100 && ! _eventLogs.empty() )
     {
-        RWCollectable* msg = NULL;
-        int msgCount = 0;
-        CtiTime processTimeStart = CtiTime();
-
-        while(_ccEventMsgQueue.canRead() && msgCount < 100)
-        {
-            try
-            {
-                msg = _ccEventMsgQueue.read();
-
-                if (msg->isA() == MSG_MULTI && ((CtiMultiMsg*) msg)->getCount() > 0)
-                {
-                    CtiMultiMsg_vec& temp = ((CtiMultiMsg*) msg)->getData();
-                    for(int i=0;i<temp.size( );i++)
-                    {
-
-                        CtiCCSubstationBusStore::getInstance()->InsertCCEventLogInDB((CtiCCEventLogMsg *) temp[i]);
-                        msgCount++;
-                    }
-                }
-                else if (msg->isA() == CTICCEVENTLOG_ID)
-                {
-                    CtiCCSubstationBusStore::getInstance()->InsertCCEventLogInDB((CtiCCEventLogMsg *) msg);
-                    msgCount++;
-                }
-                if (msg != NULL)
-                {
-                    delete msg;
-                    msg = NULL;
-                }
-            }
-            catch(...)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
-        };
-        long processTimeSecs = CtiTime().seconds() - processTimeStart.seconds();
-        if (_CC_DEBUG & CC_DEBUG_CCEVENTINSERT)
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Processed "<<msgCount<<" CC Event Log Messages in "<<processTimeSecs<<" seconds."<< endl;
-        }
-
+        CtiCCSubstationBusStore::InsertCCEventLogInDB(_eventLogs.getQueue());
     }
-    catch(...)
+
+    if (_CC_DEBUG & CC_DEBUG_CCEVENTINSERT)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Processed " << entries << " CC Event Log entries in " << timer.elapsed() / 1000 << " seconds."<< endl;
     }
-
 }
 
 /*---------------------------------------------------------------------------
@@ -1375,48 +1326,10 @@ DispatchConnectionPtr CtiCapController::getDispatchConnection()
 {
     try
     {
-        if( _dispatchConnection == NULL || (_dispatchConnection != NULL && _dispatchConnection->verifyConnection()) )
+        if( !_dispatchConnection || ( _dispatchConnection && _dispatchConnection->verifyConnection() ))
         {
-            string str;
-            char var[128];
-            string dispatch_host = "127.0.0.1";
-
-            strcpy(var, "DISPATCH_MACHINE");
-            if( !(str = gConfigParms.getValueAsString(var)).empty() )
-            {
-                dispatch_host = str.c_str();
-                if( _CC_DEBUG & CC_DEBUG_STANDARD )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << var << ":  " << dispatch_host << endl;
-                }
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-            }
-
-            int dispatch_port = VANGOGHNEXUS;
-
-            strcpy(var, "DISPATCH_PORT");
-            if( !(str = gConfigParms.getValueAsString(var)).empty() )
-            {
-                dispatch_port = atoi(str.c_str());
-                if( _CC_DEBUG & CC_DEBUG_STANDARD )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << var << ":  " << dispatch_port << endl;
-                }
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-            }
-
             //throw away the old connection if there was one that couldn't be verified
-            if( _dispatchConnection != NULL && _dispatchConnection->verifyConnection() )
+            if( _dispatchConnection )
             {
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1425,17 +1338,18 @@ DispatchConnectionPtr CtiCapController::getDispatchConnection()
                 _dispatchConnection.reset();
             }
 
-            if( _dispatchConnection == NULL )
+            if( !_dispatchConnection  )
             {
-
-                CapControlDispatchConnection* conn = new CapControlDispatchConnection("CC to Dispatch", dispatch_port, dispatch_host);
+                CapControlDispatchConnection* conn = new CapControlDispatchConnection( "CC to Dispatch" );
                 //Connect to Dispatch
                 _dispatchConnection = DispatchConnectionPtr((DispatchConnection*)conn);
+                _dispatchConnection->start();
 
                 //Send a registration message to Dispatch
                 CtiRegistrationMsg* registrationMsg = new CtiRegistrationMsg("CapController", 0, false );
                 _dispatchConnection->WriteConnQue( registrationMsg );
             }
+
             _dispatchConnection->addMessageListener(this);
         }
 
@@ -1456,71 +1370,28 @@ DispatchConnectionPtr CtiCapController::getDispatchConnection()
 
     Returns a connection to PIL, initializes if isn't created yet.
 ---------------------------------------------------------------------------*/
-CtiConnectionPtr CtiCapController::getPILConnection()
+boost::shared_ptr<CtiClientConnection> CtiCapController::getPILConnection()
 {
     try
     {
-        if( _pilConnection == NULL || (_pilConnection != NULL && _pilConnection->verifyConnection()) )
+        if( _pilConnection.get() == NULL || (_pilConnection.get() != NULL && _pilConnection->verifyConnection()) )
         {
-            string str;
-            char var[128];
-            string pil_host = "127.0.0.1";
-
-            strcpy(var, "PIL_MACHINE");
-            if( !(str = gConfigParms.getValueAsString(var)).empty() )
-            {
-                pil_host = str.c_str();
-                if( _CC_DEBUG & CC_DEBUG_STANDARD )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << var << ":  " << pil_host << endl;
-                }
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-            }
-
-            INT pil_port = PORTERINTERFACENEXUS;
-
-            strcpy(var, "PIL_PORT");
-            if( !(str = gConfigParms.getValueAsString(var)).empty() )
-            {
-                pil_port = atoi(str.c_str());
-                if( _CC_DEBUG & CC_DEBUG_STANDARD )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << var << ":  " << pil_port << endl;
-                }
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-            }
-
             //throw away the old connection if there was one that couldn't be
-            if( _pilConnection != NULL && _pilConnection->verifyConnection() )
+            if( _pilConnection.get() != NULL )
             {
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - Porter Connection Hickup in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
-                delete _pilConnection;
-                _pilConnection = NULL;
             }
 
-            if( _pilConnection == NULL )
-            {
-                //Connect to Pil
-                _pilConnection = new CtiConnection( pil_port, pil_host );
-                _pilConnection->setName("CC to Pil");
+            _pilConnection.reset( new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::pil ));
+            _pilConnection->setName("CC to Pil");
+            _pilConnection->start();
 
-                //Send a registration message to Pil
-                CtiRegistrationMsg* registrationMsg = new CtiRegistrationMsg("CapController", 0, false );
-                _pilConnection->WriteConnQue( registrationMsg );
-            }
+            //Send a registration message to Pil
+            CtiRegistrationMsg* registrationMsg = new CtiRegistrationMsg("CapController", 0, false );
+            _pilConnection->WriteConnQue( registrationMsg );
         }
 
         return _pilConnection;
@@ -1530,7 +1401,7 @@ CtiConnectionPtr CtiCapController::getPILConnection()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
 
-        return NULL;
+        return boost::shared_ptr<CtiClientConnection>();
     }
 }
 
@@ -1542,12 +1413,12 @@ CtiConnectionPtr CtiCapController::getPILConnection()
 void CtiCapController::checkPIL()
 {
     bool done = false;
-    CtiConnection* tempPtrPorterConn = getPILConnection();
+
     do
     {
         try
         {
-            CtiMessage* inMsg = (CtiMessage*) tempPtrPorterConn->ReadConnQue(0);
+            CtiMessage* inMsg = getPILConnection()->ReadConnQue(0);
 
             if ( inMsg != NULL )
             {
@@ -1561,6 +1432,7 @@ void CtiCapController::checkPIL()
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            done = true;
         }
     }
     while(!done);
@@ -2192,7 +2064,7 @@ CcDbReloadInfo CtiCapController::resolveCapControlTypeByDataBase(CtiDBChangeMsg 
 
     Reads off the Dispatch connection and handles messages accordingly.
 ---------------------------------------------------------------------------*/
-void CtiCapController::parseMessage(RWCollectable *message)
+void CtiCapController::parseMessage(CtiMessage *message)
 {
     try
     {
@@ -2357,7 +2229,7 @@ void CtiCapController::parseMessage(RWCollectable *message)
                     _itoa(message->isA(),tempstr,10);
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - message->isA() = " << tempstr << endl;
-                    dout << CtiTime() << " - Unknown message type: parseMessage(RWCollectable *message) in controller.cpp" << endl;
+                    dout << CtiTime() << " - Unknown message type: parseMessage() in controller.cpp" << endl;
                 }
         }
     }
@@ -2471,7 +2343,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
         store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
         INT seqId = CCEventSeqIdGen();
         currentSubstationBus->setEventSequence(seqId);
-        getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(false, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlSwitchOverUpdate, currentSubstationBus->getEventSequence(), value, "Switch Over Point Updated", "cap control"));
+        enqueueEventLogEntry(EventLogEntry(false, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlSwitchOverUpdate, currentSubstationBus->getEventSequence(), value, "Switch Over Point Updated", "cap control"));
         if (!currentSubstationBus->getDualBusEnable())
         {
             if (value > 0)
@@ -2481,7 +2353,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                     currentSubstationBus->setDisableFlag(true);
                     currentSubstationBus->setReEnableBusFlag(true);
                     store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                    getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(false, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlDisable, currentSubstationBus->getEventSequence(), 0, "Substation Bus Disabled By Inhibit", "cap control"));
+                    enqueueEventLogEntry(EventLogEntry(false, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlDisable, currentSubstationBus->getEventSequence(), 0, "Substation Bus Disabled By Inhibit", "cap control"));
                     string text = currentSubstationBus->getPaoName();
                     text += " Disabled";
                     string additional = string("Inhibit PointId Updated");
@@ -2494,7 +2366,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
             {
                 currentSubstationBus->setDisableFlag(false);
                 store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(false, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlEnable, currentSubstationBus->getEventSequence(), 1, "Substation Bus Enabled By Inhibit", "cap control"));
+                enqueueEventLogEntry(EventLogEntry(false, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlEnable, currentSubstationBus->getEventSequence(), 1, "Substation Bus Enabled By Inhibit", "cap control"));
                 string text = currentSubstationBus->getPaoName();
                 text += " Enabled";
                 string additional = string("Inhibit PointId Updated");
@@ -2653,7 +2525,7 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
         currentSubstationBus->setEventSequence(seqId);
         long stationId, areaId, spAreaId;
         store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-        getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlDisable, currentSubstationBus->getEventSequence(), 0, "Substation Bus Disabled By Inhibit", "cap control"));
+        enqueueEventLogEntry(EventLogEntry(0, pointID, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlDisable, currentSubstationBus->getEventSequence(), 0, "Substation Bus Disabled By Inhibit", "cap control"));
         string text = currentSubstationBus->getPaoName();
         text += " Disabled";
         string additional = string("Inhibit PointId Updated");
@@ -3610,11 +3482,11 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                         currentFeeder->setRetryIndex(0);
                                         long stationId, areaId, spAreaId;
                                         store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                                        CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, "point data msg" );
-                                        eventMsg->setActionId(currentCapBank->getActionId());
-                                        eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
+                                        EventLogEntry eventMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, "point data msg" );
+                                        eventMsg.setActionId(currentCapBank->getActionId());
+                                        eventMsg.setStateInfo(currentCapBank->getControlStatusQualityString());
+                                        enqueueEventLogEntry(eventMsg);
 
-                                        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
                                         currentCapBank->setIgnoreFlag(false);
                                         currentCapBank->setPorterRetFailFlag(false);
                                     }
@@ -4032,10 +3904,11 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                         sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                         long stationId, areaId, spAreaId;
                         store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                        CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, userName, 0, 0, 0, currentCapBank->getIpAddress());
-                        eventMsg->setActionId(currentCapBank->getActionId());
-                        eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
-                        getCCEventMsgQueueHandle().write(eventMsg);
+                        EventLogEntry eventMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, userName, 0, 0, 0, currentCapBank->getIpAddress());
+                        eventMsg.setActionId(currentCapBank->getActionId());
+                        eventMsg.setStateInfo(currentCapBank->getControlStatusQualityString());
+                        enqueueEventLogEntry(eventMsg);
+
                         currentCapBank->setLastStatusChangeTime(CtiTime());
                         currentFeeder->setRetryIndex(0);
 
@@ -4069,8 +3942,7 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
-    CtiMultiMsg* multiCCEventMsg = new CtiMultiMsg();
-    CtiMultiMsg_vec& ccEvents = multiCCEventMsg->getData();
+    EventLogEntries ccEvents;
 
     currentCapBank->setIgnoreFlag(true);
     currentSubstationBus->setBusUpdatedFlag(true);
@@ -4145,7 +4017,7 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
     long stationId, areaId, spAreaId;
     store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
 
-    ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, userName, 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
+    ccEvents.push_back( EventLogEntry(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, userName, 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
 
 
     if( currentCapBank->getOperationAnalogPointId() > 0 )
@@ -4155,7 +4027,7 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
         if (currentCapBank->getCurrentDailyOperations() > 0)
             currentCapBank->setCurrentDailyOperations( currentCapBank->getCurrentDailyOperations() - 1);
         getDispatchConnection()->WriteConnQue(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,AnalogPointType,"Command Refused, Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
-        ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlSetOperationCount, currentSubstationBus->getEventSequence(), currentCapBank->getTotalOperations(), "Command Refused, CapBank opCount adjustment", userName, 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
+        ccEvents.push_back( EventLogEntry(0, currentCapBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlSetOperationCount, currentSubstationBus->getEventSequence(), currentCapBank->getTotalOperations(), "Command Refused, CapBank opCount adjustment", userName, 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
     }
 
     if ( currentFeeder->getDailyOperationsAnalogPointId() > 0 )
@@ -4169,22 +4041,22 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
                                                                         AnalogPointType,
                                                                         "Command Refused, Forced ccServer Update",
                                                                         TAG_POINT_FORCE_UPDATE ) );
-            ccEvents.push_back( new CtiCCEventLogMsg( 0,
-                                                      currentFeeder->getDailyOperationsAnalogPointId(),
-                                                      spAreaId,
-                                                      areaId,
-                                                      stationId,
-                                                      currentSubstationBus->getPaoId(),
-                                                      currentFeeder->getPaoId(),
-                                                      capControlSetOperationCount,
-                                                      currentSubstationBus->getEventSequence(),
-                                                      currentFeeder->getCurrentDailyOperations(),
-                                                      "Command Refused, Feeder opCount adjustment",
-                                                      userName ) );
+            ccEvents.push_back( EventLogEntry( 0,
+                                               currentFeeder->getDailyOperationsAnalogPointId(),
+                                               spAreaId,
+                                               areaId,
+                                               stationId,
+                                               currentSubstationBus->getPaoId(),
+                                               currentFeeder->getPaoId(),
+                                               capControlSetOperationCount,
+                                               currentSubstationBus->getEventSequence(),
+                                               currentFeeder->getCurrentDailyOperations(),
+                                               "Command Refused, Feeder opCount adjustment",
+                                               userName ) );
         }
     }
 
-    getCCEventMsgQueueHandle().write(multiCCEventMsg);
+    enqueueEventLogEntries(ccEvents);
 
     currentCapBank->setLastStatusChangeTime(CtiTime());
     currentCapBank->setControlRecentlySentFlag(false);
@@ -4194,8 +4066,7 @@ void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBankPtr currentCapBank
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
-    CtiMultiMsg* multiCCEventMsg = new CtiMultiMsg();
-    CtiMultiMsg_vec& ccEvents = multiCCEventMsg->getData();
+    EventLogEntries ccEvents;
 
     currentSubstationBus->setBusUpdatedFlag(true);
     string text = string("CBC Unsolicited Event!");
@@ -4223,21 +4094,11 @@ void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBankPtr currentCapBank
     long stationId, areaId, spAreaId;
     store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
     currentCapBank->setActionId( CCEventActionIdGen(currentCapBank->getStatusPointId()) + 1);
-    ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlCommandSent, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), opText, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
+    ccEvents.push_back( EventLogEntry(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlCommandSent, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), opText, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
 
+    ccEvents.push_back( EventLogEntry(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
 
-    ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
-    if (ccEvents.size() > 0)
-    {
-        getCCEventMsgQueueHandle().write(multiCCEventMsg);
-        multiCCEventMsg = NULL;
-    }
-    else
-    {
-        //This should never happen.
-        delete multiCCEventMsg;
-        multiCCEventMsg = NULL;
-    }
+    enqueueEventLogEntries(ccEvents);
 
     currentCapBank->setUnsolicitedPendingFlag(false);
     currentCapBank->setIgnoreFlag(false);
@@ -4251,9 +4112,6 @@ void CtiCapController::handleUnexpectedUnsolicitedMessaging(CtiCCCapBankPtr curr
                                                   CtiCCSubstationBusPtr currentSubstationBus, CtiCCTwoWayPointsPtr twoWayPts)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-
-    CtiMultiMsg* multiCCEventMsg = new CtiMultiMsg();
-    CtiMultiMsg_vec& ccEvents = multiCCEventMsg->getData();
 
     currentSubstationBus->setBusUpdatedFlag(true);
     {
@@ -4279,18 +4137,7 @@ void CtiCapController::handleUnexpectedUnsolicitedMessaging(CtiCCCapBankPtr curr
     //send the cceventmsg.
     long stationId, areaId, spAreaId;
     store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-    ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlUnexpectedCBCStateReported, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
-    if (ccEvents.size() > 0)
-    {
-        getCCEventMsgQueueHandle().write(multiCCEventMsg);
-        multiCCEventMsg = NULL;
-    }
-    else
-    {
-        //This should never happen.
-        delete multiCCEventMsg;
-        multiCCEventMsg = NULL;
-    }
+    enqueueEventLogEntry( EventLogEntry(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlUnexpectedCBCStateReported, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
 
     currentCapBank->setUnsolicitedPendingFlag(false);
     currentCapBank->setIgnoreFlag(false);
@@ -4423,67 +4270,35 @@ void CtiCapController::confirmCapBankControl( CtiMultiMsg* pilMultiMsg, CtiMulti
     }
 }
 
-CtiPCPtrQueue< RWCollectable > &CtiCapController::getInClientMsgQueueHandle()
+CtiPCPtrQueue< CtiMessage > &CtiCapController::getInClientMsgQueueHandle()
 {
     return _inClientMsgQueue;
 }
-CtiPCPtrQueue< RWCollectable > &CtiCapController::getOutClientMsgQueueHandle()
+CtiPCPtrQueue< CtiMessage > &CtiCapController::getOutClientMsgQueueHandle()
 {
     return _outClientMsgQueue;
 }
 
 
-CtiPCPtrQueue< RWCollectable > &CtiCapController::getCCEventMsgQueueHandle()
+void CtiCapController::submitEventLogEntry(const Cti::CapControl::EventLogEntry &event)
 {
-    return _ccEventMsgQueue;
+    getInstance()->enqueueEventLogEntry(event);
 }
 
-void CtiCapController::sendEventLogMessage(CtiMessage* message)
+void CtiCapController::submitEventLogEntries(const EventLogEntries &events)
 {
-    getCCEventMsgQueueHandle().write(message);
+    getInstance()->enqueueEventLogEntries(events);
 }
 
-/*
- * loadControlLoopCParms
- * initialize control loop delay cparms that control behavior of the main loop
- * these cparms are optional.
- */
-void CtiCapController::loadControlLoopCParms()
+void CtiCapController::enqueueEventLogEntry(const Cti::CapControl::EventLogEntry &event)
 {
-    string str;
-    char var[128];
-
-    strcpy(var, "CAP_CONTROL_CONTROL_LOOP_NORMAL_DELAY");
-    if( !(str = gConfigParms.getValueAsString(var)).empty() )
-    {
-        control_loop_delay = atoi(str.c_str());
-        if( _CC_DEBUG & CC_DEBUG_STANDARD )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
-        }
-    }
-
-    strcpy(var, "CAP_CONTROL_CONTROL_LOOP_INMSG_DELAY");
-    if( !(str = gConfigParms.getValueAsString(var)).empty() )
-    {
-        control_loop_inmsg_delay = atoi(str.c_str());
-        if( _CC_DEBUG & CC_DEBUG_STANDARD )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
-        }
-    }
-
-    strcpy(var, "CAP_CONTROL_CONTROL_LOOP_OUTMSG_DELAY");
-    if( !(str = gConfigParms.getValueAsString(var)).empty() )
-    {
-        control_loop_outmsg_delay = atoi(str.c_str());
-        if( _CC_DEBUG & CC_DEBUG_STANDARD )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
-        }
-    }
+    _eventLogs.putQueue(event);
 }
 
+void CtiCapController::enqueueEventLogEntries(const EventLogEntries &events)
+{
+    for each( const Cti::CapControl::EventLogEntry &event in events )
+    {
+        enqueueEventLogEntry(event);
+    }
+}

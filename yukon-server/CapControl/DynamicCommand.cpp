@@ -6,25 +6,11 @@
 
 using std::map;
 
-RWDEFINE_COLLECTABLE( DynamicCommand, DYNAMICCOMMAND_ID )
+DEFINE_COLLECTABLE( DynamicCommand, DYNAMICCOMMAND_ID )
 
 DynamicCommand::DynamicCommand() : Inherited(), _commandType(DynamicCommand::UNDEFINED)
 {
 
-}
-
-void DynamicCommand::restoreGuts(RWvistream& iStream)
-{
-    Inherited::restoreGuts(iStream);
-
-    int commandType = 0;
-    iStream >> commandType;
-    _commandType = (DynamicCommand::CommandType)commandType;
-
-    iStream >> _longParameters;
-    iStream >> _doubleParameters;
-
-    return;
 }
 
 bool DynamicCommand::getParameter(Parameter parameter, long& value)

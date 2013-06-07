@@ -1,6 +1,6 @@
 package com.cannontech.thirdparty.digi;
 
-import static com.cannontech.thirdparty.messaging.ControlHistoryMessage.CONTROL_RESTORE_DURATION;
+import static com.cannontech.messaging.message.thirdparty.ControlHistoryMessage.CONTROL_RESTORE_DURATION;
 
 import java.util.HashSet;
 import java.util.List;
@@ -21,12 +21,12 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.messaging.message.thirdparty.ControlHistoryMessage;
 import com.cannontech.thirdparty.digi.dao.ZigbeeControlEventDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.digi.exception.DigiNotConfiguredException;
 import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
-import com.cannontech.thirdparty.messaging.ControlHistoryMessage;
 import com.cannontech.thirdparty.messaging.SepControlMessage;
 import com.cannontech.thirdparty.messaging.SepRestoreMessage;
 import com.cannontech.thirdparty.model.ZigbeeDevice;

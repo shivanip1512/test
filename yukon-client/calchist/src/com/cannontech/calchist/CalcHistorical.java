@@ -23,10 +23,10 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
-import com.cannontech.message.dispatch.ClientConnection;
-import com.cannontech.message.dispatch.message.Multi;
-import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.message.dispatch.message.Registration;
+import com.cannontech.dispatch.DispatchClientConnection;
+import com.cannontech.messaging.message.dispatch.MultiMessage;
+import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.messaging.message.dispatch.RegistrationMessage;
 import com.cannontech.roles.application.CalcHistoricalRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSettingType;
@@ -37,7 +37,7 @@ public final class CalcHistorical
 	private Thread starter = null;
 
 	private Integer aggregationInterval = null;//interval in seconds between calculations
-	private ClientConnection dispatchConnection = null;
+	private DispatchClientConnection dispatchConnection = null;
 	private GregorianCalendar nextCalcTime = null;
 
 	public static boolean isService = true;
@@ -499,7 +499,7 @@ public Vector getRawPointHistoryVectorOfVectors(Vector calcComponentVector, Greg
  * Insert the method's description here.
  * Creation date: (12/4/2000 2:27:20 PM)
  */
-public ClientConnection getDispatchConnection()
+public DispatchClientConnection getDispatchConnection()
 {
 	if( dispatchConnection == null || !dispatchConnection.isValid() )
 	{
@@ -514,9 +514,9 @@ public ClientConnection getDispatchConnection()
 		{
 			CTILogger.error( e.getMessage(), e );
 		}		
-		dispatchConnection = new ClientConnection();
+		dispatchConnection = new DispatchClientConnection();
 
-		Registration reg = new Registration();
+		RegistrationMessage reg = new RegistrationMessage();
 		reg.setAppName( CtiUtilities.getAppRegistration() );
 		reg.setAppIsUnique(0);
 		reg.setAppKnownPort(0);
@@ -946,7 +946,7 @@ public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfV
 	Vector returnVector = new Vector();
 
 	boolean done = false;
-	PointData pointDataMsg = null;
+	PointDataMessage pointDataMsg = null;
 //	GregorianCalendar targetRawPointHistoryTimeStamp = null;
 	long targetRPHTimeInMillis = 0;
 
@@ -1023,14 +1023,14 @@ public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfV
 			Double value = figurePointDataMsgValue(calcComponents, tempRawPointHistoryVector);
 			if( value != null)
 			{
-				pointDataMsg = new PointData();
+				pointDataMsg = new PointDataMessage();
 				pointDataMsg.setId(pointID);
 				pointDataMsg.setValue(value.doubleValue());
 				pointDataMsg.setTimeStamp(new Date(((LiteRawPointHistory) tempRawPointHistoryVector.get(0)).getTimeStamp()));
 				pointDataMsg.setTime(new Date(((LiteRawPointHistory) tempRawPointHistoryVector.get(0)).getTimeStamp()));
 				pointDataMsg.setPointQuality(PointQuality.Normal);
 				pointDataMsg.setType(PointTypes.CALCULATED_POINT);
-				pointDataMsg.setTags(PointData.TAG_POINT_LP_NO_REPORT); //load profile tag setting
+				pointDataMsg.setTags(PointDataMessage.TAG_POINT_LP_NO_REPORT); //load profile tag setting
 				pointDataMsg.setStr("Calc Historical");
 
 				returnVector.addElement(pointDataMsg);
@@ -1050,11 +1050,11 @@ public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfV
 	//CTILogger.info("EXIT parseAndCalculateRawPointHistories");
 	//Make the last PointData in the vector have the load profile tag only on it....this should NOW route to all listeners! (Per Corey)
 	if( pointDataMsg != null)
-		pointDataMsg.setTags(PointData.TAG_POINT_LOAD_PROFILE_DATA);
+		pointDataMsg.setTags(PointDataMessage.TAG_POINT_LOAD_PROFILE_DATA);
 	
 	for (int i = 0; i < returnVector.size(); i++)
 	{
-		PointData tempPD = (PointData)returnVector.get(i);
+		PointDataMessage tempPD = (PointDataMessage)returnVector.get(i);
 		CTILogger.debug("POINTID: " + tempPD.getId() + " -  TAG: " + Long.toHexString(tempPD.getTags()));
 	}	
 	return returnVector;
@@ -1122,7 +1122,7 @@ public void writeMultiMessage(Vector pointDataMsgVector, int pointID)
 	//CTILogger.info("ENTER writeMultiMessage");
 	if (pointDataMsgVector != null)
 	{
-		Multi multiMsg = new Multi();
+		MultiMessage multiMsg = new MultiMessage();
 		multiMsg.getVector().addAll(pointDataMsgVector);
 		
 		if( pointDataMsgVector != null)

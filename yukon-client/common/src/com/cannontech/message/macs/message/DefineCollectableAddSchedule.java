@@ -6,6 +6,7 @@ package com.cannontech.message.macs.message;
  * @author: 
  */
 
+import com.cannontech.messaging.message.macs.AddScheduleMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -24,7 +25,7 @@ public DefineCollectableAddSchedule() {
  * create method comment.
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new AddSchedule();
+	return new AddScheduleMessage();
 }
 /**
  * getComparator method comment.
@@ -55,7 +56,7 @@ public String getCxxStringId() {
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return com.cannontech.message.macs.message.AddSchedule.class;
+	return com.cannontech.messaging.message.macs.AddScheduleMessage.class;
 }
 /**
  * restoreGuts method comment.
@@ -70,7 +71,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 {
 	super.saveGuts(obj, vstr, polystr);
 
-	AddSchedule msg = (AddSchedule) obj;
+	AddScheduleMessage msg = (AddScheduleMessage) obj;
 
 	// save schedule here
 	vstr.saveObject( msg.getSchedule(), polystr );

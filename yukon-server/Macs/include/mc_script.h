@@ -9,8 +9,12 @@
 class CtiMCScript : public CtiMessage
 {
 public:
+    DECLARE_COLLECTABLE( CtiMCScript );
 
-    RWDECLARE_COLLECTABLE( CtiMCScript )
+private:
+    typedef CtiMessage Inherited;
+
+public:
 
     CtiMCScript();
     virtual ~CtiMCScript();
@@ -28,9 +32,6 @@ public:
     bool writeContents();
 
     virtual CtiMessage* replicateMessage() const;
-
-    virtual void restoreGuts(RWvistream &);
-    virtual void saveGuts(RWvostream &) const;
 
     static const std::string& getScriptPath();
     static void setScriptPath(const std::string& path);
