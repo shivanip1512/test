@@ -198,7 +198,7 @@ ALTER TABLE ArchiveValuesExportFormat
 ADD TimeZoneFormat VARCHAR(20);
 GO
 UPDATE ArchiveValuesExportFormat
-SET TimeZoneFormat = 'LOCALTZ';
+SET TimeZoneFormat = 'LOCAL';
 
 ALTER TABLE ArchiveValuesExportFormat
 ALTER COLUMN TimeZoneFormat VARCHAR(20) NOT NULL;
