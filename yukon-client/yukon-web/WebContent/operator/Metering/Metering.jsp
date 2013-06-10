@@ -102,9 +102,9 @@
 					<img id = "theGraph" src="<%=request.getContextPath()%>/servlet/GraphGenerator?action=EncodeGraph" > 
 				<%}
 				%>
-    		    <cti:checkProperty propertyid="<%= TrendingRole.TRENDING_DISCLAIMER%>"> 
+    		    <cti:checkRolesAndProperties value="TRENDING_DISCLAIMER"> 
 					<br><font size="-1"><cti:getProperty propertyid="<%= TrendingRole.TRENDING_DISCLAIMER%>"/></font>
-				</cti:checkProperty>
+				</cti:checkRolesAndProperties>
 				</center></td>
 			</tr>
 			</table>

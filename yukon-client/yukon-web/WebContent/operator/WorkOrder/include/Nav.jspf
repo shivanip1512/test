@@ -29,40 +29,40 @@
 	}
 %>
 
-<cti:checkMultiProperty propertyid="<%= Integer.toString(WorkOrderRole.WORK_ORDER_SHOW_ALL) + ',' + Integer.toString(WorkOrderRole.WORK_ORDER_CREATE_NEW) %>">
+<cti:checkRolesAndProperties value="WORK_ORDER_SHOW_ALL, WORK_ORDER_CREATE_NEW">
 <table width="101" border="0" cellspacing="0" cellpadding="5">
   <tr> 
     <td> 
       <div align="left"><span class="NavHeader">Work Orders</span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
-		  <tr> 
+          <tr> 
             <td width="10"><%= ((String[]) links.get("WOFilter.jsp"))[0] %></td>
             <td style="padding:1"><%= ((String[]) links.get("WOFilter.jsp"))[1] %></td>
           </tr>
-		  <cti:checkProperty propertyid="<%= WorkOrderRole.WORK_ORDER_SHOW_ALL %>">
+          <cti:checkRolesAndProperties value="WORK_ORDER_SHOW_ALL">
           <tr> 
             <%// if(((java.util.ArrayList)session.getAttribute(ServletUtil.FILTER_WORKORDER_LIST)) == null || ((java.util.ArrayList)session.getAttribute(ServletUtil.FILTER_WORKORDER_LIST)).size() < 1) { %>
             <%// } else {%>
-            	<td width="10"><%= ((String[]) links.get("WorkOrder.jsp"))[0] %></td>
-	            <td style="padding:1"><%= ((String[]) links.get("WorkOrder.jsp"))[1] %></td>
-	        <%// } %>
+                <td width="10"><%= ((String[]) links.get("WorkOrder.jsp"))[0] %></td>
+                <td style="padding:1"><%= ((String[]) links.get("WorkOrder.jsp"))[1] %></td>
+            <%// } %>
           </tr>
-		  </cti:checkProperty>        
-<cti:checkProperty propertyid="<%= WorkOrderRole.WORK_ORDER_CREATE_NEW %>">
+          </cti:checkRolesAndProperties>        
+<cti:checkRolesAndProperties value="WORK_ORDER_CREATE_NEW">
           <tr> 
             <td width="10"><%= ((String[]) links.get("CreateOrder.jsp"))[0] %></td>
             <td style="padding:1"><%= ((String[]) links.get("CreateOrder.jsp"))[1] %></td>
           </tr>
-</cti:checkProperty>
-<cti:checkProperty propertyid="<%= WorkOrderRole.WORK_ORDER_REPORT %>">
+</cti:checkRolesAndProperties>
+<cti:checkRolesAndProperties value="WORK_ORDER_REPORT">
           <tr> 
             <td width="10"><%= ((String[]) links.get("Report.jsp"))[0] %></td>
             <td style="padding:1"><%= ((String[]) links.get("Report.jsp"))[1] %></td>
           </tr>
-</cti:checkProperty>
+</cti:checkRolesAndProperties>
         </table>
       </div>
     </td>
   </tr>
 </table>
-</cti:checkMultiProperty>
+</cti:checkRolesAndProperties>

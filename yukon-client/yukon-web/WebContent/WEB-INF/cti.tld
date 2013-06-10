@@ -128,16 +128,6 @@
     <tag-class>com.cannontech.web.taglib.CheckYukonVersionUndefinedTag</tag-class>
     <body-content>scriptless</body-content>
   </tag>
-  
-  <tag>
-  	<name>checkNoRole</name>
-  	<tag-class>com.cannontech.web.taglib.CheckNoRole</tag-class>
-  	<attribute>
-  		<name>roleid</name>
-  		<required>true</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>	
-  </tag>
  
    <tag>
     <name>checkProperty</name>
@@ -221,46 +211,6 @@
 	<attribute>
         <name>userChecker</name>
         <required>true</required>
-        <rtexprvalue>true</rtexprvalue>
-    </attribute>
-  </tag>
-  
-  <tag>
-  	<name>checkNoProperty</name>
-  	<tag-class>com.cannontech.web.taglib.CheckNoProperty</tag-class>
-  	<attribute>
-  		<name>propertyid</name>
-  		<required>true</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>	
-  </tag>
-  
-  <tag>
-  	<name>checkMultiRole</name>
-  	<tag-class>com.cannontech.web.taglib.CheckMultiRole</tag-class>
-  	<attribute>
-  		<name>roleid</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>
-  	<attribute>
-  		<name>roles</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>
-  </tag>
-  
-  <tag>
-  	<name>checkMultiProperty</name>
-  	<tag-class>com.cannontech.web.taglib.CheckMultiProperty</tag-class>
-  	<attribute>
-  		<name>propertyid</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>
-    <attribute>
-        <name>property</name>
-        <required>false</required>
         <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>

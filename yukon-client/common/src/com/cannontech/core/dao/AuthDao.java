@@ -35,17 +35,6 @@ public interface AuthDao {
      */
     @Deprecated
     public LiteYukonRole getRole(LiteYukonUser user, int roleID);
-
-
-    /**
-     * Returns true if the given user has the given role.
-     * @param user
-     * @param rolePropertyID
-     * @return boolean
-     * @deprecated use RolePropertyDao.checkRole()
-     */
-    @Deprecated
-    public boolean checkRole(LiteYukonUser user, int roleId);
     
     /**
      * Returns true if the given user has a true value for the given property
@@ -175,7 +164,7 @@ public interface AuthDao {
     
     /**
      * Check that user has at least one of the role properties.
-     * Works using OR semantics the same as the cti:checkMultiProperty
+     * Works using OR semantics
      * <requireRoleProperty> tags.
      * @param user
      * @param rolePropertyIds

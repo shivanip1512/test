@@ -20,8 +20,6 @@ import com.cannontech.util.ReflectivePropertySearcher;
  * 
  * The propertyids must be comma separated.
  * @author alauinger
- * @see CheckProperty
- * @see CheckNoProperty
  */
 public class CheckMultiProperty extends BodyTagSupport {
 

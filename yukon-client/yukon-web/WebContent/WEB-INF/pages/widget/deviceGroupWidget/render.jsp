@@ -58,12 +58,12 @@
                                          displayCheckboxes="true"
                                          styleClass="contained static-mode scroll-large"/>
 
-    <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
-        <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
+    <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
+        <cti:checkRolesAndProperties value="DEVICE_GROUP_MODIFY">
             <div class="actionArea">
                 <cti:button nameKey="edit" type="button" id="showPopupButton" />
             </div>
-        </cti:checkProperty>
-    </cti:checkRole>
+        </cti:checkRolesAndProperties>
+    </cti:checkRolesAndProperties>
 
 </div>

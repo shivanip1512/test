@@ -41,7 +41,7 @@
                         <textarea id="disableReason" style='width: 225px; vertical-align: bottom;' rows="2" disabled>${disableReason}</textarea> 
                     </div>
                     <br>
-                <cti:checkProperty property="CBCSettingsRole.CBC_ALLOW_OVUV">
+                <cti:checkRolesAndProperties value="CBC_ALLOW_OVUV">
                     <div style="color: white;"> 
                         <input type="checkbox" id="disableOvUvCheckBox" onclick="toggleReason(this, 'disableOvUvReasonId');" <c:if test="${isDisabledOvUv}">checked</c:if> />
                         <input type="hidden" id="disableOvUvCheckBox_orig" value="${isDisabledOvUv}"/>
@@ -53,7 +53,7 @@
                         <span style="color: gray; margin-right: 0.2cm;">Reason :</span>
                         <textarea id="disableOvUvReason" style='width: 225px; vertical-align: bottom;' rows="2" disabled>${disableOvUvReason}</textarea>
                     </div>
-                </cti:checkProperty>
+                </cti:checkRolesAndProperties>
                 
                 <c:if test="${isCapBank}">
                     <br>

@@ -3,6 +3,8 @@ package com.cannontech.web.cc;
 import java.util.TimeZone;
 
 import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.operator.AdministratorRole;
@@ -12,9 +14,11 @@ import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 public class CommercialCurtailmentBean {
     private LiteYukonUser yukonUser;
     private AuthDao authDao;
+    private RolePropertyDao rolePropertyDao;
 
     public CommercialCurtailmentBean() {
         super();
+        rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
     }
 
     public LiteYukonUser getYukonUser() {
@@ -34,7 +38,7 @@ public class CommercialCurtailmentBean {
     }
     
     public boolean isAdminUser() {
-        return authDao.checkRole(getYukonUser(), AdministratorRole.ROLEID);
+        return rolePropertyDao.checkRole(YukonRole.OPERATOR_ADMINISTRATOR, this.yukonUser);
     }
     
     public String getDateFormat() {

@@ -16,7 +16,7 @@
 <!-- Find all the versacom serial groups associated with this operator -->
 <!-- a serial address of 0 indicates that we should display the serial number text field -->
 
-<cti:checkProperty propertyid="<%=DirectLoadcontrolRole.INDIVIDUAL_SWITCH%>">
+<cti:checkRolesAndProperties value="LM_INDIVIDUAL_SWITCH">
 
 <%                                       
     boolean showSerialNumberTextField = false;
@@ -596,4 +596,4 @@ dropDownRouteIDArray[<%=ii%>] = <%=nameSerial[i][3]%>;
 </body>
 </html>
 
-</cti:checkProperty>
+</cti:checkRolesAndProperties>

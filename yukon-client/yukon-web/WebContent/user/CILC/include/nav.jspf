@@ -44,7 +44,7 @@ function dispStatusMsg(msgStr)
 %>
 
 <table width="150" border="0" cellspacing="0" cellpadding="6">
-  <cti:checkRole roleid="<%=TrendingRole.ROLEID%>">
+  <cticheckRolesAndProperties value="TRENDING">
   <tr> 
     <td height="30" valign="bottom">
       <div align="left"><span class="NavHeader">Trending</span><br>
@@ -75,7 +75,7 @@ function dispStatusMsg(msgStr)
 	  </div>
     </td>
   </tr>
-  <cti:checkProperty propertyid="<%=TrendingRole.SCAN_NOW_ENABLED%>">
+  <cti:checkRolesAndProperties value="SCAN_NOW_ENABLED">
   <tr>
     <td height="30" valign="bottom">
       <div align="left"><span class="NavHeader">Display</span><br>
@@ -88,10 +88,10 @@ function dispStatusMsg(msgStr)
       </div>
     </td>
   </tr>
-  </cti:checkProperty>
-  </cti:checkRole>
+  </cti:checkRolesAndProperties>
+  </cti:checkRolesAndProperties>
 
-  <cti:checkRole roleid="<%=ReportingRole.ROLEID%>">
+  <cti:checkRolesAndProperties value="REPORTING">
   <tr> 
     <td height="30" valign="bottom">
       <div align="left"><span class="NavHeader">Reporting</span><br>
@@ -104,5 +104,5 @@ function dispStatusMsg(msgStr)
 	  </div>
     </td>
   </tr>
-  </cti:checkRole>
+  </cti:checkRolesAndProperties>
 </table>

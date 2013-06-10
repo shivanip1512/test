@@ -35,40 +35,40 @@
 
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.bulkHome.header"/>
     <tags:boxContainer title="${headerTitle}" id="bulkHomeContainer" hideEnabled="false">
-        <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
-            <cti:checkProperty property="operator.DeviceActionsRole.BULK_IMPORT_OPERATION">
+        <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
+            <cti:checkRolesAndProperties value="BULK_IMPORT_OPERATION">
                 <div class="stacked">
                     <button type="button" data-href="/bulk/import/upload" class="wideButton"><i:inline key="yukon.common.device.bulk.bulkHome.bulkImportButton"/></button>
                     <i:inline key="yukon.common.device.bulk.bulkHome.bulkImportButton.description"/>
                 </div>
-            </cti:checkProperty>
+            </cti:checkRolesAndProperties>
             
-            <cti:checkProperty property="operator.DeviceActionsRole.BULK_UPDATE_OPERATION">
+            <cti:checkRolesAndProperties value="BULK_UPDATE_OPERATION">
                 <div class="stacked">
                     <button type="button" data-href="/bulk/update/upload" class="wideButton"><i:inline key="yukon.common.device.bulk.bulkHome.bulkUpdateButton"/></button>
                     <i:inline key="yukon.common.device.bulk.bulkHome.bulkUpdateButton.description"/>
                 </div>
-            </cti:checkProperty>
+            </cti:checkRolesAndProperties>
             
-            <cti:checkProperty property="operator.DeviceActionsRole.ADD_REMOVE_POINTS">
+            <cti:checkRolesAndProperties value="ADD_REMOVE_POINTS">
                 <div class="stacked">
                     <button type="button" data-href="/bulk/pointImport/upload" class="wideButton"><i:inline key="yukon.common.device.bulk.bulkHome.bulkPointImportButton"/></button>
                     <i:inline key="yukon.common.device.bulk.bulkHome.bulkPointImportButton.description"/>
                 </div>
-            </cti:checkProperty>
-        </cti:checkRole>
+            </cti:checkRolesAndProperties>
+        </cti:checkRolesAndProperties>
             
         <div class="stacked">
             <button type="button" data-href="/bulk/deviceSelection" class="wideButton"><i:inline key="yukon.common.device.bulk.bulkHome.createCollectionButton"/></button>
             <i:inline key="yukon.common.device.bulk.bulkHome.createCollectionButton.description"/>
         </div>
 
-        <cti:checkProperty property="operator.DeviceActionsRole.FDR_TRANSLATION_MANAGER">
+        <cti:checkRolesAndProperties value="FDR_TRANSLATION_MANAGER">
             <div class="stacked">
                 <button type="button" data-href="/bulk/fdrTranslationManager/home" class="wideButton"><i:inline key="yukon.common.device.bulk.bulkHome.manageFDRTranslationsButton"/></button>
                 <i:inline key="yukon.common.device.bulk.bulkHome.manageFDRTranslationsButton.description"/>
             </div>
-        </cti:checkProperty>   
+        </cti:checkRolesAndProperties>   
     </tags:boxContainer>
     
     

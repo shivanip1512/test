@@ -179,8 +179,8 @@
                 <div style="font-size: .75em;">
                 
                     <%-- EDIT GROUP --%>
-                    <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
-                    <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_EDIT">
+                    <cti:checkRolesAndProperties value="DEVICE_ACTIONS"">
+                    <cti:checkRolesAndProperties value="DEVICE_GROUP_EDIT">
                     
                         <c:if test="${group.editable}">
                             <h3><cti:msg2 key="yukon.web.deviceGroups.editor.operationsContainer.editGroupLabel"/></h3>
@@ -254,12 +254,12 @@
                             </div>
                         </c:if>
                     
-                    </cti:checkProperty>
-                    </cti:checkRole>
+                    </cti:checkRolesAndProperties>
+                    </cti:checkRolesAndProperties>
                     
                     <%-- MODIFY GROUP --%>
-                    <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
-                    <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
+                    <cti:checkRolesAndProperties value="DEVICE_ACTIONS"">
+                    <cti:checkRolesAndProperties value="DEVICE_GROUP_MODIFY">
                         <h3><cti:msg2 key="yukon.web.deviceGroups.editor.operationsContainer.modifyGroupsLabel" /></h3>
                         <div class="groupEditorContentDetail stacked">
                         
@@ -376,8 +376,8 @@
                                                                     includeControlBar="true" />
                             </form>
                         </div>
-                    </cti:checkProperty>
-                    </cti:checkRole>
+                    </cti:checkRolesAndProperties>
+                    </cti:checkRolesAndProperties>
                     
                     <%-- GENERATE REPORTS --%>
                     <h3><cti:msg2 key="yukon.web.deviceGroups.editor.operationsContainer.generateReportsLabel"/></h3>
@@ -408,19 +408,19 @@
                     <c:choose>
                         <c:when test="${deviceCount > 0}">
                             
-                            <cti:checkProperty property="operator.DeviceActionsRole.GROUP_COMMANDER">
+                            <cti:checkRolesAndProperties value="GROUP_COMMANDER">
                                 <cti:link href="/group/commander/collectionProcessing" key="yukon.web.deviceGroups.editor.operationsContainer.sendCommand">
                                     <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                                 </cti:link>
                                 &nbsp;|&nbsp;
-                            </cti:checkProperty>
+                            </cti:checkRolesAndProperties>
                             
-                            <cti:checkProperty property="operator.DeviceActionsRole.MASS_CHANGE">
+                            <cti:checkRolesAndProperties value="MASS_CHANGE">
                                 <cti:link href="/bulk/massChange/massChangeSelect" key="yukon.web.deviceGroups.editor.operationsContainer.massChange">
                                     <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                                 </cti:link>
                                 &nbsp;|&nbsp;
-                            </cti:checkProperty>
+                            </cti:checkRolesAndProperties>
                             
                             <cti:link href="/bulk/collectionActions" key="yukon.web.deviceGroups.editor.operationsContainer.otherActions">
                                 <cti:mapParam value="${deviceCollection.collectionParameters}"/>
@@ -464,11 +464,11 @@
                             <c:choose>
                                 <c:when test="${fn:length(subGroupMap) > 0}">
                                     <%-- User must have DEVICE_GROUP_EDIT to delete groups. Set once for use in loop. --%>
-                                    <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
-                                    <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_EDIT">
+                                    <cti:checkRolesAndProperties value="DEVICE_ACTIONS"">
+                                    <cti:checkRolesAndProperties value="DEVICE_GROUP_EDIT">
                                         <c:set var="hasEditRoleProperty" value="true"/>
-                                    </cti:checkProperty>
-                                    </cti:checkRole>
+                                    </cti:checkRolesAndProperties>
+                                    </cti:checkRolesAndProperties>
                                     <table class="compactResultsTable rowHighlighting">
                                         <thead></thead>
                                         <tfoot></tfoot>

@@ -231,10 +231,10 @@ function newScheduleAssignmentPopup(schedule, command) {
                                             </c:if>
                                         </c:otherwise>
                                     </c:choose>
-                                    <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
+                                    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
                                         <cti:button nameKey="remove" renderMode="image" styleClass="deleteAssignment"/>
                                         <span class="dn"><i:inline key=".confirmDeleteMsg" arguments="${item.scheduleName},${item.deviceName}" argumentSeparator=","/></span>
-                                    </cti:checkProperty>
+                                    </cti:checkRolesAndProperties>
                                 </td>
                                 
                                 <!-- Last and Next Run Time -->

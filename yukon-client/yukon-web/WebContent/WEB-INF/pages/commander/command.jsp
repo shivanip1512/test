@@ -167,7 +167,7 @@
             </c:forEach>
                     
     <!-- START > DCU-205 Serial section -->
-            <cti:checkProperty property="CommanderRole.DCU_SA205_SERIAL_MODEL">
+            <cti:checkRolesAndProperties value="DCU_SA205_SERIAL_MODEL">
                 <c:choose>
                     <c:when test="${serialType == 'sa205' && empty serialNumber}">
                         <div class="sideMenuLink selected"><i:inline key="yukon.web.modules.commanderSelect.sideMenu.sa205"/></div>
@@ -193,11 +193,11 @@
                     </c:choose>
                 </c:forEach>
                         </ul>
-            </cti:checkProperty>
+            </cti:checkRolesAndProperties>
     <!-- END > DCU-205 Serial section -->
 
     <!-- START > DCU-305 Serial section -->
-            <cti:checkProperty property="CommanderRole.DCU_SA305_SERIAL_MODEL">
+            <cti:checkRolesAndProperties value="DCU_SA305_SERIAL_MODEL">
                 <c:choose>
                     <c:when test="${serialType == 'sa305' && empty serialNumber}">
                         <div class="sideMenuLink selected"><i:inline key="yukon.web.modules.commanderSelect.sideMenu.sa305"/></div>
@@ -223,11 +223,11 @@
                     </c:choose>
                 </c:forEach>
                         </ul>
-            </cti:checkProperty>
+            </cti:checkRolesAndProperties>
     <!-- END >DCU-305 Serial section -->
 
     <!-- START > Expresscom Serial section -->
-            <cti:checkProperty property="CommanderRole.EXPRESSCOM_SERIAL_MODEL">
+            <cti:checkRolesAndProperties value="EXPRESSCOM_SERIAL_MODEL">
                 <c:choose>
                     <c:when test="${serialType == 'xcom' && empty serialNumber}">
                         <div class="sideMenuLink selected"><i:inline key="yukon.web.modules.commanderSelect.sideMenu.xcom"/></div>
@@ -253,11 +253,11 @@
                     </c:choose>
                 </c:forEach>
                         </ul>
-            </cti:checkProperty>
+            </cti:checkRolesAndProperties>
     <!-- END > Expresscom Serial section -->
 
     <!-- START > Versacom Serial section -->
-            <cti:checkProperty property="CommanderRole.VERSACOM_SERIAL_MODEL">
+            <cti:checkRolesAndProperties value="VERSACOM_SERIAL_MODEL">
                 <c:choose>
                     <c:when test="${serialType == 'vcom' && empty serialNumber}">
                         <div class="sideMenuLink selected"><i:inline key="yukon.web.modules.commanderSelect.sideMenu.vcom"/></div>
@@ -283,7 +283,7 @@
                     </c:choose>
                 </c:forEach>
                         </ul>
-            </cti:checkProperty>
+            </cti:checkRolesAndProperties>
     <!-- END > Versacom Serial section -->
 <!-- END > Load Management section -->
 

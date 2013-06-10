@@ -4,11 +4,11 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%-- ERROR MSG --%>
-<cti:checkRole role="operator.MeteringRole.ROLEID">
-<cti:checkProperty property="operator.MeteringRole.PROFILE_COLLECTION_SCANNING">
+<cti:checkRolesAndProperties value="METERING">
+<cti:checkRolesAndProperties value="PROFILE_COLLECTION_SCANNING">
     <c:set var="hasScanningRoleProperty" value="true"/>
-</cti:checkProperty>
-</cti:checkRole>
+</cti:checkRolesAndProperties>
+</cti:checkRolesAndProperties>
 
 
 <%--CHANNELS PROFILING--%>

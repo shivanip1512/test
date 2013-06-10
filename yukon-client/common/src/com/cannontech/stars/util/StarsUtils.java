@@ -331,23 +331,6 @@ public class StarsUtils {
 	    return comp;
 	}
 	
-	/**
-	 * @deprecated There should never be any need to call these if the role properties are well designed.
-	 */
-	@Deprecated
-	public static boolean isOperator(LiteYukonUser user) {
-	    return !isResidentialCustomer(user) &&
-	    YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(user) != null;
-	}
-
-    /**
-     * @deprecated There should never be any need to call these if the role properties are well designed.
-     */
-	@Deprecated
-	public static boolean isResidentialCustomer(LiteYukonUser user) {
-		return YukonSpringHook.getBean(AuthDao.class).checkRole(user, ResidentialCustomerRole.ROLEID);
-	}
-	
 	public static String getStarsTempDir() {
         final String fs = System.getProperty("file.separator");
         String serverBase = null;

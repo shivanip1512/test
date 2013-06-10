@@ -53,8 +53,8 @@
             <cti:deviceCollection deviceCollection="${deviceCollection}" /> 
     
             <%-- CHANGES BUTTONS --%>
-            <cti:checkRole role="DeviceActionsRole.ROLEID">
-            <cti:checkProperty property="DeviceActionsRole.MASS_CHANGE">
+            <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
+            <cti:checkRolesAndProperties value="MASS_CHANGE">
                 <input type="hidden" id="massChangeBulkFieldName" name="massChangeBulkFieldName" value="">
                 <table cellspacing="10">
             
@@ -70,8 +70,8 @@
                     </c:forEach>
                     
                 </table>
-            </cti:checkProperty>
-            </cti:checkRole>
+            </cti:checkRolesAndProperties>
+            </cti:checkRolesAndProperties>
     
         </form>
         

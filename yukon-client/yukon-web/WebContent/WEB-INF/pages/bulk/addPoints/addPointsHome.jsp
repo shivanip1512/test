@@ -3,7 +3,7 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:checkProperty property="DeviceActionsRole.ADD_REMOVE_POINTS">
+<cti:checkRolesAndProperties value="ADD_REMOVE_POINTS">
 <cti:msg var="pageTitle" key="yukon.common.device.bulk.addPointsHome.pageTitle" />
 
 <cti:standardPage page="addPointsHome" module="amr">
@@ -174,4 +174,4 @@
     </tags:bulkActionContainer>
                     
 </cti:standardPage>
-</cti:checkProperty>
+</cti:checkRolesAndProperties>

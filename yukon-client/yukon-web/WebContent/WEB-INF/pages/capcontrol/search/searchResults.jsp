@@ -42,30 +42,30 @@
             	                <td nowrap="nowrap">
                                     <c:choose>
                                         <c:when test="${row.paobject}">
-                                            <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
+                                            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
                                                 <a href="/editor/cbcBase.jsf?type=2&itemid=${row.itemId}" class="tierIconLink">
                                                     <img class="tierImg" src="/WebConfig/yukon/Icons/pencil.png"/>
                                                 </a>
                                                 <a href="/editor/deleteBasePAO.jsf?value=${row.itemId}" class="tierIconLink">
                                                     <img class="tierImg" src="/WebConfig/yukon/Icons/delete.png" />
                                                 </a>
-                                            </cti:checkProperty>
+                                            </cti:checkRolesAndProperties>
                                         </c:when>
                                         <c:otherwise>
-                                            <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
+                                            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
                                                 <a href="/editor/pointBase.jsf?parentId=${row.parentId}&itemid=${row.itemId}" class="tierIconLink">
                                                     <img class="tierImg" src="/WebConfig/yukon/Icons/pencil.png"/>
                                                 </a>
                                                 <a href="/editor/deleteBasePoint.jsf?value=${row.itemId}" class="tierIconLink">
                                                     <img class="tierImg" src="/WebConfig/yukon/Icons/delete.png" height="16" width="16"/>
                                                 </a>
-                                            </cti:checkProperty>
+                                            </cti:checkRolesAndProperties>
                                         </c:otherwise>
                                     </c:choose>
                                     <c:if test="${row.controller}">
-                                        <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
+                                        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
                                             <a class="tierIconLink" href="/editor/copyBase.jsf?itemid=${row.itemId}&type=1>"><img src="/WebConfig/yukon/Icons/copy.gif" class="tierImg"/></a>
-                                        </cti:checkProperty>
+                                        </cti:checkRolesAndProperties>
                                     </c:if>
                                     <spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>
                                 </td>

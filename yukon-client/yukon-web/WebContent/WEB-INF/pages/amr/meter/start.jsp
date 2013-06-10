@@ -40,9 +40,9 @@
 				<td class="widgetColumnCell last">
                     <cti:msg2 key="yukon.web.widgets.meterSearchWidget.helpText" var="helpText"/>
 					<ct:widget bean="meterSearchWidget" helpText="${helpText}" />
-					<cti:checkRole role="DeviceActionsRole.ROLEID">
+					<cti:checkRolesAndProperties value="DEVICE_ACTIONS">
                         <ct:widget bean="systemActionsMenuWidget" />
-                    </cti:checkRole>
+                    </cti:checkRolesAndProperties>
 				</td>
 			
 			</tr>

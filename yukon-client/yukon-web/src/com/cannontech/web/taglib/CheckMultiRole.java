@@ -19,8 +19,6 @@ import com.cannontech.util.ReflectivePropertySearcher;
  * 
  * The roleids must be comma separated.
  * @author alauinger
- * @see CheckRole
- * @see CheckNoRole
  */
 public class CheckMultiRole extends BodyTagSupport {
 

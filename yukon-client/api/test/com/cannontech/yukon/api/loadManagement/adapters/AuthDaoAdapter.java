@@ -14,11 +14,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public class AuthDaoAdapter implements AuthDao {
 
 	@Override
-	public boolean checkRole(LiteYukonUser user, int roleId) {
-		throw new UnsupportedOperationException("not implemented");
-	}
-
-	@Override
 	public boolean checkRoleProperty(LiteYukonUser user, int rolePropertyID) {
 		throw new UnsupportedOperationException("not implemented");
 	}

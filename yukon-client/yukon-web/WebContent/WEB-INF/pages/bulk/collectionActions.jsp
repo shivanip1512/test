@@ -99,22 +99,22 @@
         
         <%-- THE GRID --%>
         <cti:dataGrid cols="2" tableClasses="collectionActionAlignment collectionActionCellPadding">
-            <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
+            <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
                 <c:if test="${showGroupManagement}" >
                     <cti:dataGridCell>
                         <tags:sectionContainer title="Group Management">
                             <table>
                                 <%-- ADD TO GROUP --%>
-                                <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
+                                <cti:checkRolesAndProperties value="DEVICE_GROUP_MODIFY">
                                     <tags:collectionActionTr inputValue="ADD" buttonValue="${addToGroupLabel}" inputName="addRemove" 
                                         description="${addToGroupDescription}" action="${selectGroupUrl}" deviceCollection="${deviceCollection}"/>
-                                </cti:checkProperty>
+                                </cti:checkRolesAndProperties>
                                 
                                 <%-- REMOVE FROM GROUP --%>
-                                <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
+                                <cti:checkRolesAndProperties value="DEVICE_GROUP_MODIFY">
 	                                <tags:collectionActionTr inputValue="REMOVE" buttonValue="${removeFromGroupLabel}" inputName="addRemove" 
                                         description="${removeFromGroupDescription}" action="${selectGroupUrl}" deviceCollection="${deviceCollection}"/>
-                                </cti:checkProperty>
+                                </cti:checkRolesAndProperties>
                             </table>
                         </tags:sectionContainer>
                     </cti:dataGridCell>
@@ -124,7 +124,7 @@
                     <cti:dataGridCell>
                         <tags:sectionContainer title="Editing">
                             <table>
-                                <cti:checkProperty property="operator.DeviceActionsRole.MASS_CHANGE">
+                                <cti:checkRolesAndProperties value="MASS_CHANGE">
                                     <%-- MASS CHANGE --%>
                                     <tags:collectionActionTr buttonValue="${massChangeLabel}" description="${massChangeDescription}"
                                         action="${massChangeUrl}" deviceCollection="${deviceCollection}"/>
@@ -132,13 +132,13 @@
                                     <%-- CHANGE TYPE --%>
                                     <tags:collectionActionTr buttonValue="${changeDeviceTypeLabel}" description="${changeDeviceTypeDescription}"
                                         action="${changeDeviceTypeUrl}" deviceCollection="${deviceCollection}"/>
-                                </cti:checkProperty>
+                                </cti:checkRolesAndProperties>
                                 
-                                <cti:checkProperty property="operator.DeviceActionsRole.MASS_DELETE">
+                                <cti:checkRolesAndProperties value="MASS_DELETE">
                                     <%-- MASS DELETE --%>
                                     <tags:collectionActionTr buttonValue="${massDeleteLabel}" description="${massDeleteDescription}"
                                         action="${massDeleteUrl}" deviceCollection="${deviceCollection}"/>
-                                </cti:checkProperty>
+                                </cti:checkRolesAndProperties>
                             </table>
                         </tags:sectionContainer>
                     </cti:dataGridCell>
@@ -147,21 +147,21 @@
                 <cti:dataGridCell>
                     <tags:sectionContainer title="Commands">
                         <table>
-                            <cti:checkProperty property="operator.DeviceActionsRole.GROUP_COMMANDER">
+                            <cti:checkRolesAndProperties value="GROUP_COMMANDER">
                                 <%-- GROUP COMMANDER --%>
                                 <tags:collectionActionTr buttonValue="${sendCommandLabel}" description="${sendCommandDescription}"
                                     action="${sendCommandUrl}" deviceCollection="${deviceCollection}"/>
-                            </cti:checkProperty>
+                            </cti:checkRolesAndProperties>
                             
                             <%-- GROUP ATTRIBUTE READ --%>
                             <tags:collectionActionTr buttonValue="${readAttributeLabel}" description="${readAttributeDescription}"
                                     action="${readAttributeUrl}" deviceCollection="${deviceCollection}"/>
                             
-                            <cti:checkProperty property="operator.DeviceActionsRole.LOCATE_ROUTE">
+                            <cti:checkRolesAndProperties value="LOCATE_ROUTE">
                                 <%-- LOCATE ROUTE --%>
                                 <tags:collectionActionTr buttonValue="${routeLocateLabel}" description="${routeLocateDescription}"
                                     action="${routeLocateUrl}" deviceCollection="${deviceCollection}"/>
-                            </cti:checkProperty>
+                            </cti:checkRolesAndProperties>
                         </table>
                     </tags:sectionContainer>
                 </cti:dataGridCell>
@@ -197,7 +197,7 @@
                         </table>
                     </tags:sectionContainer>
                 </cti:dataGridCell>
-            </cti:checkRole>
+            </cti:checkRolesAndProperties>
             <cti:dataGridCell>
                 <tags:sectionContainer title="Reporting">
                     <table>
@@ -205,11 +205,11 @@
                         <tags:collectionActionTr buttonValue="${deviceCollectionReportLabel}" description="${deviceCollectionReportDescription}"
                             action="${deviceCollectionReportUrl}" deviceCollection="${deviceCollection}"/>
                         
-                        <cti:checkProperty property="operator.DeviceActionsRole.ARCHIVED_DATA_ANALYSIS">
+                        <cti:checkRolesAndProperties value="ARCHIVED_DATA_ANALYSIS">
                             <%-- DATA ANALYSIS --%>
                             <tags:collectionActionTr buttonValue="${dataAnalysisLabel}" description="${dataAnalysisDiscription}"
                                 action="${dataAnalysisUrl}" deviceCollection="${deviceCollection}"/>
-                        </cti:checkProperty>        
+                        </cti:checkRolesAndProperties>        
                         
                         <cti:checkRolesAndProperties value="ARCHIVED_DATA_EXPORT">
                             <%-- ARCHIVED DATA EXPORT --%>

@@ -10,7 +10,6 @@ import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 
 /**
  * If at least one property is true then the body of the tag is evaluated, otherwise it is skipped.
- * @see CheckProperty
  */
 public class CheckEnergyCompanySettingTag extends TagSupport {
     private String value;

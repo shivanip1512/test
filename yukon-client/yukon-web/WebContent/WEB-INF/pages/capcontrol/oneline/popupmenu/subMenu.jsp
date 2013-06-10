@@ -29,10 +29,10 @@
     				<option value="" style="color: white"></option>
 	       			<option value="${openAllSub}" style="color:white;">Open All CapBanks</option>
 			     	<option value="${closeAllSub}" style="color:white;">Close All CapBanks</option>
-				    <cti:checkProperty property="CBCSettingsRole.CBC_ALLOW_OVUV">
+				    <cti:checkRolesAndProperties value="CBC_ALLOW_OVUV">
 				        <option  value="${enableOvUvSub}" style="color:white;">Enable OV/UV</option>
 				        <option  value="${disableOvUvSub}" style="color:white;">Disable OV/UV</option>
-				    </cti:checkProperty>
+				    </cti:checkRolesAndProperties>
                     <option  value="${sendAll2WaySub}" style="color:white;">Scan All 2way CBCs</option>
 				    <option  value="${sendTimeSyncSub}" style="color:white;">Send All TimeSync</option>
     				<option  value="${syncCapBankStatesSub}" style="color:white;">Sync CapBank States</option>

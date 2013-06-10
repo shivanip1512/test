@@ -58,9 +58,9 @@
         <table cellpadding="0" cellspacing="0" width="100%">
             <tr>
                 <td colspan="2" class="leftMenuHeader">
-                    <cti:checkProperty property="ResidentialCustomerRole.SIGN_OUT_ENABLED">
+                    <cti:checkRolesAndProperties  value="RESIDENTIAL_SIGN_OUT_ENABLED">
                         <a href="/servlet/LoginController?ACTION=LOGOUT"><cti:msg key="yukon.web.menu.logout" /></a>
-                    </cti:checkProperty>
+                    </cti:checkRolesAndProperties>
                     &nbsp;
                 </td>
             </tr>

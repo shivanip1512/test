@@ -61,14 +61,14 @@
                         </c:if>
 	                    
 						<!-- Actions: High Bill Complaint -->
-	                    <cti:checkProperty property="operator.MeteringRole.HIGH_BILL_COMPLAINT">
+	                    <cti:checkRolesAndProperties value="HIGH_BILL_COMPLAINT">
 	                        <c:if test="${highBillSupported}">
 	                            <cti:url var="highBillUrl" value="/meter/highBill/view">
 	                                <cti:param name="deviceId" value="${deviceId}" />
 	                            </cti:url>
 	                            <a href="${highBillUrl}"><i:inline key=".highBill"/></a><br/>
 	                        </c:if>
-	                    </cti:checkProperty>
+	                    </cti:checkRolesAndProperties>
 	                    
                         <!-- Actions: Profile -->
                         <%-- need one of these at least for the profile page to display anything --%>
@@ -88,17 +88,17 @@
 						</c:if>
                        
 						<!-- Actions: Manual Commander -->
-						<cti:checkProperty property="CommanderRole.ENABLE_WEB_COMMANDER">
+						<cti:checkRolesAndProperties value="ENABLE_WEB_COMMANDER">
                         	<c:if test="${porterCommandRequestsSupported}">
 								<cti:url var="commanderUrl" value="/amr/manualCommand/home">
         							<cti:param name="deviceId" value="${deviceId}" />
         						</cti:url>
         						<a href="${commanderUrl}"><i:inline key=".manualCommander"/></a><br/>
         					</c:if>
-        				</cti:checkProperty>
+        				</cti:checkRolesAndProperties>
 	                        
                         <!-- Actions: Locate Route -->
-                        <cti:checkProperty property="operator.DeviceActionsRole.LOCATE_ROUTE">
+                        <cti:checkRolesAndProperties value="LOCATE_ROUTE">
 							<c:if test="${porterCommandRequestsSupported}">
 								<cti:url var="routeLocateUrl" value="/bulk/routeLocate/home">
         	                    	<cti:param name="collectionType" value="idList" />
@@ -106,7 +106,7 @@
 								</cti:url>
         	                    <a href="${routeLocateUrl}"><i:inline key=".locateRoute"/></a><br/>
 							</c:if>
-						</cti:checkProperty>
+						</cti:checkRolesAndProperties>
 
 	                    <!-- Actions: Other Collection actions -->
 	                    <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">

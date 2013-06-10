@@ -15,7 +15,6 @@ import com.cannontech.util.ReflectivePropertySearcher;
  * Attempts to matche a roleid with the LiteYukonUser in the current session.
  * If a match is found then the body of the tag is evaluated, otherwise it is skipped.
  * @author alauinger
- * @see CheckNoRole
  */
 public class CheckRole extends BodyTagSupport {
 

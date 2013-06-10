@@ -66,8 +66,8 @@
     </script>
     
     <%--PAST PROFILES, don't display if the device does not support --%>
-    <cti:checkRole role="operator.MeteringRole.ROLEID">
-    <cti:checkProperty property="operator.MeteringRole.PROFILE_COLLECTION">
+    <cti:checkRolesAndProperties value="METERING">
+    <cti:checkRolesAndProperties value="PROFILE_COLLECTION">
         <br/>
     	<table class="compactResultsTable">
     		<tr>
@@ -119,8 +119,8 @@
             </tags:hideReveal>
         </c:if>
         <br>
-    </cti:checkProperty>
-    </cti:checkRole>
+    </cti:checkRolesAndProperties>
+    </cti:checkRolesAndProperties>
     
     <%-- DAILY USAGE REPORT --%>
     <form id="reportForm" action="/widget/profileWidget/viewDailyUsageReport">

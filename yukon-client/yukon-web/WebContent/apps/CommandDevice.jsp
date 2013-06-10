@@ -175,7 +175,7 @@
 			</c:forEach>
 			
 			<!-- DCU-205 Serial section -->
-			<cti:checkProperty property="CommanderRole.DCU_SA205_SERIAL_MODEL">
+			<cti:checkRolesAndProperties value="DCU_SA205_SERIAL_MODEL">
 				<c:choose>
 					<c:when test="${serialType == 'sa205'}">
 						<div class="sideMenuLink selected">DCU-205 Serial</div>
@@ -209,10 +209,10 @@
 		}
 	}
 %>
-			</cti:checkProperty>
+			</cti:checkRolesAndProperties>
 			
 			<!-- DCU-305 Serial section -->
-			<cti:checkProperty property="CommanderRole.DCU_SA305_SERIAL_MODEL">
+            <cti:checkRolesAndProperties value="DCU_SA305_SERIAL_MODEL">
 				<c:choose>
 					<c:when test="${serialType == 'sa305'}">
 						<div class="sideMenuLink selected">DCU-305 Serial</div>
@@ -247,10 +247,10 @@
 		}
 	}
 %>
-			</cti:checkProperty>
+			</cti:checkRolesAndProperties>
 				
 			<!-- Expresscom Serial section -->
-			<cti:checkProperty property="CommanderRole.EXPRESSCOM_SERIAL_MODEL">
+			<cti:checkRolesAndProperties value="EXPRESSCOM_SERIAL_MODEL">
 <% 
 	if (serialType.equals("xcom") ) {
 %>
@@ -285,10 +285,10 @@
 		}
 	}
 %>
-			</cti:checkProperty>
+			</cti:checkRolesAndProperties>
 		
 			<!-- Versacom Serial section -->
-			<cti:checkProperty property="CommanderRole.VERSACOM_SERIAL_MODEL">
+			<cti:checkRolesAndProperties value="VERSACOM_SERIAL_MODEL">
 		
 <% 
 	if (serialType.equals("vcom") ) {
@@ -324,7 +324,7 @@
 		}
 	}
 %>
-			</cti:checkProperty>
+			</cti:checkRolesAndProperties>
 			
 			<div class="horizontalRule" ></div>
 		

@@ -211,10 +211,10 @@
                 <td height="20" valign="top"> 
                   <div align="left"> 
                     <p align="center" class="TableCell1">
-                    <cti:checkProperty propertyid="<%=DirectLoadcontrolRole.INDIVIDUAL_SWITCH%>">
+                    <cti:checkRolesAndProperties value="LM_INDIVIDUAL_SWITCH">
                     <b><a href="switch_commands.jsp" class="Link2"><br>
                       Individual Switch Commands</a></b>
-                    </cti:checkProperty></p>
+                    </cti:checkRolesAndProperties></p>
                   </div>
                 </td>
               </tr>

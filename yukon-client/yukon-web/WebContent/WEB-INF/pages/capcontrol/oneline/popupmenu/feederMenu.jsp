@@ -31,10 +31,10 @@
 				    <option value="${confirmFdr}" style="color:white;">Confirm Feeder</option>
 				    <option value="${openAllFdr}" style="color:white;">Open All CapBanks</option>
 				    <option value="${closeAllFdr}" style="color:white;">Close All CapBanks</option>
-                    <cti:checkProperty property="CBCSettingsRole.CBC_ALLOW_OVUV">
+                    <cti:checkRolesAndProperties value="CBC_ALLOW_OVUV">
 				        <option  value="${enableOvUvFdr}" style="color:white;">Enable OV/UV</option>
 				        <option  value="${disableOvUvFdr}" style="color:white;">Disable OV/UV</option>
-                    </cti:checkProperty>    
+                    </cti:checkRolesAndProperties>    
 				    <option  value="${sendAll2WayFdr}" style="color:white;">Scan All 2way CBCs</option>
 				    <option  value="${sendTimeSyncFdr}" style="color:white;">Send All TimeSync</option>
 				    <option  value="${syncCapBankStatesFdr}" style="color:white;">Sync CapBank States</option>

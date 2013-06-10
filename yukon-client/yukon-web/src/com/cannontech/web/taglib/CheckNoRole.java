@@ -13,7 +13,6 @@ import com.cannontech.spring.YukonSpringHook;
  * Attempts to matche a roleid with the LiteYukonUser in the current session.
  * If a match is found then the body of the tag is skipped, otherwise it is evaluated.
  * @author alauinger
- * @see CheckRole
  */
 public class CheckNoRole extends BodyTagSupport {
 

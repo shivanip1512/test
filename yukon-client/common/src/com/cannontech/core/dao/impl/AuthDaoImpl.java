@@ -75,11 +75,6 @@ public class AuthDaoImpl implements AuthDao {
 			return databaseCache.getARole(user, roleID);
 		}
 	}
-    
-    public boolean checkRole(LiteYukonUser user, int roleId) {
-        return rolePropertyDao.checkRole(YukonRole.getForId(roleId), user);
-    }
-	
 	
 	public boolean checkRoleProperty(LiteYukonUser user, int rolePropertyID) {
 	    YukonRoleProperty property = YukonRoleProperty.getForId(rolePropertyID);

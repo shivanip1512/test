@@ -14,11 +14,11 @@ jQuery(function () {
 </script>
 
 <%-- User must have DEVICE_GROUP_MODIFY to remove devices from group. Set once for use in loop. --%>
-<cti:checkRole role="operator.DeviceActionsRole.ROLEID">
-<cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
+<cti:checkRolesAndProperties value="DEVICE_ACTIONS">
+<cti:checkRolesAndProperties value="DEVICE_GROUP_MODIFY">
     <c:set var="hasModifyRoleProperty" value="true"/>
-</cti:checkProperty>
-</cti:checkRole>
+</cti:checkRolesAndProperties>
+</cti:checkRolesAndProperties>
 
 <c:choose>
 	<c:when test="${fn:length(deviceList) > 0}">
