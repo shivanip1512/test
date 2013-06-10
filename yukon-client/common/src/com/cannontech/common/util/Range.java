@@ -1,10 +1,11 @@
 package com.cannontech.common.util;
 
-import com.google.common.base.Function;
+
 
 public final class Range<T extends Comparable<? super T>> extends BaseRange<T> implements ReadableRange<T> {
-    
-    private final static Range<?> unbounded = new Range<>(null, true, null, true);
+
+    // We can use any class for the range type here since both will be null anyway.
+    private final static Range<?> unbounded = new Range<Boolean>(null, true, null, true);
     
     /**
      * It is recommended to use the factory methods instead of this constructor.

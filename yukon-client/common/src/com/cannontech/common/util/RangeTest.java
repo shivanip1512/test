@@ -6,7 +6,7 @@ import org.junit.Test;
 
 public class RangeTest {
     
-    final Range<Integer> unbounded = new Range<Integer>(null, true, null, true);
+    final Range<Integer> unbounded = Range.unbounded();
     final Range<Integer> from5Inclusive_toUnbounded = (Range<Integer>)Range.inclusiveExclusive(5, null);
     final Range<Integer> from5Exclusive_toUnbounded = Range.exclusive(5, null);
     final Range<Integer> fromUnbounded_to5Inclusive = Range.exclusiveInclusive(null, 5);
@@ -26,7 +26,7 @@ public class RangeTest {
     
     final Range<Integer> inverted = Range.exclusive(10, 5);
 
-    final Range<Float> unbounded_float = new Range<Float>(null, true, null, true);
+    final Range<Float> unbounded_float = Range.unbounded();
     final Range<Float> from5Inclusive_toUnbounded_float = Range.inclusiveExclusive(5f, null);
     final Range<Float> from5Exclusive_toUnbounded_float = Range.exclusive(5f, null);
     final Range<Float> fromUnbounded_to5Inclusive_float = Range.exclusiveInclusive(null, 5f);
@@ -46,7 +46,7 @@ public class RangeTest {
 
     final Range<Float> inverted_float = Range.exclusive(10f, 5f);
 
-    final Range<Integer> unbounded_neg = new Range<Integer>(null, true, null, true);
+    final Range<Integer> unbounded_neg = Range.unbounded();
     final Range<Integer> from5Inclusive_toUnbounded_neg = Range.inclusiveExclusive(-5, null);
     final Range<Integer> from5Exclusive_toUnbounded_neg = Range.exclusive(-5, null);
     final Range<Integer> fromUnbounded_to5Inclusive_neg = Range.exclusiveInclusive(null, -5);
