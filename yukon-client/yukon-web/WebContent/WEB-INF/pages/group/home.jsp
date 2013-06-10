@@ -179,7 +179,7 @@
                 <div style="font-size: .75em;">
                 
                     <%-- EDIT GROUP --%>
-                    <cti:checkRolesAndProperties value="DEVICE_ACTIONS"">
+                    <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
                     <cti:checkRolesAndProperties value="DEVICE_GROUP_EDIT">
                     
                         <c:if test="${group.editable}">
