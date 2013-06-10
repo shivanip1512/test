@@ -258,7 +258,7 @@
                     </cti:checkRolesAndProperties>
                     
                     <%-- MODIFY GROUP --%>
-                    <cti:checkRolesAndProperties value="DEVICE_ACTIONS"">
+                    <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
                     <cti:checkRolesAndProperties value="DEVICE_GROUP_MODIFY">
                         <h3><cti:msg2 key="yukon.web.deviceGroups.editor.operationsContainer.modifyGroupsLabel" /></h3>
                         <div class="groupEditorContentDetail stacked">
@@ -464,7 +464,7 @@
                             <c:choose>
                                 <c:when test="${fn:length(subGroupMap) > 0}">
                                     <%-- User must have DEVICE_GROUP_EDIT to delete groups. Set once for use in loop. --%>
-                                    <cti:checkRolesAndProperties value="DEVICE_ACTIONS"">
+                                    <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
                                     <cti:checkRolesAndProperties value="DEVICE_GROUP_EDIT">
                                         <c:set var="hasEditRoleProperty" value="true"/>
                                     </cti:checkRolesAndProperties>
