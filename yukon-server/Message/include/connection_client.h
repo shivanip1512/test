@@ -9,6 +9,10 @@ class IM_EX_MSG CtiClientConnection : public CtiConnection
 
     std::auto_ptr<cms::Connection> _connection;
 
+    RWThreadFunction brokerConnThreadRw;
+    void             brokerConnThread();
+    INT              startBrokerConnection();
+
     std::auto_ptr<CtiRegistrationMsg>      _regMsg;
     std::auto_ptr<CtiPointRegistrationMsg> _ptRegMsg;
 

@@ -19,6 +19,7 @@ CtiListenerConnection::CtiListenerConnection( const string &serverQueueName ) :
     _serverQueueName( serverQueueName ),
     _title( "Listener Connection " + CtiNumStr( InterlockedIncrement( &_listenerConnectionCount )))
 {
+    brokerConnThreadRw = rwMakeThreadFunction( *this, &CtiListenerConnection::brokerConnThread );
 }
 
 
@@ -32,6 +33,87 @@ CtiListenerConnection::~CtiListenerConnection()
     {
         logException( __FILE__, __LINE__, "", "error closing." );
     }
+}
+
+//
+//  This anonymous namespace contains a global status that is use by the broker connection thread
+//
+namespace {
+
+    enum BrokerConnResult_t
+    {
+        NotStarted,
+        Started,
+        UnhandleException
+    };
+
+    BrokerConnResult_t brokerConnResult;
+}
+
+//
+//  The broker connection thread use as a wrapper around the cms::Connection::start() function.
+//
+//  NOTE:
+//  activemq-cpp v3.7.0 appears to have an issue :
+//  closing a connection with cms::Connection::close() results in a runtime error if the connection is blocked inside
+//  a cms::Connection::start(). As a temporary solution, cms::Connection::start() will be executed inside a thread, and
+//  this thread will be terminated when the connection has to be closed()
+//
+void CtiListenerConnection::brokerConnThread()
+{
+    try{
+        _connection->start(); // start the connection
+    }
+    catch( cms::CMSException& e )
+    {
+        logException( __FILE__, __LINE__, typeid(e).name(), e.getMessage() );
+
+        Sleep( 1000 ); // Don't pound the system....
+
+        return;
+    }
+    catch(...)
+    {
+        logException( __FILE__, __LINE__ );
+
+        brokerConnResult = UnhandleException;
+
+        return;
+    }
+
+    brokerConnResult = Started;
+}
+
+//
+//  Function that start and wait for the BrokerConnThread to complete.
+//  Returns NORMAL if the connection has started
+//
+INT CtiListenerConnection::startBrokerConnection()
+{
+    brokerConnResult = NotStarted;
+
+    // Create connection
+    _connection.reset( Cti::Messaging::ActiveMQ::g_connectionFactory.createConnection( _brokerUri ));
+
+    // create and start thread
+    brokerConnThreadRw.start();
+    brokerConnThreadRw.join();
+
+    if( brokerConnResult == UnhandleException )
+    {
+        throw;
+    }
+    else if( brokerConnResult != Started )
+    {
+        if( !_closed )
+        {
+            logStatus( __FUNCTION__, "unable to connect to the broker. Will try to reconnect." );
+        }
+
+        return NOTNORMAL;
+    }
+
+    return NORMAL;
 }
 
 
@@ -48,9 +130,8 @@ int CtiListenerConnection::establishConnection()
         {
             logStatus( __FUNCTION__, "is connecting." );
 
-            // Create a Connection
-            _connection.reset( Cti::Messaging::ActiveMQ::g_connectionFactory.createConnection( _brokerUri ));
-            _connection->start();
+            // Create and start connection to broker
+            if( startBrokerConnection() != NORMAL ) continue;
 
             // Create a Session
             _session.reset( _connection->createSession() );
@@ -72,12 +153,7 @@ int CtiListenerConnection::establishConnection()
             logException( __FILE__, __LINE__, typeid(e).name(), e.getMessage() );
         }
 
-        if( !_closed )
-        {
-            logStatus( __FUNCTION__, "unable to connect to the broker. Will try to reconnect." );
-        
-            Sleep( 1000 ); // Don't pound the system....
-        }
+        Sleep( 1000 ); // Don't pound the system....
     }
 
     logStatus( __FUNCTION__, "has closed." );
@@ -91,6 +167,15 @@ void CtiListenerConnection::close()
     // once the connection has been closed, it cannot be restarted
     _closed = true;
     _valid  = false;
+
+    try
+    {
+        brokerConnThreadRw.terminate();
+    }
+    catch(...)
+    {
+        // since we are shutting down, we dont care about exceptions
+    }
 
     if( _connection.get() )
     {

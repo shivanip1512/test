@@ -33,6 +33,8 @@ CtiClientConnection::CtiClientConnection( const string &serverQueueName,
 {
     // create exception listener and register function and caller
     _exceptionListener.reset( new Cti::Messaging::ActiveMQ::ExceptionListener<CtiClientConnection>( this, &CtiClientConnection::onException ));
+
+    brokerConnThreadRw = rwMakeThreadFunction( *this, &CtiClientConnection::brokerConnThread );
 }
 
 
@@ -56,6 +58,91 @@ void CtiClientConnection::onException( const cms::CMSException& ex )
     logException( __FILE__, __LINE__, typeid(ex).name(), ex.getMessage() );
 }
 
+//
+//  This anonymous namespace contains a global status that is use by the broker connection thread
+//
+namespace {
+
+    enum BrokerConnResult_t
+    {
+        NotStarted,
+        Started,
+        UnhandleException
+    };
+
+    BrokerConnResult_t brokerConnResult;
+}
+
+//
+//  The broker connection thread use as a wrapper around the cms::Connection::start() function.
+//
+//  NOTE:
+//  activemq-cpp v3.7.0 appears to have an issue :
+//  closing a connection with cms::Connection::close() results in a runtime error if the connection is blocked inside
+//  a cms::Connection::start(). As a temporary solution, cms::Connection::start() will be executed inside a thread, and
+//  this thread will be terminated when the connection has to be closed()
+//
+void CtiClientConnection::brokerConnThread()
+{
+    try{
+        _connection->start(); // start the connection
+    }
+    catch( cms::CMSException& e )
+    {
+        logException( __FILE__, __LINE__, typeid(e).name(), e.getMessage() );
+
+        Sleep( 1000 ); // Don't pound the system....
+
+        return;
+    }
+    catch(...)
+    {
+        logException( __FILE__, __LINE__ );
+
+        brokerConnResult = UnhandleException;
+
+        return;
+    }
+
+    brokerConnResult = Started;
+}
+
+//
+//  Function that start and wait for the BrokerConnThread to complete.
+//  Returns NORMAL if the connection has started
+//
+INT CtiClientConnection::startBrokerConnection()
+{
+    brokerConnResult = NotStarted;
+
+    // Create connection
+    _connection.reset( Cti::Messaging::ActiveMQ::g_connectionFactory.createConnection( _brokerUri ));
+
+    // create and start thread
+    brokerConnThreadRw.start();
+    brokerConnThreadRw.join();
+
+    if( brokerConnResult == UnhandleException )
+    {
+        throw;
+    }
+    else if( brokerConnResult != Started )
+    {
+        if( !_dontReconnect )
+        {
+            logStatus( __FUNCTION__, "unable to connect to the broker. Will try to reconnect." );
+        }
+        else
+        {
+            logStatus( __FUNCTION__, "has closed." );
+        }
+
+        return NOTNORMAL;
+    }
+
+    return NORMAL;
+}
+
 
 INT CtiClientConnection::establishConnection()
 {
@@ -77,9 +164,8 @@ INT CtiClientConnection::establishConnection()
                 {
                     logStatus( __FUNCTION__, "connecting to \"" + _serverQueueName + "\"" );
 
-                    // Create connection
-                    _connection.reset( Cti::Messaging::ActiveMQ::g_connectionFactory.createConnection( _brokerUri ));
-                    _connection->start(); // start the connection
+                    // Create and start connection to broker
+                    if( startBrokerConnection() != NORMAL ) continue;
 
                     // Create sessions
                     _sessionIn.reset( _connection->createSession() );
@@ -166,15 +252,6 @@ INT CtiClientConnection::establishConnection()
 
                 logException( __FILE__, __LINE__, typeid(e).name(), e.getMessage() );
 
-                if( !_dontReconnect )
-                {
-                    logStatus( __FUNCTION__, "unable to connect to the broker. Will try to reconnect." );
-                }
-                else
-                {
-                    logStatus( __FUNCTION__, "has closed." );
-                }
-
                 Sleep( 1000 ); // Don't pound the system....
             }
 
@@ -230,6 +307,15 @@ INT CtiClientConnection::endConnection()
     {
         _consumer.reset();
         tmpQueue->destroy();
+    }
+
+    try
+    {
+        brokerConnThreadRw.terminate();
+    }
+    catch(...)
+    {
+    	// since we are shutting down, we dont care about exceptions
     }
 
     // Close the connection as well as any child session, consumer, producer, destinations
