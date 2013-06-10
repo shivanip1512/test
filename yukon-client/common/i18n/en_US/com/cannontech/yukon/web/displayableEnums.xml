@@ -367,4 +367,8 @@
     <entry key="yukon.common.serialNumberValidationEnum.NUMERIC">Numeric</entry>
     <entry key="yukon.common.serialNumberValidationEnum.ALPHANUMERIC">Alphanumeric</entry>
 
+    <entry key="yukon.common.tzDisplayOption.LOCAL">Local</entry>
+    <entry key="yukon.common.tzDisplayOption.LOCAL_NO_DST">Standard (no DST)</entry>
+    <entry key="yukon.common.tzDisplayOption.UTC">UTC (GMT)</entry>
+
 </properties>

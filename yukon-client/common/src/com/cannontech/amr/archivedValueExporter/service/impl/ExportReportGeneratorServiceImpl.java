@@ -93,7 +93,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             generateFixedBody(preview, Collections.singletonList(previewMeter), format, fieldIdToAttributeData, userContext, reportTZ);
         } else {
             ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeData = getDynamicPreviewAttributeData(format, previewMeter);
-            generateDynamicBody(preview, Collections.singletonList(previewMeter), format, userContext, BuiltInAttribute.USAGE, attributeData, reportTZ);
+            generateDynamicBody(preview, Collections.singletonList(previewMeter), format, userContext, BuiltInAttribute.USAGE, attributeData);
         }
         
         addFooter(format, preview);
@@ -131,7 +131,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 for (Attribute attribute : attributes) {
                     ListMultimap<PaoIdentifier, PointValueQualityHolder> dateRangeAttributeData =
                             getDynamicAttributeData(meters, attribute, dateRange, null);
-                    generateDynamicBody(reportResults, meters, format, userContext, attribute, dateRangeAttributeData, reportTZ);
+                    generateDynamicBody(reportResults, meters, format, userContext, attribute, dateRangeAttributeData);
                 }
 
                 break;
@@ -143,7 +143,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 for (Attribute attribute : attributes) {
                     ListMultimap<PaoIdentifier, PointValueQualityHolder> previousDaysAttributeData = 
                             getDynamicAttributeData(meters, attribute, previousDaysDateRange, null);
-                    generateDynamicBody(reportResults, meters, format, userContext, attribute, previousDaysAttributeData, reportTZ);
+                    generateDynamicBody(reportResults, meters, format, userContext, attribute, previousDaysAttributeData);
                 }
 
                 break;
@@ -155,7 +155,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 for (Attribute attribute : attributes) {
                     ListMultimap<PaoIdentifier, PointValueQualityHolder> sinceLastChangeIdAttributeData =
                             getDynamicAttributeData(meters, attribute, null, changeIdRange);
-                    generateDynamicBody(reportResults, meters, format, userContext, attribute, sinceLastChangeIdAttributeData, reportTZ);
+                    generateDynamicBody(reportResults, meters, format, userContext, attribute, sinceLastChangeIdAttributeData);
                 }
                 
                 break;
@@ -216,7 +216,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             YukonUserContext userContext, DateTimeZone reportTZ) {
 
         for (Meter meter : meters) {
-            String dataRow = getDataRow(format, meter, userContext, attributeData, reportTZ);
+            String dataRow = getDataRow(format, meter, userContext, attributeData);
             if (!dataRow.equals(SKIP_RECORD)) {
                 reportRows.add(dataRow);
             }
@@ -227,8 +227,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
      * Builds and returns a list of strings each representing one row of data for the report.
      */
     private void generateDynamicBody(List<String> reportRows, List<Meter> meters, ExportFormat format, YukonUserContext userContext, 
-                                             Attribute attribute, ListMultimap<PaoIdentifier, 
-                                             PointValueQualityHolder> attributeData, DateTimeZone reportTZ) {
+                                             Attribute attribute, ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeData) {
         
         for (Meter meter : meters) {
             List<PointValueQualityHolder> pointData = attributeData.get(meter.getPaoIdentifier());
@@ -407,8 +406,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
      * selected to skip a record, it returns "SKIP_RECORD_SKIP_RECORD".
      */
     private String getDataRow(ExportFormat format, Meter meter, YukonUserContext userContext,
-                              Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData, 
-                              DateTimeZone reportTZ) {
+                              Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData) {
 
         StringBuilder dataRow = new StringBuilder();
         

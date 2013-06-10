@@ -7,7 +7,7 @@ public enum TimeZoneFormat implements DisplayableEnum {
     LOCAL_NO_DST,
     UTC;
     
-    private final static String keyPrefix = "yukon.web.modules.amr.archivedValueExporter.";
+    private final static String keyPrefix = "yukon.common.";
     
     @Override
     public String getFormatKey() {
