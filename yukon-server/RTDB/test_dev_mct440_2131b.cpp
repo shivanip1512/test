@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(test_mct440_2131b_decodeGetValueInstantLineData)
     CtiDeviceBase::OutMessageList  outList; // not use
 
 
-    unsigned char test_data[4] = {0x1,0x2,0x3,0x4};
+    unsigned char test_data[4] = {0x1,0x2,0x3,0x64};
 
     memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
 
@@ -172,7 +172,7 @@ BOOST_AUTO_TEST_CASE(test_mct440_2131b_decodeGetValueInstantLineData)
 
         BOOST_REQUIRE( pdata );
 
-        BOOST_CHECK_EQUAL( pdata->getValue(), 4);
+        BOOST_CHECK_EQUAL( pdata->getValue(), 100);
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
         //BOOST_CHECK_EQUAL( pdata->getTime(), t);
     }
