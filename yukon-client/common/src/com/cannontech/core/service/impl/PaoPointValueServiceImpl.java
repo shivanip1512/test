@@ -21,7 +21,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
-import com.cannontech.common.util.Range;
+import com.cannontech.common.util.ReadableRange;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
@@ -53,7 +53,7 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
     @Override
     public <P extends YukonPao> List<MeterPointValue> getMeterPointValues(Iterable<P> devices,
                                                                                 Set<Attribute> attributes,
-                                                                                Range<Instant> range,
+                                                                                ReadableRange<Instant> range,
                                                                                 Integer maxRows,
                                                                                 boolean includeDisabledPaos,
                                                                                 Set<String> discludedPointStateValues,

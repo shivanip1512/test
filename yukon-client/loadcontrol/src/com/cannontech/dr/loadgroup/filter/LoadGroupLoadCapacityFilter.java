@@ -8,14 +8,14 @@ import com.cannontech.common.bulk.filter.PostProcessingFilterAdapter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.util.Range;
+import com.cannontech.common.util.MutableRange;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 
 public class LoadGroupLoadCapacityFilter implements UiFilter<DisplayablePao> {
     private LoadGroupService loadGroupService;
-    private Range<Double> filter;
+    private MutableRange<Double> filter;
     
-    public LoadGroupLoadCapacityFilter(LoadGroupService loadGroupService, Range<Double> filter) {
+  public LoadGroupLoadCapacityFilter(LoadGroupService loadGroupService, MutableRange<Double> filter) {    
         this.loadGroupService = loadGroupService;
         this.filter = filter;
     }

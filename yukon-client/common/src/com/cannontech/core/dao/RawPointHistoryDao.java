@@ -12,7 +12,8 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.common.util.Range;
+import com.cannontech.common.util.ReadableRange;
+import com.cannontech.common.util.MutableRange;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.point.PointType;
@@ -68,8 +69,11 @@ public interface RawPointHistoryDao {
             return endInclusive;
         }
 
-        public <T extends Comparable<? super T>> Range<T> makeRange(T start, T end) {
-            return new Range<T>(start, startInclusive, end, endInclusive);
+        /**
+         * Default range is of type MutableRange<T>.
+         */
+        public <T extends Comparable<? super T>> ReadableRange<T> makeRange(T start, T end) {
+            return new MutableRange<T>(start, startInclusive, end, endInclusive);
         }
 
         public static Clusivity getClusivity(boolean startInclusive, boolean endInclusive) {
@@ -115,7 +119,7 @@ public interface RawPointHistoryDao {
      * @param order - controls ordering by timestamp and changeid
      * @return List of values for the point
      */
-    public List<PointValueHolder> getPointData(Set<Integer> pointIds, Range<Instant> range, boolean excludeDisabledPaos, Order order);
+    public List<PointValueHolder> getPointData(Set<Integer> pointIds, ReadableRange<Instant> range, boolean excludeDisabledPaos, Order order);
 
     /**
      * Method to get a list of point values for a given point and time period, 
@@ -154,7 +158,7 @@ public interface RawPointHistoryDao {
      * as a ListMultimap such that the RPH values for each PAO will be accessible (and ordered) on their own.
      */
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable<? extends YukonPao> paos,
-        Attribute attribute, Range<Instant> dateRange, Range<Long> changeIdRange, boolean excludeDisabledPaos,
+        Attribute attribute, ReadableRange<Instant> dateRange, ReadableRange<Long> changeIdRange, boolean excludeDisabledPaos,
         Order order);
 
     /**
@@ -169,7 +173,7 @@ public interface RawPointHistoryDao {
      * @param order - controls ordering by timestamp (only affects the iteration order of the values)
      * @return
      */
-    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeDataByChangeIdRange(Iterable <? extends YukonPao> paos, Attribute attribute, Range<Long> changeIdRange, boolean excludeDisabledPaos, Clusivity clusivity, Order order);
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeDataByChangeIdRange(Iterable <? extends YukonPao> paos, Attribute attribute, ReadableRange<Long> changeIdRange, boolean excludeDisabledPaos, Clusivity clusivity, Order order);
     
     /**
      * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned as a ListMultimap
@@ -207,7 +211,7 @@ public interface RawPointHistoryDao {
      */
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> displayableDevices,
                                                                                         Iterable<Attribute> attributes,
-                                                                                        Range<Instant> dateRange,
+                                                                                        ReadableRange<Instant> dateRange,
                                                                                         int maxRows,
                                                                                         boolean excludeDisabledPaos,
                                                                                         Order order);
@@ -229,8 +233,8 @@ public interface RawPointHistoryDao {
      * @param orderBy - controls field to order by  [timestamp, value]
      */
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(
-        Iterable<? extends YukonPao> paos, Attribute attribute, Range<Instant> dateRange,
-        Range<Long> changeIdRange, int maxRows, boolean excludeDisabledPaos, Order order, OrderBy orderBy);
+        Iterable<? extends YukonPao> paos, Attribute attribute, ReadableRange<Instant> dateRange,
+        ReadableRange<Long> changeIdRange, int maxRows, boolean excludeDisabledPaos, Order order, OrderBy orderBy);
     
     /**
      * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned as
@@ -240,36 +244,36 @@ public interface RawPointHistoryDao {
      * result.get(pao).size() <= maxRows
      */
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedDataByPointName(Iterable<PaoIdentifier> paos,
-        String pointName, Range<Instant> dateRange, Range<Long> changeIdRange, int maxRows, Order order);
+        String pointName, ReadableRange<Instant> dateRange, ReadableRange<Long> changeIdRange, int maxRows, Order order);
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedDataByPointName(Iterable<PaoIdentifier> paos,
         String pointName, Date startDate, Date stopDate, int maxRows, Clusivity clusivity, Order order);
 
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getDataByPointName(Iterable<PaoIdentifier> paos,
-        String pointName, Range<Instant> dateRange, Range<Long> changeIdRange, Order order);
+        String pointName, ReadableRange<Instant> dateRange, ReadableRange<Long> changeIdRange, Order order);
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getDataByPointName(Iterable<PaoIdentifier> paos,
         String pointName, Date startDate, Date stopDate, Clusivity clusivity, Order order);
 
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedDataByTypeAndOffset(
-        Iterable<PaoIdentifier> paos, PointType pointType, int offset, Range<Instant> dateRange,
-        Range<Long> changeIdRange, int maxRows, Order order);
+        Iterable<PaoIdentifier> paos, PointType pointType, int offset, ReadableRange<Instant> dateRange,
+        ReadableRange<Long> changeIdRange, int maxRows, Order order);
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedDataByTypeAndOffset(
         Iterable<PaoIdentifier> paos, PointType pointType, int offset, Date startDate, Date stopDate, int maxRows,
         Clusivity clusivity, Order order);
 
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getDataByTypeAndOffset(Iterable<PaoIdentifier> paos,
-        PointType pointType, int offset, Range<Instant> dateRange, Range<Long> changeIdRange, Order order);
+        PointType pointType, int offset, ReadableRange<Instant> dateRange, ReadableRange<Long> changeIdRange, Order order);
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getDataByTypeAndOffset(Iterable<PaoIdentifier> paos,
         PointType pointType, int offset, Date startDate, Date stopDate, Clusivity clusivity, Order order);
 
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedDataByDefaultPointName(
-        Iterable<PaoIdentifier> paos, String defaultPointName, Range<Instant> dateRange, Range<Long> changeIdRange,
+        Iterable<PaoIdentifier> paos, String defaultPointName, ReadableRange<Instant> dateRange, ReadableRange<Long> changeIdRange,
         int maxRows, Order order);
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedDataByDefaultPointName(
         Iterable<PaoIdentifier> paos, String defaultPointName, Date startDate, Date stopDate, int maxRows,
         Clusivity clusivity, Order order);
 
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getDataByDefaultPointName(Iterable<PaoIdentifier> paos,
-        String defaultPointName, Range<Instant> dateRange, Range<Long> changeIdRange, Order order);
+        String defaultPointName, ReadableRange<Instant> dateRange, ReadableRange<Long> changeIdRange, Order order);
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getDataByDefaultPointName(Iterable<PaoIdentifier> paos,
         String defaultPointName, Date startDate, Date stopDate, Clusivity clusivity, Order order);
 

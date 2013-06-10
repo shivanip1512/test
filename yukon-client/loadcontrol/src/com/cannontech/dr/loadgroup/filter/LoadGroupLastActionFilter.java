@@ -9,17 +9,17 @@ import com.cannontech.common.bulk.filter.PostProcessingFilterAdapter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.util.Range;
+import com.cannontech.common.util.MutableRange;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.messaging.message.loadcontrol.data.DirectGroupBase;
 
 public class LoadGroupLastActionFilter implements UiFilter<DisplayablePao> {
     private LoadGroupService loadGroupService;
 
-    private Range<Date> filter;
+    private MutableRange<Date> filter;
 
     public LoadGroupLastActionFilter(LoadGroupService loadGroupService,
-            Range<Date> filter) {
+                                      MutableRange<Date> filter) {
         this.loadGroupService = loadGroupService;
         this.filter = filter;
     }

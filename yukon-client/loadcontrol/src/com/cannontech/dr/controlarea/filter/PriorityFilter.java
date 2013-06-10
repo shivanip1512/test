@@ -8,16 +8,16 @@ import com.cannontech.common.bulk.filter.PostProcessingFilterAdapter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.util.Range;
+import com.cannontech.common.util.MutableRange;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
 import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
 
 public class PriorityFilter implements UiFilter<DisplayablePao> {
     private ControlAreaService controlAreaService;
 
-    private Range<Integer> filter;
+    private MutableRange<Integer> filter;
 
-    public PriorityFilter(ControlAreaService controlAreaService, Range<Integer> filter) {
+    public PriorityFilter(ControlAreaService controlAreaService, MutableRange<Integer> filter) {
         this.controlAreaService = controlAreaService;
         this.filter = filter;
     }

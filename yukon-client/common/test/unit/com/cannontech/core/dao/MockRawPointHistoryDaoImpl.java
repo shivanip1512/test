@@ -23,7 +23,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.common.util.Range;
+import com.cannontech.common.util.ReadableRange;
 import com.cannontech.core.dao.impl.RawPointHistoryDaoImpl;
 import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -109,8 +109,8 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
     }
     
     @Override
-    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> yukonPaos, Attribute attribute, Range<Instant> dateRange,
-                                                                                        Range<Long> changeIdRange, int maxRows, boolean excludeDisabledPaos, Order order, OrderBy orderBy) {
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> yukonPaos, Attribute attribute, ReadableRange<Instant> dateRange,
+                                                                                        ReadableRange<Long> changeIdRange, int maxRows, boolean excludeDisabledPaos, Order order, OrderBy orderBy) {
         ListMultimap<PaoIdentifier, PointValueQualityHolder> results = ArrayListMultimap.create();
 
         for (YukonPao yukonPao : yukonPaos) {
@@ -130,8 +130,8 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
     
     @Override
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(
-            Iterable<? extends YukonPao> yukonPaos, Attribute attribute, final Range<Instant> dateRange,
-            final Range<Long> changeIdRange, final boolean excludeDisabledPaos, final Order order) {
+            Iterable<? extends YukonPao> yukonPaos, Attribute attribute, final ReadableRange<Instant> dateRange,
+            final ReadableRange<Long> changeIdRange, final boolean excludeDisabledPaos, final Order order) {
 
         ListMultimap<PaoIdentifier, PointValueQualityHolder> paoIdToPointValueQualityHolder = ArrayListMultimap.create();
 
@@ -202,7 +202,7 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
      * Returns a list of pointValueQualityHolders that intersect with the changeIdRange supplied.  This method will return
      * all of the pointValueQualityHolders if they are supplied.
      */
-    private List<PointValueQualityHolder> intersectingPointValueQualityHoldersByRawPointHistoryIds(Range<Long> changeIdRange) {
+    private List<PointValueQualityHolder> intersectingPointValueQualityHoldersByRawPointHistoryIds(ReadableRange<Long> changeIdRange) {
         if (changeIdRange == null) {
             return pointValueQualityHolderData;
         }
@@ -220,7 +220,7 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
      * Returns a list of pointValueQualityHolders that intersect with the dateRange supplied.  This method will return
      * all of the pointValueQualityHolders if they are supplied.
      */
-    private List<PointValueQualityHolder> intersectingPointValueQualityHoldersByDateRange(Range<Instant> dateRange) {
+    private List<PointValueQualityHolder> intersectingPointValueQualityHoldersByDateRange(ReadableRange<Instant> dateRange) {
         if (dateRange == null) {
             return pointValueQualityHolderData;
         }

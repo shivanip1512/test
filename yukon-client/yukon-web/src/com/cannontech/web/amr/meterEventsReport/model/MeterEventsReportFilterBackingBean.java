@@ -86,7 +86,7 @@ public class MeterEventsReportFilterBackingBean extends ListBackingBean {
     }
 
     public Range<Instant> getRange() {
-        return new Range<>(fromInstant, true, toInstant, false);
+        return Range.inclusiveExclusive(fromInstant, toInstant);
     }
 
     public Map<BuiltInAttribute, Boolean> getMeterEventTypesMap() {

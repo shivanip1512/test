@@ -5,6 +5,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.Period;
 
 import com.cannontech.common.util.Range;
+import com.cannontech.common.util.ReadableRange;
 import com.cannontech.user.YukonUserContext;
 
 public class LocalDateRange {
@@ -25,7 +26,7 @@ public class LocalDateRange {
         this.endDate = endDate;
     }
     
-    public Range<Instant> getInstantDateRange(YukonUserContext userContext) {
+    public ReadableRange<Instant> getInstantDateRange(YukonUserContext userContext) {
         Instant startDate = this.startDate.toDateMidnight(userContext.getJodaTimeZone()).toInstant();
         Instant stopDate = this.endDate.toDateMidnight(userContext.getJodaTimeZone()).toInstant();
         

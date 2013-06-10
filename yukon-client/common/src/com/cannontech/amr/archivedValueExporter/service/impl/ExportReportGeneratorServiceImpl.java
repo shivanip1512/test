@@ -35,6 +35,7 @@ import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.Range;
+import com.cannontech.common.util.ReadableRange;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
@@ -127,7 +128,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 break;
 
             case DATE_RANGE:
-                Range<Instant> dateRange = dataRange.getLocalDateRange().getInstantDateRange(userContext);
+                Range<Instant> dateRange = (Range<Instant>)dataRange.getLocalDateRange().getInstantDateRange(userContext);
                 for (Attribute attribute : attributes) {
                     ListMultimap<PaoIdentifier, PointValueQualityHolder> dateRangeAttributeData =
                             getDynamicAttributeData(meters, attribute, dateRange, null);
@@ -363,7 +364,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
      * - fieldId and the values - the data for all the devices (meters) selected by the user.
      *
      */
-    private ListMultimap<PaoIdentifier, PointValueQualityHolder> getFixedAttributeData(List<Meter> meters, ExportAttribute attribute, Range<Instant> dateRange) {
+    private ListMultimap<PaoIdentifier, PointValueQualityHolder> getFixedAttributeData(List<Meter> meters, ExportAttribute attribute, ReadableRange<Instant> dateRange) {
     	
         Order order = null;
         OrderBy orderBy = null;
@@ -395,7 +396,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     /**
      * This is method is a helper method for retrieving the raw point history data for the supplied dateRange or changeIdRange.
      */
-    private ListMultimap<PaoIdentifier, PointValueQualityHolder> getDynamicAttributeData(List<Meter> meters, Attribute attribute, Range<Instant> dateRange, Range<Long> changeIdRange) {
+    private ListMultimap<PaoIdentifier, PointValueQualityHolder> getDynamicAttributeData(List<Meter> meters, Attribute attribute, ReadableRange<Instant> dateRange, ReadableRange<Long> changeIdRange) {
         ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeDataValues = 
                 rawPointHistoryDao.getAttributeData(meters, attribute, dateRange, changeIdRange, false, Order.FORWARD);
         return attributeDataValues;

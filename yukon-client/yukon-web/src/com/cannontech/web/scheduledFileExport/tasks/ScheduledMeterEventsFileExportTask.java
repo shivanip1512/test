@@ -162,7 +162,7 @@ public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask 
         Instant toInstant = TimeUtil.toMidnightAtEndOfDay(localDate, userTimeZone);
         
         List<MeterPointValue> events = paoPointValueService.getMeterPointValues(devices, attributes,
-                new Range<>(fromInstant, true, toInstant, false),
+                Range.inclusiveExclusive(fromInstant, toInstant),
                 onlyLatestEvent ? 1 : null,
                 includeDisabledDevices,
                 onlyAbnormalEvents ? NORMAL_VALUES : null,

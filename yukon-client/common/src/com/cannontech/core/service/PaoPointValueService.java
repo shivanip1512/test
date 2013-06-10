@@ -5,10 +5,11 @@ import java.util.Set;
 
 import org.joda.time.Instant;
 
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.paoPointValue.model.MeterPointValue;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.util.Range;
+import com.cannontech.common.util.ReadableRange;
 import com.cannontech.user.YukonUserContext;
 
 public interface PaoPointValueService {
@@ -17,7 +18,7 @@ public interface PaoPointValueService {
      * Method to get a list of MeterPointValue objects for a given list of YukonPaos & attributes within a give time range. 
      * StartDate and StopDate are inclusive.
      * Ordering is timestamp asc if maxRows is NOT passed in, and timestamp desc if it IS passed in
-     * @param devices The Iterable of YukonPao objects
+     * @param list The Iterable of YukonPao objects
      * @param attributes The Set of Attribute objects
      * @param from - Start time of period (this is always the first argument in SQL, either > or >=)
      * @param to - End time of period (this is always the second argument in SQL, either < or <=)
@@ -26,9 +27,9 @@ public interface PaoPointValueService {
      * @param discludedPointStateValues - the String representation of any PointState value's that should not be included in the results
      * @return List of values for the point
      */
-    <P extends YukonPao> List<MeterPointValue> getMeterPointValues(Iterable<P> devices,
+    <P extends YukonPao> List<MeterPointValue> getMeterPointValues(Iterable<P> list,
                                                                    Set<Attribute> attributes,
-                                                                   Range<Instant> range,
+                                                                   ReadableRange<Instant> range,
                                                                    Integer maxRows,
                                                                    boolean includeDisabledPaos,
                                                                    Set<String> discludedPointStateValues,

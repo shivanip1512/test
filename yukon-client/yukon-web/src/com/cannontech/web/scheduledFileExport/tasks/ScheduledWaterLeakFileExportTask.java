@@ -62,10 +62,9 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
 	public void start() {
 		YukonUserContext userContext = getJobContext().getJob().getUserContext();
 		
-		Range<Instant> range = new Range<Instant>();
-		range.setMin(Instant.now());
 		Duration timePrevious = Duration.standardHours(hoursPrevious);
-		range.setMax(Instant.now().minus(timePrevious));
+		Instant now = new Instant();
+		Range<Instant> range = Range.inclusive(now, now.minus(timePrevious));
 		
 		List<WaterMeterLeak> waterLeaks = waterMeterLeakService.getWaterMeterLeaks(devices, range, includeDisabledPaos, threshold, userContext);
 		String[] headerRow = getHeaderRow();

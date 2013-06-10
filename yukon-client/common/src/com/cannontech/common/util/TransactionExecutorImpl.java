@@ -2,7 +2,8 @@ package com.cannontech.common.util;
 
 import java.util.concurrent.Executor;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -13,7 +14,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 
-public class TransactionExecutorImpl implements TransactionExecutor, InitializingBean {
+public class TransactionExecutorImpl implements TransactionExecutor {
     
 
     private Executor executor;
@@ -43,8 +44,8 @@ public class TransactionExecutorImpl implements TransactionExecutor, Initializin
     }
 
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void postInit() throws Exception {
         forcedTransactionTemplate = new TransactionTemplate(platformTransactionManager);
         forcedTransactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_NOT_SUPPORTED);
         

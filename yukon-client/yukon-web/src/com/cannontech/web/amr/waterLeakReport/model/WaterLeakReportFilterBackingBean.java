@@ -67,7 +67,7 @@ public class WaterLeakReportFilterBackingBean extends ListBackingBean {
     }
 
     public Range<Instant> getRange() {
-        return Clusivity.INCLUSIVE_INCLUSIVE.makeRange(fromInstant, toInstant);
+        return Range.inclusive(fromInstant, toInstant);
     }
 
     public double getThreshold() {

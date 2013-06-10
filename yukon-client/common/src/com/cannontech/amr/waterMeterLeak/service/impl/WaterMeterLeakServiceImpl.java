@@ -21,7 +21,7 @@ import com.cannontech.common.chart.service.NormalizedUsageService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.util.Range;
+import com.cannontech.common.util.ReadableRange;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -89,7 +89,7 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
 
     @Override
     public List<WaterMeterLeak> getWaterMeterLeakIntervalData(Set<SimpleDevice> devices,
-                                                              Range<Instant> range,
+                                                              ReadableRange<Instant> range,
                                                               boolean includeDisabledPaos,
                                                               double threshold,
                                                               YukonUserContext userContext) {
@@ -98,7 +98,7 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
 
     @Override
     public List<WaterMeterLeak> getWaterMeterLeaks(Set<SimpleDevice> devices,
-                                                   Range<Instant> range,
+                                                   ReadableRange<Instant> range,
                                                    boolean includeDisabledPaos,
                                                    double threshold,
                                                    YukonUserContext userContext) {
@@ -106,7 +106,7 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
     }
 
     private List<WaterMeterLeak> getLeaks(Set<SimpleDevice> devices,
-                                          Range<Instant> range,
+                                          ReadableRange<Instant> range,
                                           boolean includeDisabledPaos,
                                           double threshold,
                                           YukonUserContext userContext,
@@ -185,7 +185,7 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
         return pointValueHolders;
     }
 
-    private void populateMeterSetAndIntervalReadings(List<Meter> allMeters, Range<Instant> range,
+    private void populateMeterSetAndIntervalReadings(List<Meter> allMeters, ReadableRange<Instant> range,
                                                      boolean includeDisabledPaos,
                                                      Set<Meter> reportingMeters,
                                                      List<MeterPointValueHolder> intervalReadings) {

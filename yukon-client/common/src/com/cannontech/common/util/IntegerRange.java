@@ -1,4 +1,4 @@
 package com.cannontech.common.util;
 
-public class IntegerRange extends Range<Integer> {
+public class IntegerRange extends MutableRange<Integer> {
 }

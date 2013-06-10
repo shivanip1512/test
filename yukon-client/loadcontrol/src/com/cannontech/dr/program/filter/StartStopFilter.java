@@ -9,18 +9,18 @@ import com.cannontech.common.bulk.filter.PostProcessingFilterAdapter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.util.Range;
+import com.cannontech.common.util.MutableRange;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.messaging.message.loadcontrol.data.Program;
 
 public class StartStopFilter implements UiFilter<DisplayablePao> {
     private ProgramService programService;
 
-    private Range<Date> filter;
+    private MutableRange<Date> filter;
     private boolean isStart;
 
     public StartStopFilter(ProgramService programService,
-            Range<Date> filter, boolean isStart) {
+            MutableRange<Date> filter, boolean isStart) {
         this.programService = programService;
         this.filter = filter;
         this.isStart = isStart;

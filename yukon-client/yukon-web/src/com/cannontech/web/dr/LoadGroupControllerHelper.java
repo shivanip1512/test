@@ -22,7 +22,7 @@ import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DateRange;
-import com.cannontech.common.util.Range;
+import com.cannontech.common.util.MutableRange;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
@@ -49,7 +49,7 @@ public class LoadGroupControllerHelper {
     public static class LoadGroupListBackingBean extends ListBackingBean {
         private String state;
         private DateRange lastAction = new DateRange();
-        private Range<Double> loadCapacity = new Range<Double>();
+        private MutableRange<Double> loadCapacity = new MutableRange<Double>();
         
         public String getState() {
             return state;
@@ -63,10 +63,10 @@ public class LoadGroupControllerHelper {
         public void setLastAction(DateRange lastAction) {
             this.lastAction = lastAction;
         }
-        public Range<Double> getLoadCapacity() {
+        public MutableRange<Double> getLoadCapacity() {
             return loadCapacity;
         }
-        public void setLoadCapacity(Range<Double> loadCapacity) {
+        public void setLoadCapacity(MutableRange<Double> loadCapacity) {
             this.loadCapacity = loadCapacity;
         }
     }
