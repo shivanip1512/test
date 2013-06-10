@@ -44,7 +44,7 @@ function dispStatusMsg(msgStr)
 %>
 
 <table width="150" border="0" cellspacing="0" cellpadding="6">
-  <cticheckRolesAndProperties value="TRENDING">
+  <cti:checkRolesAndProperties value="TRENDING">
   <tr> 
     <td height="30" valign="bottom">
       <div align="left"><span class="NavHeader">Trending</span><br>
