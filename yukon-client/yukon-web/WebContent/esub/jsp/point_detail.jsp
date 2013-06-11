@@ -1,3 +1,5 @@
+<%@page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
+<%@page import="com.cannontech.core.roleproperties.dao.RolePropertyDao"%>
 <%@ page import="java.text.DecimalFormat" %>
 
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
@@ -60,7 +62,7 @@
 	
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
     boolean offerControl = (PointTypes.STATUS_POINT == liteControlPoint.getPointType() 
-    	&& YukonSpringHook.getBean(AuthDao.class).checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.CONTROL) 
+    	&& YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(YukonRoleProperty.getForId(com.cannontech.roles.operator.EsubDrawingsRole.CONTROL), user) 
     	&& allowControl);
 %>
 <html>

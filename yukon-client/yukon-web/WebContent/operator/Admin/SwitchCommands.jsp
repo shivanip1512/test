@@ -10,12 +10,15 @@
 <%@ page import="com.cannontech.core.dao.AuthDao" %>
 <jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
 <%
-    if (!YukonSpringHook.getBean(AuthDao.class).checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_VIEW_BATCH_COMMANDS)) {
+    if (!YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(YukonRoleProperty.getForId(AdministratorRole.ADMIN_VIEW_BATCH_COMMANDS), lYukonUser)) {
 	    response.sendRedirect("../Operations.jsp");
 	    return;
 	}
 
-	boolean showEnergyCompany = liteEC.hasChildEnergyCompanies() && YukonSpringHook.getBean(AuthDao.class).checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS);
+	boolean showEnergyCompany = liteEC.hasChildEnergyCompanies() && 
+                                YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(
+                                                                                   YukonRoleProperty.getForId(AdministratorRole.ADMIN_MANAGE_MEMBERS),
+                                                                                   lYukonUser);
 	List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants(liteEC);
 	
 	int memberID = -1;

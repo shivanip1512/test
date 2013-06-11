@@ -16,6 +16,8 @@ import org.apache.commons.lang.StringUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.DrawingMetaElement;
@@ -79,14 +81,15 @@ public class SVGGenerator extends HttpServlet {
 			d.load(jlxPath);
 
 			DrawingMetaElement metaElem = d.getMetaElement();
+			RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
 			
 			// User requires the role specific to access this drawing
 			// and also the Esub VIEW role to see it, which should we be using?
 			if( YukonSpringHook.getBean(AuthDao.class).getRole(user, metaElem.getRoleID()) != null &&	
-				(YukonSpringHook.getBean(AuthDao.class).checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.VIEW) )) {				
+				    rolePropertyDao.checkProperty(YukonRoleProperty.getForId(com.cannontech.roles.operator.EsubDrawingsRole.VIEW), user)) {				
 							
-				boolean canEdit = YukonSpringHook.getBean(AuthDao.class).checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.EDIT);
-				boolean canControl = YukonSpringHook.getBean(AuthDao.class).checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.CONTROL);
+				boolean canEdit = rolePropertyDao.checkProperty(YukonRoleProperty.getForId(com.cannontech.roles.operator.EsubDrawingsRole.EDIT), user);
+				boolean canControl = rolePropertyDao.checkProperty(YukonRoleProperty.getForId(com.cannontech.roles.operator.EsubDrawingsRole.CONTROL), user);
 
 				SVGOptions svgOptions = new SVGOptions();
 				svgOptions.setStaticSVG(false);

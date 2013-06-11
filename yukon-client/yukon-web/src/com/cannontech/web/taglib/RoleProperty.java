@@ -6,6 +6,9 @@ import javax.servlet.jsp.JspException;
 import org.springframework.web.util.ExpressionEvaluationUtils;
 
 import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.roleproperties.UserNotInRoleException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ReflectivePropertySearcher;
@@ -57,7 +60,7 @@ public int doStartTag() throws JspException {
             } else {
                 propId = ReflectivePropertySearcher.getRoleProperty().getIntForName(property);
             }
-			String text = YukonSpringHook.getBean(AuthDao.class).getRolePropertyValueEx(user, propId);
+			String text = YukonSpringHook.getBean(RolePropertyDao.class).getPropertyStringValue(YukonRoleProperty.getForId(propId), user);
 			String fmat = getFormat();
 			if (fmat != null) {
 				if (fmat.equalsIgnoreCase( ServletUtil.FORMAT_UPPER ))
@@ -84,6 +87,10 @@ public int doStartTag() throws JspException {
 	catch(java.io.IOException e )
 	{
 		throw new JspException(e.getMessage());
+	}
+	catch (UserNotInRoleException e)
+	{
+	    throw new JspException(e.getMessage());
 	}
 
 	return SKIP_BODY;

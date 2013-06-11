@@ -12,6 +12,8 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -54,7 +56,7 @@ public class UpdateAttribute extends HttpServlet {
 		
 		LiteYukonUser user = (LiteYukonUser) req.getSession(false).getAttribute(LoginController.YUKON_USER);
 		
-		if(!YukonSpringHook.getBean(AuthDao.class).checkRoleProperty(user, EsubDrawingsRole.EDIT)) {
+		if(!YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(YukonRoleProperty.getForId(EsubDrawingsRole.EDIT), user)) {
 			CTILogger.info("Update request received by user without EDIT role, ip: " + req.getRemoteAddr());
 			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
 			return;

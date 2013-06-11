@@ -24,9 +24,12 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
@@ -55,7 +58,8 @@ public class LCConnectionServlet extends ErrorAwareInitializingServlet implement
 	private com.cannontech.web.loadcontrol.LoadcontrolCache cache = null;
     
     private DateFormattingService dateFormattingService = null;
-    private AuthDao authDao = null;
+    private RolePropertyDao rolePropertyDao = null;
+    private YukonUserDao yukonUserDao = null;
 
 /**
  * Insert the method's description here.
@@ -97,7 +101,8 @@ public LoadControlClientConnection getConnection() {
 public void doInit(ServletConfig config) throws ServletException {
 
 	dateFormattingService = YukonSpringHook.getBean("dateFormattingService", DateFormattingService.class);
-    authDao = YukonSpringHook.getBean("authDao", AuthDao.class);
+    rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
+    yukonUserDao = YukonSpringHook.getBean(YukonUserDao.class);
 	clientConnection = YukonSpringHook.getBean("loadControlClientConnection", LoadControlClientConnection.class);
 
 	clientConnection.addObserver(this);
@@ -137,11 +142,14 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
     String adjustments = ParamUtil.getString(req, "adjustments", null);
     String cancelPrev = ParamUtil.getString(req, "cancelPrev", null);
     String currentUserID = req.getParameter("currentUserID");
-
+   
 	//add any optional properties here
     optionalProps = getOptionalParams( req );
 	ResponseProg[] violatResp = null;
-    boolean allowStopGear = currentUserID != null && authDao.checkRoleProperty(Integer.parseInt(currentUserID), DirectLoadcontrolRole.ALLOW_STOP_GEAR_ACCESS);
+    //boolean allowStopGear = currentUserID != null && authDao.checkRoleProperty(Integer.parseInt(currentUserID), DirectLoadcontrolRole.ALLOW_STOP_GEAR_ACCESS);
+    boolean allowStopGear = currentUserID != null && rolePropertyDao.checkProperty(
+                                                                         YukonRoleProperty.getForId(DirectLoadcontrolRole.ALLOW_STOP_GEAR_ACCESS),
+                                                                         yukonUserDao.getLiteYukonUser(Integer.parseInt(currentUserID)));
     if(allowStopGear && ILCCmds.PROG_STOP.equals(cmd) ) {
         optionalProps.put("allowStopGear", "true");
     }

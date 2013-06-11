@@ -13,6 +13,8 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.PersistenceException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
@@ -171,7 +173,9 @@ public class InventoryBean {
 	    StarsYukonUser user = (StarsYukonUser) request.getSession(false).getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 	    
 	    boolean showEnergyCompany = false;
-        boolean manageMembers = YukonSpringHook.getBean(AuthDao.class).checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS);
+        boolean manageMembers = YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(
+                                                                                   YukonRoleProperty.getForId(AdministratorRole.ADMIN_MANAGE_MEMBERS), 
+                                                                                   user.getYukonUser());
         boolean hasChildren = getEnergyCompany().hasChildEnergyCompanies();
         
         int style = getHtmlStyle();
