@@ -31,7 +31,6 @@ import com.cannontech.common.util.IterableUtils;
 import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AddressDao;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
@@ -856,7 +855,9 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         }
         
         try {
-            String value = YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(user, ConsumerInfoRole.ORDER_NUMBER_AUTO_GEN);
+            String value = YukonSpringHook.getBean(RolePropertyDao.class).getPropertyStringValue(
+                                                                              YukonRoleProperty.getForId(ConsumerInfoRole.ORDER_NUMBER_AUTO_GEN),
+                                                                              user);
             if (value != null && value.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
                 value = "";
             }

@@ -1,11 +1,8 @@
 package com.cannontech.clientutils.commander;
 
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.AuthDao;
-import com.cannontech.core.dao.RoleDao;
-import com.cannontech.database.data.lite.LiteYukonRoleProperty;
-import com.cannontech.roles.application.CommanderRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -137,14 +134,10 @@ public class CommandPanel extends javax.swing.JPanel
 			try
 			{
 				executeCommandComboBoxTextField = (javax.swing.JTextField) getExecuteCommandComboBox().getEditor().getEditorComponent();
-                
-                // Check property to see if manual commands are allowed
-                LiteYukonRoleProperty liteProp =
-                    YukonSpringHook.getBean(RoleDao.class).getRoleProperty(CommanderRole.EXECUTE_MANUAL_COMMAND);
+				RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
 
-                String val = YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(
-                    ClientSession.getInstance().getUser(),
-                    liteProp.getRolePropertyID() );
+                String val = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.EXECUTE_MANUAL_COMMAND, 
+                                                                                ClientSession.getInstance().getUser());
                 
                 executeCommandComboBoxTextField.setEditable(Boolean.valueOf(val));
 			}

@@ -7,19 +7,22 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ThemeResolver;
 
-import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.util.ServletUtil;
 
 public class YukonGroupThemeResolver implements ThemeResolver {
-    private AuthDao authDao;
+    private RolePropertyDao rolePropertyDao;
     private String defaultThemeName = "";
 
     @Override
     public String resolveThemeName(HttpServletRequest request) {
         LiteYukonUser yukonUser = ServletUtil.getYukonUser(request);
-        String rolePropertyValue = authDao.getRolePropertyValue(yukonUser, WebClientRole.THEME_NAME);
+        String rolePropertyValue = rolePropertyDao.getPropertyStringValue(
+                                                       YukonRoleProperty.getForId(WebClientRole.THEME_NAME),
+                                                       yukonUser);
         if (StringUtils.isBlank(rolePropertyValue)) {
             return defaultThemeName;
         }
@@ -39,8 +42,8 @@ public class YukonGroupThemeResolver implements ThemeResolver {
     }
     
     @Autowired
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
     }
 
 }

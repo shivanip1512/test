@@ -23,6 +23,8 @@ import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.ThemeUtils;
@@ -76,7 +78,13 @@ public class ClientSession {
 	 * @return
 	 */
 	public String getRolePropertyValue(int rolePropertyID, String defaultValue) {
-		return YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(getUser(), rolePropertyID);
+	    try {
+            RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
+            return rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(rolePropertyID), getUser());
+	    }
+	    catch (Exception UserNotInRoleException) {
+	        return defaultValue;
+	    }
 	}
 		
 	/**
@@ -85,7 +93,8 @@ public class ClientSession {
 	 * @return
 	 */
 	public String getRolePropertyValue(int rolePropertyID) {
-		return YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(getUser(), rolePropertyID);
+        RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
+        return rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(rolePropertyID), getUser());
 	}
 	
 	public static synchronized ClientSession getInstance() {

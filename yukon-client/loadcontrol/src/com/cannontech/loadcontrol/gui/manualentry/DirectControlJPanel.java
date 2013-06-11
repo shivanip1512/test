@@ -25,8 +25,9 @@ import com.cannontech.common.gui.util.ComboBoxTableRenderer;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.LMDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.lm.GearControlMethod;
@@ -600,14 +601,15 @@ public javax.swing.JComboBox getJComboBoxConstraints() {
 			ivjJComboBoxConstraints.setName("JComboBoxConstraints");
 			ivjJComboBoxConstraints.setEditor(new javax.swing.plaf.metal.MetalComboBoxEditor.UIResource());
 			ivjJComboBoxConstraints.setRenderer(new javax.swing.plaf.basic.BasicComboBoxRenderer.UIResource());
+			RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
 
-			if( YukonSpringHook.getBean(AuthDao.class).checkRoleProperty( ClientSession.getInstance().getUser(),
-						DirectLoadcontrolRole.ALLOW_OBSERVE_CONSTRAINTS) )
+			if( rolePropertyDao.checkProperty(YukonRoleProperty.getForId(DirectLoadcontrolRole.ALLOW_OBSERVE_CONSTRAINTS),
+			                        ClientSession.getInstance().getUser()))
 				ivjJComboBoxConstraints.addItem( 
 					ManualControlRequestMessage.CONSTRAINT_FLAG_STRS[ManualControlRequestMessage.CONSTRAINTS_FLAG_USE] );
 
-			if( YukonSpringHook.getBean(AuthDao.class).checkRoleProperty( ClientSession.getInstance().getUser(),
-					DirectLoadcontrolRole.ALLOW_CHECK_CONSTRAINTS) )
+			if( rolePropertyDao.checkProperty(YukonRoleProperty.getForId(DirectLoadcontrolRole.ALLOW_CHECK_CONSTRAINTS),
+			                                    ClientSession.getInstance().getUser()))
 				ivjJComboBoxConstraints.addItem(
 					ManualControlRequestMessage.CONSTRAINT_FLAG_STRS[ManualControlRequestMessage.CONSTRAINTS_FLAG_CHECK] );
 
@@ -615,9 +617,9 @@ public javax.swing.JComboBox getJComboBoxConstraints() {
 				//set our initial selection to be the value specified in our
 				// role property
 				String defSel = 
-					YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(
-						ClientSession.getInstance().getUser(),
-						DirectLoadcontrolRole.DEFAULT_CONSTRAINT_SELECTION);
+					YukonSpringHook.getBean(RolePropertyDao.class).getPropertyStringValue(
+					    YukonRoleProperty.getForId(DirectLoadcontrolRole.DEFAULT_CONSTRAINT_SELECTION),
+						ClientSession.getInstance().getUser());
 	
 				ivjJComboBoxConstraints.setSelectedItem( defSel );
 			} else {
@@ -1659,9 +1661,9 @@ private void initialize() {
 				getJLabelGear().setVisible(false);
 
                 canSpecifyStopGear = 
-                    YukonSpringHook.getBean(AuthDao.class).checkRoleProperty(
-                        ClientSession.getInstance().getUser(),
-                        DirectLoadcontrolRole.ALLOW_STOP_GEAR_ACCESS);
+                    YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(
+                        YukonRoleProperty.getForId(DirectLoadcontrolRole.ALLOW_STOP_GEAR_ACCESS),
+                        ClientSession.getInstance().getUser());
                 if(canSpecifyStopGear) {
                     getJComboBoxStopGear().setVisible(true);
                     getJLabelStopGear().setVisible(true);

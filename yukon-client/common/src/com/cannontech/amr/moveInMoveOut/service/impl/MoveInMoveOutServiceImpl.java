@@ -50,13 +50,15 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.impl.SimplePointValue;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.messaging.message.dispatch.PointDataMessage;
-import com.cannontech.roles.operator.MeteringRole;
+import com.cannontech.spring.YukonSpringHook;
 
 public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
 
@@ -67,7 +69,6 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     private JobManager jobManager = null;
     private YukonJobDefinition<MoveInTask> moveInDefinition = null;
     private YukonJobDefinition<MoveOutTask> moveOutDefinition = null;
-    private AuthDao authDao;
     private AttributeService attributeService;
     private CalculatedPointService calculatedPointService;
     private DeviceGroupEditorDao deviceGroupEditorDao;
@@ -79,7 +80,6 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     private SimpleJdbcOperations jdbcTemplate = null;
     private NextValueHelper nextValueHelper = null;
     private PaoCommandAuthorizationService paoCommandAuthorizationService = null;
-
     public MoveInResult moveIn(MoveInForm moveInFormObj) {
 
         MoveInResult moveInResult = new MoveInResult();
@@ -499,8 +499,9 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     private void addArchiveEntryDatabase(Meter oldMeter, Date moveDate,
             DeviceEventEnum deviceEvent, LiteYukonUser liteYukonUser) {
 
-        boolean autoArchivingEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(liteYukonUser,
-                                                                                         MeteringRole.MOVE_IN_MOVE_OUT_AUTO_ARCHIVING));
+        boolean autoArchivingEnabled = YukonSpringHook.getBean(RolePropertyDao.class).getPropertyBooleanValue(
+                                                                                          YukonRoleProperty.MOVE_IN_MOVE_OUT_AUTO_ARCHIVING, 
+                                                                                          liteYukonUser);
 
         if (autoArchivingEnabled) {
 
@@ -578,7 +579,6 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
 
     @Required
     public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
     }
 
     @Required

@@ -14,7 +14,8 @@ import com.cannontech.analysis.data.device.capcontrol.CapControlStatusData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.PoolManager;
@@ -23,7 +24,6 @@ import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.state.StateGroupUtils;
-import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -85,7 +85,7 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
 	
 	/** A string for the title of the data */
 	private static String title = "Cap Control Current Status Report";
-	private AuthDao authDao = YukonSpringHook.getBean(AuthDao.class);
+	private RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
 	LiteYukonUser user = null;
 		
 	public Comparator ccStatusDataComparator = new java.util.Comparator()
@@ -169,7 +169,7 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
 			Date lastChangedateTime = rset.getTimestamp(5);
             String operationalState = rset.getString(6);
             if(operationalState.equalsIgnoreCase("Fixed") && user != null) {
-                operationalState = authDao.getRolePropertyValue(user, CBCOnelineSettingsRole.CAP_BANK_FIXED_TEXT);
+                operationalState = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.CAP_BANK_FIXED_TEXT, user);
             }
             Integer controlOrder = new Integer(rset.getInt(7));
             LiteYukonPAObject lite = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO(capBankPaoID.intValue());

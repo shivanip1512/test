@@ -45,9 +45,10 @@ import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.GraphDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.graph.GraphDefinition;
@@ -1999,7 +2000,9 @@ private void initialize()
 	{
 		// Setup Role Property to create/edit trends.
 		ClientSession session = ClientSession.getInstance();
-		boolean graphEdit = Boolean.valueOf(YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(session.getUser(), TrendingRole.GRAPH_EDIT_GRAPHDEFINITION)).booleanValue();
+		RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
+		boolean graphEdit = rolePropertyDao.getPropertyBooleanValue(
+		                                        YukonRoleProperty.getForId(TrendingRole.GRAPH_EDIT_GRAPHDEFINITION), session.getUser());
 		if( !graphEdit )
 		{
 			getTrendMenu().getCreateMenuItem().setEnabled(false);

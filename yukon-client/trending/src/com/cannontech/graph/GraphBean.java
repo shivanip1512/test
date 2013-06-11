@@ -13,8 +13,9 @@ import java.util.GregorianCalendar;
 import java.util.Vector;
 
 import com.cannontech.clientutils.ActivityLogger;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.activity.ActivityLogSummary;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
@@ -309,14 +310,15 @@ public class GraphBean extends Graph
 			ActivityLogSummary.LogSummary logSummary = (ActivityLogSummary.LogSummary)actLogSummary.getLogSummaryVector().get(i); 
 			if( logSummary.action.equals(ActivityLogActions.SCAN_DATA_NOW_ACTION))
 			{
-				if( logSummary.count >= Integer.valueOf(YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(liteYukonUser, TrendingRole.MAXIMUM_DAILY_SCANS)).intValue())
+			    RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
+                if( logSummary.count >= rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.getForId(TrendingRole.MAXIMUM_DAILY_SCANS), liteYukonUser) )
 				{
 					return new SessionAttribute( ServletUtil.ATT_ERROR_MESSAGE, "Maximum Scans allowed for today exceeded" );
 				}
 							
 				Date now = new Date();
 				long sinceLast = now.getTime() - logSummary.maxTimeStamp.getTime();
-				long duration = Long.valueOf(YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(liteYukonUser, TrendingRole.MINIMUM_SCAN_FREQUENCY)).longValue() * 36000;
+				long duration = rolePropertyDao.getPropertyLongValue(YukonRoleProperty.getForId(TrendingRole.MAXIMUM_DAILY_SCANS), liteYukonUser) * 36000;
 				if (sinceLast <= duration)
 				{
 					long waitTime = duration - sinceLast;

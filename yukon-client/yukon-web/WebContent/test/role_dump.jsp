@@ -1,3 +1,5 @@
+<%@page import="com.cannontech.core.roleproperties.dao.RolePropertyDao"%>
+<%@page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 <%
 	// Dumps out all the roles and properties for the logged in user
 %>
@@ -30,8 +32,10 @@
 			LiteYukonRoleProperty[] roleProps = YukonSpringHook.getBean(RoleDao.class).getRoleProperties(r.getRoleID());
 			for(int j = 0; j < roleProps.length; ++j) {
 				LiteYukonRoleProperty p = roleProps[j];
-				if(YukonSpringHook.getBean(AuthDao.class).checkRoleProperty(user, p.getRolePropertyID())) {
-					out.println("propertyid: " + p.getRolePropertyID() + "&nbsp&nbsp&nbspkey: " + p.getKeyName() + "&nbsp&nbsp&nbspdefault: " + p.getDefaultValue() + "&nbsp&nbsp&nbspvalue: " + YukonSpringHook.getBean(AuthDao.class).getRolePropertyValue(user, p.getRolePropertyID()) + "<br>");
+                YukonRoleProperty yp = YukonRoleProperty.getForId(p.getRolePropertyID());
+                RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
+				if (YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(yp, user)) {
+					out.println("propertyid: " + p.getRolePropertyID() + "&nbsp&nbsp&nbspkey: " + p.getKeyName() + "&nbsp&nbsp&nbspdefault: " + p.getDefaultValue() + "&nbsp&nbsp&nbspvalue: " + rolePropertyDao.getPropertyStringValue(yp, user) + "<br>");
 				}
 				else {
 					out.println("propertyid: " + p.getRolePropertyID() + "&nbsp&nbsp&nbspkey: " + p.getKeyName() + "&nbsp&nbsp&nbspdefault: " + p.getDefaultValue() + "&nbsp&nbsp&nbspThis property is not attached to this user, it probably should be.  Check YukonGroupRole<br>");
