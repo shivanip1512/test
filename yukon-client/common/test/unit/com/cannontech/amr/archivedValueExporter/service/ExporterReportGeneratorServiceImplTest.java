@@ -38,7 +38,6 @@ import org.junit.Test;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.cannontech.amr.archivedValueExporter.model.TimeZoneFormat;
 import com.cannontech.amr.archivedValueExporter.model.AttributeField;
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
 import com.cannontech.amr.archivedValueExporter.model.ExportField;
@@ -56,6 +55,7 @@ import com.cannontech.amr.rfn.dao.MockRfnDeviceDaoImpl;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.MockAttributeServiceImpl;
+import com.cannontech.common.util.TimeZoneFormat;
 import com.cannontech.core.dao.MockRawPointHistoryDaoImpl;
 import com.cannontech.core.dao.MockUnitMeasureDaoImpl;
 import com.cannontech.core.dao.RawPointHistoryDao;

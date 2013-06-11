@@ -39,7 +39,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFormatDao;
 import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
-import com.cannontech.amr.archivedValueExporter.model.TimeZoneFormat;
 import com.cannontech.amr.archivedValueExporter.model.AttributeField;
 import com.cannontech.amr.archivedValueExporter.model.DataSelection;
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
@@ -68,6 +67,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.scheduledFileExport.ArchivedDataExportFileGenerationParameters;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
+import com.cannontech.common.util.TimeZoneFormat;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;

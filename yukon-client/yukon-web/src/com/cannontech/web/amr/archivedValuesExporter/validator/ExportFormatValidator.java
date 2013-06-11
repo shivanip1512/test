@@ -21,7 +21,7 @@ public class ExportFormatValidator extends SimpleValidator<ArchivedValuesExporte
     protected void doValidation(ArchivedValuesExporterBackingBean target, Errors errors) {
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "format.formatName", ArchivedValuesExporterController.baseKey+"formatError.formatNameRequired");
         YukonValidationUtils.checkExceedsMaxLength(errors, "format.formatName", target.getFormat().getFormatName(), 100);
-        YukonValidationUtils.checkExceedsMaxLength(errors, "format.delimiter", target.getFormat().getDelimiter(), 1);
+        YukonValidationUtils.checkExceedsMaxLength(errors, "format.delimiter", target.getFormat().getDelimiter(), 20);
         YukonValidationUtils.checkExceedsMaxLength(errors, "format.header", target.getFormat().getHeader(), 255);
         YukonValidationUtils.checkExceedsMaxLength(errors, "format.footer", target.getFormat().getFooter(), 255);
 

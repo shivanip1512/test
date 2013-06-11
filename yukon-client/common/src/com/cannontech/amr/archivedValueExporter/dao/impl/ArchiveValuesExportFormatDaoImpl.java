@@ -12,12 +12,12 @@ import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportAttribute
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFieldDao;
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFormatDao;
 import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
-import com.cannontech.amr.archivedValueExporter.model.TimeZoneFormat;
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
 import com.cannontech.amr.archivedValueExporter.model.ExportField;
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
 import com.cannontech.amr.archivedValueExporter.model.FieldType;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.common.util.TimeZoneFormat;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.SqlUtils;

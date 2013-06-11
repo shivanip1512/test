@@ -1,4 +1,4 @@
-package com.cannontech.amr.archivedValueExporter.model;
+package com.cannontech.common.util;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 

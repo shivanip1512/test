@@ -16,7 +16,6 @@ import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
-import com.cannontech.amr.archivedValueExporter.model.TimeZoneFormat;
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
 import com.cannontech.amr.archivedValueExporter.model.ExportField;
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
@@ -36,6 +35,7 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ReadableRange;
+import com.cannontech.common.util.TimeZoneFormat;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
@@ -91,7 +91,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
 
         if (format.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE) {
             Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> fieldIdToAttributeData = getFixedPreviewAttributeData(format, previewMeter);
-            generateFixedBody(preview, Collections.singletonList(previewMeter), format, fieldIdToAttributeData, userContext, reportTZ);
+            generateFixedBody(preview, Collections.singletonList(previewMeter), format, fieldIdToAttributeData, userContext);
         } else {
             ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeData = getDynamicPreviewAttributeData(format, previewMeter);
             generateDynamicBody(preview, Collections.singletonList(previewMeter), format, userContext, BuiltInAttribute.USAGE, attributeData);
@@ -124,7 +124,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                     }
                 }
 
-                generateFixedBody(reportResults, meters, format, endDateAttributeData, userContext, reportTZ);
+                generateFixedBody(reportResults, meters, format, endDateAttributeData, userContext);
                 break;
 
             case DATE_RANGE:
@@ -214,7 +214,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
      */
     private void generateFixedBody(List<String> reportRows, List<Meter> meters, ExportFormat format, 
             Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData, 
-            YukonUserContext userContext, DateTimeZone reportTZ) {
+            YukonUserContext userContext) {
 
         for (Meter meter : meters) {
             String dataRow = getDataRow(format, meter, userContext, attributeData);
