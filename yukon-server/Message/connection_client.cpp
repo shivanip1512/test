@@ -29,12 +29,13 @@ CtiClientConnection::CtiClientConnection( const string &serverQueueName,
                                           INT tt ) :
     _brokerUri( Cti::Messaging::ActiveMQ::Broker::startupReconnectURI ),
     _serverQueueName( serverQueueName ),
-    CtiConnection( string( "Client Connection " ) + CtiNumStr( InterlockedIncrement( &_clientConnectionCount )), inQ, tt )
+    CtiConnection( string( "Client Connection " ) + CtiNumStr( InterlockedIncrement( &_clientConnectionCount )), inQ, tt ),
+    _brokerConnStarted( false )
 {
     // create exception listener and register function and caller
     _exceptionListener.reset( new Cti::Messaging::ActiveMQ::ExceptionListener<CtiClientConnection>( this, &CtiClientConnection::onException ));
 
-    brokerConnThreadRw = rwMakeThreadFunction( *this, &CtiClientConnection::brokerConnThread );
+    _brokerConnThreadRw = rwMakeThreadFunction( *this, &CtiClientConnection::brokerConnThread );
 }
 
 
@@ -59,21 +60,6 @@ void CtiClientConnection::onException( const cms::CMSException& ex )
 }
 
 //
-//  This anonymous namespace contains a global status that is use by the broker connection thread
-//
-namespace {
-
-    enum BrokerConnResult_t
-    {
-        NotStarted,
-        Started,
-        UnhandleException
-    };
-
-    BrokerConnResult_t brokerConnResult;
-}
-
-//
 //  The broker connection thread use as a wrapper around the cms::Connection::start() function.
 //
 //  NOTE:
@@ -84,7 +70,8 @@ namespace {
 //
 void CtiClientConnection::brokerConnThread()
 {
-    try{
+    try
+    {
         _connection->start(); // start the connection
     }
     catch( cms::CMSException& e )
@@ -99,48 +86,30 @@ void CtiClientConnection::brokerConnThread()
     {
         logException( __FILE__, __LINE__ );
 
-        brokerConnResult = UnhandleException;
+		// we should never get here since cms::Connection::start() can only return CMSExceptions
 
         return;
     }
 
-    brokerConnResult = Started;
+    _brokerConnStarted = true;
 }
 
 //
 //  Function that start and wait for the BrokerConnThread to complete.
 //  Returns NORMAL if the connection has started
 //
-INT CtiClientConnection::startBrokerConnection()
+bool CtiClientConnection::startBrokerConnection()
 {
-    brokerConnResult = NotStarted;
+    _brokerConnStarted = false;
 
     // Create connection
     _connection.reset( Cti::Messaging::ActiveMQ::g_connectionFactory.createConnection( _brokerUri ));
 
     // create and start thread
-    brokerConnThreadRw.start();
-    brokerConnThreadRw.join();
+    _brokerConnThreadRw.start();
+    _brokerConnThreadRw.join();
 
-    if( brokerConnResult == UnhandleException )
-    {
-        throw;
-    }
-    else if( brokerConnResult != Started )
-    {
-        if( !_dontReconnect )
-        {
-            logStatus( __FUNCTION__, "unable to connect to the broker. Will try to reconnect." );
-        }
-        else
-        {
-            logStatus( __FUNCTION__, "has closed." );
-        }
-
-        return NOTNORMAL;
-    }
-
-    return NORMAL;
+    return _brokerConnStarted;
 }
 
 
@@ -165,7 +134,18 @@ INT CtiClientConnection::establishConnection()
                     logStatus( __FUNCTION__, "connecting to \"" + _serverQueueName + "\"" );
 
                     // Create and start connection to broker
-                    if( startBrokerConnection() != NORMAL ) continue;
+                    if( !startBrokerConnection() )
+                    {
+                        if( !_dontReconnect )
+                        {
+                            logStatus( __FUNCTION__, "unable to connect to the broker. Will try to reconnect." );
+                        }
+                        else
+                        {
+                            logStatus( __FUNCTION__, "has closed." );
+                        }
+                        continue;
+                    }
 
                     // Create sessions
                     _sessionIn.reset( _connection->createSession() );
@@ -311,7 +291,7 @@ INT CtiClientConnection::endConnection()
 
     try
     {
-        brokerConnThreadRw.terminate();
+        _brokerConnThreadRw.terminate();
     }
     catch(...)
     {
@@ -319,10 +299,7 @@ INT CtiClientConnection::endConnection()
     }
 
     // Close the connection as well as any child session, consumer, producer, destinations
-    if( _connection.get() )
-    {
-        _connection->close();
-    }
+    _connection.reset();
 
     return NORMAL;
 }
