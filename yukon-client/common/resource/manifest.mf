@@ -71,4 +71,5 @@ Class-Path: ./
  servlet-api.jar 
  bcpkix-jdk15on-147.jar 
  bcprov-jdk15on-147.jar 
+ libthrift-0.9.0.jar 
  
