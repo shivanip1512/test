@@ -149,6 +149,7 @@
                 <value>jcommon.jar</value>
                 <value>jloox30.jar</value>
                 <value>nagasena.jar</value>
+                <value>libthrift-0.9.0.jar</value>
             </set>
         </property>
     </bean>
