@@ -35,6 +35,45 @@ public interface AuthDao {
      */
     @Deprecated
     public LiteYukonRole getRole(LiteYukonUser user, int roleID);
+    
+    /**
+     * Returns true if the given user has a true value for the given property
+     * @param user
+     * @param rolePropertyID
+     * @return boolean
+     * @deprecated use RolePropertyDao.checkProperty()
+     */
+    @Deprecated
+    public boolean checkRoleProperty(LiteYukonUser user, int rolePropertyID);
+
+    /**
+     * @deprecated use RolePropertyDao.checkProperty()
+     */
+    @Deprecated
+    public boolean checkRoleProperty(int userID, int rolePropertyID);
+
+    /**
+     * Returns the value for a given user and role property.
+     * @param user
+     * @param rolePropertyID
+     * @return String
+     * @throws UnknownRolePropertyException If RoleProperty doesn't exist. 
+     * @deprecated use RolePropertyDao.getPropertyStringValue()
+     */
+    @Deprecated
+    public String getRolePropertyValueEx(LiteYukonUser user, int rolePropertyID)
+            throws UnknownRolePropertyException;
+
+    /**
+     * Returns the value for a given user and role property.
+     * If no value is found then defaultValue is returned for convenience.
+     * @param user
+     * @param roleProperty
+     * @return String
+     * @deprecated use RolePropertyDao.getPropertyStringValue()
+     */
+    @Deprecated
+    public String getRolePropertyValue(LiteYukonUser user, int rolePropertyID);
 
     /**
      * Returns the value for a given userID and rolePropertyID.
@@ -116,7 +155,13 @@ public interface AuthDao {
      * @return boolean
      */
     public boolean hasPAOAccess(LiteYukonUser user);
-        
+    
+    /**
+     * @deprecated use RolePropertyDao.verifyRole()
+     */
+    @Deprecated
+    public void verifyRole(LiteYukonUser user, int roleId) throws NotAuthorizedException;
+    
     /**
      * Check that user has at least one of the role properties.
      * Works using OR semantics
@@ -127,6 +172,14 @@ public interface AuthDao {
      * @deprecated use RolePropertyDao.verifyProperty()
      */
     @Deprecated public void verifyTrueProperty(LiteYukonUser user, int ... rolePropertyIds) throws NotAuthorizedException;
+    
+    /**
+     * @param user
+     * @param rolePropertyId
+     * @throws NotAuthorizedException
+     * @deprecated use RolePropertyDao.verifyFalseProperty()
+     */
+    @Deprecated public void verifyFalseProperty(LiteYukonUser user, int rolePropertyId) throws NotAuthorizedException;
     
     /**
      * @param user
@@ -145,4 +198,10 @@ public interface AuthDao {
      * @return
      */
     public TimeZone getUserTimeZone(LiteYukonUser user) throws BadConfigurationException, IllegalArgumentException;
+
+    /**
+     * @deprecated use RolePropertyDao.getPropertyEnumValue()
+     */
+    @Deprecated
+    public <E extends Enum<E>> E getRolePropertyValue(Class<E> class1, LiteYukonUser user, int rolePropertyID);
 }
