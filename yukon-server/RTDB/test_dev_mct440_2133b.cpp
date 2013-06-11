@@ -172,7 +172,7 @@ BOOST_AUTO_TEST_CASE(test_mct440_2133b_decodeGetValueInstantLineData)
 
         BOOST_REQUIRE( pdata );
 
-        BOOST_CHECK_EQUAL( pdata->getValue(), 4);
+        BOOST_CHECK_EQUAL( pdata->getValue(), 0.04);
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
         //BOOST_CHECK_EQUAL( pdata->getTime(), t);
     }
@@ -202,7 +202,7 @@ BOOST_AUTO_TEST_CASE(test_mct440_2133b_decodeGetValueInstantLineData)
 
         BOOST_REQUIRE( pdata );
 
-        BOOST_CHECK_EQUAL( pdata->getValue(), 8);
+        BOOST_CHECK_EQUAL( pdata->getValue(), 0.08);
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
         //BOOST_CHECK_EQUAL( pdata->getTime(), t);
     }
@@ -232,7 +232,7 @@ BOOST_AUTO_TEST_CASE(test_mct440_2133b_decodeGetValueInstantLineData)
 
         BOOST_REQUIRE( pdata );
 
-        BOOST_CHECK_EQUAL( pdata->getValue(), 12);
+        BOOST_CHECK_EQUAL( pdata->getValue(), 0.12);
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
         //BOOST_CHECK_EQUAL( pdata->getTime(), t);
     }

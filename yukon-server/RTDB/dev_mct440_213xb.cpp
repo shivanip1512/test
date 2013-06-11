@@ -1013,13 +1013,14 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(INMESS          *InMessage
 
         point_info PowerFactor;
 
-        														/* Bits {7:0} Power factor in units of 0.01, range -0.99 to 1.00 */
+                                                                /* Bits {7:0} Power factor in units of 0.01, range -0.99 to 1.00 */
         double PowerFactorVal = reinterpret_cast<char &>(PhaseData[3]);
+        PowerFactorVal /= 100.0;
 
-        if( PowerFactorVal <= -100 || PowerFactorVal > 100 )
+        if( PowerFactorVal < -0.99 || PowerFactorVal > 1.00 )
         {
             PowerFactor.value       = 0;
-            PowerFactor.quality     = (PowerFactorVal > 100) ? ExceedsHighQuality : ExceedsLowQuality;
+            PowerFactor.quality     = (PowerFactorVal > 1.00) ? ExceedsHighQuality : ExceedsLowQuality;
             PowerFactor.freeze_bit  = false;
 
             status = ErrorInvalidData;
@@ -1043,8 +1044,7 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(INMESS          *InMessage
                               ReturnMsg.get(),
                               PowerFactor,
                               "Phase Line Power Factor",
-                              CtiTime(),
-                              0.01);
+                              CtiTime());
     }
 
     retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );

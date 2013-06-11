@@ -172,7 +172,7 @@ BOOST_AUTO_TEST_CASE(test_mct440_2131b_decodeGetValueInstantLineData)
 
         BOOST_REQUIRE( pdata );
 
-        BOOST_CHECK_EQUAL( pdata->getValue(), 100);
+        BOOST_CHECK_EQUAL( pdata->getValue(), 1.0);
         BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
         //BOOST_CHECK_EQUAL( pdata->getTime(), t);
     }
