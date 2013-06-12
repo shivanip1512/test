@@ -119,7 +119,8 @@ public class MultiTableIncrementer {
             final JdbcTemplate jdbc = new JdbcTemplate(dataSource);
             PlatformTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
             TransactionTemplate tt = new TransactionTemplate(transactionManager);
-            tt.execute(new TransactionCallback() {
+            tt.execute(new TransactionCallback<Object>() {
+                @Override
                 public Object doInTransaction(TransactionStatus status) {
                     // get current max
                     String maxSql = "select max(" + identityColumn + ") from " + tableName;
@@ -128,10 +129,10 @@ public class MultiTableIncrementer {
                     // make sure row exists
                     String checkSql = "select " + keyColumnName + " from " + sequenceTableName
                         + " where " + keyColumnName + " = '" + sequenceKey + "'";
-                    List matches = jdbc.queryForList(checkSql, String.class);
+                    List<String> matches = jdbc.queryForList(checkSql, String.class);
                     if (matches.isEmpty()) {
                         try {
-                            jdbc.update(insertSql, new Integer[] {1});
+                            jdbc.update(insertSql, 1);
                         } catch (DataIntegrityViolationException e) {
                             //ignore and proceed with the update attempt that follows
                         }

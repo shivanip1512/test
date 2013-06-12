@@ -36,6 +36,7 @@ public final class LMDaoImpl implements LMDao {
     private SimpleJdbcOperations jdbcOps;
 
     private static final ParameterizedRowMapper<Integer> controlAreaProgramIDRowMapper = new ParameterizedRowMapper<Integer>() {
+        @Override
         public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
             int programid = rs.getInt("lmprogramdeviceid");
             return programid;
@@ -53,6 +54,7 @@ public final class LMDaoImpl implements LMDao {
      * (non-Javadoc)
      * @see com.cannontech.core.dao.LMDao#getAllLMScenarios()
      */
+    @Override
     public LiteYukonPAObject[] getAllLMScenarios() {
         // Get an instance of the cache.
         ArrayList scenarioList = new ArrayList(32);
@@ -93,6 +95,7 @@ public final class LMDaoImpl implements LMDao {
         return retVal;
     }
 
+    @Override
     public synchronized LiteYukonPAObject[] getAllMemberLMScenarios(
             LiteYukonUser yukUser) {
         // Get an instance of the cache.
@@ -118,6 +121,7 @@ public final class LMDaoImpl implements LMDao {
      * (non-Javadoc)
      * @see com.cannontech.core.dao.LMDao#getLMScenarioProgs(int)
      */
+    @Override
     public LiteLMProgScenario[] getLMScenarioProgs(int scenarioID) {
         // Get an instance of the cache.
         ArrayList progList = new ArrayList(32);
@@ -138,6 +142,7 @@ public final class LMDaoImpl implements LMDao {
         return retVal;
     }
 
+    @Override
     public List<Integer> getProgramsForControlArea(int areaID) {
 
         String sql = "select lmprogramdeviceid from lmcontrolareaprogram where deviceid = ?";
@@ -147,6 +152,7 @@ public final class LMDaoImpl implements LMDao {
         return programIds;
     }
 
+    @Override
     public Set<LiteYukonPAObject> getAllLMDirectPrograms() {
     	List<LiteYukonPAObject> directPrograms = paoDao.getLiteYukonPAObjectByType(DeviceTypes.LM_DIRECT_PROGRAM);
     	List<LiteYukonPAObject> sepPrograms = paoDao.getLiteYukonPAObjectByType(DeviceTypes.LM_SEP_PROGRAM);
@@ -154,10 +160,11 @@ public final class LMDaoImpl implements LMDao {
         return Sets.newHashSet(Iterables.concat(directPrograms, sepPrograms));
     }
     
+    @Override
     public int getStartingGearForScenarioAndProgram(int programId, int scenarioId) {
         String sql = "select startgear from lmcontrolscenarioprogram where programid = ? and scenarioid = ?";
         JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-        return jdbcOps.queryForInt(sql, new Integer[] {programId, scenarioId});
+        return jdbcOps.queryForInt(sql, programId, scenarioId);
     }
 
     public void setDatabaseCache(IDatabaseCache databaseCache) {
@@ -166,10 +173,6 @@ public final class LMDaoImpl implements LMDao {
 
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
-    }
-
-    public SimpleJdbcOperations getJdbcOps() {
-        return jdbcOps;
     }
 
     public void setJdbcOps(SimpleJdbcOperations jdbcOps) {

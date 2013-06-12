@@ -47,19 +47,21 @@ public class CCSubSpecialAreaAssignment extends DBPersistent {
         CCSubSpecialAreaAssignment.yukonTemplate = yukonTemplate;
     }
 
+    @Override
     public void add() throws SQLException {
         add(TABLE_NAME, new Object[] { getAreaID(), getSubstationBusID(), getDisplayOrder() });
     }
 
+    @Override
     public void delete() throws SQLException {
         delete(TABLE_NAME, CONSTRAINT_COLUMNS, new Object[] { getAreaID(), getSubstationBusID() });
     }
 
+    @Override
     public void retrieve() throws SQLException {
 
     }
 
-    @SuppressWarnings("unchecked")
     public static List<CCSubSpecialAreaAssignment> getAllSpecialAreaSubs(Integer areaID) {
 
         SqlStatementBuilder allSubs = new SqlStatementBuilder();
@@ -67,17 +69,20 @@ public class CCSubSpecialAreaAssignment extends DBPersistent {
         allSubs.append("CCSubSpecialAreaAssignment");
         allSubs.append("WHERE AreaID = ?");
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        List<CCSubSpecialAreaAssignment> list;
-        list = yukonTemplate.query(allSubs.toString(), new Integer[] { areaID }, new RowMapper() {
-            public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-            CCSubSpecialAreaAssignment assign = new CCSubSpecialAreaAssignment();
-            assign.setAreaID(rs.getInt(1));
-            assign.setSubstationBusID(rs.getInt(2));
-            assign.setDisplayOrder(rs.getInt(3));
-            return assign;
-           }
-        });
+        List<CCSubSpecialAreaAssignment> list =
+            yukonTemplate.query(allSubs.toString(), new Object[] { areaID },
+                new RowMapper<CCSubSpecialAreaAssignment>() {
+                    @Override
+                    public CCSubSpecialAreaAssignment mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        CCSubSpecialAreaAssignment assign = new CCSubSpecialAreaAssignment();
+                        assign.setAreaID(rs.getInt(1));
+                        assign.setSubstationBusID(rs.getInt(2));
+                        assign.setDisplayOrder(rs.getInt(3));
+                        return assign;
+                    }
+                });
         Collections.sort(list, new Comparator<CCSubSpecialAreaAssignment>() {
+            @Override
             public int compare(CCSubSpecialAreaAssignment o1, CCSubSpecialAreaAssignment o2) {
                 try {
                     Integer strA = o1.getDisplayOrder();
@@ -96,6 +101,7 @@ public class CCSubSpecialAreaAssignment extends DBPersistent {
         return list;
     }
 
+    @Override
     public void update() throws SQLException {
 
         Object setValues[] = { getDisplayOrder() };
@@ -144,7 +150,6 @@ public class CCSubSpecialAreaAssignment extends DBPersistent {
         this.substationBusID = substationBusID;
     }
 
-    @SuppressWarnings("unchecked")
     public static List<Integer> getAreaIdsForSubstation(Integer substationId) {
         SqlStatementBuilder allSubs = new SqlStatementBuilder();
         allSubs.append("SELECT AreaID FROM");
@@ -153,7 +158,8 @@ public class CCSubSpecialAreaAssignment extends DBPersistent {
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
         List<Integer> areaIds;
         try {
-            areaIds = yukonTemplate.queryForList(allSubs.toString(), new Integer[] { substationId }, new int[]{Types.INTEGER}, Integer.class );
+            areaIds = yukonTemplate.queryForList(allSubs.toString(), new Object[] { substationId },
+                    new int[] { Types.INTEGER }, Integer.class);
         } catch (EmptyResultDataAccessException erda) {
             areaIds = null;
         }
@@ -189,7 +195,7 @@ public class CCSubSpecialAreaAssignment extends DBPersistent {
         deleteStmt.append(")");
         deleteStmt.append("AND AreaID = ?");
         yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        yukonTemplate.update(deleteStmt.toString(), new Integer[] {areaID});
+        yukonTemplate.update(deleteStmt.toString(), areaID);
     }
     
     public static void deleteSubstation(Integer substationId) {
@@ -198,6 +204,6 @@ public class CCSubSpecialAreaAssignment extends DBPersistent {
         deleteStmt.append(TABLE_NAME);
         deleteStmt.append(" WHERE SubstationBusID = ? ");
         yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        yukonTemplate.update(deleteStmt.toString(), new Integer[] {substationId});
+        yukonTemplate.update(deleteStmt.toString(), substationId);
     }
 }

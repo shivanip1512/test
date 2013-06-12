@@ -81,6 +81,7 @@ public class CapBankEditorForm extends DBEditorForm {
         super();
     }
 
+    @Override
     protected void checkForErrors() throws IllegalArgumentException {
         List<CCMonitorBankList> monitorPointList = ((CapBank) getDbPersistent()).getCcMonitorBankList();
         for (Iterator<CCMonitorBankList> iter = monitorPointList.iterator(); iter.hasNext();) {
@@ -219,10 +220,9 @@ public class CapBankEditorForm extends DBEditorForm {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void treeSwapRemoveAction() {
         FacesContext context = FacesContext.getCurrentInstance();
-        Map paramMap = context.getExternalContext().getRequestParameterMap();
+        Map<?, ?> paramMap = context.getExternalContext().getRequestParameterMap();
 
         String swapType = (String) paramMap.get("swapType");
         int elemId = new Integer((String) paramMap.get("id")).intValue();
@@ -242,10 +242,9 @@ public class CapBankEditorForm extends DBEditorForm {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void treeSwapAddAction() {
         FacesContext context = FacesContext.getCurrentInstance();
-        Map paramMap = context.getExternalContext().getRequestParameterMap();
+        Map<?, ?> paramMap = context.getExternalContext().getRequestParameterMap();
 
         String swapType = (String) paramMap.get("swapType");
         int elemId = new Integer((String) paramMap.get("id")).intValue();
@@ -374,7 +373,7 @@ public class CapBankEditorForm extends DBEditorForm {
     private void deletePointFromTable(String table, int pointId) {
         String sqlStmt = "DELETE FROM " + table + " WHERE pointId = ?";
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        yukonTemplate.update(sqlStmt, new Integer[] { new Integer(pointId) });
+        yukonTemplate.update(sqlStmt, pointId);
     }
 
     private void handleAllPointsOnList(List<CapBankMonitorPointParams> points, int controllerID,
@@ -622,6 +621,7 @@ public class CapBankEditorForm extends DBEditorForm {
         this.additionalInfo = additionalInfo;
     }
 
+    @Override
     public void resetForm() {
         additionalInfo = null;
         unassignedPoints = null;

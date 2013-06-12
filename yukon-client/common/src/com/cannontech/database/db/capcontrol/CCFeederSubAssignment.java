@@ -40,6 +40,7 @@ public CCFeederSubAssignment(Integer feedID, Integer subID, Integer dispOrder)
 /**
  * add method comment.
  */
+@Override
 public void add() throws java.sql.SQLException 
 {
 	Object[] addValues = { getSubstationBusID(), getFeederID(), getDisplayOrder() };
@@ -49,6 +50,7 @@ public void add() throws java.sql.SQLException
 /**
  * delete method comment.
  */
+@Override
 public void delete() throws java.sql.SQLException 
 {
 	Object[] values = { getFeederID(), getSubstationBusID() };
@@ -118,7 +120,7 @@ public static Integer getSubBusIdForFeeder( int paoId ){
     
     Integer substationBusId = -1;
     try {
-        substationBusId = jdbcOps.queryForInt(sql, new Integer[] {paoId});
+        substationBusId = jdbcOps.queryForInt(sql, paoId);
     } catch (EmptyResultDataAccessException e) {
         return -1;
     }
@@ -203,6 +205,7 @@ public java.lang.Integer getSubstationBusID() {
 /**
  * retrieve method comment.
  */
+@Override
 public void retrieve() throws java.sql.SQLException 
 {
 	/* WE DO NOT RETRIEVE ANY VALUES WITH THIS OBJECT */
@@ -235,6 +238,7 @@ public void setSubstationBusID(java.lang.Integer newSubstationBusID) {
 /**
  * update method comment.
  */
+@Override
 public void update() throws java.sql.SQLException 
 {
 	/* WE DO NOT UPDATE ANY VALUES WITH THIS OBJECT */

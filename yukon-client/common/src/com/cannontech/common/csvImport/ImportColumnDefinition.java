@@ -127,8 +127,9 @@ public abstract class ImportColumnDefinition {
             try {
                 //attempt to invoke the .values() method on the column's type class
                 //this should always work, since we already know it's an enum
-                Object[] enumValues =  (Object[]) typeClass.getMethod("values", null).invoke(null, new Object[0]);
-                for(Object enumValue : enumValues) {
+                Object[] enumValues =
+                    (Object[]) typeClass.getMethod("values", (Class<?>[]) null).invoke(null, new Object[0]);
+                for (Object enumValue : enumValues) {
                     validValues.add(enumValue.toString());
                 }
             } catch(NoSuchMethodException nsme) {

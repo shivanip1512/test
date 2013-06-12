@@ -163,7 +163,8 @@ public GregorianCalendar getNextImportTime() {
 
 public void start() {
 	Runnable runner = new Runnable() {
-		public void run() {
+		@Override
+        public void run() {
             log.info("Bulk MCT Importer Version " + VersionTools.getYUKON_VERSION() + " starting.");
 			
 			figureNextImportTime();
@@ -520,7 +521,7 @@ public void runImport(List<ImportData> imps) {
 			MultiDBPersistent pointsToAdd = new MultiDBPersistent();
 
 			//grab the points we need off the template
-			Vector<PointBase> points = DBFuncs.getPointsForPAO(templateID);
+			List<PointBase> points = DBFuncs.getPointsForPAO(templateID);
 			for (int i = 0; i < points.size(); i++) {
 				points.get(i).setPointID(YukonSpringHook.getBean(PointDao.class).getNextPointId());
 				points.get(i).getPoint().setPaoID(deviceID);
@@ -715,7 +716,8 @@ private void porterWorker() {
 		getPorterConnection();
 		
 		Runnable runner = new Runnable() {
-			public void run() {
+			@Override
+            public void run() {
                 log.info("Porter submission thread created.");
                 
                 while(true) {
@@ -801,6 +803,7 @@ public void update(Observable o, Object arg)
  * from Porter.  This will be used when trying to locate meters on some or all routes, as well as
  * to determine whether meter interval sends are successful.
  */
+@Override
 public void messageReceived(MessageEvent e) {
     BaseMessage in = e.getMessage();        
     
@@ -936,7 +939,7 @@ private void handleSuccessfulLocate(ReturnMessage returnMsg) {
     try {
         porterRequest = new RequestMessage( retMCT.getPAObjectID().intValue(), INTERVAL_COMMAND, currentMessageID );
         log.info("Successful location of device " + returnMsg.getDeviceId() + " on route " + routeName +" ("+ routeID+").");
-        retMCT = (MCT400SeriesBase) Transaction.createTransaction(TransactionType.RETRIEVE, retMCT).execute();
+        retMCT = Transaction.createTransaction(TransactionType.RETRIEVE, retMCT).execute();
         if(routeID != null)
             retMCT.getDeviceRoutes().setRouteID(routeID);
         else

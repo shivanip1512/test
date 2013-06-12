@@ -43,6 +43,7 @@ public class CCSubstationSubBusList extends com.cannontech.database.db.DBPersist
     /**
      * add method comment.
      */
+    @Override
     public void add() throws java.sql.SQLException {
     	Object[] addValues = { getSubstationID(), getSubstationBusID(), getDisplayOrder() };
     	add( TABLE_NAME, addValues );
@@ -51,6 +52,7 @@ public class CCSubstationSubBusList extends com.cannontech.database.db.DBPersist
     /**
      * delete method comment.
      */
+    @Override
     public void delete() throws java.sql.SQLException {
     	Object[] values = { getSubstationID(), getSubstationBusID() };
     	delete( TABLE_NAME, CONSTRAINT_COLUMNS, values );
@@ -99,6 +101,7 @@ public class CCSubstationSubBusList extends com.cannontech.database.db.DBPersist
     	String sql = "SELECT substationId, substationBusId, displayOrder FROM " + TABLE_NAME + " WHERE substationId = ? ORDER BY displayOrder";
         subBusesForSubstationList = new ArrayList<CCSubstationSubBusList>();
         jdbcOps.query(sql, new Integer[] {substationId}, new RowCallbackHandler() {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 subBusesForSubstationList.add( new CCSubstationSubBusList( rs.getInt("substationId"), rs.getInt("substationBusId"), rs.getInt("displayOrder")));
             }
@@ -114,7 +117,7 @@ public class CCSubstationSubBusList extends com.cannontech.database.db.DBPersist
         Integer substationId = -1;
         String sql = "SELECT DISTINCT substationId FROM " + TABLE_NAME + " WHERE substationBusId = ? ";
         try {
-            substationId = jdbcOps.queryForInt(sql, new Integer[] {subBusId});
+            substationId = jdbcOps.queryForInt(sql, subBusId);
         }catch (EmptyResultDataAccessException e) {
             return -1;
         }
@@ -151,6 +154,7 @@ public class CCSubstationSubBusList extends com.cannontech.database.db.DBPersist
     /**
      * retrieve method comment.
      */
+    @Override
     public void retrieve() throws java.sql.SQLException {
     }
     
@@ -184,6 +188,7 @@ public class CCSubstationSubBusList extends com.cannontech.database.db.DBPersist
     /**
      * update method comment.
      */
+    @Override
     public void update() throws java.sql.SQLException {
     }
 }

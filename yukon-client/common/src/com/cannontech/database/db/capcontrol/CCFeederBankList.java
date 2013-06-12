@@ -43,6 +43,7 @@ public CCFeederBankList(Integer feedID, Integer devID, Float order, Float clsOrd
 /**
  * add method comment.
  */
+@Override
 public void add() throws java.sql.SQLException 
 {
 	Object[] addValues = { getFeederID(), getDeviceID(), getControlOrder(), getCloseOrder(), getTripOrder() };
@@ -52,6 +53,7 @@ public void add() throws java.sql.SQLException
 /**
  * delete method comment.
  */
+@Override
 public void delete() throws java.sql.SQLException 
 {
 	Object[] values = { getFeederID(), getDeviceID() };
@@ -117,7 +119,7 @@ public static Integer getFeederIdForCapBank( int paoId ){
                  " WHERE DeviceId = ? ";
     Integer feederId = -1;
     try {
-        feederId = jdbcOps.queryForInt(sql, new Integer[] {paoId});
+        feederId = jdbcOps.queryForInt(sql, paoId);
     } catch (EmptyResultDataAccessException e) {
         return -1;
     }
@@ -204,6 +206,7 @@ public java.lang.Integer getFeederID() {
 /**
  * retrieve method comment.
  */
+@Override
 public void retrieve() throws java.sql.SQLException 
 {
 	/* WE DO NOT RETRIEVE ANY VALUES WITH THIS OBJECT */
@@ -234,6 +237,7 @@ public void setFeederID(java.lang.Integer newFeederID) {
 /**
  * update method comment.
  */
+@Override
 public void update() throws java.sql.SQLException 
 {
 	/* WE DO NOT UPDATE ANY VALUES WITH THIS OBJECT */

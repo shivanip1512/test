@@ -10,14 +10,6 @@ import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.tdc.template.TemplateDisplay;
 
 public class DataModelUtils {
-
-
-
-    public DataModelUtils() {
-        super();
-
-    }
-
     public static Integer getDisplayNum(String dispName) {
         String sqlStmt = "SELECT DisplayNum FROM Display WHERE ";
         sqlStmt += "Name like ?";
@@ -41,7 +33,7 @@ public class DataModelUtils {
         String sqlStmt = "insert into displaycolumns " + "select ?, title, typenum, ordering, width  from templatecolumns where templatenum = ?";
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
         try{
-            yukonTemplate.update(sqlStmt, new Integer[] { displayNum, templateNum });
+            yukonTemplate.update(sqlStmt, displayNum, templateNum);
         }
         catch (Exception e)
         {
@@ -52,7 +44,7 @@ public class DataModelUtils {
     public static void deleteDisplayColumns(Integer dispNum) {
         String sqlStmt = "DELETE FROM DisplayColumns where DisplayNum = ?";
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        yukonTemplate.update(sqlStmt, new Integer[] { dispNum });
+        yukonTemplate.update(sqlStmt, dispNum);
     }
 
     public static int getDisplayTemplate(long currentDisplayNumber) {
@@ -61,13 +53,10 @@ public class DataModelUtils {
         sqlStmt += "DisplayNum = ?";
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
         try {
-
-            templateNum = yukonTemplate.queryForInt(sqlStmt,
-                                                    new Integer[] { (Integer.parseInt("" + currentDisplayNumber)) });
+            templateNum = yukonTemplate.queryForInt(sqlStmt, (Integer.parseInt("" + currentDisplayNumber)));
         } catch (IncorrectResultSizeDataAccessException e) {
             templateNum = -1;
         }
         return templateNum;
     }
-
 }

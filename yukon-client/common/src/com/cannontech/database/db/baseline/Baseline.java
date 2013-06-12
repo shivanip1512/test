@@ -1,12 +1,8 @@
 package com.cannontech.database.db.baseline;
 
-import java.util.List;
-
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.SqlStatement;
 import com.cannontech.database.SqlUtils;
 
 /**
@@ -56,6 +52,7 @@ public Baseline(Integer baseID, String name, Integer day, Integer pWindow, Integ
 }
 
 
+@Override
 public void add() throws java.sql.SQLException
 {
 	Object addValues[] = 
@@ -70,6 +67,7 @@ public void add() throws java.sql.SQLException
 }
 
 
+@Override
 public void delete() throws java.sql.SQLException
 {
 	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getBaselineID());
@@ -81,8 +79,6 @@ public void delete() throws java.sql.SQLException
  */
 public static boolean deleteAllBaselines(Integer blineID, java.sql.Connection conn)
 {
-	com.cannontech.database.SqlStatement stmt = null;
-
 	if( conn == null )
 		throw new IllegalArgumentException("Database connection should not be (null)");
 
@@ -162,6 +158,7 @@ public java.lang.Integer getHolidayScheduleId() {
 	return holidayScheduleId;
 }
 
+@Override
 public void retrieve() 
 {
 	Integer constraintValues[] = { getBaselineID() };	
@@ -216,6 +213,7 @@ public void setHolidayScheduleId(java.lang.Integer holidayScheduleId) {
 	this.holidayScheduleId = holidayScheduleId;
 }
 
+@Override
 public void update() 
 {
 	Object setValues[] =
@@ -241,7 +239,7 @@ public void update()
 public final static boolean usesHolidaySchedule(int holSchID) throws java.sql.SQLException {
     JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
     String sql = "select count(*) from " + TABLE_NAME + " where holidayscheduleid = ?";
-    int count = jdbcOps.queryForInt(sql, new Integer[] {holSchID});
+    int count = jdbcOps.queryForInt(sql, holSchID);
     return count > 0; 
 }
 }

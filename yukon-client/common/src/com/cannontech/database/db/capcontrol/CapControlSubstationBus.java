@@ -1,7 +1,5 @@
 package com.cannontech.database.db.capcontrol;
 
-import java.sql.SQLException;
-
 import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.clientutils.CTILogger;
@@ -58,6 +56,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     /**
      * add method comment.
      */
+    @Override
     public void add() throws java.sql.SQLException {
         setAltSubPAOId(getSubstationBusID());
     	Object[] addValues = {
@@ -73,6 +72,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     /**
      * delete method comment.
      */
+    @Override
     public void delete() throws java.sql.SQLException {
     	handleAltSubIdOnDelete (getSubstationBusID());
     	handleSubStationAssignmentDelete(getSubstationBusID());
@@ -118,6 +118,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     /**
      * retrieve method comment.
      */
+    @Override
     public void retrieve() throws java.sql.SQLException {
     	Object constraintValues[] = { getSubstationBusID()};
     	Object results[] = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
@@ -182,6 +183,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     /**
      * update method comment.
      */
+    @Override
     public void update() throws java.sql.SQLException {
     	Object setValues[]= {
     		getCurrentVarLoadPointID(), getCurrentWattLoadPointID(), getMapLocationID(),
@@ -305,7 +307,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     			    	"dualbusenabled = 'Y'			 ";	   
     
     	JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-    	yukonTemplate.update(query, new Integer[]{subBusDeletedId});
+    	yukonTemplate.update(query, subBusDeletedId);
     }
     
     private void handleSubStationAssignmentDelete (Integer subBusDeletedId) {
@@ -313,7 +315,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
                         "where substationbusid = ? ";    
     
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        yukonTemplate.update(query, new Integer[]{subBusDeletedId});
+        yukonTemplate.update(query, subBusDeletedId);
     }
 
     public Integer getPhaseB() {

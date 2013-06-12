@@ -29,28 +29,22 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.importer.ImportPendingComm;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yimp.importer.BulkImporter;
-import com.cannontech.yukon.IServerConnection;
 
-/**
- * @author jdayton
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 public class DBFuncs {
     
-    private static final RowMapper routeNameRowMapper = new RowMapper() {
-        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+    private static final RowMapper<String> routeNameRowMapper = new RowMapper<String>() {
+        @Override
+        public String mapRow(ResultSet rs, int rowNum) throws SQLException {
             String name = rs.getString("PaoName").trim();
             return name;
         };
     };
     
-    private static final RowMapper routeIDRowMapper = new RowMapper() {
-        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+    private static final RowMapper<Integer> routeIDRowMapper = new RowMapper<Integer>() {
+        @Override
+        public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
             Integer routeID = rs.getInt("RouteID");
             return routeID;
         };
@@ -67,7 +61,7 @@ public class DBFuncs {
             " AND PAOCLASS = 'ROUTE'";
             
             JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-            routeID = jdbcOps.queryForInt(stmt, new String[] {name});
+            routeID = jdbcOps.queryForInt(stmt, name);
             return routeID;
         } catch (IncorrectResultSizeDataAccessException e) {
             return routeID;
@@ -88,10 +82,10 @@ public class DBFuncs {
         
         try {
             JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-            id = jdbcOps.queryForInt(stmt, new String[] {name});
+            id = jdbcOps.queryForInt(stmt, name);
             if(id != null && id > 0) {
                 template410.setDeviceID(id);
-                template410 = (MCT400SeriesBase) Transaction.createTransaction(Transaction.RETRIEVE, template410).execute();
+                template410 = Transaction.createTransaction(Transaction.RETRIEVE, template410).execute();
             }
         }
         catch( Exception e ) {
@@ -108,7 +102,7 @@ public class DBFuncs {
 		try {
 		    Integer paoID = 0;
 		    JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-		    paoID = jdbcOps.queryForInt(stmt, new String[] {name});
+		    paoID = jdbcOps.queryForInt(stmt, name);
             return paoID > 0;
         } 
         catch (IncorrectResultSizeDataAccessException e) {
@@ -135,20 +129,19 @@ public class DBFuncs {
         return returnDeviceID;
     }
 	
-	public static Vector getPointsForPAO( Integer paoID ) {
+	public static List<PointBase> getPointsForPAO( Integer paoID ) {
         List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(paoID);
 
-		Vector daPoints = new Vector(points.size());
-		
+		List<PointBase> daPoints = new Vector<>(points.size());
+
 		PointBase pointBase = null;
 		for (LitePoint point: points) {
 			pointBase = (PointBase) LiteFactory.createDBPersistent(point);
-			
+
 			try {
-				com.cannontech.database.Transaction t =
-					com.cannontech.database.Transaction.createTransaction(com.cannontech.database.Transaction.RETRIEVE, pointBase);
+				Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, pointBase);
 				t.execute();
-				daPoints.addElement(pointBase);
+				daPoints.add(pointBase);
 			}
 			catch (com.cannontech.database.TransactionException e) {
 				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
@@ -159,8 +152,9 @@ public class DBFuncs {
 	}
 	
 	public static boolean writeLastImportTime(Date lastImport) {
-		String stmt = "UPDATE DYNAMICIMPORTSTATUS SET LASTIMPORTTIME = '" + lastImport.toString() + "' WHERE ENTRY = 'SYSTEMVALUE'";
-		
+		String stmt = "UPDATE DYNAMICIMPORTSTATUS SET LASTIMPORTTIME = '" + lastImport.toString()
+		        + "' WHERE ENTRY = 'SYSTEMVALUE'";
+
 		return executeSimpleImportStatusSQL(stmt);
 	}
 	
@@ -205,7 +199,7 @@ public class DBFuncs {
         JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
         
         try {
-            forceImport = (String) jdbcOps.queryForObject(stmt, String.class);
+            forceImport = jdbcOps.queryForObject(stmt, String.class);
             return forceImport.compareTo("Y") == 0;
         }
         catch (DataAccessException e) {
@@ -244,7 +238,7 @@ public class DBFuncs {
         ImportPendingComm pc = new ImportPendingComm();
         pc.setPendingID(deviceID);
         try {
-            pc = (ImportPendingComm)Transaction.createTransaction(Transaction.RETRIEVE, pc).execute();
+            pc = Transaction.createTransaction(Transaction.RETRIEVE, pc).execute();
             ImportFail failure = new ImportFail();
             failure.setAddress(pc.getAddress());
             failure.setName( pc.getName() );
@@ -272,7 +266,7 @@ public class DBFuncs {
         pc.setPendingID(devID);
         
         try {
-            pc = (ImportPendingComm)Transaction.createTransaction(Transaction.RETRIEVE, pc).execute();
+            pc = Transaction.createTransaction(Transaction.RETRIEVE, pc).execute();
             ImportFail failure = new ImportFail();
             failure.setAddress(pc.getAddress());
             Transaction.createTransaction(Transaction.DELETE, pc).execute();
