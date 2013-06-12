@@ -90,8 +90,8 @@ public:
    virtual void  clientShutdown(CtiServer::ptr_type CM);
    virtual void  shutdown();
 
-   int   executeRequest(CtiRequestMsg*);
-   int   executeMulti(CtiMultiMsg*);
+   int   executeRequest(const CtiRequestMsg*);
+   int   executeMulti(const CtiMultiMsg*);
    int   execute();
    void  mainThread();
    void  connectionThread();
@@ -109,9 +109,9 @@ public:
    void putQueue(CtiMessage *Msg);
 
    bool isBroken() const { return _broken; }
-   void indicateControlOnSubGroups(CtiDeviceSPtr &Dev, CtiRequestMsg *&pReq, CtiCommandParser &parse, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList);
+   void indicateControlOnSubGroups(CtiDeviceSPtr &Dev, CtiCommandParser &parse, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList);
 
-   int reportClientRequests(CtiDeviceSPtr &Dev, const CtiCommandParser &parse, const CtiRequestMsg * pReqOrig, const CtiRequestMsg *pExecReq, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList);
+   int reportClientRequests(CtiDeviceSPtr &Dev, const CtiCommandParser &parse, const std::string &requestingUser, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList);
 
 };
 

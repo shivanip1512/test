@@ -311,26 +311,6 @@ enum CtiPortDelay_t
 };
 
 
-/*
- *  The types below CANNOT EVER overlap the TYPE_ defines found in devicetypes.h
- *  BREAKAGE MAY OCCUR.  6000 to 6100 have been reserved by comment in that file.
- */
-enum CtiPort_t
-{
-    PortTypeLocalDirect = 6000,
-    PortTypeLocalDialup,
-    PortTypeTServerDirect,
-    PortTypeTServerDialup,
-    PortTypeLocalDialBack,
-    PortTypeTServerDialBack,
-    PortTypePoolDialout,
-    PortTypeTcp,
-    PortTypeUdp,
-
-    PortTypeInvalid
-};
-
-
 enum CtiAmpUsage_t
 {
     RouteAmpUndefined = 0,

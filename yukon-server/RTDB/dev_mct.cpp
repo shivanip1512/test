@@ -3823,7 +3823,6 @@ void MctDevice::setConfigData( const string &configName, int configType, const s
         case TYPEMCT242:
         case TYPEMCT248:
         case TYPEMCT250:
-        case TYPEMCT260:
         {
             if( configType == Config2XX )
             {

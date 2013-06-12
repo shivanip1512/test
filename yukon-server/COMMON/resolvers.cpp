@@ -9,6 +9,7 @@
 #include "utility.h"
 
 #include <boost/assign.hpp>
+#include <boost/algorithm/string.hpp>
 
 using std::transform;
 using std::endl;
@@ -290,192 +291,193 @@ INT resolvePAOCategory(const string& _category)
 
 typedef std::map<string, int> device_lookup_t;
 
-device_lookup_t init_device_lookups()
-{
-    device_lookup_t device_types;
-
-    using std::make_pair;
-
+static const device_lookup_t device_lookups = boost::assign::map_list_of<string, int>
     //  --- GridSmart ---
-    device_types.insert(make_pair("capacitor bank neutral monitor",
-                                                        TYPE_NEUTRAL_MONITOR));
-    device_types.insert(make_pair("faulted circuit indicator",
-                                                        TYPE_FCI));
+    ("capacitor bank neutral monitor",  TYPE_NEUTRAL_MONITOR)
+    ("faulted circuit indicator",       TYPE_FCI)
 
     //  --- Capacitor Control ---
-    device_types.insert(make_pair("cap bank",           TYPECAPBANK));
-    device_types.insert(make_pair("cbc 6510",           TYPECBC6510));
-    device_types.insert(make_pair("cbc 7010",           TYPECBC7010));
-    device_types.insert(make_pair("cbc 7011",           TYPECBC7010));
-    device_types.insert(make_pair("cbc 7012",           TYPECBC7010));
-    device_types.insert(make_pair("cbc 7020",           TYPECBC7020));
-    device_types.insert(make_pair("cbc 7022",           TYPECBC7020));
-    device_types.insert(make_pair("cbc 7023",           TYPECBC7020));
-    device_types.insert(make_pair("cbc 7024",           TYPECBC7020));
-    device_types.insert(make_pair("cbc 7030",           TYPECBC7020));
-    device_types.insert(make_pair("cbc 8020",           TYPECBC8020));
-    device_types.insert(make_pair("cbc 8024",           TYPECBC8020));
-    device_types.insert(make_pair("cbc dnp",            TYPECBCDNP));
-    device_types.insert(make_pair("cbc expresscom",     TYPEEXPRESSCOMCBC));
-    device_types.insert(make_pair("cbc fp-2800",        TYPEFISHERPCBC));
-    device_types.insert(make_pair("cbc versacom",       TYPEVERSACOMCBC));
-    device_types.insert(make_pair("load tap changer",   TYPELTC));
+    ("cap bank",           TYPECAPBANK)
+    ("cbc 6510",           TYPECBC6510)
+    ("cbc 7010",           TYPECBC7010)
+    ("cbc 7011",           TYPECBC7010)
+    ("cbc 7012",           TYPECBC7010)
+    ("cbc 7020",           TYPECBC7020)
+    ("cbc 7022",           TYPECBC7020)
+    ("cbc 7023",           TYPECBC7020)
+    ("cbc 7024",           TYPECBC7020)
+    ("cbc 7030",           TYPECBC7020)
+    ("cbc 8020",           TYPECBC8020)
+    ("cbc 8024",           TYPECBC8020)
+    ("cbc dnp",            TYPECBCDNP)
+    ("cbc expresscom",     TYPEEXPRESSCOMCBC)
+    ("cbc fp-2800",        TYPEFISHERPCBC)
+    ("cbc versacom",       TYPEVERSACOMCBC)
+    ("load tap changer",   TYPELTC)
 
     //  --- Cooper PLC ---
-    device_types.insert(make_pair("ccu-700",            TYPE_CCU700));
-    device_types.insert(make_pair("ccu-710a",           TYPE_CCU710));
-    device_types.insert(make_pair("ccu-711",            TYPE_CCU711));
-    device_types.insert(make_pair("ccu-721",            TYPE_CCU721));
-    device_types.insert(make_pair("lcr-3102",           TYPELCR3102));
-    device_types.insert(make_pair("lmt-2",              TYPELMT2));
-    device_types.insert(make_pair("mct broadcast",      TYPEMCTBCAST));
-    device_types.insert(make_pair("mct-210",            TYPEMCT210));
-    device_types.insert(make_pair("mct-212",            TYPEMCT212));
-    device_types.insert(make_pair("mct-213",            TYPEMCT213));
-    device_types.insert(make_pair("mct-224",            TYPEMCT224));
-    device_types.insert(make_pair("mct-226",            TYPEMCT226));
-    device_types.insert(make_pair("mct-240",            TYPEMCT240));
-    device_types.insert(make_pair("mct-242",            TYPEMCT242));
-    device_types.insert(make_pair("mct-248",            TYPEMCT248));
-    device_types.insert(make_pair("mct-250",            TYPEMCT250));
-    device_types.insert(make_pair("mct-310",            TYPEMCT310));
-    device_types.insert(make_pair("mct-310ct",          TYPEMCT310));
-    device_types.insert(make_pair("mct-310id",          TYPEMCT310ID));
-    device_types.insert(make_pair("mct-310idl",         TYPEMCT310IDL));
-    device_types.insert(make_pair("mct-310il",          TYPEMCT310IL));
-    device_types.insert(make_pair("mct-318",            TYPEMCT318));
-    device_types.insert(make_pair("mct-318l",           TYPEMCT318L));
-    device_types.insert(make_pair("mct-360",            TYPEMCT360));
-    device_types.insert(make_pair("mct-370",            TYPEMCT370));
-    device_types.insert(make_pair("mct-410cl",          TYPEMCT410CL));
-    device_types.insert(make_pair("mct-410fl",          TYPEMCT410FL));
-    device_types.insert(make_pair("mct-410gl",          TYPEMCT410GL));
-    device_types.insert(make_pair("mct-410il",          TYPEMCT410IL));
-    device_types.insert(make_pair("mct-420cl",          TYPEMCT420CL));
-    device_types.insert(make_pair("mct-420cd",          TYPEMCT420CD));
-    device_types.insert(make_pair("mct-420fl",          TYPEMCT420FL));
-    device_types.insert(make_pair("mct-420fd",          TYPEMCT420FD));
-    device_types.insert(make_pair("mct-430a",           TYPEMCT430A));
-    device_types.insert(make_pair("mct-430a3",          TYPEMCT430A3));
-    device_types.insert(make_pair("mct-430s4",          TYPEMCT430S4));
-    device_types.insert(make_pair("mct-430sl",          TYPEMCT430SL));
-    device_types.insert(make_pair("mct-470",            TYPEMCT470));
-    device_types.insert(make_pair("mct-440-2131b",      TYPEMCT440_2131B));
-    device_types.insert(make_pair("mct-440-2132b",      TYPEMCT440_2132B));
-    device_types.insert(make_pair("mct-440-2133b",      TYPEMCT440_2133B));
-    device_types.insert(make_pair("repeater 800",       TYPE_REPEATER800));
-    device_types.insert(make_pair("repeater 801",       TYPE_REPEATER800));
-    device_types.insert(make_pair("repeater 850",       TYPE_REPEATER850));
-    device_types.insert(make_pair("repeater 902",       TYPE_REPEATER900));
-    device_types.insert(make_pair("repeater 921",       TYPE_REPEATER900));
-    device_types.insert(make_pair("repeater",           TYPE_REPEATER900));
+    ("ccu-700",            TYPE_CCU700)
+    ("ccu-710a",           TYPE_CCU710)
+    ("ccu-711",            TYPE_CCU711)
+    ("ccu-721",            TYPE_CCU721)
+    ("lcr-3102",           TYPELCR3102)
+    ("lmt-2",              TYPELMT2)
+    ("mct broadcast",      TYPEMCTBCAST)
+    ("mct-210",            TYPEMCT210)
+    ("mct-212",            TYPEMCT212)
+    ("mct-213",            TYPEMCT213)
+    ("mct-224",            TYPEMCT224)
+    ("mct-226",            TYPEMCT226)
+    ("mct-240",            TYPEMCT240)
+    ("mct-242",            TYPEMCT242)
+    ("mct-248",            TYPEMCT248)
+    ("mct-250",            TYPEMCT250)
+    ("mct-310",            TYPEMCT310)
+    ("mct-310ct",          TYPEMCT310)
+    ("mct-310id",          TYPEMCT310ID)
+    ("mct-310idl",         TYPEMCT310IDL)
+    ("mct-310il",          TYPEMCT310IL)
+    ("mct-318",            TYPEMCT318)
+    ("mct-318l",           TYPEMCT318L)
+    ("mct-360",            TYPEMCT360)
+    ("mct-370",            TYPEMCT370)
+    ("mct-410cl",          TYPEMCT410CL)
+    ("mct-410fl",          TYPEMCT410FL)
+    ("mct-410gl",          TYPEMCT410GL)
+    ("mct-410il",          TYPEMCT410IL)
+    ("mct-420cl",          TYPEMCT420CL)
+    ("mct-420cd",          TYPEMCT420CD)
+    ("mct-420fl",          TYPEMCT420FL)
+    ("mct-420fd",          TYPEMCT420FD)
+    ("mct-430a",           TYPEMCT430A)
+    ("mct-430a3",          TYPEMCT430A3)
+    ("mct-430s4",          TYPEMCT430S4)
+    ("mct-430sl",          TYPEMCT430SL)
+    ("mct-470",            TYPEMCT470)
+    ("mct-440-2131b",      TYPEMCT440_2131B)
+    ("mct-440-2132b",      TYPEMCT440_2132B)
+    ("mct-440-2133b",      TYPEMCT440_2133B)
+    ("repeater 800",       TYPE_REPEATER800)
+    ("repeater 801",       TYPE_REPEATER800)
+    ("repeater 850",       TYPE_REPEATER850)
+    ("repeater 902",       TYPE_REPEATER900)
+    ("repeater 921",       TYPE_REPEATER900)
+    ("repeater",           TYPE_REPEATER900)
 
     //  --- Receivers ---
-    device_types.insert(make_pair("fmu",                TYPE_FMU));
-    device_types.insert(make_pair("page receiver",      TYPE_PAGING_RECEIVER));
+    ("fmu",                TYPE_FMU)
+    ("page receiver",      TYPE_PAGING_RECEIVER)
 
     //  --- RF mesh meters ---
-    device_types.insert(make_pair("rfn-410fd",          TYPERFN410FD));
-    device_types.insert(make_pair("rfn-410fl",          TYPERFN410FL));
-    device_types.insert(make_pair("rfn-410fx",          TYPERFN410FX));
-    device_types.insert(make_pair("rfn-430a3",          TYPERFN430A3));
-    device_types.insert(make_pair("rfn-430kv",          TYPERFN430KV));
-    device_types.insert(make_pair("rfn-420elo",         TYPERFN420ELO));
-    device_types.insert(make_pair("rfn-430elo",         TYPERFN430ELO));
+    ("rfn-410fl",          TYPE_RFN410FL)
+    ("rfn-410fx",          TYPE_RFN410FX)
+    ("rfn-410fd",          TYPE_RFN410FD)
+
+    ("rfn-420fl",          TYPE_RFN420FL)
+    ("rfn-420fx",          TYPE_RFN420FX)
+    ("rfn-420fd",          TYPE_RFN420FD)
+
+    ("rfn-420frx",         TYPE_RFN420FRX)
+    ("rfn-420frd",         TYPE_RFN420FRD)
+
+    ("rfn-410cl",          TYPE_RFN410CL)
+    ("rfn-420cl",          TYPE_RFN420CL)
+    ("rfn-420cd",          TYPE_RFN420CD)
+
+    ("rfn-430a3d",         TYPE_RFN430A3D)
+    ("rfn-430a3t",         TYPE_RFN430A3T)
+    ("rfn-430a3k",         TYPE_RFN430A3K)
+    ("rfn-430a3r",         TYPE_RFN430A3R)
+
+    ("rfn-430kv",          TYPE_RFN430KV)
 
     //  --- RTU devices ---
-    device_types.insert(make_pair("rtu-dart",           TYPE_DARTRTU));
-    device_types.insert(make_pair("rtu-dnp",            TYPE_DNPRTU));
-    device_types.insert(make_pair("rtu-ilex",           TYPE_ILEXRTU));
-    device_types.insert(make_pair("rtu-lmi",            TYPE_SERIESVLMIRTU));
-    device_types.insert(make_pair("rtu-modbus",         TYPE_MODBUS));
-    device_types.insert(make_pair("rtu-ses92",          TYPE_SES92RTU));
-    device_types.insert(make_pair("rtu-welco",          TYPE_WELCORTU));
+    ("rtu-dart",           TYPE_DARTRTU)
+    ("rtu-dnp",            TYPE_DNPRTU)
+    ("rtu-ilex",           TYPE_ILEXRTU)
+    ("rtu-lmi",            TYPE_SERIESVLMIRTU)
+    ("rtu-modbus",         TYPE_MODBUS)
+    ("rtu-ses92",          TYPE_SES92RTU)
+    ("rtu-welco",          TYPE_WELCORTU)
 
     //  --- GRE (Great River Energy) transmitters ---
-    device_types.insert(make_pair("rtc",                TYPE_RTC));
-    device_types.insert(make_pair("rtm",                TYPE_RTM));
+    ("rtc",                TYPE_RTC)
+    ("rtm",                TYPE_RTM)
 
     //  --- GRE (Great River Energy) Load Management groups ---
-    device_types.insert(make_pair("golay group",        TYPE_LMGROUP_GOLAY));
-    device_types.insert(make_pair("sa-105 group",       TYPE_LMGROUP_SA105));
-    device_types.insert(make_pair("sa-205 group",       TYPE_LMGROUP_SA205));
-    device_types.insert(make_pair("sa-305 group",       TYPE_LMGROUP_SA305));
-    device_types.insert(make_pair("sa-digital group",   TYPE_LMGROUP_SADIGITAL));
+    ("golay group",        TYPE_LMGROUP_GOLAY)
+    ("sa-105 group",       TYPE_LMGROUP_SA105)
+    ("sa-205 group",       TYPE_LMGROUP_SA205)
+    ("sa-305 group",       TYPE_LMGROUP_SA305)
+    ("sa-digital group",   TYPE_LMGROUP_SADIGITAL)
 
     //  --- Load Management ---
-    device_types.insert(make_pair("ci customer",        TYPE_CI_CUSTOMER));
-    device_types.insert(make_pair("lm control area",    TYPE_LM_CONTROL_AREA));
-    device_types.insert(make_pair("lm curtail program", TYPE_LMPROGRAM_CURTAILMENT));
-    device_types.insert(make_pair("lm direct program",  TYPE_LMPROGRAM_DIRECT));
-    device_types.insert(make_pair("lm energy exchange", TYPE_LMPROGRAM_ENERGYEXCHANGE));
-    device_types.insert(make_pair("lm sep program",     TYPE_LMPROGRAM_DIRECT));
-    device_types.insert(make_pair("digi sep group",     TYPE_LMGROUP_DIGI_SEP));
-    device_types.insert(make_pair("emetcon group",      TYPE_LMGROUP_EMETCON));
-    device_types.insert(make_pair("expresscom group",   TYPE_LMGROUP_EXPRESSCOM));
-    device_types.insert(make_pair("rfn expresscom group",TYPE_LMGROUP_RFN_EXPRESSCOM));
-    device_types.insert(make_pair("mct group",          TYPE_LMGROUP_MCT));
-    device_types.insert(make_pair("point group",        TYPE_LMGROUP_POINT));
-    device_types.insert(make_pair("ripple group",       TYPE_LMGROUP_RIPPLE));
-    device_types.insert(make_pair("versacom group",     TYPE_LMGROUP_VERSACOM));
+    ("ci customer",        TYPE_CI_CUSTOMER)
+    ("lm control area",    TYPE_LM_CONTROL_AREA)
+    ("lm curtail program", TYPE_LMPROGRAM_CURTAILMENT)
+    ("lm direct program",  TYPE_LMPROGRAM_DIRECT)
+    ("lm energy exchange", TYPE_LMPROGRAM_ENERGYEXCHANGE)
+    ("lm sep program",     TYPE_LMPROGRAM_DIRECT)
+    ("digi sep group",     TYPE_LMGROUP_DIGI_SEP)
+    ("emetcon group",      TYPE_LMGROUP_EMETCON)
+    ("expresscom group",   TYPE_LMGROUP_EXPRESSCOM)
+    ("rfn expresscom group",TYPE_LMGROUP_RFN_EXPRESSCOM)
+    ("mct group",          TYPE_LMGROUP_MCT)
+    ("point group",        TYPE_LMGROUP_POINT)
+    ("ripple group",       TYPE_LMGROUP_RIPPLE)
+    ("versacom group",     TYPE_LMGROUP_VERSACOM)
 
     //  --- System ---
-    device_types.insert(make_pair("macro group",        TYPE_MACRO));
-    device_types.insert(make_pair("script",             0));
-    device_types.insert(make_pair("simple",             0));
-    device_types.insert(make_pair("system",             TYPE_SYSTEM));
-    device_types.insert(make_pair("virtual system",     TYPE_VIRTUAL_SYSTEM));
+    ("macro group",        TYPE_MACRO)
+    ("script",             0)
+    ("simple",             0)
+    ("system",             TYPE_SYSTEM)
+    ("virtual system",     TYPE_VIRTUAL_SYSTEM)
 
     //  --- Transmitters ---
-    device_types.insert(make_pair("lcu-415",            TYPE_LCU415));
-    device_types.insert(make_pair("lcu-eastriver",      TYPE_LCU415ER));
-    device_types.insert(make_pair("lcu-lg",             TYPE_LCU415LG));
-    device_types.insert(make_pair("lcu-t3026",          TYPE_LCUT3026));
-    device_types.insert(make_pair("rds terminal",       TYPE_RDS));
-    device_types.insert(make_pair("snpp terminal",      TYPE_SNPP));
-    device_types.insert(make_pair("tap terminal",       TYPE_TAPTERM));
-    device_types.insert(make_pair("tcu-5000",           TYPE_TCU5000));
-    device_types.insert(make_pair("tcu-5500",           TYPE_TCU5500));
-    device_types.insert(make_pair("tnpp terminal",      TYPE_TNPP));
-    device_types.insert(make_pair("wctp terminal",      TYPE_WCTP));
+    ("lcu-415",            TYPE_LCU415)
+    ("lcu-eastriver",      TYPE_LCU415ER)
+    ("lcu-lg",             TYPE_LCU415LG)
+    ("lcu-t3026",          TYPE_LCUT3026)
+    ("rds terminal",       TYPE_RDS)
+    ("snpp terminal",      TYPE_SNPP)
+    ("tap terminal",       TYPE_TAPTERM)
+    ("tcu-5000",           TYPE_TCU5000)
+    ("tcu-5500",           TYPE_TCU5500)
+    ("tnpp terminal",      TYPE_TNPP)
+    ("wctp terminal",      TYPE_WCTP)
 
     //  --- IEDs and electronic meters ---
-    device_types.insert(make_pair("alpha a1",           TYPE_ALPHA_A1));
-    device_types.insert(make_pair("alpha a3",           TYPE_ALPHA_A3));
-    device_types.insert(make_pair("alpha power plus",   TYPE_ALPHA_PPLUS));
-    device_types.insert(make_pair("davis weather",      TYPE_DAVIS));
-    device_types.insert(make_pair("dct-501",            TYPEDCT501));
-    device_types.insert(make_pair("dr-87",              TYPE_DR87));
-    device_types.insert(make_pair("focus",              TYPE_FOCUS));
-    device_types.insert(make_pair("ipc-410fl",          TYPE_IPC_410FL));
-    device_types.insert(make_pair("ipc-420fd",          TYPE_IPC_420FD));
-    device_types.insert(make_pair("ipc-430s4e",         TYPE_IPC_430S4E));
-    device_types.insert(make_pair("ipc-430sl",          TYPE_IPC_430SL));
-    device_types.insert(make_pair("fulcrum",            TYPE_FULCRUM));
-    device_types.insert(make_pair("ion-7330",           TYPE_ION7330));
-    device_types.insert(make_pair("ion-7700",           TYPE_ION7700));
-    device_types.insert(make_pair("ion-8300",           TYPE_ION8300));
-    device_types.insert(make_pair("kv",                 TYPE_KV2));
-    device_types.insert(make_pair("kv2",                TYPE_KV2));
-    device_types.insert(make_pair("landis-gyr s4",      TYPE_LGS4));
-    device_types.insert(make_pair("quantum",            TYPE_QUANTUM));
-    device_types.insert(make_pair("sentinel",           TYPE_SENTINEL));
-    device_types.insert(make_pair("sixnet",             TYPE_SIXNET));
-    device_types.insert(make_pair("transdata mark-v",   TYPE_TDMARKV));
-    device_types.insert(make_pair("vectron",            TYPE_VECTRON));
+    ("alpha a1",           TYPE_ALPHA_A1)
+    ("alpha a3",           TYPE_ALPHA_A3)
+    ("alpha power plus",   TYPE_ALPHA_PPLUS)
+    ("davis weather",      TYPE_DAVIS)
+    ("dct-501",            TYPEDCT501)
+    ("dr-87",              TYPE_DR87)
+    ("focus",              TYPE_FOCUS)
+    ("ipc-410fl",          TYPE_IPC_410FL)
+    ("ipc-420fd",          TYPE_IPC_420FD)
+    ("ipc-430s4e",         TYPE_IPC_430S4E)
+    ("ipc-430sl",          TYPE_IPC_430SL)
+    ("fulcrum",            TYPE_FULCRUM)
+    ("ion-7330",           TYPE_ION7330)
+    ("ion-7700",           TYPE_ION7700)
+    ("ion-8300",           TYPE_ION8300)
+    ("kv",                 TYPE_KV2)
+    ("kv2",                TYPE_KV2)
+    ("landis-gyr s4",      TYPE_LGS4)
+    ("quantum",            TYPE_QUANTUM)
+    ("sentinel",           TYPE_SENTINEL)
+    ("sixnet",             TYPE_SIXNET)
+    ("transdata mark-v",   TYPE_TDMARKV)
+    ("vectron",            TYPE_VECTRON);
 
-    return device_types;
-}
-
-static const device_lookup_t device_lookups = init_device_lookups();
 
 INT resolveDeviceType(const string& _rwsTemp)
 {
-    string rwsTemp = _rwsTemp;
-    CtiToLower(rwsTemp);
-    in_place_trim(rwsTemp);
+    string typestr = boost::trim_copy(boost::to_lower_copy(_rwsTemp));
 
-    device_lookup_t::const_iterator itr = device_lookups.find(rwsTemp);
+    device_lookup_t::const_iterator itr = device_lookups.find(typestr);
 
     if( itr != device_lookups.end() )
     {
@@ -484,7 +486,7 @@ INT resolveDeviceType(const string& _rwsTemp)
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Unsupported DEVICE type \"" << rwsTemp << "\" " << endl;
+        dout << "Unsupported DEVICE type \"" << typestr << "\" " << endl;
     }
 
     return 0;
@@ -883,6 +885,22 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPEMCT440_2131B:
         case TYPEMCT440_2132B:
         case TYPEMCT440_2133B:
+        case TYPE_RFN410FL:
+        case TYPE_RFN410FX:
+        case TYPE_RFN410FD:
+        case TYPE_RFN420FL:
+        case TYPE_RFN420FX:
+        case TYPE_RFN420FD:
+        case TYPE_RFN420FRX:
+        case TYPE_RFN420FRD:
+        case TYPE_RFN410CL:
+        case TYPE_RFN420CL:
+        case TYPE_RFN420CD:
+        case TYPE_RFN430A3D:
+        case TYPE_RFN430A3T:
+        case TYPE_RFN430A3K:
+        case TYPE_RFN430A3R:
+        case TYPE_RFN430KV:
         case TYPELCR3102:
         case TYPELTC:
         case TYPE_MODBUS:
@@ -1006,15 +1024,6 @@ INT resolveRelayUsage(const string& _str)
                 nRet |= (0x00000001 << i);
             }
         }
-
-#if 0
-        if(nRet == 0)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Invalid relay type, or no relays selected. " << str << endl;
-            nRet = A_RESTORE;
-        }
-#endif
     }
 
     return nRet;

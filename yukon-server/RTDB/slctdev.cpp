@@ -411,7 +411,6 @@ const std::set<int> carrierLpDeviceTypes = boost::assign::list_of
         (TYPEMCT242)
         (TYPEMCT248)
         (TYPEMCT250)
-        (TYPEMCT260)
         (TYPEMCT310IL)
         (TYPEMCT318L)
         (TYPEMCT410CL)

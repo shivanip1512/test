@@ -1,165 +1,195 @@
 #pragma once
 
-/* Definitions for Device types */
-#define TYPELMT2                             2
-#define TYPEDCT501                           4
-#define TYPE_REPEATER900                     5
-#define TYPE_REPEATER800                     6
-#define TYPE_REPEATER850                     7
-#define TYPEPSEUDODEVICE                     8
-#define TYPEMCT210                           10
-#define TYPEMCT212                           11
-#define TYPEMCT213                           12
-#define TYPEMCT224                           20
-#define TYPEMCT226                           21
-#define TYPEMCT240                           30
-#define TYPEMCT242                           31
-#define TYPEMCT248                           32
-#define TYPEMCT250                           40
-#define TYPEMCT260                           50
-#define TYPEMCT310                           60
-#define TYPEMCT310ID                         64
-#define TYPEMCT318                           68
-#define TYPEMCT310IL                         69
-#define TYPEMCT318L                          70
-#define TYPEMCT310IDL                        71
-#define TYPEMCT360                           75
-#define TYPEMCT370                           80
-#define TYPEMCT410CL                         82
-#define TYPEMCT410FL                         83
-#define TYPEMCT410GL                         84
-#define TYPEMCT410IL                         85
-#define TYPEMCT420CL                         86
-#define TYPEMCT420CD                         87
-#define TYPEMCT420FL                         88
-#define TYPEMCT420FD                         89
-#define TYPEMCT470                           90
-#define TYPEMCT430A                          91
-#define TYPEMCT430A3                         92
-#define TYPEMCT430S4                         93
-#define TYPEMCT430SL                         94
-#define TYPEMCT440_2131B                     95
-#define TYPEMCT440_2132B                     96
-#define TYPEMCT440_2133B                     97
+enum DeviceTypes {
 
-#define TYPELCR3102                          120
+    // A catchall for any op which needs an ID
+    SYS_DID_SYSTEM = 0,
 
-#define TYPELTC                              150
+    // Definitions for Device types
+    TYPELMT2,
+    TYPEDCT501,
+    TYPE_REPEATER900,
+    TYPE_REPEATER800,
+    TYPE_REPEATER850,
+    TYPEPSEUDODEVICE,
+    TYPEMCT210,
+    TYPEMCT212,
+    TYPEMCT213,
+    TYPEMCT224,
+    TYPEMCT226,
+    TYPEMCT240,
+    TYPEMCT242,
+    TYPEMCT248,
+    TYPEMCT250,
+    TYPEMCT310,
+    TYPEMCT310ID,
+    TYPEMCT318,
+    TYPEMCT310IL,
+    TYPEMCT318L,
+    TYPEMCT310IDL,
+    TYPEMCT360,
+    TYPEMCT370,
+    TYPEMCT410CL,
+    TYPEMCT410FL,
+    TYPEMCT410GL,
+    TYPEMCT410IL,
+    TYPEMCT420CL,
+    TYPEMCT420CD,
+    TYPEMCT420FL,
+    TYPEMCT420FD,
+    TYPEMCT470,
+    TYPEMCT430A,
+    TYPEMCT430A3,
+    TYPEMCT430S4,
+    TYPEMCT430SL,
+    TYPEMCT440_2131B,
+    TYPEMCT440_2132B,
+    TYPEMCT440_2133B,
 
-#define TYPECAPBANK                          220
-#define TYPEVERSACOMCBC                      221
-#define TYPEEXPRESSCOMCBC                    222
-#define TYPEFISHERPCBC                       230
-#define TYPECBC6510                          240
-#define TYPECBC7010                          250
-#define TYPECBC7020                          260
-#define TYPECBCDNP                           261
-#define TYPECBC8020                          270
+    TYPELCR3102,
 
-#define TYPERFN430A3                         300
-#define TYPERFN430ELO                        301
-#define TYPERFN430KV                         302
-#define TYPERFN410FL                         310
-#define TYPERFN410FX                         311
-#define TYPERFN410FD                         312
-#define TYPERFN420ELO                        320
+    TYPELTC,
 
-   /* Substation device identifiers */
-#define TYPE_CCU700                          1000
-#define TYPE_CCU710                          1001
-#define TYPE_CCU711                          1003
-#define TYPE_CCU721                          1010
-#define TYPE_ILEXRTU                         1100
-#define TYPE_WELCORTU                        1101
-#define TYPE_SES92RTU                        1102
-#define TYPE_DNPRTU                          1103
-#define TYPE_DARTRTU                         1110
-#define TYPE_ION7330                         1150
-#define TYPE_ION7700                         1151
-#define TYPE_ION8300                         1152
-#define TYPE_LCU415                          1200
-#define TYPE_LCU415LG                        1205
-#define TYPE_LCU415ER                        1210
-#define TYPE_LCUT3026                        1215
-#define TYPE_TCU5000                         1250
-#define TYPE_TCU5500                         1255
-#define TYPE_TDMARKV                         1500
-#define TYPE_DAVIS                           1600
-#define TYPE_ALPHA_PPLUS                     1800
-#define TYPE_FULCRUM                         1805  // Schlumberger Fulcrum....
-#define TYPE_LGS4                            1810  // Landis and Gyr S4....
-#define TYPE_VECTRON                         1815  // Schlumberger Vectron...
-#define TYPE_ALPHA_A1                        1820
-#define TYPE_DR87                            1825
-#define TYPE_QUANTUM                         1830  // Schlumberger Quantum
-#define TYPE_KV2                             1835  // GE KV2
-#define TYPE_SENTINEL                        1840  // Schlumberger Sentinel
-#define TYPE_FOCUS                           1841  // Focus
-#define TYPE_ALPHA_A3                        1845  // ABB Alpha A3
+    TYPECAPBANK,
+    TYPEVERSACOMCBC,
+    TYPEEXPRESSCOMCBC,
+    TYPEFISHERPCBC,
+    TYPECBC6510,
+    TYPECBC7010,
+    TYPECBC7020,
+    TYPECBCDNP,
+    TYPECBC8020,
 
-#define TYPE_SIXNET                          1850  // Sixnet VersaTrak/SiteTrak firmware > 7/1/01
+    //  RFN Focus
+    TYPE_RFN410FL,
+    TYPE_RFN410FX,
+    TYPE_RFN410FD,
+    TYPE_RFN420FL,
+    TYPE_RFN420FX,
+    TYPE_RFN420FD,
+    TYPE_RFN420FRX,
+    TYPE_RFN420FRD,
+    //  RFN Centron
+    TYPE_RFN410CL,
+    TYPE_RFN420CL,
+    TYPE_RFN420CD,
+    //  RFN A3
+    TYPE_RFN430A3D,
+    TYPE_RFN430A3T,
+    TYPE_RFN430A3K,
+    TYPE_RFN430A3R,
+    //  RFN KV
+    TYPE_RFN430KV,
 
-#define TYPE_IPC_410FL                       1860
-#define TYPE_IPC_420FD                       1861
-#define TYPE_IPC_430S4E                      1862
-#define TYPE_IPC_430SL                       1863
+    // Substation device identifiers
+    TYPE_CCU700,
+    TYPE_CCU710,
+    TYPE_CCU711,
+    TYPE_CCU721,
+    TYPE_ILEXRTU,
+    TYPE_WELCORTU,
+    TYPE_SES92RTU,
+    TYPE_DNPRTU,
+    TYPE_DARTRTU,
+    TYPE_ION7330,
+    TYPE_ION7700,
+    TYPE_ION8300,
+    TYPE_LCU415,
+    TYPE_LCU415LG,
+    TYPE_LCU415ER,
+    TYPE_LCUT3026,
+    TYPE_TCU5000,
+    TYPE_TCU5500,
+    TYPE_TDMARKV,
+    TYPE_DAVIS,
+    TYPE_ALPHA_PPLUS,
+    TYPE_FULCRUM,   // Schlumberger Fulcrum....
+    TYPE_LGS4,      // Landis and Gyr S4....
+    TYPE_VECTRON,   // Schlumberger Vectron...
+    TYPE_ALPHA_A1,
+    TYPE_DR87,
+    TYPE_QUANTUM,   // Schlumberger Quantum
+    TYPE_KV2,       // GE KV2
+    TYPE_SENTINEL,  // Schlumberger Sentinel
+    TYPE_FOCUS,     // Focus
+    TYPE_ALPHA_A3,  // ABB Alpha A3
 
-#define TYPE_TAPTERM                         1900
-#define TYPE_WCTP                            1905
-#define TYPE_RDS                             1906
-#define TYPE_SNPP                            1907
-#define TYPE_PAGING_RECEIVER                 1908
-#define TYPE_TNPP                            1909
+    TYPE_SIXNET,    // Sixnet VersaTrak/SiteTrak firmware > 7/1/01
 
-#define TYPE_RTC                             1910
-#define TYPE_RTM                             1911
-#define TYPE_FMU                             1912
-#define TYPE_SERIESVRTU                      1915
-#define TYPE_SERIESVLMIRTU                   1920
-#define TYPE_MODBUS                          1930
+    TYPE_IPC_410FL,
+    TYPE_IPC_420FD,
+    TYPE_IPC_430S4E,
+    TYPE_IPC_430SL,
 
-#define TYPE_FCI                             1940
-#define TYPE_NEUTRAL_MONITOR                 1941
+    TYPE_TAPTERM,
+    TYPE_WCTP,
+    TYPE_RDS,
+    TYPE_SNPP,
+    TYPE_PAGING_RECEIVER,
+    TYPE_TNPP,
 
-#define TYPE_LMGROUP_EMETCON                 2000  // Group type devices...
-#define TYPE_LMGROUP_VERSACOM                2001
-#define TYPE_LMGROUP_RIPPLE                  2005
-#define TYPE_LMGROUP_POINT                   2010
-#define TYPE_LMGROUP_EXPRESSCOM              2015
-#define TYPE_LMGROUP_RFN_EXPRESSCOM          2016
-#define TYPE_LMGROUP_DIGI_SEP                2017
-#define TYPE_LMGROUP_MCT                     2020
+    TYPE_RTC,
+    TYPE_RTM,
+    TYPE_FMU,
+    TYPE_SERIESVRTU,
+    TYPE_SERIESVLMIRTU,
+    TYPE_MODBUS,
 
-#define TYPE_LMGROUP_GOLAY                   2030
-#define TYPE_LMGROUP_SADIGITAL               2031
-#define TYPE_LMGROUP_SA105                   2032
-#define TYPE_LMGROUP_SA205                   2033
-#define TYPE_LMGROUP_SA305                   2034
+    TYPE_FCI,
+    TYPE_NEUTRAL_MONITOR,
 
-#define TYPEMCTBCAST                         2050
+    // Group type devices...
+    TYPE_LMGROUP_EMETCON,
+    TYPE_LMGROUP_VERSACOM,
+    TYPE_LMGROUP_RIPPLE,
+    TYPE_LMGROUP_POINT,
+    TYPE_LMGROUP_EXPRESSCOM,
+    TYPE_LMGROUP_RFN_EXPRESSCOM,
+    TYPE_LMGROUP_DIGI_SEP,
+    TYPE_LMGROUP_MCT,
 
-#define TYPE_LMPROGRAM_DIRECT                2100  // LM category objects...
-#define TYPE_LMPROGRAM_CURTAILMENT           2101
-#define TYPE_LM_CONTROL_AREA                 2102
-#define TYPE_LMPROGRAM_ENERGYEXCHANGE        2103
+    TYPE_LMGROUP_GOLAY,
+    TYPE_LMGROUP_SADIGITAL,
+    TYPE_LMGROUP_SA105,
+    TYPE_LMGROUP_SA205,
+    TYPE_LMGROUP_SA305,
 
-#define TYPE_CI_CUSTOMER                     2200  // Customer devices...
+    TYPEMCTBCAST,
 
-#define TYPE_CC_SUBSTATION_BUS               2300  // CC category objects...
-#define TYPE_CC_FEEDER                       2301
-#define TYPE_CC_AREA                         2302
-#define TYPE_CC_SUBSTATION                   2303
-#define TYPE_CC_SPECIALAREA                  2304
-#define TYPE_CC_VOLTAGEREGULATOR             2305
+    // LM category objects...
+    TYPE_LMPROGRAM_DIRECT,
+    TYPE_LMPROGRAM_CURTAILMENT,
+    TYPE_LM_CONTROL_AREA,
+    TYPE_LMPROGRAM_ENERGYEXCHANGE,
 
-// A macro device that can contain other devices - basically a generalized group of devices
-#define TYPE_MACRO                           2900
-// A system defined pseudo device. CGP 022300
-#define TYPE_SYSTEM                          3000
-#define TYPE_VIRTUAL_SYSTEM                  3001
+    // Customer devices...
+    TYPE_CI_CUSTOMER,
 
-// Port types occupy the range 6000 to 6100.  !!!!!! DO NOT USE !!!!!!
+    // CC category objects...
+    TYPE_CC_SUBSTATION_BUS,
+    TYPE_CC_FEEDER,
+    TYPE_CC_AREA,
+    TYPE_CC_SUBSTATION,
+    TYPE_CC_SPECIALAREA,
+    TYPE_CC_VOLTAGEREGULATOR,
 
+    // A macro device that can contain other devices - basically a generalized group of devices
+    TYPE_MACRO,
 
-#define SYS_DID_SYSTEM        0     // A catchall for any op which needs an ID
+    // A system defined pseudo device.
+    TYPE_SYSTEM,
+    TYPE_VIRTUAL_SYSTEM,
+
+    PortTypeLocalDirect,
+    PortTypeLocalDialup,
+    PortTypeTServerDirect,
+    PortTypeTServerDialup,
+    PortTypeLocalDialBack,
+    PortTypeTServerDialBack,
+    PortTypePoolDialout,
+    PortTypeTcp,
+    PortTypeUdp,
+
+    PortTypeInvalid,
+};
 

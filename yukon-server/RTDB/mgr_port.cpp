@@ -816,8 +816,8 @@ CtiPort* CtiPortManager::PortFactory(Cti::RowReader &rdr)
         dout << CtiTime() << " Creating a Port of type " << portTypeString << endl;
     }
 
-   switch( resolvePortType(portTypeString) )
-   {
+    switch( resolvePortType(portTypeString) )
+    {
         case PortTypeLocalDirect:
             return new CtiPortDirect;
 

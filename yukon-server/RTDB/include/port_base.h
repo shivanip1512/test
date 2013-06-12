@@ -15,6 +15,7 @@
 #include "xfer.h"
 #include "critical_section.h"
 #include "counter.h"
+#include "devicetypes.h"
 
 #define DEFAULT_QUEUE_GRIPE_POINT 50
 

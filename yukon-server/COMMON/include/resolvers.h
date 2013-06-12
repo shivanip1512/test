@@ -40,7 +40,6 @@ IM_EX_CTIBASE INT resolvePAOCategory(const std::string& rwsTemp);
 IM_EX_CTIBASE INT resolveScanType(const std::string& rwsTemp);
 IM_EX_CTIBASE INT resolveStatisticsType(const std::string& rwsTemp);
 IM_EX_CTIBASE INT resolveProtocol(const std::string& str);
-IM_EX_CTIBASE INT resolvePortType(const std::string& str);
 IM_EX_CTIBASE INT resolveAmpUseType(const std::string& rwsTemp);
 IM_EX_CTIBASE INT resolveRouteType(const std::string& rwsTemp);
 IM_EX_CTIBASE bool resolveIsDeviceTypeSingle(INT Type);

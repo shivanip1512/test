@@ -152,13 +152,22 @@ string desolveDeviceType( int aType )
         case TYPEMCT440_2133B:  Ret = "mct-440-2133b";  break;
         case TYPELMT2:          Ret = "lmt-2";          break;
 
-        case TYPERFN430A3:      Ret = "rfn-430a3";  break;
-        case TYPERFN430KV:      Ret = "rfn-430kv";  break;
-        case TYPERFN410FL:      Ret = "rfn-410fl";  break;
-        case TYPERFN410FX:      Ret = "rfn-410fx";  break;
-        case TYPERFN410FD:      Ret = "rfn-410fd";  break;
-        case TYPERFN420ELO:     Ret = "rfn-420elo"; break;
-        case TYPERFN430ELO:     Ret = "rfn-430elo"; break;
+        case TYPE_RFN410FL:     Ret = "rfn-410fl";      break;
+        case TYPE_RFN410FX:     Ret = "rfn-410fx";      break;
+        case TYPE_RFN410FD:     Ret = "rfn-410fd";      break;
+        case TYPE_RFN420FL:     Ret = "rfn-420fl";      break;
+        case TYPE_RFN420FX:     Ret = "rfn-420fx";      break;
+        case TYPE_RFN420FD:     Ret = "rfn-420fd";      break;
+        case TYPE_RFN420FRX:    Ret = "rfn-420frx";     break;
+        case TYPE_RFN420FRD:    Ret = "rfn-420frd";     break;
+        case TYPE_RFN410CL:     Ret = "rfn-410cl";      break;
+        case TYPE_RFN420CL:     Ret = "rfn-420cl";      break;
+        case TYPE_RFN420CD:     Ret = "rfn-420cd";      break;
+        case TYPE_RFN430A3D:    Ret = "rfn-430a3d";     break;
+        case TYPE_RFN430A3T:    Ret = "rfn-430a3t";     break;
+        case TYPE_RFN430A3K:    Ret = "rfn-430a3k";     break;
+        case TYPE_RFN430A3R:    Ret = "rfn-430a3r";     break;
+        case TYPE_RFN430KV:     Ret = "rfn-430kv";      break;
 
         case TYPELCR3102:       Ret = "lcr-3102";       break;
 

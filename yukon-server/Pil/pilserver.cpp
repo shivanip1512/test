@@ -40,6 +40,7 @@
 #include "PorterResponseMessage.h"
 
 #include "ctistring.h"
+#include "debug_timer.h"
 
 #include "connection_client.h"
 
@@ -128,13 +129,8 @@ void CtiPILServer::mainThread()
     BOOL          bQuit = FALSE;
     int           status;
 
-    CtiTime       TimeNow;
-
-    CtiExecutor  *pExec;
     CtiMessage   *MsgPtr;
     int groupBypass = 0;
-
-    CtiTime  starttime, finishtime;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -176,7 +172,7 @@ void CtiPILServer::mainThread()
             {
                 if(MsgPtr != NULL)
                 {
-                    starttime = starttime.now();
+                    Cti::Timing::DebugTimer messageProcessingTimer("PIL mainThread message processing");
 
                     if(DebugLevel & DEBUGLEVEL_PIL_MAINTHREAD)
                     {
@@ -184,7 +180,7 @@ void CtiPILServer::mainThread()
                     }
 
                     /* Use the same time base for the full scan check */
-                    TimeNow = TimeNow.now();   // update the time...
+                    const CtiTime TimeNow;
 
                     if(MsgPtr->isA() == MSG_PCREQUEST && MsgPtr->getMessageTime().seconds() < (TimeNow.seconds() - 900))
                     {
@@ -245,7 +241,7 @@ void CtiPILServer::mainThread()
 
                         delete MsgPtr;
                     }
-                    else if((pExec = ExecFactory.getExecutor(MsgPtr)) != NULL)
+                    else if( CtiExecutor *pExec = ExecFactory.getExecutor(MsgPtr) )
                     {
                         try
                         {
@@ -270,16 +266,6 @@ void CtiPILServer::mainThread()
                     {
                         bQuit = TRUE;
                         Inherited::shutdown();
-                    }
-
-                    finishtime = finishtime.now();
-
-                    if(finishtime.seconds() - starttime.seconds() > 5)
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " PIL mainthread took " << (finishtime.seconds() - starttime.seconds()) << " seconds to process the last message." << endl;
-                        }
                     }
                 }
             }
@@ -617,15 +603,12 @@ void CtiPILServer::resultThread()
 
                     try
                     {
-                        if(outList.size())
+                        for each( OUTMESS *OutMessage in outList )
                         {
-                            while( !outList.empty() )
-                            {
-                                OUTMESS *OutMessage = outList.front();outList.pop_front();
-                                OutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;
-                                _porterOMQueue.putQueue(OutMessage);
-                            }
+                            OutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;
+                            _porterOMQueue.putQueue(OutMessage);
                         }
+                        outList.clear();
 
                         if( retList.size() > 0 )
                         {
@@ -640,12 +623,8 @@ void CtiPILServer::resultThread()
                             CtiCommandParser parse( cmdstr );
                             if(parse.getFlags() & CMD_FLAG_UPDATE)
                             {
-                                std::list< CtiMessage* >::iterator retlist_itr = retList.begin(),
-                                                                   retlist_end = retList.end();
-
-                                for( ; retlist_itr != retlist_end; ++retlist_itr )
+                                for each( CtiMessage *pMsg in retList )
                                 {
-                                    CtiMessage *&pMsg = *retlist_itr;
                                     if(InMessage->Priority > 0)
                                     {
                                         pMsg->setMessagePriority(InMessage->Priority);
@@ -653,27 +632,25 @@ void CtiPILServer::resultThread()
 
                                     if(pMsg->isA() == MSG_PCRETURN || pMsg->isA() == MSG_POINTDATA)
                                     {
-                                        vgList.push_back(pMsg->replicateMessage());       // Mash it in ther if we said to do so.
+                                        vgList.push_back(pMsg->replicateMessage());
                                     }
                                 }
                             }
                         }
 
 
-                        while( !retList.empty() )
+                        for each( CtiMessage *pRet in retList )
                         {
-                            CtiMessage *pRet = retList.front();retList.pop_front();
                             if(InMessage->Priority > 0)
                             {
                                 pRet->setMessagePriority(InMessage->Priority);
                             }
-                            CtiConnection  *Conn = NULL;
 
                             if( pRet->isA() == MSG_PCREQUEST )
                             {
                                 _schedulerQueue.putQueue(pRet);
                             }
-                            else if((Conn = ((CtiConnection*)InMessage->Return.Connection)) != NULL)
+                            else if( CtiConnection  *Conn = static_cast<CtiConnection *>(InMessage->Return.Connection) )
                             {
                                 if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
                                 {
@@ -701,12 +678,13 @@ void CtiPILServer::resultThread()
                                 delete pRet;
                             }
                         }
+                        retList.clear();
 
-                        while( !vgList.empty() )
+                        for each( CtiMessage *vgMsg in vgList )
                         {
-                            VanGoghConnection.WriteConnQue(vgList.front());
-                            vgList.pop_front();
+                            VanGoghConnection.WriteConnQue(vgMsg);
                         }
+                        vgList.clear();
                     }
                     catch(...)
                     {
@@ -964,21 +942,16 @@ void CtiPILServer::nexusWriteThread()
 }
 
 
-int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
+int CtiPILServer::executeRequest(const CtiRequestMsg *pReq)
 {
     int i = 0;
     int status = NoError;
 
-    list< CtiMessage* >  vgList,  temp_vgList;
-    list< CtiMessage* >  retList, temp_retList;
-    list< OUTMESS* >     outList, temp_outList;
+    list< CtiMessage* >  vgList;
+    list< CtiMessage* >  retList;
+    list< OUTMESS* >     outList;
 
     list< CtiRequestMsg* >  execList;
-
-    OUTMESS *OutMessage = NULL;
-    CtiReturnMsg   *pcRet = NULL;
-    CtiMessage     *pMsg  = NULL;
-    CtiMessage     *pVg  = NULL;
 
     if( pReq->UserMessageId() != _currentUserMessageId ||
         !_currentParse.isEqual(pReq->CommandString()))
@@ -990,6 +963,12 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
     static const string str_system_message = "system_message";
     if( !pReq->DeviceId() && _currentParse.isKeyValid(str_system_message) )
     {
+        //This message is a system request for porter, send it to the porter system thread, not a device.
+        std::auto_ptr<CtiRequestMsg> tempReqMsg(
+           static_cast<CtiRequestMsg *>(pReq->replicateMessage()));
+
+        tempReqMsg->setConnectionHandle(pReq->getConnectionHandle());
+
         //  first, scrub our queue of this request
         if( _currentParse.isKeyValid("request_cancel") )
         {
@@ -1030,15 +1009,11 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                 }
             }
 
-            pReq->setOptionsField(unProcessedCount);
+            tempReqMsg->setOptionsField(unProcessedCount);
         }
 
-        //This message is a system request for porter, send it to the porter system thread, not a device.
-        CtiMessage* tempReqMsg = pReq->replicateMessage();
-        tempReqMsg->setConnectionHandle(pReq->getConnectionHandle());
-        PorterSystemMessageQueue.putQueue(tempReqMsg);
-        tempReqMsg = NULL;
-        pReq = NULL;
+        PorterSystemMessageQueue.putQueue(tempReqMsg.release());
+
         return status;
     }
 
@@ -1064,16 +1039,9 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
 
     try
     {
-        CtiDeviceSPtr Dev;
-        std::list< CtiRequestMsg* >::iterator itr = execList.begin();
-        while( itr != execList.end() )
+        for each( CtiRequestMsg *pExecReq in execList )
         {
-            Dev.reset();
-
-            CtiRequestMsg *&pExecReq = *itr;
-            Dev = DeviceManager->getDeviceByID(pExecReq->DeviceId());
-
-            if(Dev)
+            if( CtiDeviceSPtr Dev = DeviceManager->getDeviceByID(pExecReq->DeviceId()) )
             {
                 if( !_currentParse.isEqual(pExecReq->CommandString()) )
                 {
@@ -1091,18 +1059,19 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                 {
                     pExecReq->setSOE( SystemLogIdGen() );  // Get us a new number to deal with
                 }
-                delete_container(temp_outList);
-                temp_outList.clear();              // Just make sure!
+
+                std::list<OUTMESS *> temp_outList;
+                std::list<CtiMessage *> temp_retList, temp_vgList;
 
                 if(Dev->isGroup())                          // We must indicate any group which is protocol/heirarchy controlled!
                 {
-                    indicateControlOnSubGroups(Dev, pExecReq, _currentParse, temp_vgList, temp_retList);
+                    indicateControlOnSubGroups(Dev, _currentParse, temp_vgList, temp_retList);
                 }
 
                 try
                 {
                     status = Dev->beginExecuteRequest(pExecReq, _currentParse, temp_vgList, temp_retList, temp_outList);
-                    reportClientRequests(Dev, _currentParse, pReq, pExecReq, temp_vgList, temp_retList);
+                    reportClientRequests(Dev, _currentParse, pReq->getUser(), temp_vgList, temp_retList);
                 }
                 catch(...)
                 {
@@ -1115,33 +1084,22 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                     }
                 }
 
-                while( !temp_outList.empty() )
-                {
-                    // _porterOMQueue.putQueue(temp_outList.get());
-                    outList.push_back(temp_outList.front());
-                    temp_outList.pop_front();
-                }
+                outList.insert(outList.end(), temp_outList.begin(), temp_outList.end());
 
-                while( !temp_retList.empty() )
+                for each( CtiMessage *msg in temp_retList )
                 {
                     //  smuggle any request messages back out to the scheduler queue
-                    if( temp_retList.front() && temp_retList.front()->isA() == MSG_PCREQUEST )
+                    if( msg && msg->isA() == MSG_PCREQUEST )
                     {
-                        _schedulerQueue.putQueue(temp_retList.front());
+                        _schedulerQueue.putQueue(msg);
                     }
                     else
                     {
-                        retList.push_back(temp_retList.front());
+                        retList.push_back(msg);
                     }
-
-                    temp_retList.pop_front();
                 }
 
-                while( !temp_vgList.empty() )
-                {
-                    vgList.push_back(temp_vgList.front());
-                    temp_vgList.pop_front();
-                }
+                vgList.insert(vgList.end(), temp_vgList.begin(), temp_vgList.end());
 
                 if(status != NORMAL &&
                    status != DEVICEINHIBITED)
@@ -1165,9 +1123,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                     dout << CtiTime() << " Device: " << pExecReq->DeviceId() << endl;
                 }
 
-                CtiServer::ptr_type ptr = findConnectionManager((long)pExecReq->getConnectionHandle());
-
-                if(ptr)
+                if( CtiServer::ptr_type ptr = findConnectionManager((long)pExecReq->getConnectionHandle()) )
                 {
                     CtiPILConnectionManager *CM = (CtiPILConnectionManager *)ptr.get();
                     CtiReturnMsg *pcRet = CTIDBG_new CtiReturnMsg(pExecReq->DeviceId(),
@@ -1187,8 +1143,9 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                     }
                 }
             }
-            ++itr;
         }
+
+        execList.clear();
     }
     catch(...)
     {
@@ -1206,15 +1163,8 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
         }
     }
 
-    while( (i = retList.size()) > 0 )
+    for each( CtiReturnMsg *pcRet in retList )
     {
-        pcRet = (CtiReturnMsg*)retList.front();retList.pop_front();
-
-        /*if( i > 1 ) //This is causing problems when we return "no method" but dont want expectmore = 1
-        {
-            pcRet->setExpectMore(TRUE);    // Let the client know more messages are coming
-        }*/
-
         //  Note that this sends all responses to the initial request message's connection -
         //    even if any other return messages were generated by another ExecuteRequest invoked
         //    from the original and have their ConnectionHandle set to 0!
@@ -1243,6 +1193,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
             delete pcRet;
         }
     }
+    retList.clear();
 
     if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
     {
@@ -1252,12 +1203,11 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
         }
     }
 
-    for( i = outList.size() ; i > 0; i-- )
+    for each( OUTMESS *OutMessage in outList )
     {
-        OutMessage = outList.front();outList.pop_front();
         _porterOMQueue.putQueue(OutMessage);
-        OutMessage = 0;
     }
+    outList.clear();
 
     if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
     {
@@ -1267,25 +1217,16 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
         }
     }
 
-    while( (i = vgList.size()) > 0 )
+    for each( CtiMessage *pVg in vgList )
     {
-        pVg = vgList.front();vgList.pop_front();
-        VanGoghConnection.WriteConnQue((CtiMessage*)pVg);
+        VanGoghConnection.WriteConnQue(pVg);
     }
-
-    delete_container(vgList);
     vgList.clear();
-
-    delete_container(retList);
-    retList.clear();
-
-    delete_container(execList);
-    execList.clear();
 
     return status;
 }
 
-int CtiPILServer::executeMulti(CtiMultiMsg *pMulti)
+int CtiPILServer::executeMulti(const CtiMultiMsg *pMulti)
 {
     int status = NoError;
 
@@ -1293,7 +1234,7 @@ int CtiPILServer::executeMulti(CtiMultiMsg *pMulti)
 
     if(pMulti != NULL)
     {
-        CtiMultiMsg_vec::iterator itr = pMulti->getData().begin();
+        CtiMultiMsg_vec::const_iterator itr = pMulti->getData().begin();
         //RWOrderedIterator itr( pMulti->getData() );
 
         for(;itr != pMulti->getData().end(); itr++)
@@ -1304,7 +1245,7 @@ int CtiPILServer::executeMulti(CtiMultiMsg *pMulti)
                 {
                 case MSG_PCREQUEST:
                     {
-                        CtiRequestMsg *pReq = (CtiRequestMsg *)pMyMsg;
+                        const CtiRequestMsg *pReq = static_cast<const CtiRequestMsg *>(pMyMsg);
                         status = executeRequest(pReq);
                         break;
                     }
@@ -1686,7 +1627,7 @@ void CtiPILServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParse
                 {
                     retList.push_back(
                         new CtiReturnMsg(
-                           pReq->DeviceId(),
+                            pReq->DeviceId(),
                             pReq->CommandString(),
                             "Group '" + group_name + "' found no target devices.",
                             IDNF,
@@ -1956,7 +1897,7 @@ void CtiPILServer::putQueue(CtiMessage *Msg)
 }
 
 
-void CtiPILServer::indicateControlOnSubGroups(CtiDeviceSPtr &Dev, CtiRequestMsg *&pReq, CtiCommandParser &parse, list< CtiMessage* > &vgList, list< CtiMessage* > &retList)
+void CtiPILServer::indicateControlOnSubGroups(CtiDeviceSPtr &Dev, CtiCommandParser &parse, list< CtiMessage* > &vgList, list< CtiMessage* > &retList)
 {
     try
     {
@@ -2054,7 +1995,7 @@ static bool findRestoreDeviceGroupControl(const long key, CtiDeviceSPtr otherdev
  *  2. The parse is of type control, putvalue, putconfig, or putstatus.
  *  3. Username will be acquired from pExecReq first, and then pReqOrig if not specified.
  */
-int CtiPILServer::reportClientRequests(CtiDeviceSPtr &Dev, const CtiCommandParser &parse, const CtiRequestMsg * pReqOrig, const CtiRequestMsg *pExecReq, list< CtiMessage* > &vgList, list< CtiMessage* > &retList)
+int CtiPILServer::reportClientRequests(CtiDeviceSPtr &Dev, const CtiCommandParser &parse, const string &requestingUser, list< CtiMessage* > &vgList, list< CtiMessage* > &retList)
 {
     int status = NORMAL;
 
@@ -2067,8 +2008,8 @@ int CtiPILServer::reportClientRequests(CtiDeviceSPtr &Dev, const CtiCommandParse
 
     if( !gConfigParms.isTrue(PIL_OMIT_COMMAND_LOGGING) )   // Set this to true if you want to skip the excessive logs from pil.
     {
-        bool name_none  = !pReqOrig->getUser().empty() && (ciStringEqual(pReqOrig->getUser(), "none") || ciStringEqual(pReqOrig->getUser(), "(none)"));
-        bool user_valid = !pReqOrig->getUser().empty() && (!name_none || gConfigParms.isTrue(PIL_LOG_UNKNOWN_USERS) );
+        bool name_none  = !requestingUser.empty() && (ciStringEqual(requestingUser, "none") || ciStringEqual(requestingUser, "(none)"));
+        bool user_valid = !requestingUser.empty() && (!name_none || gConfigParms.isTrue(PIL_LOG_UNKNOWN_USERS) );
 
         if(Dev && user_valid &&
             (parse.getCommand() == ControlRequest ||
@@ -2081,7 +2022,7 @@ int CtiPILServer::reportClientRequests(CtiDeviceSPtr &Dev, const CtiCommandParse
             text = string("Command Request: ") + parse.getCommandStr();
 
             // The user has requested an "outbound" field action.  We have everything we need to generate a log.
-            CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(pid, ++soe, text, addl, PILLogType, SignalEvent, pReqOrig->getUser() );
+            CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(pid, ++soe, text, addl, PILLogType, SignalEvent, requestingUser );
             vgList.push_back(pSig);
 
             std::list< CtiMessage* >::const_iterator itr;
@@ -2097,7 +2038,7 @@ int CtiPILServer::reportClientRequests(CtiDeviceSPtr &Dev, const CtiCommandParse
                     text = string("Failed (Err ") + CtiNumStr(pcRet->Status()) + "): ";
 
                 text += pcRet->ResultString();
-                CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(pid, soe, text, addl, PILLogType, SignalEvent, pReqOrig->getUser() );
+                CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(pid, soe, text, addl, PILLogType, SignalEvent, requestingUser );
                 vgList.push_back(pSig);
             }
         }
