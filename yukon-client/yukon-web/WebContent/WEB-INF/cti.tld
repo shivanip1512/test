@@ -70,21 +70,6 @@
   </tag>
 
   <tag>
-  	<name>checkRole</name>
-  	<tag-class>com.cannontech.web.taglib.CheckRole</tag-class>
-  	<attribute>
-  		<name>roleid</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>	
-  	<attribute>
-  		<name>role</name>
-  		<required>false</required>
-  		<rtexprvalue>true</rtexprvalue>
-  	</attribute>	
-  </tag>  
-
-  <tag>
   	<name>checkPaoAuthorization</name>
   	<tag-class>com.cannontech.web.taglib.CheckPaoAuthorizationTag</tag-class>
     <body-content>scriptless</body-content>
@@ -127,21 +112,6 @@
     <name>checkYukonVersionUndefined</name>
     <tag-class>com.cannontech.web.taglib.CheckYukonVersionUndefinedTag</tag-class>
     <body-content>scriptless</body-content>
-  </tag>
- 
-   <tag>
-    <name>checkProperty</name>
-    <tag-class>com.cannontech.web.taglib.CheckProperty</tag-class>
-    <attribute>
-        <name>propertyid</name>
-        <required>false</required>
-        <rtexprvalue>true</rtexprvalue>
-    </attribute>    
-    <attribute>
-        <name>property</name>
-        <required>false</required>
-        <rtexprvalue>true</rtexprvalue>
-    </attribute>    
   </tag>
   
   <tag>

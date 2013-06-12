@@ -75,7 +75,6 @@ public class StarsYukonUser {
 	private void init() throws InstantiationException {
 	    RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
 	    if (rolePropertyDao.checkRole(YukonRole.OPERATOR_ADMINISTRATOR, this.getYukonUser())) {
-		//if (StarsUtils.isOperator(this.getYukonUser())) {
 			LiteEnergyCompany energyCompany = YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany( getYukonUser() );
 			if (energyCompany == null)
 				throw new InstantiationException( "Cannot find the energy company for user id = " + getYukonUser().getUserID() );
