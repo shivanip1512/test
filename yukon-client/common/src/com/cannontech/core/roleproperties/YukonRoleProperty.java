@@ -399,8 +399,8 @@ public enum YukonRoleProperty {
     MANAGE_SCHEDULES(SCHEDULER, SchedulerRole.MANAGE_SCHEDULES, booleanType()),
     
     WORK_ORDER_SHOW_ALL(WORK_ORDER, WorkOrderRole.WORK_ORDER_SHOW_ALL, booleanType()),
-    WORK_ORDER_CREATE_NEW(WORK_ORDER, WorkOrderRole.WORK_ORDER_CREATE_NEW, stringType()),
-    WORK_ORDER_REPORT(WORK_ORDER, WorkOrderRole.WORK_ORDER_REPORT, stringType()),
+    WORK_ORDER_CREATE_NEW(WORK_ORDER, WorkOrderRole.WORK_ORDER_CREATE_NEW, booleanType()),
+    WORK_ORDER_REPORT(WORK_ORDER, WorkOrderRole.WORK_ORDER_REPORT, booleanType()),
     ADDTL_ORDER_NUMBER_LABEL(WORK_ORDER, WorkOrderRole.ADDTL_ORDER_NUMBER_LABEL, stringType()),
  
     ;
