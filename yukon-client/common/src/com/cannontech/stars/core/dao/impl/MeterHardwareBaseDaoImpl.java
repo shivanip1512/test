@@ -34,11 +34,14 @@ public class MeterHardwareBaseDaoImpl implements MeterHardwareBaseDao {
 
     @Override
     public int getInventoryId(int accountId, String meterNumber, int ecId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder("select ib.inventoryId");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select ib.inventoryId");
         sql.append("from meterHardwareBase mhb, inventoryBase ib, ecToInventoryMapping map");
-        sql.append("where mhb.inventoryId = ib.inventoryId").append("and mhb.meterNumber").eq(meterNumber);
-        sql.append("and ib.accountId").append(accountId).append("and ib.inventoryId = map.inventoryId");
-        sql.append("and map.energyCompanyId").eq(ecId);
+        sql.append("where mhb.inventoryId = ib.inventoryId");
+        sql.append(    "and mhb.meterNumber").eq(meterNumber);
+        sql.append(    "and ib.accountId").eq(accountId);
+        sql.append(    "and ib.inventoryId = map.inventoryId");
+        sql.append(    "and map.energyCompanyId").eq(ecId);
 
         return yukonJdbcTemplate.queryForInt(sql);
     }
