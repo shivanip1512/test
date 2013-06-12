@@ -5,8 +5,9 @@
 
 class IM_EX_MSG CtiServerConnection : public CtiConnection
 {
-    virtual INT establishConnection ();
-    virtual INT endConnection       ();
+    virtual INT  establishConnection ();
+    virtual void endConnection       ();
+    virtual void cleanUp             ();
 
     static volatile long _serverConnectionCount;
 

@@ -9,11 +9,13 @@ class IM_EX_MSG CtiClientConnection : public CtiConnection
 
     std::auto_ptr<cms::Connection> _connection;
 
-    RWThreadFunction _brokerConnThreadRw;
-    bool             _brokerConnStarted;
-    void             brokerConnThread();
-    bool             startBrokerConnection();
-
+    std::auto_ptr<boost::thread> _brokerConnThread;
+    boost::mutex                 _brokerConnMutex;
+    bool                         _brokerConnStarted;
+    
+    void brokerConnThread      ();
+    bool startBrokerConnection ();
+ 
     std::auto_ptr<CtiRegistrationMsg>      _regMsg;
     std::auto_ptr<CtiPointRegistrationMsg> _ptRegMsg;
 
@@ -23,8 +25,9 @@ class IM_EX_MSG CtiClientConnection : public CtiConnection
 
     virtual void messagePeek ( const CtiMessage& msg );
 
-    virtual INT establishConnection ();
-    virtual INT endConnection       ();
+    virtual INT  establishConnection ();
+    virtual void endConnection       ();
+    virtual void cleanUp             ();
 
     std::auto_ptr<cms::ExceptionListener> _exceptionListener;
 

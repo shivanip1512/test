@@ -190,6 +190,8 @@ void CtiConnection::OutThread()
 
     forceTermination();
 
+    cleanUp();
+
     //if( getDebugLevel() & DEBUGLEVEL_CONNECTION )
     //{
         logStatus( __FUNCTION__, "is terminating...." );
@@ -398,7 +400,7 @@ void CtiConnection::close()
 
             if( !_bConnected )
             {
-                // if we are currently trying to establish a connection or if the thread has already ended:
+                // if we are currently trying to establish a connection :
                 // 1.  abort the connection attempt
                 // 2.  wait for the thread to end by itself
 
@@ -410,45 +412,17 @@ void CtiConnection::close()
                 {
                     // since we are shutting down, we dont care about exceptions
                 }
-
-                if( outthread.join(100) == RW_THR_TIMEOUT )
-                {
-                    if( outthread.requestCancellation(2000) == RW_THR_TIMEOUT )
-                    {
-                        logStatus( __FUNCTION__, "OutThread refuses to cancel after 2 seconds." );
-                    }
-                    if( outthread.join(2000) == RW_THR_TIMEOUT )
-                    {
-                        logStatus( __FUNCTION__, "OutThread refuses to join after 2 seconds." );
-                    }
-                }
             }
-            else
+
+            if( outthread.join(100) == RW_THR_TIMEOUT )
             {
-                // if we are currently connected, it is possible we are currently sending a message or
-                // we are flushing the inbound destination (or both)
-                // 1.  wait for the thread to complete...
-                // 2.  end the connection afterwards
-
-                if( outthread.join(100) == RW_THR_TIMEOUT )
+                if( outthread.requestCancellation(2000) == RW_THR_TIMEOUT )
                 {
-                    if( outthread.requestCancellation(2000) == RW_THR_TIMEOUT )
-                    {
-                        logStatus( __FUNCTION__, "OutThread refuses to cancel after 2 seconds." );
-                    }
-                    if( outthread.join(2000) == RW_THR_TIMEOUT )
-                    {
-                        logStatus( __FUNCTION__, "OutThread refuses to join after 2 seconds." );
-                    }
+                    logStatus( __FUNCTION__, "OutThread refuses to cancel after 2 seconds." );
                 }
-
-                try
+                if( outthread.join(2000) == RW_THR_TIMEOUT )
                 {
-                    endConnection(); // close activemq connection or/and end sessions
-                }
-                catch(...)
-                {
-                    // since we are shutting down, we dont care about exceptions
+                    logStatus( __FUNCTION__, "OutThread refuses to join after 2 seconds." );
                 }
             }
 
@@ -757,3 +731,13 @@ void CtiConnection::logException( string fileName, int line, string exceptionNam
     }
 }
 
+
+void CtiConnection::destroyDestIn()
+{
+    _consumer.reset(); // destroy the message consumer (if it exist), before the destination
+
+    if( cms::TemporaryQueue* tmpQueue = dynamic_cast<cms::TemporaryQueue*>( _destIn.get() ))
+    {
+        tmpQueue->destroy(); // Destroy the temporary queue with the provider
+    }
+}

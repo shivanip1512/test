@@ -20,7 +20,6 @@ CtiListenerConnection::CtiListenerConnection( const string &serverQueueName ) :
     _title( "Listener Connection " + CtiNumStr( InterlockedIncrement( &_listenerConnectionCount ))),
     _brokerConnStarted( false )
 {
-    _brokerConnThreadRw = rwMakeThreadFunction( *this, &CtiListenerConnection::brokerConnThread );
 }
 
 
@@ -84,8 +83,18 @@ bool CtiListenerConnection::startBrokerConnection()
     _connection.reset( Cti::Messaging::ActiveMQ::g_connectionFactory.createConnection( _brokerUri ));
 
     // create and start thread
-    _brokerConnThreadRw.start();
-    _brokerConnThreadRw.join();
+    {
+        boost::lock_guard<boost::mutex> guard(_brokerConnMutex);
+
+        if( _closed )
+        {
+            return false;
+        }
+
+        _brokerConnThread.reset( new boost::thread( &CtiListenerConnection::brokerConnThread , this ));
+    }
+
+    _brokerConnThread->join();
 
     return _brokerConnStarted;
 }
@@ -151,7 +160,14 @@ void CtiListenerConnection::close()
 
     try
     {
-        _brokerConnThreadRw.terminate();
+        {
+            boost::lock_guard<boost::mutex> guard(_brokerConnMutex);
+
+            if( _brokerConnThread.get() )
+            {
+                TerminateThread( _brokerConnThread->native_handle(), EXIT_SUCCESS );
+            }
+        }
     }
     catch(...)
     {
@@ -159,7 +175,10 @@ void CtiListenerConnection::close()
     }
 
     // Close the connection as well as any child session, consumer, producer, destinations
-    _connection.reset();
+    if( _connection.get() )
+    {
+    	_connection->close();
+    }
 }
 
 

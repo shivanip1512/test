@@ -78,7 +78,8 @@ protected:
     void flushInDestination();
 
     virtual INT  establishConnection         () = 0;
-    virtual INT  endConnection               () = 0;
+    virtual void endConnection               () = 0;
+    virtual void cleanUp                     () = 0;
     virtual void writeIncomingMessageToQueue ( CtiMessage* msg );
     virtual void messagePeek                 ( const CtiMessage& msg );
 
@@ -90,6 +91,7 @@ protected:
     void ThreadInitiate   (); // This function starts the execution of the next two, which are threads.
     void cleanConnection  ();
     void forceTermination ();
+    void destroyDestIn    ();
 
     std::auto_ptr<cms::Session>          _sessionIn;
     std::auto_ptr<cms::Session>          _sessionOut;

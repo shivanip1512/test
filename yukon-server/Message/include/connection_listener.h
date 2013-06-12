@@ -15,10 +15,12 @@ class IM_EX_MSG CtiListenerConnection
     std::auto_ptr<cms::MessageConsumer> _consumer;
     std::auto_ptr<cms::Destination>     _clientReplyDest;
 
-    RWThreadFunction _brokerConnThreadRw;
-    bool             _brokerConnStarted;
-    void             brokerConnThread();
-    bool             startBrokerConnection();
+    std::auto_ptr<boost::thread> _brokerConnThread;
+    boost::mutex                 _brokerConnMutex;
+    bool                         _brokerConnStarted;
+    
+    void brokerConnThread      ();
+    bool startBrokerConnection ();
 
     bool _closed;
     bool _valid;

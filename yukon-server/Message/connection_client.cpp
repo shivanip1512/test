@@ -34,8 +34,6 @@ CtiClientConnection::CtiClientConnection( const string &serverQueueName,
 {
     // create exception listener and register function and caller
     _exceptionListener.reset( new Cti::Messaging::ActiveMQ::ExceptionListener<CtiClientConnection>( this, &CtiClientConnection::onException ));
-
-    _brokerConnThreadRw = rwMakeThreadFunction( *this, &CtiClientConnection::brokerConnThread );
 }
 
 
@@ -86,7 +84,7 @@ void CtiClientConnection::brokerConnThread()
     {
         logException( __FILE__, __LINE__ );
 
-		// we should never get here since cms::Connection::start() can only return CMSExceptions
+        // we should never get here since cms::Connection::start() can only return CMSExceptions
 
         return;
     }
@@ -106,8 +104,18 @@ bool CtiClientConnection::startBrokerConnection()
     _connection.reset( Cti::Messaging::ActiveMQ::g_connectionFactory.createConnection( _brokerUri ));
 
     // create and start thread
-    _brokerConnThreadRw.start();
-    _brokerConnThreadRw.join();
+    {
+        boost::lock_guard<boost::mutex> guard(_brokerConnMutex);
+
+        if( _dontReconnect )
+        {
+            return false;
+        }
+
+        _brokerConnThread.reset( new boost::thread( &CtiClientConnection::brokerConnThread , this ));
+    }
+
+    _brokerConnThread->join();
 
     return _brokerConnStarted;
 }
@@ -133,6 +141,9 @@ INT CtiClientConnection::establishConnection()
                 {
                     logStatus( __FUNCTION__, "connecting to \"" + _serverQueueName + "\"" );
 
+                    // cleanup inbound destination
+                    _destIn.reset();
+
                     // Create and start connection to broker
                     if( !startBrokerConnection() )
                     {
@@ -151,9 +162,6 @@ INT CtiClientConnection::establishConnection()
                     _sessionIn.reset( _connection->createSession() );
                     _sessionOut.reset( _connection->createSession() );
 
-                    _consumer.reset();
-                    _destIn.reset();
-
                     messageCount = 0;
 
                     initialized = TRUE;
@@ -161,12 +169,8 @@ INT CtiClientConnection::establishConnection()
                     logStatus( __FUNCTION__, "connected to the broker." );
                 }
 
-                // Destroy the temporary queue
-                if( cms::TemporaryQueue* tmpQueue = dynamic_cast<cms::TemporaryQueue*>( _destIn.get() ))
-                {
-                    _consumer.reset();
-                    tmpQueue->destroy();
-                }
+                // explicitly destroy the inbound destination with the provider
+                destroyDestIn();
 
                 // Create inbound destination
                 _destIn.reset( _sessionIn->createTemporaryQueue() );
@@ -280,28 +284,46 @@ INT CtiClientConnection::establishConnection()
 }
 
 
-INT CtiClientConnection::endConnection()
+void CtiClientConnection::endConnection()
 {
-    // Destroy the temporary queue
-    if( cms::TemporaryQueue* tmpQueue = dynamic_cast<cms::TemporaryQueue*>( _destIn.get() ))
-    {
-        _consumer.reset();
-        tmpQueue->destroy();
-    }
-
     try
     {
-        _brokerConnThreadRw.terminate();
+        {
+            boost::lock_guard<boost::mutex> guard(_brokerConnMutex);
+
+            if( _brokerConnThread.get() )
+            {
+                TerminateThread( _brokerConnThread->native_handle(), EXIT_SUCCESS );
+            }
+        }
     }
     catch(...)
     {
-    	// since we are shutting down, we dont care about exceptions
+        // since we are shutting down, we dont care about exceptions
     }
 
-    // Close the connection as well as any child session, consumer, producer, destinations
-    _connection.reset();
+    // Close the connection as well as any child session, consumer, producer
+    if( _connection.get() )
+    {
+        _connection->close();
+    }
+}
 
-    return NORMAL;
+
+void CtiClientConnection::cleanUp()
+{
+    // destroy inbound temporary queue
+    try
+    {
+        destroyDestIn();
+    }
+    catch(...)
+    {
+        // since we are shutting down, we dont care about exceptions
+    }
+
+    // Closes the connection as well as any child session, consumer, producer
+    _connection.reset();
 }
 
 

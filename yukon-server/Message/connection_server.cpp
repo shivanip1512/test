@@ -105,26 +105,26 @@ INT CtiServerConnection::establishConnection()
 }
 
 
-INT CtiServerConnection::endConnection()
+void CtiServerConnection::endConnection()
 {
-    // Destroy the temporary queue
-    if( cms::TemporaryQueue* tmpQueue = dynamic_cast<cms::TemporaryQueue*>( _destIn.get() ))
+    // server connection sessions, consumer and producers are destroy in cleanUp()
+}
+
+
+void CtiServerConnection::cleanUp()
+{
+    // destroy inbound temporary queue
+    try
     {
-        _consumer.reset();
-        tmpQueue->destroy();
+        destroyDestIn();
+    }
+    catch(...)
+    {
+        // since we are shutting down, we dont care about exceptions
     }
 
-    // Closes this session as well as any active child consumers or producers.
-    if( _sessionIn.get() )
-    {
-        _sessionIn->close();
-    }
-
-    if( _sessionOut.get() )
-    {
-        _sessionOut->close();
-    }
-
-    return NORMAL;
+    // Closes the session as well as any active child consumers or producers.
+    _sessionIn.reset();
+    _sessionOut.reset();
 }
 
