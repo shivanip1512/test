@@ -178,8 +178,7 @@ public class LoginServiceImpl implements LoginService {
 
         String voice_home_url = "/voice/notification.jsp";
 
-        if( user != null 
-        /*&& (voice_home_url = authDao.getRolePropertyValue(user,WebClientRole.HOME_URL)) != null*/ )
+        if( user != null )
         {
             HttpSession session = request.getSession();
 
