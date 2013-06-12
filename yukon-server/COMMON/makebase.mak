@@ -507,9 +507,9 @@ verification_objects.obj:	precompiled.h verification_objects.h \
 		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
 		boost_time.h
 words.obj:	precompiled.h words.h dlldefs.h cticalls.h os2_2w32.h \
-		types.h optional.h cti_asmc.h dsm2err.h logger.h thread.h \
-		mutex.h guard.h utility.h ctitime.h queues.h numstr.h \
-		CtiPCPtrQueue.h
+		types.h optional.h cti_asmc.h yukon.h ctidbgmem.h logger.h \
+		thread.h mutex.h guard.h utility.h ctitime.h queues.h \
+		numstr.h CtiPCPtrQueue.h
 xfer.obj:	precompiled.h xfer.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \

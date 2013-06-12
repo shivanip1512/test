@@ -2,7 +2,7 @@
 
 #include "words.h"
 #include "cti_asmc.h"
-#include "dsm2err.h"
+#include "yukon.h"
 #include "logger.h"
 
 using std::endl;

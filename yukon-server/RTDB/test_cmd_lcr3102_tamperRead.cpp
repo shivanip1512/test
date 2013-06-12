@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_rcircuit_tamper )
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
-    
+
         BOOST_CHECK_EQUAL(ptr->function,  0x00);
         BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
         BOOST_CHECK_EQUAL(ptr->length(),  0);
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_rcircuit_tamper )
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x00);
         payload.push_back(0x00);
@@ -61,9 +61,9 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_rcircuit_tamper )
 
         BOOST_CHECK_EQUAL(points.size(), 0);
     }
-    
+
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x00);
         payload.push_back(0x00);
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_rcircuit_tamper )
 
         BOOST_CHECK_EQUAL(description, "Relay Circuit Fault detected. ");
 
-        expected_pointdata expected[] = 
+        expected_pointdata expected[] =
         {
             { "Relay Circuit Fault", CtiTime(CtiDate(13, 10, 2010), 10, 6), 0x01, NormalQuality, StatusPointType, 30 },
             { "Runtime Tamper",      CtiTime(CtiDate(13, 10, 2010), 10, 6), 0x00, NormalQuality, StatusPointType, 31 }
@@ -98,11 +98,11 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_rcircuit_tamper )
         for( int i = 0; i < expected_size; i++ )
         {
             BOOST_CHECK_EQUAL(points[i].name,    expected[i].name);
-            BOOST_CHECK_EQUAL(points[i].time,    expected[i].time);    
-            BOOST_CHECK_EQUAL(points[i].value,   expected[i].value);   
-            BOOST_CHECK_EQUAL(points[i].quality, expected[i].quality); 
-            BOOST_CHECK_EQUAL(points[i].type,    expected[i].type);    
-            BOOST_CHECK_EQUAL(points[i].offset,  expected[i].offset);  
+            BOOST_CHECK_EQUAL(points[i].time,    expected[i].time);
+            BOOST_CHECK_EQUAL(points[i].value,   expected[i].value);
+            BOOST_CHECK_EQUAL(points[i].quality, expected[i].quality);
+            BOOST_CHECK_EQUAL(points[i].type,    expected[i].type);
+            BOOST_CHECK_EQUAL(points[i].offset,  expected[i].offset);
         }
     }
 }
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_runtime_tamper )
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
-    
+
         BOOST_CHECK_EQUAL(ptr->function,  0x00);
         BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
         BOOST_CHECK_EQUAL(ptr->length(),  0);
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_runtime_tamper )
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x00);
         payload.push_back(0x00);
@@ -148,9 +148,9 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_runtime_tamper )
 
         BOOST_CHECK_EQUAL(points.size(), 0);
     }
-    
+
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x00);
         payload.push_back(0x00);
@@ -172,7 +172,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_runtime_tamper )
 
         BOOST_CHECK_EQUAL(description, "Runtime Tamper detected. ");
 
-        expected_pointdata expected[] = 
+        expected_pointdata expected[] =
         {
             { "Relay Circuit Fault", CtiTime(CtiDate(13, 10, 2010), 10, 6), 0x00, NormalQuality, StatusPointType, 30 },
             { "Runtime Tamper",      CtiTime(CtiDate(13, 10, 2010), 10, 6), 0x01, NormalQuality, StatusPointType, 31 }
@@ -185,11 +185,11 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_runtime_tamper )
         for( int i = 0; i < expected_size; i++ )
         {
             BOOST_CHECK_EQUAL(points[i].name,    expected[i].name);
-            BOOST_CHECK_EQUAL(points[i].time,    expected[i].time);    
-            BOOST_CHECK_EQUAL(points[i].value,   expected[i].value);   
-            BOOST_CHECK_EQUAL(points[i].quality, expected[i].quality); 
-            BOOST_CHECK_EQUAL(points[i].type,    expected[i].type);    
-            BOOST_CHECK_EQUAL(points[i].offset,  expected[i].offset);  
+            BOOST_CHECK_EQUAL(points[i].time,    expected[i].time);
+            BOOST_CHECK_EQUAL(points[i].value,   expected[i].value);
+            BOOST_CHECK_EQUAL(points[i].quality, expected[i].quality);
+            BOOST_CHECK_EQUAL(points[i].type,    expected[i].type);
+            BOOST_CHECK_EQUAL(points[i].offset,  expected[i].offset);
         }
     }
 }
@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_both_tamper )
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
-    
+
         BOOST_CHECK_EQUAL(ptr->function,  0x00);
         BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
         BOOST_CHECK_EQUAL(ptr->length(),  0);
@@ -214,7 +214,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_both_tamper )
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x00);
         payload.push_back(0x00);
@@ -233,9 +233,9 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_both_tamper )
         BOOST_CHECK_EQUAL(ptr->length(),  7);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
     }
-    
+
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x00);
         payload.push_back(0x00);
@@ -257,7 +257,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_both_tamper )
 
         BOOST_CHECK_EQUAL(description, "Relay Circuit Fault detected. Runtime Tamper detected. ");
 
-        expected_pointdata expected[] = 
+        expected_pointdata expected[] =
         {
             { "Relay Circuit Fault", CtiTime(CtiDate(13, 10, 2010), 10, 6), 0x01, NormalQuality, StatusPointType, 30 },
             { "Runtime Tamper",      CtiTime(CtiDate(13, 10, 2010), 10, 6), 0x01, NormalQuality, StatusPointType, 31 }
@@ -270,11 +270,11 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_both_tamper )
         for( int i = 0; i < expected_size; i++ )
         {
             BOOST_CHECK_EQUAL(points[i].name,    expected[i].name);
-            BOOST_CHECK_EQUAL(points[i].time,    expected[i].time);    
-            BOOST_CHECK_EQUAL(points[i].value,   expected[i].value);   
-            BOOST_CHECK_EQUAL(points[i].quality, expected[i].quality); 
-            BOOST_CHECK_EQUAL(points[i].type,    expected[i].type);    
-            BOOST_CHECK_EQUAL(points[i].offset,  expected[i].offset);  
+            BOOST_CHECK_EQUAL(points[i].time,    expected[i].time);
+            BOOST_CHECK_EQUAL(points[i].value,   expected[i].value);
+            BOOST_CHECK_EQUAL(points[i].quality, expected[i].quality);
+            BOOST_CHECK_EQUAL(points[i].type,    expected[i].type);
+            BOOST_CHECK_EQUAL(points[i].offset,  expected[i].offset);
         }
     }
 }
@@ -291,7 +291,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_neither_tamper )
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
-    
+
         BOOST_CHECK_EQUAL(ptr->function,  0x00);
         BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
         BOOST_CHECK_EQUAL(ptr->length(),  0);
@@ -299,7 +299,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_neither_tamper )
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x00);
         payload.push_back(0x00);
@@ -318,9 +318,9 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_neither_tamper )
         BOOST_CHECK_EQUAL(ptr->length(),  7);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
     }
-    
+
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x00);
         payload.push_back(0x00);
@@ -342,7 +342,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_neither_tamper )
 
         BOOST_CHECK_EQUAL(description, "No tamper detected.");
 
-        expected_pointdata expected[] = 
+        expected_pointdata expected[] =
         {
             { "Relay Circuit Fault", CtiTime(CtiDate(13, 10, 2010), 10, 6), 0x00, NormalQuality, StatusPointType, 30 },
             { "Runtime Tamper",      CtiTime(CtiDate(13, 10, 2010), 10, 6), 0x00, NormalQuality, StatusPointType, 31 }
@@ -355,11 +355,11 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_neither_tamper )
         for( int i = 0; i < expected_size; i++ )
         {
             BOOST_CHECK_EQUAL(points[i].name,    expected[i].name);
-            BOOST_CHECK_EQUAL(points[i].time,    expected[i].time);    
-            BOOST_CHECK_EQUAL(points[i].value,   expected[i].value);   
-            BOOST_CHECK_EQUAL(points[i].quality, expected[i].quality); 
-            BOOST_CHECK_EQUAL(points[i].type,    expected[i].type);    
-            BOOST_CHECK_EQUAL(points[i].offset,  expected[i].offset);  
+            BOOST_CHECK_EQUAL(points[i].time,    expected[i].time);
+            BOOST_CHECK_EQUAL(points[i].value,   expected[i].value);
+            BOOST_CHECK_EQUAL(points[i].quality, expected[i].quality);
+            BOOST_CHECK_EQUAL(points[i].type,    expected[i].type);
+            BOOST_CHECK_EQUAL(points[i].offset,  expected[i].offset);
         }
     }
 }
@@ -376,7 +376,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_tamper_value_error )
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
-    
+
         BOOST_CHECK_EQUAL(ptr->function,  0x00);
         BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Read);
         BOOST_CHECK_EQUAL(ptr->length(),  0);
@@ -384,7 +384,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_tamper_value_error )
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x00);
         payload.push_back(0x00);
@@ -403,9 +403,9 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_tamper_value_error )
         BOOST_CHECK_EQUAL(ptr->length(),  7);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 0);
     }
-    
+
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x00);
         payload.push_back(0x00);
@@ -419,7 +419,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_tamper_value_error )
 
         string description;
         std::vector<DlcCommand::point_data> points;
-       
+
         // Does not get retries! Will throw immediately upon bad payload!
         try
         {

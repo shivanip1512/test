@@ -1065,8 +1065,7 @@ cc_message_serialization.obj:	precompiled.h cc_message_serialization.h \
 		MsgSubStations.h MsgSystemStatus.h MsgVerifyBanks.h \
 		MsgVerifyInactiveBanks.h MsgVerifySelectedBank.h \
 		MsgVoltageRegulator.h PhaseOperatedVoltageRegulator.h
-cc_server_client_serialization_test.obj:	precompiled.h \
-		test_cc_serialization.h test_serialization.h message.h \
+cc_server_client_serialization_test.obj:	precompiled.h message.h \
 		ctitime.h dlldefs.h ctidbgmem.h collectable.h rwutil.h \
 		yukon.h types.h database_connection.h dbaccess.h dllbase.h \
 		dsm2.h cticonnect.h netports.h mutex.h guard.h utility.h \
@@ -1079,20 +1078,20 @@ cc_server_client_serialization_test.obj:	precompiled.h \
 		msg_pcrequest.h msg_pcreturn.h msg_ptreg.h msg_queuedata.h \
 		Msg_reg.h msg_requestcancel.h msg_server_req.h \
 		msg_server_resp.h msg_signal.h msg_tag.h msg_trace.h \
-		test_serialization_helper.h connection_server.h connection.h \
-		exchange.h string_utility.h queue.h cparms.h configkey.h \
-		configval.h connection_listener.h CapControlPao.h cctypes.h \
-		ccarea.h observe.h ccsubstationbus.h ccfeeder.h \
-		ccmonitorpoint.h ctidate.h ccutil.h pointattribute.h \
-		devicetypes.h mgr_paosched.h pao_schedule.h ctibase.h \
-		ctinexus.h pao_event.h dbmemobject.h amq_connection.h \
-		critical_section.h CapControlOperationMessage.h \
-		StreamableMessage.h ccoriginalparent.h cccapbank.h \
-		cctwowaycbcpoints.h AttributeService.h LitePoint.h \
-		PointValueHolder.h ccoperationstats.h ccConfirmationStats.h \
-		PointResponse.h PointResponseManager.h Exceptions.h \
-		StrategyManager.h readers_writer_lock.h ControlStrategy.h \
-		sorted_vector.h regression.h Controllable.h EventLogEntry.h \
+		connection_server.h connection.h exchange.h string_utility.h \
+		queue.h cparms.h configkey.h configval.h \
+		connection_listener.h CapControlPao.h cctypes.h ccarea.h \
+		observe.h ccsubstationbus.h ccfeeder.h ccmonitorpoint.h \
+		ctidate.h ccutil.h pointattribute.h devicetypes.h \
+		mgr_paosched.h pao_schedule.h ctibase.h ctinexus.h \
+		pao_event.h dbmemobject.h amq_connection.h critical_section.h \
+		CapControlOperationMessage.h StreamableMessage.h \
+		ccoriginalparent.h cccapbank.h cctwowaycbcpoints.h \
+		AttributeService.h LitePoint.h PointValueHolder.h \
+		ccoperationstats.h ccConfirmationStats.h PointResponse.h \
+		PointResponseManager.h Exceptions.h StrategyManager.h \
+		readers_writer_lock.h ControlStrategy.h sorted_vector.h \
+		regression.h Controllable.h EventLogEntry.h \
 		TimeOfDayStrategy.h ccareabase.h ccsparea.h ccstate.h \
 		ccsubstation.h DynamicCommand.h MsgCapControlCommand.h \
 		GangOperatedVoltageRegulator.h VoltageRegulator.h \
@@ -1103,7 +1102,9 @@ cc_server_client_serialization_test.obj:	precompiled.h \
 		MsgObjectMove.h MsgSpecialAreas.h MsgSubStationBus.h \
 		MsgSubStations.h MsgSystemStatus.h MsgVerifyBanks.h \
 		MsgVerifyInactiveBanks.h MsgVerifySelectedBank.h \
-		MsgVoltageRegulator.h PhaseOperatedVoltageRegulator.h
+		MsgVoltageRegulator.h PhaseOperatedVoltageRegulator.h \
+		test_cc_serialization.h test_serialization.h \
+		test_serialization_helper.h
 controllable.obj:	precompiled.h ControlStrategy.h NoStrategy.h \
 		Controllable.h CapControlPao.h yukon.h types.h ctidbgmem.h \
 		row_reader.h ctitime.h dlldefs.h rwutil.h \

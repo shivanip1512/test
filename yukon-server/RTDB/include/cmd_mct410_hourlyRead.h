@@ -52,9 +52,9 @@ class IM_EX_DEVDB Mct410HourlyReadCommand : public Mct410Command
 
     request_ptr makeRequest(const CtiTime now);
 
-    CtiDeviceSingle::point_info        extractMidnightKwh(const payload_t &payload) const;
-    static point_data                  extractBlinkCount (const payload_t &payload);
-    static std::vector<unsigned>       extractDeltas     (const payload_t &payload, const request_pointer &rp);
+    CtiDeviceSingle::point_info        extractMidnightKwh(const Bytes &payload) const;
+    static point_data                  extractBlinkCount (const Bytes &payload);
+    static std::vector<unsigned>       extractDeltas     (const Bytes &payload, const request_pointer &rp);
 
     static std::vector<point_data> processDeltas(point_data base_kwh, const std::vector<unsigned> &deltas);
 
@@ -78,7 +78,7 @@ public:
     Mct410HourlyReadCommand(CtiDate date_begin, CtiDate date_end, const unsigned channel);
 
     virtual request_ptr execute(const CtiTime now);
-    virtual request_ptr decode (const CtiTime now, const unsigned function, const payload_t &payload, std::string &description, std::vector<point_data> &points);
+    virtual request_ptr decode (const CtiTime now, const unsigned function, const Bytes &payload, std::string &description, std::vector<point_data> &points);
     virtual request_ptr error  (const CtiTime now, const int error_code, std::string &description);
 };
 

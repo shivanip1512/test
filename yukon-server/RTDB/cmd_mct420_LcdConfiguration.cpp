@@ -72,7 +72,7 @@ DlcCommand::request_ptr Mct420LcdConfigurationCommand::execute(CtiTime now)
     return doCommand();
 }
 
-DlcCommand::request_ptr Mct420LcdConfigurationCommand::decode(const CtiTime now, const unsigned function, const payload_t &payload, std::string &description, std::vector<point_data> &points)
+DlcCommand::request_ptr Mct420LcdConfigurationCommand::decode(const CtiTime now, const unsigned function, const Bytes &payload, std::string &description, std::vector<point_data> &points)
 {
     if( ! payload.empty() )
     {

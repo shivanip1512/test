@@ -185,7 +185,7 @@ INT DlcBaseDevice::ExecuteRequest( CtiRequestMsg        *pReq,
             }
         }
     }
-    catch( BaseCommand::CommandException &e )
+    catch( DlcCommand::CommandException &e )
     {
         returnErrorMessage(e.error_code, OutMessage, retList, e.error_description);
 
@@ -253,7 +253,7 @@ try
 
     return status;
 }
-catch( BaseCommand::CommandException &e )
+catch( DlcCommand::CommandException &e )
 {
     retList.push_back(
         new CtiReturnMsg(
@@ -278,7 +278,7 @@ try
 
     return status;
 }
-catch( BaseCommand::CommandException &e )
+catch( DlcCommand::CommandException &e )
 {
     retList.push_back(
         new CtiReturnMsg(
@@ -439,7 +439,7 @@ int DlcBaseDevice::decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list<
         {
             const DSTRUCT &dst = InMessage.Buffer.DSt;
 
-            const DlcCommand::payload_t
+            const DlcCommand::Bytes
                 payload(
                     dst.Message,
                     dst.Message + std::min<unsigned short>(dst.Length, DSTRUCT::MessageLength_Max));
@@ -517,7 +517,7 @@ int DlcBaseDevice::decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list<
 
         return NORMAL;
     }
-    catch( BaseCommand::CommandException &e )
+    catch( DlcCommand::CommandException &e )
     {
         ReturnMsg->setStatus(e.error_code);
         ReturnMsg->setResultString(getName() + " / " + e.error_description);
@@ -568,7 +568,7 @@ void DlcBaseDevice::fillOutMessage(OUTMESS &OutMessage, DlcCommand::request_t &r
     OutMessage.Buffer.BSt.IO       = request.io();
     OutMessage.Buffer.BSt.Length   = request.length();
 
-    DlcCommand::payload_t payload = request.payload();
+    DlcCommand::Bytes payload = request.payload();
 
     std::copy(payload.begin(),
               payload.begin() + std::min<unsigned>(payload.size(), BSTRUCT::MessageLength_Max),

@@ -130,7 +130,7 @@ static const ErrorLookup CtiErrors = boost::assign::map_list_of
     (97,                error_info(ERRTYPEUNKNOWN,  "Error table entry not defined"))
     (BADSOCK,           error_info(ERRTYPESYSTEM,   "Bad Nexus Specification"))
     (SOCKWRITE,         error_info(ERRTYPESYSTEM,   "Error Writing to Nexus"))
-    //  1000
+    //  100
     (BADBCH,            error_info(ERRTYPEPROTOCOL, "Bad BCH"))
 
     (200,                           error_info(ERRTYPESYSTEM,   "Yukon Base Error"))

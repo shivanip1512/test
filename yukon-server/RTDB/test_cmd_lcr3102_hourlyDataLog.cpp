@@ -182,13 +182,13 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_incorrect_start_time )
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
-    
+
         BOOST_CHECK_EQUAL(ptr->function,  0x186);
         BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Write);
         BOOST_CHECK_EQUAL(ptr->length(),  4);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 4);
 
-        DlcCommand::payload_t payload = ptr->payload();
+        DlcCommand::Bytes payload = ptr->payload();
 
         BOOST_CHECK_EQUAL(payload[0], 0x49);
         BOOST_CHECK_EQUAL(payload[1], 0x96);
@@ -197,7 +197,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_incorrect_start_time )
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x00);
 
@@ -216,7 +216,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_incorrect_start_time )
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x50);
         payload.push_back(0x97);
@@ -256,13 +256,13 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_insufficient_data )
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
-    
+
         BOOST_CHECK_EQUAL(ptr->function,  0x186);
         BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Write);
         BOOST_CHECK_EQUAL(ptr->length(),  4);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 4);
 
-        DlcCommand::payload_t payload = ptr->payload();
+        DlcCommand::Bytes payload = ptr->payload();
 
         BOOST_CHECK_EQUAL(payload[0], 0x49);
         BOOST_CHECK_EQUAL(payload[1], 0x96);
@@ -271,7 +271,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_insufficient_data )
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x00);
 
@@ -290,7 +290,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_insufficient_data )
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x50);
         payload.push_back(0x97);
@@ -329,13 +329,13 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_normal_execution )
 
         //  Request pointer shouldn't be null here!
         BOOST_CHECK(ptr.get());
-    
+
         BOOST_CHECK_EQUAL(ptr->function,  0x186);
         BOOST_CHECK_EQUAL(ptr->io(),      Cti::Protocols::EmetconProtocol::IO_Function_Write);
         BOOST_CHECK_EQUAL(ptr->length(),  4);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 4);
 
-        DlcCommand::payload_t payload = ptr->payload();
+        DlcCommand::Bytes payload = ptr->payload();
 
         BOOST_CHECK_EQUAL(payload[0], 0x49);
         BOOST_CHECK_EQUAL(payload[1], 0x96);
@@ -344,7 +344,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_normal_execution )
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x00);
 
@@ -363,7 +363,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_normal_execution )
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x49);
         payload.push_back(0x96);
@@ -385,17 +385,17 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_normal_execution )
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x0c); // Flags
         payload.push_back(0xb4); // Data...
-        payload.push_back(0xf7); //     hour 0: 45 run 15 shed 
-        payload.push_back(0x9e); //     hour 1: 30 run 30 shed 
-        payload.push_back(0xa1); //     hour 2: 40 run 20 shed 
-        payload.push_back(0x4f); //     hour 3: 60 run 0  shed 
-        payload.push_back(0x00); //     hour 4: 0  run 60 shed 
+        payload.push_back(0xf7); //     hour 0: 45 run 15 shed
+        payload.push_back(0x9e); //     hour 1: 30 run 30 shed
+        payload.push_back(0xa1); //     hour 2: 40 run 20 shed
+        payload.push_back(0x4f); //     hour 3: 60 run 0  shed
+        payload.push_back(0x00); //     hour 4: 0  run 60 shed
         payload.push_back(0x03); //     hour 5: 20 run 40 shed
-        payload.push_back(0xc5);    
+        payload.push_back(0xc5);
         payload.push_back(0x28);
 
         string description;
@@ -421,7 +421,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_normal_execution )
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x0c); // Flags
         payload.push_back(0x2b); // Data...
@@ -457,7 +457,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_normal_execution )
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x0c); // Flags
         payload.push_back(0x2b); // Data...
@@ -493,7 +493,7 @@ BOOST_AUTO_TEST_CASE( test_decode_execute_normal_execution )
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x0c); // Flags
         payload.push_back(0xb4); // Data...
@@ -548,7 +548,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_more_than_sixty_minutes_error )
         BOOST_CHECK_EQUAL(ptr->length(),  4);
         BOOST_CHECK_EQUAL(ptr->payload().size(), 4);
 
-        DlcCommand::payload_t payload = ptr->payload();
+        DlcCommand::Bytes payload = ptr->payload();
 
         BOOST_CHECK_EQUAL(payload[0], 0x49);
         BOOST_CHECK_EQUAL(payload[1], 0x96);
@@ -557,7 +557,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_more_than_sixty_minutes_error )
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x00);
 
@@ -576,7 +576,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_more_than_sixty_minutes_error )
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x49);
         payload.push_back(0x96);
@@ -598,7 +598,7 @@ BOOST_AUTO_TEST_CASE( test_execute_decode_more_than_sixty_minutes_error )
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x0c); // Flags
         payload.push_back(0xb4); // Data...

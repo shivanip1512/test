@@ -28,10 +28,10 @@ private:
     };
 
 public:
-    
+
     Lcr3102DemandResponseSummaryCommand();
-    
-    virtual request_ptr decodeReading(const CtiTime now, const unsigned function, const payload_t &payload, std::string &description, std::vector<point_data> &points);
+
+    virtual request_ptr decodeReading(const CtiTime now, const unsigned function, const Bytes &payload, std::string &description, std::vector<point_data> &points);
 
     void decodeResponseByte(const unsigned char drSummaryByte, std::string &description);
 };

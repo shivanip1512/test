@@ -16,12 +16,12 @@ private:
     };
 
 public:
-    
+
     Lcr3102TamperReadCommand();
 
-    virtual request_ptr decodeReading(const CtiTime now, const unsigned function, const payload_t &payload, std::string &description, std::vector<point_data> &points);
+    virtual request_ptr decodeReading(const CtiTime now, const unsigned function, const Bytes &payload, std::string &description, std::vector<point_data> &points);
 };
 
 }
-}   
-}   
+}
+}

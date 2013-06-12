@@ -123,8 +123,8 @@ disp_thd.obj:	precompiled.h pilserver.h dsm2.h cticonnect.h yukon.h \
 		tbl_pt_base.h slctdev.h mgr_point.h mgr_route.h \
 		repeaterrole.h mgr_config.h amq_constants.h msg_dbchg.h \
 		msg_cmd.h mgr_port.h port_base.h tbl_port_base.h xfer.h \
-		counter.h connection_client.h thread_monitor.h \
-		thread_register_data.h portglob.h porter.h devicetypes.h \
+		counter.h devicetypes.h connection_client.h thread_monitor.h \
+		thread_register_data.h portglob.h porter.h \
 		unsolicited_handler.h dev_single.h msg_pcreturn.h \
 		tbl_dv_scandata.h tbl_dv_wnd.h prot_base.h \
 		millisecond_timer.h StatisticsManager.h PaoStatistics.h \
@@ -150,9 +150,9 @@ encodingfilterfactory.obj:	precompiled.h EncodingFilterFactory.h \
 		string_utility.h tbl_static_paoinfo.h pointdefs.h \
 		encryption.h tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h \
 		pt_base.h tbl_pt_base.h tbl_port_base.h xfer.h \
-		critical_section.h counter.h tbl_port_settings.h \
-		tbl_port_timing.h tbl_port_tcpip.h encryption_lantronix.h \
-		encryption_noop.h
+		critical_section.h counter.h devicetypes.h \
+		tbl_port_settings.h tbl_port_timing.h tbl_port_tcpip.h \
+		encryption_lantronix.h encryption_noop.h
 encryption_lantronix.obj:	precompiled.h encryption_lantronix.h \
 		EncodingFilter.h logger.h dlldefs.h thread.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h types.h \
@@ -249,10 +249,10 @@ portdialback.obj:	precompiled.h cticalls.h os2_2w32.h dlldefs.h \
 		tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h slctdev.h \
 		smartmap.h readers_writer_lock.h critical_section.h \
 		mgr_port.h port_base.h tbl_port_base.h xfer.h counter.h \
-		msg_cmd.h pilserver.h server_b.h con_mgr.h \
+		devicetypes.h msg_cmd.h pilserver.h server_b.h con_mgr.h \
 		connection_server.h connection_listener.h msg_pcrequest.h \
 		mgr_point.h mgr_route.h repeaterrole.h mgr_config.h \
-		amq_constants.h portglob.h porter.h devicetypes.h
+		amq_constants.h portglob.h porter.h
 portentry.obj:	precompiled.h connection_client.h connection.h \
 		dlldefs.h exchange.h dllbase.h dsm2.h cticonnect.h yukon.h \
 		types.h ctidbgmem.h netports.h mutex.h guard.h utility.h \
@@ -270,7 +270,7 @@ portentry.obj:	precompiled.h connection_client.h connection.h \
 		dev_exclusion.h tbl_paoexclusion.h config_device.h hashkey.h \
 		hash_functions.h tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h \
 		pt_base.h tbl_pt_base.h tbl_port_base.h xfer.h \
-		critical_section.h counter.h porter.h devicetypes.h \
+		critical_section.h counter.h devicetypes.h porter.h \
 		StatisticsManager.h PaoStatistics.h PaoStatisticsRecord.h \
 		ThreadStatusKeeper.h thread_register_data.h thread_monitor.h \
 		smartmap.h readers_writer_lock.h portglob.h \
@@ -353,7 +353,7 @@ portfield.obj:	precompiled.h c_port_interface.h dlldefs.h elogger.h \
 		tbl_paoexclusion.h config_device.h hashkey.h hash_functions.h \
 		tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h \
 		tbl_pt_base.h tbl_port_base.h xfer.h critical_section.h \
-		counter.h porter.h devicetypes.h StatisticsManager.h \
+		counter.h devicetypes.h porter.h StatisticsManager.h \
 		PaoStatistics.h PaoStatisticsRecord.h ThreadStatusKeeper.h \
 		thread_register_data.h thread_monitor.h smartmap.h \
 		readers_writer_lock.h cparms.h configkey.h configval.h \
@@ -384,7 +384,7 @@ portfield.obj:	precompiled.h c_port_interface.h dlldefs.h elogger.h \
 		transdata_application.h transdata_tracker.h \
 		transdata_datalink.h prot_ymodem.h ctidate.h transdata_data.h \
 		msg_cmd.h dev_mct.h dev_carrier.h dev_dlcbase.h tbl_route.h \
-		tbl_carrier.h prot_emetcon.h cmd_dlc.h cmd_base.h \
+		tbl_carrier.h prot_emetcon.h cmd_dlc.h cmd_device.h \
 		tbl_loadprofile.h da_load_profile.h tbl_dv_mctiedport.h \
 		dev_rtc.h tbl_dv_rtc.h dev_tap.h mgr_route.h repeaterrole.h \
 		rte_macro.h tbl_rtmacro.h rte_ccu.h rte_xcu.h tbl_rtcarrier.h \
@@ -498,7 +498,7 @@ portpool.obj:	precompiled.h connection_client.h connection.h dlldefs.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
 		slctdev.h smartmap.h readers_writer_lock.h critical_section.h \
 		mgr_port.h port_base.h tbl_port_base.h xfer.h counter.h \
-		port_pool_out.h portdecl.h porter.h devicetypes.h portglob.h
+		devicetypes.h port_pool_out.h portdecl.h porter.h portglob.h
 portque.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		cparms.h rwutil.h yukon.h ctidbgmem.h database_connection.h \
 		dbaccess.h dllbase.h dsm2.h cticonnect.h netports.h mutex.h \
@@ -563,13 +563,13 @@ porttime.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
 		dnp_object_binaryoutput.h dev_ilex.h dev_mct4xx.h dev_mct.h \
 		dev_carrier.h dev_dlcbase.h tbl_route.h tbl_carrier.h \
-		prot_emetcon.h cmd_dlc.h cmd_base.h tbl_metergrp.h vcomdefs.h \
-		tbl_loadprofile.h da_load_profile.h tbl_dv_mctiedport.h \
-		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h \
-		config_data_mct.h ctidate.h mgr_route.h repeaterrole.h \
-		thread_monitor.h thread_register_data.h ThreadStatusKeeper.h \
-		config_data_dnp.h prot_welco.h prot_lmi.h prot_seriesv.h \
-		verification_objects.h
+		prot_emetcon.h cmd_dlc.h cmd_device.h tbl_metergrp.h \
+		vcomdefs.h tbl_loadprofile.h da_load_profile.h \
+		tbl_dv_mctiedport.h pt_numeric.h tbl_pt_unit.h \
+		tbl_unitmeasure.h config_data_mct.h ctidate.h mgr_route.h \
+		repeaterrole.h thread_monitor.h thread_register_data.h \
+		ThreadStatusKeeper.h config_data_dnp.h prot_welco.h \
+		prot_lmi.h prot_seriesv.h verification_objects.h
 portverify.obj:	precompiled.h boost_time.h mgr_port.h dlldefs.h \
 		smartmap.h boostutil.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h dllbase.h dsm2.h \
@@ -586,10 +586,10 @@ portverify.obj:	precompiled.h boost_time.h mgr_port.h dlldefs.h \
 		desolvers.h msg_signal.h string_utility.h \
 		tbl_static_paoinfo.h pointdefs.h encryption.h tbl_base.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
-		tbl_port_base.h xfer.h counter.h cparms.h configkey.h \
-		configval.h portverify.h queue.h verification_objects.h \
-		ctidate.h database_transaction.h database_writer.h \
-		row_writer.h
+		tbl_port_base.h xfer.h counter.h devicetypes.h cparms.h \
+		configkey.h configval.h portverify.h queue.h \
+		verification_objects.h ctidate.h database_transaction.h \
+		database_writer.h row_writer.h
 port_shr.obj:	precompiled.h ctinexus.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h dsm2.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
@@ -604,8 +604,8 @@ port_shr.obj:	precompiled.h ctinexus.h cticonnect.h yukon.h types.h \
 		db_entry_defines.h desolvers.h msg_signal.h string_utility.h \
 		tbl_static_paoinfo.h pointdefs.h encryption.h tbl_base.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
-		tbl_port_base.h xfer.h critical_section.h counter.h cparms.h \
-		configkey.h configval.h
+		tbl_port_base.h xfer.h critical_section.h counter.h \
+		devicetypes.h cparms.h configkey.h configval.h
 port_shr_ip.obj:	precompiled.h types.h cparms.h dlldefs.h rwutil.h \
 		yukon.h ctidbgmem.h database_connection.h dbaccess.h \
 		dllbase.h dsm2.h cticonnect.h netports.h mutex.h guard.h \
@@ -621,8 +621,8 @@ port_shr_ip.obj:	precompiled.h types.h cparms.h dlldefs.h rwutil.h \
 		string_utility.h tbl_static_paoinfo.h pointdefs.h \
 		encryption.h tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h \
 		pt_base.h tbl_pt_base.h tbl_port_base.h xfer.h \
-		critical_section.h counter.h prot_welco.h porter.h \
-		devicetypes.h cti_asmc.h
+		critical_section.h counter.h devicetypes.h prot_welco.h \
+		porter.h cti_asmc.h
 port_thread_tcp.obj:	precompiled.h port_thread_tcp.h \
 		unsolicited_handler.h port_base.h dev_base.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
@@ -639,7 +639,7 @@ port_thread_tcp.obj:	precompiled.h port_thread_tcp.h \
 		tbl_static_paoinfo.h pointdefs.h encryption.h tbl_base.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
 		tbl_port_base.h xfer.h critical_section.h counter.h \
-		mgr_device.h rtdb.h slctdev.h smartmap.h \
+		devicetypes.h mgr_device.h rtdb.h slctdev.h smartmap.h \
 		readers_writer_lock.h dev_single.h msg_pcrequest.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h connection.h exchange.h msg_ptreg.h msg_reg.h \
@@ -647,11 +647,10 @@ port_thread_tcp.obj:	precompiled.h port_thread_tcp.h \
 		msg_dbchg.h millisecond_timer.h packet_finder.h port_tcp.h \
 		port_serial.h tbl_port_settings.h tbl_port_timing.h \
 		tcp_connection_manager.h tcp_connection.h tbl_paoproperty.h \
-		c_port_interface.h elogger.h portglob.h porter.h \
-		devicetypes.h portfield.h prot_gpuff.h prot_dnp.h \
-		dnp_application.h dnp_objects.h dnp_transport.h \
-		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
-		dnp_object_binaryoutput.h mgr_port.h
+		c_port_interface.h elogger.h portglob.h porter.h portfield.h \
+		prot_gpuff.h prot_dnp.h dnp_application.h dnp_objects.h \
+		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
+		dnp_configuration.h dnp_object_binaryoutput.h mgr_port.h
 port_thread_udp.obj:	precompiled.h port_thread_udp.h yukon.h types.h \
 		ctidbgmem.h unsolicited_handler.h port_base.h dev_base.h \
 		dsm2.h cticonnect.h dlldefs.h netports.h mutex.h guard.h \
@@ -667,21 +666,22 @@ port_thread_udp.obj:	precompiled.h port_thread_udp.h yukon.h types.h \
 		string_utility.h tbl_static_paoinfo.h pointdefs.h \
 		encryption.h tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h \
 		pt_base.h tbl_pt_base.h tbl_port_base.h xfer.h \
-		critical_section.h counter.h mgr_device.h rtdb.h slctdev.h \
-		smartmap.h readers_writer_lock.h dev_single.h msg_pcrequest.h \
-		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
-		tbl_dv_wnd.h connection.h exchange.h msg_ptreg.h msg_reg.h \
-		queue.h cparms.h configkey.h configval.h prot_base.h \
-		msg_dbchg.h millisecond_timer.h port_udp.h port_serial.h \
-		tbl_port_settings.h tbl_port_timing.h tbl_port_tcpip.h \
-		EncodingFilterFactory.h EncodingFilter.h c_port_interface.h \
-		elogger.h prot_gpuff.h packet_finder.h portglob.h porter.h \
-		devicetypes.h mgr_port.h dev_dnp.h dev_remote.h tbl_dialup.h \
-		tbl_direct.h prot_dnp.h dnp_application.h dnp_objects.h \
-		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
-		dnp_configuration.h dnp_object_binaryoutput.h \
-		tbl_dv_address.h dev_gridadvisor.h dev_rds.h \
-		encryption_oneway_message.h portfield.h connection_client.h
+		critical_section.h counter.h devicetypes.h mgr_device.h \
+		rtdb.h slctdev.h smartmap.h readers_writer_lock.h \
+		dev_single.h msg_pcrequest.h msg_pcreturn.h msg_multi.h \
+		msg_pdata.h tbl_dv_scandata.h tbl_dv_wnd.h connection.h \
+		exchange.h msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
+		configval.h prot_base.h msg_dbchg.h millisecond_timer.h \
+		port_udp.h port_serial.h tbl_port_settings.h \
+		tbl_port_timing.h tbl_port_tcpip.h EncodingFilterFactory.h \
+		EncodingFilter.h c_port_interface.h elogger.h prot_gpuff.h \
+		packet_finder.h portglob.h porter.h mgr_port.h dev_dnp.h \
+		dev_remote.h tbl_dialup.h tbl_direct.h prot_dnp.h \
+		dnp_application.h dnp_objects.h dnp_transport.h \
+		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
+		dnp_object_binaryoutput.h tbl_dv_address.h dev_gridadvisor.h \
+		dev_rds.h encryption_oneway_message.h portfield.h \
+		connection_client.h
 ripple.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		connection_client.h connection.h exchange.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h ctidbgmem.h netports.h mutex.h guard.h \
@@ -727,7 +727,7 @@ statisticsmanager.obj:	precompiled.h StatisticsManager.h \
 		desolvers.h msg_signal.h tbl_static_paoinfo.h pointdefs.h \
 		encryption.h tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h \
 		pt_base.h tbl_pt_base.h slctdev.h mgr_port.h port_base.h \
-		tbl_port_base.h xfer.h counter.h
+		tbl_port_base.h xfer.h counter.h devicetypes.h
 statisticsthread.obj:	precompiled.h StatisticsManager.h \
 		PaoStatistics.h PaoStatisticsRecord.h ctitime.h dlldefs.h \
 		ThreadStatusKeeper.h thread_register_data.h boost_time.h \
@@ -760,7 +760,7 @@ systemmsgthread.obj:	precompiled.h cmdparse.h ctitokenizer.h dlldefs.h \
 		tbl_static_paoinfo.h encryption.h tbl_base.h tbl_scanrate.h \
 		tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h slctdev.h \
 		smartmap.h readers_writer_lock.h mgr_port.h port_base.h \
-		tbl_port_base.h xfer.h portdecl.h porter.h devicetypes.h
+		tbl_port_base.h xfer.h devicetypes.h portdecl.h porter.h
 tcp_connection.obj:	precompiled.h cparms.h dlldefs.h rwutil.h yukon.h \
 		types.h ctidbgmem.h database_connection.h dbaccess.h \
 		dllbase.h dsm2.h cticonnect.h netports.h mutex.h guard.h \
@@ -814,17 +814,17 @@ unsolicited_handler.obj:	precompiled.h boostutil.h utility.h ctitime.h \
 		string_utility.h tbl_static_paoinfo.h pointdefs.h \
 		encryption.h tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h \
 		pt_base.h tbl_pt_base.h tbl_port_base.h xfer.h \
-		critical_section.h counter.h mgr_device.h rtdb.h slctdev.h \
-		smartmap.h readers_writer_lock.h dev_single.h msg_pcrequest.h \
-		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
-		tbl_dv_wnd.h connection.h exchange.h msg_ptreg.h msg_reg.h \
-		queue.h cparms.h configkey.h configval.h prot_base.h \
-		msg_dbchg.h millisecond_timer.h prot_gpuff.h packet_finder.h \
-		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h exceptions.h \
-		portglob.h porter.h devicetypes.h dev_dnp.h dev_remote.h \
-		tbl_dialup.h tbl_direct.h prot_dnp.h dnp_application.h \
-		dnp_objects.h dnp_transport.h dnp_datalink.h \
-		dnp_datalink_packet.h dnp_configuration.h \
+		critical_section.h counter.h devicetypes.h mgr_device.h \
+		rtdb.h slctdev.h smartmap.h readers_writer_lock.h \
+		dev_single.h msg_pcrequest.h msg_pcreturn.h msg_multi.h \
+		msg_pdata.h tbl_dv_scandata.h tbl_dv_wnd.h connection.h \
+		exchange.h msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
+		configval.h prot_base.h msg_dbchg.h millisecond_timer.h \
+		prot_gpuff.h packet_finder.h pt_numeric.h tbl_pt_unit.h \
+		tbl_unitmeasure.h exceptions.h portglob.h porter.h dev_dnp.h \
+		dev_remote.h tbl_dialup.h tbl_direct.h prot_dnp.h \
+		dnp_application.h dnp_objects.h dnp_transport.h \
+		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
 		dnp_object_binaryoutput.h tbl_dv_address.h msg_trace.h \
 		StatisticsManager.h PaoStatistics.h PaoStatisticsRecord.h \
 		ThreadStatusKeeper.h thread_register_data.h thread_monitor.h \

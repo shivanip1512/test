@@ -97,7 +97,7 @@ void Mct410HourlyReadCommand::validateDate(const CtiDate &d, const CtiDate &Yest
 
 
 //  throws CommandException
-DlcCommand::point_data Mct410HourlyReadCommand::extractBlinkCount(const payload_t &payload)
+DlcCommand::point_data Mct410HourlyReadCommand::extractBlinkCount(const Bytes &payload)
 {
     point_data blink;
 
@@ -119,7 +119,7 @@ DlcCommand::point_data Mct410HourlyReadCommand::extractBlinkCount(const payload_
 
 
 //  throws CommandException
-Mct410Device::point_info Mct410HourlyReadCommand::extractMidnightKwh(const payload_t &payload) const
+Mct410Device::point_info Mct410HourlyReadCommand::extractMidnightKwh(const Bytes &payload) const
 {
     //  we have to manually check this here because we're using Mct4xxDevice::getData(), which only knows pointers
     if( payload.size() < 13 )
@@ -138,7 +138,7 @@ Mct410Device::point_info Mct410HourlyReadCommand::getAccumulatorData(const unsig
 
 
 //  throws CommandException
-vector<unsigned> Mct410HourlyReadCommand::extractDeltas(const payload_t &payload, const request_pointer &rp)
+vector<unsigned> Mct410HourlyReadCommand::extractDeltas(const Bytes &payload, const request_pointer &rp)
 {
     CtiTime day_begin(rp.date), day_end(rp.date + 1);
 
@@ -221,7 +221,7 @@ DlcCommand::request_ptr Mct410HourlyReadCommand::makeRequest(const CtiTime now)
 
 
 //  throws CommandException
-DlcCommand::request_ptr Mct410HourlyReadCommand::decode(CtiTime now, const unsigned function, const payload_t &payload, string &description, vector<point_data> &points)
+DlcCommand::request_ptr Mct410HourlyReadCommand::decode(CtiTime now, const unsigned function, const Bytes &payload, string &description, vector<point_data> &points)
 try
 {
     const unsigned weekday = getValueFromBits(payload, 0, 3);
@@ -294,7 +294,7 @@ try
         return request_ptr();
     }
 }
-catch( BaseCommand::CommandException &ex )
+catch( DlcCommand::CommandException &ex )
 {
     return error(now, ex.error_code, description = ex.error_description);
 }

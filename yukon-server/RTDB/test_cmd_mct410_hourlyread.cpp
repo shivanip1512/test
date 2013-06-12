@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_active)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x62);  //  Day of week - 3, or Wednesday
         payload.push_back(0xc5);
@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_active)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x6a);  //  Day of week - still 3, or Wednesday
         payload.push_back(0x08);  //  Blink count = 321, or 0x141
@@ -190,7 +190,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_inactive)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x82);  //  Day of week - 4, or Thursday
         payload.push_back(0xc5);
@@ -242,7 +242,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_inactive)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x8a);  //  Day of week - still 4, or Thursday
         payload.push_back(0x08);  //  Blink count = 321, or 0x141
@@ -310,7 +310,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_fall_2010)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x02);  //  Day of week - 0, or Sunday
         payload.push_back(0xc5);
@@ -362,7 +362,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_fall_2010)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x0a);  //  Day of week - still 0, or Sunday
         payload.push_back(0x08);  //  Blink count = 321, or 0x141
@@ -432,7 +432,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_spring_2011)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x02);  //  Day of week - 0, or Sunday
         payload.push_back(0xc5);
@@ -483,7 +483,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_spring_2011)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x0a);  //  Day of week - still 0, or Sunday
         payload.push_back(0x08);  //  Blink count = 321, or 0x141
@@ -553,7 +553,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_channel_2)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x62);  //  Day of week - 3, or Wednesday
         payload.push_back(0xc5);
@@ -604,7 +604,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_channel_2)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x6a);  //  Day of week - still 3, or Wednesday
         payload.push_back(0x08);  //  Blink count = 321, or 0x141
@@ -672,7 +672,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_yesterday)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x22);  //  Day of week - 1, or Monday
         payload.push_back(0xc5);
@@ -723,7 +723,7 @@ BOOST_AUTO_TEST_CASE(test_command_single_day_read_yesterday)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x2a);  //  Day of week - still 1, or Monday
         payload.push_back(0x08);  //  Blink count = 321, or 0x141
@@ -793,7 +793,7 @@ BOOST_AUTO_TEST_CASE(test_command_multi_day_read_dst_active)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x62);  //  Day of week - 3, or Wednesday
         payload.push_back(0xc5);
@@ -844,7 +844,7 @@ BOOST_AUTO_TEST_CASE(test_command_multi_day_read_dst_active)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x6a);  //  Day of week - still 3, or Wednesday
         payload.push_back(0x08);  //  Blink count = 321, or 0x141
@@ -898,7 +898,7 @@ BOOST_AUTO_TEST_CASE(test_command_multi_day_read_dst_active)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x82);  //  Day of week - 4, or Thursday
         payload.push_back(0xc5);
@@ -949,7 +949,7 @@ BOOST_AUTO_TEST_CASE(test_command_multi_day_read_dst_active)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x8a);  //  Day of week - still 4, or Thursday
         payload.push_back(0x08);  //  Blink count = 321, or 0x141
@@ -1170,7 +1170,7 @@ BOOST_AUTO_TEST_CASE(test_decode_invalid_midnight_kwh_reading)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x62);  //  Day of week - 3, or Wednesday
         payload.push_back(0xc5);
@@ -1211,7 +1211,7 @@ BOOST_AUTO_TEST_CASE(test_decode_invalid_midnight_kwh_reading)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x6a);  //  Day of week - still 3, or Wednesday
         payload.push_back(0x08);  //  Blink count = 321, or 0x141
@@ -1257,7 +1257,7 @@ BOOST_AUTO_TEST_CASE(test_decode_one_bad_delta_on_first_read)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x62);  //  Day of week - 3, or Wednesday
         payload.push_back(0xc5);
@@ -1299,7 +1299,7 @@ BOOST_AUTO_TEST_CASE(test_decode_one_bad_delta_on_first_read)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x6a);  //  Day of week - still 3, or Wednesday
         payload.push_back(0x08);  //  Blink count = 321, or 0x141
@@ -1355,7 +1355,7 @@ BOOST_AUTO_TEST_CASE(test_decode_all_bad_deltas_on_first_read)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x7f);  //  Day of week - 3, or Wednesday
         payload.push_back(0xff);
@@ -1416,7 +1416,7 @@ BOOST_AUTO_TEST_CASE(test_decode_payload_too_small_once)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x62);  //  Day of week - 3, or Wednesday
         payload.push_back(0xc5);
@@ -1451,7 +1451,7 @@ BOOST_AUTO_TEST_CASE(test_decode_payload_too_small_once)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x62);  //  Day of week - 3, or Wednesday
         payload.push_back(0xc5);
@@ -1522,7 +1522,7 @@ BOOST_AUTO_TEST_CASE(test_decode_bad_weekday)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x42);  //  Day of week - 2, or Tuesday
         payload.push_back(0xc5);
@@ -1606,7 +1606,7 @@ BOOST_AUTO_TEST_CASE(test_decode_wrong_read)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x6a);  //  Day of week - 3, or Wednesday
         payload.push_back(0x08);  //  Blink count = 321, or 0x141
@@ -1661,7 +1661,7 @@ BOOST_AUTO_TEST_CASE(test_decode_expired)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         payload.push_back(0x6a);  //  Day of week - 3, or Wednesday
         payload.push_back(0x08);  //  Blink count = 321, or 0x141

@@ -158,17 +158,18 @@ pilserver.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		dev_mct.h dev_carrier.h dev_dlcbase.h dev_single.h \
 		msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h connection.h \
 		exchange.h msg_ptreg.h msg_reg.h queue.h prot_base.h xfer.h \
-		tbl_route.h tbl_carrier.h prot_emetcon.h cmd_dlc.h cmd_base.h \
-		tbl_metergrp.h tbl_loadprofile.h da_load_profile.h \
-		tbl_dv_mctiedport.h CtiLocalConnect.h critical_section.h \
-		porter.h devicetypes.h queent.h pil_conmgr.h con_mgr.h \
-		connection_server.h connection_listener.h pil_exefct.h \
-		executorfactory.h executor.h exe_cmd.h exe_reg.h pilserver.h \
-		server_b.h smartmap.h readers_writer_lock.h mgr_device.h \
-		rtdb.h slctdev.h mgr_point.h mgr_route.h repeaterrole.h \
-		mgr_config.h amq_constants.h msg_cmd.h rte_ccu.h rte_xcu.h \
-		tbl_rtcarrier.h tbl_rtrepeater.h amq_connection.h \
-		PorterResponseMessage.h ctistring.h connection_client.h
+		tbl_route.h tbl_carrier.h prot_emetcon.h cmd_dlc.h \
+		cmd_device.h tbl_metergrp.h tbl_loadprofile.h \
+		da_load_profile.h tbl_dv_mctiedport.h CtiLocalConnect.h \
+		critical_section.h porter.h devicetypes.h queent.h \
+		pil_conmgr.h con_mgr.h connection_server.h \
+		connection_listener.h pil_exefct.h executorfactory.h \
+		executor.h exe_cmd.h exe_reg.h pilserver.h server_b.h \
+		smartmap.h readers_writer_lock.h mgr_device.h rtdb.h \
+		slctdev.h mgr_point.h mgr_route.h repeaterrole.h mgr_config.h \
+		amq_constants.h msg_cmd.h rte_ccu.h rte_xcu.h tbl_rtcarrier.h \
+		tbl_rtrepeater.h amq_connection.h PorterResponseMessage.h \
+		ctistring.h debug_timer.h connection_client.h
 pil_conmgr.obj:	precompiled.h collectable.h pil_conmgr.h exchange.h \
 		dlldefs.h dllbase.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h netports.h mutex.h guard.h utility.h ctitime.h \

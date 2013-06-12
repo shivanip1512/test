@@ -45,7 +45,7 @@ public:
     };
 
     virtual request_ptr execute(const CtiTime now);
-    virtual request_ptr decode (const CtiTime now, const unsigned function, const payload_t &payload, std::string &description, std::vector<point_data> &points);
+    virtual request_ptr decode (const CtiTime now, const unsigned function, const Bytes &payload, std::string &description, std::vector<point_data> &points);
 };
 
 }

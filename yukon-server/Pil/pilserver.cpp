@@ -944,15 +944,6 @@ void CtiPILServer::nexusWriteThread()
 
 int CtiPILServer::executeRequest(const CtiRequestMsg *pReq)
 {
-    int i = 0;
-    int status = NoError;
-
-    list< CtiMessage* >  vgList;
-    list< CtiMessage* >  retList;
-    list< OUTMESS* >     outList;
-
-    list< CtiRequestMsg* >  execList;
-
     if( pReq->UserMessageId() != _currentUserMessageId ||
         !_currentParse.isEqual(pReq->CommandString()))
     {
@@ -1014,8 +1005,16 @@ int CtiPILServer::executeRequest(const CtiRequestMsg *pReq)
 
         PorterSystemMessageQueue.putQueue(tempReqMsg.release());
 
-        return status;
+        return NoError;
     }
+
+    int status = NoError;
+
+    list< CtiMessage* >  vgList;
+    list< CtiMessage* >  retList;
+    list< OUTMESS* >     outList;
+
+    list< CtiRequestMsg* >  execList;
 
     try
     {
@@ -1084,7 +1083,7 @@ int CtiPILServer::executeRequest(const CtiRequestMsg *pReq)
                     }
                 }
 
-                outList.insert(outList.end(), temp_outList.begin(), temp_outList.end());
+                outList.splice(outList.end(), temp_outList);
 
                 for each( CtiMessage *msg in temp_retList )
                 {
@@ -1098,8 +1097,9 @@ int CtiPILServer::executeRequest(const CtiRequestMsg *pReq)
                         retList.push_back(msg);
                     }
                 }
+                temp_retList.clear();
 
-                vgList.insert(vgList.end(), temp_vgList.begin(), temp_vgList.end());
+                vgList.splice(vgList.end(), temp_vgList);
 
                 if(status != NORMAL &&
                    status != DEVICEINHIBITED)
@@ -1144,7 +1144,6 @@ int CtiPILServer::executeRequest(const CtiRequestMsg *pReq)
                 }
             }
         }
-
         execList.clear();
     }
     catch(...)

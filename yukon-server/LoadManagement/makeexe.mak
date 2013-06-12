@@ -947,8 +947,7 @@ lm_program_serialization.obj:	precompiled.h lm_group_serialization.h \
 		lmenergyexchangeofferrevision.h lmenergyexchangehourlyoffer.h \
 		lmenergyexchangecustomer.h lmenergyexchangecustomerreply.h \
 		lmenergyexchangehourlycustomer.h
-lm_server_client_serialization_test.obj:	precompiled.h \
-		test_lm_serialization.h test_serialization.h message.h \
+lm_server_client_serialization_test.obj:	precompiled.h message.h \
 		ctitime.h dlldefs.h ctidbgmem.h collectable.h rwutil.h \
 		yukon.h types.h database_connection.h dbaccess.h dllbase.h \
 		dsm2.h cticonnect.h netports.h mutex.h guard.h utility.h \
@@ -961,9 +960,9 @@ lm_server_client_serialization_test.obj:	precompiled.h \
 		msg_pcrequest.h msg_pcreturn.h msg_ptreg.h msg_queuedata.h \
 		Msg_reg.h msg_requestcancel.h msg_server_req.h \
 		msg_server_resp.h msg_signal.h msg_tag.h msg_trace.h \
-		test_serialization_helper.h connection_server.h connection.h \
-		exchange.h string_utility.h queue.h cparms.h configkey.h \
-		configval.h connection_listener.h lmmessage.h lmcontrolarea.h \
+		connection_server.h connection.h exchange.h string_utility.h \
+		queue.h cparms.h configkey.h configval.h \
+		connection_listener.h lmmessage.h lmcontrolarea.h \
 		dbmemobject.h observe.h lmprogrambase.h lmgroupbase.h \
 		lmcontrolareatrigger.h ctidate.h lmprogramdirect.h \
 		lmprogramdirectgear.h tbl_lmprogramhistory.h \
@@ -978,7 +977,8 @@ lm_server_client_serialization_test.obj:	precompiled.h \
 		BeatThePeakControlInterface.h BeatThePeakAlertLevel.h \
 		lmgroupgolay.h lmgroupmacro.h lmgroupmct.h lmgrouppoint.h \
 		lmgroupripple.h lmgroupsa105.h lmgroupsa205.h lmgroupsa305.h \
-		lmgroupsadigital.h lmgroupversacom.h
+		lmgroupsadigital.h lmgroupversacom.h test_lm_serialization.h \
+		test_serialization.h test_serialization_helper.h
 loadmanager.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \

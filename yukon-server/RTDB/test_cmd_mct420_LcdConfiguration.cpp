@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE(test_empty_write)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         string description;
         std::vector<DlcCommand::point_data> points;
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(test_empty_write)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         string description;
         std::vector<DlcCommand::point_data> points;
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(test_empty_write)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         string description;
         std::vector<DlcCommand::point_data> points;
@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
         }
 
         {
-            DlcCommand::payload_t payload;
+            DlcCommand::Bytes payload;
 
             string description;
             std::vector<DlcCommand::point_data> points;
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
         }
 
         {
-            DlcCommand::payload_t payload;
+            DlcCommand::Bytes payload;
 
             string description;
             std::vector<DlcCommand::point_data> points;
@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
         }
 
         {
-            DlcCommand::payload_t payload;
+            DlcCommand::Bytes payload;
 
             string description;
             std::vector<DlcCommand::point_data> points;
@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
         }
 
         {
-            DlcCommand::payload_t payload;
+            DlcCommand::Bytes payload;
 
             string description;
             std::vector<DlcCommand::point_data> points;
@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
         }
 
         {
-            DlcCommand::payload_t payload;
+            DlcCommand::Bytes payload;
 
             string description;
             std::vector<DlcCommand::point_data> points;
@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE(test_one_metric)
         }
 
         {
-            DlcCommand::payload_t payload;
+            DlcCommand::Bytes payload;
 
             string description;
             std::vector<DlcCommand::point_data> points;
@@ -237,7 +237,7 @@ BOOST_AUTO_TEST_CASE(test_two_metrics)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         string description;
         std::vector<DlcCommand::point_data> points;
@@ -254,7 +254,7 @@ BOOST_AUTO_TEST_CASE(test_two_metrics)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         string description;
         std::vector<DlcCommand::point_data> points;
@@ -271,7 +271,7 @@ BOOST_AUTO_TEST_CASE(test_two_metrics)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         string description;
         std::vector<DlcCommand::point_data> points;
@@ -327,7 +327,7 @@ BOOST_AUTO_TEST_CASE(test_twelve_metrics)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         string description;
         std::vector<DlcCommand::point_data> points;
@@ -344,7 +344,7 @@ BOOST_AUTO_TEST_CASE(test_twelve_metrics)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         string description;
         std::vector<DlcCommand::point_data> points;
@@ -361,7 +361,7 @@ BOOST_AUTO_TEST_CASE(test_twelve_metrics)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         string description;
         std::vector<DlcCommand::point_data> points;
@@ -419,7 +419,7 @@ BOOST_AUTO_TEST_CASE(test_thirteen_metrics)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         string description;
         std::vector<DlcCommand::point_data> points;
@@ -436,7 +436,7 @@ BOOST_AUTO_TEST_CASE(test_thirteen_metrics)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         string description;
         std::vector<DlcCommand::point_data> points;
@@ -453,7 +453,7 @@ BOOST_AUTO_TEST_CASE(test_thirteen_metrics)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         string description;
         std::vector<DlcCommand::point_data> points;
@@ -470,7 +470,7 @@ BOOST_AUTO_TEST_CASE(test_thirteen_metrics)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         string description;
         std::vector<DlcCommand::point_data> points;
@@ -529,7 +529,7 @@ BOOST_AUTO_TEST_CASE(test_fourteen_metrics)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         string description;
         std::vector<DlcCommand::point_data> points;
@@ -547,7 +547,7 @@ BOOST_AUTO_TEST_CASE(test_fourteen_metrics)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         string description;
         std::vector<DlcCommand::point_data> points;
@@ -564,7 +564,7 @@ BOOST_AUTO_TEST_CASE(test_fourteen_metrics)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         string description;
         std::vector<DlcCommand::point_data> points;
@@ -581,7 +581,7 @@ BOOST_AUTO_TEST_CASE(test_fourteen_metrics)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         string description;
         std::vector<DlcCommand::point_data> points;
@@ -652,7 +652,7 @@ BOOST_AUTO_TEST_CASE(test_twenty_six_metrics)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         string description;
         std::vector<DlcCommand::point_data> points;
@@ -682,7 +682,7 @@ BOOST_AUTO_TEST_CASE(test_twenty_six_metrics)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         string description;
         std::vector<DlcCommand::point_data> points;
@@ -699,7 +699,7 @@ BOOST_AUTO_TEST_CASE(test_twenty_six_metrics)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         string description;
         std::vector<DlcCommand::point_data> points;
@@ -716,7 +716,7 @@ BOOST_AUTO_TEST_CASE(test_twenty_six_metrics)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         string description;
         std::vector<DlcCommand::point_data> points;
@@ -770,7 +770,7 @@ BOOST_AUTO_TEST_CASE(test_reads_only)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         string description;
         std::vector<DlcCommand::point_data> points;
@@ -787,7 +787,7 @@ BOOST_AUTO_TEST_CASE(test_reads_only)
     }
 
     {
-        DlcCommand::payload_t payload;
+        DlcCommand::Bytes payload;
 
         string description;
         std::vector<DlcCommand::point_data> points;
