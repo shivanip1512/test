@@ -15,7 +15,7 @@
 <entry key="yukon.web.chooseAccountNumbers">Choose Account Numbers</entry>
 <entry key="yukon.web.chooseSerialNumbers">Choose Serial Numbers</entry>
 <entry key="yukon.web.chooseUsers">Choose Users</entry>
-<entry key="yukon.web.help.multiSelect">Hold &lt;CTRL&gt; key down to select multiple values</entry>
-<entry key="yukon.web.help.rangeSelect">Hold &lt;Shift&gt; key down to select range of values</entry>
+<entry key="yukon.web.help.multiSelect">Hold CTRL key down to select multiple values</entry>
+<entry key="yukon.web.help.rangeSelect">Hold Shift key down to select range of values</entry>
 
 </properties>
