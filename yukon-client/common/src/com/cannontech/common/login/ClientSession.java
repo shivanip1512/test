@@ -69,32 +69,17 @@ public class ClientSession {
 	public boolean checkRole(int roleid) {
 		return YukonSpringHook.getBean(AuthDao.class).getRole(getUser(), roleid) != null;
 	}
-	
-	/**
-	 * Returns the value of the given role property for the current user.
-	 * Checks if the current user has the give roleproperty id
-	 * @param rolePropertyID
-	 * @param defaultValue
-	 * @return
-	 */
-	public String getRolePropertyValue(int rolePropertyID, String defaultValue) {
-	    try {
-            RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
-            return rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(rolePropertyID), getUser());
-	    }
-	    catch (Exception UserNotInRoleException) {
-	        return defaultValue;
-	    }
-	}
 		
 	/**
 	 * Returns the value of the given role property for the current user.
+	 * Utilizes rolePropertyDao.getPropertyStringValue, so this method
+	 * will never return null. Instead returns "" for undefined rolePropertyIds. 
 	 * @param rolePropertyID
-	 * @return
+	 * @return String representing a given role property ID
 	 */
 	public String getRolePropertyValue(int rolePropertyID) {
-        RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
-        return rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(rolePropertyID), getUser());
+	    RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
+	    return rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(rolePropertyID), getUser());
 	}
 	
 	public static synchronized ClientSession getInstance() {

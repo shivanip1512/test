@@ -37,8 +37,7 @@ class SignalAlarmHandler
    
    public static final int ALARMS_DISPLAYED = Integer.parseInt(
 			ClientSession.getInstance().getRolePropertyValue(
-                  TDCRole.TDC_ALARM_COUNT, 
-                  "3") );
+                  TDCRole.TDC_ALARM_COUNT) );
 
    
    private BookMarkSelectionListener bookmarkListener = null;

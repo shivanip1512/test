@@ -19,7 +19,7 @@ public class LMGroupEditor extends com.cannontech.common.editor.PropertyPanel im
 	//hex value representing some privileges of the user on this machine
 	public static final long SPECIAL_RIPPLE = Long.parseLong( 
 		ClientSession.getInstance().getRolePropertyValue(
-		DBEditorRole.OPTIONAL_PRODUCT_DEV, "0"), 16 );
+		DBEditorRole.OPTIONAL_PRODUCT_DEV), 16 );
 		
 	private static final int[][] EDITOR_TYPES =
 	{

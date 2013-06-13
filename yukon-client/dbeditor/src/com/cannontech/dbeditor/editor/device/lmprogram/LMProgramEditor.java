@@ -319,8 +319,15 @@ public void setValue(Object val)
 				tempPanel = (DataInputPanel)panelTabs[0];
 				
 				//make sure that this user is allowed to have a member control tab
-				boolean allowMemCntrl = ClientSession.getInstance().getRolePropertyValue(
-				DBEditorRole.ALLOW_MEMBER_PROGRAMS, "FALSE").trim().equalsIgnoreCase("TRUE");
+				boolean allowMemCntrl = false;
+				try {
+				    allowMemCntrl = Boolean.parseBoolean(
+				                               ClientSession.getInstance().getRolePropertyValue(
+				                                                               DBEditorRole.ALLOW_MEMBER_PROGRAMS).trim());
+				}
+				catch (Exception e)
+				{/*Leave allowMemCntrl false*/}
+				
 				if((!allowMemCntrl && ((LiteYukonUser)ClientSession.getInstance().getUser()).getUserID() != UserUtils.USER_ADMIN_ID) && tempPanel instanceof com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramDirectMemberControlPanel)
 				{
 					i++;

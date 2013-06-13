@@ -213,7 +213,7 @@ public Object[] createNewPanel(int panelIndex)
 		case 10:
 			String showIt = 
 				ClientSession.getInstance().getRolePropertyValue(
-					DBEditorRole.TRANS_EXCLUSION, "false");
+					DBEditorRole.TRANS_EXCLUSION);
 	
 			if( "TRUE".equalsIgnoreCase(showIt) )
 			{
@@ -228,7 +228,7 @@ public Object[] createNewPanel(int panelIndex)
 		case 11:
 			String showItToo = 
 				ClientSession.getInstance().getRolePropertyValue(
-					DBEditorRole.TRANS_EXCLUSION, "false");
+					DBEditorRole.TRANS_EXCLUSION);
 	
 			if( "TRUE".equalsIgnoreCase(showItToo) )
 			{

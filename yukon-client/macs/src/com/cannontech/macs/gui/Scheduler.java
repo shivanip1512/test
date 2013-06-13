@@ -312,11 +312,12 @@ private void initialize()
 		//hex value representing the privelages of the user on this machine
 		userRightsInt = Integer.parseInt( 
 				ClientSession.getInstance().getRolePropertyValue(
-				TDCRole.MACS_EDIT, "0"), 16 );
+				TDCRole.MACS_EDIT), 16 );
 	}
    catch (java.util.MissingResourceException e)
    {
-	  com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+       userRightsInt = 0;
+       com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
    }
 
 }

@@ -1389,10 +1389,10 @@ public long getCurrentDisplayNumber()
 private void getExternalResources() 
 {
 	noCreationAllowed = ClientSession.getInstance().getRolePropertyValue(
-				TDCRole.TDC_EXPRESS, "no_soup" );
+				TDCRole.TDC_EXPRESS);
 
 	TDCDefines.MAX_ROWS = Integer.parseInt(
-				ClientSession.getInstance().getRolePropertyValue( TDCRole.TDC_MAX_ROWS, "500" ) );		
+				ClientSession.getInstance().getRolePropertyValue( TDCRole.TDC_MAX_ROWS ) );		
 }
 
 

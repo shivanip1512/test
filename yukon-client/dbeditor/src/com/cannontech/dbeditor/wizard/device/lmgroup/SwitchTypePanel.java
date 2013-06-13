@@ -25,7 +25,7 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
 	//hex value representing some privileges of the user on this machine
 	public static final long SHOW_PROTOCOL = Long.parseLong( 
 		ClientSession.getInstance().getRolePropertyValue(
-		DBEditorRole.OPTIONAL_PRODUCT_DEV, "0"), 16 );
+		DBEditorRole.OPTIONAL_PRODUCT_DEV), 16 );
 
     private static final PaoType [] GROUP_LIST = {
         PaoType.LM_GROUP_DIGI_SEP,

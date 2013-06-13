@@ -109,11 +109,17 @@ public Object[] createNewPanel(int panelIndex)
 			break;
 
 		case 6:
-			String showIt = 
-				ClientSession.getInstance().getRolePropertyValue(
-						DBEditorRole.TRANS_EXCLUSION, "false");
+			boolean showIt = false;
+			try
+			{
+			    Boolean.parseBoolean(ClientSession.getInstance().getRolePropertyValue(DBEditorRole.TRANS_EXCLUSION));
+			}
+			catch (Exception e)
+			{
+			    /* Leave showIt false */
+			}
 
-			if( "TRUE".equalsIgnoreCase(showIt) )
+			if(showIt)
 			{
 				objs[0] = new com.cannontech.dbeditor.editor.device.PAOExclusionEditorPanel();
 				objs[1] = "Exclusion List";

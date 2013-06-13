@@ -82,10 +82,8 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		boolean editPointID = false;
 		try
 		{
-			String editPointIDString = ClientSession.getInstance().getRolePropertyValue(
-					 DBEditorRole.POINT_ID_EDIT,"false" );
-			if(editPointIDString.equals("true"))
-				editPointID = true;
+			editPointID = Boolean.parseBoolean(ClientSession.getInstance().getRolePropertyValue(
+					 DBEditorRole.POINT_ID_EDIT));
 		}
 		catch (java.util.MissingResourceException e)
 		{
@@ -143,10 +141,8 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		boolean editPointID = false;
 		try
 		{
-			String editPointIDString = ClientSession.getInstance().getRolePropertyValue(
-					 DBEditorRole.POINT_ID_EDIT,"false" );
-			if(editPointIDString.equals("true"))
-				editPointID = true;
+			editPointID = Boolean.parseBoolean(ClientSession.getInstance().getRolePropertyValue(
+					 DBEditorRole.POINT_ID_EDIT));
 		}
 		catch (java.util.MissingResourceException e )
 		{
@@ -172,10 +168,8 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		boolean editPointID = false;
 		try
 		{
-			String editPointIDString = ClientSession.getInstance().getRolePropertyValue(
-					 DBEditorRole.POINT_ID_EDIT,"false" );
-			if(editPointIDString.equals("true"))
-				editPointID = true;
+			editPointID = Boolean.parseBoolean(ClientSession.getInstance().getRolePropertyValue(
+					 DBEditorRole.POINT_ID_EDIT));
 		}
 		catch (java.util.MissingResourceException e)
 		{
@@ -205,10 +199,8 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		boolean editPointID = false;
 		try
 		{
-			String editPointIDString = ClientSession.getInstance().getRolePropertyValue(
-					 DBEditorRole.POINT_ID_EDIT,"false" );
-			if(editPointIDString.equals("true"))
-				editPointID = true;
+			editPointID = Boolean.parseBoolean(ClientSession.getInstance().getRolePropertyValue(
+					 DBEditorRole.POINT_ID_EDIT));
 		}
 		catch (java.util.MissingResourceException e)
 		{

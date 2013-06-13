@@ -49,7 +49,7 @@ public class GroupTableModel extends javax.swing.table.AbstractTableModel implem
 	      showRedCol = 
 	         Boolean.valueOf(
 	            ClientSession.getInstance().getRolePropertyValue(
-	               TDCRole.LC_REDUCTION_COL, "true") );
+	               TDCRole.LC_REDUCTION_COL) );
 	   }
 	   catch( Exception e)
 	   {}

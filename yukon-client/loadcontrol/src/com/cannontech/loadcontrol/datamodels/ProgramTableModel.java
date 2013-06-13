@@ -60,8 +60,7 @@ public class ProgramTableModel extends javax.swing.table.AbstractTableModel impl
 	      showRedCol = 
 	         Boolean.valueOf(
 	            ClientSession.getInstance().getRolePropertyValue(
-	               TDCRole.LC_REDUCTION_COL, 
-	               "true") );
+	               TDCRole.LC_REDUCTION_COL));
 	   }
 	   catch( Exception e)
 	   {}

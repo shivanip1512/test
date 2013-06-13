@@ -36,7 +36,7 @@ public final class TDCDefines
    //hex value representing the privileges of the user on this machine
    public static final long USER_RIGHTS = Long.parseLong( 
 			ClientSession.getInstance().getRolePropertyValue(
-         TDCRole.TDC_RIGHTS, "0"), 16 );
+         TDCRole.TDC_RIGHTS), 16 );
 
 
 /**

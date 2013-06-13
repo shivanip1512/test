@@ -2205,10 +2205,8 @@ private void readConfigParameters()
 
 	try
 	{	 			
-		decimalPlaces = (new Integer(
-		ClientSession.getInstance().getRolePropertyValue(
-				TDCRole.DECIMAL_PLACES,
-				"3")) ).intValue();
+	    /* If getRolePropertyValue fails (returns ""), we will get a NumberFormatExcption, handled below. */
+		decimalPlaces = Integer.parseInt(ClientSession.getInstance().getRolePropertyValue(TDCRole.DECIMAL_PLACES));
 	}
 	catch( Exception e )
 	{
@@ -2238,7 +2236,7 @@ private void readConfigParameters()
 	try
 	{
 		showLm = ClientSession.getInstance().getRolePropertyValue(
-			DBEditorRole.DBEDITOR_LM, "FALSE").trim().equalsIgnoreCase("TRUE");
+			DBEditorRole.DBEDITOR_LM).trim().equalsIgnoreCase("TRUE");
 	}
 	catch( Exception e )
 	{
@@ -2248,7 +2246,7 @@ private void readConfigParameters()
 	try
 	{
 		showSystem = ClientSession.getInstance().getRolePropertyValue(
-			DBEditorRole.DBEDITOR_SYSTEM, "FALSE").trim().equalsIgnoreCase("TRUE");
+			DBEditorRole.DBEDITOR_SYSTEM).trim().equalsIgnoreCase("TRUE");
 	}
 	catch( Exception e )
 	{
@@ -2259,7 +2257,7 @@ private void readConfigParameters()
 	try
 	{
 		accessOfLoginNotAllowed = ClientSession.getInstance().getRolePropertyValue(
-			DBEditorRole.PERMIT_LOGIN_EDIT, "TRUE").trim().equalsIgnoreCase("FALSE");
+			DBEditorRole.PERMIT_LOGIN_EDIT).trim().equalsIgnoreCase("FALSE");
 	}
 	catch( Exception e )
 	{
@@ -2644,9 +2642,15 @@ public void setDatabase(DatabaseTypes whichDatabase)
 				this.menuBar = getMenuBar(whichDatabase);
 				viewMenu.lmRadioButtonMenuItem.setSelected(true);
 				//hex value representing some privileges of the user on this machine
-				long show_protocol = Long.parseLong( 
-					ClientSession.getInstance().getRolePropertyValue(
-					DBEditorRole.OPTIONAL_PRODUCT_DEV, "0"), 16 );
+				long show_protocol;
+				try {
+				    show_protocol = Long.parseLong( 
+				                             ClientSession.getInstance().getRolePropertyValue(
+				                                                             DBEditorRole.OPTIONAL_PRODUCT_DEV), 16 );
+				}
+				catch (Exception e) {
+				    show_protocol = 0;
+				}
 				if((show_protocol & ClientRights.SHOW_ADDITIONAL_PROTOCOLS) != 0) {
                     models = LM_MODELS_WITH_SA;
                 } else {
