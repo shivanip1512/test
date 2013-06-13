@@ -34,7 +34,6 @@
         <property name="moveInDefinition" ref="moveInJob"/>
         <property name="moveOutDefinition" ref="moveOutJob"/>
 
-        <property name="authDao" ref="authDao"/>
         <property name="calculatedPointService" ref="calculatedPointService"/>
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao"/>
         <property name="deviceGroupDao" ref="deviceGroupDao"/>
