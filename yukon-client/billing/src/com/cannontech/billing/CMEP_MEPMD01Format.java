@@ -26,7 +26,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.common.util.MutableRange;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
@@ -57,12 +57,12 @@ public class CMEP_MEPMD01Format extends FileFormatBase  {
         Instant processingDate = new Instant();
 
         // Get the information from the CPARMS and the billing module
-        MutableRange<Long> changeIdRange = null;
+        Range<Long> changeIdRange = null;
         boolean useLastChangeId= getBillingFileDefaults().getToken() != null;
         if (useLastChangeId) {
             Long lastCempChangeId = persistedSystemValueDao.getLongValue(PersistedSystemValueKey.CMEP_BILLING_FILE_LAST_CHANGE_ID);
             Long maxChangeId = rawPointHistoryDao.getMaxChangeId();
-            changeIdRange = new MutableRange<Long>(lastCempChangeId, maxChangeId);
+            changeIdRange = Range.inclusive(lastCempChangeId, maxChangeId);
         }
         
         Date billingStartDate = getBillingFileDefaults().getEnergyStartDate();
