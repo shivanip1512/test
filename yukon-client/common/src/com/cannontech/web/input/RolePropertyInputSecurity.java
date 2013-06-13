@@ -1,10 +1,10 @@
 package com.cannontech.web.input;
 
-import com.cannontech.core.dao.AuthDao;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ReflectivePropertySearcher;
 
 /**
@@ -14,10 +14,11 @@ import com.cannontech.util.ReflectivePropertySearcher;
 public class RolePropertyInputSecurity implements InputSecurity {
 
     private String rolePropertyString = null;
+    @Autowired public RolePropertyDao rolePropertyDao = null;
 
     public boolean isEditable(LiteYukonUser user) {
         int propId = ReflectivePropertySearcher.getRoleProperty().getIntForName(rolePropertyString);
-        String value = YukonSpringHook.getBean(RolePropertyDao.class).getPropertyStringValue(
+        String value = rolePropertyDao.getPropertyStringValue(
                                                                           YukonRoleProperty.getForId(propId), user);
 
         return Boolean.valueOf(value);
@@ -25,9 +26,6 @@ public class RolePropertyInputSecurity implements InputSecurity {
 
     public void setRoleProperty(String roleProperty) {
         this.rolePropertyString = roleProperty;
-    }
-
-    public void setAuthDao(AuthDao authDao) {
     }
 
 }
