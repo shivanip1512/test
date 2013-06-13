@@ -58,36 +58,43 @@ vector<unsigned> DeviceCommand::getValueVectorFromBits(const Bytes &data, const 
 
 void DeviceCommand::setBits(Bytes &data, const unsigned start_offset, const unsigned length, const unsigned value)
 {
-    const unsigned end_offset = start_offset + length;
+    if( ! length )
+    {
+        return;
+    }
 
-    const unsigned bytes_required = (end_offset + 7) / 8;
+    const unsigned end_offset = start_offset + length; // = 8
+
+    const unsigned bytes_required = (end_offset + 7) / 8; // = 1
 
     if( data.size() < bytes_required )
     {
         data.resize(bytes_required);
     }
-//  Not working yet.
-/*
+
     for( unsigned pos = start_offset; pos < end_offset; )
     {
         //  start_offset = 1, length = 7
-        const unsigned bit_offset  = pos % 8;
-        const unsigned byte_offset = pos / 8;
+        const unsigned bit_offset  = pos % 8; // = 1
+        const unsigned byte_offset = pos / 8; // = 0
 
-        const unsigned bits_to_write = std::min(end_offset - pos, 8U) - bit_offset;
+        const unsigned bits_to_write = std::min(end_offset - pos, 8U - bit_offset);  //  min(8 - 1, 8 - 1) = 7
 
         unsigned char mask = 0xff;
 
-        mask <<= bit_offset;
-        mask &= 0xff >> (8 - bits_to_write - bit_offset);
+        mask &= 0xff << bit_offset; //  mask << 1
+        mask &= 0xff >> (8 - bits_to_write - bit_offset);  //  mask &= 0xff >> 8 - 7 - 1
+
+        unsigned char data_to_write;
+
+        data_to_write = value >> (pos - start_offset);
+        data_to_write <<= bit_offset;
 
         data[byte_offset] &= ~mask;
-
-        data[byte_offset] |= (value >> (pos - start_offset - bits_to_write)) & mask;
+        data[byte_offset] |= data_to_write & mask;
 
         pos += bits_to_write;
     }
-*/
 }
 
 
