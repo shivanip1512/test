@@ -160,7 +160,7 @@ jQuery(function() { updateServiceCompanyInfo();});
                 </c:if>
                 
                 <c:if test="${showRoute}">
-                    <tags:selectNameValue nameKey=".route" path="routeId"  itemLabel="paoName" itemValue="yukonID" items="${routes}"  defaultItemValue="0" defaultItemLabel="${defaultRoute}"/>
+                    <tags:selectNameValue nameKey=".route" path="routeId"  itemLabel="paoName" itemValue="yukonId" items="${routes}"  defaultItemValue="0" defaultItemLabel="${defaultRoute}"/>
                 </c:if>
                 
                 <tags:yukonListEntrySelectNameValue nameKey=".status" path="deviceStatusEntryId" energyCompanyId="${energyCompanyId}" listName="DEVICE_STATUS" defaultItemValue="0" defaultItemLabel="${none}"/>

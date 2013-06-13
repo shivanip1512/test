@@ -10,20 +10,6 @@ import com.cannontech.messaging.message.loadcontrol.data.Data;
  */
 public final class LMComparators 
 {
-	public static Comparator<Data> lmDataYukonID = new Comparator<Data>()
-	{
-		public int compare(Data o1, Data o2)
-		{
-			int thisVal = o1.getYukonId().intValue();
-			int anotherVal = o2.getYukonId().intValue();
-			return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
-		}
-		public boolean equals(Object obj)
-		{
-			return false;
-		}
-	};
-	
 	/* Used to compare names for ILMData */
     public static Comparator<Data> lmDataNameComp = new Comparator<Data>()
 	{

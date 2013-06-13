@@ -39,7 +39,6 @@ public class LiteYukonPAObject extends LiteBase implements YukonPao
         CtiUtilities.STRING_NONE
 	);
 
-	//private int yukonID = com.cannontech.database.data.pao.PAOGroups.INVALID;
 	private String paoName = null;
 	private PaoType paoType = null;
 	private String paoDescription = null;
@@ -224,9 +223,9 @@ public void setPaoType(PaoType paoType) {
 	this.paoType = paoType;
 }
 
-public void setYukonID(int newYukonID) 
+public void setYukonId(int newYukonId) 
 {
-	setLiteID( newYukonID );
+	setLiteID( newYukonId );
 }
 
 public String toString() 

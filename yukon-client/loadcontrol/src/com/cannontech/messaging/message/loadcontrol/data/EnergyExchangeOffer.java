@@ -68,8 +68,8 @@ public class EnergyExchangeOffer {
 		runStatus = newRunStatus;
 	}
 
-	public void setYukonID(int newYukonID) {
-		yukonId = newYukonID;
+	public void setYukonId(int newYukonId) {
+		yukonId = newYukonId;
 	}
 
 	public String toString() {

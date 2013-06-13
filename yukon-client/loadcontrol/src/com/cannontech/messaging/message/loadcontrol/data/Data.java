@@ -13,7 +13,7 @@ public interface Data {
 
     void setYukonDescription(String newYukonDescription);
 
-    void setYukonId(Integer newYukonID);
+    void setYukonId(Integer newYukonId);
 
     void setYukonName(String newYukonName);
 

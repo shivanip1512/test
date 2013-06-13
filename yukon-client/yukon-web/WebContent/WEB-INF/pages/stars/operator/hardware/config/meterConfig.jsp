@@ -38,7 +38,7 @@
                     <tags:input path="address"/>
                 </tags:nameValue2>
     
-                <tags:selectNameValue nameKey=".route" path="routeId"  itemLabel="paoName" itemValue="yukonID" items="${routes}"  defaultItemValue="0" defaultItemLabel="${defaultRoute}"/>
+                <tags:selectNameValue nameKey=".route" path="routeId"  itemLabel="paoName" itemValue="yukonId" items="${routes}"  defaultItemValue="0" defaultItemLabel="${defaultRoute}"/>
     
             </tags:nameValueContainer2>
         

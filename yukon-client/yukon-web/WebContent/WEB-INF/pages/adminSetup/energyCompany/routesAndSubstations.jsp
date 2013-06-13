@@ -50,7 +50,7 @@
                                                     <c:if test="${route.value.deletable}">
                                                         <td class="removeColumn">
                                                             <div class="dib">
-                                                                <cti:button nameKey="remove" name="removeRoute" value="${route.key.yukonID}" type="submit" renderMode="image"/>
+                                                                <cti:button nameKey="remove" name="removeRoute" value="${route.key.yukonId}" type="submit" renderMode="image"/>
                                                             </div>
                                                         </td>
                                                     </c:if>
@@ -68,7 +68,7 @@
                             <span class="actionArea" style="float: right;">
                                 <select name="routeId">
                                     <c:forEach items="${availableRoutes}" var="routeCandidate">
-                                        <option value="${routeCandidate.yukonID}"><spring:escapeBody htmlEscape="true">${routeCandidate.paoName}</spring:escapeBody></option>
+                                        <option value="${routeCandidate.yukonId}"><spring:escapeBody htmlEscape="true">${routeCandidate.paoName}</spring:escapeBody></option>
                                     </c:forEach>
                                 </select>
                                 <cti:button nameKey="add" type="submit" name="addRoute"/>

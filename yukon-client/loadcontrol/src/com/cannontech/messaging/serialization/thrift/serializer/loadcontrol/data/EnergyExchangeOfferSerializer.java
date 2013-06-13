@@ -40,7 +40,7 @@ public class EnergyExchangeOfferSerializer extends ThriftSerializer<EnergyExchan
         msg.setOfferDate(ConverterHelper.millisecToDate(entity.get_offerDate()));
         msg.setOfferId(entity.get_offerId());
         msg.setRunStatus(entity.get_runStatus());
-        msg.setYukonID(entity.get_paoId());
+        msg.setYukonId(entity.get_paoId());
     }
 
     @Override

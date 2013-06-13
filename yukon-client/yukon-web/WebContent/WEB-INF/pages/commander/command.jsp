@@ -70,7 +70,7 @@
                                         <select id="routeID" name="routeID">
                                             <option VALUE="-1"><cti:msg2 key=".route.select"/>
                                         <c:forEach var="route" items="${availableRoutes}">
-                                            <option value="${route.yukonID}">${fn:escapeXml(route.paoName)}</option>
+                                            <option value="${route.yukonId}">${fn:escapeXml(route.paoName)}</option>
                                         </c:forEach>
                                         </select>
                                     </td>
