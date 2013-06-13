@@ -65,20 +65,20 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     private final int NEW_DAY_BUFFER_HRS = 2; // 2 hours
     private final int JOB_SCHEDULER_START_BUFFER = 4; // 4 minutes
 
-    private JobManager jobManager = null;
+    @Autowired private JobManager jobManager = null;
     private YukonJobDefinition<MoveInTask> moveInDefinition = null;
     private YukonJobDefinition<MoveOutTask> moveOutDefinition = null;
-    private AttributeService attributeService;
-    private CalculatedPointService calculatedPointService;
-    private DeviceGroupEditorDao deviceGroupEditorDao;
-    private DeviceGroupProviderDao deviceGroupDao;
-    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    private DynamicDataSource dynamicDataSource;
-    private MeterDao meterDao;
-    private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
-    private SimpleJdbcOperations jdbcTemplate = null;
-    private NextValueHelper nextValueHelper = null;
-    private PaoCommandAuthorizationService paoCommandAuthorizationService = null;
+    @Autowired private AttributeService attributeService;
+    @Autowired private CalculatedPointService calculatedPointService;
+    @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
+    @Autowired private DeviceGroupProviderDao deviceGroupDao;
+    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private MeterDao meterDao;
+    @Autowired private PlcDeviceAttributeReadService plcDeviceAttributeReadService;
+    @Autowired private SimpleJdbcOperations jdbcTemplate = null;
+    @Autowired private NextValueHelper nextValueHelper = null;
+    @Autowired private PaoCommandAuthorizationService paoCommandAuthorizationService = null;
     @Autowired private RolePropertyDao rolePropertyDao = null;
     public MoveInResult moveIn(MoveInForm moveInFormObj) {
 
@@ -561,36 +561,6 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     	return paoCommandAuthorizationService.isAuthorized(liteYukonUser, "getvalue lp peak", meter);
     }
 
-    @Required
-    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
-        this.dynamicDataSource = dynamicDataSource;
-    }
-
-    @Required
-    public void setJdbcTemplate(SimpleJdbcOperations jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    @Required
-    public void setDeviceGroupMemberEditorDao(
-            DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
-        this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
-    }
-
-    @Required
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
-    }
-
-    @Required
-    public void setDeviceGroupDao(DeviceGroupProviderDao deviceGroupDao) {
-        this.deviceGroupDao = deviceGroupDao;
-    }
-
-    @Required
-    public void setJobManager(JobManager jobManager) {
-        this.jobManager = jobManager;
-    }
 
     @Required
     public void setMoveOutDefinition(
@@ -610,29 +580,4 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
         this.calculatedPointService = calculatedPointService;
     }
 
-    @Required
-    public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
-        this.deviceGroupEditorDao = deviceGroupEditorDao;
-    }
-
-    @Required
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-
-    @Required
-	public void setPaoCommandAuthorizationService(
-			PaoCommandAuthorizationService paoCommandAuthorizationService) {
-		this.paoCommandAuthorizationService = paoCommandAuthorizationService;
-	}
-
-    @Required
-    public void setPlcDeviceAttributeReadService(PlcDeviceAttributeReadService plcDeviceAttributeReadService) {
-        this.plcDeviceAttributeReadService = plcDeviceAttributeReadService;
-    }
-    
-    @Required
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
 }

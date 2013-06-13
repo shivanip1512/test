@@ -30,21 +30,10 @@
     </bean>
 
     <bean id="moveInMoveOutService" class="com.cannontech.amr.moveInMoveOut.service.impl.MoveInMoveOutServiceImpl">
-        <property name="jobManager" ref="jobManager"/>
         <property name="moveInDefinition" ref="moveInJob"/>
         <property name="moveOutDefinition" ref="moveOutJob"/>
-
+        
         <property name="calculatedPointService" ref="calculatedPointService"/>
-        <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao"/>
-        <property name="deviceGroupDao" ref="deviceGroupDao"/>
-        <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao"/>
-        <property name="dynamicDataSource" ref="dynamicDataSource"/>
-        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
-        <property name="meterDao" ref="meterDao"/>
-        <property name="nextValueHelper" ref="nextValueHelper"/>
-        <property name="paoCommandAuthorizationService" ref="paoCommandAuthorizationService"/>
-        <property name="plcDeviceAttributeReadService" ref="plcDeviceAttributeReadService"/>
-        <property name="attributeService" ref="attributeService"/>
     </bean>
 
     <!-- Moving JobDefinitions -->
@@ -331,7 +320,7 @@
             </bean>
         </property>
     </bean>
-	
+    
     <!-- Scheduled Group Request Execution Task -->
     <bean id="scheduledGroupRequestExecutionTask" class="com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask"
         scope="prototype">
