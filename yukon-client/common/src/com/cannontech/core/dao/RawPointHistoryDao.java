@@ -13,7 +13,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.ReadableRange;
-import com.cannontech.common.util.MutableRange;
+import com.cannontech.common.util.Range;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.point.PointType;
@@ -69,11 +69,8 @@ public interface RawPointHistoryDao {
             return endInclusive;
         }
 
-        /**
-         * Default range is of type MutableRange<T>.
-         */
-        public <T extends Comparable<? super T>> ReadableRange<T> makeRange(T start, T end) {
-            return new MutableRange<T>(start, startInclusive, end, endInclusive);
+        public <T extends Comparable<? super T>> Range<T> makeRange(T start, T end) {
+            return new Range<T>(start, startInclusive, end, endInclusive);
         }
 
         public static Clusivity getClusivity(boolean startInclusive, boolean endInclusive) {

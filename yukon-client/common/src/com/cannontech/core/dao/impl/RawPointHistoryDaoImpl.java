@@ -35,6 +35,7 @@ import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.IterableUtils;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ReadableRange;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentGenerator;
@@ -90,7 +91,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
     private SqlFragmentSource buildSql(Clusivity clusivity, Iterable<Integer> pointIds, Date startDate,
                                        Date stopDate, Order order, boolean excludeDisabledPaos) {
-        ReadableRange<Instant> range = clusivity.makeRange(startDate,  stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
+        Range<Instant> range = clusivity.makeRange(startDate,  stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
         return buildSql(pointIds, range, order, excludeDisabledPaos);
     }
     
@@ -314,7 +315,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             Iterable<? extends YukonPao> displayableDevices, Attribute attribute, final Date startDate,
             final Date stopDate, final int maxRows, final boolean excludeDisabledPaos, final Clusivity clusivity,
             final Order order) {
-        ReadableRange<Instant> dateRange = clusivity.makeRange(startDate, stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
+        Range<Instant> dateRange = clusivity.makeRange(startDate, stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
         return getLimitedAttributeData(displayableDevices, attribute, dateRange, null,
             maxRows, excludeDisabledPaos, order, OrderBy.TIMESTAMP);
     }
@@ -374,7 +375,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable<? extends YukonPao> paos,
             Attribute attribute, Date startDate, Date stopDate, boolean excludeDisabledPaos, Clusivity clusivity,
             Order order) {
-        ReadableRange<Instant> dateRange = clusivity.makeRange(startDate, stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
+        Range<Instant> dateRange = clusivity.makeRange(startDate, stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
         return getAttributeData(paos, attribute, dateRange, null, excludeDisabledPaos, order);
     }
 
@@ -446,7 +447,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     @Override
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getDataByPointName(Iterable<PaoIdentifier> paos,
         String pointName, Date startDate, Date stopDate, Clusivity clusivity, Order order) {
-        ReadableRange<Instant> dateRange = clusivity.makeRange(startDate, stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
+        Range<Instant> dateRange = clusivity.makeRange(startDate, stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
         return getDataByPointName(paos, pointName, dateRange, null, order);
     }
 
@@ -492,7 +493,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     @Override
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedDataByPointName(Iterable<PaoIdentifier> paos,
         String pointName, Date startDate, Date stopDate, int maxRows, Clusivity clusivity, Order order) {
-        ReadableRange<Instant> dateRange = clusivity.makeRange(startDate, stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
+        Range<Instant> dateRange = clusivity.makeRange(startDate, stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
         return getLimitedDataByPointName(paos, pointName, dateRange, null, maxRows, order);
     }
 
@@ -539,7 +540,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     @Override
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getDataByTypeAndOffset(Iterable<PaoIdentifier> paos,
             PointType pointType, int offset, Date startDate, Date stopDate, Clusivity clusivity, Order order) {
-        ReadableRange<Instant> dateRange = clusivity.makeRange(startDate, stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
+        Range<Instant> dateRange = clusivity.makeRange(startDate, stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
         return getDataByTypeAndOffset(paos, pointType, offset, dateRange, null, order);
     }
 
@@ -595,7 +596,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedDataByTypeAndOffset(
             Iterable<PaoIdentifier> paos, PointType pointType, int offset, Date startDate, Date stopDate, int maxRows,
             Clusivity clusivity, Order order) {
-        ReadableRange<Instant> dateRange = clusivity.makeRange(startDate, stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
+        Range<Instant> dateRange = clusivity.makeRange(startDate, stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
         return getLimitedDataByTypeAndOffset(paos, pointType, offset, dateRange, null, maxRows, order);
     }
 
@@ -660,7 +661,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedDataByDefaultPointName(
             Iterable<PaoIdentifier> paos, String defaultPointName, Date startDate, Date stopDate, int maxRows,
             Clusivity clusivity, Order order) {
-        ReadableRange<Instant> dateRange = clusivity.makeRange(startDate, stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
+        Range<Instant> dateRange = clusivity.makeRange(startDate, stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
         return getLimitedDataByDefaultPointName(paos, defaultPointName, dateRange, null, maxRows, order);
     }
 
@@ -688,7 +689,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     @Override
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getDataByDefaultPointName(Iterable<PaoIdentifier> paos,
             String defaultPointName, Date startDate, Date stopDate, Clusivity clusivity, Order order) {
-        ReadableRange<Instant> dateRange = clusivity.makeRange(startDate, stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
+        Range<Instant> dateRange = clusivity.makeRange(startDate, stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
         return getDataByDefaultPointName(paos, defaultPointName, dateRange, null, order);
     }
 

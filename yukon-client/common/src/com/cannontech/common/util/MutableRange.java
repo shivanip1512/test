@@ -1,6 +1,6 @@
 package com.cannontech.common.util;
 
-import com.google.common.base.Function;
+
 
 public class MutableRange<T extends Comparable<? super T>> extends BaseRange<T> implements ReadableRange<T> {    
     /**

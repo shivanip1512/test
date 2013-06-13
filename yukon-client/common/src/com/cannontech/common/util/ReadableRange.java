@@ -27,5 +27,5 @@ public interface ReadableRange<T extends Comparable<? super T>> {
      * {@link CtiUtilities.DATE_FROM_INSTANT} or {@link CtiUtilities.INSTANT_FROM_DATE} for translating
      * from a Range&lt;Instant&gt; to or from a Range&lt;Date&gt;.
      */
-    <U extends Comparable<? super U>> BaseRange<U> translate(Function<T, U> translator);
+    <U extends Comparable<? super U>> Range<U> translate(Function<T, U> translator);
 }

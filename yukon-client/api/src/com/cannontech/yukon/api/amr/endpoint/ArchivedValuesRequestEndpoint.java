@@ -460,7 +460,7 @@ public class ArchivedValuesRequestEndpoint {
             String name = pointSelector.getName();
             Attribute attribute = attributeService.resolveAttributeName(name);
             Range<Instant> dateRange = selector.getDateRange();
-            Range<Long> changeIdRange = (Range<Long>)Range.fromExclusive(sinceValueId);
+            Range<Long> changeIdRange = Range.fromExclusive(sinceValueId);
 
             if (selector.getNumberOfRows() != null) {
                 return rawPointHistoryDao.getLimitedAttributeData(paos, attribute, dateRange, changeIdRange,
@@ -522,7 +522,7 @@ public class ArchivedValuesRequestEndpoint {
                 PointSelector pointSelector, PointValueSelector selector, Long sinceValueId) {
             String name = pointSelector.getName();
             Range<Instant> dateRange = selector.getDateRange();
-            Range<Long> changeIdRange = (Range<Long>)Range.fromExclusive(sinceValueId);
+            Range<Long> changeIdRange = Range.fromExclusive(sinceValueId);
 
             if (selector.getNumberOfRows() != null) {
                 return rawPointHistoryDao.getLimitedDataByPointName(paos, name, dateRange, changeIdRange,
@@ -553,7 +553,7 @@ public class ArchivedValuesRequestEndpoint {
             PointType type = pointSelector.getPointType();
             int offset = pointSelector.getOffset();
             Range<Instant> dateRange = selector.getDateRange();
-            Range<Long> changeIdRange = (Range<Long>)Range.fromExclusive(sinceValueId);
+            Range<Long> changeIdRange = Range.fromExclusive(sinceValueId);
 
             if (selector.getNumberOfRows() != null) {
                 return rawPointHistoryDao.getLimitedDataByTypeAndOffset(paos, type, offset, dateRange, changeIdRange,
@@ -584,7 +584,7 @@ public class ArchivedValuesRequestEndpoint {
                 PointSelector pointSelector, PointValueSelector selector, Long sinceValueId) {
             String defaultName = pointSelector.getName();
             Range<Instant> dateRange = selector.getDateRange();
-            Range<Long> changeIdRange = (Range<Long>)Range.fromExclusive(sinceValueId);
+            Range<Long> changeIdRange = Range.fromExclusive(sinceValueId);
 
             if (selector.getNumberOfRows() != null) {
                 return rawPointHistoryDao.getLimitedDataByDefaultPointName(paos, defaultName, dateRange, changeIdRange,

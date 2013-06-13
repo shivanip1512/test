@@ -128,7 +128,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 break;
 
             case DATE_RANGE:
-                Range<Instant> dateRange = (Range<Instant>)dataRange.getLocalDateRange().getInstantDateRange(userContext);
+                Range<Instant> dateRange = dataRange.getLocalDateRange().getInstantDateRange(userContext);
                 for (Attribute attribute : attributes) {
                     ListMultimap<PaoIdentifier, PointValueQualityHolder> dateRangeAttributeData =
                             getDynamicAttributeData(meters, attribute, dateRange, null);

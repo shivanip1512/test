@@ -26,7 +26,7 @@ public class LocalDateRange {
         this.endDate = endDate;
     }
     
-    public ReadableRange<Instant> getInstantDateRange(YukonUserContext userContext) {
+    public Range<Instant> getInstantDateRange(YukonUserContext userContext) {
         Instant startDate = this.startDate.toDateMidnight(userContext.getJodaTimeZone()).toInstant();
         Instant stopDate = this.endDate.toDateMidnight(userContext.getJodaTimeZone()).toInstant();
         

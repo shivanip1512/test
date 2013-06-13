@@ -55,7 +55,7 @@ public class MeterEventsWidget extends AdvancedWidgetControllerBase {
         Set<Attribute> availableEventAttributes =
             meterEventLookupService.getAvailableEventAttributes(Collections.singletonList(meter));
         
-        Range<Instant> range = Range.inclusive(null, null);
+        Range<Instant> range = Range.unbounded();
         List<MeterPointValue> events = paoPointValueService.getMeterPointValues(Collections.singletonList(meter),
                                                                                 availableEventAttributes,
                                                                                 range,
