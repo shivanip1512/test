@@ -3,6 +3,9 @@ package com.cannontech.messaging.connection;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.event.Event;
 import com.cannontech.messaging.connection.event.ConnectionEvent;
 import com.cannontech.messaging.connection.event.ConnectionEventHandler;
@@ -36,6 +39,9 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
     private boolean closeRequested = false;
     private boolean autoReconnect = false;
     private long reconnectionDelay;
+    
+    // create a logger for instances of this class and its subclasses
+    protected Logger logger = YukonLogManager.getLogger(this.getClass());
 
     public ConnectionBase() {
         this("connection");
@@ -68,7 +74,7 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
                     }
                     catch (Throwable e) {
                         setState(ConnectionState.Error);
-                        safeDisconnect();
+                        safeDisconnect(e);
                     }
                 }
             };
@@ -123,7 +129,7 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
                 // done in the finally block
             }
             catch (Exception e) {
-                // TODO log it
+                logger.error("Error in connection worker thread", e);
             }
             finally {
                 safeDisconnect();
@@ -188,7 +194,7 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
                 disconnect();
             }
             catch (Throwable e) {
-                // TODO log it
+                logger.error("Error while disconnecting the connection" , e);
             }
         }
         else {
@@ -210,7 +216,7 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
      */
     protected final void safeDisconnect(Throwable e) {
         if (e != null) {
-            // TODO log it
+            logger.error("Disconnecting connection because of : " + e.getMessage() , e);
         }
         safeDisconnect();
     }
@@ -382,5 +388,10 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
 
     public void setReconnectionDelay(long reconnectionDelay) {
         this.reconnectionDelay = Math.max(reconnectionDelay, 0);
+    }
+    
+    @Override
+    public String toString() {
+        return "messaging connection " + getName();
     }
 }

@@ -6,6 +6,9 @@ import javax.jms.MessageListener;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQSession;
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.messaging.connection.transport.Transport;
 import com.cannontech.messaging.connection.transport.TransportException;
 
@@ -14,6 +17,9 @@ public class AmqTransport implements Transport {
     private ActiveMQConnection connection;
     private ActiveMQSession session;
     private MessageListener listener;
+
+    // create a logger for instances of this class and its subclasses
+    protected Logger logger = YukonLogManager.getLogger(this.getClass());
 
     public AmqTransport(ActiveMQConnection connection) {
         started = false;
@@ -36,8 +42,9 @@ public class AmqTransport implements Transport {
                 session.close();
             }
             catch (JMSException e) {
-                // TODO log it but don't throw as we don't want to interrupt the closing/disconnecting operation
+                // Log it but don't throw as we don't want to interrupt the closing/disconnecting operation
                 // throw new TransportException("Unable to close the session for this Transport", e);
+                logger.error("Unable to close the AMQ session for this Transport", e);
             }
             finally {
                 session = null;

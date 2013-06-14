@@ -10,6 +10,7 @@ import org.apache.activemq.advisory.AdvisorySupport;
 import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.command.ActiveMQMessage;
 import org.apache.activemq.command.ActiveMQTopic;
+import org.apache.commons.lang.SerializationException;
 
 import com.cannontech.messaging.connection.transport.TransportException;
 import com.cannontech.messaging.connection.transport.amq.AmqConsumerTransport;
@@ -117,10 +118,10 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
             }
         }
         catch (JMSException e) {
-            // TODO log it but don't throw as we don't want to interrupt the closing/disconnecting operation as we don't
-            // want to interrupt the closing/disconnecting operation
-            // throw new ConnectionException("Error while disconnecting from the ActiveMQ broker",
-            // e);
+            // log it but don't throw as we don't want to interrupt the closing/disconnecting operation as we don't want
+            // to interrupt the closing/disconnecting operation
+            // throw new ConnectionException("Error while disconnecting from the ActiveMQ broker", e);
+            logger.error("Error while disconnecting from the ActiveMQ broker", e);
         }
         finally {
             connection = null;
@@ -141,16 +142,15 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
             SerializationResult result = getMessageFactory().encodeMessage(message);
 
             if (!result.isValid()) {
-                throw new ConnectionException("Serialization error");
+                // We treat serialization error as exception. And we break the current connection.
+                throw new SerializationException("Serialization error, message type= " + result.getMessageType() +
+                                                 ", message class=" + result.getMessageClass(), result.getException());
             }
 
             msg = transport.getSession().createBytesMessage();
-            msg.writeBytes(result.getPayload());
+            msg.writeBytes(result.getMessagePayload());
             msg.setJMSType(result.getMessageType());
             transport.sendMessage(msg);
-        }
-        catch (ConnectionException e) {
-            throw e;    // re-throw the ConnectionException
         }
         catch (Exception e) {
             throw new ConnectionException("Error while sending message", e);
@@ -164,8 +164,19 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
             BytesMessage byteMsg = (BytesMessage) message;
             data = new byte[(int) byteMsg.getBodyLength()];
             byteMsg.readBytes(data);
-            BaseMessage msg = (BaseMessage) getMessageFactory().decodeMessage(byteMsg.getJMSType(), data);
-            messageEvent.fire(this, msg);
+
+            SerializationResult result = getMessageFactory().decodeMessage(byteMsg.getJMSType(), data);
+         
+            if (!result.isValid()) {
+                Exception e = result.getException();
+                if (e == null) {
+                    e = new SerializationException("Unable to deserialize message of type '" + result.getMessageType() +"'");
+                }
+                safeDisconnect(e);
+                return;
+            }
+
+            messageEvent.fire(this, (BaseMessage) result.getMessageObject());
         }
         catch (Exception e) {
             safeDisconnect(e);
@@ -244,5 +255,10 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
 
     public void setMessageFactory(MessageFactory messageFactory) {
         this.messageFactory = messageFactory;
+    }
+
+    @Override
+    public String toString() {
+        return "AMQ p2p connection";
     }
 }

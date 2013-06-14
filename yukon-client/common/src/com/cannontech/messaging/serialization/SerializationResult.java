@@ -2,17 +2,19 @@ package com.cannontech.messaging.serialization;
 
 public class SerializationResult {
 
-    private byte[] payload;
+    private byte[] messagePayload;
+    private Object messageObject;
     private String messageType;
+    private Class messageClass;
     private boolean valid = false;
     private SerializationException exception;    
 
-    public byte[] getPayload() {
-        return payload;
+    public byte[] getMessagePayload() {
+        return messagePayload;
     }
 
-    void setPayload(byte[] payload) {
-        this.payload = payload;
+    void setMessagePayload(byte[] messagePayload) {
+        this.messagePayload = messagePayload;
     }
 
     public String getMessageType() {
@@ -37,5 +39,21 @@ public class SerializationResult {
 
     public void setException(SerializationException exception) {
         this.exception = exception;
+    }
+
+    public Object getMessageObject() {
+        return messageObject;
+    }
+
+    public void setMessageObject(Object messageObject) {
+        this.messageObject = messageObject;        
+    }
+
+    public Class getMessageClass() {
+        return messageClass;
+    }
+
+    public void setMessageClass(Class messageClass) {
+        this.messageClass = messageClass;
     }
 }

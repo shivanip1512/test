@@ -20,7 +20,7 @@ public class AmqClientConnection extends AmqConnectionBase<TwoWayTransport> {
     @Override
     protected AmqConsumerTransport createMonitorTransport(TwoWayTransport transport, MessageListener listener) {
         AmqConsumerTransport monitor =
-            new AmqConsumerTransport(transport.getConnection(), getAdvisoryTopicName(transport.getInQueue()), listener);
+            new AmqConsumerTransport(transport.getConnection(), getAdvisoryTopicName(transport.getOutQueue()), listener);
         monitor.setSelector("consumerCount <> 1");
         return monitor;
     }
@@ -36,5 +36,10 @@ public class AmqClientConnection extends AmqConnectionBase<TwoWayTransport> {
             catch (Exception e) {}
         }
         super.disconnect();
+    }
+    
+    @Override
+    public String toString() {
+        return super.toString() + " (client side)";
     }
 }

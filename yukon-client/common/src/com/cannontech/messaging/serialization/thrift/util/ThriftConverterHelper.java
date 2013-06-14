@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.lang.SerializationException;
 import org.apache.thrift.TBase;
 
 import com.cannontech.messaging.serialization.SerializationResult;
@@ -43,16 +44,29 @@ public class ThriftConverterHelper {
     }
 
     public Object convertFromGeneric(GenericMessage entity) {
-        return messageFactory.decodeMessage(entity.get_messageType(), entity.get_payload());
+        SerializationResult result = messageFactory.decodeMessage(entity.get_messageType(), entity.get_payload());
+
+        if (!result.isValid()) {
+            throw new SerializationException("Error while deserializing from nested GenericMessage of type '" +
+                                             entity.get_messageType() + "'", result.getException());
+        }
+
+        return result.getMessageObject();
     }
-    
+
     public <T> GenericMessage convertToGeneric(T msg) {
         if (msg == null) {
             return null;
         }
 
         SerializationResult result = messageFactory.encodeMessage(msg);
-        return new GenericMessage(result.getMessageType(), ByteBuffer.wrap(result.getPayload()));
+
+        if (!result.isValid()) {
+            throw new SerializationException("Error while serializing to nested GenericMessage of class '" +
+                                             result.getMessageClass() + "'", result.getException());
+        }
+
+        return new GenericMessage(result.getMessageType(), ByteBuffer.wrap(result.getMessagePayload()));
     }
 
     public <T, TE extends TBase<TE, ?>> List<TE> convertToEntityList(List<T> objList, Class<TE> clazz) {

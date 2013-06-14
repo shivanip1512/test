@@ -13,6 +13,9 @@ import org.apache.commons.lang.math.RandomUtils;
 import org.apache.log4j.Logger;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
+
+import sun.audio.ContinuousAudioDataStream;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
@@ -44,7 +47,7 @@ public abstract class ClientConnection extends java.util.Observable implements I
     private AtomicLong totalReceivedMessages = new AtomicLong();
     private AtomicLong totalFiredEvents = new AtomicLong();
     // create a logger for instances of this class and its subclasses
-    private Logger logger = YukonLogManager.getLogger(this.getClass());
+    protected Logger logger = YukonLogManager.getLogger(this.getClass());
 
     // This message will be sent automatically on connecting
     private BaseMessage registrationMsg = null;
@@ -216,8 +219,8 @@ public abstract class ClientConnection extends java.util.Observable implements I
     }
 
     @Override
-    public final String toString() {
-        return "ClientConnection[name=" + getName() + ", host=" + getHost() + ", port=" + getPort() + "]";
+    public String toString() {
+        return "ClientConnection [name= " + getName() + ", " + connection + "]";
     }
 
     /**************************************************************************
@@ -424,15 +427,16 @@ public abstract class ClientConnection extends java.util.Observable implements I
     private final ClientConnectionEventHandler eventHandler = new ClientConnectionEventHandler();
 
     private class ClientConnectionEventHandler implements ConnectionEventHandler, MessageEventHandler {
+
         @Override
         public void onConnectionEvent(Connection source, ConnectionState state) {
             ClientConnection conn = ClientConnection.this;
-
+            
             logger.info("Connection state changed to <" + state + "> for " + conn);
-
+                        
             switch (state) {
                 case Connected:
-
+                    
                     conn.isValid = true;
 
                     // Check to see if there is a registration message to be sent
@@ -451,7 +455,6 @@ public abstract class ClientConnection extends java.util.Observable implements I
 
                         trySendMessages();
                     }
-
                     break;
 
                 case Error:
@@ -464,7 +467,6 @@ public abstract class ClientConnection extends java.util.Observable implements I
                     notifyObservers(conn);
                     // use this for alerting clients to our connection state change
                     fireMessageEvent(new ConnStateChangeMessage(false));
-
                     break;
 
                 default:
@@ -475,7 +477,7 @@ public abstract class ClientConnection extends java.util.Observable implements I
         @Override
         public void onMessageEvent(Connection connection, BaseMessage msg) {
             ClientConnection conn = ClientConnection.this;
-            
+
             if (msg.getClass() == MultiMessage.class) {
                 MultiMessage<?> mpc = (MultiMessage<?>) msg;
 

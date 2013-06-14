@@ -9,10 +9,12 @@ import com.cannontech.messaging.connection.transport.TransportException;
 import com.cannontech.messaging.connection.transport.amq.AmqConsumerTransport;
 import com.cannontech.messaging.connection.transport.amq.AmqProducerTransport;
 import com.cannontech.messaging.connection.transport.amq.TwoWayTransport;
+import com.cannontech.messaging.util.TimeoutException;
 
 class HandShakeConnector {
 
-    private static final int WAIT_REPLY_TIME = 10000;
+    private static final int WAIT_REPLY_TIME = 30000;
+    private static final int MAX_HAND_SHAKE_MSG_COUNT = 120;
     private static final String HAND_SHAKE_REQ_MSG_TYPE = "com.cooper.eas.yukon.clientinit";
     private static final String HAND_SHAKE_RESP_MSG_TYPE = "com.cooper.eas.yukon.serverresp";
 
@@ -34,14 +36,19 @@ class HandShakeConnector {
             reqProducer.start();
             reqProducer.getProducer().setTimeToLive(WAIT_REPLY_TIME / 2);
 
-            // Create, setup and send the request message to the listenerConnection (the server)
-            Message reqMsg = reqProducer.getSession().createMessage();
-            reqMsg.setJMSReplyTo(consumer.getDestination());
-            reqMsg.setJMSType(HAND_SHAKE_REQ_MSG_TYPE);
-            reqProducer.sendMessage(reqMsg);
+            Message rspMessage;
+            int connectionRequestCount = 0;
+            do {
+                // Create, setup and send the request message to the listenerConnection (the server)
+                Message reqMsg = reqProducer.getSession().createMessage();
+                reqMsg.setJMSReplyTo(consumer.getDestination());
+                reqMsg.setJMSType(HAND_SHAKE_REQ_MSG_TYPE);
+                reqProducer.sendMessage(reqMsg);
 
-            // and wait <WAIT_REPLY_TIME> seconds for the reply
-            Message rspMessage = consumer.receiveMessage(WAIT_REPLY_TIME);
+                // and wait <WAIT_REPLY_TIME> seconds for the reply
+                rspMessage = consumer.receiveMessage(WAIT_REPLY_TIME);
+
+            } while (connectionRequestCount++ < MAX_HAND_SHAKE_MSG_COUNT && rspMessage == null);
 
             // Validate
             if (rspMessage == null) {
@@ -61,7 +68,6 @@ class HandShakeConnector {
             producer.start();
 
             // Create the resulting 2 way transport
-
             TwoWayTransport transport = new TwoWayTransport(producer, consumer);
             return transport;
         }
@@ -76,6 +82,7 @@ class HandShakeConnector {
                 }
             }
             catch (Exception ignored) {}
+
             throw new TransportException("Error while establishing a connection with the server", e);
         }
     }

@@ -1,5 +1,6 @@
 package com.cannontech.messaging.serialization.thrift;
 
+import org.apache.commons.lang.SerializationException;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TProtocol;
@@ -89,17 +90,13 @@ public abstract class ThriftSerializer<T, TE extends TBase<TE, ?>> implements Me
     public T deserialize(MessageFactory factory, byte[] data) {
         TProtocol prot = ThriftMessageFactory.createDefaultProtocol(data);
 
-        TE entity = createThrifEntityInstance();
-
         try {
+            TE entity = createThrifEntityInstance();
             entity.read(prot);
+            return convertToMessage((ThriftMessageFactory) factory, entity);
         }
         catch (TException e) {
-            // TODO log it
-            // TODO should we throw?
-            return null;
+            throw new SerializationException("Error while deserializing '" + messageType + "' data");
         }
-
-        return convertToMessage((ThriftMessageFactory) factory, entity);
     }
 }

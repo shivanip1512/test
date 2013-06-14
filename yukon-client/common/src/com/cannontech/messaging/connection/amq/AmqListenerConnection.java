@@ -118,4 +118,9 @@ public class AmqListenerConnection extends AmqConnectionBase<AmqConsumerTranspor
             }
         }
     }
+    
+    @Override
+    public String toString() {
+        return super.toString() + " (listener)";
+    }
 }

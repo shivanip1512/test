@@ -1,7 +1,7 @@
 package com.cannontech.messaging.serialization;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MessageFactory {
@@ -14,14 +14,14 @@ public class MessageFactory {
         this(null);
     }
 
-    public MessageFactory(List<? extends MessageSerializer<?>> serializerList) {
+    public MessageFactory(Collection<? extends MessageSerializer<?>> serializerList) {
         byMessageTypeSerializerMap = new HashMap<String, MessageSerializer<?>>();
         byMessageClassSerializerMap = new HashMap<Class<?>, MessageSerializer<?>>();
         registerSerializers(serializerList);
         this.name = "";
     }
 
-    public void registerSerializers(List<? extends MessageSerializer<?>> serializerList) {
+    public void registerSerializers(Collection<? extends MessageSerializer> serializerList) {
         if (serializerList != null) {
             for (MessageSerializer<?> serializer : serializerList) {
                 registerSerializer(serializer);
@@ -44,19 +44,39 @@ public class MessageFactory {
         return null;
     }
 
-    public Object decodeMessage(String messageType, byte[] msgData) {
-        Object result = null;
+    public SerializationResult decodeMessage(String messageType, byte[] msgData) {
+        SerializationResult result = new SerializationResult();
+        result.setMessageType(messageType);
+        result.setMessagePayload(msgData);
+
         MessageSerializer<?> serializer = byMessageTypeSerializerMap.get(messageType);
 
-        if (serializer != null) {
-            result = serializer.deserialize(this, msgData);
+        if (serializer == null) {
+            result
+                .setException(new SerializationException("No serializer found for message type '" + messageType + "'"));
+            return result;
         }
 
+        try {
+            Object msg = serializer.deserialize(this, msgData);
+            result.setMessageObject(msg);
+            result.setMessageClass(msg.getClass());
+            result.setValid(result.getMessagePayload() != null && result.getException() == null);
+        }
+        catch (SerializationException e) {
+            result.setException(e);
+        }
+        catch (Exception e) {
+            result.setException(new SerializationException("Error while deserializing message", e));
+        }
+        
         return result;
     }
 
     public <T> SerializationResult encodeMessage(T message) {
         SerializationResult result = new SerializationResult();
+        result.setMessageObject(message);
+        result.setMessageClass(message.getClass());
 
         try {
             @SuppressWarnings("unchecked")
@@ -67,9 +87,9 @@ public class MessageFactory {
                                                                message.getClass() + "'"));
             }
             else {
-                result.setPayload(serializer.serialize(this, message));
                 result.setMessageType(serializer.getMessageType());
-                result.setValid(result.getPayload() != null);
+                result.setMessagePayload(serializer.serialize(this, message));                
+                result.setValid(result.getMessagePayload() != null && result.getException() == null);
             }
         }
         catch (SerializationException se) {

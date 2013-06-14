@@ -1,6 +1,6 @@
 package com.cannontech.messaging.serialization.thrift;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.apache.thrift.TBase;
 import org.apache.thrift.protocol.TBinaryProtocol;
@@ -26,8 +26,8 @@ public class ThriftMessageFactory extends MessageFactory {
         this(null);
     }
 
-    public ThriftMessageFactory(List<ThriftSerializer<?, ?>> serializerList) {
-        super(serializerList);
+    public ThriftMessageFactory(Collection<ThriftSerializer<?,?>> collection) {
+        super(collection);
         converterHelper = new ThriftConverterHelper(this);
     }
 

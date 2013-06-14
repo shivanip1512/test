@@ -34,11 +34,11 @@ public class PingSerializer extends ThriftInheritanceSerializer<PingMessage, Bas
 
     @Override
     protected void populateMessageFromThriftEntity(ThriftMessageFactory msgFactory, Message entity, PingMessage msg) {
-        // Nothing to do here as Ping message is empty
+        // Nothing to do here as Ping message is empty        
     }
 
     @Override
     protected void populateThriftEntityFromMessage(ThriftMessageFactory msgFactory, PingMessage msg, Message entity) {
-        // Nothing to do here as Ping message is empty
+        // Nothing to do here as Ping message is empty        
     }
 }

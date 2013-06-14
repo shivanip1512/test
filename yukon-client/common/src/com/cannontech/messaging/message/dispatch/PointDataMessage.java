@@ -37,10 +37,8 @@ public class PointDataMessage extends BaseMessage implements PointValueQualityHo
     public static final long TAG_POINT_LOAD_PROFILE_DATA = 0x00008000; // This data will archive to raw point history
     public static final long TAG_POINT_OLD_TIMESTAMP = 0x00100000;
 
-    public static final long TAG_POINT_LP_NO_REPORT = TAG_POINT_LOAD_PROFILE_DATA | TAG_POINT_DO_NOT_REPORT; // for all
-                                                                                                             // but last
-                                                                                                             // entry of
-                                                                                                             // LP data
+    // for all but last entry of LP data
+    public static final long TAG_POINT_LP_NO_REPORT = TAG_POINT_LOAD_PROFILE_DATA | TAG_POINT_DO_NOT_REPORT;
 
     // Point Types
     /* DEFINED IN com.cannontech.database.data.point.PointTypes */
@@ -152,5 +150,4 @@ public class PointDataMessage extends BaseMessage implements PointValueQualityHo
             tags &= ~TAG_POINT_MUST_ARCHIVE;
         }
     }
-
 }

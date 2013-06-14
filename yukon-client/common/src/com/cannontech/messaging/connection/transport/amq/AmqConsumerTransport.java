@@ -42,8 +42,9 @@ public class AmqConsumerTransport extends AmqDestinationTransport {
                 consumer.close();
             }
             catch (JMSException e) {
-                // TODO log it but don't throw as we don't want to interrupt the closing/disconnecting operation
+                // Log it but don't throw as we don't want to interrupt the closing/disconnecting operation
                 // throw new TransportException("Unable to close Consumer Transport", e);
+                logger.error("Unable to close a AMQ consumer", e);
             }
             finally {
                 consumer = null;

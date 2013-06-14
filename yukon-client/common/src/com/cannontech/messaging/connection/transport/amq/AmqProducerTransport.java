@@ -37,8 +37,10 @@ public class AmqProducerTransport extends AmqDestinationTransport {
                 producer.close();
             }
             catch (JMSException e) {
-                // TODO log it but don't throw as we don't want to interrupt the closing/disconnecting operation
+                // Log it but don't throw as we don't want to interrupt the closing/disconnecting operation
                 // throw new TransportException("Unable to close Producer Transport", e);
+                logger.error("Unable to close an AMQ producer", e);
+                
             }
             finally {
                 producer = null;

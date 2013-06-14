@@ -15,7 +15,7 @@ import com.cannontech.messaging.connection.transport.TransportException;
 public class AmqDestinationTransport extends AmqTransport {
 
     private ActiveMQDestination destination;
-    private boolean managedDestination = false; // Do not create destination explicitly
+    private boolean managedDestination = false; // Do not create or destroy the destination explicitly
 
     public AmqDestinationTransport(ActiveMQConnection connection, ActiveMQDestination destination) {
         super(connection);
@@ -37,9 +37,10 @@ public class AmqDestinationTransport extends AmqTransport {
                 ((TemporaryQueue) destination).delete();
             }
             catch (JMSException e) {
-                // TODO Log it but dont throw
+                // Log it but dont throw
                 // throw new TransportException("Unable de delete the temporary queue \"" +
                 // destination.getPhysicalName() + "\"", e);
+                logger.error("Unable de delete the temporary queue \"" + destination.getPhysicalName() + "\" on a AMQ DestinationTransport ", e);
             }
         }
 

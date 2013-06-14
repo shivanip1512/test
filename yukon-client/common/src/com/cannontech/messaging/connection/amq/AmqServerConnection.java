@@ -56,4 +56,9 @@ public class AmqServerConnection extends AmqConnectionBase<TwoWayTransport> {
     protected void setDestination(ActiveMQDestination destination) {
         this.destination = destination;
     }
+    
+    @Override
+    public String toString() {
+        return super.toString() + " (server side)";
+    }
 }
