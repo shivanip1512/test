@@ -54,6 +54,7 @@ $(OPENSSL_LIBS) \
 
 RTDB_TEST_OBJS=\
 test_main.obj \
+test_cmd_rfn_CentronLcdConfiguration.obj \
 test_cmd_device.obj \
 test_cmd_mct410_hourlyread.obj \
 test_cmd_mct420_hourlyread.obj \

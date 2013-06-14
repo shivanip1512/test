@@ -40,6 +40,7 @@ INCLPATHS+= \
 
 
 YUKONDEVDLLOBJS=\
+cmd_rfn_CentronLcdConfiguration.obj \
 cmd_device.obj \
 cmd_mct410_hourlyread.obj \
 cmd_mct420.obj \

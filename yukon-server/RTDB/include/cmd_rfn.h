@@ -13,8 +13,8 @@ class IM_EX_DEVDB RfnCommand : public DeviceCommand
 {
 public:
 
-    typedef std::vector<unsigned char> RfnRequest;
-    typedef std::vector<unsigned char> RfnResponse;
+    typedef Bytes RfnRequest;
+    typedef Bytes RfnResponse;
 
     struct RfnResult
     {
@@ -23,29 +23,35 @@ public:
         std::vector<CtiTableDynamicPaoInfo> paoInfo;
     };
 
-    RfnRequest execute(const CtiTime now);
-    virtual RfnResult  decode (const CtiTime now, const RfnResponse &response) = 0;
-    virtual RfnResult  error  (const CtiTime now, const YukonError_t error_code) = 0;
+    RfnRequest execute (const CtiTime now);
+    virtual RfnResult decode (const CtiTime now, const RfnResponse &response) = 0;
+    virtual RfnResult error  (const CtiTime now, const YukonError_t error_code) = 0;
 
 protected:
 
-    typedef std::vector<unsigned char> Bytes;
+    //
+    // Functions called by execute() to create a request command
+    //
+    // Request command format :
+    // 1-byte - Command Code
+    // 1-byte - Operation
+    // N-byte - Data
+    //
+    virtual unsigned char getCommandCode() const = 0;
+    virtual unsigned char getOperation() const = 0;
+    virtual Bytes         getData() = 0;
 
+    //
+    // Type Length Values
+    //
     struct TypeLengthValue
     {
         unsigned char type;
-        unsigned char length;
         Bytes value;
     };
 
-    virtual unsigned char getCommandCode() const = 0;
-    virtual unsigned char getOperation() const = 0;
-    virtual std::vector<TypeLengthValue> getTlvs() = 0;
+    static Bytes getBytesFromTlvs( std::vector<TypeLengthValue> tlvs );
 
-    static unsigned getValueFromBits(const Bytes &data, const unsigned start_offset, const unsigned length);
-    static void setBitsInVector(Bytes &data, const unsigned start_offset, const unsigned length, const unsigned value);
-
-    static std::vector<unsigned> getValueVectorFromBits(const Bytes &data, const unsigned start_offset, const unsigned length, const unsigned count);
 };
 
 }
