@@ -6,7 +6,6 @@ import org.joda.time.Instant;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.util.Range;
-import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.web.util.ListBackingBean;
 
 public class WaterLeakReportFilterBackingBean extends ListBackingBean {
