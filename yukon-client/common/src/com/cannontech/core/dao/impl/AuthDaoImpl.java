@@ -195,7 +195,7 @@ public class AuthDaoImpl implements AuthDao {
 			
 			LiteYukonUser lYukUser = yukonUserDao.getLiteYukonUser( lContact.getLoginID() );
 			if( lYukUser != null ) {
-				if (lYukUser.getUserID() == UserUtils.USER_DEFAULT_ID) {
+				if (lYukUser.getUserID() == UserUtils.USER_NONE_ID) {
 					CTILogger.info("  Failed VOICE login because the YukonUser found was the (none) userid, Contact: " + lContact.toString());
 				} else if (lYukUser.getLoginStatus().isDisabled()) {
 					CTILogger.info("  Failed VOICE login because the YukonUser found is DISABLED, Contact: " + lContact.toString());			

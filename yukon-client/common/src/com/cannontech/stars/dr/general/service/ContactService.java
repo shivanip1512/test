@@ -10,7 +10,7 @@ public interface ContactService {
 	 * Creates a new contact, saves it, process db change add. Does NOT associate the newly created contact with a customer.
 	 * @param firstName First name of contact
 	 * @param lastName Last name of contact
-	 * @param contactUser user the contact is associated with, will be used to pull loginId from. Pass null to use UserUtils.USER_DEFAULT_ID (-9999) as loginId
+	 * @param contactUser user the contact is associated with, will be used to pull loginId from. Pass null to use UserUtils.USER_NONE_ID (-9999) as loginId
 	 * @return newly created LiteContact
 	 */
 	public LiteContact createContact(String firstName, String lastName, LiteYukonUser contactUser);

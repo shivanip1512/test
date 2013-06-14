@@ -195,9 +195,8 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private volatile List<Warehouse> warehouses = null;
     private List<LiteSubstation> substations = null;
 
-    private final Map<Integer, Integer> programIdToAppCatIdMap = new ConcurrentHashMap<Integer, Integer>();
-    private final Map<Integer, LiteApplianceCategory> appCategoryMap = 
-    	new ConcurrentHashMap<Integer, LiteApplianceCategory>();
+    private final Map<Integer, Integer> programIdToAppCatIdMap = new ConcurrentHashMap<>();
+    private final Map<Integer, LiteApplianceCategory> appCategoryMap = new ConcurrentHashMap<>();
     
     private volatile List<Integer> routeIds = null;
     
@@ -210,8 +209,8 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private class EnergyCompanyHierarchy {
         // Energy company hierarchy
         LiteStarsEnergyCompany parent = null;
-        final List<LiteStarsEnergyCompany> children = new ArrayList<LiteStarsEnergyCompany>();
-        final List<Integer> memberLoginIDs = new ArrayList<Integer>();
+        final List<LiteStarsEnergyCompany> children = new ArrayList<>();
+        final List<Integer> memberLoginIDs = new ArrayList<>();
     }
     
     private volatile EnergyCompanyHierarchy energyCompanyHierarchy = null;
@@ -359,7 +358,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
                 timeZone = CtiUtilities.getValidTimeZone(timeZoneStr);
                 CTILogger.debug("Energy Company Setting Default TimeZone found: " + timeZone.getDisplayName());
             } catch (BadConfigurationException e) {
-                throw new BadConfigurationException (e.getMessage() + ". Invalid value in Energy Company Role Default TimeZone property.");
+                throw new BadConfigurationException (e.getMessage() + ". Invalid value in Energy Company Setting Default TimeZone property.");
             }
         } else {
             timeZone = systemDateFormattingService.getSystemTimeZone();

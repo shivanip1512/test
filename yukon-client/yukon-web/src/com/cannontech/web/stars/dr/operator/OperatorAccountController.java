@@ -511,7 +511,7 @@ public class OperatorAccountController {
             }
         }
         
-        if (residentialUser.getUserID() == UserUtils.USER_DEFAULT_ID) {
+        if (residentialUser.getUserID() == UserUtils.USER_NONE_ID) {
             model.addAttribute("loginMode", LoginModeEnum.CREATE);
             loginBackingBean.setLoginEnabled(LoginStatusEnum.ENABLED);
         } else {
@@ -585,7 +585,7 @@ public class OperatorAccountController {
          * the user is not the default user
          * the login is being edited (not created or viewed)
          */
-        if(residentialUser.getUserID() != UserUtils.USER_DEFAULT_ID 
+        if(residentialUser.getUserID() != UserUtils.USER_NONE_ID 
             && LoginModeEnum.EDIT.equals(LoginModeEnum.valueOf(loginMode))
             && !bindingResult.hasErrors()) {
             systemEventLogService.loginChangeAttempted(userContext.getYukonUser(), residentialUser.getUsername(), EventSource.OPERATOR);
@@ -648,8 +648,8 @@ public class OperatorAccountController {
          * OR if there is a login AND the login fields were not changed.  
          */
         final boolean ignoreLogin = !hasEditLoginPrivileges(userContext.getYukonUser()) 
-            || (residentialUser.getUserID() == UserUtils.USER_DEFAULT_ID && StringUtils.isBlank(accountGeneral.getLoginBackingBean().getUsername()))
-            || (residentialUser.getUserID() != UserUtils.USER_DEFAULT_ID && originalUserGroup != null &&
+            || (residentialUser.getUserID() == UserUtils.USER_NONE_ID && StringUtils.isBlank(accountGeneral.getLoginBackingBean().getUsername()))
+            || (residentialUser.getUserID() != UserUtils.USER_NONE_ID && originalUserGroup != null &&
                 !didLoginChange(residentialUser, accountGeneral.getLoginBackingBean(), originalUserGroup.getUserGroupName()));
 		
 		/* UpdatableAccount */
@@ -876,7 +876,7 @@ public class OperatorAccountController {
                               authenticationService.supportsPasswordSet(currentAuthType));
 
         modelMap.addAttribute("ecResidentialUserGroups", ecResidentialUserGroups);
-        if (residentialUser.getUserID() == UserUtils.USER_DEFAULT_ID) {
+        if (residentialUser.getUserID() == UserUtils.USER_NONE_ID) {
             modelMap.addAttribute("loginMode", LoginModeEnum.CREATE);
         } else {
             modelMap.addAttribute("loginMode", LoginModeEnum.EDIT);
@@ -892,7 +892,7 @@ public class OperatorAccountController {
 	private void checkEditingDefaultUser(String username) {
         LiteYukonUser defaultUserCheck = yukonUserDao.findUserByUsername(username);
         
-        if (defaultUserCheck != null && defaultUserCheck.getUserID() == UserUtils.USER_DEFAULT_ID) {
+        if (defaultUserCheck != null && defaultUserCheck.getUserID() == UserUtils.USER_NONE_ID) {
             throw new RuntimeException("You cannot edit the the default user.");
         }
     }

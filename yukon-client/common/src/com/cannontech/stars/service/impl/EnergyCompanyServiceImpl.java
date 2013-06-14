@@ -399,7 +399,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         // Delete the default operator login
         int defaultUserId = energyCompany.getUser().getUserID();
         if (defaultUserId != com.cannontech.user.UserUtils.USER_ADMIN_ID &&
-                defaultUserId != com.cannontech.user.UserUtils.USER_DEFAULT_ID) {
+                defaultUserId != com.cannontech.user.UserUtils.USER_NONE_ID) {
             
             YukonUser.deleteOperatorLogin(defaultUserId);
             dbChangeManager.processDbChange(defaultUserId,

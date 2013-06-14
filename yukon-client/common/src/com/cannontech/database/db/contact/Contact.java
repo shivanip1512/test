@@ -25,7 +25,7 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	private Integer contactID = null;
 	private String contFirstName = CtiUtilities.STRING_NONE;
 	private String contLastName = CtiUtilities.STRING_NONE;
-	private Integer logInID = new Integer(UserUtils.USER_DEFAULT_ID);
+	private Integer logInID = new Integer(UserUtils.USER_NONE_ID);
 	private Integer addressID = new Integer(CtiUtilities.NONE_ZERO_ID);
 	
 	private static NextValueHelper nextValueHelper = YukonSpringHook.getNextValueHelper();
@@ -41,10 +41,6 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 
 	public static final String TABLE_NAME = "Contact";
 
-//	private static final String GET_CUSTOMER_CONTACT_SQL =
-//		"SELECT ContactID,ContFirstName,ContLastName,LoginID,AddressID " + 
-//		"FROM " + TABLE_NAME + " WHERE LoginID=?";
-	
 
 	/**
 	 * Contact constructor comment.
@@ -337,7 +333,7 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 		String sql =
 			"select userid from " + YukonUser.TABLE_NAME + " where userid not in" +
 			"(select loginid from " + Contact.TABLE_NAME +
-			" where loginid != " + UserUtils.USER_DEFAULT_ID + 
+			" where loginid != " + UserUtils.USER_NONE_ID + 
 			" and loginid != " + ignoreID + ")";
 	
 		NativeIntVector intVect = new NativeIntVector(32);

@@ -25,7 +25,7 @@ import com.cannontech.user.UserUtils;
 public class EnrollmentMigrationTask extends TimeConsumingTask {
 
 	LiteStarsEnergyCompany energyCompany = null;
-    int userID = UserUtils.USER_DEFAULT_ID;
+    int userID = UserUtils.USER_NONE_ID;
     
     int numEnrolled = 0;
 

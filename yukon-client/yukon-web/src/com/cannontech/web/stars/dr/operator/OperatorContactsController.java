@@ -264,7 +264,7 @@ public class OperatorContactsController {
             modelMap.addAttribute("contactId", contactId);
         
             LiteYukonUser user = contactDao.getYukonUser(contactId);
-            if(user.getUserID() != UserUtils.USER_DEFAULT_ID) {
+            if(user.getUserID() != UserUtils.USER_NONE_ID) {
                 modelMap.addAttribute("username", user.getUsername());
             }
         }

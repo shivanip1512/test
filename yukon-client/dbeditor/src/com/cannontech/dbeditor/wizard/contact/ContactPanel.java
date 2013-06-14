@@ -1271,7 +1271,7 @@ private void setSelectedLogin(Contact cnt)
 {
 	initUserCombo(
 		(cnt == null
-			? UserUtils.USER_DEFAULT_ID
+			? UserUtils.USER_NONE_ID
 			: cnt.getContact().getLogInID().intValue()));
 
 	for(int i = 0; i < getJComboBoxLoginUser().getItemCount(); i++)

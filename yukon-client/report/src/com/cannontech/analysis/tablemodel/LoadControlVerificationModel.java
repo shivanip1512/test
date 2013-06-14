@@ -376,7 +376,7 @@ public class LoadControlVerificationModel extends ReportModelBase
 		html += "            <div id='Div"+ ReportFilter.TRANSMITTER.getFilterTitle() +"' style='display:true'>" + LINE_SEPARATOR;
 		html += "              <select name='" + ATT_TRANSMITTER_IDS + "' size='10' multiple style='width:300px;'>" + LINE_SEPARATOR;
 
-		List objects = ReportFuncs.getObjectsByModelType(ReportFilter.TRANSMITTER, UserUtils.USER_DEFAULT_ID);
+		List objects = ReportFuncs.getObjectsByModelType(ReportFilter.TRANSMITTER, UserUtils.USER_NONE_ID);
 		if (objects != null)
 		{
 			for (int j = 0; j < objects.size(); j++)
@@ -402,7 +402,7 @@ public class LoadControlVerificationModel extends ReportModelBase
 		html += "            <div id='Div"+ ReportFilter.RECEIVER.getFilterTitle() +"' style='display:true'>" + LINE_SEPARATOR;
 		html += "            <select name='" + ATT_RECEIVER_IDS + "' size='10' style='width:300px;'>" + LINE_SEPARATOR;
 
-		objects = ReportFuncs.getObjectsByModelType(ReportFilter.RECEIVER, UserUtils.USER_DEFAULT_ID);
+		objects = ReportFuncs.getObjectsByModelType(ReportFilter.RECEIVER, UserUtils.USER_NONE_ID);
 		if (objects != null)
 		{
 			for (int j = 0; j < objects.size(); j++)

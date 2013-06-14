@@ -108,7 +108,7 @@ public class ServiceCompanyController {
         //check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         
-        modelMap.addAttribute("availableLogins", availableLogins(UserUtils.USER_DEFAULT_ID));
+        modelMap.addAttribute("availableLogins", availableLogins(UserUtils.USER_NONE_ID));
         modelMap.addAttribute("serviceCompany", new ServiceCompanyDto());
         modelMap.addAttribute("mode", PageEditMode.CREATE);
         
@@ -138,7 +138,7 @@ public class ServiceCompanyController {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             
-            modelMap.addAttribute("availableLogins", availableLogins(UserUtils.USER_DEFAULT_ID));
+            modelMap.addAttribute("availableLogins", availableLogins(UserUtils.USER_NONE_ID));
             modelMap.addAttribute("mode", PageEditMode.CREATE);
             return "energyCompany/serviceCompany/edit.jsp";
         }

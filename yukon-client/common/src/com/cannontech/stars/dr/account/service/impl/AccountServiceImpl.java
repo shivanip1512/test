@@ -508,9 +508,7 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Delete login
          */
-        if (userId != UserUtils.USER_DEFAULT_ID &&
-                userId != UserUtils.USER_ADMIN_ID &&
-                userId != UserUtils.USER_YUKON_ID) {
+        if (!UserUtils.isReservedUserId(userId)) {
             log.info("Deleting login and removing from starsDatabaseCache id# " + userId);
             yukonUserDao.deleteUser(userId);
             starsDatabaseCache.deleteStarsYukonUser(userId);
@@ -624,11 +622,11 @@ public class AccountServiceImpl implements AccountService {
          * If any password is specified set AuthType to default AuthType.  If it was empty set it
          *  to a space(done by dao).
          */
-        int newLoginId = UserUtils.USER_DEFAULT_ID;
+        int newLoginId = UserUtils.USER_NONE_ID;
         AuthenticationCategory defaultAuthenticationCategory = authenticationService.getDefaultAuthenticationCategory();
         if(StringUtils.isNotBlank(username)) {
             LiteYukonUser login = yukonUserDao.getLiteYukonUser(primaryContact.getLoginID());
-            if(login != null && login.getUserID() != UserUtils.USER_DEFAULT_ID) {
+            if(login != null && login.getUserID() != UserUtils.USER_NONE_ID) {
                 // Update their login info.
 
                 if (accountDto.getUserGroup() != null) {
@@ -707,11 +705,11 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Update the primary contact
          */
-        contactService.updateContact(primaryContact, accountDto.getFirstName(), accountDto.getLastName(), newLoginId != UserUtils.USER_DEFAULT_ID ? newLoginId : null);
+        contactService.updateContact(primaryContact, accountDto.getFirstName(), accountDto.getLastName(), newLoginId != UserUtils.USER_NONE_ID ? newLoginId : null);
         
         primaryContact.setContFirstName(accountDto.getFirstName());
         primaryContact.setContLastName(accountDto.getLastName());
-        if(newLoginId != UserUtils.USER_DEFAULT_ID) {
+        if(newLoginId != UserUtils.USER_NONE_ID) {
             primaryContact.setLoginID(newLoginId);
         }
         contactDao.saveContact(primaryContact);
@@ -1025,7 +1023,7 @@ public class AccountServiceImpl implements AccountService {
         retrievedDto.setPropertyNotes(accountSite.getPropertyNotes());
         
         int loginId = primaryContact.getLoginID();
-        if(loginId > UserUtils.USER_DEFAULT_ID) {
+        if(loginId > UserUtils.USER_NONE_ID) {
             LiteYukonUser user = yukonUserDao.getLiteYukonUser(loginId);
             retrievedDto.setUserName(user.getUsername());
 

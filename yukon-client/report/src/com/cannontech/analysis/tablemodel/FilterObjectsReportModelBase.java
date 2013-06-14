@@ -42,7 +42,7 @@ public abstract class FilterObjectsReportModelBase<E> extends ReportModelBase<E>
         } else {
             LiteYukonUser liteUser = null;
             YukonUserDao yukonUserDao = YukonSpringHook.getBean("yukonUserDao", YukonUserDao.class);
-            if(userId > UserUtils.USER_DEFAULT_ID) {
+            if(userId > UserUtils.USER_NONE_ID) {
                 liteUser = yukonUserDao.getLiteYukonUser(userId);
             }
             

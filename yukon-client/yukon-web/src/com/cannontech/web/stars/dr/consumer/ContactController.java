@@ -207,7 +207,7 @@ public class ContactController extends AbstractConsumerController {
     	boolean autoCreateLogin = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.AUTO_CREATE_LOGIN_FOR_ADDITIONAL_CONTACTS, energyCompany.getEnergyCompanyId());
         
         if (autoCreateLogin && !contactDao.isPrimaryContact(contact.getContactID())
-                && contact.getLoginID() == UserUtils.USER_DEFAULT_ID) {
+                && contact.getLoginID() == UserUtils.USER_NONE_ID) {
             List<LiteUserGroup> custUserGroups =  ecMappingDao.getResidentialUserGroups(energyCompany.getEnergyCompanyId());
             LiteYukonUser login = yukonUserDao.createLoginForAdditionalContact(contact.getContFirstName(), contact.getContLastName(), custUserGroups.get(0));
             contact.setLoginID(login.getUserID());
@@ -267,7 +267,7 @@ public class ContactController extends AbstractConsumerController {
 	    		map.addAttribute("contact", contactDao.getContact(contactId));
 	    	}else{
 	    		LiteContact contact = new LiteContact(-1);
-	    		contact.setLoginID(UserUtils.USER_DEFAULT_ID);
+	    		contact.setLoginID(UserUtils.USER_NONE_ID);
 	    		map.addAttribute("contact", contact);
 	    		contactId = contact.getContactID();
 	    	}

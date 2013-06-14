@@ -1379,7 +1379,7 @@ public class StarsLiteFactory {
 				starsInvs.addStarsInventory( list.get(i) );
 		}
 		
-		if (liteContact.getLoginID() != com.cannontech.user.UserUtils.USER_DEFAULT_ID &&
+		if (liteContact.getLoginID() != com.cannontech.user.UserUtils.USER_NONE_ID &&
 			liteContact.getLoginID() != com.cannontech.user.UserUtils.USER_ADMIN_ID) {
 			LiteYukonUser liteUser = YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser( liteContact.getLoginID() );
 			starsAcctInfo.setStarsUser(liteUser);

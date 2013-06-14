@@ -283,10 +283,7 @@ public class UserRolePanel extends DataInputPanel implements TreeSelectionListen
 
 	/**
 	 * Return the JTree1 property value.
-	 * 
-	 * @return JTree
 	 */
-	/* WARNING: THIS METHOD WILL BE REGENERATED. */
 	private JTree getJTreeRoles() {
 		if (ivjJTreeRoles == null) {
 			try {
@@ -308,54 +305,19 @@ public class UserRolePanel extends DataInputPanel implements TreeSelectionListen
 					String tmpCat = null;
 					DefaultMutableTreeNode categoryParent = null;
 
-					for (int i = 0; i < roles.size(); i++) {
-						LiteYukonRole role = roles.get(i);
-
+					for (LiteYukonRole role:roles) {
 						if (!role.getCategory().equalsIgnoreCase(tmpCat)) {
 							tmpCat = role.getCategory();
-
-							if (UserUtils.isReadOnlyCategory(tmpCat)) {
-								DBTreeNode d = new DBTreeNode(tmpCat
-										+ " [SYSTEM]");
-								d.setIsSystemReserved(true);
-
-								categoryParent = d;
-							} else
-								categoryParent = new DefaultMutableTreeNode(
-										tmpCat);
-
+							categoryParent = new DefaultMutableTreeNode(tmpCat);
 							root.add(categoryParent);
 						}
-
-						LiteBaseNode lbNode = new LiteBaseNode(role);
-
-						// This extra clause is necessary for the RADIUS
-						// security interface
-						if (((LiteYukonRole) lbNode.getUserObject())
-								.getRoleName().compareTo(UserUtils.CAT_RADIUS) == 0) {
-							ClientSession session = ClientSession.getInstance();
-							if (session.getUser().getUserID() == com.cannontech.user.UserUtils.USER_ADMIN_ID) {
-								lbNode.setIsSystemReserved(false);
-							} else {
-								lbNode.setIsSystemReserved(true);
-							}
-						}
-						// set this to tell the GUI if this node is editable or
-						// not
-						else
-							lbNode.setIsSystemReserved(UserUtils
-									.isReadOnlyCategory(tmpCat));
-
-						categoryParent.add(lbNode);
+						categoryParent.add(new LiteBaseNode(role));
 					}
-
 				}
 
 				// expand the root
 				ivjJTreeRoles.expandPath(new TreePath(root.getPath()));
-
 				ivjJTreeRoles.addMouseListener(getNodeListener());
-
 				ivjJTreeRoles.addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent e) {
 						valueChanged(null);

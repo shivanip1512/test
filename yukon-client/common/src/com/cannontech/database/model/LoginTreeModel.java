@@ -83,7 +83,7 @@ public synchronized void doUpdate(final Runnable onCompletion) {
                 DBTreeNode userNode = new DBTreeNode(user);
 
                 userNode.setIsSystemReserved(user.getUserID() < 0 );
-                if (user.getUserID() > UserUtils.USER_DEFAULT_ID) {
+                if (user.getUserID() > UserUtils.USER_NONE_ID) {
                     rootNode.add( userNode );
                     
                 }

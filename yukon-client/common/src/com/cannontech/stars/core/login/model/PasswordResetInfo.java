@@ -23,7 +23,7 @@ public class PasswordResetInfo{
     }
 
     public boolean isValidUser() {
-        if (user == null || user.getUserID() == UserUtils.USER_DEFAULT_ID) {
+        if (user == null || user.getUserID() == UserUtils.USER_NONE_ID) {
             return false;
         }
 

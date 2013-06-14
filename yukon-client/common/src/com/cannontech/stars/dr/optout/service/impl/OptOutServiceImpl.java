@@ -793,7 +793,7 @@ public class OptOutServiceImpl implements OptOutService {
 		Instant startDate = new Instant(0);
 
         // If the account has a login and is a member of the Residential Customer Role, load its limits
-        if(userId != UserUtils.USER_DEFAULT_ID &&
+        if(userId != UserUtils.USER_NONE_ID &&
            rolePropertyDao.checkRole(YukonRole.RESIDENTIAL_CUSTOMER, user)) {
             
             OptOutLimit currentOptOutLimit = getCurrentOptOutLimit(customerAccountId, energyCompanyTimeZone);
@@ -1118,7 +1118,7 @@ public class OptOutServiceImpl implements OptOutService {
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
 	    
         // If the account has a login and is a member of the Residential Customer Role, load its limits
-        if(user.getUserID() != UserUtils.USER_DEFAULT_ID &&
+        if(user.getUserID() != UserUtils.USER_NONE_ID &&
            rolePropertyDao.checkRole(YukonRole.RESIDENTIAL_CUSTOMER, user)) {
 		    
 		    DateTime dateTime = new DateTime(energyCompanyTimeZone);

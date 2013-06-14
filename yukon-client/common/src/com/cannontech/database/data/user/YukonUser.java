@@ -21,6 +21,7 @@ import com.cannontech.database.db.web.EnergyCompanyOperatorLoginList;
 import com.cannontech.dispatch.DbChangeType;
 import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.UserUtils;
 
 /*** 
  * @author alauinger
@@ -28,11 +29,6 @@ import com.cannontech.spring.YukonSpringHook;
 public class YukonUser extends DBPersistent implements CTIDbChange, EditorPanel
 {	
     private static final Logger log = YukonLogManager.getLogger(YukonUser.class);
-    private static final Integer[] immutableUserIds = new Integer[] {
-        -1, // Admin
-        -2, // Yukon
-        -100 // DefaultCTI
-    };
     
     private com.cannontech.database.db.user.YukonUser yukonUser;
 	private Vector<YukonGroup> yukonGroups; //type = com.cannontech.database.db.user.YukonGroup
@@ -160,7 +156,9 @@ public class YukonUser extends DBPersistent implements CTIDbChange, EditorPanel
 	}
 	
 	public static void deleteOperatorLogin(Integer userID) {
-	    checkForValidUserId(userID);
+	    if (UserUtils.isReservedUserId(userID)) {
+            throw new UnsupportedOperationException("Deletion of userid: " + userID + " not supported.");
+	    }
 	    
 		Connection conn = null;
 		
@@ -181,13 +179,6 @@ public class YukonUser extends DBPersistent implements CTIDbChange, EditorPanel
 			SqlUtils.close(conn);
 		}
 	}
-	
-	private static void checkForValidUserId(Integer userId) {
-	    for (final Integer immutableUserId : immutableUserIds) {
-	        if (userId.equals(immutableUserId)) 
-	            throw new UnsupportedOperationException("Deletion of userid: " + userId + " not supported.");
-	    }
-	}
 
 	/**
 	 * Returns the yukonGroups.
@@ -195,7 +186,7 @@ public class YukonUser extends DBPersistent implements CTIDbChange, EditorPanel
 	 */
 	public Vector<YukonGroup> getYukonGroups() {
 		if (yukonGroups == null)
-			yukonGroups = new Vector<YukonGroup>();
+			yukonGroups = new Vector<>();
 		return yukonGroups;
 	}
 

@@ -371,7 +371,7 @@ public class StarsFactory {
 			newContact.setContactID( CtiUtilities.NONE_ZERO_ID );
 			newContact.setLastName( "" );
 			newContact.setFirstName( "" );
-			newContact.setLoginID(UserUtils.USER_DEFAULT_ID);
+			newContact.setLoginID(UserUtils.USER_NONE_ID);
 			return newContact;
 		}
 		catch (Exception e) {

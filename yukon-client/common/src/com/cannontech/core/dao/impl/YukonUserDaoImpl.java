@@ -271,7 +271,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
     public void removeUserFromEventBase(int userId) {
         SqlStatementBuilder zeroOutEventBaseUserIdsSql = new SqlStatementBuilder();
         zeroOutEventBaseUserIdsSql.append("UPDATE EventBase");
-        zeroOutEventBaseUserIdsSql.append("SET UserId").eq(UserUtils.USER_DEFAULT_ID);
+        zeroOutEventBaseUserIdsSql.append("SET UserId").eq(UserUtils.USER_NONE_ID);
         zeroOutEventBaseUserIdsSql.append("WHERE UserId").eq(userId);
         yukonJdbcTemplate.update(zeroOutEventBaseUserIdsSql);
     }
@@ -283,7 +283,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	    // Remove existing contacts before removing username
 	    SqlStatementBuilder detachContactFromLogin = new SqlStatementBuilder();
 	    detachContactFromLogin.append("UPDATE Contact");
-        detachContactFromLogin.append("SET LoginId").eq(UserUtils.USER_DEFAULT_ID);
+        detachContactFromLogin.append("SET LoginId").eq(UserUtils.USER_NONE_ID);
         detachContactFromLogin.append("WHERE LoginId").eq(userId);
         yukonJdbcTemplate.update(detachContactFromLogin);
         

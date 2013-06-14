@@ -51,7 +51,7 @@ public class UserIndexManager extends AbstractIndexManager {
     private SqlStatementBuilder getQueryGuts() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("from yukonuser");
-        sql.append("where userid > " + UserUtils.USER_DEFAULT_ID);
+        sql.append("where userid > " + UserUtils.USER_NONE_ID);
         return sql;
     }
     

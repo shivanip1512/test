@@ -376,7 +376,7 @@ public class AccountImportService {
 
                                 if (liteAcctInfo != null) {
                                     LiteYukonUser login = contactDao.getYukonUser(liteAcctInfo.getCustomer().getPrimaryContactID());
-                                    if (login != null && login.getUserID() != UserUtils.USER_DEFAULT_ID && !removedUsernames.contains(login.getUsername()))
+                                    if (login != null && login.getUserID() != UserUtils.USER_NONE_ID && !removedUsernames.contains(login.getUsername()))
                                         removedUsernames.add(login.getUsername());
                                 } else if (prevFields[ImportFields.IDX_USERNAME].trim().length() > 0) {
                                     addedUsernames.remove(prevFields[ImportFields.IDX_USERNAME]);
@@ -388,7 +388,7 @@ public class AccountImportService {
                                     custFieldsMap.put(custFields[ImportFields.IDX_ACCOUNT_NO], custFields);
                                     
                                     LiteYukonUser login = contactDao.getYukonUser(liteAcctInfo.getCustomer().getPrimaryContactID());
-                                    if (login != null && login.getUserID() != UserUtils.USER_DEFAULT_ID && !removedUsernames.contains(login.getUsername())) {
+                                    if (login != null && login.getUserID() != UserUtils.USER_NONE_ID && !removedUsernames.contains(login.getUsername())) {
                                         removedUsernames.add(login.getUsername());
                                     }
                                 } else {
@@ -437,7 +437,7 @@ public class AccountImportService {
                                     custFields[ImportFields.IDX_ACCOUNT_ACTION] = "UPDATE";
                                     
                                     LiteYukonUser login = contactDao.getYukonUser(liteAcctInfo.getCustomer().getPrimaryContactID());
-                                    if (login != null && login.getUserID() != UserUtils.USER_DEFAULT_ID) {
+                                    if (login != null && login.getUserID() != UserUtils.USER_NONE_ID) {
                                         custFields[ImportFields.IDX_USERNAME] = login.getUsername();
                                     } else {
                                         checkUsername = custFields[ImportFields.IDX_USERNAME].trim().length() > 0;

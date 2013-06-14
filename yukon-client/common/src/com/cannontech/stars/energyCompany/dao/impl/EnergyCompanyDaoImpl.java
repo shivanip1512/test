@@ -35,11 +35,11 @@ import com.google.common.collect.Lists;
 
 public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
 
-    @Autowired private YukonUserDao yukonUserDao;
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private YukonUserDao yukonUserDao;
     
     private SimpleTableAccessTemplate<EnergyCompany> simpleTableTemplate;
     private final static FieldMapper<EnergyCompany> fieldMapper = new FieldMapper<EnergyCompany>() {
@@ -63,7 +63,7 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     
     @PostConstruct
     public void init() {
-        simpleTableTemplate = new SimpleTableAccessTemplate<EnergyCompany>(yukonJdbcTemplate, nextValueHelper);
+        simpleTableTemplate = new SimpleTableAccessTemplate<>(yukonJdbcTemplate, nextValueHelper);
         simpleTableTemplate.setTableName("EnergyCompany");
         simpleTableTemplate.setFieldMapper(fieldMapper);
         simpleTableTemplate.setPrimaryKeyField("EnergyCompanyId");
@@ -92,8 +92,7 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     }
 
     @Override
-    public List<DisplayableServiceCompany> getAllInheritedServiceCompanies(
-            int energyCompanyId) {
+    public List<DisplayableServiceCompany> getAllInheritedServiceCompanies(int energyCompanyId) {
         List<Integer> energyCompanyIds = Lists.newArrayList();
         energyCompanyIds.add(energyCompanyId);
         energyCompanyIds.addAll(getParentEnergyCompanyIds(energyCompanyId));
@@ -102,13 +101,11 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         sql.append("join ECToGenericMapping ecgm on ecgm.ItemID = sc.CompanyID and ecgm.MappingCategory").eq_k(EcMappingCategory.SERVICE_COMPANY);
         sql.append("where ecgm.EnergyCompanyID in (").appendArgumentList(energyCompanyIds).append(")");
         
-
         return yukonJdbcTemplate.query(sql.getSql(),
             new RowMapper<DisplayableServiceCompany>() {
                 @Override
-                public DisplayableServiceCompany mapRow(
-                        ResultSet rs, int rowNum)
-                        throws SQLException {
+                public DisplayableServiceCompany mapRow(ResultSet rs, int rowNum)
+                                                 throws SQLException {
                     DisplayableServiceCompany sc = new DisplayableServiceCompany();
                     sc.setServiceCompanyId(rs.getInt("companyId"));
                     sc.setServiceCompanyName(SqlUtils.convertDbValueToString(rs.getString("companyName")));
@@ -131,7 +128,7 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         try {
             int parentId = yukonJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
             parentIds.add(parentId);
-
+            
             /* Recursive call to get the whole parent chain */
             parentIds.addAll(getParentEnergyCompanyIds(parentId));
         } catch (EmptyResultDataAccessException e) {
@@ -210,7 +207,7 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         LiteEnergyCompany ec = getEnergyCompany(energyCompanyID);
         return (ec == null ? null : getEnergyCompanyUser(ec));
     }
-
+    
     @Override
     public void addEnergyCompanyCustomerListEntry(int customerId,
             int energyCompanyId) {
@@ -239,7 +236,7 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT Name");
         sql.append("FROM EnergyCompany");
-        sql.append("WHERE EnergyCompanyId").eq_k(energyCompanyId);
+        sql.append("WHERE EnergyCompanyId").eq(energyCompanyId);
         
         return yukonJdbcTemplate.queryForString(sql);
     }

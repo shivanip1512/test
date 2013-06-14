@@ -32,7 +32,7 @@ public class ContactServiceImpl implements ContactService {
     public LiteContact createContact(String firstName, String lastName, LiteYukonUser contactUser) {
 		
 		LiteContact liteContact = new LiteContact(-1); //  contactDao.saveContact will insert for -1, otherwise update
-		saveContact(liteContact, firstName, lastName, contactUser == null ? UserUtils.USER_DEFAULT_ID : contactUser.getUserID());
+		saveContact(liteContact, firstName, lastName, contactUser == null ? UserUtils.USER_NONE_ID : contactUser.getUserID());
 	    
 	    return liteContact;
 	}

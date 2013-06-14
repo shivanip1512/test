@@ -26,6 +26,7 @@ import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.dbeditor.wizard.contact.QuickContactPanel;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.UserUtils;
 
 public class CustomerBasePanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, DataInputPanelListener, CaretListener 
 {
@@ -405,7 +406,7 @@ public Object getValue(Object o)
 	    LiteContact blankContact = new LiteContact(-1, 
 	                                               "",
 	                                               "",
-	                                               -9999);
+	                                               UserUtils.USER_NONE_ID);
 	    ContactDao contactDao = YukonSpringHook.getBean("contactDao", ContactDao.class);
 	    contactDao.saveContact(blankContact);
 	    
