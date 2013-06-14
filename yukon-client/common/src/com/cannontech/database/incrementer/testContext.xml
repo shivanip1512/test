@@ -10,8 +10,7 @@
     <property name="sequenceNameLookup" ref="sequenceNameLookup"/>
   </bean>
   
-  <bean id="sequenceNameLookup" class="com.cannontech.database.incrementer.XmlIncrementer"
-        init-method="parse">
+  <bean id="sequenceNameLookup" class="com.cannontech.database.incrementer.XmlIncrementer">
     <property name="dataSource" ref="yukonDataSource"/>
     <property name="configFile" value="classpath:com/cannontech/database/incrementer/table_sequences.xml"/>
   </bean>

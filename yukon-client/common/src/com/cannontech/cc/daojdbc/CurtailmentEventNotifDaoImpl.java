@@ -4,7 +4,8 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
@@ -24,7 +25,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.enums.NotificationReason;
 import com.cannontech.enums.NotificationState;
 
-public class CurtailmentEventNotifDaoImpl implements CurtailmentEventNotifDao, InitializingBean {
+public class CurtailmentEventNotifDaoImpl implements CurtailmentEventNotifDao {
     
     private YukonJdbcTemplate yukonJdbcTemplate;
     private SimpleTableAccessTemplate<CurtailmentEventNotif> template;
@@ -124,8 +125,8 @@ public class CurtailmentEventNotifDaoImpl implements CurtailmentEventNotifDao, I
         }
     };
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         template = new SimpleTableAccessTemplate<CurtailmentEventNotif>(yukonJdbcTemplate, nextValueHelper);
         template.setTableName("CCurtCENotif");
         template.setPrimaryKeyField("CCurtCENotifID");

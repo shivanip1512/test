@@ -3,7 +3,8 @@ package com.cannontech.stars.dr.thermostat.dao.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +20,7 @@ import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 /**
  * Implementation class for ThermostatScheduleDao
  */
-public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, InitializingBean {
+public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao {
 
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private ChunkingSqlTemplate chunkyJdbcTemplate;
@@ -31,8 +32,8 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         chunkyJdbcTemplate= new ChunkingSqlTemplate(simpleJdbcTemplate);
     }
 

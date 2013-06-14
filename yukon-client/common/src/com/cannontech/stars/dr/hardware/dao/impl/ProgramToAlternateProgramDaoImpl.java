@@ -4,8 +4,9 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -26,7 +27,7 @@ import com.cannontech.stars.dr.hardware.model.ProgramToAlternateProgram;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.collect.Lists;
 
-public class ProgramToAlternateProgramDaoImpl implements ProgramToAlternateProgramDao, InitializingBean {
+public class ProgramToAlternateProgramDaoImpl implements ProgramToAlternateProgramDao {
 	
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
@@ -76,8 +77,8 @@ public class ProgramToAlternateProgramDaoImpl implements ProgramToAlternateProgr
         }
     };
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         programToAlternateProgramTemplate = new SimpleTableAccessTemplate<ProgramToAlternateProgram>(yukonJdbcTemplate, nextValueHelper);
         programToAlternateProgramTemplate.setTableName("ProgramToSeasonalProgram");
         programToAlternateProgramTemplate.setPrimaryKeyField("AssignedProgramId");

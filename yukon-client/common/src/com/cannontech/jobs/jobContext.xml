@@ -45,7 +45,7 @@
     </bean>
 
     <bean id="jobScheduledExecutor"
-        class="com.cannontech.common.util.ScheduledExecutorDelegate" destroy-method="shutdown">
+        class="com.cannontech.common.util.ScheduledExecutorDelegate">
         <qualifier value="job"/>
         <constructor-arg>
             <bean class="java.util.concurrent.Executors"

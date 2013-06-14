@@ -9,6 +9,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.jdom.Document;
@@ -88,6 +90,7 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
      * Loads the error-code.xml file with English values.  This fallback is required for EIM Server, Service Manager, etc
      * where there is no access to the i18n files.
      */
+    @PostConstruct
     @SuppressWarnings("unchecked")
     public void initialize() throws JDOMException, IOException {
         Builder<Integer, DeviceErrorDescription> mapBuilder = ImmutableMap.builder();

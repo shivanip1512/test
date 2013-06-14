@@ -4,7 +4,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -31,7 +32,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao, InitializingBean  {
+public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
 
     private StateDao stateDao;
     private AttributeService attributeService;
@@ -221,7 +222,8 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao, Initial
         }
     };
     
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         statusPointMonitorTemplate = new SimpleTableAccessTemplate<StatusPointMonitor>(yukonJdbcTemplate, nextValueHelper);
         statusPointMonitorTemplate.setTableName("StatusPointMonitor");
         statusPointMonitorTemplate.setPrimaryKeyField("StatusPointMonitorId");

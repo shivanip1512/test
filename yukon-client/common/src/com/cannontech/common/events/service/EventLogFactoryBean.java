@@ -3,13 +3,14 @@ package com.cannontech.common.events.service;
 import java.lang.reflect.Method;
 import java.util.Date;
 
+import javax.annotation.PostConstruct;
+
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.log4j.Logger;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -38,7 +39,7 @@ import com.cannontech.common.util.TransactionExecutor;
  * TransactionExecutor to be executed in one of the supported manners.
  *
  */
-public class EventLogFactoryBean implements FactoryBean, InitializingBean, BeanClassLoaderAware, MethodInterceptor {
+public class EventLogFactoryBean implements FactoryBean, BeanClassLoaderAware, MethodInterceptor {
     
     private Logger log = YukonLogManager.getLogger(EventLogFactoryBean.class);
     private Class<?> serviceInterface;
@@ -48,7 +49,7 @@ public class EventLogFactoryBean implements FactoryBean, InitializingBean, BeanC
     private EventLogService eventLogService;
     private TransactionExecutor transactionExecutor;
     
-    
+    @PostConstruct
     public void afterPropertiesSet() {
         if (serviceInterface == null) {
             throw new IllegalArgumentException("Property 'serviceInterface' is required");

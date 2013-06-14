@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.search.model.MspSearchField;
@@ -18,7 +19,7 @@ import com.cannontech.web.amr.meter.MspFilterBy;
 import com.cannontech.web.amr.meter.service.MspMeterSearchMethodResultProvider;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 
-public class MspMeterSearchServiceImpl implements MspMeterSearchService, InitializingBean {
+public class MspMeterSearchServiceImpl implements MspMeterSearchService {
 
 	private MspObjectDao mspObjectDao;
 	private MultispeakFuncs multispeakFuncs;
@@ -38,8 +39,8 @@ public class MspMeterSearchServiceImpl implements MspMeterSearchService, Initial
 		return msFilterByList;
 	}
 	
-	@Override
-    public void afterPropertiesSet() throws Exception {
+	@PostConstruct
+    public void init() throws Exception {
 	    int vendorId = multispeakFuncs.getPrimaryCIS();
 	    loadMspSearchFields(vendorId);
     }

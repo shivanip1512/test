@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.dao.MeterDao;
@@ -36,7 +37,7 @@ import com.google.common.collect.Sets;
  * which identifiers it is capable of loading and to ignore the others.
  *
  */
-public class PaoLoadingServiceImpl implements PaoLoadingService, InitializingBean {
+public class PaoLoadingServiceImpl implements PaoLoadingService {
     @Autowired private MeterDao meterDao;
     @Autowired private DeviceDao deviceDao;
     @Autowired private PaoDao paoDao;
@@ -45,8 +46,8 @@ public class PaoLoadingServiceImpl implements PaoLoadingService, InitializingBea
     private List<PaoLoader<DisplayablePao>> displayablePaoloaders;
     private List<PaoLoader<DeviceCollectionReportDevice>> deviceCollectionReportDeviceLoaders;
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         Builder<PaoLoader<DisplayablePao>> builder1 = ImmutableList.builder();
         builder1.add(meterDao.getDisplayableDeviceLoader());
         builder1.add(paoDao.getDisplayablePaoLoader());

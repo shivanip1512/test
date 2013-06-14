@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.annotation.PostConstruct;
+
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
@@ -107,6 +109,7 @@ public class StarsDatabaseCache implements DBChangeListener {
         this.applianceCategoryDao = applianceCategoryDao;
     }
 
+    @PostConstruct
     public void init() {		
         dataSource.addDBChangeListener(this);
         dataSource.addDatabaseChangeEventListener(DbChangeCategory.APPLIANCE, new DatabaseChangeEventListener() {

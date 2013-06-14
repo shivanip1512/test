@@ -1,6 +1,7 @@
 package com.cannontech.stars.dr.account.dao.impl;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -13,7 +14,7 @@ import com.cannontech.stars.dr.account.dao.CustomerResidenceDao;
 import com.cannontech.stars.dr.account.dao.CustomerResidenceRowAndFieldMapper;
 import com.cannontech.stars.dr.account.model.CustomerResidence;
 
-public class CustomerResidenceDaoImpl implements CustomerResidenceDao, InitializingBean {
+public class CustomerResidenceDaoImpl implements CustomerResidenceDao {
 
     private static final RowAndFieldMapper<CustomerResidence> rowAndFieldMapper;
     private YukonJdbcTemplate yukonJdbcTemplate;
@@ -57,8 +58,8 @@ public class CustomerResidenceDaoImpl implements CustomerResidenceDao, Initializ
         }
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         template = new SimpleTableAccessTemplate<CustomerResidence>(yukonJdbcTemplate, nextValueHelper);
         template.setTableName("CustomerResidence");
         template.setPrimaryKeyField("AccountSiteId");

@@ -3,7 +3,8 @@ package com.cannontech.stars.dr.account.dao.impl;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +23,7 @@ import com.cannontech.stars.dr.account.dao.CallReportDao;
 import com.cannontech.stars.dr.account.dao.CallReportRowAndFieldMapper;
 import com.cannontech.stars.dr.account.model.CallReport;
 
-public class CallReportDaoImpl implements CallReportDao, InitializingBean {
+public class CallReportDaoImpl implements CallReportDao {
 
 	private static final RowAndFieldMapper<CallReport> rowAndFieldMapper;
 	private YukonJdbcTemplate yukonJdbcTemplate;
@@ -138,8 +139,8 @@ public class CallReportDaoImpl implements CallReportDao, InitializingBean {
     	}
 	}
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
     	
     	template = new SimpleTableAccessTemplate<CallReport>(yukonJdbcTemplate, nextValueHelper);
     	template.setTableName("CallReportBase");

@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -53,7 +54,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-public class MeterDaoImpl implements MeterDao, InitializingBean {
+public class MeterDaoImpl implements MeterDao {
     private JdbcOperations jdbcOps;
     private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private DBPersistentDao dbPersistentDao;
@@ -65,8 +66,8 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     private String retrieveOneByMeterNumberSql;
     private String retrieveOneByPhysicalAddressSql;
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         retrieveOneByIdSql = meterRowMapper.getSql() + "WHERE ypo.paObjectId = ? ";
         retrieveOneByMeterNumberSql = meterRowMapper.getSql() + "WHERE UPPER(DeviceMeterGroup.MeterNumber) = UPPER(?) ";
         retrieveOneByPhysicalAddressSql = meterRowMapper.getSql() + "WHERE DeviceCarrierSettings.Address = ? ";

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -58,6 +60,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
         this.moduleConfigFile = moduleConfigFile;
     }
     
+    @PostConstruct
     public void processConfigFile() throws CommonMenuException {
         try {
             SAXBuilder builder = new SAXBuilder();

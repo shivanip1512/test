@@ -75,7 +75,7 @@
       <property name="timer" ref="globalScheduledExecutor"/>
     </bean>
     
-    <bean id="menuBuilder" class="com.cannontech.web.menu.CommonModuleBuilder" init-method="processConfigFile">
+    <bean id="menuBuilder" class="com.cannontech.web.menu.CommonModuleBuilder">
         <constructor-arg value="/WEB-INF/module_config.xml"/>
         <property name="menuOptionProducerFactory">
             <bean class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">

@@ -2,7 +2,8 @@ package com.cannontech.common.bulk;
 
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
@@ -11,7 +12,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import com.cannontech.common.config.ConfigurationSource;
 
 @ManagedResource
-public class DelayThrottleCalculator implements InitializingBean {
+public class DelayThrottleCalculator {
     private long lastTime = 0;
     private long maximumDelay = 0;
     private ConfigurationSource configurationSource;
@@ -30,8 +31,8 @@ public class DelayThrottleCalculator implements InitializingBean {
         }
     }
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         setMaximumDelay(configurationSource.getInteger(configurationPropertyName, 500));
     }
     

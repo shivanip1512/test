@@ -3,7 +3,8 @@ package com.cannontech.cc.daojdbc;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -23,7 +24,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 
-public class ProgramParameterDaoImpl implements InitializingBean, ProgramParameterDao {
+public class ProgramParameterDaoImpl implements ProgramParameterDao {
 
     private ProgramDao programDao;
     private YukonJdbcTemplate yukonJdbcTemplate;
@@ -109,8 +110,8 @@ public class ProgramParameterDaoImpl implements InitializingBean, ProgramParamet
         }
     };
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         template = new SimpleTableAccessTemplate<ProgramParameter>(yukonJdbcTemplate, nextValueHelper);
         template.setTableName("CCurtProgramParameter");
         template.setPrimaryKeyField("CCurtProgramParameterID");

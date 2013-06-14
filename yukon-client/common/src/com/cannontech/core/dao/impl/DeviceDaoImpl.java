@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -55,7 +56,7 @@ import com.google.common.collect.Maps;
  * Creation date: (3/26/2001 9:40:33 AM)
  * @author: 
  */
-public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
+public final class DeviceDaoImpl implements DeviceDao {
 
     private YukonDeviceRowMapper yukonDeviceRowMapper = null;
 
@@ -85,8 +86,8 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
         super();
     }
 
-    @Override
-    public void afterPropertiesSet() {
+    @PostConstruct
+    public void init() {
 
         this.yukonDeviceRowMapper = new YukonDeviceRowMapper();
     }

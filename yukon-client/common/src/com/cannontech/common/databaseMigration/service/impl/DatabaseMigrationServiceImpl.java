@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -26,7 +28,6 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.joda.time.DateTime;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ResourceLoaderAware;
@@ -88,7 +89,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
-public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, ResourceLoaderAware, InitializingBean{
+public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, ResourceLoaderAware{
     
     private static Logger log = YukonLogManager.getLogger(DatabaseMigrationServiceImpl.class);
     
@@ -169,8 +170,8 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     }
     
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
 
         // Parse xml into databaseDefinition object and cache it
         this.databaseDefinition = new DatabaseDefinition(databaseDefinitionResource);

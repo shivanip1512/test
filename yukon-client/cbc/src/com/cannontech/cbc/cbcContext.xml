@@ -26,7 +26,7 @@
     <property name="capControlCommentDao" ref="capControlCommentDao"/>
   </bean>
   
-  <bean id="cbcCache" class="com.cannontech.cbc.cache.impl.CapControlCacheImpl" init-method="initialize" >
+  <bean id="cbcCache" class="com.cannontech.cbc.cache.impl.CapControlCacheImpl" >
       <property name="defCapControlConn" ref="cbcConnection"/>
       <property name="refreshTimer" ref="globalScheduledExecutor"/>
       <property name="stateDao" ref="stateDao"/>

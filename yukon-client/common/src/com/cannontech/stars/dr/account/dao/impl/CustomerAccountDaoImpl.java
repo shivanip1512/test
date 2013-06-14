@@ -8,10 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Propagation;
@@ -54,7 +55,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 
-public class CustomerAccountDaoImpl implements CustomerAccountDao, InitializingBean {
+public class CustomerAccountDaoImpl implements CustomerAccountDao {
 	
     private final Logger logger = YukonLogManager.getLogger(CustomerAccountDaoImpl.class);
 
@@ -90,8 +91,8 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao, InitializingB
         }
     };
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         customerAccountTemplate = new SimpleTableAccessTemplate<CustomerAccount>(yukonJdbcTemplate, nextValueHelper);
         customerAccountTemplate.setTableName("CustomerAccount");
         customerAccountTemplate.setPrimaryKeyField("AccountId");

@@ -2,8 +2,9 @@ package com.cannontech.web.widget.support;
 
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -15,9 +16,10 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
  * have the WidgetDefinitionBean interface. When found, each one is wrapped in
  * a MultiActionController which is then mapped to the path "/&lt;shortName&gt;/*".
  */
-public class WidgetHandlerMapping extends AbstractUrlHandlerMapping implements InitializingBean {
-    @SuppressWarnings("unchecked")
-    public void afterPropertiesSet() throws Exception {
+public class WidgetHandlerMapping extends AbstractUrlHandlerMapping {
+    
+    @PostConstruct
+    public void init() throws Exception {
         ApplicationContext context = getApplicationContext();
         Map<String, WidgetDefinitionBean> beansOfType = 
             BeanFactoryUtils.beansOfTypeIncludingAncestors(context, WidgetDefinitionBean.class);

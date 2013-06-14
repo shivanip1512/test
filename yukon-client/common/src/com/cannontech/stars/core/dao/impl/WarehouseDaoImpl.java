@@ -3,7 +3,8 @@ package com.cannontech.stars.core.dao.impl;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -18,7 +19,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.core.dao.WarehouseDao;
 import com.cannontech.stars.database.db.hardware.Warehouse;
 
-public class WarehouseDaoImpl implements WarehouseDao, InitializingBean {
+public class WarehouseDaoImpl implements WarehouseDao {
     private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
     
@@ -61,8 +62,8 @@ public class WarehouseDaoImpl implements WarehouseDao, InitializingBean {
         }
     }
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         warehouseTemplate = new SimpleTableAccessTemplate<Warehouse>(yukonJdbcTemplate, nextValueHelper);
         warehouseTemplate.setTableName("Warehouse");
         warehouseTemplate.setPrimaryKeyField("WarehouseID");

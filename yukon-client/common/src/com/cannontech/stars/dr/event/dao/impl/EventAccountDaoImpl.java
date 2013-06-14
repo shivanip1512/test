@@ -5,7 +5,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -16,7 +17,7 @@ import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.stars.dr.event.dao.EventAccountDao;
 
-public class EventAccountDaoImpl implements EventAccountDao, InitializingBean {
+public class EventAccountDaoImpl implements EventAccountDao {
 
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private ChunkingSqlTemplate chunkyJdbcTemplate;
@@ -64,8 +65,8 @@ public class EventAccountDaoImpl implements EventAccountDao, InitializingBean {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         chunkyJdbcTemplate= new ChunkingSqlTemplate(simpleJdbcTemplate);
     }
 }

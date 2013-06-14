@@ -39,7 +39,7 @@
 		
     </bean>
     
-    <bean name="/470Config" class="com.cannontech.web.amr.device.configuration.DeviceConfigurationFormController" init-method="init">
+    <bean name="/470Config" class="com.cannontech.web.amr.device.configuration.DeviceConfigurationFormController">
     	
         <property name="cacheSeconds">
             <value type="int">0</value>
@@ -60,7 +60,7 @@
 		<property name="inputRoot" ref="deviceConfigInputRoot" />
     </bean>
    
-    <bean name="/440Config" class="com.cannontech.web.amr.device.configuration.DeviceConfigurationFormController" init-method="init">
+    <bean name="/440Config" class="com.cannontech.web.amr.device.configuration.DeviceConfigurationFormController">
         
         <property name="cacheSeconds">
             <value type="int">0</value>
@@ -81,7 +81,7 @@
         <property name="inputRoot" ref="deviceConfigInputRoot" />
     </bean>
 
-    <bean name="/430Config" class="com.cannontech.web.amr.device.configuration.DeviceConfigurationFormController" init-method="init">
+    <bean name="/430Config" class="com.cannontech.web.amr.device.configuration.DeviceConfigurationFormController">
     	
         <property name="cacheSeconds">
             <value type="int">0</value>
@@ -102,7 +102,7 @@
 		<property name="inputRoot" ref="deviceConfigInputRoot" />
     </bean>
     
-    <bean name="/420Config" class="com.cannontech.web.amr.device.configuration.DeviceConfigurationFormController" init-method="init">
+    <bean name="/420Config" class="com.cannontech.web.amr.device.configuration.DeviceConfigurationFormController">
     	<property name="cacheSeconds">
             <value type="int">0</value>
         </property>
@@ -121,7 +121,7 @@
 		<property name="inputRoot" ref="deviceConfigInputRoot" />
     </bean>
     
-    <bean name="/410Config" class="com.cannontech.web.amr.device.configuration.DeviceConfigurationFormController" init-method="init">
+    <bean name="/410Config" class="com.cannontech.web.amr.device.configuration.DeviceConfigurationFormController">
     	
         <property name="cacheSeconds">
             <value type="int">0</value>
@@ -142,7 +142,7 @@
 		<property name="inputRoot" ref="deviceConfigInputRoot" />
     </bean>
     
-    <bean name="/DNPConfig" class="com.cannontech.web.amr.device.configuration.DeviceConfigurationFormController" init-method="init">
+    <bean name="/DNPConfig" class="com.cannontech.web.amr.device.configuration.DeviceConfigurationFormController">
         <property name="cacheSeconds">
             <value type="int">0</value>
         </property>

@@ -6,8 +6,9 @@ import java.sql.Types;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -51,7 +52,7 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
-public class StrategyDaoImpl implements StrategyDao, InitializingBean {
+public class StrategyDaoImpl implements StrategyDao {
     
     private final ParameterizedRowMapper<CapControlStrategy> rowMapper = new StrategyRowMapper();
     private SimpleTableAccessTemplate<CapControlStrategy> strategyTemplate;
@@ -682,8 +683,8 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         if (!errors.isEmpty()) throw new IllegalArgumentException(StringUtils.join(errors, ", "));
     }
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         strategyTemplate = new SimpleTableAccessTemplate<CapControlStrategy>(yukonJdbcTemplate, nextValueHelper);
         strategyTemplate.setTableName("CapControlStrategy");
         strategyTemplate.setPrimaryKeyField("StrategyId");

@@ -7,11 +7,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.quartz.CronExpression;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -21,7 +21,7 @@ import com.cannontech.web.amr.util.cronExpressionTag.handler.CronTagStyleHandler
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 
-public class CronExpressionTagServiceImpl implements CronExpressionTagService, InitializingBean {
+public class CronExpressionTagServiceImpl implements CronExpressionTagService {
 	
     private List<CronTagStyleHandler> handlers;
     private Map<CronTagStyleType, CronTagStyleHandler> handlerMap;
@@ -118,8 +118,8 @@ public class CronExpressionTagServiceImpl implements CronExpressionTagService, I
 		return parts;
 	}
 	
-	@Override
-	public void afterPropertiesSet() throws Exception {
+	@PostConstruct
+	public void init() throws Exception {
 
 	    Collections.sort(this.handlers);
 	    

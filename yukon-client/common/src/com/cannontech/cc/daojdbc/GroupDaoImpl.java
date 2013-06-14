@@ -3,7 +3,8 @@ package com.cannontech.cc.daojdbc;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Propagation;
@@ -21,7 +22,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 
-public class GroupDaoImpl implements GroupDao, InitializingBean {
+public class GroupDaoImpl implements GroupDao {
 
     private YukonJdbcTemplate yukonJdbcTemplate;
     private SimpleTableAccessTemplate<Group> template;
@@ -83,8 +84,8 @@ public class GroupDaoImpl implements GroupDao, InitializingBean {
         }
     };
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void postInit() throws Exception {
         template = new SimpleTableAccessTemplate<Group>(yukonJdbcTemplate, nextValueHelper);
         template.setTableName("CCurtGroup");
         template.setPrimaryKeyField("CCurtGroupID");

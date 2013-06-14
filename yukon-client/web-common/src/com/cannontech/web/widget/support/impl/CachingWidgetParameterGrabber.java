@@ -3,10 +3,10 @@ package com.cannontech.web.widget.support.impl;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestBindingException;
 
@@ -15,7 +15,7 @@ import com.cannontech.web.widget.support.WidgetParameterGrabber;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 
-public class CachingWidgetParameterGrabber implements WidgetParameterGrabber, InitializingBean {
+public class CachingWidgetParameterGrabber implements WidgetParameterGrabber {
     
     private Integer maxCacheSize;
     private Boolean accessOrder;
@@ -29,7 +29,9 @@ public class CachingWidgetParameterGrabber implements WidgetParameterGrabber, In
         this.paramPrefix = getClass().getName();
     }
     
-    public void afterPropertiesSet() {
+    @PostConstruct
+    public void init() {
+        System.out.println("****** CachingWidgetParameterGrabber.init() successfully called. ******\n");
         this.cache = new MaxEntryLinkedHashMap<String, Object>(maxCacheSize, accessOrder);
     }
     

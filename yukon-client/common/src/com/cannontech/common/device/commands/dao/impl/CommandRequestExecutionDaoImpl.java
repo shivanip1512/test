@@ -3,7 +3,8 @@ package com.cannontech.common.device.commands.dao.impl;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +20,7 @@ import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 
-public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDao, InitializingBean {
+public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDao {
 
 	private static final RowAndFieldMapper<CommandRequestExecution> rowAndFieldMapper;
     private YukonJdbcTemplate yukonJdbcTemplate;
@@ -131,7 +132,8 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
     	return yukonJdbcTemplate.queryForObject(sql, new DateRowMapper(), commandRequestExecutionId);
     }
     
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
     	template = new SimpleTableAccessTemplate<CommandRequestExecution>(yukonJdbcTemplate, nextValueHelper);
     	template.setTableName("CommandRequestExec");
     	template.setPrimaryKeyField("CommandRequestExecId");

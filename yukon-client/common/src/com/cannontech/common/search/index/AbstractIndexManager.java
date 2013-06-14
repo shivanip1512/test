@@ -18,6 +18,9 @@ import java.util.Properties;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
@@ -246,6 +249,7 @@ public abstract class AbstractIndexManager implements IndexManager {
     /**
      * Helper method to initialize the index manager
      */
+    @PostConstruct
     public void initialize() {
         maxBufferedDocs = configurationSource.getInteger("WEB_INDEX_MANAGER_MAX_BUFFERED_DOCS", maxBufferedDocs);
         int queueSize = configurationSource.getInteger("WEB_INDEX_MANAGER_QUEUE_SIZE", 1000);
@@ -331,6 +335,7 @@ public abstract class AbstractIndexManager implements IndexManager {
             }};
     }
 
+    @PreDestroy
     public void shutdown() {
         shutdownNow = true;
         managerThread.interrupt();

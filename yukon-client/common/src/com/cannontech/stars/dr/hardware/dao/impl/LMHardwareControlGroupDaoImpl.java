@@ -11,8 +11,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.joda.time.ReadableInstant;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -45,7 +46,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
-public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao, InitializingBean {
+public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao {
     private static final String removeSql;
     private static final YukonRowMapper<LMHardwareControlGroup> rowMapper;
     private YukonJdbcTemplate yukonJdbcTemplate;
@@ -702,7 +703,8 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         return list;
     }
 
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         template = new SimpleTableAccessTemplate<LMHardwareControlGroup>(yukonJdbcTemplate, nextValueHelper);
         template.setTableName(TABLE_NAME);
         template.setPrimaryKeyField("controlEntryId");

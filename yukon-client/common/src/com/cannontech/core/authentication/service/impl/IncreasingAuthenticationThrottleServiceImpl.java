@@ -6,7 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.config.ConfigurationSource;
@@ -23,7 +24,7 @@ import com.google.common.collect.Maps;
  * login attempts.
  * @author mmalekar
  */
-public class IncreasingAuthenticationThrottleServiceImpl implements AuthenticationThrottleService, InitializingBean {
+public class IncreasingAuthenticationThrottleServiceImpl implements AuthenticationThrottleService {
 
     @Autowired private ConfigurationSource configurationSource;
     
@@ -34,8 +35,8 @@ public class IncreasingAuthenticationThrottleServiceImpl implements Authenticati
     private double authThrottleDelta =  0.0; // used to ramp up throttle duration slowly or rapidly    
     private int abandonedAuthThrottleDays = 100;
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
 
         // Check and see if we need to change the AUTH_THROTTLE_DELTA_KEY value.
         Double authThrottleExpBase = configurationSource.getDouble(MasterConfigDoubleKeysEnum.AUTH_THROTTLE_EXP_BASE);

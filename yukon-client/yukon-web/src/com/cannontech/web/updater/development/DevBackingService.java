@@ -1,6 +1,7 @@
 package com.cannontech.web.updater.development;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.user.YukonUserContext;
@@ -8,7 +9,7 @@ import com.cannontech.web.support.development.DevDbSetupTask;
 import com.cannontech.web.support.development.database.service.DevDatabasePopulationService;
 import com.cannontech.web.updater.UpdateBackingService;
 
-public class DevBackingService implements UpdateBackingService, InitializingBean {
+public class DevBackingService implements UpdateBackingService {
     private DevDatabasePopulationService devDatabasePopulationService;
     
     @Override
@@ -24,8 +25,8 @@ public class DevBackingService implements UpdateBackingService, InitializingBean
     public boolean isValueAvailableImmediately(String fullIdentifier, long afterDate, YukonUserContext userContext) {
         return true;
     }
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
     }
     @Autowired
     public void setDevDatabasePopulationService(DevDatabasePopulationService devDatabasePopulationService) {

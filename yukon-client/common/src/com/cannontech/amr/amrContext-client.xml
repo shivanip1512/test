@@ -12,7 +12,7 @@
 
 	<bean id="deviceErrorTranslator"
         class="com.cannontech.amr.errors.dao.impl.DeviceErrorTranslatorDaoImpl"
-        scope="singleton" init-method="initialize">
+        scope="singleton">
         <property name="errorDefinitions">
             <value type="java.io.InputStream">
                 com/cannontech/amr/errors/dao/impl/error-code.xml

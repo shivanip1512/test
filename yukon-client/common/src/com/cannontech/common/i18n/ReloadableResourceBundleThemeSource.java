@@ -1,15 +1,16 @@
 package com.cannontech.common.i18n;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.ui.context.support.ResourceBundleThemeSource;
+
+import javax.annotation.PostConstruct;
 
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.util.CtiUtilities;
 
-public class ReloadableResourceBundleThemeSource extends ResourceBundleThemeSource implements InitializingBean {
+public class ReloadableResourceBundleThemeSource extends ResourceBundleThemeSource {
     
     private boolean useCodeAsDefaultMessage;
     private int cacheSeconds;
@@ -17,8 +18,8 @@ public class ReloadableResourceBundleThemeSource extends ResourceBundleThemeSour
     private boolean fallbackToSystemLocale;
     private ConfigurationSource configurationSource;
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         String yukonBase = CtiUtilities.getYukonBase();
         setBasenamePrefix("file:" + yukonBase + "/" + "Server/Config/Themes/");
         

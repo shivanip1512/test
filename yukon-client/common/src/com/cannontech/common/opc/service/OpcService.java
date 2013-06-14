@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -75,6 +77,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
     /**
      * Called by Spring to start the service.
      */
+    @PostConstruct
     public void initialize() {
         try {
             serviceEnabled = Boolean.parseBoolean(config.getRequiredString("OPC_ENABLED"));

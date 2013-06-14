@@ -3,7 +3,8 @@ package com.cannontech.stars.core.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -21,7 +22,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.core.dao.SiteInformationDao;
 import com.cannontech.stars.database.data.lite.LiteSiteInformation;
 
-public class SiteInformationDaoImpl implements SiteInformationDao, InitializingBean {
+public class SiteInformationDaoImpl implements SiteInformationDao {
     
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
@@ -34,7 +35,8 @@ public class SiteInformationDaoImpl implements SiteInformationDao, InitializingB
         rowMapper = SiteInformationDaoImpl.createRowMapper();
     }
 
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         siteInfoTemplate = new SimpleTableAccessTemplate<LiteSiteInformation>(yukonJdbcTemplate, nextValueHelper);
         siteInfoTemplate.setTableName(TABLE_NAME);
         siteInfoTemplate.setPrimaryKeyField("SiteId");

@@ -1,6 +1,7 @@
 package com.cannontech.common.device.groups.composed.dao.impl;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -12,7 +13,7 @@ import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 
-public class DeviceGroupComposedDaoImpl implements DeviceGroupComposedDao, InitializingBean {
+public class DeviceGroupComposedDaoImpl implements DeviceGroupComposedDao {
 
     private static final RowAndFieldMapper<DeviceGroupComposed> rowAndFieldMapper;
     private YukonJdbcTemplate yukonJdbcTemplate;
@@ -42,8 +43,8 @@ public class DeviceGroupComposedDaoImpl implements DeviceGroupComposedDao, Initi
         }
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         template = new SimpleTableAccessTemplate<DeviceGroupComposed>(yukonJdbcTemplate, nextValueHelper);
         template.setTableName("DeviceGroupComposed");
         template.setPrimaryKeyField("DeviceGroupComposedId");

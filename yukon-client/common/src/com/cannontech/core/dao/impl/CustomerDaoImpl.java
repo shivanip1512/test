@@ -5,7 +5,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -45,7 +46,7 @@ import com.cannontech.yukon.IDatabaseCache;
  * 
  * @author:
  */
-public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
+public final class CustomerDaoImpl implements CustomerDao {
 
     private ContactDao contactDao;
     private YukonUserDao yukonUserDao;    
@@ -518,7 +519,8 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         this.energyCompanyDao = energyCompanyDao;
     }
     
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         liteCustomerTemplate = new SimpleTableAccessTemplate<LiteCustomer>(yukonJdbcTemplate, nextValueHelper);
         liteCustomerTemplate.setTableName(CUSTOMER_TABLE_NAME);
         liteCustomerTemplate.setPrimaryKeyField("CustomerId");

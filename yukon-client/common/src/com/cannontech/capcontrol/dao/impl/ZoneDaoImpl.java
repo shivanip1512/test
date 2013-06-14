@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.joda.time.ReadableInstant;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -43,7 +44,7 @@ import com.cannontech.enums.RegulatorPointMapping;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-public class ZoneDaoImpl implements ZoneDao, InitializingBean {
+public class ZoneDaoImpl implements ZoneDao {
 
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
@@ -641,8 +642,8 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         }
     };
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         zoneTemplate = new SimpleTableAccessTemplate<Zone>(yukonJdbcTemplate, nextValueHelper);
         zoneTemplate.setTableName("Zone");
         zoneTemplate.setPrimaryKeyField("ZoneId");

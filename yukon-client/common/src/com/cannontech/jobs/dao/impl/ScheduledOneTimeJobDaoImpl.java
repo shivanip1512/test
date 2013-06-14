@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Propagation;
@@ -46,9 +48,9 @@ public class ScheduledOneTimeJobDaoImpl extends JobDaoBase implements ScheduledO
 
     private SeparableRowMapper<ScheduledOneTimeJob> jobRowMapper;
 
-
+    @PostConstruct
     public void afterPropertiesSet() throws Exception {
-        super.afterPropertiesSet();
+        super.init();
         
         jobRowMapper = new SeparableRowMapper<ScheduledOneTimeJob>(yukonJobBaseRowMapper) {
             protected ScheduledOneTimeJob createObject(YukonResultSet rs) throws SQLException {

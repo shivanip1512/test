@@ -3,7 +3,8 @@ package com.cannontech.cc.daojdbc;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
@@ -22,7 +23,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 
-public class AvailableProgramGroupDaoImpl implements InitializingBean, AvailableProgramGroupDao {
+public class AvailableProgramGroupDaoImpl implements AvailableProgramGroupDao {
     
     private YukonJdbcTemplate yukonJdbcTemplate;
     private SimpleTableAccessTemplate<AvailableProgramGroup> template;
@@ -89,8 +90,8 @@ public class AvailableProgramGroupDaoImpl implements InitializingBean, Available
         }
     };
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         template = new SimpleTableAccessTemplate<AvailableProgramGroup>(yukonJdbcTemplate, nextValueHelper);
         template.setTableName("CCurtProgramGroup");
         template.setPrimaryKeyField("CCurtProgramGroupID");

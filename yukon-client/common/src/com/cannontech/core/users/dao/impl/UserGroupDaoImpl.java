@@ -3,10 +3,10 @@ package com.cannontech.core.users.dao.impl;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.naming.ConfigurationException;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -30,7 +30,7 @@ import com.cannontech.messaging.message.dispatch.DBChangeMessage;
 import com.cannontech.messaging.util.DbChangeManager;
 import com.google.common.collect.Multimap;
 
-public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
+public class UserGroupDaoImpl implements UserGroupDao {
     private static final Logger log = YukonLogManager.getLogger(UserGroupDaoImpl.class);
     
     @Autowired private DbChangeManager dbChangeManager;
@@ -58,8 +58,8 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
         }
     };
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         userGroupTemplate = new SimpleTableAccessTemplate<com.cannontech.database.db.user.UserGroup>(yukonJdbcTemplate, nextValueHelper);
         userGroupTemplate.setTableName("UserGroup");
         userGroupTemplate.setPrimaryKeyField("UserGroupId");

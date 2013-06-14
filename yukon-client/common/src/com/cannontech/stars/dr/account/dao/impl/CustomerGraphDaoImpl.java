@@ -2,7 +2,8 @@ package com.cannontech.stars.dr.account.dao.impl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -14,7 +15,7 @@ import com.cannontech.stars.dr.account.dao.CustomerGraphDao;
 import com.cannontech.stars.dr.account.dao.CustomerGraphRowAndFieldMapper;
 import com.cannontech.stars.dr.account.model.CustomerGraph;
 
-public class CustomerGraphDaoImpl implements CustomerGraphDao, InitializingBean {
+public class CustomerGraphDaoImpl implements CustomerGraphDao {
 
 	private static final RowAndFieldMapper<CustomerGraph> rowAndFieldMapper;
     private YukonJdbcTemplate yukonJdbcTemplate;
@@ -76,8 +77,8 @@ public class CustomerGraphDaoImpl implements CustomerGraphDao, InitializingBean 
     	template.update(customerGraph);
     }
 	
-	@Override
-    public void afterPropertiesSet() throws Exception {
+	@PostConstruct
+    public void init() throws Exception {
         template = new SimpleTableAccessTemplate<CustomerGraph>(yukonJdbcTemplate, nextValueHelper);
         template.setTableName("GraphCustomerList");
         template.setPrimaryKeyField("GraphDefinitionId");

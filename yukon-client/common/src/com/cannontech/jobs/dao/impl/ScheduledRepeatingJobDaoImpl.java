@@ -5,7 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Propagation;
@@ -23,7 +24,7 @@ import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
 import com.cannontech.spring.SeparableRowMapper;
 
-public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements ScheduledRepeatingJobDao, InitializingBean {
+public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements ScheduledRepeatingJobDao {
     private final FieldMapper<ScheduledRepeatingJob> jobFieldMapper = new FieldMapper<ScheduledRepeatingJob>() {
         public void extractValues(MapSqlParameterSource p, ScheduledRepeatingJob job) {
             String cronString = job.getCronString();
@@ -60,8 +61,9 @@ public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements Schedule
         return rowMapper;
     }
     
-    public void afterPropertiesSet() throws Exception {
-        super.afterPropertiesSet();
+    @PostConstruct
+    public void  afterPropertiesSet() throws Exception {
+        super.init();
         
         jobRowMapper = getJobRowMapper();
         

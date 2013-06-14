@@ -12,6 +12,8 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -193,6 +195,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      * Get the static instance of Multispeak (this) object.
      * Adds a message listener to the pil connection instance. 
      */
+    @PostConstruct
     public void initialize() throws Exception {
         log.info("New MSP instance created");
         porterConnection.addMessageListener(this);

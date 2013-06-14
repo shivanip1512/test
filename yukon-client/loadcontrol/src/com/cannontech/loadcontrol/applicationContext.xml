@@ -10,7 +10,7 @@
 
     <bean id="loadControlClientConnectionFactory" class="com.cannontech.loadcontrol.LoadControlClientConnectionFactory"/>
     <bean id="loadControlClientConnection" factory-bean="loadControlClientConnectionFactory" 
-         factory-method="createConnection" scope="singleton" destroy-method="disconnect"/>
+         factory-method="createConnection" scope="singleton"/>
          
     <bean id="loadManagementService" class="com.cannontech.loadcontrol.LoadManagementProxy" 
         scope="singleton">

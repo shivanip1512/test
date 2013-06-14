@@ -7,7 +7,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +37,7 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
+public class ECMappingDaoImpl implements ECMappingDao {
     private YukonJdbcTemplate yukonJdbcTemplate;;
     private StarsDatabaseCache starsDatabaseCache;
     private ChunkingSqlTemplate chunkyJdbcTemplate;
@@ -531,8 +532,8 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
         this.starsDatabaseCache = starsDatabaseCache;
     }
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         chunkyJdbcTemplate= new ChunkingSqlTemplate(yukonJdbcTemplate);
     }
     

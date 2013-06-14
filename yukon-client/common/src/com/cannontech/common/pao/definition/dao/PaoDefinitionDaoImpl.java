@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
@@ -507,6 +508,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     /**
      * For unit tests, the setCustomInputFile method must be called BEFORE you call this initialize method.
      */
+    @PostConstruct
     public void initialize() throws Exception {
         paoAndPointToAttributeMap = Maps.newHashMap();
         paoTypeMap = EnumHashBiMap.create(PaoType.class);

@@ -4,7 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -23,7 +24,7 @@ import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 
-public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao, InitializingBean  {
+public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao  {
 
 	private static final ParameterizedRowMapper<TamperFlagMonitor> rowMapper;
     private YukonJdbcTemplate yukonJdbcTemplate;
@@ -116,7 +117,8 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao, Initializ
         }
     };
     
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         template = 
            new SimpleTableAccessTemplate<TamperFlagMonitor>(yukonJdbcTemplate, nextValueHelper);
         template.setTableName("TamperFlagMonitor");

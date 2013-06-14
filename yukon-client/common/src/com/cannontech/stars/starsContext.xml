@@ -89,8 +89,7 @@
     <bean id="liteStarsEnergyCompanyFactory" class="com.cannontech.stars.database.data.lite.LiteStarsEnergyCompanyFactory"/>
 
     <bean id="starsDatabaseCache"
-        class="com.cannontech.stars.database.cache.StarsDatabaseCache"
-        init-method="init">
+        class="com.cannontech.stars.database.cache.StarsDatabaseCache">
         <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
     </bean>
 

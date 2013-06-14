@@ -3,7 +3,8 @@ package com.cannontech.stars.dr.event.dao.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,8 +16,7 @@ import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.stars.dr.event.dao.EventBaseDao;
 import com.cannontech.stars.dr.event.dao.EventInventoryDao;
 
-public class EventInventoryDaoImpl implements EventInventoryDao,
-        InitializingBean {
+public class EventInventoryDaoImpl implements EventInventoryDao {
 
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private ChunkingSqlTemplate chunkingJdbcTemplate;
@@ -68,8 +68,8 @@ public class EventInventoryDaoImpl implements EventInventoryDao,
         this.eventBaseDao = eventBaseDao;
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         chunkingJdbcTemplate = new ChunkingSqlTemplate(simpleJdbcTemplate);
     }
 

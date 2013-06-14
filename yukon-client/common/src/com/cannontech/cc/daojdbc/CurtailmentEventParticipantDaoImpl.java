@@ -3,7 +3,8 @@ package com.cannontech.cc.daojdbc;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
@@ -23,7 +24,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 
-public class CurtailmentEventParticipantDaoImpl implements CurtailmentEventParticipantDao, InitializingBean {
+public class CurtailmentEventParticipantDaoImpl implements CurtailmentEventParticipantDao {
     
     private YukonJdbcTemplate yukonJdbcTemplate;
     private SimpleTableAccessTemplate<CurtailmentEventParticipant> template;
@@ -98,8 +99,8 @@ public class CurtailmentEventParticipantDaoImpl implements CurtailmentEventParti
         }
     };
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         template = new SimpleTableAccessTemplate<CurtailmentEventParticipant>(yukonJdbcTemplate, nextValueHelper);
         template.setTableName("CCurtCEParticipant");
         template.setPrimaryKeyField("CCurtCEParticipantID");

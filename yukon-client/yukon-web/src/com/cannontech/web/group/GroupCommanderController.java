@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.mail.util.ByteArrayDataSource;
@@ -17,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -70,7 +70,7 @@ import com.cannontech.web.util.JsonView;
 @Controller
 @RequestMapping("/commander/*")
 @CheckRoleProperty(YukonRoleProperty.GROUP_COMMANDER)
-public class GroupCommanderController implements InitializingBean {
+public class GroupCommanderController {
 
     private Logger log = YukonLogManager.getLogger(GroupCommanderController.class);
 
@@ -96,7 +96,8 @@ public class GroupCommanderController implements InitializingBean {
     // available meter commands
     private List<LiteCommand> meterCommands;
 
-    public void afterPropertiesSet() {
+    @PostConstruct
+    public void init() {
             
         this.meterCommands = new ArrayList<LiteCommand>();
         

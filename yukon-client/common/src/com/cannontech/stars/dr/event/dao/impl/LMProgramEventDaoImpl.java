@@ -5,7 +5,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -18,7 +19,7 @@ import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.event.dao.LMCustomerEventBaseDao;
 import com.cannontech.stars.dr.event.dao.LMProgramEventDao;
 
-public class LMProgramEventDaoImpl implements LMProgramEventDao, InitializingBean {
+public class LMProgramEventDaoImpl implements LMProgramEventDao {
 
     SimpleJdbcTemplate simpleJdbcTemplate;
     ECMappingDao ecMappingDao;
@@ -79,8 +80,8 @@ public class LMProgramEventDaoImpl implements LMProgramEventDao, InitializingBea
         this.lmCustomerEventBaseDao = lmCustomerEventBaseDao;
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         chunkyJdbcTemplate= new ChunkingSqlTemplate(simpleJdbcTemplate);
     }
 }

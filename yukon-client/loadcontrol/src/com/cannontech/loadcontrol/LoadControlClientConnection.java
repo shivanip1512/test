@@ -15,6 +15,8 @@ import java.util.Observer;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.PreDestroy;
+
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -75,6 +77,7 @@ public class LoadControlClientConnection extends com.cannontech.messaging.util.C
     	}
     }
 
+    @PreDestroy
     public void disconnect()
     {
     	super.disconnect();

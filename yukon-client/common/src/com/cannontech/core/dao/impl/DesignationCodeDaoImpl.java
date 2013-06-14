@@ -3,7 +3,8 @@ package com.cannontech.core.dao.impl;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
@@ -20,7 +21,7 @@ import com.cannontech.dispatch.DbChangeCategory;
 import com.cannontech.dispatch.DbChangeType;
 import com.cannontech.messaging.util.DbChangeManager;
 
-public class DesignationCodeDaoImpl implements DesignationCodeDao, InitializingBean {
+public class DesignationCodeDaoImpl implements DesignationCodeDao {
     
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
@@ -64,8 +65,8 @@ public class DesignationCodeDaoImpl implements DesignationCodeDao, InitializingB
         }
     }
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         designationCodeTemplate = new SimpleTableAccessTemplate<DesignationCodeDto>(yukonJdbcTemplate, nextValueHelper);
         designationCodeTemplate.setTableName("ServiceCompanyDesignationCode");
         designationCodeTemplate.setPrimaryKeyField("DesignationCodeID");

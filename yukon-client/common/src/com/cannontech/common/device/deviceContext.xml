@@ -57,7 +57,7 @@
     <bean id="paoDefinitionService" class="com.cannontech.common.pao.definition.service.PaoDefinitionServiceImpl" scope="singleton">
     </bean>
     
-	<bean id="paoDefinitionDao" class="com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImpl" scope="singleton" init-method="initialize">
+	<bean id="paoDefinitionDao" class="com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImpl" scope="singleton">
         <property name="inputFile" value="classpath:com/cannontech/common/pao/definition/dao/paoDefinition.xml" />
         <property name="schemaFile" value="classpath:com/cannontech/common/pao/definition/dao/paoDefinition.xsd" />
         <property name="pointLegendFile" value="classpath:com/cannontech/common/pao/definition/dao/pointOffset.xsl" />

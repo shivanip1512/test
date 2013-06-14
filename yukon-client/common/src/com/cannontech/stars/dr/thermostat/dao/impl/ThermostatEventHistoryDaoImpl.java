@@ -3,8 +3,9 @@ package com.cannontech.stars.dr.thermostat.dao.impl;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.joda.time.Instant;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
@@ -31,7 +32,7 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 
-public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao, InitializingBean {
+public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao {
     
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
@@ -183,8 +184,8 @@ public class ThermostatEventHistoryDaoImpl implements ThermostatEventHistoryDao,
         }
     };
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         thermostatEventTemplate = new SimpleTableAccessTemplate<ThermostatEvent>(yukonJdbcTemplate, nextValueHelper);
         thermostatEventTemplate.setTableName("ThermostatEventHistory");
         thermostatEventTemplate.setPrimaryKeyField("EventId");

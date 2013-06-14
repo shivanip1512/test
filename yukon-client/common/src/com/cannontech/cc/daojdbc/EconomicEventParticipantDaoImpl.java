@@ -9,7 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +48,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
-public class EconomicEventParticipantDaoImpl implements EconomicEventParticipantDao, InitializingBean {
+public class EconomicEventParticipantDaoImpl implements EconomicEventParticipantDao {
 
     private YukonJdbcTemplate yukonJdbcTemplate;
     private EconomicEventNotifDao economicEventNotifDao;
@@ -208,8 +209,8 @@ public class EconomicEventParticipantDaoImpl implements EconomicEventParticipant
         }
     };
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         participantTemplate = new SimpleTableAccessTemplate<EconomicEventParticipant>(yukonJdbcTemplate, nextValueHelper);
         participantTemplate.setTableName("CCurtEEParticipant");
         participantTemplate.setPrimaryKeyField("CCurtEEParticipantID");

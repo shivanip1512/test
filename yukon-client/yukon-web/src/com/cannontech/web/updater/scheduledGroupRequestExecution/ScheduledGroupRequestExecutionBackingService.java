@@ -4,8 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGroupRequestExecutionBundle;
@@ -14,7 +15,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
 import com.cannontech.web.updater.scheduledGroupRequestExecution.handler.ScheduledGroupRequestExecutionUpdaterHandler;
 
-public class ScheduledGroupRequestExecutionBackingService implements UpdateBackingService, InitializingBean {
+public class ScheduledGroupRequestExecutionBackingService implements UpdateBackingService {
 
 	private List<ScheduledGroupRequestExecutionUpdaterHandler> handlers;
 	private Map<ScheduledGroupCommandRequestExecutionUpdaterTypeEnum, ScheduledGroupRequestExecutionUpdaterHandler> handlersMap;
@@ -38,8 +39,8 @@ public class ScheduledGroupRequestExecutionBackingService implements UpdateBacki
     	return true;
     }
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
     	
     	this.handlersMap = new HashMap<ScheduledGroupCommandRequestExecutionUpdaterTypeEnum, ScheduledGroupRequestExecutionUpdaterHandler>();
     	for (ScheduledGroupRequestExecutionUpdaterHandler handler : this.handlers) {

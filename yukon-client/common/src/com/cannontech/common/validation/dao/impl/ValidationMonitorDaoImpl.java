@@ -6,8 +6,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -35,7 +36,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.SetMultimap;
 
 
-public class ValidationMonitorDaoImpl implements ValidationMonitorDao, InitializingBean  {
+public class ValidationMonitorDaoImpl implements ValidationMonitorDao  {
 
 	private final Logger log = YukonLogManager.getLogger(ValidationMonitorDaoImpl.class);
 		
@@ -176,7 +177,8 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao, Initializ
         }
     };
     
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         template = 
             new SimpleTableAccessTemplate<ValidationMonitor>(yukonJdbcTemplate, nextValueHelper);
         template.setTableName("ValidationMonitor");

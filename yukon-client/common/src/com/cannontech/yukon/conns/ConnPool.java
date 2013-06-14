@@ -3,6 +3,8 @@ package com.cannontech.yukon.conns;
 
 import java.util.Hashtable;
 
+import javax.annotation.PreDestroy;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.CTILogger;
@@ -59,6 +61,7 @@ public class ConnPool
 		return _allConns;
 	}
     
+	@PreDestroy
     public void shutdown() {
         for (IServerConnection conn : _allConns.values()) {
             conn.disconnect();

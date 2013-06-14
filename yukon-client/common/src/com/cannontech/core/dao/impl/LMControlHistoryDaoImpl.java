@@ -6,7 +6,8 @@ import java.sql.Types;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -20,7 +21,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.db.device.lm.LMControlHistory;
 import com.cannontech.database.incrementer.NextValueHelper;
 
-public class LMControlHistoryDaoImpl implements LMControlHistoryDao, InitializingBean {
+public class LMControlHistoryDaoImpl implements LMControlHistoryDao {
     private static final String selectAllSql;
     private static final String selectById;
     private static final String selectByPAObjectId;
@@ -138,7 +139,8 @@ public class LMControlHistoryDaoImpl implements LMControlHistoryDao, Initializin
         this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
     
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         template = 
             new SimpleTableAccessTemplate<LMControlHistory>(yukonJdbcTemplate, nextValueHelper);
         template.setTableName(TABLE_NAME);

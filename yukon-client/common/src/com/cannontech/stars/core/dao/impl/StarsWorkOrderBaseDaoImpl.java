@@ -7,7 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -22,7 +23,7 @@ import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
 import com.cannontech.stars.dr.event.dao.EventWorkOrderDao;
 
-public class StarsWorkOrderBaseDaoImpl implements StarsWorkOrderBaseDao, InitializingBean {
+public class StarsWorkOrderBaseDaoImpl implements StarsWorkOrderBaseDao {
     private static final String selectSql;
     private static final ParameterizedRowMapper<LiteWorkOrderBase> rowMapper = createRowMapper();
     private SimpleJdbcTemplate simpleJdbcTemplate;
@@ -164,8 +165,8 @@ public class StarsWorkOrderBaseDaoImpl implements StarsWorkOrderBaseDao, Initial
         this.eventWorkOrderDao = eventWorkOrderDao;
     }
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         chunkyJdbcTemplate= new ChunkingSqlTemplate(simpleJdbcTemplate);
     }
 }

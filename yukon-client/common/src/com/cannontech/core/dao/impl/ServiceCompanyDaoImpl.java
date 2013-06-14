@@ -5,7 +5,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
@@ -26,7 +27,7 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
 
-public class ServiceCompanyDaoImpl implements ServiceCompanyDao, InitializingBean {
+public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
     
     private DesignationCodeDao designationCodeDao;
     private ContactNotificationDao contactNotificationDao;
@@ -113,8 +114,8 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao, InitializingBea
         }
     }
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         serviceCompanyTemplate = new SimpleTableAccessTemplate<ServiceCompanyDto>(yukonJdbcTemplate, nextValueHelper);
         serviceCompanyTemplate.setTableName("ServiceCompany");
         serviceCompanyTemplate.setPrimaryKeyField("CompanyID");

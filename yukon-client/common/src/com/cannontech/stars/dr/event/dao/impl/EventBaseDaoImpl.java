@@ -2,7 +2,8 @@ package com.cannontech.stars.dr.event.dao.impl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Propagation;
@@ -18,7 +19,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.event.dao.EventBaseDao;
 import com.cannontech.stars.dr.event.model.EventBase;
 
-public class EventBaseDaoImpl implements EventBaseDao, InitializingBean {
+public class EventBaseDaoImpl implements EventBaseDao {
 
     private ChunkingSqlTemplate chunkingJdbcTemplate;
     private NextValueHelper nextValueHelper;
@@ -57,8 +58,8 @@ public class EventBaseDaoImpl implements EventBaseDao, InitializingBean {
         }
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         chunkingJdbcTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
         
         eventBaseTemplate = new SimpleTableAccessTemplate<EventBase>(yukonJdbcTemplate, nextValueHelper);

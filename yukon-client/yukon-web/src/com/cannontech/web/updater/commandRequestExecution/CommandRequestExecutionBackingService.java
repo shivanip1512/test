@@ -4,15 +4,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
 import com.cannontech.web.updater.commandRequestExecution.handler.CommandRequestExecutionUpdaterHandler;
 
-public class CommandRequestExecutionBackingService implements UpdateBackingService, InitializingBean {
+public class CommandRequestExecutionBackingService implements UpdateBackingService {
 
 	private List<CommandRequestExecutionUpdaterHandler> handlers;
 	private Map<CommandRequestExecutionUpdaterTypeEnum, CommandRequestExecutionUpdaterHandler> handlersMap;
@@ -34,8 +35,8 @@ public class CommandRequestExecutionBackingService implements UpdateBackingServi
     	return true;
     }
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
     	
     	this.handlersMap = new HashMap<CommandRequestExecutionUpdaterTypeEnum, CommandRequestExecutionUpdaterHandler>();
     	for (CommandRequestExecutionUpdaterHandler handler : this.handlers) {

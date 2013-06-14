@@ -4,6 +4,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
+import javax.annotation.PreDestroy;
+
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
@@ -20,6 +22,7 @@ public class ExecutorDelegate implements Executor {
         service.execute(command);
     }
 
+    @PreDestroy
     public void shutdown() {
         service.shutdownNow();
     }

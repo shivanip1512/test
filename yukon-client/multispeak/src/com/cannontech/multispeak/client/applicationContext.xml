@@ -35,7 +35,7 @@
   <bean id="mspLMGroupDao" class="com.cannontech.multispeak.dao.impl.MspLMGroupDaoImpl">
   </bean>
   
-  <bean id="multispeakMeterService" class="com.cannontech.multispeak.service.impl.MultispeakMeterServiceImpl" init-method="initialize">
+  <bean id="multispeakMeterService" class="com.cannontech.multispeak.service.impl.MultispeakMeterServiceImpl">
   	<property name="porterConnection" ref="porterConnection"/>
   </bean>
   

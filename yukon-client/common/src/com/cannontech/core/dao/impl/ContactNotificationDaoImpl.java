@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -32,7 +33,7 @@ import com.cannontech.yukon.IDatabaseCache;
  * Functions for the LiteContactNotification data in cache
  * 
  */
-public final class ContactNotificationDaoImpl implements ContactNotificationDao, InitializingBean{
+public final class ContactNotificationDaoImpl implements ContactNotificationDao {
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private SimpleJdbcTemplate simpleJdbcTemplate;
     @Autowired private YukonJdbcOperations yukonJdbcOperations;
@@ -320,8 +321,8 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
 
     }
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         chunkyJdbcTemplate= new ChunkingSqlTemplate(simpleJdbcTemplate);
     }
 }

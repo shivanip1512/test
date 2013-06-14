@@ -4,7 +4,8 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Propagation;
@@ -26,7 +27,7 @@ import com.cannontech.stars.dr.workOrder.model.WorkOrderBase;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
-public class WorkOrderBaseDaoImpl implements WorkOrderBaseDao, InitializingBean {
+public class WorkOrderBaseDaoImpl implements WorkOrderBaseDao {
 
     private NextValueHelper nextValueHelper;
     private ECMappingDao ecMappingDao;
@@ -107,8 +108,8 @@ public class WorkOrderBaseDaoImpl implements WorkOrderBaseDao, InitializingBean 
         return yukonJdbcTemplate.query(sql, new WorkOrderBaseRowMapper());
     }
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         workOrderBaseTemplate = new SimpleTableAccessTemplate<WorkOrderBase>(yukonJdbcTemplate, nextValueHelper);
         workOrderBaseTemplate.setTableName("WorkOrderBase");
         workOrderBaseTemplate.setPrimaryKeyField("OrderId");

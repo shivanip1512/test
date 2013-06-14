@@ -3,7 +3,8 @@ package com.cannontech.amr.porterResponseMonitor.dao.impl;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -35,7 +36,7 @@ import com.cannontech.dispatch.DbChangeCategory;
 import com.cannontech.dispatch.DbChangeType;
 import com.cannontech.messaging.util.DbChangeManager;
 
-public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao, InitializingBean {
+public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao {
 
     @Autowired private AttributeService attributeService;
     @Autowired private StateDao stateDao;
@@ -244,8 +245,8 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao, I
 		}
 	};
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
+	@PostConstruct
+	public void init() throws Exception {
 		monitorTemplate = new SimpleTableAccessTemplate<PorterResponseMonitor>(yukonJdbcTemplate, nextValueHelper);
 		monitorTemplate.setTableName("PorterResponseMonitor");
 		monitorTemplate.setPrimaryKeyField("MonitorId");

@@ -3,7 +3,8 @@ package com.cannontech.jobs.dao.impl;
 import java.sql.SQLException;
 import java.util.Map;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -19,7 +20,7 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.jobs.model.YukonJob;
 
-public class JobDaoBase implements InitializingBean {
+public class JobDaoBase {
     protected YukonJdbcTemplate yukonJdbcTemplate;
 
     protected static YukonRowMapper<JobDisabledStatus> jobDisabledStatusRowMapper = 
@@ -65,8 +66,8 @@ public class JobDaoBase implements InitializingBean {
     protected NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<YukonJob> template;
 
-
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         template = new SimpleTableAccessTemplate<YukonJob>(yukonJdbcTemplate, nextValueHelper);
         template.setTableName("Job");
         template.setPrimaryKeyField("jobId");

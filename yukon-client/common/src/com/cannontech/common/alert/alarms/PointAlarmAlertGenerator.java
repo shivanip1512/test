@@ -1,5 +1,7 @@
 package com.cannontech.common.alert.alarms;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.tags.AlarmUtils;
@@ -27,6 +29,7 @@ public class PointAlarmAlertGenerator implements SignalListener {
     private PaoDao paoDao;
     private RolePropertyUserCheckerFactory userCheckerFactory;
     
+    @PostConstruct
     public void initialize() {
         asyncDynamicDataSource.registerForAllAlarms(this);
     }

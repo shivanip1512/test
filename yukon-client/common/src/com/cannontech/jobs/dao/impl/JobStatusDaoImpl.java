@@ -4,7 +4,8 @@ import java.sql.Types;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -21,7 +22,7 @@ import com.cannontech.jobs.model.JobState;
 import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.YukonJob;
 
-public class JobStatusDaoImpl implements JobStatusDao, InitializingBean {
+public class JobStatusDaoImpl implements JobStatusDao {
     protected YukonJdbcTemplate yukonJdbcTemplate;
     protected NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<JobStatus<?>> template;
@@ -134,7 +135,8 @@ public class JobStatusDaoImpl implements JobStatusDao, InitializingBean {
     	return result;
     }
     
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         template = new SimpleTableAccessTemplate<JobStatus<?>>(yukonJdbcTemplate, nextValueHelper);
         template.setTableName("JobStatus");
         template.setPrimaryKeyField("jobStatusId");

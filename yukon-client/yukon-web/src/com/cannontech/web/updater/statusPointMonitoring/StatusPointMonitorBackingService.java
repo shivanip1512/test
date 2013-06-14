@@ -4,15 +4,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
 import com.cannontech.web.updater.statusPointMonitoring.handler.StatusPointProcessingUpdaterHandler;
 
-public class StatusPointMonitorBackingService implements UpdateBackingService, InitializingBean {
+public class StatusPointMonitorBackingService implements UpdateBackingService {
 
 	private List<StatusPointProcessingUpdaterHandler> handlers;
 	private Map<StatusPointMonitorUpdaterTypeEnum, StatusPointProcessingUpdaterHandler> handlersMap;
@@ -35,8 +36,8 @@ public class StatusPointMonitorBackingService implements UpdateBackingService, I
     	return true;
     }
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
 
     	this.handlersMap = new HashMap<StatusPointMonitorUpdaterTypeEnum, StatusPointProcessingUpdaterHandler>();
     	for (StatusPointProcessingUpdaterHandler handler : this.handlers) {

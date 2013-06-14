@@ -59,7 +59,7 @@
     <bean id="databaseVendorResolver" class="com.cannontech.database.vendor.MetaDataDatabaseVendorResolver"/>
     <bean id="vendorSpecificSqlBuilderFactory" class="com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory"/>
 
-    <bean id="connectionPool" class="com.cannontech.yukon.conns.ConnPool" destroy-method="shutdown"/>
+    <bean id="connectionPool" class="com.cannontech.yukon.conns.ConnPool"/>
 
     <bean id="notificationProxy" factory-bean="connectionPool" factory-method="getDefNotificationConn" scope="prototype" />
     <bean id="dispatchConnection" factory-bean="connectionPool" factory-method="getDefDispatchConn" scope="prototype" />
@@ -71,7 +71,7 @@
         <property name="sequenceNameLookup" ref="sequenceNameLookup" />
     </bean>
 
-    <bean id="sequenceNameLookup" class="com.cannontech.database.incrementer.XmlIncrementer" init-method="parse">
+    <bean id="sequenceNameLookup" class="com.cannontech.database.incrementer.XmlIncrementer">
         <property name="dataSource" ref="yukonDataSource" />
         <property name="configFile" value="classpath:com/cannontech/database/incrementer/table_sequences.xml" />
     </bean>
@@ -86,7 +86,7 @@
        <constructor-arg value="true"/> <!--  create as daemon  -->
     </bean>
     
-    <bean id="globalScheduledExecutor" class="com.cannontech.common.util.ScheduledExecutorDelegate" destroy-method="shutdown">
+    <bean id="globalScheduledExecutor" class="com.cannontech.common.util.ScheduledExecutorDelegate">
        <qualifier value="main"/>
        <constructor-arg>
             <bean class="java.util.concurrent.Executors"
@@ -100,8 +100,7 @@
         <property name="concurrentExecutor" ref="globalScheduledExecutor"/>
     </bean>
 
-    <bean id="longRunningExecutor" class="com.cannontech.common.util.ExecutorDelegate"
-        destroy-method="shutdown">
+    <bean id="longRunningExecutor" class="com.cannontech.common.util.ExecutorDelegate">
         <constructor-arg>
             <bean class="java.util.concurrent.ThreadPoolExecutor">
                 <qualifier value="longRunning" />

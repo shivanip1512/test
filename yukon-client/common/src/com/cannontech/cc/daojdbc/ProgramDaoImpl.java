@@ -3,7 +3,8 @@ package com.cannontech.cc.daojdbc;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Propagation;
@@ -23,7 +24,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 
-public class ProgramDaoImpl implements ProgramDao, InitializingBean {
+public class ProgramDaoImpl implements ProgramDao {
 
     private ProgramTypeDaoImpl programTypeDao;
     private YukonJdbcTemplate yukonJdbcTemplate;
@@ -113,8 +114,8 @@ public class ProgramDaoImpl implements ProgramDao, InitializingBean {
         }
     };
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         template = new SimpleTableAccessTemplate<Program>(yukonJdbcTemplate, nextValueHelper);
         template.setTableName("CCurtProgram");
         template.setPrimaryKeyField("CCurtProgramID");

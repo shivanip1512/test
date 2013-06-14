@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
 
 import com.cannontech.stars.util.FilterWrapper;
 
-public class FilterByFactory implements InitializingBean {
+public class FilterByFactory {
     private List<FilterByProducer> filterByProducers;
     private Map<Integer, FilterByProducer> producerMap;
     
@@ -27,8 +27,8 @@ public class FilterByFactory implements InitializingBean {
         return filterBys;
     }
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         Map<Integer, FilterByProducer> map = new HashMap<Integer, FilterByProducer>(filterByProducers.size());
 
         for (final FilterByProducer factory : filterByProducers) {

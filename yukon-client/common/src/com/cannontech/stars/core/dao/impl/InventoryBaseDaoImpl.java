@@ -8,9 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -58,7 +59,7 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
-public class InventoryBaseDaoImpl implements InventoryBaseDao, InitializingBean {
+public class InventoryBaseDaoImpl implements InventoryBaseDao {
     
     private static final Logger log = YukonLogManager.getLogger(InventoryBaseDaoImpl.class);
     
@@ -645,8 +646,8 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao, InitializingBean 
         return inventoryIdList;
     }
     
-    @Override
-    public void afterPropertiesSet() {
+    @PostConstruct
+    public void init() {
         liteInventoryTemplate = new SimpleTableAccessTemplate<LiteInventoryBase>(yukonJdbcTemplate, nextValueHelper);
         liteInventoryTemplate.setTableName("InventoryBase");
         liteInventoryTemplate.setPrimaryKeyField("InventoryID");

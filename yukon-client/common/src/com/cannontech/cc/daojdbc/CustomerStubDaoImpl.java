@@ -5,7 +5,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
@@ -30,7 +31,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
-public class CustomerStubDaoImpl implements CustomerStubDao, InitializingBean {
+public class CustomerStubDaoImpl implements CustomerStubDao {
     
     private YukonJdbcTemplate yukonJdbcTemplate;
     private SimpleTableAccessTemplate<CICustomerPointData> template;
@@ -112,8 +113,8 @@ public class CustomerStubDaoImpl implements CustomerStubDao, InitializingBean {
         }
     };
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         template = new SimpleTableAccessTemplate<CICustomerPointData>(yukonJdbcTemplate, nextValueHelper);
         template.setTableName("CICustomerPointData");
         template.setPrimaryKeyField("CustomerID");

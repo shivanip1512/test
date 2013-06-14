@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
@@ -31,7 +32,7 @@ import com.cannontech.enums.NotificationState;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 
-public class EconomicEventNotifDaoImpl implements EconomicEventNotifDao, InitializingBean {
+public class EconomicEventNotifDaoImpl implements EconomicEventNotifDao {
 
     private YukonJdbcTemplate yukonJdbcTemplate;
     private EconomicEventParticipantDao economicEventParticipantDao;
@@ -152,8 +153,8 @@ public class EconomicEventNotifDaoImpl implements EconomicEventNotifDao, Initial
         }
     };
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         template = new SimpleTableAccessTemplate<EconomicEventNotif>(yukonJdbcTemplate, nextValueHelper);
         template.setTableName("CCurtEconomicEventNotif");
         template.setPrimaryKeyField("CCurtEconomicEventNotifID");

@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.joda.time.Instant;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.dao.MeterDao;
@@ -25,7 +24,7 @@ import com.cannontech.web.updater.multispeak.deviceGroupSync.handler.MultispeakD
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
-public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingService, InitializingBean {
+public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingService {
     
     private Map<MultispeakDeviceGroupSyncUpdaterTypeEnum, MultispeakDeviceGroupSyncUpdaterHandler> handlersMap;
     private ObjectFormattingService objectFormattingService;
@@ -64,8 +63,8 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         return true;
     }
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void secondInit() throws Exception {
         
         handlersMap = new HashMap<MultispeakDeviceGroupSyncUpdaterTypeEnum, MultispeakDeviceGroupSyncUpdaterHandler>();
         

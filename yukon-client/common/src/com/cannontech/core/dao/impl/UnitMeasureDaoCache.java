@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
 
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
@@ -18,7 +18,7 @@ import com.cannontech.database.data.lite.LiteUnitMeasure;
  * 
  * --tmack
  */
-public class UnitMeasureDaoCache implements UnitMeasureDao, InitializingBean {
+public class UnitMeasureDaoCache implements UnitMeasureDao {
     private UnitMeasureDao delegate;
     private Map<String, LiteUnitMeasure> byNameCache;
     private Map<Integer, LiteUnitMeasure> byIdCache;
@@ -58,8 +58,8 @@ public class UnitMeasureDaoCache implements UnitMeasureDao, InitializingBean {
         return delegate.getLiteUnitMeasures();
     }
 
-    @SuppressWarnings("unchecked")
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         // suppress warning here for the sake of clean code elsewhere
         byNameCache = new HashMap<String, LiteUnitMeasure>();
         byIdCache = new HashMap<Integer, LiteUnitMeasure>();

@@ -6,8 +6,8 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -41,7 +41,7 @@ import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.google.common.collect.Lists;
 
-public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequestExecutionDao, InitializingBean {
+public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequestExecutionDao {
 
 	private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
 	private JobManager jobManager;
@@ -333,9 +333,9 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
         	pair.setCommandRequestExecutionContextId(new CommandRequestExecutionContextId(value));
         }
     };
-    
-	@Override
-    public void afterPropertiesSet() throws Exception {
+
+	@PostConstruct
+    public void init() throws Exception {
         template = new SimpleTableAccessTemplate<>(yukonJdbcTemplate,nextValueHelper);
         template.setTableName("ScheduledGrpCommandRequest");
         template.setPrimaryKeyField("CommandRequestExecContextId");

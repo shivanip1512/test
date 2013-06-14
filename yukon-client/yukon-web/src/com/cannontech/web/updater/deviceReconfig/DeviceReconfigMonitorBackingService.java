@@ -4,15 +4,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
 import com.cannontech.web.updater.deviceReconfig.handler.DeviceReconfigUpdaterHandler;
 
-public class DeviceReconfigMonitorBackingService implements UpdateBackingService, InitializingBean {
+public class DeviceReconfigMonitorBackingService implements UpdateBackingService {
 
     private List<DeviceReconfigUpdaterHandler> handlers;
     private Map<DeviceReconfigMonitorUpdaterType, DeviceReconfigUpdaterHandler> handlersMap;
@@ -34,8 +35,8 @@ public class DeviceReconfigMonitorBackingService implements UpdateBackingService
         return true;
     }
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
 
         this.handlersMap = new HashMap<DeviceReconfigMonitorUpdaterType, DeviceReconfigUpdaterHandler>();
         for (DeviceReconfigUpdaterHandler handler : this.handlers) {

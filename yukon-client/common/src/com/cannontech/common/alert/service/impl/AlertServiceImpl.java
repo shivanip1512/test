@@ -8,6 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,7 @@ public class AlertServiceImpl implements AlertService {
         Collections.synchronizedMap(new LinkedHashMap<Integer,IdentifiableAlertImpl>());
     private Long maxAge = null;
     
+    @PostConstruct
     public void initialize() {
         if (maxAge == null) {
             setupMaxAge();

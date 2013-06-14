@@ -3,7 +3,8 @@ package com.cannontech.stars.dr.event.dao.impl;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -14,7 +15,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.event.dao.LMCustomerEventBaseDao;
 import com.cannontech.stars.dr.event.model.LMCustomerEventBase;
 
-public class LMCustomerEventBaseDaoImpl implements LMCustomerEventBaseDao, InitializingBean {
+public class LMCustomerEventBaseDaoImpl implements LMCustomerEventBaseDao {
     private static final String[] insertSql;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private NextValueHelper nextValueHelper;
@@ -88,8 +89,8 @@ public class LMCustomerEventBaseDaoImpl implements LMCustomerEventBaseDao, Initi
         this.nextValueHelper = nextValueHelper;
     }
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         chunkyJdbcTemplate= new ChunkingSqlTemplate(simpleJdbcTemplate);
     }
 }

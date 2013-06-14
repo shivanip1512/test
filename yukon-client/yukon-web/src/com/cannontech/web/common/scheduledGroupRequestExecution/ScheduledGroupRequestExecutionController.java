@@ -6,13 +6,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -54,7 +54,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.AttributeSelectorHelperService;
 
 @CheckRoleProperty(YukonRoleProperty.MANAGE_SCHEDULES)
-public class ScheduledGroupRequestExecutionController extends MultiActionController implements InitializingBean {
+public class ScheduledGroupRequestExecutionController extends MultiActionController {
 
     @Autowired private CommandDao commandDao;
     @Autowired private ScheduledGroupRequestExecutionService scheduledGroupRequestExecutionService;
@@ -509,8 +509,8 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
     }
 	
 	// INIT
-	@Override
-    public void afterPropertiesSet() {
+	@PostConstruct
+    public void init() {
         
         this.meterCommands = new ArrayList<LiteCommand>();
         

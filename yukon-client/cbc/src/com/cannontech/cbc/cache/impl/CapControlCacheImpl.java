@@ -4,6 +4,7 @@ package com.cannontech.cbc.cache.impl;
  * Maintains information from the capcontrol server
  */
 import java.util.ArrayList;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -12,6 +13,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
@@ -81,6 +84,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     public CapControlCacheImpl() {
     }
     
+    @PostConstruct
     public void initialize() {
         Runnable task = new Runnable() {
             @Override

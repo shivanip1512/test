@@ -3,9 +3,10 @@ package com.cannontech.core.authentication.service.impl;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Required;
@@ -35,7 +36,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 
-public class AuthenticationServiceImpl implements AuthenticationService, InitializingBean {
+public class AuthenticationServiceImpl implements AuthenticationService {
     private final static Logger log = YukonLogManager.getLogger(AuthenticationServiceImpl.class);
     private Map<AuthType, AuthenticationProvider> providerMap;
     
@@ -243,8 +244,8 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
         this.providerMap = providerMap;
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         String authenticationTimeoutStyleEnumStr =
                 configurationSource.getString(MasterConfigStringKeysEnum.AUTHENTICATION_TIMEOUT_STYLE, "STATIC");
         AuthenticationTimeoutStyleEnum authenticationTimeoutStyle =

@@ -5,12 +5,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -37,7 +37,7 @@ import com.cannontech.user.UserUtils;
  * Service used to start scheduled opt outs and clean up any opt outs that have just
  * completed
  */
-public class OptOutCleanupService implements InitializingBean {
+public class OptOutCleanupService {
 
     private Logger logger = YukonLogManager.getLogger(OptOutCleanupService.class);
 	
@@ -49,9 +49,8 @@ public class OptOutCleanupService implements InitializingBean {
 	private YukonEnergyCompanyService yukonEnergyCompanyService;
 	private ScheduledExecutor executor;
 	
-	@Override
-	public void afterPropertiesSet() throws Exception {
-    	
+	@PostConstruct
+	public void init() throws Exception {
 	    executor.scheduleWithFixedDelay(new Runnable() {
             public void run() {
                 logger.debug("Starting opt out task.");

@@ -3,7 +3,8 @@ package com.cannontech.core.authentication.dao.impl;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
@@ -19,7 +20,7 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 
-public class PasswordHistoryDaoImpl implements PasswordHistoryDao, InitializingBean { 
+public class PasswordHistoryDaoImpl implements PasswordHistoryDao { 
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
     
@@ -45,8 +46,8 @@ public class PasswordHistoryDaoImpl implements PasswordHistoryDao, InitializingB
         }
     };
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         passwordHistoryTemplate = new SimpleTableAccessTemplate<PasswordHistory>(yukonJdbcTemplate, nextValueHelper);
         passwordHistoryTemplate.setTableName("PasswordHistory");
         passwordHistoryTemplate.setPrimaryKeyField("PasswordHistoryId");

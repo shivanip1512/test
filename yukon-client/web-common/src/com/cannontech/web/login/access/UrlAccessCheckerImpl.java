@@ -2,9 +2,9 @@ package com.cannontech.web.login.access;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.util.UrlPathHelper;
@@ -14,15 +14,15 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.checker.UserChecker;
 import com.cannontech.util.ServletUtil;
 
-public class UrlAccessCheckerImpl implements UrlAccessChecker,InitializingBean {
+public class UrlAccessCheckerImpl implements UrlAccessChecker {
     private final UrlPathHelper urlPathHelper = new UrlPathHelper();
     private final PathMatcher pathMatcher = new AntPathMatcher();
     private UrlAccessDescriptionParser descriptionParser;
     private String[] urlAccessDescriptions;
     private List<UrlAccess> urlAccessList;
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         urlAccessList = descriptionParser.parse(urlAccessDescriptions);
     }
     

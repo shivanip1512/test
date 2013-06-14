@@ -4,19 +4,20 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 
-public class VendorSpecificSqlBuilderFactory implements InitializingBean {
+public class VendorSpecificSqlBuilderFactory {
     private DatabaseVendor currentVendor;
     private DatabaseVendorResolver databaseConnectionVendorResolver;
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         currentVendor = databaseConnectionVendorResolver.getDatabaseVendor();
     }
     

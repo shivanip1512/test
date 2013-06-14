@@ -1,8 +1,8 @@
 package com.cannontech.yukon.api.support;
 
+import javax.annotation.PostConstruct;
 import javax.xml.transform.Source;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.ws.wsdl.wsdl11.ProviderBasedWsdl4jDefinition;
 import org.springframework.ws.wsdl.wsdl11.Wsdl11Definition;
@@ -13,7 +13,7 @@ import org.springframework.xml.xsd.XsdSchemaCollection;
 
 import com.google.common.collect.ImmutableList;
 
-public class YukonWsdlDefinition implements Wsdl11Definition, InitializingBean {
+public class YukonWsdlDefinition implements Wsdl11Definition {
 
     private final InliningXsdSchemaTypesProvider typesProvider = new InliningXsdSchemaTypesProvider();
 
@@ -77,7 +77,8 @@ public class YukonWsdlDefinition implements Wsdl11Definition, InitializingBean {
         soapProvider.setServiceName(serviceName);
     }
 
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         delegate.afterPropertiesSet();
     }
 

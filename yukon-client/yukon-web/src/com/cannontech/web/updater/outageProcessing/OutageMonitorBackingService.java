@@ -4,15 +4,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
 import com.cannontech.web.updater.outageProcessing.handler.OutageProcessingUpdaterHandler;
 
-public class OutageMonitorBackingService implements UpdateBackingService, InitializingBean {
+public class OutageMonitorBackingService implements UpdateBackingService {
 
 	private List<OutageProcessingUpdaterHandler> handlers;
 	private Map<OutageMonitorUpdaterTypeEnum, OutageProcessingUpdaterHandler> handlersMap;
@@ -35,8 +36,8 @@ public class OutageMonitorBackingService implements UpdateBackingService, Initia
     	return true;
     }
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
 
     	this.handlersMap = new HashMap<OutageMonitorUpdaterTypeEnum, OutageProcessingUpdaterHandler>();
     	for (OutageProcessingUpdaterHandler handler : this.handlers) {

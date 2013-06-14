@@ -6,7 +6,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -25,8 +26,7 @@ import com.cannontech.stars.database.data.lite.LiteLMHardwareEvent;
 import com.cannontech.stars.dr.event.dao.LMCustomerEventBaseDao;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 
-public class LMHardwareEventDaoImpl implements LMHardwareEventDao,
-        InitializingBean {
+public class LMHardwareEventDaoImpl implements LMHardwareEventDao {
     private static final String selectAllSql;
     private static final String selectAndSql;
     private static final String selectOrderSql;
@@ -208,8 +208,8 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao,
         this.nextValueHelper = nextValueHelper;
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         chunkingJdbcTemplate = new ChunkingSqlTemplate(simpleJdbcTemplate);
     }
 

@@ -1,5 +1,7 @@
 package com.cannontech.common.alert.serverResponse.capcontrol;
 
+import javax.annotation.PostConstruct;
+
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.core.dao.YukonUserDao;
@@ -18,7 +20,7 @@ public class CapControlServerResponseAlertGenerator implements MessageListener {
     private IServerConnection defCapControlConn;
     private YukonUserDao yukonUserDao;
     
-    
+    @PostConstruct
     public void initialize() {
         defCapControlConn.addMessageListener( this );  
     }

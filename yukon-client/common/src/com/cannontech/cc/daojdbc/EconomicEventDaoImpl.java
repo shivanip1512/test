@@ -7,7 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Propagation;
@@ -42,7 +43,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
-public class EconomicEventDaoImpl implements InitializingBean, EconomicEventDao {
+public class EconomicEventDaoImpl implements EconomicEventDao {
 
     private YukonJdbcTemplate yukonJdbcTemplate;
     private SimpleTableAccessTemplate<EconomicEvent> eventTemplate;
@@ -232,8 +233,8 @@ public class EconomicEventDaoImpl implements InitializingBean, EconomicEventDao 
         }
     };
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         eventTemplate = new SimpleTableAccessTemplate<EconomicEvent>(yukonJdbcTemplate, nextValueHelper);
         eventTemplate.setTableName("CCurtEconomicEvent");
         eventTemplate.setPrimaryKeyField("CCurtEconomicEventID");
