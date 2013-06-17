@@ -96,9 +96,9 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
                 parentProupId = parentGroup.getParentGroupId();
                 path = parentGroup.getStoredDeviceGroup().getName() + "/" + path;
             }
-            log.info(systemGroupEnum + "=" + path.toString());
             systemGroupPaths.put(systemGroupEnum, path);
         }
+        log.debug("Loaded "+groups.size()+" System Groups");
     }
     
     private final SqlStatementBuilder deviceGroupMemberInsertSql = new SqlStatementBuilder();
