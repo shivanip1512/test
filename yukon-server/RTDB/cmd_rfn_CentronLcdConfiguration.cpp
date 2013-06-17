@@ -71,13 +71,17 @@ RfnCommand::RfnResult RfnCentronLcdConfigurationCommand::decode(const CtiTime no
     if( response.size() < 2 )
     {
         // "Invalid response"
-        throw CommandException(ErrorInvalidData, GetErrorString(ErrorInvalidData));
+        char error_str[80];
+        GetErrorString(ErrorInvalidData, error_str);
+        throw CommandException(ErrorInvalidData, error_str);
     }
 
     if( response[0] != LcdConfiguration_CommandCode_Response )
     {
         // "Invalid command code"
-        throw CommandException(ErrorInvalidData, GetErrorString(ErrorInvalidData));
+        char error_str[80];
+        GetErrorString(ErrorInvalidData, error_str);
+        throw CommandException(ErrorInvalidData, error_str);
     }
 
     const int metrics_nbr = response[1];
@@ -85,7 +89,9 @@ RfnCommand::RfnResult RfnCentronLcdConfigurationCommand::decode(const CtiTime no
     if( metrics_nbr != response.size() - 2 )
     {
         // "Invalid number of display metrics"
-        throw CommandException(ErrorInvalidData, GetErrorString(ErrorInvalidData));
+        char error_str[80];
+        GetErrorString(ErrorInvalidData, error_str);
+        throw CommandException(ErrorInvalidData, error_str);
     }
 
     if( !metrics_nbr )
@@ -122,7 +128,9 @@ RfnCommand::RfnResult RfnCentronLcdConfigurationCommand::decode(const CtiTime no
 RfnCommand::RfnResult RfnCentronLcdConfigurationCommand::error(const CtiTime now, const YukonError_t error_code)
 {
     //  This should probably be the default for all commands unless specified otherwise.
-    throw CommandException(error_code, GetErrorString(error_code));
+    char error_str[80];
+    GetErrorString(error_code, error_str);
+    throw CommandException(error_code, error_str);
 }
 
 //  returns the command code
