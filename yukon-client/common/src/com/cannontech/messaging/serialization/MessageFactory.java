@@ -67,14 +67,21 @@ public class MessageFactory {
             result.setException(e);
         }
         catch (Exception e) {
-            result.setException(new SerializationException("Error while deserializing message", e));
+            result.setException(new SerializationException("Error while deserializing message, type=" +
+                                                           result.getMessageType() + " ,class=" +
+                                                           result.getMessageClass(), e));
         }
-        
+
         return result;
     }
 
     public <T> SerializationResult encodeMessage(T message) {
         SerializationResult result = new SerializationResult();
+
+        if (message == null) {
+            return result;
+        }
+
         result.setMessageObject(message);
         result.setMessageClass(message.getClass());
 
@@ -88,7 +95,7 @@ public class MessageFactory {
             }
             else {
                 result.setMessageType(serializer.getMessageType());
-                result.setMessagePayload(serializer.serialize(this, message));                
+                result.setMessagePayload(serializer.serialize(this, message));
                 result.setValid(result.getMessagePayload() != null && result.getException() == null);
             }
         }
@@ -96,7 +103,9 @@ public class MessageFactory {
             result.setException(se);
         }
         catch (Exception e) {
-            result.setException(new SerializationException(e));
+            result.setException(new SerializationException("Error while serializing message, type=" +
+                                                           result.getMessageType() + " ,class=" +
+                                                           result.getMessageClass(), e));
         }
 
         return result;
