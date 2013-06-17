@@ -61,15 +61,15 @@ import com.cannontech.database.data.pao.ZoneType;
 import com.cannontech.enums.Phase;
 import com.cannontech.enums.RegulatorPointMapping;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.messaging.message.capcontrol.CommandType;
-import com.cannontech.messaging.message.capcontrol.DynamicCommandMessage;
-import com.cannontech.messaging.message.capcontrol.ServerResponseMessage;
-import com.cannontech.messaging.message.capcontrol.DynamicCommandMessage.DynamicCommandType;
-import com.cannontech.messaging.message.capcontrol.DynamicCommandMessage.Parameter;
-import com.cannontech.messaging.message.capcontrol.streamable.CapBankDevice;
-import com.cannontech.messaging.message.capcontrol.streamable.StreamableCapObject;
-import com.cannontech.messaging.message.capcontrol.streamable.SubStation;
-import com.cannontech.messaging.message.capcontrol.streamable.VoltageRegulatorFlags;
+import com.cannontech.message.capcontrol.model.CapControlServerResponse;
+import com.cannontech.message.capcontrol.model.CommandType;
+import com.cannontech.message.capcontrol.model.DynamicCommand;
+import com.cannontech.message.capcontrol.model.DynamicCommand.DynamicCommandType;
+import com.cannontech.message.capcontrol.model.DynamicCommand.Parameter;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.message.capcontrol.streamable.SubStation;
+import com.cannontech.message.capcontrol.streamable.VoltageRegulatorFlags;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
@@ -227,25 +227,25 @@ public class ZoneDetailController {
             for (CapBankPointDelta pointDelta : zoneVoltageDeltas.getPointDeltas()) {
                 double deltaAsDbl = Double.valueOf(pointDelta.getDelta());
     
-                DynamicCommandMessage command = new DynamicCommandMessage(DynamicCommandType.DELTA);
+                DynamicCommand command = new DynamicCommand(DynamicCommandType.DELTA);
                 command.addParameter(Parameter.DEVICE_ID, pointDelta.getBankId());
                 command.addParameter(Parameter.POINT_ID, pointDelta.getPointId());
                 command.addParameter(Parameter.POINT_RESPONSE_DELTA, deltaAsDbl);
                 command.addParameter(Parameter.POINT_RESPONSE_STATIC_DELTA, pointDelta.isStaticDelta() ? 1 : 0);
                 
                 CommandResultCallback callback = new CommandResultCallback() {
-                    private ServerResponseMessage response;
+                    private CapControlServerResponse response;
                     private String errorMessage;
                     @Override
                     public void processingExceptionOccured(String errorMessage) {
                         this.errorMessage = errorMessage;
                     }
                     @Override
-                    public ServerResponseMessage getResponse() {
+                    public CapControlServerResponse getResponse() {
                         return response;
                     }
                     @Override
-                    public void recievedResponse(ServerResponseMessage message) {
+                    public void recievedResponse(CapControlServerResponse message) {
                         if (!message.isSuccess()) {
                             this.errorMessage = message.getResponse();
                         }
@@ -257,7 +257,7 @@ public class ZoneDetailController {
                     }
                 };
     
-                ServerResponseMessage response = executor.blockingExecute(command, ServerResponseMessage.class, callback);
+                CapControlServerResponse response = executor.blockingExecute(command, CapControlServerResponse.class, callback);
                 if (response.isTimeout()) {
                     flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.updateTimeout"));
                 } else if (!response.isSuccess()) {
@@ -539,14 +539,14 @@ public class ZoneDetailController {
 
         int subBusId = zoneDto.getSubstationBusId();
         StreamableCapObject subBus = cache.getSubBus(subBusId);
-        SubStation station = cache.getSubstation(subBus.getParentId());
+        SubStation station = cache.getSubstation(subBus.getParentID());
         
         StreamableCapObject area;
         if(isSpecialArea) {
             area = cache.getArea(station.getSpecialAreaId());
         }
         else {
-            area = cache.getArea(station.getParentId());
+            area = cache.getArea(station.getParentID());
         }
         
         String areaName = area.getCcName();

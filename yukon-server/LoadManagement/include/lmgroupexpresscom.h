@@ -13,7 +13,7 @@ class CtiLMGroupExpresscom : public CtiLMGroupBase, public Cti::LoadManagement::
 
 public:
 
-DECLARE_COLLECTABLE( CtiLMGroupExpresscom );
+RWDECLARE_COLLECTABLE( CtiLMGroupExpresscom )
 
     CtiLMGroupExpresscom();
     CtiLMGroupExpresscom(Cti::RowReader &rdr);
@@ -39,6 +39,10 @@ DECLARE_COLLECTABLE( CtiLMGroupExpresscom );
                                                     int priority) const;
     virtual bool sendBeatThePeakControl(Cti::BeatThePeak::AlertLevel level, int timeout);
     virtual bool sendBeatThePeakRestore();
+
+    //Members inherited from RWCollectable
+    void restoreGuts(RWvistream& );
+    void saveGuts(RWvostream& ) const;
 
     CtiLMGroupExpresscom& operator=(const CtiLMGroupExpresscom& right);
 

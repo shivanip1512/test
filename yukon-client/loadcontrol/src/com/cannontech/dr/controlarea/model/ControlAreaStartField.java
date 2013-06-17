@@ -10,7 +10,7 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.core.service.SystemDateFormattingService;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
+import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.user.YukonUserContext;
 
 public class ControlAreaStartField extends ControlAreaBackingFieldBase {
@@ -23,7 +23,7 @@ public class ControlAreaStartField extends ControlAreaBackingFieldBase {
     }
     
     @Override
-    public Object getControlAreaValue(ControlAreaItem controlArea, YukonUserContext userContext) {
+    public Object getControlAreaValue(LMControlArea controlArea, YukonUserContext userContext) {
         Calendar startDate = null;
         if (controlArea.getDailyStartTime() > -1) {
             startDate = systemDateFormattingService.getSystemCalendar();
@@ -47,8 +47,8 @@ public class ControlAreaStartField extends ControlAreaBackingFieldBase {
 
             @Override
             public int compare(DisplayablePao pao1, DisplayablePao pao2) {
-                ControlAreaItem controlArea1 = getControlAreaFromYukonPao(pao1);
-                ControlAreaItem controlArea2 = getControlAreaFromYukonPao(pao2);
+                LMControlArea controlArea1 = getControlAreaFromYukonPao(pao1);
+                LMControlArea controlArea2 = getControlAreaFromYukonPao(pao2);
                 if (controlArea1 == controlArea2) {
                     return 0;
                 }

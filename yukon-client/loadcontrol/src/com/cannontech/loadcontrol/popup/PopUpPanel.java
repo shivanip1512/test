@@ -9,15 +9,15 @@ import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.loadcontrol.LCUtils;
+import com.cannontech.loadcontrol.data.IGearProgram;
+import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.gui.manualentry.ConstraintResponsePanel;
 import com.cannontech.loadcontrol.gui.manualentry.DirectChangeGearJPanel;
 import com.cannontech.loadcontrol.gui.manualentry.DirectControlJPanel;
 import com.cannontech.loadcontrol.gui.manualentry.MultiSelectProg;
 import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
-import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
-import com.cannontech.messaging.message.loadcontrol.data.GearProgram;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
-import com.cannontech.messaging.message.loadcontrol.data.ProgramDirect;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 
 /**
  * Helps control handling with program constraints 
@@ -45,7 +45,7 @@ public class PopUpPanel {
 	 * 
 	 */
 	public void showDirectManualEntry( final int panelMode,
-			Program[] prgArray ) 
+			LMProgramBase[] prgArray ) 
 	{
 		final JDialog d = new JDialog(SwingUtil.getParentFrame(thisPopup.getInvoker()));
 
@@ -97,14 +97,14 @@ public class PopUpPanel {
 
 					for( int i = 0; i < selected.length; i++ )
 					{
-						ManualControlRequestMessage lmCntrlMsg =
+						LMManualControlRequest lmCntrlMsg =
 							panel.createMessage(
 									selected[i].getBaseProgram(),
 									selected[i].getGearNum());
 
 						isCheckConstraints |=
 							lmCntrlMsg.getConstraintFlag() ==
-								ManualControlRequestMessage.CONSTRAINTS_FLAG_CHECK;
+								LMManualControlRequest.CONSTRAINTS_FLAG_CHECK;
 						
 						programResp[i] = new ResponseProg(
 								lmCntrlMsg,
@@ -174,7 +174,7 @@ public class PopUpPanel {
 		
 	}
 
-    public void showChangeGearOptions( ProgramDirect currentProgram ) {
+    public void showChangeGearOptions( LMProgramDirect currentProgram ) {
         final JDialog d = new JDialog(SwingUtil.getParentFrame(thisPopup.getInvoker()));
 
         DirectChangeGearJPanel panel = new DirectChangeGearJPanel() {
@@ -185,7 +185,7 @@ public class PopUpPanel {
                 d.setSize( d.getWidth() + x, d.getHeight() );
             }
         };
-        panel.setGearList(((GearProgram)currentProgram).getDirectGearVector());
+        panel.setGearList(((IGearProgram)currentProgram).getDirectGearVector());
         d.setTitle("Choose Next Gear");
         d.setModal(true);
         d.setContentPane(panel);
@@ -199,9 +199,9 @@ public class PopUpPanel {
             Integer newCurrentGearNumber = panel.getSelectedGearNumber();
     
             if( newCurrentGearNumber != null ) {
-                ManualControlRequestMessage lmCntrlMsg = panel.createMessage(currentProgram, newCurrentGearNumber);
-                lmCntrlMsg.setConstraintFlag(ManualControlRequestMessage.CONSTRAINTS_FLAG_USE);
-                lmCntrlMsg.setCommand(ManualControlRequestMessage.CHANGE_GEAR);
+                LMManualControlRequest lmCntrlMsg = panel.createMessage(currentProgram, newCurrentGearNumber);
+                lmCntrlMsg.setConstraintFlag(LMManualControlRequest.CONSTRAINTS_FLAG_USE);
+                lmCntrlMsg.setCommand(LMManualControlRequest.CHANGE_GEAR);
                 ResponseProg currentResponseProg = new ResponseProg(lmCntrlMsg, currentProgram );
                 ResponseProg[] responseWrapper = { currentResponseProg };
                 

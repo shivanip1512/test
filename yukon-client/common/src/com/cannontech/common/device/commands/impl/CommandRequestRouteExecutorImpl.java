@@ -16,7 +16,7 @@ import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionId
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.messaging.message.porter.RequestMessage;
+import com.cannontech.message.porter.message.Request;
 
 /**
  * Implementation class for CommandRequestRouteExecutor
@@ -28,13 +28,13 @@ public class CommandRequestRouteExecutorImpl extends
     private Logger log = YukonLogManager.getLogger(CommandRequestRouteExecutorImpl.class);
 
     @Override
-    protected void adjustRequest(RequestMessage request, CommandRequestRoute commandRequest) {
+    protected void adjustRequest(Request request, CommandRequestRoute commandRequest) {
         
         long requestId = RandomUtils.nextInt();
         int routeId = commandRequest.getRouteId();
         
-        request.setRouteId(routeId);
-        request.setUserMessageId(requestId);
+        request.setRouteID(routeId);
+        request.setUserMessageID(requestId);
 
         String debugStr = "Built request: " +
         "command = " + request.getCommandString() + " " +

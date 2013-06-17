@@ -150,7 +150,7 @@ public Integer getPointDeviceID() {
 
 	try
 	{
-		return new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getDeviceComboBox().getSelectedItem()).getYukonId());
+		return new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getDeviceComboBox().getSelectedItem()).getYukonID());
 	}
 	catch(NullPointerException npe)
 	{
@@ -172,7 +172,7 @@ public Object getValue(Object val) {
     int nextId = YukonSpringHook.getBean(PointDao.class).getNextPointId();
 	point.setPointID(nextId);
 	point.getPoint().setPointName(name);
-	point.getPoint().setPaoID( new Integer(liteDevice.getYukonId()) );
+	point.getPoint().setPaoID( new Integer(liteDevice.getYukonID()) );
 
 	return val;
 }
@@ -291,7 +291,7 @@ public void setSelectedDeviceIndex(int deviceID)
 	//sets selected index of DeviceComboBox to selected device
 	for (int i = 0; i < getDeviceComboBox().getItemCount(); i++)
 	{
-		if( ((com.cannontech.database.data.lite.LiteYukonPAObject)getDeviceComboBox().getItemAt(i)).getYukonId()
+		if( ((com.cannontech.database.data.lite.LiteYukonPAObject)getDeviceComboBox().getItemAt(i)).getYukonID()
 			== deviceID )
 		{
 			getDeviceComboBox().setSelectedIndex(i);
@@ -327,7 +327,7 @@ public void setValueCapControl(Object val, Integer initialPAOId )
 				getDeviceComboBox().addItem( ((com.cannontech.database.data.lite.LiteYukonPAObject)capObjects.get(i)) );
 
 				if( initialPAOId != null && initialPAOId.intValue()
-					 == ((com.cannontech.database.data.lite.LiteYukonPAObject)capObjects.get(i)).getYukonId() )
+					 == ((com.cannontech.database.data.lite.LiteYukonPAObject)capObjects.get(i)).getYukonID() )
 				{
 					getDeviceComboBox().setSelectedIndex( getDeviceComboBox().getItemCount() - 1 );
 				}
@@ -360,7 +360,7 @@ public void setValueCore(Object val, Integer initialPAOId)
     			{
     				getDeviceComboBox().addItem(liteYukonPAObject);
     
-    				if( initialPAOId != null && initialPAOId.intValue() == liteYukonPAObject.getYukonId() )
+    				if( initialPAOId != null && initialPAOId.intValue() == liteYukonPAObject.getYukonID() )
     				{
     					getDeviceComboBox().setSelectedIndex( getDeviceComboBox().getItemCount() - 1 );
     				}
@@ -398,7 +398,7 @@ public void setValueLM( Object val, Integer initialPAOId )
 				getDeviceComboBox().addItem( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)) );
 
 				if( initialPAOId != null && initialPAOId.intValue()
-					 == ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getYukonId() )
+					 == ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getYukonID() )
 				{
 					getDeviceComboBox().setSelectedIndex( getDeviceComboBox().getItemCount() - 1 );
 				}

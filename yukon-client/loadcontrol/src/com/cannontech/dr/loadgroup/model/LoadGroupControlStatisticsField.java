@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.messaging.message.loadcontrol.data.DirectGroupBase;
+import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.user.YukonUserContext;
 
 public class LoadGroupControlStatisticsField extends LoadGroupBackingFieldBase {
@@ -15,7 +15,7 @@ public class LoadGroupControlStatisticsField extends LoadGroupBackingFieldBase {
     }
     
     @Override
-    public Object getGroupValue(DirectGroupBase group, YukonUserContext userContext) {
+    public Object getGroupValue(LMDirectGroupBase group, YukonUserContext userContext) {
         Object[] result = {
                 CtiUtilities.decodeSecondsToTime(group.getCurrentHoursDaily()),
                 CtiUtilities.decodeSecondsToTime(group.getCurrentHoursMonthly()),
@@ -32,8 +32,8 @@ public class LoadGroupControlStatisticsField extends LoadGroupBackingFieldBase {
             @Override
             public int compare(DisplayablePao pao1, DisplayablePao pao2) {
                 
-                DirectGroupBase group1 = getGroupFromYukonPao(pao1);
-                DirectGroupBase group2 = getGroupFromYukonPao(pao2);
+                LMDirectGroupBase group1 = getGroupFromYukonPao(pao1);
+                LMDirectGroupBase group2 = getGroupFromYukonPao(pao2);
                 if (group1 == group2) {
                     return 0;
                 }

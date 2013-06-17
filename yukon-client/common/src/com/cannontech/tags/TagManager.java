@@ -22,12 +22,12 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.point.TAGLog;
-import com.cannontech.dispatch.DispatchClientConnection;
-import com.cannontech.messaging.message.BaseMessage;
-import com.cannontech.messaging.message.dispatch.MultiMessage;
-import com.cannontech.messaging.message.dispatch.TagMessage;
-import com.cannontech.messaging.util.MessageEvent;
-import com.cannontech.messaging.util.MessageListener;
+import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.message.Multi;
+import com.cannontech.message.dispatch.message.TagMsg;
+import com.cannontech.message.util.Message;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
 import com.cannontech.yukon.conns.ConnPool;
 
 /**
@@ -60,7 +60,7 @@ public class TagManager implements MessageListener {
 	private static TagManager _instance;
 	
 	//an optional reference to a Dispatch connection
-	private DispatchClientConnection _dispatchConn = null;
+	private ClientConnection _dispatchConn = null;
 	
 	
 	public static synchronized TagManager getInstance() {
@@ -81,10 +81,10 @@ public class TagManager implements MessageListener {
 	 * @return
 	 */	
 	public void createTag(int pointID, int tagID, String username, String desc, String refStr, String forStr) throws Exception {
-		TagMessage tm = new TagMessage();
-		tm.setAction(TagMessage.ADD_TAG_ACTION);
-		tm.setPointId(pointID);
-		tm.setTagId(tagID);
+		TagMsg tm = new TagMsg();
+		tm.setAction(TagMsg.ADD_TAG_ACTION);
+		tm.setPointID(pointID);
+		tm.setTagID(tagID);
 		tm.setUserName(username);
 		tm.setDescriptionStr(desc);
 		tm.setReferenceStr(refStr);
@@ -98,8 +98,8 @@ public class TagManager implements MessageListener {
 	 */
 	public void removeTag(Tag tag, String username) throws Exception {
 		tag.setTagTime(new Date());
-		TagMessage tm = new TagMessage();
-		tm.setAction(TagMessage.REMOVE_TAG_ACTION);
+		TagMsg tm = new TagMsg();
+		tm.setAction(TagMsg.REMOVE_TAG_ACTION);
 		tm.setTag(tag);
 		tm.setUserName(username);
 		writeMsg(tm);
@@ -111,8 +111,8 @@ public class TagManager implements MessageListener {
 	 */
 	public void updateTag(Tag tag, String username) throws Exception {
 		tag.setTagTime(new Date());
-		TagMessage tm = new TagMessage();
-		tm.setAction(TagMessage.UPDATE_TAG_ACTION);
+		TagMsg tm = new TagMsg();
+		tm.setAction(TagMsg.UPDATE_TAG_ACTION);
 		tm.setTag(tag);
 		tm.setUserName(username);
 
@@ -144,7 +144,7 @@ public class TagManager implements MessageListener {
 		Iterator tagIter = tagSet.iterator();
 		while(tagIter.hasNext()) {
 			Tag tag = (Tag) tagIter.next();
-			if(tag.getInstanceId() == instanceID) {
+			if(tag.getInstanceID() == instanceID) {
 				return tag;
 			}
 		}
@@ -194,10 +194,10 @@ public class TagManager implements MessageListener {
 	 * from dispatch before returning.
 	 * @param msg
 	 */
-	private void writeMsg(TagMessage msg) throws Exception 
+	private void writeMsg(TagMsg msg) throws Exception 
 	{
 		Integer msgID = new Integer(nextClientMessageID());
-		msg.setClientMessageId(msgID.intValue());
+		msg.setClientMessageID(msgID.intValue());
 
 		Object synchObj = new Object();
 
@@ -219,41 +219,41 @@ public class TagManager implements MessageListener {
 	 * Called by the dispatch connection.  Dont' call this directly
 	 */
 	public void messageReceived(MessageEvent me) {
-		BaseMessage msg = me.getMessage();
+		Message msg = me.getMessage();
 		handleMessage(msg);
 	}
 	
-	private void handleMessage(BaseMessage msg) {
-		if(msg instanceof MultiMessage) {
-			Iterator mIter = ((MultiMessage)msg).getVector().iterator();
+	private void handleMessage(Message msg) {
+		if(msg instanceof Multi) {
+			Iterator mIter = ((Multi)msg).getVector().iterator();
 			while(mIter.hasNext()) {
-				handleMessage((BaseMessage)mIter.next());
+				handleMessage((Message)mIter.next());
 			}
 		}
 		else
-		if(msg instanceof TagMessage) {
-			TagMessage tMsg = (TagMessage) msg;
+		if(msg instanceof TagMsg) {
+			TagMsg tMsg = (TagMsg) msg;
 			Tag t =  tMsg.getTag();
-			Integer tagKey = new Integer(t.getPointId());
+			Integer tagKey = new Integer(t.getPointID());
 			
 			synchronized(_allTags) {
-				if(tMsg.getAction() == TagMessage.ADD_TAG_ACTION 	 ||
-					tMsg.getAction() == TagMessage.UPDATE_TAG_ACTION ||
-					tMsg.getAction() == TagMessage.REPORT_TAG_ACTION ) {
-					CTILogger.debug("Adding/Updating/Reporting tag: " + t.getInstanceId());
+				if(tMsg.getAction() == TagMsg.ADD_TAG_ACTION 	 ||
+					tMsg.getAction() == TagMsg.UPDATE_TAG_ACTION ||
+					tMsg.getAction() == TagMsg.REPORT_TAG_ACTION ) {
+					CTILogger.debug("Adding/Updating/Reporting tag: " + t.getInstanceID());
 					Set ts = getTagSet(tagKey.intValue());
 					ts.remove(t);
 					ts.add(t);
 				}
 				else 
-				if(tMsg.getAction() == TagMessage.REMOVE_TAG_ACTION){
-					CTILogger.debug("Removing tag: " + t.getInstanceId());
+				if(tMsg.getAction() == TagMsg.REMOVE_TAG_ACTION){
+					CTILogger.debug("Removing tag: " + t.getInstanceID());
 					Set ts = getTagSet(tagKey.intValue());
 					ts.remove(t);
 				}
 			} 
 			//Notify anyone waiting for this message if any
-			Integer msgID = new Integer(tMsg.getClientMessageId());
+			Integer msgID = new Integer(tMsg.getClientMessageID());
 			Object synchObj = _waitForIDMap.get(msgID);
 			if(synchObj != null) {
 				synchronized(synchObj) {
@@ -278,10 +278,10 @@ public class TagManager implements MessageListener {
 	 * gets the current dispatch connection we should use
 	 * 
 	 */
-	private synchronized DispatchClientConnection getDispatchConn()
+	private synchronized ClientConnection getDispatchConn()
 	{
 		if( _dispatchConn == null )
-			return (DispatchClientConnection) ConnPool.getInstance().getDefDispatchConn();
+			return (ClientConnection) ConnPool.getInstance().getDefDispatchConn();
 		else
 			return _dispatchConn;
 	}
@@ -290,7 +290,7 @@ public class TagManager implements MessageListener {
 	 * Allow for others to give me a connection to Dispatch I can use
 	 * Only use this constructor if needed!!
 	 */
-	public TagManager( DispatchClientConnection conn )
+	public TagManager( ClientConnection conn )
 	{
 		if( conn == null )
 			throw new IllegalArgumentException("Need a non null connection for the constructor");

@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.cache.DBChangeListener;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class RolePropertyChangeHelper {
     
@@ -22,8 +22,8 @@ public class RolePropertyChangeHelper {
         asyncDynamicDataSource.addDBChangeListener(new DBChangeListener() {
 
             @Override
-            public void dbChangeReceived(DBChangeMessage dbChange) {
-                 if (dbChange.getDatabase() == DBChangeMessage.CHANGE_YUKON_USER_DB && (dbChange.getDbChangeType() == DbChangeType.UPDATE || 
+            public void dbChangeReceived(DBChangeMsg dbChange) {
+                 if (dbChange.getDatabase() == DBChangeMsg.CHANGE_YUKON_USER_DB && (dbChange.getDbChangeType() == DbChangeType.UPDATE || 
                                                                                     dbChange.getDbChangeType() == DbChangeType.DELETE)) {
                      if (log.isDebugEnabled()) {
                          log.debug("sending clearCache to RolePropertyDao because: " + dbChange);

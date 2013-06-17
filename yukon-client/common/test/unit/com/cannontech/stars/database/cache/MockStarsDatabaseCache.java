@@ -8,7 +8,7 @@ import org.joda.time.ReadableInstant;
 import com.cannontech.common.util.MethodNotImplementedException;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsLMControlHistory;
 import com.cannontech.stars.database.data.lite.LiteWebConfiguration;
@@ -117,7 +117,7 @@ public class MockStarsDatabaseCache extends StarsDatabaseCache {
     }
     
     @Override
-    public void dbChangeReceived(DBChangeMessage msg) {
+    public void dbChangeReceived(DBChangeMsg msg) {
         throw new MethodNotImplementedException();
     }
 

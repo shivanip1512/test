@@ -15,7 +15,7 @@ class LMGroupDigiSEP : public CtiLMGroupBase, public Cti::LoadManagement::GroupC
 
 public:
 
-DECLARE_COLLECTABLE( LMGroupDigiSEP );
+RWDECLARE_COLLECTABLE( LMGroupDigiSEP )
 
     LMGroupDigiSEP();
     LMGroupDigiSEP(Cti::RowReader &rdr);

@@ -13,9 +13,9 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.dispatch.DispatchClientConnection;
-import com.cannontech.messaging.message.dispatch.MultiMessage;
-import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.message.Multi;
+import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -43,10 +43,10 @@ public class PointChangePlayer {
 	private void doIt(Date begin) {
 		System.out.println("Using " + begin.toString() + " to source point changes");
 		
-		PointDataMessage[] pChanges = loadChanges(begin);
+		PointData[] pChanges = loadChanges(begin);
 		System.out.println("loaded " + pChanges.length + " point changes");
 		
-		DispatchClientConnection conn = new DispatchClientConnection();
+		ClientConnection conn = new ClientConnection();
 		GlobalSettingDao globalSettingDao = YukonSpringHook.getBean(GlobalSettingDao.class);
 		conn.setHost(globalSettingDao.getString(GlobalSettingType.DISPATCH_MACHINE));
 		conn.setPort(globalSettingDao.getInteger(GlobalSettingType.DISPATCH_PORT));
@@ -58,10 +58,10 @@ public class PointChangePlayer {
 		
 		while(true) {
 			for( int i = 0; i < pChanges.length; i++ ) {
-				MultiMessage multi = new MultiMessage();
+				Multi multi = new Multi();
 				
 				for( int j = 0; j < 10000 && i < pChanges.length; j++, i++ ) {
-					PointDataMessage pch = pChanges[i];
+					PointData pch = pChanges[i];
 					Date now = new Date();
 					pch.setTime(now);
 					pch.setTimeStamp(now);				
@@ -78,7 +78,7 @@ public class PointChangePlayer {
 		}
 	}
 	
-	private PointDataMessage[] loadChanges(Date d) {
+	private PointData[] loadChanges(Date d) {
 		
 		ArrayList changeList = new ArrayList();
 		
@@ -98,7 +98,7 @@ public class PointChangePlayer {
 			rset = pstmt.executeQuery();
 		
 			while( rset.next() ) {
-				PointDataMessage pch = new PointDataMessage();
+				PointData pch = new PointData();
 				pch.setType(PointTypes.ANALOG_POINT);
 				pch.setId(rset.getInt(1));			
 				int pointQuality = rset.getInt(2);
@@ -113,7 +113,7 @@ public class PointChangePlayer {
 			SqlUtils.close(rset, pstmt, conn );			
 		}		
 		
-		PointDataMessage[] retVal = new PointDataMessage[changeList.size()];
+		PointData[] retVal = new PointData[changeList.size()];
 		changeList.toArray(retVal);
 		return retVal;
 	}

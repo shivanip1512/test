@@ -9,14 +9,14 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.dr.controlarea.model.TriggerType;
-import com.cannontech.messaging.message.loadcontrol.CommandMessage;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaTriggerItem;
+import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
+import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class ControlAreaTriggerJPanel extends com.cannontech.common.gui.util.ConfirmationJPanel implements java.awt.event.ActionListener, java.util.Observer {
-	private ControlAreaItem lmControlArea = null;
+	private LMControlArea lmControlArea = null;
 	private javax.swing.JButton ivjJButtonCancel = null;
 	private javax.swing.JButton ivjJButtonUpdate = null;
 	private javax.swing.JComboBox ivjJComboBoxTrigger1NewThreshold = null;
@@ -506,7 +506,7 @@ private javax.swing.JTextField getJTextFieldTrigger2RestoreOffset() {
  * Creation date: (1/9/2002 9:34:03 AM)
  * @return com.cannontech.loadcontrol.data.LMControlArea
  */
-public com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem getLmControlArea() {
+public com.cannontech.loadcontrol.data.LMControlArea getLmControlArea() {
 	return lmControlArea;
 }
 /**
@@ -610,11 +610,11 @@ public void jButtonCancel_ActionPerformed(java.awt.event.ActionEvent actionEvent
 public void jButtonUpdate_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 
-	com.cannontech.messaging.message.dispatch.MultiMessage multi = new com.cannontech.messaging.message.dispatch.MultiMessage();
+	com.cannontech.message.dispatch.message.Multi multi = new com.cannontech.message.dispatch.message.Multi();
 	
 	for( int i = 0; i < getLmControlArea().getTriggerVector().size(); i++ )
 	{
-		ControlAreaTriggerItem trigger = (ControlAreaTriggerItem)getLmControlArea().getTriggerVector().get(i);
+		LMControlAreaTrigger trigger = (LMControlAreaTrigger)getLmControlArea().getTriggerVector().get(i);
 
 		double threshValue = 0.0;
 		double restoreVal = 0.0;
@@ -657,9 +657,9 @@ public void jButtonUpdate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 
 				
 			//create a new restore offset command message
-			CommandMessage offsetCmd = new CommandMessage(
-					CommandMessage.CHANGE_RESTORE_OFFSET,
-					getLmControlArea().getYukonId().intValue(),
+			LMCommand offsetCmd = new LMCommand(
+					LMCommand.CHANGE_RESTORE_OFFSET,
+					getLmControlArea().getYukonID().intValue(),
 					trigger.getTriggerNumber().intValue(),  //the trigger number
 					restoreVal );
 
@@ -670,9 +670,9 @@ public void jButtonUpdate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 		//}
 		
 			//create a new threshold command message
-			CommandMessage threshCmd = new CommandMessage(
-					CommandMessage.CHANGE_THRESHOLD,
-					getLmControlArea().getYukonId().intValue(),
+			LMCommand threshCmd = new LMCommand(
+					LMCommand.CHANGE_THRESHOLD,
+					getLmControlArea().getYukonID().intValue(),
 					trigger.getTriggerNumber().intValue(),  //the trigger number
 					threshValue );
 	
@@ -745,13 +745,13 @@ private void setComboBoxText(int groupID, javax.swing.JComboBox jCombo )
  * Creation date: (1/9/2002 9:34:03 AM)
  * @param newLmControlArea com.cannontech.loadcontrol.data.LMControlArea
  */
-public void setLmControlArea(com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem newLmControlArea) 
+public void setLmControlArea(com.cannontech.loadcontrol.data.LMControlArea newLmControlArea) 
 {
 	lmControlArea = newLmControlArea;
 
 	for( int i = 0; i < getLmControlArea().getTriggerVector().size(); i++ )
 	{
-		ControlAreaTriggerItem trigger = (ControlAreaTriggerItem)getLmControlArea().getTriggerVector().get(i);
+		LMControlAreaTrigger trigger = (LMControlAreaTrigger)getLmControlArea().getTriggerVector().get(i);
 
 		//get the point used for this trigger
 		com.cannontech.database.data.lite.LitePoint point = YukonSpringHook.getBean(PointDao.class).getLitePoint(
@@ -799,7 +799,7 @@ public void setLmControlArea(com.cannontech.messaging.message.loadcontrol.data.C
  * @param trigger com.cannontech.loadcontrol.data.LMControlAreaTrigger
  * @param point com.cannontech.database.data.lite.LitePoint
  */
-private void setTrigger1Values(ControlAreaTriggerItem trigger, com.cannontech.database.data.lite.LitePoint point) 
+private void setTrigger1Values(LMControlAreaTrigger trigger, com.cannontech.database.data.lite.LitePoint point) 
 {
 /*
 	if( trigger.getTriggerType().equalsIgnoreCase(ILMControlAreaTrigger.TYPE_STATUS) )
@@ -836,7 +836,7 @@ private void setTrigger1Values(ControlAreaTriggerItem trigger, com.cannontech.da
  * @param trigger com.cannontech.loadcontrol.data.LMControlAreaTrigger
  * @param point com.cannontech.database.data.lite.LitePoint
  */
-private void setTrigger2Values(ControlAreaTriggerItem trigger, com.cannontech.database.data.lite.LitePoint point) 
+private void setTrigger2Values(LMControlAreaTrigger trigger, com.cannontech.database.data.lite.LitePoint point) 
 {
 /*
 	if( trigger.getTriggerType().equalsIgnoreCase(ILMControlAreaTrigger.TYPE_STATUS) )
@@ -873,9 +873,9 @@ private void setTrigger2Values(ControlAreaTriggerItem trigger, com.cannontech.da
 public void update( java.util.Observable originator, Object newValue ) 
 {
 	// should be a value of com.cannontech.loadcontrol.data.LMControlArea;
-	if( newValue instanceof ControlAreaItem )
+	if( newValue instanceof LMControlArea )
 	{
-		ControlAreaItem newArea = (ControlAreaItem)newValue;
+		LMControlArea newArea = (LMControlArea)newValue;
 
 		//be sure this is our area
 		if( newArea.equals(getLmControlArea()) )

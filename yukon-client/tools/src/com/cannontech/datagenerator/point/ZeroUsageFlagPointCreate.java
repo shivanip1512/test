@@ -68,7 +68,7 @@ public class ZeroUsageFlagPointCreate extends PointCreate
 		    PointBase pointBase = PointFactory.createNewPoint(pointID,
                     PointTypes.STATUS_POINT,
                     "Zero Usage",
-                    litePaobject.getYukonId(),
+                    litePaobject.getYukonID(),
                     ZERO_USAGE_FLAG_POINT_OFFSET);
 
 		    pointBase.getPoint().setStateGroupID(new Integer(StateGroupUtils.STATEGROUP_TRUEFALSE));

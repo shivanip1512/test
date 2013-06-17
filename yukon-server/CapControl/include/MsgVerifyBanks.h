@@ -4,8 +4,7 @@
 
 class VerifyBanks : public ItemCommand
 {
-    public:
-        DECLARE_COLLECTABLE( VerifyBanks );
+    RWDECLARE_COLLECTABLE( VerifyBanks )
 
     private:
         typedef ItemCommand Inherited;
@@ -16,8 +15,11 @@ class VerifyBanks : public ItemCommand
         VerifyBanks(const VerifyBanks& msg);
         ~VerifyBanks();
 
-        bool getDisableOvUv() const;
+        bool getDisableOvUv();
         void setDisableOvUv(bool disableOvUv);
+
+        void restoreGuts(RWvistream& iStream);
+        void saveGuts(RWvostream& oStream) const;
 
         VerifyBanks& operator=(const VerifyBanks& right);
 

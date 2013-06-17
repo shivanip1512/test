@@ -24,12 +24,13 @@ namespace Database {
 }
 }
 
-class CtiCCSubstation : public CapControlPao
+class CtiCCSubstation : public RWCollectable, public CapControlPao
 {
-public:
-    DECLARE_COLLECTABLE( CtiCCSubstation );
 
 public:
+
+RWDECLARE_COLLECTABLE( CtiCCSubstation )
+
     CtiCCSubstation();
     CtiCCSubstation(Cti::RowReader& rdr);
     CtiCCSubstation(const CtiCCSubstation& substation);
@@ -50,7 +51,7 @@ public:
     long getVoltReductionControlId() const;
     bool getChildVoltReductionFlag() const;
 
-    Cti::CapControl::PaoIdVector getCCSubIds() const {return _subBusIds;};
+    Cti::CapControl::PaoIdVector getCCSubIds(){return _subBusIds;};
     void addCCSubId(long busId){_subBusIds.push_back(busId);};
     CtiCCOperationStats& getOperationStats();
     CtiCCConfirmationStats& getConfirmationStats();
@@ -78,6 +79,9 @@ public:
     bool isDirty() const;
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
     void setDynamicData(Cti::RowReader& rdr);
+
+    //Members inherited from RWCollectable
+    void saveGuts(RWvostream& ) const;
 
     CtiCCSubstation& operator=(const CtiCCSubstation& right);
 

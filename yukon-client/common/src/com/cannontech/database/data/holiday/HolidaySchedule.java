@@ -1,7 +1,7 @@
 package com.cannontech.database.data.holiday;
 
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * Insert the type's description here.
@@ -66,14 +66,14 @@ public void delete() throws java.sql.SQLException
  * Creation date: (12/19/2001 1:45:25 PM)
  * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
  */
-public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType)
+public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
 {
-	DBChangeMessage[] msgs = {
-	        new DBChangeMessage(
+	DBChangeMsg[] msgs = {
+	        new DBChangeMsg(
 	                        getHolidayScheduleID().intValue(),
-	                        DBChangeMessage.CHANGE_HOLIDAY_SCHEDULE_DB,
-	                        DBChangeMessage.CAT_HOLIDAY_SCHEDULE,
-	                        DBChangeMessage.CAT_HOLIDAY_SCHEDULE,
+	                        DBChangeMsg.CHANGE_HOLIDAY_SCHEDULE_DB,
+	                        DBChangeMsg.CAT_HOLIDAY_SCHEDULE,
+	                        DBChangeMsg.CAT_HOLIDAY_SCHEDULE,
 	                        dbChangeType)
 	};
 	

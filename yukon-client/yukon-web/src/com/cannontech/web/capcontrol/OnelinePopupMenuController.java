@@ -28,10 +28,10 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.messaging.message.capcontrol.CommandType;
-import com.cannontech.messaging.message.capcontrol.streamable.CapBankDevice;
-import com.cannontech.messaging.message.capcontrol.streamable.Feeder;
-import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
+import com.cannontech.message.capcontrol.model.CommandType;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.updater.point.PointUpdateBackingService;
@@ -206,7 +206,7 @@ public class OnelinePopupMenuController {
         model.addAttribute("controlType", CapControlType.CAPBANK);
         
         CapBankDevice capBank = cache.getCapBankDevice(id);
-        int cbcDeviceId = capBank.getControlDeviceId();
+        int cbcDeviceId = capBank.getControlDeviceID();
         LiteYukonPAObject cbcPaoObject = paoDao.getLiteYukonPAO(cbcDeviceId);
         
         model.addAttribute("paoId", id);
@@ -349,7 +349,7 @@ public class OnelinePopupMenuController {
         String paoName = capBank.getCcName();
         model.addAttribute("paoName", paoName);
         
-        LiteYukonPAObject lite = paoDao.getLiteYukonPAO(capBank.getControlDeviceId());
+        LiteYukonPAObject lite = paoDao.getLiteYukonPAO(capBank.getControlDeviceID());
         boolean scanDisabled = !CapControlUtils.isTwoWay( lite );
         model.addAttribute("scanDisabled", scanDisabled);
         

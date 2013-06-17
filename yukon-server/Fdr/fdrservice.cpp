@@ -67,11 +67,10 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "guard.h"
 #include "fdrservice.h"
 #include "thread_monitor.h"
-#include "connection_client.h"
+#include "connection.h"
 #include "msg_cmd.h"
-#include "amq_constants.h"
 
-CtiClientConnection FdrVanGoghConnection( Cti::Messaging::ActiveMQ::Queue::dispatch );
+CtiConnection     FdrVanGoghConnection;
 
 bool UserQuit = false;
 
@@ -328,8 +327,8 @@ void CtiFDRService::Run( )
         startInterfaces();
 
         // Initialize the connection to VanGogh....
+        FdrVanGoghConnection.doConnect(VANGOGHNEXUS, FdrVanGoghMachine);
         FdrVanGoghConnection.setName("FDR Service to Dispatch");
-        FdrVanGoghConnection.start();
         FdrVanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg("FDR Service", rwThreadId(), TRUE));
 
         do
@@ -366,7 +365,7 @@ void CtiFDRService::Run( )
         }
         while ( WAIT_TIMEOUT == WaitForSingleObject( iShutdown, 10000 ) );   // 10 seconds
 
-        FdrVanGoghConnection.close();
+        FdrVanGoghConnection.ShutdownConnection();
     }
     catch( RWxmsg &msg )
     {

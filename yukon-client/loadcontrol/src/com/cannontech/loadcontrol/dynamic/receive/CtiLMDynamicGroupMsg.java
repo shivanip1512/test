@@ -8,7 +8,6 @@ package com.cannontech.loadcontrol.dynamic.receive;
 
 import java.util.GregorianCalendar;
 
-import com.cannontech.messaging.message.loadcontrol.dynamic.receive.GroupChanged;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -23,13 +22,13 @@ public class CtiLMDynamicGroupMsg implements com.roguewave.vsj.DefineCollectable
     }
     
     public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-    	return new GroupChanged();
+    	return new LMGroupChanged();
     }
     
     public com.roguewave.tools.v2_0.Comparator getComparator() {
     	return new Comparator() {
     		public int compare(Object x, Object y) {
-    			return (((GroupChanged)x).getPaoId() - ((GroupChanged)y).getPaoId());
+    			return (((LMGroupChanged)x).getPaoID().intValue() - ((LMGroupChanged)y).getPaoID().intValue() );
     		}
     	};
     }
@@ -43,13 +42,13 @@ public class CtiLMDynamicGroupMsg implements com.roguewave.vsj.DefineCollectable
     }
     
     public Class getJavaClass() {
-    	return GroupChanged.class;
+    	return LMGroupChanged.class;
     }
     
     public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {
-    	GroupChanged lmGroupChanged = (GroupChanged) obj;
+    	LMGroupChanged lmGroupChanged = (LMGroupChanged) obj;
     	
-    	lmGroupChanged.setPaoId((int)vstr.extractUnsignedInt());
+    	lmGroupChanged.setPaoID((int)vstr.extractUnsignedInt());
     	lmGroupChanged.setDisableFlag(vstr.extractUnsignedInt() > 0);
         lmGroupChanged.setGroupControlState((int)vstr.extractUnsignedInt());
         lmGroupChanged.setCurrentHoursDaily((int)vstr.extractUnsignedInt());

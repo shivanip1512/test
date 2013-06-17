@@ -22,10 +22,10 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.dispatch.DbChangeType;
 import com.cannontech.esub.PointAttributes;
 import com.cannontech.esub.util.Util;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.operator.EsubDrawingsRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
@@ -125,7 +125,7 @@ public class UpdateAttribute extends HttpServlet {
 		
 		// update the cache and send out a db change	
 		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		DBChangeMessage[] msg = cache.createDBChangeMessages((CTIDbChange) dbObj, DbChangeType.UPDATE);
+		DBChangeMsg[] msg = cache.createDBChangeMessages((CTIDbChange) dbObj, DbChangeType.UPDATE);
 		for(int i = 0; i < msg.length; i++ ) {
 			cache.handleDBChangeMessage(msg[i]);			
 		

@@ -24,7 +24,7 @@ import com.cannontech.logger.config.LoggerMainFrame;
 import com.cannontech.logger.scm.SCMEvent;
 import com.cannontech.logger.scm.SCMEventListener;
 import com.cannontech.logger.scm.SCMEventManager;
-import com.cannontech.messaging.message.dispatch.PointRegistrationMessage;
+import com.cannontech.message.dispatch.message.PointRegistration;
 import com.klg.jclass.page.JCDocument;
 import com.klg.jclass.page.JCFlow;
 import com.klg.jclass.page.JCPrinter;
@@ -40,10 +40,10 @@ public class Logger implements java.awt.event.ActionListener, SCMEventListener
     private String printMode = MODE_PRINTER;//MODE_SCREEN;
     
     // register for everything by default
-    private int pointRegistration = PointRegistrationMessage.REG_ALL_PTS_MASK | 
-                                    PointRegistrationMessage.REG_EVENTS | 
-					  				PointRegistrationMessage.REG_ALARMS|
-                                    PointRegistrationMessage.REG_NO_UPLOAD;
+    private int pointRegistration = PointRegistration.REG_ALL_PTS_MASK | 
+                                    PointRegistration.REG_EVENTS | 
+					  				PointRegistration.REG_ALARMS|
+                                    PointRegistration.REG_NO_UPLOAD;
 
     public final String VERSION = 
             com.cannontech.common.version.VersionTools.getYUKON_VERSION() + "2.0";
@@ -560,57 +560,57 @@ private void setPointReg(String regMsg, boolean upload)
     // default of pointRegistration is ALL
     if( regMsg.equalsIgnoreCase("ALL")){
         if(upload){
-            pointRegistration = PointRegistrationMessage.REG_ALL_PTS_MASK | 
-            PointRegistrationMessage.REG_EVENTS | 
-                PointRegistrationMessage.REG_ALARMS;
+            pointRegistration = PointRegistration.REG_ALL_PTS_MASK | 
+            PointRegistration.REG_EVENTS | 
+                PointRegistration.REG_ALARMS;
         }else{
-            pointRegistration = PointRegistrationMessage.REG_ALL_PTS_MASK | 
-            PointRegistrationMessage.REG_EVENTS | 
-            PointRegistrationMessage.REG_ALARMS|
-            PointRegistrationMessage.REG_NO_UPLOAD; 
+            pointRegistration = PointRegistration.REG_ALL_PTS_MASK | 
+            PointRegistration.REG_EVENTS | 
+            PointRegistration.REG_ALARMS|
+            PointRegistration.REG_NO_UPLOAD; 
         }
     }
     else if( regMsg.equalsIgnoreCase("EVENTS") ){
         if(upload){
-            pointRegistration = PointRegistrationMessage.REG_EVENTS;
+            pointRegistration = PointRegistration.REG_EVENTS;
         }else{
-            pointRegistration = PointRegistrationMessage.REG_ALL_PTS_MASK | 
-            PointRegistrationMessage.REG_NO_UPLOAD; 
+            pointRegistration = PointRegistration.REG_ALL_PTS_MASK | 
+            PointRegistration.REG_NO_UPLOAD; 
         }
     }else if( regMsg.equalsIgnoreCase("ALARMS") ){
         if(upload){
-            pointRegistration = PointRegistrationMessage.REG_ALARMS;
+            pointRegistration = PointRegistration.REG_ALARMS;
         }else{
-            pointRegistration = PointRegistrationMessage.REG_ALL_PTS_MASK | 
-            PointRegistrationMessage.REG_NO_UPLOAD; 
+            pointRegistration = PointRegistration.REG_ALL_PTS_MASK | 
+            PointRegistration.REG_NO_UPLOAD; 
         }
     }else if( regMsg.equalsIgnoreCase("CALCULATED") ){
         if(upload){
-            pointRegistration = PointRegistrationMessage.REG_ALL__CALCULATED;
+            pointRegistration = PointRegistration.REG_ALL__CALCULATED;
         }else{
-            pointRegistration = PointRegistrationMessage.REG_ALL_PTS_MASK | 
-            PointRegistrationMessage.REG_NO_UPLOAD; 
+            pointRegistration = PointRegistration.REG_ALL_PTS_MASK | 
+            PointRegistration.REG_NO_UPLOAD; 
         }
     }else if( regMsg.equalsIgnoreCase("ACCUMULATOR") ){
         if(upload){
-            pointRegistration = PointRegistrationMessage.REG_ALL_ACCUMULATOR;
+            pointRegistration = PointRegistration.REG_ALL_ACCUMULATOR;
         }else{
-            pointRegistration = PointRegistrationMessage.REG_ALL_PTS_MASK | 
-            PointRegistrationMessage.REG_NO_UPLOAD; 
+            pointRegistration = PointRegistration.REG_ALL_PTS_MASK | 
+            PointRegistration.REG_NO_UPLOAD; 
         }
     }else if( regMsg.equalsIgnoreCase("ANALOG") ){
         if(upload){
-            pointRegistration = PointRegistrationMessage.REG_ALL_ANALOG;
+            pointRegistration = PointRegistration.REG_ALL_ANALOG;
         }else{
-            pointRegistration = PointRegistrationMessage.REG_ALL_PTS_MASK | 
-            PointRegistrationMessage.REG_NO_UPLOAD; 
+            pointRegistration = PointRegistration.REG_ALL_PTS_MASK | 
+            PointRegistration.REG_NO_UPLOAD; 
         }
     }else if( regMsg.equalsIgnoreCase("STATUS") ){
         if(upload){
-            pointRegistration = PointRegistrationMessage.REG_ALL_STATUS;
+            pointRegistration = PointRegistration.REG_ALL_STATUS;
         }else{
-            pointRegistration = PointRegistrationMessage.REG_ALL_PTS_MASK | 
-            PointRegistrationMessage.REG_NO_UPLOAD; 
+            pointRegistration = PointRegistration.REG_ALL_PTS_MASK | 
+            PointRegistration.REG_NO_UPLOAD; 
         }
     }
 

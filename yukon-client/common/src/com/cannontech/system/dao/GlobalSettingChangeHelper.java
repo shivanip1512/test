@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
-import com.cannontech.dispatch.DatabaseChangeEvent;
-import com.cannontech.dispatch.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 
 public class GlobalSettingChangeHelper {
     

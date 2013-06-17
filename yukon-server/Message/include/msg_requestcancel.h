@@ -14,9 +14,6 @@
 
 class IM_EX_MSG CtiRequestCancelMsg : public CtiMessage
 {
-public:
-    DECLARE_COLLECTABLE( CtiRequestCancelMsg )
-
 protected:
 
    long           _requestId;         // RequestID, if any.
@@ -27,7 +24,9 @@ protected:
 
 public:
 
-   typedef  CtiMessage  Inherited;
+   RWDECLARE_COLLECTABLE( CtiRequestCancelMsg );
+
+   typedef CtiMessage Inherited;
 
    CtiRequestCancelMsg(long   _requestId        = 0,
                    unsigned   _requestIDCount   = 0,
@@ -39,6 +38,8 @@ public:
 
    CtiRequestCancelMsg& operator=(const CtiRequestCancelMsg& aRef);
 
+   virtual void saveGuts(RWvostream &aStream) const;
+   virtual void restoreGuts(RWvistream& aStream);
    virtual CtiMessage* replicateMessage() const;
 
    long  getRequestId() const;

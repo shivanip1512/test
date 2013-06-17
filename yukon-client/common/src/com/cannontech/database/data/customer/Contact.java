@@ -8,8 +8,8 @@ import com.cannontech.database.db.NestedDBPersistentComparators;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.customer.Address;
 import com.cannontech.database.db.customer.Customer;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * This type was created in VisualAge.
@@ -130,14 +130,14 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	 * Creation date: (12/19/2001 1:45:25 PM)
 	 * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
 	 */
-	public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType) {
+	public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
 	    
-		DBChangeMessage[] msgs = {
-		        new DBChangeMessage(
+		DBChangeMsg[] msgs = {
+		        new DBChangeMsg(
 		                        getContact().getContactID().intValue(),
-		                        DBChangeMessage.CHANGE_CONTACT_DB,
-		                        DBChangeMessage.CAT_CUSTOMERCONTACT,
-		                        DBChangeMessage.CAT_CUSTOMERCONTACT,
+		                        DBChangeMsg.CHANGE_CONTACT_DB,
+		                        DBChangeMsg.CAT_CUSTOMERCONTACT,
+		                        DBChangeMsg.CAT_CUSTOMERCONTACT,
 		                        dbChangeType)
 		};	
 	

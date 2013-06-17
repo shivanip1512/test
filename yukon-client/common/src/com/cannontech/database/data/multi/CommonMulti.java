@@ -2,8 +2,8 @@ package com.cannontech.database.data.multi;
 
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 public abstract class CommonMulti extends com.cannontech.database.db.DBPersistent 
 {
@@ -39,16 +39,16 @@ public void delete() throws java.sql.SQLException
 
 }
 
-public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType)
+public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
 {
-	java.util.ArrayList<DBChangeMessage> list = new java.util.ArrayList<DBChangeMessage>(10);
+	java.util.ArrayList<DBChangeMsg> list = new java.util.ArrayList<DBChangeMsg>(10);
 
 	for( int i = 0; i < getDBPersistentVector().size(); i++ )
 	{
 		if( getDBPersistentVector().get(i) instanceof CTIDbChange )
 		{
 			//add the basic change method
-			DBChangeMessage[] msgs = 
+			DBChangeMsg[] msgs = 
 				((CTIDbChange)getDBPersistentVector().get(i)).getDBChangeMsgs(dbChangeType);
 
 			for( int j = 0; j < msgs.length; j++ )
@@ -59,10 +59,10 @@ public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType)
 	
 
 	if( list.size() == 0 )
-		return new DBChangeMessage[0];
+		return new DBChangeMsg[0];
 	else
 	{ 
-		DBChangeMessage[] dbChange = new DBChangeMessage[list.size()];
+		DBChangeMsg[] dbChange = new DBChangeMsg[list.size()];
 		return list.toArray( dbChange );
 	}
 

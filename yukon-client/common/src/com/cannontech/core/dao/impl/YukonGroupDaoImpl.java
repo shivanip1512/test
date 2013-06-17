@@ -25,9 +25,9 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
-import com.cannontech.messaging.util.DbChangeManager;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.collect.Maps;
@@ -199,9 +199,9 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
         DbChangeType changeType = update ? DbChangeType.UPDATE : DbChangeType.ADD;
         
         dbChangeManager.processDbChange(group.getGroupID(),
-                                        DBChangeMessage.CHANGE_YUKON_USER_DB,
-                                        DBChangeMessage.CAT_YUKON_USER_GROUP,
-                                        DBChangeMessage.CAT_YUKON_USER,
+                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                        DBChangeMsg.CAT_YUKON_USER_GROUP,
+                                        DBChangeMsg.CAT_YUKON_USER,
                                         changeType);
     }
     
@@ -221,9 +221,9 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
         yukonJdbcTemplate.update(sql);
         
         dbChangeManager.processDbChange(groupId,
-                                        DBChangeMessage.CHANGE_YUKON_USER_DB,
-                                        DBChangeMessage.CAT_YUKON_USER_GROUP,
-                                        DBChangeMessage.CAT_YUKON_USER,
+                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                        DBChangeMsg.CAT_YUKON_USER_GROUP,
+                                        DBChangeMsg.CAT_YUKON_USER,
                                         DbChangeType.DELETE);
     }
     

@@ -2,7 +2,7 @@ package com.cannontech.web.capcontrol.models;
 
 import java.util.List;
 
-import com.cannontech.messaging.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 
 public class ViewableArea {
 

@@ -145,6 +145,12 @@ static void HandleReturnMessage(CtiReturnMsg* msg,
                 std::vector<std::string>& bad_names,
                 std::deque<CtiTableMeterReadLog>& queueStatus);
 
+static void HandleMessage(RWCollectable* msg,
+              PILReturnMap& good_map,
+              PILReturnMap& bad_map,
+              PILReturnMap& device_map,
+              std::vector<std::string>& bad_names);
+
 static int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue, UINT requestLogId);
 
 /* Retrieves the id of a notification group given its name */
@@ -153,6 +159,12 @@ static long GetNotificationGroupID( const std::string& name );
 /* Retrive the name/id of a device */
 static void GetDeviceName(long deviceID, std::string& name);
 static long GetDeviceID(const std::string& name);
+
+/* Strips out the select list part of the command and builds up
+   a set of n select name commands from it, which are returned
+   in sel_set as RWCollectableStrings. The original cmd is modified
+   to remove the original select statement */
+static void StripSelectListCmd(std::string& cmd, RWSet& sel_set);
 
 static std::vector<CtiRequestMsg *> BuildRequestSet(Tcl_Interp* interp, CtiString cmd);
 /* Nothing below here should be called from within this dll unless you have a good
@@ -173,6 +185,14 @@ struct thr_hash
         return thrId.hash();
     }
 };
+
+static RWRecursiveLock<RWMutexLock> _queue_mux;
+static RWTValHashDictionary<RWThreadId, boost::shared_ptr< CtiCountedPCPtrQueue<RWCollectable> >, thr_hash, std::equal_to<RWThreadId>  > InQueueStore;
+static RWTValHashDictionary<RWThreadId, boost::shared_ptr< CtiCountedPCPtrQueue<RWCollectable> >, thr_hash, std::equal_to<RWThreadId>  > OutQueueStore;
+
+/* This function runs in it's own thread and simple watches the connection to the
+   PIL for incoming messages and places them in the appropriate queue */
+static void _MessageThrFunc();
 
 std::string BuildCommandString(const int argc, const char * const argv[]);
 void DumpReturnMessage(CtiReturnMsg& msg);

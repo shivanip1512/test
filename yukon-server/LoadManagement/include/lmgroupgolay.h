@@ -9,7 +9,7 @@ class CtiLMGroupGolay : public CtiLMGroupBase
 {
 public:
 
-DECLARE_COLLECTABLE( CtiLMGroupGolay );
+RWDECLARE_COLLECTABLE( CtiLMGroupGolay )
 
     CtiLMGroupGolay();
     CtiLMGroupGolay(Cti::RowReader &rdr);
@@ -27,6 +27,10 @@ DECLARE_COLLECTABLE( CtiLMGroupGolay );
     int getNominalTimeout() const;
     CtiLMGroupGolay& setNominalTimeout(int nominal_timeout);
       
+    //Members inherited from RWCollectable
+    void restoreGuts(RWvistream& );
+    void saveGuts(RWvostream& ) const;
+
     CtiLMGroupGolay& operator=(const CtiLMGroupGolay& right);
 
     int operator==(const CtiLMGroupGolay& right) const;

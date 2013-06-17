@@ -1,7 +1,7 @@
 package com.cannontech.cbc.oneline.elements;
 
 import com.cannontech.cbc.oneline.states.OnelineState;
-import com.cannontech.messaging.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 
 public interface OnelineLxElement {
 

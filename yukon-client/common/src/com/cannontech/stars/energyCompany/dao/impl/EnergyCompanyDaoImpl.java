@@ -25,9 +25,9 @@ import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
-import com.cannontech.messaging.util.DbChangeManager;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.yukon.IDatabaseCache;
@@ -225,9 +225,9 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         yukonJdbcTemplate.update(sql);
         
         dbChangeManager.processDbChange(energyCompanyId,
-                                        DBChangeMessage.CHANGE_ENERGY_COMPANY_DB,
-                                        DBChangeMessage.CAT_ENERGY_COMPANY,
-                                        DBChangeMessage.CAT_ENERGY_COMPANY,
+                                        DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
+                                        DBChangeMsg.CAT_ENERGY_COMPANY,
+                                        DBChangeMsg.CAT_ENERGY_COMPANY,
                                         DbChangeType.UPDATE);
     }
     

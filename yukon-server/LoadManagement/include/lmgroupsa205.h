@@ -9,7 +9,7 @@ class CtiLMGroupSA205 : public CtiLMGroupBase
 {
 public:
 
-DECLARE_COLLECTABLE( CtiLMGroupSA205 );
+RWDECLARE_COLLECTABLE( CtiLMGroupSA205 )
 
     CtiLMGroupSA205();
     CtiLMGroupSA205(Cti::RowReader &rdr);
@@ -23,6 +23,10 @@ DECLARE_COLLECTABLE( CtiLMGroupSA205 );
     virtual CtiRequestMsg* createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const;
     virtual CtiRequestMsg* createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const;
     virtual CtiRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const;
+
+    //Members inherited from RWCollectable
+    void restoreGuts(RWvistream& );
+    void saveGuts(RWvostream& ) const;
 
     CtiLMGroupSA205& operator=(const CtiLMGroupSA205& right);
 

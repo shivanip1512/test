@@ -8,9 +8,9 @@ import java.awt.Color;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.loadcontrol.LCUtils;
+import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.events.LCGenericTableModelEvent;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.user.SystemUserContext;
 
@@ -22,7 +22,7 @@ public class ProgramTableModel extends javax.swing.table.AbstractTableModel impl
 	private java.util.Vector rows = null;
 
   	// the holder for the current LMControlArea
-	private ControlAreaItem currentControlArea = null;
+	private LMControlArea currentControlArea = null;
 	
 	//The columns and their column index	
 	public static final int PROGRAM_NAME			= 0;
@@ -100,8 +100,8 @@ public class ProgramTableModel extends javax.swing.table.AbstractTableModel impl
 		{
 			try
 			{
-				String thisVal = ((Program)o1).getYukonName();
-				String anotherVal = ((Program)o2).getYukonName();
+				String thisVal = ((LMProgramBase)o1).getYukonName();
+				String anotherVal = ((LMProgramBase)o2).getYukonName();
 				return( thisVal.compareToIgnoreCase(anotherVal) );
 			}
 			catch( Exception e )
@@ -139,9 +139,9 @@ public class ProgramTableModel extends javax.swing.table.AbstractTableModel impl
 	 * Insert the method's description here.
 	 * Creation date: (8/23/00 10:01:03 AM)
 	 */
-	public Program[] getAllRows()
+	public LMProgramBase[] getAllRows()
 	{
-		Program[] temp = new Program[getRowCount()];
+		LMProgramBase[] temp = new LMProgramBase[getRowCount()];
 		
 		getRows().toArray(temp);
 		return temp;
@@ -166,34 +166,34 @@ public class ProgramTableModel extends javax.swing.table.AbstractTableModel impl
 	{
 		if( row >= 0 && row < getRowCount() && col <= getColumnCount() )
 		{
-			Program prg = (Program)getRowAt(row);
+			LMProgramBase prg = (LMProgramBase)getRowAt(row);
 	
 			if( prg.getDisableFlag().booleanValue() )
 			{
 				return cellColors[5];
 			}
-			else if( prg.getProgramStatus().intValue() == Program.STATUS_INACTIVE
-						|| prg.getProgramStatus().intValue() == Program.STATUS_NON_CNTRL )
+			else if( prg.getProgramStatus().intValue() == LMProgramBase.STATUS_INACTIVE
+						|| prg.getProgramStatus().intValue() == LMProgramBase.STATUS_NON_CNTRL )
 			{
 				return cellColors[0];
 			}
-			else if( prg.getProgramStatus().intValue() == Program.STATUS_ACTIVE
-						|| prg.getProgramStatus().intValue() == Program.STATUS_FULL_ACTIVE
-						|| prg.getProgramStatus().intValue() == Program.STATUS_MANUAL_ACTIVE
-						|| prg.getProgramStatus().intValue() == Program.STATUS_TIMED_ACTIVE )
+			else if( prg.getProgramStatus().intValue() == LMProgramBase.STATUS_ACTIVE
+						|| prg.getProgramStatus().intValue() == LMProgramBase.STATUS_FULL_ACTIVE
+						|| prg.getProgramStatus().intValue() == LMProgramBase.STATUS_MANUAL_ACTIVE
+						|| prg.getProgramStatus().intValue() == LMProgramBase.STATUS_TIMED_ACTIVE )
 			{
 				return cellColors[1];
 			}
-			else if( prg.getProgramStatus().intValue() == Program.STATUS_NOTIFIED)
+			else if( prg.getProgramStatus().intValue() == LMProgramBase.STATUS_NOTIFIED)
 			{
 				return cellColors[2];
 			}
-			else if( prg.getProgramStatus().intValue() == Program.STATUS_SCHEDULED
-						 || prg.getProgramStatus().intValue() == Program.STATUS_CNTRL_ATTEMPT )
+			else if( prg.getProgramStatus().intValue() == LMProgramBase.STATUS_SCHEDULED
+						 || prg.getProgramStatus().intValue() == LMProgramBase.STATUS_CNTRL_ATTEMPT )
 			{
 				return cellColors[3];
 			}
-			else if( prg.getProgramStatus().intValue() == Program.STATUS_STOPPING )
+			else if( prg.getProgramStatus().intValue() == LMProgramBase.STATUS_STOPPING )
 			{
 				return cellColors[4];
 			}
@@ -221,7 +221,7 @@ public class ProgramTableModel extends javax.swing.table.AbstractTableModel impl
 	 * Creation date: (4/6/2001 10:08:28 AM)
 	 * @return com.cannontech.loadcontrol.data.LMControlArea
 	 */
-	private com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem getCurrentControlArea() {
+	private com.cannontech.loadcontrol.data.LMControlArea getCurrentControlArea() {
 		return currentControlArea;
 	}
 	/**
@@ -244,16 +244,16 @@ public class ProgramTableModel extends javax.swing.table.AbstractTableModel impl
 			return null;
 			
 		//return (LMProgramBase)getRows().get(rowIndex);
-		return (Program)getRows().get(rowIndex);
+		return (LMProgramBase)getRows().get(rowIndex);
 	}
 	
 	/**
 	 * This method returns the value of a row in the form of 
 	 * a LMProgramBase object.
 	 */
-	public synchronized Program getProgramAt(int rowIndex) 
+	public synchronized LMProgramBase getProgramAt(int rowIndex) 
 	{
-		return (Program)getRowAt(rowIndex);
+		return (LMProgramBase)getRowAt(rowIndex);
 	}
 	
 	
@@ -292,9 +292,9 @@ public class ProgramTableModel extends javax.swing.table.AbstractTableModel impl
 	public Object getValueAt(int row, int col) 
 	{
 	
-		if( row <= getRowCount() && isProgramValid((Program)getRowAt(row)) )
+		if( row <= getRowCount() && isProgramValid((LMProgramBase)getRowAt(row)) )
 		{
-			Program prg = (Program)getRowAt(row);
+			LMProgramBase prg = (LMProgramBase)getRowAt(row);
 			// the following line could be changed to be more careful about the formatting
 			return LCUtils.getProgramValueAt( prg, col, new SystemUserContext() );
 		}
@@ -316,11 +316,11 @@ public class ProgramTableModel extends javax.swing.table.AbstractTableModel impl
 	 * @return boolean
 	 * @param prg com.cannontech.loadcontrol.data.LMProgramBase
 	 */
-	private boolean isProgramValid(Program prg) 
+	private boolean isProgramValid(LMProgramBase prg) 
 	{
-		if( prg instanceof com.cannontech.messaging.message.loadcontrol.data.ProgramDirect 
-			 || prg instanceof com.cannontech.messaging.message.loadcontrol.data.ProgramCurtailment
-			 || prg instanceof com.cannontech.messaging.message.loadcontrol.data.ProgramEnergyExchange )
+		if( prg instanceof com.cannontech.loadcontrol.data.LMProgramDirect 
+			 || prg instanceof com.cannontech.loadcontrol.data.LMProgramCurtailment
+			 || prg instanceof com.cannontech.loadcontrol.data.LMProgramEnergyExchange )
 		{
 			return true;
 		}
@@ -335,19 +335,19 @@ public class ProgramTableModel extends javax.swing.table.AbstractTableModel impl
 	 * Creation date: (4/6/2001 10:08:28 AM)
 	 * @param newCurrentControlArea com.cannontech.loadcontrol.data.LMControlArea
 	 */
-	public synchronized void setCurrentControlArea(com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem newCurrentControlArea) 
+	public synchronized void setCurrentControlArea(com.cannontech.loadcontrol.data.LMControlArea newCurrentControlArea) 
 	{
 		currentControlArea = newCurrentControlArea;
 		int oldRowCount = getRowCount();
 		
 		if( getCurrentControlArea() == null 
-			 || getCurrentControlArea().getProgramVector() == null )
+			 || getCurrentControlArea().getLmProgramVector() == null )
 		{
 			clear();
 		}
 		else
 		{		
-			rows = getCurrentControlArea().getProgramVector();
+			rows = getCurrentControlArea().getLmProgramVector();
 	
 			//always keep our list in order by the Program Name
 			// this will sort the references ONLY
@@ -387,7 +387,7 @@ public class ProgramTableModel extends javax.swing.table.AbstractTableModel impl
 	 * Tells us if we should show a waiting GUI or not while updating
 	 * @return boolean
 	 */
-	public boolean showWaiting( ControlAreaItem newCntrlArea )
+	public boolean showWaiting( LMControlArea newCntrlArea )
 	{
 		return false;
 	}

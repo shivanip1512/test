@@ -14,9 +14,6 @@
 
 class IM_EX_MSG CtiQueueDataMsg : public CtiMessage
 {
-public:
-    DECLARE_COLLECTABLE( CtiQueueDataMsg )
-
 protected:
 
    long           _queueID;
@@ -30,8 +27,9 @@ protected:
 
 public:
 
-   typedef CtiMessage Inherited;
+   RWDECLARE_COLLECTABLE( CtiQueueDataMsg );
 
+   typedef CtiMessage Inherited;
 
    CtiQueueDataMsg(long       _queueID          = 0,
                    unsigned   _queueCount       = 0,
@@ -46,7 +44,10 @@ public:
 
    CtiQueueDataMsg& operator=(const CtiQueueDataMsg& aRef);
 
+   virtual void saveGuts(RWvostream &aStream) const;
+   virtual void restoreGuts(RWvistream& aStream);
    virtual CtiMessage* replicateMessage() const;
+
 
    long  getId() const;
    CtiQueueDataMsg& setId( const long a_id );

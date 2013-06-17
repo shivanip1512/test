@@ -2,7 +2,6 @@ package com.cannontech.message.notif;
 import java.io.IOException;
 
 import com.cannontech.message.util.DefineCollectableMessage;
-import com.cannontech.messaging.message.notif.EconomicEventDeleteMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
@@ -14,7 +13,7 @@ public class DefColl_EconomicEventDeleteMsg extends DefineCollectableMessage {
     public static final int MSG_ID = 713;
 
     public Object create(VirtualInputStream vstr) throws IOException {
-        return new EconomicEventDeleteMessage();
+        return new EconomicEventDeleteMsg();
     }
 
     public Comparator getComparator() {
@@ -38,27 +37,27 @@ public class DefColl_EconomicEventDeleteMsg extends DefineCollectableMessage {
     }
 
     public Class getJavaClass() {
-        return EconomicEventDeleteMessage.class;
+        return EconomicEventDeleteMsg.class;
     }
 
     public void restoreGuts(Object obj, VirtualInputStream vstr,
             CollectableStreamer polystr) throws IOException {
         super.restoreGuts(obj, vstr, polystr);
-        EconomicEventDeleteMessage msg = (EconomicEventDeleteMessage) obj;
+        EconomicEventDeleteMsg msg = (EconomicEventDeleteMsg) obj;
 
-        msg.setEconomicEventId (vstr.extractInt());
-        msg.setDeleteStart (vstr.extractInt() == 1);
-        msg.setDeleteStop (vstr.extractInt() == 1);
+        msg.economicEventId = vstr.extractInt();
+        msg.deleteStart = vstr.extractInt() == 1;
+        msg.deleteStop = vstr.extractInt() == 1;
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr,
             CollectableStreamer polystr) throws IOException {
         super.saveGuts(obj, vstr, polystr);
-        EconomicEventDeleteMessage msg = (EconomicEventDeleteMessage) obj;
+        EconomicEventDeleteMsg msg = (EconomicEventDeleteMsg) obj;
 
-        vstr.insertInt(msg.getEconomicEventId());
-        vstr.insertInt(msg.isDeleteStart() ? 1 : 0);
-        vstr.insertInt(msg.isDeleteStop() ? 1 : 0);
+        vstr.insertInt(msg.economicEventId);
+        vstr.insertInt(msg.deleteStart ? 1 : 0);
+        vstr.insertInt(msg.deleteStop ? 1 : 0);
     }
 
 }

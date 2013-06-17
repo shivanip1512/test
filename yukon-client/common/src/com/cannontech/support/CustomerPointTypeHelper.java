@@ -136,7 +136,7 @@ public class CustomerPointTypeHelper {
         if (!found) {
             pointId = YukonSpringHook.getBean(PointDao.class).getNextPointId();
             PointBase point = PointFactory.createAnalogPoint(pointName, 
-                                                             customerDevice.getYukonId(), 
+                                                             customerDevice.getYukonID(), 
                                                              pointId, 
                                                              0, 
                                                              UnitOfMeasure.UNDEF.getId(),

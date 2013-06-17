@@ -2,7 +2,7 @@ package com.cannontech.tdc.roweditor;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 
@@ -243,7 +243,7 @@ public class StatusManualEntryPanel extends ManualEntryJPanel implements RowEdit
     public void JButtonSendAction_actionPerformed(java.util.EventObject newEvent) {
         try {
             // Create new point Here
-            PointDataMessage pt = new PointDataMessage();
+            PointData pt = new PointData();
             pt.setId(getEditorData().getPointID());
             pt.setTags(getEditorData().getTags());
             pt.setTimeStamp(new java.util.Date());

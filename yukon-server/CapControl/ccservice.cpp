@@ -222,7 +222,8 @@ void CtiCCService::Run()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Starting client listener thread..." << endl;
     }
-    CtiCCClientListener::getInstance().start();
+    CtiCCClientListener* clientListener = CtiCCClientListener::getInstance();
+    clientListener->start();
 
     /*{
         CtiLockGuard<CtiLogger> logger_guard(dout);

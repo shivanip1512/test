@@ -26,7 +26,43 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include "dllbase.h"
 
-DEFINE_COLLECTABLE( CtiPointRegistrationMsg, MSG_POINTREGISTRATION );
+RWDEFINE_COLLECTABLE( CtiPointRegistrationMsg, MSG_POINTREGISTRATION );
+
+void
+CtiPointRegistrationMsg::restoreGuts(RWvistream& aStream)
+{
+   int         ptcnt;
+   unsigned    utemp;
+   double      dtemp;
+   LONG        itemp;
+
+   CtiMessage::restoreGuts( aStream );
+
+   aStream >> RegFlags;
+   aStream >> ptcnt;
+
+   for(int i = 0; i < ptcnt; i++)
+   {
+      aStream >> itemp;
+
+      PointList.push_back(itemp);
+   }
+}
+
+void
+CtiPointRegistrationMsg::saveGuts(RWvostream &aStream) const
+{
+   CtiMessage::saveGuts( aStream );
+
+   aStream << RegFlags;
+   aStream << PointList.size();              // How many are on their way....
+
+   std::vector<LONG>::const_iterator itr = PointList.begin();
+   for( ; itr != PointList.end(); itr++)
+   {
+      aStream << *itr;
+   }
+}
 
 // Return a new'ed copy of this message!
 CtiMessage* CtiPointRegistrationMsg::replicateMessage() const
@@ -110,22 +146,5 @@ void CtiPointRegistrationMsg::insert(const LONG& a)
    PointList.push_back(a);
 }
 
-int CtiPointRegistrationMsg::getFlags() const
-{
-    return RegFlags;
-}
+int CtiPointRegistrationMsg::getFlags() const { return RegFlags; }
 
-void CtiPointRegistrationMsg::setFlags(int flags)
-{
-    RegFlags = flags;
-}
-
-const std::vector<LONG>& CtiPointRegistrationMsg::getPointList() const
-{
-    return PointList;
-}
-
-void CtiPointRegistrationMsg::setPointList( const std::vector<LONG>& points )
-{
-    PointList.assign( points.begin(), points.end() );
-}

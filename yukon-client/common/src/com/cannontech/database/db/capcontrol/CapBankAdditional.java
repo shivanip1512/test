@@ -6,8 +6,8 @@ import java.util.Date;
 
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 @SuppressWarnings("serial")
 public class CapBankAdditional extends DBPersistent implements CTIDbChange{
@@ -310,13 +310,13 @@ public class CapBankAdditional extends DBPersistent implements CTIDbChange{
         this.reqPend = reqPend;
     }
 
-    public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType) {
-        DBChangeMessage[] dbChange = new DBChangeMessage[1];
+    public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+        DBChangeMsg[] dbChange = new DBChangeMsg[1];
 
-        dbChange[0] = new DBChangeMessage(
+        dbChange[0] = new DBChangeMsg(
                         getDeviceID().intValue(),
-                        DBChangeMessage.CHANGE_CBC_ADDINFO_DB,
-                        DBChangeMessage.CAT_CBC_ADDINFO,
+                        DBChangeMsg.CHANGE_CBC_ADDINFO_DB,
+                        DBChangeMsg.CAT_CBC_ADDINFO,
                         dbChangeType);
 
         return dbChange;

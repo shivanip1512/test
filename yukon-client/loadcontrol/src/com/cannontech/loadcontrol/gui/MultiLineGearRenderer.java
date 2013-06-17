@@ -177,13 +177,13 @@ public java.awt.Component getTableCellRendererComponent(final javax.swing.JTable
 	}
 
 	
-	if( value instanceof com.cannontech.messaging.message.loadcontrol.data.ProgramDirect )
+	if( value instanceof com.cannontech.loadcontrol.data.LMProgramDirect )
 	{
-		processDirectProgram( (com.cannontech.messaging.message.loadcontrol.data.ProgramDirect)value, table );
+		processDirectProgram( (com.cannontech.loadcontrol.data.LMProgramDirect)value, table );
 	}
-	else if( value instanceof com.cannontech.messaging.message.loadcontrol.data.ProgramCurtailment )
+	else if( value instanceof com.cannontech.loadcontrol.data.LMProgramCurtailment )
 	{
-		processCurtailmentProgram( (com.cannontech.messaging.message.loadcontrol.data.ProgramCurtailment)value, table );
+		processCurtailmentProgram( (com.cannontech.loadcontrol.data.LMProgramCurtailment)value, table );
 	}
 	else
 	{  //must be some other LMProgram not handled yet, just add it like its a string
@@ -297,17 +297,17 @@ public static void main(java.lang.String[] args) {
  * Insert the method's description here.
  * Creation date: (7/18/2001 5:03:03 PM)
  */
-private void processCurtailmentProgram( com.cannontech.messaging.message.loadcontrol.data.ProgramCurtailment value, javax.swing.JTable table )
+private void processCurtailmentProgram( com.cannontech.loadcontrol.data.LMProgramCurtailment value, javax.swing.JTable table )
 {
 	add(getJLabelText());
 		
-	com.cannontech.messaging.message.loadcontrol.data.ProgramCurtailment dPrg = value;
+	com.cannontech.loadcontrol.data.LMProgramCurtailment dPrg = value;
 	
 	if( table.getRowHeight() != rowHeight )
 		table.setRowHeight( rowHeight );
 
 	getJLabelGearName().setText(
-			STRING_ARROW + "Notify Time: " + (int)(value.getMinNotifyTime() / 60) + "(minutes)");
+			STRING_ARROW + "Notify Time: " + (int)(value.getMinNotifyTime().intValue() / 60) + "(minutes)");
 	
 	add(getJLabelGearName());	
 }
@@ -315,27 +315,27 @@ private void processCurtailmentProgram( com.cannontech.messaging.message.loadcon
  * Insert the method's description here.
  * Creation date: (7/18/2001 5:03:03 PM)
  */
-private void processDirectProgram( com.cannontech.messaging.message.loadcontrol.data.ProgramDirect value, javax.swing.JTable table ) 
+private void processDirectProgram( com.cannontech.loadcontrol.data.LMProgramDirect value, javax.swing.JTable table ) 
 {
 	add(getJLabelText());
 		
 	if( value.getDirectGearVector().size() > 0 )
 	{
-		com.cannontech.messaging.message.loadcontrol.data.ProgramDirect dPrg = value;
+		com.cannontech.loadcontrol.data.LMProgramDirect dPrg = value;
 		
 		if( table.getRowHeight() != rowHeight )
 			table.setRowHeight( rowHeight );
 
 		
 		boolean found = false;
-		com.cannontech.messaging.message.loadcontrol.data.ProgramDirectGear gear = null;
+		com.cannontech.loadcontrol.data.LMProgramDirectGear gear = null;
 		
 		//get the current gear we are in
 		for( int i = 0; i < dPrg.getDirectGearVector().size(); i++ )
 		{			
-			gear = (com.cannontech.messaging.message.loadcontrol.data.ProgramDirectGear)dPrg.getDirectGearVector().get(i);
+			gear = (com.cannontech.loadcontrol.data.LMProgramDirectGear)dPrg.getDirectGearVector().get(i);
 
-			if( dPrg.getCurrentGearNumber().intValue() == gear.getGearNumber())
+			if( dPrg.getCurrentGearNumber().intValue() == gear.getGearNumber().intValue() )
 			{
 				getJLabelGearName().setText(
 						STRING_ARROW + gear.getGearName() );

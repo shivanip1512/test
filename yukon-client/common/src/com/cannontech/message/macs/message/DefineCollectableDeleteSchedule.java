@@ -6,7 +6,6 @@ package com.cannontech.message.macs.message;
  * @author: 
  */
 
-import com.cannontech.messaging.message.macs.DeleteScheduleMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 
@@ -24,7 +23,7 @@ public DefineCollectableDeleteSchedule() {
  * create method comment.
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new DeleteScheduleMessage();
+	return new DeleteSchedule();
 }
 /**
  * getComparator method comment.
@@ -55,7 +54,7 @@ public String getCxxStringId() {
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return com.cannontech.messaging.message.macs.DeleteScheduleMessage.class;
+	return com.cannontech.message.macs.message.DeleteSchedule.class;
 }
 /**
  * restoreGuts method comment.
@@ -63,7 +62,7 @@ public Class getJavaClass() {
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 {
 	super.restoreGuts( obj, vstr, polystr );
-	DeleteScheduleMessage schedule = (DeleteScheduleMessage) obj;
+	DeleteSchedule schedule = (DeleteSchedule) obj;
 
 	int scheduleId = (int) vstr.extractLong(); // watch cast!
 
@@ -76,7 +75,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 {
 	super.saveGuts(obj, vstr, polystr);
 
-	DeleteScheduleMessage msg = (DeleteScheduleMessage) obj;
+	DeleteSchedule msg = (DeleteSchedule) obj;
 	vstr.insertLong( msg.getScheduleId() );
 }
 }

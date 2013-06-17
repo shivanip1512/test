@@ -4,7 +4,7 @@
 #include "utility.h"
 #include "ccid.h"
 
-DEFINE_COLLECTABLE( CtiCCCapBankStatesMsg, CTICCCAPBANKSTATES_MSG_ID )
+RWDEFINE_COLLECTABLE( CtiCCCapBankStatesMsg, CTICCCAPBANKSTATES_MSG_ID )
 
 /*---------------------------------------------------------------------------
     Constuctors
@@ -72,3 +72,16 @@ CtiCCCapBankStatesMsg& CtiCCCapBankStatesMsg::operator=(const CtiCCCapBankStates
 
     return *this;
 }
+
+void CtiCCCapBankStatesMsg::restoreGuts(RWvistream& strm)
+{
+    Inherited::restoreGuts(strm);
+    strm >> _ccCapBankStates;
+}
+
+void CtiCCCapBankStatesMsg::saveGuts(RWvostream& strm) const
+{
+    Inherited::saveGuts(strm);
+    strm << _ccCapBankStates;
+}
+

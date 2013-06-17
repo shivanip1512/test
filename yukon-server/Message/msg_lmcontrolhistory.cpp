@@ -21,9 +21,44 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "logger.h"
 #include "msg_lmcontrolhistory.h"
 
-DEFINE_COLLECTABLE( CtiLMControlHistoryMsg, MSG_LMCONTROLHISTORY );
+RWDEFINE_COLLECTABLE( CtiLMControlHistoryMsg, MSG_LMCONTROLHISTORY );
 
 unsigned int CtiLMControlHistoryMsg::_instanceCount = 0;
+
+void CtiLMControlHistoryMsg::saveGuts(RWvostream &aStream) const
+{
+    Inherited::saveGuts(aStream);
+    aStream <<
+        getPAOId() <<
+        getPointId() <<
+        getRawState() <<
+        getStartDateTime() <<
+        getControlDuration() <<
+        getReductionRatio() <<
+        getControlType() <<
+        getActiveRestore() <<
+        getReductionValue() <<
+        getControlPriority() <<
+        getAssociationKey();
+}
+
+void CtiLMControlHistoryMsg::restoreGuts(RWvistream& aStream)
+{
+    Inherited::restoreGuts(aStream);
+
+    aStream >>
+        _paoId >>
+        _pointId >>
+        _rawState >>
+        _startDateTime >>
+        _controlDuration >>
+        _reductionRatio >>
+        _controlType >>
+        _activeRestore >>
+        _reductionValue >>
+        _controlPriority >>
+        _associationKey;
+}
 
 long CtiLMControlHistoryMsg::getPAOId() const
 {

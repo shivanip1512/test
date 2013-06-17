@@ -3,8 +3,8 @@ package com.cannontech.loadcontrol;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
-import com.cannontech.messaging.util.ServerRequest;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
+import com.cannontech.message.util.ServerRequest;
 
 public class LoadManagementProxy implements LoadManagementService {
     private LoadControlClientConnection loadControlClientConnection;
@@ -16,9 +16,9 @@ public class LoadManagementProxy implements LoadManagementService {
 
     public void startProgram(int programId, Date startTime, Date stopTime) {
         //Send the message to loadmanagement               
-        ManualControlRequestMessage msg = new ManualControlRequestMessage();
-        msg.setCommand(ManualControlRequestMessage.SCHEDULED_START);
-        msg.setYukonId(programId);
+        LMManualControlRequest msg = new LMManualControlRequest();
+        msg.setCommand(LMManualControlRequest.SCHEDULED_START);
+        msg.setYukonID(programId);
         msg.setStartGear(1);
 
         GregorianCalendar startCal = convertToCalendar(startTime);
@@ -38,9 +38,9 @@ public class LoadManagementProxy implements LoadManagementService {
     
     public void changeProgramStop(int programId, Date stopTime) {
         //Send the message to loadmanagement               
-        ManualControlRequestMessage msg = new ManualControlRequestMessage();
-        msg.setCommand(ManualControlRequestMessage.SCHEDULED_STOP);
-        msg.setYukonId(programId);
+        LMManualControlRequest msg = new LMManualControlRequest();
+        msg.setCommand(LMManualControlRequest.SCHEDULED_STOP);
+        msg.setYukonID(programId);
 
         GregorianCalendar stopCal = convertToCalendar(stopTime);
 
@@ -52,9 +52,9 @@ public class LoadManagementProxy implements LoadManagementService {
     
     public void stopProgram(int programId) {
         //Send the message to loadmanagement               
-        ManualControlRequestMessage msg = new ManualControlRequestMessage();
-        msg.setCommand(ManualControlRequestMessage.STOP_NOW);
-        msg.setYukonId(programId);
+        LMManualControlRequest msg = new LMManualControlRequest();
+        msg.setCommand(LMManualControlRequest.STOP_NOW);
+        msg.setYukonID(programId);
 
         Date now = new Date();
         GregorianCalendar stopCal = convertToCalendar(now);

@@ -32,11 +32,11 @@ import com.cannontech.dr.controlarea.model.ControlAreaTrigger;
 import com.cannontech.dr.controlarea.model.TriggerType;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
-import com.cannontech.messaging.message.BaseMessage;
-import com.cannontech.messaging.message.dispatch.MultiMessage;
-import com.cannontech.messaging.message.loadcontrol.CommandMessage;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaTriggerItem;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
+import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
+import com.cannontech.loadcontrol.messages.LMCommand;
+import com.cannontech.message.dispatch.message.Multi;
+import com.cannontech.message.util.Message;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -167,14 +167,14 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     }
 
     @Override
-    public ControlAreaItem getControlAreaForPao(YukonPao from) {
-        DatedObject<ControlAreaItem> datedControlArea =
+    public LMControlArea getControlAreaForPao(YukonPao from) {
+        DatedObject<LMControlArea> datedControlArea =
             loadControlClientConnection.getDatedControlArea(from.getPaoIdentifier().getPaoId());
         return datedControlArea == null ? null : datedControlArea.getObject();
     }
 
     @Override
-    public DatedObject<ControlAreaItem> getDatedControlArea(int controlAreaId) {
+    public DatedObject<LMControlArea> getDatedControlArea(int controlAreaId) {
         return loadControlClientConnection.getDatedControlArea(controlAreaId);
     }
 
@@ -222,11 +222,11 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         
         ControlArea controlArea = this.getControlArea(controlAreaId);
         
-        MultiMessage<CommandMessage> multi = new MultiMessage<CommandMessage>();
-        Vector<CommandMessage> commandVector = multi.getVector();
+        Multi<LMCommand> multi = new Multi<LMCommand>();
+        Vector<LMCommand> commandVector = multi.getVector();
         for(ControlAreaTrigger trigger : controlArea.getTriggers()) {
             
-            CommandMessage command = new CommandMessage(CommandMessage.RESET_PEAK_POINT_VALUE,
+            LMCommand command = new LMCommand(LMCommand.RESET_PEAK_POINT_VALUE,
                                               controlAreaId,
                                               trigger.getTriggerNumber(), 
                                               0.0);
@@ -239,9 +239,9 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     
     @Override
     public void setEnabled(int controlAreaId, boolean isEnabled) {
-        int loadControlCommand = isEnabled ? CommandMessage.ENABLE_CONTROL_AREA
-                : CommandMessage.DISABLE_CONTROL_AREA;
-        BaseMessage msg = new CommandMessage(loadControlCommand, controlAreaId, 0, 0.0);
+        int loadControlCommand = isEnabled ? LMCommand.ENABLE_CONTROL_AREA
+                : LMCommand.DISABLE_CONTROL_AREA;
+        Message msg = new LMCommand(loadControlCommand, controlAreaId, 0, 0.0);
         loadControlClientConnection.write(msg);
         
         ControlArea controlArea = this.getControlArea(controlAreaId);
@@ -256,22 +256,22 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     public void changeTriggers(int controlAreaId, Double threshold1, Double offset1, 
                                Double threshold2, Double offset2) {
 
-        DatedObject<ControlAreaItem> datedControlArea = 
+        DatedObject<LMControlArea> datedControlArea = 
             loadControlClientConnection.getDatedControlArea(controlAreaId);
         
-        ControlAreaItem controlArea = datedControlArea.getObject();
+        LMControlArea controlArea = datedControlArea.getObject();
         
-        MultiMessage<CommandMessage> multi = new MultiMessage<CommandMessage>();
-        Vector<CommandMessage> commandVector = multi.getVector();
+        Multi<LMCommand> multi = new Multi<LMCommand>();
+        Vector<LMCommand> commandVector = multi.getVector();
         
-        Vector<ControlAreaTriggerItem> triggerVector = controlArea.getTriggerVector();
+        Vector<LMControlAreaTrigger> triggerVector = controlArea.getTriggerVector();
 
         // Add trigger change commands for trigger 1 if it exists and is a
         // threshold trigger.
-        ControlAreaTriggerItem trigger1 = triggerVector.get(0);
+        LMControlAreaTrigger trigger1 = triggerVector.get(0);
         if (trigger1 != null && (trigger1.getTriggerType() == TriggerType.THRESHOLD || 
                                 trigger1.getTriggerType() == TriggerType.THRESHOLD_POINT)) {
-            List<CommandMessage> triggerCommands = 
+            List<LMCommand> triggerCommands = 
                 this.getTriggerCommands(controlAreaId, trigger1, threshold1, offset1);
             commandVector.addAll(triggerCommands);
         }
@@ -280,10 +280,10 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         // Add trigger change commands for trigger 2 if it exists and is a
         // threshold trigger.
         if (triggerVector.size() > 1) {
-            ControlAreaTriggerItem trigger2 = triggerVector.get(1);
+            LMControlAreaTrigger trigger2 = triggerVector.get(1);
             if (trigger2 != null && (trigger2.getTriggerType() == TriggerType.THRESHOLD || 
                                 trigger2.getTriggerType() == TriggerType.THRESHOLD_POINT)) {
-                List<CommandMessage> triggerCommands = 
+                List<LMCommand> triggerCommands = 
                     this.getTriggerCommands(controlAreaId, trigger2, threshold2, offset2);
                 commandVector.addAll(triggerCommands);
             }
@@ -298,12 +298,12 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     @Override
     public void changeTimeWindow(int controlAreaId, Integer startSeconds, Integer stopSeconds) {
         
-        MultiMessage<CommandMessage> multi = new MultiMessage<CommandMessage>();
+        Multi<LMCommand> multi = new Multi<LMCommand>();
         
-        Vector<CommandMessage> commandVector = multi.getVector();
+        Vector<LMCommand> commandVector = multi.getVector();
         if(startSeconds != null){
             //send a message to the server telling it to change the START time
-            CommandMessage startDateCommand = new CommandMessage(CommandMessage.CHANGE_CURRENT_START_TIME,
+            LMCommand startDateCommand = new LMCommand(LMCommand.CHANGE_CURRENT_START_TIME,
                                                        controlAreaId,
                                                        0, 
                                                        startSeconds);
@@ -312,7 +312,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         
         if(stopSeconds != null){
             //send a message to the server telling it to change the STOP time
-            CommandMessage stopDateCommand = new CommandMessage(CommandMessage.CHANGE_CURRENT_STOP_TIME,
+            LMCommand stopDateCommand = new LMCommand(LMCommand.CHANGE_CURRENT_STOP_TIME,
                                                       controlAreaId,
                                                       0,
                                                       stopSeconds);
@@ -329,7 +329,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     
     @Override
     public boolean isEnabled(int controlAreaId) {
-        ControlAreaItem controlArea = this.loadControlClientConnection.getControlArea(controlAreaId);
+        LMControlArea controlArea = this.loadControlClientConnection.getControlArea(controlAreaId);
         Boolean disableFlag = controlArea.getDisableFlag();
         return !disableFlag;
     }
@@ -347,15 +347,15 @@ public class ControlAreaServiceImpl implements ControlAreaService {
      * @param offset - New offset value
      * @return - List of trigger change commands
      */
-    private List<CommandMessage> getTriggerCommands(int controlAreaId, ControlAreaTriggerItem trigger, 
+    private List<LMCommand> getTriggerCommands(int controlAreaId, LMControlAreaTrigger trigger, 
                                                Double threshold, Double offset) {
         
-        List<CommandMessage> commandList = new ArrayList<CommandMessage>();
+        List<LMCommand> commandList = new ArrayList<LMCommand>();
         
         Integer triggerNumber = trigger.getTriggerNumber();
         if(offset != null && trigger.getMinRestoreOffset() != offset) {
             //create a new restore offset command message
-            CommandMessage offsetCommand = new CommandMessage(CommandMessage.CHANGE_RESTORE_OFFSET,
+            LMCommand offsetCommand = new LMCommand(LMCommand.CHANGE_RESTORE_OFFSET,
                                                     controlAreaId,
                                                     triggerNumber,
                                                     offset);
@@ -364,7 +364,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
 
         if(threshold != null && trigger.getThreshold() != threshold ) {
             //create a new threshold command message
-            CommandMessage thresholdCommand = new CommandMessage(CommandMessage.CHANGE_THRESHOLD,
+            LMCommand thresholdCommand = new LMCommand(LMCommand.CHANGE_THRESHOLD,
                                                         controlAreaId,
                                                         triggerNumber,
                                                         threshold);

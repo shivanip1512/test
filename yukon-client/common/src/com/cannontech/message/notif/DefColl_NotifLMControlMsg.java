@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Date;
 
 import com.cannontech.message.util.DefineCollectableMessage;
-import com.cannontech.messaging.message.notif.ControlMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
@@ -17,7 +16,7 @@ public class DefColl_NotifLMControlMsg extends DefineCollectableMessage {
     public static final int MSG_ID = 707;
 
     public Object create(VirtualInputStream vstr) throws java.io.IOException {
-        return new ControlMessage();
+        return new NotifLMControlMsg();
     }
 
     public Comparator getComparator() {
@@ -41,36 +40,36 @@ public class DefColl_NotifLMControlMsg extends DefineCollectableMessage {
     }
 
     public Class getJavaClass() {
-        return ControlMessage.class;
+        return NotifLMControlMsg.class;
     }
 
     public void restoreGuts(Object obj, VirtualInputStream vstr,
             CollectableStreamer polystr) throws IOException {
         super.restoreGuts(obj, vstr, polystr);
-        ControlMessage msg = (ControlMessage) obj;
+        NotifLMControlMsg msg = (NotifLMControlMsg) obj;
 
-        msg.setNotifGroupIds(new int[vstr.extractInt()]);
-        for(int i = 0; i < msg.getNotifGroupIds().length; i++) {
-        	msg.getNotifGroupIds()[i] = vstr.extractInt();
+        msg.notifGroupIds = new int[vstr.extractInt()];
+        for(int i = 0; i < msg.notifGroupIds.length; i++) {
+        	msg.notifGroupIds[i] = vstr.extractInt();
         }
-        msg.setNotifType(vstr.extractInt());
-        msg.setProgramId(vstr.extractInt());
-        msg.setStartTime((Date) vstr.restoreObject(SimpleMappings.Time));
-        msg.setStopTime((Date) vstr.restoreObject(SimpleMappings.Time));        
+        msg.notifType = vstr.extractInt();
+        msg.programId = vstr.extractInt();
+        msg.startTime = (Date) vstr.restoreObject(SimpleMappings.Time);
+        msg.stopTime = (Date) vstr.restoreObject(SimpleMappings.Time);        
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr,
             CollectableStreamer polystr) throws IOException {
         super.saveGuts(obj, vstr, polystr);
-        ControlMessage msg = (ControlMessage) obj;
+        NotifLMControlMsg msg = (NotifLMControlMsg) obj;
 
-        vstr.insertInt(msg.getNotifGroupIds().length);
-        for(int i = 0; i < msg.getNotifGroupIds().length; i++) {
-        	vstr.insertInt(msg.getNotifGroupIds()[i]);
+        vstr.insertInt(msg.notifGroupIds.length);
+        for(int i = 0; i < msg.notifGroupIds.length; i++) {
+        	vstr.insertInt(msg.notifGroupIds[i]);
         }
-        vstr.insertInt(msg.getNotifType());
-        vstr.insertInt(msg.getProgramId());
-        vstr.saveObject(msg.getStartTime(), SimpleMappings.Time);
-        vstr.saveObject(msg.getStopTime(), SimpleMappings.Time);
+        vstr.insertInt(msg.notifType);
+        vstr.insertInt(msg.programId);
+        vstr.saveObject(msg.startTime, SimpleMappings.Time);
+        vstr.saveObject(msg.stopTime, SimpleMappings.Time);
     }
 }

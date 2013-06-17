@@ -8,22 +8,22 @@ import com.cannontech.common.device.commands.CommandRequestRouteAndDevice;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
-import com.cannontech.messaging.message.porter.RequestMessage;
+import com.cannontech.message.porter.message.Request;
 
 public class CommandRequestRouteAndDeviceExecutorImpl extends CommandRequestExecutorBase<CommandRequestRouteAndDevice> implements CommandRequestRouteAndDeviceExecutor {
 
     private Logger log = YukonLogManager.getLogger(CommandRequestRouteAndDeviceExecutorImpl.class);
     
     @Override
-    protected void adjustRequest(RequestMessage request, CommandRequestRouteAndDevice commandRequest) {
+    protected void adjustRequest(Request request, CommandRequestRouteAndDevice commandRequest) {
 
         long requestId = RandomUtils.nextInt();
         int routeId = commandRequest.getRouteId();
         int deviceId = commandRequest.getDevice().getPaoIdentifier().getPaoId();
         
-        request.setRouteId(routeId);
-        request.setDeviceId(deviceId);
-        request.setUserMessageId(RandomUtils.nextInt());
+        request.setRouteID(routeId);
+        request.setDeviceID(deviceId);
+        request.setUserMessageID(RandomUtils.nextInt());
         
         String debugStr = "Built request: " +
         "command = " + request.getCommandString() + " " +

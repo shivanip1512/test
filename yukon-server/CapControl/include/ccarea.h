@@ -21,10 +21,11 @@
 
 class CtiCCArea : public CtiCCAreaBase
 {
-public:
-    DECLARE_COLLECTABLE( CtiCCArea )
 
 public:
+
+RWDECLARE_COLLECTABLE( CtiCCArea )
+
     CtiCCArea();
     CtiCCArea(StrategyManager * strategyManager);
     CtiCCArea(Cti::RowReader& rdr, StrategyManager * strategyManager);
@@ -47,6 +48,9 @@ public:
 
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
     void setDynamicData(Cti::RowReader& rdr);
+
+    //Members inherited from RWCollectable
+    void saveGuts(RWvostream& ) const;
 
     CtiCCArea& operator=(const CtiCCArea& right);
 

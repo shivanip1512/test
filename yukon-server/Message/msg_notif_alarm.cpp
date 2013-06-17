@@ -6,7 +6,7 @@
 
 using namespace std;
 
-DEFINE_COLLECTABLE( CtiNotifAlarmMsg, NOTIF_ALARM_MSG_ID );
+RWDEFINE_COLLECTABLE( CtiNotifAlarmMsg, NOTIF_ALARM_MSG_ID );
 
 CtiNotifAlarmMsg::CtiNotifAlarmMsg()
     : _category_id(0),
@@ -124,6 +124,36 @@ CtiNotifAlarmMsg& CtiNotifAlarmMsg:: setAbnormal(bool abnormal)
 {
     _abnormal = abnormal;
     return *this;
+}
+
+void CtiNotifAlarmMsg::saveGuts(RWvostream &aStream) const
+{
+    CtiMessage::saveGuts(aStream);
+
+    aStream
+        << _notif_group_ids
+        << _category_id
+        << _point_id
+        << _condition
+        << _value
+    << _alarm_timestamp
+        << _acknowledged
+        << _abnormal;
+}
+
+void CtiNotifAlarmMsg::restoreGuts(RWvistream& aStream)
+{
+    CtiMessage::restoreGuts(aStream);
+
+    aStream
+        >> _notif_group_ids
+        >> _category_id
+        >> _point_id
+        >> _condition
+        >> _value
+    >> _alarm_timestamp
+        >> _acknowledged
+        >> _abnormal;
 }
 
 CtiMessage* CtiNotifAlarmMsg::replicateMessage() const

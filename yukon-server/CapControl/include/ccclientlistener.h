@@ -9,13 +9,10 @@
 #include "ccclientconn.h"
 #include "ccstate.h"
 
-typedef boost::ptr_vector<CtiCCClientConnection> CtiCCConnectionVec;
-
 class CtiCCClientListener
 {
 public:
-
-    CtiCCClientListener();
+    CtiCCClientListener(long port);
     virtual ~CtiCCClientListener();
 
     virtual void start();
@@ -23,26 +20,28 @@ public:
 
     void BroadcastMessage(CtiMessage* msg);
 
-    static CtiCCClientListener& getInstance();
+    static CtiCCClientListener* getInstance();
 
     RWRecursiveLock<RWMutexLock> & getMux() { return _connmutex; };
 
+    std::vector<CtiCCClientConnection*>& getClientConnectionList();
+
+protected:
+
 private:
 
-    CtiListenerConnection _listenerConnection;
-
+    long _port;
     RWThread _listenerthr;
     RWThread _checkthr;
 
-    CtiCCConnectionVec _connections;
+    std::vector<CtiCCClientConnection*> _connections;
     RWRecursiveLock<RWMutexLock> _connmutex;
+    RWSocketListener* _socketListener;
 
-    static CtiCCClientListener _instance;
+    static CtiCCClientListener* _instance;
 
     bool _doquit;
 
     void _listen( );
     void _check( );
-
-    void removeAllConnections();
 };

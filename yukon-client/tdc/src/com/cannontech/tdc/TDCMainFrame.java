@@ -35,12 +35,12 @@ import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.debug.gui.AboutDialog;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.CommandMessage;
-import com.cannontech.messaging.message.BaseMessage;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
-import com.cannontech.messaging.util.MessageEvent;
-import com.cannontech.messaging.util.MessageListener;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.message.util.Command;
+import com.cannontech.message.util.Message;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.tdc.bookmark.BookMarkBase;
 import com.cannontech.tdc.commandevents.AckAlarm;
@@ -3201,11 +3201,11 @@ public void jMenuItemResetCntrlHrs_ActionPerformed(java.awt.event.ActionEvent ac
 	{
 		// build up our opArgList for our command	message
         List<Integer> data = new ArrayList<Integer>(1);
-		data.add(CommandMessage.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken	
+		data.add(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken	
 
 		// create our command message
-		CommandMessage cmd = new CommandMessage();
-		cmd.setOperation( CommandMessage.RESET_CNTRL_HOURS );
+		Command cmd = new Command();
+		cmd.setOperation( Command.RESET_CNTRL_HOURS );
 		cmd.setOpArgList( data );
 		cmd.setTimeStamp( new Date() );
 
@@ -4516,10 +4516,10 @@ private void setUpMainFrame( String previousItem )
     	for (long pointId : allPointIDs) {
     		
     		//fire a DBChange to allow other TDC's to refresh their display data from the DB
-    		DBChangeMessage dbChange =
-    				new DBChangeMessage(
+    		DBChangeMsg dbChange =
+    				new DBChangeMsg(
     					(int)pointId,
-    					DBChangeMessage.CHANGE_TDC_DB,
+    					DBChangeMsg.CHANGE_TDC_DB,
     					"ALL",
     					"ALL",
     					DbChangeType.UPDATE );
@@ -4559,7 +4559,7 @@ public void update(java.util.Observable observ, Object obj)
 {
 	//Should be an instance of com.cannontech.message.dispatch.ClientConnection
 	//notifying us of a change in the connections state
-	if( obj instanceof com.cannontech.dispatch.DispatchClientConnection )
+	if( obj instanceof com.cannontech.message.dispatch.ClientConnection )
 	{
 			
 		if (this != null)
@@ -4574,12 +4574,12 @@ public void update(java.util.Observable observ, Object obj)
 
 public void messageReceived( MessageEvent e )
 {
-	BaseMessage in = e.getMessage();
+	Message in = e.getMessage();
 
-	if( in instanceof com.cannontech.messaging.message.dispatch.SignalMessage )
+	if( in instanceof com.cannontech.message.dispatch.message.Signal )
 	{
-		com.cannontech.messaging.message.dispatch.SignalMessage sig =
-			(com.cannontech.messaging.message.dispatch.SignalMessage)in;
+		com.cannontech.message.dispatch.message.Signal sig =
+			(com.cannontech.message.dispatch.message.Signal)in;
 
 		getAlarmHandler().handleSignal( sig );
 

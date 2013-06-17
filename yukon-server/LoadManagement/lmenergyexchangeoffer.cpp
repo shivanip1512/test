@@ -28,7 +28,7 @@ using std::endl;
 
 extern ULONG _LM_DEBUG;
 
-DEFINE_COLLECTABLE( CtiLMEnergyExchangeOffer, CTILMENERGYEXCHANGEOFFER_ID )
+RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeOffer, CTILMENERGYEXCHANGEOFFER_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -110,12 +110,6 @@ const CtiTime& CtiLMEnergyExchangeOffer::getOfferDate() const
     Returns a list of offer revisions for this energy exchange offer.
 ---------------------------------------------------------------------------*/
 vector<CtiLMEnergyExchangeOfferRevision*>& CtiLMEnergyExchangeOffer::getLMEnergyExchangeOfferRevisions()
-{
-
-    return _lmenergyexchangeofferrevisions;
-}
-
-const vector<CtiLMEnergyExchangeOfferRevision*>& CtiLMEnergyExchangeOffer::getLMEnergyExchangeOfferRevisions() const
 {
 
     return _lmenergyexchangeofferrevisions;
@@ -371,6 +365,44 @@ void CtiLMEnergyExchangeOffer::deleteLMEnergyExchangeProgramOfferTable()
         << getOfferId();
 
     deleter.execute();
+}
+
+/*-------------------------------------------------------------------------
+    restoreGuts
+
+    Restore self's state from the given stream
+--------------------------------------------------------------------------*/
+void CtiLMEnergyExchangeOffer::restoreGuts(RWvistream& istrm)
+{
+    RWCollectable::restoreGuts( istrm );
+
+    CtiTime tempTime;
+
+    istrm >> _paoid
+    >> _offerid
+    >> _runstatus
+    >> tempTime
+    >> _lmenergyexchangeofferrevisions;
+
+    _offerdate = CtiTime(tempTime);
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+
+    Save self's state onto the given stream
+---------------------------------------------------------------------------*/
+void CtiLMEnergyExchangeOffer::saveGuts(RWvostream& ostrm ) const
+{
+    RWCollectable::saveGuts( ostrm );
+
+    ostrm << _paoid
+    << _offerid
+    << _runstatus
+    << _offerdate
+    << _lmenergyexchangeofferrevisions;
+
+    return;
 }
 
 /*---------------------------------------------------------------------------

@@ -8,7 +8,7 @@ package com.cannontech.tdc.alarms.gui;
  */
 import java.util.Vector;
 
-import com.cannontech.messaging.message.dispatch.SignalMessage;
+import com.cannontech.message.dispatch.message.Signal;
 
 public class AlarmingRowVector
 {
@@ -82,7 +82,7 @@ public boolean areRowNumbersLessAlarming( int rowNumber )
  * Version: <version>
  * @return boolean
  */
-public boolean containsSignal( SignalMessage signal_ )
+public boolean containsSignal( Signal signal_ )
 {
 	for( int i = 0; i < getAlarmingRows().size(); i++ )
 	{

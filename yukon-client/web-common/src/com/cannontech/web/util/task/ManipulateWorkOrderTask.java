@@ -13,9 +13,9 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
-import com.cannontech.messaging.util.DbChangeManager;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
@@ -159,11 +159,11 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
     					}
                     }
 
-					DBChangeMessage dbChangeMessage = new DBChangeMessage(
+					DBChangeMsg dbChangeMessage = new DBChangeMsg(
 		    				workOrderBase.getWorkOrderBase().getOrderID(),
-		    				DBChangeMessage.CHANGE_WORK_ORDER_DB,
-		    				DBChangeMessage.CAT_WORK_ORDER,
-		    				DBChangeMessage.CAT_WORK_ORDER,
+		    				DBChangeMsg.CHANGE_WORK_ORDER_DB,
+		    				DBChangeMsg.CAT_WORK_ORDER,
+		    				DBChangeMsg.CAT_WORK_ORDER,
 		    				DbChangeType.UPDATE
 		    			);
 		    		//Change the dbChangeMessage source so the stars message handler will handle it instead of ignore it.

@@ -21,30 +21,30 @@ import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.messaging.message.BaseMessage;
-import com.cannontech.messaging.message.notif.AlarmMessage;
+import com.cannontech.message.notif.NotifAlarmMsg;
+import com.cannontech.message.util.Message;
 import com.cannontech.notif.outputs.*;
 import com.cannontech.notif.server.NotifServerConnection;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 
-public class AlarmMessageHandler extends NotifHandler implements MessageHandler<AlarmMessage> {
+public class AlarmMessageHandler extends NotifHandler implements MessageHandler<NotifAlarmMsg> {
     private static Logger log = YukonLogManager.getLogger(AlarmMessageHandler.class);
     
     private @Autowired PointFormattingService pointFormattingService;
     private @Autowired MeterDao meterDao;
     
     @Override
-    public Class<AlarmMessage> getSupportedMessageType() {
-        return AlarmMessage.class;
+    public Class<NotifAlarmMsg> getSupportedMessageType() {
+        return NotifAlarmMsg.class;
     }
     
     @Override
-    public void handleMessage(NotifServerConnection connection,  BaseMessage message) {
-        AlarmMessage msg = (AlarmMessage) message;
+    public void handleMessage(NotifServerConnection connection,  Message message) {
+        NotifAlarmMsg msg = (NotifAlarmMsg) message;
 
-        for (int i = 0; i < msg.getNotifGroupIds().length; i++) {
-            int notifGroupId = msg.getNotifGroupIds()[i];
+        for (int i = 0; i < msg.notifGroupIds.length; i++) {
+            int notifGroupId = msg.notifGroupIds[i];
             LiteNotificationGroup liteNotifGroup = YukonSpringHook.getBean(NotificationGroupDao.class).getLiteNotificationGroup(notifGroupId);
             
             NotificationBuilder notifFormatter = createNotificationBuilder(msg, liteNotifGroup);
@@ -52,10 +52,10 @@ public class AlarmMessageHandler extends NotifHandler implements MessageHandler<
         }
     }
 
-    private NotificationBuilder createNotificationBuilder(AlarmMessage _msg, 
+    private NotificationBuilder createNotificationBuilder(NotifAlarmMsg _msg, 
                                                           LiteNotificationGroup _liteNotifGroup) {
         
-        final AlarmMessage msg = _msg;
+        final NotifAlarmMsg msg = _msg;
         final LiteNotificationGroup liteNotifGroup = _liteNotifGroup;
         
         NotificationBuilder notifFormatter = new NotificationBuilder() {
@@ -65,10 +65,10 @@ public class AlarmMessageHandler extends NotifHandler implements MessageHandler<
                 
                 notif.addData("notificationgroup", liteNotifGroup.getNotificationGroupName());
                 
-                LitePoint point = YukonSpringHook.getBean(PointDao.class).getLitePoint(msg.getPointId());
+                LitePoint point = YukonSpringHook.getBean(PointDao.class).getLitePoint(msg.pointId);
                 notif.addData("pointid", Integer.toString(point.getPointID()));
                 notif.addData("pointname", point.getPointName());
-                notif.addData("rawvalue", Double.toString(msg.getValue()));
+                notif.addData("rawvalue", Double.toString(msg.value));
                 notif.addData("pointtype", PointTypes.getType(point.getPointType()));
                 int pAObjectId = point.getPaobjectID();
                 PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
@@ -79,7 +79,7 @@ public class AlarmMessageHandler extends NotifHandler implements MessageHandler<
                 String meterNumber = "";
                 if (liteYukonPAO.getPaoType().isMeter()) {
                     try {
-                        Meter meter = meterDao.getForId(liteYukonPAO.getYukonId());
+                        Meter meter = meterDao.getForId(liteYukonPAO.getYukonID());
                         meterNumber = meter.getMeterNumber();
                     } catch (NotFoundException nfe) {
                         // ignore if not found, will use default empty string.
@@ -99,14 +99,14 @@ public class AlarmMessageHandler extends NotifHandler implements MessageHandler<
                 String dateValue = pointFormattingService.getValueString(alarmPointValue, Format.DATE, userContext);
                 notif.addData("datevalue", dateValue);
                 
-                notif.addData("abnormal", BooleanUtils.toStringTrueFalse(msg.isAbnormal()));
-                notif.addData("acknowledged", BooleanUtils.toStringTrueFalse(msg.isAcknowledged()));
+                notif.addData("abnormal", BooleanUtils.toStringTrueFalse(msg.abnormal));
+                notif.addData("acknowledged", BooleanUtils.toStringTrueFalse(msg.acknowledged));
                 
                 
-                String conditionText = AlarmUtils.getAlarmConditionText(msg.getCondition(), point);
+                String conditionText = AlarmUtils.getAlarmConditionText(msg.condition, point);
                 notif.addData("condition", conditionText);
                 
-                String categoryText = YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategoryName(msg.getAlarmCategoryId());
+                String categoryText = YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategoryName(msg.alarmCategoryId);
                 notif.addData("category", categoryText);
                 
                 DateFormat dateFormatter = new SimpleDateFormat("EEEE, MMMM d"); // e.g. "Tuesday, May 31"
@@ -116,21 +116,21 @@ public class AlarmMessageHandler extends NotifHandler implements MessageHandler<
                 timeFormatter.setTimeZone(timeZone);
                 dateFormatter.setTimeZone(timeZone);
                 
-                notif.addData("alarmtime", timeFormatter.format(msg.getAlarmTimestamp()));
-                notif.addData("alarmdate", dateFormatter.format(msg.getAlarmTimestamp()));
-                notif.addData("alarmdatetime", Iso8601DateUtil.formatIso8601Date(msg.getAlarmTimestamp(), timeZone));
+                notif.addData("alarmtime", timeFormatter.format(msg.alarmTimestamp));
+                notif.addData("alarmdate", dateFormatter.format(msg.alarmTimestamp));
+                notif.addData("alarmdatetime", Iso8601DateUtil.formatIso8601Date(msg.alarmTimestamp, timeZone));
                 
                 String uofm = "";
                 if (point.getPointTypeEnum().isStatus()) {
                     // handle as status
-                    LiteState liteState = YukonSpringHook.getBean(StateDao.class).findLiteState(point.getStateGroupID(), (int)msg.getValue());
+                    LiteState liteState = YukonSpringHook.getBean(StateDao.class).findLiteState(point.getStateGroupID(), (int)msg.value);
                     notif.addData("value", liteState.getStateText());
                 } else {
                     // handle as analog
                     NumberFormat numberInstance = NumberFormat.getNumberInstance();
                     numberInstance.setMaximumFractionDigits(8); // seems to cut off most crazy floats
-                    notif.addData("value", numberInstance.format(msg.getValue()));
-                    LiteUnitMeasure liteUnitMeasureByPointID = YukonSpringHook.getBean(UnitMeasureDao.class).getLiteUnitMeasureByPointID(msg.getPointId());
+                    notif.addData("value", numberInstance.format(msg.value));
+                    LiteUnitMeasure liteUnitMeasureByPointID = YukonSpringHook.getBean(UnitMeasureDao.class).getLiteUnitMeasureByPointID(msg.pointId);
                     if (liteUnitMeasureByPointID != null) {
                         uofm = liteUnitMeasureByPointID.getUnitMeasureName();
                     }
@@ -160,11 +160,11 @@ public class AlarmMessageHandler extends NotifHandler implements MessageHandler<
     
     private class AlarmPointValue implements PointValueHolder {
         
-        private final AlarmMessage msg;
+        private final NotifAlarmMsg msg;
         private final LitePoint litePoint;
 
-        public AlarmPointValue(AlarmMessage msg, LitePoint litePoint) {
-            Validate.isTrue(msg.getPointId() == litePoint.getLiteID());
+        public AlarmPointValue(NotifAlarmMsg msg, LitePoint litePoint) {
+            Validate.isTrue(msg.pointId == litePoint.getLiteID());
             this.msg = msg;
             this.litePoint = litePoint;
         }
@@ -176,7 +176,7 @@ public class AlarmMessageHandler extends NotifHandler implements MessageHandler<
 
         @Override
         public Date getPointDataTimeStamp() {
-            return msg.getAlarmTimestamp();
+            return msg.alarmTimestamp;
         }
 
         @Override
@@ -186,7 +186,7 @@ public class AlarmMessageHandler extends NotifHandler implements MessageHandler<
 
         @Override
         public double getValue() {
-            return msg.getValue();
+            return msg.value;
         }
         
     }

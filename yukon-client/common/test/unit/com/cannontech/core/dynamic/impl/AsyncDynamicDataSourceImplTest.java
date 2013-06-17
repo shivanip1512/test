@@ -10,7 +10,7 @@ import org.junit.Test;
 import com.cannontech.core.dynamic.PointDataListener;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.dynamic.MockDispatchConnection;
-import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
@@ -90,8 +90,8 @@ public class AsyncDynamicDataSourceImplTest {
 
     }
     
-    public static PointDataMessage createPointData(int id) {
-        PointDataMessage data = new PointDataMessage();
+    public static PointData createPointData(int id) {
+        PointData data = new PointData();
         data.setId(id);
         return data;
     }

@@ -10,11 +10,11 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.alert.model.Alert;
 import com.cannontech.common.alert.service.AlertClearHandler;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dispatch.DispatchClientConnection;
-import com.cannontech.messaging.message.CommandMessage;
+import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.util.Command;
 
 public class AlarmAlertClearHandler implements AlertClearHandler {
-    private DispatchClientConnection dispatchConnection;
+    private ClientConnection dispatchConnection;
     private Logger log = YukonLogManager.getLogger(AlarmAlertClearHandler.class);
 
     @Override
@@ -29,9 +29,9 @@ public class AlarmAlertClearHandler implements AlertClearHandler {
         data.add(alarmAlert.getPointId());
         data.add(alarmAlert.getCondition());
 
-        final CommandMessage command = new CommandMessage();
+        final Command command = new Command();
         command.setUserName(user.getUsername());
-        command.setOperation(CommandMessage.ACKNOWLEGDE_ALARM);
+        command.setOperation(Command.ACKNOWLEGDE_ALARM);
         command.setOpArgList(data);
         command.setTimeStamp(new Date());
 
@@ -39,7 +39,7 @@ public class AlarmAlertClearHandler implements AlertClearHandler {
         log.debug("sent command to acknowledge alarm alert: " + alarmAlert);
     }
     
-    public void setDispatchConnection(DispatchClientConnection dispatchConnection) {
+    public void setDispatchConnection(ClientConnection dispatchConnection) {
         this.dispatchConnection = dispatchConnection;
     }
     

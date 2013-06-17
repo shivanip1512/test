@@ -367,9 +367,10 @@ INT CtiDeviceFMU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
     }
     else
     {
-        const string error_str = GetErrorString(ErrReturn);
-
+        char error_str[80];
         string resultString;
+
+        GetErrorString(ErrReturn, error_str);
 
         resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
 

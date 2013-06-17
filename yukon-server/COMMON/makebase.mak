@@ -311,8 +311,11 @@ elog_cli.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 encryption.obj:	precompiled.h encryption.h dlldefs.h ctistring.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
 		os2_2w32.h types.h numstr.h
-error.obj:	precompiled.h dsm2err.h dlldefs.h yukon.h types.h \
-		ctidbgmem.h
+error.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
+		dsm2.h cticonnect.h yukon.h ctidbgmem.h netports.h mutex.h \
+		guard.h utility.h ctitime.h queues.h numstr.h dsm2err.h \
+		words.h optional.h dllbase.h logger.h thread.h \
+		CtiPCPtrQueue.h
 exchange.obj:	precompiled.h exchange.h dlldefs.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h netports.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \

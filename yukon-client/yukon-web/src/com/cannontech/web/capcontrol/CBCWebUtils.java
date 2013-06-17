@@ -2,8 +2,8 @@ package com.cannontech.web.capcontrol;
 
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.messaging.message.capcontrol.streamable.Feeder;
-import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.util.ServletUtil;
 
 /**
@@ -72,9 +72,9 @@ public class CBCWebUtils
         }
         else
         {
-            temp += _getPointStr(subBus.getCurrentVarLoadPointId());
-            temp += _getPointStr(subBus.getCurrentWattLoadPointId());
-            temp += _getPointStr(subBus.getEstimatedVarLoadPointId());
+            temp += _getPointStr(subBus.getCurrentVarLoadPointID());
+            temp += _getPointStr(subBus.getCurrentWattLoadPointID());
+            temp += _getPointStr(subBus.getEstimatedVarLoadPointID());
         }
 
         if (temp.length() > 0)
@@ -90,12 +90,12 @@ public class CBCWebUtils
     private static synchronized String _createFeederGraphURL(Feeder feeder, String type) {
         String temp = "";
         if (TYPE_PF.equals(type)) {
-            temp += _getPointStr(feeder.getPowerFactorPointId());
-            temp += _getPointStr(feeder.getEstimatedPowerFactorPointId());
+            temp += _getPointStr(feeder.getPowerFactorPointID());
+            temp += _getPointStr(feeder.getEstimatedPowerFactorPointID());
         } else {
-            temp += _getPointStr(feeder.getCurrentVarLoadPointId());
-            temp += _getPointStr(feeder.getCurrentWattLoadPointId());
-            temp += _getPointStr(feeder.getEstimatedVarLoadPointId());
+            temp += _getPointStr(feeder.getCurrentVarLoadPointID());
+            temp += _getPointStr(feeder.getCurrentWattLoadPointID());
+            temp += _getPointStr(feeder.getEstimatedVarLoadPointID());
         }
 
         if (temp.length() > 0) {

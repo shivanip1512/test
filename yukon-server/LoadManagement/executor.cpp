@@ -507,7 +507,7 @@ void CtiLMCommandExecutor::SendAllControlAreas()
     {
         msg->setConnectionHandle(_command->getConnectionHandle());
         std::auto_ptr<CtiMessage> tmp_msg(msg);
-        CtiLMClientListener::getInstance().sendMessageToClient(tmp_msg);
+        CtiLMClientListener::getInstance()->sendMessageToClient(tmp_msg);
     }
     else
     {
@@ -1483,7 +1483,7 @@ void CtiLMManualControlRequestExecutor::Execute()
         {
             response->setConnectionHandle(_controlMsg->getConnectionHandle());
             std::auto_ptr<CtiMessage> tmp_msg(response);
-            CtiLMClientListener::getInstance().sendMessageToClient(tmp_msg);
+            CtiLMClientListener::getInstance()->sendMessageToClient(tmp_msg);
         }
         else
         {
@@ -2382,7 +2382,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::CancelOffer()
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaMsgExecutor::Execute()
 {
-    CtiLMClientListener::getInstance().BroadcastMessage(((CtiMessage*)_controlAreaMsg));
+    CtiLMClientListener::getInstance()->BroadcastMessage(((CtiMessage*)_controlAreaMsg));
 }
 
 

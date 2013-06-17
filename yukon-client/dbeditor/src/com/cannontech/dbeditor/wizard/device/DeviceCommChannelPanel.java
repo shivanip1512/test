@@ -228,7 +228,7 @@ private void checkAddress()
                                           JOptionPane.WARNING_MESSAGE);
             throw new CancelInsertException("Device was not inserted");
         } else
-            portID = new Integer(((LiteYukonPAObject) getPortComboBox().getSelectedItem()).getYukonId());
+            portID = new Integer(((LiteYukonPAObject) getPortComboBox().getSelectedItem()).getYukonID());
 
         int devType = PAOGroups.getDeviceType(((DeviceBase) val).getPAOType());
 

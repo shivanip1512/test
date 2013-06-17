@@ -18,6 +18,9 @@ import com.cannontech.common.util.SwingUtil;
 import com.cannontech.debug.gui.ObjectInfoDialog;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
+import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.loadcontrol.data.LMGroupBase;
+import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.datamodels.ControlAreaTableModel;
 import com.cannontech.loadcontrol.datamodels.ControlHistoryTableModel;
 import com.cannontech.loadcontrol.datamodels.FilteredControlAreaTableModel;
@@ -34,14 +37,11 @@ import com.cannontech.loadcontrol.gui.manualentry.DirectControlJPanel;
 import com.cannontech.loadcontrol.gui.manualentry.MultiSelectProg;
 import com.cannontech.loadcontrol.gui.manualentry.NoViolationResponsePanel;
 import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
+import com.cannontech.loadcontrol.messages.LMCommand;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.loadcontrol.popup.ControlAreaPopUpMenu;
 import com.cannontech.loadcontrol.popup.GroupPopUpMenu;
 import com.cannontech.loadcontrol.popup.ProgramPopUpMenu;
-import com.cannontech.messaging.message.loadcontrol.CommandMessage;
-import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
-import com.cannontech.messaging.message.loadcontrol.data.GroupBase;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tdc.TDCMainPanel;
@@ -153,13 +153,13 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
 		d1.setLocalTableModels(
 			new TableModel[] { 
 			        new FilteredControlAreaTableModel(
-			                                          new int[] {ControlAreaItem.STATE_PARTIALLY_ACTIVE,
-			                                                  ControlAreaItem.STATE_FULLY_ACTIVE,
-			                                                  ControlAreaItem.STATE_MANUAL_ACTIVE,
-			                                                  ControlAreaItem.STATE_INACTIVE,
-			                                                  ControlAreaItem.STATE_FULLY_SCHEDULED,
-			                                                  ControlAreaItem.STATE_PARTIALLY_SCHEDULED,
-			                                                  ControlAreaItem.STATE_CNTRL_ATTEMPT},
+			                                          new int[] {LMControlArea.STATE_PARTIALLY_ACTIVE,
+			                                                  LMControlArea.STATE_FULLY_ACTIVE,
+			                                                  LMControlArea.STATE_MANUAL_ACTIVE,
+			                                                  LMControlArea.STATE_INACTIVE,
+			                                                  LMControlArea.STATE_FULLY_SCHEDULED,
+			                                                  LMControlArea.STATE_PARTIALLY_SCHEDULED,
+			                                                  LMControlArea.STATE_CNTRL_ATTEMPT},
 			                                                  getControlAreaTableModel().getTableModelListeners()),
 					getProgramTableModel(),
 					getGroupTableModel() } );
@@ -169,10 +169,10 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
 		d2.setLocalTableModels(
 			new TableModel[] { 
 					new FilteredControlAreaTableModel(
-						new int[] {ControlAreaItem.STATE_PARTIALLY_ACTIVE,
-										ControlAreaItem.STATE_FULLY_ACTIVE,
-										ControlAreaItem.STATE_MANUAL_ACTIVE,
-										ControlAreaItem.STATE_FULLY_SCHEDULED},
+						new int[] {LMControlArea.STATE_PARTIALLY_ACTIVE,
+										LMControlArea.STATE_FULLY_ACTIVE,
+										LMControlArea.STATE_MANUAL_ACTIVE,
+										LMControlArea.STATE_FULLY_SCHEDULED},
 						getControlAreaTableModel().getTableModelListeners()),
 					getProgramTableModel(),
 					getGroupTableModel() } );
@@ -183,7 +183,7 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
 		d3.setLocalTableModels(
 			new TableModel[] { 
 					new FilteredControlAreaTableModel( 
-						new int[] {ControlAreaItem.STATE_INACTIVE},
+						new int[] {LMControlArea.STATE_INACTIVE},
 						getControlAreaTableModel().getTableModelListeners()),
 					getProgramTableModel(),
 					getGroupTableModel() } );
@@ -233,8 +233,8 @@ public void buttonBarPanel_JButtonDisableAllAction_actionPerformed(java.util.Eve
 			if( !getControlAreaTableModel().getRowAt(i).getDisableFlag().booleanValue() )
 			{
 				getLoadControlClientConnection().write(
-					new CommandMessage( CommandMessage.DISABLE_CONTROL_AREA,
-						 				getControlAreaTableModel().getRowAt(i).getYukonId().intValue(),
+					new LMCommand( LMCommand.DISABLE_CONTROL_AREA,
+						 				getControlAreaTableModel().getRowAt(i).getYukonID().intValue(),
 						 				0, 0.0) );
 			}
 		}
@@ -266,8 +266,8 @@ public void buttonBarPanel_JButtonEnableAllAction_actionPerformed(java.util.Even
 			if( getControlAreaTableModel().getRowAt(i).getDisableFlag().booleanValue() )
 			{
 				getLoadControlClientConnection().write(
-					new CommandMessage( CommandMessage.ENABLE_CONTROL_AREA,
-						 				getControlAreaTableModel().getRowAt(i).getYukonId().intValue(),
+					new LMCommand( LMCommand.ENABLE_CONTROL_AREA,
+						 				getControlAreaTableModel().getRowAt(i).getYukonID().intValue(),
 						 				0, 0.0) );
 			}
 		}
@@ -306,13 +306,13 @@ private void showContScenWindow( final int panelMode )
 	Hashtable allProgs = new Hashtable( getControlAreaTableModel().getRowCount() * 3 ); //just a guess
 
 	for( int i = 0; i < getControlAreaTableModel().getRowCount(); i++ )
-		for( int j = 0; j < getControlAreaTableModel().getRowAt(i).getProgramVector().size(); j++ )
+		for( int j = 0; j < getControlAreaTableModel().getRowAt(i).getLmProgramVector().size(); j++ )
 		{
-			Program prog = 
-				(Program)
-				getControlAreaTableModel().getRowAt(i).getProgramVector().get(j);
+			LMProgramBase prog = 
+				(LMProgramBase)
+				getControlAreaTableModel().getRowAt(i).getLmProgramVector().get(j);
 
-			allProgs.put( prog.getYukonId(), prog );
+			allProgs.put( prog.getYukonID(), prog );
 		}
 	
 	final JDialog d = new JDialog(SwingUtil.getParentFrame(this));
@@ -400,8 +400,8 @@ private void showContScenWindow( final int panelMode )
                     boolean checkedButNoConstraintsViolated = false;
                     for(ResponseProg response : programResp) {
                         if(response.getViolations().size() == 0 
-                                && response.getLmRequest().getConstraintFlag() == ManualControlRequestMessage.CONSTRAINTS_FLAG_CHECK) {
-                            checkedButNoConstraintsViolated = response.getLmRequest().getCommand() == ManualControlRequestMessage.SCHEDULED_START || response.getLmRequest().getCommand() == ManualControlRequestMessage.START_NOW;
+                                && response.getLmRequest().getConstraintFlag() == LMManualControlRequest.CONSTRAINTS_FLAG_CHECK) {
+                            checkedButNoConstraintsViolated = response.getLmRequest().getCommand() == LMManualControlRequest.SCHEDULED_START || response.getLmRequest().getCommand() == LMManualControlRequest.START_NOW;
                             break;
                         }
                     }
@@ -545,18 +545,18 @@ private String[] createPrintableText()
  */
 
 private void retrieveAllControlAreasFromServer() {
-    CommandMessage command = new CommandMessage();
-    command.setCommand(CommandMessage.RETRIEVE_ALL_CONTROL_AREAS);
+    LMCommand command = new LMCommand();
+    command.setCommand(LMCommand.RETRIEVE_ALL_CONTROL_AREAS);
     getLoadControlClientConnection().queue(command);
 }
 
 public void lmDisplayRefresh() {
-    ControlAreaItem[] currentAreas = getLoadControlClientConnection().getAllLMControlAreas();
+    LMControlArea[] currentAreas = getLoadControlClientConnection().getAllLMControlAreas();
     if(currentAreas != null && currentAreas.length > 0) {
         getGroupTableModel().clear();
         getProgramTableModel().clear();
         getControlAreaTableModel().clear();
-        for(ControlAreaItem controlArea : currentAreas) {
+        for(LMControlArea controlArea : currentAreas) {
             updateControlAreaTableModel( controlArea, getControlAreaTableModel());
             getLoadControlClientConnection().notifyObservers( new LCChangeEvent( 
                                  getLoadControlClientConnection(), 
@@ -1040,7 +1040,7 @@ private IProgramTableModel getProgramTableModel()
  * This method was created in VisualAge.
  * @return Object
  */
-protected Program getSelectedProgram() 
+protected LMProgramBase getSelectedProgram() 
 {
 	javax.swing.ListSelectionModel lsm = getJTableProgram().getSelectionModel();
 	
@@ -1057,7 +1057,7 @@ protected Program getSelectedProgram()
  * This method was created in VisualAge.
  * @return Object
  */
-protected GroupBase getSelectedGroup() 
+protected LMGroupBase getSelectedGroup() 
 {
 	javax.swing.ListSelectionModel lsm = getJTableGroup().getSelectionModel();
 	
@@ -1069,8 +1069,8 @@ protected GroupBase getSelectedGroup()
 	
 	Object row = getGroupTableModel().getRowAt( selectedRow );
 	
-	if( row instanceof GroupBase )	
-		return (GroupBase)row;
+	if( row instanceof LMGroupBase )	
+		return (LMGroupBase)row;
 	else
 		return null;
 }
@@ -1079,7 +1079,7 @@ protected GroupBase getSelectedGroup()
  * This method was created in VisualAge.
  * @return com.cannontech.loadcontrol.data.LMControlArea
  */
-protected ControlAreaItem getSelectedControlArea() 
+protected LMControlArea getSelectedControlArea() 
 {
 	javax.swing.ListSelectionModel lsm = getJTableControlArea().getSelectionModel();
 	
@@ -1166,7 +1166,7 @@ private void initConnections() throws java.lang.Exception
 				Object row = getGroupTableModel().getRowAt( getJTableGroup().rowAtPoint(e.getPoint()) );
 
 				//determines what popupBox is shown
-				if( row instanceof GroupBase )
+				if( row instanceof LMGroupBase )
 					getGroupPopUpMenu().show( e.getComponent(), e.getX(), e.getY() );
 			}
 		}
@@ -1620,14 +1620,14 @@ private void updateProgramTableModel()
 	getProgramTableModel().setCurrentControlArea( getSelectedControlArea() );
 }
 
-private int getInsertionIndx( ControlAreaItem area, IControlAreaTableModel cntrlAreaTbModel )
+private int getInsertionIndx( LMControlArea area, IControlAreaTableModel cntrlAreaTbModel )
 {
     int i = 0;
     
     //always keep our main list in order by the AreaName
     for( i = 0; i < cntrlAreaTbModel.getRowCount(); i++ )
     {
-        ControlAreaItem areaRow = cntrlAreaTbModel.getRowAt(i);
+        LMControlArea areaRow = cntrlAreaTbModel.getRowAt(i);
 
         int cmpVal = area.getYukonName().compareToIgnoreCase(areaRow.getYukonName());
 
@@ -1639,10 +1639,10 @@ private int getInsertionIndx( ControlAreaItem area, IControlAreaTableModel cntrl
     return i;
 }
 
-private synchronized void updateControlAreaTableModel(ControlAreaItem changedArea, IControlAreaTableModel cntrlAreaTbModel) {
+private synchronized void updateControlAreaTableModel(LMControlArea changedArea, IControlAreaTableModel cntrlAreaTbModel) {
     boolean found = false;
     for( int i = 0; i < cntrlAreaTbModel.getRowCount(); i++ ) {
-        ControlAreaItem areaRow = cntrlAreaTbModel.getRowAt(i);
+        LMControlArea areaRow = cntrlAreaTbModel.getRowAt(i);
             
         if( areaRow.equals(changedArea) ) {
             //update all the the control area's
@@ -1662,18 +1662,18 @@ private synchronized void updateControlAreaTableModel(ControlAreaItem changedAre
 
 private synchronized void handleChange( LCChangeEvent msg ) {
     
-    if(msg.arg instanceof ControlAreaItem) {
-        ControlAreaItem lmControlArea = (ControlAreaItem)msg.arg;
+    if(msg.arg instanceof LMControlArea) {
+        LMControlArea lmControlArea = (LMControlArea)msg.arg;
         
         if( msg.id == LCChangeEvent.INSERT ) {
-            ControlAreaItem newArea = getLoadControlClientConnection().getControlArea(lmControlArea.getYukonId());
+            LMControlArea newArea = getLoadControlClientConnection().getControlArea(lmControlArea.getYukonID());
             getControlAreaTableModel().addControlAreaAt(newArea, getInsertionIndx(newArea, getControlAreaTableModel()));
         }
         else if( msg.id == LCChangeEvent.UPDATE ) {
             boolean found = false;
-            ControlAreaItem newArea = getLoadControlClientConnection().getControlArea(lmControlArea.getYukonId());
+            LMControlArea newArea = getLoadControlClientConnection().getControlArea(lmControlArea.getYukonID());
             for( int i = 0; i < getControlAreaTableModel().getRowCount(); i++ ) {
-                ControlAreaItem areaRow = getControlAreaTableModel().getRowAt(i);
+                LMControlArea areaRow = getControlAreaTableModel().getRowAt(i);
                     
                 if( areaRow.equals(newArea) ) {
                     //update all the the control area's

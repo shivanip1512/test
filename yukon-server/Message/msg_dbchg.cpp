@@ -26,7 +26,31 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "ctibase.h"
 #include "logger.h"
 
-DEFINE_COLLECTABLE( CtiDBChangeMsg, MSG_DBCHANGE );
+RWDEFINE_COLLECTABLE( CtiDBChangeMsg, MSG_DBCHANGE );
+
+void
+CtiDBChangeMsg::restoreGuts(RWvistream& aStream)
+{
+   CtiMessage::restoreGuts( aStream );         // Base class is not really a RWCollectible, but could be.
+
+   aStream >> _id
+           >> _database
+           >> _category
+           >> _objecttype
+           >> _typeofchange;
+}
+
+void
+CtiDBChangeMsg::saveGuts(RWvostream &aStream) const
+{
+   CtiMessage::saveGuts( aStream );            // Base class is not really a RWCollectible, but could be.
+
+   aStream << _id
+           << _database
+           << _category
+           << _objecttype
+           << _typeofchange;
+}
 
 // Return a new'ed copy of this message!
 CtiMessage* CtiDBChangeMsg::replicateMessage() const
@@ -56,18 +80,6 @@ CtiDBChangeMsg::CtiDBChangeMsg(LONG id,INT database, string category, string obj
    _typeofchange(typeofchange),
    CtiMessage(15)
 {}
-
-// constructor provided for deserialization
-CtiDBChangeMsg::CtiDBChangeMsg(const CtiMessage& baseMessage, LONG id, INT database, string category, string objecttype, INT typeofchange) :
-   _id(id),
-   _database(database),
-   _category(category),
-   _objecttype(objecttype),
-   _typeofchange(typeofchange)
-{
-    static_cast<CtiMessage&>(*this) = baseMessage;
-}
-
 
 // Default Constructor needed for Roque Wave !!!!!!!!!!NEVER USE!!!!!!!!!!!
 CtiDBChangeMsg::CtiDBChangeMsg()

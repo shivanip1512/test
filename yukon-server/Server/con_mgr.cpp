@@ -25,7 +25,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "msg_cmd.h"
 
 
-CtiConnectionManager::CtiConnectionManager( CtiListenerConnection& listenerConn, Que_t *inQ ) :
+
+CtiConnectionManager::CtiConnectionManager( const INT &Port, const string &HostMachine, Que_t *inQ) :
    ClientName("DEFAULT"),
    ClientAppId(0),
    ClientUnique(FALSE),
@@ -33,7 +34,20 @@ CtiConnectionManager::CtiConnectionManager( CtiListenerConnection& listenerConn,
    ClientRegistered(FALSE),
    _clientExpirationDelay(180),
    _serverRequestId(0),
-   CtiServerConnection(listenerConn, inQ)
+   CtiConnection(Port, HostMachine, inQ)
+{
+   // cout << "**** Connection Manager!!! *****" << endl;
+}
+
+CtiConnectionManager::CtiConnectionManager(CtiExchange *xchg, Que_t *inQ) :
+   ClientName("DEFAULT"),
+   ClientAppId(0),
+   ClientUnique(FALSE),
+   ClientQuestionable(FALSE),
+   ClientRegistered(FALSE),
+   _clientExpirationDelay(180),
+   _serverRequestId(0),
+   CtiConnection(xchg, inQ)
 {}
 
 CtiConnectionManager::~CtiConnectionManager()

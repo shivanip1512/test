@@ -116,6 +116,17 @@ VoltageRegulator & VoltageRegulator::operator=(const VoltageRegulator & rhs)
 }
 
 
+void VoltageRegulator::saveGuts(RWvostream& ostrm) const
+{
+    RWCollectable::saveGuts(ostrm);
+    CapControlPao::saveGuts(ostrm);
+
+    ostrm << 0                      //parentId Must be here for clients...
+          << _lastTapOperation
+          << _lastTapOperationTime;
+}
+
+
 void VoltageRegulator::handlePointData(CtiPointDataMsg * message)
 {
     setUpdated(true);
@@ -258,7 +269,7 @@ void VoltageRegulator::executeDigitalOutputHelper( const LitePoint & point,
 
     if ( recordEventType != capControlNoEvent )
     {
-        CtiCapController::submitEventLogEntry( EventLogEntry( textDescription, getPaoId(), recordEventType ) );
+        CtiCapController::getInstance()->sendEventLogMessage( new CtiCCEventLogMsg( textDescription, getPaoId(), recordEventType ) );
     }
 
     std::string commandString = point.getStateOneControl() + " select pointid " + CtiNumStr( point.getPointId() );
@@ -283,7 +294,7 @@ void VoltageRegulator::executeRemoteControlHelper( const LitePoint & point,
 
     if ( recordEventType != capControlNoEvent )
     {
-        CtiCapController::submitEventLogEntry( EventLogEntry( textDescription, getPaoId(), recordEventType ) );
+        CtiCapController::getInstance()->sendEventLogMessage( new CtiCCEventLogMsg( textDescription, getPaoId(), recordEventType ) );
     }
 }
 

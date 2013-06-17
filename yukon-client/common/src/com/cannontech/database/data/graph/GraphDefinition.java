@@ -8,8 +8,8 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.graph.GraphCustomerList;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.database.db.web.OperatorLoginGraphList;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * Insert the type's description here.
@@ -32,19 +32,19 @@ public GraphDefinition() {
  * Creation date: (12/19/2001 1:45:25 PM)
  * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
  */
-public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType)
+public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
 {
-	ArrayList<DBChangeMessage> list = new ArrayList<DBChangeMessage>(10);
+	ArrayList<DBChangeMsg> list = new ArrayList<DBChangeMsg>(10);
 
 	//add the basic change method
-	list.add( new DBChangeMessage(
+	list.add( new DBChangeMsg(
 					getGraphDefinition().getGraphDefinitionID().intValue(),
-					DBChangeMessage.CHANGE_GRAPH_DB,
-					DBChangeMessage.CAT_GRAPH,
-					DBChangeMessage.CAT_GRAPH,
+					DBChangeMsg.CHANGE_GRAPH_DB,
+					DBChangeMsg.CAT_GRAPH,
+					DBChangeMsg.CAT_GRAPH,
 					dbChangeType) );
 	 
-	DBChangeMessage[] dbChange = new DBChangeMessage[list.size()];
+	DBChangeMsg[] dbChange = new DBChangeMsg[list.size()];
 	return list.toArray( dbChange );
 }
 /**

@@ -26,10 +26,11 @@ namespace Database {
 
 class CtiCCSpecial : public CtiCCAreaBase
 {
-public:
-    DECLARE_COLLECTABLE( CtiCCSpecial );
 
 public:
+
+RWDECLARE_COLLECTABLE( CtiCCSpecial )
+
     CtiCCSpecial();
     CtiCCSpecial(StrategyManager * strategyManager);
     CtiCCSpecial(Cti::RowReader& rdr, StrategyManager * strategyManager);
@@ -41,6 +42,9 @@ public:
     void setDynamicData(Cti::RowReader& rdr);
 
     virtual bool isSpecial() {return true;};
+
+    //Members inherited from RWCollectable
+    void saveGuts(RWvostream& ) const;
 
     CtiCCSpecial& operator=(const CtiCCSpecial& right);
 

@@ -297,7 +297,7 @@ public class PAOExclusionEditorPanel extends
 				YukonPAObject excPAO = (YukonPAObject)LiteFactory.convertLiteToDBPersAndRetrieve(litePAO );
 				
                 PAOExclusion paoExcl = new PAOExclusion( pao.getPAObjectID(),	
-				                                        	new Integer(((LiteYukonPAObject) getAddRemovePanelPAOExcl().rightListGetModel().getElementAt( i ) ).getYukonId() ),
+				                                        	new Integer(((LiteYukonPAObject) getAddRemovePanelPAOExcl().rightListGetModel().getElementAt( i ) ).getYukonID() ),
 															PAOExclusion.REQUEUE_OPTIMAL);
 				
 				/*
@@ -305,7 +305,7 @@ public class PAOExclusionEditorPanel extends
 				 *  transmitter's own exclusion list. It is simple: just make a second entry for the database with the current paoID and
 				 * current excluded deviceID switched.
 				 */
-				PAOExclusion correspondingPaoExcl = new PAOExclusion(new Integer(((LiteYukonPAObject)getAddRemovePanelPAOExcl().rightListGetModel()	.getElementAt(i)).getYukonId()),
+				PAOExclusion correspondingPaoExcl = new PAOExclusion(new Integer(((LiteYukonPAObject)getAddRemovePanelPAOExcl().rightListGetModel()	.getElementAt(i)).getYukonID()),
 				                                                     pao.getPAObjectID(),
 				                                                     PAOExclusion.REQUEUE_OPTIMAL);
 				
@@ -599,7 +599,7 @@ public class PAOExclusionEditorPanel extends
 
 			for (PAOExclusion currPaoExclusion: currExcluded) {
 				for (LiteYukonPAObject litePAO : paos) {
-					if ( litePAO.getYukonId() == currPaoExclusion.getExcludedPaoID() && 
+					if ( litePAO.getYukonID() == currPaoExclusion.getExcludedPaoID() && 
 							litePAO.getLiteID() != LiteYukonPAObject.LITEPAOBJECT_NONE.getLiteID() )
 					{
 						assignedPAOs.addElement( litePAO );
@@ -613,7 +613,7 @@ public class PAOExclusionEditorPanel extends
 				// be sure we have a pao that is similar to ourself by category
 				// AND that it is not our self!
 				if ( DeviceTypesFuncs.isTransmitter(litePAO.getPaoType().getDeviceTypeId()) && 
-						litePAO.getYukonId() != pao.getPAObjectID().intValue() && 
+						litePAO.getYukonID() != pao.getPAObjectID().intValue() && 
 						litePAO.getPaoType().getPaoClass() != PaoClass.GROUP)
 				{
 					if ( ! assignedPAOs.contains( litePAO ) && litePAO.getLiteID() != LiteYukonPAObject.LITEPAOBJECT_NONE.getLiteID() )

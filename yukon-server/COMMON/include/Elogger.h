@@ -1,5 +1,10 @@
 #pragma once
 
+#ifndef NORMAL
+    #define NORMAL      0
+#endif
+
+
 #if !defined (NOMINMAX)
 #define NOMINMAX
 #endif

@@ -26,15 +26,13 @@
 
 class IM_EX_MSG CtiPointRegistrationMsg : public CtiMessage
 {
-public:
-    DECLARE_COLLECTABLE( CtiPointRegistrationMsg )
-
 private:
 
    int                     RegFlags;
    std::vector<LONG>         PointList;
 
 public:
+   RWDECLARE_COLLECTABLE( CtiPointRegistrationMsg );
 
    typedef CtiMessage Inherited;
 
@@ -43,7 +41,8 @@ public:
    CtiPointRegistrationMsg(const CtiPointRegistrationMsg &aRef);
 
    CtiPointRegistrationMsg& operator=(const CtiPointRegistrationMsg& aRef);
-
+   void saveGuts(RWvostream &aStream) const;
+   void restoreGuts(RWvistream& aStream);
    virtual CtiMessage* replicateMessage() const;
 
    // If list is empty, I assume you wanted them all!.
@@ -55,10 +54,6 @@ public:
    void clear();
    void insert(const LONG& a);
    int getFlags() const;
-   void setFlags(int flags);
-
-   const std::vector<LONG>& getPointList() const;
-   void setPointList( const std::vector<LONG>& points );
 
    virtual void dump() const;
 };

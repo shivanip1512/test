@@ -8,17 +8,17 @@ import java.awt.Color;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.loadcontrol.LCUtils;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
-import com.cannontech.messaging.message.loadcontrol.data.CurtailCustomer;
-import com.cannontech.messaging.message.loadcontrol.data.GroupBase;
-import com.cannontech.messaging.message.loadcontrol.data.Group;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
+import com.cannontech.loadcontrol.data.ILMGroup;
+import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.loadcontrol.data.LMCurtailCustomer;
+import com.cannontech.loadcontrol.data.LMGroupBase;
+import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.user.SystemUserContext;
 
 public class GroupTableModel extends javax.swing.table.AbstractTableModel implements javax.swing.event.TableModelListener, ISelectableLMTableModel
 {
-	private ControlAreaItem currentControlArea = null;
+	private LMControlArea currentControlArea = null;
 	private java.util.Vector rows = null;
 	
 	//The columns and their column index	
@@ -90,8 +90,8 @@ public class GroupTableModel extends javax.swing.table.AbstractTableModel implem
 		{
 			try
 			{
-				String thisVal = ((Group)o1).getName();
-				String anotherVal = ((Group)o2).getName();
+				String thisVal = ((ILMGroup)o1).getName();
+				String anotherVal = ((ILMGroup)o2).getName();
 				return( thisVal.compareToIgnoreCase(anotherVal) );
 			}
 			catch( Exception e )
@@ -178,30 +178,30 @@ public java.awt.Color getCellForegroundColor(int row, int col)
 {
 	if( getRowAt(row) != null && getRowCount() > row && col < getColumnCount() )
 	{
-		Group rowValue = (Group)getRowAt(row);
+		ILMGroup rowValue = (ILMGroup)getRowAt(row);
 		String state = rowValue.getGroupControlStateString();
 		
 		if( rowValue.getDisableFlag().booleanValue() )
 		{
 			return cellColors[3];	
 		}
-		else if( state.equalsIgnoreCase(GroupBase.CURRENT_STATES[GroupBase.STATE_INACTIVE])
-					|| state.equalsIgnoreCase(CurtailCustomer.ACK_UNACKNOWLEDGED) )
+		else if( state.equalsIgnoreCase(LMGroupBase.CURRENT_STATES[LMGroupBase.STATE_INACTIVE])
+					|| state.equalsIgnoreCase(LMCurtailCustomer.ACK_UNACKNOWLEDGED) )
 		{
 			return cellColors[0];
 		}
-		else if( state.equalsIgnoreCase(GroupBase.CURRENT_STATES[GroupBase.STATE_ACTIVE])
-					|| state.equalsIgnoreCase(CurtailCustomer.ACK_ACKNOWLEDGED) )
+		else if( state.equalsIgnoreCase(LMGroupBase.CURRENT_STATES[LMGroupBase.STATE_ACTIVE])
+					|| state.equalsIgnoreCase(LMCurtailCustomer.ACK_ACKNOWLEDGED) )
 		{
 			return cellColors[1];
 		}
-		else if( state.equalsIgnoreCase(GroupBase.CURRENT_STATES[GroupBase.STATE_ACTIVE_PENDING])
-					|| state.equalsIgnoreCase(CurtailCustomer.ACK_NOT_REQUIRED) )
+		else if( state.equalsIgnoreCase(LMGroupBase.CURRENT_STATES[LMGroupBase.STATE_ACTIVE_PENDING])
+					|| state.equalsIgnoreCase(LMCurtailCustomer.ACK_NOT_REQUIRED) )
 		{
 			return cellColors[2];
 		}
-		else if( state.equalsIgnoreCase(GroupBase.CURRENT_STATES[GroupBase.STATE_INACTIVE_PENDING])
-					|| state.equalsIgnoreCase(CurtailCustomer.ACK_VERBAL) )
+		else if( state.equalsIgnoreCase(LMGroupBase.CURRENT_STATES[LMGroupBase.STATE_INACTIVE_PENDING])
+					|| state.equalsIgnoreCase(LMCurtailCustomer.ACK_VERBAL) )
 		{
 			return cellColors[4];
 		}
@@ -274,7 +274,7 @@ public Object getValueAt(int row, int col)
 {
 	if( row < getRowCount() && row >= 0 )
 	{
-		Group rowValue = (Group)getRowAt(row);
+		ILMGroup rowValue = (ILMGroup)getRowAt(row);
 		
         // the following line could be changed to be more careful about the formatting
 		return LCUtils.getGroupValueAt( rowValue, col, new SystemUserContext() );
@@ -306,19 +306,19 @@ public void setBackGroundColor(java.awt.Color newBackGroundColor)
  * Creation date: (4/6/2001 10:08:28 AM)
  * @param newCurrentControlArea com.cannontech.loadcontrol.data.LMControlArea
  */
-public synchronized void setCurrentData(ControlAreaItem cntrArea_, Program prgBse_ ) 
+public synchronized void setCurrentData(LMControlArea cntrArea_, LMProgramBase prgBse_ ) 
 {
 	currentControlArea = cntrArea_;
 	int oldRowCount = getRowCount();
 		
-	if( currentControlArea != null && currentControlArea.getProgramVector() != null )
+	if( currentControlArea != null && currentControlArea.getLmProgramVector() != null )
 	{
 		getRows().removeAllElements();
 
-		for( int i = 0; i < currentControlArea.getProgramVector().size(); i++ )
+		for( int i = 0; i < currentControlArea.getLmProgramVector().size(); i++ )
 		{
-			Program prg = 
-				(Program)currentControlArea.getProgramVector().get(i);
+			LMProgramBase prg = 
+				(LMProgramBase)currentControlArea.getLmProgramVector().get(i);
 
 			if( prgBse_ != null )
 			{

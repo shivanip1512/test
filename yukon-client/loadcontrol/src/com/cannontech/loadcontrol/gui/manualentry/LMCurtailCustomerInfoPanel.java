@@ -5,12 +5,12 @@ package com.cannontech.loadcontrol.gui.manualentry;
  * Creation date: (4/17/2001 2:09:06 PM)
  * @author: 
  */
-import com.cannontech.messaging.message.loadcontrol.data.CurtailCustomer;
-import com.cannontech.messaging.message.loadcontrol.data.CiCustomerBase;
+import com.cannontech.loadcontrol.data.LMCICustomerBase;
+import com.cannontech.loadcontrol.data.LMCurtailCustomer;
 
 public class LMCurtailCustomerInfoPanel extends javax.swing.JPanel implements java.awt.event.ActionListener 
 {
-	private CiCustomerBase lmGroup = null;
+	private LMCICustomerBase lmGroup = null;
 	private javax.swing.JLabel ivjJLabelAckDateTime = null;
 	private javax.swing.JLabel ivjJLabelAckLate = null;
 	private javax.swing.JLabel ivjJLabelAckPerson = null;
@@ -684,7 +684,7 @@ private javax.swing.JPanel getJPanelAckPanel() {
  * Creation date: (4/17/2001 2:12:39 PM)
  * @return com.cannontech.loadcontrol.data.LMCICustomerBase
  */
-public CiCustomerBase getLmGroup() {
+public LMCICustomerBase getLmGroup() {
 	return lmGroup;
 }
 /**
@@ -870,13 +870,13 @@ public static void main(java.lang.String[] args) {
  * Creation date: (4/17/2001 2:12:39 PM)
  * @param newLmGroup com.cannontech.loadcontrol.data.LMCICustomerBase
  */
-public void setLmGroup(CiCustomerBase newLmGroup) 
+public void setLmGroup(LMCICustomerBase newLmGroup) 
 {
 	lmGroup = newLmGroup;
 
-	if( getLmGroup() instanceof CurtailCustomer )
+	if( getLmGroup() instanceof LMCurtailCustomer )
 	{
-		final CurtailCustomer customer = (CurtailCustomer)getLmGroup();
+		final LMCurtailCustomer customer = (LMCurtailCustomer)getLmGroup();
 
 		javax.swing.SwingUtilities.invokeLater( new Runnable()
 		{
@@ -885,7 +885,7 @@ public void setLmGroup(CiCustomerBase newLmGroup)
 			{
 				getJLabelActualName().setText( customer.getCompanyName() );
 				getJLabelActualTimeZone().setText( customer.getTimeZone() );
-				getJLabelActualPDL().setText( String.valueOf(customer.getCustomerDemandLevel()) );
+				getJLabelActualPDL().setText( customer.getCustomerDemandLevel().toString() );
 
 				com.cannontech.clientutils.commonutils.ModifiedDate date = new com.cannontech.clientutils.commonutils.ModifiedDate(customer.getAckDateTime().getTime());
 				getJLabelActualDateTime().setText( date.toString() );
@@ -893,7 +893,7 @@ public void setLmGroup(CiCustomerBase newLmGroup)
 				getJLabelActualAckStatus().setText( customer.getAckStatus() );
 				getJLabelActualAckPerson().setText( customer.getNameOfAckPerson() );
 				getJLabelActualIPAddress().setText( customer.getIpAddress() );
-				getJLabelActualLateResponse().setText( String.valueOf(customer.getAckLateFlag()));
+				getJLabelActualLateResponse().setText( customer.getAckLateFlag().toString() );
 				getJLabelActualUserName().setText( customer.getUserIDname() );
 				getJLabelActualNotes().setText( customer.getCurtailmentNotes() );
 			}

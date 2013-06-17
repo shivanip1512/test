@@ -22,12 +22,12 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
-import com.cannontech.messaging.message.capcontrol.streamable.Area;
-import com.cannontech.messaging.message.capcontrol.streamable.CapBankDevice;
-import com.cannontech.messaging.message.capcontrol.streamable.Feeder;
-import com.cannontech.messaging.message.capcontrol.streamable.StreamableCapObject;
-import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
-import com.cannontech.messaging.message.capcontrol.streamable.SubStation;
+import com.cannontech.message.capcontrol.streamable.Area;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.message.capcontrol.streamable.SubBus;
+import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.models.NavigableArea;
 import com.cannontech.web.capcontrol.models.NavigableCapBank;
@@ -67,25 +67,25 @@ public class CapControlWebUtilsServiceImpl implements CapControlWebUtilsService 
             
             if (subBus.getAlternateBusId() > 0) {
                 SubBus linkedSub = capControlCache.getSubBus(subBus.getAlternateBusId());
-                SubStation station = capControlCache.getSubstation(linkedSub.getParentId());
+                SubStation station = capControlCache.getSubstation(linkedSub.getParentID());
                 
                 alternateStationId = station.getCcId();
-                alternateAreaId = station.getParentId();
+                alternateAreaId = station.getParentID();
             }
 
             viewable.setAlternateStationId(alternateStationId);
             viewable.setAlternateAreaId(alternateAreaId);
 
-            if(subBus.getCurrentVarLoadPointId() != 0) {
-                LitePoint point = pointDao.getLitePoint(subBus.getCurrentVarLoadPointId());
+            if(subBus.getCurrentVarLoadPointID() != 0) {
+                LitePoint point = pointDao.getLitePoint(subBus.getCurrentVarLoadPointID());
                 viewable.setVarPoint(point);
             }
-            if(subBus.getCurrentVoltLoadPointId() != 0) {
-                LitePoint point = pointDao.getLitePoint(subBus.getCurrentVoltLoadPointId());
+            if(subBus.getCurrentVoltLoadPointID() != 0) {
+                LitePoint point = pointDao.getLitePoint(subBus.getCurrentVoltLoadPointID());
                 viewable.setVoltPoint(point);
             }
-            if(subBus.getCurrentWattLoadPointId() != 0) {
-                LitePoint point = pointDao.getLitePoint(subBus.getCurrentWattLoadPointId());
+            if(subBus.getCurrentWattLoadPointID() != 0) {
+                LitePoint point = pointDao.getLitePoint(subBus.getCurrentWattLoadPointID());
                 viewable.setWattPoint(point);
             }
 
@@ -133,7 +133,7 @@ public class CapControlWebUtilsServiceImpl implements CapControlWebUtilsService 
     public List<ViewableCapBank> createViewableCapBank(List<CapBankDevice> capBanks) {
         List<ViewableCapBank> viewableList = new ArrayList<ViewableCapBank>(capBanks.size());
         for (CapBankDevice cbc: capBanks) {
-            LiteYukonPAObject controller = paoDao.getLiteYukonPAO(cbc.getControlDeviceId());
+            LiteYukonPAObject controller = paoDao.getLiteYukonPAO(cbc.getControlDeviceID());
             ViewableCapBank viewable = new ViewableCapBank();
             
             viewable.setCapBankDevice(cbc);

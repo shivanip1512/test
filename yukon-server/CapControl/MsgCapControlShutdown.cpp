@@ -3,4 +3,14 @@
 #include "MsgCapControlShutdown.h"
 #include "ccid.h"
 
-DEFINE_COLLECTABLE( CtiCCShutdown, CTICCSHUTDOWN_ID )
+RWDEFINE_COLLECTABLE( CtiCCShutdown, CTICCSHUTDOWN_ID )
+
+void CtiCCShutdown::restoreGuts(RWvistream& strm)
+{
+    Inherited::restoreGuts(strm);
+}
+
+void CtiCCShutdown::saveGuts(RWvostream& strm) const
+{
+    Inherited::saveGuts(strm);
+}

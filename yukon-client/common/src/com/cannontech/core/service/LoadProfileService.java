@@ -8,7 +8,7 @@ import java.util.Map;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.messaging.message.porter.RequestMessage;
+import com.cannontech.message.porter.message.Request;
 import com.cannontech.user.YukonUserContext;
 
 public interface LoadProfileService {
@@ -41,7 +41,7 @@ public interface LoadProfileService {
         public CompletionCallback callback;
         public Date from;
         public Date to;
-        public RequestMessage request;
+        public Request request;
         public long requestId;
         public int channel;
         public String userName;

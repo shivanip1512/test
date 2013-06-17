@@ -10,8 +10,8 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.tou.TOUDayRateSwitches;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * @author jdayton
@@ -85,14 +85,14 @@ public void delete() throws java.sql.SQLException
  * Creation date: (12/06/2004 10:35:21 AM)
  * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
  */
-public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType) {
+public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
     
-	DBChangeMessage[] msgs = { 
-	        new DBChangeMessage(
+	DBChangeMsg[] msgs = { 
+	        new DBChangeMsg(
 	                        getDayID().intValue(),
-	                        DBChangeMessage.CHANGE_TOU_SCHEDULE_DB,
-	                        DBChangeMessage.CAT_TOU_SCHEDULE,
-	                        DBChangeMessage.CAT_TOU_SCHEDULE,
+	                        DBChangeMsg.CHANGE_TOU_SCHEDULE_DB,
+	                        DBChangeMsg.CAT_TOU_SCHEDULE,
+	                        DBChangeMsg.CAT_TOU_SCHEDULE,
 	                        dbChangeType)
 	};
 

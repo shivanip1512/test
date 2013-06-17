@@ -29,7 +29,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "logger.h"
 #include "msg_trace.h"
 
-DEFINE_COLLECTABLE( CtiTraceMsg, MSG_TRACE );
+RWDEFINE_COLLECTABLE( CtiTraceMsg, MSG_TRACE );
+
 
 CtiTraceMsg::CtiTraceMsg() :
     _end(true),
@@ -54,12 +55,34 @@ CtiTraceMsg& CtiTraceMsg::operator=(const CtiTraceMsg& aRef)
     return *this;
 }
 
+
 // Return a new'ed copy of this message!
 CtiMessage* CtiTraceMsg::replicateMessage() const
 {
    CtiTraceMsg *ret = CTIDBG_new CtiTraceMsg(*this);
 
    return( (CtiMessage*)ret );
+}
+
+void
+CtiTraceMsg::restoreGuts(RWvistream& aStream)
+{
+    int end = FALSE;                    // stupid RWVistream cant do bool...
+
+    Inherited::restoreGuts( aStream );
+
+   aStream >> end >> _attributes >> _trace;
+
+   _end = end ? true : false;
+}
+
+void
+CtiTraceMsg::saveGuts(RWvostream &aStream) const
+{
+    int end = _end ? TRUE : FALSE;      // stupid RWVistream cant do bool...
+
+    Inherited::saveGuts( aStream );
+    aStream << end << _attributes << _trace;
 }
 
 void CtiTraceMsg::dump() const

@@ -16,7 +16,7 @@ import com.cannontech.graph.buffer.html.PeakHtml;
 import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.model.TrendModel;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -387,11 +387,11 @@ public class WebGraph implements Runnable
 	public void run()
 	{
        dbChangeListener = new DBChangeListener() {
-            public void dbChangeReceived(DBChangeMessage msg)
+            public void dbChangeReceived(DBChangeMsg msg)
             {
                 if (!msg.getSource().equals(com.cannontech.common.util.CtiUtilities.DEFAULT_MSG_SOURCE))
                 {
-                    if( msg.getDatabase() == DBChangeMessage.CHANGE_GRAPH_DB)
+                    if( msg.getDatabase() == DBChangeMsg.CHANGE_GRAPH_DB)
                     {
                         CTILogger.info("DBChangeMSG received, updating graphDefinitionCache.");
                         getPredefinedGraphs();

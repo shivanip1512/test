@@ -14,37 +14,54 @@
 #include "logger.h"
 #include "mutex.h"
 
-#include "message.h"
-#include "connection_server.h"
-
 class CtiMCConnection : public CtiObservable
 {
-    bool _valid;
-
-    CtiServerConnection _connection;
-
-    CtiMCConnection();
-
 public:
 
-    CtiMCConnection( CtiListenerConnection& listenerConn );
+    CtiMCConnection();
     ~CtiMCConnection();
 
-    void start();
+    void initialize(RWPortal portal);
     
     BOOL isValid();
 
     void close();
 
-    void write(CtiMessage* msg);
+    void write(RWCollectable* msg);
 
     //blocking - closing or destroying the connection
     //will cause them to return
-    CtiMessage* read();
-    CtiMessage* read(unsigned long millis);
+    RWCollectable* read();
+    RWCollectable* read(unsigned long millis);
 
     bool operator==(const CtiMCConnection& conn)
     {
         return (this == &conn);
     }
+
+protected:
+    CtiPCPtrQueue< RWCollectable >  _in;
+    CtiPCPtrQueue< RWCollectable > _out;
+
+    void _sendthr();
+    void _recvthr();
+
+private:
+
+    CtiMutex _mux;
+
+    volatile bool _valid;
+    volatile bool _closed;
+
+    RWPortal* _portal;
+    RWPortalStreambuf *sinbuf;
+    RWPortalStreambuf *soubuf;
+    RWpostream        *oStream;
+    RWpistream        *iStream;
+
+
+    RWThread _recvrunnable;
+    RWThread _sendrunnable;
+
+    void _close();
 };

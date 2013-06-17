@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Date;
 
 import com.cannontech.message.util.DefineCollectableMessage;
-import com.cannontech.messaging.message.porter.QueueDataMessage;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.VirtualInputStream;
@@ -21,7 +20,7 @@ public class DefineCollectableQueueData extends DefineCollectableMessage {
     }
 
     public Object create(VirtualInputStream vstr) throws java.io.IOException {
-        return new QueueDataMessage();
+        return new QueueData();
     }
 
     public int getCxxClassId() {
@@ -33,14 +32,14 @@ public class DefineCollectableQueueData extends DefineCollectableMessage {
     }
 
     public Class getJavaClass() {
-        return QueueDataMessage.class;
+        return QueueData.class;
     }
     
     public void restoreGuts(Object obj, VirtualInputStream vstr, CollectableStreamer polystr) throws IOException 
     {
         super.restoreGuts(obj, vstr, polystr);
         
-        QueueDataMessage data = (QueueDataMessage) obj;
+        QueueData data = (QueueData) obj;
         
         data.setQueueId(vstr.extractLong());
         data.setQueueCount(vstr.extractUnsignedInt());
@@ -55,7 +54,7 @@ public class DefineCollectableQueueData extends DefineCollectableMessage {
     {
         super.saveGuts(obj, vstr, polystr );
 
-        QueueDataMessage req = (QueueDataMessage) obj;
+        QueueData req = (QueueData) obj;
 
         vstr.insertLong(req.getQueueId());
         vstr.insertUnsignedInt(req.getQueueCount());

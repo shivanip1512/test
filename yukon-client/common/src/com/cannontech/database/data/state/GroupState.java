@@ -7,8 +7,8 @@ import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * This type was created in VisualAge.
@@ -60,14 +60,14 @@ public void delete() throws java.sql.SQLException
  * Creation date: (12/19/2001 1:45:25 PM)
  * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
  */
-public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType) {
+public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
 	
-    DBChangeMessage[] msgs = {
-            new DBChangeMessage(
+    DBChangeMsg[] msgs = {
+            new DBChangeMsg(
                             getStateGroup().getStateGroupID().intValue(),
-                            DBChangeMessage.CHANGE_STATE_GROUP_DB,
-                            DBChangeMessage.CAT_STATEGROUP,
-                            DBChangeMessage.CAT_STATEGROUP,
+                            DBChangeMsg.CHANGE_STATE_GROUP_DB,
+                            DBChangeMsg.CAT_STATEGROUP,
+                            DBChangeMsg.CAT_STATEGROUP,
                             dbChangeType)
 	};
 
@@ -205,7 +205,7 @@ public void setStateGroupID(Integer stateGroupID) {
 	getStateGroup().setStateGroupID(stateGroupID);
 	if (getStatesVector() != null) {
 	    for (State state : getStatesVector()) {
-			state.getState().setStateGroupId(getStateGroup().getStateGroupID());
+			state.getState().setStateGroupID(getStateGroup().getStateGroupID());
 		}
 	}	
 }

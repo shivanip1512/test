@@ -14,9 +14,10 @@ import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.dr.controlarea.model.TriggerType;
+import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.datamodels.ControlAreaTableModel;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
 import com.cannontech.spring.YukonSpringHook;
+
 public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements javax.swing.table.TableCellRenderer 
 {
 	private static final java.awt.Color BORDER_COLOR = new java.awt.Color(125,50,180);
@@ -131,10 +132,10 @@ public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements 
 		}
 	
 		
-		if( value instanceof ControlAreaItem )
+		if( value instanceof LMControlArea )
 		{
 			processLMControlArea(
-				(ControlAreaItem)value,
+				(LMControlArea)value,
 				table,
 				column );
 		}
@@ -195,7 +196,7 @@ public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements 
 	 * @param trigger LMControlAreaTrigger
 	 */
 	public static synchronized void setTriggerStrings(
-			com.cannontech.messaging.message.loadcontrol.data.ControlAreaTriggerItem trigger, 
+			com.cannontech.loadcontrol.data.LMControlAreaTrigger trigger, 
 			JTable table, 
 			StringBuffer strBuf, 
 			final int col ) 
@@ -327,7 +328,7 @@ public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements 
 	 * Insert the method's description here.
 	 * Creation date: (7/18/2001 5:03:03 PM)
 	 */
-	private synchronized void processLMControlArea( ControlAreaItem value, JTable table, final int col )
+	private synchronized void processLMControlArea( LMControlArea value, JTable table, final int col )
 	{
 		//add(getJLabelText());
 		StringBuffer topStrBuf = new StringBuffer();
@@ -341,8 +342,8 @@ public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements 
 		{			
 			for( int i = 0; i < value.getTriggerVector().size(); i++ )
 			{
-				com.cannontech.messaging.message.loadcontrol.data.ControlAreaTriggerItem trigger = 
-						(com.cannontech.messaging.message.loadcontrol.data.ControlAreaTriggerItem)value.getTriggerVector().get(i);
+				com.cannontech.loadcontrol.data.LMControlAreaTrigger trigger = 
+						(com.cannontech.loadcontrol.data.LMControlAreaTrigger)value.getTriggerVector().get(i);
 
 
 				if( trigger.getTriggerNumber().intValue() == 1 )

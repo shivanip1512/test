@@ -7,7 +7,7 @@ import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.macs.schedule.wizard.ScheduleBasePanel;
 import com.cannontech.macs.schedule.wizard.ScriptScheduleSetupPanel;
 import com.cannontech.macs.schedule.wizard.SimpleSchedulePanel;
-import com.cannontech.messaging.message.macs.ScheduleMessage;
+import com.cannontech.message.macs.message.Schedule;
 
 /**
  * This type was created in VisualAge.
@@ -20,19 +20,19 @@ public class ScheduleEditorPanel extends PropertyPanel implements IMultiPanelEdi
 	private DataInputPanel[] inputPanels;
 	private String[] inputPanelTabNames;
 	
-	private String type = ScheduleMessage.SIMPLE_TYPE;
+	private String type = Schedule.SIMPLE_TYPE;
 	private String scriptFileName = null;
 
 	private static final String[][] EDITOR_TYPES =
 	{
 		{  //0 - ScheduleBasePanel
-			ScheduleMessage.SCRIPT_TYPE, ScheduleMessage.SIMPLE_TYPE
+			Schedule.SCRIPT_TYPE, Schedule.SIMPLE_TYPE
 		},
 		{	//1	- ScriptScheduleSetupPanel
-			ScheduleMessage.SCRIPT_TYPE
+			Schedule.SCRIPT_TYPE
 		},
 		{ 	//2 - SimpleSchedulePanel
-			ScheduleMessage.SIMPLE_TYPE
+			Schedule.SIMPLE_TYPE
 		}
 	};
 
@@ -180,10 +180,10 @@ public void setValue(Object val)
 	DataInputPanel tempPanel;
 
 	//We must assume that val is an instance of Schedule
-	ScheduleMessage schedule = (ScheduleMessage) val;
+	Schedule schedule = (Schedule) val;
 	type = schedule.getType();
 
-	if( getType().equalsIgnoreCase(ScheduleMessage.SCRIPT_TYPE) )
+	if( getType().equalsIgnoreCase(Schedule.SCRIPT_TYPE) )
 	{
 		scriptFileName = schedule.getScriptFileName();
 	}
@@ -229,9 +229,9 @@ public String toString() {
  * Creation date: (3/12/2001 2:11:45 PM)
  * @param text java.lang.String
  */
-public void updateScriptText(final com.cannontech.messaging.message.macs.ScriptFileMessage file)
+public void updateScriptText(final com.cannontech.message.macs.message.ScriptFile file)
 {
-	if( getType().equalsIgnoreCase(ScheduleMessage.SCRIPT_TYPE) )
+	if( getType().equalsIgnoreCase(Schedule.SCRIPT_TYPE) )
 	{
 		CTILogger.info("		** RECEIVED AN updateScriptText() msg");
 

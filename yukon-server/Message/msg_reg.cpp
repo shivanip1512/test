@@ -28,7 +28,32 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include "dllbase.h"
 
-DEFINE_COLLECTABLE( CtiRegistrationMsg, MSG_REGISTER );
+RWDEFINE_COLLECTABLE( CtiRegistrationMsg, MSG_REGISTER );
+
+
+void
+CtiRegistrationMsg::restoreGuts(RWvistream& aStream)
+{
+   CtiMessage::restoreGuts( aStream );
+
+   aStream >> _appName;
+   aStream >> _appId;
+   aStream >> _appIsUnique;
+   aStream >> _appKnownPort;
+   aStream >> _appExpirationDelay;
+}
+
+void
+CtiRegistrationMsg::saveGuts(RWvostream &aStream) const
+{
+   CtiMessage::saveGuts( aStream );
+
+   aStream << _appName;
+   aStream << _appId;
+   aStream << _appIsUnique;
+   aStream << _appKnownPort;
+   aStream << _appExpirationDelay;
+}
 
 // Return a new'ed copy of this message!
 CtiMessage* CtiRegistrationMsg::replicateMessage() const

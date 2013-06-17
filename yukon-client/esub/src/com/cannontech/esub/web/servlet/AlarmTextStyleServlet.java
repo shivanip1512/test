@@ -21,8 +21,9 @@ import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.AlarmDao;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
-import com.cannontech.messaging.message.dispatch.SignalMessage;
+import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.spring.YukonSpringHook;
+
 /**
  * AlarmTextStyleServlet chooses between two svg styles given a list of point ids 
  * 
@@ -61,9 +62,9 @@ public class AlarmTextStyleServlet extends HttpServlet {
         /* check if any of the points on these devices are in alarm*/
         List<Integer> deviceIds = StringUtils.parseIntStringForList(deviceIdStr);
         try {
-            List<SignalMessage> deviceSignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForPaos(deviceIds);
-            for (Iterator<SignalMessage> iter = deviceSignals.iterator(); iter.hasNext();) {
-                SignalMessage signal  = iter.next();
+            List<Signal> deviceSignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForPaos(deviceIds);
+            for (Iterator<Signal> iter = deviceSignals.iterator(); iter.hasNext();) {
+                Signal signal  = iter.next();
                 // find out why there is a null in the list!
                 if(signal != null) {
                     if(TagUtils.isAlarmUnacked(signal.getTags())) {
@@ -85,9 +86,9 @@ public class AlarmTextStyleServlet extends HttpServlet {
         /* check if any of the points are in alarm*/    
         List<Integer> pointIds = StringUtils.parseIntStringForList(pointIdStr);
         try {
-            List<SignalMessage> pointSignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForPoints(pointIds);
-            for (Iterator<SignalMessage> iter = pointSignals.iterator(); iter.hasNext();) {
-                SignalMessage signal = iter.next();
+            List<Signal> pointSignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForPoints(pointIds);
+            for (Iterator<Signal> iter = pointSignals.iterator(); iter.hasNext();) {
+                Signal signal = iter.next();
                 // find out why there is a null in the list!
                 if(signal != null) {
                     if(TagUtils.isAlarmUnacked(signal.getTags())) {
@@ -108,9 +109,9 @@ public class AlarmTextStyleServlet extends HttpServlet {
         
         /* check if any of the alarm categories are in alarm*/
         List<Integer> alarmCategoryIds = StringUtils.parseIntStringForList(alarmCategoryIdStr);
-        List<SignalMessage> alarmCategorySignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForAlarmCategories(alarmCategoryIds);
-        for (Iterator<SignalMessage> iter = alarmCategorySignals.iterator(); iter.hasNext();) {
-            SignalMessage signal = iter.next();
+        List<Signal> alarmCategorySignals = YukonSpringHook.getBean(AlarmDao.class).getSignalsForAlarmCategories(alarmCategoryIds);
+        for (Iterator<Signal> iter = alarmCategorySignals.iterator(); iter.hasNext();) {
+            Signal signal = iter.next();
             // find out why there is a null in the list!
             if(signal != null) {
                 if(TagUtils.isAlarmUnacked(signal.getTags())) {

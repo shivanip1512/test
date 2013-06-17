@@ -34,71 +34,90 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "msg_pcreturn.h"
 #include "collectable.h"
 
-#include "connection_client.h"
-#include "amq_constants.h"
-
-void main( int argc, char **argv )
+void main(int argc, char **argv)
 {
-    if(argc != 3)
-    {
-        cout << "Arg 1:   this app's registration name" << endl;
-        cout << "Arg 2:   # of loops to receive data  " << endl;
+   if(argc != 4)
+   {
+      cout << "Arg 1:   vangogh server machine name" << endl;
+      cout << "Arg 2:   this app's registration name" << endl;
+      cout << "Arg 3:   # of loops to receive data  " << endl;
 
-        exit(-1);
-    }
+      exit(-1);
+   }
 
-    try
-    {
-        CtiClientConnection Connect( Cti::Messaging::ActiveMQ::Queue::dispatch );
+   try
+   {
+      RWWinSockInfo info;
 
-        Connect.setName( "SignalSinkTest" );
-        Connect.start();
+      int Op, k;
 
-        // Send registration message
-        Connect.WriteConnQue( new CtiRegistrationMsg(argv[1], rwThreadId(), FALSE ));
+      unsigned                   pt = 1;
+      CtiMessage                 *IGMsg;
+      CtiCommandMsg              NoOpMsg;     // Defaults to a NoOp request.
+      CtiRegistrationMsg         RegMsg(argv[2], rwThreadId(), FALSE);
 
-        // Register for a few points which "test.exe" will change.
-        Connect.WriteConnQue( new CtiPointRegistrationMsg(REG_EVENTS | REG_ALARMS | REG_NO_UPLOAD ));
+      Op = CtiCommandMsg::ClientAppShutdown;
 
-        for( int imsg_cnt=0; imsg_cnt < atoi(argv[2]); imsg_cnt++ )
-        {
-            boost::scoped_ptr<CtiMessage> imsg( Connect.ReadConnQue() );
+      CtiCommandMsg      TerminateMsg(Op, 15);     // I want a Shutdown request here
 
-            if( imsg )
+      RWCollectable *c;
+
+      RWSocketPortal psck(RWInetAddr(VANGOGHNEXUS, argv[1]));
+      CtiExchange Ex(psck);
+
+      Ex.Out() << RegMsg;
+      Ex.Out().vflush();
+
+      /*
+       *  Register for a few points which "test.exe" will change.
+       */
+      CtiPointRegistrationMsg    PtRegMsg(REG_EVENTS | REG_ALARMS | REG_NO_UPLOAD);
+
+      Ex.Out() << PtRegMsg;
+      Ex.Out().vflush();
+
+      for(int i=0; i < atoi(argv[3]); i++)
+      {
+         Ex.In() >> c;
+
+         if(c != NULL)
+         {
+            if(c->isA() == MSG_MULTI)
             {
-                if(imsg->isA() == MSG_MULTI)
-                {
-                    cout << CtiTime() << " Received multi message." << endl;
-                    CtiMultiMsg *pChg = dynamic_cast<CtiMultiMsg*>(imsg.get());
-                    for each( CtiMessage* x in pChg->getData() )
-                    {
-                        x->dump();
-                    }
-                }
-                else if(imsg->isA() == MSG_SIGNAL)
-                {
-                    CtiSignalMsg* pSig = dynamic_cast<CtiSignalMsg*>(imsg.get());
-                    cout << CtiTime() << " **** SIGNAL RECEIVED **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    pSig->dump();
-                }
+               CtiMultiMsg *pChg = (CtiMultiMsg*)c;
+
+               for(int x = 0; x < pChg->getData().size(); x++)
+               {
+                  ((CtiMessage*)(pChg->getData()[x]))->dump();
+               }
             }
-            else
+            else if(c->isA() == MSG_SIGNAL)
             {
-                cout << CtiTime() << " Received unexpected null message." << endl;;
-                break;
+               CtiSignalMsg* pSig = (CtiSignalMsg*) c;
+               cout << CtiTime() << " **** SIGNAL RECEIVED **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+               pSig->dump();
             }
-        }
 
-        cout << CtiTime() << " Ending Test." << endl;
 
-        // Send shutdown request
-        Connect.WriteConnQue( new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15 ));
-        Connect.close();
-    }
-    catch(...)
-    {
-        cout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
 
-    exit(0);
+            delete c;   //Make sure to delete this - its on the heap
+         }
+         else
+         {
+            break; // for
+         }
+      }
+
+      Ex.Out() << TerminateMsg;
+      Ex.Out().vflush();
+   }
+   catch(RWxmsg &msg)
+   {
+      cout << "Tester Exception: ";
+      cout << msg.why() << endl;
+   }
+
+   exit(0);
+
 }

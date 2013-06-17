@@ -17,7 +17,7 @@ import com.cannontech.database.data.point.PointLogicalGroups;
 import com.cannontech.database.db.point.Point;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.database.db.point.TAGLog;
-import com.cannontech.messaging.message.dispatch.SignalMessage;
+import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.tdc.custom.CustomDisplay;
 import com.cannontech.tdc.data.Display;
 import com.cannontech.tdc.utils.DataBaseInteraction;
@@ -428,7 +428,7 @@ public class ViewCreator
 		Integer catID = null;
 		if( Display.isAlarmDisplay(displayNum_) && displayNum_ != Display.GLOBAL_ALARM_DISPLAY )
 		{
-			catID = new Integer( (displayNum_ + SignalMessage.EVENT_SIGNAL) - Display.GLOBAL_ALARM_DISPLAY);
+			catID = new Integer( (displayNum_ + Signal.EVENT_SIGNAL) - Display.GLOBAL_ALARM_DISPLAY);
 		}
 
 		String rowCountQuery = "select min(s.logid), max(s.logid) " +
@@ -500,15 +500,15 @@ public class ViewCreator
 	
 		for( int i = 0; i < rowData.length; i++ )
 		{
-			SignalMessage sig = new SignalMessage();
+			Signal sig = new Signal();
 			// put a holder value for the model in row location i
 			if( rowData[i].length >= 7 && rowData[i][6] != null )
 			{
-				sig.setPointId( Integer.parseInt(rowData[i][1].toString()) );			
+				sig.setPointID( Integer.parseInt(rowData[i][1].toString()) );			
 				sig.setTimeStamp( new ModifiedDate( ((Timestamp)rowData[i][2]).getTime() ) );
 				sig.setSOE_Tag( Integer.parseInt(rowData[i][3].toString()) );
 				sig.setLogType( Integer.parseInt(rowData[i][4].toString()) );
-				sig.setCategoryId( Integer.parseInt(rowData[i][5].toString()) );
+				sig.setCategoryID( Integer.parseInt(rowData[i][5].toString()) );
 				sig.setAction( CommonUtils.createString( rowData[i][6] ) );
 				sig.setDescription( CommonUtils.createString( rowData[i][7] ) );
 				sig.setUserName( CommonUtils.createString( rowData[i][8] ) );

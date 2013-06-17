@@ -13,8 +13,8 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.database.data.lite.LiteContactNotification;
-import com.cannontech.messaging.message.BaseMessage;
-import com.cannontech.messaging.message.notif.CustomerEmailMessage;
+import com.cannontech.message.notif.NotifCustomerEmailMsg;
+import com.cannontech.message.util.Message;
 import com.cannontech.notif.outputs.ContactableCustomer;
 import com.cannontech.notif.outputs.StandardEmailHandler;
 import com.cannontech.notif.server.NotifServerConnection;
@@ -22,7 +22,7 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.tools.email.EmailServiceMessage;
 
-public class CustomerEmailMessageHandler implements MessageHandler<CustomerEmailMessage> {
+public class CustomerEmailMessageHandler implements MessageHandler<NotifCustomerEmailMsg> {
     
     private static final Logger log = YukonLogManager.getLogger(CustomerEmailMessageHandler.class);
     
@@ -35,15 +35,15 @@ public class CustomerEmailMessageHandler implements MessageHandler<CustomerEmail
     }
 
     @Override
-    public Class<CustomerEmailMessage> getSupportedMessageType() {
-        return CustomerEmailMessage.class;
+    public Class<NotifCustomerEmailMsg> getSupportedMessageType() {
+        return NotifCustomerEmailMsg.class;
     }
     
     @Override
-    public void handleMessage(NotifServerConnection connection, BaseMessage message) {
-        final CustomerEmailMessage msg = (CustomerEmailMessage) message;
+    public void handleMessage(NotifServerConnection connection, Message message) {
+        final NotifCustomerEmailMsg msg = (NotifCustomerEmailMsg) message;
         
-        ContactableCustomer customer = new ContactableCustomer(YukonSpringHook.getBean(CustomerDao.class).getLiteCICustomer(msg.getCustomerId()));
+        ContactableCustomer customer = new ContactableCustomer(YukonSpringHook.getBean(CustomerDao.class).getLiteCICustomer(msg.getCustomerID()));
         
         for (LiteContactNotification notif : customer.getNotifications(StandardEmailHandler.checker)) {
             String emailTo = notif.getNotification();

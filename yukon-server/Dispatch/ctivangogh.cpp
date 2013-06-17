@@ -65,8 +65,6 @@
 
 #include <boost/tuple/tuple_comparison.hpp>
 
-#include "amq_constants.h"
-
 using namespace std;
 
 #define MAX_ARCHIVER_ENTRIES     10             // If this many entries appear, we'll do a dump
@@ -603,64 +601,118 @@ void CtiVanGogh::VGMainThread()
 
 void CtiVanGogh::VGConnectionHandlerThread()
 {
+    int               i=0;
+    BOOL              bQuit = FALSE;
+
+    UINT sanity = 0;
+
+    CtiExchange       *XChg;
+
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Dispatch Connection Handler Thread starting as TID " << rwThreadId() << " (0x" << hex << rwThreadId() << dec << ")" << endl;
     }
 
-    try
+    NetPort = RWInetPort(gConfigParms.getValueAsInt("DISPATCH_PORT", VANGOGHNEXUS));
+    NetAddr = RWInetAddr(NetPort);
+
+    _listenerSocket.listen(NetAddr);
+
+    // This is here for looks, in reality it is rarely called.
+    if( !_listenerSocket.valid() )
     {
-        // main loop
-        for(;!bGCtrlC;)
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Could not open socket " << NetAddr << " for listening" << endl;
+
+        exit(-1);
+    }
+
+    /* Up this threads priority a notch over the other procs */
+    CTISetPriority(PRTYC_NOCHANGE, THREAD_PRIORITY_BELOW_NORMAL);
+
+    for(;!bQuit && !bGCtrlC;)
+    {
+        try
         {
-            if( _listenerConnection.verifyConnection() != NORMAL )
-            {
-                mConnectionTable.clear();
+            // It seems necessary to make this copy. RW does this and now so do we.
+            RWSocket tempSocket = _listenerSocket;
+            RWSocket newSocket = tempSocket.accept();
+            RWSocketPortal sock;
 
-                _listenerConnection.establishConnection();
+            if( !newSocket.valid() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Could not accept new connection " << endl;
             }
-
-            if( _listenerConnection.acceptClient() == NORMAL )
+            else
             {
-                // Create new vangogh connection manager
-                CtiServer::ptr_type sptrConMan( CTIDBG_new CtiVanGoghConnectionManager( _listenerConnection, &MainQueue_ ));
+                // This is very important. We tell the socket portal that we own the socket!
+                sock = RWSocketPortal(newSocket, RWSocketPortalBase::Application);
 
-                // add the new client connection
-                clientConnect( sptrConMan );
-
-                // Kick off the connection's communication threads.
-                sptrConMan->start();
-
-                if(gDispatchDebugLevel & DISPATCH_DEBUG_CONNECTIONS)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " New connection established." << endl;
+                    dout << CtiTime() << " Connection Handler Thread. New connect. " << endl;
                 }
+
+                {
+                    CtiServerExclusion guard(_server_exclusion);
+
+                    XChg                                = CTIDBG_new CtiExchange(sock);
+                    CtiVanGoghConnectionManager *ConMan = CTIDBG_new CtiVanGoghConnectionManager(XChg, &MainQueue_);
+                    CtiServer::ptr_type sptrConMan(ConMan);
+
+                    clientConnect( sptrConMan );
+                    sptrConMan->ThreadInitiate();     // Kick off the connection's communication threads.
+
+                    if(gDispatchDebugLevel & DISPATCH_DEBUG_CONNECTIONS)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " New connection established" << endl;
+                    }
+                }
+
             }
 
             reportOnThreads();
         }
-    }
-    catch( RWxmsg& msg )
-    {
+        catch(RWSockErr& msg )
+        {
+            if(msg.errorNumber() == RWNETENOTSOCK)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Socket error RWNETENOTSOCK" << endl;
+                bQuit = TRUE;     // get out of the for loop
+            }
+            else
+            {
+                bQuit = TRUE;
+                // dout << CtiTime() << " VGConnectionHandlerThread: The KNOWN socket has been closed" << endl;
+            }
+        }
+        catch(RWxmsg& msg )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << endl << "VGConnectionHandler Failed: " ;
+                dout << msg.why() << endl;
+                bQuit = TRUE;
+            }
+            throw;
+        }
+        catch(...)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << endl << "VGConnectionHandler Failed: " << msg.why() << endl;
+            dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-        throw;
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Dispatch Connection Handler Thread shutting down " << endl;
     }
-}
 
+    return;
+}
 
 int CtiVanGogh::registration(CtiServer::ptr_type pCM, const CtiPointRegistrationMsg &aReg)
 {
@@ -5307,9 +5359,7 @@ CtiTableCICustomerBase* CtiVanGogh::getCustomer( LONG custid )
 }
 
 
-CtiVanGogh::CtiVanGogh() :
-    _notificationConnection(NULL),
-    _listenerConnection( Cti::Messaging::ActiveMQ::Queue::dispatch )
+CtiVanGogh::CtiVanGogh() : _notificationConnection(NULL)
 {
     {
         CtiServerExclusion guard(_server_exclusion);
@@ -7240,7 +7290,8 @@ void CtiVanGogh::stopDispatch()
 
     try
     {
-        _listenerConnection.close();
+        // This forces the listener thread to exit on shutdown.
+        _listenerSocket.close();
     }
     catch(...)
     {
@@ -7320,9 +7371,8 @@ CtiConnection* CtiVanGogh::getNotificationConnection()
 
             if( _notificationConnection == NULL )
             {
-                _notificationConnection  = new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::notification );
+                _notificationConnection  = new CtiConnection( NotificationPort, NotificationMachine );
                 _notificationConnection->setName("Dispatch to Notification");
-                _notificationConnection->start();
             }
         }
 

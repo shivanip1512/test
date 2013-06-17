@@ -40,10 +40,10 @@ import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.dbeditor.wizard.state.YukonImagePanel;
-import com.cannontech.dispatch.DbChangeType;
 import com.cannontech.esub.element.FunctionElement;
 import com.cannontech.esub.element.StateImage;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -1271,7 +1271,7 @@ public void actionPerformed(ActionEvent e)
                     Transaction t = Transaction.createTransaction(Transaction.INSERT, (DBPersistent) event.getDataChanged());
                     DBPersistent img = t.execute();
                     if(img instanceof CTIDbChange) {
-                        DBChangeMessage[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages(
+                        DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages(
                                     (CTIDbChange)img, DbChangeType.ADD);
                                   
                         for( int i = 0; i < dbChange.length; i++ )
@@ -1288,7 +1288,7 @@ public void actionPerformed(ActionEvent e)
                     DBPersistent img = t.execute();
 
                     if(img instanceof CTIDbChange) {
-                        DBChangeMessage[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages(
+                        DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages(
                                     (CTIDbChange)img, DbChangeType.DELETE);
                                   
                         for( int i = 0; i < dbChange.length; i++ )

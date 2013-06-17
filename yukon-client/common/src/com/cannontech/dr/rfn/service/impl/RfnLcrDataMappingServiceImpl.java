@@ -33,7 +33,7 @@ import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.model.RfnLcrPointDataMap;
 import com.cannontech.dr.rfn.model.RfnLcrRelayDataMap;
 import com.cannontech.dr.rfn.service.RfnLcrDataMappingService;
-import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -47,9 +47,9 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
     private static final Logger log = YukonLogManager.getLogger(RfnLcrDataMappingServiceImpl.class);
     private static final LogHelper logHelper = YukonLogManager.getLogHelper(RfnLcrDataMappingServiceImpl.class);
 
-    public List<PointDataMessage> mapPointData(RfnLcrReadingArchiveRequest request, SimpleXPathTemplate data) {
+    public List<PointData> mapPointData(RfnLcrReadingArchiveRequest request, SimpleXPathTemplate data) {
         
-        List<PointDataMessage> messagesToSend = Lists.newArrayListWithExpectedSize(16);
+        List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
         Set<RfnLcrPointDataMap> rfnLcrPointDataMap = Sets.newHashSet();
 
         RfnDevice device = rfnDeviceLookupService.getDevice(request.getRfnIdentifier());
@@ -90,11 +90,11 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
                 Integer pointTypeId = paoPointIdentifier.getPointIdentifier().getPointType().getPointTypeId();
                 Long timeInSec = data.evaluateAsLong("/DRReport/@utc");
                 Date timeOfReading = new Instant(timeInSec * 1000).toDate();
-                PointDataMessage pointData = createPointData(pointId, pointTypeId, timeOfReading, value);
+                PointData pointData = createPointData(pointId, pointTypeId, timeOfReading, value);
                 messagesToSend.add(pointData);
             }
         }
-        List<PointDataMessage> intervalData;
+        List<PointData> intervalData;
         
         /** This may be useful some day */
         boolean readNow = (data.evaluateAsInt("/DRReport/Info/Flags") & 0x01) == 1;
@@ -105,12 +105,12 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
         return messagesToSend;
     }
 
-    private List<PointDataMessage> mapIntervalData(RfnLcrReadingArchiveRequest request, 
+    private List<PointData> mapIntervalData(RfnLcrReadingArchiveRequest request, 
             SimpleXPathTemplate data, RfnDevice device) {
         
         int intervalLengthMinutes = evaluateArchiveReadValue(data, RfnLcrPointDataMap.RECORDING_INTERVAL).intValue();
         
-        List<PointDataMessage> intervalPointData = Lists.newArrayListWithExpectedSize(16);
+        List<PointData> intervalPointData = Lists.newArrayListWithExpectedSize(16);
         Set<RfnLcrRelayDataMap> rfnLcrRelayDataMap = Sets.newHashSet();
 
         try {
@@ -149,9 +149,9 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
                 Integer runTime = (interval & 0xFF00) >>> 8;
                 Integer shedTime = interval & 0xFF;
 
-                PointDataMessage runTimePointData = createPointData(runTimePoint.getPointID(), 
+                PointData runTimePointData = createPointData(runTimePoint.getPointID(), 
                         runTimePoint.getPointType(), currentIntervalTimestamp.toDate(), new Double(runTime));
-                PointDataMessage shedTimePointData = createPointData(shedTimePoint.getPointID(), 
+                PointData shedTimePointData = createPointData(shedTimePoint.getPointID(), 
                         shedTimePoint.getPointType(), currentIntervalTimestamp.toDate(), new Double(shedTime));
 
                 intervalPointData.add(runTimePointData);
@@ -164,9 +164,9 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
         return intervalPointData;
     }
 
-    private PointDataMessage createPointData(Integer pointId, Integer pointType, Date timestamp, Double value) {
+    private PointData createPointData(Integer pointId, Integer pointType, Date timestamp, Double value) {
         
-        PointDataMessage pointData = new PointDataMessage();
+        PointData pointData = new PointData();
         pointData.setTagsPointMustArchive(true);    
         pointData.setPointQuality(PointQuality.Normal);
 

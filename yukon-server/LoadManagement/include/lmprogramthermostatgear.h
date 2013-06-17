@@ -35,6 +35,10 @@ public:
 
     virtual CtiLMProgramDirectGear* replicate() const;
 
+    //Members inherited from RWCollectable
+    //void restoreGuts(RWvistream& );
+    //void saveGuts(RWvostream& ) const;
+
     CtiLMProgramThermoStatGear& operator=(const CtiLMProgramThermoStatGear& right);
 
     int operator==(const CtiLMProgramThermoStatGear& right) const;

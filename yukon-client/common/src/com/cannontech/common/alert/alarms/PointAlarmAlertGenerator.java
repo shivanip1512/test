@@ -14,7 +14,7 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.SignalListener;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.messaging.message.dispatch.SignalMessage;
+import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.user.checker.RolePropertyUserCheckerFactory;
 import com.cannontech.user.checker.UserChecker;
@@ -35,7 +35,7 @@ public class PointAlarmAlertGenerator implements SignalListener {
     }
     
     @Override
-    public void signalReceived(SignalMessage signal) {
+    public void signalReceived(Signal signal) {
         final int tags = signal.getTags();
         
         boolean isAlarmActive = TagUtils.isAlarmActive(tags);
@@ -45,9 +45,9 @@ public class PointAlarmAlertGenerator implements SignalListener {
         
         LitePoint litePoint = null;
         try {
-            litePoint = pointDao.getLitePoint(signal.getPointId());
+            litePoint = pointDao.getLitePoint(signal.getPointID());
         }catch (NotFoundException nfe) {
-            CTILogger.error("The point (pointId:"+ signal.getPointId() + ") for this Alarm might have been deleted!", nfe);
+            CTILogger.error("The point (pointId:"+ signal.getPointID() + ") for this Alarm might have been deleted!", nfe);
         }
         if(litePoint != null) {
         	LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
@@ -58,7 +58,7 @@ public class PointAlarmAlertGenerator implements SignalListener {
         	resolvableTemplate.addData("alarmText", AlarmUtils.getAlarmConditionText(signal.getCondition(), litePoint));
         
         	AlarmAlert alarmAlert = new AlarmAlert(signal.getTimeStamp(), resolvableTemplate);
-        	alarmAlert.setPointId(signal.getPointId());
+        	alarmAlert.setPointId(signal.getPointID());
         	alarmAlert.setCondition(signal.getCondition());
         	boolean isUnacknowledgedAlarm = TagUtils.isAlarmUnacked(signal.getTags());
         	alarmAlert.setUnacknowledgedAlarm(isUnacknowledgedAlarm);

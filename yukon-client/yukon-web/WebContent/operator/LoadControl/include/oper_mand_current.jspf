@@ -3,7 +3,7 @@
 <%@ page import="java.util.GregorianCalendar" %>
 <%@ page import="java.util.Calendar" %>
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
-<%@ page import="com.cannontech.messaging.message.loadcontrol.data.ProgramCurtailment" %>
+<%@ page import="com.cannontech.loadcontrol.data.LMProgramCurtailment" %>
 <%@ page import="com.cannontech.common.util.TimeUtil" %>
 <%
 	String pending = request.getParameter("pending");

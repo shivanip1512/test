@@ -37,14 +37,27 @@ protected:
       };
    };
 
-public:
-
-   CtiVanGoghConnectionManager( CtiListenerConnection &listenerConn, Que_t *MainQueue_ );
-   virtual ~CtiVanGoghConnectionManager();
-
-   static unsigned hash(const CtiVanGoghConnectionManager& aRef);
+private:
 
    // Client connection supplied information via a Registration Message
+
+   int  ClientKnownPort;
+
+   CtiVanGoghConnectionManager() :
+      _blank(0),
+      ClientKnownPort(-1)
+   {
+      std::cout << "Default Constructor may break things!" << FO(__FILE__) << " " << __LINE__ << std::endl;
+      std::cout << "**** Connection Manager!!! *****" << std::endl;
+   }
+
+public:
+
+   CtiVanGoghConnectionManager(CtiExchange *XChg, Que_t *MainQueue_);// :_blank(0),ClientKnownPort(-1),CtiConnectionManager(XChg, MainQueue_)
+   virtual ~CtiVanGoghConnectionManager();
+   static unsigned hash(const CtiVanGoghConnectionManager& aRef);
+   int   getClientKnownPort() const;//          {return ClientKnownPort; }
+   void  setClientKnownPort(int p);//           {ClientKnownPort = p; }
 
    UINT  getStatus() const;
    CtiVanGoghConnectionManager& setStatus( const UINT a_status );

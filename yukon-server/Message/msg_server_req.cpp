@@ -3,16 +3,24 @@
 #include "logger.h"
 
 using std::endl;
-using std::string;
-using std::auto_ptr;
 
-using boost::shared_ptr;
-
-DEFINE_COLLECTABLE( CtiServerRequestMsg, MSG_SERVER_REQUEST );
+RWDEFINE_COLLECTABLE( CtiServerRequestMsg, MSG_SERVER_REQUEST );
 
 CtiServerRequestMsg::CtiServerRequestMsg(const CtiServerRequestMsg& req)
 {
     operator=(req);
+}
+
+void CtiServerRequestMsg::saveGuts(RWvostream &strm) const
+{
+    Inherited::saveGuts(strm);
+    strm << _id << _payload;
+}
+
+void CtiServerRequestMsg::restoreGuts(RWvistream &strm)
+{
+    Inherited::restoreGuts(strm);
+    strm >> _id >> _payload;
 }
 
 void CtiServerRequestMsg::dump() const
@@ -32,7 +40,7 @@ CtiMessage* CtiServerRequestMsg::replicateMessage() const
 CtiServerRequestMsg::CtiServerRequestMsg()
 : _id(-1), _payload(NULL) {}
 
-CtiServerRequestMsg::CtiServerRequestMsg(int id, CtiMessage* payload)
+CtiServerRequestMsg::CtiServerRequestMsg(int id, RWCollectable* payload)
 : _id(id), _payload(payload) { }
 
 CtiServerRequestMsg::~CtiServerRequestMsg()
@@ -52,12 +60,12 @@ CtiServerRequestMsg& CtiServerRequestMsg::setID(int id)
     return *this;
 }
 
-CtiMessage* CtiServerRequestMsg::getPayload() const
+RWCollectable* CtiServerRequestMsg::getPayload() const
 {
     return _payload;
 }
 
-CtiServerRequestMsg& CtiServerRequestMsg::setPayload(CtiMessage* payload)
+CtiServerRequestMsg& CtiServerRequestMsg::setPayload(RWCollectable* payload)
 {
     _payload = payload;
     return *this;

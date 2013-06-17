@@ -17,8 +17,8 @@ import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -168,10 +168,10 @@ public class UserGroup extends DBPersistent implements CTIDbChange, EditorPanel 
     }
     
     @Override
-    public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType) {
-        DBChangeMessage[] msgs = 
-            {new DBChangeMessage(userGroup.getUserGroupId(), DBChangeMessage.CHANGE_USER_GROUP_DB,
-                             DBChangeMessage.CAT_USER_GROUP, DBChangeMessage.CAT_USER_GROUP,  dbChangeType)};
+    public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+        DBChangeMsg[] msgs = 
+            {new DBChangeMsg(userGroup.getUserGroupId(), DBChangeMsg.CHANGE_USER_GROUP_DB,
+                             DBChangeMsg.CAT_USER_GROUP, DBChangeMsg.CAT_USER_GROUP,  dbChangeType)};
 
         return msgs;
     }

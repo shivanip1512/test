@@ -10,8 +10,8 @@ import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -312,7 +312,7 @@ public class LocateRouteDialog extends javax.swing.JDialog implements java.awt.e
     }
 
     @Override
-    public void handleDBChangeMsg(DBChangeMessage msg, LiteBase liteBase) {
+    public void handleDBChangeMsg(DBChangeMsg msg, LiteBase liteBase) {
         
         if(msg.getCategory().equals(PAOGroups.STRING_CAT_ROUTE)){
             DbChangeType dbChangeType = msg.getDbChangeType();

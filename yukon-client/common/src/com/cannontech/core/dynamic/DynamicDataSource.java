@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
-import com.cannontech.messaging.message.dispatch.PointDataMessage;
-import com.cannontech.messaging.message.dispatch.SignalMessage;
+import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.message.dispatch.message.Signal;
 
 /**
  * DynamicDataSource can be used to obtain dynamic/current point
@@ -18,8 +18,8 @@ import com.cannontech.messaging.message.dispatch.SignalMessage;
  */
 public interface DynamicDataSource {
     
-    public void putValue(PointDataMessage pointData) throws DynamicDataAccessException;
-    public void putValues(Iterable<PointDataMessage> pointDatas) throws DynamicDataAccessException;
+    public void putValue(PointData pointData) throws DynamicDataAccessException;
+    public void putValues(Iterable<PointData> pointDatas) throws DynamicDataAccessException;
     public void putValue(int pointId, double value) throws DynamicDataAccessException;
     
     /**
@@ -30,7 +30,7 @@ public interface DynamicDataSource {
      * @Deprecated use getPointValue
      */
     @Deprecated
-    public PointDataMessage getPointData(int pointId) throws DynamicDataAccessException;
+    public PointData getPointData(int pointId) throws DynamicDataAccessException;
     /**
      * Please use getPointValue to avoid creating a dependency on the actual PointData message
      * @param pointId
@@ -39,15 +39,15 @@ public interface DynamicDataSource {
      * @Deprecated use getPointValue
      */
     @Deprecated
-    public Set<PointDataMessage> getPointData(Set<Integer> pointIds) throws DynamicDataAccessException;
+    public Set<PointData> getPointData(Set<Integer> pointIds) throws DynamicDataAccessException;
     
     public PointValueQualityHolder getPointValue(int pointId) throws DynamicDataAccessException;
     public Set<? extends PointValueQualityHolder> getPointValue(Set<Integer> pointIds) throws DynamicDataAccessException;
     
-    public Set<SignalMessage> getSignals(int pointId) throws DynamicDataAccessException;
-    public Map<Integer, Set<SignalMessage>> getSignals(Set<Integer> pointIds) throws DynamicDataAccessException;
+    public Set<Signal> getSignals(int pointId) throws DynamicDataAccessException;
+    public Map<Integer, Set<Signal>> getSignals(Set<Integer> pointIds) throws DynamicDataAccessException;
     
-    public Set<SignalMessage> getSignalsByCategory(int alarmCategoryId) throws DynamicDataAccessException;
+    public Set<Signal> getSignalsByCategory(int alarmCategoryId) throws DynamicDataAccessException;
     
     public Integer getTags(int pointId) throws DynamicDataAccessException;
     public Set<Integer> getTags(Set<Integer> pointIds) throws DynamicDataAccessException;

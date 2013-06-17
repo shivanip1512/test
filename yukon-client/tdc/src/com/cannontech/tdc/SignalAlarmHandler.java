@@ -7,7 +7,7 @@ import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.messaging.message.dispatch.SignalMessage;
+import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tdc.bookmark.BookMarkBase;
@@ -83,7 +83,7 @@ class SignalAlarmHandler
       return alarmMenu;
    }
    
-   public synchronized void handleSignal( SignalMessage sig )
+   public synchronized void handleSignal( Signal sig )
    {
 
       boolean foundSig = false;
@@ -94,8 +94,8 @@ class SignalAlarmHandler
       {
          javax.swing.JMenuItem menuItem = (javax.swing.JMenuItem)getAlarmVector().get(i);
          
-          SignalMessage storedSig = 
-          	(SignalMessage)menuItem.getClientProperty( SignalAlarmHandler.class.getName() );
+          Signal storedSig = 
+          	(Signal)menuItem.getClientProperty( SignalAlarmHandler.class.getName() );
    
          //we already have a JMenuItem for this signal
          if( storedSig != null )
@@ -108,7 +108,7 @@ class SignalAlarmHandler
                         SignalAlarmHandler.class.getName(), sig );
                   
                   LitePoint lp =      
-                     YukonSpringHook.getBean(PointDao.class).getLitePoint( (int)sig.getPointId() );
+                     YukonSpringHook.getBean(PointDao.class).getLitePoint( (int)sig.getPointID() );
                   
                   menuItem.setText(
 								"(" + YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(lp.getPaobjectID()) +
@@ -147,11 +147,11 @@ class SignalAlarmHandler
          {            
             public int compare(Object o1, Object o2)
             {
-               long val1 = ((SignalMessage)
+               long val1 = ((Signal)
                   ((javax.swing.JMenuItem)o1).getClientProperty(
                   SignalAlarmHandler.class.getName())).getTimeStamp().getTime();
                   
-               long val2 = ((SignalMessage)
+               long val2 = ((Signal)
                   ((javax.swing.JMenuItem)o2).getClientProperty(
                   SignalAlarmHandler.class.getName())).getTimeStamp().getTime();
 
@@ -210,13 +210,13 @@ class SignalAlarmHandler
       
    }
    
-   private void addAlarm( SignalMessage sig )
+   private void addAlarm( Signal sig )
    {
    	if( sig == null )
    		return;
 
 		LitePoint lp =      
-			YukonSpringHook.getBean(PointDao.class).getLitePoint( (int)sig.getPointId() );
+			YukonSpringHook.getBean(PointDao.class).getLitePoint( (int)sig.getPointID() );
 
 		javax.swing.JMenuItem newItem = new javax.swing.JMenuItem(
 			"(" + YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(lp.getPaobjectID()) +
@@ -237,7 +237,7 @@ class SignalAlarmHandler
             Display.DISPLAY_TYPES[Display.ALARMS_AND_EVENTS_TYPE_INDEX] +
             BookMarkBase.BOOKMARK_TOKEN +
             YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategoryName(
-                  (int)sig.getCategoryId()) );
+                  (int)sig.getCategoryID()) );
 
 
       newItem.addActionListener(

@@ -3,11 +3,10 @@
 #include <limits.h>
 
 #include <rw/thr/thrfunc.h>
+
 #include <rw/toolpro/sockport.h>
 #include <rw/toolpro/inetaddr.h>
 #include <rw/toolpro/neterr.h>
-
-#include <boost/scoped_ptr.hpp>
 
 #include "dlldefs.h"
 #include "exchange.h"
@@ -18,18 +17,6 @@
 #include "mutex.h"
 #include "queue.h"
 
-namespace cms {
-class Connection;
-class Session;
-class Message;
-class ExceptionListener;
-class MessageListener;
-class Destination;
-class MessageConsumer;
-class MessageProducer;
-class CMSException;
-}
-
 class IM_EX_MSG CtiConnection
 {
 public:
@@ -39,107 +26,119 @@ public:
 
 protected:
 
-    CtiConnection( const std::string& title, Que_t *inQ = NULL, INT tt = 3 );
+   std::string              _name;
+   CtiTime                  _birth;
 
-    virtual ~CtiConnection();
+   INT                      _termTime;
+   CtiTime                  _lastInQueueWrite;
 
-    std::string _name;
-    const std::string _title;
+   CtiRegistrationMsg      *_regMsg;
+   CtiPointRegistrationMsg *_ptRegMsg;
 
-    INT _termTime;
+   std::string              _host;
+   INT                      _port;
 
-    CtiTime _birth;
-    CtiTime _lastInQueueWrite;
+   CtiExchange             *_exchange;                     // Pointer so I can kill it dead at will...
 
-    RWThreadFunction outthread;
+   RWThreadFunction         outthread_;
+   RWThreadFunction         inthread_;
 
-    Que_t  _outQueue; // contains message to send
-    Que_t* _inQueue;  // contains message received
+    Que_t outQueue;        // outthread_ pops out of here
+    Que_t *inQueue;        // inthread_ dumps into here
 
 
-    // State Descriptions:
-    union
-    {
-        UINT _flag;
+   /*
+    *  State Descriptions:
+    *
+    *  _valid              Exchange/Socket/Portal is good to go.
+    *  _dontReconnect      ConnectPortal should not re-establish the connection..
+    *                         Someone has put us in shutdown mode
+    *  _serverConnection   This Exchange/Socket/Portal cannot be reconnected.  Failure is terminal
+    */
+   union
+   {
+      UINT        _flag;
 
-        struct // Bit field status definitions
-        {
-            UINT _bQuit              : 1;
-            UINT _noLongerViable     : 1;     // One or both the threads have terminated.
-            UINT _connectCalled      : 1;     // Indicates that threads have started and queues exist.
-            UINT _valid              : 1;
-            UINT _dontReconnect      : 1;
-            UINT _localQueueAlloc    : 1;
-            UINT _bConnected         : 1;
-        };
-    };
+      struct         // Bit field status definitions
+      {
+         UINT     _bQuit                  : 1;
+         UINT     _noLongerViable         : 1;     // One or both the threads have terminated.
+         UINT     _connectCalled          : 1;     // Indicates that threads have started and queues exist.
+         UINT     _valid                  : 1;
+         UINT     _dontReconnect          : 1;
+         UINT     _serverConnection       : 1;
+         UINT     _localQueueAlloc        : 1;
+         UINT     _preventInThreadReset   : 1;     // This is here because the In and Out threads can both
+         UINT     _preventOutThreadReset  : 1;     // call cleanConnection, we dont want them fighting.
+      };
+   };
 
-    void sendMessage( const CtiMessage& message );
-    void flushInDestination();
+   virtual void writeIncomingMessageToQueue(CtiMessage *msgPtr);
 
-    virtual INT  establishConnection         () = 0;
-    virtual void endConnection               () = 0;
-    virtual void cleanUp                     () = 0;
-    virtual void writeIncomingMessageToQueue ( CtiMessage* msg );
-    virtual void messagePeek                 ( const CtiMessage& msg );
-
-    INT checkCancellation ( INT mssleep = 0 );
+private:
+    void cleanConnection();
+    void cleanExchange();
 
     mutable CtiMutex _mux;
 
-    void OutThread        (); // OutBound messages to the applicaiton go through here
-    void ThreadInitiate   (); // This function starts the execution of the next two, which are threads.
-    void cleanConnection  ();
-    void forceTermination ();
-    void destroyDestIn    ();
-
-    std::auto_ptr<cms::Session>          _sessionIn;
-    std::auto_ptr<cms::Session>          _sessionOut;
-    std::auto_ptr<cms::Destination>      _destIn;
-    std::auto_ptr<cms::Destination>      _destOut;
-    std::auto_ptr<cms::MessageConsumer>  _consumer;
-    std::auto_ptr<cms::MessageProducer>  _producer;
-    std::auto_ptr<cms::MessageListener>  _messageListener;
-
-    std::auto_ptr<cms::Destination>      _advisoryDest;
-    std::auto_ptr<cms::MessageConsumer>  _advisoryConsumer;
-    std::auto_ptr<cms::MessageListener>  _advisoryListener;
-
-    void onMessage         ( const cms::Message* message );
-    void onAdvisoryMessage ( const cms::Message* message );
-
-    void logStatus    ( std::string funcName, std::string note ) const;
-    void logException ( std::string fileName, int line, std::string exceptionName = "", std::string note = "" ) const;
-
-    boost::scoped_ptr<CtiMessage> _outMessage;
 
 public:
 
-    void start();
-    void close();
+   // Don't want anyone to use this one....
+   CtiConnection( );
+   CtiConnection( const INT &Port, const std::string &Host, Que_t *inQ = NULL, INT tt = 3);
+   CtiConnection(CtiExchange *xchg, Que_t *inQ = NULL, INT tt = 3);
+   virtual ~CtiConnection();
 
-    static unsigned hash ( const CtiConnection& aRef );
+   virtual void doConnect( const INT &Port, const std::string &Host, Que_t *inQ = NULL );
+   virtual RWBoolean operator==(const CtiConnection& aRef) const;
+   static unsigned hash(const CtiConnection& aRef);
+   CtiMessage*    ReadConnQue(UINT Timeout = UINT_MAX);
+   int            WriteConnQue(CtiMessage*, unsigned millitimeout = 0, bool cleaniftimedout = true);
 
-    virtual RWBoolean operator== ( const CtiConnection& aRef ) const;
+   void   Shutdown();
 
-    CtiMessage* ReadConnQue  ( UINT Timeout = UINT_MAX );
-    int         WriteConnQue ( CtiMessage* msg, unsigned millitimeout = 0, bool cleaniftimedout = true );
+   std::string getPeer() const;
 
-    Que_t& getOutQueueHandle();
-    Que_t& getInQueueHandle();
+   INT ConnectPortal();
+   INT ManageSocketError( RWSockErr& msg );
 
-    INT  verifyConnection();
-    int  outQueueCount() const;
-    BOOL isViable() const;
-    UINT valid() const;
+   void ResetConnection();
+   void ShutdownConnection();
 
-    const CtiTime& getLastReceiptTime() const;
+   // This function starts the execution of the next two, which are threads.
+   virtual int  ThreadInitiate();
+   virtual void InThread();             // InBound messages from application come in here
+   virtual void OutThread();            // OutBound messages to the applicaiton go through here
 
-    std::string who() const;
-    std::string getPeer() const;
+   virtual void ThreadTerminate();
+    Que_t & getOutQueueHandle();
+    Que_t & getInQueueHandle();
 
-    const std::string& getName () const;
-    void               setName ( const std::string &str );
+   BOOL  isViable() const;
+   UINT  valid() const;
+   void  forceTermination();
+   INT   verifyConnection();
+   INT   establishConnection();
+   INT   checkCancellation(INT mssleep = 0);
+   INT   waitForConnect();
+
+   const CtiTime& getLastReceiptTime() const;
+
+   void  messagePeek( CtiMessage *MyMsg );
+   void  recordRegistration( CtiMessage *msg );
+   void  recordPointRegistration( CtiMessage *msg );
+
+   std::string who();
+
+   std::string   getName() const;
+   CtiConnection& setName(const std::string &str);
+
+   int outQueueCount() const;
+
+   virtual void preWork();
+
 };
 
 typedef CtiConnection* CtiConnectionPtr;
+

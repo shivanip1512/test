@@ -105,7 +105,7 @@ location="control.jsp?pointid=" + id + "&action=display";
 	Iterator tagLogIter = tagLogList.iterator();
 	while(tagLogIter.hasNext()) {
 		TAGLog tag = (TAGLog) tagLogIter.next();
-		LiteTag lt = YukonSpringHook.getBean(TagDao.class).getLiteTag(tag.getTagID());
+		LiteTag lt = YukonSpringHook.getBean(TagDao.class).getLiteTag(tag.getTagID().intValue());
 %>	      
       
           <tr>

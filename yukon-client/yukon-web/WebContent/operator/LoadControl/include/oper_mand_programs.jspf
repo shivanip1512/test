@@ -6,11 +6,11 @@
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 </head>
-<%@ page import="com.cannontech.messaging.message.loadcontrol.data.ProgramCurtailment" %>
-<%@ page import="com.cannontech.messaging.message.loadcontrol.data.CurtailCustomer" %>
+<%@ page import="com.cannontech.loadcontrol.data.LMProgramCurtailment" %>
+<%@ page import="com.cannontech.loadcontrol.data.LMCurtailCustomer" %>
 <%@ page import="java.util.ArrayList" %>
 <%
-    ProgramCurtailment[] programs = cache.getEnergyCompanyCurtailmentPrograms(energyCompanyID);
+    LMProgramCurtailment[] programs = cache.getEnergyCompanyCurtailmentPrograms(energyCompanyID);
 
 %>
 <body class="Background" text="#000000" leftmargin="0" topmargin="0">
@@ -89,7 +89,7 @@
           <%
                for( int i = 0; i < programs.length; i += 2 )
                {
-                    ProgramCurtailment p = programs[i];   
+                    LMProgramCurtailment p = programs[i];   
           %>
           <tr> 
             <td valign="top"> 
@@ -98,12 +98,12 @@
                   <td  class="HeaderCell" width="50%"><%= p.getYukonName() %></td>
                 </tr>
                 <%
-                    CurtailCustomer[] custs = cache.getCurtailmentCustomers(p.getYukonId().longValue() );
+                    LMCurtailCustomer[] custs = cache.getCurtailmentCustomers(p.getYukonID().longValue() );
                     for( int j = 0; j < custs.length; j++ )
                     {                    
                 %>
                 <tr class="TableCell"> 
-                  <td width="50%"> <a href="oper_mand.jsp?tab=profile&customerid=<%= custs[j].getCustomerId() %>" class="Link1"><%= custs[j].getCompanyName() %></a></td>
+                  <td width="50%"> <a href="oper_mand.jsp?tab=profile&customerid=<%= custs[j].getCustomerID() %>" class="Link1"><%= custs[j].getCompanyName() %></a></td>
                 </tr>
                 <%
                     }
@@ -123,12 +123,12 @@
                   <td class="HeaderCell" width="50%"> <%= p.getYukonName() %></td>
                 </tr>
                 <%
-                    custs = cache.getCurtailmentCustomers(p.getYukonId().longValue() );
+                    custs = cache.getCurtailmentCustomers(p.getYukonID().longValue() );
                     for( int j = 0; j < custs.length; j++ )
                     {                    
                 %>
                 <tr class="TableCell"> 
-                  <td width="50%"> <a href="oper_mand.jsp?tab=profile&customerid=<%= custs[j].getCustomerId() %>" class="Link1"><%= custs[j].getCompanyName() %></a></td>
+                  <td width="50%"> <a href="oper_mand.jsp?tab=profile&customerid=<%= custs[j].getCustomerID() %>" class="Link1"><%= custs[j].getCompanyName() %></a></td>
                 </tr>
                 <%
                      }

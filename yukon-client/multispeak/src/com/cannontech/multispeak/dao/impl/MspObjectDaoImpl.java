@@ -22,7 +22,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.SystemLog;
-import com.cannontech.dispatch.SystemLogHelper;
+import com.cannontech.message.dispatch.message.SystemLogHelper;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;

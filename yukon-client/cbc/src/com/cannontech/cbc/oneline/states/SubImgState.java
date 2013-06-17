@@ -2,8 +2,8 @@ package com.cannontech.cbc.oneline.states;
 
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.util.CapControlUtils;
-import com.cannontech.messaging.message.capcontrol.streamable.StreamableCapObject;
-import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 
 public class SubImgState implements OnelineState {
 
@@ -11,15 +11,15 @@ public class SubImgState implements OnelineState {
 
     public int getLiteStateId(StreamableCapObject o, int state) {
         SubBus subBus = (SubBus) o;
-        if (subBus.getCcDisableFlag()) {
+        if (subBus.getCcDisableFlag().booleanValue()) {
             state = OnelineUtil.SUB_ST_DIS;
-        } else if (subBus.getRecentlyControlledFlag()) {
+        } else if (subBus.getRecentlyControlledFlag().booleanValue()) {
 
-            if (subBus.getRecentlyControlledFlag()) {
+            if (subBus.getRecentlyControlledFlag().booleanValue()) {
                 state = OnelineUtil.SUB_ST_PENDING;
             }
 
-        } else if (subBus.getSwitchOverStatus() && CapControlUtils.isDualBusEnabled(subBus)) {
+        } else if (subBus.getSwitchOverStatus().booleanValue() && CapControlUtils.isDualBusEnabled(subBus)) {
             state = OnelineUtil.SUB_ST_EN_ALBUS;
         }
 

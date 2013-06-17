@@ -25,7 +25,7 @@ import com.cannontech.database.db.holiday.DateOfHoliday;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
-import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -135,12 +135,12 @@ public class Baseline implements Serializable
 		
 		if( data != null)
 		{
-			PointDataMessage pointDataMsg = null;
+			PointData pointDataMsg = null;
 			for (int i = 0; i < data.length(); i++)
 			{
 				// Must enter the baseline value into RPH twice in order for Graph to be able to draw it.
 				// Begining Timestamp 00:00:01
-				pointDataMsg = new PointDataMessage();
+				pointDataMsg = new PointData();
 				pointDataMsg.setId(pointID.intValue());
 		
 				pointDataMsg.setValue( data.getValues()[i].doubleValue());
@@ -554,7 +554,7 @@ public class Baseline implements Serializable
 	{
 		HoursAndValues returnData = null;
 		long DAY = 86400000;
-		PointDataMessage pointDataMsg = null;
+		PointData pointDataMsg = null;
 	
 		StringBuffer sql = new StringBuffer("SELECT VALUE, TIMESTAMP FROM RAWPOINTHISTORY WHERE ");
 	

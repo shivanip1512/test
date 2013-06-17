@@ -6,7 +6,7 @@ package com.cannontech.loadcontrol.datamodels;
 import java.awt.Color;
 
 import com.cannontech.loadcontrol.LCUtils;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
+import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.user.SystemUserContext;
 
 public class ControlAreaTableModel extends com.cannontech.tdc.observe.ObservableRowTableModel implements IControlAreaTableModel
@@ -66,9 +66,9 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (4/6/2001 10:08:28 AM)
-	 * @param ControlAreaItem
+	 * @param LMControlArea
 	 */
-	public synchronized void addControlArea( ControlAreaItem area )
+	public synchronized void addControlArea( LMControlArea area )
 	{
 		addControlAreaAt( area, 0 );
 	}
@@ -76,14 +76,14 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (4/6/2001 10:08:28 AM)
-	 * @param ControlAreaItem
+	 * @param LMControlArea
 	 */
-	public synchronized void addControlAreaAt( ControlAreaItem area, int indx )
+	public synchronized void addControlAreaAt( LMControlArea area, int indx )
 	{
 		//area = fileterArea(area);
 	
 		//FOR NOW, only display LMControlAreas that have 1 or more LMPrograms
-		if( area.getProgramVector().size() > 0 )
+		if( area.getLmProgramVector().size() > 0 )
 		{
 			getCurrentControlAreas().insertElementAt( area, indx );
 			fireTableRowsInserted( indx, getRowCount() );
@@ -196,22 +196,22 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 			{
 				return CELL_COLORS[3];
 			}
-			else if( getRowAt(row).getControlAreaState().intValue() == ControlAreaItem.STATE_INACTIVE )
+			else if( getRowAt(row).getControlAreaState().intValue() == LMControlArea.STATE_INACTIVE )
 			{
 				return CELL_COLORS[0];
 			}
-			else if( getRowAt(row).getControlAreaState().intValue() == ControlAreaItem.STATE_PARTIALLY_ACTIVE
-						|| getRowAt(row).getControlAreaState().intValue() == ControlAreaItem.STATE_FULLY_ACTIVE
-						|| getRowAt(row).getControlAreaState().intValue() == ControlAreaItem.STATE_MANUAL_ACTIVE )
+			else if( getRowAt(row).getControlAreaState().intValue() == LMControlArea.STATE_PARTIALLY_ACTIVE
+						|| getRowAt(row).getControlAreaState().intValue() == LMControlArea.STATE_FULLY_ACTIVE
+						|| getRowAt(row).getControlAreaState().intValue() == LMControlArea.STATE_MANUAL_ACTIVE )
 			{
 				return CELL_COLORS[1];
 			}
-			else if( getRowAt(row).getControlAreaState().intValue() == ControlAreaItem.STATE_CNTRL_ATTEMPT )
+			else if( getRowAt(row).getControlAreaState().intValue() == LMControlArea.STATE_CNTRL_ATTEMPT )
 			{
 				return CELL_COLORS[2];
 			}
-			else if(getRowAt(row).getControlAreaState().intValue() == ControlAreaItem.STATE_FULLY_SCHEDULED
-                        || getRowAt(row).getControlAreaState().intValue() == ControlAreaItem.STATE_PARTIALLY_SCHEDULED )
+			else if(getRowAt(row).getControlAreaState().intValue() == LMControlArea.STATE_FULLY_SCHEDULED
+                        || getRowAt(row).getControlAreaState().intValue() == LMControlArea.STATE_PARTIALLY_SCHEDULED )
 			{
 			    return CELL_COLORS[4];
 			}
@@ -251,12 +251,12 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 	/**
 	 * This method returns the value of a row in the form of a LMControlArea object.
 	 */
-	public synchronized ControlAreaItem getRowAt(int rowIndex) 
+	public synchronized LMControlArea getRowAt(int rowIndex) 
 	{
 		if( rowIndex < 0 || rowIndex >= getRowCount() )
 			return null;
 		else
-			return (ControlAreaItem)getCurrentControlAreas().get(rowIndex);	
+			return (LMControlArea)getCurrentControlAreas().get(rowIndex);	
 	}
 	
 	/**
@@ -274,7 +274,7 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 	
 		if( row < getRowCount() && row >= 0 )
 		{
-			ControlAreaItem lmCntrArea = getRowAt(row);
+			LMControlArea lmCntrArea = getRowAt(row);
 			// the following line could be changed to be more careful about the formatting
 			return LCUtils.getControlAreaValueAt( lmCntrArea, col, new SystemUserContext());					
 		}
@@ -324,9 +324,9 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (4/6/2001 10:08:28 AM)
-	 * @param ControlAreaItem
+	 * @param LMControlArea
 	 */
-	public void removeControlArea( ControlAreaItem area )
+	public void removeControlArea( LMControlArea area )
 	{
 		int loc = getCurrentControlAreas().indexOf(area);
 		
@@ -341,9 +341,9 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (4/6/2001 10:08:28 AM)
-	 * @param ControlAreaItem
+	 * @param LMControlArea
 	 */
-	public void setControlAreaAt( ControlAreaItem area, int index )
+	public void setControlAreaAt( LMControlArea area, int index )
 	{
 		//area = fileterArea(area);
 		getCurrentControlAreas().setElementAt( area, index );

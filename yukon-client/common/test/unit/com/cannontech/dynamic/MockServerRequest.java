@@ -3,34 +3,34 @@ package com.cannontech.dynamic;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.messaging.message.BaseMessage;
-import com.cannontech.messaging.message.server.ServerResponseMessage;
-import com.cannontech.messaging.util.MessageEvent;
-import com.cannontech.messaging.util.ServerRequest;
+import com.cannontech.message.server.ServerResponseMsg;
+import com.cannontech.message.util.Message;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.ServerRequest;
 import com.cannontech.yukon.IServerConnection;
 
 public class MockServerRequest implements ServerRequest {
 
-    List<BaseMessage> messagesWritten = new ArrayList<BaseMessage>();
-    public ServerResponseMessage makeServerRequest(IServerConnection conn,
-            BaseMessage msg) {
+    List<Message> messagesWritten = new ArrayList<Message>();
+    public ServerResponseMsg makeServerRequest(IServerConnection conn,
+            Message msg) {
         messagesWritten.add(msg);
         return makeGoodResponse();
     }
 
-    private ServerResponseMessage makeGoodResponse() {
-        ServerResponseMessage srm = new ServerResponseMessage();
-        srm.setStatus(ServerResponseMessage.STATUS_OK);
+    private ServerResponseMsg makeGoodResponse() {
+        ServerResponseMsg srm = new ServerResponseMsg();
+        srm.setStatus(ServerResponseMsg.STATUS_OK);
         return srm;
     }
     
-    private ServerResponseMessage makeBadResponse() {
-        ServerResponseMessage srm = new ServerResponseMessage();
-        srm.setStatus(ServerResponseMessage.STATUS_ERROR);
+    private ServerResponseMsg makeBadResponse() {
+        ServerResponseMsg srm = new ServerResponseMsg();
+        srm.setStatus(ServerResponseMsg.STATUS_ERROR);
         return srm;
     }
-    public ServerResponseMessage makeServerRequest(IServerConnection conn,
-            BaseMessage msg, long timeout) {
+    public ServerResponseMsg makeServerRequest(IServerConnection conn,
+            Message msg, long timeout) {
         // TODO Auto-generated method stub
         return null;
     }

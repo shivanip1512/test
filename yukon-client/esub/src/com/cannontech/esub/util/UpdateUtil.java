@@ -24,7 +24,7 @@ import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.esub.PointAttributes;
-import com.cannontech.messaging.message.dispatch.SignalMessage;
+import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 
@@ -221,10 +221,10 @@ public class UpdateUtil {
     		
     		if( (displayAttrib & PointAttributes.ALARM_TEXT) != 0 ) {
     			boolean foundOne = false;
-    			Iterator<SignalMessage> sigIter = dynamicDataSource.getSignals(pointID).iterator();			
+    			Iterator<Signal> sigIter = dynamicDataSource.getSignals(pointID).iterator();			
     			while(sigIter.hasNext()) {
-    				SignalMessage sig = (SignalMessage) sigIter.next();
-    				if((sig.getTags() & SignalMessage.TAG_UNACKNOWLEDGED_ALARM) != 0) {
+    				Signal sig = (Signal) sigIter.next();
+    				if((sig.getTags() & Signal.TAG_UNACKNOWLEDGED_ALARM) != 0) {
     					if(!foundOne) {
     						text += sig.getDescription();						
     					}
@@ -333,7 +333,7 @@ public class UpdateUtil {
         DynamicDataSource dynamicDataSource = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
 		int tags = dynamicDataSource.getTags(pointID);
         
-		return ((tags & SignalMessage.TAG_ATTRIB_CONTROL_AVAILABLE) != 0) &&
-				!((tags & SignalMessage.MASK_ANY_CONTROL_DISABLE) != 0);
+		return ((tags & Signal.TAG_ATTRIB_CONTROL_AVAILABLE) != 0) &&
+				!((tags & Signal.MASK_ANY_CONTROL_DISABLE) != 0);
 	}
 }

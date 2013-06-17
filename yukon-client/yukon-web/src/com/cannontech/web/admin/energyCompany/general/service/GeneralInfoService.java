@@ -13,9 +13,9 @@ import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
-import com.cannontech.messaging.util.DbChangeManager;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
@@ -93,11 +93,8 @@ public class GeneralInfoService {
         /* Address */
         addressDao.update(generalInfo.getAddress().getLiteAddress(addressId));
 
-        dbChangeManager.processDbChange(contactId,
-                                        DBChangeMessage.CHANGE_CONTACT_DB,
-                                        DBChangeMessage.CAT_CUSTOMERCONTACT,
-                                        DBChangeMessage.CAT_CUSTOMERCONTACT,
-                                        DbChangeType.UPDATE);
+        dbChangeManager.processDbChange(contactId, DBChangeMsg.CHANGE_CONTACT_DB, DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                        DBChangeMsg.CAT_CUSTOMERCONTACT, DbChangeType.UPDATE);
         
         /* Route */
         defaultRouteService.updateDefaultRoute(energyCompany, generalInfo.getDefaultRouteId(), user);

@@ -26,7 +26,7 @@ using std::vector;
 
 extern ULONG _LM_DEBUG;
 
-DEFINE_COLLECTABLE( CtiLMEnergyExchangeCustomer, CTILMENERGYEXCHANGECUSTOMER_ID )
+RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeCustomer, CTILMENERGYEXCHANGECUSTOMER_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -59,10 +59,6 @@ vector<CtiLMEnergyExchangeCustomerReply*>& CtiLMEnergyExchangeCustomer::getLMEne
     return _lmenergyexchangecustomerreplies;
 }
 
-const vector<CtiLMEnergyExchangeCustomerReply*>& CtiLMEnergyExchangeCustomer::getLMEnergyExchangeCustomerReplies() const
-{
-    return _lmenergyexchangecustomerreplies;
-}
 
 /*-------------------------------------------------------------------------
     hasAcceptedOffer
@@ -88,6 +84,32 @@ BOOL CtiLMEnergyExchangeCustomer::hasAcceptedOffer(LONG offerid) const
     }
 
     return returnBoolean;
+}
+
+/*-------------------------------------------------------------------------
+    restoreGuts
+
+    Restore self's state from the given stream
+--------------------------------------------------------------------------*/
+void CtiLMEnergyExchangeCustomer::restoreGuts(RWvistream& istrm)
+{
+    CtiLMCICustomerBase::restoreGuts( istrm );
+
+    istrm >> _lmenergyexchangecustomerreplies;
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+
+    Save self's state onto the given stream
+---------------------------------------------------------------------------*/
+void CtiLMEnergyExchangeCustomer::saveGuts(RWvostream& ostrm ) const
+{
+    CtiLMCICustomerBase::saveGuts( ostrm );
+
+    ostrm << _lmenergyexchangecustomerreplies;
+
+    return;
 }
 
 /*---------------------------------------------------------------------------

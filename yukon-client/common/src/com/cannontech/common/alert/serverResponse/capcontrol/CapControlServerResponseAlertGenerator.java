@@ -6,11 +6,11 @@ import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.messaging.message.BaseMessage;
-import com.cannontech.messaging.message.capcontrol.ResponseType;
-import com.cannontech.messaging.message.capcontrol.ServerResponseMessage;
-import com.cannontech.messaging.util.MessageEvent;
-import com.cannontech.messaging.util.MessageListener;
+import com.cannontech.message.capcontrol.model.CapControlResponseType;
+import com.cannontech.message.capcontrol.model.CapControlServerResponse;
+import com.cannontech.message.util.Message;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
 import com.cannontech.user.checker.SingleUserChecker;
 import com.cannontech.user.checker.UserChecker;
 import com.cannontech.yukon.IServerConnection;
@@ -27,11 +27,11 @@ public class CapControlServerResponseAlertGenerator implements MessageListener {
 
     @Override
     public void messageReceived(MessageEvent e) {
-        BaseMessage in = e.getMessage();
+        Message in = e.getMessage();
         String user = in.getUserName();
-        if (in instanceof ServerResponseMessage) {
-            ServerResponseMessage response = (ServerResponseMessage)in;
-            if (response.getResponseType() == ResponseType.COMMAND_REFUSED) {
+        if (in instanceof CapControlServerResponse) {
+            CapControlServerResponse response = (CapControlServerResponse)in;
+            if (response.getResponseType() == CapControlResponseType.COMMAND_REFUSED) {
                 ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.serverResponse");
                 resolvableTemplate.addData("responseText", response.getResponse());
                 CapControlServerResonseAlert alert = new CapControlServerResonseAlert(in.getTimeStamp(), resolvableTemplate);

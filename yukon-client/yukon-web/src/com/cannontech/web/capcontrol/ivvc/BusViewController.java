@@ -28,8 +28,8 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.pao.ZoneType;
 import com.cannontech.enums.Phase;
-import com.cannontech.messaging.message.capcontrol.streamable.StreamableCapObject;
-import com.cannontech.messaging.message.capcontrol.streamable.SubStation;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
@@ -126,14 +126,14 @@ public class BusViewController {
     
     private void setupBreadCrumbs(ModelMap model, CapControlCache cache, int subBusId, boolean isSpecialArea, YukonUserContext userContext) {
         StreamableCapObject subBus = cache.getSubBus(subBusId);
-        SubStation station = cache.getSubstation(subBus.getParentId());
+        SubStation station = cache.getSubstation(subBus.getParentID());
         
         StreamableCapObject area;
         if(isSpecialArea) {
             area = cache.getArea(station.getSpecialAreaId());
         }
         else {
-            area = cache.getArea(station.getParentId());
+            area = cache.getArea(station.getParentID());
         }
         
         String areaName = area.getCcName();

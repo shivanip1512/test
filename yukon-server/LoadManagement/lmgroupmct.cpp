@@ -21,7 +21,7 @@
 
 extern ULONG _LM_DEBUG;
 
-DEFINE_COLLECTABLE( CtiLMGroupMCT, CTILMGROUPMCT_ID )
+RWDEFINE_COLLECTABLE( CtiLMGroupMCT, CTILMGROUPMCT_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -45,6 +45,27 @@ CtiLMGroupMCT::CtiLMGroupMCT(const CtiLMGroupMCT& groupmct)
 ---------------------------------------------------------------------------*/
 CtiLMGroupMCT::~CtiLMGroupMCT()
 {
+}
+
+/*-------------------------------------------------------------------------
+    restoreGuts
+
+    Restore self's state from the given stream
+--------------------------------------------------------------------------*/
+void CtiLMGroupMCT::restoreGuts(RWvistream& istrm)
+{
+    Inherited::restoreGuts( istrm );
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+
+    Save self's state onto the given stream
+---------------------------------------------------------------------------*/
+void CtiLMGroupMCT::saveGuts(RWvostream& ostrm ) const
+{
+    Inherited::saveGuts( ostrm );
+    return;
 }
 
 /*---------------------------------------------------------------------------

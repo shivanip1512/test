@@ -13,7 +13,7 @@ import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionRe
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.messaging.message.porter.RequestMessage;
+import com.cannontech.message.porter.message.Request;
 
 /**
  * Implementation class for CommandRequestDeviceExecutor
@@ -25,13 +25,13 @@ public class CommandRequestDeviceExecutorImpl extends
     private Logger log = YukonLogManager.getLogger(CommandRequestDeviceExecutorImpl.class);
 
     @Override
-    protected void adjustRequest(RequestMessage request, CommandRequestDevice commandRequest) {
+    protected void adjustRequest(Request request, CommandRequestDevice commandRequest) {
         
         long requestId = RandomUtils.nextInt();
         int deviceId = commandRequest.getDevice().getPaoIdentifier().getPaoId();
         
-        request.setDeviceId(deviceId);
-        request.setUserMessageId(requestId);
+        request.setDeviceID(deviceId);
+        request.setUserMessageID(requestId);
         
         String debugStr = "Built request: " +
         "command = " + request.getCommandString() + " " +

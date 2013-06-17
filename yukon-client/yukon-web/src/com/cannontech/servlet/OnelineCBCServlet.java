@@ -21,7 +21,7 @@ import com.cannontech.cbc.oneline.view.CapControlOnelineCanvas;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.svg.SVGOptions;
-import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;

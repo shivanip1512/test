@@ -15,7 +15,7 @@ class CtiLMProgramEnergyExchange : public CtiLMProgramBase
 
 public:
 
-DECLARE_COLLECTABLE( CtiLMProgramEnergyExchange );
+RWDECLARE_COLLECTABLE( CtiLMProgramEnergyExchange )
 
     CtiLMProgramEnergyExchange();
     CtiLMProgramEnergyExchange(Cti::RowReader &rdr);
@@ -30,9 +30,7 @@ DECLARE_COLLECTABLE( CtiLMProgramEnergyExchange );
     const std::string& getCanceledMsg() const;
     const std::string& getStoppedEarlyMsg() const;
     std::vector<CtiLMEnergyExchangeOffer*>& getLMEnergyExchangeOffers();
-    const std::vector<CtiLMEnergyExchangeOffer*>& getLMEnergyExchangeOffers() const;
     std::vector<CtiLMEnergyExchangeCustomer*>& getLMEnergyExchangeCustomers();
-    const std::vector<CtiLMEnergyExchangeCustomer*>& getLMEnergyExchangeCustomers() const;
 
     CtiLMProgramEnergyExchange& setMinNotifyTime(LONG notifytime);
     CtiLMProgramEnergyExchange& setHeading(const std::string& head);
@@ -55,6 +53,10 @@ DECLARE_COLLECTABLE( CtiLMProgramEnergyExchange );
     virtual BOOL hasControlHoursAvailable();
     virtual BOOL stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, CtiTime currentTime);
     virtual BOOL handleManualControl(CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
+
+    //Members inherited from RWCollectable
+    void restoreGuts(RWvistream& );
+    void saveGuts(RWvostream& ) const;
 
     CtiLMProgramEnergyExchange& operator=(const CtiLMProgramEnergyExchange& right);
 

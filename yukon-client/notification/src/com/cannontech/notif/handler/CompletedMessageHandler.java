@@ -2,24 +2,24 @@ package com.cannontech.notif.handler;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.messaging.message.BaseMessage;
-import com.cannontech.messaging.message.notif.VoiceCompletedMessage;
+import com.cannontech.message.notif.NotifCompletedMsg;
+import com.cannontech.message.util.Message;
 import com.cannontech.notif.outputs.VoiceHandler;
 import com.cannontech.notif.server.NotifServerConnection;
 
-public class CompletedMessageHandler implements MessageHandler<VoiceCompletedMessage> {
+public class CompletedMessageHandler implements MessageHandler<NotifCompletedMsg> {
 
     private @Autowired VoiceHandler voiceHandler;
 
     @Override
-    public Class<VoiceCompletedMessage> getSupportedMessageType() {
-        return VoiceCompletedMessage.class;
+    public Class<NotifCompletedMsg> getSupportedMessageType() {
+        return NotifCompletedMsg.class;
     }
 
     @Override
-    public void handleMessage(NotifServerConnection connection,  BaseMessage message) {
-        VoiceCompletedMessage msg = (VoiceCompletedMessage) message;
+    public void handleMessage(NotifServerConnection connection,  Message message) {
+        NotifCompletedMsg msg = (NotifCompletedMsg) message;
         
-        voiceHandler.callStatus(msg.getCallToken(), msg.getCallStatus());
+        voiceHandler.callStatus(msg.token, msg.status);
     }
 }

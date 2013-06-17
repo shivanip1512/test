@@ -296,7 +296,7 @@ public class DeviceSelectionPanel extends JPanel implements TreeWillExpandListen
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
     
         Object o = node.getUserObject();
-        if( o instanceof LiteYukonPAObject && ((LiteYukonPAObject) o).getYukonId() == paoID) {
+        if( o instanceof LiteYukonPAObject && ((LiteYukonPAObject) o).getYukonID() == paoID) {
             //getDevicePointTree().getSelectionModel().addSelectionPath( path );
             return path;
         }

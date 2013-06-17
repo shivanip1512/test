@@ -26,8 +26,6 @@ using Cti::CapControl::VoltageRegulatorManager;
 using Cti::CapControl::Zone;
 using Cti::CapControl::ZoneManager;
 using Cti::CapControl::sendCapControlOperationMessage;
-using Cti::CapControl::EventLogEntry;
-using Cti::CapControl::EventLogEntries;
 
 using namespace Cti::Messaging::CapControl;
 
@@ -343,29 +341,29 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 state->setState(IVVCState::IVVC_WAIT);
                 state->setCommsRetryCount(0);
 
-                state->setCommsLost(false);
+                state->setCommsLost(false);     // Write to the event log...
 
                 long stationId, areaId, spAreaId;
                 store->getSubBusParentInfo(subbus, spAreaId, areaId, stationId);
 
+                CtiMultiMsg* ccEvents = new CtiMultiMsg();
+                ccEvents->insert(
+                    new CtiCCEventLogMsg(
+                            0,
+                            SYS_PID_CAPCONTROL,
+                            spAreaId,
+                            areaId,
+                            stationId,
+                            subbus->getPaoId(),
+                            0,
+                            capControlIvvcCommStatus,
+                            0,
+                            1,
+                            "IVVC Comms Restored",
+                            "cap control") );
+
                 updateCommsState( subbus->getCommsStatePointId(), state->isCommsLost() );
-
-                // Write to the event log...
-                CtiCapController::submitEventLogEntry(
-                   EventLogEntry(
-                        0,
-                        SYS_PID_CAPCONTROL,
-                        spAreaId,
-                        areaId,
-                        stationId,
-                        subbus->getPaoId(),
-                        0,
-                        capControlIvvcCommStatus,
-                        0,
-                        1,
-                        "IVVC Comms Restored",
-                        "cap control") );
-
+                sendEvents(dispatchConnection, ccEvents);
                 break;
             }
             else if ( ! allRegulatorsInRemoteMode(subbusId) )   // At least one regulator in 'Auto' mode
@@ -471,7 +469,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 }
 
                 CtiMultiMsg_vec pointChanges;
-                EventLogEntries ccEvents;
+                CtiMultiMsg* ccEventMsg = new CtiMultiMsg();
+                CtiMultiMsg_vec &ccEvents = ccEventMsg->getData();
 
                 //Update Control Status
                 bool result = subbus->capBankControlStatusUpdate(pointChanges, ccEvents);
@@ -493,7 +492,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 }
 
 
-                sendPointChangesAndEvents(dispatchConnection,pointChanges,ccEvents);
+                sendPointChangesAndEvents(dispatchConnection,pointChanges,ccEventMsg);
                 subbus->setBusUpdatedFlag(true);
                 state->setTimeStamp(now);
 
@@ -576,7 +575,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 // Update the point response data with whatever data we got back from the post scan
                 //  --- only if we're not using static deltas
 
-                if ( ! _IVVC_STATIC_DELTA_VOLTAGES )
+                if ( ! _IVVC_STATIC_DELTA_VOLTAGES )    
                 {
                     subbus->updatePointResponseDeltas( state->getReportedControllers() );
                 }
@@ -925,7 +924,8 @@ void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
                                     bank->getControlStatus() == CtiCCCapBank::CloseQuestionable);
 
             CtiMultiMsg_vec pointChanges;
-            EventLogEntries ccEvents;
+            CtiMultiMsg* ccEventMsg = new CtiMultiMsg();
+            CtiMultiMsg_vec &ccEvents = ccEventMsg->getData();
 
             double beforeKvar = subbus->getCurrentVarLoadPointValue();
             double varValueA = subbus->getPhaseAValue();
@@ -965,7 +965,8 @@ void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
             if (request != NULL)
             {
                 CtiTime time = request->getMessageTime();
-                CtiCapController::getInstance()->getPILConnection()->WriteConnQue(request);
+                CtiConnectionPtr pilConn = CtiCapController::getInstance()->getPILConnection();
+                pilConn->WriteConnQue(request);
 
                 sendIVVCAnalysisMessage(
                     IVVCAnalysisMessage::createCapbankOperationMessage( subbus->getPaoId(),
@@ -989,7 +990,7 @@ void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
                     pointChanges.push_back(new CtiPointDataMsg(subbus->getEstimatedVarLoadPointId(),subbus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
                 }
 
-                sendPointChangesAndEvents(dispatchConnection,pointChanges,ccEvents);
+                sendPointChangesAndEvents(dispatchConnection,pointChanges,ccEventMsg);
             }
             else    // if request is NULL we returned early from create(In|De)creaseVarRequest( ... ) - this only happens if we exceed KVar
             {
@@ -1164,9 +1165,19 @@ void IVVCAlgorithm::sendPointChanges(DispatchConnectionPtr dispatchConnection, C
     }
 }
 
-void IVVCAlgorithm::sendPointChangesAndEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges, const EventLogEntries &ccEvents)
+void IVVCAlgorithm::sendEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg* ccEventMsg)
 {
-    CtiCapController::submitEventLogEntries(ccEvents);
+    if ( ccEventMsg->getCount() > 0 )
+    {
+        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(ccEventMsg->replicateMessage());
+        delete ccEventMsg;
+    }
+        //Not calling processCCEventMsgs(). The control loop will end up calling this.
+}
+
+void IVVCAlgorithm::sendPointChangesAndEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges, CtiMultiMsg* ccEvents)
+{
+    sendEvents(dispatchConnection,ccEvents);
     sendPointChanges(dispatchConnection,pointChanges);
 }
 
@@ -1183,8 +1194,9 @@ bool IVVCAlgorithm::busVerificationAnalysisState(IVVCStatePtr state, CtiCCSubsta
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
     CtiMultiMsg_vec pointChanges;
+    CtiMultiMsg* ccEventMsg = new CtiMultiMsg();
     CtiMultiMsg* pilMessages = new CtiMultiMsg();
-    EventLogEntries ccEvents;
+    CtiMultiMsg_vec &ccEvents = ccEventMsg->getData();
     CtiMultiMsg_vec &pilMsg = pilMessages->getData();
     if (!subbus->getPerformingVerificationFlag())
     {
@@ -1253,8 +1265,9 @@ bool IVVCAlgorithm::busVerificationAnalysisState(IVVCStatePtr state, CtiCCSubsta
     }
     if (pilMsg.size() > 0)
     {
-        CtiCapController::getInstance()->getPILConnection()->WriteConnQue(pilMessages);
-        sendPointChangesAndEvents(dispatchConnection,pointChanges,ccEvents);
+        CtiConnectionPtr pilConn = CtiCapController::getInstance()->getPILConnection();
+        pilConn->WriteConnQue(pilMessages);
+        sendPointChangesAndEvents(dispatchConnection,pointChanges,ccEventMsg);
     }
 
     state->setState(IVVCState::IVVC_VERIFY_CONTROL_LOOP);
@@ -1263,7 +1276,7 @@ bool IVVCAlgorithm::busVerificationAnalysisState(IVVCStatePtr state, CtiCCSubsta
 
 }
 
-void IVVCAlgorithm::setupNextBankToVerify(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, EventLogEntries &ccEvents)
+void IVVCAlgorithm::setupNextBankToVerify(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, CtiMultiMsg_vec& ccEvents)
 {
     if(subbus->areThereMoreCapBanksToVerify(ccEvents))
     {
@@ -2245,7 +2258,7 @@ double IVVCAlgorithm::feederPFCorrectionCalculator( const double actualFeederPF,
                                                     const IVVCStrategy * strategy, const bool isPeakTime ) const
 {
     return std::min( strategy->getPowerFactorCorrectionMaxCost(),
-                     std::max( 0.0,
+                     std::max( 0.0, 
                                strategy->getPowerFactorCorrectionCost()
                                 * ( calculatePowerFactorCost( actualFeederPF, strategy, isPeakTime ) / 100.0
                                         - strategy->getPowerFactorCorrectionBandwidth() ) ) );
@@ -2371,21 +2384,21 @@ void IVVCAlgorithm::handleCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr su
         long stationId, areaId, spAreaId;
         store->getSubBusParentInfo(subbus, spAreaId, areaId, stationId);
 
-        EventLogEntries ccEvents;
-        ccEvents.push_back(
-            EventLogEntry(
-                0,
-                SYS_PID_CAPCONTROL,
-                spAreaId,
-                areaId,
-                stationId,
-                subbus->getPaoId(),
-                0,
-                capControlIvvcCommStatus,
-                0,
-                0,
-                "IVVC Comms Lost",
-                "cap control") );
+        CtiMultiMsg* ccEvents = new CtiMultiMsg();
+        ccEvents->insert(
+            new CtiCCEventLogMsg(
+                    0,
+                    SYS_PID_CAPCONTROL,
+                    spAreaId,
+                    areaId,
+                    stationId,
+                    subbus->getPaoId(),
+                    0,
+                    capControlIvvcCommStatus,
+                    0,
+                    0,
+                    "IVVC Comms Lost",
+                    "cap control") );
 
         PointValueMap rejectedPoints = state->getGroupRequest()->getRejectedPointValues();
         std::set<long> missingIds = state->getGroupRequest()->getMissingPoints();
@@ -2400,20 +2413,20 @@ void IVVCAlgorithm::handleCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr su
                 << " - Timestamp: "
                 << pv.second.timestamp;
 
-            ccEvents.push_back(
-                EventLogEntry(
-                    0,
-                    pv.first,
-                    spAreaId,
-                    areaId,
-                    stationId,
-                    subbus->getPaoId(),
-                    0,
-                    capControlIvvcRejectedPoint,
-                    0,
-                    pv.second.value,
-                    eventText.str(),
-                    "cap control") );
+            ccEvents->insert(
+                new CtiCCEventLogMsg(
+                        0,
+                        pv.first,
+                        spAreaId,
+                        areaId,
+                        stationId,
+                        subbus->getPaoId(),
+                        0,
+                        capControlIvvcRejectedPoint,
+                        0,
+                        pv.second.value,
+                        eventText.str(),
+                        "cap control") );
 
             // remove the rejected point Ids the set of missingIds to reduce log entries.
             missingIds.erase( pv.first );
@@ -2421,25 +2434,25 @@ void IVVCAlgorithm::handleCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr su
 
         for each (long ID in missingIds)
         {
-            ccEvents.push_back(
-                EventLogEntry(
-                    0,
-                    ID,
-                    spAreaId,
-                    areaId,
-                    stationId,
-                    subbus->getPaoId(),
-                    0,
-                    capControlIvvcMissingPoint,
-                    0,
-                    0,
-                    "IVVC Missing Point Response",
-                    "cap control") );
+            ccEvents->insert(
+                new CtiCCEventLogMsg(
+                        0,
+                        ID,
+                        spAreaId,
+                        areaId,
+                        stationId,
+                        subbus->getPaoId(),
+                        0,
+                        capControlIvvcMissingPoint,
+                        0,
+                        0,
+                        "IVVC Missing Point Response",
+                        "cap control") );
         }
 
         DispatchConnectionPtr dispatchConnection = CtiCapController::getInstance()->getDispatchConnection();
 
-        CtiCapController::submitEventLogEntries(ccEvents);
+        sendEvents(dispatchConnection, ccEvents);
     }
 }
 
@@ -2479,7 +2492,7 @@ void IVVCAlgorithm::updateCommsState( const long busCommsPointId, const bool isC
 
 
 void IVVCAlgorithm::calculateMultiTapOperation( PointValueMap & voltages,
-                                                CtiCCSubstationBusPtr subbus,
+                                                CtiCCSubstationBusPtr subbus,                                   
                                                 IVVCStrategy * strategy,
                                                 IVVCState::TapOperationZoneMap & solution )
 {
@@ -2773,7 +2786,7 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
 /*
     This guy will run a validation check on the received point data request.
         We are looking for non-stale data and that all of the required BusPower points are present and accounted for.
-
+                                                                                                                    
     Now the validity is on a per zone per phase basis...
 */
 bool IVVCAlgorithm::hasValidData( PointDataRequestPtr& request, CtiTime timeNow, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy )

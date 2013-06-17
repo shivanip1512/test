@@ -4,21 +4,21 @@
 <%@ include file="include/oper_header.jspf" %> 
 
 <%
-     String tab = request.getParameter("tab");
-     tab = request.getParameter("tab");
+   String tab = request.getParameter("tab");
+   tab = request.getParameter("tab");
 
-     String referrer = (String) session.getValue("referrer");
-     if( referrer == null )
-        referrer = request.getRequestURI() + "?" + request.getQueryString();
-     referrer = ServletUtil.createSafeRedirectUrl(request, referrer);
-  		  
-      if( tab == null )    
-          tab = "";
-           
-      session.putValue("referrer", request.getRequestURI() + "?" + request.getQueryString());
- %>
+   String referrer = (String) session.getValue("referrer");
+   if( referrer == null )
+      referrer = request.getRequestURI() + "?" + request.getQueryString();
+   referrer = ServletUtil.createSafeRedirectUrl(request, referrer);
+		  
+    if( tab == null )    
+        tab = "";
+         
+    session.putValue("referrer", request.getRequestURI() + "?" + request.getQueryString());
+%>
 
-<%@ page import="com.cannontech.messaging.message.loadcontrol.data.ProgramCurtailment" %>
+<%@ page import="com.cannontech.loadcontrol.data.LMProgramCurtailment" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="/WEB-INF/struts.tld" prefix="struts" %>
 <jsp:useBean id="checker" scope="session" class="com.cannontech.web.validate.PageBean"/>
@@ -48,12 +48,12 @@
 			out.println("<META HTTP-EQUIV=\"refresh\" CONTENT=\"600\">");
 	}
 	else if (tab.equalsIgnoreCase("new")) {
-        ProgramCurtailment[] programs = cache.getEnergyCompanyCurtailmentPrograms(energyCompanyID);
+        LMProgramCurtailment[] programs = cache.getEnergyCompanyCurtailmentPrograms(energyCompanyID);
         programNames = new String[programs.length];
         programIds = new String[programs.length];
 		for (int i = 0; i < programs.length; i++) {
 			programNames[i] = programs[i].getYukonName();
-			programIds[i] = programs[i].getYukonId().toString();
+			programIds[i] = programs[i].getYukonID().toString();
 		}
    
 		if (request.getParameter("error") == null) {	// not back from the confirmation page
@@ -160,9 +160,9 @@
 				stopCal.setTime( new java.util.Date(startCal.getTime().getTime() + durationMillis) );
 
 				com.cannontech.loadcontrol.LoadControlClientConnection conn = cs.getConnection();
-				com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage msg = new com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage();
-				msg.setCommand( com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage.SCHEDULED_START );
-				msg.setYukonId(Integer.parseInt(request.getParameter("program")));
+				com.cannontech.loadcontrol.messages.LMManualControlRequest msg = new com.cannontech.loadcontrol.messages.LMManualControlRequest();
+				msg.setCommand( com.cannontech.loadcontrol.messages.LMManualControlRequest.SCHEDULED_START );
+				msg.setYukonID(Integer.parseInt(request.getParameter("program")));
 				msg.setNotifyTime(notifyCal);
 				msg.setStartTime(startCal);
 				msg.setStopTime(stopCal);
@@ -194,50 +194,50 @@
      
       <p>   
         <%
-               if( tab.equalsIgnoreCase("history") )
-                         {
-           %>
+        if( tab.equalsIgnoreCase("history") )
+        {   
+        %>
         <%@ include file="include/oper_mand_history.jspf" %>
         <%
-            }
-                else
-                if( tab.equalsIgnoreCase("historydetail") )
-                {
+        }
+        else
+        if( tab.equalsIgnoreCase("historydetail") )
+        {
         %>
         <%@ include file="include/oper_mand_history_detail.jspf" %>
         <%
-            }
-                else
-                if( tab.equalsIgnoreCase("programs") )
-                {
+        }
+        else
+        if( tab.equalsIgnoreCase("programs") )
+        {
         %>
         <%@ include file="include/oper_mand_programs.jspf" %>
         <%
-            }
-                else
-                if( tab.equalsIgnoreCase("new") )
-                {
+        }
+        else
+        if( tab.equalsIgnoreCase("new") )
+        {
         %>
         <%@ include file="include/oper_mand_new.jspf" %>
         <%
-            }
-                		else    
-                		if( tab.equalsIgnoreCase("newconfirm") )
-                		{
-        %>
+        }
+		else    
+		if( tab.equalsIgnoreCase("newconfirm") )
+		{
+		%>
         <%@ include file="include/oper_mand_new_confirm.jspf" %>
         <%
-            }
-                else
-                if( tab.equalsIgnoreCase("profile") )
-                {
+		}
+        else
+        if( tab.equalsIgnoreCase("profile") )
+        {
         %>
         <%@ include file="include/customer_mand_profile.jspf" %>
         <%
-            }
-                else               
-                if( tab.equalsIgnoreCase("current") || true)
-                {
+        }
+        else               
+        if( tab.equalsIgnoreCase("current") || true)
+        {
         %>
         <%@ include file="include/oper_mand_current.jspf" %>
         <%

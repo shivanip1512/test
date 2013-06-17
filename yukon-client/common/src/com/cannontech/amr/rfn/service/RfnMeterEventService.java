@@ -20,7 +20,7 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.point.stategroup.EventStatus;
-import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
@@ -48,7 +48,7 @@ public class RfnMeterEventService {
      * Process our event/alarm by first adding pointdata for our event type (i.e. the corresponding "Event Status"
      * status point), then continue on to our more specific processor
      */
-    public <T extends RfnEvent> void processEvent(RfnDevice device, T event, List<? super PointDataMessage> pointDatas) {
+    public <T extends RfnEvent> void processEvent(RfnDevice device, T event, List<? super PointData> pointDatas) {
         log.debug("Event Recieved - event: " + event + " Meter: " + device);
 
         boolean handledStatusEvent = handleRfnEventStatusEvents(device, event, pointDatas);
@@ -62,7 +62,7 @@ public class RfnMeterEventService {
     }
     
     private <T extends RfnEvent> boolean handleRfnEventStatusEvents(RfnDevice meter, T event,
-                                                                 List<? super PointDataMessage> pointDatas) {
+                                                                 List<? super PointData> pointDatas) {
         try {
             BuiltInAttribute eventAttr = BuiltInAttribute.valueOf(event.getType().name());
             if (eventAttr.isRfnEventStatusType()) {
@@ -93,7 +93,7 @@ public class RfnMeterEventService {
      * passed in List of pointDatas. This method uses a PointQuality of Normal
      */
     public void processAttributePointData(RfnDevice rfnDevice,
-                                          List<? super PointDataMessage> pointDatas,
+                                          List<? super PointData> pointDatas,
                                           BuiltInAttribute attr,
                                           long timestamp,
                                           double pointValue) {
@@ -106,7 +106,7 @@ public class RfnMeterEventService {
      * passed in List of pointDatas.
      */
     public void processAttributePointData(RfnDevice rfnDevice,
-                                          List<? super PointDataMessage> pointDatas,
+                                          List<? super PointData> pointDatas,
                                           BuiltInAttribute attr,
                                           long timestamp,
                                           double pointValue,
@@ -116,7 +116,7 @@ public class RfnMeterEventService {
 
         LitePoint litePoint = attributeService.getPointForAttribute(rfnDevice, attr);
 
-        PointDataMessage pointData = new PointDataMessage();
+        PointData pointData = new PointData();
         pointData.setId(litePoint.getPointID());
         pointData.setTime(new Date(timestamp));
         pointData.setPointQuality(quality);

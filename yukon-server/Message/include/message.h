@@ -1,5 +1,11 @@
 #pragma once
 
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
+#include <windows.h>
+#include <iostream>
 #include <string>
 
 #include <rw/collect.h>
@@ -14,7 +20,8 @@
 
 class CtiMessage;    // Forward reference...
 
-typedef std::vector<CtiMessage*> CtiMultiMsg_vec;
+//typedef std::vector<CtiMessage*> CtiMultiMsg_vec;
+typedef std::vector<RWCollectable*> CtiMultiMsg_vec;
 
 /******************************************************************************
  *  This is a base class which comprises an executable (Dispatch-able) message
@@ -23,19 +30,16 @@ typedef std::vector<CtiMessage*> CtiMultiMsg_vec;
  *  DERIVED classes MUST DECLARE AND DEFINE THEMSELVES COLLECTIBLE!
  *
  ******************************************************************************/
-class IM_EX_MSG CtiMessage
+class IM_EX_MSG CtiMessage : public RWCollectable
 {
-public:
-    DECLARE_COLLECTABLE( CtiMessage )
-
 protected:
 
-    CtiTime      MessageTime;         // set to current during construction.
-    INT          MessagePriority;
-    int          _soe;             // An ID to group events.. Default to zero if not used
-    std::string  _usr;
-    int          _token;
-    std::string  _src;
+   CtiTime      MessageTime;         // set to current during construction.
+   INT          MessagePriority;
+   int          _soe;             // An ID to group events.. Default to zero if not used
+   std::string  _usr;
+   int          _token;
+   std::string  _src;
 
    /*
     *  Allows a message to mark its return path.. This is a bread crumb.
@@ -45,6 +49,8 @@ protected:
    void  *ConnectionHandle;
 
 public:
+   RWDECLARE_COLLECTABLE( CtiMessage );
+
 
    CtiMessage(int Pri = 7);
 
@@ -75,6 +81,9 @@ public:
    const std::string& getSource() const;
    CtiMessage&   setSource(const std::string& src);
 
+   virtual void saveGuts(RWvostream &aStream) const;
+   virtual void restoreGuts(RWvistream& aStream);
+
    virtual CtiMessage* replicateMessage() const;
 
    // Adjust the time to now.
@@ -87,7 +96,6 @@ public:
 
    virtual bool isValid();
 };
-
 
 // This will be used to sort these things in a CtiQueue.
 namespace std
@@ -104,7 +112,3 @@ namespace std
     }
   };
 };
-
-
-
-

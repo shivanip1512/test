@@ -14,9 +14,9 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.pao.CapControlTypes;
-import com.cannontech.messaging.message.capcontrol.streamable.Feeder;
-import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
-import com.cannontech.messaging.message.capcontrol.streamable.SubStation;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.SubBus;
+import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.spring.YukonSpringHook;
 
 public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTelemetryDataModel.ModelRow> implements CapControlFilterable {
@@ -86,20 +86,20 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
                     Integer areaId = -1;
                     if(row.type.equalsIgnoreCase(CapControlTypes.STRING_CAPCONTROL_SUBBUS)){
                         SubBus bus = capControlCache.getSubBus(paoId);
-                        Integer stationId = bus.getParentId();
+                        Integer stationId = bus.getParentID();
                         if(stationId > 0) {
                             SubStation sub = capControlCache.getSubstation(stationId);
-                            areaId = sub.getParentId();
+                            areaId = sub.getParentID();
                         }
                     }else {
                         Feeder fdr = capControlCache.getFeeder(paoId);
-                        Integer parentId = fdr.getParentId();
+                        Integer parentId = fdr.getParentID();
                         if(parentId > 0) {
                             SubBus bus = capControlCache.getSubBus(parentId);
-                            Integer stationId = bus.getParentId();
+                            Integer stationId = bus.getParentID();
                             if(stationId > 0) {
                                 SubStation sub = capControlCache.getSubstation(stationId);
-                                areaId = sub.getParentId();
+                                areaId = sub.getParentID();
                             }
                         }
                     }
@@ -111,17 +111,17 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
                     Integer substationId = -1;
                     if(row.type.equalsIgnoreCase(CapControlTypes.STRING_CAPCONTROL_SUBBUS)){
                         SubBus bus = capControlCache.getSubBus(paoId);
-                        Integer parentId = bus.getParentId();
+                        Integer parentId = bus.getParentID();
                         if(parentId > 0) {
                             SubStation sub = capControlCache.getSubstation(parentId);
                             substationId = sub.getCcId();
                         }
                     }else {
                         Feeder fdr = capControlCache.getFeeder(paoId);
-                        Integer parentId = fdr.getParentId();
+                        Integer parentId = fdr.getParentID();
                         if(parentId > 0) {
                             SubBus bus = capControlCache.getSubBus(parentId);
-                            Integer busParent = bus.getParentId();
+                            Integer busParent = bus.getParentID();
                             if(busParent > 0) {
                                 SubStation sub = capControlCache.getSubstation(busParent);
                                 substationId = sub.getCcId();
@@ -138,7 +138,7 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
                         busId = paoId;
                     }else {
                         Feeder fdr = capControlCache.getFeeder(paoId);
-                        Integer parentId = fdr.getParentId();
+                        Integer parentId = fdr.getParentID();
                         if(parentId > 0) {
                             busId = parentId;
                         }

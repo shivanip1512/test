@@ -3,15 +3,15 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <%@ include file="include/oper_header.jspf" %>
 <%@ include file="include/oper_trendingheader.jspf" %>
-<%@ page import="com.cannontech.messaging.message.loadcontrol.data.Program" %>
-<%@ page import="com.cannontech.messaging.message.loadcontrol.data.ProgramDirect" %>
-<%@ page import="com.cannontech.messaging.message.loadcontrol.data.ProgramDirectGear" %>
+<%@ page import="com.cannontech.loadcontrol.data.LMProgramBase" %>
+<%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
+<%@ page import="com.cannontech.loadcontrol.data.LMProgramDirectGear" %>
 <%@ page import="java.util.Calendar" %>
 <%@ taglib uri="/WEB-INF/struts.tld" prefix="struts" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <jsp:useBean id="checker" scope="session" class="com.cannontech.web.validate.PageBean"/>
 <%
-    /* Parameters:
+/* Parameters:
    id - the id of the program e to start
    
    Attempts to get a reference to the program with programid == id
@@ -21,8 +21,8 @@
    java.text.SimpleDateFormat timeFormat = new java.text.SimpleDateFormat("HH:mm");
 	timeFormat.setTimeZone(tz);
 	
-   ProgramDirect program = null;
-   java.util.List<ProgramDirectGear> gears = null; //will contain LMProgramDirectGear
+   LMProgramDirect program = null;
+   java.util.List<LMProgramDirectGear> gears = null; //will contain LMProgramDirectGear
    java.util.Date now = new java.util.Date();
       
     //What program are we dealing with?
@@ -111,74 +111,74 @@
         String gearName = request.getParameter("gear");
         int gearIndex = -1;
 
-        Program[] allPrograms = cache.getDirectPrograms();
+        LMProgramBase[] allPrograms = cache.getDirectPrograms();
 
         for( int i = 0; i < allPrograms.length; i++ )
         {
-    if( allPrograms[i].getYukonId().intValue() == programID )
-    {
-        java.util.List<ProgramDirectGear> gVec = ((ProgramDirect)allPrograms[i]).getDirectGearVector();
+            if( allPrograms[i].getYukonID().intValue() == programID )
+            {
+                java.util.List<LMProgramDirectGear> gVec = ((LMProgramDirect)allPrograms[i]).getDirectGearVector();
 
-        for( int j = 0; j < gVec.size(); j++ )
-        {
-    ProgramDirectGear g = (ProgramDirectGear) gVec.get(j);
-    if( g.getGearName().equalsIgnoreCase(gearName) )
-    {
-        gearIndex = j+1;
-        break;
-    }
-        }
-    }
+                for( int j = 0; j < gVec.size(); j++ )
+                {
+                    LMProgramDirectGear g = (LMProgramDirectGear) gVec.get(j);
+                    if( g.getGearName().equalsIgnoreCase(gearName) )
+                    {
+                        gearIndex = j+1;
+                        break;
+                    }
+                }
+            }
 
-    if( gearIndex >= 0 )
-        break;
+            if( gearIndex >= 0 )
+                break;
         }
-        
+                
 		if (valid)
 		{		
 			//Send the message to loadmanagement	           
-    com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage msg = new com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage();
-        	msg.setCommand(com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage.SCHEDULED_START);
-	        msg.setYukonId(programID);
+            com.cannontech.loadcontrol.messages.LMManualControlRequest msg = new com.cannontech.loadcontrol.messages.LMManualControlRequest();
+        	msg.setCommand(com.cannontech.loadcontrol.messages.LMManualControlRequest.SCHEDULED_START);
+	        msg.setYukonID(programID);
 	        msg.setStartGear(gearIndex);
-       
-    java.util.Date current = new java.util.Date();
-    java.util.GregorianCalendar currentCal = new java.util.GregorianCalendar();
-    currentCal.setTime(current);            
+                       
+            java.util.Date current = new java.util.Date();
+            java.util.GregorianCalendar currentCal = new java.util.GregorianCalendar();
+            currentCal.setTime(current);            
 
-    startCal.set( Calendar.YEAR, currentCal.get( Calendar.YEAR ) );
-    startCal.set( Calendar.DAY_OF_YEAR, currentCal.get( Calendar.DAY_OF_YEAR ) );
+            startCal.set( Calendar.YEAR, currentCal.get( Calendar.YEAR ) );
+            startCal.set( Calendar.DAY_OF_YEAR, currentCal.get( Calendar.DAY_OF_YEAR ) );
 
-    stopCal.set( Calendar.YEAR, currentCal.get( Calendar.YEAR ) );
-    stopCal.set( Calendar.DAY_OF_YEAR, currentCal.get( Calendar.DAY_OF_YEAR ) );
+            stopCal.set( Calendar.YEAR, currentCal.get( Calendar.YEAR ) );
+            stopCal.set( Calendar.DAY_OF_YEAR, currentCal.get( Calendar.DAY_OF_YEAR ) );
 
-    msg.setStartTime(startCal);
-    msg.setStopTime(stopCal);
+            msg.setStartTime(startCal);
+            msg.setStopTime(stopCal);
 	        
-    com.cannontech.loadcontrol.LoadControlClientConnection conn = cs.getConnection();
-    conn.write(msg);                           
-    checker.clear();
-    
-    /* Log this activity */
-    com.cannontech.clientutils.ActivityLogger.logEvent(user.getUserID(), programID, 
-    				com.cannontech.database.data.activity.ActivityLogActions.MANUAL_LMPROGRAM_START_ACTION,
-    				"Manual control of direct program requested, start: " + startCal.getTime() + " stop: " + stopCal.getTime());
-     response.sendRedirect( "oper_direct.jsp?pending=true");
-     
+            com.cannontech.loadcontrol.LoadControlClientConnection conn = cs.getConnection();
+            conn.write(msg);                           
+            checker.clear();
+            
+            /* Log this activity */
+            com.cannontech.clientutils.ActivityLogger.logEvent(user.getUserID(), programID, 
+            				com.cannontech.database.data.activity.ActivityLogActions.MANUAL_LMPROGRAM_START_ACTION,
+            				"Manual control of direct program requested, start: " + startCal.getTime() + " stop: " + stopCal.getTime());
+             response.sendRedirect( "oper_direct.jsp?pending=true");
+             
 		}
 	}
 
-    Program[] allPrograms = cache.getDirectPrograms();
+    LMProgramBase[] allPrograms = cache.getDirectPrograms();
 
     for( int i = 0; i < allPrograms.length; i++ )
     {
-        if( allPrograms[i].getYukonId().intValue() == programID )
+        if( allPrograms[i].getYukonID().intValue() == programID )
         {
-    program = (ProgramDirect)allPrograms[i];
+            program = (LMProgramDirect)allPrograms[i];
 
-    // Find all the gears for this program
-    gears = program.getDirectGearVector();
-    break;
+            // Find all the gears for this program
+            gears = program.getDirectGearVector();
+            break;
         }
     }
 %>
@@ -217,7 +217,7 @@
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
               </tr>
               <tr> 
                 <td width="253" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Load 
@@ -282,9 +282,9 @@
                         <select name="gear">
                         <%
                             for( int i = 0; i < gears.size(); i++ ) 
-                                            {
-                                                out.print("<option>" + ((ProgramDirectGear) gears.get(i)).getGearName());                       
-                                            }
+                            {
+                                out.print("<option>" + ((LMProgramDirectGear) gears.get(i)).getGearName());                       
+                            }
                         %>                  
                         </select>     
                     </td>

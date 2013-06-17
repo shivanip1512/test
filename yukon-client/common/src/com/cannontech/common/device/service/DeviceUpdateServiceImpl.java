@@ -65,9 +65,9 @@ import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.RfnAddress;
 import com.cannontech.device.range.DlcAddressRangeService;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
-import com.cannontech.messaging.util.DbChangeManager;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.collect.Maps;
@@ -207,9 +207,9 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
             }
         }
         
-        DBChangeMessage[] changeMsgs = changedDevice.getDBChangeMsgs(DbChangeType.UPDATE);
+        DBChangeMsg[] changeMsgs = changedDevice.getDBChangeMsgs(DbChangeType.UPDATE);
         // Send DBChangeMsgs
-        for (DBChangeMessage msg : changeMsgs) {
+        for (DBChangeMsg msg : changeMsgs) {
             dbChangeManager.processDbChange(msg);
         }
         

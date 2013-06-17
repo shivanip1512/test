@@ -255,7 +255,7 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
                 {
                     resultString = "ERROR " + CtiNumStr(nRet) + string(" performing command on route ");
                     resultString += Route->getName();
-                    resultString += "\n" + GetErrorString(nRet);
+                    resultString += "\n" + FormatError(nRet);
                     pRet->setResultString(resultString);
                     pRet->setStatus( nRet );
                 }

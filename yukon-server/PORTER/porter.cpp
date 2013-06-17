@@ -70,8 +70,6 @@
 #include "database_connection.h"
 #include "dev_ccu721.h"
 
-#include "connection_client.h"
-
 using namespace std;
 using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
@@ -771,6 +769,13 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
     /* make it clear who is just about the boss */
     CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_NORMAL);
+
+    /* Open the error message file */
+    if((i = InitError ()) != NORMAL)
+    {
+        PrintError ((USHORT)i);
+        CTIExit (-1, -1);
+    }
 
     bool writeLogMessage = true;
 
@@ -2200,7 +2205,7 @@ bool addCommResult(long deviceID, bool wasFailure, bool retryGtZero)
 
 void commFail(const CtiDeviceSPtr &Device)
 {
-    extern CtiClientConnection VanGoghConnection;
+    extern CtiConnection VanGoghConnection;
 
     CtiPointSPtr  pPoint;
     char temp[80];
@@ -2277,7 +2282,7 @@ LONG GetCommFailPointID(LONG devid)
 void reportOnWorkObjects()
 {
     CtiPointDataMsg *pData = NULL;
-    extern CtiClientConnection VanGoghConnection;
+    extern CtiConnection VanGoghConnection;
     ULONG workCount = 0;
     PortManager.apply( applyPortWorkReport, &workCount );
 

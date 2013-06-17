@@ -36,19 +36,19 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.messaging.message.capcontrol.BankMoveMessage;
-import com.cannontech.messaging.message.capcontrol.ChangeOpStateMessage;
-import com.cannontech.messaging.message.capcontrol.CommandMessage;
-import com.cannontech.messaging.message.capcontrol.CommandType;
-import com.cannontech.messaging.message.capcontrol.ItemCommandMessage;
-import com.cannontech.messaging.message.capcontrol.ServerResponseMessage;
-import com.cannontech.messaging.message.capcontrol.VerifyBanksMessage;
-import com.cannontech.messaging.message.capcontrol.VerifyInactiveBanksMessage;
-import com.cannontech.messaging.message.capcontrol.VerifySelectedBankMessage;
-import com.cannontech.messaging.message.capcontrol.streamable.CapBankDevice;
-import com.cannontech.messaging.message.capcontrol.streamable.Feeder;
-import com.cannontech.messaging.message.capcontrol.streamable.StreamableCapObject;
-import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.message.capcontrol.model.BankMove;
+import com.cannontech.message.capcontrol.model.CapControlCommand;
+import com.cannontech.message.capcontrol.model.CapControlServerResponse;
+import com.cannontech.message.capcontrol.model.ChangeOpState;
+import com.cannontech.message.capcontrol.model.CommandType;
+import com.cannontech.message.capcontrol.model.ItemCommand;
+import com.cannontech.message.capcontrol.model.VerifyBanks;
+import com.cannontech.message.capcontrol.model.VerifyInactiveBanks;
+import com.cannontech.message.capcontrol.model.VerifySelectedBank;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -105,7 +105,7 @@ public class CommandController {
         }
         
         boolean success = false;
-        CommandMessage command = CommandHelper.buildCommand(commandType, context.getYukonUser());
+        CapControlCommand command = CommandHelper.buildCommand(commandType, context.getYukonUser());
         try {
             executor.execute(command);
             success = true;
@@ -152,7 +152,7 @@ public class CommandController {
         } else {
             /* SEND COMMAND AND RETURN STATUS */
             boolean success = true;
-            CommandMessage command;
+            CapControlCommand command;
             if (commandType.isVerifyCommand()) {
                 command = CommandHelper.buildVerifyBanks(user, commandType, itemId, false);
             } else if (commandId == CommandType.VERIFY_SELECTED_BANK.getCommandId()  ) {
@@ -204,7 +204,7 @@ public class CommandController {
         
         String bankName = cache.getCapBankDevice(bankId).getCcName();
         BankOpState state = BankOpState.valueOf(opState);
-        ChangeOpStateMessage command = CommandHelper.buildChangeOpStateCommand(user, bankId, state);
+        ChangeOpState command = CommandHelper.buildChangeOpStateCommand(user, bankId, state);
         boolean success = true;
         try {
             executor.execute(command);
@@ -255,21 +255,21 @@ public class CommandController {
         }
         
         Feeder newFeeder = cache.getFeeder(bankMoveBean.getNewFeederId());
-        BankMoveMessage command = CommandHelper.buildBankMove(user, bankMoveBean, tempMove == null ? true : false);
+        BankMove command = CommandHelper.buildBankMove(user, bankMoveBean, tempMove == null ? true : false);
         
         CommandResultCallback callback = new CommandResultCallback() {
-            private ServerResponseMessage response;
+            private CapControlServerResponse response;
             private String errorMessage;
             @Override
             public void processingExceptionOccured(String errorMessage) {
                 this.errorMessage = errorMessage;
             }
             @Override
-            public ServerResponseMessage getResponse() {
+            public CapControlServerResponse getResponse() {
                 return response;
             }
             @Override
-            public void recievedResponse(ServerResponseMessage message) {
+            public void recievedResponse(CapControlServerResponse message) {
                 if (!message.isSuccess()) {
                     this.errorMessage = message.getResponse();
                 }
@@ -281,7 +281,7 @@ public class CommandController {
             }
         };
         
-        ServerResponseMessage response = executor.blockingExecute(command, ServerResponseMessage.class, callback);
+        CapControlServerResponse response = executor.blockingExecute(command, CapControlServerResponse.class, callback);
         if (response.isTimeout()) {
             flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.bankMoveTimeout", bank.getCcName(), newFeeder.getCcName()));
         } else if (!response.isSuccess()) {
@@ -305,16 +305,16 @@ public class CommandController {
         rolePropertyDao.verifyProperty(permissions.get(CapControlType.CAPBANK), user);
         CapBankDevice bank = cache.getCapBankDevice(bankId);
         Feeder feeder;
-        ItemCommandMessage command;
+        ItemCommand command;
         if (!assignHere) {
-            feeder = cache.getFeeder(bank.getOrigFeederId());
+            feeder = cache.getFeeder(bank.getOrigFeederID());
             command = CommandHelper.buildItemCommand(CommandType.RETURN_CAP_TO_ORIGINAL_FEEDER.getCommandId(), bankId, user);
         } else {
-            feeder = cache.getFeeder(bank.getParentId());
+            feeder = cache.getFeeder(bank.getParentID());
             BankMoveBean bean = new BankMoveBean();
             bean.setBankId(bankId);
-            bean.setOldFeederId(bank.getOrigFeederId());
-            bean.setNewFeederId(bank.getParentId());
+            bean.setOldFeederId(bank.getOrigFeederID());
+            bean.setNewFeederId(bank.getParentID());
             bean.setDisplayOrder(bank.getControlOrder()); // IS THIS RIGHT?
             bean.setCloseOrder(bank.getCloseOrder());
             bean.setTripOrder(bank.getTripOrder());
@@ -322,18 +322,18 @@ public class CommandController {
         }
         
         CommandResultCallback callback = new CommandResultCallback() {
-            private ServerResponseMessage response;
+            private CapControlServerResponse response;
             private String errorMessage;
             @Override
             public void processingExceptionOccured(String errorMessage) {
                 this.errorMessage = errorMessage;
             }
             @Override
-            public ServerResponseMessage getResponse() {
+            public CapControlServerResponse getResponse() {
                 return response;
             }
             @Override
-            public void recievedResponse(ServerResponseMessage message) {
+            public void recievedResponse(CapControlServerResponse message) {
                 if (!message.isSuccess()) {
                     this.errorMessage = message.getResponse();
                 }
@@ -345,7 +345,7 @@ public class CommandController {
             }
         };
         
-        ServerResponseMessage response = executor.blockingExecute(command, ServerResponseMessage.class, callback);
+        CapControlServerResponse response = executor.blockingExecute(command, CapControlServerResponse.class, callback);
         if (response.isTimeout()) {
             flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.bankMoveTimeout", bank.getCcName(), feeder.getCcName()));
         } else if (!response.isSuccess()) {
@@ -374,8 +374,8 @@ public class CommandController {
             return sendNotAuthorizedResponse(response, accessor, model, user, CommandType.CHANGE_OP_STATE);
         }
         
-	    int pointId = cache.getCapBankDevice(paoId).getStatusPointId();
-	    PointDataMessage command = CommandHelper.buildManualStateChange(user, pointId, paoId, rawStateId);
+	    int pointId = cache.getCapBankDevice(paoId).getStatusPointID();
+	    PointData command = CommandHelper.buildManualStateChange(user, pointId, paoId, rawStateId);
 	    boolean success = true;
 	    try {
 	        executor.execute(command);
@@ -389,7 +389,7 @@ public class CommandController {
     @RequestMapping
     public void commandOneLine(HttpServletResponse response, YukonUserContext context, int paoId, int cmdId) {
         LiteYukonUser user = context.getYukonUser();
-        ItemCommandMessage command = CommandHelper.buildItemCommand(cmdId, paoId, user);
+        ItemCommand command = CommandHelper.buildItemCommand(cmdId, paoId, user);
         
         try {
             executor.execute(command);
@@ -426,7 +426,7 @@ public class CommandController {
             }
             CommandType commandType = CommandType.getForId(commandId);
 
-            ItemCommandMessage command = CommandHelper.buildItemCommand(commandId, paoId, user);
+            ItemCommand command = CommandHelper.buildItemCommand(commandId, paoId, user);
             boolean disableSuccess = true;
             try {
                 executor.execute(command);
@@ -451,7 +451,7 @@ public class CommandController {
             }
             CommandType commandType = CommandType.getForId(commandId);
 
-            ItemCommandMessage command = CommandHelper.buildItemCommand(commandId, paoId, user);
+            ItemCommand command = CommandHelper.buildItemCommand(commandId, paoId, user);
             boolean disableOvUvSuccess = true;
             try {
                 executor.execute(command);
@@ -473,7 +473,7 @@ public class CommandController {
             if (StringUtils.isBlank(reason)) reason = generateUpdateComment(commandType, paoId, user, accessor);
             
             String rawState = ServletRequestUtils.getRequiredStringParameter(request, "operationalStateValue");
-            ChangeOpStateMessage command = CommandHelper.buildChangeOpStateCommand(user, paoId, BankOpState.valueOf(rawState));
+            ChangeOpState command = CommandHelper.buildChangeOpStateCommand(user, paoId, BankOpState.valueOf(rawState));
             try {
                 executor.execute(command);
                 insertComment(paoId, commandType, user, reason);
@@ -501,8 +501,8 @@ public class CommandController {
         }
         
         CapBankDevice bank = cache.getCapBankDevice(bankId);
-        int pointId = bank.getOperationAnalogPointId();
-        PointDataMessage command = CommandHelper.buildResetOpCount(user, pointId, bankId, newOpCount);
+        int pointId = bank.getOperationAnalogPointID();
+        PointData command = CommandHelper.buildResetOpCount(user, pointId, bankId, newOpCount);
         boolean success = true;
         try {
             executor.execute(command);
@@ -518,7 +518,7 @@ public class CommandController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         StreamableCapObject streamable = cache.getObject(itemId);
         CommandType type = CommandType.getForId(commandId);
-        VerifyBanksMessage command = CommandHelper.buildVerifyBanks(context.getYukonUser(), type, itemId, disableOvUv);
+        VerifyBanks command = CommandHelper.buildVerifyBanks(context.getYukonUser(), type, itemId, disableOvUv);
         boolean success = true;
         
         try {
@@ -534,7 +534,7 @@ public class CommandController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         StreamableCapObject streamable = cache.getObject(itemId);
         CommandType type = CommandType.VERIFY_INACTIVE_BANKS;
-        VerifyInactiveBanksMessage command = CommandHelper.buildVerifyInactiveBanks(context.getYukonUser(), type, itemId, disableOvUv, inactivityTime);
+        VerifyInactiveBanks command = CommandHelper.buildVerifyInactiveBanks(context.getYukonUser(), type, itemId, disableOvUv, inactivityTime);
         boolean success = true;
         
         try {
@@ -550,7 +550,7 @@ public class CommandController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         StreamableCapObject streamable = cache.getObject(itemId);
         CommandType type = CommandType.VERIFY_SELECTED_BANK;
-        VerifySelectedBankMessage command = CommandHelper.buildVerifySelectedBank(context.getYukonUser(), type, itemId, bankId, disableOvUv);
+        VerifySelectedBank command = CommandHelper.buildVerifySelectedBank(context.getYukonUser(), type, itemId, bankId, disableOvUv);
         boolean success = true;
         
         try {

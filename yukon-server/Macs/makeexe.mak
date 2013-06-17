@@ -15,8 +15,8 @@ INCLPATHS+= \
 -I$(RW) \
 -I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
--I$(THRIFT_INCLUDE) \
--I$(MSG)\Serialization
+
+
 
 .PATH.H = \
 .\include \
@@ -35,6 +35,8 @@ INCLPATHS+= \
 ;$(DATABASE)\include \
 ;$(RW)
 
+
+
 LIBS=\
 advapi32.lib \
 $(TCL_LIBS) \
@@ -42,9 +44,7 @@ $(COMPILEBASE)\lib\service.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib \
-$(COMPILEBASE)\lib\ctiholidaydb.lib \
-$(COMPILEBASE)\lib\ctithriftmsg.lib \
-$(THRIFT_LIB)
+$(COMPILEBASE)\lib\ctiholidaydb.lib
 
 BASEOBJS= \
 interp.obj \
@@ -66,8 +66,7 @@ mc_server.obj \
 mc_svc.obj \
 mgr_mcsched.obj \
 tbl_mcsched.obj \
-tbl_mcsimpsched.obj \
-mc_message_serialization.obj
+tbl_mcsimpsched.obj
 
 TARGS = macs.exe
 
@@ -143,25 +142,18 @@ allclean:   clean all
 clientconn.obj:	precompiled.h clientconn.h mc.h logger.h dlldefs.h \
 		thread.h mutex.h guard.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
-		observe.h message.h ctidbgmem.h collectable.h rwutil.h \
-		yukon.h database_connection.h dbaccess.h dllbase.h dsm2.h \
-		cticonnect.h netports.h dsm2err.h words.h optional.h \
-		database_reader.h row_reader.h boost_time.h boostutil.h \
-		connection_server.h connection.h exchange.h string_utility.h \
-		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
-		msg_reg.h queue.h cparms.h configkey.h configval.h \
-		connection_listener.h ctibase.h ctinexus.h
+		observe.h ctibase.h ctinexus.h cticonnect.h yukon.h \
+		ctidbgmem.h netports.h dllbase.h dsm2.h dsm2err.h words.h \
+		optional.h
 clistener.obj:	precompiled.h clistener.h mc.h logger.h dlldefs.h \
 		thread.h mutex.h guard.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
-		clientconn.h observe.h message.h ctidbgmem.h collectable.h \
-		rwutil.h yukon.h database_connection.h dbaccess.h dllbase.h \
-		dsm2.h cticonnect.h netports.h dsm2err.h words.h optional.h \
+		clientconn.h observe.h msg_multi.h collectable.h msg_pdata.h \
+		yukon.h ctidbgmem.h pointdefs.h pointtypes.h message.h \
+		rwutil.h database_connection.h dbaccess.h dllbase.h dsm2.h \
+		cticonnect.h netports.h dsm2err.h words.h optional.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
-		connection_server.h connection.h exchange.h string_utility.h \
-		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
-		msg_reg.h queue.h cparms.h configkey.h configval.h \
-		connection_listener.h amq_constants.h
+		queue.h cparms.h configkey.h configval.h string_utility.h
 decodetextcmdfile.obj:	precompiled.h ctidate.h dlldefs.h logger.h \
 		thread.h mutex.h guard.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
@@ -187,14 +179,13 @@ mccmd.obj:	precompiled.h mccmd.h msg_pcrequest.h dlldefs.h message.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
 		pointtypes.h logger.h thread.h CtiPCPtrQueue.h ctdpcptrq.h \
 		tbl_meterreadlog.h ctistring.h database_transaction.h \
-		connection_client.h connection.h exchange.h string_utility.h \
-		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
-		configval.h amq_constants.h cmdparse.h ctitokenizer.h \
-		parsevalue.h msg_requestcancel.h msg_queuedata.h msg_signal.h \
-		msg_dbchg.h msg_notif_email.h tbl_devicereadrequestlog.h \
+		connection.h exchange.h string_utility.h msg_ptreg.h \
+		msg_reg.h queue.h cparms.h configkey.h configval.h cmdparse.h \
+		ctitokenizer.h parsevalue.h msg_requestcancel.h \
+		msg_queuedata.h msg_signal.h msg_dbchg.h msg_notif_email.h \
+		msg_notif_email_attachment.h tbl_devicereadrequestlog.h \
 		ctibase.h ctinexus.h mgr_holiday.h ctidate.h wpsc.h xcel.h \
-		decodetextcmdfile.h smartmap.h readers_writer_lock.h \
-		critical_section.h
+		decodetextcmdfile.h
 mc_dbthr.obj:	precompiled.h mc_dbthr.h mc.h logger.h dlldefs.h \
 		thread.h mutex.h guard.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
@@ -230,20 +221,9 @@ mc_main.obj:	precompiled.h ctitime.h dlldefs.h CServiceConfig.h \
 		tbl_mcsimpsched.h mc_dbthr.h mccmd.h msg_pcrequest.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
 		pointtypes.h ctdpcptrq.h tbl_meterreadlog.h ctistring.h \
-		clistener.h clientconn.h observe.h connection_server.h \
-		connection.h exchange.h msg_ptreg.h msg_reg.h \
-		connection_listener.h mc_msg.h mc_script.h mc_scheduler.h \
-		mgr_holiday.h ctidate.h mc_fileint.h fileint.h ctibase.h \
-		ctinexus.h
-mc_message_serialization.obj:	precompiled.h mc_message_serialization.h \
-		mc_msg.h message.h ctitime.h dlldefs.h ctidbgmem.h \
-		collectable.h rwutil.h yukon.h types.h database_connection.h \
-		dbaccess.h dllbase.h dsm2.h cticonnect.h netports.h mutex.h \
-		guard.h utility.h queues.h cticalls.h os2_2w32.h numstr.h \
-		dsm2err.h words.h optional.h database_reader.h row_reader.h \
-		boost_time.h boostutil.h mc_sched.h mc.h logger.h thread.h \
-		CtiPCPtrQueue.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
-		tbl_mcsimpsched.h mc_script.h
+		clistener.h clientconn.h observe.h mc_msg.h mc_script.h \
+		mc_scheduler.h mgr_holiday.h ctidate.h mc_fileint.h fileint.h \
+		ctibase.h ctinexus.h
 mc_msg.obj:	precompiled.h mc_msg.h message.h ctitime.h dlldefs.h \
 		ctidbgmem.h collectable.h rwutil.h yukon.h types.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h \
@@ -290,32 +270,12 @@ mc_server.obj:	precompiled.h mc_server.h mc.h logger.h dlldefs.h \
 		tbl_mcsched.h tbl_mcsimpsched.h mc_dbthr.h mccmd.h \
 		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
 		pointdefs.h pointtypes.h ctdpcptrq.h tbl_meterreadlog.h \
-		ctistring.h clistener.h clientconn.h observe.h \
-		connection_server.h connection.h exchange.h msg_ptreg.h \
-		msg_reg.h connection_listener.h mc_msg.h mc_script.h \
-		mc_scheduler.h mgr_holiday.h ctidate.h mc_fileint.h fileint.h \
-		thread_monitor.h smartmap.h readers_writer_lock.h \
-		thread_register_data.h msg_cmd.h connection_client.h \
-		amq_constants.h tbl_devicereadjoblog.h
-mc_server_client_serialization_test.obj:	precompiled.h message.h \
-		ctitime.h dlldefs.h ctidbgmem.h collectable.h rwutil.h \
-		yukon.h types.h database_connection.h dbaccess.h dllbase.h \
-		dsm2.h cticonnect.h netports.h mutex.h guard.h utility.h \
-		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
-		optional.h database_reader.h row_reader.h boost_time.h \
-		boostutil.h msg_cmd.h msg_commerrorhistory.h msg_dbchg.h \
-		msg_lmcontrolhistory.h pointdefs.h msg_multi.h msg_pdata.h \
-		pointtypes.h msg_notif_alarm.h msg_notif_email.h logger.h \
-		thread.h CtiPCPtrQueue.h msg_notif_lmcontrol.h \
-		msg_pcrequest.h msg_pcreturn.h msg_ptreg.h msg_queuedata.h \
-		Msg_reg.h msg_requestcancel.h msg_server_req.h \
-		msg_server_resp.h msg_signal.h msg_tag.h msg_trace.h mc_msg.h \
-		mc_sched.h mc.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
-		tbl_mcsimpsched.h mc_script.h test_mc_serialization.h \
-		test_serialization.h test_serialization_helper.h \
-		connection_server.h connection.h exchange.h string_utility.h \
-		queue.h cparms.h configkey.h configval.h \
-		connection_listener.h
+		ctistring.h clistener.h clientconn.h observe.h mc_msg.h \
+		mc_script.h mc_scheduler.h mgr_holiday.h ctidate.h \
+		mc_fileint.h fileint.h thread_monitor.h smartmap.h \
+		readers_writer_lock.h thread_register_data.h msg_cmd.h \
+		msg_reg.h connection.h exchange.h msg_ptreg.h \
+		tbl_devicereadjoblog.h
 mc_svc.obj:	precompiled.h mc_svc.h cservice.h dlldefs.h mc_server.h \
 		mc.h logger.h thread.h mutex.h guard.h utility.h ctitime.h \
 		queues.h cticalls.h os2_2w32.h types.h numstr.h \
@@ -330,10 +290,8 @@ mc_svc.obj:	precompiled.h mc_svc.h cservice.h dlldefs.h mc_server.h \
 		mc_dbthr.h mccmd.h msg_pcrequest.h msg_pcreturn.h msg_multi.h \
 		msg_pdata.h pointdefs.h pointtypes.h ctdpcptrq.h \
 		tbl_meterreadlog.h ctistring.h clistener.h clientconn.h \
-		observe.h connection_server.h connection.h exchange.h \
-		msg_ptreg.h msg_reg.h connection_listener.h mc_msg.h \
-		mc_script.h mc_scheduler.h mgr_holiday.h ctidate.h \
-		mc_fileint.h fileint.h thread_monitor.h smartmap.h \
+		observe.h mc_msg.h mc_script.h mc_scheduler.h mgr_holiday.h \
+		ctidate.h mc_fileint.h fileint.h thread_monitor.h smartmap.h \
 		readers_writer_lock.h thread_register_data.h
 mgr_mcsched.obj:	precompiled.h mgr_mcsched.h mc.h logger.h dlldefs.h \
 		thread.h mutex.h guard.h utility.h ctitime.h queues.h \

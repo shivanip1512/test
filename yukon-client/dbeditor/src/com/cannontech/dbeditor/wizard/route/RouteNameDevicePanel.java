@@ -190,7 +190,7 @@ public Object getValue(Object val) {
 
 	String routeName = getRouteNameTextField().getText().trim();
 
-	Integer deviceID = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getSignalTransmitterComboBox().getSelectedItem()).getYukonId());
+	Integer deviceID = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getSignalTransmitterComboBox().getSelectedItem()).getYukonID());
 
 	int type = ((LiteYukonPAObject)getSignalTransmitterComboBox().getSelectedItem()).getPaoType().getDeviceTypeId();
 

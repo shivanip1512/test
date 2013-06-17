@@ -39,6 +39,7 @@ Things to note about telegyr learned the hard way...
 #include "msg_ptreg.h"
 #include "msg_pdata.h"
 #include "msg_signal.h"
+#include "connection.h"
 #include "pointtypes.h"
 #include "dllbase.h"
 #include "logger.h"

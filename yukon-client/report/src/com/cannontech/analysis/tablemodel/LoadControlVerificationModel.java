@@ -382,7 +382,7 @@ public class LoadControlVerificationModel extends ReportModelBase
 			for (int j = 0; j < objects.size(); j++)
 			{
 				if (objects.get(j) instanceof LiteYukonPAObject)
-					html += "          <option value='" + ((LiteYukonPAObject)objects.get(j)).getYukonId() + "'>" + ((LiteYukonPAObject)objects.get(j)).getPaoName() + "</option>" + LINE_SEPARATOR;
+					html += "          <option value='" + ((LiteYukonPAObject)objects.get(j)).getYukonID() + "'>" + ((LiteYukonPAObject)objects.get(j)).getPaoName() + "</option>" + LINE_SEPARATOR;
 			}
 		}
 		html += "              </select>" + LINE_SEPARATOR;
@@ -408,7 +408,7 @@ public class LoadControlVerificationModel extends ReportModelBase
 			for (int j = 0; j < objects.size(); j++)
 			{
 				if (objects.get(j) instanceof LiteYukonPAObject)
-					html += "          <option value='" + ((LiteYukonPAObject)objects.get(j)).getYukonId() + "'>" + ((LiteYukonPAObject)objects.get(j)).getPaoName() + "</option>" + LINE_SEPARATOR;
+					html += "          <option value='" + ((LiteYukonPAObject)objects.get(j)).getYukonID() + "'>" + ((LiteYukonPAObject)objects.get(j)).getPaoName() + "</option>" + LINE_SEPARATOR;
 			}
 		}
 		html += "            </select>" + LINE_SEPARATOR;

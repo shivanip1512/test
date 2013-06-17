@@ -63,12 +63,12 @@ import com.cannontech.database.db.device.Device;
 import com.cannontech.database.model.LiteBaseTreeModel;
 import com.cannontech.database.model.NullDBTreeModel;
 import com.cannontech.database.model.TreeModelEnum;
-import com.cannontech.dispatch.SystemLogHelper;
-import com.cannontech.messaging.message.BaseMessage;
-import com.cannontech.messaging.message.porter.RequestMessage;
-import com.cannontech.messaging.message.porter.ReturnMessage;
-import com.cannontech.messaging.util.MessageEvent;
-import com.cannontech.messaging.util.MessageListener;
+import com.cannontech.message.dispatch.message.SystemLogHelper;
+import com.cannontech.message.porter.message.Request;
+import com.cannontech.message.porter.message.Return;
+import com.cannontech.message.util.Message;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ColorUtil;
 import com.cannontech.yukon.BasicServerConnection;
@@ -124,7 +124,7 @@ public class YC extends Observable implements MessageListener
 	private int commandMode = DEFAULT_MODE;
 	
 	/** Store last Porter request message, for use when need to send it again (loop) */
-	private RequestMessage porterRequest = null;
+	private Request porterRequest = null;
 	
 	/** Singleton incrementor for messageIDs to send to porter connection */
 	private static volatile long currentUserMessageID = 1;
@@ -220,7 +220,7 @@ public class YC extends Observable implements MessageListener
         //---------------------------------------------------------------------------------------
         if ( getCommandMode() == CGP_MODE )
         {
-            porterRequest = new RequestMessage( 0, getExecuteCmdsVector().get(0), currentUserMessageID );
+            porterRequest = new Request( 0, getExecuteCmdsVector().get(0), currentUserMessageID );
             porterRequest.setPriority(getCommandPriority());
             getExecuteCmdsVector().remove(0);	//remove the sent command from the list!
             writeNewRequestToPorter( porterRequest );
@@ -435,7 +435,7 @@ public class YC extends Observable implements MessageListener
 		}
 	
 		//send the first command from the vector out!
-		porterRequest = new RequestMessage( liteYukonPao.getLiteID(), getExecuteCmdsVector().get(0), currentUserMessageID );
+		porterRequest = new Request( liteYukonPao.getLiteID(), getExecuteCmdsVector().get(0), currentUserMessageID );
 		porterRequest.setPriority(getCommandPriority());
 		getExecuteCmdsVector().remove(0);	//remove the sent command from the list!
 		
@@ -453,12 +453,12 @@ public class YC extends Observable implements MessageListener
 				if( rt.getPaoType() == PaoType.ROUTE_MACRO)
 					return;
 	
-				porterRequest.setRouteId(rt.getYukonId());
+				porterRequest.setRouteID(rt.getYukonID());
 			}
 	 	}
 		else if( getLoopType() == LOOPLOCATE_ROUTE )
 		{
-			porterRequest.setRouteId(getRouteID());
+			porterRequest.setRouteID(getRouteID());
 		}
 		writeNewRequestToPorter(porterRequest);
 	}
@@ -503,14 +503,14 @@ public class YC extends Observable implements MessageListener
 	
 		setLoopType( parseLoopCommand() );
 		
-		porterRequest = new RequestMessage( com.cannontech.database.db.device.Device.SYSTEM_DEVICE_ID, getExecuteCmdsVector().get(0), currentUserMessageID );
+		porterRequest = new Request( com.cannontech.database.db.device.Device.SYSTEM_DEVICE_ID, getExecuteCmdsVector().get(0), currentUserMessageID );
 		porterRequest.setPriority(getCommandPriority());
 		getExecuteCmdsVector().remove(0);	//remove the sent command from the list!
 
 		// Get routeID / set it in the request
 		if( getRouteID() >= 0)
 		{
-			porterRequest.setRouteId(getRouteID());
+			porterRequest.setRouteID(getRouteID());
 		}
 		else
 		{
@@ -902,14 +902,14 @@ public class YC extends Observable implements MessageListener
 	 * Write Request message to porter.
 	 * @param request com.cannontech.message.porter.message.Request
 	 */
-	public void writeNewRequestToPorter(RequestMessage request_)
+	public void writeNewRequestToPorter(Request request_)
 	{
 		java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM d HH:mm:ss a z");					
 		long timer = (System.currentTimeMillis());
 
 		String log = "";
-		if( request_.getDeviceId() > 0)
-			log = " Device \'" + YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(request_.getDeviceId()) + "\'";
+		if( request_.getDeviceID() > 0)
+			log = " Device \'" + YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(request_.getDeviceID()) + "\'";
 		else
 			log = " Serial # \'" + serialNumber + "\'";
 
@@ -921,7 +921,7 @@ public class YC extends Observable implements MessageListener
             addRequestMessage(currentUserMessageID);
             generateMessageID();
             getPilConn().write( request_ );
-            logSystemEvent(request_.getCommandString(), request_.getDeviceId());
+            logSystemEvent(request_.getCommandString(), request_.getDeviceID());
 		}
 		else
 		{
@@ -937,7 +937,7 @@ public class YC extends Observable implements MessageListener
 	 * Returns the porterRequest.
 	 * @return com.cannontech.message.porter.message.Request
 	 */
-	public RequestMessage getPorterRequest()
+	public Request getPorterRequest()
 	{
 		return porterRequest;
 	}
@@ -961,30 +961,30 @@ public class YC extends Observable implements MessageListener
 	 */
 	public void messageReceived(MessageEvent e)
 	{
-		BaseMessage in = e.getMessage();		
-		if(in instanceof ReturnMessage)
+		Message in = e.getMessage();		
+		if(in instanceof Return)
 		{
-			ReturnMessage returnMsg = (ReturnMessage) in;
+			Return returnMsg = (Return) in;
 			synchronized(this)
 			{
-                CTILogger.debug("Message Received [ID:"+ returnMsg.getUserMessageId() + 
-                                " DevID:" + returnMsg.getDeviceId() + 
+                CTILogger.debug("Message Received [ID:"+ returnMsg.getUserMessageID() + 
+                                " DevID:" + returnMsg.getDeviceID() + 
                                 " Command:" + returnMsg.getCommandString() +
                                 " Result:" + returnMsg.getResultString() + 
                                 " Status:" + returnMsg.getStatus() +
                                 " More:" + returnMsg.getExpectMore()+"]");
-				if( !getRequestMessageIDs().contains( new Long(returnMsg.getUserMessageId())))
+				if( !getRequestMessageIDs().contains( new Long(returnMsg.getUserMessageID())))
 				{
-					CTILogger.debug("Unknown Message: "+ returnMsg.getUserMessageId() +" Command [" + returnMsg.getCommandString()+"]");
-					CTILogger.debug("Unknown Message: "+ returnMsg.getUserMessageId() +" Result [" + returnMsg.getResultString()+"]");
+					CTILogger.debug("Unknown Message: "+ returnMsg.getUserMessageID() +" Command [" + returnMsg.getCommandString()+"]");
+					CTILogger.debug("Unknown Message: "+ returnMsg.getUserMessageID() +" Result [" + returnMsg.getResultString()+"]");
 					return;
 				}
 				else
 				{
 					//Remove the messageID from the set of Executing ids.
-					if(sendMore == 0 && returnMsg.getExpectMore() == false)	//nothing more is coming, remove from list.
+					if(sendMore == 0 && returnMsg.getExpectMore() == 0)	//nothing more is coming, remove from list.
 					{//Do not remove these from the "master" requestMessageIDs anymore, Per Corey 20060501
-						getRequestMessageIDs_Executing().remove( new Long(returnMsg.getUserMessageId()));
+						getRequestMessageIDs_Executing().remove( new Long(returnMsg.getUserMessageID()));
 					}
 				}
 				CTILogger.debug("Total Messages: " + getRequestMessageIDs().size()+ " | Commands Executing: " + getRequestMessageIDs_Executing().size());
@@ -992,13 +992,13 @@ public class YC extends Observable implements MessageListener
 				String displayOutput = "";
 
 				/** When new (one that is different from the previous) userMessageID occurs, print datetime, command, etc info*/ 
-				if( prevUserID != returnMsg.getUserMessageId())
+				if( prevUserID != returnMsg.getUserMessageID())
 				{
 					//textColor = java.awt.Color.black;
-					debugOutput = "<BR>["+ displayFormat.format(returnMsg.getTimeStamp()) + "]-{" + returnMsg.getUserMessageId() +"} {Device: " +  YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(returnMsg.getDeviceId()) + "} Return from \'" + returnMsg.getCommandString() + "\'";
+					debugOutput = "<BR>["+ displayFormat.format(returnMsg.getTimeStamp()) + "]-{" + returnMsg.getUserMessageID() +"} {Device: " +  YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(returnMsg.getDeviceID()) + "} Return from \'" + returnMsg.getCommandString() + "\'";
 					writeOutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, MessageType.INFO);
 					debugOutput = "";
-					prevUserID = returnMsg.getUserMessageId();
+					prevUserID = returnMsg.getUserMessageID();
 
 					/**TODO - better implement getting the header on the display screen*/				
 					/*if( firstTime && getLoopType() != YC.NOLOOP)
@@ -1017,9 +1017,9 @@ public class YC extends Observable implements MessageListener
 				for (int i = 0; i < returnMsg.getVector().size(); i++)
 				{
 					Object o = returnMsg.getVector().elementAt(i);
-					if (o instanceof com.cannontech.messaging.message.dispatch.PointDataMessage)
+					if (o instanceof com.cannontech.message.dispatch.message.PointData)
 					{
-						com.cannontech.messaging.message.dispatch.PointDataMessage pd = (com.cannontech.messaging.message.dispatch.PointDataMessage) o;
+						com.cannontech.message.dispatch.message.PointData pd = (com.cannontech.message.dispatch.message.PointData) o;
 						if ( pd.getStr().length() > 0 )
 						{
 							int tabCount = (60 - displayOutput.length())/ 24;
@@ -1032,13 +1032,13 @@ public class YC extends Observable implements MessageListener
 					}
 				}
 				
-				if( returnMsg.getExpectMore() == false) {
+				if( returnMsg.getExpectMore() == 0) {
 					String routeName = null;
 					if (returnMsg.getRouteOffset() > 0)
 						routeName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(returnMsg.getRouteOffset());																				
 					
 					if( routeName == null)
-						routeName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(returnMsg.getDeviceId());
+						routeName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(returnMsg.getDeviceID());
 
 					displayOutput = "Route:   " + routeName;
 					int tabCount = (60 - displayOutput.length())/ 24;
@@ -1051,11 +1051,11 @@ public class YC extends Observable implements MessageListener
 					if( getLoopType() != YC.NOLOOP)
 					{
 						if( returnMsg.getStatus() != 0) {
-							if( returnMsg.getExpectMore() == false) {
+							if( returnMsg.getExpectMore() == 0) {
 								displayOutput += "Error  " + returnMsg.getStatus() + "\t( " + returnMsg.getResultString()+ " )";
 							}
 						} else{	//status == 0 == successfull
-							if( returnMsg.getExpectMore() == false) {
+							if( returnMsg.getExpectMore() == 0) {
 								displayOutput += "Valid";
 							}
 						}
@@ -1076,7 +1076,7 @@ public class YC extends Observable implements MessageListener
 
 				synchronized ( YukonCommander.class )
 				{
-					if( returnMsg.getExpectMore() == false)	//Only send next message when ret expects nothing more
+					if( returnMsg.getExpectMore() == 0)	//Only send next message when ret expects nothing more
 					{
 						//Break out of this outer loop.
 						doneSendMore:
@@ -1106,7 +1106,7 @@ public class YC extends Observable implements MessageListener
 									if(rt.getPaoType() == PaoType.ROUTE_MACRO)
 										break doneSendMore;
 
-									getPorterRequest().setRouteId(rt.getYukonId());
+									getPorterRequest().setRouteID(rt.getYukonID());
 								}
 							}
 							startStopWatch(getTimeOut());

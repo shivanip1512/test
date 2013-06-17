@@ -2,7 +2,7 @@ package com.cannontech.loadcontrol;
 
 import java.util.Comparator;
 
-import com.cannontech.messaging.message.loadcontrol.data.Data;
+import com.cannontech.loadcontrol.data.ILMData;
 
 /**
  * Created for defining comparators for all types in LM
@@ -10,14 +10,28 @@ import com.cannontech.messaging.message.loadcontrol.data.Data;
  */
 public final class LMComparators 
 {
-	/* Used to compare names for ILMData */
-    public static Comparator<Data> lmDataNameComp = new Comparator<Data>()
+	public static Comparator<ILMData> lmDataYukonID = new Comparator<ILMData>()
 	{
-		public int compare(Data o1, Data o2)
+		public int compare(ILMData o1, ILMData o2)
+		{
+			int thisVal = o1.getYukonID().intValue();
+			int anotherVal = o2.getYukonID().intValue();
+			return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
+		}
+		public boolean equals(Object obj)
+		{
+			return false;
+		}
+	};
+	
+	/* Used to compare names for ILMData */
+    public static Comparator<ILMData> lmDataNameComp = new Comparator<ILMData>()
+	{
+		public int compare(ILMData o1, ILMData o2)
 		{
 			String thisVal = null, anotherVal = null;
 			
-			if(o1 instanceof Data && o2 instanceof Data)
+			if(o1 instanceof ILMData && o2 instanceof ILMData)
 			{
 				thisVal = o1.getYukonName();
 				anotherVal = o2.getYukonName();

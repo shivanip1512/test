@@ -14,12 +14,10 @@
 #include "msg_multi.h"
 #include "queue.h"
 
-#include "connection_listener.h"
-
 class CtiMCClientListener : public CtiThread, public CtiObserver
 {
 public:
-    CtiMCClientListener();
+    CtiMCClientListener(UINT port);
     ~CtiMCClientListener();
 
     // Send a message to all attached clients
@@ -49,19 +47,20 @@ public:
 protected:
 
 private:
+    RWSocketListener* _listener;
 
-    CtiListenerConnection _listenerConnection;
+    UINT _port;
 
-    boost::ptr_vector<CtiMCConnection> _connections;
+    std::vector<CtiMCConnection*> _connections;
     RWMutexLock _connmutex;
 
     volatile bool _doquit;
 
     // collectables written to this queue will be
     // broadcast to all the connections
-    CtiPCPtrQueue< CtiMessage > _broadcast_queue;
+    CtiPCPtrQueue< RWCollectable > _broadcast_queue;
 
     CtiQueue< CtiMessage, std::greater<CtiMessage> >* _conn_in_queue;
 
-    void removeAllConnections();
+    bool removeInvalidConnections(CtiMCConnection& conn);
 };

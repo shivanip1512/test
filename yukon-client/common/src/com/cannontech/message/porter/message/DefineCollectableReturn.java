@@ -6,8 +6,6 @@ package com.cannontech.message.porter.message;
  * @author: 
  */
 import com.cannontech.message.util.CollectionExtracter;
-import com.cannontech.messaging.message.porter.ReturnMessage;
-import com.cannontech.messaging.serialization.util.ConverterHelper;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -28,7 +26,7 @@ public DefineCollectableReturn() {
  * @exception java.io.IOException The exception description.
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new ReturnMessage();
+	return new Return();
 }
 /**
  * Insert the method's description here.
@@ -67,7 +65,7 @@ public String getCxxStringId() {
  * @return java.lang.Class
  */
 public Class getJavaClass() {
-	return ReturnMessage.class;
+	return Return.class;
 }
 /**
  * Insert the method's description here.
@@ -81,21 +79,21 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 {
 	super.restoreGuts( obj, vstr, polystr );
  
-	ReturnMessage ret = (ReturnMessage) obj;
+	Return ret = (Return) obj;
 
 //	ret.setVector( (java.util.Vector)vstr.restoreObject( polystr ) );
     ret.setVector( CollectionExtracter.extractVector(vstr, polystr) );
     
-	ret.setDeviceId( vstr.extractInt() );
+	ret.setDeviceID( vstr.extractInt() );
 	ret.setCommandString( (String) vstr.restoreObject(SimpleMappings.CString));
 	ret.setResultString( (String) vstr.restoreObject( SimpleMappings.CString));
 	ret.setStatus( vstr.extractInt() );
 	ret.setRouteOffset( vstr.extractInt() );
 	ret.setMacroOffset( vstr.extractInt() );
 	ret.setAttemptNum( vstr.extractInt() );
-	ret.setGroupMessageId(vstr.extractLong() );
-	ret.setUserMessageId( vstr.extractLong() );
-	ret.setExpectMore( ConverterHelper.intToBool(vstr.extractInt()) );
+	ret.setGroupMessageID(vstr.extractLong() );
+	ret.setUserMessageID( vstr.extractLong() );
+	ret.setExpectMore( vstr.extractInt() );
 }
 /**
  * Insert the method's description here.

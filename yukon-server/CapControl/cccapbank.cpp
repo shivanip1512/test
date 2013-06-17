@@ -34,7 +34,7 @@ using Database::DatabaseDaoFactory;
 extern unsigned long _CC_DEBUG;
 extern bool _USE_FLIP_FLAG;
 
-DEFINE_COLLECTABLE( CtiCCCapBank, CTICCCAPBANK_ID )
+RWDEFINE_COLLECTABLE( CtiCCCapBank, CTICCCAPBANK_ID )
 
 
 /*---------------------------------------------------------------------------
@@ -160,11 +160,6 @@ CtiCCConfirmationStats& CtiCCCapBank::getConfirmationStats()
 }
 
 CtiCCOriginalParent& CtiCCCapBank::getOriginalParent()
-{
-    return _originalParent;
-}
-
-const CtiCCOriginalParent& CtiCCCapBank::getOriginalParent() const
 {
     return _originalParent;
 }
@@ -1814,6 +1809,57 @@ bool CtiCCCapBank::updateExistingMonitorPoint(CtiCCMonitorPointPtr monPoint)
     return true;
 }
 
+/*---------------------------------------------------------------------------
+    saveGuts
+
+    Save self's state onto the given stream
+---------------------------------------------------------------------------*/
+void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
+{
+    long tempParentId = _originalParent.getOriginalParentId();
+
+    RWCollectable::saveGuts(ostrm);
+    CapControlPao::saveGuts(ostrm);
+
+    ostrm << _parentId;
+    ostrm << _maxdailyops;
+    ostrm << _maxopsdisableflag;
+    ostrm << _alarminhibitflag;
+    ostrm << _controlinhibitflag;
+    ostrm << _operationalstate;
+
+    ostrm << _controllertype;
+
+    ostrm << _controldeviceid;
+    ostrm << _banksize;
+    ostrm << _typeofswitch;
+    ostrm << _switchmanufacture;
+    ostrm << _maplocationid;
+    ostrm <<  _reclosedelay;
+    ostrm <<  _controlorder;
+    ostrm <<  _statuspointid;
+    ostrm <<  _controlstatus;
+    ostrm <<  _operationanalogpointid;
+    ostrm <<  _totaloperations;
+    ostrm <<  _laststatuschangetime;
+    ostrm <<  _tagscontrolstatus;
+    ostrm <<  tempParentId;
+    ostrm <<  _currentdailyoperations;
+    ostrm <<  _ignoreFlag;
+    ostrm << _ignoreReason;
+    ostrm << _ovUvDisabledFlag;
+    ostrm << _triporder;
+    ostrm << _closeorder;
+    ostrm << _controlDeviceType;
+    ostrm << _sBeforeVars;
+    ostrm << _sAfterVars;
+    ostrm << _sPercentChange;
+    ostrm << _maxDailyOpsHitFlag;
+    ostrm << _ovuvSituationFlag;
+    ostrm << _controlStatusQuality;
+    ostrm << _localControlFlag;
+    ostrm << _partialPhaseInfo;
+}
 
 /*---------------------------------------------------------------------------
     operator=
@@ -2088,9 +2134,9 @@ CtiCCCapBank* CtiCCCapBank::replicate() const
 
     Used for ordering cap banks within a feeder by control order.
 ---------------------------------------------------------------------------*/
-int CtiCCCapBank::compareTo(const CtiCCCapBank* rightObj) const
+int CtiCCCapBank::compareTo(const RWCollectable* rightObj) const
 {
-    return _controlorder == rightObj->getControlOrder() ? 0 : (_controlorder > rightObj->getControlOrder() ? 1 : -1);
+    return _controlorder == ((CtiCCCapBank*)rightObj)->getControlOrder() ? 0 : (_controlorder > ((CtiCCCapBank*)rightObj)->getControlOrder() ? 1 : -1);
 }
 
 /*---------------------------------------------------------------------------

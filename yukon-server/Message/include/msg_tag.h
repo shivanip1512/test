@@ -7,9 +7,6 @@
 class IM_EX_MSG CtiTagMsg : public CtiMessage
 {
 public:
-    DECLARE_COLLECTABLE(CtiTagMsg)
-
-public:
    typedef enum
      {
        AddAction,
@@ -33,7 +30,11 @@ protected:
 
    int _clientMsgId;        // id sourced and returned to clients.  Untouched and unused by dispatch.
 
+private:
+
 public:
+
+   RWDECLARE_COLLECTABLE(CtiTagMsg);
 
    typedef CtiMessage Inherited;
 
@@ -70,6 +71,8 @@ public:
    int getClientMsgId() const;
    CtiTagMsg& setClientMsgId(int id);
 
+   virtual void saveGuts(RWvostream &aStream) const;
+   virtual void restoreGuts(RWvistream& aStream);
    virtual CtiMessage* replicateMessage() const;
 
    virtual void dump() const;

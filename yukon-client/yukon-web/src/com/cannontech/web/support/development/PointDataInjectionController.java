@@ -23,7 +23,7 @@ import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
-import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
@@ -80,7 +80,7 @@ public class PointDataInjectionController {
             YukonUserContext userContext) {
         DateTime dateTime = date.toDateTime(time, userContext.getJodaTimeZone());
         
-        PointDataMessage pointData = new PointDataMessage();
+        PointData pointData = new PointData();
         pointData.setId(pointId);
         pointData.setTime(dateTime.toDate());
         pointData.setPointQuality(quality);

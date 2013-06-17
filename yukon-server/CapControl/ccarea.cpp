@@ -23,7 +23,7 @@ extern unsigned long _CC_DEBUG;
 
 using Cti::CapControl::PaoIdVector;
 
-DEFINE_COLLECTABLE( CtiCCArea, CTICCAREA_ID )
+RWDEFINE_COLLECTABLE( CtiCCArea, CTICCAREA_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -64,6 +64,38 @@ CtiCCArea::CtiCCArea(const CtiCCArea& area)
 ---------------------------------------------------------------------------*/
 CtiCCArea::~CtiCCArea()
 {
+
+}
+
+
+/*---------------------------------------------------------------------------
+    saveGuts
+
+    Save self's state onto the given stream
+---------------------------------------------------------------------------*/
+void CtiCCArea::saveGuts(RWvostream& ostrm ) const
+{
+    CtiCCAreaBase::saveGuts(ostrm);
+
+    ostrm << getOvUvDisabledFlag();
+    ostrm << getSubstationIds();
+
+    double pfDisplayValue = getPFactor();
+    double estPfDisplayValue = getEstPFactor();
+
+    // Modifying the display value of pFactor to represent +100% values as a negative value.
+    if (pfDisplayValue > 1)
+    {
+        pfDisplayValue -= 2;
+    }
+    if (estPfDisplayValue > 1)
+    {
+        estPfDisplayValue -= 2;
+    }
+    ostrm << pfDisplayValue
+          << estPfDisplayValue
+          << getVoltReductionControlValue()
+          << _childVoltReductionFlag;
 
 }
 
@@ -225,10 +257,6 @@ bool CtiCCArea::getReEnableAreaFlag() const
     return _reEnableAreaFlag;
 }
 
-bool CtiCCArea::getChildVoltReductionFlag() const
-{
-    return _childVoltReductionFlag;
-}
 
 /*---------------------------------------------------------------------------
     setAreaUpdatedFlag

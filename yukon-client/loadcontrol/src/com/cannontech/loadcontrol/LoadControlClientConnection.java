@@ -22,23 +22,23 @@ import org.apache.log4j.Logger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
+import com.cannontech.loadcontrol.data.LMDirectGroupBase;
+import com.cannontech.loadcontrol.data.LMGroupBase;
+import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.data.LMProgramDirect;
+import com.cannontech.loadcontrol.dynamic.receive.LMControlAreaChanged;
+import com.cannontech.loadcontrol.dynamic.receive.LMGroupChanged;
+import com.cannontech.loadcontrol.dynamic.receive.LMProgramChanged;
+import com.cannontech.loadcontrol.dynamic.receive.LMTriggerChanged;
 import com.cannontech.loadcontrol.events.LCChangeEvent;
+import com.cannontech.loadcontrol.messages.LMControlAreaMsg;
+import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.ConnectionException;
-import com.cannontech.messaging.message.BaseMessage;
-import com.cannontech.messaging.message.loadcontrol.ControlAreaMessage;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaTriggerItem;
-import com.cannontech.messaging.message.loadcontrol.data.DirectGroupBase;
-import com.cannontech.messaging.message.loadcontrol.data.GroupBase;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
-import com.cannontech.messaging.message.loadcontrol.data.ProgramDirect;
-import com.cannontech.messaging.message.loadcontrol.dynamic.receive.ControlAreaChanged;
-import com.cannontech.messaging.message.loadcontrol.dynamic.receive.GroupChanged;
-import com.cannontech.messaging.message.loadcontrol.dynamic.receive.ProgramChanged;
-import com.cannontech.messaging.message.loadcontrol.dynamic.receive.TriggerChanged;
-import com.cannontech.messaging.message.server.ServerResponseMessage;
-import com.cannontech.messaging.util.MessageEvent;
-import com.cannontech.messaging.util.MessageListener;
+import com.cannontech.message.util.Message;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.base.Function;
 import com.google.common.collect.HashMultimap;
@@ -47,13 +47,14 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import com.roguewave.vsj.CollectableStreamer;
 
-public class LoadControlClientConnection extends com.cannontech.messaging.util.ClientConnection implements MessageListener {
+public class LoadControlClientConnection extends com.cannontech.message.util.ClientConnection implements MessageListener {
     private final Logger log = YukonLogManager.getLogger(LoadControlClientConnection.class);
 	
-	private Map<Integer, DatedObject<ControlAreaItem>> controlAreas = new ConcurrentHashMap<Integer, DatedObject<ControlAreaItem>>();
-    private Map<Integer, DatedObject<Program>> programs = new ConcurrentHashMap<Integer, DatedObject<Program>>();
-    private Map<Integer, DatedObject<GroupBase>> groups = new ConcurrentHashMap<Integer, DatedObject<GroupBase>>();
+	private Map<Integer, DatedObject<LMControlArea>> controlAreas = new ConcurrentHashMap<Integer, DatedObject<LMControlArea>>();
+    private Map<Integer, DatedObject<LMProgramBase>> programs = new ConcurrentHashMap<Integer, DatedObject<LMProgramBase>>();
+    private Map<Integer, DatedObject<LMGroupBase>> groups = new ConcurrentHashMap<Integer, DatedObject<LMGroupBase>>();
 
     private Map<Integer, Integer> controlAreaByProgram = Maps.newHashMap();
     private Multimap<Integer, Integer> programsByLoadGroup = HashMultimap.create();
@@ -69,8 +70,8 @@ public class LoadControlClientConnection extends com.cannontech.messaging.util.C
     	// for all the ControlAreas
     	if( countObservers() >= 2 )
     	{
-    		com.cannontech.messaging.message.loadcontrol.CommandMessage cmd = new com.cannontech.messaging.message.loadcontrol.CommandMessage();
-    		cmd.setCommand( com.cannontech.messaging.message.loadcontrol.CommandMessage.RETRIEVE_ALL_CONTROL_AREAS );
+    		com.cannontech.loadcontrol.messages.LMCommand cmd = new com.cannontech.loadcontrol.messages.LMCommand();
+    		cmd.setCommand( com.cannontech.loadcontrol.messages.LMCommand.RETRIEVE_ALL_CONTROL_AREAS );
     		
     		//tell the server we need all the ControlAreas sent to the new registered object
     		queue( cmd );
@@ -85,26 +86,26 @@ public class LoadControlClientConnection extends com.cannontech.messaging.util.C
     	deleteObservers();
     }
     
-    private void handleDeletedItems(ControlAreaMessage msg) {
+    private void handleDeletedItems(LMControlAreaMsg msg) {
         // When a message comes in with the "deleted" flag set, it contains all
         // of the control areas EXCEPT the deleted one(s).
         Set<Integer> controlAreasToKeep = Sets.newHashSet();
         Set<Integer> programsToKeep = Sets.newHashSet();
         Set<Integer> loadGroupsToKeep = Sets.newHashSet();
 
-        for (ControlAreaItem controlArea : msg.getLMControlAreaVector()) {
-            controlAreasToKeep.add(controlArea.getYukonId());
-            for (Program program : controlArea.getProgramVector()) {
-                programsToKeep.add(program.getYukonId());
-                for (GroupBase group : program.getLoadControlGroupVector()) {
-                    loadGroupsToKeep.add(group.getYukonId());
+        for (LMControlArea controlArea : msg.getLMControlAreaVector()) {
+            controlAreasToKeep.add(controlArea.getYukonID());
+            for (LMProgramBase program : controlArea.getLmProgramVector()) {
+                programsToKeep.add(program.getYukonID());
+                for (LMGroupBase group : program.getLoadControlGroupVector()) {
+                    loadGroupsToKeep.add(group.getYukonID());
                 }
             }
         }
 
         for (Integer controlAreaId : controlAreas.keySet()) {
             if (!controlAreasToKeep.contains(controlAreaId)) {
-                DatedObject<ControlAreaItem> removed = controlAreas.remove(controlAreaId);
+                DatedObject<LMControlArea> removed = controlAreas.remove(controlAreaId);
                 setChanged();
                 notifyObservers(new LCChangeEvent(this,
                                                   LCChangeEvent.DELETE,
@@ -114,7 +115,7 @@ public class LoadControlClientConnection extends com.cannontech.messaging.util.C
 
         for (Integer programId : programs.keySet()) {
             if (!programsToKeep.contains(programId)) {
-                DatedObject<Program> removed = programs.remove(programId);
+                DatedObject<LMProgramBase> removed = programs.remove(programId);
                 setChanged();
                 notifyObservers(new LCChangeEvent(this,
                                                   LCChangeEvent.DELETE,
@@ -124,7 +125,7 @@ public class LoadControlClientConnection extends com.cannontech.messaging.util.C
 
         for (Integer loadGroupId : groups.keySet()) {
             if (!loadGroupsToKeep.contains(loadGroupId)) {
-                DatedObject<GroupBase> removed = groups.remove(loadGroupId);
+                DatedObject<LMGroupBase> removed = groups.remove(loadGroupId);
                 setChanged();
                 notifyObservers(new LCChangeEvent(this,
                                                   LCChangeEvent.DELETE,
@@ -134,18 +135,18 @@ public class LoadControlClientConnection extends com.cannontech.messaging.util.C
     }
 
     @Deprecated
-    public ControlAreaItem[] getAllLMControlAreas() {
-        ControlAreaItem[] retVal = new ControlAreaItem[controlAreas.size()];
+    public LMControlArea[] getAllLMControlAreas() {
+        LMControlArea[] retVal = new LMControlArea[controlAreas.size()];
         int index = 0;
-        for (DatedObject<ControlAreaItem> datedControlArea : controlAreas.values()) {
+        for (DatedObject<LMControlArea> datedControlArea : controlAreas.values()) {
             retVal[index++] = datedControlArea.getObject();
         }
         return retVal;
     }
     
-    public ControlAreaItem getControlArea(int controlAreaId) {
-        ControlAreaItem controlArea = null;
-        DatedObject<ControlAreaItem> datedControlArea = controlAreas.get(controlAreaId);
+    public LMControlArea getControlArea(int controlAreaId) {
+        LMControlArea controlArea = null;
+        DatedObject<LMControlArea> datedControlArea = controlAreas.get(controlAreaId);
         if (datedControlArea != null) {
             controlArea = datedControlArea.getObject();
         }
@@ -158,12 +159,12 @@ public class LoadControlClientConnection extends com.cannontech.messaging.util.C
      * @param programId
      * @return
      */
-    public ControlAreaItem findControlAreaForProgram(int programId) {
+    public LMControlArea findControlAreaForProgram(int programId) {
         Integer controlAreaId = controlAreaByProgram.get(programId);
         if(controlAreaId == null) {
             return null;
         }
-        DatedObject<ControlAreaItem> datedControlArea = controlAreas.get(controlAreaId);
+        DatedObject<LMControlArea> datedControlArea = controlAreas.get(controlAreaId);
         return datedControlArea == null ? null : datedControlArea.getObject();
     }
     
@@ -172,7 +173,7 @@ public class LoadControlClientConnection extends com.cannontech.messaging.util.C
     }
     
     @Deprecated
-    public Map<Integer, ControlAreaItem> getControlAreas() {
+    public Map<Integer, LMControlArea> getControlAreas() {
     	return unwrapDatedMap(controlAreas);
     }
     
@@ -186,9 +187,9 @@ public class LoadControlClientConnection extends com.cannontech.messaging.util.C
     	return clientConnection;
     }
 
-    public Program getProgram(int programId) 
+    public LMProgramBase getProgram(int programId) 
     {
-        DatedObject<Program> datedProgram = programs.get(programId);
+        DatedObject<LMProgramBase> datedProgram = programs.get(programId);
         return datedProgram == null ? null : datedProgram.getObject();
     }
     
@@ -199,13 +200,13 @@ public class LoadControlClientConnection extends com.cannontech.messaging.util.C
      * @throws ConnectionException
      * @throws NotFoundException
      */
-    public Program getProgramSafe(int programId) throws ConnectionException, NotFoundException
+    public LMProgramBase getProgramSafe(int programId) throws ConnectionException, NotFoundException
     {
         if(!isValid()) {
             throw new ConnectionException("The Load Management server connection is not valid.");
         }
         
-        DatedObject<Program> datedProgram = programs.get(programId);
+        DatedObject<LMProgramBase> datedProgram = programs.get(programId);
         
         if(datedProgram == null) {
             throw new NotFoundException("The requested program with id " + programId + " was not found.");
@@ -219,32 +220,32 @@ public class LoadControlClientConnection extends com.cannontech.messaging.util.C
      *
      * @throws ConnectionException
      */
-    public Set<Program> getAllProgramsSet() throws ConnectionException {
+    public Set<LMProgramBase> getAllProgramsSet() throws ConnectionException {
         
         if(!isValid()) {
             throw new ConnectionException("The Load Management server connection is not valid.");
         }
     	
-    	List<DatedObject<Program>> datedPrograms = new ArrayList<DatedObject<Program>>(programs.values());
+    	List<DatedObject<LMProgramBase>> datedPrograms = new ArrayList<DatedObject<LMProgramBase>>(programs.values());
     	
-    	List<Program> programs = Lists.transform(datedPrograms, new Function<DatedObject<Program>, Program>() {
+    	List<LMProgramBase> programs = Lists.transform(datedPrograms, new Function<DatedObject<LMProgramBase>, LMProgramBase>() {
 								    		@Override
-								    		public Program apply(DatedObject<Program> from) {
+								    		public LMProgramBase apply(DatedObject<LMProgramBase> from) {
 								    			return from.getObject();
 								    		}
 										});
     	
-    	ImmutableSet<Program> programSet = ImmutableSet.copyOf(programs);
+    	ImmutableSet<LMProgramBase> programSet = ImmutableSet.copyOf(programs);
     	
         return programSet;
     }
 
-    public List<Program> getProgramsForProgramIds(List<Integer> programIds) throws ConnectionException,
+    public List<LMProgramBase> getProgramsForProgramIds(List<Integer> programIds) throws ConnectionException,
             NotFoundException {
 
-        List<Program> programs = new ArrayList<Program>(programIds.size());
+        List<LMProgramBase> programs = new ArrayList<LMProgramBase>(programIds.size());
         for (int programId : programIds) {
-            Program program = getProgramSafe(programId);
+            LMProgramBase program = getProgramSafe(programId);
             if (program != null) {
                 programs.add(program);
             }
@@ -253,28 +254,28 @@ public class LoadControlClientConnection extends com.cannontech.messaging.util.C
         return programs;
     }
 
-    public GroupBase getGroup(int groupId) {
-        GroupBase group = null;
-        DatedObject<GroupBase> datedGroup = groups.get(groupId);
+    public LMGroupBase getGroup(int groupId) {
+        LMGroupBase group = null;
+        DatedObject<LMGroupBase> datedGroup = groups.get(groupId);
         if (datedGroup != null) {
             group = datedGroup.getObject();
         }
         return group;
     }    
 
-    public DatedObject<ControlAreaItem> getDatedControlArea(int controlAreaId) {
+    public DatedObject<LMControlArea> getDatedControlArea(int controlAreaId) {
         return controlAreas.get(controlAreaId);
     }
     
-    public DatedObject<Program> getDatedProgram(int programId) {
+    public DatedObject<LMProgramBase> getDatedProgram(int programId) {
         return programs.get(programId);
     }
     
-    public DatedObject<GroupBase> getDatedGroup(int groupId) {
+    public DatedObject<LMGroupBase> getDatedGroup(int groupId) {
         return groups.get(groupId);
     }
     
-    private void handleLMControlArea(ControlAreaItem controlArea) {
+    private void handleLMControlArea(LMControlArea controlArea) {
         log.debug(" ---> Received a control area named " + controlArea.getYukonName());
 
         /* Build up hashMaps of references for all these different objects, so we don't have
@@ -286,24 +287,24 @@ public class LoadControlClientConnection extends com.cannontech.messaging.util.C
          * updated controlArea as input to this method so we cannot determine what (if anything) 
          * has been deleted.  This is why the methods to get those maps have been deprecated.
 		 */
-        for (int i = 0; i < controlArea.getProgramVector().size(); i++) {
-            Program currentProgram = (Program) controlArea.getProgramVector()
+        for (int i = 0; i < controlArea.getLmProgramVector().size(); i++) {
+            LMProgramBase currentProgram = (LMProgramBase) controlArea.getLmProgramVector()
                                                                       .get(i);
             for (int j = 0; j < currentProgram.getLoadControlGroupVector()
                                               .size(); j++) {
-                GroupBase group = (GroupBase) currentProgram.getLoadControlGroupVector().get(j);
-                groups.put(group.getYukonId(), new DatedObject<GroupBase>(group));
-                programsByLoadGroup.put(group.getYukonId(), currentProgram.getYukonId());
+                LMGroupBase group = (LMGroupBase) currentProgram.getLoadControlGroupVector().get(j);
+                groups.put(group.getYukonID(), new DatedObject<LMGroupBase>(group));
+                programsByLoadGroup.put(group.getYukonID(), currentProgram.getYukonID());
             }
-            programs.put(currentProgram.getYukonId(), new DatedObject<Program>(currentProgram));
-            controlAreaByProgram.put(currentProgram.getYukonId(), controlArea.getYukonId());
+            programs.put(currentProgram.getYukonID(), new DatedObject<LMProgramBase>(currentProgram));
+            controlAreaByProgram.put(currentProgram.getYukonID(), controlArea.getYukonID());
         }
 
         // We wait to add the control area until its programs have been added
         // so we have don't have a control area in the map which references
         // programs/groups which aren't.
-        boolean newInsert = controlAreas.put(controlArea.getYukonId(),
-                                             new DatedObject<ControlAreaItem>(controlArea)) == null;
+        boolean newInsert = controlAreas.put(controlArea.getYukonID(),
+                                             new DatedObject<LMControlArea>(controlArea)) == null;
 
     	// tell all listeners that we received an updated LMControlArea
     	setChanged();
@@ -317,19 +318,19 @@ public class LoadControlClientConnection extends com.cannontech.messaging.util.C
 
     public void messageReceived(MessageEvent msgEvent) {
         log.debug("messageReceived: " + msgEvent);
-        BaseMessage obj = msgEvent.getMessage();
-        if (obj instanceof ControlAreaChanged) {
+        Message obj = msgEvent.getMessage();
+        if (obj instanceof LMControlAreaChanged) {
             // The server only sends this type of message for minor control area changes
             // This helps prevent heavy messages constantly flowing on every little change
-            handleLMControlAreaChange((ControlAreaChanged)obj);
-        } else if (obj instanceof ProgramChanged) {
-            handleLMProgramChange((ProgramChanged)obj);
-        } else if (obj instanceof GroupChanged) {
-            handleLMGroupChange((GroupChanged) obj);
-        } else if (obj instanceof ControlAreaMessage) {
+            handleLMControlAreaChange((LMControlAreaChanged)obj);
+        } else if (obj instanceof LMProgramChanged) {
+            handleLMProgramChange((LMProgramChanged)obj);
+        } else if (obj instanceof LMGroupChanged) {
+            handleLMGroupChange((LMGroupChanged) obj);
+        } else if (obj instanceof LMControlAreaMsg) {
             // This message type contains a list of everything load management
             // knows about.
-            ControlAreaMessage msg = (ControlAreaMessage) obj;
+            LMControlAreaMsg msg = (LMControlAreaMsg) obj;
 
             // We need to remove control areas, programs and load groups which
             // aren't used any more.
@@ -337,16 +338,24 @@ public class LoadControlClientConnection extends com.cannontech.messaging.util.C
             for (int i = 0; i < msg.getNumberOfLMControlAreas(); i++) {
                 handleLMControlArea(msg.getLMControlArea(i));
             }
-        } else if (obj instanceof ServerResponseMessage) {
+        } else if (obj instanceof ServerResponseMsg) {
     	    //log.debug("Received a ServerResponseMsg, ignoring it since I didn't send a request");
     	}
     }
     
-   
-    private void handleLMControlAreaChange(ControlAreaChanged changedArea) {
-        DatedObject<ControlAreaItem> datedArea = controlAreas.get(changedArea.getPaoId());
+    public void registerMappings(CollectableStreamer streamer ) {
+    	super.registerMappings( streamer );
+    
+    	com.roguewave.vsj.DefineCollectable[] mappings = CollectableMappings.getMappings();
+    
+    	for( int i = 0; i < mappings.length; i++ )
+    		streamer.register( mappings[i] );
+    }
+    
+    private void handleLMControlAreaChange(LMControlAreaChanged changedArea) {
+        DatedObject<LMControlArea> datedArea = controlAreas.get(changedArea.getPaoID());
         // LMControlAreaChanged doesn't contain changes to programs
-        ControlAreaItem newControlArea = (ControlAreaItem) datedArea.getObject().cloneKeepingPrograms();
+        LMControlArea newControlArea = (LMControlArea) datedArea.getObject().cloneKeepingPrograms();
 
         newControlArea.setDisableFlag(changedArea.getDisableFlag());
         newControlArea.setNextCheckTime(changedArea.getNextCheckTime());
@@ -355,9 +364,9 @@ public class LoadControlClientConnection extends com.cannontech.messaging.util.C
         newControlArea.setCurrentDailyStartTime(changedArea.getCurrentDailyStartTime());
         newControlArea.setCurrentDailyStopTime(changedArea.getCurrentDailyStopTime());
 
-        for(TriggerChanged changedTrigger : changedArea.getTriggers()) {
+        for(LMTriggerChanged changedTrigger : changedArea.getTriggers()) {
             log.debug("processing " + changedTrigger);
-            ControlAreaTriggerItem currentTrigger = newControlArea.getTrigger(changedTrigger.getTriggerNumber());
+            LMControlAreaTrigger currentTrigger = newControlArea.getTrigger(changedTrigger.getTriggerNumber());
 
             if(currentTrigger != null) {
                 currentTrigger.setTriggerNumber(changedTrigger.getTriggerNumber());
@@ -370,32 +379,32 @@ public class LoadControlClientConnection extends com.cannontech.messaging.util.C
                 currentTrigger.setProjectedPointValue(changedTrigger.getProjectedPointValue());
             } else {
                 log.error("got trigger change information for control area "
-                          + changedArea.getPaoId() + ", trigger number "
+                          + changedArea.getPaoID() + ", trigger number "
                           + changedTrigger.getTriggerNumber()
                           + " but there was no trigger to change");
             }
         }
-        controlAreas.put(newControlArea.getYukonId(),
-                         new DatedObject<ControlAreaItem>(newControlArea));
+        controlAreas.put(newControlArea.getYukonID(),
+                         new DatedObject<LMControlArea>(newControlArea));
 
         // tell all listeners that we received an updated LMControlArea
         setChanged();
         notifyObservers(new LCChangeEvent(this, LCChangeEvent.UPDATE, newControlArea));
     }
 
-    private void updateControlAreasForProgram(Program program) {
-        ControlAreaItem parentControlArea = findControlAreaForProgram(program.getYukonId());
-        ControlAreaItem newControlArea = parentControlArea.cloneUpdatingProgram(program);
-        controlAreas.put(newControlArea.getYukonId(), new DatedObject<ControlAreaItem>(newControlArea));
+    private void updateControlAreasForProgram(LMProgramBase program) {
+        LMControlArea parentControlArea = findControlAreaForProgram(program.getYukonID());
+        LMControlArea newControlArea = parentControlArea.cloneUpdatingProgram(program);
+        controlAreas.put(newControlArea.getYukonID(), new DatedObject<LMControlArea>(newControlArea));
     }
 
-    private void handleLMProgramChange(ProgramChanged changedProgram) {
-        DatedObject<Program> datedProgram = programs.get(changedProgram.getPaoId());
-    	Program newProgram = datedProgram.getObject().cloneKeepingLoadGroups();
+    private void handleLMProgramChange(LMProgramChanged changedProgram) {
+        DatedObject<LMProgramBase> datedProgram = programs.get(changedProgram.getPaoID());
+    	LMProgramBase newProgram = datedProgram.getObject().cloneKeepingLoadGroups();
 
         newProgram.setDisableFlag(changedProgram.getDisableFlag());
-        if (newProgram instanceof ProgramDirect) {
-            ProgramDirect directProgram = (ProgramDirect) newProgram;
+        if (newProgram instanceof LMProgramDirect) {
+            LMProgramDirect directProgram = (LMProgramDirect) newProgram;
             directProgram.setCurrentGearNumber(changedProgram.getCurrentGearNumber()); 
             directProgram.setLastGroupControlled(changedProgram.getLastGroupControlled());
             directProgram.setProgramStatus(changedProgram.getProgramState());
@@ -407,7 +416,7 @@ public class LoadControlClientConnection extends com.cannontech.messaging.util.C
             directProgram.setStartedRampingOut(changedProgram.getStartedRampingOutTime());
         }
 
-        programs.put(newProgram.getYukonId(), new DatedObject<Program>(newProgram));
+        programs.put(newProgram.getYukonID(), new DatedObject<LMProgramBase>(newProgram));
         updateControlAreasForProgram(newProgram);
 
         // tell all listeners that we had an update
@@ -417,12 +426,12 @@ public class LoadControlClientConnection extends com.cannontech.messaging.util.C
                                           newProgram));
     }
     
-    private void handleLMGroupChange(GroupChanged changedGroup) {
-        DatedObject<GroupBase> datedLoadGroup = groups.get(changedGroup.getPaoId());
-    	GroupBase newGroup = datedLoadGroup.getObject().clone();
+    private void handleLMGroupChange(LMGroupChanged changedGroup) {
+        DatedObject<LMGroupBase> datedLoadGroup = groups.get(changedGroup.getPaoID());
+    	LMGroupBase newGroup = datedLoadGroup.getObject().clone();
 
-        if (newGroup instanceof DirectGroupBase) {
-            DirectGroupBase directGroup = (DirectGroupBase) newGroup;
+        if (newGroup instanceof LMDirectGroupBase) {
+            LMDirectGroupBase directGroup = (LMDirectGroupBase) newGroup;
             directGroup.setDisableFlag(changedGroup.getDisableFlag());
             directGroup.setGroupControlState(changedGroup.getGroupControlState());
             directGroup.setCurrentHoursDaily(changedGroup.getCurrentHoursDaily());
@@ -437,11 +446,11 @@ public class LoadControlClientConnection extends com.cannontech.messaging.util.C
             directGroup.setDailyOps(changedGroup.getDailyOps());
         }
 
-        groups.put(newGroup.getYukonId(), new DatedObject<GroupBase>(newGroup));
-        for (Integer programId : programsByLoadGroup.get(newGroup.getYukonId())) {
-            Program parentProgram = programs.get(programId).getObject();
-            Program newProgram = parentProgram.cloneUpdatingLoadGroup(newGroup);
-            programs.put(newProgram.getYukonId(), new DatedObject<Program>(newProgram));
+        groups.put(newGroup.getYukonID(), new DatedObject<LMGroupBase>(newGroup));
+        for (Integer programId : programsByLoadGroup.get(newGroup.getYukonID())) {
+            LMProgramBase parentProgram = programs.get(programId).getObject();
+            LMProgramBase newProgram = parentProgram.cloneUpdatingLoadGroup(newGroup);
+            programs.put(newProgram.getYukonID(), new DatedObject<LMProgramBase>(newProgram));
             updateControlAreasForProgram(newProgram);
         }
 

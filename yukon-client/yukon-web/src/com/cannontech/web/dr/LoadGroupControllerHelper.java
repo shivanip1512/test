@@ -37,7 +37,7 @@ import com.cannontech.dr.loadgroup.filter.LoadGroupStateFilter;
 import com.cannontech.dr.loadgroup.model.LoadGroupNameField;
 import com.cannontech.dr.loadgroup.service.LoadGroupFieldService;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
-import com.cannontech.messaging.message.loadcontrol.data.DirectGroupBase;
+import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -150,7 +150,7 @@ public class LoadGroupControllerHelper {
         if(!StringUtils.isEmpty(backingBean.getSort())) {
             // If there is a custom sorter, add it
             
-            DemandResponseBackingField<DirectGroupBase> sortField = 
+            DemandResponseBackingField<LMDirectGroupBase> sortField = 
                 loadGroupFieldService.getBackingField(backingBean.getSort());
             
             sorter = sortField.getSorter(userContext);

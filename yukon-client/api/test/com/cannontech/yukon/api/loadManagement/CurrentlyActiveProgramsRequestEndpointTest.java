@@ -16,8 +16,8 @@ import org.springframework.core.io.Resource;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
 import com.cannontech.yukon.api.loadManagement.adapters.LoadControlServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.CurrentlyActiveProgramsRequestEndpoint;
 import com.cannontech.yukon.api.loadManagement.mocks.MockProgramStatus;
@@ -49,8 +49,8 @@ public class CurrentlyActiveProgramsRequestEndpointTest {
             
             List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
             if (!user.getUsername().equals(EMTPY_RETURN_USER)){
-                MockProgramStatus program1 = new MockProgramStatus("Program1", Program.STATUS_ACTIVE, "2008-10-13T12:30:00Z", "2008-10-13T21:40:01Z", "Gear1");
-                MockProgramStatus program2 = new MockProgramStatus("Program2", Program.STATUS_INACTIVE, "2008-10-14T13:45:01Z", null, "Gear2");
+                MockProgramStatus program1 = new MockProgramStatus("Program1", LMProgramBase.STATUS_ACTIVE, "2008-10-13T12:30:00Z", "2008-10-13T21:40:01Z", "Gear1");
+                MockProgramStatus program2 = new MockProgramStatus("Program2", LMProgramBase.STATUS_INACTIVE, "2008-10-14T13:45:01Z", null, "Gear2");
                 programStatuses.add(program1);
                 programStatuses.add(program2);
             }

@@ -29,7 +29,7 @@ using std::endl;
 
 extern ULONG _LM_DEBUG;
 
-DEFINE_COLLECTABLE( CtiLMCurtailCustomer, CTILMCURTAILCUSTOMER_ID )
+RWDEFINE_COLLECTABLE( CtiLMCurtailCustomer, CTILMCURTAILCUSTOMER_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -162,6 +162,52 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::setAckLateFlag(BOOL acklate)
 {
     _acklateflag = acklate;
     return *this;
+}
+
+
+/*-------------------------------------------------------------------------
+    restoreGuts
+
+    Restore self's state from the given stream
+--------------------------------------------------------------------------*/
+void CtiLMCurtailCustomer::restoreGuts(RWvistream& istrm)
+{
+    CtiLMCICustomerBase::restoreGuts( istrm );
+
+    CtiTime tempTime;
+    istrm >> _requireack
+          >> _curtailreferenceid
+          >> _acknowledgestatus
+          >> tempTime
+          >> _ipaddressofackuser
+          >> _useridname
+          >> _nameofackperson
+          >> _curtailmentnotes
+          >> _acklateflag;
+
+    _ackdatetime = CtiTime(tempTime);
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+
+    Save self's state onto the given stream
+---------------------------------------------------------------------------*/
+void CtiLMCurtailCustomer::saveGuts(RWvostream& ostrm ) const
+{
+    CtiLMCICustomerBase::saveGuts( ostrm );
+
+    ostrm << _requireack
+          << _curtailreferenceid
+          << _acknowledgestatus
+          << _ackdatetime
+          << _ipaddressofackuser
+          << _useridname
+          << _nameofackperson
+          << _curtailmentnotes
+          << _acklateflag;
+
+    return;
 }
 
 /*---------------------------------------------------------------------------

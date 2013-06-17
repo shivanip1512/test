@@ -15,11 +15,8 @@
 class IM_EX_MSG CtiNotifAlarmMsg : public CtiMessage
 {
 public:
-    DECLARE_COLLECTABLE( CtiNotifAlarmMsg )
 
-public:
-
-    typedef CtiMessage Inherited;
+    RWDECLARE_COLLECTABLE( CtiNotifAlarmMsg );
 
     CtiNotifAlarmMsg();
     CtiNotifAlarmMsg(const std::vector<int>& group_ids,
@@ -50,12 +47,14 @@ public:
     CtiNotifAlarmMsg& setAlarmTimestamp(const CtiTime& alarm_timestamp);
     CtiNotifAlarmMsg& setAcknowledged(bool acknowledged);
     CtiNotifAlarmMsg& setAbnormal(bool abnormal);
-
+        
+    virtual void saveGuts(RWvostream &aStream) const;
+    virtual void restoreGuts(RWvistream& aStream);
     virtual CtiMessage* replicateMessage() const;
 
     virtual void dump() const;
 
-
+    
 private:
     std::vector<int> _notif_group_ids;    
     int _category_id;

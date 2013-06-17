@@ -33,7 +33,7 @@ using std::endl;
     returns TRUE if successfull
     FALSE otherwise
 -----------------------------------------------------------------------------*/
-bool DecodeCFDATAFile(const string& file, std::vector<std::string*>* ordered)
+bool DecodeCFDATAFile(const string& file, std::vector<RWCollectableString*>* ordered)
 {
     FILE* fptr;
     char l_buf[36];  //each line is 33 char's long + \r\n + add a byte for NULL
@@ -53,9 +53,9 @@ bool DecodeCFDATAFile(const string& file, std::vector<std::string*>* ordered)
         if( strlen( l_buf) != 34 )
             continue;
 
-        std::string *decoded = new std::string();
+        RWCollectableString* decoded = new RWCollectableString();
 
-        if( DecodeCFDATALine( l_buf, decoded ) == false)
+        if( DecodeCFDATALine( l_buf, string(decoded->data()) ) == false)
         {
             fclose(fptr);
             delete decoded;
@@ -74,7 +74,7 @@ bool DecodeCFDATAFile(const string& file, std::vector<std::string*>* ordered)
 }
 
 
-bool DecodeEOIFile(const string& file, std::vector<std::string*>* ordered)
+bool DecodeEOIFile(const string& file, std::vector<RWCollectableString*>* ordered)
 {
     FILE* fptr;
     char l_buf[1000];
@@ -106,7 +106,7 @@ bool DecodeEOIFile(const string& file, std::vector<std::string*>* ordered)
     return true;
 }
 
-bool DecodeWepcoFile(const string& file, std::vector<std::string*>* ordered)
+bool DecodeWepcoFile(const string& file, std::vector<RWCollectableString*>* ordered)
 {
     FILE* fptr;
     char l_buf[1000];
@@ -138,7 +138,7 @@ bool DecodeWepcoFile(const string& file, std::vector<std::string*>* ordered)
     return true;
 }
 
-bool DecodeWepcoFileService(const string& file, std::vector<std::string*>* results)
+bool DecodeWepcoFileService(const string& file, std::vector<RWCollectableString*>* results)
 {
     FILE* fptr;
     char l_buf[1000];
@@ -172,7 +172,7 @@ bool DecodeWepcoFileService(const string& file, std::vector<std::string*>* resul
 }
 
 
-bool DecodeWepcoFileConfig(const string& file, std::vector<std::string*>* results)
+bool DecodeWepcoFileConfig(const string& file, std::vector<RWCollectableString*>* results)
 {
     FILE* fptr;
     char l_buf[1000];
@@ -207,7 +207,7 @@ bool DecodeWepcoFileConfig(const string& file, std::vector<std::string*>* result
 
 
 
-bool DecodeCFDATALine( char* line, string* decoded )
+bool DecodeCFDATALine( char* line, string& decoded )
 {
     char delim = ' ';
     char* pos = 0;
@@ -221,7 +221,7 @@ bool DecodeCFDATALine( char* line, string* decoded )
     unsigned short class_id = 0;
     unsigned short div_id = 0;
 
-    *decoded = "set MessagePriority 6 ; putconfig versacom serial ";
+    decoded = "set MessagePriority 6 ; putconfig versacom serial ";
 
     //DLC Function (2bytes)
     if( (pos = strtok( line, &delim)) == NULL )
@@ -239,19 +239,19 @@ bool DecodeCFDATALine( char* line, string* decoded )
 
     serial_num = atol(pos);
 
-    *decoded += pos;
+    decoded += pos;
 
     if( func == 4 )
     {
-        *decoded += " service in ";
-        *decoded += GetSelectCustomRouteID(serial_num);
+        decoded += " service in ";
+        decoded += GetSelectCustomRouteID(serial_num);
         return true;
     }
     else
     if( func == 5 )
     {
-        *decoded += " service out ";
-        *decoded += GetSelectCustomRouteID(serial_num);
+        decoded += " service out ";
+        decoded += GetSelectCustomRouteID(serial_num);
         return true;
     }
 
@@ -266,8 +266,8 @@ bool DecodeCFDATALine( char* line, string* decoded )
         temp = atoi(pos);
         sprintf( buf, "%d", temp );
 
-        *decoded += " utility ";
-        *decoded += buf;
+        decoded += " utility ";
+        decoded += buf;
     }
 
     //Division Code - aux (3 bytes)
@@ -279,8 +279,8 @@ bool DecodeCFDATALine( char* line, string* decoded )
     temp = atoi(pos);
     sprintf(buf, "%d", temp);
 
-    *decoded += " aux ";
-    *decoded += buf;
+    decoded += " aux ";
+    decoded += buf;
 
     //Operating Disctrict - section (3 bytes )
     if( (pos = strtok( line, &delim)) == NULL )
@@ -291,8 +291,8 @@ bool DecodeCFDATALine( char* line, string* decoded )
     temp = atoi(pos);
     sprintf(buf, "%d", temp);
 
-    *decoded += " section ";
-    *decoded += buf;
+    decoded += " section ";
+    decoded += buf;
 
     //Class #1 (2bytes)
     if( (pos = strtok( line, &delim)) == NULL )
@@ -329,8 +329,8 @@ bool DecodeCFDATALine( char* line, string* decoded )
 
     sprintf(buf, "0x%04x", class_id);
 
-    *decoded += " class ";
-    *decoded += buf;
+    decoded += " class ";
+    decoded += buf;
 
     //DLC Division (2 bytes)
     if( (pos = strtok( line, &delim)) == NULL )
@@ -345,13 +345,13 @@ bool DecodeCFDATALine( char* line, string* decoded )
 
     sprintf(buf, "0x%04x", div_id);
 
-    *decoded += " division ";
-    *decoded += buf;
+    decoded += " division ";
+    decoded += buf;
 
     string route_select = GetSelectCustomRouteID(serial_num);
     if( route_select.length() > 0 ) {
-        *decoded += " ";
-        *decoded += route_select;
+        decoded += " ";
+        decoded += route_select;
     }
 
     return true;
@@ -362,7 +362,7 @@ bool DecodeCFDATALine( char* line, string* decoded )
     $VSERV=<groupname>,VN<serial num>,CONTRACT=(IN|OUT),TEMP=(IN|OUT)
 */
 
-bool DecodeEOILine( char* line, std::vector<std::string*>* results)
+bool DecodeEOILine( char* line, std::vector<RWCollectableString*>* results)
 {
     char* group = NULL;
     char* serial = NULL;
@@ -450,7 +450,7 @@ bool DecodeEOILine( char* line, std::vector<std::string*>* results)
     }
 
     if( contract != NULL ) {
-        std::string* decoded = new std::string();
+        RWCollectableString* decoded = new RWCollectableString();
         *decoded = "set MessagePriority 6 ; putconfig versacom ";
         *decoded += serial_str.c_str();
         *decoded += " service ";
@@ -461,7 +461,7 @@ bool DecodeEOILine( char* line, std::vector<std::string*>* results)
     }
 
     if( temp != NULL ) {
-        std::string* decoded = new std::string();
+        RWCollectableString* decoded = new RWCollectableString();
         *decoded = "set MessagePriority 6 ; putconfig versacom ";
         *decoded += serial_str.c_str();
         *decoded += " service ";
@@ -476,7 +476,7 @@ bool DecodeEOILine( char* line, std::vector<std::string*>* results)
 
 }
 
-bool DecodeWepcoLine( char* line, std::vector<std::string*>* results)
+bool DecodeWepcoLine( char* line, std::vector<RWCollectableString*>* results)
 {
     char* token;
     char* delim = ",";
@@ -516,18 +516,18 @@ bool DecodeWepcoLine( char* line, std::vector<std::string*>* results)
     {
         serviceTempCmd += " service in temp";
         serviceTempCmd += GetSelectCustomRouteID(serial_num);
-        results->push_back(new std::string(serviceTempCmd));
+        results->push_back(new RWCollectableString(serviceTempCmd.c_str()));
 
         serviceCmd += " service in ";
         serviceCmd += GetSelectCustomRouteID(serial_num);
-        results->push_back(new std::string(serviceCmd));
+        results->push_back(new RWCollectableString(serviceCmd.c_str()));
     }
     else
     if( func == 5 )
     {
         serviceCmd += " service out ";
         serviceCmd += GetSelectCustomRouteID(serial_num);
-        results->push_back(new std::string(serviceCmd));
+        results->push_back(new RWCollectableString(serviceCmd.c_str()));
         return true;
     }
 
@@ -565,7 +565,7 @@ bool DecodeWepcoLine( char* line, std::vector<std::string*>* results)
         configCmd += route_select;
     }
 
-    results->push_back(new std::string(configCmd));
+    results->push_back(new RWCollectableString(configCmd.c_str()));
     return true;
 }
 
@@ -603,7 +603,7 @@ string GetSelectCustomRouteID(long serial_num) {
     return cmd;
 }
 
-bool DecodeWepcoServiceLine( char* line, std::vector<std::string*>* results )
+bool DecodeWepcoServiceLine( char* line, std::vector<RWCollectableString*>* results )
 {
     char* token;
     char* delim = ",";
@@ -641,18 +641,18 @@ bool DecodeWepcoServiceLine( char* line, std::vector<std::string*>* results )
     {
         serviceTempCmd += " service in temp";
         serviceTempCmd += GetSelectCustomRouteID(serial_num);
-        results->push_back(new std::string(serviceTempCmd));
+        results->push_back(new RWCollectableString(serviceTempCmd.c_str()));
 
         serviceCmd += " service in ";
         serviceCmd += GetSelectCustomRouteID(serial_num);
-        results->push_back(new std::string(serviceCmd));
+        results->push_back(new RWCollectableString(serviceCmd.c_str()));
     }
     else
     if( func == 5 )
     {
         serviceCmd += " service out ";
         serviceCmd += GetSelectCustomRouteID(serial_num);
-        results->push_back(new std::string(serviceCmd));
+        results->push_back(new RWCollectableString(serviceCmd.c_str()));
     }
     else
     {
@@ -663,7 +663,7 @@ bool DecodeWepcoServiceLine( char* line, std::vector<std::string*>* results )
 }
 
 
-bool DecodeWepcoConfigLine( char* line, std::vector<std::string*>* results )
+bool DecodeWepcoConfigLine( char* line, std::vector<RWCollectableString*>* results )
 {
     char* token;
     char* delim = ",";
@@ -733,7 +733,7 @@ bool DecodeWepcoConfigLine( char* line, std::vector<std::string*>* results )
         configCmd += route_select;
     }
 
-    results->push_back(new std::string(configCmd));
+    results->push_back(new RWCollectableString(configCmd.c_str()));
     return true;
 }
 

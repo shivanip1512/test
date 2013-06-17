@@ -14,8 +14,8 @@ import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
 import com.cannontech.yukon.api.loadManagement.adapters.LoadControlServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.ProgramStatusRequestEndpoint;
 import com.cannontech.yukon.api.loadManagement.mocks.MockProgramStatus;
@@ -50,9 +50,9 @@ public class ProgramStatusRequestEndpointTest {
             }
             
             if (programName.equals("Program1")) {
-                return new MockProgramStatus("Program1", Program.STATUS_ACTIVE, "2008-10-13T12:30:00Z", "2008-10-13T21:40:01Z", "Gear1");
+                return new MockProgramStatus("Program1", LMProgramBase.STATUS_ACTIVE, "2008-10-13T12:30:00Z", "2008-10-13T21:40:01Z", "Gear1");
             } else if (programName.equals("Program2")) {
-                return new MockProgramStatus("Program2", Program.STATUS_INACTIVE, "2008-10-14T13:45:01Z", null, "Gear2");
+                return new MockProgramStatus("Program2", LMProgramBase.STATUS_INACTIVE, "2008-10-14T13:45:01Z", null, "Gear2");
             }
             
             return null;

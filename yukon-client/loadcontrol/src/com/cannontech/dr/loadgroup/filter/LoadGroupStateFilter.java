@@ -9,7 +9,7 @@ import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
-import com.cannontech.messaging.message.loadcontrol.data.DirectGroupBase;
+import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 
 public class LoadGroupStateFilter implements UiFilter<DisplayablePao> {
     private LoadGroupService loadGroupService;
@@ -31,7 +31,7 @@ public class LoadGroupStateFilter implements UiFilter<DisplayablePao> {
 
             @Override
             public boolean matches(DisplayablePao pao) {
-                DirectGroupBase group = loadGroupService.getGroupForPao(pao);
+                LMDirectGroupBase group = loadGroupService.getGroupForPao(pao);
                 return group != null
                     && (group.isActive() && showActive
                     || !group.isActive() && !showActive);

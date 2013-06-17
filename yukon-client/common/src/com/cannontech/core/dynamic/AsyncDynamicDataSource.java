@@ -4,9 +4,9 @@ import java.util.Set;
 
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DBChangeLiteListener;
-import com.cannontech.dispatch.DbChangeCategory;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * AsyncDynamicDataSource provides a method to receive dynamic point, signal/alarm, 
@@ -129,7 +129,7 @@ public interface AsyncDynamicDataSource {
      * CALL THIS!
      * @param dbChange
      */
-    public void publishDbChange(DBChangeMessage dbChange);
+    public void publishDbChange(DBChangeMsg dbChange);
     
     /**
      * Adds a listner that will receive DBChange events

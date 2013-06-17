@@ -140,8 +140,7 @@ BOOST_AUTO_TEST_CASE(test_attemptToResendControl)
     const CtiTime currentTime(CtiDate(1, 1, 2010));
 
     {
-        CtiMultiMsg_vec pointChanges, pilMessages;
-        Cti::CapControl::EventLogEntries ccEvents;
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
 
         feeder->setLastCapBankControlledDeviceId(5);
         bank->setControlStatus(CtiCCCapBank::OpenPending);
@@ -159,8 +158,7 @@ BOOST_AUTO_TEST_CASE(test_attemptToResendControl)
         BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
     }
     {
-        CtiMultiMsg_vec pointChanges, pilMessages;
-        Cti::CapControl::EventLogEntries ccEvents;
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
 
         feeder->setLastCapBankControlledDeviceId(5);
         bank->setControlStatus(CtiCCCapBank::ClosePending);
@@ -184,8 +182,7 @@ BOOST_AUTO_TEST_CASE(test_attemptToResendControl)
     attributeBackdoor.points[p.getPointId()] = p;
 
     {
-        CtiMultiMsg_vec pointChanges, pilMessages;
-        Cti::CapControl::EventLogEntries ccEvents;
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
 
         feeder->setLastCapBankControlledDeviceId(5);
         bank->setControlStatus(CtiCCCapBank::OpenPending);
@@ -203,8 +200,7 @@ BOOST_AUTO_TEST_CASE(test_attemptToResendControl)
         BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
     }
     {
-        CtiMultiMsg_vec pointChanges, pilMessages;
-        Cti::CapControl::EventLogEntries ccEvents;
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
 
         feeder->setLastCapBankControlledDeviceId(5);
         bank->setControlStatus(CtiCCCapBank::ClosePending);
@@ -258,8 +254,7 @@ BOOST_AUTO_TEST_CASE(test_create_requests)
     const CtiTime currentTime(CtiDate(1, 1, 2010));
 
     {
-        CtiMultiMsg_vec pointChanges, pilMessages;
-        Cti::CapControl::EventLogEntries ccEvents;
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
 
         CtiRequestMsg *pilRequest = feeder->createDecreaseVarRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
 
@@ -269,8 +264,7 @@ BOOST_AUTO_TEST_CASE(test_create_requests)
         BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
     }
     {
-        CtiMultiMsg_vec pointChanges, pilMessages;
-        Cti::CapControl::EventLogEntries ccEvents;
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
 
         CtiRequestMsg *pilRequest = feeder->createDecreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
 
@@ -280,8 +274,7 @@ BOOST_AUTO_TEST_CASE(test_create_requests)
         BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
     }
     {
-        CtiMultiMsg_vec pointChanges, pilMessages;
-        Cti::CapControl::EventLogEntries ccEvents;
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
 
         CtiRequestMsg *pilRequest = feeder->createForcedVarRequest(bank, pointChanges, ccEvents, CtiCCCapBank::Close, "n/a");
 
@@ -291,8 +284,7 @@ BOOST_AUTO_TEST_CASE(test_create_requests)
         BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
     }
     {
-        CtiMultiMsg_vec pointChanges, pilMessages;
-        Cti::CapControl::EventLogEntries ccEvents;
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
 
         CtiRequestMsg *pilRequest = feeder->createForcedVarRequest(bank, pointChanges, ccEvents, CtiCCCapBank::Open, "n/a");
 
@@ -302,8 +294,7 @@ BOOST_AUTO_TEST_CASE(test_create_requests)
         BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
     }
     {
-        CtiMultiMsg_vec pointChanges, pilMessages;
-        Cti::CapControl::EventLogEntries ccEvents;
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
 
         CtiRequestMsg *pilRequest = feeder->createIncreaseVarRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
 
@@ -313,8 +304,7 @@ BOOST_AUTO_TEST_CASE(test_create_requests)
         BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
     }
     {
-        CtiMultiMsg_vec pointChanges, pilMessages;
-        Cti::CapControl::EventLogEntries ccEvents;
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
 
         CtiRequestMsg *pilRequest = feeder->createIncreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
 
@@ -330,8 +320,7 @@ BOOST_AUTO_TEST_CASE(test_create_requests)
     attributeBackdoor.points[p.getPointId()] = p;
 
     {
-        CtiMultiMsg_vec pointChanges, pilMessages;
-        Cti::CapControl::EventLogEntries ccEvents;
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
 
         CtiRequestMsg *pilRequest = feeder->createDecreaseVarRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
 
@@ -341,8 +330,7 @@ BOOST_AUTO_TEST_CASE(test_create_requests)
         BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
     }
     {
-        CtiMultiMsg_vec pointChanges, pilMessages;
-        Cti::CapControl::EventLogEntries ccEvents;
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
 
         CtiRequestMsg *pilRequest = feeder->createDecreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
 
@@ -352,8 +340,7 @@ BOOST_AUTO_TEST_CASE(test_create_requests)
         BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
     }
     {
-        CtiMultiMsg_vec pointChanges, pilMessages;
-        Cti::CapControl::EventLogEntries ccEvents;
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
 
         CtiRequestMsg *pilRequest = feeder->createForcedVarRequest(bank, pointChanges, ccEvents, CtiCCCapBank::Close, "n/a");
 
@@ -363,8 +350,7 @@ BOOST_AUTO_TEST_CASE(test_create_requests)
         BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
     }
     {
-        CtiMultiMsg_vec pointChanges, pilMessages;
-        Cti::CapControl::EventLogEntries ccEvents;
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
 
         CtiRequestMsg *pilRequest = feeder->createForcedVarRequest(bank, pointChanges, ccEvents, CtiCCCapBank::Open, "n/a");
 
@@ -374,8 +360,7 @@ BOOST_AUTO_TEST_CASE(test_create_requests)
         BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
     }
     {
-        CtiMultiMsg_vec pointChanges, pilMessages;
-        Cti::CapControl::EventLogEntries ccEvents;
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
 
         CtiRequestMsg *pilRequest = feeder->createIncreaseVarRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
 
@@ -385,8 +370,7 @@ BOOST_AUTO_TEST_CASE(test_create_requests)
         BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
     }
     {
-        CtiMultiMsg_vec pointChanges, pilMessages;
-        Cti::CapControl::EventLogEntries ccEvents;
+        CtiMultiMsg_vec pointChanges, ccEvents, pilMessages;
 
         CtiRequestMsg *pilRequest = feeder->createIncreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
 

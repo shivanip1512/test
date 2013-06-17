@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.BootstrapUtils;
-import com.cannontech.dispatch.DispatchClientConnection;
-import com.cannontech.messaging.message.dispatch.RegistrationMessage;
+import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -75,8 +75,8 @@ public class ConnPool
      */
 	private IServerConnection createPorterConn()
 	{		
-		com.cannontech.porter.PorterClientConnection porterCC = 
-				new com.cannontech.porter.PorterClientConnection();
+		com.cannontech.message.porter.ClientConnection porterCC = 
+				new com.cannontech.message.porter.ClientConnection();
 
 		return porterCC;
 	}
@@ -87,9 +87,9 @@ public class ConnPool
 	 */
 	private IServerConnection createDispatchConn()
 	{		
-		DispatchClientConnection connToDispatch = new DispatchClientConnection();
+		ClientConnection connToDispatch = new ClientConnection();
 		
-		RegistrationMessage reg = new RegistrationMessage();
+		Registration reg = new Registration();
          /*
          * App name will be value of cti.app.name environment variable
          */
@@ -111,8 +111,8 @@ public class ConnPool
 	public IServerConnection getDefDispatchConn() {
 
 	    //check our master Map of existing connections
-	    DispatchClientConnection connToDispatch =
-	        (DispatchClientConnection)getAllConns().get(DISPATCH_CONN);
+	    ClientConnection connToDispatch =
+	        (ClientConnection)getAllConns().get(DISPATCH_CONN);
 
 	    if( connToDispatch == null ) {
 	        String defaultHost = "127.0.0.1";
@@ -120,7 +120,7 @@ public class ConnPool
 	        defaultHost = globalSettingDao.getString(GlobalSettingType.DISPATCH_MACHINE);
 	        int port = globalSettingDao.getInteger(GlobalSettingType.DISPATCH_PORT);
 
-	        connToDispatch = (DispatchClientConnection)createDispatchConn();
+	        connToDispatch = (ClientConnection)createDispatchConn();
 	        connToDispatch.setHost(defaultHost);
 	        connToDispatch.setPort(port);
 	        
@@ -142,8 +142,8 @@ public class ConnPool
     public IServerConnection getDefPorterConn()
     {
         //check our master Map of existing connections
-        com.cannontech.porter.PorterClientConnection porterCC =
-            (com.cannontech.porter.PorterClientConnection)getAllConns().get(PORTER_CONN);
+        com.cannontech.message.porter.ClientConnection porterCC =
+            (com.cannontech.message.porter.ClientConnection)getAllConns().get(PORTER_CONN);
         
         if( porterCC == null )
         {
@@ -152,7 +152,7 @@ public class ConnPool
             host = globalSettingDao.getString(GlobalSettingType.PORTER_MACHINE);
             int port = globalSettingDao.getInteger(GlobalSettingType.PORTER_PORT);
     
-            porterCC = (com.cannontech.porter.PorterClientConnection)createPorterConn();
+            porterCC = (com.cannontech.message.porter.ClientConnection)createPorterConn();
     
             porterCC.setHost(host);
             porterCC.setPort(port);

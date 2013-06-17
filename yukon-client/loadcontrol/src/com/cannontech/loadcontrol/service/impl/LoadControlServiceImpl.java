@@ -20,15 +20,13 @@ import com.cannontech.dr.scenario.model.Scenario;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.ProgramUtils;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
+import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.loadcontrol.service.data.ProgramStartingGear;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
-import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
-import com.cannontech.messaging.message.loadcontrol.data.ProgramDirect;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -48,7 +46,7 @@ public class LoadControlServiceImpl implements LoadControlService {
         
         validateProgramIsVisibleToUser(programName, programId, user);
         
-        Program program = loadControlClientConnection.getProgramSafe(programId);
+        LMProgramBase program = loadControlClientConnection.getProgramSafe(programId);
         
         return new ProgramStatus(program);
     }
@@ -58,22 +56,22 @@ public class LoadControlServiceImpl implements LoadControlService {
     public List<ProgramStatus> getAllCurrentlyActivePrograms(LiteYukonUser user) {
         
     	// all LMProgramBase set
-        Set<Program> allProgramBaseSet = loadControlClientConnection.getAllProgramsSet();
+        Set<LMProgramBase> allProgramBaseSet = loadControlClientConnection.getAllProgramsSet();
         
         // active LMProgramBase set
-        Set<Program> activeProgramBaseSet = Sets.newHashSet();
-        for (Program programBase : allProgramBaseSet) {
+        Set<LMProgramBase> activeProgramBaseSet = Sets.newHashSet();
+        for (LMProgramBase programBase : allProgramBaseSet) {
             if (ProgramUtils.isActive(programBase)) {
             	activeProgramBaseSet.add(programBase);
             }
         }
         
         // filter out unauthorized YukonPao
-        List<Program> authorizedPrograms = paoAuthorizationService.filterAuthorized(user, activeProgramBaseSet, Permission.LM_VISIBLE);
+        List<LMProgramBase> authorizedPrograms = paoAuthorizationService.filterAuthorized(user, activeProgramBaseSet, Permission.LM_VISIBLE);
         
         // build ProgramStatus list
         List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
-        for (Program lmProgramBase: authorizedPrograms) {
+        for (LMProgramBase lmProgramBase: authorizedPrograms) {
         	
         	ProgramStatus programStatus = new ProgramStatus(lmProgramBase);
             if (programStatus.isActive()) {
@@ -166,9 +164,9 @@ public class LoadControlServiceImpl implements LoadControlService {
     	}
     	
     	// otherwise, check if the program's control area (if any) is visible to user
-    	ControlAreaItem controlAreaForProgram = loadControlClientConnection.findControlAreaForProgram(programId);
+    	LMControlArea controlAreaForProgram = loadControlClientConnection.findControlAreaForProgram(programId);
     	if (controlAreaForProgram != null) {
-    		return isLmPaoVisibleToUser(user, controlAreaForProgram.getYukonId());
+    		return isLmPaoVisibleToUser(user, controlAreaForProgram.getYukonID());
     	}
     	
     	return false;

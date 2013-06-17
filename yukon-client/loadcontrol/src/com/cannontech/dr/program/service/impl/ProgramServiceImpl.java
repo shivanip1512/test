@@ -60,22 +60,23 @@ import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.ProgramUtils;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
-import com.cannontech.messaging.message.BaseMessage;
-import com.cannontech.messaging.message.loadcontrol.CommandMessage;
-import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
-import com.cannontech.messaging.message.loadcontrol.ManualControlResponseMessage;
-import com.cannontech.messaging.message.loadcontrol.data.GearProgram;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
-import com.cannontech.messaging.message.loadcontrol.data.ProgramDirect;
+import com.cannontech.loadcontrol.data.IGearProgram;
+import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.data.LMProgramDirect;
+import com.cannontech.loadcontrol.data.LMProgramDirectGear;
+import com.cannontech.loadcontrol.messages.LMCommand;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
+import com.cannontech.loadcontrol.messages.LMManualControlResponse;
 import com.cannontech.loadcontrol.service.LoadControlCommandService;
 import com.cannontech.loadcontrol.service.ProgramChangeBlocker;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
-import com.cannontech.messaging.message.loadcontrol.data.ProgramDirectGear;
-import com.cannontech.messaging.util.BadServerResponseException;
-import com.cannontech.messaging.util.ServerRequest;
-import com.cannontech.messaging.util.ServerRequestImpl;
-import com.cannontech.messaging.util.TimeoutException;
+import com.cannontech.message.server.ServerResponseMsg;
+import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.ConnectionException;
+import com.cannontech.message.util.Message;
+import com.cannontech.message.util.ServerRequest;
+import com.cannontech.message.util.ServerRequestImpl;
+import com.cannontech.message.util.TimeoutException;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
@@ -126,19 +127,19 @@ public class ProgramServiceImpl implements ProgramService {
         };
 
     @Override
-    public Program getProgramForPao(YukonPao from) {
-        DatedObject<Program> datedProgram =
+    public LMProgramBase getProgramForPao(YukonPao from) {
+        DatedObject<LMProgramBase> datedProgram =
             loadControlClientConnection.getDatedProgram(from.getPaoIdentifier().getPaoId());
         return datedProgram == null ? null : datedProgram.getObject();
     }
     
     @Override
-    public Program getProgramForPaoSafe(YukonPao from) {
+    public LMProgramBase getProgramForPaoSafe(YukonPao from) {
             return loadControlClientConnection.getProgramSafe(from.getPaoIdentifier().getPaoId());
     }
 
     @Override
-    public DatedObject<Program> findDatedProgram(int programId) {
+    public DatedObject<LMProgramBase> findDatedProgram(int programId) {
         return loadControlClientConnection.getDatedProgram(programId);
     }
 
@@ -207,11 +208,11 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     public List<ConstraintViolations> getConstraintViolationForStartScenario(int scenarioId, Date startDate, Date stopDate) {
         List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
-        List<Program> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
+        List<LMProgramBase> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
         Map<Integer, ScenarioProgram> scenarioPrograms =  scenarioDao.findScenarioProgramsForScenario(scenarioId);
         List<ConstraintViolations> programViolations = new ArrayList<>();
 
-        for (Program program : programs) {
+        for (LMProgramBase program : programs) {
             final int programId = program.getPaoIdentifier().getPaoId();
             final int startingGearNumber = loadControlProgramDao.getStartingGearForScenarioAndProgram(ProgramUtils.getProgramId(program), scenarioId);
             final ScenarioProgram scenarioProgram = scenarioPrograms.get(programId);
@@ -235,10 +236,10 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     public List<ConstraintViolations> getConstraintViolationForStopScenario(int scenarioId, Date stopDate) {
         List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
-        List<Program> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
+        List<LMProgramBase> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
         List<ConstraintViolations> programViolations = new ArrayList<>();
 
-        for (Program program : programs) {
+        for (LMProgramBase program : programs) {
             final int programId = program.getPaoIdentifier().getPaoId();
             final int startingGearNumber = loadControlProgramDao.getStartingGearForScenarioAndProgram(ProgramUtils.getProgramId(program), scenarioId);
 
@@ -258,16 +259,16 @@ public class ProgramServiceImpl implements ProgramService {
         Date programStartDate = datePlusOffset(startDate, startOffset);
         Date programStopDate = datePlusOffset(stopDate, stopOffset);
 
-        ManualControlRequestMessage controlRequest =
+        LMManualControlRequest controlRequest =
             getManualControlMessage(programId, gearNumber,
                                     programStartDate, programStopDate,
-                                    ManualControlRequestMessage.CONSTRAINTS_FLAG_CHECK);
+                                    LMManualControlRequest.CONSTRAINTS_FLAG_CHECK);
 
         // better be a program for this Request Message!
-        Program program = loadControlClientConnection.getProgram(programId);
+        LMProgramBase program = loadControlClientConnection.getProgram(programId);
 
         String additionalInfo = null;
-        if (program instanceof ProgramDirect) {
+        if (program instanceof LMProgramDirect) {
             additionalInfo =
                 additionalInfoFromGearAdjustments(gearAdjustments,
                                                   programStartDate,
@@ -275,7 +276,7 @@ public class ProgramServiceImpl implements ProgramService {
         }
 
         if (additionalInfo != null) {
-            ((ProgramDirect) program).setAddtionalInfo(additionalInfo);
+            ((LMProgramDirect) program).setAddtionalInfo(additionalInfo);
             controlRequest.setAddditionalInfo(additionalInfo);
         }
 
@@ -294,12 +295,12 @@ public class ProgramServiceImpl implements ProgramService {
 
         boolean stopScheduled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SCHEDULE_STOP_CHECKED_BY_DEFAULT, liteYukonUser);
 
-        Program program = loadControlClientConnection.getProgramSafe(programId);
+        LMProgramBase program = loadControlClientConnection.getProgramSafe(programId);
         ProgramStatus programStatus = new ProgramStatus(program);
 
         int gearNumber;
         if (gearName == null) {
-            gearNumber = ((ProgramDirect)program).getCurrentGearNumber();
+            gearNumber = ((LMProgramDirect)program).getCurrentGearNumber();
         } else {
             try {
                 gearNumber = loadControlProgramDao.getGearNumberForGearName(programId, gearName);
@@ -361,15 +362,15 @@ public class ProgramServiceImpl implements ProgramService {
                       "; stopping at " + stopDate + " + " + stopOffset + " = " + programStopDate);
         }
 
-        ManualControlRequestMessage controlRequest = getStartProgramRequest(programId, gearNumber, programStartDate,
+        LMManualControlRequest controlRequest = getStartProgramRequest(programId, gearNumber, programStartDate,
                                                                        stopScheduled, programStopDate, overrideConstraints, gearAdjustments);
 
-        Program program = loadControlClientConnection.getProgram(programId);
+        LMProgramBase program = loadControlClientConnection.getProgram(programId);
         ProgramStatus programStatus = null;
 
-        controlRequest.setConstraintFlag(ManualControlRequestMessage.CONSTRAINTS_FLAG_USE);
+        controlRequest.setConstraintFlag(LMManualControlRequest.CONSTRAINTS_FLAG_USE);
         if (overrideConstraints) {
-            controlRequest.setConstraintFlag(ManualControlRequestMessage.CONSTRAINTS_FLAG_OVERRIDE);
+            controlRequest.setConstraintFlag(LMManualControlRequest.CONSTRAINTS_FLAG_OVERRIDE);
         }
 
         if (block) {
@@ -406,19 +407,19 @@ public class ProgramServiceImpl implements ProgramService {
         }
 
         List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
-        List<Program> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
+        List<LMProgramBase> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
         Map<Integer, ScenarioProgram> scenarioPrograms =  scenarioDao.findScenarioProgramsForScenario(scenarioId);
         List<ProgramStatus> programStatuses = new ArrayList<>();
 
-        for (Program program : programs) {
+        for (LMProgramBase program : programs) {
             int startingGearNumber = loadControlProgramDao.getStartingGearForScenarioAndProgram(ProgramUtils.getProgramId(program), scenarioId);
-            ScenarioProgram scenarioProgram = scenarioPrograms.get(program.getYukonId());
+            ScenarioProgram scenarioProgram = scenarioPrograms.get(program.getYukonID());
 
             Date programStartDate = datePlusOffset(startTime, scenarioProgram.getStartOffset());
             Date programStopDate = datePlusOffset(stopTime, scenarioProgram.getStopOffset());
 
             String gearName = getGearNameForProgram(program, startingGearNumber);
-            ProgramStatus programStatus = startProgram(program.getYukonId(), programStartDate, programStopDate, gearName,
+            ProgramStatus programStatus = startProgram(program.getYukonID(), programStartDate, programStopDate, gearName,
                           overrideConstraints, observeConstraints, user);
             
             programStatuses.add(programStatus);
@@ -444,23 +445,23 @@ public class ProgramServiceImpl implements ProgramService {
         });
     }
 
-    private ManualControlRequestMessage getStartProgramRequest(int programId, int gearNumber, Date programStartDate,
+    private LMManualControlRequest getStartProgramRequest(int programId, int gearNumber, Date programStartDate,
                                                           boolean stopScheduled, Date programStopDate, boolean overrideConstraints,
                                                           List<GearAdjustment> gearAdjustments) {
 
         int constraintId = overrideConstraints
-            ? ManualControlRequestMessage.CONSTRAINTS_FLAG_OVERRIDE
-            : ManualControlRequestMessage.CONSTRAINTS_FLAG_USE;
-        ManualControlRequestMessage controlRequest =
+                ? LMManualControlRequest.CONSTRAINTS_FLAG_OVERRIDE
+                        : LMManualControlRequest.CONSTRAINTS_FLAG_USE;
+        LMManualControlRequest controlRequest =
                 getManualControlMessage(programId, gearNumber, programStartDate,
                                         programStopDate, constraintId);
 
-        Program program = loadControlClientConnection.getProgram(programId);
+        LMProgramBase program = loadControlClientConnection.getProgram(programId);
         String additionalInfo =
                 additionalInfoFromGearAdjustments(gearAdjustments, programStartDate,
                                                   programStopDate);
         if (additionalInfo != null) {
-            ((ProgramDirect) program).setAddtionalInfo(additionalInfo);
+            ((LMProgramDirect) program).setAddtionalInfo(additionalInfo);
             controlRequest.setAddditionalInfo(additionalInfo);
         }
 
@@ -502,10 +503,10 @@ public class ProgramServiceImpl implements ProgramService {
         return retVal.toString();
     }
 
-    private String getGearNameForProgram(Program program, int gearNumber) {
-        if (program instanceof GearProgram) {
-            ProgramDirectGear gear =
-                ((GearProgram) program).getDirectGearVector().get(gearNumber - 1);
+    private String getGearNameForProgram(LMProgramBase program, int gearNumber) {
+        if (program instanceof IGearProgram) {
+            LMProgramDirectGear gear =
+                ((IGearProgram) program).getDirectGearVector().get(gearNumber - 1);
             return gear.getGearName();
         }
         return null;
@@ -513,11 +514,11 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public void stopProgram(int programId) {
-        Program program = loadControlClientConnection.getProgram(programId);
+        LMProgramBase program = loadControlClientConnection.getProgram(programId);
         Date stopDate = new Date();
-        ManualControlRequestMessage controlRequest =
+        LMManualControlRequest controlRequest =
             program.createStartStopNowMsg(stopDate, 1, null, false,
-                                          ManualControlRequestMessage.CONSTRAINTS_FLAG_USE);
+                                          LMManualControlRequest.CONSTRAINTS_FLAG_USE);
         loadControlClientConnection.write(controlRequest);
 
         demandResponseEventLogService.programStopped(program.getYukonName(),
@@ -547,8 +548,8 @@ public class ProgramServiceImpl implements ProgramService {
             stopTime = CtiUtilities.get1990GregCalendar().getTime();
         }
 
-        Program program = loadControlClientConnection.getProgramSafe(programId);
-        int gearNumber = ((ProgramDirect)program).getCurrentGearNumber();
+        LMProgramBase program = loadControlClientConnection.getProgramSafe(programId);
+        int gearNumber = ((LMProgramDirect)program).getCurrentGearNumber();
 
         ProgramStatus programStatus = new ProgramStatus(program);
 
@@ -577,10 +578,10 @@ public class ProgramServiceImpl implements ProgramService {
     private ProgramStatus stopProgramBlocking(int programId, Date stopDate, Duration stopOffset, boolean block)
             throws TimeoutException, BadServerResponseException {
         
-        Program program = loadControlClientConnection.getProgram(programId);
+        LMProgramBase program = loadControlClientConnection.getProgram(programId);
         Date programStopDate = datePlusOffset(stopDate, stopOffset);
         Date startDate = CtiUtilities.get1990GregCalendar().getTime();
-        ManualControlRequestMessage controlRequest = program.createScheduledStopMsg(startDate, programStopDate, 1, null);
+        LMManualControlRequest controlRequest = program.createScheduledStopMsg(startDate, programStopDate, 1, null);
         
         ProgramStatus programStatus = null;
         if (block) {
@@ -633,15 +634,15 @@ public class ProgramServiceImpl implements ProgramService {
         }
 
         List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
-        List<Program> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
+        List<LMProgramBase> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
         Map<Integer, ScenarioProgram> scenarioPrograms =  scenarioDao.findScenarioProgramsForScenario(scenarioId);
         List<ProgramStatus> programStatuses = new ArrayList<>();
 
-        for (Program program : programs) {
-            ScenarioProgram scenarioProgram = scenarioPrograms.get(program.getYukonId());
+        for (LMProgramBase program : programs) {
+            ScenarioProgram scenarioProgram = scenarioPrograms.get(program.getYukonID());
 
             Date programStopDate = datePlusOffset(stopTime, scenarioProgram.getStopOffset());
-            ProgramStatus programStatus = stopProgram(program.getYukonId(), programStopDate, overrideConstraints, observeConstraints);
+            ProgramStatus programStatus = stopProgram(program.getYukonID(), programStopDate, overrideConstraints, observeConstraints);
 
             programStatuses.add(programStatus);
         }
@@ -652,15 +653,15 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     public ConstraintViolations getConstraintViolationsForStopProgram(int programId, int gearNumber, 
                                                                       Date stopDate) {
-        Program program = loadControlClientConnection.getProgram(programId);
+        LMProgramBase program = loadControlClientConnection.getProgram(programId);
         Date startDate = CtiUtilities.get1990GregCalendar().getTime();
-        ManualControlRequestMessage changeGearRequest = 
+        LMManualControlRequest changeGearRequest = 
             program.createScheduledStopMsg(
                     startDate, 
                     stopDate,
                     gearNumber, null);
-        changeGearRequest.setConstraintFlag(ManualControlRequestMessage.CONSTRAINTS_FLAG_CHECK);
-        changeGearRequest.setCommand(ManualControlRequestMessage.CHANGE_GEAR);
+        changeGearRequest.setConstraintFlag(LMManualControlRequest.CONSTRAINTS_FLAG_CHECK);
+        changeGearRequest.setCommand(LMManualControlRequest.CHANGE_GEAR);
 
         return makeServerRequest(changeGearRequest);
     }
@@ -669,18 +670,18 @@ public class ProgramServiceImpl implements ProgramService {
     public void stopProgramWithGear(int programId, int gearNumber, Date stopDate, 
                                     boolean overrideConstraints) {
         int constraintId = overrideConstraints
-            ? ManualControlRequestMessage.CONSTRAINTS_FLAG_OVERRIDE
-            : ManualControlRequestMessage.CONSTRAINTS_FLAG_USE;
-        Program program = loadControlClientConnection.getProgram(programId);
+            ? LMManualControlRequest.CONSTRAINTS_FLAG_OVERRIDE
+            : LMManualControlRequest.CONSTRAINTS_FLAG_USE;
+        LMProgramBase program = loadControlClientConnection.getProgram(programId);
         String gearName = getGearNameForProgram(program, gearNumber);
         Date startDate = CtiUtilities.get1990GregCalendar().getTime();
-        ManualControlRequestMessage changeGearRequest = 
+        LMManualControlRequest changeGearRequest = 
             program.createScheduledStopMsg(
                     startDate, 
                     stopDate,
                     gearNumber, null);
         changeGearRequest.setConstraintFlag(constraintId);
-        changeGearRequest.setCommand(ManualControlRequestMessage.CHANGE_GEAR);
+        changeGearRequest.setCommand(LMManualControlRequest.CHANGE_GEAR);
 
         ServerRequest serverRequest = new ServerRequestImpl();
         serverRequest.makeServerRequest(loadControlClientConnection, changeGearRequest);
@@ -689,13 +690,13 @@ public class ProgramServiceImpl implements ProgramService {
                                                      stopDate, gearName);
     }
 
-    private ConstraintViolations makeServerRequest(ManualControlRequestMessage controlRequest) {
+    private ConstraintViolations makeServerRequest(LMManualControlRequest controlRequest) {
         ServerRequest serverRequest = new ServerRequestImpl();
-        com.cannontech.messaging.message.server.ServerResponseMessage serverResponse =
+        ServerResponseMsg serverResponse =
             serverRequest.makeServerRequest(loadControlClientConnection, controlRequest);
 
         List<ConstraintContainer> violations = Lists.newArrayList();
-        ManualControlResponseMessage lmResp = (ManualControlResponseMessage) serverResponse.getPayload();
+        LMManualControlResponse lmResp = (LMManualControlResponse) serverResponse.getPayload();
         
         violations = LCUtils.convertViolationsToContainers(lmResp.getConstraintViolations());
 
@@ -710,23 +711,23 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     public void changeGear(int programId, int gearNumber) {
         
-        Program program = loadControlClientConnection.getProgram(programId);
+        LMProgramBase program = loadControlClientConnection.getProgram(programId);
         Date stopDate = program.getStopTime().getTime();
         
         // Change gears is only available for programs in the Manual Active state
-        if(Program.STATUS_MANUAL_ACTIVE != program.getProgramStatus()) {
+        if(LMProgramBase.STATUS_MANUAL_ACTIVE != program.getProgramStatus()) {
             throw new IllegalStateException("The program " + 
                                             program.getYukonName() + 
                                             " must be in the Manual Active state to change gears.");
         }
         
-        ManualControlRequestMessage changeGearRequest = 
+        LMManualControlRequest changeGearRequest = 
             program.createStartStopNowMsg(stopDate, 
                                           gearNumber, 
                                           null, 
                                           true, 
-                                          ManualControlRequestMessage.CONSTRAINTS_FLAG_USE) ;
-        changeGearRequest.setCommand(ManualControlRequestMessage.CHANGE_GEAR);
+                                          LMManualControlRequest.CONSTRAINTS_FLAG_USE) ;
+        changeGearRequest.setCommand(LMManualControlRequest.CHANGE_GEAR);
         changeGearRequest.setStartTime(program.getStartTime());
 
         ServerRequest serverRequest = new ServerRequestImpl();
@@ -739,9 +740,9 @@ public class ProgramServiceImpl implements ProgramService {
     @Override
     public void setEnabled(int programId, boolean isEnabled) {
 
-        int loadControlCommand = isEnabled ? CommandMessage.ENABLE_PROGRAM
-                : CommandMessage.DISABLE_PROGRAM;
-        BaseMessage msg = new CommandMessage(loadControlCommand, programId, 0, 0.0);
+        int loadControlCommand = isEnabled ? LMCommand.ENABLE_PROGRAM
+                : LMCommand.DISABLE_PROGRAM;
+        Message msg = new LMCommand(loadControlCommand, programId, 0, 0.0);
         loadControlClientConnection.write(msg);
         
         DisplayablePao program = this.getProgram(programId);
@@ -755,22 +756,22 @@ public class ProgramServiceImpl implements ProgramService {
     
     @Override
     public void disableAndSupressRestoration(int programId) {
-        BaseMessage msg = new CommandMessage(CommandMessage.EMERGENCY_DISABLE_PROGRAM, programId, 0, 0.0);
+        Message msg = new LMCommand(LMCommand.EMERGENCY_DISABLE_PROGRAM, programId, 0, 0.0);
         loadControlClientConnection.write(msg);
         
         DisplayablePao program = getProgram(programId);
         demandResponseEventLogService.programDisabled(program.getName());
     }
     
-    private ManualControlRequestMessage getManualControlMessage(
+    private LMManualControlRequest getManualControlMessage(
             int programId, int gearNumber, Date startDate, Date stopDate, int constraintId) {
         if (stopDate == null) {
             throw new IllegalArgumentException("startDate cannot be null");
         }
 
-        Program program = loadControlClientConnection.getProgram(programId);
-        String additionalInfo = program instanceof ProgramDirect
-            ? ((ProgramDirect) program).getAddtionalInfo() : null;
+        LMProgramBase program = loadControlClientConnection.getProgram(programId);
+        String additionalInfo = program instanceof LMProgramDirect
+            ? ((LMProgramDirect) program).getAddtionalInfo() : null;
         if (startDate == null) {
             return program.createStartStopNowMsg(stopDate, gearNumber,
                                                  additionalInfo, true,

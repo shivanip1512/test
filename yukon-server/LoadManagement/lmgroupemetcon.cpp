@@ -24,7 +24,7 @@ using std::endl;
 
 extern ULONG _LM_DEBUG;
 
-DEFINE_COLLECTABLE( CtiLMGroupEmetcon, CTILMGROUPEMETCON_ID )
+RWDEFINE_COLLECTABLE( CtiLMGroupEmetcon, CTILMGROUPEMETCON_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -205,6 +205,27 @@ BOOL CtiLMGroupEmetcon::doesMasterCycleNeedToBeUpdated(CtiTime currentTime, CtiT
     }
 
     return returnBOOL;
+}
+
+/*-------------------------------------------------------------------------
+    restoreGuts
+
+    Restore self's state from the given stream
+--------------------------------------------------------------------------*/
+void CtiLMGroupEmetcon::restoreGuts(RWvistream& istrm)
+{
+    CtiLMGroupBase::restoreGuts( istrm );
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+
+    Save self's state onto the given stream
+---------------------------------------------------------------------------*/
+void CtiLMGroupEmetcon::saveGuts(RWvostream& ostrm ) const
+{
+    CtiLMGroupBase::saveGuts( ostrm );
+    return;
 }
 
 /*---------------------------------------------------------------------------

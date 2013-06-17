@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <rw/collect.h>
@@ -18,7 +17,6 @@
 #include "sorted_vector.h"
 #include "regression.h"
 #include "Controllable.h"
-#include "EventLogEntry.h"
 
 namespace Cti {
 namespace Database {
@@ -72,12 +70,13 @@ struct FeederVARComparison
     }
 };
 
-class CtiCCFeeder : public Controllable
+class CtiCCFeeder : public RWCollectable, public Controllable
 {
-public:
-    DECLARE_COLLECTABLE( CtiCCFeeder );
 
 public:
+
+RWDECLARE_COLLECTABLE( CtiCCFeeder )
+
     CtiCCFeeder();
     CtiCCFeeder(StrategyManager * strategyManager);
     CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager);
@@ -166,7 +165,6 @@ public:
     const CtiRegression& getRegressionC();
 
     CtiCCCapBank_SVector& getCCCapBanks();
-    const CtiCCCapBank_SVector& getCCCapBanks() const;
     std::list<int> getAllCapBankIds();
     std::vector<CtiCCCapBankPtr> getAllCapBanks();
         std::vector<CtiCCCapBankPtr> getAllSwitchedCapBanks();
@@ -254,16 +252,16 @@ public:
                                           bool checkLimits = true);
     bool checkForMaxKvar( long, long );
     bool removeMaxKvar( long bankId );
-    CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents,
+    CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
                                             string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue);
-    CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents,
+    CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
                                             string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue);
-    CtiRequestMsg* createForcedVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, int action, string typeOfControl);
-    void createForcedVarConfirmation(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, string typeOfControl);
-    bool capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, long minConfirmPercent, long failurePercent,
+    CtiRequestMsg* createForcedVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, int action, string typeOfControl);
+    void createForcedVarConfirmation(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string typeOfControl);
+    bool capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, long minConfirmPercent, long failurePercent,
                                     double varValueBeforeControl, double currentVarLoadPointValue, long currentVarPointQuality,
                                     double varAValue, double varBValue, double varCValue, const CtiRegression& reg);
-    bool capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, long minConfirmPercent,
+    bool capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, long minConfirmPercent,
                                                      long failurePercent, //double varValueBeforeControl, double currentVarLoadPointValue,
                                                      long currentVarPointQuality, double varAValueBeforeControl, double varBValueBeforeControl,
                                                      double varCValueBeforeControl, double varAValue, double varBValue, double varCValue,
@@ -276,11 +274,11 @@ public:
     string createVarText(double aValue, float multiplier);
     bool isPeakDay();
     bool isPastMaxConfirmTime(const CtiTime& currentDateTime, long maxConfirmTime, long feederRetries);
-    bool checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages,
+    bool checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages,
                                                    bool peakTimeFlag, long decimalPlaces, const string& controlUnits,
                                                    bool dailyMaxOpsHitFlag);
     bool checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime,
-                            CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
+                            CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     void orderBanksOnFeeder();
     double figureCurrentSetPoint(const CtiTime& currentDateTime);
     bool isPeakTime(const CtiTime& currentDateTime);
@@ -297,31 +295,31 @@ public:
                              const CtiRegression& regC,  bool usePhaseData, bool useTotalizedControl);
 
     void fillOutBusOptimizedInfo(bool peakTimeFlag);
-    bool attemptToResendControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages, long maxConfirmTime);
-    bool checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages, long maxConfirmTime, long sendRetries);
+    bool attemptToResendControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, long maxConfirmTime);
+    bool checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, long maxConfirmTime, long sendRetries);
     bool checkMaxDailyOpCountExceeded(CtiMultiMsg_vec &pointChanges);
-    bool voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMultiMsg_vec &pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
+    bool voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec& pilMessages);
     void updatePointResponsePreOpValues(CtiCCCapBank* capBank);
     void updatePointResponseDeltas();
     bool areAllMonitorPointsNewEnough(const CtiTime& currentDateTime);
     bool isScanFlagSet();
     unsigned long getMonitorPointScanTime();
     bool scanAllMonitorPoints();
-    void analyzeMultiVoltFeeder(const CtiTime& currentDateTime, long minConfirmPercent, long failurePercent, long maxConfirmTime, long sendRetries, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
+    void analyzeMultiVoltFeeder(const CtiTime& currentDateTime, long minConfirmPercent, long failurePercent, long maxConfirmTime, long sendRetries, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     bool areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr oorPoint);
     bool areOtherMonitorPointResponsesOk(long mPointID, CtiCCCapBank* potentialCap, int action);
     double computeRegression( CtiTime time );
     string createTextString(const string& controlMethod, int control, double controlValue, double monitorValue);
-    void createCannotControlBankText(string text, string commandString, Cti::CapControl::EventLogEntries &ccEvents);
+    void createCannotControlBankText(string text, string commandString, CtiMultiMsg_vec& ccEvents);
     void resetVerificationFlags();
 
-    CtiRequestMsg* createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents,
+    CtiRequestMsg* createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
                                                         string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue);
-    CtiRequestMsg* createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents,
+    CtiRequestMsg* createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
                                                         string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue);
-    bool startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
-    bool sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
-    CtiRequestMsg*  createCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents,
+    bool startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
+    bool sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
+    CtiRequestMsg*  createCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
                                           CtiMultiMsg_vec& pilMessages, CtiCCCapBank* currentCapBank, int control);
 
     bool isVerificationAlreadyControlled(long minConfirmPercent, long quality, double varAValueBeforeControl,
@@ -334,9 +332,9 @@ public:
     bool areThereMoreCapBanksToVerify();
     CtiCCFeeder& getNextCapBankToVerify();
 
-    bool capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, long minConfirmPercent,
+    bool capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, long minConfirmPercent,
                                          long failurePercent, double varAValue, double varBValue, double varCValue);
-    bool capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents,
+    bool capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
                                                  long minConfirmPercent, long failPercent);
     CtiCCFeeder& addAllFeederPointsToMsg(std::set<long>& pointAddMsg);
     CtiCCCapBank* getMonitorPointParentBank(CtiCCMonitorPointPtr point);
@@ -346,10 +344,12 @@ public:
     CtiCCOperationStats& getOperationStats();
     CtiCCConfirmationStats& getConfirmationStats();
     CtiCCOriginalParent& getOriginalParent();
-    const CtiCCOriginalParent& getOriginalParent() const;
 
     bool isDirty() const;
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
+
+    //Members inherited from RWCollectable
+    void saveGuts(RWvostream& ) const;
 
     CtiCCFeeder& operator=(const CtiCCFeeder& right);
 

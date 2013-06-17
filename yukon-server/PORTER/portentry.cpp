@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-#include "connection_client.h"
+#include "connection.h"
 #include "queues.h"
 #include "queue.h"
 #include "dsm2.h"
@@ -440,7 +440,7 @@ INT ValidatePort(OUTMESS *&OutMessage)
                 //  Provide an interim error so they know the comms channel is stalled.
                 const int error = ErrorPortNotInitialized;
 
-                string error_string = "Error " + CtiNumStr(error) + ": " + GetErrorString(error);
+                string error_string = "Error " + CtiNumStr(error) + ": " + FormatError(error);
 
                 const long error_id = OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID;
 
@@ -717,7 +717,7 @@ INT RemoteComm(OUTMESS *&OutMessage)
 
 INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS &OutMessage)
 {
-    extern CtiClientConnection VanGoghConnection;
+    extern CtiConnection VanGoghConnection;
 
     INT status = NORMAL;
 
@@ -772,7 +772,7 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS &OutMessage)
                 dout << NowTime << " **** Execute Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << NowTime << "   Device:  " << Dev->getName() << endl;
                 dout << NowTime << "   Command: " << pReq.CommandString() << endl;
-                dout << NowTime << "   Status = " << status << ": " << GetErrorString(status) << endl;
+                dout << NowTime << "   Status = " << status << ": " << FormatError(status) << endl;
 
                 if(outList.size() > 0)
                 {

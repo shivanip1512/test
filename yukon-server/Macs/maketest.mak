@@ -15,8 +15,6 @@ INCLPATHS+= \
 -I$(RW) \
 -I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
--I$(THRIFT_INCLUDE) \
--I$(MSG)\Serialization
 
 .PATH.H = \
 .\include \
@@ -42,9 +40,8 @@ $(COMPILEBASE)\lib\service.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib \
-$(COMPILEBASE)\lib\ctiholidaydb.lib \
-$(COMPILEBASE)\lib\ctithriftmsg.lib \
-$(THRIFT_LIB)
+$(COMPILEBASE)\lib\ctiholidaydb.lib
+
 
 MACS_TEST_OBJS= \
 test_main.obj \
@@ -52,7 +49,6 @@ test_interp.obj \
 test_scheduletime.obj \
 test_decodeTextCmdFile.obj \
 test_mccmd.obj \
-test_mc_serialization.obj \
 
 MACSBASEOBJS= \
 clientconn.obj \
@@ -72,16 +68,12 @@ mccmd.obj \
 interp.obj \
 interp_pool.obj \
 wpsc.obj \
-xcel.obj \
-mc_message_serialization.obj
-
+xcel.obj
 
 MACS_TEST_FULLBUILD = $[Filename,$(OBJ),MacsTestFullBuild,target]
 
 
-ALL:            test_macs.exe \
-                mc_server_client_serialization_test.exe
-
+ALL:            test_macs.exe
 
 $(MACS_TEST_FULLBUILD) :
 	@touch $@
@@ -96,21 +88,6 @@ test_macs.exe:    $(MACS_TEST_FULLBUILD) $(MACS_TEST_OBJS)  Makefile
 	@%cd $(OBJ)
 	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(_TargetF) \
         $(MACS_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(MACSBASEOBJS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
-	@%cd ..
-
-        -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	mt.exe -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
-        -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
-        @%cd $(CWD)
-        @echo.
-        
-mc_server_client_serialization_test.exe:    $(MACS_TEST_FULLBUILD) mc_server_client_serialization_test.obj  Makefile
-        @echo:
-	@echo Creating Executable $(BIN)\$(_TargetF)
-        @echo:
-	@%cd $(OBJ)
-	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(_TargetF) \
-        mc_server_client_serialization_test.obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(MACSBASEOBJS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
 	@%cd ..
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)

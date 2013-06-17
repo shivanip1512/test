@@ -22,7 +22,7 @@ import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
-import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.loox.jloox.LxGraph;
@@ -79,7 +79,7 @@ public class OnelineSub extends OnelineObject {
 
     private void initEditorImage() {
         editorImage = new StaticImage();
-        String link = OnelineUtil.createBookmarkLink(subBus.getCcId());
+        String link = OnelineUtil.createBookmarkLink(subBus.getCcId().intValue());
         editorImage.setLinkTo(link);
         editorImage.setYukonImage(OnelineUtil.IMG_EDITOR);
         editorImage.setX(getInjectionLine().getPoint1().getX() + 5);

@@ -5,11 +5,11 @@ package com.cannontech.macs.gui.popup;
  * Creation date: (2/13/2001 2:49:45 PM)
  * @author: 
  */
-import com.cannontech.messaging.message.macs.ScheduleMessage;
+import com.cannontech.message.macs.message.Schedule;
 
 public class SchedulerPopUpMenu extends com.cannontech.clientutils.popup.JPopUpMenuEventBase implements java.awt.event.ActionListener
 {
-	private ScheduleMessage schedule = null;
+	private Schedule schedule = null;
 	//private int commandToExecute = -1;
 	private javax.swing.JMenuItem jMenuItemEnableDisable = null;
 	private javax.swing.JMenuItem jMenuItemStartStop = null;
@@ -170,7 +170,7 @@ private javax.swing.JMenuItem getJMenuItemUpdate()
  * Creation date: (2/22/2001 10:20:16 AM)
  * @return Schedule
  */
-public ScheduleMessage getSchedule() {
+public Schedule getSchedule() {
 	return schedule;
 }
 /**
@@ -220,14 +220,14 @@ private void initialize()
  * Creation date: (2/22/2001 10:20:16 AM)
  * @param newSchedule Schedule
  */
-public void setSchedule(ScheduleMessage newSchedule) 
+public void setSchedule(Schedule newSchedule) 
 {
 	schedule = newSchedule;
 
 	if( getSchedule() != null )
 	{
 	    getJMenuItemView().setEnabled(true);
-		if( getSchedule().getCurrentState().equalsIgnoreCase( ScheduleMessage.STATE_RUNNING ) )
+		if( getSchedule().getCurrentState().equalsIgnoreCase( Schedule.STATE_RUNNING ) )
 		{
 			getJMenuItemDelete().setEnabled(false);
 			getJMenuItemEdit().setEnabled(false);
@@ -240,7 +240,7 @@ public void setSchedule(ScheduleMessage newSchedule)
 			getJMenuItemStartStop().setText("Start...");
 		}
 
-		if( getSchedule().getCurrentState().equalsIgnoreCase( ScheduleMessage.STATE_DISABLED ) )
+		if( getSchedule().getCurrentState().equalsIgnoreCase( Schedule.STATE_DISABLED ) )
 		{
 			getJMenuItemStartStop().setEnabled(false);
 			getJMenuItemEnableDisable().setText("Enable");
@@ -257,7 +257,7 @@ public void setSchedule(ScheduleMessage newSchedule)
 
 
 		// should always be at the bottom of this method
-		if( getSchedule().getCurrentState().equalsIgnoreCase( ScheduleMessage.STATE_PENDING ) )
+		if( getSchedule().getCurrentState().equalsIgnoreCase( Schedule.STATE_PENDING ) )
 		{
 			getJMenuItemStartStop().setText("Stop...");
 			getJMenuItemDelete().setEnabled(false);

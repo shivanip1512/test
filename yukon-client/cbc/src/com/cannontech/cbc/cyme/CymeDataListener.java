@@ -25,8 +25,8 @@ import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.point.stategroup.TrueFalse;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.collect.Sets;
 
 public class CymeDataListener implements DBChangeListener, PointDataListener {
@@ -115,8 +115,8 @@ public class CymeDataListener implements DBChangeListener, PointDataListener {
 	}
 
 	@Override
-	public void dbChangeReceived(DBChangeMessage dbChange) {
-		if (dbChange.getDatabase() == DBChangeMessage.CHANGE_PAO_DB) {
+	public void dbChangeReceived(DBChangeMsg dbChange) {
+		if (dbChange.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
 			PaoType paoType = PaoType.getForDbString(dbChange.getObjectType());
 			if (paoType == PaoType.CAP_CONTROL_SUBBUS) {
 				PaoIdentifier busIdentifier = new PaoIdentifier(dbChange.getId(), paoType);

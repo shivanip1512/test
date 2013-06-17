@@ -115,7 +115,7 @@ private javax.swing.JLabel getRouteLabel() {
 public Object getValue(Object val)
 {
 
-	Integer id = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject) getRouteComboBox().getSelectedItem()).getYukonId());
+	Integer id = new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject) getRouteComboBox().getSelectedItem()).getYukonID());
 
 	if (val instanceof com.cannontech.database.data.multi.MultiDBPersistent)
 	{
@@ -231,7 +231,7 @@ public void setRoute(Integer routeId)
 		java.util.List allRoutes = cache.getAllRoutes();
 		for (int i = 0; i < allRoutes.size(); i++)
 		{
-			if (((com.cannontech.database.data.lite.LiteYukonPAObject) allRoutes.get(i)).getYukonId() == routeId.intValue())
+			if (((com.cannontech.database.data.lite.LiteYukonPAObject) allRoutes.get(i)).getYukonID() == routeId.intValue())
 				getRouteComboBox().setSelectedIndex(i);
 		}
 	}

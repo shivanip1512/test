@@ -5,7 +5,6 @@ package com.cannontech.loadcontrol.messages;
  * @author: Aaron Lauinger
  */
 
-import com.cannontech.messaging.message.loadcontrol.EnergyExchangeControlMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -24,7 +23,7 @@ public DefineCollectableLMEnergyExchangeControlMsg() {
  * create method comment.
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new EnergyExchangeControlMessage();
+	return new LMEnergyExchangeControlMsg();
 }
 /**
  * getComparator method comment.
@@ -55,7 +54,7 @@ public String getCxxStringId() {
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return EnergyExchangeControlMessage.class;
+	return LMEnergyExchangeControlMsg.class;
 }
 /**
  * restoreGuts method comment.
@@ -72,11 +71,11 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 {
 	super.saveGuts( obj, vstr, polystr );
 
-	EnergyExchangeControlMessage msg = (EnergyExchangeControlMessage) obj;
+	LMEnergyExchangeControlMsg msg = (LMEnergyExchangeControlMsg) obj;
 
 	vstr.insertUnsignedInt( msg.getCommand().longValue() );
-	vstr.insertUnsignedLong( msg.getYukonId().longValue() );
-	vstr.insertUnsignedLong( msg.getOfferId().longValue() );
+	vstr.insertUnsignedLong( msg.getYukonID().longValue() );
+	vstr.insertUnsignedLong( msg.getOfferID().longValue() );
 	vstr.saveObject( msg.getOfferDate(), SimpleMappings.Time );
 	vstr.saveObject( msg.getNotificationDateTime(), SimpleMappings.Time );
 	vstr.saveObject( msg.getExpirationDateTime(), SimpleMappings.Time );

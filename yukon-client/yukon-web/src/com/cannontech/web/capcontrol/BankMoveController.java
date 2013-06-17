@@ -20,13 +20,13 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.messaging.message.capcontrol.CommandType;
-import com.cannontech.messaging.message.capcontrol.streamable.Area;
-import com.cannontech.messaging.message.capcontrol.streamable.CapBankDevice;
-import com.cannontech.messaging.message.capcontrol.streamable.Feeder;
-import com.cannontech.messaging.message.capcontrol.streamable.StreamableCapObject;
-import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
-import com.cannontech.messaging.message.capcontrol.streamable.SubStation;
+import com.cannontech.message.capcontrol.model.CommandType;
+import com.cannontech.message.capcontrol.streamable.Area;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.message.capcontrol.streamable.SubBus;
+import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.models.MovedBank;
 import com.cannontech.web.capcontrol.models.NavigableArea;
@@ -61,17 +61,17 @@ public class BankMoveController {
             subBusId = filterCapControlCache.getParentSubBusID(bankid);
         }
         if (capBank != null) {
-            oldFeederId = capBank.getParentId();
+            oldFeederId = capBank.getParentID();
         }
         model.addAttribute("oneline", oneline);
         model.addAttribute("bankId", bankid);
         model.addAttribute("oldFeederId", oldFeederId);
         model.addAttribute("subBusId", subBusId);
         
-        Feeder feeder = filterCapControlCache.getFeeder(capBank.getParentId()); 
-        SubBus subBus = filterCapControlCache.getSubBus(feeder.getParentId());
-        SubStation substation = filterCapControlCache.getSubstation(subBus.getParentId());
-        StreamableCapObject area = filterCapControlCache.getArea(substation.getParentId());
+        Feeder feeder = filterCapControlCache.getFeeder(capBank.getParentID()); 
+        SubBus subBus = filterCapControlCache.getSubBus(feeder.getParentID());
+        SubStation substation = filterCapControlCache.getSubstation(subBus.getParentID());
+        StreamableCapObject area = filterCapControlCache.getArea(substation.getParentID());
         
         model.addAttribute("substationId", substation.getCcId());
         
@@ -88,7 +88,7 @@ public class BankMoveController {
         
         BankMoveBean bankMoveBean = new BankMoveBean();
         bankMoveBean.setBankId(capBank.getCcId());
-        bankMoveBean.setOldFeederId(capBank.getParentId());
+        bankMoveBean.setOldFeederId(capBank.getParentID());
         model.addAttribute("bankMoveBean", bankMoveBean);
         
         if (oneline) {
@@ -118,12 +118,12 @@ public class BankMoveController {
         List<Area> areas = filterCapControlCache.getCbcAreas();
         List<MovedBank> movedCaps = Lists.newArrayList();   
         for (Area area : areas) {
-            List<CapBankDevice> capBanks = filterCapControlCache.getCapBanksByArea(area.getCcId());
+            List<CapBankDevice> capBanks = filterCapControlCache.getCapBanksByArea(area.getPaoId());
             for (CapBankDevice capBank : capBanks) {
                 if (capBank.isBankMoved()) {
                     MovedBank movedBank = new MovedBank(capBank);
                     movedBank.setCurrentFeederName(updaterHelper.getCapBankValueAt(capBank, UpdaterHelper.UpdaterDataType.CB_PARENT_COLUMN, context).toString());
-                    movedBank.setOriginalFeederName(filterCapControlCache.getFeeder(capBank.getOrigFeederId()).getCcName());
+                    movedBank.setOriginalFeederName(filterCapControlCache.getFeeder(capBank.getOrigFeederID()).getCcName());
                     movedCaps.add(movedBank);
                 }
             }

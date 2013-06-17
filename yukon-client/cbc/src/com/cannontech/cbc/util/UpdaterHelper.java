@@ -29,11 +29,11 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.messaging.message.capcontrol.streamable.Area;
-import com.cannontech.messaging.message.capcontrol.streamable.CapBankDevice;
-import com.cannontech.messaging.message.capcontrol.streamable.Feeder;
-import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
-import com.cannontech.messaging.message.capcontrol.streamable.SubStation;
+import com.cannontech.message.capcontrol.streamable.Area;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.SubBus;
+import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.CapControlConst;
 import com.cannontech.util.ColorUtil;
@@ -172,7 +172,7 @@ public class UpdaterHelper {
         
         if (capBank == null) return "";
         
-        Integer controlDeviceId = capBank.getControlDeviceId();
+        Integer controlDeviceId = capBank.getControlDeviceID();
         String controllerName = null;
         
         if (controlDeviceId != 0) {
@@ -257,7 +257,7 @@ public class UpdaterHelper {
         }
 
         case CB_PARENT_COLUMN: {
-            int parentId = capBank.getParentId();
+            int parentId = capBank.getParentID();
             if (parentId > 0 ) {
                 return paoLoadingService.getDisplayablePao(new PaoIdentifier(parentId, PaoType.CAP_CONTROL_FEEDER)).getName();
             } else {
@@ -439,7 +439,7 @@ public class UpdaterHelper {
         }
 
         case SUB_AREA_NAME_COLUMN: {
-            return substation.getCcDescription();
+            return substation.getCcArea();
         }
 
         case SUB_CURRENT_STATE_COLUMN: {
@@ -544,7 +544,7 @@ public class UpdaterHelper {
         }
 
         case SUB_AREA_NAME_COLUMN: {
-            return subBus.getCcDescription();
+            return subBus.getCcArea();
         }
 
         case SUB_CURRENT_STATE_COLUMN: {
@@ -669,7 +669,7 @@ public class UpdaterHelper {
         }
 
         case SUB_VAR_LOAD_COLUMN: {
-            if (subBus.getCurrentVarLoadPointId() <= PointTypes.SYS_PID_SYSTEM)
+            if (subBus.getCurrentVarLoadPointID() <= PointTypes.SYS_PID_SYSTEM)
                 return accessor.getMessage("yukon.web.defaults.dashes");
             else {
                 return CommonUtils.formatDecimalPlaces(subBus.getCurrentVarLoadPointValue(), decPlaces);
@@ -677,7 +677,7 @@ public class UpdaterHelper {
         }
         
         case SUB_VAR_EST_LOAD_COLUMN: {
-            if (subBus.getCurrentVarLoadPointId() <= PointTypes.SYS_PID_SYSTEM)
+            if (subBus.getCurrentVarLoadPointID() <= PointTypes.SYS_PID_SYSTEM)
                 return accessor.getMessage("yukon.web.defaults.dashes");
             else {
                 return CommonUtils.formatDecimalPlaces(subBus.getEstimatedVarLoadPointValue(), decPlaces);
@@ -719,7 +719,7 @@ public class UpdaterHelper {
         }
         
         case SUB_WATTS_COLUMN: {
-            if (subBus.getCurrentWattLoadPointId() <= PointTypes.SYS_PID_SYSTEM)
+            if (subBus.getCurrentWattLoadPointID() <= PointTypes.SYS_PID_SYSTEM)
                 return accessor.getMessage("yukon.web.defaults.dashes");
             else {
                 return CommonUtils.formatDecimalPlaces(subBus.getCurrentWattLoadPointValue(), decPlaces);
@@ -727,7 +727,7 @@ public class UpdaterHelper {
         }
         
         case SUB_VOLTS_COLUMN: {
-            if (subBus.getCurrentVoltLoadPointId() <= PointTypes.SYS_PID_SYSTEM)
+            if (subBus.getCurrentVoltLoadPointID() <= PointTypes.SYS_PID_SYSTEM)
                 return accessor.getMessage("yukon.web.defaults.dashes");
             else {
                 return CommonUtils.formatDecimalPlaces(subBus.getCurrentVoltLoadPointValue(), decPlaces);
@@ -909,7 +909,7 @@ public class UpdaterHelper {
         
         case FDR_POWER_FACTOR_COLUMN: {
             String pf =  getPowerFactorText(feeder.getPowerFactorValue() , true, context.getYukonUser(), accessor);     
-            String estPf = getPowerFactorText(feeder.getEstimatedPowerFactorValue(), true, context.getYukonUser(), accessor);
+            String estPf = getPowerFactorText(feeder.getEstimatedPFValue(), true, context.getYukonUser(), accessor);
             return accessor.getMessage("yukon.web.modules.capcontrol.pfEstPf", pf, estPf);
         }
 
@@ -926,7 +926,7 @@ public class UpdaterHelper {
         }
 
         case FDR_VAR_LOAD_COLUMN: {
-            if (feeder.getCurrentVarLoadPointId() <= PointTypes.SYS_PID_SYSTEM) {
+            if (feeder.getCurrentVarLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
                 return accessor.getMessage("yukon.web.defaults.dashes");
             } else {
                 return CommonUtils.formatDecimalPlaces(feeder.getCurrentVarLoadPointValue(), decPlaces);
@@ -934,7 +934,7 @@ public class UpdaterHelper {
         }
         
         case FDR_VAR_EST_LOAD_COLUMN: {
-            if (feeder.getCurrentVarLoadPointId() <= PointTypes.SYS_PID_SYSTEM) {
+            if (feeder.getCurrentVarLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
                 return accessor.getMessage("yukon.web.defaults.dashes");
             } else {
                 return CommonUtils.formatDecimalPlaces(feeder.getEstimatedVarLoadPointValue(), decPlaces);
@@ -969,7 +969,7 @@ public class UpdaterHelper {
         }
         
         case FDR_WATTS_COLUMN: {
-            if (feeder.getCurrentWattLoadPointId() <= PointTypes.SYS_PID_SYSTEM) {
+            if (feeder.getCurrentWattLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
                 return accessor.getMessage("yukon.web.defaults.dashes");
             } else {
                 return CommonUtils.formatDecimalPlaces(feeder.getCurrentWattLoadPointValue(), decPlaces);
@@ -977,7 +977,7 @@ public class UpdaterHelper {
         }
         
         case FDR_VOLTS_COLUMN: {
-            if (feeder.getCurrentVoltLoadPointId() <= PointTypes.SYS_PID_SYSTEM) {
+            if (feeder.getCurrentVoltLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
                 return accessor.getMessage("yukon.web.defaults.dashes");
             } else {
                 return CommonUtils.formatDecimalPlaces(feeder.getCurrentVoltLoadPointValue(), decPlaces);
@@ -1003,7 +1003,7 @@ public class UpdaterHelper {
         }        
 
         case FDR_ONELINE_WATTS_COLUMN: {
-            if (feeder.getCurrentWattLoadPointId() <= PointTypes.SYS_PID_SYSTEM) {
+            if (feeder.getCurrentWattLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
                 return accessor.getMessage("yukon.web.defaults.dashes");
             } else {
                 return CommonUtils.formatDecimalPlaces(feeder.getCurrentWattLoadPointValue(), decPlaces);
@@ -1011,7 +1011,7 @@ public class UpdaterHelper {
         }
         
         case FDR_ONELINE_VOLTS_COLUMN: {
-            if (feeder.getCurrentVoltLoadPointId() <= PointTypes.SYS_PID_SYSTEM) {
+            if (feeder.getCurrentVoltLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
                 return accessor.getMessage("yukon.web.defaults.dashes");
             } else {
                 return CommonUtils.formatDecimalPlaces(feeder.getCurrentVoltLoadPointValue(), decPlaces);
@@ -1019,7 +1019,7 @@ public class UpdaterHelper {
         }
         
         case FDR_ONELINE_VAR_LOAD_COLUMN: {
-            if (feeder.getCurrentVarLoadPointId() <= PointTypes.SYS_PID_SYSTEM) {
+            if (feeder.getCurrentVarLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
                 return accessor.getMessage("yukon.web.defaults.dashes");
             } else {
                 return CommonUtils.formatDecimalPlaces(feeder.getCurrentVarLoadPointValue(), decPlaces);
@@ -1048,14 +1048,14 @@ public class UpdaterHelper {
         
         case FDR_ONELINE_WATTS_VOLTS_COLUMN: {
             String watts = "";
-        	if (feeder.getCurrentWattLoadPointId() <= PointTypes.SYS_PID_SYSTEM) {
+        	if (feeder.getCurrentWattLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
                 watts = accessor.getMessage("yukon.web.defaults.dashes");
         	} else {
         	    watts = CommonUtils.formatDecimalPlaces(feeder.getCurrentWattLoadPointValue(), decPlaces);
             }
         	
         	String volts = "";
-        	if (feeder.getCurrentVoltLoadPointId() <= PointTypes.SYS_PID_SYSTEM) {
+        	if (feeder.getCurrentVoltLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
         	    volts = accessor.getMessage("yukon.web.defaults.dashes");
             } else {
         		volts = CommonUtils.formatDecimalPlaces(feeder.getCurrentVoltLoadPointValue(), decPlaces);
@@ -1236,14 +1236,14 @@ public class UpdaterHelper {
         }
 
         case SUB_ONELINE_DAILY_OPCNT_COLUMN: {
-            return String.valueOf(subBus.getCurrentDailyOperations());
+            return (subBus.getCurrentDailyOperations()).toString();
         }
 
         case SUB_ONELINE_MAX_OPCNT_COLUMN: {
             if (subBus.getMaxDailyOperation() <= 0) {
                 return accessor.getMessage("yukon.web.defaults.na");
             } else {
-                return String.valueOf(subBus.getMaxDailyOperation());
+                return subBus.getMaxDailyOperation().toString();
             }
         }
         
@@ -1268,7 +1268,7 @@ public class UpdaterHelper {
         }
         
         case SUB_ONELINE_KVAR_LOAD_COLUMN: {
-            if (subBus.getCurrentVarLoadPointId() <= PointTypes.SYS_PID_SYSTEM) {
+            if (subBus.getCurrentVarLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
                 return accessor.getMessage("yukon.web.defaults.dashes");
             } else {
                 return CommonUtils.formatDecimalPlaces(subBus.getCurrentVarLoadPointValue(), decPlaces);
@@ -1276,7 +1276,7 @@ public class UpdaterHelper {
         }
         
         case SUB_ONELINE_KVAR_ESTMATED_COLUMN: {
-            if (subBus.getCurrentVarLoadPointId() <= PointTypes.SYS_PID_SYSTEM) {
+            if (subBus.getCurrentVarLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
                 return accessor.getMessage("yukon.web.defaults.dashes");
             } else {
                 return CommonUtils.formatDecimalPlaces(subBus.getEstimatedVarLoadPointValue(), decPlaces);
@@ -1292,7 +1292,7 @@ public class UpdaterHelper {
         }
 
         case SUB_ONELINE_WATT_COLUMN: {
-            if (subBus.getCurrentWattLoadPointId() <= PointTypes.SYS_PID_SYSTEM) {
+            if (subBus.getCurrentWattLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
                 return accessor.getMessage("yukon.web.defaults.dashes");
             } else {
                 return CommonUtils.formatDecimalPlaces(subBus.getCurrentWattLoadPointValue(), decPlaces);
@@ -1300,7 +1300,7 @@ public class UpdaterHelper {
         }
         
         case SUB_ONELINE_VOLT_COLUMN: {
-            if (subBus.getCurrentVoltLoadPointId() <= PointTypes.SYS_PID_SYSTEM) {
+            if (subBus.getCurrentVoltLoadPointID() <= PointTypes.SYS_PID_SYSTEM) {
                 return accessor.getMessage("yukon.web.defaults.dashes");
             } else {
                 return CommonUtils.formatDecimalPlaces(subBus.getCurrentVoltLoadPointValue(), decPlaces);

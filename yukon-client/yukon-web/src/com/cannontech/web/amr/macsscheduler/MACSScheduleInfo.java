@@ -1,17 +1,17 @@
 package com.cannontech.web.amr.macsscheduler;
 
-import com.cannontech.messaging.message.macs.ScheduleMessage;
+import com.cannontech.message.macs.message.Schedule;
 
 public class MACSScheduleInfo {
-    private final ScheduleMessage schedule;
+    private final Schedule schedule;
     private final boolean editable;
     
-    public MACSScheduleInfo(final ScheduleMessage schedule, final boolean editable) {
+    public MACSScheduleInfo(final Schedule schedule, final boolean editable) {
         this.schedule = schedule;
         this.editable = editable;
     }
     
-    public ScheduleMessage getSchedule() {
+    public Schedule getSchedule() {
         return schedule;
     }
     

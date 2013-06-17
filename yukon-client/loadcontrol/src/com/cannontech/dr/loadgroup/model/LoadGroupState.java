@@ -2,15 +2,15 @@ package com.cannontech.dr.loadgroup.model;
 
 import java.util.Map;
 
-import com.cannontech.messaging.message.loadcontrol.data.GroupBase;
+import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public enum LoadGroupState {
-    ACTIVE(GroupBase.STATE_ACTIVE),
-    ACTIVE_PENDING(GroupBase.STATE_ACTIVE_PENDING),
-    INACTIVE(GroupBase.STATE_INACTIVE),
-    INACTIVE_PENDING(GroupBase.STATE_INACTIVE_PENDING),
+    ACTIVE(LMGroupBase.STATE_ACTIVE),
+    ACTIVE_PENDING(LMGroupBase.STATE_ACTIVE_PENDING),
+    INACTIVE(LMGroupBase.STATE_INACTIVE),
+    INACTIVE_PENDING(LMGroupBase.STATE_INACTIVE_PENDING),
     ;
 
     private int loadGroupStateId;

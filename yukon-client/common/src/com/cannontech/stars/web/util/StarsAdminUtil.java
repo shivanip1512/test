@@ -43,10 +43,10 @@ import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.user.UserGroup;
-import com.cannontech.dispatch.DbChangeCategory;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
-import com.cannontech.messaging.util.DbChangeManager;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -778,59 +778,59 @@ public class StarsAdminUtil {
         }
         else if (lite.getLiteType() == LiteTypes.STARS_CUST_ACCOUNT_INFO) {
             dbChangeManager.processDbChange(lite.getLiteID(),
-                                            DBChangeMessage.CHANGE_CUSTOMER_ACCOUNT_DB,
-                                            DBChangeMessage.CAT_CUSTOMER_ACCOUNT,
-                                            DBChangeMessage.CAT_CUSTOMER_ACCOUNT,
+                                            DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
+                                            DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+                                            DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
                                             dbChangeType);
             
         }
         else if (lite.getLiteType() == LiteTypes.YUKON_USER) {
             dbChangeManager.processDbChange(lite.getLiteID(),
-                                            DBChangeMessage.CHANGE_YUKON_USER_DB,
-                                            DBChangeMessage.CAT_YUKON_USER,
-                                            DBChangeMessage.CAT_YUKON_USER,
+                                            DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                            DBChangeMsg.CAT_YUKON_USER,
+                                            DBChangeMsg.CAT_YUKON_USER,
                                             dbChangeType);
         }
         else if (lite.getLiteType() == LiteTypes.CONTACT) {
             dbChangeManager.processDbChange(lite.getLiteID(),
-                                            DBChangeMessage.CHANGE_CONTACT_DB,
-                                            DBChangeMessage.CAT_CUSTOMERCONTACT,
-                                            DBChangeMessage.CAT_CUSTOMERCONTACT,
+                                            DBChangeMsg.CHANGE_CONTACT_DB,
+                                            DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                            DBChangeMsg.CAT_CUSTOMERCONTACT,
                                             dbChangeType);
         }
         else if (lite.getLiteType() == LiteTypes.YUKON_GROUP) {
             dbChangeManager.processDbChange(lite.getLiteID(),
-                                            DBChangeMessage.CHANGE_YUKON_USER_DB,
-                                            DBChangeMessage.CAT_YUKON_USER_GROUP,
-                                            DBChangeMessage.CAT_YUKON_USER_GROUP,
+                                            DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                            DBChangeMsg.CAT_YUKON_USER_GROUP,
+                                            DBChangeMsg.CAT_YUKON_USER_GROUP,
                                             dbChangeType);
         }
         else if (lite.getLiteType() == LiteTypes.ENERGY_COMPANY) {
             dbChangeManager.processDbChange(lite.getLiteID(),
-                                            DBChangeMessage.CHANGE_ENERGY_COMPANY_DB,
-                                            DBChangeMessage.CAT_ENERGY_COMPANY,
-                                            DBChangeMessage.CAT_ENERGY_COMPANY,
+                                            DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
+                                            DBChangeMsg.CAT_ENERGY_COMPANY,
+                                            DBChangeMsg.CAT_ENERGY_COMPANY,
                                             dbChangeType);
         }
         else if (lite.getLiteType() == LiteTypes.CUSTOMER) {
             dbChangeManager.processDbChange(lite.getLiteID(),
-                                            DBChangeMessage.CHANGE_CUSTOMER_DB,
-                                            DBChangeMessage.CAT_CUSTOMER,
-                                            DBChangeMessage.CAT_CUSTOMER,
+                                            DBChangeMsg.CHANGE_CUSTOMER_DB,
+                                            DBChangeMsg.CAT_CUSTOMER,
+                                            DBChangeMsg.CAT_CUSTOMER,
                                             dbChangeType);
         }
         else if (lite.getLiteType() == LiteTypes.CUSTOMER_CI) {
             dbChangeManager.processDbChange(lite.getLiteID(),
-                                            DBChangeMessage.CHANGE_CUSTOMER_DB,
-                                            DBChangeMessage.CAT_CI_CUSTOMER,
-                                            DBChangeMessage.CAT_CI_CUSTOMER,
+                                            DBChangeMsg.CHANGE_CUSTOMER_DB,
+                                            DBChangeMsg.CAT_CI_CUSTOMER,
+                                            DBChangeMsg.CAT_CI_CUSTOMER,
                                             dbChangeType);
         }
         else if( lite.getLiteType() == LiteTypes.STARS_SERVICE_COMPANY_DESIGNATION_CODE){
             dbChangeManager.processDbChange(lite.getLiteID(),
-                                            DBChangeMessage.CHANGE_SERVICE_COMPANY_DESIGNATION_CODE_DB,
-                                            DBChangeMessage.CAT_SERVICE_COMPANY_DESIGNATION_CODE,
-                                            DBChangeMessage.CAT_SERVICE_COMPANY_DESIGNATION_CODE,
+                                            DBChangeMsg.CHANGE_SERVICE_COMPANY_DESIGNATION_CODE_DB,
+                                            DBChangeMsg.CAT_SERVICE_COMPANY_DESIGNATION_CODE,
+                                            DBChangeMsg.CAT_SERVICE_COMPANY_DESIGNATION_CODE,
                                             dbChangeType);
         }
     }

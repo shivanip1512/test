@@ -82,8 +82,8 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.schedule.script.ScriptTemplate;
 import com.cannontech.database.data.schedule.script.ScriptTemplateTypes;
-import com.cannontech.messaging.message.macs.ScheduleMessage;
-import com.cannontech.messaging.message.macs.ScriptFileMessage;
+import com.cannontech.message.macs.message.Schedule;
+import com.cannontech.message.macs.message.ScriptFile;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IMACSConnection;
@@ -1988,7 +1988,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     @SuppressWarnings("unchecked")
     public Object getValue(Object val)
     {
-    	ScheduleMessage sch = (ScheduleMessage)val;
+    	Schedule sch = (Schedule)val;
         getScriptTemplate().setParameterValue(SCHEDULE_NAME_PARAM, sch.getScheduleName());
     	
     	sch.setScriptFileName(getScriptNameTextField().getText());
@@ -2418,7 +2418,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
      * @param file com.cannontech.message.macs.message.ScriptFile
      */
     @SuppressWarnings("static-access")
-    public void setScriptValues(final ScriptFileMessage file) {
+    public void setScriptValues(final ScriptFile file) {
     	try {
     		int i = 0;
     		for( i = 0; i < 25; i++ ) { // 5 second timeout 
@@ -2541,7 +2541,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
      * @param o java.lang.Object
      */
     public void setValue(Object o) {
-    	ScheduleMessage sched = (ScheduleMessage)o;
+    	Schedule sched = (Schedule)o;
     	this.scheduleId = sched.getId();
     	setTemplateType(sched.getTemplateType());
     }

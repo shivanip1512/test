@@ -3,9 +3,7 @@
 
 using std::vector;
 
-DEFINE_COLLECTABLE( CtiNotifLMControlMsg, NOTIF_LMCONTROL_MSG_ID );
-
-//REGISTER_MSG_FACTORY( CtiNotifLMControlMsg );
+RWDEFINE_COLLECTABLE( CtiNotifLMControlMsg, NOTIF_LMCONTROL_MSG_ID );
 
 CtiNotifLMControlMsg::CtiNotifLMControlMsg() : _notif_type(0), _program_id(-1)
 { }
@@ -70,6 +68,30 @@ CtiNotifLMControlMsg& CtiNotifLMControlMsg::setStopTime(const CtiTime& stop_time
 {
     _stop_time = stop_time;
     return *this;
+}
+
+void CtiNotifLMControlMsg::saveGuts(RWvostream &aStream) const
+{
+    CtiMessage::saveGuts(aStream);
+
+    aStream
+    << _notif_group_ids
+    << _notif_type
+    << _program_id
+    << _start_time
+    << _stop_time;
+}
+
+void CtiNotifLMControlMsg::restoreGuts(RWvistream& aStream)
+{
+    CtiMessage::restoreGuts(aStream);
+
+    aStream
+    >> _notif_group_ids
+    >> _notif_type
+    >> _program_id
+    >> _start_time
+    >> _stop_time;
 }
 
 CtiMessage* CtiNotifLMControlMsg::replicateMessage() const

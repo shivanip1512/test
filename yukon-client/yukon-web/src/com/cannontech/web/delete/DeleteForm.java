@@ -16,8 +16,8 @@ import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.capcontrol.CapControlSubstation;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.messaging.message.capcontrol.streamable.Area;
-import com.cannontech.messaging.message.capcontrol.streamable.SubStation;
+import com.cannontech.message.capcontrol.streamable.Area;
+import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.editor.CapControlForm;
@@ -67,7 +67,7 @@ public abstract class DeleteForm extends DBEditorForm {
                         Integer areaId = 0;
                         try {
                             SubStation sub = capControlCache.getSubstation(subId);
-                            areaId = sub.getParentId();
+                            areaId = sub.getParentID();
                         }catch(NotFoundException nfe) {
                             areaId = 0;
                         }

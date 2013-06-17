@@ -12,16 +12,16 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
-import com.cannontech.messaging.message.loadcontrol.CommandMessage;
-import com.cannontech.messaging.message.loadcontrol.data.GroupBase;
-import com.cannontech.messaging.message.loadcontrol.data.GroupExpresscom;
-import com.cannontech.messaging.message.loadcontrol.data.GroupRipple;
-import com.cannontech.messaging.message.loadcontrol.data.GroupVersacom;
-import com.cannontech.messaging.message.loadcontrol.data.GroupPoint;
+import com.cannontech.loadcontrol.data.LMGroupBase;
+import com.cannontech.loadcontrol.data.LMGroupExpresscom;
+import com.cannontech.loadcontrol.data.LMGroupPoint;
+import com.cannontech.loadcontrol.data.LMGroupRipple;
+import com.cannontech.loadcontrol.data.LMGroupVersacom;
+import com.cannontech.loadcontrol.messages.LMCommand;
 
 public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.event.ActionListener
 {
-	private GroupBase loadControlGroup = null;
+	private LMGroupBase loadControlGroup = null;
 
 	private javax.swing.JMenuItem jMenuItemTrueCycle = null;
 	private javax.swing.JMenuItem jMenuItemSmartCycle = null;
@@ -92,17 +92,17 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 		{
 			Object obj = panel.getValue(null);
 			
-			if( obj instanceof CommandMessage )
+			if( obj instanceof LMCommand )
 			{
-				CommandMessage cmd = (CommandMessage)obj;
-				cmd.setCommand( CommandMessage.TRUE_CYCLE_GROUP );
-				cmd.setYukonId( getLoadControlGroup().getYukonId().intValue() );
+				LMCommand cmd = (LMCommand)obj;
+				cmd.setCommand( LMCommand.TRUE_CYCLE_GROUP );
+				cmd.setYukonID( getLoadControlGroup().getYukonID().intValue() );
 			
 				LoadControlClientConnection.getInstance().write( cmd );
 			}
 			else
 				throw new IllegalArgumentException(
-					"Should only return " + CommandMessage.class.getName() +
+					"Should only return " + LMCommand.class.getName() +
 					" instances, instead reuturned a " + obj.getClass().getName() + 
 					" (very unbecoming)");	
 		}
@@ -128,17 +128,17 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 		{
 			Object obj = panel.getValue(null);
 			
-			if( obj instanceof CommandMessage )
+			if( obj instanceof LMCommand )
 			{
-				CommandMessage cmd = (CommandMessage)obj;
-				cmd.setCommand( CommandMessage.SMART_CYCLE_GROUP );
-				cmd.setYukonId( getLoadControlGroup().getYukonId().intValue() );
+				LMCommand cmd = (LMCommand)obj;
+				cmd.setCommand( LMCommand.SMART_CYCLE_GROUP );
+				cmd.setYukonID( getLoadControlGroup().getYukonID().intValue() );
 			
 				LoadControlClientConnection.getInstance().write( cmd );
 			}
 			else
 				throw new IllegalArgumentException(
-					"Should only return " + CommandMessage.class.getName() +
+					"Should only return " + LMCommand.class.getName() +
 					" instances, instead reuturned a " + obj.getClass().getName() + 
 					" (very unbecoming)");	
 		}
@@ -156,16 +156,16 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 		{
 			//send a message to the server telling it to ENABLE this group
 			LoadControlClientConnection.getInstance().write(
-					new CommandMessage( CommandMessage.ENABLE_GROUP,
-						 				getLoadControlGroup().getYukonId().intValue(),
+					new LMCommand( LMCommand.ENABLE_GROUP,
+						 				getLoadControlGroup().getYukonID().intValue(),
 						 				0, 0.0) );
 		}
 		else
 		{
 			//send a message to the server telling it to DISABLE this group	
 			LoadControlClientConnection.getInstance().write(
-					new CommandMessage( CommandMessage.DISABLE_GROUP,
-						 				getLoadControlGroup().getYukonId().intValue(),
+					new LMCommand( LMCommand.DISABLE_GROUP,
+						 				getLoadControlGroup().getYukonID().intValue(),
 						 				0, 0.0) );
 		}		
 	}
@@ -180,8 +180,8 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 	{
 		//send a message to the server telling it to CONFIRM this group
 		LoadControlClientConnection.getInstance().write(
-				new CommandMessage( CommandMessage.CONFIRM_GROUP,
-					 				getLoadControlGroup().getYukonId().intValue(),
+				new LMCommand( LMCommand.CONFIRM_GROUP,
+					 				getLoadControlGroup().getYukonID().intValue(),
 					 				0, 
 					 				0.0,
 					 				0,
@@ -198,8 +198,8 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 	{
 		//send a message to the server telling it to RESTORE this group
 		LoadControlClientConnection.getInstance().write(
-				new CommandMessage( CommandMessage.RESTORE_GROUP,
-					 				getLoadControlGroup().getYukonId().intValue(),
+				new LMCommand( LMCommand.RESTORE_GROUP,
+					 				getLoadControlGroup().getYukonID().intValue(),
 					 				0,
 					 				0.0) );
 	}
@@ -215,7 +215,7 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 			this, "Shed Duration: ",
 			"Enter Shed Time", JOptionPane.QUESTION_MESSAGE,
 			null, 
-			(getLoadControlGroup() instanceof GroupRipple
+			(getLoadControlGroup() instanceof LMGroupRipple
 			  ? new Object[] { new StringBuffer("(Ripple Groups use programmed times in switch)") }
 			  : LCUtils.SHED_STRS), 
 			null );
@@ -229,8 +229,8 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 
 			//send a message to the server telling it to SHED this group
 			LoadControlClientConnection.getInstance().write(
-				new CommandMessage( CommandMessage.SHED_GROUP,
-					 				getLoadControlGroup().getYukonId().intValue(),
+				new LMCommand( LMCommand.SHED_GROUP,
+					 				getLoadControlGroup().getYukonID().intValue(),
 					 				seconds, //shed time in seconds
 					 				0.0,
 					 				0,
@@ -252,7 +252,7 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 			{
 				jMenuItemTrueCycle = new javax.swing.JMenuItem();
 				jMenuItemTrueCycle.setName("JMenuItemTrueCycle");
-				jMenuItemTrueCycle.setText(CommandMessage.CMD_STRS[CommandMessage.TRUE_CYCLE_GROUP] + "...");
+				jMenuItemTrueCycle.setText(LMCommand.CMD_STRS[LMCommand.TRUE_CYCLE_GROUP] + "...");
 				jMenuItemTrueCycle.setMnemonic('y');
 				jMenuItemTrueCycle.setActionCommand("jMenuItemTrueCycle");
 			} 
@@ -279,7 +279,7 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 			{
 				jMenuItemSmartCycle = new javax.swing.JMenuItem();
 				jMenuItemSmartCycle.setName("JMenuItemSmartCycle");
-				jMenuItemSmartCycle.setText( CommandMessage.CMD_STRS[CommandMessage.SMART_CYCLE_GROUP] + "...");
+				jMenuItemSmartCycle.setText( LMCommand.CMD_STRS[LMCommand.SMART_CYCLE_GROUP] + "...");
 				jMenuItemSmartCycle.setMnemonic('m');
 				jMenuItemSmartCycle.setActionCommand("jMenuItemSmartCycle");
 			} 
@@ -305,7 +305,7 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 			{
 				jMenuItemConfirm = new javax.swing.JMenuItem();
 				jMenuItemConfirm.setName("JMenuItemConfirm");
-				jMenuItemConfirm.setText(CommandMessage.CMD_STRS[CommandMessage.CONFIRM_GROUP]);
+				jMenuItemConfirm.setText(LMCommand.CMD_STRS[LMCommand.CONFIRM_GROUP]);
 				jMenuItemConfirm.setMnemonic('f');
 				jMenuItemConfirm.setActionCommand("jMenuItemConfirm");
 			} 
@@ -331,7 +331,7 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 			{
 				jMenuItemDisable = new javax.swing.JMenuItem();
 				jMenuItemDisable.setName("JMenuItemDisable");
-				jMenuItemDisable.setText( CommandMessage.CMD_STRS[CommandMessage.DISABLE_GROUP] );
+				jMenuItemDisable.setText( LMCommand.CMD_STRS[LMCommand.DISABLE_GROUP] );
 				jMenuItemDisable.setMnemonic('s');
 				jMenuItemDisable.setActionCommand("jMenuItemDisable");
 			} 
@@ -356,7 +356,7 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 			{
 				jMenuItemRestore = new javax.swing.JMenuItem();
 				jMenuItemRestore.setName("JMenuItemRestore");
-				jMenuItemRestore.setText(CommandMessage.CMD_STRS[CommandMessage.RESTORE_GROUP]);
+				jMenuItemRestore.setText(LMCommand.CMD_STRS[LMCommand.RESTORE_GROUP]);
 				jMenuItemRestore.setMnemonic('t');
 				jMenuItemRestore.setActionCommand("jMenuItemRestore");
 			} 
@@ -381,7 +381,7 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 			{
 				jMenuItemShed = new javax.swing.JMenuItem();
 				jMenuItemShed.setName("JMenuItemShed");
-				jMenuItemShed.setText(CommandMessage.CMD_STRS[CommandMessage.SHED_GROUP] + "...");
+				jMenuItemShed.setText(LMCommand.CMD_STRS[LMCommand.SHED_GROUP] + "...");
 				jMenuItemShed.setMnemonic('s');
 				jMenuItemShed.setActionCommand("jMenuItemShed");
 			} 
@@ -398,7 +398,7 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 	 * Creation date: (9/28/00 3:50:46 PM)
 	 * @return LMGroupBase
 	 */
-	public GroupBase getLoadControlGroup() 
+	public LMGroupBase getLoadControlGroup() 
 	{
 		return loadControlGroup;
 	}
@@ -455,9 +455,9 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (8/25/00 10:40:12 AM)
-	 * @param GroupBase
+	 * @param LMGroupBase
 	 */
-	public void setLoadControlGroup(GroupBase newGroup) 
+	public void setLoadControlGroup(LMGroupBase newGroup) 
 	{
 		loadControlGroup = newGroup;
 	
@@ -468,22 +468,22 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 		//handle any disablement text
 		getJMenuItemDisable().setText(
 			getLoadControlGroup().getDisableFlag().booleanValue() 
-			? CommandMessage.CMD_STRS[CommandMessage.ENABLE_GROUP]
-			: CommandMessage.CMD_STRS[CommandMessage.DISABLE_GROUP] );
+			? LMCommand.CMD_STRS[LMCommand.ENABLE_GROUP]
+			: LMCommand.CMD_STRS[LMCommand.DISABLE_GROUP] );
 
 
 		//only ExpressCom groups allowed
 		getJMenuItemTrueCycle().setEnabled( 
 				!getLoadControlGroup().getDisableFlag().booleanValue()
-				&& (getLoadControlGroup() instanceof GroupExpresscom) );
+				&& (getLoadControlGroup() instanceof LMGroupExpresscom) );
 		
 
 		//only ExpressCom & Versacom groups allowed
 		getJMenuItemSmartCycle().setEnabled( 
 				!getLoadControlGroup().getDisableFlag().booleanValue()
 				&& 
-				(getLoadControlGroup() instanceof GroupExpresscom
-				 || getLoadControlGroup() instanceof GroupVersacom) );
+				(getLoadControlGroup() instanceof LMGroupExpresscom
+				 || getLoadControlGroup() instanceof LMGroupVersacom) );
 
 		
 		getJMenuItemConfirm().setEnabled( !getLoadControlGroup().getDisableFlag().booleanValue() );
@@ -492,13 +492,13 @@ public class GroupPopUpMenu extends javax.swing.JPopupMenu implements java.awt.e
 		//all groups except PointGroup
 		getJMenuItemRestore().setEnabled( 
 				!getLoadControlGroup().getDisableFlag().booleanValue()
-				&& !(getLoadControlGroup() instanceof GroupPoint) );
+				&& !(getLoadControlGroup() instanceof LMGroupPoint) );
 		
 		
 		//all groups except PointGroup
 		getJMenuItemShed().setEnabled(
 				!getLoadControlGroup().getDisableFlag().booleanValue()
-				&& !(getLoadControlGroup() instanceof GroupPoint) );	
+				&& !(getLoadControlGroup() instanceof LMGroupPoint) );	
 	}
 
 }

@@ -21,7 +21,6 @@
 #include "fdrpointlist.h"
 
 #include "utility.h"
-#include "amq_constants.h"
 
 using std::string;
 using std::endl;
@@ -511,7 +510,7 @@ BOOL CtiFDRInterface::stop( void )
         }
 
         // this is throwing an exception sometimes, I'm cheating since its only shutdown
-       iDispatchConn->close();
+       iDispatchConn->ShutdownConnection();
 
        iThreadDbChange.join();
        iThreadFromDispatch.join();
@@ -542,10 +541,8 @@ BOOL CtiFDRInterface::connectWithDispatch()
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Attempting to connect to dispatch at " << iDispatchMachine << " for " << getInterfaceName() << endl;
             }
-
-            iDispatchConn = new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch );
+            iDispatchConn = new CtiConnection(VANGOGHNEXUS, iDispatchMachine);
             iDispatchConn->setName("FDR to Dispatch");
-            iDispatchConn->start();
 
             if (iDispatchConn->verifyConnection() != NORMAL)
             {

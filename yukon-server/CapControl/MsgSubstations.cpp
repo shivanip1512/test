@@ -12,7 +12,7 @@ const unsigned long CtiCCSubstationsMsg::SubDeleted  = 0x00000002;
 const unsigned long CtiCCSubstationsMsg::SubAdded    = 0x00000004;
 const unsigned long CtiCCSubstationsMsg::SubModified = 0x00000008;
 
-DEFINE_COLLECTABLE( CtiCCSubstationsMsg, CTICCSUBSTATION_MSG_ID )
+RWDEFINE_COLLECTABLE( CtiCCSubstationsMsg, CTICCSUBSTATION_MSG_ID )
 
 CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations, unsigned long bitMask) : Inherited(), _ccSubstations(NULL), _msgInfoBitMask(bitMask)
 {
@@ -108,4 +108,24 @@ CtiCCSubstationsMsg& CtiCCSubstationsMsg::operator=(const CtiCCSubstationsMsg& r
     }
 
     return *this;
+}
+
+void CtiCCSubstationsMsg::restoreGuts(RWvistream& strm)
+{
+    Inherited::restoreGuts(strm);
+
+    strm >> _msgInfoBitMask;
+    strm >> _ccSubstations;
+
+    return;
+}
+
+void CtiCCSubstationsMsg::saveGuts(RWvostream& strm) const
+{
+    Inherited::saveGuts(strm);
+
+    strm << _msgInfoBitMask;
+    strm << _ccSubstations;
+
+    return;
 }

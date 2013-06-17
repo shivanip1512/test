@@ -7,14 +7,13 @@
 
 #include "observe.h"
 #include "row_reader.h"
-#include "collectable.h"
-
-class CtiLMEnergyExchangeHourlyCustomer
+                
+class CtiLMEnergyExchangeHourlyCustomer : public RWCollectable
 {
 
 public:
 
-    DECLARE_COLLECTABLE( CtiLMEnergyExchangeHourlyCustomer );
+RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeHourlyCustomer )
 
     CtiLMEnergyExchangeHourlyCustomer();
     CtiLMEnergyExchangeHourlyCustomer(Cti::RowReader &rdr);
@@ -39,6 +38,10 @@ public:
     void addLMEnergyExchangeHourlyCustomerTable();
     void updateLMEnergyExchangeHourlyCustomerTable();
     
+    //Members inherited from RWCollectable
+    void restoreGuts(RWvistream& );
+    void saveGuts(RWvostream& ) const;
+
     CtiLMEnergyExchangeHourlyCustomer& operator=(const CtiLMEnergyExchangeHourlyCustomer& right);
 
     int operator==(const CtiLMEnergyExchangeHourlyCustomer& right) const;

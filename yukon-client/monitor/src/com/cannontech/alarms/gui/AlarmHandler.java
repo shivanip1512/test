@@ -5,11 +5,11 @@ import java.util.Observer;
 import java.util.Vector;
 
 import com.cannontech.clientutils.tags.TagUtils;
-import com.cannontech.dispatch.DispatchClientConnection;
-import com.cannontech.messaging.message.BaseMessage;
-import com.cannontech.messaging.message.dispatch.SignalMessage;
-import com.cannontech.messaging.util.MessageEvent;
-import com.cannontech.messaging.util.MessageListener;
+import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.message.util.Message;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
 import com.cannontech.systray.ISystrayDefines;
 import com.cannontech.systray.YukonSysTray;
 
@@ -62,7 +62,7 @@ public class AlarmHandler implements Observer, MessageListener
 		return signalVector;
 	}
 
-	public synchronized void handleSignal( SignalMessage sig )
+	public synchronized void handleSignal( Signal sig )
 	{
 
 		boolean foundSig = false;
@@ -71,7 +71,7 @@ public class AlarmHandler implements Observer, MessageListener
 
 		for( int i = 0; i < getSignalVector().size(); i++ )
 		{
-			SignalMessage storedSig = (SignalMessage)getSignalVector().get(i);
+			Signal storedSig = (Signal)getSignalVector().get(i);
 
 			if( storedSig.equals(sig) ) //update the sig value
 			{
@@ -113,7 +113,7 @@ public class AlarmHandler implements Observer, MessageListener
 	
 	public void update( Observable src, Object val )
 	{
-		if( val instanceof DispatchClientConnection )
+		if( val instanceof ClientConnection )
 		{
 			if( !getAlarmClient().connected() )
 				yukonSysTray.setTrayText( ISystrayDefines.MSG_NOT_CONN );
@@ -126,11 +126,11 @@ public class AlarmHandler implements Observer, MessageListener
 	
 	public void messageReceived( MessageEvent e )
 	{
-		BaseMessage in = e.getMessage();
+		Message in = e.getMessage();
 
-		if( in instanceof SignalMessage )
+		if( in instanceof Signal )
 		{
-			handleSignal( (SignalMessage)in );
+			handleSignal( (Signal)in );
 			
 			yukonSysTray.setTrayText( ISystrayDefines.MSG_ALRM_TOTALS +  
 						getSignalVector().size() );			

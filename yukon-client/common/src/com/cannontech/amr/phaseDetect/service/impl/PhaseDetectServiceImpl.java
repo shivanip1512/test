@@ -57,7 +57,7 @@ import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.enums.Phase;
-import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -392,13 +392,13 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
                     break;
                 }
             }
-            PointDataMessage pointData = new PointDataMessage();
+            PointData pointData = new PointData();
             pointData.setId(phasePoint.getLiteID());
             pointData.setType(phasePoint.getPointType());
             pointData.setPointQuality(PointQuality.Normal);
             pointData.setTime(new Date());
             pointData.setValue(liteState.getStateRawState());
-            pointData.setTags(PointDataMessage.TAG_POINT_MUST_ARCHIVE);
+            pointData.setTags(PointData.TAG_POINT_MUST_ARCHIVE);
             pointData.setMillis(0);
             dynamicDataSource.putValue(pointData);
         } catch (IllegalUseOfAttribute e) {

@@ -56,7 +56,7 @@ public ControlAreaProgramTableModel() {
 public boolean addRow(com.cannontech.database.db.device.lm.LMControlAreaProgram list, com.cannontech.database.data.lite.LiteYukonPAObject device)
 {
 	for( int i = 0; i < getRowCount(); i++ )
-		if( getRowAt(i).getLiteDevice().getYukonId() == device.getYukonId() )
+		if( getRowAt(i).getLiteDevice().getYukonID() == device.getYukonID() )
 			return false; //row already exists, did not insert the new one
 	
 	ProgramRow row = new ProgramRow( list, device );

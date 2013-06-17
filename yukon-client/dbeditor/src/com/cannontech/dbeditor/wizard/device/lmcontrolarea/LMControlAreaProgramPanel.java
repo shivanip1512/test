@@ -239,7 +239,7 @@ private javax.swing.JComboBox getJComboBoxLMProgram() {
 				{
 					LiteYukonPAObject lite = (LiteYukonPAObject)l.get(i);
 					 
-					if( unassignedPrgIDs.contains( new Integer(lite.getYukonId()) ) )
+					if( unassignedPrgIDs.contains( new Integer(lite.getYukonID()) ) )
 						ivjJComboBoxLMProgram.addItem( lite );
 				}
 			}
@@ -965,7 +965,7 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 	programList.setStopPriority( new Integer( ((Number)getJCSpinFieldStopOrder().getValue()).intValue() ) );
 
 	// this is set to the LMPrograms deviceID
-	programList.setLmProgramDeviceID( new Integer( ((LiteYukonPAObject)getJComboBoxLMProgram().getSelectedItem()).getYukonId() ) );
+	programList.setLmProgramDeviceID( new Integer( ((LiteYukonPAObject)getJComboBoxLMProgram().getSelectedItem()).getYukonID() ) );
 	
  	/*if( getJTableModel().addRow( programList, (com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxLMProgram().getSelectedItem() ) )
  	{
@@ -1018,7 +1018,7 @@ public void jButtonRemove_ActionPerformed(java.awt.event.ActionEvent actionEvent
 		boolean error = false;
 		for(LiteYukonPAObject program : lite)
 		{
-		    List<Scenario> scenarios = scenarioDao.findScenariosForProgram(program.getYukonId());
+		    List<Scenario> scenarios = scenarioDao.findScenariosForProgram(program.getYukonID());
 		    if(scenarios.size() > 0)
 		    {
 		        error = true;

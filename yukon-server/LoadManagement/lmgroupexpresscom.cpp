@@ -30,7 +30,7 @@ using std::endl;
 extern ULONG _LM_DEBUG;
 #define ROUNDING_SECONDS (60*57) //Round up on minute 58 or greater
 
-DEFINE_COLLECTABLE( CtiLMGroupExpresscom, CTILMGROUPEXPRESSCOM_ID )
+RWDEFINE_COLLECTABLE( CtiLMGroupExpresscom, CTILMGROUPEXPRESSCOM_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -589,6 +589,27 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointSimpleMsg(string settings, LO
     {
         return NULL;
     }
+}
+
+/*-------------------------------------------------------------------------
+    restoreGuts
+
+    Restore self's state from the given stream
+--------------------------------------------------------------------------*/
+void CtiLMGroupExpresscom::restoreGuts(RWvistream& istrm)
+{
+    CtiLMGroupBase::restoreGuts( istrm );
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+
+    Save self's state onto the given stream
+---------------------------------------------------------------------------*/
+void CtiLMGroupExpresscom::saveGuts(RWvostream& ostrm ) const
+{
+    CtiLMGroupBase::saveGuts( ostrm );
+    return;
 }
 
 /*---------------------------------------------------------------------------

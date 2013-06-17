@@ -1,6 +1,6 @@
 <%@page import="java.util.*" %>
 <%@page import="com.cannontech.roles.capcontrol.CBCSettingsRole" %>
-<%@page import="com.cannontech.messaging.message.capcontrol.streamable.*" %>
+<%@page import="com.cannontech.message.capcontrol.streamable.*" %>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>

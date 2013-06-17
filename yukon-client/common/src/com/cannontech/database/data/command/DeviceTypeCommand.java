@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.command.Command;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * Insert the type's description here.
@@ -29,19 +29,19 @@ public DeviceTypeCommand() {
 /**
  * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
  */
-public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType)
+public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
 {
-	ArrayList<DBChangeMessage> list = new ArrayList<DBChangeMessage>(10);
+	ArrayList<DBChangeMsg> list = new ArrayList<DBChangeMsg>(10);
 
 	//add the basic change method
-	list.add( new DBChangeMessage(
+	list.add( new DBChangeMsg(
 					getDeviceTypeCommand().getDeviceCommandID().intValue(),
-					DBChangeMessage.CHANGE_DEVICETYPE_COMMAND_DB,
-					DBChangeMessage.CAT_DEVICETYPE_COMMAND,
-					DBChangeMessage.CAT_DEVICETYPE_COMMAND,
+					DBChangeMsg.CHANGE_DEVICETYPE_COMMAND_DB,
+					DBChangeMsg.CAT_DEVICETYPE_COMMAND,
+					DBChangeMsg.CAT_DEVICETYPE_COMMAND,
 					dbChangeType) );
 	 
-	DBChangeMessage[] dbChange = new DBChangeMessage[list.size()];
+	DBChangeMsg[] dbChange = new DBChangeMsg[list.size()];
 	return list.toArray( dbChange );
 }
 /**

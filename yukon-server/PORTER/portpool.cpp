@@ -15,7 +15,7 @@
 #include "precompiled.h"
 
 
-#include "connection_client.h"
+#include "connection.h"
 #include "cparms.h"
 #include "mgr_device.h"
 #include "mgr_port.h"
@@ -35,7 +35,7 @@ static INT sgPoolDebugLevel = 0;
 
 void PortPoolDialoutThread(void *pid)
 {
-    extern CtiClientConnection  VanGoghConnection;
+    extern CtiConnection  VanGoghConnection;
     extern CtiPortManager PortManager;
 
     INT            i, status = NORMAL;

@@ -2,7 +2,7 @@ package com.cannontech.database;
 
 import org.apache.commons.lang.Validate;
 
-import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 

@@ -3,7 +3,7 @@ package com.cannontech.loadcontrol;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.messaging.message.loadcontrol.CommandMessage;
+import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 
@@ -26,15 +26,14 @@ public class LoadControlClientConnectionFactory {
 			clientConnection.setPort(lcPort);
 		}
     		
+    	clientConnection.connectWithoutWait();
     	
     	// init
     	clientConnection.addMessageListener( clientConnection );
-        CommandMessage cmd = new CommandMessage();
-        cmd.setCommand( CommandMessage.RETRIEVE_ALL_CONTROL_AREAS );
+        LMCommand cmd = new LMCommand();
+        cmd.setCommand( LMCommand.RETRIEVE_ALL_CONTROL_AREAS );
         clientConnection.setRegistrationMsg(cmd);
 
-        clientConnection.connectWithoutWait();
-        
         return clientConnection;
     }
 }

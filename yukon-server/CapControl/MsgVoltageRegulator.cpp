@@ -3,7 +3,7 @@
 #include "MsgVoltageRegulator.h"
 #include "ccid.h"
 
-DEFINE_COLLECTABLE( VoltageRegulatorMessage, CTIVOLTAGEREGULATOR_MSG_ID )
+RWDEFINE_COLLECTABLE( VoltageRegulatorMessage, CTIVOLTAGEREGULATOR_MSG_ID )
 
 VoltageRegulatorMessage::VoltageRegulatorMessage()
     : Inherited()
@@ -43,23 +43,16 @@ CtiMessage * VoltageRegulatorMessage::replicateMessage() const
     return new VoltageRegulatorMessage(*this);
 }
 
+void VoltageRegulatorMessage::saveGuts(RWvostream & ostrm) const
+{
+    Inherited::saveGuts(ostrm);
+
+    ostrm << regulators;
+}
+
 void VoltageRegulatorMessage::insert(Cti::CapControl::VoltageRegulator * regulator)
 {
     regulators.push_back( regulator->replicate() );
-}
-
-const boost::ptr_vector<Cti::CapControl::VoltageRegulator> VoltageRegulatorMessage::getVoltageRegulators() const
-{
-    boost::ptr_vector<Cti::CapControl::VoltageRegulator> vec;
-
-    vec.reserve( regulators.size() );
-
-    for each( const Cti::CapControl::VoltageRegulator* regulator in regulators )
-    {
-        vec.push_back( regulator->replicate() );
-    }
-
-    return vec;
 }
 
 void VoltageRegulatorMessage::cleanup()

@@ -24,7 +24,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
@@ -57,7 +57,7 @@ public class CalculatedPointDataProducer {
      * The primary method used to pass each {@link CalculationData} on to it's corresponding
      * {@link PointCalculator}.  Any resulting {@link PointData} messages are to be added to {@code toArchive}
      */
-    public void calculate(Collection<? extends CalculationData> calculatorFrom, List<? super PointDataMessage> toArchive) {
+    public void calculate(Collection<? extends CalculationData> calculatorFrom, List<? super PointData> toArchive) {
         for (CalculationData data : calculatorFrom) {
             PaoTypePointIdentifier ptpi = data.getPaoPointValue().getPaoPointIdentifier().getPaoTypePointIdentifier();
             PointCalculator calculator = calculatorMappings.get(ptpi);

@@ -6,8 +6,8 @@ import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.messaging.message.capcontrol.streamable.CapBankDevice;
-import com.cannontech.messaging.message.capcontrol.streamable.SubStation;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.user.YukonUserContext;
 
 public class SubStationFormattingService extends AbstractAreaFormatingService<SubStation> {

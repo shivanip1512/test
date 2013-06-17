@@ -40,10 +40,10 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dispatch.DbChangeType;
 import com.cannontech.i18n.service.YukonUserContextService;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
-import com.cannontech.messaging.util.DbChangeManager;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.SiteInformationDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
@@ -181,9 +181,9 @@ public class AccountServiceImpl implements AccountService {
             }
 
             dbChangeManager.processDbChange(user.getLiteID(), 
-                                            DBChangeMessage.CHANGE_YUKON_USER_DB,
-                                            DBChangeMessage.CAT_YUKON_USER, 
-                                            DBChangeMessage.CAT_YUKON_USER, 
+                                            DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                            DBChangeMsg.CAT_YUKON_USER, 
+                                            DBChangeMsg.CAT_YUKON_USER, 
                                             DbChangeType.ADD);
         }
             
@@ -271,9 +271,9 @@ public class AccountServiceImpl implements AccountService {
         liteCustomer.setTemperatureUnit(tempUnit);
         customerDao.addCustomer(liteCustomer);
         dbChangeManager.processDbChange(liteCustomer.getLiteID(),
-                                        DBChangeMessage.CHANGE_CUSTOMER_DB,
-                                        DBChangeMessage.CAT_CUSTOMER,
-                                        DBChangeMessage.CAT_CUSTOMER,
+                                        DBChangeMsg.CHANGE_CUSTOMER_DB,
+                                        DBChangeMsg.CAT_CUSTOMER,
+                                        DBChangeMsg.CAT_CUSTOMER,
                                         DbChangeType.ADD);
             
         /*
@@ -302,9 +302,9 @@ public class AccountServiceImpl implements AccountService {
             liteCICustomer.setEnergyCompanyID(yukonEnergyCompany.getEnergyCompanyId());
             customerDao.addCICustomer(liteCICustomer);
             dbChangeManager.processDbChange(liteCustomer.getLiteID(),
-                                            DBChangeMessage.CHANGE_CUSTOMER_DB,
-                                            DBChangeMessage.CAT_CI_CUSTOMER,
-                                            DBChangeMessage.CAT_CI_CUSTOMER,
+                                            DBChangeMsg.CHANGE_CUSTOMER_DB,
+                                            DBChangeMsg.CAT_CI_CUSTOMER,
+                                            DBChangeMsg.CAT_CI_CUSTOMER,
                                             DbChangeType.ADD);
         }
             
@@ -361,9 +361,9 @@ public class AccountServiceImpl implements AccountService {
         }
         customerAccountDao.add(customerAccount);
         dbChangeManager.processDbChange(customerAccount.getAccountId(),
-                                        DBChangeMessage.CHANGE_CUSTOMER_ACCOUNT_DB,
-                                        DBChangeMessage.CAT_CUSTOMER_ACCOUNT,
-                                        DBChangeMessage.CAT_CUSTOMER_ACCOUNT,
+                                        DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
+                                        DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+                                        DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
                                         DbChangeType.ADD);
             
         /*
@@ -500,9 +500,9 @@ public class AccountServiceImpl implements AccountService {
          */
         customerDao.deleteCustomer(account.getCustomerId());
         dbChangeManager.processDbChange(liteCustomer.getLiteID(),
-                                        DBChangeMessage.CHANGE_CUSTOMER_DB,
-                                        DBChangeMessage.CAT_CUSTOMER,
-                                        DBChangeMessage.CAT_CUSTOMER,
+                                        DBChangeMsg.CHANGE_CUSTOMER_DB,
+                                        DBChangeMsg.CAT_CUSTOMER,
+                                        DBChangeMsg.CAT_CUSTOMER,
                                         DbChangeType.DELETE);
         
         /*
@@ -519,9 +519,9 @@ public class AccountServiceImpl implements AccountService {
          */
         starsEnergyCompany.deleteCustAccountInformation(customerInfo);
         dbChangeManager.processDbChange(customerInfo.getLiteID(),
-                                        DBChangeMessage.CHANGE_CUSTOMER_ACCOUNT_DB,
-                                        DBChangeMessage.CAT_CUSTOMER_ACCOUNT,
-                                        DBChangeMessage.CAT_CUSTOMER_ACCOUNT,
+                                        DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
+                                        DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+                                        DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
                                         DbChangeType.DELETE);
         
         log.info("Account: " +account.getAccountNumber()+ " deleted successfully.");
@@ -663,9 +663,9 @@ public class AccountServiceImpl implements AccountService {
 
                 newLoginId = newUser.getUserID();
                 dbChangeManager.processDbChange(newUser.getLiteID(),
-                                                DBChangeMessage.CHANGE_YUKON_USER_DB,
-                                                DBChangeMessage.CAT_YUKON_USER,
-                                                DBChangeMessage.CAT_YUKON_USER,
+                                                DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                                DBChangeMsg.CAT_YUKON_USER,
+                                                DBChangeMsg.CAT_YUKON_USER,
                                                 DbChangeType.ADD);
             }
         }
@@ -697,9 +697,9 @@ public class AccountServiceImpl implements AccountService {
         
         customerAccountDao.update(account);
         dbChangeManager.processDbChange(account.getAccountId(),
-                                        DBChangeMessage.CHANGE_CUSTOMER_ACCOUNT_DB,
-                                        DBChangeMessage.CAT_CUSTOMER_ACCOUNT,
-                                        DBChangeMessage.CAT_CUSTOMER_ACCOUNT,
+                                        DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
+                                        DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+                                        DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
                                         DbChangeType.UPDATE);
         
         /*
@@ -714,9 +714,9 @@ public class AccountServiceImpl implements AccountService {
         }
         contactDao.saveContact(primaryContact);
         dbChangeManager.processDbChange(primaryContact.getLiteID(),
-                                        DBChangeMessage.CHANGE_CONTACT_DB,
-                                        DBChangeMessage.CAT_CUSTOMERCONTACT,
-                                        DBChangeMessage.CAT_CUSTOMERCONTACT,
+                                        DBChangeMsg.CHANGE_CONTACT_DB,
+                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
                                         DbChangeType.UPDATE);
         
         /*
@@ -875,9 +875,9 @@ public class AccountServiceImpl implements AccountService {
         }
         
         dbChangeManager.processDbChange(liteCustomer.getLiteID(),
-                                        DBChangeMessage.CHANGE_CUSTOMER_DB,
-                                        DBChangeMessage.CAT_CUSTOMER,
-                                        DBChangeMessage.CAT_CUSTOMER,
+                                        DBChangeMsg.CHANGE_CUSTOMER_DB,
+                                        DBChangeMsg.CAT_CUSTOMER,
+                                        DBChangeMsg.CAT_CUSTOMER,
                                         DbChangeType.UPDATE);
         
         /*

@@ -54,7 +54,7 @@ Event.observe(window, "load", function() {
                         <tags:inputPhone nameKey=".fax" path="fax"/>
 
                         <tags:inputNameValue nameKey=".email" path="email" size="35" maxlength="130"/>
-                        <tags:selectNameValue items="${routes}" itemLabel="paoName" itemValue="yukonId" 
+                        <tags:selectNameValue items="${routes}" itemLabel="paoName" itemValue="yukonID" 
                             nameKey=".route" path="defaultRouteId" defaultItemLabel="${none}" defaultItemValue="-1"/>
                         <c:if test="${showParentLogin}">
                             <tags:selectNameValue items="${operatorLogins}" itemLabel="username" itemValue="userID" 

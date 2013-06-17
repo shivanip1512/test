@@ -10,7 +10,7 @@ import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.stategroup.PointState;
-import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.message.dispatch.message.PointData;
 
 public class SimplePointAccessDaoImpl implements SimplePointAccessDao {
     private DynamicDataSource dynamicDataSource;
@@ -69,7 +69,7 @@ public class SimplePointAccessDaoImpl implements SimplePointAccessDao {
     }
     
     private void setPointValue(int pointId, Instant time, double value, int pointType) {
-        PointDataMessage pointData = new PointDataMessage();
+        PointData pointData = new PointData();
         pointData.setId(pointId);
         pointData.setValue(value);
         pointData.setType(pointType);
@@ -80,7 +80,7 @@ public class SimplePointAccessDaoImpl implements SimplePointAccessDao {
     }
     
     @Override
-    public void writePointData(PointDataMessage pointData) {
+    public void writePointData(PointData pointData) {
     	dynamicDataSource.putValue(pointData);
     }
     

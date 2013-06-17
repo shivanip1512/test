@@ -68,7 +68,7 @@ public class TamperFlagPointCreate extends PointCreate
 		    PointBase pointBase = PointFactory.createNewPoint(pointID,
                     PointTypes.STATUS_POINT,
                     "Tamper Flag",
-                    litePaobject.getYukonId(),
+                    litePaobject.getYukonID(),
                     TAMPER_FLAG_POINT_OFFSET);
 
 		    pointBase.getPoint().setStateGroupID(new Integer(StateGroupUtils.STATEGROUP_TRUEFALSE));

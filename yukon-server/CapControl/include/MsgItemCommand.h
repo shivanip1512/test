@@ -4,8 +4,7 @@
 
 class ItemCommand : public CapControlCommand
 {
-    public:
-        DECLARE_COLLECTABLE( ItemCommand );
+    RWDECLARE_COLLECTABLE( ItemCommand )
 
     private:
         typedef CapControlCommand Inherited;
@@ -16,8 +15,11 @@ class ItemCommand : public CapControlCommand
         ItemCommand(const ItemCommand& commandMsg);
         virtual ~ItemCommand();
 
-        int getItemId() const;
+        int getItemId();
         void setItemId(int itemId);
+
+        void restoreGuts(RWvistream& iStream);
+        void saveGuts(RWvostream& oStream) const;
 
         ItemCommand& operator=(const ItemCommand& right);
 

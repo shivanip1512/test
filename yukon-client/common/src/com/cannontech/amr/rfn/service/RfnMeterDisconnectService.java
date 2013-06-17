@@ -25,7 +25,7 @@ import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.message.dispatch.message.PointData;
 
 public class RfnMeterDisconnectService {
 
@@ -143,7 +143,7 @@ public class RfnMeterDisconnectService {
     
     private void publishPointData(int rawState, RfnMeter meter) {
         LitePoint point = attributeService.getPointForAttribute(meter, BuiltInAttribute.DISCONNECT_STATUS);
-        PointDataMessage pointData = new PointDataMessage();
+        PointData pointData = new PointData();
         pointData.setId(point.getLiteID());
         pointData.setPointQuality(PointQuality.Normal);
         pointData.setValue(rawState);

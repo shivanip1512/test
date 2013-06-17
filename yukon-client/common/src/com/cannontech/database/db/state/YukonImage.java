@@ -5,8 +5,8 @@ import java.sql.SQLException;
 
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * @author rneuharth
@@ -287,14 +287,14 @@ public class YukonImage extends DBPersistent implements com.cannontech.database.
 	 * Creation date: (12/19/2001 1:45:25 PM)
 	 * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
 	 */
-	public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType)
+	public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
 	{
-		DBChangeMessage[] msgs = {
-		        new DBChangeMessage(
+		DBChangeMsg[] msgs = {
+		        new DBChangeMsg(
 		                        getImageID().intValue(),
-		                        DBChangeMessage.CHANGE_YUKON_IMAGE,
-		                        DBChangeMessage.CAT_STATEGROUP,
-		                        DBChangeMessage.CAT_STATEGROUP,
+		                        DBChangeMsg.CHANGE_YUKON_IMAGE,
+		                        DBChangeMsg.CAT_STATEGROUP,
+		                        DBChangeMsg.CAT_STATEGROUP,
 		                        dbChangeType)
 		};
 

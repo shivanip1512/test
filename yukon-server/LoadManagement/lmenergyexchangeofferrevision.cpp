@@ -31,7 +31,7 @@ using std::endl;
 
 extern ULONG _LM_DEBUG;
 
-DEFINE_COLLECTABLE( CtiLMEnergyExchangeOfferRevision, CTILMENERGYEXCHANGEOFFERREVISION_ID )
+RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeOfferRevision, CTILMENERGYEXCHANGEOFFERREVISION_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -140,12 +140,6 @@ const string& CtiLMEnergyExchangeOfferRevision::getAdditionalInfo() const
     Returns a list of the price offers for each hour in the revision.
 ---------------------------------------------------------------------------*/
 vector<CtiLMEnergyExchangeHourlyOffer*>& CtiLMEnergyExchangeOfferRevision::getLMEnergyExchangeHourlyOffers()
-{
-
-    return _lmenergyexchangehourlyoffers;
-}
-
-const vector<CtiLMEnergyExchangeHourlyOffer*>& CtiLMEnergyExchangeOfferRevision::getLMEnergyExchangeHourlyOffers() const
 {
 
     return _lmenergyexchangehourlyoffers;
@@ -280,6 +274,58 @@ LONG CtiLMEnergyExchangeOfferRevision::getLastCurtailHour() const
     }
 
     return returnLONG;
+}
+
+/*-------------------------------------------------------------------------
+    restoreGuts
+
+    Restore self's state from the given stream
+--------------------------------------------------------------------------*/
+void CtiLMEnergyExchangeOfferRevision::restoreGuts(RWvistream& istrm)
+{
+
+
+
+    RWCollectable::restoreGuts( istrm );
+
+    CtiTime tempTime1;
+    CtiTime tempTime2;
+    CtiTime tempTime3;
+
+    istrm >> _offerid
+    >> _revisionnumber
+    >> tempTime1
+    >> tempTime2
+    >> tempTime3
+    >> _additionalinfo
+    >> _lmenergyexchangehourlyoffers;
+
+    _actiondatetime = CtiTime(tempTime1);
+    _notificationdatetime = CtiTime(tempTime2);
+    _offerexpirationdatetime = CtiTime(tempTime3);
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+
+    Save self's state onto the given stream
+---------------------------------------------------------------------------*/
+void CtiLMEnergyExchangeOfferRevision::saveGuts(RWvostream& ostrm ) const
+{
+
+
+
+    RWCollectable::saveGuts( ostrm );
+
+    ostrm << _offerid
+    << _revisionnumber
+    << _actiondatetime
+    << _notificationdatetime
+    << _offerexpirationdatetime
+    << _additionalinfo
+    << _lmenergyexchangehourlyoffers;
+
+    return;
 }
 
 /*---------------------------------------------------------------------------

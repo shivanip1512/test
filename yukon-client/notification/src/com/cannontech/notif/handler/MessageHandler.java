@@ -1,9 +1,9 @@
 package com.cannontech.notif.handler;
 
-import com.cannontech.messaging.message.BaseMessage;
+import com.cannontech.message.util.Message;
 import com.cannontech.notif.server.NotifServerConnection;
 
-public interface MessageHandler<T extends BaseMessage> {
+public interface MessageHandler<T extends Message> {
 
     /**
      * Overriding functions should process the Message, produce a Notification
@@ -12,7 +12,7 @@ public interface MessageHandler<T extends BaseMessage> {
      * @param connection 
      * @param message
      */
-    public void handleMessage(NotifServerConnection connection, BaseMessage message);
+    public void handleMessage(NotifServerConnection connection, Message message);
 
     public Class<T> getSupportedMessageType();
 }

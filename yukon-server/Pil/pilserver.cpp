@@ -27,6 +27,7 @@
 #include "logger.h"
 #include "executor.h"
 #include "dlldefs.h"
+#include "connection.h"
 
 #include "ctibase.h"
 #include "dllbase.h"
@@ -41,8 +42,6 @@
 
 #include "ctistring.h"
 #include "debug_timer.h"
-
-#include "connection_client.h"
 
 #include <rw/toolpro/winsock.h>
 #include <rw/thr/thrfunc.h>
@@ -65,9 +64,8 @@ using namespace std;
 
 void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager );
 extern IM_EX_CTIBASE void DumpOutMessage(void *Mess);
-
-CtiClientConnection   VanGoghConnection( Cti::Messaging::ActiveMQ::Queue::dispatch );
-CtiPILExecutorFactory ExecFactory;
+CtiConnection           VanGoghConnection;
+CtiPILExecutorFactory   ExecFactory;
 
 /* Define the return nexus handle */
 DLLEXPORT CtiLocalConnect<OUTMESS, INMESS> PilToPorter; //Pil handles this one
@@ -137,8 +135,8 @@ void CtiPILServer::mainThread()
         dout << CtiTime() << " PILMainThread  : Started as TID " << rwThreadId() << endl;
     }
 
-    VanGoghConnection.setName("Pil to Dispatch");
-    VanGoghConnection.start();
+    VanGoghConnection.doConnect(VANGOGHNEXUS, VanGoghMachine);
+    VanGoghConnection.setName("Dispatch");
     VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(PIL_REGISTRATION_NAME, rwThreadId(), TRUE));
 
     /* Give us a tiny attitude */
@@ -200,7 +198,7 @@ void CtiPILServer::mainThread()
                                 new CtiReturnMsg(
                                         req->DeviceId(),
                                         req->CommandString(),
-                                        GetErrorString(ErrRequestExpired),
+                                        FormatError(ErrRequestExpired),
                                         ErrRequestExpired,
                                         req->RouteId(),
                                         req->MacroOffset(),
@@ -293,7 +291,7 @@ void CtiPILServer::mainThread()
                 try
                 {
                     // This forces the listener thread to exit on shutdown.
-                    _listenerConnection.close();
+                    _listenerSocket.close();
                 }
                 catch(...)
                 {
@@ -389,67 +387,127 @@ void CtiPILServer::mainThread()
     _broken = true;
 
     VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
-    VanGoghConnection.close();
+    VanGoghConnection.ShutdownConnection();
 }
 
 void CtiPILServer::connectionThread()
 {
+    int               i=0;
+    BOOL              bQuit = FALSE;
+
+    CtiCommandMsg     *CmdMsg = NULL;
+
+    CtiExchange       *XChg;
+
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " ConnThread     : Started as TID " << rwThreadId() << endl;
     }
 
-    // main loop
     try
     {
-        for(;!bServerClosing;)
-        {
-            if( _listenerConnection.verifyConnection() != NORMAL )
-            {
-                mConnectionTable.clear();
+        NetPort  = RWInetPort(PORTERINTERFACENEXUS);
+        NetAddr  = RWInetAddr(NetPort);           // This one for this server!
 
-                _listenerConnection.establishConnection();
+        _listenerSocket.listen(NetAddr);
+
+        if(!_listenerSocket.valid())
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Could not open socket " << NetAddr << " for listning" << endl;
             }
 
-            if( _listenerConnection.acceptClient() == NORMAL )
-            {
-                // Create new pil connection manager
-                CtiServer::ptr_type sptrConMan( CTIDBG_new CtiPILConnectionManager( _listenerConnection, &MainQueue_ ));
-
-                sptrConMan->setClientName("DEFAULT");
-
-                // the new client connection
-                clientConnect( sptrConMan );
-
-                // Need to inform MainThread of the "New Guy" so that he may control its destiny from now on.
-                auto_ptr<CtiCommandMsg >CmdMsg( CTIDBG_new CtiCommandMsg( CtiCommandMsg::NewClient, 15 ));
-
-                if( CmdMsg.get() != NULL )
-                {
-                    CmdMsg->setConnectionHandle( (void*) sptrConMan.get() );
-                    MainQueue_.putQueue( CmdMsg.release() );
-                    sptrConMan->start();
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " ERROR Starting CTIDBG_new connection! " << rwThreadId() << endl;
-                }
-            }
+            exit(-1);
         }
     }
-    catch( RWxmsg& msg )
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << endl <<  " ConnThread: Failed... " << msg.why() << endl;
-        }
-        throw;
-    }
-    catch(...)
+    catch(RWxmsg &msg)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "Exception " << __FILE__ << " (" << __LINE__ << ") " << msg.why() << endl;
+        throw;
+    }
+
+    for(;!bQuit && !bServerClosing;)
+    {
+        try
+        { // It seems necessary to make this copy. RW does this and now so do we.
+            RWSocket tempSocket = _listenerSocket;
+            RWSocket newSocket = tempSocket.accept();
+            RWSocketPortal sock;
+
+            // This is very important. We tell the socket portal that we own the socket!
+            sock = RWSocketPortal(newSocket, RWSocketPortalBase::Application);
+
+            if( sock.socket().valid() )
+            {
+                XChg = CTIDBG_new CtiExchange(sock);
+
+                if(XChg != NULL)
+                {
+                    CtiPILConnectionManager *ConMan = CTIDBG_new CtiPILConnectionManager(XChg, &MainQueue_);
+
+                    if(ConMan != NULL)
+                    {
+                        ConMan->setClientName("DEFAULT");
+
+                        /*
+                         *  Need to inform MainThread of the "New Guy" so that he may control its destiny from
+                         *  now on.
+                         */
+
+                        CtiServer::ptr_type sptrConMan(ConMan);
+                        clientConnect( sptrConMan );             // Put it in the list...
+
+                        CmdMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::NewClient, 15);
+
+
+                        if(CmdMsg != NULL)
+                        {
+                            CmdMsg->setConnectionHandle((void*) ConMan);
+                            MainQueue_.putQueue(CmdMsg);
+                            ConMan->ThreadInitiate();
+                        }
+                        else
+                        {
+                            delete ConMan;    // Also deletes the XChg...
+                            ConMan = NULL;
+
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " ERROR Starting CTIDBG_new connection! " << rwThreadId() << endl;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Sleep(1000);   // No runaways here please
+            }
+        }
+        catch(RWSockErr& msg )
+        {
+            if(msg.errorNumber() == RWNETENOTSOCK)
+            {
+                bQuit = TRUE;     // get out of the for loop
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Socket error RWNETENOTSOCK" << endl;
+            }
+            else
+            {
+                bQuit = TRUE;
+            }
+        }
+        catch(RWxmsg& msg )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << endl << CtiTime() << " ConnThread: Failed... " ;
+                dout << msg.why() << endl;
+
+                bQuit = TRUE;
+            }
+            throw;
+        }
     }
 
     {
@@ -458,6 +516,7 @@ void CtiPILServer::connectionThread()
     }
 
     _broken = true;
+    return;
 }
 
 
@@ -1109,7 +1168,7 @@ int CtiPILServer::executeRequest(const CtiRequestMsg *pReq)
                     dout << NowTime << " **** Execute Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << NowTime << "   Device:  " << Dev->getName() << endl;
                     dout << NowTime << "   Command: " << pExecReq->CommandString() << endl;
-                    dout << NowTime << "   Status = " << status << ": " << GetErrorString(status) << endl;
+                    dout << NowTime << "   Status = " << status << ": " << FormatError(status) << endl;
                 }
 
                 status = NORMAL;
@@ -1352,7 +1411,7 @@ void CtiPILServer::vgConnThread()
     } /* End of for */
 
     VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
-    VanGoghConnection.close();
+    VanGoghConnection.ShutdownConnection();
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2093,3 +2152,4 @@ void CtiPILServer::periodicActionThread()
         dout << CtiTime() << " PIL periodicActionThread : " << rwThreadId() << " terminating " << std::endl;
     }
 }
+

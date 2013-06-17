@@ -1,6 +1,6 @@
 #pragma once
 
-#include "connection_client.h"
+#include "connection.h"
 #include "cservice.h"
 
 #include "calcthread.h"
@@ -30,7 +30,7 @@ protected:
 
     bool readCalcPoints( CtiCalculateThread *calcThread );
     BOOL isANewCalcPointID(const long aPointID);
-    BOOL parseMessage( CtiMessage *message, CtiCalculateThread *calcThread );
+    BOOL parseMessage( RWCollectable *message, CtiCalculateThread *calcThread );
     void dropDispatchConnection( );
     void pauseInputThread();
     void resumeInputThread();
@@ -53,7 +53,7 @@ private:
     messageQueue _dbChangeMessages;
     CtiCalculateThread::CtiCalcThreadInterruptReason _interruptReason;
     CtiCalculateThread *calcThread;
-    CtiClientConnection *_conxion;
+    CtiConnection *_conxion;
     void _inputThread( void );
     void _outputThread( void );
 

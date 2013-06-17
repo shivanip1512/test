@@ -31,7 +31,7 @@ using std::vector;
 
 extern ULONG _LM_DEBUG;
 
-DEFINE_COLLECTABLE( CtiLMEnergyExchangeCustomerReply, CTILMENERGYEXCHANGECUSTOMERREPLY_ID )
+RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeCustomerReply, CTILMENERGYEXCHANGECUSTOMERREPLY_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -173,12 +173,6 @@ vector<CtiLMEnergyExchangeHourlyCustomer*>& CtiLMEnergyExchangeCustomerReply::ge
     return _lmenergyexchangehourlycustomers;
 }
 
-const vector<CtiLMEnergyExchangeHourlyCustomer*>& CtiLMEnergyExchangeCustomerReply::getLMEnergyExchangeHourlyCustomers() const
-{
-
-    return _lmenergyexchangehourlycustomers;
-}
-
 /*---------------------------------------------------------------------------
     setCustomerId
 
@@ -286,6 +280,60 @@ CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::setEnergyExc
 
     _energyexchangenotes = exchangenotes;
     return *this;
+}
+
+
+/*-------------------------------------------------------------------------
+    restoreGuts
+
+    Restore self's state from the given stream
+--------------------------------------------------------------------------*/
+void CtiLMEnergyExchangeCustomerReply::restoreGuts(RWvistream& istrm)
+{
+
+
+
+    RWCollectable::restoreGuts( istrm );
+
+    CtiTime tempTime;
+    istrm >> _customerid
+    >> _offerid
+    >> _acceptstatus
+    >> tempTime
+    >> _revisionnumber
+    >> _ipaddressofacceptuser
+    >> _useridname
+    >> _nameofacceptperson
+    >> _energyexchangenotes
+    >> _lmenergyexchangehourlycustomers;
+
+    _acceptdatetime = CtiTime(tempTime);
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+
+    Save self's state onto the given stream
+---------------------------------------------------------------------------*/
+void CtiLMEnergyExchangeCustomerReply::saveGuts(RWvostream& ostrm ) const
+{
+
+
+
+    RWCollectable::saveGuts( ostrm );
+
+    ostrm << _customerid
+    << _offerid
+    << _acceptstatus
+    << _acceptdatetime
+    << _revisionnumber
+    << _ipaddressofacceptuser
+    << _useridname
+    << _nameofacceptperson
+    << _energyexchangenotes
+    << _lmenergyexchangehourlycustomers;
+
+    return;
 }
 
 /*---------------------------------------------------------------------------

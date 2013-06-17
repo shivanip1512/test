@@ -7,7 +7,7 @@ extern unsigned long _CC_DEBUG;
 
 using std::endl;
 
-DEFINE_COLLECTABLE( CtiCCSpecialAreasMsg, CTICCSPECIALAREAS_MSG_ID )
+RWDEFINE_COLLECTABLE( CtiCCSpecialAreasMsg, CTICCSPECIALAREAS_MSG_ID )
 
 CtiCCSpecialAreasMsg::CtiCCSpecialAreasMsg(CtiCCSpArea_vec& ccSpecialAreas) : Inherited(), _ccSpecialAreas(NULL)
 {
@@ -93,4 +93,32 @@ CtiCCSpecialAreasMsg& CtiCCSpecialAreasMsg::operator=(const CtiCCSpecialAreasMsg
     }
 
     return *this;
+}
+
+void CtiCCSpecialAreasMsg::restoreGuts(RWvistream& strm)
+{
+    Inherited::restoreGuts(strm);
+    strm >> _ccSpecialAreas;
+}
+
+void CtiCCSpecialAreasMsg::saveGuts(RWvostream& strm) const
+{
+    Inherited::saveGuts(strm);
+    if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
+    {
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - CtiCCSpecialAreasMsg has "<< _ccSpecialAreas->size()<<" entries." << endl;
+        }
+        for (int h=0;h < _ccSpecialAreas->size(); h++)
+        {
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Area: "<<((CtiCCSpecial*)_ccSpecialAreas->at(h))->getPaoName()<<
+                    " : "<<((CtiCCSpecial*)_ccSpecialAreas->at(h))->getPaoId()<< endl;
+            }
+        }
+    }
+
+    strm << _ccSpecialAreas;
 }

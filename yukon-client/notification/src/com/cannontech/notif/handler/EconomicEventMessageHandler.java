@@ -7,11 +7,11 @@ import com.cannontech.cc.dao.EconomicEventDao;
 import com.cannontech.cc.model.EconomicEvent;
 import com.cannontech.cc.model.EconomicEventPricing;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.messaging.message.BaseMessage;
-import com.cannontech.messaging.message.notif.EconomicEventMessage;
+import com.cannontech.message.notif.EconomicEventMsg;
+import com.cannontech.message.util.Message;
 import com.cannontech.notif.server.NotifServerConnection;
 
-public class EconomicEventMessageHandler implements MessageHandler<EconomicEventMessage> {
+public class EconomicEventMessageHandler implements MessageHandler<EconomicEventMsg> {
     
     private static final Logger log = YukonLogManager.getLogger(CustomerEmailMessageHandler.class);
     
@@ -19,18 +19,18 @@ public class EconomicEventMessageHandler implements MessageHandler<EconomicEvent
     private @Autowired EconomicEventDao economicEventDao;
  
     @Override
-    public Class<EconomicEventMessage> getSupportedMessageType() {
-        return EconomicEventMessage.class;
+    public Class<EconomicEventMsg> getSupportedMessageType() {
+        return EconomicEventMsg.class;
     }
     
     @Override
-    public void handleMessage(NotifServerConnection connection, BaseMessage message) {
-        EconomicEventMessage msg = (EconomicEventMessage) message;
+    public void handleMessage(NotifServerConnection connection, Message message) {
+        EconomicEventMsg msg = (EconomicEventMsg) message;
 
-        final EconomicEvent economicEvent = economicEventDao.getForId(msg.getEconomicEventId());
-            final EconomicEventPricing economicEventPricing = economicEvent.getRevisions().get(msg.getRevisionNumber());
+        final EconomicEvent economicEvent = economicEventDao.getForId(msg.economicEventId);
+            final EconomicEventPricing economicEventPricing = economicEvent.getRevisions().get(msg.revisionNumber);
             
-            switch (msg.getAction()) {
+            switch (msg.action) {
                 case STARTING:
                     economicEventScheduler.eventCreationNotification(economicEvent);
                     break;
@@ -44,7 +44,7 @@ public class EconomicEventMessageHandler implements MessageHandler<EconomicEvent
                     economicEventScheduler.eventExtensionNotification(economicEvent);
                     break;
                 default:
-                    log.error("Unknown action: " + msg.getAction());
+                    log.error("Unknown action: " + msg.action);
             }
     }
 }

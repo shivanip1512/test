@@ -17,13 +17,11 @@
 #include "msg_trace.h"
 #include "StatisticsManager.h"
 
-#include "connection_client.h"
-
 using namespace std;
 
 using Cti::Timing::MillisecondTimer;
 
-extern CtiClientConnection VanGoghConnection;
+extern CtiConnection VanGoghConnection;
 
 extern INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage);
 extern bool processCommStatus(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, const CtiDeviceSPtr &Device);
@@ -641,7 +639,7 @@ void UnsolicitedHandler::startPendingRequest(device_record *dr)
             catch( MissingConfigException &e )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " DNP Device " << dnp_device->getName() << " is not assigned a DNP configuration. "
+                dout << CtiTime() << " DNP Device " << dnp_device->getName() << " is not assigned a DNP configuration. " 
                      << "Unable to process inbound message." << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
@@ -851,7 +849,7 @@ void UnsolicitedHandler::traceInbound( unsigned long ip, unsigned short port, in
     if( status && status != ErrPortSimulated )
     {
         mTrace.setBrightRed();
-        mTrace.setTrace( GetErrorString(status) );
+        mTrace.setTrace( FormatError(status) );
         mTrace.setEnd(true);
         _traceList.push_back(mTrace.replicateMessage());
         mTrace.setNormal();

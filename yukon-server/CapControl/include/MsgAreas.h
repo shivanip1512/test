@@ -5,8 +5,7 @@
 
 class CtiCCGeoAreasMsg : public CapControlMessage
 {
-    public:
-        DECLARE_COLLECTABLE( CtiCCGeoAreasMsg )
+    RWDECLARE_COLLECTABLE( CtiCCGeoAreasMsg )
 
     private:
         typedef CapControlMessage Inherited;
@@ -20,9 +19,11 @@ class CtiCCGeoAreasMsg : public CapControlMessage
         virtual ~CtiCCGeoAreasMsg();
 
         CtiCCArea_vec* getCCGeoAreas() const     { return _ccGeoAreas; }
-        unsigned long  getBitMask()    const     { return _msgInfoBitMask; }
 
         virtual CtiMessage* replicateMessage() const;
+
+        void restoreGuts( RWvistream& );
+        void saveGuts( RWvostream&) const;
 
         CtiCCGeoAreasMsg& operator=(const CtiCCGeoAreasMsg& right);
 

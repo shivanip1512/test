@@ -51,8 +51,8 @@ import com.cannontech.database.db.capcontrol.TargetSettingType;
 import com.cannontech.enums.Phase;
 import com.cannontech.enums.RegulatorPointMapping;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.messaging.message.capcontrol.streamable.CapBankDevice;
-import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.ZoneDtoHelper;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
@@ -534,7 +534,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 	                                        Integer pointId, Phase phase, String zoneName, 
 	                                        double graphStartPosition) {
 	    CapBankDevice bank = cache.getCapBankDevice(bankToZone.getDeviceId());
-	    int paoId = bank.getControlDeviceId();
+	    int paoId = bank.getControlDeviceID();
 	    double distance = bankToZone.getDistance();
         double xPosition = graphStartPosition + bankToZone.getGraphPositionOffset();
         VfPoint graphPoint = getVfPoint(settings, userContext, paoId, pointId, distance, phase, null,

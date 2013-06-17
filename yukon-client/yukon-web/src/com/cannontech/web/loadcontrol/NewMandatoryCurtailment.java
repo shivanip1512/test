@@ -8,7 +8,6 @@ package com.cannontech.web.loadcontrol;
 import java.util.Date;
 
 import com.cannontech.loadcontrol.LoadControlClientConnection;
-import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
 
 public class NewMandatoryCurtailment
 {
@@ -33,10 +32,10 @@ public void submitMandatoryCurtailment(LoadControlClientConnection conn, int pro
 	java.util.GregorianCalendar stopCal = new java.util.GregorianCalendar();
 	stopCal.setTime(stopDate);
 	
-	ManualControlRequestMessage msg = new ManualControlRequestMessage();
+	com.cannontech.loadcontrol.messages.LMManualControlRequest msg = new com.cannontech.loadcontrol.messages.LMManualControlRequest();
 	
-	msg.setCommand( ManualControlRequestMessage.SCHEDULED_START );
-	msg.setYukonId(programID);
+	msg.setCommand( com.cannontech.loadcontrol.messages.LMManualControlRequest.SCHEDULED_START );
+	msg.setYukonID(programID);
 	msg.setNotifyTime(notifyCal);
 	msg.setStartTime(startCal);
 	msg.setStopTime(stopCal);

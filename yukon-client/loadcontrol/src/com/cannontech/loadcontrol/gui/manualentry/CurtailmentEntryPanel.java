@@ -1,6 +1,6 @@
 package com.cannontech.loadcontrol.gui.manualentry;
 
-import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 
 /**
  * Insert the type's description here.
@@ -9,7 +9,7 @@ import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
  */
 public class CurtailmentEntryPanel extends javax.swing.JPanel implements java.awt.event.ActionListener 
 {
-	private com.cannontech.messaging.message.loadcontrol.data.ProgramCurtailment curtailProgram = null;
+	private com.cannontech.loadcontrol.data.LMProgramCurtailment curtailProgram = null;
 	private javax.swing.JLabel ivjJLabelKwhAvail = null;
 	private javax.swing.JLabel ivjJLabelKwhPrice = null;
 	private javax.swing.JLabel ivjJLabelOfferExpires = null;
@@ -72,7 +72,7 @@ public CurtailmentEntryPanel() {
 /**
  * VoluntaryCurtailmentEntryPanel constructor comment.
  */
-public CurtailmentEntryPanel( com.cannontech.messaging.message.loadcontrol.data.ProgramCurtailment curtProgram )
+public CurtailmentEntryPanel( com.cannontech.loadcontrol.data.LMProgramCurtailment curtProgram )
 {
 	super();
 
@@ -251,7 +251,7 @@ private static void getBuilderData() {
  * Creation date: (4/9/2001 6:48:08 PM)
  * @return com.cannontech.loadcontrol.data.LMProgramCurtailment
  */
-public com.cannontech.messaging.message.loadcontrol.data.ProgramCurtailment getCurtailProgram() {
+public com.cannontech.loadcontrol.data.LMProgramCurtailment getCurtailProgram() {
 	return curtailProgram;
 }
 
@@ -1822,7 +1822,7 @@ public void jButtonStart_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 
 		//get the total milliseconds for our Notif time
 		//check the validity of the two times
-		if( ((notifyCalendar.getTime().getTime()) + (getCurtailProgram().getMinNotifyTime() * 1000)) > startCalendar.getTime().getTime() )
+		if( ((notifyCalendar.getTime().getTime()) + (getCurtailProgram().getMinNotifyTime().intValue() * 1000)) > startCalendar.getTime().getTime() )
 		{
 			javax.swing.JOptionPane.showConfirmDialog( this, "The notify date/time plus the MinNotifyTime MUST \nbe less than the curtail date/time, try again.", "Incorrect Entry", javax.swing.JOptionPane.CLOSED_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE );
 			return;
@@ -1844,7 +1844,7 @@ public void jButtonStart_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 					stopCalendar.getTime(), 
 					0, 
 					notifyCalendar.getTime(), 
-					msg, ManualControlRequestMessage.CONSTRAINTS_FLAG_USE) );
+					msg, LMManualControlRequest.CONSTRAINTS_FLAG_USE) );
 
 		
 		//close the Dialog
@@ -1890,13 +1890,13 @@ public static void main(java.lang.String[] args) {
  * Creation date: (4/9/2001 6:48:08 PM)
  * @param newCurtailProgram com.cannontech.loadcontrol.data.LMProgramCurtailment
  */
-protected void setCurtailProgram(com.cannontech.messaging.message.loadcontrol.data.ProgramCurtailment newCurtailProgram) 
+protected void setCurtailProgram(com.cannontech.loadcontrol.data.LMProgramCurtailment newCurtailProgram) 
 {
 	curtailProgram = newCurtailProgram;
 
 	if( curtailProgram != null )
 	{
-		int notifMinutes = curtailProgram.getMinNotifyTime() / 60;
+		int notifMinutes = curtailProgram.getMinNotifyTime().intValue() / 60;
 		
 		java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 		cal.setTime( new java.util.Date() );

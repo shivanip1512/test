@@ -36,14 +36,14 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
+import com.cannontech.loadcontrol.data.LMGroupBase;
+import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
+import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.ConnectionException;
-import com.cannontech.messaging.message.dispatch.PointDataMessage;
-import com.cannontech.messaging.message.loadcontrol.data.GroupBase;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
-import com.cannontech.messaging.util.BadServerResponseException;
-import com.cannontech.messaging.util.TimeoutException;
+import com.cannontech.message.util.TimeoutException;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspLMGroupDao;
 import com.cannontech.multispeak.dao.MspLMInterfaceMappingDao;
@@ -250,8 +250,8 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 	}
 	
 	@Override
-	public PointDataMessage buildPointData(int pointId, ScadaAnalog scadaAnalog, String userName) {
-		PointDataMessage pointData = new PointDataMessage();
+	public PointData buildPointData(int pointId, ScadaAnalog scadaAnalog, String userName) {
+		PointData pointData = new PointData();
 		pointData.setId(pointId);
 		pointData.setValue(scadaAnalog.getValue());
 		pointData.setPointQuality(getPointQuality(scadaAnalog.getQuality()));
@@ -272,7 +272,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
     	if (!fdrTranslations.isEmpty()) {
 	    	for (FdrTranslation fdrTranslation : fdrTranslations) {
 				if( fdrTranslation.getDirection() == FdrDirection.RECEIVE) {
-					PointDataMessage pointData = buildPointData(fdrTranslation.getPointId(), scadaAnalog, liteYukonUser.getUsername());
+					PointData pointData = buildPointData(fdrTranslation.getPointId(), scadaAnalog, liteYukonUser.getUsername());
 					simplePointAccessDao.writePointData(pointData);
 					CTILogger.debug("PointData update sent to Dispatch (" + pointData.toString() + ")");
 				}
@@ -294,7 +294,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
         List<MspLMInterfaceMapping> mspLmInterfaceMappingList = mspLMInterfaceMappingDao.getAllMappings();
         Collections.sort(mspLmInterfaceMappingList, new MspLMInterfaceMappingStrategyNameComparator(MspLmInterfaceMappingColumnEnum.SUBSTATION, true) );
         
-        List<Program> lmProgramBases = new ArrayList<Program>();
+        List<LMProgramBase> lmProgramBases = new ArrayList<LMProgramBase>();
 		Set<MspLMGroupStatus> allStatus = new HashSet<MspLMGroupStatus>();
 		Set<MspLMProgramMode> allModes= new HashSet<MspLMProgramMode>();
 
@@ -328,11 +328,11 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 				}
 
 	        	//Build a list of all the programs for the controllable object's device type
-	        	lmProgramBases = new ArrayList<Program>();
+	        	lmProgramBases = new ArrayList<LMProgramBase>();
 	        	int paobjectId = mspLMInterfaceMapping.getPaobjectId();
 				LiteYukonPAObject liteYukonPAObject = paoDao.getLiteYukonPAO(paobjectId);
 				if (paoDefinitionDao.isTagSupported(liteYukonPAObject.getPaoType(), PaoTag.LM_PROGRAM)) {
-					Program program = loadControlClientConnection.getProgramSafe(paobjectId);
+					LMProgramBase program = loadControlClientConnection.getProgramSafe(paobjectId);
 					lmProgramBases.add(program);
 	        	} else if ( liteYukonPAObject.getPaoType() == PaoType.LM_SCENARIO) {
 	        		List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(paobjectId);
@@ -348,10 +348,10 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 				
 				
 				// Loop through all programs and load the status and mode values.
-				for (Program programBase : lmProgramBases) {
+				for (LMProgramBase programBase : lmProgramBases) {
 					// Loop through all groups within the program
-					List<GroupBase> loadGroups = programBase.getLoadControlGroupVector();
-					for (GroupBase groupBase : loadGroups) {
+					List<LMGroupBase> loadGroups = programBase.getLoadControlGroupVector();
+					for (LMGroupBase groupBase : loadGroups) {
 						List<MspLMGroupCommunications> mspLMGroupCommunications = mspLMGroupDao.getLMGroupCommunications(groupBase);
 						allStatus.add(mspLMGroupDao.getStatus(mspLMGroupCommunications));				
 					}
@@ -423,7 +423,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 	 * @return
 	 */
 	private SubstationLoadControlStatusControlledItemsControlItem buildSubstationLoadControlStatusControlledItemsControlItem( 
-			String strategyName, List<Program> lmProgramBases, Map<Integer, Integer> programCounts){
+			String strategyName, List<LMProgramBase> lmProgramBases, Map<Integer, Integer> programCounts){
 		
 		SubstationLoadControlStatusControlledItemsControlItem controlledItem = 
 			new SubstationLoadControlStatusControlledItemsControlItem();
@@ -467,12 +467,12 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 	 * @param programCounts
 	 * @return
 	 */
-	private Integer getActiveCount(List<Program> lmProgramBases, Map<Integer, Integer> programCounts) {
+	private Integer getActiveCount(List<LMProgramBase> lmProgramBases, Map<Integer, Integer> programCounts) {
 		Integer count = 0;
-		for (Program program: lmProgramBases) {
+		for (LMProgramBase program: lmProgramBases) {
 			if( program != null) {
 				//Combine counts for all programs in the scenario
-				Integer programCount = programCounts.get(program.getYukonId());
+				Integer programCount = programCounts.get(program.getYukonID());
 				count += (programCount != null ? programCount : 0);
 			}
 		}
@@ -488,12 +488,12 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 	 * @param programCounts
 	 * @return
 	 */
-	private Integer getActiveControlledCount(List<Program> lmProgramBases, Map<Integer, Integer> programCounts) {
+	private Integer getActiveControlledCount(List<LMProgramBase> lmProgramBases, Map<Integer, Integer> programCounts) {
 		Integer controlledCount = 0;
-		for (Program program: lmProgramBases) {
+		for (LMProgramBase program: lmProgramBases) {
 			if( program != null) {
 				//Combine counts for all programs in the scenario
-				Integer programCount = programCounts.get(program.getYukonId());
+				Integer programCount = programCounts.get(program.getYukonID());
 				controlledCount += (program.isActive() && programCount != null ? programCount : 0);	//controlled items is 0 if not active program
 			}
 		}

@@ -6,9 +6,9 @@ import javax.swing.JPanel;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.loadcontrol.LCUtils;
-import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
-import com.cannontech.messaging.message.loadcontrol.data.ProgramDirect;
-import com.cannontech.messaging.message.loadcontrol.data.ProgramDirectGear;
+import com.cannontech.loadcontrol.data.LMProgramDirect;
+import com.cannontech.loadcontrol.data.LMProgramDirectGear;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 
 /**
  * Insert the type's description here.
@@ -74,10 +74,10 @@ public class DirectChangeGearJPanel extends JPanel implements java.awt.event.Act
 		}
 	}
 
-	public synchronized ManualControlRequestMessage createMessage( ProgramDirect program, Integer gearNum ) 
+	public synchronized LMManualControlRequest createMessage( LMProgramDirect program, Integer gearNum ) 
 	{
         return LCUtils.createStartMessage( true, program.getStartTime().getTime(), program.getStopTime().getTime(),
-                                       program, gearNum, ManualControlRequestMessage.CONSTRAINTS_FLAG_CHECK, null );
+                                       program, gearNum, LMManualControlRequest.CONSTRAINTS_FLAG_CHECK, null );
     }
 
 	public void exit() {}
@@ -314,7 +314,7 @@ public class DirectChangeGearJPanel extends JPanel implements java.awt.event.Act
 		return;
 	}
 
-	public void setGearList(List<ProgramDirectGear> gears) {
+	public void setGearList(List<LMProgramDirectGear> gears) {
 		getJComboBoxGear().removeAllItems();
 		        
 		if( gears != null )
@@ -337,7 +337,7 @@ public class DirectChangeGearJPanel extends JPanel implements java.awt.event.Act
     }
     
     public Integer getSelectedGearNumber() {
-        return ((ProgramDirectGear)getSelectedGear()).getGearNumber();
+        return ((LMProgramDirectGear)getSelectedGear()).getGearNumber();
     }
     
 	public void setParentWidth( int x ) {}

@@ -3,14 +3,14 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <%@ include file="include/oper_header.jspf" %>
 <%@ include file="include/oper_trendingheader.jspf" %>
-<%@ page import="com.cannontech.messaging.message.loadcontrol.data.Program" %>
-<%@ page import="com.cannontech.messaging.message.loadcontrol.data.ProgramDirect" %>
+<%@ page import="com.cannontech.loadcontrol.data.LMProgramBase" %>
+<%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
 <%@ page import="java.util.Calendar" %>
 <%@ taglib uri="/WEB-INF/struts.tld" prefix="struts" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <jsp:useBean id="checker" scope="session" class="com.cannontech.web.validate.PageBean"/>
 <%
-    /* Parameters:
+/* Parameters:
    id - the id of the program to stop
    
    Attempts to get a reference to the program with programid == id
@@ -19,7 +19,7 @@
    java.text.SimpleDateFormat timeFormat = new java.text.SimpleDateFormat("HH:mm");
    timeFormat.setTimeZone(tz);
    
-   ProgramDirect program = null;
+   LMProgramDirect program = null;
    java.util.Date now = new java.util.Date();
       
     //What program are we dealing with?
@@ -87,49 +87,50 @@
 		}
 	   		    
 
-    com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage msg = new com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage();
-        	msg.setCommand(com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage.SCHEDULED_STOP);
-	        msg.setYukonId(programID);
+            com.cannontech.loadcontrol.messages.LMManualControlRequest msg = new com.cannontech.loadcontrol.messages.LMManualControlRequest();
+        	msg.setCommand(com.cannontech.loadcontrol.messages.LMManualControlRequest.SCHEDULED_STOP);
+	        msg.setYukonID(programID);
 	        msg.setStartGear(1);
-        
-    java.util.Date current = new java.util.Date();
-    java.util.GregorianCalendar currentCal = new java.util.GregorianCalendar();
-    currentCal.setTime(current);
+                        
+            java.util.Date current = new java.util.Date();
+            java.util.GregorianCalendar currentCal = new java.util.GregorianCalendar();
+            currentCal.setTime(current);
            
-    java.util.GregorianCalendar stopCal = new java.util.GregorianCalendar();		    
+            java.util.GregorianCalendar stopCal = new java.util.GregorianCalendar();		    
 
-    if( stopTime != null )
+            if( stopTime != null )
 		        stopCal.setTime(stopTime);
-    else
-        stopCal.setTime(current);
+            else
+                stopCal.setTime(current);
 
-    stopCal.set( Calendar.YEAR, currentCal.get( Calendar.YEAR ) );
-    stopCal.set( Calendar.DAY_OF_YEAR, currentCal.get( Calendar.DAY_OF_YEAR ) );
+            stopCal.set( Calendar.YEAR, currentCal.get( Calendar.YEAR ) );
+            stopCal.set( Calendar.DAY_OF_YEAR, currentCal.get( Calendar.DAY_OF_YEAR ) );
           
-    msg.setStopTime(stopCal);
+            msg.setStopTime(stopCal);
 	        
-    com.cannontech.loadcontrol.LoadControlClientConnection conn = cs.getConnection();
-    conn.write(msg);
-       
-    checker.clear();
-    
-    /* Log this activity */
-    com.cannontech.clientutils.ActivityLogger.logEvent(user.getUserID(), programID, com.cannontech.database.data.activity.ActivityLogActions.MANUAL_LMPROGRAM_STOP_ACTION, "Manual control of direct program requested, stop: " + stopCal.getTime());            
+            com.cannontech.loadcontrol.LoadControlClientConnection conn = cs.getConnection();
+            conn.write(msg);
+                       
+            checker.clear();
+            
+            /* Log this activity */
+            com.cannontech.clientutils.ActivityLogger.logEvent(user.getUserID(), programID, com.cannontech.database.data.activity.ActivityLogActions.MANUAL_LMPROGRAM_STOP_ACTION, "Manual control of direct program requested, stop: " + stopCal.getTime());            
 
-    response.sendRedirect( "oper_direct.jsp?pending=true");
+            response.sendRedirect( "oper_direct.jsp?pending=true");
 		}
 	}
 
-    Program[] allPrograms = cache.getDirectPrograms();
+    LMProgramBase[] allPrograms = cache.getDirectPrograms();
 
     for( int i = 0; i < allPrograms.length; i++ )
     {
-        if( allPrograms[i].getYukonId().intValue() == programID )
+        if( allPrograms[i].getYukonID().intValue() == programID )
         {
-    program = (ProgramDirect)allPrograms[i];
-    break;
+            program = (LMProgramDirect)allPrograms[i];
+            break;
         }
     }
+
 %>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">

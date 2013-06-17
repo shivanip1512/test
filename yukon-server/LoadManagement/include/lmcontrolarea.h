@@ -15,12 +15,13 @@
 #include "row_reader.h"
 #include "database_connection.h"
 
-class CtiLMControlArea : public CtiMemDBObject
+class CtiLMControlArea : public CtiMemDBObject, public RWCollectable
 {
-public:
-    DECLARE_COLLECTABLE( CtiLMControlArea );
 
 public:
+
+RWDECLARE_COLLECTABLE( CtiLMControlArea )
+
     static LONG numberOfReferences;
 
     CtiLMControlArea();
@@ -56,12 +57,9 @@ public:
     CtiTime getCurrentDailyStartTime(const CtiDate &defaultDate = CtiDate::now()) const;
     CtiTime getCurrentDailyStopTime(const CtiDate &defaultDate = CtiDate::now()) const;
     std::vector<CtiLMControlAreaTrigger*>& getLMControlAreaTriggers();
-    const std::vector<CtiLMControlAreaTrigger*>& getLMControlAreaTriggers() const;
     CtiLMControlAreaTrigger* getThresholdTrigger() const;
     CtiLMControlAreaTrigger* getThresholdPointTrigger() const;
     std::vector<CtiLMProgramBaseSPtr>& getLMPrograms();
-    const std::vector<CtiLMProgramBaseSPtr>& getLMPrograms() const;
-    LONG getCurrentPriority() const;
 
     CtiLMControlArea& setPAOId(LONG id);
     CtiLMControlArea& setPAOCategory(const std::string& category);
@@ -85,8 +83,6 @@ public:
     CtiLMControlArea& setCurrentDailyStopTime(LONG tempstop);
     CtiLMControlArea& resetCurrentDailyStartTime();
     CtiLMControlArea& resetCurrentDailyStopTime();
-
-    CtiLMControlArea& setPAOType( const LONG paoType );
 
     BOOL isTriggerCheckNeeded(CtiTime currentTime);
     BOOL isControlTime(LONG secondsFromBeginningOfDay);
@@ -120,6 +116,10 @@ public:
 
     void dumpDynamicData();
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
+
+    //Members inherited from RWCollectable
+    void restoreGuts(RWvistream& );
+    void saveGuts(RWvostream& ) const;
 
     CtiLMControlArea& operator=(const CtiLMControlArea& right);
 

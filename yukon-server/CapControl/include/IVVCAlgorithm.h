@@ -65,15 +65,16 @@ class IVVCAlgorithm
         void tapOpZoneNormalization(const long parentID, const Cti::CapControl::ZoneManager &zoneManager, IVVCState::TapOperationZoneMap &tapOp);
 
         virtual void operateBank(long bankId, CtiCCSubstationBusPtr subbus, DispatchConnectionPtr dispatchConnection, IVVCStrategy* strategy);
-        virtual void sendPointChangesAndEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges, const Cti::CapControl::EventLogEntries &ccEvents);
+        virtual void sendPointChangesAndEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges, CtiMultiMsg* ccEvents);
         virtual void sendPointChanges(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges);
+        virtual void sendEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg* ccEvents);
 
         virtual void sendKeepAlive(CtiCCSubstationBusPtr subbus);
 
         virtual bool busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, DispatchConnectionPtr dispatchConnection);
 
         bool busVerificationAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, DispatchConnectionPtr dispatchConnection);
-        void setupNextBankToVerify(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, Cti::CapControl::EventLogEntries &ccEvents);
+        void setupNextBankToVerify(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, CtiMultiMsg_vec& ccEvents);
         bool allRegulatorsInRemoteMode(const long subbusId) const;
 
         void sendDisableRemoteControl( CtiCCSubstationBusPtr subbus );
@@ -84,7 +85,7 @@ class IVVCAlgorithm
         void updateCommsState( const long busCommsPointId, const bool isCommsLost ) const;
 
         void calculateMultiTapOperation( PointValueMap & voltages,
-                                         CtiCCSubstationBusPtr subbus,
+                                         CtiCCSubstationBusPtr subbus,                                   
                                          IVVCStrategy * strategy,
                                          IVVCState::TapOperationZoneMap & solution );
 

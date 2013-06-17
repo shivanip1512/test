@@ -11,7 +11,7 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.enums.NotificationReason;
 import com.cannontech.enums.NotificationState;
-import com.cannontech.messaging.message.notif.CurtailmentEventMessage;
+import com.cannontech.message.notif.CurtailmentEventMsg;
 import com.cannontech.notif.outputs.*;
 
 public class CurtailmentEventScheduler extends EventScheduler {
@@ -66,13 +66,13 @@ public class CurtailmentEventScheduler extends EventScheduler {
        return !missedOne;
     }
 
-    public void handleCurtailmentMessage(CurtailmentEventMessage msg) {
+    public void handleCurtailmentMessage(CurtailmentEventMsg msg) {
         // should I be talking to the services layer instead???
-        final CurtailmentEvent event = curtailmentEventDao.getForId(msg.getCurtailmentEventId());
+        final CurtailmentEvent event = curtailmentEventDao.getForId(msg.curtailmentEventId);
         List<CurtailmentEventParticipant> participants = curtailmentEventParticipantDao.getForEvent(event);
         
         Date now = new Date();
-        switch(msg.getAction()) {
+        switch(msg.action) {
         case STARTING:
             createNotification(participants,
                                NotificationReason.STARTING,

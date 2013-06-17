@@ -23,7 +23,7 @@ class CtiSignalMsg;
 namespace Cti           {
 namespace CapControl    {
 
-class VoltageRegulator : public CapControlPao, public UpdatablePao
+class VoltageRegulator : public RWCollectable, public CapControlPao, public UpdatablePao
 {
 public:
 
@@ -62,6 +62,8 @@ public:
     VoltageRegulator(const VoltageRegulator & toCopy);
 
     VoltageRegulator &operator=(const VoltageRegulator & rhs);
+
+    virtual void saveGuts(RWvostream & ostrm) const;
 
     virtual void handlePointData(CtiPointDataMsg * message);
 
@@ -102,13 +104,6 @@ public:
     std::string getPhaseString() const;
 
     double getVoltageChangePerTap() const;
-
-    TapOperation getLastTapOperation() const     { return _lastTapOperation; }
-    CtiTime      getLastTapOperationTime() const { return _lastTapOperationTime; }
-
-    virtual bool            getRecentTapOperation() const = 0;
-    virtual OperatingMode   getLastOperatingMode() const = 0;
-    virtual OperatingMode   getLastCommandedOperatingMode() const = 0;
 
 protected:
 
@@ -151,12 +146,6 @@ protected:
 
     void notifyTapOperation(const TapOperation & operation, const CtiTime & timeStamp = CtiTime() );
 };
-
-// this is added to use voltageRegulator with boost::ptr_vector, since it is an abstract class
-inline VoltageRegulator* new_clone(VoltageRegulator const& other)
-{
-  return other.replicate();
-}
 
 }
 }

@@ -36,7 +36,7 @@ using std::endl;
 
 extern unsigned long _CC_DEBUG;
 
-DEFINE_COLLECTABLE( CtiCCSpecial, CTICCSPECIALAREA_ID )
+RWDEFINE_COLLECTABLE( CtiCCSpecial, CTICCSPECIALAREA_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -70,6 +70,37 @@ CtiCCSpecial::CtiCCSpecial(const CtiCCSpecial& special)
 ---------------------------------------------------------------------------*/
 CtiCCSpecial::~CtiCCSpecial()
 {
+
+}
+
+
+/*---------------------------------------------------------------------------
+    saveGuts
+
+    Save self's state onto the given stream
+---------------------------------------------------------------------------*/
+void CtiCCSpecial::saveGuts(RWvostream& ostrm ) const
+{
+    CtiCCAreaBase::saveGuts(ostrm);
+    ostrm << getSubstationIds();
+    
+    double pfDisplayValue = getPFactor();
+    double estPfDisplayValue = getEstPFactor();
+
+    // Modifying the display value of pFactor to represent +100% values as a negative value.
+    if (pfDisplayValue > 1)
+    {
+        pfDisplayValue -= 2;
+    }
+    if (estPfDisplayValue > 1)
+    {
+        estPfDisplayValue -= 2;
+    }
+
+    ostrm << getOvUvDisabledFlag()
+        << pfDisplayValue
+        << estPfDisplayValue
+        << getVoltReductionControlValue();
 
 }
 

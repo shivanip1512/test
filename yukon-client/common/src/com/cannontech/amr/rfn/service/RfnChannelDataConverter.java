@@ -31,7 +31,7 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
@@ -54,7 +54,7 @@ public class RfnChannelDataConverter {
     private ImmutableSet<PaoTypePointIdentifier> calculationContributors;
     private static final Logger log = YukonLogManager.getLogger(RfnChannelDataConverter.class);
     
-    public List<CalculationData> convert(RfnMeterPlusReadingData reading, List<? super PointDataMessage> toArchive) {
+    public List<CalculationData> convert(RfnMeterPlusReadingData reading, List<? super PointData> toArchive) {
         
         List<CalculationData> calculationData = Lists.newArrayList();
         
@@ -102,7 +102,7 @@ public class RfnChannelDataConverter {
                 continue;
             }
             
-            PointDataMessage pointData = new PointDataMessage();
+            PointData pointData = new PointData();
             pointData.setId(pointId);
             pointData.setPointQuality(PointQuality.Normal);
             double value = pointValueHandler.convert(channelData.getValue());

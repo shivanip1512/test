@@ -5,17 +5,17 @@
 #include <rw/thr/thread.h>
 #include <rw/thr/recursiv.h>
 
-#include "connection_server.h"
+#include "connection.h"
 #include "lmmessage.h"
 
-typedef boost::shared_ptr<CtiServerConnection> CtiLMConnectionPtr;
+typedef boost::shared_ptr<CtiConnection> CtiLMConnectionPtr;
 typedef std::vector<CtiLMConnectionPtr> CtiLMConnectionVec;
+typedef CtiLMConnectionVec::iterator CtiLMConnectionIter;
 
 class CtiLMClientListener
 {
 public:
-
-    CtiLMClientListener();
+    CtiLMClientListener(LONG port);
     virtual ~CtiLMClientListener();
 
     virtual void start();
@@ -24,14 +24,14 @@ public:
     void BroadcastMessage(CtiMessage* msg);
     void sendMessageToClient(std::auto_ptr<CtiMessage> msg);
 
-    static CtiLMClientListener& getInstance();
+    static CtiLMClientListener* getInstance();
 
     CtiMessage* getQueue(unsigned time);
 
+protected:
+
 private:
-
-    CtiListenerConnection _listenerConnection;
-
+    LONG _port;   
     RWThread _listenerthr;
     RWThread _checkthr;
     CtiConnection::Que_t _incomingQueue;
@@ -39,12 +39,10 @@ private:
     CtiLMConnectionVec _connections;
     RWRecursiveLock<RWMutexLock> _connmutex;
 
-    static CtiLMClientListener _instance;
+    static CtiLMClientListener* _instance;
 
     bool _doquit;
 
     void _listen( );
     void _check( );
-
-    void removeAllConnections();
 };

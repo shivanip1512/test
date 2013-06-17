@@ -90,11 +90,11 @@ INT CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
                 nRet = BADPARAM;
             }
 
-            resultString = "Did not transmit Expresscom commands. Error " + CtiNumStr(nRet) + " - " + GetErrorString(nRet);
+            resultString = "Did not transmit Expresscom commands. Error " + CtiNumStr(nRet) + " - " + FormatError(nRet);
             retList.push_back(CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, 0, 0, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
 
             string desc = "Route: RF Network";
-            string actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route. Error " + CtiNumStr(nRet) + " - " + GetErrorString(nRet);
+            string actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route. Error " + CtiNumStr(nRet) + " - " + FormatError(nRet);
             vgList.push_back(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
 
             return nRet;
@@ -128,9 +128,9 @@ void CtiDeviceGroupRfnExpresscom::sendDRMessage(int priority, int expirationDura
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::Rfn;
     std::auto_ptr<StreamableMessage> message(
-        RfnBroadcastMessage::createMessage(priority,
-                                           RfnBroadcastMessage::RfnMessageClass::DemandResponse,
-                                           expirationDuration,
+        RfnBroadcastMessage::createMessage(priority, 
+                                           RfnBroadcastMessage::RfnMessageClass::DemandResponse, 
+                                           expirationDuration, 
                                            payload));
 
     gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_RfnBroadcast, message);

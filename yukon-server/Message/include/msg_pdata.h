@@ -15,9 +15,6 @@
 
 class IM_EX_MSG CtiPointDataMsg : public CtiMessage
 {
-public:
-    DECLARE_COLLECTABLE( CtiPointDataMsg )
-
 protected:
 
    long           _id;
@@ -37,11 +34,11 @@ private:
 
     static unsigned int _instanceCount;
 
-
+    CtiPointType_t resolveType(int type);
 
 public:
 
-    CtiPointType_t resolveType(int type);
+   RWDECLARE_COLLECTABLE( CtiPointDataMsg );
 
    typedef CtiMessage Inherited;
 
@@ -61,7 +58,10 @@ public:
 
    CtiPointDataMsg& operator=(const CtiPointDataMsg& aRef);
 
+   virtual void saveGuts(RWvostream &aStream) const;
+   virtual void restoreGuts(RWvistream& aStream);
    virtual CtiMessage* replicateMessage() const;
+
 
    long  getId() const;
    CtiPointDataMsg& setId( const long a_id );

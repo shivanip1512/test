@@ -37,10 +37,10 @@ import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
-import com.cannontech.messaging.message.loadcontrol.data.GearProgram;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
-import com.cannontech.messaging.message.loadcontrol.data.ProgramDirectGear;
+import com.cannontech.loadcontrol.data.IGearProgram;
+import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.data.LMProgramDirectGear;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -107,9 +107,9 @@ public class StartProgramController extends ProgramControllerBase {
 
         model.addAttribute("program", program);
 
-        Program programBase = programService.getProgramForPao(program);
-        ProgramDirectGear gear =
-            ((GearProgram) programBase).getDirectGearVector().get(backingBean.getGearNumber() - 1);
+        LMProgramBase programBase = programService.getProgramForPao(program);
+        LMProgramDirectGear gear =
+            ((IGearProgram) programBase).getDirectGearVector().get(backingBean.getGearNumber() - 1);
 
         if (!gear.isTargetCycle()) {
             // they really can't adjust gears; got here via bug or hack
@@ -362,10 +362,10 @@ public class StartProgramController extends ProgramControllerBase {
                                                          Permission.LM_VISIBLE,
                                                          Permission.CONTROL_COMMAND);
 
-            Program programBase = programService.getProgramForPao(program);
+            LMProgramBase programBase = programService.getProgramForPao(program);
 
-            ProgramDirectGear gear =
-                ((GearProgram) programBase).getDirectGearVector().get(programStartInfo.getGearNumber() - 1);
+            LMProgramDirectGear gear =
+                ((IGearProgram) programBase).getDirectGearVector().get(programStartInfo.getGearNumber() - 1);
 
             if (gear.isTargetCycle()) {
                 programsWithTargetCycleGears.add(programStartInfo.getProgramId());
@@ -467,10 +467,10 @@ public class StartProgramController extends ProgramControllerBase {
             DisplayablePao program = programService.getProgram(programId);
             programsByProgramId.put(programId, program);
 
-            Program programBase = programService.getProgramForPaoSafe(program);
+            LMProgramBase programBase = programService.getProgramForPaoSafe(program);
 
-            ProgramDirectGear gear =
-                ((GearProgram) programBase).getDirectGearVector().get(programStartInfo.getGearNumber() - 1);
+            LMProgramDirectGear gear =
+                ((IGearProgram) programBase).getDirectGearVector().get(programStartInfo.getGearNumber() - 1);
 
             List<GearAdjustment> gearAdjustments = null;
             if (gear.isTargetCycle() &&
@@ -567,9 +567,9 @@ public class StartProgramController extends ProgramControllerBase {
             }
 
             DisplayablePao program = programService.getProgram(programStartInfo.getProgramId());
-            Program programBase = programService.getProgramForPao(program);
-            ProgramDirectGear gear =
-                ((GearProgram) programBase).getDirectGearVector().get(programStartInfo.getGearNumber() - 1);
+            LMProgramBase programBase = programService.getProgramForPao(program);
+            LMProgramDirectGear gear =
+                ((IGearProgram) programBase).getDirectGearVector().get(programStartInfo.getGearNumber() - 1);
 
             List<GearAdjustment> gearAdjustments = null;
             if (gear.isTargetCycle() &&
@@ -625,7 +625,7 @@ public class StartProgramController extends ProgramControllerBase {
             String defaultConstraint =
                 rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DEFAULT_CONSTRAINT_SELECTION, user);
             if (fromBack == null || !fromBack) {
-                backingBean.setAutoObserveConstraints(defaultConstraint.equalsIgnoreCase(ManualControlRequestMessage.CONSTRAINT_FLAG_STRS[ManualControlRequestMessage.CONSTRAINTS_FLAG_USE]));
+                backingBean.setAutoObserveConstraints(defaultConstraint.equalsIgnoreCase(LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_USE]));
             }
         }
     }

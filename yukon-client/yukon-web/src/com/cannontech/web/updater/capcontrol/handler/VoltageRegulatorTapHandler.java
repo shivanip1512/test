@@ -8,7 +8,7 @@ import com.cannontech.capcontrol.TapOperation;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.messaging.message.capcontrol.streamable.VoltageRegulatorFlags;
+import com.cannontech.message.capcontrol.streamable.VoltageRegulatorFlags;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.capcontrol.VoltageRegulatorUpdaterTypeEnum;
 

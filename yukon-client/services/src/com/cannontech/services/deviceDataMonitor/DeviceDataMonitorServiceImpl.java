@@ -48,11 +48,10 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.dispatch.DatabaseChangeEvent;
-import com.cannontech.dispatch.DbChangeCategory;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.dispatch.DispatchClientConnection;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.conns.ConnPool;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -74,7 +73,7 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
     @Autowired private DynamicDataSource dynamicDataSource;
     @Autowired private PointDao pointDao;
 
-    private DispatchClientConnection dispatchConnection;
+    private com.cannontech.message.dispatch.ClientConnection dispatchConnection;
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorServiceImpl.class);
     
     private static final String WORKER_COUNT_CONFIG = "DEVICE_DATA_MONITOR_WORKER_COUNT";
@@ -159,8 +158,8 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
         // if they were in there
         asyncDynamicDataSource.addDBChangeListener(new DBChangeListener() {
             @Override
-            public void dbChangeReceived(DBChangeMessage dbChange) {
-                if (dbChange.getDatabase() == DBChangeMessage.CHANGE_PAO_DB && dbChange.getDbChangeType() != DbChangeType.DELETE) {
+            public void dbChangeReceived(DBChangeMsg dbChange) {
+                if (dbChange.getDatabase() == DBChangeMsg.CHANGE_PAO_DB && dbChange.getDbChangeType() != DbChangeType.DELETE) {
                     int paoId = dbChange.getId();
                     SimpleDevice yukonDevice = deviceDao.getYukonDevice(paoId);
 
@@ -495,7 +494,7 @@ public class DeviceDataMonitorServiceImpl extends ServiceWorker<DeviceDataMonito
     
     private void waitForDispatch() throws InterruptedException {
         if (dispatchConnection == null) {
-            dispatchConnection = (DispatchClientConnection)connPool.getDefDispatchConn();
+            dispatchConnection = (com.cannontech.message.dispatch.ClientConnection)connPool.getDefDispatchConn();
         }
         dispatchConnection.waitForValidConnection();
     }

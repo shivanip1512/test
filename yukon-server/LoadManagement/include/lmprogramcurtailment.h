@@ -15,7 +15,7 @@ class CtiLMProgramCurtailment : public CtiLMProgramBase
 
 public:
 
-DECLARE_COLLECTABLE( CtiLMProgramCurtailment );
+RWDECLARE_COLLECTABLE( CtiLMProgramCurtailment )
 
     CtiLMProgramCurtailment();
     CtiLMProgramCurtailment(Cti::RowReader &rdr);
@@ -38,7 +38,6 @@ DECLARE_COLLECTABLE( CtiLMProgramCurtailment );
     const std::string& getRunStatus() const;
     const std::string& getAdditionalInfo() const;
     std::vector<CtiLMCurtailCustomer*>& getLMProgramCurtailmentCustomers();
-    const std::vector<CtiLMCurtailCustomer*>& getLMProgramCurtailmentCustomers() const;
 
     CtiLMProgramCurtailment& setMinNotifyTime(LONG notifytime);
     CtiLMProgramCurtailment& setHeading(const std::string& head);
@@ -71,6 +70,10 @@ DECLARE_COLLECTABLE( CtiLMProgramCurtailment );
     virtual BOOL hasControlHoursAvailable();
     virtual BOOL stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, CtiTime currentTime);
     virtual BOOL handleManualControl(CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg);
+
+    //Members inherited from RWCollectable
+    void restoreGuts(RWvistream& );
+    void saveGuts(RWvostream& ) const;
 
     CtiLMProgramCurtailment& operator=(const CtiLMProgramCurtailment& right);
 

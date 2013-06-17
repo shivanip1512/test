@@ -3,7 +3,6 @@ package com.cannontech.message.notif;
 import java.io.IOException;
 
 import com.cannontech.message.util.DefineCollectableMessage;
-import com.cannontech.messaging.message.notif.VoiceDataRequestMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
@@ -16,7 +15,7 @@ public class DefColl_VoiceDataRequestMsg extends DefineCollectableMessage {
     public static final int MSG_ID = 708;
 
     public Object create(VirtualInputStream vstr) throws java.io.IOException {
-        return new VoiceDataRequestMessage();
+        return new VoiceDataRequestMsg();
     }
 
     public Comparator getComparator() {
@@ -40,21 +39,21 @@ public class DefColl_VoiceDataRequestMsg extends DefineCollectableMessage {
     }
 
     public Class getJavaClass() {
-        return VoiceDataRequestMessage.class;
+        return VoiceDataRequestMsg.class;
     }
 
     public void restoreGuts(Object obj, VirtualInputStream vstr,
             CollectableStreamer polystr) throws IOException {
-        VoiceDataRequestMessage msg = (VoiceDataRequestMessage) obj;
+        VoiceDataRequestMsg msg = (VoiceDataRequestMsg) obj;
 
-        msg.setCallToken ((String) vstr.restoreObject(SimpleMappings.CString));
+        msg.callToken = (String) vstr.restoreObject(SimpleMappings.CString);
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr,
             CollectableStreamer polystr) throws IOException {
-        VoiceDataRequestMessage msg = (VoiceDataRequestMessage) obj;
+        VoiceDataRequestMsg msg = (VoiceDataRequestMsg) obj;
 
-        vstr.saveObject(msg.getCallToken(), SimpleMappings.CString);
+        vstr.saveObject(msg.callToken, SimpleMappings.CString);
 
     }
 

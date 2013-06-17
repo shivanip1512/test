@@ -6,8 +6,7 @@
 #include "msg_cmd.h"
 #include "msg_pdata.h"
 #include "msg_reg.h"
-#include "connection_client.h"
-#include "amq_constants.h"
+#include "connection.h"
 
 #include <time.h>
 #include <algorithm>
@@ -23,7 +22,7 @@ unsigned gMacsDebugLevel = 0x00000000;
 
 
 CtiMCServer::CtiMCServer()
-: _client_listener(),
+: _client_listener(MC_PORT),
   _db_update_thread(_schedule_manager),
   _scheduler(_schedule_manager),
   _file_interface(_schedule_manager),
@@ -56,14 +55,17 @@ void CtiMCServer::run()
 
     try
     {
-        CtiClientConnection VanGoghConnection( Cti::Messaging::ActiveMQ::Queue::dispatch );
+        CtiConnection VanGoghConnection;
+        string dispatch_host = gConfigParms.getValueAsString("DISPATCH_MACHINE", "127.0.0.1");
+        int    dispatch_port = gConfigParms.getValueAsInt("DISPATCH_PORT", VANGOGHNEXUS);
+
         {
             CtiLockGuard< CtiLogger > guard(dout);
-            dout << " Connecting to dispatch" << endl;
+            dout << " Connecting to dispatch, host: " << dispatch_host << ", port: " << dispatch_port << endl;
         }
 
+        VanGoghConnection.doConnect(dispatch_port, dispatch_host);
         VanGoghConnection.setName("MACServer to Dispatch");
-        VanGoghConnection.start();
 
         //Send a registration message
         CtiRegistrationMsg* regMsg = new CtiRegistrationMsg("MACServer", 0, false );
@@ -196,7 +198,7 @@ void CtiMCServer::run()
             dout << CtiTime() << " - " << "Shutting down MACServer connection to VanGogh" << endl;
         }
 
-        VanGoghConnection.close();
+        VanGoghConnection.ShutdownConnection();
     }
     catch(...)
     {

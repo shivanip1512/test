@@ -30,7 +30,7 @@ using std::endl;
 
 extern ULONG _LM_DEBUG;
 
-DEFINE_COLLECTABLE( CtiLMControlAreaTrigger, CTILMCONTROLAREATRIGGER_ID )
+RWDEFINE_COLLECTABLE( CtiLMControlAreaTrigger, CTILMCONTROLAREATRIGGER_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -654,6 +654,70 @@ void CtiLMControlAreaTrigger::calculateProjectedValue()
 bool CtiLMControlAreaTrigger::hasReceivedPointData() const
 {
     return _lastpointvaluetimestamp > gInvalidCtiTime;
+}
+
+/*-------------------------------------------------------------------------
+    restoreGuts
+
+    Restore self's state from the given stream
+--------------------------------------------------------------------------*/
+void CtiLMControlAreaTrigger::restoreGuts(RWvistream& istrm)
+{
+    RWCollectable::restoreGuts( istrm );
+
+    CtiTime tempTime1;
+    CtiTime tempTime2;
+
+    istrm >> _paoid
+    >> _triggernumber
+    >> _triggertype
+    >> _pointid
+    >> _pointvalue
+    >> tempTime1
+    >> _normalstate
+    >> _threshold
+    >> _projectiontype
+    >> _projectionpoints
+    >> _projectaheadduration
+    >> _thresholdkickpercent
+    >> _minrestoreoffset
+    >> _peakpointid
+    >> _peakpointvalue
+    >> tempTime2
+    >> _projectedpointvalue;
+
+    _lastpointvaluetimestamp = CtiTime(tempTime1);
+    _lastpeakpointvaluetimestamp = CtiTime(tempTime2);
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+
+    Save self's state onto the given stream
+---------------------------------------------------------------------------*/
+void CtiLMControlAreaTrigger::saveGuts(RWvostream& ostrm ) const
+{
+    RWCollectable::saveGuts( ostrm );
+
+    ostrm << _paoid
+    << _triggernumber
+    << _triggertype
+    << _pointid
+    << _pointvalue
+    << _lastpointvaluetimestamp
+    << _normalstate
+    << _threshold
+    << _projectiontype
+    << _projectionpoints
+    << _projectaheadduration
+    << _thresholdkickpercent
+    << _minrestoreoffset
+    << _peakpointid
+    << _peakpointvalue
+    << _lastpeakpointvaluetimestamp
+    << _projectedpointvalue;
+
+    return;
 }
 
 /*---------------------------------------------------------------------------

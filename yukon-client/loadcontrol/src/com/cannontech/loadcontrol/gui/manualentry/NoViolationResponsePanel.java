@@ -11,7 +11,7 @@ import javax.swing.JCheckBox;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 
 public class NoViolationResponsePanel extends DataInputPanel implements ActionListener {
 	private javax.swing.JScrollPane ivjJScrollPaneTable = null;
@@ -110,7 +110,7 @@ public Object getValue(Object obj) {
 		ResponseProg prg = getTableModelCons().getRowAt( i );
 		
         /*None violated so just send them like an Observe was set*/
-		prg.getLmRequest().setConstraintFlag(ManualControlRequestMessage.CONSTRAINTS_FLAG_USE );
+		prg.getLmRequest().setConstraintFlag(LMManualControlRequest.CONSTRAINTS_FLAG_USE );
 
 		progList.add( prg );
 	}

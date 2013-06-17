@@ -15,12 +15,8 @@
 class CtiMCSchedule : public CtiMemDBObject, public CtiMessage
 {
 public:
-    DECLARE_COLLECTABLE( CtiMCSchedule );
 
-private:
-    typedef CtiMessage Inherited;
-
-public:
+    RWDECLARE_COLLECTABLE( CtiMCSchedule )
 
     // Schedule Types
     static const char* Simple;
@@ -138,6 +134,11 @@ public:
 
     // CGP 022802 DBMEMOBJ lost his monitor.
     CtiMutex& getMux()  { return _classMutex;}
+
+    // For RW Streaming
+    virtual void saveGuts(RWvostream &aStream) const;
+    virtual void restoreGuts(RWvistream& aStream);
+
 
 //debug
     bool checkSchedule() const;

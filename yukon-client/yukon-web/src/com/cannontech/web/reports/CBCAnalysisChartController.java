@@ -28,8 +28,8 @@ import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.messaging.message.capcontrol.streamable.Feeder;
-import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.web.capcontrol.CBCWebUtils;
 import com.cannontech.web.security.annotation.CheckFalseRoleProperty;
 
@@ -115,21 +115,21 @@ public class CBCAnalysisChartController extends MultiActionController  {
         	    		phaseIds.add(subBus_dao.getPhasec());
     	    			labledPointIds.put("phaseIds", phaseIds);
     	    			
-    	    			labledPointIds.put("estimatedVarLoadPointId", Collections.singletonList(subBus_cache.getEstimatedVarLoadPointId()));
-        	    		labledPointIds.put("currentWattLoadPointId", Collections.singletonList(subBus_cache.getCurrentWattLoadPointId()));
+    	    			labledPointIds.put("estimatedVarLoadPointId", Collections.singletonList(subBus_cache.getEstimatedVarLoadPointID()));
+        	    		labledPointIds.put("currentWattLoadPointId", Collections.singletonList(subBus_cache.getCurrentWattLoadPointID()));
     	    		}
     	    		else {
     	    			
     	    			definitionName = "kVarWattRPHDefinition";
     	    			
-    	    			labledPointIds.put("currentVarLoadPointId", Collections.singletonList(subBus_cache.getCurrentVarLoadPointId()));      
-        	    		labledPointIds.put("estimatedVarLoadPointId", Collections.singletonList(subBus_cache.getEstimatedVarLoadPointId()));
-        	    		labledPointIds.put("currentWattLoadPointId", Collections.singletonList(subBus_cache.getCurrentWattLoadPointId()));
+    	    			labledPointIds.put("currentVarLoadPointId", Collections.singletonList(subBus_cache.getCurrentVarLoadPointID()));      
+        	    		labledPointIds.put("estimatedVarLoadPointId", Collections.singletonList(subBus_cache.getEstimatedVarLoadPointID()));
+        	    		labledPointIds.put("currentWattLoadPointId", Collections.singletonList(subBus_cache.getCurrentWattLoadPointID()));
     	    		}
     	    		
     	    	}
     	    	else if(capControlCache.isFeeder(targetId)) {
-    	    		com.cannontech.messaging.message.capcontrol.streamable.Feeder feeder_cache = capControlCache.getFeeder(targetId);
+    	    		com.cannontech.message.capcontrol.streamable.Feeder feeder_cache = capControlCache.getFeeder(targetId);
     	    		FeederPhaseData phaseData = feederDao.getFeederPhaseData(targetId);
     	    		
     	    		if (phaseData.getUsePhaseData() == true) {
@@ -142,16 +142,16 @@ public class CBCAnalysisChartController extends MultiActionController  {
         	    		phaseIds.add(phaseData.getPhaseC());
     	    			labledPointIds.put("phaseIds", phaseIds);
     	    			
-    	    			labledPointIds.put("estimatedVarLoadPointId", Collections.singletonList(feeder_cache.getEstimatedVarLoadPointId()));
-        	    		labledPointIds.put("currentWattLoadPointId", Collections.singletonList(feeder_cache.getCurrentWattLoadPointId()));
+    	    			labledPointIds.put("estimatedVarLoadPointId", Collections.singletonList(feeder_cache.getEstimatedVarLoadPointID()));
+        	    		labledPointIds.put("currentWattLoadPointId", Collections.singletonList(feeder_cache.getCurrentWattLoadPointID()));
     	    		}
     	    		else {
     	    			
     	    			definitionName = "kVarWattRPHDefinition";
     	    			
-    	    			labledPointIds.put("currentVarLoadPointId", Collections.singletonList(feeder_cache.getCurrentVarLoadPointId()));      
-        	    		labledPointIds.put("estimatedVarLoadPointId", Collections.singletonList(feeder_cache.getEstimatedVarLoadPointId()));
-        	    		labledPointIds.put("currentWattLoadPointId", Collections.singletonList(feeder_cache.getCurrentWattLoadPointId()));
+    	    			labledPointIds.put("currentVarLoadPointId", Collections.singletonList(feeder_cache.getCurrentVarLoadPointID()));      
+        	    		labledPointIds.put("estimatedVarLoadPointId", Collections.singletonList(feeder_cache.getEstimatedVarLoadPointID()));
+        	    		labledPointIds.put("currentWattLoadPointId", Collections.singletonList(feeder_cache.getCurrentWattLoadPointID()));
     	    		}
     	    	}
     		}
@@ -168,8 +168,8 @@ public class CBCAnalysisChartController extends MultiActionController  {
     	    	}
     	    	else if(capControlCache.isFeeder(targetId)) {
     	    		Feeder feeder = capControlCache.getFeeder(targetId);
-    	    		labledPointIds.put("powerFactorPointId", Collections.singletonList(feeder.getPowerFactorPointId()));		
-    	    		labledPointIds.put("estimatedPowerFactorPointId", Collections.singletonList(feeder.getEstimatedPowerFactorPointId()));
+    	    		labledPointIds.put("powerFactorPointId", Collections.singletonList(feeder.getPowerFactorPointID()));		
+    	    		labledPointIds.put("estimatedPowerFactorPointId", Collections.singletonList(feeder.getEstimatedPowerFactorPointID()));
     	    	}
     		}
     		

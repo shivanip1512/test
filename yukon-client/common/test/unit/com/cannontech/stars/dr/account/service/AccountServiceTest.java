@@ -31,9 +31,9 @@ import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
-import com.cannontech.messaging.util.DbChangeManager;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.SiteInformationDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
@@ -281,9 +281,9 @@ public class AccountServiceTest extends EasyMockSupport {
         authenticationServiceMock.setPassword(newuser, updatableAccount.getAccountDto().getPassword());
         
         dbChangeManager.processDbChange(user.getLiteID(),
-                                        DBChangeMessage.CHANGE_YUKON_USER_DB,
-                                        DBChangeMessage.CAT_YUKON_USER,
-                                        DBChangeMessage.CAT_YUKON_USER,
+                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                        DBChangeMsg.CAT_YUKON_USER,
+                                        DBChangeMsg.CAT_YUKON_USER,
                                         DbChangeType.ADD);
         expect(addressDaoMock.add(new LiteAddress())).andReturn(true);
         expect(addressDaoMock.add(new LiteAddress())).andReturn(true);
@@ -291,9 +291,9 @@ public class AccountServiceTest extends EasyMockSupport {
                                                 updatableAccount.getAccountDto().getLastName(), user));
         expect(authenticationServiceMock.getDefaultAuthType()).andReturn(AuthType.NONE);
         dbChangeManager.processDbChange(1,
-                                        DBChangeMessage.CHANGE_CONTACT_DB,
-                                        DBChangeMessage.CAT_CUSTOMERCONTACT,
-                                        DBChangeMessage.CAT_CUSTOMERCONTACT,
+                                        DBChangeMsg.CHANGE_CONTACT_DB,
+                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
                                         DbChangeType.ADD);
         expect(contactNotificationServiceMock.createNotification(new LiteContact(1), ContactNotificationType.HOME_PHONE, 
                                                                  updatableAccount.getAccountDto().getHomePhone())).andReturn(null);
@@ -307,9 +307,9 @@ public class AccountServiceTest extends EasyMockSupport {
         expect(energyCompanySettingDaoMock.getEnum(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT, TemperatureUnit.class, YukonEnergyCompanyMockFactory.getYukonEC1().getEnergyCompanyId())).andReturn(TemperatureUnit.FAHRENHEIT);
         customerDaoMock.addCustomer(liteCustomer);
         dbChangeManager.processDbChange(1,
-                                        DBChangeMessage.CHANGE_CUSTOMER_DB,
-                                        DBChangeMessage.CAT_CUSTOMER,
-                                        DBChangeMessage.CAT_CUSTOMER,
+                                        DBChangeMsg.CHANGE_CUSTOMER_DB,
+                                        DBChangeMsg.CAT_CUSTOMER,
+                                        DBChangeMsg.CAT_CUSTOMER,
                                         DbChangeType.ADD);
         expect(siteInformationDaoMock.getSubstationIdByName("SuperStation")).andReturn(-1);
         siteInformationDaoMock.add(new LiteSiteInformation());
@@ -320,9 +320,9 @@ public class AccountServiceTest extends EasyMockSupport {
         customerAccount.setCustomerId(liteCustomer.getCustomerID());
         customerAccountDaoMock.add(customerAccount);
         dbChangeManager.processDbChange(1,
-                                        DBChangeMessage.CHANGE_CUSTOMER_ACCOUNT_DB,
-                                        DBChangeMessage.CAT_CUSTOMER_ACCOUNT,
-                                        DBChangeMessage.CAT_CUSTOMER_ACCOUNT,
+                                        DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
+                                        DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+                                        DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
                                         DbChangeType.ADD);
 
         ECToAccountMapping ecToAccountMapping = new ECToAccountMapping();

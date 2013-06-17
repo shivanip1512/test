@@ -249,7 +249,7 @@ public class DeviceCheckBoxTreeModel extends AbstractDeviceTreeModel implements 
 
         if( node.willHaveChildren() && node.getUserObject() instanceof LiteYukonPAObject )
         {
-            int deviceDevID = ((LiteYukonPAObject)node.getUserObject()).getYukonId();
+            int deviceDevID = ((LiteYukonPAObject)node.getUserObject()).getYukonID();
 
             //lock our point list down
             synchronized( pointTempList )

@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.messaging.message.porter.RequestMessage;
+import com.cannontech.message.porter.message.Request;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.service.DeviceVerificationService;
@@ -37,7 +37,7 @@ public class DeviceVerificationServiceImpl implements DeviceVerificationService 
     
     private boolean executeCommand(final String command) {
         if (porterConnection != null ) {
-            RequestMessage req = new RequestMessage(0, command, messageIdCounter.incrementAndGet());
+            Request req = new Request(0, command, messageIdCounter.incrementAndGet());
             porterConnection.write(req);
             CTILogger.info("Sent command to PIL:  " + command);
             return true;

@@ -26,9 +26,9 @@ import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.dr.service.DemandResponseService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
-import com.cannontech.messaging.message.loadcontrol.data.DirectGroupBase;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
+import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.loadcontrol.data.LMDirectGroupBase;
+import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -123,7 +123,7 @@ public class DemandResponseServiceImpl implements DemandResponseService {
         }
 
         if (pao.getPaoIdentifier().getPaoType() == PaoType.LM_CONTROL_AREA) {
-            ControlAreaItem controlArea = controlAreaService.getControlAreaForPao(pao);
+            LMControlArea controlArea = controlAreaService.getControlAreaForPao(pao);
             if (controlArea == null) {
                 return null;
             }
@@ -133,7 +133,7 @@ public class DemandResponseServiceImpl implements DemandResponseService {
         }
 
         if (paoDefinitionDao.isTagSupported(pao.getPaoIdentifier().getPaoType(), PaoTag.LM_PROGRAM)) {
-            Program program = programService.getProgramForPao(pao);
+            LMProgramBase program = programService.getProgramForPao(pao);
             if (program == null) {
                 return null;
             }
@@ -142,7 +142,7 @@ public class DemandResponseServiceImpl implements DemandResponseService {
                                     CombinedState.forProgramState(state));
         }
 
-        DirectGroupBase loadGroup = loadGroupService.getGroupForPao(pao);
+        LMDirectGroupBase loadGroup = loadGroupService.getGroupForPao(pao);
         if (loadGroup == null) {
             return null;
         }

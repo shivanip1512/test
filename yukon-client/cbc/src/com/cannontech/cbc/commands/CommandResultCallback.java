@@ -1,10 +1,10 @@
 package com.cannontech.cbc.commands;
 
-import com.cannontech.messaging.message.capcontrol.ServerResponseMessage;
+import com.cannontech.message.capcontrol.model.CapControlServerResponse;
 
 public interface CommandResultCallback {
     public void processingExceptionOccured(String reason);
-    public ServerResponseMessage getResponse();
-    public void recievedResponse(ServerResponseMessage message);
+    public CapControlServerResponse getResponse();
+    public void recievedResponse(CapControlServerResponse message);
     public String getErrorMessage();
 }

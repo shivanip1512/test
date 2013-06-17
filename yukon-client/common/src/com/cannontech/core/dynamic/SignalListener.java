@@ -1,6 +1,6 @@
 package com.cannontech.core.dynamic;
 
-import com.cannontech.messaging.message.dispatch.SignalMessage;
+import com.cannontech.message.dispatch.message.Signal;
 
 /**
  * Implement this interface to receive Signals from Yukon.
@@ -8,5 +8,5 @@ import com.cannontech.messaging.message.dispatch.SignalMessage;
  * @author alauinger
  */
 public interface SignalListener {
-    public void signalReceived(SignalMessage signal);
+    public void signalReceived(Signal signal);
 }

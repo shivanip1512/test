@@ -1,11 +1,8 @@
-#pragma once
-
 #include "MsgCapControlMessage.h"
 
 class CtiCCObjectMoveMsg : public CapControlMessage
 {
-    public:
-        DECLARE_COLLECTABLE( CtiCCObjectMoveMsg );
+    RWDECLARE_COLLECTABLE( CtiCCObjectMoveMsg )
 
     private:
         typedef CapControlMessage Inherited;
@@ -22,6 +19,9 @@ class CtiCCObjectMoveMsg : public CapControlMessage
         float getSwitchingOrder() const;
         float getCloseOrder() const;
         float getTripOrder() const;
+
+        void restoreGuts(RWvistream& iStream);
+        void saveGuts(RWvostream& oStream) const;
 
         CtiCCObjectMoveMsg& operator=(const CtiCCObjectMoveMsg& right);
         virtual CtiMessage* replicateMessage() const;

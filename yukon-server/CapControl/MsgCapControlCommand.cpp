@@ -3,7 +3,7 @@
 #include "MsgCapControlCommand.h"
 #include "ccid.h"
 
-DEFINE_COLLECTABLE( CapControlCommand, CAP_CONTROL_COMMAND_ID )
+RWDEFINE_COLLECTABLE( CapControlCommand, CAP_CONTROL_COMMAND_ID )
 
 CapControlCommand::CapControlCommand() :
     Inherited()
@@ -28,14 +28,35 @@ CapControlCommand::~CapControlCommand()
 
 }
 
-int CapControlCommand::getCommandId() const
+int CapControlCommand::getCommandId()
 {
     return _commandId;
 }
 
-long CapControlCommand::getMessageId() const
+long CapControlCommand::getMessageId()
 {
     return _messageId;
+}
+
+void CapControlCommand::restoreGuts(RWvistream& iStream)
+{
+    Inherited::restoreGuts(iStream);
+
+    iStream >> _messageId
+            >> _commandId;
+
+    return;
+}
+
+void CapControlCommand::saveGuts(RWvostream& oStream) const
+{
+    Inherited::saveGuts(oStream);
+
+
+    oStream << _messageId
+            << _commandId;
+
+    return;
 }
 
 CapControlCommand& CapControlCommand::operator=(const CapControlCommand& right)

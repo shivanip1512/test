@@ -5,10 +5,7 @@
 
 class IM_EX_MSG CtiRequestMsg : public CtiMessage
 {
-public:
-    DECLARE_COLLECTABLE( CtiRequestMsg )
-
-public:
+private:
 
     long    _device_id;
     std::string  _command_string;
@@ -20,6 +17,7 @@ public:
     int     _options_field;        // Options specific to the message.  One such is a "NO STATS' flag telling the bg to not process statistics on the request.
 
 public:
+    RWDECLARE_COLLECTABLE( CtiRequestMsg );
 
     typedef CtiMessage Inherited;
 
@@ -38,6 +36,8 @@ public:
     CtiRequestMsg(const CtiRequestMsg &aRef);
     CtiRequestMsg& operator=(const CtiRequestMsg& aRef);
 
+    void saveGuts(RWvostream &aStream) const;
+    void restoreGuts(RWvistream& aStream);
     CtiMessage* replicateMessage() const;
 
     long DeviceId() const;

@@ -17,9 +17,9 @@ import com.cannontech.database.SqlParameterChildSink;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.dispatch.DbChangeCategory;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.util.DbChangeManager;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.dr.selectionList.dao.SelectionListDao;
 
 public class SelectionListDaoImpl implements SelectionListDao {

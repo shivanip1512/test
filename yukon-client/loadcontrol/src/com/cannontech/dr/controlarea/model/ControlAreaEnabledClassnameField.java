@@ -1,6 +1,6 @@
 package com.cannontech.dr.controlarea.model;
 
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
+import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.user.YukonUserContext;
 
 public class ControlAreaEnabledClassnameField extends ControlAreaBackingFieldBase {
@@ -11,7 +11,7 @@ public class ControlAreaEnabledClassnameField extends ControlAreaBackingFieldBas
     }
 
     @Override
-    public Object getControlAreaValue(ControlAreaItem controlArea,
+    public Object getControlAreaValue(LMControlArea controlArea,
             YukonUserContext userContext) {
         return controlArea.getDisableFlag() ? "drDisabled" : "drEnabled";
     }

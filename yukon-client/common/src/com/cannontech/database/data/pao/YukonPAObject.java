@@ -14,8 +14,8 @@ import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.database.db.NestedDBPersistentComparators;
 import com.cannontech.database.db.pao.PAOExclusion;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -119,14 +119,14 @@ private void deletePoints() throws java.sql.SQLException
  * Creation date: (12/19/2001 1:45:25 PM)
  * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
  */
-public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType)
+public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
 {
-	ArrayList<DBChangeMessage> list = new ArrayList<DBChangeMessage>(10);
+	ArrayList<DBChangeMsg> list = new ArrayList<DBChangeMsg>(10);
 
 	//add the basic change method
-	list.add( new DBChangeMessage(
+	list.add( new DBChangeMsg(
 	                          getPAObjectID().intValue(),
-	                          DBChangeMessage.CHANGE_PAO_DB,
+	                          DBChangeMsg.CHANGE_PAO_DB,
 	                          getPAOCategory(),
 	                          getPAOType(),
 	                          dbChangeType) );
@@ -141,10 +141,10 @@ public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType)
 		//add a new message for each point
 		for( int i = 0; i < idsAndTypes.length; i++ )
 		{
-			DBChangeMessage msg = new DBChangeMessage(
+			DBChangeMsg msg = new DBChangeMsg(
 			                                  idsAndTypes[i][0],
-			                                  DBChangeMessage.CHANGE_POINT_DB,
-			                                  DBChangeMessage.CAT_POINT,
+			                                  DBChangeMsg.CHANGE_POINT_DB,
+			                                  DBChangeMsg.CAT_POINT,
 			                                  PointTypes.getType( idsAndTypes[i][1] ),
 			                                  dbChangeType);
 
@@ -154,7 +154,7 @@ public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType)
 	}
 	
 	 
-	DBChangeMessage[] dbChange = new DBChangeMessage[list.size()];
+	DBChangeMsg[] dbChange = new DBChangeMsg[list.size()];
 	return list.toArray( dbChange );
 }
 /**

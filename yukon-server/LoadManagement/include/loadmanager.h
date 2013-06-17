@@ -8,7 +8,7 @@
 #include <rw/collect.h>
 
 #include "dbaccess.h"
-#include "connection_client.h"
+#include "connection.h"
 #include "message.h"
 #include "msg_multi.h"
 #include "msg_cmd.h"
@@ -49,14 +49,14 @@ private:
 
     void controlLoop();
 
-    boost::shared_ptr<CtiClientConnection> getPILConnection();
-    boost::shared_ptr<CtiClientConnection> getDispatchConnection();
-    boost::shared_ptr<CtiClientConnection> getNotificationConnection();
+    CtiConnection* getPILConnection();
+    CtiConnection* getDispatchConnection();
+    CtiConnection* getNotificationConnection();
 
     void checkDispatch(CtiTime currentTime);
     void checkPIL(CtiTime currentTime);
     void registerForPoints(const std::vector<CtiLMControlArea*>& controlAreas);
-    void parseMessage( CtiMessage *message, CtiTime currentTime );
+    void parseMessage( RWCollectable *message, CtiTime currentTime );
     void pointDataMsg( long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, CtiTime currentTime );
     void signalMsg( long pointID, unsigned tags, std::string text, std::string additional );
 
@@ -65,9 +65,9 @@ private:
     static CtiLoadManager* _instance;
     RWThread _loadManagerThread;
 
-    boost::shared_ptr<CtiClientConnection> _pilConnection;
-    boost::shared_ptr<CtiClientConnection> _dispatchConnection;
-    boost::shared_ptr<CtiClientConnection> _notificationConnection;
+    CtiConnection* _pilConnection;
+    CtiConnection* _dispatchConnection;
+    CtiConnection* _notificationConnection;
 
     int control_loop_delay;
     int control_loop_inmsg_delay;

@@ -60,9 +60,9 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.debug.gui.ObjectInfoDialog;
 import com.cannontech.graph.model.TrendModel;
-import com.cannontech.messaging.message.CommandMessage;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
-import com.cannontech.messaging.message.dispatch.SignalMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.message.util.Command;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tags.Tag;
 import com.cannontech.tdc.commandevents.AckAlarm;
@@ -889,7 +889,7 @@ private Object[][] getAlarmStatesCache()
 		for( int i = 0; i < alarmStates.size(); i++ )
 		{
 			LiteAlarmCategory liteAlarm = (LiteAlarmCategory)alarmStates.get(i);
-			if( liteAlarm.getAlarmStateID() == SignalMessage.EVENT_SIGNAL )
+			if( liteAlarm.getAlarmStateID() == Signal.EVENT_SIGNAL )
 				continue;
 
 			data[indx][0] = liteAlarm.getCategoryName();
@@ -2555,13 +2555,13 @@ public void jMenuItemPopUpAckAlarm_ActionPerformed(java.awt.event.ActionEvent ae
 			TDCMainFrame.messageLog.addMessage(
 					"An ACK ALARM message was sent for ALL ALARMS on pointid " + ptValues.getPointID(), MessageBoxFrame.INFORMATION_MSG );
 		}
-		else if( obj instanceof SignalMessage )
+		else if( obj instanceof Signal )
 		{
-			SignalMessage sig = (SignalMessage)obj;
+			Signal sig = (Signal)obj;
 			TDCMainFrame.messageLog.addMessage(
-					"An ACK ALARM message was sent for pointid " + sig.getPointId(), MessageBoxFrame.INFORMATION_MSG );
+					"An ACK ALARM message was sent for pointid " + sig.getPointID(), MessageBoxFrame.INFORMATION_MSG );
 	
-			AckAlarm.send( sig.getPointId(), sig.getCondition() );
+			AckAlarm.send( sig.getPointID(), sig.getCondition() );
 		}
 
 	}
@@ -2588,7 +2588,7 @@ public void jMenuItemPopUpClear_ActionPerformed(java.awt.event.ActionEvent actio
 public void jMenuItemPopUpDisable_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 	// Create a signal here to send
-	com.cannontech.messaging.message.dispatch.SignalMessage sig = new com.cannontech.messaging.message.dispatch.SignalMessage();	
+	com.cannontech.message.dispatch.message.Signal sig = new com.cannontech.message.dispatch.message.Signal();	
 	int selectedRow = getDisplayTable().getSelectedRow();
 	PointValues ptValue = getTableDataModel().getPointValue(selectedRow);
 	String msg = new String();
@@ -2597,21 +2597,21 @@ public void jMenuItemPopUpDisable_ActionPerformed(java.awt.event.ActionEvent act
 	if( TagUtils.isPointOutOfService(ptValue.getTags()) )
 	{
 		msg = "ENABLE";
-		sig.setTags( ptValue.getTags() & ~com.cannontech.messaging.message.dispatch.SignalMessage.TAG_DISABLE_POINT_BY_POINT );
+		sig.setTags( ptValue.getTags() & ~com.cannontech.message.dispatch.message.Signal.TAG_DISABLE_POINT_BY_POINT );
 	}
 	else
 	{
 		msg = "DISABLE";
-		sig.setTags( ptValue.getTags() | com.cannontech.messaging.message.dispatch.SignalMessage.TAG_DISABLE_POINT_BY_POINT );
+		sig.setTags( ptValue.getTags() | com.cannontech.message.dispatch.message.Signal.TAG_DISABLE_POINT_BY_POINT );
 	}
 						
-	sig.setPointId( ptValue.getPointID() );
+	sig.setPointID( ptValue.getPointID() );
 	
 	sig.setDescription("Point control change occurred from TDC on point: " + 
 		ptValue.getDeviceName().toString() + " / " + ptValue.getPointName()); //who
 	
 	sig.setAction("A " + msg + " control point event was executed");
-	sig.setCategoryId( com.cannontech.messaging.message.dispatch.SignalMessage.EVENT_SIGNAL );
+	sig.setCategoryID( com.cannontech.message.dispatch.message.Signal.EVENT_SIGNAL );
 	sig.setUserName(CtiUtilities.getUserName());
 	sig.setTimeStamp( new Date() );
 	
@@ -2693,7 +2693,7 @@ public void jPopupMenu_PopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEve
 		getJMenuPopUpAckAlarm().removeAll();
 		PointValues pv = getTableDataModel().getPointValue( selectedRow );
 		
-		SignalMessage[] sigs = pv.getAllSignals();
+		Signal[] sigs = pv.getAllSignals();
 		for( int i = 0; i < sigs.length; i++ )
 		{
 			if( TagUtils.isAlarmUnacked(sigs[i].getTags()) )
@@ -2712,7 +2712,7 @@ public void jPopupMenu_PopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEve
 					AlarmUtils.getAlarmConditionText( 
 						sigs[i].getCondition(), lPoint.getPointType(), lPoint.getPointID() ) +
 					" (" + sigs[i].getDescription() + ")",
-					Colors.getColor(getTableDataModel().getAlarmColor((int)sigs[i].getCategoryId()) ),
+					Colors.getColor(getTableDataModel().getAlarmColor((int)sigs[i].getCategoryID()) ),
 					sigs[i] );
 								
 	
@@ -2829,7 +2829,7 @@ private void addTagMenuItems( int selRow )
 	while( it.hasNext() )
 	{
 		Tag aTag = (Tag)it.next();
-		LiteTag liteTag = YukonSpringHook.getBean(TagDao.class).getLiteTag( aTag.getTagId() );
+		LiteTag liteTag = YukonSpringHook.getBean(TagDao.class).getLiteTag( aTag.getTagID() );
 
 		JMenuItem mi = new JMenuItem(
 				liteTag.getTagName() + " (Level: " + liteTag.getTagLevel() + ")" );
@@ -2872,14 +2872,14 @@ public void jRadioButtonMenuItemAllowPt_ActionPerformed(java.awt.event.ActionEve
 
 	// build up our opArgList for our command	message
     List<Integer> data = new ArrayList<Integer>(4);
-	data.add(CommandMessage.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken	
-	data.add(CommandMessage.ABLEMENT_POINT_IDTYPE);
+	data.add(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken	
+	data.add(Command.ABLEMENT_POINT_IDTYPE);
 	data.add(pointID);
-	data.add(CommandMessage.ABLEMENT_ENABLE);
+	data.add(Command.ABLEMENT_ENABLE);
 
 	// create our command message
-	CommandMessage cmd = new CommandMessage();
-	cmd.setOperation( CommandMessage.CONTROL_ABLEMENT );
+	Command cmd = new Command();
+	cmd.setOperation( Command.CONTROL_ABLEMENT );
 	cmd.setOpArgList( data );
 	cmd.setTimeStamp( new Date() );
 
@@ -2900,14 +2900,14 @@ public void jRadioButtonMenuItemDisableDev_ItemStateChanged(java.awt.event.ItemE
 	{
 		// build up our opArgList for our command	message
         List<Integer> data = new ArrayList<Integer>(4);
-		data.add(CommandMessage.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken	
-		data.add(CommandMessage.ABLEMENT_DEVICE_IDTYPE);
+		data.add(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken	
+		data.add(Command.ABLEMENT_DEVICE_IDTYPE);
 		data.add(ptVal.getDeviceID());
-		data.add(CommandMessage.ABLEMENT_DISABLE);
+		data.add(Command.ABLEMENT_DISABLE);
 	
 		// create our command message
-		CommandMessage cmd = new CommandMessage();
-		cmd.setOperation( CommandMessage.ABLEMENT_TOGGLE );
+		Command cmd = new Command();
+		cmd.setOperation( Command.ABLEMENT_TOGGLE );
 		cmd.setOpArgList( data );
 		cmd.setTimeStamp( new Date() );
 	
@@ -2933,14 +2933,14 @@ public void jRadioButtonMenuItemDisablePt_ItemStateChanged(java.awt.event.ItemEv
 
 	// build up our opArgList for our command	message
     List<Integer> data = new ArrayList<Integer>(4); 
-	data.add(CommandMessage.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken	
-	data.add(CommandMessage.ABLEMENT_POINT_IDTYPE);
+	data.add(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken	
+	data.add(Command.ABLEMENT_POINT_IDTYPE);
 	data.add(pointID);
-	data.add(CommandMessage.ABLEMENT_DISABLE);
+	data.add(Command.ABLEMENT_DISABLE);
 
 	// create our command message
-	CommandMessage cmd = new CommandMessage();
-	cmd.setOperation( CommandMessage.ABLEMENT_TOGGLE );
+	Command cmd = new Command();
+	cmd.setOperation( Command.ABLEMENT_TOGGLE );
 	cmd.setOpArgList( data );
 	cmd.setTimeStamp( new Date() );
 
@@ -2959,14 +2959,14 @@ public void jRadioButtonMenuItemEnableDev_ItemStateChanged(java.awt.event.ItemEv
 
 	// build up our opArgList for our command	message
     List<Integer> data = new ArrayList<Integer>(4);
-	data.add(CommandMessage.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken	
-	data.add(CommandMessage.ABLEMENT_DEVICE_IDTYPE);
+	data.add(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken	
+	data.add(Command.ABLEMENT_DEVICE_IDTYPE);
 	data.add(deviceID);
-	data.add(CommandMessage.ABLEMENT_ENABLE); 
+	data.add(Command.ABLEMENT_ENABLE); 
 
 	// create our command message
-	CommandMessage cmd = new CommandMessage();
-	cmd.setOperation( CommandMessage.ABLEMENT_TOGGLE );
+	Command cmd = new Command();
+	cmd.setOperation( Command.ABLEMENT_TOGGLE );
 	cmd.setOpArgList( data );
 	cmd.setTimeStamp( new Date() );
 
@@ -2985,14 +2985,14 @@ public void jRadioButtonMenuItemEnbablePt_ItemStateChanged(java.awt.event.ItemEv
 
 	// build up our opArgList for our command	message
     List<Integer> data = new ArrayList<Integer>(4);
-	data.add(CommandMessage.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken	
-	data.add(CommandMessage.ABLEMENT_POINT_IDTYPE);
+	data.add(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken	
+	data.add(Command.ABLEMENT_POINT_IDTYPE);
 	data.add(pointID);
-	data.add(CommandMessage.ABLEMENT_ENABLE);
+	data.add(Command.ABLEMENT_ENABLE);
 
 	// create our command message
-	CommandMessage cmd = new CommandMessage();
-	cmd.setOperation( CommandMessage.ABLEMENT_TOGGLE );
+	Command cmd = new Command();
+	cmd.setOperation( Command.ABLEMENT_TOGGLE );
 	cmd.setOpArgList( data );
 	cmd.setTimeStamp( new Date() );
 
@@ -3012,13 +3012,13 @@ public void jMenuItemInhibitDev_ActionPerformed(java.awt.event.ActionEvent actio
 
 	//assumes inhibiting
 	String cntrlStr = "INHIBIT";
-	int cmdInhib = CommandMessage.ABLEMENT_DISABLE;
+	int cmdInhib = Command.ABLEMENT_DISABLE;
 	
 	if( ((javax.swing.JMenuItem)
 			actionEvent.getSource()).getText().equals("Control on Device: NO") )
 	{
 		cntrlStr = "ALLOW";
-		cmdInhib = CommandMessage.ABLEMENT_ENABLE;
+		cmdInhib = Command.ABLEMENT_ENABLE;
 	}
 
 	int res = javax.swing.JOptionPane.showConfirmDialog(
@@ -3033,15 +3033,15 @@ public void jMenuItemInhibitDev_ActionPerformed(java.awt.event.ActionEvent actio
 	{	
 		// build up our opArgList for our command	message
         List<Integer> data = new ArrayList<Integer>(4);        
-		data.add(CommandMessage.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken
-		data.add(CommandMessage.ABLEMENT_DEVICE_IDTYPE);
+		data.add(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken
+		data.add(Command.ABLEMENT_DEVICE_IDTYPE);
 		data.add(deviceID);
 		data.add(cmdInhib);
 
 	
 		// create our command message
-		CommandMessage cmd = new CommandMessage();
-		cmd.setOperation( CommandMessage.CONTROL_ABLEMENT );
+		Command cmd = new Command();
+		cmd.setOperation( Command.CONTROL_ABLEMENT );
 		cmd.setOpArgList( data );
 		cmd.setTimeStamp( new Date() );
 	
@@ -3102,14 +3102,14 @@ public void jRadioButtonMenuItemInhibitPt_ActionPerformed(java.awt.event.ActionE
 
 	// build up our opArgList for our command	message
     List<Integer> data = new ArrayList<Integer>(4);
-	data.add(CommandMessage.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken	
-	data.add(CommandMessage.ABLEMENT_POINT_IDTYPE);
+	data.add(Command.DEFAULT_CLIENT_REGISTRATION_TOKEN);  // this is the ClientRegistrationToken	
+	data.add(Command.ABLEMENT_POINT_IDTYPE);
 	data.add(pointID);
-	data.add(CommandMessage.ABLEMENT_DISABLE);
+	data.add(Command.ABLEMENT_DISABLE);
 
 	// create our command message
-	CommandMessage cmd = new CommandMessage();
-	cmd.setOperation( CommandMessage.CONTROL_ABLEMENT );
+	Command cmd = new Command();
+	cmd.setOperation( Command.CONTROL_ABLEMENT );
 	cmd.setOpArgList( data );
 	cmd.setTimeStamp( new Date() );
 
@@ -3367,7 +3367,7 @@ public void executeRefresh_Pressed()
  * Insert the method's description here.
  * Creation date: (1/21/00 11:46:00 AM)
  */
-protected void processDBChangeMsg( DBChangeMessage msg )
+protected void processDBChangeMsg( DBChangeMsg msg )
 {		
 	try
 	{

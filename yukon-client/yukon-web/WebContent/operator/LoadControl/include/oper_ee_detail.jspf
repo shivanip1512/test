@@ -8,12 +8,12 @@
 </head>
 <%
      // Find the program
-    ProgramEnergyExchange program = null;
-    ProgramEnergyExchange[] programs = cache.getEnergyCompanyEnergyExchangePrograms(energyCompanyID);
+    LMProgramEnergyExchange program = null;
+    LMProgramEnergyExchange[] programs = cache.getEnergyCompanyEnergyExchangePrograms(energyCompanyID);
     
     for( int i = 0; i < programs.length; i++ )
     {
-        if( programs[i].getYukonId() == programID )
+        if( programs[i].getYukonID().intValue() == programID.intValue() )
         {
             program = programs[i];
             break;
@@ -21,7 +21,7 @@
     }
 
     // Find the offer
-    EnergyExchangeOffer offer = null;
+    LMEnergyExchangeOffer offer = null;
 
     if( program != null )
     {
@@ -32,11 +32,11 @@
             {
                 
                 
-                EnergyExchangeOffer o = (EnergyExchangeOffer) offers.elementAt(j);
+                LMEnergyExchangeOffer o = (LMEnergyExchangeOffer) offers.elementAt(j);
                   
                 if(                   
                     o != null &&  
-                    o.getOfferId() == offerID )
+                    o.getOfferID().intValue() == offerID.intValue() )
                 {   // found the correct offer
                     offer = o;
                     break;
@@ -51,7 +51,7 @@
     {   
  
         double totalCommitted = 0;
-        EnergyExchangeCustomer[] customers = cache.getEnergyExchangeCustomers(program.getYukonId().longValue());               
+        LMEnergyExchangeCustomer[] customers = cache.getEnergyExchangeCustomers(program.getYukonID().longValue());               
 %>
 
 <body class="Background" text="#000000" leftmargin="0" topmargin="0">
@@ -131,9 +131,9 @@
                 <tr> 
                   <td width="650" class="TitleHeader"> 
                     <br>
-                    <p align="center">Energy Buyback - OFFER <%= String.valueOf(offer.getOfferId()) %>  - <%= revisionNumber %> DETAILS</p>
+                    <p align="center">Energy Buyback - OFFER <%= offer.getOfferID().toString() %>  - <%= revisionNumber %> DETAILS</p>
                     <% 
-           java.util.Date notificationDate = ((EnergyExchangeOfferRevision) offerRevisions.get(revisionNumber)).getNotificationDateTime();          
+           java.util.Date notificationDate = ((LMEnergyExchangeOfferRevision) offerRevisions.get(revisionNumber.intValue())).getNotificationDateTime();          
                       
            if( notificationDate.after(new java.util.Date()) &&
                offer.getRunStatus().trim().equalsIgnoreCase("scheduled") )
@@ -158,17 +158,17 @@
                       <% 
           for( int i = 0; i < customers.length; i++ )
         {
-              EnergyExchangeCustomer customer = customers[i];
+              LMEnergyExchangeCustomer customer = customers[i];
 
               java.util.Vector customerReplies = customer.getEnergyExchangeCustomerReplies();
               for( int j = 0; j < customerReplies.size(); j++ )
               {
-                  EnergyExchangeCustomerReply reply = (EnergyExchangeCustomerReply) customerReplies.elementAt(j);
+                  LMEnergyExchangeCustomerReply reply = (LMEnergyExchangeCustomerReply) customerReplies.elementAt(j);
 				  
-                //  out.println("\n reply rev#: " + reply.getOfferId() + "-" + reply.getRevisionNumber() );
+                //  out.println("\n reply rev#: " + reply.getOfferID() + "-" + reply.getRevisionNumber() );
                 //  out.println("\nrevisionNumber: " + revisionNumber );
-                  if( reply.getOfferId() == offerID &&
-                      reply.getRevisionNumber() == revisionNumber )
+                  if( reply.getOfferID().intValue() == offerID.intValue() &&
+                      reply.getRevisionNumber().intValue() == revisionNumber.intValue() )
                   {
                       // Add up the total committed
                       double committed = 0;
@@ -176,16 +176,16 @@
                       java.util.Vector hourlyReplies = reply.getEnergyExchangeHourlyCustomer();
                       for( int k = 0; k < hourlyReplies.size(); k++ )
                       {
-                        EnergyExchangeHourlyCustomer hourlyReply = (EnergyExchangeHourlyCustomer) hourlyReplies.elementAt(k);
-    	                if( hourlyReply.getRevisionNumber() == reply.getRevisionNumber())
-	                        committed += hourlyReply.getAmountCommitted();
+                        LMEnergyExchangeHourlyCustomer hourlyReply = (LMEnergyExchangeHourlyCustomer) hourlyReplies.elementAt(k);
+    	                if( hourlyReply.getRevisionNumber().intValue() == reply.getRevisionNumber().intValue())
+	                        committed += hourlyReply.getAmountCommitted().intValue();
                       }
 
                       totalCommitted += committed;
 
                         %>
                       <tr valign="top"> 
-                        <td width="300" class="TableCell"><a href="oper_ee.jsp?tab=current&prog=<%= program.getYukonId() %>&offer=<%= offerID %>&rev=<%= revisionNumber %>&cust=<%= customer.getCustomerId() %>" class="Link1"><%= customer.getCompanyName() %></a></td>
+                        <td width="300" class="TableCell"><a href="oper_ee.jsp?tab=current&prog=<%= program.getYukonID() %>&offer=<%= offerID %>&rev=<%= revisionNumber %>&cust=<%= customer.getCustomerID() %>" class="Link1"><%= customer.getCompanyName() %></a></td>
                         <td width="150" class="TableCell"><%= reply.getAcceptStatus() %></td>
                         <td width="150" class="TableCell"><%= numberFormat.format(committed )%></td>
                       </tr>

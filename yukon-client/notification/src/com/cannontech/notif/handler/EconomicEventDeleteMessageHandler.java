@@ -4,42 +4,42 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.cc.dao.EconomicEventDao;
 import com.cannontech.cc.model.EconomicEvent;
-import com.cannontech.messaging.message.BaseMessage;
-import com.cannontech.messaging.message.BooleanData;
-import com.cannontech.messaging.message.notif.EconomicEventDeleteMessage;
-import com.cannontech.messaging.message.server.ServerRequestMessage;
-import com.cannontech.messaging.message.server.ServerResponseMessage;
+import com.cannontech.message.notif.EconomicEventDeleteMsg;
+import com.cannontech.message.server.ServerRequestMsg;
+import com.cannontech.message.server.ServerResponseMsg;
+import com.cannontech.message.util.CollectableBoolean;
+import com.cannontech.message.util.Message;
 import com.cannontech.notif.server.NotifServerConnection;
 
-public class EconomicEventDeleteMessageHandler implements MessageHandler<EconomicEventDeleteMessage> {
+public class EconomicEventDeleteMessageHandler implements MessageHandler<EconomicEventDeleteMsg> {
 
     private @Autowired EconomicEventScheduler economicEventScheduler;
     private @Autowired EconomicEventDao economicEventDao;
     
     @Override
-    public void handleMessage(NotifServerConnection connection, BaseMessage message) {
+    public void handleMessage(NotifServerConnection connection, Message message) {
         
-        ServerRequestMessage reqMsg = (ServerRequestMessage) message;
+        ServerRequestMsg reqMsg = (ServerRequestMsg) message;
         
-        EconomicEventDeleteMessage reqPayload = (EconomicEventDeleteMessage) reqMsg.getPayload();
-        Integer economicEventId = reqPayload.getEconomicEventId();
+        EconomicEventDeleteMsg reqPayload = (EconomicEventDeleteMsg) reqMsg.getPayload();
+        Integer economicEventId = reqPayload.economicEventId;
         EconomicEvent economicEvent =  economicEventDao.getForId(economicEventId);
         
         Boolean success = economicEventScheduler.deleteEventNotification(economicEvent, 
-                                                             reqPayload.isDeleteStart(), 
-                                                             reqPayload.isDeleteStop());
+                                                             reqPayload.deleteStart, 
+                                                             reqPayload.deleteStop);
         
-        BooleanData respPayload = new BooleanData(success);
+        CollectableBoolean respPayload = new CollectableBoolean(success);
         
-        ServerResponseMessage responseMsg = reqMsg.createResponseMsg();
+        ServerResponseMsg responseMsg = reqMsg.createResponseMsg();
         responseMsg.setPayload(respPayload);
-        responseMsg.setStatus(ServerResponseMessage.STATUS_OK);
+        responseMsg.setStatus(ServerResponseMsg.STATUS_OK);
         connection.write(responseMsg);
     }
 
     @Override
-    public Class<EconomicEventDeleteMessage> getSupportedMessageType() {
-        return EconomicEventDeleteMessage.class;
+    public Class<EconomicEventDeleteMsg> getSupportedMessageType() {
+        return EconomicEventDeleteMsg.class;
     }
 
 }

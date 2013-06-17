@@ -1,8 +1,7 @@
 #include <boost/test/auto_unit_test.hpp>
+
 #include "PointDataRequestFactory.h"
 #include "DispatchPointdataRequest.h"
-
-#include "amq_constants.h"
 
 BOOST_AUTO_TEST_SUITE( test_PointDataRequest )
 
@@ -11,14 +10,14 @@ class mock_DispatchConnection : public DispatchConnection
 {
 public:
 
-    mock_DispatchConnection() : DispatchConnection("mock_DispatchConnection" ) {  }
+    mock_DispatchConnection() : DispatchConnection("mock_DispatchConnection", -1, "localhost") {  }
 };
 
 
 BOOST_AUTO_TEST_CASE(test_point_data_request_factory_watchlist_creation)
 {
     PointDataRequestFactory testFactory;
-    PointDataRequestPtr     pd_request = testFactory.createDispatchPointDataRequest( DispatchConnectionPtr( new mock_DispatchConnection()));
+    PointDataRequestPtr     pd_request = testFactory.createDispatchPointDataRequest( DispatchConnectionPtr( new mock_DispatchConnection ) );
 
     // Need an actual DispatchPointDataRequest pointer so we can call processNewMessage().
 
@@ -63,7 +62,7 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_watchlist_creation)
 BOOST_AUTO_TEST_CASE(test_point_data_request_factory_ignore_points_not_on_watchlist)
 {
     PointDataRequestFactory testFactory;
-    PointDataRequestPtr     pd_request = testFactory.createDispatchPointDataRequest( DispatchConnectionPtr( new mock_DispatchConnection()));
+    PointDataRequestPtr     pd_request = testFactory.createDispatchPointDataRequest( DispatchConnectionPtr( new mock_DispatchConnection ) );
 
     // Need an actual DispatchPointDataRequest pointer so we can call processNewMessage().
 
@@ -97,7 +96,7 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_ignore_points_not_on_watchl
 BOOST_AUTO_TEST_CASE(test_point_data_request_factory_all_good_data)
 {
     PointDataRequestFactory testFactory;
-    PointDataRequestPtr     pd_request = testFactory.createDispatchPointDataRequest( DispatchConnectionPtr( new mock_DispatchConnection()));
+    PointDataRequestPtr     pd_request = testFactory.createDispatchPointDataRequest( DispatchConnectionPtr( new mock_DispatchConnection ) );
 
     // Need an actual DispatchPointDataRequest pointer so we can call processNewMessage().
 
@@ -151,7 +150,7 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_all_good_data)
 BOOST_AUTO_TEST_CASE(test_point_data_request_factory_all_good_data_for_one_point)
 {
     PointDataRequestFactory testFactory;
-    PointDataRequestPtr     pd_request = testFactory.createDispatchPointDataRequest( DispatchConnectionPtr( new mock_DispatchConnection()));
+    PointDataRequestPtr     pd_request = testFactory.createDispatchPointDataRequest( DispatchConnectionPtr( new mock_DispatchConnection ) );
 
     // Need an actual DispatchPointDataRequest pointer so we can call processNewMessage().
 
@@ -189,7 +188,7 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_all_good_data_for_one_point
 BOOST_AUTO_TEST_CASE(test_point_data_request_factory_mixed_data_for_one_point_1)
 {
     PointDataRequestFactory testFactory;
-    PointDataRequestPtr     pd_request = testFactory.createDispatchPointDataRequest( DispatchConnectionPtr( new mock_DispatchConnection()));
+    PointDataRequestPtr     pd_request = testFactory.createDispatchPointDataRequest( DispatchConnectionPtr( new mock_DispatchConnection ) );
 
     // Need an actual DispatchPointDataRequest pointer so we can call processNewMessage().
 
@@ -227,7 +226,7 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_mixed_data_for_one_point_1)
 BOOST_AUTO_TEST_CASE(test_point_data_request_factory_mixed_data_for_one_point_2)
 {
     PointDataRequestFactory testFactory;
-    PointDataRequestPtr     pd_request = testFactory.createDispatchPointDataRequest( DispatchConnectionPtr( new mock_DispatchConnection()));
+    PointDataRequestPtr     pd_request = testFactory.createDispatchPointDataRequest( DispatchConnectionPtr( new mock_DispatchConnection ) );
 
     // Need an actual DispatchPointDataRequest pointer so we can call processNewMessage().
 
@@ -265,7 +264,7 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_mixed_data_for_one_point_2)
 BOOST_AUTO_TEST_CASE(test_point_data_request_factory_all_bad_data_for_one_point)
 {
     PointDataRequestFactory testFactory;
-    PointDataRequestPtr     pd_request = testFactory.createDispatchPointDataRequest( DispatchConnectionPtr( new mock_DispatchConnection()));
+    PointDataRequestPtr     pd_request = testFactory.createDispatchPointDataRequest( DispatchConnectionPtr( new mock_DispatchConnection ) );
 
     // Need an actual DispatchPointDataRequest pointer so we can call processNewMessage().
 
@@ -303,7 +302,7 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_all_bad_data_for_one_point)
 BOOST_AUTO_TEST_CASE(test_point_data_request_factory_complete_data)
 {
     PointDataRequestFactory testFactory;
-    PointDataRequestPtr     pd_request = testFactory.createDispatchPointDataRequest( DispatchConnectionPtr( new mock_DispatchConnection()));
+    PointDataRequestPtr     pd_request = testFactory.createDispatchPointDataRequest( DispatchConnectionPtr( new mock_DispatchConnection ) );
 
     // Need an actual DispatchPointDataRequest pointer so we can call processNewMessage().
 
@@ -368,7 +367,7 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_complete_data)
 BOOST_AUTO_TEST_CASE(test_point_data_request_factory_incomplete_data)
 {
     PointDataRequestFactory testFactory;
-    PointDataRequestPtr     pd_request = testFactory.createDispatchPointDataRequest( DispatchConnectionPtr( new mock_DispatchConnection()));
+    PointDataRequestPtr     pd_request = testFactory.createDispatchPointDataRequest( DispatchConnectionPtr( new mock_DispatchConnection ) );
 
     // Need an actual DispatchPointDataRequest pointer so we can call processNewMessage().
 

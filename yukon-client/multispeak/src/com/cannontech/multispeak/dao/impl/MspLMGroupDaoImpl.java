@@ -17,11 +17,11 @@ import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.messaging.message.loadcontrol.data.GroupBase;
-import com.cannontech.messaging.message.loadcontrol.data.GroupEmetcon;
-import com.cannontech.messaging.message.loadcontrol.data.GroupExpresscom;
-import com.cannontech.messaging.message.loadcontrol.data.GroupVersacom;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
+import com.cannontech.loadcontrol.data.LMGroupBase;
+import com.cannontech.loadcontrol.data.LMGroupEmetcon;
+import com.cannontech.loadcontrol.data.LMGroupExpresscom;
+import com.cannontech.loadcontrol.data.LMGroupVersacom;
+import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.multispeak.dao.MspLMGroupDao;
 import com.cannontech.multispeak.db.MspLMGroupCommunications;
 import com.cannontech.multispeak.db.MspLMGroupCommunications.MspLMGroupStatus;
@@ -63,13 +63,13 @@ public class MspLMGroupDaoImpl implements MspLMGroupDao {
     
 	@Override
 	public List<MspLMGroupCommunications> getLMGroupCommunications(
-			GroupBase lmGroupBase) {
-		if (lmGroupBase instanceof GroupEmetcon) {
-			return getLMGroupEmetconCommunications((GroupEmetcon)lmGroupBase);
-		} else if (lmGroupBase instanceof GroupExpresscom) {
-			return getLMGroupExpresscomCommunications((GroupExpresscom)lmGroupBase);
-		} else if (lmGroupBase instanceof GroupVersacom) {
-			return getLMGroupVerscomCommunications((GroupVersacom)lmGroupBase);
+			LMGroupBase lmGroupBase) {
+		if (lmGroupBase instanceof LMGroupEmetcon) {
+			return getLMGroupEmetconCommunications((LMGroupEmetcon)lmGroupBase);
+		} else if (lmGroupBase instanceof LMGroupExpresscom) {
+			return getLMGroupExpresscomCommunications((LMGroupExpresscom)lmGroupBase);
+		} else if (lmGroupBase instanceof LMGroupVersacom) {
+			return getLMGroupVerscomCommunications((LMGroupVersacom)lmGroupBase);
 		} else {
 			throw new IllegalArgumentException("LMGroup object type not identified: " + lmGroupBase.toString());
 		}
@@ -77,23 +77,23 @@ public class MspLMGroupDaoImpl implements MspLMGroupDao {
 
 	@Override
 	public List<MspLMGroupCommunications> getLMGroupEmetconCommunications(
-			GroupEmetcon lmGroupEmetcon) {
+			LMGroupEmetcon lmGroupEmetcon) {
 		String sql = sqlEmetcon + " WHERE grp.DeviceId = ? ";
-		return template.query(sql, mspLMGroupCommunicationsMapper, lmGroupEmetcon.getYukonId());
+		return template.query(sql, mspLMGroupCommunicationsMapper, lmGroupEmetcon.getYukonID());
 	}
 
 	@Override
 	public List<MspLMGroupCommunications> getLMGroupExpresscomCommunications(
-			GroupExpresscom lmGroupExpresscom) {
+			LMGroupExpresscom lmGroupExpresscom) {
 		String sql = sqlExpresscom + " WHERE grp.LMGroupId = ? ";
-		return template.query(sql, mspLMGroupCommunicationsMapper, lmGroupExpresscom.getYukonId());
+		return template.query(sql, mspLMGroupCommunicationsMapper, lmGroupExpresscom.getYukonID());
 	}
 
 	@Override
 	public List<MspLMGroupCommunications> getLMGroupVerscomCommunications(
-			GroupVersacom lmGroupVersacom) {
+			LMGroupVersacom lmGroupVersacom) {
 		String sql = sqlVersacom + " WHERE grp.DeviceId = ? ";
-		return template.query(sql, mspLMGroupCommunicationsMapper, lmGroupVersacom.getYukonId());
+		return template.query(sql, mspLMGroupCommunicationsMapper, lmGroupVersacom.getYukonID());
 	}
 
 	@Override
@@ -147,7 +147,7 @@ public class MspLMGroupDaoImpl implements MspLMGroupDao {
     }
  
     @Override
-    public MspLMProgramMode getMode(Program lmProgramBase) {
+    public MspLMProgramMode getMode(LMProgramBase lmProgramBase) {
     	if (lmProgramBase.isActive()) {
     		return MspLMProgramMode.COIN;
     	} else {

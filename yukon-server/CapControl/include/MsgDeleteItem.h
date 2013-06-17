@@ -4,8 +4,7 @@
 
 class DeleteItem : public CapControlMessage
 {
-    public:
-        DECLARE_COLLECTABLE( DeleteItem );
+    RWDECLARE_COLLECTABLE( DeleteItem );
 
     private:
         typedef CapControlMessage Inherited;
@@ -14,10 +13,11 @@ class DeleteItem : public CapControlMessage
         DeleteItem(int itemId);
         virtual ~DeleteItem();
 
+        void restoreGuts(RWvistream& iStream);
+        void saveGuts(RWvostream& oStream) const;
+
         DeleteItem& operator=(const DeleteItem& right);
         virtual CtiMessage* replicateMessage() const;
-
-        int getItemId() const { return _itemId; }
 
     private:
         int _itemId;

@@ -3,7 +3,6 @@
 #include "message.h"
 #include "mc_sched.h"
 
-
 /*
     CtiMCUpdateSchedule
     Requests that the server update the given schedule.
@@ -11,9 +10,8 @@
 class CtiMCUpdateSchedule : public CtiMessage
 {
 public:
-    DECLARE_COLLECTABLE( CtiMCUpdateSchedule );
 
-public:
+    RWDECLARE_COLLECTABLE( CtiMCUpdateSchedule )
 
     CtiMCUpdateSchedule();
     CtiMCUpdateSchedule(const CtiMCUpdateSchedule& ref);
@@ -31,6 +29,9 @@ public:
     const std::string& getScript() const;
     CtiMCUpdateSchedule& setScript(const std::string& script);
 
+    void saveGuts(RWvostream &aStream) const;
+    void restoreGuts(RWvistream& aStream);
+
 private:
 
     CtiMCSchedule  _schedule;
@@ -44,12 +45,8 @@ private:
 class CtiMCAddSchedule : public CtiMessage
 {
 public:
-    DECLARE_COLLECTABLE( CtiMCAddSchedule );
 
-private:
-    typedef CtiMessage Inherited;
-
-public:
+    RWDECLARE_COLLECTABLE( CtiMCAddSchedule )
 
     CtiMCAddSchedule();
     CtiMCAddSchedule(const CtiMCAddSchedule& ref);
@@ -67,6 +64,9 @@ public:
     const std::string& getScript() const;
     CtiMCAddSchedule& setScript(const std::string& script);
 
+    void saveGuts(RWvostream &aStream) const;
+    void restoreGuts(RWvistream& aStream);
+
 private:
 
     CtiMCSchedule  _schedule;
@@ -83,12 +83,8 @@ private:
 class CtiMCDeleteSchedule : public CtiMessage
 {
 public:
-    DECLARE_COLLECTABLE( CtiMCDeleteSchedule );
 
-private:
-    typedef CtiMessage Inherited;
-
-public:
+    RWDECLARE_COLLECTABLE( CtiMCDeleteSchedule )
 
     CtiMCDeleteSchedule();
     CtiMCDeleteSchedule(const CtiMCDeleteSchedule& ref);
@@ -101,6 +97,9 @@ public:
 
     long getScheduleID() const;
     CtiMCDeleteSchedule& setScheduleID(long id);
+
+    void saveGuts(RWvostream &aStream) const;
+    void restoreGuts(RWvistream& aStream);
 
 private:
 
@@ -118,17 +117,13 @@ private:
 class CtiMCRetrieveSchedule : public CtiMessage
 {
 public:
-    DECLARE_COLLECTABLE( CtiMCRetrieveSchedule );
-
-private:
-    typedef CtiMessage Inherited;
-
-public:
 
     enum
     {
         AllSchedules = 0
     };
+
+    RWDECLARE_COLLECTABLE( CtiMCRetrieveSchedule )
 
     CtiMCRetrieveSchedule();
     CtiMCRetrieveSchedule(const CtiMCRetrieveSchedule& ref);
@@ -142,6 +137,9 @@ public:
     long getScheduleID() const;
     CtiMCRetrieveSchedule& setScheduleID(long id);
 
+    void saveGuts(RWvostream &aStream) const;
+    void restoreGuts(RWvistream& aStream);
+
 private:
     long _id;
 };
@@ -153,12 +151,8 @@ private:
 class CtiMCRetrieveScript : public CtiMessage
 {
 public:
-    DECLARE_COLLECTABLE( CtiMCRetrieveScript );
 
-private:
-    typedef CtiMessage Inherited;
-
-public:
+    RWDECLARE_COLLECTABLE( CtiMCRetrieveScript )
 
     CtiMCRetrieveScript();
     CtiMCRetrieveScript(const CtiMCRetrieveScript& ref);
@@ -172,6 +166,8 @@ public:
     const std::string& getScriptName() const;
     CtiMCRetrieveScript& setScriptName(const std::string& script_name);
 
+    void saveGuts(RWvostream &aStream) const;
+    void restoreGuts(RWvistream& aStream);
 private:
 
     std::string _name;
@@ -180,12 +176,8 @@ private:
 class CtiMCVerifyScript : public CtiMessage
 {
 public:
-    DECLARE_COLLECTABLE( CtiMCVerifyScript );
 
-private:
-    typedef CtiMessage Inherited;
-
-public:
+    RWDECLARE_COLLECTABLE( CtiMCVerifyScript )
 
     CtiMCVerifyScript();
     CtiMCVerifyScript(const CtiMCVerifyScript& ref);
@@ -198,6 +190,10 @@ public:
 
     const std::string& getScriptName() const;
     CtiMCVerifyScript& setScriptName(const std::string& script_name);
+
+    void saveGuts(RWvostream &aStream) const;
+    void restoreGuts(RWvistream& aStream);
+
 private:
 
     std::string _name;
@@ -213,12 +209,8 @@ private:
 class CtiMCOverrideRequest : public CtiMessage
 {
 public:
-    DECLARE_COLLECTABLE( CtiMCOverrideRequest );
 
-private:
-    typedef CtiMessage Inherited;
-
-public:
+    RWDECLARE_COLLECTABLE( CtiMCOverrideRequest )
 
     enum Action
     {
@@ -249,6 +241,9 @@ public:
     CtiMCOverrideRequest& setStartTime(const CtiTime& time);
     CtiMCOverrideRequest& setStopTime(const CtiTime& time);
 
+    void saveGuts(RWvostream &aStream) const;
+    void restoreGuts(RWvistream& aStream);
+
 private:
 
     Action _action;
@@ -266,12 +261,8 @@ private:
 class CtiMCInfo : public CtiMessage
 {
 public:
-    DECLARE_COLLECTABLE( CtiMCInfo );
 
-private:
-    typedef CtiMessage Inherited;
-
-public:
+    RWDECLARE_COLLECTABLE( CtiMCInfo )
 
     CtiMCInfo();
     CtiMCInfo(const CtiMCInfo& ref);
@@ -288,6 +279,9 @@ public:
 
     CtiMCInfo& setID(long id);
     CtiMCInfo& setInfo(const std::string& info);
+
+    void saveGuts(RWvostream &aStream) const;
+    void restoreGuts(RWvistream& aStream);
 
 private:
 

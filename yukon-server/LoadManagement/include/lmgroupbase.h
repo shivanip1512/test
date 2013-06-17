@@ -18,7 +18,7 @@
 #include "row_reader.h"
 #include "database_connection.h"
 
-class CtiLMGroupBase : public CtiMemDBObject
+class CtiLMGroupBase : public RWCollectable, public CtiMemDBObject
 {
 
 public:
@@ -66,8 +66,6 @@ public:
     virtual LONG getControlStatusPointId() const;
     virtual const std::string& getLastControlString() const;
     virtual bool readyToControlAt(CtiTime &currentTime) const;
-
-    unsigned getInternalState() const;
 
     virtual CtiLMGroupBase& setPAOId(LONG id);
     virtual CtiLMGroupBase& setPAOCategory(const std::string& category);
@@ -135,6 +133,10 @@ public:
     virtual BOOL doesMasterCycleNeedToBeUpdated(CtiTime currentTime, CtiTime controlEndTime, ULONG offTime);
 
     virtual void setDirty(BOOL b=TRUE);
+
+    //Members inherited from RWCollectable
+    void restoreGuts(RWvistream& );
+    void saveGuts(RWvostream& ) const;
 
     CtiLMGroupBase& operator=(const CtiLMGroupBase& right);
     bool operator<(const CtiLMGroupBase& right) const;

@@ -23,9 +23,9 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.db.device.DeviceMeterGroup;
-import com.cannontech.messaging.message.porter.RequestMessage;
-import com.cannontech.messaging.message.porter.ReturnMessage;
-import com.cannontech.messaging.util.MessageEvent;
+import com.cannontech.message.porter.message.Request;
+import com.cannontech.message.porter.message.Return;
+import com.cannontech.message.util.MessageEvent;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
@@ -36,7 +36,7 @@ import com.cannontech.yukon.conns.ConnPool;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class RevisionHFinder implements com.cannontech.messaging.util.MessageListener
+public class RevisionHFinder implements com.cannontech.message.util.MessageListener
 {
 	//log file (and path) to read from 
 	private String logFileName = "";
@@ -57,7 +57,7 @@ public class RevisionHFinder implements com.cannontech.messaging.util.MessageLis
 	public Vector missedIDs = new Vector();
 			
 	/** Store last Porter request message, for use when need to send it again (loop) */
-	public RequestMessage porterRequest = null;
+	public Request porterRequest = null;
 	
 	/** Singleton incrementor for messageIDs to send to porter connection */
 	private static volatile long currentUserMessageID = 1;
@@ -435,7 +435,7 @@ public class RevisionHFinder implements com.cannontech.messaging.util.MessageLis
 		getPilConn().isValid();
 		for(Integer deviceId : deviceIDs)
 		{
-			porterRequest = new RequestMessage( deviceId, "getconfig model", currentUserMessageID );
+			porterRequest = new Request( deviceId, "getconfig model", currentUserMessageID );
 			porterRequest.setPriority(14);
 			if( getPilConn().isValid() )
 			{
@@ -477,20 +477,20 @@ public class RevisionHFinder implements com.cannontech.messaging.util.MessageLis
 	 */
 	public void messageReceived(MessageEvent e)
 	{
-		if(e.getMessage() instanceof ReturnMessage)
+		if(e.getMessage() instanceof Return)
 		{
-			ReturnMessage returnMsg = (ReturnMessage) e.getMessage();
+			Return returnMsg = (Return) e.getMessage();
 			synchronized(this)
 			{
-				if( !getRequestMessageIDs().contains( new Long(returnMsg.getUserMessageId())))
+				if( !getRequestMessageIDs().contains( new Long(returnMsg.getUserMessageID())))
 					return;
 
-				CTILogger.info(returnMsg.getDeviceId() + " " + returnMsg.getResultString() + "  " + returnMsg.getExpectMore());
+				CTILogger.info(returnMsg.getDeviceID() + " " + returnMsg.getResultString() + "  " + returnMsg.getExpectMore());
 				synchronized ( RevisionHFinder.class )
 				{
-					if( returnMsg.getExpectMore() == false)	//Only send next message when ret expects nothing more
+					if( returnMsg.getExpectMore() == 0)	//Only send next message when ret expects nothing more
 					{
-						int devID = returnMsg.getDeviceId();
+						int devID = returnMsg.getDeviceID();
 						String result = returnMsg.getResultString();
 						if( result.indexOf("Revision ") >= 0)
 						{
@@ -500,19 +500,19 @@ public class RevisionHFinder implements com.cannontech.messaging.util.MessageLis
 								Pair revH = new Pair(new Integer(devID), result); 
 								revHReads.add(revH);
 							}
-							receivedDevIDs.remove(new Integer(returnMsg.getDeviceId()));
+							receivedDevIDs.remove(new Integer(returnMsg.getDeviceID()));
 						}
 						else
 						{
 							//Not a valid return message, save the deviceID and try again!
 							missedIDs.add(new Integer(devID));						
 						}
-						getRequestMessageIDs().remove(new Long(returnMsg.getUserMessageId()));						
+						getRequestMessageIDs().remove(new Long(returnMsg.getUserMessageID()));						
 					}
 					else if( returnMsg.getResultString().indexOf("NoMethod") >= 0 ||
 							returnMsg.getResultString().indexOf("do not") >= 0)
 					{
-						getRequestMessageIDs().remove(new Long(returnMsg.getUserMessageId()));
+						getRequestMessageIDs().remove(new Long(returnMsg.getUserMessageID()));
 					}
 					
 				}

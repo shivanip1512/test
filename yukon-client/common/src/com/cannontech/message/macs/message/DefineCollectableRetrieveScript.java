@@ -6,7 +6,6 @@ package com.cannontech.message.macs.message;
  * @author: 
  */
 
-import com.cannontech.messaging.message.macs.RetrieveScriptMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -25,7 +24,7 @@ public DefineCollectableRetrieveScript() {
  * create method comment.
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new RetrieveScriptMessage();
+	return new RetrieveScript();
 }
 /**
  * getComparator method comment.
@@ -56,7 +55,7 @@ public String getCxxStringId() {
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return com.cannontech.messaging.message.macs.RetrieveScriptMessage.class;
+	return com.cannontech.message.macs.message.RetrieveScript.class;
 }
 /**
  * restoreGuts method comment.
@@ -70,7 +69,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {
 	super.saveGuts(obj, vstr, polystr);
 
-	RetrieveScriptMessage msg = (RetrieveScriptMessage) obj;
+	RetrieveScript msg = (RetrieveScript) obj;
 	vstr.saveObject( msg.getScriptName(), SimpleMappings.CString );
 }
 }

@@ -243,7 +243,7 @@ public Object getValue(Object val)
     int nextId = YukonSpringHook.getBean(PointDao.class).getNextPointId();
 	point.setPointID(nextId);
 	point.getPoint().setPointName(nameString);
-	point.getPoint().setPaoID(new Integer(liteDevice.getYukonId()));
+	point.getPoint().setPaoID(new Integer(liteDevice.getYukonID()));
 	
 	return val;
 
@@ -337,7 +337,7 @@ public void setSelectedDeviceIndex(int deviceID)
 
 		for (int i = 0; i < getDeviceComboBox().getItemCount(); i++)
 		{
-			if ((new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject) getDeviceComboBox().getItemAt(i)).getYukonId()))
+			if ((new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject) getDeviceComboBox().getItemAt(i)).getYukonID()))
 				.compareTo(new Integer(deviceID))
 				== 0)
 			{

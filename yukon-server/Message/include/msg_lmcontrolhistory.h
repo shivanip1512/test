@@ -4,13 +4,9 @@
 #include "message.h"
 #include "yukon.h"
 
-
 class IM_EX_MSG CtiLMControlHistoryMsg : public CtiMessage
 {
-public:
-    DECLARE_COLLECTABLE( CtiLMControlHistoryMsg )
-
-public:
+protected:
 
    long        _paoId;                  //
    long        _pointId;                // Controlled pointid, or zero if NA.
@@ -29,6 +25,8 @@ private:
     static unsigned int _instanceCount;
 
 public:
+
+   RWDECLARE_COLLECTABLE( CtiLMControlHistoryMsg );
 
    typedef CtiMessage Inherited;
 
@@ -78,6 +76,8 @@ public:
    int getAssociationKey() const;
    CtiLMControlHistoryMsg& setAssociationKey(const int key);
 
+   virtual void saveGuts(RWvostream &aStream) const;
+   virtual void restoreGuts(RWvistream& aStream);
    virtual CtiMessage* replicateMessage() const;
 
    virtual void dump() const;

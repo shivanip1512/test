@@ -55,7 +55,7 @@ using std::set;
 extern ULONG _LM_DEBUG;
 extern std::queue<CtiTableLMProgramHistory> _PROGRAM_HISTORY_QUEUE;
 
-DEFINE_COLLECTABLE( CtiLMProgramDirect, CTILMPROGRAMDIRECT_ID )
+RWDEFINE_COLLECTABLE( CtiLMProgramDirect, CTILMPROGRAMDIRECT_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -358,22 +358,12 @@ vector<CtiLMProgramDirectGear*>& CtiLMProgramDirect::getLMProgramDirectGears()
     return _lmprogramdirectgears;
 }
 
-const vector<CtiLMProgramDirectGear*>& CtiLMProgramDirect::getLMProgramDirectGears() const
-{
-    return _lmprogramdirectgears;
-}
-
 /*---------------------------------------------------------------------------
     getLMProgramDirectGroups
 
     Returns the a vector of pointers to this programs groups
 ---------------------------------------------------------------------------*/
 CtiLMGroupVec& CtiLMProgramDirect::getLMProgramDirectGroups()
-{
-    return _lmprogramdirectgroups;
-}
-
-const CtiLMGroupVec& CtiLMProgramDirect::getLMProgramDirectGroups() const
 {
     return _lmprogramdirectgroups;
 }
@@ -389,22 +379,12 @@ set<CtiLMProgramDirectSPtr>& CtiLMProgramDirect::getMasterPrograms()
     return _master_programs;
 }
 
-const set<CtiLMProgramDirectSPtr>& CtiLMProgramDirect::getMasterPrograms() const
-{
-    return _master_programs;
-}
-
 /*----------------------------------------------------------------------------
   getSubordinateProgrmas
 
   Returns a set of pointers to this programs subordinate programs.
 ----------------------------------------------------------------------------*/
 set<CtiLMProgramDirectSPtr>& CtiLMProgramDirect::getSubordinatePrograms()
-{
-    return _subordinate_programs;
-}
-
-const set<CtiLMProgramDirectSPtr>& CtiLMProgramDirect::getSubordinatePrograms() const
 {
     return _subordinate_programs;
 }
@@ -5299,6 +5279,137 @@ CtiLMProgramDirectGear* CtiLMProgramDirect::getCurrentGearObject()
     }
 
     return returnGearObject;
+}
+
+/*-------------------------------------------------------------------------
+    restoreGuts
+
+    Restore self's state from the given stream
+--------------------------------------------------------------------------*/
+void CtiLMProgramDirect::restoreGuts(RWvistream& istrm)
+{
+    CtiLMProgramBase::restoreGuts( istrm );
+
+    RWOrdered rw_groups;
+    for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
+    {
+        CtiLMGroupPtr lm_group  = *i;
+        rw_groups.insert( lm_group.get() );
+    }
+
+    CtiTime tempTime1;
+    CtiTime tempTime2;
+    CtiTime tempTime3;
+    CtiTime tempTime4;
+    CtiTime tempTime5;
+
+    istrm >> _currentgearnumber
+    >> _lastgroupcontrolled
+    >> tempTime1
+    >> tempTime2
+    >> tempTime3
+    >> tempTime4
+    >> tempTime5
+    >> _trigger_offset
+    >> _trigger_restore_offset
+    >> (BOOL)_constraint_override
+    >> _lmprogramdirectgears
+    >> rw_groups;
+
+    setHasBeatThePeakGear(false);
+    for each( CtiLMProgramDirectGear *gear in _lmprogramdirectgears )
+    {
+        if( ciStringEqual(gear->getControlMethod(), CtiLMProgramDirectGear::BeatThePeakMethod) )
+        {
+            setHasBeatThePeakGear(true);
+            break;
+        }
+    }
+
+    _directstarttime = CtiTime(tempTime1);
+    _directstoptime = CtiTime(tempTime2);
+    _notify_active_time = CtiTime(tempTime3);
+    _notify_inactive_time = CtiTime(tempTime4);
+    _startedrampingout = CtiTime(tempTime5);
+    if( _currentgearnumber > 0 )
+    {
+        _currentgearnumber = _currentgearnumber - 1;
+    }
+    //delete_container(rw_groups);
+    rw_groups.clearAndDestroy();
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+
+    Save self's state onto the given stream
+---------------------------------------------------------------------------*/
+void CtiLMProgramDirect::saveGuts(RWvostream& ostrm ) const
+{
+    CtiLMProgramBase::saveGuts( ostrm );
+
+    // Only send active master/subordinate programs
+    std::vector<CtiLMProgramDirectSPtr> active_masters;
+    for( std::set<CtiLMProgramDirectSPtr>::const_iterator m_iter = _master_programs.begin();
+       m_iter != _master_programs.end();
+       m_iter++ )
+    {
+        if( (*m_iter)->getProgramState() != CtiLMProgramBase::InactiveState )
+        {
+            active_masters.push_back(*m_iter);
+        }
+    }
+
+    std::vector<CtiLMProgramDirectSPtr> active_subordinates;
+    for( std::set<CtiLMProgramDirectSPtr>::const_iterator s_iter = _subordinate_programs.begin();
+       s_iter != _subordinate_programs.end();
+       s_iter++ )
+    {
+        if( (*s_iter)->getProgramState() != CtiLMProgramBase::InactiveState )
+        {
+            active_subordinates.push_back(*s_iter);
+        }
+    }
+
+    ostrm << (_currentgearnumber+1)
+    << _lastgroupcontrolled
+    << _directstarttime
+    << _directstoptime
+    << _notify_active_time
+    << _notify_inactive_time
+    << _startedrampingout
+    << _trigger_offset
+    << _trigger_restore_offset
+    << _constraint_override
+    << _lmprogramdirectgears;
+
+    // send groups, using a rwordered seems to be trouble
+    ostrm << _lmprogramdirectgroups.size();
+    for( CtiLMGroupConstIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
+    {
+        CtiLMGroupPtr lm_group  = *i;
+        ostrm << lm_group.get();
+    }
+
+    // send all the active master programs
+    ostrm << active_masters.size();
+    for( std::vector<CtiLMProgramDirectSPtr>::const_iterator m2_iter = active_masters.begin();
+       m2_iter != active_masters.end();
+       m2_iter++ )
+    {
+        ostrm << *m2_iter;
+    }
+
+    // send all the active subordinate programs
+    ostrm << active_subordinates.size();
+    for( std::vector<CtiLMProgramDirectSPtr>::const_iterator s2_iter = active_subordinates.begin();
+       s2_iter != active_subordinates.end();
+       s2_iter++ )
+    {
+        ostrm << *s2_iter;
+    }
+
+    return;
 }
 
 /*---------------------------------------------------------------------------

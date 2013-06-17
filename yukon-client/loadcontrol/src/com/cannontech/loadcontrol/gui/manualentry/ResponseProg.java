@@ -6,9 +6,9 @@ import java.util.List;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.dr.program.service.ConstraintContainer;
-import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
-import com.cannontech.messaging.message.server.ServerResponseMessage;
+import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
+import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
@@ -24,13 +24,13 @@ public class ResponseProg
 	private List<ConstraintContainer> violations = new ArrayList<ConstraintContainer>(8);
 	private String noViolationsMessage = null;
 	private String action = NONE_ACTION;
-	private int status = ServerResponseMessage.STATUS_UNINIT;
+	private int status = ServerResponseMsg.STATUS_UNINIT;
 	private Boolean override = Boolean.FALSE;
 
-	private Program lmProgramBase = null;
+	private LMProgramBase lmProgramBase = null;
 
 	//the request messages that created this response
-	private ManualControlRequestMessage lmRequest = null;
+	private LMManualControlRequest lmRequest = null;
 
 
 	public static final String NONE_ACTION = "";
@@ -44,7 +44,7 @@ public class ResponseProg
 		this( null, null );
 	}
 
-	public ResponseProg( ManualControlRequestMessage req, Program lmProg )
+	public ResponseProg( LMManualControlRequest req, LMProgramBase lmProg )
 	{
 		super();
 		setLmRequest( req );
@@ -141,7 +141,7 @@ public class ResponseProg
 	/**
 	 * @return
 	 */
-	public ManualControlRequestMessage getLmRequest()
+	public LMManualControlRequest getLmRequest()
 	{
 		return lmRequest;
 	}
@@ -149,7 +149,7 @@ public class ResponseProg
 	/**
 	 * @param request
 	 */
-	public void setLmRequest(ManualControlRequestMessage request)
+	public void setLmRequest(LMManualControlRequest request)
 	{
 		lmRequest = request;
 	}
@@ -157,7 +157,7 @@ public class ResponseProg
 	/**
 	 * @return
 	 */
-	public Program getLmProgramBase()
+	public LMProgramBase getLmProgramBase()
 	{
 		return lmProgramBase;
 	}
@@ -165,7 +165,7 @@ public class ResponseProg
 	/**
 	 * @param base
 	 */
-	public void setLmProgramBase(Program base)
+	public void setLmProgramBase(LMProgramBase base)
 	{
 		lmProgramBase = base;
 	}

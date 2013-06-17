@@ -219,7 +219,7 @@ public Object getValue(Object val)
 
 		com.cannontech.database.db.device.MCTBroadcastMapping mappingOfMCTs = new com.cannontech.database.db.device.MCTBroadcastMapping();
 		
-		mappingOfMCTs.setMctID( new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getMCTListAddRemovePanel().rightListGetModel().getElementAt(i)).getYukonId()) );
+		mappingOfMCTs.setMctID( new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getMCTListAddRemovePanel().rightListGetModel().getElementAt(i)).getYukonID()) );
 		
 		mappingOfMCTs.setMctBroadcastID( broadcaster.getDevice().getDeviceID() );
 		
@@ -556,7 +556,7 @@ public void setValue(Object val)
 				{				
 					com.cannontech.database.db.device.MCTBroadcastMapping mappedMCT = ((com.cannontech.database.db.device.MCTBroadcastMapping)broadcaster.getMCTVector().elementAt(j));
 
-					if( mappedMCT.getMctID().intValue() == liteDevice.getYukonId() )
+					if( mappedMCT.getMctID().intValue() == liteDevice.getYukonID() )
 					{
 						availableMCTs.remove(liteDevice);
 						usedMCTs.add(liteDevice );

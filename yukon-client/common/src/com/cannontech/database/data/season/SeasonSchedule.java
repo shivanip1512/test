@@ -1,7 +1,7 @@
 package com.cannontech.database.data.season;
 
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * Insert the type's description here.
@@ -66,14 +66,14 @@ public void delete() throws java.sql.SQLException
  * Creation date: (6/22/2004 10:35:21 AM)
  * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
  */
-public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType) {
+public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
     
-	DBChangeMessage[] msgs = {
-	        new DBChangeMessage(
+	DBChangeMsg[] msgs = {
+	        new DBChangeMsg(
 	                        getScheduleID().intValue(),
-	                        DBChangeMessage.CHANGE_SEASON_SCHEDULE_DB,
-	                        DBChangeMessage.CAT_SEASON_SCHEDULE,
-	                        DBChangeMessage.CAT_SEASON_SCHEDULE,
+	                        DBChangeMsg.CHANGE_SEASON_SCHEDULE_DB,
+	                        DBChangeMsg.CAT_SEASON_SCHEDULE,
+	                        DBChangeMsg.CAT_SEASON_SCHEDULE,
 	                        dbChangeType)
 	};
 	

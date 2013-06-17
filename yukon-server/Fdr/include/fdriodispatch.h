@@ -1,7 +1,7 @@
 #pragma once
 
 #include "message.h"
-#include "connection_client.h"
+#include "connection.h"
 
 #include "fdrio.cpp"
 
@@ -16,6 +16,6 @@ private:
     void _outThread( void );
 
 protected:
-    CtiClientConnection *_dispatchConn;
+    CtiConnection *_dispatchConn;
     BOOL _dbChange;
 };

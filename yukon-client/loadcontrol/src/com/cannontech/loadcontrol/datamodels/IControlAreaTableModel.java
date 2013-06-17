@@ -3,7 +3,7 @@ package com.cannontech.loadcontrol.datamodels;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
+import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.tdc.observe.ObservableJTableRow;
 
 /**
@@ -18,16 +18,16 @@ public interface IControlAreaTableModel extends TableModel
 {
 	void clear();
 	
-	ControlAreaItem getRowAt( int rowNum_ );
+	LMControlArea getRowAt( int rowNum_ );
 	
 	void setObservedRow( int rowNum_ );
 	
 	ObservableJTableRow getObservedRow();
 
 
-	void addControlAreaAt( ControlAreaItem area, int indx );
-	void removeControlArea( ControlAreaItem area );
-	void setControlAreaAt( ControlAreaItem area, int index );
+	void addControlAreaAt( LMControlArea area, int indx );
+	void removeControlArea( LMControlArea area );
+	void setControlAreaAt( LMControlArea area, int index );
 	
 	TableModelListener[] getTableModelListeners();
 }

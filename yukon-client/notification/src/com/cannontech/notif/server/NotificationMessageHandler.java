@@ -7,11 +7,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.util.*;
-import com.cannontech.messaging.message.BaseMessage;
-import com.cannontech.messaging.message.dispatch.MultiMessage;
-import com.cannontech.messaging.util.MessageEvent;
-import com.cannontech.messaging.util.MessageListener;
 import com.cannontech.notif.handler.MessageHandler;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -24,14 +21,14 @@ public class NotificationMessageHandler implements MessageListener
     private static final Logger log = YukonLogManager.getLogger(NotificationMessageHandler.class);
         
     //Built by Autowired Setter
-    private Map<Class<? extends BaseMessage>, MessageHandler<?>> messageHandlerMap;
+    private Map<Class<? extends Message>, MessageHandler<?>> messageHandlerMap;
     
-    private void handleMessage(NotifServerConnection connection, BaseMessage message) {
+    private void handleMessage(NotifServerConnection connection, Message message) {
         try {
-            if (message instanceof MultiMessage) {
-                MultiMessage multiMsg = (MultiMessage) message;
-                for (int i = 0; i < ((MultiMessage) message).getVector().size(); i++) {
-                    handleMessage(connection, (BaseMessage) multiMsg.getVector().get(i));
+            if (message instanceof Multi) {
+                Multi multiMsg = (Multi) message;
+                for (int i = 0; i < ((Multi) message).getVector().size(); i++) {
+                    handleMessage(connection, (Message) multiMsg.getVector().get(i));
                 }
             } else {
                 MessageHandler<?> handler = messageHandlerMap.get(message.getClass());
@@ -48,7 +45,7 @@ public class NotificationMessageHandler implements MessageListener
     @Override
     public void messageReceived(MessageEvent messageEvent) {
         NotifServerConnection connection = (NotifServerConnection)messageEvent.getSource();
-        BaseMessage message = messageEvent.getMessage();
+        Message message = messageEvent.getMessage();
         
         handleMessage(connection, message);
     }
@@ -56,7 +53,7 @@ public class NotificationMessageHandler implements MessageListener
     @Autowired
     public void setMessageHandlers(List<MessageHandler<?>> messageHandlers) {
         /* Build Handler Map */        
-        Builder<Class<? extends BaseMessage>, MessageHandler<?>> builder = ImmutableMap.builder();
+        Builder<Class<? extends Message>, MessageHandler<?>> builder = ImmutableMap.builder();
         
         for (MessageHandler<?> handler : messageHandlers) {
             builder.put(handler.getSupportedMessageType(), handler);

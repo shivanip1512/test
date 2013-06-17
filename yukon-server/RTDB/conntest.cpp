@@ -24,13 +24,11 @@
 #include <rw\thr\mutex.h>
 
 #include "dllbase.h"
-#include "connection_client.h"
-#include "connection_server.h"
-#include "amq_constants.h"
+#include "connection.h"
 #include "msg_cmd.h"
 #include "msg_trace.h"
 
-std::vector<CtiServerConnection*> connections;
+std::set<CtiConnection *> connections;
 
 using namespace std;
 
@@ -46,10 +44,10 @@ enum OperationMode
 };
 
 bool bGCtrlC;
-CtiConnection::Que_t MainQueue_;
+CtiConnection::Que_t          MainQueue_;
 DLLIMPORT extern CtiLogger dout;
 
-// CtrlHandler handles is used to catch ctrl-c when run in a console
+/* CtrlHandler handles is used to catch ctrl-c when run in a console */
 BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
 {
     switch( fdwCtrlType )
@@ -64,6 +62,7 @@ BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
             Sleep(5000);
             return TRUE;
         }
+
     default:
         {
             return FALSE;
@@ -71,63 +70,125 @@ BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
     }
 }
 
-void ConnectionHandlerThread( string name )
+void ConnectionHandlerThread(int portNumber)
 {
-    bool bQuit = false;
+    int               i=0;
+    BOOL              bQuit = FALSE;
 
-    cout << CtiTime() << " Server Connection Handler Thread starting as TID " << rwThreadId() << " (0x" << hex << rwThreadId() << dec << ")" << endl;
+    UINT sanity = 0;
 
-    // Up this threads priority a notch over the other procs
-    CTISetPriority( PRTYC_NOCHANGE, THREAD_PRIORITY_BELOW_NORMAL );
+    CtiCommandMsg     *CmdMsg   = NULL;
 
-    CtiListenerConnection listenerConnection( "com.cooper.eas.yukon.conntest" );
+    RWSocket                      sock;
+    RWInetPort                    NetPort;
+    RWInetAddr                    NetAddr;    // This one for this server!
+
+    CtiExchange       *XChg;
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        cout << CtiTime() << " Server Connection Handler Thread starting as TID " << rwThreadId() << " (0x" << hex << rwThreadId() << dec << ")" << endl;
+    }
+
+    /* Up this threads priority a notch over the other procs */
+    CTISetPriority(PRTYC_NOCHANGE, THREAD_PRIORITY_BELOW_NORMAL);
 
     try
     {
-        for(;!bQuit && !bGCtrlC;)
-        {
-            if( listenerConnection.verifyConnection() != NORMAL )
-            {
-                connections.clear();
+        NetPort  = RWInetPort(portNumber);
+        NetAddr  = RWInetAddr(NetPort);
 
-                listenerConnection.establishConnection();
-            }
+        sock.listen(NetAddr);
 
-            if( listenerConnection.acceptClient() == NORMAL )
-            {
-                auto_ptr<CtiServerConnection> new_conn( new CtiServerConnection( listenerConnection, &MainQueue_ ));
-
-                new_conn->setName( name );
-                new_conn->start();
-
-                connections.push_back( new_conn.release() );
-
-                cout << CtiTime() << " New client connection established " << endl;
-            }
-        }
-    }
-    catch(RWxmsg& msg )
-    {
+        // This is here for looks, in reality it is rarely called.
+        if( !sock.valid() )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << endl << "ConnectionHandler Failed: " << msg.why() << endl;
+            dout << "Could not open socket " << NetAddr << " for listening" << endl;
+
+            exit(-1);
         }
+    }
+    catch(const RWxmsg& x)
+    {
+        cout << "Exception: " << x.why() << endl;
         exit(-1);
     }
     catch(...)
     {
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            cout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            exit(-1);
         }
-        exit(-1);
+    }
+
+    for(;!bQuit && !bGCtrlC;)
+    {
+        try
+        {
+
+            // It seems necessary to make this copy. RW does this and now so do we.
+            RWSocket tempSocket = sock;
+            RWSocket newSocket = tempSocket.accept();
+
+            if( !newSocket.valid() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Could not accept new connection " << endl;
+            }
+            else
+            {
+                RWSocketPortal portal = RWSocketPortal(newSocket, RWSocketPortalBase::Application);
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Connection Handler Thread. New connect. " << endl;
+                }
+
+                {
+                    XChg                      = CTIDBG_new CtiExchange(portal);
+                    CtiConnection *connection = CTIDBG_new CtiConnection(XChg, &MainQueue_);
+
+                    connection->ThreadInitiate();     // Kick off the connection's communication threads.
+
+                    connections.insert(connection);
+                    cout << CtiTime() << " New connection established" << endl;
+                }
+            }
+
+        }
+        catch(RWSockErr& msg )
+        {
+            if(msg.errorNumber() == RWNETENOTSOCK)
+            {
+                cout << CtiTime() << " Socket error RWNETENOTSOCK" << endl;
+                bQuit = TRUE;     // get out of the for loop
+            }
+            else
+            {
+                bQuit = TRUE;
+                // dout << CtiTime() << " VGConnectionHandlerThread: The KNOWN socket has been closed" << endl;
+            }
+        }
+        catch(RWxmsg& msg )
+        {
+            {
+                cout << endl << "VGConnectionHandler Failed: " ;
+                cout << msg.why() << endl;
+                bQuit = TRUE;
+            }
+            throw;
+        }
+        catch(...)
+        {
+            cout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 }
-
-void runServer( string name )
+void runServer(int portNumber)
 {
     bool bQuit = false;
-    RWThreadFunction ConnThread_ = rwMakeThreadFunction( &ConnectionHandlerThread, name );
+    RWThreadFunction ConnThread_ = rwMakeThreadFunction(&ConnectionHandlerThread, portNumber);
     ConnThread_.start();
 
     CtiMessage *msg;
@@ -149,30 +210,26 @@ void runServer( string name )
         ConnThread_.terminate();
     }
 
+    // Shutdown all connections and exit!
+    std::set<CtiConnection *>::iterator iter;
+    for( iter = connections.begin(); iter != connections.end(); iter++ )
+    {
+        CtiConnection *conn = *iter;
+        delete conn;
+    }
+
     return;
 }
 
-void runClient( string name )
+void runClient(int portNumber, string portName)
 {
-    cout << CtiTime() << " Starting Client Connection " << endl;
-
-    CtiClientConnection conn( "com.cooper.eas.yukon.conntest" );
-
-    conn.setName( name );
-    conn.start();
-
-    if( conn.verifyConnection() != NORMAL  )
-    {
-        cout << CtiTime() << " Client connection is failed" << endl;
-        return;
-    }
-
+    CtiConnection conn(portNumber, "127.0.0.1");
+    conn.setName(portName);
+    int i;
     bool bQuit = false;
 
     for(;!bQuit && !bGCtrlC;)
     {
-        int i = -1;
-
         cout << "0: Quit" << endl;
         cout << "1: Send Trace Msg" << endl;
         cout << "Selection Please: ";
@@ -180,9 +237,9 @@ void runClient( string name )
 
         if( i == 1 )
         {
-            auto_ptr<CtiTraceMsg> msg( new CtiTraceMsg() );
-            msg->setTrace( conn.who() + " sent trace msg");
-            conn.WriteConnQue( msg.release() );
+            CtiTraceMsg * msg = CTIDBG_new CtiTraceMsg();
+            msg->setTrace(portName + " sent trace msg");
+            conn.WriteConnQue(msg);
         }
         else if( i == 0 )
         {
@@ -195,43 +252,49 @@ void runClient( string name )
 
 void main(void)
 {
+
     _set_purecall_handler(Purecall);
+    //  start up Windows Sockets
+    WSADATA wsaData;
+    WSAStartup(MAKEWORD (1,1), &wsaData);
 
     if( !SetConsoleCtrlHandler(CtrlHandler,  TRUE) )
     {
-        cout << " Could not install control handler " << endl;
+        cout << "Could not install control handler" << endl;
+
         exit(-1);
     }
 
     bGCtrlC = false;
-    string connectionName;
-    int operationMode;
+    string portName;
+    int operationMode, portNumber;
     cout << "Please give me a name: ";
-    cin  >> connectionName;
+    cin  >> portName;
     cout << "Am I a Server (1) or Client (2): ";
     cin  >> operationMode;
+    cout << "Port Number: ";
+    cin  >> portNumber;
 
-    // fire up the logger thread
-    dout.start              ();
-    dout.setOutputPath      ( gLogDirectory );
-    dout.setRetentionLength ( gLogRetention );
-    dout.setOutputFile      ( "conntest" );
-    dout.setToStdOut        ( true );
-    dout.setWriteInterval   ( 1000 );
+    dout.start();     // fire up the logger thread
+    dout.setOutputPath(gLogDirectory);
+    dout.setRetentionLength(gLogRetention);
+    dout.setOutputFile("conntest");
+    dout.setToStdOut(true);
+    dout.setWriteInterval(1000);
 
     if( operationMode == Server )
     {
-        runServer( connectionName );
-        Sleep( 10000 );
+        runServer(portNumber);
+        Sleep(10000);
     }
     else if( operationMode == Client )
     {
-        runClient( connectionName );
-        Sleep( 10000 );
+        runClient(portNumber, portName);
+        Sleep(10000);
     }
     else
     {
-        cout << " Unknown Operation Mode: "<< operationMode << ", exiting. " << endl;
+        cout << "Unknown Operation Mode: "<< operationMode << ", exiting." << endl;
     }
 }
 

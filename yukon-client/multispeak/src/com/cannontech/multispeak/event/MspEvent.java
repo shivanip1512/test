@@ -6,7 +6,7 @@
  */
 package com.cannontech.multispeak.event;
 
-import com.cannontech.messaging.message.porter.ReturnMessage;
+import com.cannontech.message.porter.message.Return;
 
 /**
  * @author stacey
@@ -22,7 +22,7 @@ public interface MspEvent{
      * @param returnMsg
      * @return boolean
      */
-    public boolean messageReceived(ReturnMessage returnMsg);
+    public boolean messageReceived(Return returnMsg);
     
     public void eventNotification();
     

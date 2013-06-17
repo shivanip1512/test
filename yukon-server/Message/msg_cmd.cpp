@@ -12,7 +12,36 @@
 
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
-DEFINE_COLLECTABLE( CtiCommandMsg, MSG_COMMAND );
+RWDEFINE_COLLECTABLE( CtiCommandMsg, MSG_COMMAND );
+
+void
+CtiCommandMsg::restoreGuts(RWvistream& aStream)
+{
+   int Count, i, iTemp;
+   CtiMessage::restoreGuts( aStream );         // Base class is not really a RWCollectible, but could be.
+
+   aStream >> iOperation >> iOpString >> Count;
+
+   for(i = 0; i < Count; i++)
+   {
+      aStream >> iTemp;
+      iOpArgList.push_back(iTemp);
+   }
+}
+
+void
+CtiCommandMsg::saveGuts(RWvostream &aStream) const
+{
+   CtiMessage::saveGuts( aStream );            // Base class is not really a RWCollectible, but could be.
+
+   aStream << iOperation << iOpString << iOpArgList.size();
+
+   for(std::vector<int>::const_iterator itr = iOpArgList.begin(); itr != iOpArgList.end(); ++itr)
+   {
+      aStream << *itr;
+   }
+
+}
 
 void CtiCommandMsg::dump() const
 {

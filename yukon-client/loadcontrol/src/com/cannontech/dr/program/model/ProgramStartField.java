@@ -5,7 +5,7 @@ import java.util.Comparator;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ResolvableTemplate;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
+import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.user.YukonUserContext;
 
 public class ProgramStartField extends ProgramBackingFieldBase {
@@ -16,7 +16,7 @@ public class ProgramStartField extends ProgramBackingFieldBase {
     }
     
     @Override
-    public Object getProgramValue(Program program, YukonUserContext userContext) {
+    public Object getProgramValue(LMProgramBase program, YukonUserContext userContext) {
         if (hasBlankStartTime(program)) {
             return blankFieldResolvable;
         } else {
@@ -32,8 +32,8 @@ public class ProgramStartField extends ProgramBackingFieldBase {
 
             @Override
             public int compare(DisplayablePao pao1, DisplayablePao pao2) {
-                Program program1 = getProgramFromYukonPao(pao1);
-                Program program2 = getProgramFromYukonPao(pao2);
+                LMProgramBase program1 = getProgramFromYukonPao(pao1);
+                LMProgramBase program2 = getProgramFromYukonPao(pao2);
 
                 if (hasBlankStartTime(program1)) {
                     program1 = null;
@@ -58,7 +58,7 @@ public class ProgramStartField extends ProgramBackingFieldBase {
             }};
     }        
 
-    private boolean hasBlankStartTime(Program program) {
+    private boolean hasBlankStartTime(LMProgramBase program) {
         return program == null || program.getDisableFlag()
             || program.getStartTime() == null
             || program.getStartTime().before(CtiUtilities.get1990GregCalendar());

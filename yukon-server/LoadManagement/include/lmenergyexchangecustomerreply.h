@@ -10,12 +10,12 @@
 #include "lmenergyexchangehourlycustomer.h"
 #include "row_reader.h"
 
-class CtiLMEnergyExchangeCustomerReply
+class CtiLMEnergyExchangeCustomerReply : public RWCollectable
 {
 
 public:
 
-DECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomerReply );
+RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomerReply )
 
     CtiLMEnergyExchangeCustomerReply();
     CtiLMEnergyExchangeCustomerReply(Cti::RowReader &rdr);
@@ -33,7 +33,6 @@ DECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomerReply );
     const std::string& getNameOfAcceptPerson() const;
     const std::string& getEnergyExchangeNotes() const;
     std::vector<CtiLMEnergyExchangeHourlyCustomer*>& getLMEnergyExchangeHourlyCustomers();
-    const std::vector<CtiLMEnergyExchangeHourlyCustomer*>& getLMEnergyExchangeHourlyCustomers() const;
 
     CtiLMEnergyExchangeCustomerReply& setCustomerId(LONG custid);
     CtiLMEnergyExchangeCustomerReply& setOfferId(LONG offid);
@@ -52,6 +51,10 @@ DECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomerReply );
     void restoreDynamicData(Cti::RowReader &rdr);
     void dumpDynamicData();
     
+    //Members inherited from RWCollectable
+    void restoreGuts(RWvistream& );
+    void saveGuts(RWvostream& ) const;
+
     CtiLMEnergyExchangeCustomerReply& operator=(const CtiLMEnergyExchangeCustomerReply& right);
 
     int operator==(const CtiLMEnergyExchangeCustomerReply& right) const;

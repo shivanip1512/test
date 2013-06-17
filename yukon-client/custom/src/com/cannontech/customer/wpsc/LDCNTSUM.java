@@ -11,7 +11,7 @@ import com.cannontech.database.SqlUtils;
  */
 public class LDCNTSUM implements Runnable
 {
-	private com.cannontech.dispatch.DispatchClientConnection dispatchConn = null;
+	private com.cannontech.message.dispatch.ClientConnection dispatchConn = null;
 
 	private long writeDelay = 30000;
 	private java.lang.String fileName = "LDCNTSUM.SND";
@@ -26,7 +26,7 @@ public class LDCNTSUM implements Runnable
 /**
  * LDCNTSUM constructor comment.
  */
-public LDCNTSUM(com.cannontech.dispatch.DispatchClientConnection newDispatchConn, String outputFile)
+public LDCNTSUM(com.cannontech.message.dispatch.ClientConnection newDispatchConn, String outputFile)
 {
 	super();
 	this.dispatchConn = newDispatchConn;
@@ -38,20 +38,20 @@ public LDCNTSUM(com.cannontech.dispatch.DispatchClientConnection newDispatchConn
  * @param msg com.cannontech.message.util.Message
  * @param l java.util.List
  */
-private void decodeMessge(com.cannontech.messaging.message.BaseMessage msg, java.util.List l) 
+private void decodeMessge(com.cannontech.message.util.Message msg, java.util.List l) 
 {
 	
-	if( msg instanceof com.cannontech.messaging.message.dispatch.MultiMessage )
+	if( msg instanceof com.cannontech.message.dispatch.message.Multi )
 	{
-		java.util.Vector v = ((com.cannontech.messaging.message.dispatch.MultiMessage) msg).getVector();
+		java.util.Vector v = ((com.cannontech.message.dispatch.message.Multi) msg).getVector();
 		for( int i = 0; i < v.size(); i++ )
 		{
-			com.cannontech.messaging.message.BaseMessage m = (com.cannontech.messaging.message.BaseMessage) v.elementAt(i);
-			if( m instanceof com.cannontech.messaging.message.dispatch.SignalMessage )
+			com.cannontech.message.util.Message m = (com.cannontech.message.util.Message) v.elementAt(i);
+			if( m instanceof com.cannontech.message.dispatch.message.Signal )
 				l.add(m);
 		}
 	}
-	else if( msg instanceof com.cannontech.messaging.message.dispatch.SignalMessage )
+	else if( msg instanceof com.cannontech.message.dispatch.message.Signal )
 	{
 		l.add(msg);
 	}
@@ -64,7 +64,7 @@ private void decodeMessge(com.cannontech.messaging.message.BaseMessage msg, java
  * @return java.lang.String
  * @param signal com.cannontech.message.dispatch.message.Signal
  */
-private String decodeSignal(com.cannontech.messaging.message.dispatch.SignalMessage signal) 
+private String decodeSignal(com.cannontech.message.dispatch.message.Signal signal) 
 {
 
 	String retVal = null;
@@ -72,7 +72,7 @@ private String decodeSignal(com.cannontech.messaging.message.dispatch.SignalMess
 	try
 	{
 		//First determine whether we need to do any work
-		if( signal.getPointId() != com.cannontech.database.data.point.PointTypes.SYS_PID_LOADMANAGEMENT )
+		if( signal.getPointID() != com.cannontech.database.data.point.PointTypes.SYS_PID_LOADMANAGEMENT )
 			return null;
 
 		//make sure the action is one we care about
@@ -297,21 +297,21 @@ public void run()
 		{
 			Object in;
 
-			if( (in = dispatchConn.read(0L)) != null && in instanceof com.cannontech.messaging.message.BaseMessage )
+			if( (in = dispatchConn.read(0L)) != null && in instanceof com.cannontech.message.util.Message )
 			{				
 				long writeAt = System.currentTimeMillis() + getWriteDelay();
 				
 				java.util.LinkedList writeList = new java.util.LinkedList();
-				decodeMessge((com.cannontech.messaging.message.BaseMessage) in, writeList);
+				decodeMessge((com.cannontech.message.util.Message) in, writeList);
 
 				if( writeList.isEmpty() )
 					continue;
 
 				while( writeAt > System.currentTimeMillis() )
 				{
-					if( (in = dispatchConn.read(0L)) != null && in instanceof com.cannontech.messaging.message.BaseMessage )
+					if( (in = dispatchConn.read(0L)) != null && in instanceof com.cannontech.message.util.Message )
 					{
-						decodeMessge((com.cannontech.messaging.message.BaseMessage) in, writeList);
+						decodeMessge((com.cannontech.message.util.Message) in, writeList);
 					}
 					else
 						Thread.sleep(200);							
@@ -322,12 +322,12 @@ public void run()
 				try
 				{
 					writer = new java.io.PrintWriter( new java.io.BufferedOutputStream( new java.io.FileOutputStream( getFileName(), true) ));
-					com.cannontech.messaging.message.dispatch.SignalMessage sig;
+					com.cannontech.message.dispatch.message.Signal sig;
 					java.util.Iterator iter = writeList.iterator();
 					int receivedCount = 0;
 					while( iter.hasNext() )
 					{
-						sig = (com.cannontech.messaging.message.dispatch.SignalMessage) iter.next();
+						sig = (com.cannontech.message.dispatch.message.Signal) iter.next();
 
 						if( WPSCMain.DEBUG )
 						{
@@ -335,9 +335,9 @@ public void run()
 							//Because of the logger not understanding an end of line character,
 							//Each element is instead specified this way.  Hack..whatever...
 							WPSCMain.logMessage("   Signal received:" , com.cannontech.common.util.LogWriter.DEBUG);
-							WPSCMain.logMessage("                Id: " + sig.getPointId(), com.cannontech.common.util.LogWriter.DEBUG);
+							WPSCMain.logMessage("                Id: " + sig.getPointID(), com.cannontech.common.util.LogWriter.DEBUG);
 							WPSCMain.logMessage("          Log Type: " + sig.getLogType(), com.cannontech.common.util.LogWriter.DEBUG);
-							WPSCMain.logMessage("  Logging Priority: " + sig.getCategoryId(), com.cannontech.common.util.LogWriter.DEBUG);
+							WPSCMain.logMessage("  Logging Priority: " + sig.getCategoryID(), com.cannontech.common.util.LogWriter.DEBUG);
 							WPSCMain.logMessage("       Description: " + sig.getDescription(), com.cannontech.common.util.LogWriter.DEBUG);
 							WPSCMain.logMessage("            Action: " + sig.getAction(), com.cannontech.common.util.LogWriter.DEBUG);
 							WPSCMain.logMessage("              Tags: " + sig.getTags(), com.cannontech.common.util.LogWriter.DEBUG);

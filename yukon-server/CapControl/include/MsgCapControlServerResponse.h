@@ -4,8 +4,7 @@
 
 class CtiCCServerResponse : public CtiMessage
 {
-    public:
-        DECLARE_COLLECTABLE( CtiCCServerResponse );
+    RWDECLARE_COLLECTABLE( CtiCCServerResponse )
 
     public:
         typedef CtiMessage Inherited;
@@ -27,9 +26,11 @@ class CtiCCServerResponse : public CtiMessage
 
         virtual ~CtiCCServerResponse();
 
-        long getMessageId() const;
-        long getResponseType() const;
         std::string getResponse() const;
+        long getResponseType() const;
+
+        void restoreGuts(RWvistream&);
+        void saveGuts(RWvostream&) const;
 
         CtiCCServerResponse& operator=(const CtiCCServerResponse& right);
 

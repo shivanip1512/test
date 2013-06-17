@@ -7,7 +7,6 @@ package com.cannontech.loadcontrol.dynamic.receive;
  */
 import java.util.GregorianCalendar;
 
-import com.cannontech.messaging.message.loadcontrol.dynamic.receive.ProgramChanged;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -22,13 +21,13 @@ public class CtiLMDynamicProgramMsg implements com.roguewave.vsj.DefineCollectab
     }
     
     public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-    	return new ProgramChanged();
+    	return new LMProgramChanged();
     }
     
     public com.roguewave.tools.v2_0.Comparator getComparator() {
     	return new Comparator() {
     		public int compare(Object x, Object y) {
-    			return (((ProgramChanged)x).getPaoId() - ((ProgramChanged)y).getPaoId() );
+    			return (((LMProgramChanged)x).getPaoID().intValue() - ((LMProgramChanged)y).getPaoID().intValue() );
     		}
     	};
     }
@@ -42,13 +41,13 @@ public class CtiLMDynamicProgramMsg implements com.roguewave.vsj.DefineCollectab
     }
     
     public Class getJavaClass() {
-    	return ProgramChanged.class;
+    	return LMProgramChanged.class;
     }
     
     public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {
-    	ProgramChanged lmProgramChanged = (ProgramChanged) obj;
+    	LMProgramChanged lmProgramChanged = (LMProgramChanged) obj;
     	
-    	lmProgramChanged.setPaoId((int)vstr.extractUnsignedInt());
+    	lmProgramChanged.setPaoID((int)vstr.extractUnsignedInt());
     	lmProgramChanged.setDisableFlag(vstr.extractUnsignedInt() > 0);
         lmProgramChanged.setCurrentGearNumber((int)vstr.extractUnsignedInt());
         lmProgramChanged.setLastGroupControlled((int)vstr.extractUnsignedInt());

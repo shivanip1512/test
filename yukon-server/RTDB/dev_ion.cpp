@@ -702,6 +702,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
     }
     else
     {
+        char error_str[80];
         string resultString;
 
         if( !ErrReturn )
@@ -709,7 +710,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
             ErrReturn = NOTNORMAL;
         }
 
-        const string error_str = GetErrorString(ErrReturn);
+        GetErrorString(ErrReturn, error_str);
 
         resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
 
@@ -916,7 +917,9 @@ INT CtiDeviceION::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, li
             }
         }
 
-        const string error_str = GetErrorString(ErrReturn);
+        char error_str[80];
+
+        GetErrorString(ErrReturn, error_str);
 
         resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
 

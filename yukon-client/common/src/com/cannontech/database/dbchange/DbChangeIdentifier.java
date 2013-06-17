@@ -1,6 +1,6 @@
 package com.cannontech.database.dbchange;
 
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 public class DbChangeIdentifier {
     private int database;
@@ -10,7 +10,7 @@ public class DbChangeIdentifier {
         this.database = database;
         this.id = id;
     }
-    public static DbChangeIdentifier createIdentifier(DBChangeMessage dbChangeMessage) {
+    public static DbChangeIdentifier createIdentifier(DBChangeMsg dbChangeMessage) {
         return new DbChangeIdentifier(dbChangeMessage.getDatabase(), dbChangeMessage.getId());
     }
     public int getDatabase() {

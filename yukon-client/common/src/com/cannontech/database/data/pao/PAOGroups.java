@@ -4,7 +4,7 @@ import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.messaging.message.macs.ScheduleMessage;
+import com.cannontech.message.macs.message.Schedule;
 import com.google.common.collect.ImmutableSet;
 
 /**
@@ -384,9 +384,9 @@ public final static int getDeviceType(String typeString)
         return CBC_7024;
     else if (isStringDevice(compareString, STRING_CBC_DNP[0]))
         return CBC_DNP;
-    else if (isStringDevice(compareString, ScheduleMessage.SIMPLE_TYPE))
+    else if (isStringDevice(compareString, Schedule.SIMPLE_TYPE))
         return SIMPLE_SCHEDULE;
-    else if (isStringDevice(compareString, ScheduleMessage.SCRIPT_TYPE))
+    else if (isStringDevice(compareString, Schedule.SCRIPT_TYPE))
         return SCRIPT;
     else if ( isStringDevice(compareString, STRING_NEUTRAL_MONITOR[0] ))
         return NEUTRAL_MONITOR;
@@ -733,9 +733,9 @@ public final static String getPAOTypeString(int type)
         case CBC_DNP:
             return STRING_CBC_DNP[0];
         case SIMPLE_SCHEDULE:
-            return ScheduleMessage.SIMPLE_TYPE;
+            return Schedule.SIMPLE_TYPE;
         case SCRIPT:
-            return ScheduleMessage.SCRIPT_TYPE;
+            return Schedule.SCRIPT_TYPE;
         case FAULT_CI:
             return STRING_FAULT_CI[0];
         case NEUTRAL_MONITOR:

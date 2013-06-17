@@ -5,7 +5,7 @@ package com.cannontech.clientutils.tags;
  * Creation date: (1/9/2001 2:56:48 PM)
  * @author: 
  */
-import com.cannontech.messaging.message.dispatch.SignalMessage;
+import com.cannontech.message.dispatch.message.Signal;
 
 public final class TagUtils {
 /**
@@ -54,7 +54,7 @@ public static String getTagString(int tags)
 }
 
 public static boolean isNewAlarm(int tags) {
-    boolean result = (tags & SignalMessage.TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL) == 0;
+    boolean result = (tags & Signal.TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL) == 0;
     return result;
 }
 
@@ -70,7 +70,7 @@ public static boolean isAlarmActive(int tags)
 	{
 		checkAlarmStateValidity(tags);
 		return
-			(tags & SignalMessage.TAG_ACTIVE_ALARM) != 0;
+			(tags & Signal.TAG_ACTIVE_ALARM) != 0;
 	}
 	catch( IllegalAlarmSateException e )
 	{
@@ -91,7 +91,7 @@ public static boolean isAlarmUnacked(int tags)
 	{
 		checkAlarmStateValidity(tags);
 		return 
-			(tags & SignalMessage.TAG_UNACKNOWLEDGED_ALARM) != 0;
+			(tags & Signal.TAG_UNACKNOWLEDGED_ALARM) != 0;
 	}
 	catch( IllegalAlarmSateException e )
 	{
@@ -110,7 +110,7 @@ public static boolean isConditionActive(int tags)
     try
     {
         checkAlarmStateValidity(tags);
-        return  (tags & SignalMessage.TAG_ACTIVE_CONDITION) != 0;
+        return  (tags & Signal.TAG_ACTIVE_CONDITION) != 0;
     }
     catch( IllegalAlarmSateException e )
     {
@@ -126,12 +126,12 @@ public static boolean isConditionActive(int tags)
  */
 public static boolean isAnyAlarm(int tags) 
 {
-	return ( (tags & SignalMessage.MASK_ANY_ALARM) != 0 );
+	return ( (tags & Signal.MASK_ANY_ALARM) != 0 );
 }
 
 public static boolean isControlPending(int tags) 
 {
-	return ( (tags & SignalMessage.TAG_CONTROL_PENDING) != 0 );
+	return ( (tags & Signal.TAG_CONTROL_PENDING) != 0 );
 }
 
 /**
@@ -141,7 +141,7 @@ public static boolean isControlPending(int tags)
  */
 public static boolean isControlEnabled(long tags ) 
 {
-	return( (tags & SignalMessage.MASK_ANY_CONTROL_DISABLE) == 0 );
+	return( (tags & Signal.MASK_ANY_CONTROL_DISABLE) == 0 );
 }
 /**
  * Insert the method's description here.
@@ -150,7 +150,7 @@ public static boolean isControlEnabled(long tags )
  */
 public static boolean isControllablePoint(long tags ) 
 {
-	return( (tags & SignalMessage.TAG_ATTRIB_CONTROL_AVAILABLE) != 0 );
+	return( (tags & Signal.TAG_ATTRIB_CONTROL_AVAILABLE) != 0 );
 }
 /**
  * Insert the method's description here.
@@ -159,7 +159,7 @@ public static boolean isControllablePoint(long tags )
  */
 public static boolean isDeviceControlInhibited(long tags) 
 {
-	return( (tags & SignalMessage.TAG_DISABLE_CONTROL_BY_DEVICE) > 0 );	
+	return( (tags & Signal.TAG_DISABLE_CONTROL_BY_DEVICE) > 0 );	
 }
 /**
  * Insert the method's description here.
@@ -168,7 +168,7 @@ public static boolean isDeviceControlInhibited(long tags)
  */
 public static boolean isDeviceOutOfService(long tags) 
 {
-	return( (tags & SignalMessage.TAG_DISABLE_DEVICE_BY_DEVICE) > 0 );	
+	return( (tags & Signal.TAG_DISABLE_DEVICE_BY_DEVICE) > 0 );	
 }
 /**
  * Insert the method's description here.
@@ -177,7 +177,7 @@ public static boolean isDeviceOutOfService(long tags)
  */
 public static boolean isPointControlInhibited(long tags) 
 {
-	return( (tags & SignalMessage.TAG_DISABLE_CONTROL_BY_POINT) > 0 );
+	return( (tags & Signal.TAG_DISABLE_CONTROL_BY_POINT) > 0 );
 }
 /**
  * Insert the method's description here.
@@ -186,7 +186,7 @@ public static boolean isPointControlInhibited(long tags)
  */
 public static boolean isPointOutOfService(long tags) 
 {
-	return( (tags & SignalMessage.TAG_DISABLE_POINT_BY_POINT) > 0 );	
+	return( (tags & Signal.TAG_DISABLE_POINT_BY_POINT) > 0 );	
 }
 
 }

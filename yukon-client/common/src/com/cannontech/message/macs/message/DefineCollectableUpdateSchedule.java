@@ -6,7 +6,6 @@ package com.cannontech.message.macs.message;
  * @author: 
  */
 
-import com.cannontech.messaging.message.macs.UpdateScheduleMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -25,7 +24,7 @@ public DefineCollectableUpdateSchedule() {
  * create method comment.
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new UpdateScheduleMessage();
+	return new UpdateSchedule();
 }
 /**
  * getComparator method comment.
@@ -56,7 +55,7 @@ public String getCxxStringId() {
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return com.cannontech.messaging.message.macs.UpdateScheduleMessage.class;
+	return com.cannontech.message.macs.message.UpdateSchedule.class;
 }
 /**
  * restoreGuts method comment.
@@ -70,7 +69,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {
 	super.saveGuts(obj, vstr, polystr);
 
-	UpdateScheduleMessage msg = (UpdateScheduleMessage) obj;
+	UpdateSchedule msg = (UpdateSchedule) obj;
 	// save schedule here
 	vstr.saveObject( msg.getSchedule(), polystr );
 

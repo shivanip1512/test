@@ -5,10 +5,26 @@
 
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
-DEFINE_COLLECTABLE( CtiReturnMsg, MSG_PCRETURN );
+RWDEFINE_COLLECTABLE( CtiReturnMsg, MSG_PCRETURN );
 
 CtiReturnMsg::~CtiReturnMsg()
 {
+}
+
+void CtiReturnMsg::saveGuts(RWvostream &aStream) const
+{
+    Inherited::saveGuts(aStream);
+
+    aStream << DeviceId() << CommandString() << ResultString() << Status() << RouteID() << MacroOffset() <<
+       AttemptNum() << GroupMessageId() << UserMessageId() << ExpectMore();
+}
+
+void CtiReturnMsg::restoreGuts(RWvistream& aStream)
+{
+    Inherited::restoreGuts(aStream);
+
+    aStream >> _device_id >> _command_string >> _result_string >> _status >> _routeid >> _macro_offset
+    >> _attempt_num >> _group_message_id >> _user_message_id >> _expectMore;
 }
 
 long CtiReturnMsg::DeviceId() const
@@ -163,7 +179,7 @@ void CtiReturnMsg::dump() const
 }
 
 CtiReturnMsg::CtiReturnMsg() :
-    _expectMore(false),
+    _expectMore(0),
     _device_id(-1L),
     _status(0),
     _routeid(0),
@@ -185,7 +201,7 @@ CtiReturnMsg::CtiReturnMsg(long device_id,
                  long user_message_id,
                  int soe,
                  CtiMultiMsg_vec &data) :
-     _expectMore(false),
+     _expectMore(0),
      _device_id(device_id),
      _command_string(command_string),
      _result_string(result_string),
@@ -205,7 +221,7 @@ CtiReturnMsg::CtiReturnMsg(long device_id,
                            const PIL_ECHO &pil_echo,
                            const string &result_string,
                            int status) :
-     _expectMore(false),
+     _expectMore(0),
      _device_id(device_id),
      _command_string(pil_echo.CommandStr),
      _result_string(result_string),

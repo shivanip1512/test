@@ -14,9 +14,9 @@ import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.amr.monitors.DeviceDataMonitorCacheService;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
-import com.cannontech.dispatch.DatabaseChangeEvent;
-import com.cannontech.dispatch.DbChangeCategory;
-import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.collect.Lists;
 
 public class DeviceDataMonitorCacheServiceImpl implements DeviceDataMonitorCacheService {

@@ -21,7 +21,7 @@ using std::endl;
 
 extern unsigned long _CC_DEBUG;
 
-DEFINE_COLLECTABLE( CtiCCState, CTICCSTATE_ID )
+RWDEFINE_COLLECTABLE( CtiCCState, CTICCSTATE_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -114,6 +114,34 @@ CtiCCState& CtiCCState::setBackgroundColor(long backgroundcolor)
     _backgroundcolor = backgroundcolor;
 
     return *this;
+}
+
+/*-------------------------------------------------------------------------
+    restoreGuts
+
+    Restore self's state from the given stream
+--------------------------------------------------------------------------*/
+void CtiCCState::restoreGuts(RWvistream& istrm)
+{
+    RWCollectable::restoreGuts( istrm );
+
+    istrm >> _text
+          >> _foregroundcolor
+          >> _backgroundcolor;
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+
+    Save self's state onto the given stream
+---------------------------------------------------------------------------*/
+void CtiCCState::saveGuts(RWvostream& ostrm ) const
+{
+    RWCollectable::saveGuts( ostrm );
+
+    ostrm << _text
+          << _foregroundcolor
+          << _backgroundcolor;
 }
 
 /*---------------------------------------------------------------------------

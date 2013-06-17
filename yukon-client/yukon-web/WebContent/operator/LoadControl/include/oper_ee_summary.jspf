@@ -99,13 +99,13 @@
           <%
                           {
                         
-                                ProgramEnergyExchange[] eeProgs = cache.getEnergyCompanyEnergyExchangePrograms(energyCompanyID);
+                                LMProgramEnergyExchange[] eeProgs = cache.getEnergyCompanyEnergyExchangePrograms(energyCompanyID);
                                                        
                                 for( int i = 0; i < eeProgs.length; i++ )
                                 {
                                     for( int j = 0; j < eeProgs[i].getEnergyExchangeOffers().size(); j++ )
                                     {
-                                        EnergyExchangeOffer offer = (EnergyExchangeOffer) eeProgs[i].getEnergyExchangeOffers().elementAt(j);
+                                        LMEnergyExchangeOffer offer = (LMEnergyExchangeOffer) eeProgs[i].getEnergyExchangeOffers().elementAt(j);
 
                                         // Check if it is today                                   
                                         GregorianCalendar nowCal = new GregorianCalendar();
@@ -120,21 +120,21 @@
                                             // the offer is for today, now show all revisions                                            
                                             for( int k = 0; k < offer.getEnergyExchangeOfferRevisions().size(); k++ )
                                             {                                                
-                                                EnergyExchangeOfferRevision revision =  
-                                                    (EnergyExchangeOfferRevision) offer.getEnergyExchangeOfferRevisions().elementAt(k);
+                                                LMEnergyExchangeOfferRevision revision =  
+                                                    (LMEnergyExchangeOfferRevision) offer.getEnergyExchangeOfferRevisions().elementAt(k);
 
                                                 // Add up the total target from all the hourly offers
                                                  double targetTotal = 0.0;
                                                  java.util.Vector hourlyOffers = revision.getEnergyExchangeHourlyOffers();
                                                  for( int l = 0; l < hourlyOffers.size(); l++ )
                                                  {
-                                                     EnergyExchangeHourlyOffer hourOffer = (EnergyExchangeHourlyOffer) hourlyOffers.elementAt(l);
-                                                     targetTotal += hourOffer.getAmountRequested();
+                                                     LMEnergyExchangeHourlyOffer hourOffer = (LMEnergyExchangeHourlyOffer) hourlyOffers.elementAt(l);
+                                                     targetTotal += hourOffer.getAmountRequested().doubleValue();
                                                  }
                                                  
                                                 // Add up all the commited from the customer replies
                                                  double committedTotal = 0.0;
-                                                 EnergyExchangeCustomer[] progCustomers = cache.getEnergyExchangeCustomers(eeProgs[i].getYukonId().longValue());
+                                                 LMEnergyExchangeCustomer[] progCustomers = cache.getEnergyExchangeCustomers(eeProgs[i].getYukonID().longValue());
 
                                                  if( progCustomers != null )
                                                  {
@@ -143,16 +143,16 @@
                                                          java.util.Vector replies = progCustomers[m].getEnergyExchangeCustomerReplies();
                                                          for( int n = 0; n < replies.size(); n++ )
                                                          {
-                                                              EnergyExchangeCustomerReply reply = (EnergyExchangeCustomerReply) replies.elementAt(n);
-                                                              if( reply.getOfferId() == revision.getOfferId() &&
-                                                                  reply.getRevisionNumber() <= revision.getRevisionNumber() ) 
+                                                              LMEnergyExchangeCustomerReply reply = (LMEnergyExchangeCustomerReply) replies.elementAt(n);
+                                                              if( reply.getOfferID().intValue() == revision.getOfferID().intValue() &&
+                                                                  reply.getRevisionNumber().intValue() <= revision.getRevisionNumber().intValue() ) 
                                                               {                                                              
                                                                 java.util.Vector hourlyReplies = reply.getEnergyExchangeHourlyCustomer();
                                                                 for( int o = 0; o < hourlyReplies.size(); o++ )
                                                                 {
-                                                                    EnergyExchangeHourlyCustomer hourlyReply = (EnergyExchangeHourlyCustomer) hourlyReplies.elementAt(o);
-                                                                    if( hourlyReply.getRevisionNumber() == reply.getRevisionNumber())
-                                                                      committedTotal += hourlyReply.getAmountCommitted();
+                                                                    LMEnergyExchangeHourlyCustomer hourlyReply = (LMEnergyExchangeHourlyCustomer) hourlyReplies.elementAt(o);
+                                                                    if( hourlyReply.getRevisionNumber().intValue() == reply.getRevisionNumber().intValue())
+                                                                      committedTotal += hourlyReply.getAmountCommitted().doubleValue();
                                                                 }
                                                               }
                                                          }
@@ -160,7 +160,7 @@
                                                  }
                           %>
           <tr valign="top"> 
-            <td class="TableCell"><a href="oper_ee.jsp?tab=current&prog=<%= offer.getYukonId() %>&offer=<%= offer.getOfferId() %>&rev=<%= revision.getRevisionNumber() %>" class="Link1"><%= offer.getOfferId() + "-" + revision.getRevisionNumber() %></a></td>
+            <td class="TableCell"><a href="oper_ee.jsp?tab=current&prog=<%= offer.getYukonID() %>&offer=<%= offer.getOfferID() %>&rev=<%= revision.getRevisionNumber() %>" class="Link1"><%= offer.getOfferID() + "-" + revision.getRevisionNumber() %></a></td>
             <td class="TableCell"><%= eeProgs[i].getYukonName() %></td>
             <td class="TableCell"><%= offer.getRunStatus() %></td>
             <td class="TableCell"><%= timePart.format(revision.getNotificationDateTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(revision.getNotificationDateTime()) %></td>
@@ -193,14 +193,14 @@
         <%
                           {
                         
-                                ProgramEnergyExchange[] eeProgs = cache.getEnergyCompanyEnergyExchangePrograms(energyCompanyID);
+                                LMProgramEnergyExchange[] eeProgs = cache.getEnergyCompanyEnergyExchangePrograms(energyCompanyID);
 //out.println("found: " + eeProgs.length + " ee progs for ee company id: " + energyCompanyID);
                                 for( int i = 0; i < eeProgs.length; i++ )
                                 {
                                   //out.println("found: " + eeProgs[i].getEnergyExchangeOffers().size() + " offers :P");
                                     for( int j = 0; j < eeProgs[i].getEnergyExchangeOffers().size(); j++ )
                                     {   
-                                        EnergyExchangeOffer offer = (EnergyExchangeOffer) eeProgs[i].getEnergyExchangeOffers().elementAt(j);
+                                        LMEnergyExchangeOffer offer = (LMEnergyExchangeOffer) eeProgs[i].getEnergyExchangeOffers().elementAt(j);
 
                                         // Check if it is today                                   
                                         GregorianCalendar nowCal = new GregorianCalendar();
@@ -216,8 +216,8 @@
                                             //out.println("found: " + offer.getEnergyExchangeOfferRevisions().size() + " revisions");
                                             for( int k = 0; k < offer.getEnergyExchangeOfferRevisions().size(); k++ )
                                             {                                                
-                                                EnergyExchangeOfferRevision revision =  
-                                                    (EnergyExchangeOfferRevision) offer.getEnergyExchangeOfferRevisions().elementAt(k);
+                                                LMEnergyExchangeOfferRevision revision =  
+                                                    (LMEnergyExchangeOfferRevision) offer.getEnergyExchangeOfferRevisions().elementAt(k);
 
                                                 // Add up the total target from all the hourly offers
                                                  double targetTotal = 0.0;
@@ -225,13 +225,13 @@
                                                 // out.println("found: " + hourlyOffers.size() + " hourly!!>>   ");
                                                  for( int l = 0; l < hourlyOffers.size(); l++ )
                                                  {
-                                                     EnergyExchangeHourlyOffer hourOffer = (EnergyExchangeHourlyOffer) hourlyOffers.elementAt(l);
-                                                     targetTotal += hourOffer.getAmountRequested();
+                                                     LMEnergyExchangeHourlyOffer hourOffer = (LMEnergyExchangeHourlyOffer) hourlyOffers.elementAt(l);
+                                                     targetTotal += hourOffer.getAmountRequested().doubleValue();
                                                  }
                                                  
                                                 // Add up all the commited from the customer replies
                                                  double committedTotal = 0.0;
-                                                 EnergyExchangeCustomer[] progCustomers = cache.getEnergyExchangeCustomers(eeProgs[i].getYukonId().longValue());
+                                                 LMEnergyExchangeCustomer[] progCustomers = cache.getEnergyExchangeCustomers(eeProgs[i].getYukonID().longValue());
 
                                                  if( progCustomers != null )
                                                  {
@@ -240,16 +240,16 @@
                                                          java.util.Vector replies = progCustomers[m].getEnergyExchangeCustomerReplies();
                                                          for( int n = 0; n < replies.size(); n++ )
                                                          {
-                                                              EnergyExchangeCustomerReply reply = (EnergyExchangeCustomerReply) replies.elementAt(n);
-                                                              if( reply.getOfferId() == revision.getOfferId() &&
-                                                                  reply.getRevisionNumber() <= revision.getRevisionNumber() )
+                                                              LMEnergyExchangeCustomerReply reply = (LMEnergyExchangeCustomerReply) replies.elementAt(n);
+                                                              if( reply.getOfferID().intValue() == revision.getOfferID().intValue() &&
+                                                                  reply.getRevisionNumber().intValue() <= revision.getRevisionNumber().intValue() )
                                                               {                                                              
                                                                 java.util.Vector hourlyReplies = reply.getEnergyExchangeHourlyCustomer();
                                                                 for( int o = 0; o < hourlyReplies.size(); o++ )
                                                                 {
-                                                                    EnergyExchangeHourlyCustomer hourlyReply = (EnergyExchangeHourlyCustomer) hourlyReplies.elementAt(o);
-                                                                    if( hourlyReply.getRevisionNumber() == reply.getRevisionNumber())
-                                                                      committedTotal += hourlyReply.getAmountCommitted();
+                                                                    LMEnergyExchangeHourlyCustomer hourlyReply = (LMEnergyExchangeHourlyCustomer) hourlyReplies.elementAt(o);
+                                                                    if( hourlyReply.getRevisionNumber().intValue() == reply.getRevisionNumber().intValue())
+                                                                      committedTotal += hourlyReply.getAmountCommitted().doubleValue();
                                                                 }
                                                               }
                                                          }
@@ -257,7 +257,7 @@
                                                  }
                           %>
         <tr valign="top"> 
-          <td class="TableCell"><a href="oper_ee.jsp?tab=current&prog=<%= offer.getYukonId() %>&offer=<%= offer.getOfferId() %>&rev=<%= revision.getRevisionNumber() %>" class="Link1"><%= offer.getOfferId() + "-" + revision.getRevisionNumber() %></a></td>
+          <td class="TableCell"><a href="oper_ee.jsp?tab=current&prog=<%= offer.getYukonID() %>&offer=<%= offer.getOfferID() %>&rev=<%= revision.getRevisionNumber() %>" class="Link1"><%= offer.getOfferID() + "-" + revision.getRevisionNumber() %></a></td>
           <td class="TableCell"><%= eeProgs[i].getYukonName() %></td>
           <td class="TableCell"><%= offer.getRunStatus() %></td>
           <td class="TableCell"> <%= timePart.format(revision.getNotificationDateTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(revision.getNotificationDateTime()) %></td>
@@ -289,14 +289,14 @@
         <%
                           {
                         
-                                ProgramEnergyExchange[] eeProgs = cache.getEnergyCompanyEnergyExchangePrograms(energyCompanyID);
+                                LMProgramEnergyExchange[] eeProgs = cache.getEnergyCompanyEnergyExchangePrograms(energyCompanyID);
 //out.println("found: " + eeProgs.length + " ee progs for ee company id: " + energyCompanyID);
                                 for( int i = 0; i < eeProgs.length; i++ )
                                 {
                                   //out.println("found: " + eeProgs[i].getEnergyExchangeOffers().size() + " offers :P");
                                     for( int j = 0; j < eeProgs[i].getEnergyExchangeOffers().size(); j++ )
                                     {   
-                                        EnergyExchangeOffer offer = (EnergyExchangeOffer) eeProgs[i].getEnergyExchangeOffers().elementAt(j);
+                                        LMEnergyExchangeOffer offer = (LMEnergyExchangeOffer) eeProgs[i].getEnergyExchangeOffers().elementAt(j);
 
                                         // Check if it is today                                   
                                         GregorianCalendar nowCal = new GregorianCalendar();
@@ -313,8 +313,8 @@
                                             //out.println("found: " + offer.getEnergyExchangeOfferRevisions().size() + " revisions");
                                             for( int k = 0; k < offer.getEnergyExchangeOfferRevisions().size(); k++ )
                                             {                                                
-                                                EnergyExchangeOfferRevision revision =  
-                                                    (EnergyExchangeOfferRevision) offer.getEnergyExchangeOfferRevisions().elementAt(k);
+                                                LMEnergyExchangeOfferRevision revision =  
+                                                    (LMEnergyExchangeOfferRevision) offer.getEnergyExchangeOfferRevisions().elementAt(k);
 
                                                 // Add up the total target from all the hourly offers
                                                  double targetTotal = 0.0;
@@ -322,13 +322,13 @@
                                                 // out.println("found: " + hourlyOffers.size() + " hourly!!>>   ");
                                                  for( int l = 0; l < hourlyOffers.size(); l++ )
                                                  {
-                                                     EnergyExchangeHourlyOffer hourOffer = (EnergyExchangeHourlyOffer) hourlyOffers.elementAt(l);
-                                                     targetTotal += hourOffer.getAmountRequested();
+                                                     LMEnergyExchangeHourlyOffer hourOffer = (LMEnergyExchangeHourlyOffer) hourlyOffers.elementAt(l);
+                                                     targetTotal += hourOffer.getAmountRequested().doubleValue();
                                                  }
                                                  
                                                 // Add up all the commited from the customer replies
                                                  double committedTotal = 0.0;
-                                                 EnergyExchangeCustomer[] progCustomers = cache.getEnergyExchangeCustomers(eeProgs[i].getYukonId().longValue());
+                                                 LMEnergyExchangeCustomer[] progCustomers = cache.getEnergyExchangeCustomers(eeProgs[i].getYukonID().longValue());
 
                                                  if( progCustomers != null )
                                                  {
@@ -337,16 +337,16 @@
                                                          java.util.Vector replies = progCustomers[m].getEnergyExchangeCustomerReplies();
                                                          for( int n = 0; n < replies.size(); n++ )
                                                          {
-                                                              EnergyExchangeCustomerReply reply = (EnergyExchangeCustomerReply) replies.elementAt(n);
-                                                              if( reply.getOfferId() == revision.getOfferId() &&
-                                                                  reply.getRevisionNumber() <= revision.getRevisionNumber() )
+                                                              LMEnergyExchangeCustomerReply reply = (LMEnergyExchangeCustomerReply) replies.elementAt(n);
+                                                              if( reply.getOfferID().intValue() == revision.getOfferID().intValue() &&
+                                                                  reply.getRevisionNumber().intValue() <= revision.getRevisionNumber().intValue() )
                                                               {                                                              
                                                                 java.util.Vector hourlyReplies = reply.getEnergyExchangeHourlyCustomer();
                                                                 for( int o = 0; o < hourlyReplies.size(); o++ )
                                                                 {
-                                                                    EnergyExchangeHourlyCustomer hourlyReply = (EnergyExchangeHourlyCustomer) hourlyReplies.elementAt(o);
-                                                                    if( hourlyReply.getRevisionNumber() == reply.getRevisionNumber())
-                                                                    committedTotal += hourlyReply.getAmountCommitted();
+                                                                    LMEnergyExchangeHourlyCustomer hourlyReply = (LMEnergyExchangeHourlyCustomer) hourlyReplies.elementAt(o);
+                                                                    if( hourlyReply.getRevisionNumber().intValue() == reply.getRevisionNumber().intValue())
+                                                                    committedTotal += hourlyReply.getAmountCommitted().doubleValue();
                                                                 }
                                                               }
                                                          }
@@ -354,7 +354,7 @@
                                                  }
                           %>
         <tr valign="top"> 
-          <td class="TableCell"><a href="oper_ee.jsp?tab=current&prog=<%= offer.getYukonId() %>&offer=<%= offer.getOfferId() %>&rev=<%= revision.getRevisionNumber() %>" class="Link1"><%= offer.getOfferId() + "-" + revision.getRevisionNumber() %></a></td>
+          <td class="TableCell"><a href="oper_ee.jsp?tab=current&prog=<%= offer.getYukonID() %>&offer=<%= offer.getOfferID() %>&rev=<%= revision.getRevisionNumber() %>" class="Link1"><%= offer.getOfferID() + "-" + revision.getRevisionNumber() %></a></td>
           <td class="TableCell"><%= eeProgs[i].getYukonName() %></td>
           <td class="TableCell"><%= offer.getRunStatus() %></td>
           <td class="TableCell"> <%= timePart.format(revision.getNotificationDateTime()) + " " + tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) + "  " + datePart.format(revision.getNotificationDateTime()) %></td>

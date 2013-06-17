@@ -6,7 +6,6 @@ package com.cannontech.message.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.messaging.message.CommandMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -23,7 +22,7 @@ public DefineCollectableCommand() {
  * create method comment.
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new CommandMessage();
+	return new Command();
 }
 /**
  * getComparator method comment.
@@ -54,7 +53,7 @@ public String getCxxStringId() {
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return CommandMessage.class;
+	return Command.class;
 }
 /**
  * restoreGuts method comment.
@@ -62,7 +61,7 @@ public Class getJavaClass() {
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {
 	super.restoreGuts( obj, vstr, polystr );
 
-	CommandMessage cmd = (CommandMessage) obj;
+	Command cmd = (Command) obj;
 	
 	cmd.setOperation( vstr.extractInt() );
 	cmd.setOpString( (String) vstr.restoreObject(SimpleMappings.CString));
@@ -82,7 +81,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {
 	super.saveGuts(obj, vstr, polystr );
 
-	CommandMessage cmd = (CommandMessage) obj;
+	Command cmd = (Command) obj;
 
 	vstr.insertInt( cmd.getOperation() );
 	vstr.saveObject( cmd.getOpString(), SimpleMappings.CString );

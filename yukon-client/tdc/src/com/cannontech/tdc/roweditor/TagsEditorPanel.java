@@ -23,11 +23,11 @@ import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.YukonImageDao;
 import com.cannontech.database.data.lite.LiteTag;
-import com.cannontech.messaging.message.BaseMessage;
-import com.cannontech.messaging.message.dispatch.MultiMessage;
-import com.cannontech.messaging.message.dispatch.TagMessage;
-import com.cannontech.messaging.util.MessageEvent;
-import com.cannontech.messaging.util.MessageListener;
+import com.cannontech.message.dispatch.message.Multi;
+import com.cannontech.message.dispatch.message.TagMsg;
+import com.cannontech.message.util.Message;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tags.Tag;
 import com.cannontech.tdc.TDCMainFrame;
@@ -495,15 +495,15 @@ public void JButtonSendAction_actionPerformed(java.util.EventObject newEvent)
 
 public void messageReceived(MessageEvent e)
 {
-	if( e.getMessage() instanceof MultiMessage )
+	if( e.getMessage() instanceof Multi )
 	{
-		Vector v = ((MultiMessage)e.getMessage()).getVector();
+		Vector v = ((Multi)e.getMessage()).getVector();
 		for( int i = 0; i < v.size(); i++ )
-			messageReceived( new MessageEvent( e.getSource(), (BaseMessage)v.get(i) ) );
+			messageReceived( new MessageEvent( e.getSource(), (Message)v.get(i) ) );
 	}
 
 
-	if( e.getMessage() instanceof TagMessage )
+	if( e.getMessage() instanceof TagMsg )
 	{
 		initTagTableData();
 	}

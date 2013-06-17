@@ -28,7 +28,7 @@ import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.cache.Cache;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
@@ -96,7 +96,7 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
      * @param recentReadings the cache representing recent interval values, used to avoid querying the database. 
      */
     @Override
-    public void calculate(Cache<CacheKey, CacheValue> recentReadings, CalculationData data, List<? super PointDataMessage> pointData) {
+    public void calculate(Cache<CacheKey, CacheValue> recentReadings, CalculationData data, List<? super PointData> pointData) {
         
         PaoIdentifier pao = data.getPaoPointValue().getPaoIdentifier();
         PointValueQualityHolder pvqh = data.getPaoPointValue().getPointValueQualityHolder();
@@ -224,8 +224,8 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
         }
     }
     
-    private void addPointData(LitePoint lp, double value, Date timestamp, List<? super PointDataMessage> pointData) {
-        PointDataMessage pd = new PointDataMessage();
+    private void addPointData(LitePoint lp, double value, Date timestamp, List<? super PointData> pointData) {
+        PointData pd = new PointData();
         pd.setId(lp.getPointID());
         pd.setPointQuality(PointQuality.Normal);
         pd.setValue(value);

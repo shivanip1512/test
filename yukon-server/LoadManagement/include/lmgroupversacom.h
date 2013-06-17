@@ -13,7 +13,7 @@ class CtiLMGroupVersacom : public CtiLMGroupBase
 
 public:
 
-DECLARE_COLLECTABLE( CtiLMGroupVersacom );
+RWDECLARE_COLLECTABLE( CtiLMGroupVersacom )
 
     CtiLMGroupVersacom();
     CtiLMGroupVersacom(Cti::RowReader &rdr);
@@ -26,6 +26,10 @@ DECLARE_COLLECTABLE( CtiLMGroupVersacom );
     virtual CtiRequestMsg* createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const;
     virtual CtiRequestMsg* createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const;
     virtual CtiRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const;
+
+    //Members inherited from RWCollectable
+    void restoreGuts(RWvistream& );
+    void saveGuts(RWvostream& ) const;
 
     CtiLMGroupVersacom& operator=(const CtiLMGroupVersacom& right);
 

@@ -9,7 +9,7 @@ package com.cannontech.tdc.commandevents;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.messaging.message.CommandMessage;
+import com.cannontech.message.util.Command;
 import com.cannontech.tdc.roweditor.SendData;
 
 public class AckAlarm 
@@ -35,13 +35,13 @@ public static void sendAckAll( int pointid )
 	//add the pointID
 	data.add(pointid);
 	//add the ACK_ALL reserved value instead of the AlarmCondition
-	data.add(CommandMessage.ACK_ALL_TOKEN);
+	data.add(Command.ACK_ALL_TOKEN);
 
 		
 	// Sends a vangogh command message to capcontrol, which then forwards the exact
 	//   message onto dispatch(vangogh)
-	CommandMessage cmd = new CommandMessage();
-	cmd.setOperation( CommandMessage.ACKNOWLEGDE_ALARM );
+	Command cmd = new Command();
+	cmd.setOperation( Command.ACKNOWLEGDE_ALARM );
 	cmd.setOpArgList( data );
 	cmd.setTimeStamp( new java.util.Date() );
 	
@@ -67,9 +67,9 @@ public static void send( int[] pointids, int[] conditions )
 		data.add(conditions[i]);
 	}
 
-	CommandMessage cmd = new CommandMessage();
+	Command cmd = new Command();
 	cmd.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
-	cmd.setOperation( CommandMessage.ACKNOWLEGDE_ALARM );
+	cmd.setOperation( Command.ACKNOWLEGDE_ALARM );
 	cmd.setOpArgList( data );
 	cmd.setTimeStamp( new java.util.Date() );
 

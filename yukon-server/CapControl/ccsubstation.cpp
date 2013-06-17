@@ -24,7 +24,7 @@ extern unsigned long _CC_DEBUG;
 using Cti::CapControl::PaoIdVector;
 using Cti::CapControl::setVariableIfDifferent;
 
-DEFINE_COLLECTABLE( CtiCCSubstation, CTICCSUBSTATION_ID )
+RWDEFINE_COLLECTABLE( CtiCCSubstation, CTICCSUBSTATION_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -86,6 +86,49 @@ CtiCCConfirmationStats& CtiCCSubstation::getConfirmationStats()
     return _confirmationStats;
 }
 
+/*---------------------------------------------------------------------------
+    saveGuts
+
+    Save self's state onto the given stream
+---------------------------------------------------------------------------*/
+void CtiCCSubstation::saveGuts(RWvostream& ostrm ) const
+{
+    RWCollectable::saveGuts(ostrm);
+    CapControlPao::saveGuts(ostrm);
+
+    ostrm << _parentId
+          << _ovUvDisabledFlag;
+
+    ostrm << _subBusIds.size();
+
+    for each(long busId in _subBusIds)
+    {
+        ostrm << busId;
+    }
+
+    double pfDisplayValue = _pfactor;
+    double estPfDisplayValue = _estPfactor;
+
+    // Modifying the display value of pFactor to represent +100% values as a negative value.
+    if (_pfactor > 1)
+    {
+        pfDisplayValue -= 2;
+    }
+    if (_estPfactor > 1)
+    {
+        estPfDisplayValue -= 2;
+    }
+
+    ostrm << pfDisplayValue
+        << estPfDisplayValue
+        << _saEnabledFlag
+        << _saEnabledId
+        << _voltReductionFlag
+        << _recentlyControlledFlag
+        << _childVoltReductionFlag;
+
+
+}
 
 /*---------------------------------------------------------------------------
     operator=

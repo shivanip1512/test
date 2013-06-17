@@ -3,7 +3,7 @@
 #include "MsgObjectMove.h"
 #include "ccid.h"
 
-DEFINE_COLLECTABLE( CtiCCObjectMoveMsg, CTICCOBJECTMOVEMSG_ID )
+RWDEFINE_COLLECTABLE( CtiCCObjectMoveMsg, CTICCOBJECTMOVEMSG_ID )
 
 CtiCCObjectMoveMsg::CtiCCObjectMoveMsg(bool permanentflag, long oldparentid, long objectid, long newparentid,
                    float switchingorder, float closeOrder, float tripOrder) :
@@ -57,6 +57,36 @@ float CtiCCObjectMoveMsg::getCloseOrder() const
 float CtiCCObjectMoveMsg::getTripOrder() const
 {
     return _tripOrder;
+}
+
+void CtiCCObjectMoveMsg::restoreGuts(RWvistream& strm)
+{
+    Inherited::restoreGuts(strm);
+
+    strm >> _permanentflag
+         >> _oldparentid
+         >> _objectid
+         >> _newparentid
+         >> _switchingorder
+         >> _closeOrder
+         >> _tripOrder;
+
+    return;
+}
+
+void CtiCCObjectMoveMsg::saveGuts(RWvostream& strm) const
+{
+    Inherited::saveGuts(strm);
+
+    strm << _permanentflag
+         << _oldparentid
+         << _objectid
+         << _newparentid
+         << _switchingorder
+         << _closeOrder
+         << _tripOrder;
+
+    return;
 }
 
 CtiCCObjectMoveMsg& CtiCCObjectMoveMsg::operator=(const CtiCCObjectMoveMsg& right)

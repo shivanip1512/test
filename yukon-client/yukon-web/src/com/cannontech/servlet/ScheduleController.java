@@ -36,7 +36,7 @@ public class ScheduleController extends javax.servlet.http.HttpServlet {
 	
 	private static java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM-dd-yyyy-HH-mm-ss");
 
-	private static com.cannontech.dispatch.DispatchClientConnection vangoghConn = null;
+	private static com.cannontech.message.dispatch.ClientConnection vangoghConn = null;
 
 	private int soeTag = 0;
 
@@ -55,8 +55,8 @@ public ScheduleController() {
  * @return com.cannontech.macs.Schedule
  * @param id long
  */
-private com.cannontech.messaging.message.macs.ScheduleMessage findSchedule(long id) {
-	com.cannontech.messaging.message.macs.ScheduleMessage retVal = null;
+private com.cannontech.message.macs.message.Schedule findSchedule(long id) {
+	com.cannontech.message.macs.message.Schedule retVal = null;
 
 	ConnServlet connContainer = (ConnServlet)
 		getServletContext().getAttribute(ConnServlet.SERVLETS_CONTEXT_ID);
@@ -64,7 +64,7 @@ private com.cannontech.messaging.message.macs.ScheduleMessage findSchedule(long 
 	if( connContainer != null )
 	{
 	    //com.cannontech.macs.MACSClientConnection conn = connContainer.getConnection();
-	    com.cannontech.messaging.message.macs.ScheduleMessage[] schedules = 
+	    com.cannontech.message.macs.message.Schedule[] schedules = 
 	    		connContainer.getIMACSConnection().retrieveSchedules();
 
 	    if( schedules != null )
@@ -159,7 +159,7 @@ public void service(javax.servlet.http.HttpServletRequest req, javax.servlet.htt
 	java.util.Date stopDate  = parseTime(stopAtStr);
 
 	
-	com.cannontech.messaging.message.macs.ScheduleMessage sched = findSchedule(Integer.parseInt(scheduleIDStr));
+	com.cannontech.message.macs.message.Schedule sched = findSchedule(Integer.parseInt(scheduleIDStr));
 	ConnServlet connContainer = (ConnServlet)
 			getServletContext().getAttribute(ConnServlet.SERVLETS_CONTEXT_ID);
 			
@@ -170,10 +170,10 @@ public void service(javax.servlet.http.HttpServletRequest req, javax.servlet.htt
 		if( (action.equalsIgnoreCase("start") || action.equalsIgnoreCase("startstop")) &&
 			 startDate != null )
 		{
-			com.cannontech.messaging.message.macs.OverrideRequestMessage startRequest = 
-				new com.cannontech.messaging.message.macs.OverrideRequestMessage();
+			com.cannontech.message.macs.message.OverrideRequest startRequest = 
+				new com.cannontech.message.macs.message.OverrideRequest();
 			startRequest.setSchedId(sched.getId());
-			startRequest.setAction(com.cannontech.messaging.message.macs.OverrideRequestMessage.OVERRIDE_START);
+			startRequest.setAction(com.cannontech.message.macs.message.OverrideRequest.OVERRIDE_START);
 			startRequest.setStart(startDate);
 			conn.writeMsg(startRequest);
 
@@ -188,10 +188,10 @@ public void service(javax.servlet.http.HttpServletRequest req, javax.servlet.htt
 		if( (action.equalsIgnoreCase("stop") || action.equalsIgnoreCase("startstop")) &&
 			 stopDate != null )
 		{			
-			com.cannontech.messaging.message.macs.OverrideRequestMessage stopRequest = 
-		 		new com.cannontech.messaging.message.macs.OverrideRequestMessage();
+			com.cannontech.message.macs.message.OverrideRequest stopRequest = 
+		 		new com.cannontech.message.macs.message.OverrideRequest();
 		 	stopRequest.setSchedId(sched.getId());
-			stopRequest.setAction(com.cannontech.messaging.message.macs.OverrideRequestMessage.OVERRIDE_STOP);
+			stopRequest.setAction(com.cannontech.message.macs.message.OverrideRequest.OVERRIDE_STOP);
 			stopRequest.setStop(stopDate);
 			conn.writeMsg(stopRequest);
 
@@ -231,7 +231,7 @@ public void service(javax.servlet.http.HttpServletRequest req, javax.servlet.htt
  * Creation date: (3/26/2001 7:19:50 PM)
  * @param id long
  */
-private void setScheduleRequestPending(com.cannontech.messaging.message.macs.ScheduleMessage sched) 
+private void setScheduleRequestPending(com.cannontech.message.macs.message.Schedule sched) 
 {
 	sched.setCurrentState(PSEUDO_SCHEDULE_STATE);
 }

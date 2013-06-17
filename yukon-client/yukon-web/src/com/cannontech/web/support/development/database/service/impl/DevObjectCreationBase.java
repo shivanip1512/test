@@ -57,7 +57,7 @@ public abstract class DevObjectCreationBase {
         if (litePao == null) {
             return -1;
         }
-        return litePao.getYukonId();
+        return litePao.getYukonID();
     }
 
     protected SmartMultiDBPersistent createSmartDBPersistent(DeviceBase deviceBase) {

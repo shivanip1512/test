@@ -580,7 +580,7 @@ public Date getStartTime()
 	if( getJTextFieldStartTime().getText() == null
 		 || getJTextFieldStartTime().getText().length() <= 0 )
 	{
-		return new Date(com.cannontech.messaging.message.macs.ScheduleMessage.INVALID_DATE);
+		return new Date(com.cannontech.message.macs.message.Schedule.INVALID_DATE);
 	}
 	else
 	{
@@ -599,7 +599,7 @@ public Date getStartTime()
 		catch( Exception e )
 		{
 			com.cannontech.clientutils.CTILogger.info("*** Received a bad value in getStartTime() of " + this.getClass().getName() + " : " + e.getMessage() );
-			return new Date(com.cannontech.messaging.message.macs.ScheduleMessage.INVALID_DATE);
+			return new Date(com.cannontech.message.macs.message.Schedule.INVALID_DATE);
 		}
 		
 	}
@@ -621,7 +621,7 @@ public Date getStopTime()
 	else if(	 getJTextFieldStopTime().getText() == null
 				 || getJTextFieldStopTime().getText().length() <= 0 )
 	{
-		return new Date(com.cannontech.messaging.message.macs.ScheduleMessage.INVALID_DATE);
+		return new Date(com.cannontech.message.macs.message.Schedule.INVALID_DATE);
 	}
 	else
 	{
@@ -641,7 +641,7 @@ public Date getStopTime()
 		catch( Exception e )
 		{
 			com.cannontech.clientutils.CTILogger.info("*** Received a bad value in getStopTime() of " + this.getClass().getName() + " : " + e.getMessage() );
-			return new Date(com.cannontech.messaging.message.macs.ScheduleMessage.INVALID_DATE);
+			return new Date(com.cannontech.message.macs.message.Schedule.INVALID_DATE);
 		}
 		
 	}
@@ -872,8 +872,8 @@ public void jButtonOk_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 		 && getStartTime() != null
 		 && getStopTime() != null )
 	{
-		if( getStartTime().getTime() > com.cannontech.messaging.message.macs.ScheduleMessage.INVALID_DATE
-			 && getStopTime().getTime() > com.cannontech.messaging.message.macs.ScheduleMessage.INVALID_DATE )
+		if( getStartTime().getTime() > com.cannontech.message.macs.message.Schedule.INVALID_DATE
+			 && getStopTime().getTime() > com.cannontech.message.macs.message.Schedule.INVALID_DATE )
 		{
 			if( getStartTime().getTime() >= getStopTime().getTime() )
 			{

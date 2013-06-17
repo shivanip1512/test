@@ -39,7 +39,7 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.model.DbBackgroundTreeModel;
 import com.cannontech.database.model.LiteBaseTreeModel;
 import com.cannontech.database.model.NullDBTreeModel;
-import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.base.Predicate;
 
 public class TreeViewPanel extends javax.swing.JPanel implements java.awt.ItemSelectable, javax.swing.event.TreeWillExpandListener, ItemListener

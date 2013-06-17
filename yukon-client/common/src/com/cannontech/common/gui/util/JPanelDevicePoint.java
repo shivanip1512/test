@@ -379,7 +379,7 @@ public void jComboBoxDevice_ActionPerformed(java.awt.event.ActionEvent actionEve
 		com.cannontech.database.data.lite.LiteYukonPAObject selectedDevice = 
 				(com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxDevice().getSelectedItem();
 		
-        List<LitePoint> devicePoints = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(selectedDevice.getYukonId());
+        List<LitePoint> devicePoints = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(selectedDevice.getYukonID());
         for (LitePoint point : devicePoints) {
             getJComboBoxPoint().addItem(point);
         }
@@ -475,7 +475,7 @@ public void setPointTypeFilter(int[] pointTypes)
 public void setSelectedLitePAO(int paoID) 
 {
 	for( int i = 0; i < getJComboBoxDevice().getModel().getSize(); i++ )
-		if( ((com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxDevice().getItemAt(i)).getYukonId() == paoID )
+		if( ((com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxDevice().getItemAt(i)).getYukonID() == paoID )
 		{
 			getJComboBoxDevice().setSelectedIndex(i);
 			break;

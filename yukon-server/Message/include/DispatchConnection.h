@@ -1,6 +1,6 @@
 #pragma once
 
-#include "connection_client.h"
+#include "connection.h"
 #include "message.h"
 #include "MessageListener.h"
 
@@ -18,7 +18,7 @@
  *
  * @author Thain Spar (12/10/2009)
  */
-class IM_EX_MSG DispatchConnection : public CtiClientConnection
+class IM_EX_MSG DispatchConnection : public CtiConnection
 {
     private:
 
@@ -29,33 +29,30 @@ class IM_EX_MSG DispatchConnection : public CtiClientConnection
         std::set<long> _removeList;
         std::set<long> _registeredPoints;
 
-        std::set<::MessageListener*> _messageListeners;
+        std::set<MessageListener*> _messageListeners;
         //typedef std::map<MessageListener*,std::set<long> > MessageListenerMap;
         //MessageListenerMap _messageListeners;
 
         //Hidden
         DispatchConnection();
-
     public:
 
         typedef CtiConnection Inherited;
 
-        static const std::string dispatcherQueueName;
-
-        DispatchConnection(const std::string &connectionName, Que_t *inQ = NULL, int tt = 3);
+        DispatchConnection(const std::string &connectionName, const int &port, const std::string &host, Que_t *inQ = NULL, int tt = 3);
 
         virtual void preWork();
         virtual void writeIncomingMessageToQueue(CtiMessage *msgPtr);
 
-        void registerForPoints(::MessageListener* listener, const std::set<long>& pointIds);
-        void registerForPoint(::MessageListener* listener, long pointId);
-        void unRegisterForPoints(::MessageListener* listener, const std::set<long>& pointIds);
-        void unRegisterForPoint(::MessageListener* listener, long pointId);
+        void registerForPoints(MessageListener* listener, const std::set<long>& pointIds);
+        void registerForPoint(MessageListener* listener, long pointId);
+        void unRegisterForPoints(MessageListener* listener, const std::set<long>& pointIds);
+        void unRegisterForPoint(MessageListener* listener, long pointId);
 
         void requestPointValues(const std::set<long>& pointIds);
 
-        void addMessageListener(::MessageListener* messageListener);
-        void removeMessageListener(::MessageListener* messageListener);
+        void addMessageListener(MessageListener* messageListener);
+        void removeMessageListener(MessageListener* messageListener);
 };
 
 typedef boost::shared_ptr<DispatchConnection> DispatchConnectionPtr;

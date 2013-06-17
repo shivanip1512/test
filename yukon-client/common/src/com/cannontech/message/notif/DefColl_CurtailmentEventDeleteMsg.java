@@ -2,7 +2,6 @@ package com.cannontech.message.notif;
 import java.io.IOException;
 
 import com.cannontech.message.util.DefineCollectableMessage;
-import com.cannontech.messaging.message.notif.CurtailmentEventDeleteMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
@@ -14,7 +13,7 @@ public class DefColl_CurtailmentEventDeleteMsg extends DefineCollectableMessage 
     public static final int MSG_ID = 711;
 
     public Object create(VirtualInputStream vstr) throws IOException {
-        return new CurtailmentEventDeleteMessage();
+        return new CurtailmentEventDeleteMsg();
     }
 
     public Comparator getComparator() {
@@ -38,27 +37,27 @@ public class DefColl_CurtailmentEventDeleteMsg extends DefineCollectableMessage 
     }
 
     public Class getJavaClass() {
-        return CurtailmentEventDeleteMessage.class;
+        return CurtailmentEventDeleteMsg.class;
     }
 
     public void restoreGuts(Object obj, VirtualInputStream vstr,
             CollectableStreamer polystr) throws IOException {
         super.restoreGuts(obj, vstr, polystr);
-        CurtailmentEventDeleteMessage msg = (CurtailmentEventDeleteMessage) obj;
+        CurtailmentEventDeleteMsg msg = (CurtailmentEventDeleteMsg) obj;
 
-        msg.setCurtailmentEventId(vstr.extractInt());
-        msg.setDeleteStart(vstr.extractInt() == 1);
-        msg.setDeleteStop(vstr.extractInt() == 1);
+        msg.curtailmentEventId = vstr.extractInt();
+        msg.deleteStart = vstr.extractInt() == 1;
+        msg.deleteStop = vstr.extractInt() == 1;
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr,
             CollectableStreamer polystr) throws IOException {
         super.saveGuts(obj, vstr, polystr);
-        CurtailmentEventDeleteMessage msg = (CurtailmentEventDeleteMessage) obj;
+        CurtailmentEventDeleteMsg msg = (CurtailmentEventDeleteMsg) obj;
 
-        vstr.insertInt(msg.getCurtailmentEventId());
-        vstr.insertInt(msg.isDeleteStart() ? 1 : 0);
-        vstr.insertInt(msg.isDeleteStop()? 1 : 0);
+        vstr.insertInt(msg.curtailmentEventId);
+        vstr.insertInt(msg.deleteStart ? 1 : 0);
+        vstr.insertInt(msg.deleteStop ? 1 : 0);
     }
 
 }

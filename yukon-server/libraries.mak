@@ -16,10 +16,10 @@ copy:
 
         -@if not exist $(YUKONOUTPUT)\$(SQLAPI_DLL).dll copy $(SQLAPI)\bin\$(SQLAPI_DLL).dll $(YUKONOUTPUT)
 
-        -@if not exist $(YUKONOUTPUT)\activemq-cpp.dll  copy $(ACTIVEMQ)\bin\activemq-cpp.dll $(YUKONOUTPUT)
-        -@if not exist $(YUKONOUTPUT)\libapr-1.dll      copy $(APR)\bin\libapr-1.dll $(YUKONOUTPUT)
-        -@if not exist $(YUKONOUTPUT)\libaprutil-1.dll  copy $(APR_UTIL)\bin\libaprutil-1.dll $(YUKONOUTPUT)
-        -@if not exist $(YUKONOUTPUT)\libapriconv-1.dll copy $(APR_ICONV)\bin\libapriconv-1.dll $(YUKONOUTPUT)
+        -@if not exist $(YUKONOUTPUT)\activemq-cpp.dll  copy $(ACTIVEMQ)\bin\activemq-cpp.dll  $(YUKONOUTPUT)
+        -@if not exist $(YUKONOUTPUT)\libapr-1.dll      copy $(ACTIVEMQ)\bin\libapr-1.dll      $(YUKONOUTPUT)
+        -@if not exist $(YUKONOUTPUT)\libaprutil-1.dll  copy $(ACTIVEMQ)\bin\libaprutil-1.dll  $(YUKONOUTPUT)
+        -@if not exist $(YUKONOUTPUT)\libapriconv-1.dll copy $(ACTIVEMQ)\bin\libapriconv-1.dll $(YUKONOUTPUT)
 
         -@if not exist $(YUKONOUTPUT)\libeay32.dll copy $(OPENSSL)\bin\libeay32.dll $(YUKONOUTPUT)
         -@if not exist $(YUKONOUTPUT)\ssleay32.dll copy $(OPENSSL)\bin\ssleay32.dll $(YUKONOUTPUT)

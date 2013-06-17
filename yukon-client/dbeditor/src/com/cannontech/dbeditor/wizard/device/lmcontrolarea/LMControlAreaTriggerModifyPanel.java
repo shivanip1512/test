@@ -1266,7 +1266,7 @@ private javax.swing.JTextField getJTextFieldATKU() {
 	
 			
 			getJComboBoxType().setSelectedItem( trigger.getTriggerType() );
-			getJPanelTriggerID().setSelectedLitePAO( litePAO.getYukonId() );
+			getJPanelTriggerID().setSelectedLitePAO( litePAO.getYukonID() );
 			getJPanelTriggerID().setSelectedLitePoint( litePoint.getPointID() );
 			getJComboBoxNormalState().setSelectedItem( liteState );
 	
@@ -1283,7 +1283,7 @@ private javax.swing.JTextField getJTextFieldATKU() {
 			else {
 				getJTextFieldThreshold().setText( trigger.getThreshold().toString() );
 			}
-			getJPanelTriggerID().setSelectedLitePAO( litePAO.getYukonId() );
+			getJPanelTriggerID().setSelectedLitePAO( litePAO.getYukonID() );
 			getJPanelTriggerID().setSelectedLitePoint( litePoint.getPointID() );
 	
 			getJCheckBoxPeakTracking().setEnabled(true);

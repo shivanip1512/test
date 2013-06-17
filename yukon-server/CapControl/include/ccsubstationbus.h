@@ -20,7 +20,6 @@
 #include "sorted_vector.h"
 #include "PointResponse.h"
 #include "mgr_paosched.h"
-#include "EventLogEntry.h"
 
 namespace Cti {
 namespace Database {
@@ -51,12 +50,13 @@ enum CtiCCMultiBusState
 };
 
 
-class CtiCCSubstationBus : public Controllable
+class CtiCCSubstationBus : public RWCollectable, public Controllable
 {
-public:
-    DECLARE_COLLECTABLE( CtiCCSubstationBus );
 
 public:
+
+RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
+
     CtiCCSubstationBus();
     CtiCCSubstationBus(StrategyManager * strategyManager);
     CtiCCSubstationBus(Cti::RowReader& rdr, StrategyManager * strategyManager);
@@ -163,7 +163,6 @@ public:
     const CtiRegression& getRegressionC();
 
     CtiFeeder_vec& getCCFeeders();
-    const CtiFeeder_vec& getCCFeeders() const;
     std::list<int> getCCFeederIds();
     void deleteCCFeeder(long feederId);
 
@@ -262,12 +261,12 @@ public:
     double getSetPoint();
     bool isPastMaxConfirmTime(const CtiTime& currentDateTime);
     long getLastFeederControlledSendRetries() const;
-    void analyzeMultiVoltBus(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
-    void analyzeMultiVoltBus1(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
+    void analyzeMultiVoltBus(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
+    void analyzeMultiVoltBus1(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     bool performActionMultiPointBus(const CtiTime& currentDateTime);
     bool isVarCheckNeeded(const CtiTime& currentDateTime);
     bool isConfirmCheckNeeded();
-    bool capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents);
+    bool capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
     double figureCurrentSetPoint(const CtiTime& currentDateTime);
     bool isPeakDay(const CtiTime& currentDateTime);
     bool isPeakTime(const CtiTime& currentDateTime);
@@ -283,20 +282,20 @@ public:
     CtiCCCapBankPtr CtiCCSubstationBus::getPendingCapBank( );
     std::vector<CtiCCCapBankPtr> getAllCapBanks( );
     std::vector<CtiCCCapBankPtr> getAllSwitchedCapBanks( );
-    CtiCCSubstationBus& checkForAndProvideNeededControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
+    CtiCCSubstationBus& checkForAndProvideNeededControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     CtiCCSubstationBus& checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime,
-                        CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
+                        CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     CtiCCSubstationBus& checkForAndProvideNeededTimeOfDayControl(const CtiTime& currentDateTime,
-                            CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
-    void regularSubstationBusControl(double lagLevel, double leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
-    void optimizedSubstationBusControl(double lagLevel, double leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
+                            CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
+    void regularSubstationBusControl(double lagLevel, double leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
+    void optimizedSubstationBusControl(double lagLevel, double leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     CtiCCSubstationBus& figureEstimatedVarLoadPointValue();
     bool isAlreadyControlled();
     double convertKQToKVAR(double kq, double kw);
     double convertKVARToKQ(double kvar, double kw);
     static double calculateKVARSolution(const string& controlUnits, double setPoint, double varValue, double wattValue);
-    bool checkForAndPerformSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
-    bool checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
+    bool checkForAndPerformSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
+    bool checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     void voltControlProcess();
     void updatePointResponsePreOpValues(CtiCCCapBank* capBank);
     void updatePointResponseDeltas();
@@ -310,24 +309,24 @@ public:
     bool isMultiVoltBusAnalysisNeeded(const CtiTime& currentDateTime);
     bool areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr oorPoint);
     CtiCCCapBank* getMonitorPointParentBankAndFeeder(CtiCCMonitorPointPtr point, CtiCCFeeder* feed);
-    bool voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMultiMsg_vec &pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec &pilMessages);
+    bool voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec &pilMessages);
     bool areOtherMonitorPointResponsesOk(long mPointID, CtiCCCapBank* potentialCap, int action);
-    bool analyzeBusForVarImprovement(CtiMultiMsg_vec &pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec &pilMessages);
+    bool analyzeBusForVarImprovement(CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec &pilMessages);
 
     int getAlterateBusIdForPrimary() const;
     bool isBusPerformingVerification();
     bool isBusReadyToStartVerification();
     bool isBusVerificationAlreadyStarted();
     bool isVerificationPastMaxConfirmTime(const CtiTime& currentDateTime);
-    bool areThereMoreCapBanksToVerify(Cti::CapControl::EventLogEntries &ccEvents);
-    CtiCCSubstationBus& startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
+    bool areThereMoreCapBanksToVerify(CtiMultiMsg_vec& ccEvents);
+    CtiCCSubstationBus& startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     bool isVerificationAlreadyControlled();
-    CtiCCSubstationBus& analyzeVerificationByFeeder(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages, CtiMultiMsg_vec& capMessages);
-    void setCapBanksToVerifyFlags(int verificationStrategy, Cti::CapControl::EventLogEntries &ccEvents);
+    CtiCCSubstationBus& analyzeVerificationByFeeder(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, CtiMultiMsg_vec& capMessages);
+    void setCapBanksToVerifyFlags(int verificationStrategy, CtiMultiMsg_vec& ccEvents);
     bool isBankSelectedByVerificationStrategy(int verificationStrategy, CtiCCCapBankPtr currentCapBank);
     CtiCCSubstationBus& recompileCapBanksToVerifyList();
-    CtiCCSubstationBus& getNextCapBankToVerify(Cti::CapControl::EventLogEntries &ccEvents);
-    bool sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
+    CtiCCSubstationBus& getNextCapBankToVerify(CtiMultiMsg_vec& ccEvents);
+    bool sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     CtiCCSubstationBus& setVerificationFlag(bool verificationFlag);
     CtiCCSubstationBus& setPerformingVerificationFlag(bool performingVerificationFlag);
     CtiCCSubstationBus& setVerificationDoneFlag(bool verificationDoneFlag);
@@ -350,12 +349,12 @@ public:
     void setCapBankInactivityTime(long capBankToVerifyInactivityTime);
     long getCapBankInactivityTime(void) const;
 
-    bool capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents);
-    bool capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents);
-    void createStatusUpdateMessages(CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiCCCapBankPtr capBank,
+    bool capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
+    bool capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
+    void createStatusUpdateMessages(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiCCCapBankPtr capBank,
                                     CtiCCFeederPtr feeder, string text, string additional, bool verifyFlag,
                                     double before, double after, double change, double phaseA, double phaseB, double phaseC);
-    void createCannotControlBankText(string text, string commandString, Cti::CapControl::EventLogEntries &ccEvents);
+    void createCannotControlBankText(string text, string commandString, CtiMultiMsg_vec& ccEvents);
     void performDataOldAndFallBackNecessaryCheck();
 
     bool addMonitorPoint(long pointId, CtiCCMonitorPointPtr monPoint);
@@ -381,20 +380,15 @@ public:
     CtiCCOperationStats& getOperationStats();
     CtiCCConfirmationStats& getConfirmationStats();
 
+    //Members inherited from RWCollectable
+    void saveGuts(RWvostream& ) const;
+
     CtiCCSubstationBus& operator=(const CtiCCSubstationBus& right);
 
     CtiCCSubstationBus* replicate() const;
 
     //static int PeakState;
     //static int OffPeakState;
-
-    // Added for serialization
-    double getAltSubVoltVal() const;
-    double getAltSubVarVal() const;
-    double getAltSubWattVal() const;
-    double getCurrentvoltloadpointvalue() const;
-    double getCurrentvarloadpointvalue() const;
-    double getCurrentwattloadpointvalue() const;
 
 private:
 

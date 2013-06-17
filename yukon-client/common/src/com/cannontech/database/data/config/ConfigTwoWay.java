@@ -7,8 +7,8 @@
 package com.cannontech.database.data.config;
 
 import com.cannontech.database.db.config.MCTConfig;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * @author jdayton
@@ -94,14 +94,14 @@ public void delete() throws java.sql.SQLException
 }
 
 
-public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType)
+public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
 {
-	DBChangeMessage[] msgs = { 
-	        new DBChangeMessage(
+	DBChangeMsg[] msgs = { 
+	        new DBChangeMsg(
 	                        getConfigID().intValue(),
-	                        DBChangeMessage.CHANGE_CONFIG_DB,
-	                        DBChangeMessage.CAT_CONFIG,
-	                        DBChangeMessage.CAT_CONFIG,
+	                        DBChangeMsg.CHANGE_CONFIG_DB,
+	                        DBChangeMsg.CAT_CONFIG,
+	                        DBChangeMsg.CAT_CONFIG,
 	                        dbChangeType)
 	};
 

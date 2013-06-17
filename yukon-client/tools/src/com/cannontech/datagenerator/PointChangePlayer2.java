@@ -20,7 +20,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.yukon.conns.ConnPool;
@@ -46,7 +46,7 @@ public class PointChangePlayer2 {
 		}
 
 		int idOffset = Integer.parseInt(args[1]);
-		PointDataMessage[] pData = loadChanges(args[0], idOffset);
+		PointData[] pData = loadChanges(args[0], idOffset);
 				
 		CTILogger.info("Loaded " + pData.length + " point changes");
 		
@@ -76,11 +76,11 @@ public class PointChangePlayer2 {
 		}
 	}
 	
-	private static void writeOut(PointDataMessage pd, long ts) {
+	private static void writeOut(PointData pd, long ts) {
 		
 		boolean lpFlag = setLPFlag(pd.getId());
 				
-		PointDataMessage msg = new PointDataMessage();
+		PointData msg = new PointData();
 		msg.setId(pd.getId());
 		msg.setTime(new Date(ts));
 		msg.setTimeStamp(new Date(ts));
@@ -112,7 +112,7 @@ public class PointChangePlayer2 {
 		return cal.getTimeInMillis();
 	}
 		
-	private static PointDataMessage[] loadChanges(String fileName, int idOffset) throws Exception {
+	private static PointData[] loadChanges(String fileName, int idOffset) throws Exception {
 		
 		ArrayList changeList = new ArrayList();
 		DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(fileName)));
@@ -135,7 +135,7 @@ public class PointChangePlayer2 {
 			
 			
 			
-			PointDataMessage pData = new PointDataMessage();
+			PointData pData = new PointData();
 			
 			pData.setId(id);
 			pData.setTime(new Date((long)ts * 1000L));
@@ -152,7 +152,7 @@ public class PointChangePlayer2 {
 		}
 		
 		dis.close();
-		PointDataMessage[] retVal = new PointDataMessage[changeList.size()];
+		PointData[] retVal = new PointData[changeList.size()];
 		changeList.toArray(retVal);
 		return retVal;
 	}

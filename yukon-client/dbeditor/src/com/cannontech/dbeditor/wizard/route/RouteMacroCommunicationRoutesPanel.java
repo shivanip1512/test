@@ -180,7 +180,7 @@ public Object getValue(Object val) {
 		com.cannontech.database.db.route.MacroRoute mRoute = new com.cannontech.database.db.route.MacroRoute();
 		mRoute.setRouteID(routeID);
 		mRoute.setSingleRouteID( new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)
-									getRoutesAddRemovePanel().rightListGetModel().getElementAt(i)).getYukonId()) );
+									getRoutesAddRemovePanel().rightListGetModel().getElementAt(i)).getYukonID()) );
 		mRoute.setRouteOrder( new Integer(i+1) );
 
 		macroRouteVector.addElement( mRoute );	

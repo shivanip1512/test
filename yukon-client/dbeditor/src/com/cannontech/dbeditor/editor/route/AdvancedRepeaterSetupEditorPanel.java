@@ -788,7 +788,7 @@ public Object getValue(Object val)
 			repeaterRouteID = ((com.cannontech.database.db.route.RepeaterRoute)repeaterRoutes.elementAt(i)).getDeviceID().intValue();
 			for (int j=0;j<devices.size();j++)
 			{
-				if ( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(j)).getYukonId() == repeaterRouteID )
+				if ( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(j)).getYukonID() == repeaterRouteID )
 				{
 					Object repeaterISpinVal = repeaterFields[i].getValue();
 					if(repeaterISpinVal instanceof Long)
@@ -1047,7 +1047,7 @@ public void setValue(Object val) {
 			repeaterRouteDeviceID = ((com.cannontech.database.db.route.RepeaterRoute)repeaterRoutes.elementAt(i)).getDeviceID().intValue();
 			for (int j=0;j<devices.size();j++)
 			{
-				if ( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(j)).getYukonId() == repeaterRouteDeviceID )
+				if ( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(j)).getYukonID() == repeaterRouteDeviceID )
 				{
 					repeaterLabels[i].setText(((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(j)).getPaoName());
 					break;

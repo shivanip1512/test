@@ -5,24 +5,20 @@
 #include "msg_cmd.h"
 #include "collectable.h"
 
-#include "amq_constants.h"
-
 using std::string;
-using boost::shared_ptr;
 
-DispatchConnection::DispatchConnection() :
-        CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch )
+DispatchConnection::DispatchConnection()
 {
 
 }
 
-DispatchConnection::DispatchConnection( const string& connectionName, Que_t *inQ, int tt) :
-        CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch, inQ, tt )
+DispatchConnection::DispatchConnection( const string& connectionName, const int &port, const string &host, Que_t *inQ, int tt) :
+    CtiConnection(port,host,inQ,tt)
 {
     Inherited::setName(connectionName);
 }
 
-void DispatchConnection::registerForPoint(::MessageListener* listener, long pointId)
+void DispatchConnection::registerForPoint(MessageListener* listener, long pointId)
 {
     CtiLockGuard< CtiMutex > guard(_regListMux);
 
@@ -34,7 +30,7 @@ void DispatchConnection::registerForPoint(::MessageListener* listener, long poin
     return;
 }
 
-void DispatchConnection::registerForPoints(::MessageListener* listener, const std::set<long>& pointIds)
+void DispatchConnection::registerForPoints(MessageListener* listener, const std::set<long>& pointIds)
 {
     CtiLockGuard< CtiMutex > guard(_regListMux);
 
@@ -49,7 +45,7 @@ void DispatchConnection::registerForPoints(::MessageListener* listener, const st
     return;
 }
 
-void DispatchConnection::unRegisterForPoint(::MessageListener* listener, long pointId)
+void DispatchConnection::unRegisterForPoint(MessageListener* listener, long pointId)
 {
     CtiLockGuard< CtiMutex > guard(_regListMux);
 
@@ -57,7 +53,7 @@ void DispatchConnection::unRegisterForPoint(::MessageListener* listener, long po
     _removeList.insert(pointId);
 }
 
-void DispatchConnection::unRegisterForPoints(::MessageListener* listener, const std::set<long>& pointIds)
+void DispatchConnection::unRegisterForPoints(MessageListener* listener, const std::set<long>& pointIds)
 {
     CtiLockGuard< CtiMutex > guard(_regListMux);
 
@@ -144,16 +140,17 @@ void DispatchConnection::writeIncomingMessageToQueue(CtiMessage* msgPtr)
     if (msgPtr->isA() == MSG_MULTI)
     {
         CtiMultiMsg* multi = (CtiMultiMsg*)msgPtr;
-        for each (CtiMessage* msg in multi->getData())
+        for each (RWCollectable* rwcol in multi->getData())
         {
             //These are all messages.
+            CtiMessage* msg = (CtiMessage*)rwcol;
             writeIncomingMessageToQueue(msg->replicateMessage());
         }
     }
     else
     {
         CtiLockGuard< CtiMutex > guard(_listenerMux);
-        for each (::MessageListener* listener in _messageListeners)
+        for each (MessageListener* listener in _messageListeners)
         {
             if (listener != NULL)
             {
@@ -167,13 +164,13 @@ void DispatchConnection::writeIncomingMessageToQueue(CtiMessage* msgPtr)
     msgPtr = NULL;
 }
 
-void DispatchConnection::addMessageListener(::MessageListener* messageListener)
+void DispatchConnection::addMessageListener(MessageListener* messageListener)
 {
     CtiLockGuard< CtiMutex > guard(_listenerMux);
     _messageListeners.insert(messageListener);
 }
 
-void DispatchConnection::removeMessageListener(::MessageListener* messageListener)
+void DispatchConnection::removeMessageListener(MessageListener* messageListener)
 {
     CtiLockGuard< CtiMutex > guard(_listenerMux);
     _messageListeners.erase(messageListener);

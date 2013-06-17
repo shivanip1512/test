@@ -3,7 +3,6 @@ package com.cannontech.message.notif;
 import java.io.IOException;
 
 import com.cannontech.message.util.DefineCollectableMessage;
-import com.cannontech.messaging.message.notif.VoiceDataResponseMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
@@ -16,7 +15,7 @@ public class DefColl_VoiceDataResponseMsg extends DefineCollectableMessage {
     public static final int MSG_ID = 709;
 
     public Object create(VirtualInputStream vstr) throws java.io.IOException {
-        return new VoiceDataResponseMessage();
+        return new VoiceDataResponseMsg();
     }
 
     public Comparator getComparator() {
@@ -41,27 +40,27 @@ public class DefColl_VoiceDataResponseMsg extends DefineCollectableMessage {
     }
 
     public Class getJavaClass() {
-        return VoiceDataResponseMessage.class;
+        return VoiceDataResponseMsg.class;
     }
 
     public void restoreGuts(Object obj, VirtualInputStream vstr,
             CollectableStreamer polystr) throws IOException {
         super.restoreGuts(obj, vstr, polystr);
-        VoiceDataResponseMessage msg = (VoiceDataResponseMessage) obj;
+        VoiceDataResponseMsg msg = (VoiceDataResponseMsg) obj;
 
-        msg.setCallToken( (String) vstr.restoreObject(SimpleMappings.CString));
-        msg.setXmlData ( (String) vstr.restoreObject(SimpleMappings.CString));
-        msg.setContactId ( vstr.extractInt());
+        msg.callToken = (String) vstr.restoreObject(SimpleMappings.CString);
+        msg.xmlData = (String) vstr.restoreObject(SimpleMappings.CString);
+        msg.contactId = vstr.extractInt();
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr,
             CollectableStreamer polystr) throws IOException {
         super.saveGuts(obj, vstr, polystr);
-        VoiceDataResponseMessage msg = (VoiceDataResponseMessage) obj;
+        VoiceDataResponseMsg msg = (VoiceDataResponseMsg) obj;
 
-        vstr.saveObject(msg.getCallToken(), SimpleMappings.CString);
-        vstr.saveObject(msg.getXmlData(), SimpleMappings.CString);
-        vstr.insertInt(msg.getContactId());
+        vstr.saveObject(msg.callToken, SimpleMappings.CString);
+        vstr.saveObject(msg.xmlData, SimpleMappings.CString);
+        vstr.insertInt(msg.contactId);
 
     }
 

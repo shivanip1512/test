@@ -12,10 +12,10 @@ import com.cannontech.core.service.TableToDBChangeMappingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.dispatch.DbChangeCategory;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
-import com.cannontech.messaging.util.DbChangeManager;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class TableToDBChangeMappingServiceImpl implements TableToDBChangeMappingService{
     
@@ -28,10 +28,10 @@ public class TableToDBChangeMappingServiceImpl implements TableToDBChangeMapping
         addDBTableListener("ApplianceCategory", DbChangeCategory.APPLIANCE);
         addDBTableListener("LMGroupExpressCom", 0, PAOGroups.STRING_CAT_DEVICE, PaoType.LM_GROUP_EXPRESSCOMM.getDbString());
         addDBTableListener("LMProgram", 0, PAOGroups.STRING_CAT_LOADMANAGEMENT, PaoType.LM_DIRECT_PROGRAM.getDbString());
-        addDBTableListener("LMProgramWebPublishing", DBChangeMessage.CHANGE_STARS_PUBLISHED_PROGRAM_DB, DBChangeMessage.CAT_STARS_PUBLISHED_PROGRAM, DBChangeMessage.CAT_STARS_PUBLISHED_PROGRAM);
-        addDBTableListener("YukonGroup", 10, DBChangeMessage.CAT_YUKON_USER_GROUP, DBChangeMessage.CAT_YUKON_USER);
-        addDBTableListener("YukonWebConfiguration", DBChangeMessage.CHANGE_WEB_CONFIG_DB, DBChangeMessage.CAT_WEB_CONFIG, DBChangeMessage.CAT_WEB_CONFIG);
-        addPointDBTableListener("Point", 1, DBChangeMessage.CAT_POINT);
+        addDBTableListener("LMProgramWebPublishing", DBChangeMsg.CHANGE_STARS_PUBLISHED_PROGRAM_DB, DBChangeMsg.CAT_STARS_PUBLISHED_PROGRAM, DBChangeMsg.CAT_STARS_PUBLISHED_PROGRAM);
+        addDBTableListener("YukonGroup", 10, DBChangeMsg.CAT_YUKON_USER_GROUP, DBChangeMsg.CAT_YUKON_USER);
+        addDBTableListener("YukonWebConfiguration", DBChangeMsg.CHANGE_WEB_CONFIG_DB, DBChangeMsg.CAT_WEB_CONFIG, DBChangeMsg.CAT_WEB_CONFIG);
+        addPointDBTableListener("Point", 1, DBChangeMsg.CAT_POINT);
     }
 
     private void addDBTableListener(final String tableName, final DbChangeCategory changeCategory) {

@@ -32,7 +32,7 @@
 <%@page import="com.cannontech.analysis.controller.ReportController"%>
 <cti:verifyRolesAndProperties value="REPORTING"/>
 
-<%@page import="com.cannontech.messaging.message.capcontrol.streamable.StreamableCapObject"%><cti:verifyRolesAndProperties value="REPORTING"/>
+<%@page import="com.cannontech.message.capcontrol.streamable.StreamableCapObject"%><cti:verifyRolesAndProperties value="REPORTING"/>
 
 <%
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
@@ -758,11 +758,9 @@ function makeFirstSelectedFilterValueVisible() {
                                     		<c:out value="<%=object.toString()%>" />
                                     	</option>
                                     	
-                        			<%
-                                    	                        			    }else if (object instanceof LiteYukonPAObject) {
-                                    	                        			                			
-                                    	                        			                				objectStringVal = String.valueOf(((LiteYukonPAObject)object).getYukonId());
-                                    	                        			%>
+                        			<%}else if (object instanceof LiteYukonPAObject) {
+                        			
+                        				objectStringVal = String.valueOf(((LiteYukonPAObject)object).getYukonID());%>
                         				
                                     	<option value='<c:out value="<%=objectStringVal%>" />' <% if (selectedReportFilterValues != null && selectedReportFilterValues.contains(objectStringVal)) {%>selected<%} %>>
                                     		<c:out value="<%=((LiteYukonPAObject)object).getPaoName()%>" />

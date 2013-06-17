@@ -1,6 +1,6 @@
 package com.cannontech.dr.program.model;
 
-import com.cannontech.messaging.message.loadcontrol.data.Program;
+import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.user.YukonUserContext;
 
 public class ProgramEnabledField extends ProgramBackingFieldBase {
@@ -11,7 +11,7 @@ public class ProgramEnabledField extends ProgramBackingFieldBase {
     }
 
     @Override
-    public Object getProgramValue(Program program,
+    public Object getProgramValue(LMProgramBase program,
             YukonUserContext userContext) {
         if (program == null) {
             return "";

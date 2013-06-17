@@ -6,31 +6,31 @@ import com.cannontech.common.util.DatedObject;
 import com.cannontech.dr.DemandResponseBackingField;
 import com.cannontech.dr.controlarea.service.ControlAreaFieldService;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
+import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingServiceBase;
 
-public class ControlAreaBackingService extends UpdateBackingServiceBase<ControlAreaItem> {
+public class ControlAreaBackingService extends UpdateBackingServiceBase<LMControlArea> {
     private ControlAreaService controlAreaService = null;
     private ControlAreaFieldService controlAreaFieldService;
 
     @Override
-    public DatedObject<ControlAreaItem> getDatedObject(int controlAreaId) {
-        DatedObject<ControlAreaItem> datedControlArea = 
+    public DatedObject<LMControlArea> getDatedObject(int controlAreaId) {
+        DatedObject<LMControlArea> datedControlArea = 
             controlAreaService.getDatedControlArea(controlAreaId);
         return datedControlArea;
     }
     
     @Override
-    public Object getValue(DatedObject<ControlAreaItem> datedObject, String[] idBits,
+    public Object getValue(DatedObject<LMControlArea> datedObject, String[] idBits,
                            YukonUserContext userContext) {
 
         String fieldName = idBits[1];
 
-        DemandResponseBackingField<ControlAreaItem> backingField = 
+        DemandResponseBackingField<LMControlArea> backingField = 
             controlAreaFieldService.getBackingField(fieldName);
         
-        ControlAreaItem controlArea = null;
+        LMControlArea controlArea = null;
         if (datedObject != null) {
             controlArea = datedObject.getObject();
         }

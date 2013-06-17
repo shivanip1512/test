@@ -86,7 +86,6 @@
         <include name="XmlSchema-1.4.2.jar"/>
         <include name="yc.jar"/>
         <include name="yukonappserver.jar"/>
-        <include name="libthrift-0.9.0.jar"/>
     </fileset>
 
     <target name="compile">

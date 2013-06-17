@@ -5,12 +5,9 @@
 
 #include "ctitime.h"
 
-#include "collectable.h"
-
-class ConstraintViolation
+class ConstraintViolation : public RWCollectable
 {
-public:
-    DECLARE_COLLECTABLE( ConstraintViolation );
+RWDECLARE_COLLECTABLE( ConstraintViolation )
 
 private:
 
@@ -22,18 +19,13 @@ private:
 
     ConstraintViolation() { };
 
-public:
+    /* Friend function is declared here for the use of the above-declared private default constructor.
+       RogueWave needs access to a default constructor in rwutil.h to be able to pass these types of
+       objects over the wire to the client side in vectors. This overload function is the rwutil function
+       which creates the object and thus needs the friend access. */
+    template <class T> friend RWvistream& operator >> ( RWvistream &strm, std::vector<T> &v );
 
-    ConstraintViolation( int errorCode,
-                         const std::vector<double>& doubleParams,
-                         const std::vector<int>& integerParams,
-                         const std::vector<std::string>& stringParams,
-                         const std::vector<CtiTime>& datetimeParams ) :
-    _errorCode( errorCode ),
-    _doubleParams( doubleParams ),
-    _integerParams( integerParams ),
-    _datetimeParams( datetimeParams )
-    {};
+public:
 
     enum CV_Type_Double
     {
@@ -143,11 +135,16 @@ public:
 
     int getErrorCode() const;
 
+    void restoreGuts(RWvistream&);
+    void saveGuts(RWvostream&) const;
+
     bool operator==(const ConstraintViolation &rhs) const;
 
-    const std::vector<double>&      getDoubleParams()   const;
-    const std::vector<int>&         getIntegerParams()  const;
-    const std::vector<std::string>& getStringParams()   const;
-    const std::vector<CtiTime>&     getDateTimeParams() const;
+protected:
+
+    std::vector<double>      getDoubleParams()   const;
+    std::vector<int>         getIntegerParams()  const;
+    std::vector<std::string> getStringParams()   const;
+    std::vector<CtiTime>     getDateTimeParams() const;
 
 };

@@ -36,12 +36,12 @@ import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.CTIDbChange;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 public interface IDatabaseCache {
 
-    public DBChangeMessage[] createDBChangeMessages(CTIDbChange newItem, DbChangeType dbChangeType);
+    public DBChangeMsg[] createDBChangeMessages(CTIDbChange newItem, DbChangeType dbChangeType);
 
     public List<LiteAlarmCategory> getAllAlarmCategories();
 
@@ -151,8 +151,8 @@ public interface IDatabaseCache {
      *    else null is returned.
      * @param noObjectNeeded 
      */
-    public LiteBase handleDBChangeMessage(DBChangeMessage dbChangeMsg, boolean noObjectNeeded);
-    public LiteBase handleDBChangeMessage(DBChangeMessage dbChangeMsg);
+    public LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg, boolean noObjectNeeded);
+    public LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg);
 
     public void releaseAllAlarmCategories();
 

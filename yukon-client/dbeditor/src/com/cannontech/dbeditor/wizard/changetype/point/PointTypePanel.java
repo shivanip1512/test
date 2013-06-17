@@ -909,7 +909,7 @@ public void setButtons(Object val)
 {
 		List<LiteYukonPAObject> allDevices = cache.getAllYukonPAObjects();
 		for (LiteYukonPAObject liteYukonPAObject : allDevices) {
-			if (liteYukonPAObject.getYukonId() == deviceID)
+			if (liteYukonPAObject.getYukonID() == deviceID)
 			{
 				if (liteYukonPAObject.getPaoType().getPaoClass() == PaoClass.GROUP)
 				{

@@ -226,7 +226,7 @@ public Object getValue(Object o)
 	if( group instanceof IGroupRoute)
 	{
 		((IGroupRoute) group).setRouteID( 
-			new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxRoutes().getSelectedItem()).getYukonId()) );
+			new Integer(((com.cannontech.database.data.lite.LiteYukonPAObject)getJComboBoxRoutes().getSelectedItem()).getYukonID()) );
 	}
 	
 	com.cannontech.database.data.multi.MultiDBPersistent objectsToAdd = new com.cannontech.database.data.multi.MultiDBPersistent();
@@ -411,7 +411,7 @@ public void setValue(Object o)
 			java.util.List<LiteYukonPAObject> routes = cache.getAllRoutes();
 			for( LiteYukonPAObject route : routes ) {
 			    getJComboBoxRoutes().addItem(route);
-			    if (route.getYukonId() == groupRouteId) {
+			    if (route.getYukonID() == groupRouteId) {
 			        getJComboBoxRoutes().setSelectedItem(route);
 			    }
 			}

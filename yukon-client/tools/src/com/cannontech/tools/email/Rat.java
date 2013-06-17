@@ -14,11 +14,11 @@ import javax.mail.internet.MimeMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.messaging.message.CommandMessage;
-import com.cannontech.messaging.message.porter.RequestMessage;
-import com.cannontech.messaging.util.MessageEvent;
-import com.cannontech.messaging.util.MessageListener;
-import com.cannontech.porter.PorterClientConnection;
+import com.cannontech.message.porter.ClientConnection;
+import com.cannontech.message.porter.message.Request;
+import com.cannontech.message.util.Command;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
 import com.cannontech.yukon.conns.ConnPool;
 
 class Rat
@@ -216,8 +216,8 @@ private boolean executeCheckDispatchConnection()
 	
 	try
 	{
-		com.cannontech.messaging.message.dispatch.RegistrationMessage reg = 
-					new com.cannontech.messaging.message.dispatch.RegistrationMessage();
+		com.cannontech.message.dispatch.message.Registration reg = 
+					new com.cannontech.message.dispatch.message.Registration();
 					
 		reg.setAppName( CtiUtilities.getAppRegistration() );
 		reg.setAppIsUnique(1);  //this app IS unique
@@ -225,8 +225,8 @@ private boolean executeCheckDispatchConnection()
 		reg.setAppExpirationDelay( 60 );  // 1 minutes
 		
 		CTILogger.info("Trying to connect to:  " + getYukonHost() + " " + DISPATCH_PORT );
-		com.cannontech.dispatch.DispatchClientConnection connection = 
-					new com.cannontech.dispatch.DispatchClientConnection();
+		com.cannontech.message.dispatch.ClientConnection connection = 
+					new com.cannontech.message.dispatch.ClientConnection();
 
 		connection.setHost(getYukonHost());
 		connection.setPort(DISPATCH_PORT);
@@ -253,9 +253,9 @@ private boolean executeCheckDispatchConnection()
 		if( connection.isValid() )
 		{	
 			CTILogger.info("Connection & Registration to Server Established.");
-			CommandMessage cmd = new CommandMessage();
+			Command cmd = new Command();
 
-			cmd.setOperation( CommandMessage.LOOP_CLIENT );
+			cmd.setOperation( Command.LOOP_CLIENT );
 			cmd.setPriority(15);
 			connection.write( cmd );
 
@@ -288,8 +288,8 @@ private boolean executeCheckPorterConnection()
 		CTILogger.info("Trying to connect to:  " + getYukonHost() + " " + DISPATCH_PORT );
         
         //get his own porter connection
-        PorterClientConnection portConn = 
-            (PorterClientConnection)ConnPool.getInstance().getDefPorterConn();
+        ClientConnection portConn = 
+            (ClientConnection)ConnPool.getInstance().getDefPorterConn();
 
         portConn.setHost( getYukonHost() );
         portConn.setPort( PORTER_PORT );
@@ -323,8 +323,8 @@ private boolean executeCheckPorterConnection()
 		if( portConn.isValid() )
 		{	
 			CTILogger.info("Connection & Registration to Server Established.");
-			RequestMessage req = new RequestMessage();
-			req.setDeviceId(0);
+			Request req = new Request();
+			req.setDeviceID(0);
 			req.setCommandString("control open select pointid -4");
 
             //need a mutable final instance!

@@ -15,9 +15,9 @@ import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
-import com.cannontech.messaging.util.DbChangeManager;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.DbPersistentBeanFactory;
 
 public class DBPersistentDaoImpl implements DBPersistentDao {
@@ -61,9 +61,9 @@ public class DBPersistentDaoImpl implements DBPersistentDao {
             
             // Generate and process db change messages when not of type NONE
             DbChangeType dbChangeType = transactionType.getDbChangeType();
-            DBChangeMessage[] dbChangeMsgs = getDBChangeMsgs(item, dbChangeType);
+            DBChangeMsg[] dbChangeMsgs = getDBChangeMsgs(item, dbChangeType);
             if (dbChangeMsgs != null) {
-                for (DBChangeMessage changeMsg : dbChangeMsgs) {
+                for (DBChangeMsg changeMsg : dbChangeMsgs) {
                     dbChangeManager.processDbChange(changeMsg);
                 }
             }
@@ -78,7 +78,7 @@ public class DBPersistentDaoImpl implements DBPersistentDao {
     	dbPersistentBeanFactory.createNewDbPersistentBean().execute(transactionType, item);
     }
 
-    private DBChangeMessage[] getDBChangeMsgs(DBPersistent item, DbChangeType dbChangeType) {
+    private DBChangeMsg[] getDBChangeMsgs(DBPersistent item, DbChangeType dbChangeType) {
         if (!(item instanceof CTIDbChange) || dbChangeType == DbChangeType.NONE) {
             return null;
         }

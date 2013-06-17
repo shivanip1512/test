@@ -50,10 +50,10 @@ import com.cannontech.database.data.user.YukonGroup;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.user.UserGroup;
-import com.cannontech.dispatch.DbChangeCategory;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
-import com.cannontech.messaging.util.DbChangeManager;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.SiteInformationDao;
@@ -148,8 +148,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         
         /* This does nothing to StarsDatabaseCache,  I don't know who else would care. */
         dbChangeManager.processDbChange(energyCompany.getEnergyCompanyId(), 
-                                        DBChangeMessage.CHANGE_ENERGY_COMPANY_DB,
-                                        DBChangeMessage.CAT_ENERGY_COMPANY,
+                                        DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
+                                        DBChangeMsg.CAT_ENERGY_COMPANY,
                                         DbChangeType.ADD);
 
         /* Set Default Route */
@@ -403,9 +403,9 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             
             YukonUser.deleteOperatorLogin(defaultUserId);
             dbChangeManager.processDbChange(defaultUserId,
-                                            DBChangeMessage.CHANGE_YUKON_USER_DB,
-                                            DBChangeMessage.CAT_YUKON_USER,
-                                            DBChangeMessage.CAT_YUKON_USER,
+                                            DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                            DBChangeMsg.CAT_YUKON_USER,
+                                            DBChangeMsg.CAT_YUKON_USER,
                                             DbChangeType.DELETE);
         }
         
@@ -476,9 +476,9 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             try {
                 LiteContact liteContact = YukonSpringHook.getBean(ContactDao.class).getContact(energyCompany.getPrimaryContactID());
                 dbChangeManager.processDbChange(liteContact.getContactID(),
-                                                DBChangeMessage.CHANGE_CONTACT_DB,
-                                                DBChangeMessage.CAT_CUSTOMERCONTACT,
-                                                DBChangeMessage.CAT_CUSTOMERCONTACT,
+                                                DBChangeMsg.CHANGE_CONTACT_DB,
+                                                DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                                DBChangeMsg.CAT_CUSTOMERCONTACT,
                                                 DbChangeType.DELETE);
             }catch(EmptyResultDataAccessException ignore) {}
         }

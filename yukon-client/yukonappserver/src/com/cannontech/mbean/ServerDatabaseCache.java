@@ -59,8 +59,8 @@ import com.cannontech.database.db.capcontrol.CapBank;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.point.PointAlarming;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.server.cache.AlarmCategoryLoader;
 import com.cannontech.yukon.server.cache.BaselineLoader;
@@ -212,7 +212,7 @@ protected ServerDatabaseCache(String databaseAlias) {
  * Creation date: (3/29/2001 12:27:17 PM)
  * @param newItem com.cannontech.database.db.DBPersistent
  */
-public synchronized DBChangeMessage[] createDBChangeMessages( CTIDbChange newItem, DbChangeType dbChangeType )
+public synchronized DBChangeMsg[] createDBChangeMessages( CTIDbChange newItem, DbChangeType dbChangeType )
 {
 	return newItem.getDBChangeMsgs( dbChangeType);
 }
@@ -1200,7 +1200,7 @@ private synchronized LiteBase handleContactChange( DbChangeType dbChangeType, in
     {
     case ADD:
     {
-        if ( id == DBChangeMessage.CHANGE_INVALID_ID )
+        if ( id == DBChangeMsg.CHANGE_INVALID_ID )
             break;
         
         LiteContact lc = getAContactByContactID(id);
@@ -1221,7 +1221,7 @@ private synchronized LiteBase handleContactChange( DbChangeType dbChangeType, in
     }
     case DELETE:
         //special case for this handler!!!!
-        if ( id == DBChangeMessage.CHANGE_INVALID_ID )
+        if ( id == DBChangeMsg.CHANGE_INVALID_ID )
         {
             releaseAllContacts();
             break;
@@ -1244,7 +1244,7 @@ private synchronized LiteBase handleContactChange( DbChangeType dbChangeType, in
 }
 
 @Override
-public LiteBase handleDBChangeMessage(DBChangeMessage dbChangeMsg) {
+public LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg) {
     return handleDBChangeMessage(dbChangeMsg, false);
 }
 
@@ -1255,7 +1255,7 @@ public LiteBase handleDBChangeMessage(DBChangeMessage dbChangeMsg) {
  * available optimizations can be made to ignore it.
  *
  */
-public synchronized LiteBase handleDBChangeMessage(DBChangeMessage dbChangeMsg,
+public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
                                                    boolean noObjectNeeded)
 {
     String objectType = dbChangeMsg.getObjectType();
@@ -1265,12 +1265,12 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMessage dbChangeMsg,
     int id = dbChangeMsg.getId();
     LiteBase retLBase = null;
 
-    if( database == DBChangeMessage.CHANGE_POINT_DB )
+    if( database == DBChangeMsg.CHANGE_POINT_DB )
     {
         allPointLimits = null;
         retLBase = handlePointChange( dbChangeType, id, noObjectNeeded );
     }
-    else if( database == DBChangeMessage.CHANGE_PAO_DB )
+    else if( database == DBChangeMsg.CHANGE_PAO_DB )
     {
         retLBase = handleYukonPAOChange( dbChangeType, id);
 
@@ -1321,26 +1321,26 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMessage dbChangeMsg,
         }
 
     }
-    else if( database == DBChangeMessage.CHANGE_STATE_GROUP_DB )
+    else if( database == DBChangeMsg.CHANGE_STATE_GROUP_DB )
     {
         retLBase = handleStateGroupChange( dbChangeType, id );		
     }
-    else if( database == DBChangeMessage.CHANGE_ALARM_CATEGORY_DB )
+    else if( database == DBChangeMsg.CHANGE_ALARM_CATEGORY_DB )
     {
         retLBase = handleAlarmCategoryChange( dbChangeType, id );
     }
-    else if( database == DBChangeMessage.CHANGE_YUKON_IMAGE )
+    else if( database == DBChangeMsg.CHANGE_YUKON_IMAGE )
     { 
         retLBase = handleYukonImageChange( dbChangeType, id );
     }
-    else if( database == DBChangeMessage.CHANGE_NOTIFICATION_GROUP_DB )
+    else if( database == DBChangeMsg.CHANGE_NOTIFICATION_GROUP_DB )
     {
         //clear out the Contacts as they may have changed
         releaseAllContacts();
 
         retLBase = handleNotificationGroupChange( dbChangeType, id );
     }
-    else if( database == DBChangeMessage.CHANGE_CONTACT_DB )
+    else if( database == DBChangeMsg.CHANGE_CONTACT_DB )
     {
         //clear out the CICustomers & NotificationGroups as they may have changed
         allCICustomers = null;
@@ -1350,60 +1350,60 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMessage dbChangeMsg,
 
         retLBase = handleContactChange( dbChangeType, id );		
     }
-    else if( database == DBChangeMessage.CHANGE_GRAPH_DB )
+    else if( database == DBChangeMsg.CHANGE_GRAPH_DB )
     {
         retLBase = handleGraphDefinitionChange( dbChangeType, id );
     }
-    else if( database == DBChangeMessage.CHANGE_HOLIDAY_SCHEDULE_DB )
+    else if( database == DBChangeMsg.CHANGE_HOLIDAY_SCHEDULE_DB )
     {
         retLBase = handleHolidayScheduleChange( dbChangeType, id );
     }
-    else if( database == DBChangeMessage.CHANGE_BASELINE_DB )
+    else if( database == DBChangeMsg.CHANGE_BASELINE_DB )
     {
         retLBase = handleBaselineChange( dbChangeType, id );
     }
-    else if( database == DBChangeMessage.CHANGE_SEASON_SCHEDULE_DB )
+    else if( database == DBChangeMsg.CHANGE_SEASON_SCHEDULE_DB )
     {
         retLBase = handleSeasonScheduleChange( dbChangeType, id );
     }
-    else if( database == DBChangeMessage.CHANGE_TOU_SCHEDULE_DB )
+    else if( database == DBChangeMsg.CHANGE_TOU_SCHEDULE_DB )
     {
         retLBase = handleTOUScheduleChange( dbChangeType, id );
     }
-    else if( database == DBChangeMessage.CHANGE_CONFIG_DB )
+    else if( database == DBChangeMsg.CHANGE_CONFIG_DB )
     {
-        if (DBChangeMessage.CAT_DEVICE_CONFIG.equals(dbCategory)) {
+        if (DBChangeMsg.CAT_DEVICE_CONFIG.equals(dbCategory)) {
             // Do nothing - no cache for device configs
         } else {
             retLBase = handleConfigChange(dbChangeType, id);
         }
     }
-    else if( database == DBChangeMessage.CHANGE_TAG_DB )
+    else if( database == DBChangeMsg.CHANGE_TAG_DB )
     {
         retLBase = handleTagChange( dbChangeType, id );
     }
-    else if( database == DBChangeMessage.CHANGE_LMCONSTRAINT_DB )
+    else if( database == DBChangeMsg.CHANGE_LMCONSTRAINT_DB )
     {
         retLBase = handleLMProgramConstraintChange( dbChangeType, id );
     }
-    else if( database == DBChangeMessage.CHANGE_DEVICETYPE_COMMAND_DB)
+    else if( database == DBChangeMsg.CHANGE_DEVICETYPE_COMMAND_DB)
     {
         retLBase = handleDeviceTypeCommandChange(dbChangeType, id);
     }
-    else if( database == DBChangeMessage.CHANGE_COMMAND_DB )
+    else if( database == DBChangeMsg.CHANGE_COMMAND_DB )
     {
         retLBase = handleCommandChange( dbChangeType, id );
     }
-    else if( database == DBChangeMessage.CHANGE_ENERGY_COMPANY_DB )
+    else if( database == DBChangeMsg.CHANGE_ENERGY_COMPANY_DB )
     {
         allEnergyCompanies = null;
         userEnergyCompanyCache.clear();
 
-    } else if( database == DBChangeMessage.CHANGE_CUSTOMER_DB ) {
+    } else if( database == DBChangeMsg.CHANGE_CUSTOMER_DB ) {
         allNotificationGroups = null;
         retLBase = handleCustomerChange( dbChangeType, id, dbCategory, noObjectNeeded );
 
-        if( dbCategory.equalsIgnoreCase(DBChangeMessage.CAT_CI_CUSTOMER)) {
+        if( dbCategory.equalsIgnoreCase(DBChangeMsg.CAT_CI_CUSTOMER)) {
             allCICustomers = null;
 
             // LiteEnergyCompany has a list of all cicustomers
@@ -1412,9 +1412,9 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMessage dbChangeMsg,
         }
 
     }
-    else if( database == DBChangeMessage.CHANGE_YUKON_USER_DB ) 
+    else if( database == DBChangeMsg.CHANGE_YUKON_USER_DB ) 
     {
-        if( DBChangeMessage.CAT_YUKON_USER_GROUP.equalsIgnoreCase(dbCategory) )
+        if( DBChangeMsg.CAT_YUKON_USER_GROUP.equalsIgnoreCase(dbCategory) )
             retLBase = handleYukonGroupChange( dbChangeType, id );
         else
             retLBase = handleYukonUserChange( dbChangeType, id, noObjectNeeded);
@@ -1424,10 +1424,10 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMessage dbChangeMsg,
         allYukonRoles = null;
         allYukonGroupRolePropertiesMap = null;
         userEnergyCompanyCache.clear();
-    } else if (database == DBChangeMessage.CHANGE_USER_GROUP_DB) {
+    } else if (database == DBChangeMsg.CHANGE_USER_GROUP_DB) {
         retLBase = handleUserGroupChange( dbChangeType, id);
-    } else if ( database == DBChangeMessage.CHANGE_CUSTOMER_ACCOUNT_DB ) {
-        if ( dbCategory.equalsIgnoreCase(DBChangeMessage.CAT_CUSTOMER_ACCOUNT) ) {
+    } else if ( database == DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB ) {
+        if ( dbCategory.equalsIgnoreCase(DBChangeMsg.CAT_CUSTOMER_ACCOUNT) ) {
             //allContacts = null;
         }
         retLBase = null;
@@ -2246,7 +2246,7 @@ private LiteBase handleCustomerChange( DbChangeType dbChangeType, int id, String
 			if(!noObjectNeeded)
 			{
 				LiteCustomer lc;
-				if( dbCategory.equalsIgnoreCase(DBChangeMessage.CAT_CI_CUSTOMER ))
+				if( dbCategory.equalsIgnoreCase(DBChangeMsg.CAT_CI_CUSTOMER ))
 					lc = new LiteCICustomer(id);
 				else 
 					lc = new LiteCustomer(id);
@@ -2413,7 +2413,7 @@ private synchronized LiteBase handleYukonPAOChange( DbChangeType dbChangeType, i
 				LiteYukonPAObject ly = new LiteYukonPAObject(id);
 				ly.retrieve(databaseAlias);
 				allYukonPAObjects.add(ly);
-				allPAOsMap.put( new Integer(ly.getYukonId()), ly );
+				allPAOsMap.put( new Integer(ly.getYukonID()), ly );
 	
 				lBase = ly;
 			}
@@ -2430,7 +2430,7 @@ private synchronized LiteBase handleYukonPAOChange( DbChangeType dbChangeType, i
 		case DELETE:
 				for(int i=0;i<allYukonPAObjects.size();i++)
 				{
-					if( allYukonPAObjects.get(i).getYukonId() == id )
+					if( allYukonPAObjects.get(i).getYukonID() == id )
 					{
 						allPAOsMap.remove( new Integer(id) );
 						lBase = allYukonPAObjects.remove(i);

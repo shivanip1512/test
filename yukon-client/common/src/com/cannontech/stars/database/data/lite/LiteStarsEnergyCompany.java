@@ -58,9 +58,9 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.user.YukonGroup;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
-import com.cannontech.messaging.util.DbChangeManager;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -1128,9 +1128,9 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         
         // Remove customer from the cache
         dbChangeManager.processDbChange(liteAcctInfo.getCustomer().getLiteID(),
-                                        DBChangeMessage.CHANGE_CUSTOMER_DB,
-                                        DBChangeMessage.CAT_CUSTOMER,
-                                        DBChangeMessage.CAT_CUSTOMER,
+                                        DBChangeMsg.CHANGE_CUSTOMER_DB,
+                                        DBChangeMsg.CAT_CUSTOMER,
+                                        DBChangeMsg.CAT_CUSTOMER,
                                         DbChangeType.DELETE);
     }
     

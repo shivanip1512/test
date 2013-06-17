@@ -1856,7 +1856,7 @@ void CtiLMControlAreaStore::reset()
         _wascontrolareadeletedflag = false;
 
         // Make sure all the clients get the new control areas
-        CtiLMClientListener::getInstance().BroadcastMessage(CTIDBG_new CtiLMControlAreaMsg(*_controlAreas,msgBitMask));
+        CtiLMClientListener::getInstance()->BroadcastMessage(CTIDBG_new CtiLMControlAreaMsg(*_controlAreas,msgBitMask));
     }
     catch( ... )
     {

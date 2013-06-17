@@ -11,8 +11,8 @@ import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -385,14 +385,14 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
      * Generates a DBChange msg.
      */
     @Override
-    public DBChangeMessage[] getDBChangeMsgs(DbChangeType dbChangeType) {
-        DBChangeMessage[] dbChange = new DBChangeMessage[1];
+    public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+        DBChangeMsg[] dbChange = new DBChangeMsg[1];
 
         //add the basic change method
-        dbChange[0] = new DBChangeMessage(
+        dbChange[0] = new DBChangeMsg(
                         getStrategyID().intValue(),
-                        DBChangeMessage.CHANGE_CBC_STRATEGY_DB,
-                        DBChangeMessage.CAT_CBC_STRATEGY,
+                        DBChangeMsg.CHANGE_CBC_STRATEGY_DB,
+                        DBChangeMsg.CAT_CBC_STRATEGY,
                         dbChangeType);
 
         return dbChange;

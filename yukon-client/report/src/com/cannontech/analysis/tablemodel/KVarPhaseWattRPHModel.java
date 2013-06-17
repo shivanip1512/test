@@ -20,7 +20,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.user.YukonUserContext;
 
 public class KVarPhaseWattRPHModel extends BareReportModelBase<KVarPhaseWattRPHModel.ModelRow> implements ReportModelMetaInfo {
@@ -69,21 +69,21 @@ public class KVarPhaseWattRPHModel extends BareReportModelBase<KVarPhaseWattRPHM
         	SubBus subBus_cache = capControlCache.getSubBus(targetId);
         	SubstationBus subBus_dao = substationBusDao.findSubBusById(targetId);
         	
-        	phaseAPointId = subBus_cache.getCurrentVarLoadPointId();
+        	phaseAPointId = subBus_cache.getCurrentVarLoadPointID();
         	phaseBPointId = subBus_dao.getPhaseb();
         	phaseCPointId = subBus_dao.getPhasec();
-        	estimatedVarLoadPointId = subBus_cache.getEstimatedVarLoadPointId();
-        	currentWattLoadPointId = subBus_cache.getCurrentWattLoadPointId();
+        	estimatedVarLoadPointId = subBus_cache.getEstimatedVarLoadPointID();
+        	currentWattLoadPointId = subBus_cache.getCurrentWattLoadPointID();
         }
         else if(capControlCache.isFeeder(targetId)) {
-        	com.cannontech.messaging.message.capcontrol.streamable.Feeder feeder_cache = capControlCache.getFeeder(targetId);
+        	com.cannontech.message.capcontrol.streamable.Feeder feeder_cache = capControlCache.getFeeder(targetId);
         	FeederPhaseData phaseData = feederDao.getFeederPhaseData(targetId);
         	
         	phaseAPointId = phaseData.getCurrentVarLoadPointId();
         	phaseBPointId = phaseData.getPhaseB();
         	phaseCPointId = phaseData.getPhaseC();
-        	estimatedVarLoadPointId = feeder_cache.getEstimatedVarLoadPointId();
-        	currentWattLoadPointId = feeder_cache.getCurrentWattLoadPointId();
+        	estimatedVarLoadPointId = feeder_cache.getEstimatedVarLoadPointID();
+        	currentWattLoadPointId = feeder_cache.getCurrentWattLoadPointID();
         }
         
         // gather point data

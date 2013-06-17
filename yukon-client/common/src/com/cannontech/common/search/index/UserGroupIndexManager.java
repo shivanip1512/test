@@ -11,8 +11,8 @@ import org.apache.lucene.index.Term;
 
 import com.cannontech.common.search.YukonObjectAnalyzer;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.collect.Lists;
 
 /**
@@ -74,7 +74,7 @@ public class UserGroupIndexManager extends AbstractIndexManager {
 
     @Override
     protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category, String type) {
-        if (database == DBChangeMessage.CHANGE_USER_GROUP_DB && DBChangeMessage.CAT_USER_GROUP.equalsIgnoreCase(category)) {
+        if (database == DBChangeMsg.CHANGE_USER_GROUP_DB && DBChangeMsg.CAT_USER_GROUP.equalsIgnoreCase(category)) {
             return this.processUserGroupChange(id);
         }
 

@@ -1963,7 +1963,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
 
             LiteYukonPAObject port = ((LiteYukonPAObject) getPortComboBox().getSelectedItem());
 
-            portID = new Integer(port.getYukonId());
+            portID = new Integer(port.getYukonID());
             dDirect.setPortID(portID);
 
             Object postCommWaitSpinVal = getPostCommWaitSpinner().getValue();
@@ -2167,7 +2167,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
         } else {
             if (val instanceof CarrierBase) {
                 CarrierBase carrierBase = (CarrierBase) val;
-                int routeId = (((LiteYukonPAObject) getRouteComboBox().getSelectedItem()).getYukonId());
+                int routeId = (((LiteYukonPAObject) getRouteComboBox().getSelectedItem()).getYukonID());
                 carrierBase.getDeviceRoutes().setRouteID(routeId);
             } else if(val instanceof RfnBase) {
                 RfnBase rfnBase = (RfnBase)val;
@@ -2498,7 +2498,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     			    PaoType paoType = liteRoute.getPaoType();
     				if (paoType == PaoType.ROUTE_CCU || paoType == PaoType.ROUTE_MACRO) {
     					getRouteComboBox().addItem(liteRoute);
-    					if (liteRoute.getYukonId() == assignedRouteID ) {
+    					if (liteRoute.getYukonID() == assignedRouteID ) {
     						getRouteComboBox().setSelectedItem(liteRoute);
     					}
     				}
@@ -2514,7 +2514,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     				
     			for (LiteYukonPAObject route : routes) {
     			    getRouteComboBox().addItem(route);
-    			    if (route.getYukonId() == assignedRouteID) {
+    			    if (route.getYukonID() == assignedRouteID) {
                         getRouteComboBox().setSelectedItem(route);
     			    }
     			}
@@ -2557,7 +2557,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 litePort = (com.cannontech.database.data.lite.LiteYukonPAObject)ports.get(i);
                 getPortComboBox().addItem(litePort);
                 
-                if( ((com.cannontech.database.data.lite.LiteYukonPAObject)ports.get(i)).getYukonId() == portID )
+                if( ((com.cannontech.database.data.lite.LiteYukonPAObject)ports.get(i)).getYukonID() == portID )
                 {
                     getPortComboBox().setSelectedItem(litePort);
                 }
@@ -2609,7 +2609,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     			litePort = (com.cannontech.database.data.lite.LiteYukonPAObject)ports.get(i);
     			getPortComboBox().addItem(litePort);
     			
-    			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)ports.get(i)).getYukonId() == portID )
+    			if( ((com.cannontech.database.data.lite.LiteYukonPAObject)ports.get(i)).getYukonID() == portID )
     			{
     				getPortComboBox().setSelectedItem(litePort);
     				

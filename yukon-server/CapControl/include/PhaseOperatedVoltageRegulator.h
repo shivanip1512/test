@@ -8,14 +8,16 @@ namespace CapControl    {
 class PhaseOperatedVoltageRegulator : public VoltageRegulator
 {
 public:
-    DECLARE_COLLECTABLE( PhaseOperatedVoltageRegulator );
 
-public:
+    RWDECLARE_COLLECTABLE( PhaseOperatedVoltageRegulator )
+
     PhaseOperatedVoltageRegulator();
     PhaseOperatedVoltageRegulator(Cti::RowReader & rdr);
     PhaseOperatedVoltageRegulator(const PhaseOperatedVoltageRegulator & toCopy);
 
     PhaseOperatedVoltageRegulator & operator=(const PhaseOperatedVoltageRegulator & rhs);
+
+    virtual void saveGuts(RWvostream & ostrm) const;
 
     virtual void loadAttributes(AttributeService * service);
 
@@ -32,10 +34,6 @@ public:
     virtual void executeDisableRemoteControl();
 
     virtual IDSet getVoltagePointIDs();
-
-    virtual bool            getRecentTapOperation() const { return _recentTapOperation; }
-    virtual OperatingMode   getLastOperatingMode()  const { return _lastOperatingMode; }
-    virtual OperatingMode   getLastCommandedOperatingMode() const { return _lastCommandedOperatingMode; }
 
 protected:
     

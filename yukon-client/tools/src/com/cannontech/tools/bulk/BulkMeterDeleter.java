@@ -16,8 +16,8 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
@@ -91,14 +91,14 @@ public class BulkMeterDeleter {
     	for (LiteYukonPAObject pao : bulkDataContainer.getYukonPAObjects()) {
     		
     		int paoId = pao.getLiteID();
-    		DBChangeMessage changeMsgPao = new DBChangeMessage(paoId, DBChangeMessage.CHANGE_PAO_DB, PAOGroups.STRING_CAT_DEVICE, DbChangeType.DELETE);
+    		DBChangeMsg changeMsgPao = new DBChangeMsg(paoId, DBChangeMsg.CHANGE_PAO_DB, PAOGroups.STRING_CAT_DEVICE, DbChangeType.DELETE);
     		connToDispatch.write(changeMsgPao);
     		
     		List<LitePoint> paoPoints = pointDao.getLitePointsByPaObjectId(paoId);
     		for (LitePoint point : paoPoints) {
     			
     			int pointId = point.getPointID();
-    			DBChangeMessage changeMsgPoints = new DBChangeMessage(pointId, DBChangeMessage.CHANGE_POINT_DB, DBChangeMessage.CAT_POINT, DbChangeType.DELETE);
+    			DBChangeMsg changeMsgPoints = new DBChangeMsg(pointId, DBChangeMsg.CHANGE_POINT_DB, DBChangeMsg.CAT_POINT, DbChangeType.DELETE);
                 connToDispatch.write(changeMsgPoints);
     		}
     	}

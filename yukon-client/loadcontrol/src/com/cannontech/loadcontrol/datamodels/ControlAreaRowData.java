@@ -7,12 +7,12 @@ package com.cannontech.loadcontrol.datamodels;
  */
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.dr.controlarea.model.TriggerType;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaTriggerItem;
+import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.spring.YukonSpringHook;
 
 public class ControlAreaRowData 
 {
-	private ControlAreaTriggerItem trigger = null;
+	private LMControlAreaTrigger trigger = null;
 	private com.cannontech.database.data.lite.LitePoint litePoint = null;
 	private String currentValue = null;
 	private String triggerValue = null;
@@ -59,7 +59,7 @@ public com.cannontech.database.data.lite.LitePoint getLitePoint() {
  * Creation date: (7/25/2001 12:08:09 PM)
  * @return com.cannontech.loadcontrol.data.LMControlAreaTrigger
  */
-public com.cannontech.messaging.message.loadcontrol.data.ControlAreaTriggerItem getTrigger() {
+public com.cannontech.loadcontrol.data.LMControlAreaTrigger getTrigger() {
 	return trigger;
 }
 /**
@@ -137,7 +137,7 @@ public void setLitePoint(com.cannontech.database.data.lite.LitePoint newLitePoin
  * Creation date: (7/25/2001 12:08:09 PM)
  * @param newTrigger com.cannontech.loadcontrol.data.LMControlAreaTrigger
  */
-public void setTrigger(com.cannontech.messaging.message.loadcontrol.data.ControlAreaTriggerItem newTrigger) 
+public void setTrigger(com.cannontech.loadcontrol.data.LMControlAreaTrigger newTrigger) 
 {
 	//Any time the trigger changes, we must re-evaluate our other values
 	currentValue = null;

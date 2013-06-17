@@ -16,8 +16,7 @@
 
 class CtiLMMessage : public CtiMessage
 {
-public:
-    DECLARE_COLLECTABLE( CtiLMMessage );
+RWDECLARE_COLLECTABLE( CtiLMMessage )
 
 public:
     CtiLMMessage() { };
@@ -27,6 +26,9 @@ public:
 
     const std::string& getMessage() const;
     
+    void restoreGuts(RWvistream&);
+    void saveGuts(RWvostream&) const;
+
 private:
     // The connection that received/produced this message
     std::string _message;
@@ -35,8 +37,7 @@ private:
 
 class CtiLMCommand : public CtiLMMessage
 {
-public:
-    DECLARE_COLLECTABLE( CtiLMCommand );
+RWDECLARE_COLLECTABLE( CtiLMCommand )
 
 public:
 
@@ -63,20 +64,8 @@ public:
 	EMERGENCY_DISABLE_PROGRAM
     };
 
-    CtiLMCommand( LONG command,
-                  LONG paoid,
-                  LONG number,
-                  DOUBLE value,
-                  LONG count,
-                  LONG auxid ) :
-    _command( command ),
-    _paoid( paoid ),
-    _number( number ),
-    _value( value ),
-    _count( count ),
-    _auxid( auxid )
-    {}
-
+    CtiLMCommand() { }; //provided for polymorphic persitence only
+    
     virtual ~CtiLMCommand();
 
     LONG getCommand() const;
@@ -85,6 +74,9 @@ public:
     DOUBLE getValue() const;
     LONG getCount() const;
     LONG getAuxId() const;
+
+    void restoreGuts(RWvistream&);
+    void saveGuts(RWvostream&) const;
 
     CtiLMCommand& operator=(const CtiLMCommand& right);
 
@@ -101,8 +93,7 @@ private:
 
 class CtiLMManualControlRequest : public CtiLMMessage
 {
-public:
-    DECLARE_COLLECTABLE( CtiLMManualControlRequest );
+RWDECLARE_COLLECTABLE( CtiLMManualControlRequest )
 
 public:
 
@@ -153,6 +144,9 @@ public:
     
     virtual CtiMessage* replicateMessage() const;
 	
+    void restoreGuts(RWvistream&);
+    void saveGuts(RWvostream&) const;
+
     CtiLMManualControlRequest& operator=(const CtiLMManualControlRequest& right);
 private:
     
@@ -169,8 +163,7 @@ private:
 
 class CtiLMManualControlResponse : public CtiLMMessage
 {
-public:
-    DECLARE_COLLECTABLE( CtiLMManualControlResponse );
+RWDECLARE_COLLECTABLE( CtiLMManualControlResponse )
 
 public:
 
@@ -188,6 +181,9 @@ public:
 
     virtual CtiMessage* replicateMessage() const;
     
+    void restoreGuts(RWvistream&);
+    void saveGuts(RWvostream&) const;
+
     CtiLMManualControlResponse& operator=(const CtiLMManualControlResponse& right);
 private:
     LONG _paoid;
@@ -197,8 +193,7 @@ private:
 
 class CtiLMEnergyExchangeControlMsg : public CtiLMMessage
 {
-public:
-    DECLARE_COLLECTABLE( CtiLMEnergyExchangeControlMsg );
+RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeControlMsg )
 
 public:
 
@@ -228,18 +223,8 @@ public:
     DOUBLE getAmountRequested(int i) const;
     LONG getPriceOffered(int i) const;
 
-    std::vector<DOUBLE> getAmountsRequested() const;
-    std::vector<LONG> getPricesOffered() const;
-
-    CtiLMEnergyExchangeControlMsg( LONG command,
-                                   LONG paoid,
-                                   LONG offerid,
-                                   const CtiTime& offerdate,
-                                   const CtiTime& notificationdatetime,
-                                   const CtiTime& expirationdatetime,
-                                   const std::string& additionalinfo,
-                                   const std::vector<DOUBLE>& amountsrequested,
-                                   const std::vector<LONG>& pricesoffered );
+    void restoreGuts(RWvistream&);
+    void saveGuts(RWvostream&) const;
 
     CtiLMEnergyExchangeControlMsg& operator=(const CtiLMEnergyExchangeControlMsg& right);
 private:
@@ -258,8 +243,7 @@ private:
 
 class CtiLMEnergyExchangeAcceptMsg : public CtiLMMessage
 {
-public:
-    DECLARE_COLLECTABLE( CtiLMEnergyExchangeAcceptMsg );
+RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeAcceptMsg )
 
 public:
 
@@ -280,17 +264,8 @@ public:
     const std::string& getEnergyExchangeNotes() const;
     DOUBLE getAmountCommitted(int i) const;
 
-    std::vector<DOUBLE> getAmountsCommitted() const;
-
-    CtiLMEnergyExchangeAcceptMsg( LONG paoid,
-                                  LONG offerid,
-                                  LONG revisionnumber,
-                                  const std::string& acceptstatus,
-                                  const std::string& ipaddressofacceptuser,
-                                  const std::string& useridname,
-                                  const std::string& nameofacceptperson,
-                                  const std::string& energyexchangenotes,
-                                  const std::vector<DOUBLE>& amountscommitted );
+    void restoreGuts(RWvistream&);
+    void saveGuts(RWvostream&) const;
 
     CtiLMEnergyExchangeAcceptMsg& operator=(const CtiLMEnergyExchangeAcceptMsg& right);
 private:
@@ -309,8 +284,7 @@ private:
 
 class CtiLMControlAreaMsg : public CtiLMMessage
 {
-public:
-    DECLARE_COLLECTABLE( CtiLMControlAreaMsg );
+RWDECLARE_COLLECTABLE( CtiLMControlAreaMsg )
 
 public:
     CtiLMControlAreaMsg(std::vector<CtiLMControlArea*>& contAreas, ULONG bitMask = 0);
@@ -322,6 +296,9 @@ public:
     ULONG getMsgInfoBitMask() const { return _msgInfoBitMask; };
     std::vector<CtiLMControlArea*>* getControlAreas() const { return _controlAreas; };
     virtual CtiMessage* replicateMessage() const;
+
+    void restoreGuts( RWvistream& );
+    void saveGuts( RWvostream&) const;
 
     CtiLMControlAreaMsg& operator=(const CtiLMControlAreaMsg& right);
 
@@ -339,8 +316,7 @@ private:
 
 class CtiLMCurtailmentAcknowledgeMsg : public CtiLMMessage
 {
-public:
-    DECLARE_COLLECTABLE( CtiLMCurtailmentAcknowledgeMsg );
+RWDECLARE_COLLECTABLE( CtiLMCurtailmentAcknowledgeMsg )
 
 public:
 
@@ -356,13 +332,8 @@ public:
     const std::string& getNameOfAckPerson() const;
     const std::string& getCurtailmentNotes() const;
 
-    CtiLMCurtailmentAcknowledgeMsg( LONG paoid,
-                                    LONG curtailreferenceid,
-                                    const std::string& acknowledgestatus,
-                                    const std::string& ipaddressofackuser,
-                                    const std::string& useridname,
-                                    const std::string& nameofackperson,
-                                    const std::string& curtailmentnotes );
+    void restoreGuts(RWvistream&);
+    void saveGuts(RWvostream&) const;
 
     CtiLMCurtailmentAcknowledgeMsg& operator=(const CtiLMCurtailmentAcknowledgeMsg& right);
 private:
@@ -378,29 +349,14 @@ private:
 
 class CtiLMDynamicGroupDataMsg : public CtiMessage
 {
-public:
-    DECLARE_COLLECTABLE( CtiLMDynamicGroupDataMsg );
+RWDECLARE_COLLECTABLE( CtiLMDynamicGroupDataMsg )
 
 public:
     CtiLMDynamicGroupDataMsg(CtiLMGroupPtr group);
 
     void dump() const;
-
+    void saveGuts( RWvostream&) const;
     virtual CtiMessage* replicateMessage() const;
-
-    LONG getPaoId() const                           { return _paoid; };
-    BOOL getDisableFlag() const                     { return _disableflag; };
-    LONG getGroupControlState() const               { return _groupcontrolstate; };
-    LONG getCurrentHoursDaily() const               { return _currenthoursdaily; };
-    LONG getCurrentHoursMonthly() const             { return _currenthoursmonthly; };
-    LONG getCurrentHoursSeasonal() const            { return _currenthoursseasonal; };
-    LONG getCurrentHoursAnnually() const            { return _currenthoursannually; };
-    const CtiTime& getLastControlSent() const       { return _lastcontrolsent; };
-    const CtiTime& getControlStartTime() const      { return _controlstarttime; };
-    const CtiTime& getControlCompleteTime() const   { return _controlcompletetime; };
-    const CtiTime& getNextControlTime() const       { return _next_control_time; };
-    unsigned getInternalState() const               { return _internalState; };
-    LONG getDailyOps() const                        { return _daily_ops; };
 
 private:
     CtiLMDynamicGroupDataMsg() {};
@@ -421,28 +377,15 @@ private:
 
 class CtiLMDynamicProgramDataMsg : public CtiMessage
 {
-public:
-    DECLARE_COLLECTABLE( CtiLMDynamicProgramDataMsg );
+RWDECLARE_COLLECTABLE( CtiLMDynamicProgramDataMsg )
     friend class CtiLMConnection;
 
 public:
     CtiLMDynamicProgramDataMsg(CtiLMProgramDirectSPtr program);
 
     void dump() const;
-
+    void saveGuts( RWvostream&) const;
     virtual CtiMessage* replicateMessage() const;
-
-    LONG getPaoId() const                           { return _paoid; };
-    BOOL getDisableFlag() const                     { return _disableflag; };
-    LONG getCurrentGearNumber() const               { return _currentgearnumber; };
-    LONG getLastGroupControlled() const             { return _lastgroupcontrolled; };
-    LONG getProgramState() const                    { return _programstate; };
-    DOUBLE getReductionTotal() const                { return _reductiontotal; };
-    const CtiTime& getDirectStartTime() const       { return _directstarttime; };
-    const CtiTime& getDirectStopTime() const        { return _directstoptime; };
-    const CtiTime& getNotifyActiveTime() const      { return _notify_active_time; };
-    const CtiTime& getNotifyInactiveTime() const    { return _notify_inactive_time; };
-    const CtiTime& getStartedRampingOutTime() const { return _startedrampingouttime; };
 
 private:
     CtiLMDynamicProgramDataMsg() {};
@@ -461,25 +404,14 @@ private:
 
 class CtiLMDynamicTriggerDataMsg : public CtiMessage
 {
-public:
-    DECLARE_COLLECTABLE( CtiLMDynamicTriggerDataMsg );
+RWDECLARE_COLLECTABLE( CtiLMDynamicTriggerDataMsg )
 
 public:
     CtiLMDynamicTriggerDataMsg(CtiLMControlAreaTrigger *trigger);
 
     void dump() const;
-
+    void saveGuts( RWvostream&) const;
     virtual CtiMessage* replicateMessage() const;
-
-    LONG gePaoId() const                                  { return _paoid; }
-    LONG getTriggerNumber() const                         { return _triggernumber; }
-    DOUBLE getPointValue() const                          { return _pointvalue; };
-    const CtiTime& getLastPointValueTimestamp() const     { return _lastpointvaluetimestamp; }
-    LONG getNormalState() const                           { return _normalstate; }
-    DOUBLE getThreshold() const                           { return _threshold; }
-    DOUBLE getPeakPointValue() const                      { return _peakpointvalue; }
-    const CtiTime& getLastPeakPointValueTimestamp() const { return _lastpeakpointvaluetimestamp; }
-    DOUBLE getProjectedPointValue() const                 { return _projectedpointvalue; }
 
 private:
     CtiLMDynamicTriggerDataMsg() {};
@@ -496,24 +428,14 @@ private:
 
 class CtiLMDynamicControlAreaDataMsg : public CtiMessage
 {
-public:
-    DECLARE_COLLECTABLE( CtiLMDynamicControlAreaDataMsg );
+RWDECLARE_COLLECTABLE( CtiLMDynamicControlAreaDataMsg )
 
 public:
     CtiLMDynamicControlAreaDataMsg(CtiLMControlArea *controlArea);
 
     void dump() const;
-
+    void saveGuts( RWvostream&) const;
     virtual CtiMessage* replicateMessage() const;
-
-    LONG getPaoId() const                   { return _paoid; };
-    BOOL getDisableFlag() const             { return _disableflag; };
-    const CtiTime& getNextCheckTime() const { return _nextchecktime; };
-    LONG getControlAreaState() const        { return _controlareastate; };
-    LONG getCurrentPriority() const         { return _currentpriority; };
-    LONG getCurrentDailyStartTime() const   { return _currentdailystarttime; };
-    LONG getCurrentDailyStopTime() const    { return _currentdailystoptime; };
-    const std::vector<CtiLMDynamicTriggerDataMsg>& getTriggers() const { return _triggers; };
 
 private:
     CtiLMDynamicControlAreaDataMsg() {};

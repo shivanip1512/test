@@ -162,9 +162,10 @@ void CtiVanGoghConnectionManager::reportRegistration() const
    dout << "Alarm       " << (getAlarm() ? "YES" : "NO ") << endl;
 }
 
-CtiVanGoghConnectionManager::CtiVanGoghConnectionManager( CtiListenerConnection &listenerConn, Que_t *MainQueue_) :
+CtiVanGoghConnectionManager::CtiVanGoghConnectionManager(CtiExchange *XChg, Que_t *MainQueue_) :
    _blank(0),
-   CtiConnectionManager(listenerConn, MainQueue_)
+   ClientKnownPort(-1),
+   CtiConnectionManager(XChg, MainQueue_)
 {
    // cout << "**** Connection Manager!!! *****" << endl;
 }
@@ -177,3 +178,7 @@ unsigned CtiVanGoghConnectionManager::hash(const CtiVanGoghConnectionManager& aR
 {
    return (unsigned)&aRef;            // The address of the Object?
 }
+
+int CtiVanGoghConnectionManager::getClientKnownPort() const          {return ClientKnownPort; }
+void CtiVanGoghConnectionManager::setClientKnownPort(int p)           {ClientKnownPort = p; }
+

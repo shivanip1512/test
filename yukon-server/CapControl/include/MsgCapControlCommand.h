@@ -4,8 +4,7 @@
 
 class CapControlCommand : public CtiMessage
 {
-    public:
-        DECLARE_COLLECTABLE( CapControlCommand );
+    RWDECLARE_COLLECTABLE( CapControlCommand );
 
     private:
         typedef CtiMessage Inherited;
@@ -97,18 +96,16 @@ class CapControlCommand : public CtiMessage
         CapControlCommand();
         CapControlCommand(int commandId);
         CapControlCommand(const CapControlCommand& commandMsg);
-        CapControlCommand(int commandId, long messageId) :
-            Inherited(),
-            _commandId( commandId ),
-            _messageId( messageId )
-        {};
 
         virtual ~CapControlCommand();
 
         void setCommandId(int commandId);
-        int getCommandId() const;
+        int getCommandId();
 
-        long getMessageId() const;
+        long getMessageId();
+
+        void restoreGuts(RWvistream& iStream);
+        void saveGuts(RWvostream& oStream) const;
 
         CapControlCommand& operator=(const CapControlCommand& right);
 

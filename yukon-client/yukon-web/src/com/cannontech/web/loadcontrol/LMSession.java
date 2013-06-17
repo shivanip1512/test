@@ -7,7 +7,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
-import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.roles.loadcontrol.DirectLoadcontrolRole;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -44,11 +44,11 @@ public class LMSession
 
 		if (rolePropertyDao.checkProperty(YukonRoleProperty.getForId(DirectLoadcontrolRole.ALLOW_OBSERVE_CONSTRAINTS), user))
 			constList.add(
-				ManualControlRequestMessage.CONSTRAINT_FLAG_STRS[ManualControlRequestMessage.CONSTRAINTS_FLAG_USE] );
+				LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_USE] );
 
 		if(rolePropertyDao.checkProperty(YukonRoleProperty.getForId(DirectLoadcontrolRole.ALLOW_CHECK_CONSTRAINTS), user))
 			constList.add(
-				ManualControlRequestMessage.CONSTRAINT_FLAG_STRS[ManualControlRequestMessage.CONSTRAINTS_FLAG_CHECK] );	
+				LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_CHECK] );	
 
 		return constList;
 	}

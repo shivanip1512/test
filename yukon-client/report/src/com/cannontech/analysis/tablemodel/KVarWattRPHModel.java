@@ -16,7 +16,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.user.YukonUserContext;
 
 public class KVarWattRPHModel extends BareReportModelBase<KVarWattRPHModel.ModelRow> implements ReportModelMetaInfo {
@@ -57,15 +57,15 @@ public class KVarWattRPHModel extends BareReportModelBase<KVarWattRPHModel.Model
         
         if(capControlCache.isSubBus(targetId)) {
         	SubBus subBus_cache = capControlCache.getSubBus(targetId);
-        	currentVarLoadPointId = subBus_cache.getCurrentVarLoadPointId();
-        	estimatedVarLoadPointId = subBus_cache.getEstimatedVarLoadPointId();
-        	currentWattLoadPointId = subBus_cache.getCurrentWattLoadPointId();
+        	currentVarLoadPointId = subBus_cache.getCurrentVarLoadPointID();
+        	estimatedVarLoadPointId = subBus_cache.getEstimatedVarLoadPointID();
+        	currentWattLoadPointId = subBus_cache.getCurrentWattLoadPointID();
         }
         else if(capControlCache.isFeeder(targetId)) {
-        	com.cannontech.messaging.message.capcontrol.streamable.Feeder feeder_cache = capControlCache.getFeeder(targetId);
-        	currentVarLoadPointId = feeder_cache.getCurrentVarLoadPointId();
-        	estimatedVarLoadPointId = feeder_cache.getEstimatedVarLoadPointId();
-        	currentWattLoadPointId = feeder_cache.getCurrentWattLoadPointId();
+        	com.cannontech.message.capcontrol.streamable.Feeder feeder_cache = capControlCache.getFeeder(targetId);
+        	currentVarLoadPointId = feeder_cache.getCurrentVarLoadPointID();
+        	estimatedVarLoadPointId = feeder_cache.getEstimatedVarLoadPointID();
+        	currentWattLoadPointId = feeder_cache.getCurrentWattLoadPointID();
         }
         
         // gather point data

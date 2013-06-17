@@ -4,6 +4,7 @@
 
 #include "dlldefs.h"
 #include "message.h" 
+
 /*
  * CtiNotifLMControlMsg is used to tell the notification server
  * about a loadmanagement event that will happen or has happened.
@@ -12,11 +13,8 @@
 class IM_EX_MSG CtiNotifLMControlMsg : public CtiMessage
 {
 public:
-    DECLARE_COLLECTABLE( CtiNotifLMControlMsg )
 
-public:
-
-    typedef CtiMessage Inherited;
+    RWDECLARE_COLLECTABLE( CtiNotifLMControlMsg );
 
     enum NotificationType { STARTING = 1, STARTING_NEVER_STOP, UPDATING, FINISHING };
     
@@ -37,9 +35,11 @@ public:
     CtiNotifLMControlMsg& setStartTime(const CtiTime& start_time);
     CtiNotifLMControlMsg& setStopTime(const CtiTime& stop_time);
 
+    virtual void saveGuts(RWvostream &aStream) const;
+    virtual void restoreGuts(RWvistream& aStream);
     virtual CtiMessage* replicateMessage() const;
 
-public:
+private:
     std::vector<int> _notif_group_ids;
     int _notif_type;
     int _program_id;

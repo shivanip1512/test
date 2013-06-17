@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.ResolvableTemplate;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaTriggerItem;
+import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.user.YukonUserContext;
 
 public class TriggerPeakProjectionField extends TriggerBackingFieldBase {
@@ -15,7 +15,7 @@ public class TriggerPeakProjectionField extends TriggerBackingFieldBase {
     }
     
     @Override
-    public Object getTriggerValue(ControlAreaTriggerItem trigger, YukonUserContext userContext) {
+    public Object getTriggerValue(LMControlAreaTrigger trigger, YukonUserContext userContext) {
         
         TriggerType triggerType = trigger.getTriggerType();
 
@@ -37,7 +37,7 @@ public class TriggerPeakProjectionField extends TriggerBackingFieldBase {
             @Override
             public int triggerCompare(
                     TriggerType triggerType,
-                    ControlAreaTriggerItem trigger1, ControlAreaTriggerItem trigger2) {
+                    LMControlAreaTrigger trigger1, LMControlAreaTrigger trigger2) {
 
                 if (triggerType == TriggerType.THRESHOLD) {
                     return trigger1.getPeakPointValue().compareTo(trigger2.getPeakPointValue());

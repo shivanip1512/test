@@ -9,10 +9,10 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
-import com.cannontech.messaging.message.loadcontrol.data.GearProgram;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
-import com.cannontech.messaging.message.loadcontrol.data.ProgramDirectGear;
+import com.cannontech.loadcontrol.data.IGearProgram;
+import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.data.LMProgramDirectGear;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 
 public class ProgramUtils {
 
@@ -22,25 +22,25 @@ public class ProgramUtils {
     private static final long nullDateTime = CtiUtilities.get1990GregCalendar().getTime().getTime();
     
     static {
-        activeStatii.add(Program.STATUS_ACTIVE);
-        activeStatii.add(Program.STATUS_MANUAL_ACTIVE);
-        activeStatii.add(Program.STATUS_FULL_ACTIVE);
-        activeStatii.add(Program.STATUS_TIMED_ACTIVE);
+        activeStatii.add(LMProgramBase.STATUS_ACTIVE);
+        activeStatii.add(LMProgramBase.STATUS_MANUAL_ACTIVE);
+        activeStatii.add(LMProgramBase.STATUS_FULL_ACTIVE);
+        activeStatii.add(LMProgramBase.STATUS_TIMED_ACTIVE);
         
-        scheduledStatii.add(Program.STATUS_SCHEDULED);
-        scheduledStatii.add(Program.STATUS_NOTIFIED);
+        scheduledStatii.add(LMProgramBase.STATUS_SCHEDULED);
+        scheduledStatii.add(LMProgramBase.STATUS_NOTIFIED);
         
-        inactiveStatii.add(Program.STATUS_INACTIVE);
-        inactiveStatii.add(Program.STATUS_STOPPING);
-        inactiveStatii.add(Program.STATUS_CNTRL_ATTEMPT);
-        inactiveStatii.add(Program.STATUS_NON_CNTRL);
+        inactiveStatii.add(LMProgramBase.STATUS_INACTIVE);
+        inactiveStatii.add(LMProgramBase.STATUS_STOPPING);
+        inactiveStatii.add(LMProgramBase.STATUS_CNTRL_ATTEMPT);
+        inactiveStatii.add(LMProgramBase.STATUS_NON_CNTRL);
     }
     
-    public static int getProgramId(Program program) {
-        return program.getYukonId();
+    public static int getProgramId(LMProgramBase program) {
+        return program.getYukonID();
     }
     
-    public static String getProgramName(Program program) {
+    public static String getProgramName(LMProgramBase program) {
         return program.getYukonName();
     }
     
@@ -49,7 +49,7 @@ public class ProgramUtils {
      * @param program
      * @return start time Date or null if program has no start time set.
      */
-    public static Date getStartTime(Program program) {
+    public static Date getStartTime(LMProgramBase program) {
 
         Date startTime = program.getStartTime().getTime();
         if (startTime.getTime() <= nullDateTime) {
@@ -63,7 +63,7 @@ public class ProgramUtils {
      * @param program
      * @return stop time Date or null if program has no stop time set.
      */
-    public static Date getStopTime(Program program) {
+    public static Date getStopTime(LMProgramBase program) {
         
         Date stopTime = program.getStopTime().getTime();
         if (stopTime.getTime() <= nullDateTime) {
@@ -78,12 +78,12 @@ public class ProgramUtils {
      * @param program
      * @return
      */
-    public static String getCurrentGearName(Program program) {
+    public static String getCurrentGearName(LMProgramBase program) {
         
-        if (program instanceof GearProgram) {
-            GearProgram gearProgram = (GearProgram)program;
-            for(ProgramDirectGear gear : (Vector<ProgramDirectGear>)gearProgram.getDirectGearVector()) {
-                if (gearProgram.getCurrentGearNumber().intValue() == gear.getGearNumber()) {
+        if (program instanceof IGearProgram) {
+            IGearProgram gearProgram = (IGearProgram)program;
+            for(LMProgramDirectGear gear : (Vector<LMProgramDirectGear>)gearProgram.getDirectGearVector()) {
+                if (gearProgram.getCurrentGearNumber().intValue() == gear.getGearNumber().intValue() ) {
                     return gear.getGearName();
                 }           
             }
@@ -101,11 +101,11 @@ public class ProgramUtils {
      * @param constraintFlag
      * @return
      */
-    public static ManualControlRequestMessage createStartRequest(Program program, Date startTime, Duration startOffset, Date stopTime, Duration stopOffset, int gearNumber, boolean forceStart) {
+    public static LMManualControlRequest createStartRequest(LMProgramBase program, Date startTime, Duration startOffset, Date stopTime, Duration stopOffset, int gearNumber, boolean forceStart) {
         
-        int constraintFlag = ManualControlRequestMessage.CONSTRAINTS_FLAG_USE;
+        int constraintFlag = LMManualControlRequest.CONSTRAINTS_FLAG_USE;
         if (forceStart) {
-            constraintFlag = ManualControlRequestMessage.CONSTRAINTS_FLAG_OVERRIDE;
+            constraintFlag = LMManualControlRequest.CONSTRAINTS_FLAG_OVERRIDE;
         }
         
         Date nowTime = new Date();
@@ -124,7 +124,7 @@ public class ProgramUtils {
         if (applyStopOffset) {
         	stopTimeWithOffset = new Instant(stopTime).plus(stopOffset).toDate();
         }
-        ManualControlRequestMessage request = null;
+        LMManualControlRequest request = null;
         if (startTimeWithOffset == null || nowTime.getTime() >= startTimeWithOffset.getTime()) {
             request = program.createStartStopNowMsg(stopTimeWithOffset, gearNumber, "", true, constraintFlag);
         } else {
@@ -144,14 +144,14 @@ public class ProgramUtils {
      * @param constraintFlag
      * @return
      */
-    public static ManualControlRequestMessage createStopRequest(Program program, Date stopTime, Duration stopOffset, int gearNumber, boolean forceStop) {
+    public static LMManualControlRequest createStopRequest(LMProgramBase program, Date stopTime, Duration stopOffset, int gearNumber, boolean forceStop) {
         
-        int constraintFlag = ManualControlRequestMessage.CONSTRAINTS_FLAG_USE;
+        int constraintFlag = LMManualControlRequest.CONSTRAINTS_FLAG_USE;
         if (forceStop) {
-            constraintFlag = ManualControlRequestMessage.CONSTRAINTS_FLAG_OVERRIDE;
+            constraintFlag = LMManualControlRequest.CONSTRAINTS_FLAG_OVERRIDE;
         }
         
-        ManualControlRequestMessage request = null;
+        LMManualControlRequest request = null;
         Date nowTime = new Date();
         Date stopTimeWithOffset = stopTime;
         if (stopOffset != null) {
@@ -170,15 +170,15 @@ public class ProgramUtils {
         return request;
     }
     
-    public static boolean isActive(Program program) {
+    public static boolean isActive(LMProgramBase program) {
         return activeStatii.contains(program.getProgramStatus());
     }
     
-    public static boolean isScheduled(Program program) {
+    public static boolean isScheduled(LMProgramBase program) {
         return scheduledStatii.contains(program.getProgramStatus());
     }
     
-    public static boolean isInactive(Program program) {
+    public static boolean isInactive(LMProgramBase program) {
         return inactiveStatii.contains(program.getProgramStatus());
     }
 }

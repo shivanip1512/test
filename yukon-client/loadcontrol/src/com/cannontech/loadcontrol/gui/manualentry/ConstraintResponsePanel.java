@@ -20,8 +20,8 @@ import com.cannontech.common.login.ClientSession;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
-import com.cannontech.messaging.message.server.ServerResponseMessage;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
+import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.roles.loadcontrol.DirectLoadcontrolRole;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -230,8 +230,8 @@ public Object getValue(Object obj)
 		
 		prg.getLmRequest().setConstraintFlag(
 			prg.getOverride().booleanValue()
-			? ManualControlRequestMessage.CONSTRAINTS_FLAG_OVERRIDE
-			: ManualControlRequestMessage.CONSTRAINTS_FLAG_USE );
+			? LMManualControlRequest.CONSTRAINTS_FLAG_OVERRIDE
+			: LMManualControlRequest.CONSTRAINTS_FLAG_USE );
 
 		progList.add( prg );
 	}
@@ -287,7 +287,7 @@ public void setValue(Object obj)
 	for( int i = 0; i < respProgs.length; i++ )
 	{
 		//we only care about the violators!!!!
-		if( respProgs[i].getStatus() != ServerResponseMessage.STATUS_UNINIT )
+		if( respProgs[i].getStatus() != ServerResponseMsg.STATUS_UNINIT )
 			getTableModelCons().addRow( respProgs[i] );
 	}
 

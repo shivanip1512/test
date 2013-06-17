@@ -22,10 +22,10 @@
     java.text.SimpleDateFormat responseDateFormat = new java.text.SimpleDateFormat("MM/dd/yy");
                                                  
     //Now locate the specific offer and revision
-    ProgramEnergyExchange[] programs = cache.getEnergyCompanyEnergyExchangePrograms(energyCompanyID);
-    ProgramEnergyExchange program = null;
-    EnergyExchangeOffer offer = null;
-    EnergyExchangeOfferRevision revision = null;
+    LMProgramEnergyExchange[] programs = cache.getEnergyCompanyEnergyExchangePrograms(energyCompanyID);
+    LMProgramEnergyExchange program = null;
+    LMEnergyExchangeOffer offer = null;
+    LMEnergyExchangeOfferRevision revision = null;
 
     if( programs != null )
     {
@@ -36,16 +36,16 @@
 
             for( int l = 0; l < offers.size(); l++ )
             {
-                EnergyExchangeOffer o = (EnergyExchangeOffer) offers.elementAt(l);
-                if( o.getOfferId() == offerID )
+                LMEnergyExchangeOffer o = (LMEnergyExchangeOffer) offers.elementAt(l);
+                if( o.getOfferID().intValue() == offerID.intValue() )
                 {
                     java.util.Vector revisions = o.getEnergyExchangeOfferRevisions();
                     if( revisions != null )
                     {
                         for( int m = 0; m < revisions.size(); m++ )
                         {
-                            EnergyExchangeOfferRevision r = (EnergyExchangeOfferRevision) revisions.elementAt(m);
-                            if( r.getRevisionNumber() == revisionNumber )
+                            LMEnergyExchangeOfferRevision r = (LMEnergyExchangeOfferRevision) revisions.elementAt(m);
+                            if( r.getRevisionNumber().intValue() == revisionNumber.intValue() )
                             {
                                 program = programs[k];
                                 offer = o;
@@ -61,12 +61,12 @@
     }
                                                        
     // Find the customer object we are dealing with
-    EnergyExchangeCustomer[] customers = cache.getEnergyExchangeCustomers(program.getYukonId().longValue());
-    EnergyExchangeCustomer customer = null;
+    LMEnergyExchangeCustomer[] customers = cache.getEnergyExchangeCustomers(program.getYukonID().longValue());
+    LMEnergyExchangeCustomer customer = null;
 
     for( int i = 0; i < customers.length; i++ )
     {
-        if( customers[i].getCustomerId() == customerID )
+        if( customers[i].getCustomerID().intValue() == customerID.intValue() )
         {
             customer = customers[i];
             break;
@@ -76,7 +76,7 @@
     
     
     //Now locate a customer reply, if any
-    EnergyExchangeCustomerReply reply = null;
+    LMEnergyExchangeCustomerReply reply = null;
 
     if( customer != null )
     {    
@@ -86,9 +86,9 @@
         {
             for( int j = 0; j < replies.size(); j++ )
             {
-                EnergyExchangeCustomerReply r = (EnergyExchangeCustomerReply) replies.elementAt(j);
-                if( r.getOfferId() == offerID &&
-                    r.getRevisionNumber() == revisionNumber )
+                LMEnergyExchangeCustomerReply r = (LMEnergyExchangeCustomerReply) replies.elementAt(j);
+                if( r.getOfferID().intValue() == offerID.intValue() &&
+                    r.getRevisionNumber().intValue() == revisionNumber.intValue() )
                 {
                     reply = r;
                     break;
@@ -222,14 +222,14 @@
 
                   if( offer != null )
                   {
-					    double priceVal = ((EnergyExchangeHourlyOffer) revision.getEnergyExchangeHourlyOffers().elementAt(h)).getPrice() / 100;
+					    double priceVal = ((LMEnergyExchangeHourlyOffer) revision.getEnergyExchangeHourlyOffers().elementAt(h)).getPrice().doubleValue() / 100;
                         price = priceFormat.format(priceVal);  
                   }
 
                   if( reply != null && reply.getEnergyExchangeHourlyCustomer() != null &&
                       reply.getEnergyExchangeHourlyCustomer().size() > h )
                   {
-                      EnergyExchangeHourlyCustomer hc = (EnergyExchangeHourlyCustomer) reply.getEnergyExchangeHourlyCustomer().elementAt(h);
+                      LMEnergyExchangeHourlyCustomer hc = (LMEnergyExchangeHourlyCustomer) reply.getEnergyExchangeHourlyCustomer().elementAt(h);
                       Double a = hc.getAmountCommitted();
 
                       totalCommitted += a.longValue();
@@ -269,14 +269,14 @@
 
                   if( offer != null )
                   {
-					  double priceVal = ((EnergyExchangeHourlyOffer) revision.getEnergyExchangeHourlyOffers().elementAt(h)).getPrice() / 100;
+					  double priceVal = ((LMEnergyExchangeHourlyOffer) revision.getEnergyExchangeHourlyOffers().elementAt(h)).getPrice().doubleValue() / 100;
 					  price = priceFormat.format(priceVal);  
                   }
 
                   if( reply != null && reply.getEnergyExchangeHourlyCustomer() != null &&
                       reply.getEnergyExchangeHourlyCustomer().size() > h )
                   {
-                      EnergyExchangeHourlyCustomer hc = (EnergyExchangeHourlyCustomer) reply.getEnergyExchangeHourlyCustomer().elementAt(h);
+                      LMEnergyExchangeHourlyCustomer hc = (LMEnergyExchangeHourlyCustomer) reply.getEnergyExchangeHourlyCustomer().elementAt(h);
                       Double a = hc.getAmountCommitted();
 
                       totalCommitted += a.longValue();

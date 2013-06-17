@@ -440,14 +440,6 @@ bool CtiLMGroupBase::readyToControlAt(CtiTime &currentTime) const
 }
 
 /*---------------------------------------------------------------------------
-    Returns the internal state
----------------------------------------------------------------------------*/
-unsigned CtiLMGroupBase::getInternalState() const
-{
-    return _internalState;
-}
-
-/*---------------------------------------------------------------------------
     setPAOId
 
     Sets the unique id of the substation - use with caution
@@ -970,6 +962,92 @@ CtiRequestMsg* CtiLMGroupBase::createSetPointSimpleMsg(string settings, LONG min
         dout << CtiTime() << " - Can not create a Set Point command to a non-Expresscom Load Management Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
     return NULL;
+}
+
+/*-------------------------------------------------------------------------
+    restoreGuts
+
+    Restore self's state from the given stream
+--------------------------------------------------------------------------*/
+void CtiLMGroupBase::restoreGuts(RWvistream& istrm)
+{
+    RWCollectable::restoreGuts( istrm );
+
+    CtiTime tempTime1;
+    CtiTime tempTime2;
+    CtiTime tempTime3;
+    CtiTime tempTime4;
+    CtiTime tempLastStopTimeSent;
+
+    istrm >> _paoid
+    >> _paocategory
+    >> _paoclass
+    >> _paoname
+    >> _paoTypeString
+    >> _paodescription
+    >> _disableflag
+    >> _grouporder
+    >> _kwcapacity
+    >> _childorder
+    >> _alarminhibit
+    >> _controlinhibit
+    >> _groupcontrolstate
+    >> _currenthoursdaily
+    >> _currenthoursmonthly
+    >> _currenthoursseasonal
+    >> _currenthoursannually
+    >> tempTime1
+    >> tempTime2
+    >> tempTime3
+    >> tempTime4
+    >> _internalState
+    >> _daily_ops
+    >> tempLastStopTimeSent;
+
+    _paoType = resolvePAOType(_paocategory,_paoTypeString);
+
+    _lastcontrolsent = CtiTime(tempTime1);
+    _controlstarttime = CtiTime(tempTime2);
+    _controlcompletetime = CtiTime(tempTime3);
+    _next_control_time = CtiTime(tempTime4);
+    _lastStopTimeSent = CtiTime(tempLastStopTimeSent);
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+
+    Save self's state onto the given stream
+---------------------------------------------------------------------------*/
+void CtiLMGroupBase::saveGuts(RWvostream& ostrm ) const
+{
+    RWCollectable::saveGuts( ostrm );
+
+    ostrm << _paoid
+    << _paocategory
+    << _paoclass
+    << _paoname
+    << _paoTypeString
+    << _paodescription
+    << _disableflag
+    << _grouporder
+    << _kwcapacity
+    << _childorder
+    << _alarminhibit
+    << _controlinhibit
+    << _groupcontrolstate
+    << _currenthoursdaily
+    << _currenthoursmonthly
+    << _currenthoursseasonal
+    << _currenthoursannually
+    << _lastcontrolsent
+    << _controlstarttime
+    << _controlcompletetime
+    << _next_control_time
+    << _internalState
+    << _daily_ops
+    << _lastStopTimeSent;
+
+    return;
 }
 
 /*---------------------------------------------------------------------------

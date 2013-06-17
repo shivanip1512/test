@@ -41,7 +41,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.messaging.message.dispatch.PointDataMessage;
+import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -574,7 +574,7 @@ public class DeviceDataMonitorTest {
         }
     }
     
-    private class PointValue extends PointDataMessage {
+    private class PointValue extends PointData {
         public PointValue(int id, double value) {
             super();
             setId(id);

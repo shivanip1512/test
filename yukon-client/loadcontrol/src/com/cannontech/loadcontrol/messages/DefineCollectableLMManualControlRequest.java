@@ -3,7 +3,6 @@ package com.cannontech.loadcontrol.messages;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -24,7 +23,7 @@ public DefineCollectableLMManualControlRequest()
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new ManualControlRequestMessage();
+	return new LMManualControlRequest();
 }
 /**
  * getComparator method comment.
@@ -56,7 +55,7 @@ public String getCxxStringId() {
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return ManualControlRequestMessage.class;
+	return LMManualControlRequest.class;
 }
 /**
  * restoreGuts method comment.
@@ -74,10 +73,10 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 {
 	super.saveGuts( obj, vstr, polystr );
 
-	ManualControlRequestMessage lmManualControlMsg = (ManualControlRequestMessage) obj;
+	LMManualControlRequest lmManualControlMsg = (LMManualControlRequest) obj;
 
 	vstr.insertUnsignedInt( (long) lmManualControlMsg.getCommand() );
-	vstr.insertUnsignedInt( (long) lmManualControlMsg.getYukonId() );
+	vstr.insertUnsignedInt( (long) lmManualControlMsg.getYukonID() );
 	vstr.saveObject( lmManualControlMsg.getNotifyTime().getTime(), SimpleMappings.Time );
 	vstr.saveObject( lmManualControlMsg.getStartTime().getTime(), SimpleMappings.Time );
 	vstr.saveObject( lmManualControlMsg.getStopTime().getTime(), SimpleMappings.Time );

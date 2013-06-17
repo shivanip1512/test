@@ -5,7 +5,7 @@ import java.util.Comparator;
 import org.apache.commons.lang.builder.CompareToBuilder;
 
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
+import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.user.YukonUserContext;
 
 public class ControlAreaStateField extends ControlAreaBackingFieldBase {
@@ -16,7 +16,7 @@ public class ControlAreaStateField extends ControlAreaBackingFieldBase {
     }
     
     @Override
-    public Object getControlAreaValue(ControlAreaItem controlArea, YukonUserContext userContext) {
+    public Object getControlAreaValue(LMControlArea controlArea, YukonUserContext userContext) {
         ControlAreaState state = ControlAreaState.valueOf(controlArea.getControlAreaState());
         return buildResolvable(getFieldName()  + "." + state.name());
     }
@@ -27,8 +27,8 @@ public class ControlAreaStateField extends ControlAreaBackingFieldBase {
 
             @Override
             public int compare(DisplayablePao pao1, DisplayablePao pao2) {
-                ControlAreaItem controlArea1 = getControlAreaFromYukonPao(pao1);
-                ControlAreaItem controlArea2 = getControlAreaFromYukonPao(pao2);
+                LMControlArea controlArea1 = getControlAreaFromYukonPao(pao1);
+                LMControlArea controlArea2 = getControlAreaFromYukonPao(pao2);
                 if (controlArea1 == controlArea2) {
                     return 0;
                 }

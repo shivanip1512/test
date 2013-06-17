@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.messaging.message.notif.CallStatus;
+import com.cannontech.message.notif.NotifCallEvent;
 import com.cannontech.yukon.INotifConnection;
 
 @Controller
@@ -28,7 +28,7 @@ public class NotificationStatusController {
         log.debug("received callComplete for " + callToken + " with success=" + success);
         try {
             Validate.notEmpty(callToken, "callToken must not be null");
-            notifClientConnection.sendCallEvent(callToken, success ? CallStatus.CONFIRMED : CallStatus.UNCONFIRMED);
+            notifClientConnection.sendCallEvent(callToken, success ? NotifCallEvent.CONFIRMED : NotifCallEvent.UNCONFIRMED);
         } catch (Exception e) {
             response.write("failure: " + e.toString());
             log.warn("unable to handle callComplete", e);
@@ -46,7 +46,7 @@ public class NotificationStatusController {
         log.debug("received callEnd for " + callToken + " with failure=" + failure);
         try {
             Validate.notEmpty(callToken, "callToken must not be null");
-            notifClientConnection.sendCallEvent(callToken, failure ? CallStatus.FAILURE : CallStatus.DISCONNECT);
+            notifClientConnection.sendCallEvent(callToken, failure ? NotifCallEvent.FAILURE : NotifCallEvent.DISCONNECT);
         } catch (Exception e) {
             response.write("failure: " + e.toString());
             log.warn("unable to handle callEnd", e);
@@ -59,7 +59,7 @@ public class NotificationStatusController {
     public void callDisconnect(String yukonCallToken, Writer response) throws IOException {
         log.debug("received callDisconnect for " + yukonCallToken);
         Validate.notNull(yukonCallToken);
-        notifClientConnection.sendCallEvent(yukonCallToken, CallStatus.DISCONNECT);
+        notifClientConnection.sendCallEvent(yukonCallToken, NotifCallEvent.DISCONNECT);
         response.write("exitEvent\n");
     }
     
@@ -67,7 +67,7 @@ public class NotificationStatusController {
     public void callFailed(String yukonCallToken, Writer response) throws IOException {
         log.debug("received callFailed for " + yukonCallToken);
         Validate.notNull(yukonCallToken);
-        notifClientConnection.sendCallEvent(yukonCallToken, CallStatus.FAILURE);
+        notifClientConnection.sendCallEvent(yukonCallToken, NotifCallEvent.FAILURE);
         response.write("exitEvent\n");
     }
     

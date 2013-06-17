@@ -7,10 +7,10 @@ package com.cannontech.tools.msg;
  */
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.dispatch.DispatchClientConnection;
-import com.cannontech.messaging.message.CommandMessage;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.ClientConnection;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.message.util.Command;
 
 public class DBChangeGenerator {
 /**
@@ -43,7 +43,7 @@ public static void main(String[] args)
 	if( numChanges == -1 )
 	 	forever = true;
 	
-	DispatchClientConnection conn = new DispatchClientConnection();
+	ClientConnection conn = new ClientConnection();
 
 	conn.setHost(vanGogh);
 	conn.setPort(port);
@@ -60,7 +60,7 @@ public static void main(String[] args)
 
 	//First do a registration
 	com.cannontech.clientutils.CTILogger.info("Registering client with vangogh");
-	com.cannontech.messaging.message.dispatch.RegistrationMessage reg = new com.cannontech.messaging.message.dispatch.RegistrationMessage();
+	com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
 	reg.setAppName( CtiUtilities.getAppRegistration() );
 	reg.setAppIsUnique(0);
 	reg.setAppKnownPort(0);
@@ -70,8 +70,8 @@ public static void main(String[] args)
 
 	//Do a loopback
 	com.cannontech.clientutils.CTILogger.info("Attempting a loopback command");
-	CommandMessage cmd = new CommandMessage();
-	cmd.setOperation( CommandMessage.LOOP_CLIENT );
+	Command cmd = new Command();
+	cmd.setOperation( Command.LOOP_CLIENT );
 	cmd.setTimeStamp( new java.util.Date() );
 	conn.write( cmd );
 
@@ -86,9 +86,9 @@ public static void main(String[] args)
 	{
 		for( int j = 0; j < id.length; j++ )
 		{				
-			DBChangeMessage msg = new DBChangeMessage(
+			DBChangeMsg msg = new DBChangeMsg(
 					id[j],
-					DBChangeMessage.CHANGE_PAO_DB,
+					DBChangeMsg.CHANGE_PAO_DB,
 					PAOGroups.STRING_CAT_DEVICE,
 					PAOGroups.STRING_CAP_BANK[0],
 					DbChangeType.UPDATE );

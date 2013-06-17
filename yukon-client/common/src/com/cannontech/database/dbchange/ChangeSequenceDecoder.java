@@ -4,15 +4,15 @@ import static com.cannontech.database.dbchange.ChangeSequenceStrategyEnum.ERROR;
 import static com.cannontech.database.dbchange.ChangeSequenceStrategyEnum.KEEP_BOTH;
 import static com.cannontech.database.dbchange.ChangeSequenceStrategyEnum.KEEP_FIRST;
 import static com.cannontech.database.dbchange.ChangeSequenceStrategyEnum.KEEP_LAST;
-import static com.cannontech.dispatch.DbChangeType.ADD;
-import static com.cannontech.dispatch.DbChangeType.DELETE;
-import static com.cannontech.dispatch.DbChangeType.UPDATE;
+import static com.cannontech.message.dispatch.message.DbChangeType.ADD;
+import static com.cannontech.message.dispatch.message.DbChangeType.DELETE;
+import static com.cannontech.message.dispatch.message.DbChangeType.UPDATE;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import com.cannontech.common.exception.BadConfigurationException;
-import com.cannontech.dispatch.DbChangeType;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class ChangeSequenceDecoder {
     private static final Map<ChangeSequence, ChangeSequenceStrategyEnum> strategyLookup = new HashMap<ChangeSequence, ChangeSequenceStrategyEnum>();

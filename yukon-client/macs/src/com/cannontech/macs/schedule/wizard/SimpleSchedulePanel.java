@@ -387,7 +387,7 @@ private javax.swing.JPanel getJPanelCommands() {
  */
 public Object getValue(Object val) 
 {
-	com.cannontech.messaging.message.macs.ScheduleMessage command = (com.cannontech.messaging.message.macs.ScheduleMessage)val;
+	com.cannontech.message.macs.message.Schedule command = (com.cannontech.message.macs.message.Schedule)val;
 
 	//store the start command
 	if( getJComboBoxStartCommand().getSelectedItem() != null )
@@ -640,7 +640,7 @@ public void mouseReleased(java.awt.event.MouseEvent e) {
  */
 public void setValue(Object o) 
 {
-	com.cannontech.messaging.message.macs.ScheduleMessage sched = (com.cannontech.messaging.message.macs.ScheduleMessage)o;
+	com.cannontech.message.macs.message.Schedule sched = (com.cannontech.message.macs.message.Schedule)o;
 	boolean set = false;
 
 	// check to see if we have to add the startCommand or just set it selected

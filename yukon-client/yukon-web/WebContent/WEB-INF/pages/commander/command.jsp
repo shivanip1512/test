@@ -70,7 +70,7 @@
                                         <select id="routeID" name="routeID">
                                             <option VALUE="-1"><cti:msg2 key=".route.select"/>
                                         <c:forEach var="route" items="${availableRoutes}">
-                                            <option value="${route.yukonId}">${fn:escapeXml(route.paoName)}</option>
+                                            <option value="${route.yukonID}">${fn:escapeXml(route.paoName)}</option>
                                         </c:forEach>
                                         </select>
                                     </td>
@@ -127,12 +127,12 @@
                 <c:if test="${cti:isDeviceSortByGroup(device)}">
                         <li>
                     <c:choose>
-                        <c:when test="${device.yukonId == deviceId}">
+                        <c:when test="${device.yukonID == deviceId}">
                             ${fn:escapeXml(device.paoName)}
                         </c:when>
                         <c:otherwise>
                             <cti:url var="commandUrl" value="/commander/command">
-                                <cti:param name="deviceId" value="${device.yukonId}"/>
+                                <cti:param name="deviceId" value="${device.yukonID}"/>
                             </cti:url>
                             <a title="${device.paoIdentifier}" href="${commandUrl}">${fn:escapeXml(device.paoName)}</a>
                         </c:otherwise>
@@ -152,12 +152,12 @@
                 <c:if test="${cti:isLoadManagementSortByGroup(device)}">
                         <ul>
                     <c:choose>
-                        <c:when test="${device.yukonId == deviceId}">
+                        <c:when test="${device.yukonID == deviceId}">
                             <li>${fn:escapeXml(device.paoName)}</li>
                         </c:when>
                         <c:otherwise>
                             <cti:url var="commandUrl" value="/commander/command">
-                                <cti:param name="deviceId" value="${device.yukonId}"/>
+                                <cti:param name="deviceId" value="${device.yukonID}"/>
                             </cti:url>
                             <li><a href="${commandUrl}" class="Link1">${fn:escapeXml(device.paoName)}</a></li>
                         </c:otherwise>
@@ -296,12 +296,12 @@
                 <c:if test="${cti:isCapControlSortByGroup(device)}">
                         <li>
                     <c:choose>
-                        <c:when test="${device.yukonId == deviceId}">
+                        <c:when test="${device.yukonID == deviceId}">
                             ${fn:escapeXml(device.paoName)}
                         </c:when>
                         <c:otherwise>
                             <cti:url var="commandUrl" value="/commander/command">
-                                <cti:param name="deviceId" value="${device.yukonId}"/>
+                                <cti:param name="deviceId" value="${device.yukonID}"/>
                             </cti:url>
                             <a title="${device.paoIdentifier}" href="${commandUrl}">${fn:escapeXml(device.paoName)}</a>
                         </c:otherwise>

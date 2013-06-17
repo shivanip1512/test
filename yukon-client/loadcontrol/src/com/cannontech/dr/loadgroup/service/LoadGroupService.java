@@ -8,16 +8,16 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
-import com.cannontech.messaging.message.loadcontrol.data.DirectGroupBase;
-import com.cannontech.messaging.message.loadcontrol.data.GroupBase;
+import com.cannontech.loadcontrol.data.LMDirectGroupBase;
+import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.user.YukonUserContext;
 
 public interface LoadGroupService {
 
     public DisplayablePao getLoadGroup(int loadGroupId);
-    public DirectGroupBase getGroupForPao(YukonPao from);
+    public LMDirectGroupBase getGroupForPao(YukonPao from);
     
-    public DatedObject<? extends GroupBase> findDatedGroup(int loadGroupId);
+    public DatedObject<? extends LMGroupBase> findDatedGroup(int loadGroupId);
 
     public List<DisplayablePao> findLoadGroupsForMacroLoadGroup(
             int loadGroupId, YukonUserContext userContext);

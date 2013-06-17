@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.cannontech.messaging.message.CommandMessage;
+import com.cannontech.message.util.Command;
 import com.cannontech.tdc.roweditor.SendData;
 
 public class AnalogOutputCommand {
@@ -16,9 +16,9 @@ public class AnalogOutputCommand {
         data.add((int) pointID);
         data.add((int) outputValue);
 
-        CommandMessage cmd = new CommandMessage();
+        Command cmd = new Command();
         cmd.setUserName(com.cannontech.common.util.CtiUtilities.getUserName());
-        cmd.setOperation(CommandMessage.ANALOG_OUTPUT_REQUEST);
+        cmd.setOperation(Command.ANALOG_OUTPUT_REQUEST);
         cmd.setOpArgList(data);
         cmd.setTimeStamp(new Date());
 

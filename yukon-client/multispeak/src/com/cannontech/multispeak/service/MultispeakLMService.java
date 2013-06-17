@@ -8,10 +8,10 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
+import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.ConnectionException;
-import com.cannontech.messaging.message.dispatch.PointDataMessage;
-import com.cannontech.messaging.util.BadServerResponseException;
-import com.cannontech.messaging.util.TimeoutException;
+import com.cannontech.message.util.TimeoutException;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.db.MspLoadControl;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
@@ -133,7 +133,7 @@ public interface MultispeakLMService {
 	 * @param userName
 	 * @return
 	 */
-	public PointDataMessage buildPointData(int pointId, ScadaAnalog scadaAnalog, String userName);
+	public PointData buildPointData(int pointId, ScadaAnalog scadaAnalog, String userName);
 
 	/**
 	 * Writes a MultiSpeak scadaAnalog value to dispatch as a PointData objec t..

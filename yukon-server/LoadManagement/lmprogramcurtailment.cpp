@@ -34,7 +34,7 @@ using std::vector;
 
 extern ULONG _LM_DEBUG;
 
-DEFINE_COLLECTABLE( CtiLMProgramCurtailment, CTILMPROGRAMCURTAILMENT_ID )
+RWDEFINE_COLLECTABLE( CtiLMProgramCurtailment, CTILMPROGRAMCURTAILMENT_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -236,13 +236,6 @@ vector<CtiLMCurtailCustomer*>& CtiLMProgramCurtailment::getLMProgramCurtailmentC
 
     return _lmprogramcurtailmentcustomers;
 }
-
-const vector<CtiLMCurtailCustomer*>& CtiLMProgramCurtailment::getLMProgramCurtailmentCustomers() const
-{
-
-    return _lmprogramcurtailmentcustomers;
-}
-
 
 /*---------------------------------------------------------------------------
     setMinNotifyTime
@@ -924,6 +917,73 @@ BOOL CtiLMProgramCurtailment::hasControlHoursAvailable()
 {
     BOOL returnBoolean = TRUE;
     return returnBoolean;
+}
+
+/*-------------------------------------------------------------------------
+    restoreGuts
+
+    Restore self's state from the given stream
+--------------------------------------------------------------------------*/
+void CtiLMProgramCurtailment::restoreGuts(RWvistream& istrm)
+{
+    CtiLMProgramBase::restoreGuts( istrm );
+
+    CtiTime tempTime1;
+    CtiTime tempTime2;
+    CtiTime tempTime3;
+    CtiTime tempTime4;
+
+    istrm >> _minnotifytime
+    >> _heading
+    >> _messageheader
+    >> _messagefooter
+    >> _acktimelimit
+    >> _canceledmsg
+    >> _stoppedearlymsg
+    >> _curtailreferenceid
+    >> tempTime1
+    >> tempTime2
+    >> tempTime3
+    >> tempTime4
+    >> _runstatus
+    >> _additionalinfo
+    >> _lmprogramcurtailmentcustomers;
+
+    _actiondatetime = CtiTime(tempTime1);
+    _notificationdatetime = CtiTime(tempTime2);
+    _curtailmentstarttime = CtiTime(tempTime3);
+    _curtailmentstoptime = CtiTime(tempTime4);
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+
+    Save self's state onto the given stream
+---------------------------------------------------------------------------*/
+void CtiLMProgramCurtailment::saveGuts(RWvostream& ostrm ) const
+{
+
+
+
+    CtiLMProgramBase::saveGuts( ostrm );
+
+    ostrm << _minnotifytime
+    << _heading
+    << _messageheader
+    << _messagefooter
+    << _acktimelimit
+    << _canceledmsg
+    << _stoppedearlymsg
+    << _curtailreferenceid
+    << _actiondatetime
+    << _notificationdatetime
+    << _curtailmentstarttime
+    << _curtailmentstoptime
+    << _runstatus
+    << _additionalinfo
+    << _lmprogramcurtailmentcustomers;
+
+    return;
 }
 
 /*---------------------------------------------------------------------------

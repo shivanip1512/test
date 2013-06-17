@@ -103,7 +103,7 @@ public class FdrImporter {
             LiteYukonPAObject obj = deviceDao.getLiteYukonPaobjectByDeviceName(device.getPAOName());
             if(obj != null) {
                 //update
-                device.setDeviceID(obj.getYukonId());
+                device.setDeviceID(obj.getYukonID());
                 try{
                     device.update();
                 }catch(SQLException e) {

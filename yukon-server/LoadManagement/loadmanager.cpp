@@ -50,8 +50,6 @@
 
 #include <rw/thr/prodcons.h>
 
-#include "amq_constants.h"
-
 using namespace std;
 
 extern ULONG _LM_DEBUG;
@@ -92,6 +90,10 @@ CtiLoadManager* CtiLoadManager::getInstance()
 CtiLoadManager::CtiLoadManager()
 : control_loop_delay(500), control_loop_inmsg_delay(0), control_loop_outmsg_delay(0)
 {
+
+    _dispatchConnection = NULL;
+    _pilConnection = NULL;
+    _notificationConnection = NULL;
 }
 
 /*---------------------------------------------------------------------------
@@ -162,11 +164,12 @@ void CtiLoadManager::stop()
     try
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        if( _dispatchConnection.get() != NULL && _dispatchConnection->valid() )
+        if( _dispatchConnection!=NULL && _dispatchConnection->valid() )
         {
             _dispatchConnection->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
         }
-        _dispatchConnection.reset(); // Note this delete will block for the message above to go out.
+        delete _dispatchConnection; // Note this delete will block for the message above to go out.
+        _dispatchConnection = NULL;
     }
     catch( ... )
     {
@@ -177,11 +180,12 @@ void CtiLoadManager::stop()
     try
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        if( _pilConnection.get() != NULL && _pilConnection->valid() )
+        if( _pilConnection!=NULL && _pilConnection->valid() )
         {
             _pilConnection->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
         }
-        _pilConnection.reset(); // Note this delete will block for the message above to go out.
+        delete _pilConnection;
+        _pilConnection = NULL;
     }
     catch( ... )
     {
@@ -192,11 +196,12 @@ void CtiLoadManager::stop()
     try
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        if( _notificationConnection.get()!=NULL && _notificationConnection->valid() )
+        if( _notificationConnection!=NULL && _notificationConnection->valid() )
         {
             _notificationConnection->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
         }
-        _notificationConnection.reset(); // Note this delete will block for the message above to go out.
+        delete _notificationConnection;
+        _notificationConnection = NULL;
     }
     catch( ... )
     {
@@ -255,7 +260,7 @@ void CtiLoadManager::controlLoop()
             long main_wait = control_loop_delay;
             bool received_message = false;
             Sleep(250);
-            while( (msg = CtiLMClientListener::getInstance().getQueue(main_wait)) != NULL )
+            while( (msg = CtiLMClientListener::getInstance()->getQueue(main_wait)) != NULL )
             {
                 CtiLMExecutor* executor = executorFactory.createExecutor(msg);
                 try
@@ -683,20 +688,68 @@ void CtiLoadManager::controlLoop()
 
   Returns a connection to Dispatch, initializes if isn't created yet.
   ---------------------------------------------------------------------------*/
-boost::shared_ptr<CtiClientConnection> CtiLoadManager::getDispatchConnection()
+CtiConnection* CtiLoadManager::getDispatchConnection()
 {
     try
     {
-        if( _dispatchConnection.get() == NULL || _dispatchConnection->verifyConnection() != NORMAL )
+        if( _dispatchConnection == NULL || (_dispatchConnection != NULL && _dispatchConnection->verifyConnection()) )
         {
-            //Connect to Dispatch
-            _dispatchConnection.reset( CTIDBG_new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch ));
-            _dispatchConnection->setName("LM to Dispatch");
-            _dispatchConnection->start();
+            //Set up the defaults
+            INT dispatch_port = VANGOGHNEXUS;
+            string dispatch_host = "127.0.0.1";
 
-            //Send a registration message to Dispatch
-            CtiRegistrationMsg* registrationMsg = CTIDBG_new CtiRegistrationMsg("LoadManagement", 0, false );
-            _dispatchConnection->WriteConnQue( registrationMsg );
+            string str;
+            char var[128];
+
+            strcpy(var, "DISPATCH_MACHINE");
+            if( !(str = gConfigParms.getValueAsString(var)).empty() )
+            {
+                dispatch_host = str;
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - " << var << ":  " << str << endl;
+                }
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+            }
+
+            strcpy(var, "DISPATCH_PORT");
+            if( !(str = gConfigParms.getValueAsString(var)).empty() )
+            {
+                dispatch_port = atoi(str.c_str());
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - " << var << ":  " << str << endl;
+                }
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+            }
+
+            //throw away the old connection if there was one that couldn't be verified
+            if( _dispatchConnection != NULL && _dispatchConnection->verifyConnection() )
+            {
+                delete _dispatchConnection;
+                _dispatchConnection = NULL;
+            }
+
+            if( _dispatchConnection == NULL )
+            {
+                //Connect to Dispatch
+                _dispatchConnection = CTIDBG_new CtiConnection( dispatch_port, dispatch_host );
+                _dispatchConnection->setName("LM to Dispatch");
+
+                //Send a registration message to Dispatch
+                CtiRegistrationMsg* registrationMsg = CTIDBG_new CtiRegistrationMsg("LoadManagement", 0, false );
+                _dispatchConnection->WriteConnQue( registrationMsg );
+            }
         }
 
         return _dispatchConnection;
@@ -706,7 +759,7 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getDispatchConnection()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
 
-        return boost::shared_ptr<CtiClientConnection>();
+        return NULL;
     }
 }
 
@@ -715,20 +768,67 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getDispatchConnection()
 
   Returns a connection to PIL, initializes if isn't created yet.
   ---------------------------------------------------------------------------*/
-boost::shared_ptr<CtiClientConnection> CtiLoadManager::getPILConnection()
+CtiConnection* CtiLoadManager::getPILConnection()
 {
     try
     {
-        if( _pilConnection.get() == NULL || _pilConnection->verifyConnection() != NORMAL )
+        if( _pilConnection == NULL || (_pilConnection != NULL && _pilConnection->verifyConnection()) )
         {
-            //Connect to Pil
-            _pilConnection.reset( CTIDBG_new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::pil ));
-            _pilConnection->setName("LM to Pil");
-            _pilConnection->start();
+            //Set up the defaults
+            INT pil_port = PORTERINTERFACENEXUS;
+            string pil_host = "127.0.0.1";
 
-            //Send a registration message to Pil
-            CtiRegistrationMsg* registrationMsg = CTIDBG_new CtiRegistrationMsg("LoadManagement", 0, false );
-            _pilConnection->WriteConnQue( registrationMsg );
+            string str;
+            char var[128];
+
+            strcpy(var, "PIL_MACHINE");
+            if( !(str = gConfigParms.getValueAsString(var)).empty() )
+            {
+                pil_host = str;
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - " << var << ":  " << str << endl;
+                }
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+            }
+
+            strcpy(var, "PIL_PORT");
+            if( !(str = gConfigParms.getValueAsString(var)).empty() )
+            {
+                pil_port = atoi(str.c_str());
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - " << var << ":  " << str << endl;
+                }
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+            }
+
+            if( _pilConnection != NULL && _pilConnection->verifyConnection() )
+            {
+                delete _pilConnection;
+                _pilConnection = NULL;
+            }
+
+            if( _pilConnection == NULL )
+            {
+                //Connect to Pil
+                _pilConnection = CTIDBG_new CtiConnection( pil_port, pil_host );
+                _pilConnection->setName("LM to Pil");
+
+                //Send a registration message to Pil
+                CtiRegistrationMsg* registrationMsg = CTIDBG_new CtiRegistrationMsg("LoadManagement", 0, false );
+                _pilConnection->WriteConnQue( registrationMsg );
+            }
         }
 
         return _pilConnection;
@@ -738,7 +838,7 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getPILConnection()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
 
-        return boost::shared_ptr<CtiClientConnection>();
+        return NULL;
     }
 }
 
@@ -747,16 +847,35 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getPILConnection()
 
   Returns a connection to the Notification Server
   ---------------------------------------------------------------------------*/
-boost::shared_ptr<CtiClientConnection> CtiLoadManager::getNotificationConnection()
+CtiConnection* CtiLoadManager::getNotificationConnection()
 {
     try
     {
-        if( _notificationConnection.get() == NULL || _notificationConnection->verifyConnection() != NORMAL )
+        if( _notificationConnection == NULL || (_notificationConnection != NULL && _notificationConnection->verifyConnection()) )
         {
-            //Connect to Pil
-            _notificationConnection.reset( CTIDBG_new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::notification ));
-            _notificationConnection->setName("LM to Notification");
-            _notificationConnection->start();
+            //Set up the defaults
+            string notification_host = gConfigParms.getValueAsString("NOTIFICATION_MACHINE", "127.0.0.1");
+            int notification_port = gConfigParms.getValueAsInt("NOTIFICATION_PORT", NOTIFICATIONNEXUS);
+
+            if( _LM_DEBUG & LM_DEBUG_STANDARD )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - NOTIFICATION_MACHINE: " << notification_host << endl;
+                dout << CtiTime() << " - NOTIFICATION_PORT: " << notification_port << endl;
+            }
+
+            if( _notificationConnection != NULL && _notificationConnection->verifyConnection() )
+            {
+                delete _notificationConnection;
+                _notificationConnection = NULL;
+            }
+
+            if( _notificationConnection == NULL )
+            {
+                //Connect to Pil
+                _notificationConnection  = CTIDBG_new CtiConnection( notification_port, notification_host.c_str() );
+                _notificationConnection->setName("LM to Notification");
+            }
         }
 
         return _notificationConnection;
@@ -766,7 +885,7 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getNotificationConnection
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
 
-        return boost::shared_ptr<CtiClientConnection>();
+        return NULL;
     }
 }
 
@@ -778,12 +897,12 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getNotificationConnection
 void CtiLoadManager::checkDispatch(CtiTime currentTime)
 {
     bool done = FALSE;
-
+    CtiConnection* tempPtrDispatchConn = getDispatchConnection();
     do
     {
         try
         {
-            CtiMessage* in = getDispatchConnection()->ReadConnQue(0);
+            CtiMessage* in = (CtiMessage*) tempPtrDispatchConn->ReadConnQue(0);
 
             if( in != NULL )
             {
@@ -810,12 +929,12 @@ void CtiLoadManager::checkDispatch(CtiTime currentTime)
 void CtiLoadManager::checkPIL(CtiTime currentTime)
 {
     bool done = FALSE;
-
+    CtiConnection* tempPtrPorterConn = getPILConnection();
     do
     {
         try
         {
-            CtiMessage* in = getPILConnection()->ReadConnQue(0);
+            CtiMessage* in = (CtiMessage*) tempPtrPorterConn->ReadConnQue(0);
 
             if( in != NULL )
             {
@@ -937,7 +1056,7 @@ void CtiLoadManager::registerForPoints(const vector<CtiLMControlArea*>& controlA
 
   Reads off the Dispatch connection and handles messages accordingly.
   ---------------------------------------------------------------------------*/
-void CtiLoadManager::parseMessage( CtiMessage *message, CtiTime currentTime )
+void CtiLoadManager::parseMessage(RWCollectable *message, CtiTime currentTime)
 {
     CtiMultiMsg* msgMulti;
     CtiPointDataMsg* pData;
@@ -1427,7 +1546,7 @@ void CtiLoadManager::sendMessageToClients( CtiMessage* message )
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     try
     {
-        CtiLMClientListener::getInstance().BroadcastMessage(message);
+        CtiLMClientListener::getInstance()->BroadcastMessage(message);
     }
     catch( ... )
     {

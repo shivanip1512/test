@@ -23,8 +23,8 @@ import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.customer.Customer;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.database.data.appliance.ApplianceBase;
@@ -365,11 +365,11 @@ public class YukonToCRSFuncs
 	    		Transaction<Customer> t = Transaction.createTransaction(Transaction.UPDATE, customer);
 	    		customer = t.execute();
 
-	    		DBChangeMessage dbChangeMessage = new DBChangeMessage(
+	    		DBChangeMsg dbChangeMessage = new DBChangeMsg(
     					customer.getCustomerID().intValue(),
-    					DBChangeMessage.CHANGE_CUSTOMER_DB,
-    					DBChangeMessage.CAT_CUSTOMER,
-    					DBChangeMessage.CAT_CUSTOMER,
+    					DBChangeMsg.CHANGE_CUSTOMER_DB,
+    					DBChangeMsg.CAT_CUSTOMER,
+    					DBChangeMsg.CAT_CUSTOMER,
     					DbChangeType.UPDATE
     					);
 	    		dbChangeMessage.setSource("YukonToCRSFuncs:ForceHandleDBChange");	//TODO verify if StarsDBCache handles
@@ -670,11 +670,11 @@ public class YukonToCRSFuncs
 		customerAccount.setEnergyCompanyID(new Integer(ecID_workOrder));
 		customerAccount = Transaction.createTransaction(Transaction.INSERT, customerAccount).execute();
 		
-        DBChangeMessage dbChangeMessage = new DBChangeMessage(
+        DBChangeMsg dbChangeMessage = new DBChangeMsg(
 			customerAccount.getCustomerAccount().getAccountID().intValue(),
-			DBChangeMessage.CHANGE_CUSTOMER_ACCOUNT_DB,
-			DBChangeMessage.CAT_CUSTOMER_ACCOUNT,
-			DBChangeMessage.CAT_CUSTOMER_ACCOUNT,
+			DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
+			DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+			DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
 			DbChangeType.ADD
 		);
         dbChangeMessage.setSource("YukonToCRSFuncs:ForceHandleDBChange");	//TODO verify if StarsDBCache handles
@@ -714,11 +714,11 @@ public class YukonToCRSFuncs
 			contact.getContactNotifVect().add(crsNotif);
 		}
 		contact = Transaction.createTransaction(Transaction.INSERT, contact).execute();
-        DBChangeMessage dbChangeMessage = new DBChangeMessage(
+        DBChangeMsg dbChangeMessage = new DBChangeMsg(
 			contact.getContact().getContactID().intValue(),
-			DBChangeMessage.CHANGE_CONTACT_DB,
-			DBChangeMessage.CAT_CUSTOMERCONTACT,
-			DBChangeMessage.CAT_CUSTOMERCONTACT,
+			DBChangeMsg.CHANGE_CONTACT_DB,
+			DBChangeMsg.CAT_CUSTOMERCONTACT,
+			DBChangeMsg.CAT_CUSTOMERCONTACT,
 			DbChangeType.ADD
 		);
         dbChangeMessage.setSource("YukonToCRSFuncs:ForceHandleDBChange");	//TODO verify if StarsDBCache handles
@@ -794,11 +794,11 @@ public class YukonToCRSFuncs
     	{
 	    	try {
 	    		accountSite = Transaction.createTransaction(Transaction.UPDATE, accountSite).execute();
-	    		DBChangeMessage dbChangeMessage = new DBChangeMessage(
+	    		DBChangeMsg dbChangeMessage = new DBChangeMsg(
 					customerAccount.getCustomerAccount().getAccountID().intValue(),
-					DBChangeMessage.CHANGE_CUSTOMER_ACCOUNT_DB,
-					DBChangeMessage.CAT_CUSTOMER_ACCOUNT,
-					DBChangeMessage.CAT_CUSTOMER_ACCOUNT,
+					DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
+					DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+					DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
 					DbChangeType.UPDATE
 				);
 	    		dbChangeMessage.setSource("YukonToCRSFuncs:ForceHandleDBChange");	//TODO verify if StarsDBCache handles
@@ -818,11 +818,11 @@ public class YukonToCRSFuncs
 
 		if( isChanged)
 		{
-            DBChangeMessage dbChangeMessage = new DBChangeMessage(
+            DBChangeMsg dbChangeMessage = new DBChangeMsg(
 				contactDB.getContactID().intValue(),
-				DBChangeMessage.CHANGE_CONTACT_DB,
-				DBChangeMessage.CAT_CUSTOMERCONTACT,
-				DBChangeMessage.CAT_CUSTOMERCONTACT,
+				DBChangeMsg.CHANGE_CONTACT_DB,
+				DBChangeMsg.CAT_CUSTOMERCONTACT,
+				DBChangeMsg.CAT_CUSTOMERCONTACT,
 				DbChangeType.UPDATE
 			);
             dbChangeMessage.setSource("YukonToCRSFuncs:ForceHandleDBChange");	//TODO verify if StarsDBCache handles
@@ -898,7 +898,7 @@ public class YukonToCRSFuncs
 		return returnEntry;
 	}    
 	
-	public static void handleDBChangeMsg(DBChangeMessage msg) {
+	public static void handleDBChangeMsg(DBChangeMsg msg) {
         if (msg != null) {
             DefaultDatabaseCache.getInstance().handleDBChangeMessage( msg );
             

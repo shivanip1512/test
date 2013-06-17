@@ -12,8 +12,8 @@ import org.apache.lucene.index.Term;
 
 import com.cannontech.common.search.YukonObjectAnalyzer;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * Class which manages point device lucene index creation and update.
@@ -73,8 +73,8 @@ public class LoginGroupIndexManager extends AbstractIndexManager {
     }
 
     protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category, String type) {
-        if (database == DBChangeMessage.CHANGE_YUKON_USER_DB 
-               && DBChangeMessage.CAT_YUKON_USER_GROUP.equalsIgnoreCase(category) ) {
+        if (database == DBChangeMsg.CHANGE_YUKON_USER_DB 
+               && DBChangeMsg.CAT_YUKON_USER_GROUP.equalsIgnoreCase(category) ) {
             // login group change msg
             return this.processGroupChange(id);
         }

@@ -45,23 +45,23 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 
 			if( returnObject instanceof com.cannontech.database.data.device.DeviceBase )
 			{
-				((DeviceBase)returnObject).setDeviceID(new Integer( ((LiteYukonPAObject)liteObject).getYukonId()) );
+				((DeviceBase)returnObject).setDeviceID(new Integer( ((LiteYukonPAObject)liteObject).getYukonID()) );
 				((DeviceBase)returnObject).setPAOName( ((LiteYukonPAObject)liteObject).getPaoName());
 
 			}
 			else if( returnObject instanceof com.cannontech.database.data.port.DirectPort )
 			{	
-				((com.cannontech.database.data.port.DirectPort)returnObject).setPortID( new Integer(((LiteYukonPAObject)liteObject).getYukonId()) );
+				((com.cannontech.database.data.port.DirectPort)returnObject).setPortID( new Integer(((LiteYukonPAObject)liteObject).getYukonID()) );
 				((com.cannontech.database.data.port.DirectPort)returnObject).setPortName( ((LiteYukonPAObject)liteObject).getPaoName() );
 			}
 			else if( returnObject instanceof com.cannontech.database.data.route.RouteBase )
 			{	
-				((com.cannontech.database.data.route.RouteBase)returnObject).setRouteID( new Integer(((LiteYukonPAObject)liteObject).getYukonId()) );
+				((com.cannontech.database.data.route.RouteBase)returnObject).setRouteID( new Integer(((LiteYukonPAObject)liteObject).getYukonID()) );
 				((com.cannontech.database.data.route.RouteBase)returnObject).setRouteName( ((LiteYukonPAObject)liteObject).getPaoName() );
 			}
 			else if( returnObject instanceof com.cannontech.database.data.capcontrol.CapControlYukonPAOBase )
 			{	
-				((com.cannontech.database.data.capcontrol.CapControlYukonPAOBase)returnObject).setCapControlPAOID( new Integer(((LiteYukonPAObject)liteObject).getYukonId()) );
+				((com.cannontech.database.data.capcontrol.CapControlYukonPAOBase)returnObject).setCapControlPAOID( new Integer(((LiteYukonPAObject)liteObject).getYukonID()) );
 				((com.cannontech.database.data.capcontrol.CapControlYukonPAOBase)returnObject).setName( ((LiteYukonPAObject)liteObject).getPaoName() );
 			}
 			break;

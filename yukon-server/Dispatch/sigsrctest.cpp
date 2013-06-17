@@ -35,9 +35,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "msg_signal.h"
 #include "msg_pdata.h"
 #include "msg_ptreg.h"
-#include "connection_client.h"
+#include "connection.h"
 #include "pointtypes.h"
-#include "amq_constants.h"
 
 BOOL           bQuit = FALSE;
 
@@ -71,78 +70,92 @@ BOOL MyCtrlHandler(DWORD fdwCtrlType)
 
 void main(int argc, char **argv)
 {
-   if( argc != 5 )
+   char  actn[80];
+   char  desc[80];
+
+   if(argc < 6)
    {
-      cout << "Arg 1:   Minimum point to error       " << endl;
-      cout << "Arg 2:   Maximum point to error       " << endl;
-      cout << "Arg 3:   UnAck'd (1)/ Ack'd (0) Alarm " << endl;
-      cout << "Arg 4:   Loops " << endl;
+      cout << "Arg 1:   dispatch server machine name " << endl;
+      cout << "Arg 2:   Minimum point to error       " << endl;
+      cout << "Arg 3:   Maximum point to error       " << endl;
+      cout << "Arg 4:   UnAck'd (1)/ Ack'd (0) Alarm " << endl;
+      cout << "Arg 5:   Loops " << endl;
 
       exit(-1);
    }
 
-   INT minErr = atoi(argv[1]);
-   INT maxErr = atoi(argv[2]);
-   INT unack  = atoi(argv[3]);
-   int loops  = atoi(argv[4]);
+   INT minErr = atoi(argv[2]);
+   INT maxErr = atoi(argv[3]);
+   INT unack = atoi(argv[4]);
+   int loops = atoi(argv[5]);
 
    INT tag = unack ? (TAG_UNACKNOWLEDGED_ALARM | TAG_ACTIVE_ALARM) : (TAG_ACTIVE_ALARM);
 
+
    try
    {
+      int Op, k;
+      CtiMultiMsg *pMulti = NULL;
+
+      unsigned    pt = 1;
+
       if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE) MyCtrlHandler,  TRUE))
       {
          cerr << "Could not install control handler" << endl;
          return;
       }
 
-      // Create client cticonnection
-      CtiClientConnection Connect( Cti::Messaging::ActiveMQ::Queue::dispatch );
 
-      // start the connection
-      Connect.setName( "SignalSourceTest" );
-      Connect.start();
-      
+      CtiConnection  Connect(VANGOGHNEXUS, argv[1]);
+
+
       // Insert a registration message into the multi
-      Connect.WriteConnQue( CTIDBG_new CtiRegistrationMsg( "SignalSource", rwThreadId(), TRUE ));
+      Connect.WriteConnQue(CTIDBG_new CtiRegistrationMsg("SignalSource", rwThreadId(), TRUE));
 
+
+      CtiPointDataMsg   *pDat = NULL;
+      CtiSignalMsg      *pSig = NULL;
 /*      CtiEmailMsg       *pEmail = CTIDBG_new CtiEmailMsg(1, CtiEmailMsg::CICustomerEmailType);
+
       Connect.WriteConnQue(pEmail);
 */
-      for( int s = 0; s < loops; s++ )
+      for(int s = 0; s < loops; s++)
       {
-         auto_ptr<CtiMultiMsg> pMulti( CTIDBG_new CtiMultiMsg );
+         pMulti = CTIDBG_new CtiMultiMsg;
 
-         for( int k = minErr; !bQuit && k <= maxErr; k++ )
+         for(k = minErr; !bQuit && k <= maxErr; k++)
          {
-            string desc = " POINT " + CtiNumStr(k) + " ERROR FORCED BY " + argv[0];
-            string actn = " POINT ERROR FORCED";
+            if(pMulti != NULL)
+            {
+               sprintf(desc, " POINT %d ERROR FORCED BY %s", k, argv[0]);
+               sprintf(actn, " POINT ERROR FORCED");
 
-            pMulti->insert( CTIDBG_new CtiSignalMsg( k,
-                                                     0,
-                                                     CtiTime().asString().c_str() + desc,
-                                                     actn,
-                                                     GeneralLogType,
-                                                     SignalEvent,
-                                                     "sigsrctest.cpp",
-                                                     tag ));
+               pSig = CTIDBG_new CtiSignalMsg(k, 0, CtiTime().asString().c_str() + string(desc), string(actn), GeneralLogType, SignalEvent, "sigsrctest.cpp", tag);
+
+               pMulti->insert(pSig);
+            }
+            else
+            {
+               exit(-1);
+            }
          }
 
-         Connect.WriteConnQue( pMulti.release() );
+         Connect.WriteConnQue(pMulti);
 
-         ReadTheInboundAndDispose( Connect );
+         ReadTheInboundAndDispose(Connect);
 
-         Sleep( 5000 );
+         Sleep(5000);
+
       }
 
-      cout << CtiTime() << " Ending Test." << endl;
-
       Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 0));
-      Connect.close();
+      Connect.ShutdownConnection();
+
    }
-   catch(...)
+   catch(RWxmsg &msg)
    {
-       cout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      cout << "Tester Exception: ";
+      cout << msg.why() << endl;
    }
 
    exit(0);
@@ -160,7 +173,7 @@ void ReadTheInboundAndDispose(CtiConnection &Connect)
 
       if(pMsg->isA() == MSG_MULTI)
       {
-         pMulti = dynamic_cast<CtiMultiMsg*>(pMsg);
+         pMulti = (CtiMultiMsg*)pMsg;
       }
 
       {

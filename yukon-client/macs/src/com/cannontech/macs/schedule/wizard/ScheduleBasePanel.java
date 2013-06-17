@@ -9,7 +9,7 @@ import java.util.List;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.data.schedule.script.ScriptTemplateTypes;
-import com.cannontech.messaging.message.macs.ScheduleMessage;
+import com.cannontech.message.macs.message.Schedule;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.conns.ConnPool;
@@ -571,16 +571,16 @@ private javax.swing.JComboBox getJComboBoxStartPolicy() {
 			// user code begin {1}
 
 			ivjJComboBoxStartPolicy.addItem( 
-					StringUtils.addCharBetweenWords( ' ', ScheduleMessage.MANUAL_START ) );
+					StringUtils.addCharBetweenWords( ' ', Schedule.MANUAL_START ) );
 
 			ivjJComboBoxStartPolicy.addItem( 
-					StringUtils.addCharBetweenWords( ' ', ScheduleMessage.DATETIME_START ) );
+					StringUtils.addCharBetweenWords( ' ', Schedule.DATETIME_START ) );
 
 			ivjJComboBoxStartPolicy.addItem( 
-					StringUtils.addCharBetweenWords( ' ', ScheduleMessage.DAYOFMONTH_START ) );
+					StringUtils.addCharBetweenWords( ' ', Schedule.DAYOFMONTH_START ) );
 
 			ivjJComboBoxStartPolicy.addItem( 
-					StringUtils.addCharBetweenWords( ' ', ScheduleMessage.WEEKDAY_START ) );
+					StringUtils.addCharBetweenWords( ' ', Schedule.WEEKDAY_START ) );
 				
 			
 			// user code end
@@ -605,16 +605,16 @@ private javax.swing.JComboBox getJComboBoxStopPolicy() {
 			// user code begin {1}
 
 			ivjJComboBoxStopPolicy.addItem( 
-					StringUtils.addCharBetweenWords( ' ', ScheduleMessage.MANUAL_STOP ) );
+					StringUtils.addCharBetweenWords( ' ', Schedule.MANUAL_STOP ) );
 
 			ivjJComboBoxStopPolicy.addItem( 
-					StringUtils.addCharBetweenWords( ' ', ScheduleMessage.ABSOLUTETIME_STOP ) );
+					StringUtils.addCharBetweenWords( ' ', Schedule.ABSOLUTETIME_STOP ) );
 
 			ivjJComboBoxStopPolicy.addItem( 
-					StringUtils.addCharBetweenWords( ' ', ScheduleMessage.DURATION_STOP ) );
+					StringUtils.addCharBetweenWords( ' ', Schedule.DURATION_STOP ) );
 				
 			ivjJComboBoxStopPolicy.addItem( 
-					StringUtils.addCharBetweenWords( ' ', ScheduleMessage.UNTILCOMPLETE_STOP ) );
+					StringUtils.addCharBetweenWords( ' ', Schedule.UNTILCOMPLETE_STOP ) );
 
 			
 			// user code end
@@ -638,8 +638,8 @@ private javax.swing.JComboBox getJComboBoxType() {
 			ivjJComboBoxType.setName("JComboBoxType");
 			// user code begin {1}
 
-			getJComboBoxType().addItem( ScheduleMessage.SIMPLE_TYPE );
-			getJComboBoxType().addItem( ScheduleMessage.SCRIPT_TYPE );
+			getJComboBoxType().addItem( Schedule.SIMPLE_TYPE );
+			getJComboBoxType().addItem( Schedule.SCRIPT_TYPE );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -1494,11 +1494,11 @@ public int getTemplateType()
  */
 public Object getValue(Object val) 
 {
-	ScheduleMessage sch = null;
+	Schedule sch = null;
 	if( val == null )
-		sch = new ScheduleMessage();
+		sch = new Schedule();
 	else
-		sch = (ScheduleMessage)val;
+		sch = (Schedule)val;
 
 	// ID must be set by server!!	
 	sch.setScheduleName( getJTextFieldScheduleName().getText() );
@@ -1521,7 +1521,7 @@ public Object getValue(Object val)
 	java.util.GregorianCalendar tempCal = new java.util.GregorianCalendar();
 
 	// Process the start attributes here	
-	if( getSelectedStartPolicy().equalsIgnoreCase(ScheduleMessage.DATETIME_START) )
+	if( getSelectedStartPolicy().equalsIgnoreCase(Schedule.DATETIME_START) )
 	{
 		tempCal.setTime( getDateComboBox().getSelectedDate() );
 			
@@ -1537,7 +1537,7 @@ public Object getValue(Object val)
 		else
 			sch.setStartYear( tempCal.get(java.util.GregorianCalendar.YEAR) );
 	} 
-	else if( getSelectedStartPolicy().equalsIgnoreCase(ScheduleMessage.DAYOFMONTH_START) )
+	else if( getSelectedStartPolicy().equalsIgnoreCase(Schedule.DAYOFMONTH_START) )
 	{
 		sch.setStartDay( Integer.parseInt(getJTextFieldDayOfMonth().getText()) );
 
@@ -1547,19 +1547,19 @@ public Object getValue(Object val)
 		sch.setStartMonth( tempCal.get(java.util.GregorianCalendar.MONTH) + 1 );
 		sch.setStartYear( tempCal.get(java.util.GregorianCalendar.YEAR) );
 	}
-	else if( getSelectedStartPolicy().equalsIgnoreCase(ScheduleMessage.WEEKDAY_START) )
+	else if( getSelectedStartPolicy().equalsIgnoreCase(Schedule.WEEKDAY_START) )
 	{
 		sch.setValidWeekDays( getJCheckBoxDayChooser().getSelectedDays8Chars() );
 	}
 
 
 	// Process the stop attributes here
-	if( getSelectedStopPolicy().equalsIgnoreCase( ScheduleMessage.ABSOLUTETIME_STOP ) )
+	if( getSelectedStopPolicy().equalsIgnoreCase( Schedule.ABSOLUTETIME_STOP ) )
 	{
  		if( getJTextFieldTimeAbsoluteStopTime().isEnabled() && getJTextFieldTimeAbsoluteStopTime().getText() != null )	 	
 			sch.setStopTime( getJTextFieldTimeAbsoluteStopTime().getTimeText() + ":00" );
 	}
-	else if( getSelectedStopPolicy().equalsIgnoreCase( ScheduleMessage.DURATION_STOP ) )
+	else if( getSelectedStopPolicy().equalsIgnoreCase( Schedule.DURATION_STOP ) )
 	{
 		//we entered minutes, lets make it seconds for the server
 		sch.setDuration( ((Number)getJCSpinFieldDuration().getValue()).intValue() * 60 );
@@ -1826,16 +1826,16 @@ public void jComboBoxStopPolicy_ActionPerformed(java.awt.event.ActionEvent actio
  */
 public void jComboBoxType_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-	boolean val = getJComboBoxType().getSelectedItem().equals( ScheduleMessage.SIMPLE_TYPE );
+	boolean val = getJComboBoxType().getSelectedItem().equals( Schedule.SIMPLE_TYPE );
 
 	//Simple schedules can not have the UNTIL_COMPLETE stop policy	
 	if( val )
 	{
 		//release the hate!
-		if( getSelectedStopPolicy().equalsIgnoreCase(ScheduleMessage.UNTILCOMPLETE_STOP) )
+		if( getSelectedStopPolicy().equalsIgnoreCase(Schedule.UNTILCOMPLETE_STOP) )
 			getJComboBoxStopPolicy().setSelectedIndex(0);
 
-		getJComboBoxStopPolicy().removeItem( StringUtils.addCharBetweenWords(' ', ScheduleMessage.UNTILCOMPLETE_STOP) );
+		getJComboBoxStopPolicy().removeItem( StringUtils.addCharBetweenWords(' ', Schedule.UNTILCOMPLETE_STOP) );
 		
 		//Disable the Script specific fields.
 		setScriptOnlyFieldsEnabled(false);		
@@ -1844,14 +1844,14 @@ public void jComboBoxType_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	{
 		//be sure the UNTIL_COMPLETE stop policy is in the stop policy combo box!
 		for( int i = 0; i < getJComboBoxStopPolicy().getItemCount(); i++ )
-			if( StringUtils.removeChars(' ', getJComboBoxStopPolicy().getItemAt(i).toString()).equalsIgnoreCase(ScheduleMessage.UNTILCOMPLETE_STOP) )
+			if( StringUtils.removeChars(' ', getJComboBoxStopPolicy().getItemAt(i).toString()).equalsIgnoreCase(Schedule.UNTILCOMPLETE_STOP) )
 			{
 				val = true;
 				break;
 			}
 
 		if( !val )
-			getJComboBoxStopPolicy().addItem( StringUtils.addCharBetweenWords(' ', ScheduleMessage.UNTILCOMPLETE_STOP) );
+			getJComboBoxStopPolicy().addItem( StringUtils.addCharBetweenWords(' ', Schedule.UNTILCOMPLETE_STOP) );
 			
 		setScriptOnlyFieldsEnabled(true);
 	}
@@ -1947,22 +1947,22 @@ private void setScriptOnlyFieldsEnabled(boolean value)
 private void setStartFieldVisible()
 {
 	getDateComboBox().setVisible(
-		getSelectedStartPolicy().equalsIgnoreCase(ScheduleMessage.DATETIME_START) );
+		getSelectedStartPolicy().equalsIgnoreCase(Schedule.DATETIME_START) );
 	getJCheckBoxEveryYear().setVisible(
-		getSelectedStartPolicy().equalsIgnoreCase(ScheduleMessage.DATETIME_START) );
+		getSelectedStartPolicy().equalsIgnoreCase(Schedule.DATETIME_START) );
 
 		
 	getJTextFieldDayOfMonth().setVisible( 
-		getSelectedStartPolicy().equalsIgnoreCase(ScheduleMessage.DAYOFMONTH_START) );
+		getSelectedStartPolicy().equalsIgnoreCase(Schedule.DAYOFMONTH_START) );
 	getJLabel1to31().setVisible( 
-		getSelectedStartPolicy().equalsIgnoreCase(ScheduleMessage.DAYOFMONTH_START) );
+		getSelectedStartPolicy().equalsIgnoreCase(Schedule.DAYOFMONTH_START) );
 
 		
 	getJCheckBoxDayChooser().setVisible( 
-		getSelectedStartPolicy().equalsIgnoreCase(ScheduleMessage.WEEKDAY_START) );
+		getSelectedStartPolicy().equalsIgnoreCase(Schedule.WEEKDAY_START) );
 
 	getJTextFieldTimeEntryStart().setEnabled( 
-		!getSelectedStartPolicy().equalsIgnoreCase(ScheduleMessage.MANUAL_START) );
+		!getSelectedStartPolicy().equalsIgnoreCase(Schedule.MANUAL_START) );
 
 }
 /**
@@ -1974,25 +1974,25 @@ private void setStopFieldVisible()
 {
 	//absolute GUI widgets
 	getJTextFieldTimeAbsoluteStopTime().setVisible(
-		getSelectedStopPolicy().equalsIgnoreCase(ScheduleMessage.ABSOLUTETIME_STOP) );
+		getSelectedStopPolicy().equalsIgnoreCase(Schedule.ABSOLUTETIME_STOP) );
 	getJLabelAbsoluteStopTime().setVisible(
-		getSelectedStopPolicy().equalsIgnoreCase(ScheduleMessage.ABSOLUTETIME_STOP) );
+		getSelectedStopPolicy().equalsIgnoreCase(Schedule.ABSOLUTETIME_STOP) );
 	getJLabelABSFormat().setVisible(
-		getSelectedStopPolicy().equalsIgnoreCase(ScheduleMessage.ABSOLUTETIME_STOP) );
+		getSelectedStopPolicy().equalsIgnoreCase(Schedule.ABSOLUTETIME_STOP) );
 	
 
 	//duration GUI widgets
 	getJCSpinFieldDuration().setVisible(
-		getSelectedStopPolicy().equalsIgnoreCase(ScheduleMessage.DURATION_STOP) );
+		getSelectedStopPolicy().equalsIgnoreCase(Schedule.DURATION_STOP) );
 	getJLabelMinutes().setVisible(
-		getSelectedStopPolicy().equalsIgnoreCase(ScheduleMessage.DURATION_STOP) );
+		getSelectedStopPolicy().equalsIgnoreCase(Schedule.DURATION_STOP) );
 }
 /**
  * setValue method comment.
  */
 public void setValue(Object val) 
 {
-	ScheduleMessage sched = (ScheduleMessage)val;
+	Schedule sched = (Schedule)val;
 	this.scheduleId = sched.getId();
 
 	setEditableJComboBox( sched.getNonPersistantData().getCategories() );
@@ -2021,7 +2021,7 @@ public void setValue(Object val)
 	getJComboBoxStartPolicy().setSelectedItem( StringUtils.addCharBetweenWords(
 		' ', sched.getStartPolicy() ) );
 	
-	if( sched.getStartPolicy().equalsIgnoreCase( ScheduleMessage.DATETIME_START ) )
+	if( sched.getStartPolicy().equalsIgnoreCase( Schedule.DATETIME_START ) )
 	{
 		/*----- SUPER HACK!!! */
 		java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
@@ -2046,13 +2046,13 @@ public void setValue(Object val)
 		
 		getDateComboBox().setSelectedDate( cal.getTime() );
 	}
-	else if( sched.getStartPolicy().equalsIgnoreCase( ScheduleMessage.DAYOFMONTH_START ) )
+	else if( sched.getStartPolicy().equalsIgnoreCase( Schedule.DAYOFMONTH_START ) )
 	{		
 		//cal.setTime( sched.getNextRunTime() );		
 		getJTextFieldDayOfMonth().setText( 
 				new Integer(sched.getStartDay()).toString() );
 	}
-	else if( sched.getStartPolicy().equalsIgnoreCase( ScheduleMessage.WEEKDAY_START ) )
+	else if( sched.getStartPolicy().equalsIgnoreCase( Schedule.WEEKDAY_START ) )
 	{
 		//HOLIDAY is set in here too!!!
 		getJCheckBoxDayChooser().setSelectedCheckBoxes( sched.getValidWeekDays() );		
@@ -2064,14 +2064,14 @@ public void setValue(Object val)
 	getJComboBoxStopPolicy().setSelectedItem( StringUtils.addCharBetweenWords(
 		' ', sched.getStopPolicy() ) );
 	
-	if( sched.getStopPolicy().equalsIgnoreCase( ScheduleMessage.ABSOLUTETIME_STOP ) )
+	if( sched.getStopPolicy().equalsIgnoreCase( Schedule.ABSOLUTETIME_STOP ) )
 	{
 		if( sched.getStopTime().length() > 5 )
 			getJTextFieldTimeAbsoluteStopTime().setText( sched.getStopTime().substring(0, 5) );
 		else
 			getJTextFieldTimeAbsoluteStopTime().setText( sched.getStopTime() );
 	}
-	else if( sched.getStopPolicy().equalsIgnoreCase( ScheduleMessage.DURATION_STOP ) )
+	else if( sched.getStopPolicy().equalsIgnoreCase( Schedule.DURATION_STOP ) )
 	{
 		// since the server gives us seconds, lets make it into minutes
 		getJCSpinFieldDuration().setValue( new Integer(sched.getDuration() / 60) );

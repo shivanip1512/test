@@ -9,16 +9,16 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.LMDao;
 import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.loadcontrol.LCUtils;
-import com.cannontech.messaging.message.dispatch.MultiMessage;
-import com.cannontech.messaging.message.loadcontrol.CommandMessage;
-import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaTriggerItem;
-import com.cannontech.messaging.message.loadcontrol.data.GroupBase;
-import com.cannontech.messaging.message.loadcontrol.data.Data;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
-import com.cannontech.messaging.message.loadcontrol.data.ProgramDirect;
-import com.cannontech.messaging.message.loadcontrol.data.ScenarioWrapper;
+import com.cannontech.loadcontrol.data.ILMData;
+import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
+import com.cannontech.loadcontrol.data.LMGroupBase;
+import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.data.LMProgramDirect;
+import com.cannontech.loadcontrol.data.LMScenarioWrapper;
+import com.cannontech.loadcontrol.messages.LMCommand;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
+import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -105,7 +105,7 @@ public final class LMCmdMsgFactory
 	 * @return
 	 */
 	public static synchronized WebCmdMsg createCmdMsg( 
-			String cmdStr, Data lmData, final Hashtable optionalProps )
+			String cmdStr, ILMData lmData, final Hashtable optionalProps )
 	{
 		WebCmdMsg cmdMsg = new WebCmdMsg(cmdStr);
 
@@ -132,7 +132,7 @@ public final class LMCmdMsgFactory
 	 * @param optionalProps
 	 * @return
 	 */
-	private static WebCmdMsg createCmdMsg( WebCmdMsg cmdMsg, Data lmData, Hashtable optionalProps )
+	private static WebCmdMsg createCmdMsg( WebCmdMsg cmdMsg, ILMData lmData, Hashtable optionalProps )
 	{
 		if( optionalProps != null )
 		{
@@ -178,7 +178,7 @@ public final class LMCmdMsgFactory
 
 	private static void handleArea( final WebCmdMsg cmdMsg, final Hashtable optionalProps )
 	{
-	    ControlAreaItem lmCntrArea = (ControlAreaItem)cmdMsg.getLMData();
+		LMControlArea lmCntrArea = (LMControlArea)cmdMsg.getLMData();
 			
 		if( lmCntrArea == null )
 		{
@@ -203,16 +203,16 @@ public final class LMCmdMsgFactory
 			//create the message we need to send to the LC server
 			if( lmCntrArea.getDisableFlag().booleanValue() )
 			{
-				cmdMsg.setGenLCMsg( new CommandMessage( 
-							CommandMessage.ENABLE_CONTROL_AREA,
-							lmCntrArea.getYukonId().intValue(),
+				cmdMsg.setGenLCMsg( new LMCommand( 
+							LMCommand.ENABLE_CONTROL_AREA,
+							lmCntrArea.getYukonID().intValue(),
 							0, 0.0 ) );
 			}
 			else
 			{
-				cmdMsg.setGenLCMsg( new CommandMessage(
-							CommandMessage.DISABLE_CONTROL_AREA,
-							lmCntrArea.getYukonId().intValue(),
+				cmdMsg.setGenLCMsg( new LMCommand(
+							LMCommand.DISABLE_CONTROL_AREA,
+							lmCntrArea.getYukonID().intValue(),
 							0, 0.0 ) );
 			}
 
@@ -224,13 +224,13 @@ public final class LMCmdMsgFactory
                 "PEAK VALUE(S)</font> to zero for all triggers on the " + 
                 "selected CONTROL AREA?<BR>");
 
-            MultiMessage multi = new MultiMessage();
+            Multi multi = new Multi();
             for( int i = 0; i < lmCntrArea.getTriggerVector().size(); i++ ) {            
 
                 //create the message for each trigger on the ControlArea
-                multi.getVector().add( new CommandMessage( 
-                            CommandMessage.RESET_PEAK_POINT_VALUE,
-                            lmCntrArea.getYukonId().intValue(),
+                multi.getVector().add( new LMCommand( 
+                            LMCommand.RESET_PEAK_POINT_VALUE,
+                            lmCntrArea.getYukonID().intValue(),
                             i+1, 0.0 ) );
             }
 
@@ -245,18 +245,18 @@ public final class LMCmdMsgFactory
 
 			if( optionalProps != null )
 			{
-				MultiMessage multi = new MultiMessage();
+				Multi multi = new Multi();
 				List progIDs = Arrays.asList( dblarray1 );
 				int constID =
-					ManualControlRequestMessage.getConstraintId( constraint );
+					LMManualControlRequest.getConstraintID( constraint );
 
 				
-				for( int i = 0; i < lmCntrArea.getProgramVector().size(); i++ )
+				for( int i = 0; i < lmCntrArea.getLmProgramVector().size(); i++ )
 				{
-					Program prg = 
-							(Program)lmCntrArea.getProgramVector().get(i);
+					LMProgramBase prg = 
+							(LMProgramBase)lmCntrArea.getLmProgramVector().get(i);
 
-					if( !progIDs.contains( new Double(prg.getYukonId().doubleValue()) ) )
+					if( !progIDs.contains( new Double(prg.getYukonID().doubleValue()) ) )
 						continue;					
 				
 				
@@ -286,15 +286,15 @@ public final class LMCmdMsgFactory
 
 			if( optionalProps != null )
 			{
-				MultiMessage multi = new MultiMessage();
+				Multi multi = new Multi();
 				List progIDs = Arrays.asList( dblarray1 );
 				
-				for( int i = 0; i < lmCntrArea.getProgramVector().size(); i++ )
+				for( int i = 0; i < lmCntrArea.getLmProgramVector().size(); i++ )
 				{
-					Program prg = 
-							(Program)lmCntrArea.getProgramVector().get(i);
+					LMProgramBase prg = 
+							(LMProgramBase)lmCntrArea.getLmProgramVector().get(i);
 
-					if( !progIDs.contains( new Double(prg.getYukonId().doubleValue()) ) )
+					if( !progIDs.contains( new Double(prg.getYukonID().doubleValue()) ) )
 						continue;					
 					
 
@@ -304,7 +304,7 @@ public final class LMCmdMsgFactory
 							prg.createStartStopNowMsg(
 									stopdate,
 									1, null,
-									false, ManualControlRequestMessage.CONSTRAINTS_FLAG_USE) );
+									false, LMManualControlRequest.CONSTRAINTS_FLAG_USE) );
 					else					
 						multi.getVector().add(
 							prg.createScheduledStopMsg(
@@ -326,16 +326,16 @@ public final class LMCmdMsgFactory
 
 			if( optionalProps != null )
 			{
-				MultiMessage multi = new MultiMessage();
+				Multi multi = new Multi();
 				for( int i = 0; i < lmCntrArea.getTriggerVector().size(); i++ )
 				{
-				    ControlAreaTriggerItem oldTrig = 
-							(ControlAreaTriggerItem)lmCntrArea.getTriggerVector().get(i);
+					LMControlAreaTrigger oldTrig = 
+							(LMControlAreaTrigger)lmCntrArea.getTriggerVector().get(i);
 					
 					//create a new restore offset command message
-					CommandMessage offsetCmd = new CommandMessage(
-							CommandMessage.CHANGE_RESTORE_OFFSET,
-							lmCntrArea.getYukonId().intValue(),
+					LMCommand offsetCmd = new LMCommand(
+							LMCommand.CHANGE_RESTORE_OFFSET,
+							lmCntrArea.getYukonID().intValue(),
 							i+1,  //the trigger number
 							dblarray2[i].doubleValue() );
 		
@@ -344,9 +344,9 @@ public final class LMCmdMsgFactory
 						multi.getVector().add( offsetCmd );
 				
 					//create a new threshold command message
-					CommandMessage threshCmd = new CommandMessage(
-							CommandMessage.CHANGE_THRESHOLD,
-							lmCntrArea.getYukonId().intValue(),
+					LMCommand threshCmd = new LMCommand(
+							LMCommand.CHANGE_THRESHOLD,
+							lmCntrArea.getYukonID().intValue(),
 							i+1,  //the trigger number
 							dblarray1[i].doubleValue() );
 			
@@ -369,7 +369,7 @@ public final class LMCmdMsgFactory
 
 			if( optionalProps != null )
 			{
-				MultiMessage multi = new MultiMessage();
+				Multi multi = new Multi();
 				
 				//send a message to the server telling it to change the START time
 				if( startdate != null ){
@@ -378,8 +378,8 @@ public final class LMCmdMsgFactory
 		                                               startdate.getSeconds();
 
 					multi.getVector().add(
-							new CommandMessage( CommandMessage.CHANGE_CURRENT_START_TIME,
-							               lmCntrArea.getYukonId().intValue(),
+							new LMCommand( LMCommand.CHANGE_CURRENT_START_TIME,
+							               lmCntrArea.getYukonID().intValue(),
 							               0, 
 							               startSecondsAfterMidnight) );
 
@@ -392,8 +392,8 @@ public final class LMCmdMsgFactory
                                                       stopdate.getSeconds();
 
 				    multi.getVector().add(
-							new CommandMessage( CommandMessage.CHANGE_CURRENT_STOP_TIME,
-										   lmCntrArea.getYukonId().intValue(),
+							new LMCommand( LMCommand.CHANGE_CURRENT_STOP_TIME,
+										   lmCntrArea.getYukonID().intValue(),
 										   0,
 										   stopSecondsAfterMidnight ) );
 				}
@@ -407,7 +407,7 @@ public final class LMCmdMsgFactory
 
 	private static void handleProgram( final WebCmdMsg cmdMsg, final Hashtable optionalProps )
 	{
-		Program prg = (Program)cmdMsg.getLMData();
+		LMProgramBase prg = (LMProgramBase)cmdMsg.getLMData();
 
 		if( prg == null )
 		{
@@ -434,17 +434,17 @@ public final class LMCmdMsgFactory
 			if( prg.getDisableFlag().booleanValue() )
 			{
 				cmdMsg.setGenLCMsg(
-						new CommandMessage(
-							CommandMessage.ENABLE_PROGRAM,
-							prg.getYukonId().intValue(),
+						new LMCommand(
+							LMCommand.ENABLE_PROGRAM,
+							prg.getYukonID().intValue(),
 							0, 0.0) );
 			}
 			else
 			{
 				cmdMsg.setGenLCMsg(
-						new CommandMessage(
-							CommandMessage.DISABLE_PROGRAM,
-							prg.getYukonId().intValue(),
+						new LMCommand(
+							LMCommand.DISABLE_PROGRAM,
+							prg.getYukonID().intValue(),
 							0, 0.0) );
 			}
 
@@ -458,12 +458,12 @@ public final class LMCmdMsgFactory
 			if( optionalProps != null )
 			{
 				int constID =
-					ManualControlRequestMessage.getConstraintId( constraint );
+					LMManualControlRequest.getConstraintID( constraint );
 				
 				//does the start now
 				if( startdate.equals(CtiUtilities.get1990GregCalendar().getTime()) )
                 {
-					if (prg instanceof ProgramDirect) 
+					if (prg instanceof LMProgramDirect) 
                     {
                         createStartStopForTargetCycle(cmdMsg, prg, constID);
                         
@@ -482,7 +482,7 @@ public final class LMCmdMsgFactory
 				
                 else
                 {
-					if (prg instanceof ProgramDirect)
+					if (prg instanceof LMProgramDirect)
                     {
                        createSchedStartForTargetCycle(cmdMsg, prg, constID);
                                                                    
@@ -512,17 +512,17 @@ public final class LMCmdMsgFactory
 						prg.createStartStopNowMsg(
 								stopdate,
 								1, null, false,
-								ManualControlRequestMessage.CONSTRAINTS_FLAG_USE) );
+								LMManualControlRequest.CONSTRAINTS_FLAG_USE) );
 				else {
 				    /*Gear change requested for stop purposes*/
                     if(optionalProps.get("allowStopGear") != null && optionalProps.get("stopgearnum") != null) {
                         int gearNumForStop = Integer.parseInt((String)optionalProps.get("stopgearnum")); 
-                        ManualControlRequestMessage changeGearRequest = 
+                        LMManualControlRequest changeGearRequest = 
                                         prg.createScheduledStopMsg(
                                                 startdate, 
                                                 stopdate,
                                                 gearNumForStop, null);
-                        changeGearRequest.setCommand(ManualControlRequestMessage.CHANGE_GEAR);
+                        changeGearRequest.setCommand(LMManualControlRequest.CHANGE_GEAR);
                         cmdMsg.setGenLCMsg(changeGearRequest);
                         /*Remove this if we don't want to do this as a 
                          * sync msg and hear about constraint violations
@@ -539,36 +539,36 @@ public final class LMCmdMsgFactory
 			}
 		}
         /*Normal change gear request*/
-        else if( ILCCmds.PROG_CHANGE_GEAR.equals(cmdMsg.getCmd()) && prg.getProgramStatus() == Program.STATUS_MANUAL_ACTIVE) {
+        else if( ILCCmds.PROG_CHANGE_GEAR.equals(cmdMsg.getCmd()) && prg.getProgramStatus() == LMProgramBase.STATUS_MANUAL_ACTIVE) {
             if( optionalProps != null ) {
-                ManualControlRequestMessage changeGearRequest = prg.createStartStopNowMsg( prg.getStopTime().getTime(), gearnum.intValue(), null, true, 0) ;
-                changeGearRequest.setCommand(ManualControlRequestMessage.CHANGE_GEAR);
+                LMManualControlRequest changeGearRequest = prg.createStartStopNowMsg( prg.getStopTime().getTime(), gearnum.intValue(), null, true, 0) ;
+                changeGearRequest.setCommand(LMManualControlRequest.CHANGE_GEAR);
                 changeGearRequest.setStartTime(prg.getStartTime());
                 cmdMsg.setGenLCMsg(changeGearRequest);
             }
         }
 	}
 
-    private static void createSchedStartForTargetCycle(final WebCmdMsg cmdMsg, Program prg, int constID) {
+    private static void createSchedStartForTargetCycle(final WebCmdMsg cmdMsg, LMProgramBase prg, int constID) {
         cmdMsg.setGenLCMsg( prg.createScheduledStartMsg(
                                                         startdate,
                                                         stopdate,
                                                         gearnum.intValue(),
-                                                        null, ((ProgramDirect)prg).getAddtionalInfo(), 
+                                                        null, ((LMProgramDirect)prg).getAddtionalInfo(), 
                                                         constID) );
     }
 
-    private static void createStartStopForTargetCycle(final WebCmdMsg cmdMsg, Program prg, int constID) {
+    private static void createStartStopForTargetCycle(final WebCmdMsg cmdMsg, LMProgramBase prg, int constID) {
         cmdMsg.setGenLCMsg( prg.createStartStopNowMsg(
                                                       stopdate,
                                                       gearnum.intValue(), 
-                                                      ((ProgramDirect)prg).getAddtionalInfo(), 
+                                                      ((LMProgramDirect)prg).getAddtionalInfo(), 
                                                       true, constID) );
     }
 
 	private static void handleGroup( final WebCmdMsg cmdMsg, final Hashtable optionalProps )
 	{
-		GroupBase grp = (GroupBase)cmdMsg.getLMData();
+		LMGroupBase grp = (LMGroupBase)cmdMsg.getLMData();
 
 		if( grp == null )
 		{
@@ -596,17 +596,17 @@ public final class LMCmdMsgFactory
 			if( grp.getDisableFlag().booleanValue() )
 			{
 				cmdMsg.setGenLCMsg(
-						new CommandMessage(
-							CommandMessage.ENABLE_GROUP,
-							grp.getYukonId().intValue(),
+						new LMCommand(
+							LMCommand.ENABLE_GROUP,
+							grp.getYukonID().intValue(),
 							0, 0.0) );
 			}
 			else
 			{
 				cmdMsg.setGenLCMsg(
-						new CommandMessage(
-							CommandMessage.DISABLE_GROUP,
-							grp.getYukonId().intValue(),
+						new LMCommand(
+							LMCommand.DISABLE_GROUP,
+							grp.getYukonID().intValue(),
 							0, 0.0) );
 			}
 
@@ -620,8 +620,8 @@ public final class LMCmdMsgFactory
 			if( optionalProps != null )
 			{
 				cmdMsg.setGenLCMsg(
-					new CommandMessage( CommandMessage.SHED_GROUP,
-								grp.getYukonId().intValue(),
+					new LMCommand( LMCommand.SHED_GROUP,
+								grp.getYukonID().intValue(),
 								duration.intValue(), //shed time in seconds
 								0.0,
 								0,
@@ -638,8 +638,8 @@ public final class LMCmdMsgFactory
 			if( optionalProps != null )
 			{
 				cmdMsg.setGenLCMsg(
-					new CommandMessage( CommandMessage.RESTORE_GROUP,
-								grp.getYukonId().intValue(),
+					new LMCommand( LMCommand.RESTORE_GROUP,
+								grp.getYukonID().intValue(),
 								0,
 								0.0) );
 			}
@@ -654,19 +654,19 @@ public final class LMCmdMsgFactory
 				
 			if( optionalProps != null )
 			{
-				CommandMessage cmd = new CommandMessage();
+				LMCommand cmd = new LMCommand();
 				cmd.setCommand(
 					(ILCCmds.GRP_TRUE_CY.equals(cmdMsg.getCmd()) 
-						? CommandMessage.TRUE_CYCLE_GROUP 
-						: CommandMessage.SMART_CYCLE_GROUP) );
+						? LMCommand.TRUE_CYCLE_GROUP 
+						: LMCommand.SMART_CYCLE_GROUP) );
 
-				cmd.setYukonId( grp.getYukonId().intValue() );
+				cmd.setYukonID( grp.getYukonID().intValue() );
 					
 				//the alt route may or may not be available
 //				LiteYukonPAObject liteRoute = null;
 //				if( getJComboBoxAltRoute().isVisible() )	
 //					liteRoute = (LiteYukonPAObject)getJComboBoxAltRoute().getSelectedItem();
-//				cmd.setAuxid( (liteRoute == null ? 0 : liteRoute.getYukonId()) );//this auxid will be used for the alt routeID soon
+//				cmd.setAuxid( (liteRoute == null ? 0 : liteRoute.getYukonID()) );//this auxid will be used for the alt routeID soon
 
 				cmd.setNumber( cyclepercent.intValue() );  //cycle percent
 				cmd.setValue( duration.intValue() ); //period length in seconds
@@ -686,8 +686,8 @@ public final class LMCmdMsgFactory
 			{
 					
 				cmdMsg.setGenLCMsg(
-					new CommandMessage( CommandMessage.CONFIRM_GROUP,
-								grp.getYukonId().intValue(),
+					new LMCommand( LMCommand.CONFIRM_GROUP,
+								grp.getYukonID().intValue(),
 								0, 
 								0.0,
 								0,
@@ -702,7 +702,7 @@ public final class LMCmdMsgFactory
 
 	private static void handleScenario( final WebCmdMsg cmdMsg, final Hashtable optionalProps )
 	{
-	    ScenarioWrapper lmScenario = (ScenarioWrapper)cmdMsg.getLMData();
+		LMScenarioWrapper lmScenario = (LMScenarioWrapper)cmdMsg.getLMData();
 
 		if( lmScenario == null )
 		{
@@ -726,17 +726,17 @@ public final class LMCmdMsgFactory
 
 			if( optionalProps != null )
 			{
-				MultiMessage multi = new MultiMessage();
+				Multi multi = new Multi();
 				List progIDs = Arrays.asList( dblarray1 );
 				int constID =
-					ManualControlRequestMessage.getConstraintId( constraint );
+					LMManualControlRequest.getConstraintID( constraint );
 
 				LoadcontrolCache tempCache =
 					(LoadcontrolCache)optionalProps.get("local_LCCache");
 
 
 				LiteLMProgScenario[] programs = 
-						YukonSpringHook.getBean(LMDao.class).getLMScenarioProgs( lmScenario.getYukonId().intValue() );
+						YukonSpringHook.getBean(LMDao.class).getLMScenarioProgs( lmScenario.getYukonID().intValue() );
 
 				for( int i = 0; i < programs.length; i++ )
 				{
@@ -774,14 +774,14 @@ public final class LMCmdMsgFactory
 
 			if( optionalProps != null )
 			{
-				MultiMessage multi = new MultiMessage();
+				Multi multi = new Multi();
 				List progIDs = Arrays.asList( dblarray1 );
 				LoadcontrolCache tempCache =
 					(LoadcontrolCache)optionalProps.get("local_LCCache");
 
 
 				LiteLMProgScenario[] programs = 
-						YukonSpringHook.getBean(LMDao.class).getLMScenarioProgs( lmScenario.getYukonId().intValue() );
+						YukonSpringHook.getBean(LMDao.class).getLMScenarioProgs( lmScenario.getYukonID().intValue() );
 
 				for( int i = 0; i < programs.length; i++ )
 				{
@@ -803,7 +803,7 @@ public final class LMCmdMsgFactory
 							0,
 							startdate, 
 							stopdate,
-							ManualControlRequestMessage.CONSTRAINTS_FLAG_USE) );
+							LMManualControlRequest.CONSTRAINTS_FLAG_USE) );
 				}
 
 				if( multi.getVector().size() > 0 )

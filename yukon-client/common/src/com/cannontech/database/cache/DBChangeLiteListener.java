@@ -1,7 +1,7 @@
 package com.cannontech.database.cache;
 
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 
 /**
@@ -21,5 +21,5 @@ public interface DBChangeLiteListener {
  * @param msg com.cannontech.message.dispatch.message.DBChangeMsg
  * @param lBase An object representing what changed, could be null
  */
-void handleDBChangeMsg(DBChangeMessage msg, LiteBase lBase );
+void handleDBChangeMsg(DBChangeMsg msg, LiteBase lBase );
 }

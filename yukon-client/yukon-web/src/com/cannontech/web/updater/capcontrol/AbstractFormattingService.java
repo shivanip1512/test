@@ -3,7 +3,7 @@ package com.cannontech.web.updater.capcontrol;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.messaging.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.user.YukonUserContext;
 
 public abstract class AbstractFormattingService<E extends StreamableCapObject> implements CapControlFormattingService<E> {

@@ -52,8 +52,8 @@ import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaTriggerItem;
+import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -166,11 +166,11 @@ public class ControlAreaController {
             boolean backWithNameSorter = true;
             String sortFieldName = backingBean.getSort();
             if (sortFieldName.startsWith("CA_")) {
-                DemandResponseBackingField<ControlAreaItem> sortField = controlAreaFieldService.getBackingField(sortFieldName.substring(3));
+                DemandResponseBackingField<LMControlArea> sortField = controlAreaFieldService.getBackingField(sortFieldName.substring(3));
                 sorter = sortField.getSorter(userContext);
                 backWithNameSorter = controlAreaNameField != sortField;
             } else if (sortFieldName.startsWith("TR_")) {
-                DemandResponseBackingField<ControlAreaTriggerItem> sortField = triggerFieldService.getBackingField(sortFieldName.substring(3));
+                DemandResponseBackingField<LMControlAreaTrigger> sortField = triggerFieldService.getBackingField(sortFieldName.substring(3));
                 sorter = sortField.getSorter(userContext);
             } else {
                 throw new RuntimeException("invalid sort field name");
@@ -317,7 +317,7 @@ public class ControlAreaController {
                                                      Permission.LM_VISIBLE,
                                                      Permission.CONTROL_COMMAND);
 
-        ControlAreaItem controlAreaFull = controlAreaService.getControlAreaForPao(controlArea);
+        LMControlArea controlAreaFull = controlAreaService.getControlAreaForPao(controlArea);
         Integer currentDailyStartTime = controlAreaFull.getCurrentDailyStartTime();
         Integer currentDailyStopTime = controlAreaFull.getCurrentDailyStopTime();
 
@@ -408,11 +408,11 @@ public class ControlAreaController {
                                                      Permission.LM_VISIBLE,
                                                      Permission.CONTROL_COMMAND);
 
-        ControlAreaItem controlAreaFull = controlAreaService.getControlAreaForPao(controlArea);
-        Vector<ControlAreaTriggerItem> triggerVector = controlAreaFull.getTriggerVector();
+        LMControlArea controlAreaFull = controlAreaService.getControlAreaForPao(controlArea);
+        Vector<LMControlAreaTrigger> triggerVector = controlAreaFull.getTriggerVector();
         
         TriggersDto triggersDto = new TriggersDto();
-        for (ControlAreaTriggerItem trigger : triggerVector) {
+        for (LMControlAreaTrigger trigger : triggerVector) {
         	if (trigger.getTriggerNumber().intValue() == 1) {
         		triggersDto.setTrigger1(trigger);
         	}
@@ -470,7 +470,7 @@ public class ControlAreaController {
         @Override
         public void doValidation(TriggersDto target, Errors errors) {
         	
-        	for (ControlAreaTriggerItem trigger : target.getTriggers()) {
+        	for (LMControlAreaTrigger trigger : target.getTriggers()) {
         		
         		if (trigger.getTriggerType() == TriggerType.THRESHOLD || trigger.getTriggerType() == TriggerType.THRESHOLD_POINT) {
         		

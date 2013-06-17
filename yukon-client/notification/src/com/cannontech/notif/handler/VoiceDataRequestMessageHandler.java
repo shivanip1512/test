@@ -8,33 +8,33 @@ import org.jdom.output.XMLOutputter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.messaging.message.BaseMessage;
-import com.cannontech.messaging.message.notif.VoiceDataRequestMessage;
-import com.cannontech.messaging.message.notif.VoiceDataResponseMessage;
-import com.cannontech.messaging.message.server.ServerRequestMessage;
-import com.cannontech.messaging.message.server.ServerResponseMessage;
+import com.cannontech.message.notif.VoiceDataRequestMsg;
+import com.cannontech.message.notif.VoiceDataResponseMsg;
+import com.cannontech.message.server.ServerRequestMsg;
+import com.cannontech.message.server.ServerResponseMsg;
+import com.cannontech.message.util.Message;
 import com.cannontech.notif.outputs.Notification;
 import com.cannontech.notif.outputs.VoiceHandler;
 import com.cannontech.notif.server.NotifServerConnection;
 import com.cannontech.notif.voice.Call;
 
-public class VoiceDataRequestMessageHandler implements MessageHandler<VoiceDataRequestMessage> {
+public class VoiceDataRequestMessageHandler implements MessageHandler<VoiceDataRequestMsg> {
     
     private @Autowired VoiceHandler voiceHandler;
 
     @Override
-    public Class<VoiceDataRequestMessage> getSupportedMessageType() {
-        return VoiceDataRequestMessage.class;
+    public Class<VoiceDataRequestMsg> getSupportedMessageType() {
+        return VoiceDataRequestMsg.class;
     }
     
     @Override
-    public void handleMessage(NotifServerConnection connection,  BaseMessage message) {
-        ServerRequestMessage req = (ServerRequestMessage) message;
-        VoiceDataRequestMessage reqMsg = (VoiceDataRequestMessage) req.getPayload();
-        ServerResponseMessage responseMsg = req.createResponseMsg();
+    public void handleMessage(NotifServerConnection connection,  Message message) {
+        ServerRequestMsg req = (ServerRequestMsg) message;
+        VoiceDataRequestMsg reqMsg = (VoiceDataRequestMsg) req.getPayload();
+        ServerResponseMsg responseMsg = req.createResponseMsg();
         
         try {
-            Call call = voiceHandler.getCall(reqMsg.getCallToken());
+            Call call = voiceHandler.getCall(reqMsg.callToken);
             Notification notif = call.getMessage();
             Document xmlDoc = notif.getDocument();
 
@@ -42,18 +42,18 @@ public class VoiceDataRequestMessageHandler implements MessageHandler<VoiceDataR
             StringWriter stringWriter = new StringWriter();
             out.output(xmlDoc.getRootElement(), stringWriter);
             
-            VoiceDataResponseMessage rspPayload = new VoiceDataResponseMessage();
-            rspPayload.setCallToken(reqMsg.getCallToken());
-            rspPayload.setXmlData(stringWriter.toString());
-            rspPayload.setContactId(call.getContactId());
+            VoiceDataResponseMsg rspPayload = new VoiceDataResponseMsg();
+            rspPayload.callToken = reqMsg.callToken;
+            rspPayload.xmlData = stringWriter.toString();
+            rspPayload.contactId = call.getContactId();
             
             responseMsg.setPayload(rspPayload);
-            responseMsg.setStatus(ServerResponseMessage.STATUS_OK);
+            responseMsg.setStatus(ServerResponseMsg.STATUS_OK);
             connection.write(responseMsg);
             
         } catch (Exception e) {
-            CTILogger.warn("Unable to return xml parameters for call (token=" + reqMsg.getCallToken() + ")", e);
-            responseMsg.setStatus(ServerResponseMessage.STATUS_ERROR);
+            CTILogger.warn("Unable to return xml parameters for call (token=" + reqMsg.callToken + ")", e);
+            responseMsg.setStatus(ServerResponseMsg.STATUS_ERROR);
         }
 
         connection.write(responseMsg);

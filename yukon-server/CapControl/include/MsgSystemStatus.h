@@ -4,8 +4,7 @@
 
 class SystemStatus : public CapControlMessage
 {
-    public:
-        DECLARE_COLLECTABLE( SystemStatus );
+    RWDECLARE_COLLECTABLE( SystemStatus );
 
     private:
         typedef CapControlMessage Inherited;
@@ -14,10 +13,11 @@ class SystemStatus : public CapControlMessage
         SystemStatus(bool state);
         virtual ~SystemStatus();
 
+        void restoreGuts(RWvistream& iStream);
+        void saveGuts(RWvostream& oStream) const;
+
         SystemStatus& operator=(const SystemStatus& right);
         virtual CtiMessage* replicateMessage() const;
-
-        bool getState() const { return _systemState; }
 
     private:
         bool _systemState;

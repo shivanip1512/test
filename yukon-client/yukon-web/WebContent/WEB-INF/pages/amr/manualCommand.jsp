@@ -37,7 +37,7 @@
                     <tags:boxContainer2 nameKey="executeCommand" hideEnabled="false" styleClass="widgetContainer">
                         <form name="commandForm" method="POST" action="/servlet/CommanderServlet">
                 
-                            <input type="hidden" name="deviceID" value="${device.yukonId}">
+                            <input type="hidden" name="deviceID" value="${device.yukonID}">
                             <input type="hidden" name="timeOut" value="8000">
                             <input id="redirect" type="hidden" name="REDIRECT" value="/amr/manualCommand/home?deviceId=${deviceId}">
                             <input id="referrer" type="hidden" name="REFERRER" value="/amr/manualCommand/home?deviceId=${deviceId}">

@@ -153,7 +153,7 @@
 			    <span id="DivRoute" style="display:none"> 
 			    	<select name="RouteFilterValue">
 			      		<c:forEach items="${commandDeviceBean.validRoutes}" var="route">
-			      			<option value="${route.yukonId}" ${commandDeviceBean.filterValue == route ? 'selected' : ''}>${route.paoName}</option>
+			      			<option value="${route.yukonID}" ${commandDeviceBean.filterValue == route ? 'selected' : ''}>${route.paoName}</option>
 			      		</c:forEach>
 			      	</select>
 			    </span>
@@ -161,7 +161,7 @@
 			    <span id="DivCommChannel" style="display:none">
 			    	<select name="CommChannelFilterValue">
 			      		<c:forEach items="${commandDeviceBean.validCommChannels}" var="channel">
-			      			<option value="${channel.yukonId}" ${commandDeviceBean.filterValue == channel ? 'selected' : ''}>${channel.paoName}</option>
+			      			<option value="${channel.yukonID}" ${commandDeviceBean.filterValue == channel ? 'selected' : ''}>${channel.paoName}</option>
 			      		</c:forEach>
 			      </select>
 			    </span>

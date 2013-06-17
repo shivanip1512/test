@@ -10,8 +10,6 @@
 
 #include "logger.h"
 
-#include "amq_util.h"
-
 using std::make_pair;
 using std::auto_ptr;
 using std::string;
@@ -22,6 +20,7 @@ namespace Messaging {
 
 ActiveMQConnectionManager::ActiveMQConnectionManager(const string &broker_uri) :
     _broker_uri(broker_uri),
+    _initialized(false),
     _delay(2)
 {
     _queue_names.insert(make_pair(Queue_PorterResponses, "yukon.notif.stream.amr.PorterResponseMessage"));
@@ -46,6 +45,11 @@ ActiveMQConnectionManager::~ActiveMQConnectionManager()
 
     _connection.reset();
     _session.reset();
+
+    if( _initialized )
+    {
+        activemq::library::ActiveMQCPP::shutdownLibrary();
+    }
 }
 
 
@@ -94,15 +98,31 @@ void Cti::Messaging::ActiveMQConnectionManager::getIncomingMessages()
 
 void ActiveMQConnectionManager::validateSetup()
 {
+    if( ! _initialized )
+    {
+        //  can throw std::runtime_exception
+        activemq::library::ActiveMQCPP::initializeLibrary();
+
+        _initialized = true;
+    }
+
     if( ! _connection.get() )
-    {  
+    {
+        scoped_ptr<cms::ConnectionFactory> connectionFactory;
+
+        connectionFactory.reset(cms::ConnectionFactory::createCMSConnectionFactory(_broker_uri));
+
         scoped_ptr<cms::Connection> connection;
-        connection.reset( ActiveMQ::g_connectionFactory.createConnection( _broker_uri ) );
+
+        connection.reset(connectionFactory->createConnection());
+
         connection->start();
+
         _connection.swap(connection);
 
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
+
             dout << CtiTime() << " ActiveMQ CMS connection established\n";
         }
     }
@@ -113,6 +133,7 @@ void ActiveMQConnectionManager::validateSetup()
 
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
+
             dout << CtiTime() << " ActiveMQ CMS session established\n";
         }
     }

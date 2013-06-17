@@ -4,40 +4,39 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.cc.dao.CurtailmentEventDao;
 import com.cannontech.cc.model.CurtailmentEvent;
-import com.cannontech.messaging.message.BaseMessage;
-import com.cannontech.messaging.message.BooleanData;
-import com.cannontech.messaging.message.notif.CurtailmentEventDeleteMessage;
-import com.cannontech.messaging.message.server.ServerRequestMessage;
-import com.cannontech.messaging.message.server.ServerResponseMessage;
+import com.cannontech.message.notif.CurtailmentEventDeleteMsg;
+import com.cannontech.message.server.ServerRequestMsg;
+import com.cannontech.message.server.ServerResponseMsg;
+import com.cannontech.message.util.*;
 import com.cannontech.notif.server.NotifServerConnection;
 
-public class CurtailmentEventDeleteMessageHandler implements MessageHandler<CurtailmentEventDeleteMessage> {
+public class CurtailmentEventDeleteMessageHandler implements MessageHandler<CurtailmentEventDeleteMsg> {
 
     private @Autowired CurtailmentEventDao curtailmentEventDao;
     private @Autowired CurtailmentEventScheduler curtailmentEventScheduler;
     
     @Override
-    public Class<CurtailmentEventDeleteMessage> getSupportedMessageType() {
-        return CurtailmentEventDeleteMessage.class;
+    public Class<CurtailmentEventDeleteMsg> getSupportedMessageType() {
+        return CurtailmentEventDeleteMsg.class;
     }
     
     @Override
-    public void handleMessage(NotifServerConnection connection, BaseMessage message) {
-        ServerRequestMessage reqMsg = (ServerRequestMessage) message;
-        CurtailmentEventDeleteMessage reqPayload = (CurtailmentEventDeleteMessage) reqMsg.getPayload();
+    public void handleMessage(NotifServerConnection connection, Message message) {
+        ServerRequestMsg reqMsg = (ServerRequestMsg) message;
+        CurtailmentEventDeleteMsg reqPayload = (CurtailmentEventDeleteMsg) reqMsg.getPayload();
         
-        Integer curtailmentEventId = reqPayload.getCurtailmentEventId();
+        Integer curtailmentEventId = reqPayload.curtailmentEventId;
         
         CurtailmentEvent event = curtailmentEventDao.getForId(curtailmentEventId);
         boolean success = curtailmentEventScheduler.deleteEventNotification(event, 
-                                                             reqPayload.isDeleteStart(), 
-                                                             reqPayload.isDeleteStop());
+                                                             reqPayload.deleteStart, 
+                                                             reqPayload.deleteStop);
         
-        BooleanData respPayload = new BooleanData(success);
+        CollectableBoolean respPayload = new CollectableBoolean(success);
         
-        ServerResponseMessage responseMsg = reqMsg.createResponseMsg();
+        ServerResponseMsg responseMsg = reqMsg.createResponseMsg();
         responseMsg.setPayload(respPayload);
-        responseMsg.setStatus(ServerResponseMessage.STATUS_OK);
+        responseMsg.setStatus(ServerResponseMsg.STATUS_OK);
         connection.write(responseMsg);
     }
 

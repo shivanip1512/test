@@ -4,8 +4,8 @@ import javax.swing.table.AbstractTableModel;
 
 import com.cannontech.common.gui.panel.IMultiSelectModel;
 import com.cannontech.common.gui.panel.MultiSelectRow;
-import com.cannontech.messaging.message.loadcontrol.data.GearProgram;
-import com.cannontech.messaging.message.loadcontrol.data.ProgramDirectGear;
+import com.cannontech.loadcontrol.data.IGearProgram;
+import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 
 /**
  * @author rneuharth
@@ -91,19 +91,19 @@ public class MultiSelectPrgModel extends AbstractTableModel implements IMultiSel
 		return null;			
 	}
 
-	private String getCurrentGear( GearProgram dPrg )
+	private String getCurrentGear( IGearProgram dPrg )
 	{
-		ProgramDirectGear gear = null;
+		LMProgramDirectGear gear = null;
 		
 		//get the current gear we are in
 		for( int i = 0; i < dPrg.getDirectGearVector().size(); i++ )
 		{			
-			gear = (ProgramDirectGear)dPrg.getDirectGearVector().get(i);
+			gear = (LMProgramDirectGear)dPrg.getDirectGearVector().get(i);
 	
-			if( dPrg.getCurrentGearNumber().intValue() == gear.getGearNumber() )
+			if( dPrg.getCurrentGearNumber().intValue() == gear.getGearNumber().intValue() )
 			{
 				//return gear.getGearName();
-				return String.valueOf(gear.getGearNumber());
+				return gear.getGearNumber().toString();
 			}			
 		}
 	
@@ -150,10 +150,10 @@ public class MultiSelectPrgModel extends AbstractTableModel implements IMultiSel
 		{
 			MultiSelectRow ms = (MultiSelectRow)getRowAt(row);
 			
-            if( val instanceof ProgramDirectGear )
+            if( val instanceof LMProgramDirectGear )
             {
                 ((MultiSelectProg)ms.getObject()).setGearNum(
-							((ProgramDirectGear)val).getGearNumber() );
+							((LMProgramDirectGear)val).getGearNumber() );
             }			
             else if( val instanceof Integer )
             {

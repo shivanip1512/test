@@ -5,7 +5,7 @@
 
 using std::string;
 
-DEFINE_COLLECTABLE( CtiCCServerResponse, CTICCSERVERRESPONSE_ID )
+RWDEFINE_COLLECTABLE( CtiCCServerResponse, CTICCSERVERRESPONSE_ID )
 
 CtiCCServerResponse::CtiCCServerResponse(long messageId, long type, string res) :
     Inherited()
@@ -24,11 +24,6 @@ CtiCCServerResponse::~CtiCCServerResponse()
 {
 }
 
-long CtiCCServerResponse::getMessageId() const
-{
-    return _messageId;
-}
-
 long CtiCCServerResponse::getResponseType() const
 {
     return _responseType;
@@ -37,6 +32,27 @@ long CtiCCServerResponse::getResponseType() const
 string CtiCCServerResponse::getResponse() const
 {
     return _response;
+}
+
+void CtiCCServerResponse::restoreGuts(RWvistream& strm)
+{
+    Inherited::restoreGuts(strm);
+    strm >> _messageId
+         >> _responseType
+         >> _response;
+
+    return;
+}
+
+void CtiCCServerResponse::saveGuts(RWvostream& strm) const
+{
+    Inherited::saveGuts(strm);
+
+    strm << _messageId
+         << _responseType
+         << _response;
+
+    return;
 }
 
 CtiCCServerResponse& CtiCCServerResponse::operator=(const CtiCCServerResponse& right)

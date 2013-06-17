@@ -14,7 +14,7 @@ class CtiLMGroupPoint : public CtiLMGroupBase
 
 public:
 
-DECLARE_COLLECTABLE( CtiLMGroupPoint );
+RWDECLARE_COLLECTABLE( CtiLMGroupPoint )
 
     CtiLMGroupPoint();
     CtiLMGroupPoint(Cti::RowReader &rdr);
@@ -35,6 +35,10 @@ DECLARE_COLLECTABLE( CtiLMGroupPoint );
     virtual CtiRequestMsg* createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const;
     virtual CtiRequestMsg* createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const;
     virtual CtiRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const;
+
+    //Members inherited from RWCollectable
+    void restoreGuts(RWvistream& );
+    void saveGuts(RWvostream& ) const;
 
     CtiLMGroupPoint& operator=(const CtiLMGroupPoint& right);
 

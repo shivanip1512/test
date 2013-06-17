@@ -1,6 +1,6 @@
 package com.cannontech.dr.controlarea.model;
 
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
+import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.user.YukonUserContext;
 
 public class ControlAreaStateClassnameField extends ControlAreaBackingFieldBase {
@@ -11,7 +11,7 @@ public class ControlAreaStateClassnameField extends ControlAreaBackingFieldBase 
     }
 
     @Override
-    public Object getControlAreaValue(ControlAreaItem controlArea, YukonUserContext userContext) {
+    public Object getControlAreaValue(LMControlArea controlArea, YukonUserContext userContext) {
         ControlAreaState state = ControlAreaState.valueOf(controlArea.getControlAreaState());
         return "CONTROLAREA_STATE_" + state.toString();
     }

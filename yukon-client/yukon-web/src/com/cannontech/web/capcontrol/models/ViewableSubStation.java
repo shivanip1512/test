@@ -2,7 +2,7 @@ package com.cannontech.web.capcontrol.models;
 
 import java.util.List;
 
-import com.cannontech.messaging.message.capcontrol.streamable.SubStation;
+import com.cannontech.message.capcontrol.streamable.SubStation;
 
 
 public class ViewableSubStation {

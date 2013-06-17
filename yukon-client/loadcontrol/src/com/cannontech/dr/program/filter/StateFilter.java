@@ -10,7 +10,7 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.dr.program.model.ProgramState;
 import com.cannontech.dr.program.service.ProgramService;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
+import com.cannontech.loadcontrol.data.LMProgramBase;
 
 public class StateFilter implements UiFilter<DisplayablePao> {
     public static enum FilteredState {
@@ -42,7 +42,7 @@ public class StateFilter implements UiFilter<DisplayablePao> {
                 if (filteredState == FilteredState.ALL) {
                     return true;
                 }
-                Program program = programService.getProgramForPao(pao);
+                LMProgramBase program = programService.getProgramForPao(pao);
                 if (program == null) {
                     // Program is not in load management; it cannot be active,
                     // or inactive.

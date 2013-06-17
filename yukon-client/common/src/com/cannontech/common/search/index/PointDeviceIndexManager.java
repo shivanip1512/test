@@ -15,8 +15,8 @@ import com.cannontech.common.search.YukonObjectAnalyzer;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.UnitOfMeasure;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * Class which manages point device lucene index creation and update.
@@ -110,7 +110,7 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
 
     @Override
     protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category, String type) {
-        if (database == DBChangeMessage.CHANGE_PAO_DB && PAOGroups.STRING_CAT_DEVICE.equalsIgnoreCase(category)) {
+        if (database == DBChangeMsg.CHANGE_PAO_DB && PAOGroups.STRING_CAT_DEVICE.equalsIgnoreCase(category)) {
             // Device change msg
             
             if(id == 0) {
@@ -120,8 +120,8 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
             }
             
             return this.processDeviceChange(dbChangeType, id);
-        } else if (database == DBChangeMessage.CHANGE_POINT_DB
-                && DBChangeMessage.CAT_POINT.equals(category)) {
+        } else if (database == DBChangeMsg.CHANGE_POINT_DB
+                && DBChangeMsg.CAT_POINT.equals(category)) {
             // Point change msg
             return this.processPointChange(dbChangeType, id);
         }

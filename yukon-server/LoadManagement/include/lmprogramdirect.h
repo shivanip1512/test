@@ -27,7 +27,7 @@ class CtiLMProgramDirect : public CtiLMProgramBase
 
 public:
 
-DECLARE_COLLECTABLE( CtiLMProgramDirect );
+RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
 
     CtiLMProgramDirect();
     CtiLMProgramDirect(Cti::RowReader &rdr);
@@ -59,16 +59,10 @@ DECLARE_COLLECTABLE( CtiLMProgramDirect );
     bool getIsRampingOut();
 
     std::vector<CtiLMProgramDirectGear*>& getLMProgramDirectGears();
-    const std::vector<CtiLMProgramDirectGear*>& getLMProgramDirectGears() const;
-
     CtiLMGroupVec& getLMProgramDirectGroups();
-    const CtiLMGroupVec& getLMProgramDirectGroups() const;
 
     std::set<CtiLMProgramDirectSPtr>& getMasterPrograms();
-    const std::set<CtiLMProgramDirectSPtr>& getMasterPrograms() const;
-
     std::set<CtiLMProgramDirectSPtr>& getSubordinatePrograms();
-    const std::set<CtiLMProgramDirectSPtr>& getSubordinatePrograms() const;
 
     std::vector<int>&  getNotificationGroupIDs();
 
@@ -150,6 +144,10 @@ DECLARE_COLLECTABLE( CtiLMProgramDirect );
     virtual void setChangeReason(const std::string& reason);
 
     virtual bool getHasBeatThePeakGear() const;
+
+    //Members inherited from RWCollectable
+    void restoreGuts(RWvistream& );
+    void saveGuts(RWvostream& ) const;
 
     CtiLMProgramDirect& operator=(const CtiLMProgramDirect& right);
 

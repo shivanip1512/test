@@ -25,9 +25,9 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.user.UserGroup;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
-import com.cannontech.messaging.util.DbChangeManager;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.collect.Multimap;
 
 public class UserGroupDaoImpl implements UserGroupDao {
@@ -122,9 +122,9 @@ public class UserGroupDaoImpl implements UserGroupDao {
         userGroupTemplate.update(userGroup);
         
         dbChangeManager.processDbChange(userGroup.getUserGroupId(), 
-                                        DBChangeMessage.CHANGE_USER_GROUP_DB,
-                                        DBChangeMessage.CAT_USER_GROUP, 
-                                        DBChangeMessage.CAT_USER_GROUP, 
+                                        DBChangeMsg.CHANGE_USER_GROUP_DB,
+                                        DBChangeMsg.CAT_USER_GROUP, 
+                                        DBChangeMsg.CAT_USER_GROUP, 
                                         DbChangeType.UPDATE);
     }
 
@@ -137,9 +137,9 @@ public class UserGroupDaoImpl implements UserGroupDao {
         yukonJdbcTemplate.update(sql);
         
         dbChangeManager.processDbChange(userGroupId, 
-                                        DBChangeMessage.CHANGE_USER_GROUP_DB,
-                                        DBChangeMessage.CAT_USER_GROUP, 
-                                        DBChangeMessage.CAT_USER_GROUP, 
+                                        DBChangeMsg.CHANGE_USER_GROUP_DB,
+                                        DBChangeMsg.CAT_USER_GROUP, 
+                                        DBChangeMsg.CAT_USER_GROUP, 
                                         DbChangeType.DELETE);
     }
     
@@ -286,9 +286,9 @@ public class UserGroupDaoImpl implements UserGroupDao {
         yukonJdbcTemplate.update(sql);
         
         dbChangeManager.processDbChange(userGroupId, 
-                                        DBChangeMessage.CHANGE_USER_GROUP_DB,
-                                        DBChangeMessage.CAT_USER_GROUP, 
-                                        DBChangeMessage.CAT_USER_GROUP, 
+                                        DBChangeMsg.CHANGE_USER_GROUP_DB,
+                                        DBChangeMsg.CAT_USER_GROUP, 
+                                        DBChangeMsg.CAT_USER_GROUP, 
                                         DbChangeType.UPDATE);
     }
 
@@ -302,9 +302,9 @@ public class UserGroupDaoImpl implements UserGroupDao {
         yukonJdbcTemplate.update(sql);
         
         dbChangeManager.processDbChange(userGroupId, 
-                                        DBChangeMessage.CHANGE_USER_GROUP_DB,
-                                        DBChangeMessage.CAT_USER_GROUP, 
-                                        DBChangeMessage.CAT_USER_GROUP, 
+                                        DBChangeMsg.CHANGE_USER_GROUP_DB,
+                                        DBChangeMsg.CAT_USER_GROUP, 
+                                        DBChangeMsg.CAT_USER_GROUP, 
                                         DbChangeType.UPDATE);
     }
 }

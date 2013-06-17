@@ -25,9 +25,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "collectable.h"
 
 
-DEFINE_COLLECTABLE( CtiRequestCancelMsg, MSG_REQUESTCANCEL );
-
-//REGISTER_MSG_FACTORY( CtiRequestCancelMsg );
+RWDEFINE_COLLECTABLE( CtiRequestCancelMsg, MSG_REQUESTCANCEL );
 
 CtiRequestCancelMsg::CtiRequestCancelMsg(
                                 long       requestId,
@@ -63,6 +61,29 @@ CtiRequestCancelMsg& CtiRequestCancelMsg::operator=(const CtiRequestCancelMsg& a
     }
 
     return *this;
+}
+
+void CtiRequestCancelMsg::saveGuts(RWvostream &aStream) const
+{
+    Inherited::saveGuts(aStream);
+    aStream << getRequestId() << getRequestIdCount() << getTime() << UserMessageId();
+}
+
+void CtiRequestCancelMsg::restoreGuts(RWvistream& aStream)
+{
+    Inherited::restoreGuts(aStream);
+
+    long           requestId;         // RequestID, if any.
+    unsigned       requestIdCount;    // Count of items with requestID _requestID
+    long           userMessageId;
+    CtiTime        aTime;
+
+    aStream >> requestId >> requestIdCount >> aTime >> userMessageId;
+
+    setRequestId(requestId);
+    setRequestIdCount(requestIdCount);
+    setTime(aTime);
+    setUserMessageId(userMessageId);
 }
 
 long  CtiRequestCancelMsg::getRequestId() const

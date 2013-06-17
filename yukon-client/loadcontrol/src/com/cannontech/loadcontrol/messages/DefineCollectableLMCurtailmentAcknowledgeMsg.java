@@ -3,7 +3,6 @@ package com.cannontech.loadcontrol.messages;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.messaging.message.loadcontrol.CurtailmentAcknowledgeMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -24,7 +23,7 @@ public DefineCollectableLMCurtailmentAcknowledgeMsg()
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new CurtailmentAcknowledgeMessage();
+	return new LMCurtailmentAcknowledgeMsg();
 }
 /**
  * getComparator method comment.
@@ -56,7 +55,7 @@ public String getCxxStringId() {
  */
 public Class getJavaClass()
 {
-	return CurtailmentAcknowledgeMessage.class;
+	return LMCurtailmentAcknowledgeMsg.class;
 }
 /**
  * restoreGuts method comment.
@@ -73,10 +72,10 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 {
 	super.saveGuts( obj, vstr, polystr );
 
-	CurtailmentAcknowledgeMessage curtailAckMsg = (CurtailmentAcknowledgeMessage) obj;
+	LMCurtailmentAcknowledgeMsg curtailAckMsg = (LMCurtailmentAcknowledgeMsg) obj;
 
-	vstr.insertUnsignedInt( (long)curtailAckMsg.getYukonId() );
-	vstr.insertUnsignedInt( (long)curtailAckMsg.getCurtailReferenceId() );
+	vstr.insertUnsignedInt( (long)curtailAckMsg.getYukonID() );
+	vstr.insertUnsignedInt( (long)curtailAckMsg.getCurtailReferenceID() );
 	vstr.saveObject( curtailAckMsg.getAcknowledgeStatus(), SimpleMappings.CString );
 	vstr.saveObject( curtailAckMsg.getIpAddressOfAckUser(), SimpleMappings.CString );
 	vstr.saveObject( curtailAckMsg.getUserIdName(), SimpleMappings.CString );

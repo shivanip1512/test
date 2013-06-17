@@ -78,7 +78,7 @@ public class DisconnectPointCreate extends PointCreate
 		    PointBase newPoint2 = PointFactory.createNewPoint(pointID,
                     PointTypes.STATUS_POINT,
                     "Disconnect Status",
-                    litePaobject.getYukonId(),
+                    litePaobject.getYukonID(),
                     new Integer(PointOffsets.PT_OFFSET_TOTAL_KWH));
 
             newPoint2.getPoint().setStateGroupID(new Integer(StateGroupUtils.STATEGROUP_MCT410DISC));

@@ -10,13 +10,13 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.dr.DemandResponseBackingField;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.messaging.message.loadcontrol.data.DirectGroupBase;
+import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.user.YukonUserContext;
 
 /**
  * Abstract Base Class for load group backing fields 
  */
-public abstract class LoadGroupBackingFieldBase implements DemandResponseBackingField<DirectGroupBase> {
+public abstract class LoadGroupBackingFieldBase implements DemandResponseBackingField<LMDirectGroupBase> {
 
     private final static String baseKey = "yukon.web.modules.dr.loadGroup.value";
     protected final static MessageSourceResolvable blankFieldResolvable = 
@@ -31,10 +31,10 @@ public abstract class LoadGroupBackingFieldBase implements DemandResponseBacking
      * @return Value of this field for the given group (Should be one of: String, 
      *                                                  MessageSourceResolvable, ResolvableTemplate)
      */
-    public abstract Object getGroupValue(DirectGroupBase group, YukonUserContext userContext);
+    public abstract Object getGroupValue(LMDirectGroupBase group, YukonUserContext userContext);
 
     @Override
-    public Object getValue(DirectGroupBase group, YukonUserContext userContext) {
+    public Object getValue(LMDirectGroupBase group, YukonUserContext userContext) {
         if(group != null || handlesNull()) {
             return getGroupValue(group, userContext);
         } else {
@@ -48,7 +48,7 @@ public abstract class LoadGroupBackingFieldBase implements DemandResponseBacking
         return null;
     }
     
-    protected DirectGroupBase getGroupFromYukonPao(YukonPao from){
+    protected LMDirectGroupBase getGroupFromYukonPao(YukonPao from){
         return loadGroupService.getGroupForPao(from);
     }
     

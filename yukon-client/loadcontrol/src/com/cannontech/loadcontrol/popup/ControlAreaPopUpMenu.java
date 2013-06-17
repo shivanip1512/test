@@ -14,21 +14,21 @@ import javax.swing.JOptionPane;
 import com.cannontech.common.gui.panel.ManualChangeJPanel;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
+import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.gui.manualentry.ControlAreaTimeChangeJPanel;
 import com.cannontech.loadcontrol.gui.manualentry.ControlAreaTriggerJPanel;
 import com.cannontech.loadcontrol.gui.manualentry.DirectControlJPanel;
 import com.cannontech.loadcontrol.gui.manualentry.MultiSelectProg;
-import com.cannontech.messaging.message.dispatch.MultiMessage;
-import com.cannontech.messaging.message.loadcontrol.CommandMessage;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
+import com.cannontech.loadcontrol.messages.LMCommand;
+import com.cannontech.message.dispatch.message.Multi;
 
 
 public class ControlAreaPopUpMenu extends com.cannontech.tdc.observe.ObservableJPopupMenu implements java.awt.event.ActionListener
 {
 	public static final String STR_DIS_PRGRMS = "Disable Program(s)";
     public static final String STR_EN_PRGRMS = "Enable Program(s)";
-    private ControlAreaItem loadControlArea = null;
+    private LMControlArea loadControlArea = null;
 	private javax.swing.JMenuItem jMenuItemTriggers = null;
 	private javax.swing.JMenuItem jMenuItemDialyTime = null;
 	private javax.swing.JMenuItem jMenuItemDisable = null;
@@ -222,8 +222,8 @@ private void showDirectManualEntry( final int panelMode )
 	
 	//get an array of LMProgramBase to use later 
 	// (only copies the references into the new array, not a full instance copy!!)
-	Program[] prgArray = new Program[ getLoadControlArea().getProgramVector().size() ]; 
-	prgArray = (Program[])getLoadControlArea().getProgramVector().toArray( prgArray );
+	LMProgramBase[] prgArray = new LMProgramBase[ getLoadControlArea().getLmProgramVector().size() ]; 
+	prgArray = (LMProgramBase[])getLoadControlArea().getLmProgramVector().toArray( prgArray );
 
 	p.showDirectManualEntry( panelMode, prgArray );
 	
@@ -252,7 +252,7 @@ private void showProgramAblementPanel( final int cmd )
 
 
 	d.setTitle(
-		cmd == CommandMessage.ENABLE_PROGRAM 
+		cmd == LMCommand.ENABLE_PROGRAM 
 		? STR_EN_PRGRMS
 		: STR_DIS_PRGRMS );
 
@@ -267,8 +267,8 @@ private void showProgramAblementPanel( final int cmd )
 
 	//get an array of LMProgramBase to use later 
 	// (only copies the references into the new array, not a full instance copy!!)
-	Program[] prgArray = new Program[ getLoadControlArea().getProgramVector().size() ]; 
-	prgArray = (Program[])getLoadControlArea().getProgramVector().toArray( prgArray );
+	LMProgramBase[] prgArray = new LMProgramBase[ getLoadControlArea().getLmProgramVector().size() ]; 
+	prgArray = (LMProgramBase[])getLoadControlArea().getLmProgramVector().toArray( prgArray );
 
 	if( panel.setMultiSelectObject( prgArray ) )
 	{
@@ -284,16 +284,16 @@ private void showProgramAblementPanel( final int cmd )
 				
 			if( selected != null )
 			{
-				MultiMessage multiCmd = new MultiMessage();
+				Multi multiCmd = new Multi();
 				for( int i = 0; i < selected.length; i++ )
 				{
 					//only add the operate the program if it's state is opposite of the command
-					if( (cmd == CommandMessage.ENABLE_PROGRAM && selected[i].getBaseProgram().getDisableFlag())
-						|| (cmd == CommandMessage.DISABLE_PROGRAM && !selected[i].getBaseProgram().getDisableFlag()) )
+					if( (cmd == LMCommand.ENABLE_PROGRAM && selected[i].getBaseProgram().getDisableFlag().booleanValue())
+						|| (cmd == LMCommand.DISABLE_PROGRAM && !selected[i].getBaseProgram().getDisableFlag().booleanValue()) )
 					{
 						multiCmd.getVector().add(
-							new CommandMessage( cmd,
-								selected[i].getBaseProgram().getYukonId().intValue(),
+							new LMCommand( cmd,
+								selected[i].getBaseProgram().getYukonID().intValue(),
 								0, 0.0) );
 					}
 				}
@@ -405,7 +405,7 @@ private javax.swing.JMenuItem getJMenuItemTriggers()
  * Creation date: (1/21/2001 5:32:52 PM)
  * @return LMControlArea
  */
-public ControlAreaItem getLoadControlArea() 
+public LMControlArea getLoadControlArea() 
 {
 	return loadControlArea;
 }
@@ -471,11 +471,11 @@ private void initialize()
 
 private void jMenuItemEnableProgs_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 {
-	showProgramAblementPanel( CommandMessage.ENABLE_PROGRAM );
+	showProgramAblementPanel( LMCommand.ENABLE_PROGRAM );
 }
 private void jMenuItemDisableProgs_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 {
-	showProgramAblementPanel( CommandMessage.DISABLE_PROGRAM );
+	showProgramAblementPanel( LMCommand.DISABLE_PROGRAM );
 }
 
 private void jMenuItemStart_ActionPerformed(java.awt.event.ActionEvent actionEvent)
@@ -493,7 +493,7 @@ private void jMenuItemStop_ActionPerformed(java.awt.event.ActionEvent actionEven
  */
 private void jMenuItemDailyTime_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 {
-	if( !getLoadControlArea().getDisableFlag())
+	if( !getLoadControlArea().getDisableFlag().booleanValue() )
 	{
 		Frame frame = SwingUtil.getParentFrame(this.getInvoker());
 		java.awt.Cursor savedCursor = null;
@@ -533,21 +533,21 @@ private void jMenuItemDailyTime_ActionPerformed(java.awt.event.ActionEvent actio
 
 			if( panel.getChoice() == panel.CONFIRMED_PANEL )
 			{
-				com.cannontech.messaging.message.dispatch.MultiMessage multi = new com.cannontech.messaging.message.dispatch.MultiMessage();
+				com.cannontech.message.dispatch.message.Multi multi = new com.cannontech.message.dispatch.message.Multi();
 				
 				//send a message to the server telling it to change the START time
-				if( panel.getStartTime() != ControlAreaItem.INVALID_INT )
+				if( panel.getStartTime() != LMControlArea.INVALID_INT )
 					multi.getVector().add(
-							new CommandMessage( CommandMessage.CHANGE_CURRENT_START_TIME,
-							 				getLoadControlArea().getYukonId().intValue(),
+							new LMCommand( LMCommand.CHANGE_CURRENT_START_TIME,
+							 				getLoadControlArea().getYukonID().intValue(),
 							 				0, 
 							 				(double)panel.getStartTime()) );
 
 				//send a message to the server telling it to change the STOP time
-				if( panel.getStopTime() != ControlAreaItem.INVALID_INT )
+				if( panel.getStopTime() != LMControlArea.INVALID_INT )
 					multi.getVector().add(
-								new CommandMessage( CommandMessage.CHANGE_CURRENT_STOP_TIME,
-							 				getLoadControlArea().getYukonId().intValue(),
+								new LMCommand( LMCommand.CHANGE_CURRENT_STOP_TIME,
+							 				getLoadControlArea().getYukonID().intValue(),
 							 				0,
 							 				(double)panel.getStopTime()) );
 
@@ -573,7 +573,7 @@ private void jMenuItemDailyTime_ActionPerformed(java.awt.event.ActionEvent actio
  */
 private void jMenuItemDisableEnable_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 {
-	if( getLoadControlArea().getDisableFlag())
+	if( getLoadControlArea().getDisableFlag().booleanValue() )
 	{
 		//send a message to the server telling it to ENABLE this LMControlArea
 		int res = JOptionPane.showConfirmDialog( this,
@@ -584,8 +584,8 @@ private void jMenuItemDisableEnable_ActionPerformed(java.awt.event.ActionEvent a
 		if( res == JOptionPane.OK_OPTION )
 		{
 			LoadControlClientConnection.getInstance().write(
-					new CommandMessage( CommandMessage.ENABLE_CONTROL_AREA,
-						 				getLoadControlArea().getYukonId().intValue(),
+					new LMCommand( LMCommand.ENABLE_CONTROL_AREA,
+						 				getLoadControlArea().getYukonID().intValue(),
 						 				0, 0.0) );
 						 				
 			fireObservedRowChanged(
@@ -604,8 +604,8 @@ private void jMenuItemDisableEnable_ActionPerformed(java.awt.event.ActionEvent a
 		{
 			//send a message to the server telling it to DISABLE this LMControlArea
 			LoadControlClientConnection.getInstance().write(
-					new CommandMessage( CommandMessage.DISABLE_CONTROL_AREA,
-						 				getLoadControlArea().getYukonId().intValue(),
+					new LMCommand( LMCommand.DISABLE_CONTROL_AREA,
+						 				getLoadControlArea().getYukonID().intValue(),
 						 				0, 0.0) );
 	
 			fireObservedRowChanged(
@@ -632,11 +632,11 @@ private void jMenuItemResetPeak_ActionPerformed(java.awt.event.ActionEvent actio
     if( res == JOptionPane.OK_OPTION )
     {
         
-        MultiMessage multi = new MultiMessage();
+        Multi multi = new Multi();
         for( int i = 0; i < getLoadControlArea().getTriggerVector().size(); i++ ) {
             multi.getVector().add(
-                new CommandMessage( CommandMessage.RESET_PEAK_POINT_VALUE,
-                        getLoadControlArea().getYukonId().intValue(),
+                new LMCommand( LMCommand.RESET_PEAK_POINT_VALUE,
+                        getLoadControlArea().getYukonID().intValue(),
                         i+1, 0.0) );
         }
         
@@ -716,7 +716,7 @@ private void jMenuItemTriggers_ActionPerformed(java.awt.event.ActionEvent action
  * Creation date: (1/21/2001 5:32:52 PM)
  * @param newLoadControlArea LMControlArea
  */
-public void setLoadControlArea(ControlAreaItem newLoadControlArea) 
+public void setLoadControlArea(LMControlArea newLoadControlArea) 
 {
 	loadControlArea = newLoadControlArea;
 
@@ -726,14 +726,14 @@ public void setLoadControlArea(ControlAreaItem newLoadControlArea)
 	syncMenuItems();
 
 	//lastly, check for disablement
-	if( getLoadControlArea().getDisableFlag() )
+	if( getLoadControlArea().getDisableFlag().booleanValue() )
 	{
 		getJMenuItemDisable().setText("Enable / ReEnable");
 	}
 	else
 	{
 		getJMenuItemDisable().setText("Disable / Waive");
-		if(newLoadControlArea.getControlAreaState() == ControlAreaItem.STATE_FULLY_ACTIVE) {
+		if(newLoadControlArea.getControlAreaState() == LMControlArea.STATE_FULLY_ACTIVE) {
 		    getJMenuItemStart().setVisible(false);
 		}else {
 		    getJMenuItemStart().setVisible(true);
@@ -750,29 +750,29 @@ public void setLoadControlArea(ControlAreaItem newLoadControlArea)
 private void syncMenuItems()
 {
 
-	switch( getLoadControlArea().getControlAreaState() )
+	switch( getLoadControlArea().getControlAreaState().intValue() )
 	{
-		case ControlAreaItem.STATE_PARTIALLY_ACTIVE:
+		case LMControlArea.STATE_PARTIALLY_ACTIVE:
 			getJMenuItemDisable().setEnabled(true);
 			break;
 		
-		case ControlAreaItem.STATE_MANUAL_ACTIVE:
-		case ControlAreaItem.STATE_FULLY_ACTIVE:
+		case LMControlArea.STATE_MANUAL_ACTIVE:
+		case LMControlArea.STATE_FULLY_ACTIVE:
 			getJMenuItemDisable().setEnabled(true);
 			break;
 		
-		case ControlAreaItem.STATE_INACTIVE:
+		case LMControlArea.STATE_INACTIVE:
 			getJMenuItemDisable().setEnabled(true);
 			break;
 			
-		case ControlAreaItem.STATE_FULLY_SCHEDULED:
-		case ControlAreaItem.STATE_PARTIALLY_SCHEDULED:
-		case ControlAreaItem.STATE_CNTRL_ATTEMPT:
+		case LMControlArea.STATE_FULLY_SCHEDULED:
+		case LMControlArea.STATE_PARTIALLY_SCHEDULED:
+		case LMControlArea.STATE_CNTRL_ATTEMPT:
 			getJMenuItemDisable().setEnabled(true);
 			break;
 
 		default:
-			throw new IllegalStateException("Found an nonexistent state for a LMControlArea object, value = " + getLoadControlArea().getControlAreaState() );
+			throw new IllegalStateException("Found an nonexistent state for a LMControlArea object, value = " + getLoadControlArea().getControlAreaState().intValue() );
 	}
 
 

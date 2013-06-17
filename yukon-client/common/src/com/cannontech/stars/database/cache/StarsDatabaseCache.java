@@ -39,10 +39,10 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.web.YukonWebConfiguration;
-import com.cannontech.dispatch.DatabaseChangeEvent;
-import com.cannontech.dispatch.DbChangeCategory;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.database.data.appliance.ApplianceCategory;
@@ -307,12 +307,12 @@ public class StarsDatabaseCache implements DBChangeListener {
 	}
 	
 	@Override
-	public void dbChangeReceived(DBChangeMessage msg){
+	public void dbChangeReceived(DBChangeMsg msg) {
 		CTILogger.debug(" ## DBChangeMsg ##\n" + msg);
 		
         List<LiteStarsEnergyCompany> companies = getAllEnergyCompanies();
 		
-        if (msg.getDatabase() == DBChangeMessage.CHANGE_PAO_DB) {
+        if (msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
 		    LiteYukonPAObject litePao = null;
             
             /*
@@ -377,8 +377,8 @@ public class StarsDatabaseCache implements DBChangeListener {
     			}
     		}
     	}
-		else if (msg.getDatabase() == DBChangeMessage.CHANGE_YUKON_USER_DB) {
-			if (msg.getCategory().equals( DBChangeMessage.CAT_YUKON_USER )) {
+		else if (msg.getDatabase() == DBChangeMsg.CHANGE_YUKON_USER_DB) {
+			if (msg.getCategory().equals( DBChangeMsg.CAT_YUKON_USER )) {
 				LiteContact liteContact = YukonSpringHook.getBean(YukonUserDao.class).getLiteContact( msg.getId() );
 				if (liteContact != null) {
 						CustomerAccountDao customerAccountDao = YukonSpringHook.getBean("customerAccountDao", CustomerAccountDao.class);
@@ -399,14 +399,14 @@ public class StarsDatabaseCache implements DBChangeListener {
 						}
 				}
 			}
-		} else if (msg.getDatabase() == DBChangeMessage.CHANGE_WEB_CONFIG_DB) {
+		} else if (msg.getDatabase() == DBChangeMsg.CHANGE_WEB_CONFIG_DB) {
             handleWebConfigurationChange(msg);
-        } else if (msg.getDatabase() == DBChangeMessage.CHANGE_STARS_PUBLISHED_PROGRAM_DB) {
+        } else if (msg.getDatabase() == DBChangeMsg.CHANGE_STARS_PUBLISHED_PROGRAM_DB) {
             handlePublishedProgramChange(msg);
         }
 	}
 
-	private synchronized void handlePublishedProgramChange(DBChangeMessage msg) {
+	private synchronized void handlePublishedProgramChange(DBChangeMsg msg) {
 	    LMProgramWebPublishing lmProgramWebPublishing = LMProgramWebPublishing.getLMProgramWebPublishing(msg.getId());
 	    int appCatId = lmProgramWebPublishing.getApplianceCategoryID();
 
@@ -457,7 +457,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 
 	}
 
-    private synchronized void handleWebConfigurationChange(DBChangeMessage msg) {
+    private synchronized void handleWebConfigurationChange(DBChangeMsg msg) {
         webConfigMap = null;
     }
 
@@ -513,7 +513,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 	    }
 	}
 
-	private void handleLMProgramChange(DBChangeMessage msg, LiteStarsEnergyCompany energyCompany, LiteLMProgramWebPublishing liteProg) {
+	private void handleLMProgramChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteLMProgramWebPublishing liteProg) {
 		switch( msg.getDbChangeType())
 		{
 			case ADD:
@@ -557,7 +557,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 		}
 	}
 	
-	private void handleLMGroupChange(DBChangeMessage msg, LiteStarsEnergyCompany energyCompany, LiteLMProgramWebPublishing liteProg) {
+	private void handleLMGroupChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteLMProgramWebPublishing liteProg) {
 		switch( msg.getDbChangeType())
 		{
 			case ADD:
@@ -592,7 +592,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 		}
 	}
 	
-	private void handleYukonUserChange(DBChangeMessage msg, LiteStarsEnergyCompany energyCompany, StarsCustAccountInformation starsAcctInfo) {
+	private void handleYukonUserChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, StarsCustAccountInformation starsAcctInfo) {
 		switch( msg.getDbChangeType() ) {
 			case ADD:
 				// Don't need to do anything
@@ -612,7 +612,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 		}
 	}
 
-	private void handleRouteChange(DBChangeMessage msg, LiteStarsEnergyCompany energyCompany) {
+	private void handleRouteChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany) {
 		switch(msg.getDbChangeType()) {
 			case ADD:
 				// Don't need to do anything

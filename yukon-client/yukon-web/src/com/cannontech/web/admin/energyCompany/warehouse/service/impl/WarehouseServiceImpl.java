@@ -7,9 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.core.dao.AddressDao;
-import com.cannontech.dispatch.DbChangeCategory;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.util.DbChangeManager;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.WarehouseDao;
 import com.cannontech.stars.database.db.hardware.Warehouse;
 import com.cannontech.web.admin.energyCompany.warehouse.model.WarehouseDto;

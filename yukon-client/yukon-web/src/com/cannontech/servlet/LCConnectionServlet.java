@@ -32,12 +32,12 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
+import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
-import com.cannontech.messaging.message.dispatch.MultiMessage;
-import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
-import com.cannontech.messaging.message.loadcontrol.data.ProgramDirect;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
+import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.roles.loadcontrol.DirectLoadcontrolRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
@@ -220,7 +220,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 }
 private void setAdditionalInfoForProgram(String additionalInfo, String programID) 
 {
-    ProgramDirect prg = (ProgramDirect)getCache().getProgram(new Integer (programID) );
+    LMProgramDirect prg = (LMProgramDirect)getCache().getProgram(new Integer (programID) );
     String baseString = "adjustments";
 
     if (additionalInfo != null) 
@@ -256,14 +256,14 @@ private void resendSyncMsgs( HttpServletRequest req, Double[] progIds )
 
                 for( int j = 0; progIds != null && j < progIds.length; j++ ) {
                     int progID = progIds[j].intValue();
-                    if( progID == resProgArr.getLmProgramBase().getYukonId().intValue() )
+                    if( progID == resProgArr.getLmProgramBase().getYukonID().intValue() )
                         resProgArr.setOverride( Boolean.TRUE );
                 }
                 
                 resProgArr.getLmRequest().setConstraintFlag(
                         resProgArr.getOverride().booleanValue()
-                        ? ManualControlRequestMessage.CONSTRAINTS_FLAG_OVERRIDE
-                        : ManualControlRequestMessage.CONSTRAINTS_FLAG_USE );                
+                        ? LMManualControlRequest.CONSTRAINTS_FLAG_OVERRIDE
+                        : LMManualControlRequest.CONSTRAINTS_FLAG_USE );                
 			}
 	
 			if( lmSess.getResponseProgs().length > 0 )	
@@ -290,15 +290,15 @@ private void resendSyncMsgs( HttpServletRequest req, Double[] progIds )
  */
 private ResponseProg[] sendSyncMsg( final WebCmdMsg cmdMsg )
 {
-	MultiMessage multMsg = new MultiMessage();
-	if( cmdMsg.genLCCmdMsg() instanceof MultiMessage )
-		multMsg = (MultiMessage)cmdMsg.genLCCmdMsg();
+	Multi multMsg = new Multi();
+	if( cmdMsg.genLCCmdMsg() instanceof Multi )
+		multMsg = (Multi)cmdMsg.genLCCmdMsg();
 	else
 		multMsg.getVector().add( cmdMsg.genLCCmdMsg() ); //a multi of 1
 
 
-	ManualControlRequestMessage[] lmReqs =
-		new ManualControlRequestMessage[ multMsg.getVector().size() ];
+	LMManualControlRequest[] lmReqs =
+		new LMManualControlRequest[ multMsg.getVector().size() ];
 
 	ResponseProg[] programResps =
 		new ResponseProg[ multMsg.getVector().size() ];
@@ -309,12 +309,12 @@ private ResponseProg[] sendSyncMsg( final WebCmdMsg cmdMsg )
 
     for( int i = 0; i < multMsg.getVector().size(); i++ )
 	{
-		lmReqs[i] = (ManualControlRequestMessage)multMsg.getVector().get(i);
+		lmReqs[i] = (LMManualControlRequest)multMsg.getVector().get(i);
 
 
 		//better be a program for this Request Message!
-		Program progBase =
-			getCache().getProgram( new Integer(lmReqs[i].getYukonId()) );
+		LMProgramBase progBase =
+			getCache().getProgram( new Integer(lmReqs[i].getYukonID()) );
 
 		//may or may not be an error, just warn for now
 		if( progBase == null )
@@ -322,7 +322,7 @@ private ResponseProg[] sendSyncMsg( final WebCmdMsg cmdMsg )
 
         isCheckConstraints |=
             lmReqs[i].getConstraintFlag() ==
-                ManualControlRequestMessage.CONSTRAINTS_FLAG_CHECK;
+                LMManualControlRequest.CONSTRAINTS_FLAG_CHECK;
         handleTargetCycleAjustments(lmReqs[i], progBase);
         programResps[i] = new ResponseProg( lmReqs[i], progBase );
 	}
@@ -353,10 +353,10 @@ private ResponseProg[] sendSyncMsg( final WebCmdMsg cmdMsg )
         return null;
 }
 
-private void handleTargetCycleAjustments(ManualControlRequestMessage lmReq, Program progBase) {
-    if (progBase instanceof ProgramDirect) 
+private void handleTargetCycleAjustments(LMManualControlRequest lmReq, LMProgramBase progBase) {
+    if (progBase instanceof LMProgramDirect) 
     {
-        String additionalInfo = ((ProgramDirect)progBase).getAddtionalInfo();
+        String additionalInfo = ((LMProgramDirect)progBase).getAddtionalInfo();
         if (additionalInfo != null)
             lmReq.setAddditionalInfo(additionalInfo);
     }
@@ -534,7 +534,7 @@ private Map<String, Object> getOptionalParams( HttpServletRequest req )
 	if( req.getParameter("startTime1") != null )
 	{
         if( req.getParameter("startTime1").length() <= 0 ) {
-            optionalProps.put("starttime", new Integer(ControlAreaItem.INVALID_INT));
+            optionalProps.put("starttime", new Integer(LMControlArea.INVALID_INT));
         } else {
             optionalProps.put("starttime",
                               new Integer( CtiUtilities.decodeStringToSeconds( req.getParameter("startTime1") )) );
@@ -545,7 +545,7 @@ private Map<String, Object> getOptionalParams( HttpServletRequest req )
 	if( req.getParameter("stopTime1") != null )
 	{
         if( req.getParameter("stopTime1").length() <= 0 ) {
-		    optionalProps.put( "stoptime", new Integer(ControlAreaItem.INVALID_INT) );
+		    optionalProps.put( "stoptime", new Integer(LMControlArea.INVALID_INT) );
         } else {
 		    optionalProps.put( "stoptime",
 		                       new Integer( CtiUtilities.decodeStringToSeconds( req.getParameter("stopTime1") )) );

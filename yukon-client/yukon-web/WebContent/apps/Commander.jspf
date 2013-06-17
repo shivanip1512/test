@@ -96,7 +96,7 @@ div.scroll { font-size: 12px;
 		LiteYukonPAObject[] validRoutes = YC_BEAN.getValidRoutes();
 		for (int i = 0; i < validRoutes.length; i++) {
 %>
-						<option VALUE="<%=((LiteYukonPAObject)validRoutes[i]).getYukonId()%>" <%=YC_BEAN.getRouteID()==((LiteYukonPAObject)validRoutes[i]).getYukonId() ? "selected" : ""%>><%=((LiteYukonPAObject)validRoutes[i]).getPaoName()%>
+						<option VALUE="<%=((LiteYukonPAObject)validRoutes[i]).getYukonID()%>" <%=YC_BEAN.getRouteID()==((LiteYukonPAObject)validRoutes[i]).getYukonID() ? "selected" : ""%>><%=((LiteYukonPAObject)validRoutes[i]).getPaoName()%>
 <%
 		}
 %>

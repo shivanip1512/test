@@ -138,12 +138,12 @@
 			<c:forEach items="${YC_BEAN.deviceHistory}" var="device">
 				<c:if test="${cti:isDeviceSortByGroup(device)}">
 					<c:choose>
-						<c:when test="${deviceId == device.yukonId}">
+						<c:when test="${deviceId == device.yukonID}">
 							<div class="sideMenuLink selected">${device.paoName}</div>
 						</c:when>
 						<c:otherwise>
 							<div class="sideMenuLink">
-								<a href="CommandDevice.jsp?deviceID=${device.yukonId}" class="Link1">
+								<a href="CommandDevice.jsp?deviceID=${device.yukonID}" class="Link1">
 									${device.paoName}
 								</a>
 							</div>
@@ -160,12 +160,12 @@
 			<c:forEach items="${YC_BEAN.deviceHistory}" var="device">
 				<c:if test="${cti:isLoadManagementSortByGroup(device)}">
 					<c:choose>
-						<c:when test="${deviceId == device.yukonId}">
+						<c:when test="${deviceId == device.yukonID}">
 							<div class="sideMenuLink selected">${device.paoName}</div>
 						</c:when>
 						<c:otherwise>
 							<div class="sideMenuLink">
-								<a href="CommandDevice.jsp?deviceID=${device.yukonId}" class="Link1">
+								<a href="CommandDevice.jsp?deviceID=${device.yukonID}" class="Link1">
 									${device.paoName}
 								</a>
 							</div>
@@ -334,12 +334,12 @@
 			<c:forEach items="${YC_BEAN.deviceHistory}" var="device">
 				<c:if test="${cti:isCapControlSortByGroup(device)}">
 					<c:choose>
-						<c:when test="${deviceId == device.yukonId}">
+						<c:when test="${deviceId == device.yukonID}">
 							<div class="sideMenuLink selected">${device.paoName}</div>
 						</c:when>
 						<c:otherwise>
 							<div class="sideMenuLink">
-								<a href="CommandDevice.jsp?deviceID=${device.yukonId}" class="Link1">
+								<a href="CommandDevice.jsp?deviceID=${device.yukonID}" class="Link1">
 									${device.paoName}
 								</a>
 							</div>

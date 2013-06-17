@@ -13,8 +13,8 @@ import org.apache.lucene.index.Term;
 import com.cannontech.common.search.YukonObjectAnalyzer;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.SqlStringStatementBuilder;
-import com.cannontech.dispatch.DbChangeType;
-import com.cannontech.messaging.message.dispatch.DBChangeMessage;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * Class which manages customer account lucene index creation and update.
@@ -94,8 +94,8 @@ public class CustomerAccountIndexManager extends AbstractIndexManager {
     }
 
     protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category, String type) {
-        if (database == DBChangeMessage.CHANGE_CUSTOMER_ACCOUNT_DB 
-               && DBChangeMessage.CAT_CUSTOMER_ACCOUNT.equalsIgnoreCase(category) ) {
+        if (database == DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB 
+               && DBChangeMsg.CAT_CUSTOMER_ACCOUNT.equalsIgnoreCase(category) ) {
             // Customer account change msg
             return this.processCustomerAccountChange(id);
         }

@@ -19,8 +19,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "msg_pcreturn.h"
 #include "msg_pdata.h"
 #include "msg_ptreg.h"
-#include "connection_client.h"
-#include "amq_constants.h"
+#include "connection.h"
 #include "pointtypes.h"
 
 BOOL           bQuit = FALSE;
@@ -78,8 +77,7 @@ void main(int argc, char **argv)
             return;
         }
 
-        CtiClientConnection Connect( Cti::Messaging::ActiveMQ::Queue::dispatch );
-        Connect.start();
+        CtiConnection Connect(VANGOGHNEXUS, argv[1]);
 
         Connect.WriteConnQue( CTIDBG_new CtiRegistrationMsg("point changer", rwThreadId(), TRUE) );
 
@@ -103,7 +101,7 @@ void main(int argc, char **argv)
         }
 
         Connect.WriteConnQue( CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 0) );
-        Connect.close( );
+        Connect.ShutdownConnection( );
     }
     catch( RWxmsg &msg )
     {

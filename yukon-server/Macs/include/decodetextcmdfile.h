@@ -17,10 +17,10 @@
 #define TEXT_CMD_FILE_SPECIFY_EXPRESSCOM    1
 #define TEXT_CMD_FILE_SPECIFY_NO_PROTOCOL   2
 
-int decodeTextCommandFile(const std::string& fileName, int aCommandLimit, int aProtocolFlag, std::vector<std::string*>* commandList);
-int decodeDSM2VconfigFile(const std::string& fileName, std::vector<std::string*>* commandList);
+int decodeTextCommandFile(const std::string& fileName, int aCommandLimit, int aProtocolFlag, std::vector<RWCollectableString*>* commandList);
+int decodeDSM2VconfigFile(const std::string& fileName, std::vector<RWCollectableString*>* commandList);
 static bool getToken (char** InBuffer, std::string &OutBuffer);
 static bool outputLogFile (std::vector<std::string> &aLog);
 static bool outputCommandFile (const std::string &aFileName, int aLineCnt, std::vector<std::string> &aCmdVector);
-static bool decodeDsm2Lines( std::string &function, std::string &route,std::string &serialNum,std::string &cmd,std::string* programming);
-bool validateAndDecodeLine( std::string & line, int aProtocolFlag, std::string* programming, std::string aFileName);
+static bool decodeDsm2Lines( std::string &function, std::string &route,std::string &serialNum,std::string &cmd,RWCollectableString* programming);
+bool validateAndDecodeLine( std::string & line, int aProtocolFlag, RWCollectableString* programming, std::string aFileName);

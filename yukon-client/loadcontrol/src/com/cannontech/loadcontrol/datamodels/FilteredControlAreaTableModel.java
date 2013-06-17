@@ -2,7 +2,7 @@ package com.cannontech.loadcontrol.datamodels;
 
 import javax.swing.event.TableModelListener;
 
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
+import com.cannontech.loadcontrol.data.LMControlArea;
 
 /**
  * @author rneuharth
@@ -14,7 +14,7 @@ import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
  */
 public class FilteredControlAreaTableModel extends ControlAreaTableModel
 {
-	private int[] filteredStates = new int[] { ControlAreaItem.INVALID_INT };
+	private int[] filteredStates = new int[] { LMControlArea.INVALID_INT };
  
 
 	/**
@@ -53,14 +53,14 @@ public class FilteredControlAreaTableModel extends ControlAreaTableModel
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (4/6/2001 10:08:28 AM)
-	 * @param ControlAreaItem
+	 * @param LMControlArea
 	 */
-	public synchronized void addControlAreaAt( ControlAreaItem area, int indx )
+	public synchronized void addControlAreaAt( LMControlArea area, int indx )
 	{
 		if( !isValid(area.getControlAreaState().intValue()) )
 			return;
 			
-		if( area.getProgramVector().size() > 0 )
+		if( area.getLmProgramVector().size() > 0 )
 		{
 			getCurrentControlAreas().insertElementAt( area, indx );
 			fireTableRowsInserted( indx, getRowCount() );
@@ -72,9 +72,9 @@ public class FilteredControlAreaTableModel extends ControlAreaTableModel
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (4/6/2001 10:08:28 AM)
-	 * @param ControlAreaItem
+	 * @param LMControlArea
 	 */
-	public void setControlAreaAt( ControlAreaItem area, int index )
+	public void setControlAreaAt( LMControlArea area, int index )
 	{
 		if( !isValid(area.getControlAreaState().intValue()) )
 		{

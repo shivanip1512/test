@@ -33,26 +33,26 @@ import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 import com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment;
 import com.cannontech.database.db.state.StateGroupUtils;
-import com.cannontech.messaging.message.BaseMessage;
-import com.cannontech.messaging.message.capcontrol.CommandMessage;
-import com.cannontech.messaging.message.capcontrol.CommandType;
-import com.cannontech.messaging.message.capcontrol.DeleteItemMessage;
-import com.cannontech.messaging.message.capcontrol.SpecialAreasMessage;
-import com.cannontech.messaging.message.capcontrol.SubAreasMessage;
-import com.cannontech.messaging.message.capcontrol.SubStationsMessage;
-import com.cannontech.messaging.message.capcontrol.SubstationBusesMessage;
-import com.cannontech.messaging.message.capcontrol.SystemStatusMessage;
-import com.cannontech.messaging.message.capcontrol.VoltageRegulatorFlagMessage;
-import com.cannontech.messaging.message.capcontrol.streamable.Area;
-import com.cannontech.messaging.message.capcontrol.streamable.CapBankDevice;
-import com.cannontech.messaging.message.capcontrol.streamable.Feeder;
-import com.cannontech.messaging.message.capcontrol.streamable.SpecialArea;
-import com.cannontech.messaging.message.capcontrol.streamable.StreamableCapObject;
-import com.cannontech.messaging.message.capcontrol.streamable.SubBus;
-import com.cannontech.messaging.message.capcontrol.streamable.SubStation;
-import com.cannontech.messaging.message.capcontrol.streamable.VoltageRegulatorFlags;
-import com.cannontech.messaging.util.MessageEvent;
-import com.cannontech.messaging.util.MessageListener;
+import com.cannontech.message.capcontrol.model.CapControlCommand;
+import com.cannontech.message.capcontrol.model.CommandType;
+import com.cannontech.message.capcontrol.model.DeleteItem;
+import com.cannontech.message.capcontrol.model.SpecialAreas;
+import com.cannontech.message.capcontrol.model.SubAreas;
+import com.cannontech.message.capcontrol.model.SubStations;
+import com.cannontech.message.capcontrol.model.SubstationBuses;
+import com.cannontech.message.capcontrol.model.SystemStatus;
+import com.cannontech.message.capcontrol.model.VoltageRegulatorFlagMessage;
+import com.cannontech.message.capcontrol.streamable.Area;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.SpecialArea;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.message.capcontrol.streamable.SubBus;
+import com.cannontech.message.capcontrol.streamable.SubStation;
+import com.cannontech.message.capcontrol.streamable.VoltageRegulatorFlags;
+import com.cannontech.message.util.Message;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.CapControlClientConnection;
 import com.cannontech.yukon.conns.ConnPool;
@@ -131,7 +131,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     public synchronized String getSubBusNameForFeeder(Feeder feeder) {
         Validate.notNull(feeder,"Feeder cannot be null, method: getSubBusNameForFeeder");
     	
-        int parentId = feeder.getParentId();
+        int parentId = feeder.getParentID();
         
     	if (parentId > 0) {
             SubBus bus = subBusMap.get(parentId);
@@ -323,7 +323,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     public synchronized boolean isSpecialCBCArea(int deviceId) {
         List<SpecialArea> areaList = getSpecialCbcAreas();
         for (final SpecialArea area : areaList) {
-            boolean result = area.getCcId() == deviceId;
+            boolean result = area.getPaoId().equals(deviceId);
             if (result) return true;
         }
         return false;
@@ -494,9 +494,9 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         if( isSubBus(childID) ) {
             return childID;
         } else if( isFeeder(childID) ) {
-            return getFeeder(new Integer(childID)).getParentId();
+            return getFeeder(new Integer(childID)).getParentID();
         } else if( isCapBank(childID) ) {
-            return getFeeder(new Integer(getCapBankDevice(new Integer(childID)).getParentId())).getParentId();
+            return getFeeder(new Integer(getCapBankDevice(new Integer(childID)).getParentID())).getParentID();
         }
         throw new NotFoundException("could not find SubBus from child id of " + childID);
     }
@@ -514,11 +514,11 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         if (isSubstation(childId)) {
             return childId;
         } else if(isSubBus(childId)) {
-            return getSubBus(childId).getParentId();
+            return getSubBus(childId).getParentID();
         } else if( isFeeder(childId) ) {
-            return getSubBus(getFeeder(new Integer(childId)).getParentId()).getParentId();
+            return getSubBus(getFeeder(new Integer(childId)).getParentID()).getParentID();
         } else if( isCapBank(childId) ) {
-            return getSubBus(getFeeder(new Integer(getCapBankDevice(new Integer(childId)).getParentId())).getParentId()).getParentId();
+            return getSubBus(getFeeder(new Integer(getCapBankDevice(new Integer(childId)).getParentID())).getParentID()).getParentID();
         } else {
             return CtiUtilities.NONE_ZERO_ID;
         }
@@ -538,11 +538,11 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     	else if( isSubstation(childID) ) {
             station = getSubstation(childID);
         }else if( isSubBus(childID)){
-        	station = getSubstation(getSubBus(childID).getParentId());
+        	station = getSubstation(getSubBus(childID).getParentID());
         }else if( isFeeder(childID) ) {
-        	station = getSubstation(getSubBus(getFeeder(new Integer(childID)).getParentId()).getParentId());
+        	station = getSubstation(getSubBus(getFeeder(new Integer(childID)).getParentID()).getParentID());
         } else if( isCapBank(childID) ) {
-        	station = getSubstation(getSubBus(getFeeder(new Integer(getCapBankDevice(new Integer(childID)).getParentId())).getParentId()).getParentId());
+        	station = getSubstation(getSubBus(getFeeder(new Integer(getCapBankDevice(new Integer(childID)).getParentID())).getParentID()).getParentID());
         } else {
             station = null;
         }
@@ -550,7 +550,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         if( station == null) {
         	id = CtiUtilities.NONE_ZERO_ID;
         } else {
-	        id = station.getParentId();
+	        id = station.getParentID();
 			if (id < 0) {
 				id = station.getSpecialAreaId();
 			}
@@ -558,14 +558,14 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     	return id;
     }    
     /**
-    * @param SubAreasMessage
+    * @param SubAreas
     */
-    private synchronized void handleSpecialAreaList(SpecialAreasMessage areas) {
+    private synchronized void handleSpecialAreaList(SpecialAreas areas) {
         clearCacheMap(cbcSpecialAreaMap);
         
         List<SpecialArea> list = areas.getAreas();
         for (final SpecialArea area : list) {
-        	int areaId = area.getCcId();
+        	int areaId = area.getPaoId();
             cbcSpecialAreaMap.put(areaId, area);
             getUpdatedObjMap().handleCBCChangeEvent(area);
         }
@@ -603,7 +603,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      * Process multiple SubBuses
      * @param busesMsg
      */
-    private synchronized void handleSubBuses( SubstationBusesMessage busesMsg ) {
+    private synchronized void handleSubBuses( SubstationBuses busesMsg ) {
         logAllSubs(busesMsg);
         //If this is a full reload of all subs.
     	if (busesMsg.isAllSubs()) {
@@ -624,7 +624,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      * Process multiple SubBuses
      * @param busesMsg
      */
-    private synchronized void handleSubStations( SubStationsMessage stationsMsg ) {
+    private synchronized void handleSubStations( SubStations stationsMsg ) {
     	logAllSubStations(stationsMsg);
         //If this is a full reload of all subs.
     	if (stationsMsg.isAllSubStations()) {
@@ -642,7 +642,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     * Process multiple Areas
     * @param areaMsg
     */
-   private synchronized void handleAreas( SubAreasMessage areasMsg ) {
+   private synchronized void handleAreas( SubAreas areasMsg ) {
    	logAllAreas(areasMsg);
        //If this is a full reload of all subs.
    	if (areasMsg.isAllAreas()) {
@@ -657,7 +657,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
    }
 
     
-    private synchronized void handleDeletedSubs(SubstationBusesMessage busesMsg) {
+    private synchronized void handleDeletedSubs(SubstationBuses busesMsg) {
         for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ ){
         	//remove old
         	SubBus bus = busesMsg.getSubBusAt(i);
@@ -666,43 +666,43 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         }
     }
     
-    private synchronized void handleDeletedSubStations(SubStationsMessage stationsMsg) {
+    private synchronized void handleDeletedSubStations(SubStations stationsMsg) {
         for( int i = 0; i < stationsMsg.getNumberOfStations(); i++ ){
         	//remove old
         	handleDeletedSubstation( stationsMsg.getSubAt(i).getCcId() );
         }
     }
     
-    private synchronized void handleDeletedAreas(SubAreasMessage areaMsg) {
+    private synchronized void handleDeletedAreas(SubAreas areaMsg) {
         for( int i = 0; i < areaMsg.getNumberOfAreas(); i++ ){
         	//remove old
         	handleDeletedArea( areaMsg.getArea(i).getCcId() );
         }
     }
     
-    private synchronized void logAllSubs(SubstationBusesMessage busesMsg) {
+    private synchronized void logAllSubs(SubstationBuses busesMsg) {
         if(!log.isDebugEnabled()) {
             return;
         }
         
         for( int i = (busesMsg.getNumberOfBuses()-1); i >= 0; i-- ){
         	log.debug("Received SubBus - " + busesMsg.getSubBusAt(i).getCcName() 
-        			+ "/" + busesMsg.getSubBusAt(i).getCcDescription() );
+        			+ "/" + busesMsg.getSubBusAt(i).getCcArea() );
         }
     }
     
-    private synchronized void logAllSubStations(SubStationsMessage stationsMsg) {
+    private synchronized void logAllSubStations(SubStations stationsMsg) {
         if(!log.isDebugEnabled()) {
             return;
         }
         
         for( int i = (stationsMsg.getNumberOfStations()-1); i >= 0; i-- ){
         	log.debug("Received SubStations - " + stationsMsg.getSubAt(i).getCcName() 
-        			+ "/" + stationsMsg.getSubAt(i).getCcDescription() );
+        			+ "/" + stationsMsg.getSubAt(i).getCcArea() );
         }
     }  
     
-    private synchronized void logAllAreas(SubAreasMessage areasMsg) {
+    private synchronized void logAllAreas(SubAreas areasMsg) {
         if(!log.isDebugEnabled()) {
             return;
         }
@@ -712,19 +712,19 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         }
     }   
     
-    private synchronized void handleAllSubs(SubstationBusesMessage busesMsg) {
+    private synchronized void handleAllSubs(SubstationBuses busesMsg) {
         for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ ) {
         	handleSubBus( busesMsg.getSubBusAt(i) );
         }
     }
     
-    private synchronized void handleAllSubStation(SubStationsMessage stationsMsg) {
+    private synchronized void handleAllSubStation(SubStations stationsMsg) {
         for( int i = 0; i < stationsMsg.getNumberOfStations(); i++ ) {
         	handleSubStation( stationsMsg.getSubAt(i) );
         }
     }
     
-    private synchronized void handleAllArea(SubAreasMessage areasMsg) {
+    private synchronized void handleAllArea(SubAreas areasMsg) {
         for( int i = 0; i < areasMsg.getNumberOfAreas(); i++ ) {
         	handleArea( areasMsg.getArea(i) );
         }
@@ -788,7 +788,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         removeFromCacheMap(feederMap, deviceId);    
     }
     
-    private void handleSystemStatus(SystemStatusMessage status) {
+    private void handleSystemStatus(SystemStatus status) {
         synchronized (systemStatusOn ) {
             systemStatusOn = status.isEnabled();
         }
@@ -878,7 +878,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         log.debug("Refreshing CapControl Cache");
         
         try  {
-            getConnection().sendCommand(new CommandMessage(CommandType.REQUEST_ALL_DATA.getCommandId()));
+            getConnection().sendCommand(new CapControlCommand(CommandType.REQUEST_ALL_DATA.getCommandId()));
         } catch (Exception e) {
             log.error("Exception occurred during a refresh_cache operation", e);
             return false;
@@ -892,20 +892,20 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      */
     @Override
     public synchronized void messageReceived(MessageEvent event) {
-        BaseMessage message = event.getMessage();
+        Message message = event.getMessage();
         
-        if (message instanceof SubstationBusesMessage) {
-            handleSubBuses((SubstationBusesMessage) message);
-        } else if (message instanceof SubStationsMessage) {
-            handleSubStations((SubStationsMessage) message);
-        } else if (message instanceof SpecialAreasMessage) {
-            handleSpecialAreaList((SpecialAreasMessage) message);
-        } else if (message instanceof SubAreasMessage) {
-        	handleAreas((SubAreasMessage) message);
-        } else if (message instanceof DeleteItemMessage) {
-            handleDeleteItem(((DeleteItemMessage)message).getItemId());
-        } else if (message instanceof SystemStatusMessage) {
-            handleSystemStatus((SystemStatusMessage)message);
+        if (message instanceof SubstationBuses) {
+            handleSubBuses((SubstationBuses) message);
+        } else if (message instanceof SubStations) {
+            handleSubStations((SubStations) message);
+        } else if (message instanceof SpecialAreas) {
+            handleSpecialAreaList((SpecialAreas) message);
+        } else if (message instanceof SubAreas) {
+        	handleAreas((SubAreas) message);
+        } else if (message instanceof DeleteItem) {
+            handleDeleteItem(((DeleteItem)message).getItemId());
+        } else if (message instanceof SystemStatus) {
+            handleSystemStatus((SystemStatus)message);
         } else if (message instanceof VoltageRegulatorFlagMessage) {
             handleVoltageRegulator((VoltageRegulatorFlagMessage)message);
         }

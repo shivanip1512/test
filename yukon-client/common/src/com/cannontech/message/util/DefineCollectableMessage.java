@@ -3,7 +3,6 @@ package com.cannontech.message.util;
 /**
  * This type was created in VisualAge.
  */
-import com.cannontech.messaging.message.BaseMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -19,7 +18,7 @@ public DefineCollectableMessage() {
  * create method comment.
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new BaseMessage(); //Should this ever occur?
+	return new Message(); //Should this ever occur?
 }
 /**
  * getComparator method comment.
@@ -50,7 +49,7 @@ public String getCxxStringId() {
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return com.cannontech.messaging.message.BaseMessage.class;
+	return com.cannontech.message.util.Message.class;
 }
 /**
  * restoreGuts method comment.
@@ -64,24 +63,24 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	int token = vstr.extractInt();
 	String source = (String) (vstr.restoreObject( SimpleMappings.CString ));
 
-	((BaseMessage) obj).setTimeStamp( timeStamp );
-	((BaseMessage) obj).setPriority( priority );
-	((BaseMessage) obj).setSOE_Tag( soe_tag );
-	((BaseMessage) obj).setUserName( username );
-	((BaseMessage) obj).setToken( token );
-	((BaseMessage) obj).setSource( source );
+	((Message) obj).setTimeStamp( timeStamp );
+	((Message) obj).setPriority( priority );
+	((Message) obj).setSOE_Tag( soe_tag );
+	((Message) obj).setUserName( username );
+	((Message) obj).setToken( token );
+	((Message) obj).setSource( source );
 }
 /**
  * saveGuts method comment.
  */
 public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {
 
-	java.util.Date timeStamp = ((BaseMessage) obj).getTimeStamp();
-	int priority = ((BaseMessage) obj).getPriority();
-	int soe_tag = ((BaseMessage) obj).getSOE_Tag();
-	String username = ((BaseMessage) obj).getUserName();
-	int token = ((BaseMessage) obj).getToken();
-	String source = ((BaseMessage) obj).getSource();
+	java.util.Date timeStamp = ((Message) obj).getTimeStamp();
+	int priority = ((Message) obj).getPriority();
+	int soe_tag = ((Message) obj).getSOE_Tag();
+	String username = ((Message) obj).getUserName();
+	int token = ((Message) obj).getToken();
+	String source = ((Message) obj).getSource();
 	
 	vstr.saveObject( timeStamp, SimpleMappings.Time );
 	vstr.insertInt( priority );

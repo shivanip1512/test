@@ -5,7 +5,7 @@ import java.awt.Color;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.loadcontrol.datamodels.ISelectableLMTableModel;
 import com.cannontech.loadcontrol.events.LCGenericTableModelEvent;
-import com.cannontech.messaging.message.server.ServerResponseMessage;
+import com.cannontech.message.server.ServerResponseMsg;
 
 public class NoConstraintViolatedTableModel extends javax.swing.table.AbstractTableModel implements javax.swing.event.TableModelListener, ISelectableLMTableModel {
 	//contains
@@ -47,7 +47,7 @@ public class NoConstraintViolatedTableModel extends javax.swing.table.AbstractTa
 	public java.awt.Color getCellForegroundColor(int row, int col) {
 		ResponseProg prog = getRowAt( row );
 
-		if( prog.getStatus() == ServerResponseMessage.STATUS_UNINIT ) {
+		if( prog.getStatus() == ServerResponseMsg.STATUS_UNINIT ) {
 			return CELL_COLORS[0];
 		}
 		else

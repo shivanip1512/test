@@ -14,8 +14,6 @@
 #include "pil_conmgr.h"
 #include "string_utility.h"
 
-#include "connection_listener.h"
-
 class IM_EX_CTIPIL CtiPILConnectionManager : public CtiConnectionManager
 {
 private:
@@ -26,8 +24,14 @@ public:
 
    typedef CtiConnectionManager Inherited;
 
-   CtiPILConnectionManager( CtiListenerConnection &listenerConn, Que_t *MainQueue_ ) :
-       CtiConnectionManager( listenerConn, MainQueue_ )
+   CtiPILConnectionManager()
+   {
+      std::cout << "Default Constructor may break things!" << FO(__FILE__) << " " << __LINE__ << std::endl;
+      std::cout << "**** Connection Manager!!! *****" << std::endl;
+   }
+
+   CtiPILConnectionManager(CtiExchange *XChg, Que_t *MainQueue_) :
+      CtiConnectionManager( XChg, MainQueue_ )
    {
       // cout << "**** Connection Manager!!! *****" << endl;
    }

@@ -8,7 +8,7 @@ package com.cannontech.tdc.commandevents;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.messaging.message.CommandMessage;
+import com.cannontech.message.util.Command;
 import com.cannontech.tdc.roweditor.SendData;
 
 public class ControlCommand 
@@ -56,9 +56,9 @@ public static void send( long deviceID, long pointID, int rawState )
 	data.add(rawState);
 	/*** End building the Command.opArgList() ****************************/
 
-	CommandMessage cmd = new CommandMessage();
+	Command cmd = new Command();
 	cmd.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
-	cmd.setOperation( CommandMessage.CONTROL_REQUEST );
+	cmd.setOperation( Command.CONTROL_REQUEST );
 	cmd.setOpArgList( data );
 	cmd.setTimeStamp( new java.util.Date() );
 

@@ -17,13 +17,13 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
-import com.cannontech.messaging.message.CommandMessage;
-import com.cannontech.messaging.message.dispatch.MultiMessage;
-import com.cannontech.messaging.message.dispatch.PointDataMessage;
-import com.cannontech.messaging.message.dispatch.PointRegistrationMessage;
-import com.cannontech.messaging.message.dispatch.SignalMessage;
-import com.cannontech.messaging.message.server.ServerResponseMessage;
-import com.cannontech.messaging.util.ServerRequest;
+import com.cannontech.message.dispatch.message.Multi;
+import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.message.dispatch.message.PointRegistration;
+import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.message.server.ServerResponseMsg;
+import com.cannontech.message.util.Command;
+import com.cannontech.message.util.ServerRequest;
 import com.cannontech.yukon.IServerConnection;
 import com.google.common.collect.Iterables;
 
@@ -45,15 +45,15 @@ class DispatchProxy {
      * @param pointId
      * @return
      */
-    PointDataMessage getPointData(int pointId) {
-        MultiMessage m = getPointDataMulti(CtiUtilities.asSet(pointId));
-        List<PointDataMessage> pointData = new ArrayList<PointDataMessage>(1);
+    PointData getPointData(int pointId) {
+        Multi m = getPointDataMulti(CtiUtilities.asSet(pointId));
+        List<PointData> pointData = new ArrayList<PointData>(1);
         extractPointData(pointData, m);
         Validate.isTrue(pointData.size() != 0, "Returned multi was empty: ", pointData.size());
         if (pointData.size() > 1) {
             log.warn("Returned multi was bigger than expected, ignoring other elements: " + pointData.subList(1, pointData.size()));
         }
-        return (PointDataMessage) pointData.get(0);
+        return (PointData) pointData.get(0);
     }
     
     /**
@@ -61,10 +61,10 @@ class DispatchProxy {
      * @param pointIds
      * @return
      */
-    Set<PointDataMessage> getPointData(Set<Integer> pointIds) {
-        Set<PointDataMessage> pointData = new HashSet<PointDataMessage>((int)(pointIds.size()/0.75f)+1);
+    Set<PointData> getPointData(Set<Integer> pointIds) {
+        Set<PointData> pointData = new HashSet<PointData>((int)(pointIds.size()/0.75f)+1);
         if(!pointIds.isEmpty()) {
-            MultiMessage m = getPointDataMulti(pointIds);
+            Multi m = getPointDataMulti(pointIds);
             extractPointData(pointData, m);
         }
         return pointData;
@@ -75,9 +75,9 @@ class DispatchProxy {
      * @param pointId
      * @return
      */
-    Set<SignalMessage> getSignals(int pointId) {
-        Map<Integer, Set<SignalMessage>> sigs = getSignals(CtiUtilities.asSet(pointId)); 
-        Set<SignalMessage> ret = sigs.get(pointId);
+    Set<Signal> getSignals(int pointId) {
+        Map<Integer, Set<Signal>> sigs = getSignals(CtiUtilities.asSet(pointId)); 
+        Set<Signal> ret = sigs.get(pointId);
         if (ret == null) {
             ret = Collections.emptySet();
         }
@@ -90,10 +90,10 @@ class DispatchProxy {
      * @param pointIds
      * @return
      */
-    Map<Integer, Set<SignalMessage>> getSignals(Set<Integer> pointIds) {
-        Map<Integer, Set<SignalMessage>> signals = new HashMap<Integer, Set<SignalMessage>>((int)(pointIds.size()/0.75f)+1);        
+    Map<Integer, Set<Signal>> getSignals(Set<Integer> pointIds) {
+        Map<Integer, Set<Signal>> signals = new HashMap<Integer, Set<Signal>>((int)(pointIds.size()/0.75f)+1);        
         if(!pointIds.isEmpty()) {
-            MultiMessage m = getPointDataMulti(pointIds);
+            Multi m = getPointDataMulti(pointIds);
             extractSignals(signals, m);
         }
         
@@ -105,22 +105,22 @@ class DispatchProxy {
      * @param alarmCategoryId
      * @return
      */
-    Set<SignalMessage> getSignalsByCategory(int alarmCategoryId) {
-        CommandMessage cmd = makeCommandMsg(CommandMessage.ALARM_CATEGORY_REQUEST, CtiUtilities.asSet(alarmCategoryId));
-        MultiMessage m = (MultiMessage) makeRequest(cmd);
-        Set<SignalMessage> signals = new HashSet<SignalMessage>();
+    Set<Signal> getSignalsByCategory(int alarmCategoryId) {
+        Command cmd = makeCommandMsg(Command.ALARM_CATEGORY_REQUEST, CtiUtilities.asSet(alarmCategoryId));
+        Multi m = (Multi) makeRequest(cmd);
+        Set<Signal> signals = new HashSet<Signal>();
         extractSignals(signals, m);
         return signals;
     }
     
-    void putPointData(PointDataMessage pointData) {
+    void putPointData(PointData pointData) {
         putPointData(Collections.singleton(pointData));
     }
     
-    void putPointData(Iterable<PointDataMessage> pointDatas) {
+    void putPointData(Iterable<PointData> pointDatas) {
         validateDispatchConnection();
-        MultiMessage<PointDataMessage> multi = new MultiMessage<PointDataMessage>();
-        Vector<PointDataMessage> vector = new Vector<PointDataMessage>();
+        Multi<PointData> multi = new Multi<PointData>();
+        Vector<PointData> vector = new Vector<PointData>();
         Iterables.addAll(vector, pointDatas);
         multi.setVector(vector);
         dispatchConnection.write(multi);
@@ -133,16 +133,16 @@ class DispatchProxy {
     public void registerForPointIds(Set<Integer> pointIds) throws DispatchNotConnectedException{
         if (pointIds.isEmpty()) return;
         validateDispatchConnection();
-        PointRegistrationMessage pReg = new PointRegistrationMessage();
-        pReg.setRegFlags(PointRegistrationMessage.REG_ADD_POINTS);
+        PointRegistration pReg = new PointRegistration();
+        pReg.setRegFlags(PointRegistration.REG_ADD_POINTS);
         pReg.setPointIds(pointIds);
         dispatchConnection.write(pReg);
     }
     
     public void registerForPoints() {
         validateDispatchConnection();
-        PointRegistrationMessage pReg = new PointRegistrationMessage();
-        pReg.setRegFlags(PointRegistrationMessage.REG_ALL_PTS_MASK | PointRegistrationMessage.REG_NO_UPLOAD);
+        PointRegistration pReg = new PointRegistration();
+        pReg.setRegFlags(PointRegistration.REG_ALL_PTS_MASK | PointRegistration.REG_NO_UPLOAD);
         dispatchConnection.write(pReg);
     }
     
@@ -152,14 +152,14 @@ class DispatchProxy {
      * @param pointIds
      * @return
      */
-    private MultiMessage getPointDataMulti(Set<Integer> pointIds) {
+    private Multi getPointDataMulti(Set<Integer> pointIds) {
         if (log.isDebugEnabled()) {
             log.debug("Making getPointDataMulti request for: " + pointIds);
         }
-        MultiMessage m;
+        Multi m;
         try {
-            CommandMessage cmd = makeCommandMsg(CommandMessage.POINT_DATA_REQUEST, pointIds);
-            m = (MultiMessage) makeRequest(cmd);
+            Command cmd = makeCommandMsg(Command.POINT_DATA_REQUEST, pointIds);
+            m = (Multi) makeRequest(cmd);
             registerForPointIds(pointIds);
         } catch (DynamicDataAccessException e) {
             throw new DynamicDataAccessException("There was an error retreiving the value for pointIds: " + pointIds, e);
@@ -173,10 +173,10 @@ class DispatchProxy {
      * @param cmd
      * @return
      */
-    private Object makeRequest(CommandMessage cmd) {
+    private Object makeRequest(Command cmd) {
         validateDispatchConnection();
-        ServerResponseMessage resp = serverRequest.makeServerRequest(dispatchConnection,cmd);
-        if(resp.getStatus() == ServerResponseMessage.STATUS_ERROR) {
+        ServerResponseMsg resp = serverRequest.makeServerRequest(dispatchConnection,cmd);
+        if(resp.getStatus() == ServerResponseMsg.STATUS_ERROR) {
             log.error("Dispatch returned the following message: " + resp.getMessage());
             throw new DynamicDataAccessException(resp.getStatusStr() + ": " + resp.getMessage());
         }        
@@ -196,7 +196,7 @@ class DispatchProxy {
      * @param pointIds
      * @return
      */
-    private CommandMessage makeCommandMsg(int op, Set<Integer> pointIds) {
+    private Command makeCommandMsg(int op, Set<Integer> pointIds) {
         return makeCommandMsg(op, new ArrayList<Integer>(pointIds));
     }
     
@@ -206,8 +206,8 @@ class DispatchProxy {
      * @param pointIds
      * @return
      */
-    private CommandMessage makeCommandMsg(int op, List<Integer> pointIds) {
-        CommandMessage cmd = new CommandMessage();
+    private Command makeCommandMsg(int op, List<Integer> pointIds) {
+        Command cmd = new Command();
         cmd.setOperation(op);
         cmd.setOpArgList(pointIds);
         return cmd;
@@ -219,13 +219,13 @@ class DispatchProxy {
      * @param pointData
      * @param m
      */
-    private void extractPointData(Collection<PointDataMessage> pointData, MultiMessage m) {
+    private void extractPointData(Collection<PointData> pointData, Multi m) {
         for (Object o : m.getVector()) {
-            if (o instanceof PointDataMessage) {
-                pointData.add((PointDataMessage) o);
-            } else if (o instanceof MultiMessage) {
-                extractPointData(pointData, (MultiMessage) o);
-            } else if (o instanceof SignalMessage) {
+            if (o instanceof PointData) {
+                pointData.add((PointData) o);
+            } else if (o instanceof Multi) {
+                extractPointData(pointData, (Multi) o);
+            } else if (o instanceof Signal) {
                 /*
                  *  When asked for a point data, Dispatch will send back
                  *  Singals in the multi if their are any active for that point.
@@ -244,19 +244,19 @@ class DispatchProxy {
      * @param signals
      * @param m
      */
-    private void extractSignals(Map<Integer, Set<SignalMessage>> signals, MultiMessage m) {
+    private void extractSignals(Map<Integer, Set<Signal>> signals, Multi m) {
         for(Object o : m.getVector()) {
-            if(o instanceof SignalMessage) {
-                SignalMessage signal = (SignalMessage) o;
-                Set<SignalMessage> sigs = signals.get(signal.getPointId());
+            if(o instanceof Signal) {
+                Signal signal = (Signal) o;
+                Set<Signal> sigs = signals.get(signal.getPointID());
                 if(sigs == null)  {
-                    sigs = new HashSet<SignalMessage>();
-                    signals.put(signal.getPointId(), sigs);
+                    sigs = new HashSet<Signal>();
+                    signals.put(signal.getPointID(), sigs);
                 }
-                sigs.add((SignalMessage)o);
+                sigs.add((Signal)o);
             }
-            else if(o instanceof MultiMessage) {
-                extractSignals(signals, (MultiMessage) o);
+            else if(o instanceof Multi) {
+                extractSignals(signals, (Multi) o);
             }
         }
     }
@@ -267,13 +267,13 @@ class DispatchProxy {
      * @param signals
      * @param m
      */
-    private void extractSignals(Set<SignalMessage> signals, MultiMessage m) {
+    private void extractSignals(Set<Signal> signals, Multi m) {
         for (Object o : m.getVector()) {
-            if (o instanceof SignalMessage) {
-                SignalMessage signal = (SignalMessage) o;
+            if (o instanceof Signal) {
+                Signal signal = (Signal) o;
                 signals.add(signal);
-            } else if (o instanceof MultiMessage) {
-                extractSignals(signals, (MultiMessage) o);
+            } else if (o instanceof Multi) {
+                extractSignals(signals, (Multi) o);
             } else {
                 log.info("Received unknown type in multi (expecting Signal): " + o.getClass());
             }
@@ -281,8 +281,8 @@ class DispatchProxy {
     }
     
     public void registerForAlarms() {
-        PointRegistrationMessage pReg = new PointRegistrationMessage();
-        pReg.setRegFlags(PointRegistrationMessage.REG_ALARMS);
+        PointRegistration pReg = new PointRegistration();
+        pReg.setRegFlags(PointRegistration.REG_ALARMS);
         dispatchConnection.queue(pReg);
     }
 

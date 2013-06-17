@@ -32,7 +32,7 @@
 
 using namespace std;
 
-DEFINE_COLLECTABLE( CtiMCSchedule, MSG_MC_SCHEDULE );
+RWDEFINE_COLLECTABLE( CtiMCSchedule, MSG_MC_SCHEDULE );
 
 // Schedule types
 const char* CtiMCSchedule::Simple   = "Simple";
@@ -901,6 +901,150 @@ CtiMCSchedule& CtiMCSchedule::setRepeatInterval(long repeat_interval)
     return *this;
 }
 
+void CtiMCSchedule::saveGuts(RWvostream &aStream) const
+{
+    if( !checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    // conversions before sending
+    // string -> RWString
+    CtiMessage::saveGuts(aStream);
+    aStream     <<  getScheduleID() //long
+                <<  getScheduleName()
+                <<  getCategoryName()
+                <<  getScheduleType()
+                <<  getHolidayScheduleID() //long
+                <<  getCommandFile()
+                <<  getCurrentState()
+                <<  getStartPolicy()
+                <<  getStopPolicy()
+                <<  getLastRunTime() //CtiTime
+                <<  getLastRunStatus()
+                <<  getStartDay()  //int
+                <<  getStartMonth() //int
+                <<  getStartYear()  //int
+                <<  getStartTime()
+                <<  getStopTime()
+                <<  getValidWeekDays()
+                <<  getDuration()   //int
+                <<  CtiTime((unsigned long)0) //getManualStartTime() //CtiTime
+                <<  CtiTime((unsigned long)0) //getManualStopTime()  //CtiTime
+                <<  getTargetPaoId()
+                <<  getStartCommand()
+                <<  getStopCommand()
+                <<  getRepeatInterval()  //int
+                <<  getCurrentStartTime() //CtiTime
+                <<  getCurrentStopTime() //CtiTime
+                <<  getTemplateType();  //int
+
+    if( !checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+}
+
+void CtiMCSchedule::restoreGuts(RWvistream& aStream)
+{
+    if( !checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    // bring the info back into temporaries
+    // to use the set functions
+    long temp_long;
+    int temp_int;
+    string temp_str;
+    CtiTime temp_time;
+
+    CtiMessage::restoreGuts(aStream);
+    aStream >> temp_long;
+    setScheduleID(temp_long);
+
+    aStream >> temp_str;
+    setScheduleName( temp_str );
+
+    aStream >> temp_str;
+    setCategoryName(temp_str);
+
+    aStream >> temp_str;
+    setScheduleType(temp_str);
+
+    aStream >> temp_long;
+    setHolidayScheduleID(temp_long);
+
+    aStream >> temp_str;
+    setCommandFile( temp_str );
+
+    aStream >> temp_str;
+    setCurrentState(  temp_str );
+
+    aStream >> temp_str;
+    setStartPolicy(  temp_str );
+
+    aStream >> temp_str;
+    setStopPolicy( temp_str );
+
+    aStream >> temp_time;
+    setLastRunTime( temp_time );
+
+    aStream >> temp_str;
+    setLastRunStatus( temp_str );
+
+    aStream >> temp_int;
+    setStartDay(temp_int);
+
+    aStream >> temp_int;
+    setStartMonth(temp_int);
+
+    aStream >> temp_int;
+    setStartYear(temp_int);
+
+    aStream >> temp_str;
+    setStartTime(temp_str );
+
+    aStream >> temp_str;
+    setStopTime( temp_str );
+
+    aStream >> temp_str;
+    setValidWeekDays( temp_str );
+
+    aStream >> temp_int;
+    setDuration(temp_int);
+
+    // Dont set the man start/stop time remove this in the future
+    aStream >> temp_time;
+    //setManualStartTime( temp_time );
+
+    aStream >> temp_time;
+    //setManualStopTime( temp_time );
+
+    aStream >> temp_int;
+    setTargetPaoID( temp_int );
+
+    aStream >> temp_str;
+    setStartCommand(temp_str );
+
+    aStream >> temp_str;
+    setStopCommand( temp_str );
+
+    aStream >> temp_int;
+    setRepeatInterval( temp_int);
+
+    aStream >> temp_int;
+    setTemplateType(temp_int);
+
+    if( !checkSchedule() )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+}
 
 /*== Private Functions == */
 

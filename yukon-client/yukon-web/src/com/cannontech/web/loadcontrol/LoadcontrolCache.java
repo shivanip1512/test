@@ -31,15 +31,14 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.LMComparators;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
-import com.cannontech.messaging.message.loadcontrol.CommandMessage;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
-import com.cannontech.messaging.message.loadcontrol.data.CurtailCustomer;
-import com.cannontech.messaging.message.loadcontrol.data.GroupBase;
-import com.cannontech.messaging.message.loadcontrol.data.EnergyExchangeCustomer;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
-import com.cannontech.messaging.message.loadcontrol.data.ProgramCurtailment;
-import com.cannontech.messaging.message.loadcontrol.data.ProgramEnergyExchange;
-import com.cannontech.messaging.message.loadcontrol.data.ScenarioWrapper;
+import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.loadcontrol.data.LMCurtailCustomer;
+import com.cannontech.loadcontrol.data.LMEnergyExchangeCustomer;
+import com.cannontech.loadcontrol.data.LMGroupBase;
+import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.data.LMProgramCurtailment;
+import com.cannontech.loadcontrol.data.LMProgramEnergyExchange;
+import com.cannontech.loadcontrol.data.LMScenarioWrapper;
 import com.cannontech.spring.YukonSpringHook;
 
 public class LoadcontrolCache implements java.util.Observer {
@@ -71,8 +70,8 @@ public class LoadcontrolCache implements java.util.Observer {
 	
 	
 	//programs
-	private List<ProgramCurtailment> curtailmentPrograms = new ArrayList<ProgramCurtailment>();
-	private List<ProgramEnergyExchange> energyExchangePrograms = new ArrayList<ProgramEnergyExchange>();
+	private List<LMProgramCurtailment> curtailmentPrograms = new ArrayList<LMProgramCurtailment>();
+	private List<LMProgramEnergyExchange> energyExchangePrograms = new ArrayList<LMProgramEnergyExchange>();
 	
 /**
  * LoadcontrolCache constructor comment.
@@ -91,10 +90,10 @@ public LoadcontrolCache(final LoadControlClientConnection lcConn) {
 
 /**
  * Creation date: (6/12/2001 9:36:25 AM)
- * @return com.cannontech.loadcontrol.data.ProgramEnergyExchange[]
+ * @return com.cannontech.loadcontrol.data.LMProgramEnergyExchange[]
  * @param operatorID long
  */
-public ProgramEnergyExchange[] getActiveEnergyExchangePrograms(long energyCompanyID) {
+public com.cannontech.loadcontrol.data.LMProgramEnergyExchange[] getActiveEnergyExchangePrograms(long energyCompanyID) {
 
 /*	java.util.ArrayList foundProgs = new java.util.ArrayList();
 
@@ -108,10 +107,10 @@ public ProgramEnergyExchange[] getActiveEnergyExchangePrograms(long energyCompan
 		{
 			Object prog = progVector.elementAt(j);
 				
-			if( prog instanceof com.cannontech.loadcontrol.data.ProgramEnergyExchange )
+			if( prog instanceof com.cannontech.loadcontrol.data.LMProgramEnergyExchange )
 			{
-				com.cannontech.loadcontrol.data.ProgramEnergyExchange eeProg =
-					(com.cannontech.loadcontrol.data.ProgramEnergyExchange) prog;
+				com.cannontech.loadcontrol.data.LMProgramEnergyExchange eeProg =
+					(com.cannontech.loadcontrol.data.LMProgramEnergyExchange) prog;
 
 				java.util.Vector customers = eeProg.getEnergyExchangeCustomers();
 				for( int k = 0; k < customers.size(); k++ )
@@ -134,39 +133,43 @@ public ProgramEnergyExchange[] getActiveEnergyExchangePrograms(long energyCompan
 		
 	}
 
-	com.cannontech.loadcontrol.data.ProgramEnergyExchange[] retVal =
-		new com.cannontech.loadcontrol.data.ProgramEnergyExchange[foundProgs.size()];
+	com.cannontech.loadcontrol.data.LMProgramEnergyExchange[] retVal =
+		new com.cannontech.loadcontrol.data.LMProgramEnergyExchange[foundProgs.size()];
 
 	foundProgs.toArray(retVal);
 
 	return retVal;*/
 	return null;
 }
+/**
+ * Creation date: (6/26/2001 3:30:05 PM)
+ * @return com.cannontech.loadcontrol.data.LMCurtailCustomer
+ * @param progID long
+ */
+public synchronized LMCurtailCustomer[] getCurtailmentCustomers(long progID) {
 
-public synchronized CurtailCustomer[] getCurtailmentCustomers(long progID) {
+	LMCurtailCustomer[] retVal = null;
 
-	CurtailCustomer[] retVal = null;
-
-	Iterator<ProgramCurtailment> i = curtailmentPrograms.iterator();
+	Iterator<LMProgramCurtailment> i = curtailmentPrograms.iterator();
 	while( i.hasNext() )
 	{
-		ProgramCurtailment p = i.next();
+		LMProgramCurtailment p = i.next();
 
-		if (p.getYukonId().longValue() != progID)
+		if (p.getYukonID().longValue() != progID)
 			continue;
 
 		// are these for sure all customers???
 		// only god or wally knows
-		List<GroupBase> customers = p.getLoadControlGroupVector();
+		List<LMGroupBase> customers = p.getLoadControlGroupVector();
 
 		if( customers != null )
 		{
-			retVal = new CurtailCustomer[customers.size()];
+			retVal = new LMCurtailCustomer[customers.size()];
 			customers.toArray(retVal);				
 		}
 		else
 		{
-			retVal = new CurtailCustomer[0];
+			retVal = new LMCurtailCustomer[0];
 		}			
 	}
 
@@ -185,17 +188,17 @@ public long getCurtailmentID(long progID)
 /**
  * This could be sped up quite a bit.
  * Creation date: (6/26/2001 3:45:59 PM)
- * @return com.cannontech.loadcontrol.data.ProgramCurtailment
+ * @return com.cannontech.loadcontrol.data.LMProgramCurtailment
  * @param progID long
  */
-public ProgramCurtailment getCurtailmentProgram(long progID) {
+public LMProgramCurtailment getCurtailmentProgram(long progID) {
 	
-	Iterator<ProgramCurtailment> i = curtailmentPrograms.iterator();
+	Iterator<LMProgramCurtailment> i = curtailmentPrograms.iterator();
 	while( i.hasNext() )
 	{
-		ProgramCurtailment p = i.next();
+		LMProgramCurtailment p = i.next();
 
-		if( p.getYukonId().longValue() == progID )
+		if( p.getYukonID().longValue() == progID )
 		{
 			return p;
 		}
@@ -280,28 +283,28 @@ public double[] getCustomerBaseLine(long customerID, Date start, Date end) {
 	// Something went wrong, lets blow this joint.
 	return null;
 }
-	public ProgramCurtailment[] getCustomerCurtailmentPrograms(long custID)
+	public LMProgramCurtailment[] getCustomerCurtailmentPrograms(long custID)
 	{
 		return null;
 	}
-public ProgramEnergyExchange[] getCustomerEnergyExchangePrograms(long custID)
+public LMProgramEnergyExchange[] getCustomerEnergyExchangePrograms(long custID)
 {
-	List<ProgramEnergyExchange> tempProgs = new ArrayList<ProgramEnergyExchange>();	
-	ProgramEnergyExchange[] retVal= null;
+	List<LMProgramEnergyExchange> tempProgs = new ArrayList<LMProgramEnergyExchange>();	
+	LMProgramEnergyExchange[] retVal= null;
 
-	Iterator<ProgramEnergyExchange> i = energyExchangePrograms.iterator();
+	Iterator<LMProgramEnergyExchange> i = energyExchangePrograms.iterator();
 	while( i.hasNext() )
 	{
-		ProgramEnergyExchange p = i.next();
+		LMProgramEnergyExchange p = i.next();
 		
-		Vector<EnergyExchangeCustomer> customers = p.getEnergyExchangeCustomers();
+		Vector<LMEnergyExchangeCustomer> customers = p.getEnergyExchangeCustomers();
 		if( customers != null )
 		{
-			Iterator<EnergyExchangeCustomer> cIter = customers.iterator();
+			Iterator<LMEnergyExchangeCustomer> cIter = customers.iterator();
 			while( cIter.hasNext())
 			{
-				EnergyExchangeCustomer c = cIter.next();
-				if( c.getCustomerId() == custID )
+				LMEnergyExchangeCustomer c = cIter.next();
+				if( c.getCustomerID().longValue() == custID )
 				{
 					tempProgs.add(p);
 					break;	
@@ -311,7 +314,7 @@ public ProgramEnergyExchange[] getCustomerEnergyExchangePrograms(long custID)
 		
 	}	
 
-	retVal = new ProgramEnergyExchange[tempProgs.size()];
+	retVal = new LMProgramEnergyExchange[tempProgs.size()];
 	tempProgs.toArray(retVal);
 		
 	return retVal;
@@ -324,17 +327,17 @@ public java.lang.String getDbAlias() {
 	return dbAlias;
 }
 
-public Program[] getDirectPrograms() {
+public LMProgramBase[] getDirectPrograms() {
 	
-	Set<Program> programSet = new HashSet<Program>();
-	ControlAreaItem[] areas = lcConn.getAllLMControlAreas();
+	Set<LMProgramBase> programSet = new HashSet<LMProgramBase>();
+	LMControlArea[] areas = lcConn.getAllLMControlAreas();
 	// Get the programs from the control areas to make sure they are up to date
-	for(ControlAreaItem area : areas) {
-		Vector<Program> programVector = area.getProgramVector();
+	for(LMControlArea area : areas) {
+		Vector<LMProgramBase> programVector = area.getLmProgramVector();
 		programSet.addAll(programVector);
 	}
 	
-	return programSet.toArray(new Program[]{});
+	return programSet.toArray(new LMProgramBase[]{});
 }
 
 /**
@@ -342,17 +345,17 @@ public Program[] getDirectPrograms() {
  * 
  * @return Iterator
  */
-public Iterator<ControlAreaItem> getAllControlAreas( LiteYukonUser yukUser, boolean overridePaoRestrictions )
+public Iterator<LMControlArea> getAllControlAreas( LiteYukonUser yukUser, boolean overridePaoRestrictions )
 {
     if( yukUser == null )
         return lcConn.getControlAreas().values().iterator(); //return all areas
 
-    Iterator<ControlAreaItem> iter = lcConn.getControlAreas().values().iterator();
-    List<ControlAreaItem> paoList = new ArrayList<ControlAreaItem>(32);
+    Iterator<LMControlArea> iter = lcConn.getControlAreas().values().iterator();
+    List<LMControlArea> paoList = new ArrayList<LMControlArea>(32);
     while( iter.hasNext() )
     {
-        ControlAreaItem area = iter.next();
-        if( YukonSpringHook.getBean(AuthDao.class).userHasAccessPAO(yukUser, area.getYukonId().intValue()) || overridePaoRestrictions )
+        LMControlArea area = iter.next();
+        if( YukonSpringHook.getBean(AuthDao.class).userHasAccessPAO(yukUser, area.getYukonID().intValue()) || overridePaoRestrictions )
             paoList.add( area );
     }
 
@@ -365,16 +368,16 @@ public Iterator<ControlAreaItem> getAllControlAreas( LiteYukonUser yukUser, bool
  * 
  * @return LMControlArea
  */
-public ControlAreaItem getControlArea( Integer areaID )
+public LMControlArea getControlArea( Integer areaID )
 {
 	return lcConn.getControlArea( areaID );
 }
 
 /**
  * 
- * @return ProgramBase
+ * @return LMProgramBase
  */
-public Program getProgram( Integer progID )
+public LMProgramBase getProgram( Integer progID )
 {
 	return lcConn.getProgram( progID );
 }
@@ -383,7 +386,7 @@ public Program getProgram( Integer progID )
  * Only returns LMGroupBase clases, this excludes customers
  * @return LMGroupBase
  */
-public GroupBase getGroup( Integer grpID )
+public LMGroupBase getGroup( Integer grpID )
 {
 	return lcConn.getGroup( grpID );
 }
@@ -392,14 +395,14 @@ public GroupBase getGroup( Integer grpID )
  * 
  * @return LMScenarioWrapper
  */
-public ScenarioWrapper getScenario( Integer scenarioID )
+public LMScenarioWrapper getScenario( Integer scenarioID )
 {
 	LiteYukonPAObject[] scenarios = YukonSpringHook.getBean(LMDao.class).getAllLMScenarios();
 	for( int i = 0; i < scenarios.length; i++ )
 	{
-		if( scenarios[i].getYukonId() == scenarioID.intValue() )
+		if( scenarios[i].getYukonID() == scenarioID.intValue() )
 		{
-			ScenarioWrapper scenario = new ScenarioWrapper( scenarios[i] );
+			LMScenarioWrapper scenario = new LMScenarioWrapper( scenarios[i] );
 			return scenario;
 		}
 	}
@@ -407,30 +410,30 @@ public ScenarioWrapper getScenario( Integer scenarioID )
 	return null;
 }
 
-public synchronized ProgramCurtailment[] getEnergyCompanyCurtailmentPrograms(long energyCompanyID)
+public synchronized LMProgramCurtailment[] getEnergyCompanyCurtailmentPrograms(long energyCompanyID)
 {
-	ProgramCurtailment[] retVal = null;
-	List<ProgramCurtailment> tempProgs = new ArrayList<ProgramCurtailment>();
+	LMProgramCurtailment[] retVal = null;
+	List<LMProgramCurtailment> tempProgs = new ArrayList<LMProgramCurtailment>();
 	long[] ecCustomers = energyCompanyCustomer.get( new Integer( (int) energyCompanyID) );
 
 	if( ecCustomers != null )
 	{
-		Iterator<ProgramCurtailment> pIter = curtailmentPrograms.iterator();
+		Iterator<LMProgramCurtailment> pIter = curtailmentPrograms.iterator();
 		while( pIter.hasNext() )
 		{
-			ProgramCurtailment p = pIter.next();
+			LMProgramCurtailment p = pIter.next();
 
-			List<GroupBase> customers = p.getLoadControlGroupVector();
+			List<LMGroupBase> customers = p.getLoadControlGroupVector();
 			if( customers != null )
 			{
 				Iterator<?> cIter = customers.iterator();
 				while( cIter.hasNext() )
 				{
 					Object o = cIter.next();
-					if( o instanceof CurtailCustomer )
+					if( o instanceof LMCurtailCustomer )
 					{
-						CurtailCustomer c = (CurtailCustomer) o;
-						if( java.util.Arrays.binarySearch(ecCustomers,c.getCustomerId()) >= 0 )
+						LMCurtailCustomer c = (LMCurtailCustomer) o;
+						if( java.util.Arrays.binarySearch(ecCustomers,c.getCustomerID().longValue()) >= 0 )
 						{
 							tempProgs.add(p);
 							break;
@@ -441,35 +444,35 @@ public synchronized ProgramCurtailment[] getEnergyCompanyCurtailmentPrograms(lon
 		}	
 	}
 
-	retVal = new ProgramCurtailment[tempProgs.size()];
+	retVal = new LMProgramCurtailment[tempProgs.size()];
 	tempProgs.toArray(retVal);
 		
 	return retVal;
 }
-public synchronized ProgramEnergyExchange[] getEnergyCompanyEnergyExchangePrograms(long energyCompanyID)
+public synchronized LMProgramEnergyExchange[] getEnergyCompanyEnergyExchangePrograms(long energyCompanyID)
 {
-	List<ProgramEnergyExchange> tempProgs = new ArrayList<ProgramEnergyExchange>();
+	List<LMProgramEnergyExchange> tempProgs = new ArrayList<LMProgramEnergyExchange>();
 	
-	ProgramEnergyExchange[] retVal= null;
+	LMProgramEnergyExchange[] retVal= null;
 
 	long[] ecCustomers = energyCompanyCustomer.get( new Integer( (int) energyCompanyID) );
 
 	if( ecCustomers != null )
 	{	
-		Iterator<ProgramEnergyExchange> i = energyExchangePrograms.iterator();
+		Iterator<LMProgramEnergyExchange> i = energyExchangePrograms.iterator();
 		while( i.hasNext() )
 		{
-			ProgramEnergyExchange p = i.next();
+			LMProgramEnergyExchange p = i.next();
 			
-			Vector<EnergyExchangeCustomer> customers = p.getEnergyExchangeCustomers();
+			Vector<LMEnergyExchangeCustomer> customers = p.getEnergyExchangeCustomers();
 			if( customers != null )
 			{
-				Iterator<EnergyExchangeCustomer> cIter = customers.iterator();
+				Iterator<LMEnergyExchangeCustomer> cIter = customers.iterator();
 				while( cIter.hasNext())
 				{
-					EnergyExchangeCustomer c = cIter.next();
+					LMEnergyExchangeCustomer c = cIter.next();
 
-					if( java.util.Arrays.binarySearch( ecCustomers, c.getCustomerId()) >= 0 )
+					if( java.util.Arrays.binarySearch( ecCustomers, c.getCustomerID().longValue() ) >= 0 )
 					{
 						tempProgs.add(p);
 						break;	
@@ -480,7 +483,7 @@ public synchronized ProgramEnergyExchange[] getEnergyCompanyEnergyExchangeProgra
 		}	
 	}
 
-	retVal = new ProgramEnergyExchange[tempProgs.size()];
+	retVal = new LMProgramEnergyExchange[tempProgs.size()];
 	tempProgs.toArray(retVal);
 		
 	return retVal;
@@ -490,28 +493,28 @@ public synchronized ProgramEnergyExchange[] getEnergyCompanyEnergyExchangeProgra
  * @return com.cannontech.loadcontrol.data.LMCurtailCustomer
  * @param progID long
  */
-public synchronized EnergyExchangeCustomer[] getEnergyExchangeCustomers(long progID) {
+public synchronized LMEnergyExchangeCustomer[] getEnergyExchangeCustomers(long progID) {
 
-	EnergyExchangeCustomer[] retVal= null;
+	LMEnergyExchangeCustomer[] retVal= null;
 	
-	Iterator<ProgramEnergyExchange> i = energyExchangePrograms.iterator();
+	Iterator<LMProgramEnergyExchange> i = energyExchangePrograms.iterator();
 	while( i.hasNext() )
 	{
-		ProgramEnergyExchange p = i.next();
+		LMProgramEnergyExchange p = i.next();
 
-		if( p.getYukonId().longValue() == progID )
+		if( p.getYukonID().longValue() == progID )
 		{
-			Vector<EnergyExchangeCustomer> customers = p.getEnergyExchangeCustomers();
+			Vector<LMEnergyExchangeCustomer> customers = p.getEnergyExchangeCustomers();
 			if( customers != null )
 			{
-				retVal = new EnergyExchangeCustomer[customers.size()];
+				retVal = new LMEnergyExchangeCustomer[customers.size()];
 				customers.toArray(retVal);
 			}
 		}
 	}
 
 	if( retVal == null )
-		retVal = new EnergyExchangeCustomer[0];
+		retVal = new LMEnergyExchangeCustomer[0];
 		
 	return retVal;
 }
@@ -579,10 +582,10 @@ public synchronized void refresh()
 	
 	if( lcConn != null )
 	{		
-		CommandMessage c =
-			new CommandMessage();
+		com.cannontech.loadcontrol.messages.LMCommand c =
+			new com.cannontech.loadcontrol.messages.LMCommand();
 
-		c.setCommand( CommandMessage.RETRIEVE_ALL_CONTROL_AREAS);
+		c.setCommand( com.cannontech.loadcontrol.messages.LMCommand.RETRIEVE_ALL_CONTROL_AREAS);
 		lcConn.write(c);
         lcConn.addObserver( this );
 	}

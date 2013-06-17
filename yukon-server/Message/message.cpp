@@ -23,10 +23,33 @@
 using std::string;
 using std::endl;
 
-using boost::shared_ptr;
-
 #define DEFAULT_SYSTEM_USER "(yukon system)"
-DEFINE_COLLECTABLE( CtiMessage, MSG_DEFAULT );
+RWDEFINE_COLLECTABLE( CtiMessage, MSG_DEFAULT );
+
+
+void CtiMessage::saveGuts(RWvostream &aStream) const
+{
+   RWCollectable::saveGuts( aStream );
+
+   aStream << MessageTime;
+   aStream << MessagePriority;
+   aStream << _soe;
+   aStream << _usr;
+   aStream << _token;
+   aStream << _src;
+}
+
+void CtiMessage::restoreGuts(RWvistream& aStream)
+{
+   RWCollectable::restoreGuts( aStream );
+
+   aStream >> MessageTime;
+   aStream >> MessagePriority;
+   aStream >> _soe;
+   aStream >> _usr;
+   aStream >> _token;
+   aStream >> _src;
+}
 
 CtiMessage* CtiMessage::replicateMessage() const
 {

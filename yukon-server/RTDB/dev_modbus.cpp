@@ -591,9 +591,10 @@ INT ModbusDevice::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
     }
     else
     {
+        char error_str[80];
         string resultString;
 
-        const string error_str = GetErrorString(ErrReturn);
+        GetErrorString(ErrReturn, error_str);
 
         resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
 

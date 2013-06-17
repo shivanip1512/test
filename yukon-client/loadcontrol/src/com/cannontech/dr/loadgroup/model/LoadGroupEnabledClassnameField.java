@@ -1,6 +1,6 @@
 package com.cannontech.dr.loadgroup.model;
 
-import com.cannontech.messaging.message.loadcontrol.data.DirectGroupBase;
+import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.user.YukonUserContext;
 
 public class LoadGroupEnabledClassnameField extends LoadGroupBackingFieldBase {
@@ -11,7 +11,7 @@ public class LoadGroupEnabledClassnameField extends LoadGroupBackingFieldBase {
     }
 
     @Override
-    public Object getGroupValue(DirectGroupBase loadGroup,
+    public Object getGroupValue(LMDirectGroupBase loadGroup,
             YukonUserContext userContext) {
         return loadGroup.getDisableFlag() ? "drDisabled" : "drEnabled";
     }

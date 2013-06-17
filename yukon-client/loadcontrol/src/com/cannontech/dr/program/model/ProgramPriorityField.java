@@ -3,7 +3,7 @@ package com.cannontech.dr.program.model;
 import java.util.Comparator;
 
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
+import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.user.YukonUserContext;
 
 public class ProgramPriorityField extends ProgramBackingFieldBase {
@@ -14,7 +14,7 @@ public class ProgramPriorityField extends ProgramBackingFieldBase {
     }
     
     @Override
-    public Object getProgramValue(Program program, YukonUserContext userContext) {
+    public Object getProgramValue(LMProgramBase program, YukonUserContext userContext) {
         return buildResolvable(getFieldName(),
                                program.getStartPriority() <= 0
                                    ? 1 : program.getStartPriority());
@@ -26,8 +26,8 @@ public class ProgramPriorityField extends ProgramBackingFieldBase {
 
             @Override
             public int compare(DisplayablePao pao1, DisplayablePao pao2) {
-                Program program1 = getProgramFromYukonPao(pao1);
-                Program program2 = getProgramFromYukonPao(pao2);
+                LMProgramBase program1 = getProgramFromYukonPao(pao1);
+                LMProgramBase program2 = getProgramFromYukonPao(pao2);
                 if (program1 == program2) {
                     return 0;
                 }

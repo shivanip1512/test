@@ -25,7 +25,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.messaging.message.macs.ScheduleMessage;
+import com.cannontech.message.macs.message.Schedule;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -33,87 +33,87 @@ import com.cannontech.web.security.annotation.CheckRole;
 
 @CheckRole(YukonRole.SCHEDULER)
 public class MACSScheduleController extends MultiActionController {
-    private static final Comparator<ScheduleMessage> sortByName;
-    private static final Comparator<ScheduleMessage> sortByCategory;
-    private static final Comparator<ScheduleMessage> sortByState;
-    private static final Comparator<ScheduleMessage> sortByStartDate;
-    private static final Comparator<ScheduleMessage> sortByStopDate;
-    private static final Comparator<ScheduleMessage> reverseSortByName;
-    private static final Comparator<ScheduleMessage> reverseSortByCategory;
-    private static final Comparator<ScheduleMessage> reverseSortByState;
-    private static final Comparator<ScheduleMessage> reverseSortByStartDate;
-    private static final Comparator<ScheduleMessage> reverseSortByStopDate;
-    private MACSScheduleService<ScheduleMessage> service;
+    private static final Comparator<Schedule> sortByName;
+    private static final Comparator<Schedule> sortByCategory;
+    private static final Comparator<Schedule> sortByState;
+    private static final Comparator<Schedule> sortByStartDate;
+    private static final Comparator<Schedule> sortByStopDate;
+    private static final Comparator<Schedule> reverseSortByName;
+    private static final Comparator<Schedule> reverseSortByCategory;
+    private static final Comparator<Schedule> reverseSortByState;
+    private static final Comparator<Schedule> reverseSortByStartDate;
+    private static final Comparator<Schedule> reverseSortByStopDate;
+    private MACSScheduleService<Schedule> service;
     private DateFormattingService dateFormattingService;
     private RolePropertyDao rolePropertyDao;
     
     static {
-        sortByName = new Comparator<ScheduleMessage>() {
-            public int compare(ScheduleMessage o1, ScheduleMessage o2) {
+        sortByName = new Comparator<Schedule>() {
+            public int compare(Schedule o1, Schedule o2) {
                 return o1.getScheduleName().compareTo(o2.getScheduleName());
             }
         };
         
-        sortByCategory = new Comparator<ScheduleMessage>() {
-            public int compare(ScheduleMessage o1, ScheduleMessage o2) {
+        sortByCategory = new Comparator<Schedule>() {
+            public int compare(Schedule o1, Schedule o2) {
                 return o1.getCategoryName().compareTo(o2.getCategoryName());
             }
         };
         
-        sortByState = new Comparator<ScheduleMessage>() {
-            public int compare(ScheduleMessage o1, ScheduleMessage o2) {
+        sortByState = new Comparator<Schedule>() {
+            public int compare(Schedule o1, Schedule o2) {
                 int result = o1.getCurrentState().compareTo(o2.getCurrentState());
                 if (result == 0) return sortByName.compare(o1, o2);
                 return result;
             }
         };
         
-        sortByStartDate = new Comparator<ScheduleMessage>() {
-            public int compare(ScheduleMessage o1, ScheduleMessage o2) {
+        sortByStartDate = new Comparator<Schedule>() {
+            public int compare(Schedule o1, Schedule o2) {
                 int result = o1.getNextRunTime().compareTo(o2.getNextRunTime());
                 if (result == 0) return sortByName.compare(o1, o2);
                 return result;
             }
         };
         
-        sortByStopDate = new Comparator<ScheduleMessage>() {
-            public int compare(ScheduleMessage o1, ScheduleMessage o2) {
+        sortByStopDate = new Comparator<Schedule>() {
+            public int compare(Schedule o1, Schedule o2) {
                 int result = o1.getNextStopTime().compareTo(o2.getNextStopTime());
                 if (result == 0) return sortByName.compare(o1, o2);
                 return result;
             }
         };
         
-        reverseSortByName = new Comparator<ScheduleMessage>() {
-            public int compare(ScheduleMessage o1, ScheduleMessage o2) {
+        reverseSortByName = new Comparator<Schedule>() {
+            public int compare(Schedule o1, Schedule o2) {
                 return o2.getScheduleName().compareTo(o1.getScheduleName());
             }
         };
         
-        reverseSortByCategory = new Comparator<ScheduleMessage>() {
-            public int compare(ScheduleMessage o1, ScheduleMessage o2) {
+        reverseSortByCategory = new Comparator<Schedule>() {
+            public int compare(Schedule o1, Schedule o2) {
                 return o2.getCategoryName().compareTo(o1.getCategoryName());
             }
         };
         
-        reverseSortByState = new Comparator<ScheduleMessage>() {
-            public int compare(ScheduleMessage o1, ScheduleMessage o2) {
+        reverseSortByState = new Comparator<Schedule>() {
+            public int compare(Schedule o1, Schedule o2) {
                 int result = o2.getCurrentState().compareTo(o1.getCurrentState());
                 if (result == 0) return sortByName.compare(o1, o2);
                 return result;
             }
         };
         
-        reverseSortByStartDate = new Comparator<ScheduleMessage>() {
-            public int compare(ScheduleMessage o1, ScheduleMessage o2) {
+        reverseSortByStartDate = new Comparator<Schedule>() {
+            public int compare(Schedule o1, Schedule o2) {
                 int result = o2.getNextRunTime().compareTo(o1.getNextRunTime());
                 if (result == 0) return sortByName.compare(o1, o2);
                 return result;
             }
         };
         
-        reverseSortByStopDate = new Comparator<ScheduleMessage>() {
-            public int compare(ScheduleMessage o1, ScheduleMessage o2) {
+        reverseSortByStopDate = new Comparator<Schedule>() {
+            public int compare(Schedule o1, Schedule o2) {
                 int result = o2.getNextStopTime().compareTo(o1.getNextStopTime());
                 if (result == 0) return sortByName.compare(o1, o2);
                 return result;
@@ -137,7 +137,7 @@ public class MACSScheduleController extends MultiActionController {
     
     public ModelAndView innerView(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
-        final List<ScheduleMessage> list = service.getAll();
+        final List<Schedule> list = service.getAll();
         final LiteYukonUser user = ServletUtil.getYukonUser(request);
         String sortBy = ServletRequestUtils.getStringParameter(request, "sortBy");
         Boolean descending = ServletRequestUtils.getBooleanParameter(request, "descending");
@@ -167,7 +167,7 @@ public class MACSScheduleController extends MultiActionController {
         
         if (!isEditable(userContext.getYukonUser())) return view(request, reponse);
         
-        final ScheduleMessage schedule = service.getById(id);
+        final Schedule schedule = service.getById(id);
         final Calendar cal = dateFormattingService.getCalendar(userContext);
         final Calendar stopCal = (Calendar) cal.clone();
         stopCal.add(Calendar.HOUR_OF_DAY, 4);
@@ -238,7 +238,7 @@ public class MACSScheduleController extends MultiActionController {
         if (time.equals("stopnow") || time.equals("stoptime")) start = stop;
             
         if (start != null) {
-            ScheduleMessage schedule = service.getById(id);
+            Schedule schedule = service.getById(id);
             
             if (start.compareTo(stop) > 0) {
             	
@@ -261,7 +261,7 @@ public class MACSScheduleController extends MultiActionController {
         
         if (!isEditable(user)) return mav;
         
-        ScheduleMessage schedule = service.getById(id);
+        Schedule schedule = service.getById(id);
         String currentState = schedule.getCurrentState();
         
         if (currentState.equalsIgnoreCase("Disabled")) {
@@ -280,7 +280,7 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     @SuppressWarnings("unchecked")
-    private void sort(final List<ScheduleMessage> list, final String sortBy, final Boolean descending) {
+    private void sort(final List<Schedule> list, final String sortBy, final Boolean descending) {
         Comparator c = null;
         String cleanSortBy = sortBy.trim();
         
@@ -326,15 +326,15 @@ public class MACSScheduleController extends MultiActionController {
         return redirect;
     }
     
-    private List<MACSScheduleInfo> createScheduleInfoList(final List<ScheduleMessage> scheduleList, final boolean editable) {
+    private List<MACSScheduleInfo> createScheduleInfoList(final List<Schedule> scheduleList, final boolean editable) {
         List<MACSScheduleInfo> infoList = new ArrayList<MACSScheduleInfo>(scheduleList.size());
-        for (final ScheduleMessage schedule : scheduleList) {
+        for (final Schedule schedule : scheduleList) {
             infoList.add(new MACSScheduleInfo(schedule, editable));
         }
         return infoList;
     }
     
-    public void setScheduleService(final MACSScheduleService<ScheduleMessage> service) {
+    public void setScheduleService(final MACSScheduleService<Schedule> service) {
         this.service = service;
     }
     

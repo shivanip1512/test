@@ -6,8 +6,6 @@ package com.cannontech.loadcontrol.messages;
 import java.util.List;
 
 import com.cannontech.message.util.CollectionExtracter;
-import com.cannontech.messaging.message.loadcontrol.ManualControlResponseMessage;
-import com.cannontech.messaging.message.loadcontrol.data.ConstraintViolation;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -28,7 +26,7 @@ public DefineCollectableLMManualControlResponse()
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException
 {
-	return new ManualControlResponseMessage();
+	return new LMManualControlResponse();
 }
 /**
  * getComparator method comment.
@@ -60,7 +58,7 @@ public String getCxxStringId() {
  * getJavaClass method comment.
  */
 public Class<?> getJavaClass() {
-	return ManualControlResponseMessage.class;
+	return LMManualControlResponse.class;
 }
 /**
  * restoreGuts method comment.
@@ -68,14 +66,14 @@ public Class<?> getJavaClass() {
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException
 {
 	super.restoreGuts( obj, vstr, polystr );
-	ManualControlResponseMessage lmManualControlResponse = (ManualControlResponseMessage) obj;
+	LMManualControlResponse lmManualControlResponse = (LMManualControlResponse) obj;
 	int programID = (int) vstr.extractUnsignedInt();
 	//Vector v = (Vector) vstr.restoreObject(polystr);
     List<ConstraintViolation> v = CollectionExtracter.extractList(vstr, polystr, ConstraintViolation.class);
 	String bestFitAction = (String) vstr.restoreObject( SimpleMappings.CString );
 	
 	lmManualControlResponse.setConstraintViolations(v);
-	lmManualControlResponse.setProgramId(programID);
+	lmManualControlResponse.setProgramID(programID);
 	lmManualControlResponse.setBestFitAction(bestFitAction);								
 }
 /**

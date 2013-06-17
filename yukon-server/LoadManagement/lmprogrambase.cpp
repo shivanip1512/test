@@ -388,11 +388,6 @@ std::vector<CtiLMProgramControlWindow*>& CtiLMProgramBase::getLMProgramControlWi
     return _lmprogramcontrolwindows;
 }
 
-const std::vector<CtiLMProgramControlWindow*>& CtiLMProgramBase::getLMProgramControlWindows() const
-{
-    return _lmprogramcontrolwindows;
-}
-
 /*---------------------------------------------------------------------------
     getManualControlReceivedFlag
 
@@ -747,29 +742,6 @@ CtiLMProgramBase& CtiLMProgramBase::setManualControlReceivedFlag(BOOL manualrece
     return *this;
 }
 
-CtiLMProgramBase& CtiLMProgramBase::setPaoTypeString( const std::string& typeString )
-{
-    _paoTypeString = typeString;
-    return *this;
-}
-
-CtiLMProgramBase& CtiLMProgramBase::setLMProgramControlWindows( const std::vector<CtiLMProgramControlWindow*>& lmProgramControlWindows )
-{
-    delete_container(_lmprogramcontrolwindows);
-    _lmprogramcontrolwindows.clear();
-    for( int i=0; i<lmProgramControlWindows.size(); i++ )
-    {
-        _lmprogramcontrolwindows.push_back(((CtiLMProgramControlWindow*)lmProgramControlWindows[i])->replicate());
-    }
-    return *this;
-}
-
-CtiLMProgramBase& CtiLMProgramBase::setPaoType( const LONG paoType )
-{
-    _paoType = paoType;
-    return *this;
-}
-
 /*---------------------------------------------------------------------------
     isAvailableToday
 
@@ -854,6 +826,91 @@ BOOL CtiLMProgramBase::handleTimedControl(CtiTime currentTime, LONG secondsFromB
 BOOL CtiLMProgramBase::isPastMinRestartTime(CtiTime currentTime)
 {
     return TRUE;
+}
+
+/*-------------------------------------------------------------------------
+    restoreGuts
+
+    Restore self's state from the given stream
+--------------------------------------------------------------------------*/
+void CtiLMProgramBase::restoreGuts(RWvistream& istrm)
+{
+    RWCollectable::restoreGuts( istrm );
+
+    CtiTime tempTime1;
+    CtiTime tempTime2;
+    istrm >> _paoid
+    >> _paocategory
+    >> _paoclass
+    >> _paoname
+    >> _paoTypeString
+    >> _paodescription
+    >> _disableflag
+    >> _start_priority
+    >> _stop_priority
+    >> _controltype
+    >> _availableweekdays
+    >> _maxhoursdaily
+    >> _maxhoursmonthly
+    >> _maxhoursseasonal
+    >> _maxhoursannually
+    >> _minactivatetime
+    >> _minrestarttime/*
+                        >> _holidayscheduleid
+                        >> _seasonscheduleid*/
+    >> _programstatuspointid
+    >> _programstate
+    >> _reductionanalogpointid
+    >> _reductiontotal
+    >> tempTime1
+    >> tempTime2
+    >> _manualcontrolreceivedflag
+    >> _lmprogramcontrolwindows;
+
+    _paoType = resolvePAOType(_paocategory,_paoTypeString);
+
+    _startedcontrolling = CtiTime(tempTime1);
+    _lastcontrolsent = CtiTime(tempTime2);
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+
+    Save self's state onto the given stream
+---------------------------------------------------------------------------*/
+void CtiLMProgramBase::saveGuts(RWvostream& ostrm ) const
+{
+    RWCollectable::saveGuts( ostrm );
+
+    ostrm << _paoid
+    << _paocategory
+    << _paoclass
+    << _paoname
+    << _paoTypeString
+    << _paodescription
+    << _disableflag
+    << _start_priority
+    << _stop_priority
+    << _controltype
+    << _availableweekdays
+    << _maxhoursdaily
+    << _maxhoursmonthly
+    << _maxhoursseasonal
+    << _maxhoursannually
+    << _minactivatetime
+    << _minrestarttime/*
+                        << _holidayscheduleid
+                        << _seasonscheduleid*/
+    << _programstatuspointid
+    << _programstate
+    << _reductionanalogpointid
+    << _reductiontotal
+    << _startedcontrolling
+    << _lastcontrolsent
+    << _manualcontrolreceivedflag
+    << _lmprogramcontrolwindows;
+
+    return;
 }
 
 /*---------------------------------------------------------------------------

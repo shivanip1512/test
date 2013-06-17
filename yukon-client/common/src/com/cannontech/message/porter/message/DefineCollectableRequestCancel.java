@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Date;
 
 import com.cannontech.message.util.DefineCollectableMessage;
-import com.cannontech.messaging.message.porter.RequestCancelMessage;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.VirtualInputStream;
@@ -21,7 +20,7 @@ public class DefineCollectableRequestCancel extends DefineCollectableMessage {
     }
 
     public Object create(VirtualInputStream vstr) throws java.io.IOException {
-        return new RequestCancelMessage();
+        return new RequestCancel();
     }
 
     public int getCxxClassId() {
@@ -33,14 +32,14 @@ public class DefineCollectableRequestCancel extends DefineCollectableMessage {
     }
 
     public Class getJavaClass() {
-        return RequestCancelMessage.class;
+        return RequestCancel.class;
     }
     
     public void restoreGuts(Object obj, VirtualInputStream vstr, CollectableStreamer polystr) throws IOException 
     {
         super.restoreGuts( obj, vstr, polystr );
         
-        RequestCancelMessage req = (RequestCancelMessage) obj;
+        RequestCancel req = (RequestCancel) obj;
         
         req.setRequestId(vstr.extractLong());
         req.setRequestIdCount(vstr.extractUnsignedInt());
@@ -52,7 +51,7 @@ public class DefineCollectableRequestCancel extends DefineCollectableMessage {
     {
         super.saveGuts(obj, vstr, polystr );
 
-        RequestCancelMessage req = (RequestCancelMessage) obj;
+        RequestCancel req = (RequestCancel) obj;
 
         vstr.insertLong(req.getRequestId());
         vstr.insertUnsignedInt(req.getRequestIdCount());

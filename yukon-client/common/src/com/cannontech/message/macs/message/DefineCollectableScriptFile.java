@@ -6,7 +6,6 @@ package com.cannontech.message.macs.message;
  * @author: 
  */
 
-import com.cannontech.messaging.message.macs.ScriptFileMessage;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -25,7 +24,7 @@ public DefineCollectableScriptFile() {
  * create method comment.
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new ScriptFileMessage();
+	return new ScriptFile();
 }
 /**
  * getComparator method comment.
@@ -56,7 +55,7 @@ public String getCxxStringId() {
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return com.cannontech.messaging.message.macs.ScriptFileMessage.class;
+	return com.cannontech.message.macs.message.ScriptFile.class;
 }
 /**
  * restoreGuts method comment.
@@ -64,7 +63,7 @@ public Class getJavaClass() {
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {
 	super.restoreGuts( obj, vstr, polystr );
 
-	ScriptFileMessage file = (ScriptFileMessage) obj;
+	ScriptFile file = (ScriptFile) obj;
 	
 	file.setFileName( (String)vstr.restoreObject( SimpleMappings.CString ));
 	file.setFileContents( (String)vstr.restoreObject( SimpleMappings.CString ));

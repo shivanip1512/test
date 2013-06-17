@@ -56,6 +56,7 @@ class CapControlPao
         CapControlPao& operator=(const CapControlPao& right);
 
         void CapControlPao::restore(Cti::RowReader& rdr);
+        void CapControlPao::saveGuts(RWvostream& ostrm) const;
 
         bool CapControlPao::operator == (const CapControlPao& right) const;
         bool CapControlPao::operator != (const CapControlPao& right) const;

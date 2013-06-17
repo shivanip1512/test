@@ -8,20 +8,20 @@ import org.apache.log4j.Logger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
+import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.dynamic.receive.LMProgramChanged;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
-import com.cannontech.messaging.message.loadcontrol.ManualControlRequestMessage;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
-import com.cannontech.messaging.message.loadcontrol.dynamic.receive.ProgramChanged;
-import com.cannontech.messaging.util.BadServerResponseException;
-import com.cannontech.messaging.util.MessageEvent;
-import com.cannontech.messaging.util.MessageListener;
-import com.cannontech.messaging.util.TimeoutException;
+import com.cannontech.message.util.BadServerResponseException;
+import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
+import com.cannontech.message.util.TimeoutException;
 
 public class ProgramChangeBlocker implements MessageListener {
 
     private Logger log = YukonLogManager.getLogger(ProgramChangeBlocker.class);
     
-    private ManualControlRequestMessage controlRequest;
+    private LMManualControlRequest controlRequest;
     private ProgramStatus programStatus;
     private LoadControlCommandService loadControlCommandService;
     private LoadControlClientConnection loadControlClientConnection;
@@ -33,7 +33,7 @@ public class ProgramChangeBlocker implements MessageListener {
     private CountDownLatch countDownLatch;
     
     
-    public ProgramChangeBlocker(ManualControlRequestMessage controlRequest,
+    public ProgramChangeBlocker(LMManualControlRequest controlRequest,
             ProgramStatus programStatus,
             LoadControlCommandService loadControlCommandService,
             LoadControlClientConnection loadControlClientConnection,
@@ -76,7 +76,7 @@ public class ProgramChangeBlocker implements MessageListener {
             throw new TimeoutException();
         }
         
-        Program updatedProgram = loadControlClientConnection.getProgram(programId);
+        LMProgramBase updatedProgram = loadControlClientConnection.getProgram(programId);
         programStatus.setProgram(updatedProgram);
     }
     
@@ -84,10 +84,10 @@ public class ProgramChangeBlocker implements MessageListener {
     public void messageReceived(MessageEvent e) {
 
         Object obj = e.getMessage();
-        if(obj instanceof ProgramChanged) {
+        if(obj instanceof LMProgramChanged) {
             
-            ProgramChanged programChangedResp = (ProgramChanged)obj;
-            if (programChangedResp.getPaoId() == this.programId) {
+            LMProgramChanged programChangedResp = (LMProgramChanged)obj;
+            if (programChangedResp.getPaoID().intValue() == this.programId) {
                 
                 long timeNow = System.currentTimeMillis();
                 if (timeNow > this.afterTime) {

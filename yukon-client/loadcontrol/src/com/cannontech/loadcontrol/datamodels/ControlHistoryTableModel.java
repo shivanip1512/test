@@ -16,9 +16,9 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.dr.controlarea.model.TriggerType;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaItem;
-import com.cannontech.messaging.message.loadcontrol.data.ControlAreaTriggerItem;
-import com.cannontech.messaging.message.loadcontrol.data.Program;
+import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
+import com.cannontech.loadcontrol.data.LMProgramBase;
 
 public class ControlHistoryTableModel extends javax.swing.table.AbstractTableModel implements TableModelListener, IProgramTableModel
 {
@@ -35,7 +35,7 @@ public class ControlHistoryTableModel extends javax.swing.table.AbstractTableMod
 	private Vector rows = null;
 
   	// the holder for the current LMControlArea
-	private ControlAreaItem currentControlArea = null;
+	private LMControlArea currentControlArea = null;
 	
 	//The columns and their column index	
   	public static final int DATE_TIME			= 0;
@@ -125,7 +125,7 @@ public class ControlHistoryTableModel extends javax.swing.table.AbstractTableMod
 	 * Creation date: (4/6/2001 10:08:28 AM)
 	 * @return com.cannontech.loadcontrol.data.LMControlArea
 	 */
-	private ControlAreaItem getCurrentControlArea() {
+	private LMControlArea getCurrentControlArea() {
 		return currentControlArea;
 	}
 
@@ -145,7 +145,7 @@ public class ControlHistoryTableModel extends javax.swing.table.AbstractTableMod
 	 * This method returns the value of a row in the form of 
 	 * a LMProgramBase object.
 	 */
-	public synchronized Program getProgramAt(int rowIndex) 
+	public synchronized LMProgramBase getProgramAt(int rowIndex) 
 	{
 		return null;
 	}
@@ -235,7 +235,7 @@ public class ControlHistoryTableModel extends javax.swing.table.AbstractTableMod
 	 * trigger must change to return TRUE
 	 * @return boolean
 	 */
-	private boolean hasChanged( ControlAreaItem newCntrlArea )
+	private boolean hasChanged( LMControlArea newCntrlArea )
 	{
 		//be sure there was a change of the are that affects this model
 		if( getCurrentControlArea() == null 
@@ -254,7 +254,7 @@ public class ControlHistoryTableModel extends javax.swing.table.AbstractTableMod
 	 * Creation date: (4/6/2001 10:08:28 AM)
 	 * @param newCurrentControlArea com.cannontech.loadcontrol.data.LMControlArea
 	 */
-	public synchronized void setCurrentControlArea(ControlAreaItem newCurrentControlArea) 
+	public synchronized void setCurrentControlArea(LMControlArea newCurrentControlArea) 
 	{
 		//be sure there was a change of the area affects this model
 		boolean changed = hasChanged(newCurrentControlArea);
@@ -293,8 +293,8 @@ public class ControlHistoryTableModel extends javax.swing.table.AbstractTableMod
 			
 			for( int i = 0; i < getCurrentControlArea().getTriggerVector().size(); i++ )
 			{
-				ControlAreaTriggerItem trigger =
-					(ControlAreaTriggerItem)getCurrentControlArea().getTriggerVector().get(i);
+				LMControlAreaTrigger trigger =
+					(LMControlAreaTrigger)getCurrentControlArea().getTriggerVector().get(i);
 
                 if (trigger.getTriggerType() == TriggerType.THRESHOLD || 
                     trigger.getTriggerType() == TriggerType.THRESHOLD_POINT) {
@@ -365,14 +365,14 @@ public class ControlHistoryTableModel extends javax.swing.table.AbstractTableMod
 	
 	
 	
-	private double getThresholdValue( ControlAreaItem area )
+	private double getThresholdValue( LMControlArea area )
 	{
 		if( area != null && area.getTriggerVector().size() > 0 )
 		{
 			for( int i = 0; i < area.getTriggerVector().size(); i++ )
 			{
-				ControlAreaTriggerItem trigger = 
-						(ControlAreaTriggerItem)area.getTriggerVector().get(i);
+				LMControlAreaTrigger trigger = 
+						(LMControlAreaTrigger)area.getTriggerVector().get(i);
 				
                 if (trigger.getTriggerType() == TriggerType.THRESHOLD ||
                     trigger.getTriggerType() == TriggerType.THRESHOLD_POINT) {
@@ -387,14 +387,14 @@ public class ControlHistoryTableModel extends javax.swing.table.AbstractTableMod
 	}
 	
 
-	private int getTriggerPtID( ControlAreaItem area )
+	private int getTriggerPtID( LMControlArea area )
 	{
 		if( area != null && area.getTriggerVector().size() > 0 )
 		{
 			for( int i = 0; i < area.getTriggerVector().size(); i++ )
 			{
-				ControlAreaTriggerItem trigger = 
-						(ControlAreaTriggerItem)area.getTriggerVector().get(i);
+				LMControlAreaTrigger trigger = 
+						(LMControlAreaTrigger)area.getTriggerVector().get(i);
 				
                 if (trigger.getTriggerType() == TriggerType.THRESHOLD) {
 					return trigger.getPointId().intValue();
@@ -431,7 +431,7 @@ public class ControlHistoryTableModel extends javax.swing.table.AbstractTableMod
 	 * Tells us if we should show a waiting GUI or not while updating
 	 * @return boolean
 	 */
-	public boolean showWaiting( ControlAreaItem newCntrlArea )
+	public boolean showWaiting( LMControlArea newCntrlArea )
 	{
 		return hasChanged( newCntrlArea );
 	}
