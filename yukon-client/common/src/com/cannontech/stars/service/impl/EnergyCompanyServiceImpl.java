@@ -31,6 +31,7 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.EnergyCompanyNameUnavailableException;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -107,6 +108,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Autowired private UserGroupDao userGroupDao ;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private YukonGroupDao yukonGroupDao;
+    @Autowired private YukonUserDao yukonUserDao;
 
     @Override
     @Transactional(rollbackFor = {ConfigurationException.class, RuntimeException.class})
@@ -421,6 +423,9 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         //Find and delete a privilege user group
         LiteUserGroup liteUserGroup = userGroupDao.findLiteUserGroupByUserGroupName(energyCompany.getName() + " " + StarsAdminUtil.USER_GROUP_EXTENSION);
         if(liteUserGroup != null){
+            
+            log.info("Removing users from user group id# " + liteUserGroup.getUserGroupId());
+            yukonUserDao.removeUsersFromUserGroup(liteUserGroup.getUserGroupId());
             UserGroup userGroup = new UserGroup();
             userGroup.setUserGroupId(liteUserGroup.getUserGroupId());
             

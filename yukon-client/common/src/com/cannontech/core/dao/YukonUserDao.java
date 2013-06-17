@@ -114,6 +114,11 @@ public interface YukonUserDao {
      * This method removes the user from their current user group.
      */
     public void removeUserFromUserGroup(int userId);
+    
+    /**
+     * This method removes the users from the user group.
+     */
+    public void removeUsersFromUserGroup(int userGroupId);
 
     /**
      * This method adds a user to the supplied groups and sends out the necessary db change messages
@@ -161,5 +166,4 @@ public interface YukonUserDao {
      * Changes all the forceReset values for a given group.
      */
     public void updateForceResetByGroupId(int groupId, boolean forceReset);
-
 }

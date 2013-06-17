@@ -475,4 +475,14 @@ public class YukonUserDaoImpl implements YukonUserDao {
         
         yukonJdbcTemplate.update(sql);
     }
+    
+    @Override
+    public void removeUsersFromUserGroup(int userGroupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE YukonUser");
+        sql.set("UserGroupId", null);
+        sql.append("WHERE UserGroupId").eq(userGroupId);
+        yukonJdbcTemplate.update(sql);
+    }
+
 }
