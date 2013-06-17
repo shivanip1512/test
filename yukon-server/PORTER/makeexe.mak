@@ -198,11 +198,12 @@ disp_thd.obj:	precompiled.h pilserver.h dsm2.h cticonnect.h yukon.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
 		slctdev.h mgr_point.h mgr_route.h repeaterrole.h mgr_config.h \
 		msg_dbchg.h msg_cmd.h mgr_port.h port_base.h tbl_port_base.h \
-		xfer.h counter.h thread_monitor.h thread_register_data.h \
-		portglob.h porter.h devicetypes.h unsolicited_handler.h \
-		dev_single.h msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h \
-		prot_base.h millisecond_timer.h StatisticsManager.h \
-		PaoStatistics.h PaoStatisticsRecord.h ThreadStatusKeeper.h
+		xfer.h counter.h devicetypes.h thread_monitor.h \
+		thread_register_data.h portglob.h porter.h \
+		unsolicited_handler.h dev_single.h msg_pcreturn.h \
+		tbl_dv_scandata.h tbl_dv_wnd.h prot_base.h \
+		millisecond_timer.h StatisticsManager.h PaoStatistics.h \
+		PaoStatisticsRecord.h ThreadStatusKeeper.h
 dllmain.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		dsm2.h cticonnect.h yukon.h ctidbgmem.h netports.h mutex.h \
 		guard.h utility.h ctitime.h queues.h numstr.h dsm2err.h \
@@ -323,9 +324,9 @@ portdialback.obj:	precompiled.h cticalls.h os2_2w32.h dlldefs.h \
 		tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h slctdev.h \
 		smartmap.h readers_writer_lock.h critical_section.h \
 		mgr_port.h port_base.h tbl_port_base.h xfer.h counter.h \
-		msg_cmd.h pilserver.h server_b.h con_mgr.h msg_pcrequest.h \
-		mgr_point.h mgr_route.h repeaterrole.h mgr_config.h \
-		portglob.h porter.h devicetypes.h
+		devicetypes.h msg_cmd.h pilserver.h server_b.h con_mgr.h \
+		msg_pcrequest.h mgr_point.h mgr_route.h repeaterrole.h \
+		mgr_config.h portglob.h porter.h
 portentry.obj:	precompiled.h connection.h dlldefs.h exchange.h \
 		dllbase.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \
 		netports.h mutex.h guard.h utility.h ctitime.h queues.h \
@@ -733,21 +734,21 @@ port_thread_udp.obj:	precompiled.h port_thread_udp.h yukon.h types.h \
 		string_utility.h tbl_static_paoinfo.h pointdefs.h \
 		encryption.h tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h \
 		pt_base.h tbl_pt_base.h tbl_port_base.h xfer.h \
-		critical_section.h counter.h mgr_device.h rtdb.h slctdev.h \
-		smartmap.h readers_writer_lock.h dev_single.h msg_pcrequest.h \
-		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
-		tbl_dv_wnd.h connection.h exchange.h msg_ptreg.h msg_reg.h \
-		queue.h cparms.h configkey.h configval.h prot_base.h \
-		msg_dbchg.h millisecond_timer.h port_udp.h port_serial.h \
-		tbl_port_settings.h tbl_port_timing.h tbl_port_tcpip.h \
-		EncodingFilterFactory.h EncodingFilter.h c_port_interface.h \
-		elogger.h prot_gpuff.h packet_finder.h portglob.h porter.h \
-		devicetypes.h mgr_port.h dev_dnp.h dev_remote.h tbl_dialup.h \
-		tbl_direct.h prot_dnp.h dnp_application.h dnp_objects.h \
-		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
-		dnp_configuration.h dnp_object_binaryoutput.h \
-		tbl_dv_address.h dev_gridadvisor.h dev_rds.h \
-		encryption_oneway_message.h portfield.h
+		critical_section.h counter.h devicetypes.h mgr_device.h \
+		rtdb.h slctdev.h smartmap.h readers_writer_lock.h \
+		dev_single.h msg_pcrequest.h msg_pcreturn.h msg_multi.h \
+		msg_pdata.h tbl_dv_scandata.h tbl_dv_wnd.h connection.h \
+		exchange.h msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
+		configval.h prot_base.h msg_dbchg.h millisecond_timer.h \
+		port_udp.h port_serial.h tbl_port_settings.h \
+		tbl_port_timing.h tbl_port_tcpip.h EncodingFilterFactory.h \
+		EncodingFilter.h c_port_interface.h elogger.h prot_gpuff.h \
+		packet_finder.h portglob.h porter.h mgr_port.h dev_dnp.h \
+		dev_remote.h tbl_dialup.h tbl_direct.h prot_dnp.h \
+		dnp_application.h dnp_objects.h dnp_transport.h \
+		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
+		dnp_object_binaryoutput.h tbl_dv_address.h dev_gridadvisor.h \
+		dev_rds.h encryption_oneway_message.h portfield.h
 ripple.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		connection.h exchange.h dllbase.h dsm2.h cticonnect.h yukon.h \
 		ctidbgmem.h netports.h mutex.h guard.h utility.h ctitime.h \

@@ -956,8 +956,7 @@ test_prot_dnp.obj:	prot_dnp.h dlldefs.h pointtypes.h prot_base.h \
 		boost_time.h boostutil.h xfer.h packet_finder.h \
 		dnp_application.h dnp_objects.h dnp_transport.h \
 		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
-		dnp_object_binaryoutput.h dnp_object_internalindications.h \
-		boost_test_helpers.h
+		dnp_object_binaryoutput.h boost_test_helpers.h
 test_prot_expresscom.obj:	expresscom.h cmdparse.h ctitokenizer.h \
 		dlldefs.h parsevalue.h dllbase.h dsm2.h cticonnect.h yukon.h \
 		types.h ctidbgmem.h netports.h mutex.h guard.h utility.h \
