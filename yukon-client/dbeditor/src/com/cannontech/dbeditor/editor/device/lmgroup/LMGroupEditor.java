@@ -2,7 +2,6 @@ package com.cannontech.dbeditor.editor.device.lmgroup;
 
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.ClientRights;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -252,8 +251,7 @@ public void setValue(Object val)
 	java.util.Vector tabs = new java.util.Vector( EDITOR_TYPES.length );
 	
 	DataInputPanel tempPanel;
-	int type = com.cannontech.database.data.pao.PAOGroups.getDeviceType( 
-				((com.cannontech.database.data.device.lm.LMGroup)val).getPAOType() );
+	int type = PaoType.getPaoTypeId(((com.cannontech.database.data.device.lm.LMGroup)val).getPAOType());
 
  	for( int i = 0; i < EDITOR_TYPES.length; i++ )
  	{

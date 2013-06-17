@@ -12,10 +12,10 @@ import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.OneLineDrawing;
 import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.cbc.util.UpdaterHelper;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.capcontrol.CapBank;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
@@ -72,7 +72,7 @@ public class OnelineCap extends OnelineObject {
         initEditorImage();
         initInformationImage();
         
-        if (CapControlUtils.isTwoWay(PAOGroups.getDeviceType(getStreamable().getControlDeviceType()))) {
+        if (CapControlUtils.isTwoWay(PaoType.getPaoTypeId(getStreamable().getControlDeviceType()))) {
             initPointTimestampsImage();
         }
 

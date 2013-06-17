@@ -1854,12 +1854,12 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
         deviceBase = (com.cannontech.database.data.device.DeviceBase) val;
 
         deviceBase.setPAOName(getNameTextField().getText());
-        int devType = PAOGroups.getDeviceType(deviceBase.getPAOType());
+        int devType = PaoType.getPaoTypeId(deviceBase.getPAOType());
 
         // just in case, set our String type data to the exact String type
         // expected
         // used to ensure the type string in the DB is the same as the code
-        deviceBase.setDeviceType(PAOGroups.getPAOTypeString(devType));
+        deviceBase.setDeviceType(PaoType.getPaoTypeString(devType));
 
         if (getDisableFlagCheckBox().isSelected())
             deviceBase.setDisableFlag(new Character('Y'));
@@ -2626,18 +2626,15 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     		postCommWait = ((IDLCBase)rBase).getDeviceIDLCRemote().getPostCommWait();
     
     		//only show CCUAmpUse when its a CCU-711 or CCU-710A
-    		if( com.cannontech.database.data.pao.PAOGroups.getPAOType( rBase.getPAOCategory(), rBase.getPAOType() )
-    			 == PAOGroups.CCU711
-    			 || com.cannontech.database.data.pao.PAOGroups.getPAOType( rBase.getPAOCategory(), rBase.getPAOType() )
-    			 == PAOGroups.CCU710A )
+    		if( PaoType.getPaoTypeId(rBase.getPAOType()) == PAOGroups.CCU711 || 
+    		        PaoType.getPaoTypeId(rBase.getPAOType()) == PAOGroups.CCU710A ) 
     		{
     			ampUse = ((IDLCBase)rBase).getDeviceIDLCRemote().getCcuAmpUseType();
     			getJLabelCCUAmpUseType().setVisible(true);
     			getJComboBoxAmpUseType().setVisible(true);
     
     			//add the extra options for CCU-711's only!
-    			if( com.cannontech.database.data.pao.PAOGroups.getPAOType( rBase.getPAOCategory(), rBase.getPAOType() )
-    			 	 == PAOGroups.CCU711 )
+    			if( PaoType.getPaoTypeId(rBase.getPAOType()) == PAOGroups.CCU711 )
     			{
     				getJComboBoxAmpUseType().addItem( com.cannontech.database.db.device.DeviceIDLCRemote.AMPUSE_ALTERNATING );
     				getJComboBoxAmpUseType().addItem( com.cannontech.database.db.device.DeviceIDLCRemote.AMPUSE_DEF_1_FAIL_2 );
@@ -2940,7 +2937,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     {
     	deviceBase = (DeviceBase)val;
     
-    	deviceType = PAOGroups.getDeviceType( deviceBase.getPAOType() );
+    	deviceType = PaoType.getPaoTypeId( deviceBase.getPAOType() );
     	String typeStr = deviceBase.getPAOType();
     	//Override defalut type string for TapTerminal
     	if (deviceType == PAOGroups.TAPTERMINAL) {

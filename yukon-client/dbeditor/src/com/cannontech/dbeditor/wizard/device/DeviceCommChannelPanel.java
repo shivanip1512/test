@@ -16,6 +16,7 @@ import javax.swing.event.ListSelectionListener;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.wizard.CancelInsertException;
@@ -230,7 +231,7 @@ private void checkAddress()
         } else
             portID = new Integer(((LiteYukonPAObject) getPortComboBox().getSelectedItem()).getYukonID());
 
-        int devType = PAOGroups.getDeviceType(((DeviceBase) val).getPAOType());
+        int devType = PaoType.getPaoTypeId(((DeviceBase) val).getPAOType());
 
         if (val instanceof PagingTapTerminal) {
             ((PagingTapTerminal) val).getDeviceDirectCommSettings().setPortID(portID);

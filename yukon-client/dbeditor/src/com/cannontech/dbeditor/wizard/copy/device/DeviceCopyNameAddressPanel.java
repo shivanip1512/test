@@ -476,7 +476,7 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 				}
 				carrierBase.getDeviceCarrierSettings().setAddress(addressHolder);
 
-				int deviceType = PAOGroups.getDeviceType( deviceBase.getPAOType() );
+				int deviceType = PaoType.getPaoTypeId( deviceBase.getPAOType() );
 				if( DeviceTypesFuncs.isMCT(deviceType) ) {
 					checkMCTAddresses( new Integer(getAddressTextField().getText()).intValue() );
                     checkMeterNumber(getJTextFieldMeterNumber().getText());

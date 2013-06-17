@@ -1078,7 +1078,7 @@ public static Object changeType (String newType,
 		}
 
 		//create a brand new DeviceBase object
-		val = DeviceFactory.createDevice( PAOGroups.getDeviceType(type) );
+		val = DeviceFactory.createDevice( PaoType.getPaoTypeId(type) );
 		
 		//set all the device specific stuff here
 		((DeviceBase) val).setDevice(

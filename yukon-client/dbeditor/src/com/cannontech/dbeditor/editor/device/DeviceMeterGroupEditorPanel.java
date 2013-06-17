@@ -20,6 +20,7 @@ import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
@@ -1017,7 +1018,7 @@ public static void main(java.lang.String[] args) {
 @SuppressWarnings("deprecation")
 public void setValue(Object val) 
 {
-	int deviceType = PAOGroups.getDeviceType( ((DeviceBase)val).getPAOType() );
+	int deviceType = PaoType.getPaoTypeId( ((DeviceBase)val).getPAOType() );
 	
 	DeviceConfigurationDao deviceConfigDao = YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
 	

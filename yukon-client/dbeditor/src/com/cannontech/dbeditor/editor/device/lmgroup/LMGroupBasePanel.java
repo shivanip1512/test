@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.device.lm.IGroupRoute;
@@ -1172,7 +1173,7 @@ public void setSwitchType(String type)
 	getJTextFieldType().setText( type );
 
 	//do not show the route panel if the type is one of the following
-	int deviceType = com.cannontech.database.data.pao.PAOGroups.getDeviceType(type);
+	int deviceType = PaoType.getPaoTypeId(type);
     getCommunicationPanel().setVisible( 
 		!(deviceType == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP ||
 	      deviceType == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT ||

@@ -326,8 +326,8 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
             ((MCTBase)newDevice).setConfigMapping(((MCTBase)oldDevice).getConfigMapping());
 
             if ( newDevice instanceof MCT400SeriesBase && oldDevice instanceof MCT400SeriesBase &&
-                    (DeviceTypesFuncs.isMCT410(PAOGroups.getDeviceType(newDevice.getPAOType())) && 
-                     DeviceTypesFuncs.isMCT410(PAOGroups.getDeviceType(oldDevice.getPAOType())))) {
+                    (DeviceTypesFuncs.isMCT410(PaoType.getPaoTypeId(newDevice.getPAOType())) && 
+                     DeviceTypesFuncs.isMCT410(PaoType.getPaoTypeId(oldDevice.getPAOType())))) {
                 ((MCT400SeriesBase) newDevice).setDeviceMCT400Series(((MCT400SeriesBase)oldDevice).getDeviceMCT400Series());
             }
         }

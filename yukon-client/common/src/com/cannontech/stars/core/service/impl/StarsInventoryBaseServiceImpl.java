@@ -14,13 +14,13 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
@@ -130,7 +130,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
 	        	
 	    		YukonListEntry entry = yukonListDao.getYukonListEntry(hardwareTypeID);
 	    		String deviceTypeName = entry.getEntryText();
-	    		int yukonDeviceTypeId = PAOGroups.getDeviceType(deviceTypeName);
+	    		int yukonDeviceTypeId = PaoType.getPaoTypeId(deviceTypeName);
 	    		if (!DeviceTypesFuncs.isTwoWayLcr(yukonDeviceTypeId)) {
 	    			throw new Lcr3102YukonDeviceCreationException("Selected yukon device must be a Two Way LCR.");
 	    		}
@@ -254,7 +254,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                 		
                 		YukonListEntry entry = yukonListDao.getYukonListEntry(hardwareTypeID);
         	    		String deviceTypeName = entry.getEntryText();
-        	    		int yukonDeviceTypeId = PAOGroups.getDeviceType(deviceTypeName);
+        	    		int yukonDeviceTypeId = PaoType.getPaoTypeId(deviceTypeName);
         	    		if (!DeviceTypesFuncs.isTwoWayLcr(yukonDeviceTypeId)) {
         	    			throw new StarsDeviceSerialNumberAlreadyExistsException("Selected yukon device must be a Two Way LCR.");
         	    		} 

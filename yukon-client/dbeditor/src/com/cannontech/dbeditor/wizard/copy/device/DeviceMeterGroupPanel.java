@@ -13,9 +13,9 @@ import com.cannontech.common.device.groups.service.FixedDeviceGroupingHack;
 import com.cannontech.common.device.groups.service.FixedDeviceGroups;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.multi.MultiDBPersistent;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceGroupMember;
 import com.cannontech.spring.YukonSpringHook;
@@ -307,7 +307,7 @@ public class DeviceMeterGroupPanel extends DataInputPanel {
         } else {
             device = (DeviceBase) val;
         }
-        yd = new SimpleDevice(device.getPAObjectID(),PAOGroups.getDeviceType(device.getPAOType()));
+        yd = new SimpleDevice(device.getPAObjectID(),PaoType.getPaoTypeId(device.getPAOType()));
         String cycleGroup = (String)getCycleGroupComboBox().getSelectedItem();
         String alternateGroup = (String)getAlternateGroupComboBox().getSelectedItem();
         String billingGroup = (String)getJComboBoxBillingGroup().getSelectedItem();
@@ -331,7 +331,7 @@ public class DeviceMeterGroupPanel extends DataInputPanel {
             device = (DeviceBase) o;
         }
         
-        yd = new SimpleDevice(device.getPAObjectID(),PAOGroups.getDeviceType(device.getPAOType()));
+        yd = new SimpleDevice(device.getPAObjectID(),PaoType.getPaoTypeId(device.getPAOType()));
         String billingGroup = hacker.getGroupForDevice(FixedDeviceGroups.BILLINGGROUP, yd);
         String alternateGroup = hacker.getGroupForDevice(FixedDeviceGroups.TESTCOLLECTIONGROUP, yd);
         String collectionGroup = hacker.getGroupForDevice(FixedDeviceGroups.COLLECTIONGROUP, yd);

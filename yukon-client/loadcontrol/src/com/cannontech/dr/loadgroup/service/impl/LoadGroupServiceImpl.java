@@ -142,7 +142,7 @@ public class LoadGroupServiceImpl implements LoadGroupService {
             public DisplayablePao mapRow(YukonResultSet rs)
                     throws SQLException {
                 String paoTypeStr = rs.getString("type");
-                int deviceTypeId = PAOGroups.getPAOType("DEVICE", paoTypeStr);
+                int deviceTypeId = PaoType.getPaoTypeId(paoTypeStr);
                 PaoType paoType = PaoType.getForId(deviceTypeId);
                 PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
                                                         paoType);

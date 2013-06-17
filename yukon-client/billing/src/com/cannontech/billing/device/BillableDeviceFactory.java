@@ -1,6 +1,7 @@
 package com.cannontech.billing.device;
 
 import com.cannontech.billing.device.base.BillableDevice;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 
@@ -19,7 +20,7 @@ public class BillableDeviceFactory {
     public static BillableDevice createBillableDevice(String category, String type) {
         BillableDevice device = null;
 
-        int intType = PAOGroups.getPAOType(category, type);
+        int intType = PaoType.getPaoTypeId(type);
 
         switch (intType) {
 

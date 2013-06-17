@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.data.device.DeviceFactory;
@@ -1401,7 +1402,7 @@ public boolean processTransmitterFile()
 		String deviceType = DeviceTypes.STRING_SERIES_5_LMI[0];
 		Series5LMI device = null;
 
-		device = (Series5LMI)DeviceFactory.createDevice( PAOGroups.getDeviceType( deviceType ) );
+		device = (Series5LMI)DeviceFactory.createDevice( PaoType.getPaoTypeId( deviceType ) );
 		device.setDeviceID(deviceID);
 		
 		//replace all blanks with a single _
@@ -1636,7 +1637,7 @@ public boolean processUnxRTCFile()
 
 		String deviceType = DeviceTypes.STRING_RTC[0];
 		String devName = line[0].trim();
-		RTC device = (RTC)DeviceFactory.createDevice( PAOGroups.getDeviceType(deviceType) );
+		RTC device = (RTC)DeviceFactory.createDevice( PaoType.getPaoTypeId(deviceType) );
 
 		Integer rtcID = new Integer(START_RTCID++);
 		device.setDeviceID( rtcID );

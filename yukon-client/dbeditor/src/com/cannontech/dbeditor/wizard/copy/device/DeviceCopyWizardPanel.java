@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.wizard.CancelInsertException;
 import com.cannontech.common.wizard.WizardPanel;
 import com.cannontech.common.wizard.WizardPanelEvent;
@@ -381,7 +382,7 @@ public class DeviceCopyWizardPanel extends WizardPanel {
     }
     
     public void setDeviceType() {
-    	deviceType = PAOGroups.getDeviceType(((DeviceBase) getCopyObject()).getPAOType() );
+    	deviceType = PaoType.getPaoTypeId(((DeviceBase) getCopyObject()).getPAOType() );
     }
     
     public void setDeviceType(DBPersistent device) {

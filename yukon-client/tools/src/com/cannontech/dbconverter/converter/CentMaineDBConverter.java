@@ -6,6 +6,7 @@ import java.util.StringTokenizer;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.data.device.CCU711;
@@ -400,7 +401,7 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 
 			device =
 				(CCU711) DeviceFactory.createDevice(
-					PAOGroups.getDeviceType(deviceType));
+					PaoType.getPaoTypeId(deviceType));
 			device.setDeviceID(deviceID);
 
 			//replace all blanks with a single space
@@ -495,7 +496,7 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 
 			device =
 				(Repeater900) DeviceFactory.createDevice(
-					PAOGroups.getDeviceType(deviceType));
+					PaoType.getPaoTypeId(deviceType));
 			device.setDeviceID(deviceID);
 			device.getDeviceRoutes().setRouteID(new Integer(0));
 			//replace all blanks with a single space
@@ -586,9 +587,7 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 						.data
 						.route
 						.RouteFactory
-						.createRoute(
-					com.cannontech.database.data.pao.PAOGroups.getRouteType(
-						routeType));
+						.createRoute(PaoType.getPaoTypeId(routeType));
 			route.setDeviceID(deviceID);
 
 			//replace all blanks with a single space
@@ -805,11 +804,10 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
 						.createDevice(
 							com
 								.cannontech
-								.database
-								.data
+								.common
 								.pao
-								.PAOGroups
-								.getDeviceType(
+								.PaoType
+								.getPaoTypeId(
 								deviceType));
 
 				//set our unique deviceID
@@ -879,7 +877,7 @@ public class CentMaineDBConverter extends MessageFrameAdaptor {
                 // this is a little bit of a hack and I don't have a way to test it, hopefully if anyone
                 // ever wants to use this class again, they'll have a better idea about what they wan to
                 // do with groups
-                SimpleDevice yd = new SimpleDevice(deviceID,PAOGroups.getDeviceType(deviceType));
+                SimpleDevice yd = new SimpleDevice(deviceID,PaoType.getPaoTypeId(deviceType));
 				DeviceGroupMember dgm = new DeviceGroupMember(yd,null,leadMeter,leadLoad,null,null,null);
 
 				if (deviceType.equals(new String("MCT-240"))

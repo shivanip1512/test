@@ -9,6 +9,7 @@ import javax.swing.JTabbedPane;
 
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.dbeditor.wizard.port.PooledPortListPanel;
@@ -245,7 +246,7 @@ public void setValue(Object val) {
 
 	//We must assume that val is an instance of DirectPort	
 	DirectPort port = (DirectPort) val;
-	int type = com.cannontech.database.data.pao.PAOGroups.getPortType( port.getPAOType() );
+	int type = PaoType.getPaoTypeId(port.getPAOType());
 
  	for( int i = 0; i < EDITOR_TYPES.length; i++ )
  	{

@@ -466,7 +466,7 @@ public Object getValue(Object val)
 		throw new Error("Unable to determine device type when attempting to set the address");
 	}
 
-	int deviceType = PAOGroups.getDeviceType(deviceBase.getPAOType());
+	int deviceType = PaoType.getPaoTypeId(deviceBase.getPAOType());
 	if (DeviceTypesFuncs.isMCT(deviceType) || DeviceTypesFuncs.isRepeater(deviceType) || DeviceTypesFuncs.isTwoWayLcr(deviceType)) {
 
         // Check for unique address

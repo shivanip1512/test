@@ -4,10 +4,10 @@ import java.util.HashMap;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.device.MCTIEDBase;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.device.DeviceGroupMember;
@@ -935,7 +935,7 @@ public boolean processCapBankControllers()
 		com.cannontech.database.data.capcontrol.CapControlDeviceBase cbcDevice = null;
 
 
-		cbcDevice = (com.cannontech.database.data.capcontrol.CapControlDeviceBase)com.cannontech.database.data.device.DeviceFactory.createDevice( com.cannontech.database.data.pao.PAOGroups.getDeviceType( deviceType ) );
+		cbcDevice = (com.cannontech.database.data.capcontrol.CapControlDeviceBase)com.cannontech.database.data.device.DeviceFactory.createDevice( PaoType.getPaoTypeId( deviceType ) );
 		
 		//set our unique own deviceID
 		cbcDevice.setDeviceID(deviceID);
@@ -1007,7 +1007,7 @@ public boolean processLoadGroups()
 		
 		com.cannontech.database.data.device.lm.LMGroup lmGroupDevice = null;
 
-		lmGroupDevice = (com.cannontech.database.data.device.lm.LMGroup)com.cannontech.database.data.device.lm.LMFactory.createLoadManagement(com.cannontech.database.data.pao.PAOGroups.getDeviceType( deviceType ) );
+		lmGroupDevice = (com.cannontech.database.data.device.lm.LMGroup)com.cannontech.database.data.device.lm.LMFactory.createLoadManagement(PaoType.getPaoTypeId( deviceType ) );
 		
 		//set our unique own deviceID
 		lmGroupDevice.setDeviceID(deviceID);
@@ -1132,7 +1132,7 @@ public boolean processMCTDevices()
 		//}
 		//else
 		//{
-		device = (com.cannontech.database.data.device.MCTBase)com.cannontech.database.data.device.DeviceFactory.createDevice( com.cannontech.database.data.pao.PAOGroups.getDeviceType( deviceType ) );
+		device = (com.cannontech.database.data.device.MCTBase)com.cannontech.database.data.device.DeviceFactory.createDevice( PaoType.getPaoTypeId( deviceType ) );
 		//}
 		
 		//set our unique deviceID
@@ -1164,7 +1164,7 @@ public boolean processMCTDevices()
         // this is a little bit of a hack and I don't have a way to test it, hopefully if anyone
         // ever wants to use this class again, they'll have a better idea about what they wan to
         // do with groups
-		SimpleDevice yd = new SimpleDevice(deviceID,PAOGroups.getDeviceType(deviceType));
+		SimpleDevice yd = new SimpleDevice(deviceID,PaoType.getPaoTypeId(deviceType));
 		DeviceGroupMember dgm = new DeviceGroupMember(yd, newBillingGroup, newCollectionGroup, newTestCollectionGroup, null, null, null);
 	
 		// set LoadProfile Interval
@@ -1255,12 +1255,12 @@ public boolean processPortFile()
 		
 		//this createPort() call actually queries the database for a new unique portID!!
 		// let this happen for now, but, a performance issue may occur
-		port = com.cannontech.database.data.port.PortFactory.createPort( com.cannontech.database.data.pao.PAOGroups.getPortType( tokenizer.nextElement().toString()) );
+		port = com.cannontech.database.data.port.PortFactory.createPort( PaoType.getPaoTypeId(tokenizer.nextElement().toString()) );
 
 		//set our unique own portID
 		port.setPortID(portID);
 
-		int portType = com.cannontech.database.data.pao.PAOGroups.getPortType(port.getPAOType() );//guesswork here...
+		int portType = PaoType.getPaoTypeId(port.getPAOType());
 
 		if( portType == com.cannontech.database.data.pao.PAOGroups.LOCAL_DIALUP
 			 || portType == com.cannontech.database.data.pao.PAOGroups.LOCAL_DIRECT
@@ -1341,7 +1341,7 @@ public boolean processRepeaterFile(int aPassCount)
 		//set our unique own deviceID
 		device.setDeviceID(deviceID);
 		
-		int deviceInt = com.cannontech.database.data.pao.PAOGroups.getDeviceType( deviceType );
+		int deviceInt = com.cannontech.common.pao.PaoType.getPaoTypeId( deviceType );
 		
 		device.setDeviceClass( "CARRIER" );
 
@@ -1604,7 +1604,7 @@ public boolean processRTUDevices()
 		
 		com.cannontech.database.data.device.RTUBase device = null;
 		
-		device = (com.cannontech.database.data.device.RTUBase)com.cannontech.database.data.device.DeviceFactory.createDevice( com.cannontech.database.data.pao.PAOGroups.getDeviceType( deviceType ) );
+		device = (com.cannontech.database.data.device.RTUBase)com.cannontech.database.data.device.DeviceFactory.createDevice( PaoType.getPaoTypeId( deviceType ) );
 
 		//set our unique own deviceID
 		device.setDeviceID(deviceID);
@@ -1681,9 +1681,9 @@ public boolean processSingleRouteFile()
 		String routeType = tokenizer.nextElement().toString();
 		com.cannontech.database.data.route.RouteBase route = null;
 
-		int routeInt = com.cannontech.database.data.pao.PAOGroups.getRouteType( routeType );	
+		int routeInt = PaoType.getPaoTypeId(routeType);
 			
-		route = com.cannontech.database.data.route.RouteFactory.createRoute( com.cannontech.database.data.pao.PAOGroups.getRouteType( routeType ));
+		route = com.cannontech.database.data.route.RouteFactory.createRoute( PaoType.getPaoTypeId(routeType));
 
 		//set our unique own routeID
 		route.setRouteID(routeID);
@@ -1944,7 +1944,7 @@ public boolean processTransmitterFile()
 		String deviceType = tokenizer.nextElement().toString();
 		com.cannontech.database.data.device.DeviceBase device = null;
 
-		device = com.cannontech.database.data.device.DeviceFactory.createDevice( com.cannontech.database.data.pao.PAOGroups.getDeviceType( deviceType ) );
+		device = com.cannontech.database.data.device.DeviceFactory.createDevice( com.cannontech.common.pao.PaoType.getPaoTypeId( deviceType ) );
 		
 		
 		//set our unique own deviceID
@@ -2004,7 +2004,7 @@ public boolean processVirtualDeviceFile()
 		
 		com.cannontech.database.data.device.DeviceBase device = null;
 		
-		device = com.cannontech.database.data.device.DeviceFactory.createDevice( com.cannontech.database.data.pao.PAOGroups.getDeviceType( deviceType ) );
+		device = com.cannontech.database.data.device.DeviceFactory.createDevice( com.cannontech.common.pao.PaoType.getPaoTypeId( deviceType ) );
 		
 		//set our unique own deviceID
 		device.setDeviceID(deviceID);

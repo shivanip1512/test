@@ -1,5 +1,6 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.ClientRights;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -241,7 +242,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		if (getGroupTypePanel().isGroupMacro())
 		{
 			getLMGroupBasePanel().setSwitchType( 
-				com.cannontech.database.data.pao.PAOGroups.getPAOTypeString(com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP ));
+				PaoType.getPaoTypeString(PAOGroups.MACRO_GROUP ));
 			getLMGroupBasePanel().setFirstFocus();
 			return getLMGroupBasePanel();
 		}

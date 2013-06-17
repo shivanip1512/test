@@ -236,6 +236,9 @@ public enum PaoType implements DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> mctTypes;
     private final static ImmutableSet<PaoType> iedTypes;
     private final static ImmutableSet<PaoType> rtuTypes;
+    private final static ImmutableSet<PaoType> portTypes;
+    
+    public final static int INVALID = -1;
 
     static {
         try {
@@ -409,8 +412,22 @@ public enum PaoType implements DatabaseRepresentationSource {
             RTUILEX,
             RTUWELCO,
             RTM);
+        
+        portTypes = ImmutableSet.of(
+            LOCAL_DIRECT,
+            LOCAL_SHARED,
+            LOCAL_RADIO,
+            LOCAL_DIALUP,
+            TSERVER_DIRECT,
+            TCPPORT,
+            UDPPORT,
+            TSERVER_SHARED,
+            TSERVER_RADIO,
+            TSERVER_DIALUP,
+            LOCAL_DIALBACK,
+            DIALOUT_POOL);
     }
-
+    
     /**
      * Looks up the PaoType based on its Java constant ID.
      * 
@@ -467,6 +484,10 @@ public enum PaoType implements DatabaseRepresentationSource {
     
     public boolean isCapControl() {
         return PaoClass.CAPCONTROL == paoClass;
+    }
+    
+    public boolean isPort() {
+        return portTypes.contains(this);
     }
     
     public boolean isLmGroup() {
@@ -529,4 +550,29 @@ public enum PaoType implements DatabaseRepresentationSource {
     public static ImmutableSet<PaoType> getRtuTypes() {
         return rtuTypes;
     }
+    
+    /**
+     * Maps PaoType String IDs to their corresponding integer device IDs.
+     * @param typeString
+     * @return
+     */
+    public final static int getPaoTypeId(String typeString) {
+        if (typeString == null) {
+            return INVALID;
+        }
+        
+        PaoType device = getForDbString(typeString);
+        return device.getDeviceTypeId();
+    }
+    
+    /**
+     * Maps integer device IDs to their corresponding PaoType String IDs.
+     * @param typeId
+     * @return
+     */
+    public final static String getPaoTypeString(int typeId) {
+        PaoType paoTypeObject = getForId(typeId);
+        return paoTypeObject.getDbString();
+    }
+    
 }

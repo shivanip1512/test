@@ -203,7 +203,7 @@ public final class PaoDaoImpl implements PaoDao {
             sqlBuilder.append("AND y.Type = ? ");
             String stringCategory = PAOGroups.getCategory(category);
             String stringClass = PAOGroups.getPAOClass(category, paoClass);
-            String stringType = PAOGroups.getPAOTypeString(type);
+            String stringType = PaoType.getPaoTypeString(type);
             
             LiteYukonPAObject pao = 
                 (LiteYukonPAObject) jdbcOps.queryForObject(sqlBuilder.getSql(), 
@@ -242,7 +242,7 @@ public final class PaoDaoImpl implements PaoDao {
     }
     
     public List<LiteYukonPAObject> getLiteYukonPAObjectByType(int paoType) {
-        String typeStr = PAOGroups.getPAOTypeString(paoType);
+        String typeStr = PaoType.getPaoTypeString(paoType);
         String sql = litePaoSql;
         sql += "where UPPER(type)=? ";
 

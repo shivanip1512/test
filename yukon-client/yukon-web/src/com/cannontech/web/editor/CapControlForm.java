@@ -557,7 +557,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
            }
            
            initDataModel(pao);
-           initPanels(PAOGroups.getPAOType(pao.getPAOCategory(), pao.getPAOType()));
+           initPanels(PaoType.getPaoTypeId(pao.getPAOType()));
            
         } else if (getDbPersistent() instanceof PointBase) {
             
@@ -840,7 +840,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                     setDbPersistent(dbPers);
                 }
         		if (getDbPersistent() instanceof ICapBankController) {
-        			setDbPersistent( (YukonPAObject) DeviceTypesFuncs.changeCBCType(PAOGroups.getPAOTypeString( getCBControllerEditor().getDeviceType() ) , (ICapBankController)getDbPersistent()));
+        			setDbPersistent( (YukonPAObject) DeviceTypesFuncs.changeCBCType(PaoType.getPaoTypeString( getCBControllerEditor().getDeviceType() ) , (ICapBankController)getDbPersistent()));
     			}
             }
 			

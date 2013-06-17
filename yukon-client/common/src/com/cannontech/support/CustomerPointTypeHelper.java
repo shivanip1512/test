@@ -12,6 +12,7 @@ import com.cannontech.cc.dao.CustomerStubDao;
 import com.cannontech.cc.model.CICustomerPointData;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.common.exception.PointException;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
@@ -156,7 +157,7 @@ public class CustomerPointTypeHelper {
     protected LiteYukonPAObject getCustomerDevice(CICustomerStub customer) {
         final String generatedDeviceCategory = PAOGroups.STRING_CAT_DEVICE;
         final String generatedDeviceClass = DeviceClasses.STRING_CLASS_VIRTUAL;
-        final String generatedDeviceType = PAOGroups.getPAOTypeString(DeviceTypes.VIRTUAL_SYSTEM);
+        final String generatedDeviceType = PaoType.getPaoTypeString(DeviceTypes.VIRTUAL_SYSTEM);
         String deviceName = customerDevicePrefix + customer.getCompanyName() + customerDeviceSuffix;
         
         // returns null if not found

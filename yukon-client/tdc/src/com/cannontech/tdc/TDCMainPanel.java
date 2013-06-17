@@ -46,6 +46,7 @@ import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.gui.panel.CompositeJSplitPane;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
@@ -56,7 +57,6 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteTag;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.debug.gui.ObjectInfoDialog;
 import com.cannontech.graph.model.TrendModel;
@@ -2730,7 +2730,7 @@ public void jPopupMenu_PopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEve
 		getJMenuItemAltScanRate().setEnabled( 
 			!Display.isCoreType(getCurrentDisplay().getType())
 			&& DeviceTypesFuncs.hasDeviceScanRate(
-				PAOGroups.getDeviceType(pv.getDeviceType()) ) );		
+				PaoType.getPaoTypeId(pv.getDeviceType()) ) );		
 
 
 		// check to see if the point can be controlled AND its control is NOT disabled

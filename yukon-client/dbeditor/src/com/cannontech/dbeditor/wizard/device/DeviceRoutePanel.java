@@ -191,7 +191,7 @@ public class DeviceRoutePanel
             // The default value for DeviceLoadProfile.loadProfileDemandRate was changed to 3600, therefore, 
             //   all "legacy" mcts should be set to 300.  This is just to keep the DBEditor code working the same for these meter types.
             // New bulk operations will not have this check it it, we're assuming these legacy devices are not being added using those tools.
-            int deviceType = PAOGroups.getDeviceType( ((MCTBase)value).getPAOType() );
+            int deviceType = PaoType.getPaoTypeId( ((MCTBase)value).getPAOType() );
             if( DeviceTypesFuncs.isMCT2XXORMCT310XX(deviceType) || DeviceTypesFuncs.isMCT3xx(deviceType)) {
                 ((MCTBase) value).getDeviceLoadProfile().setLoadProfileDemandRate(new Integer(300));
             }

@@ -2102,7 +2102,7 @@ private void setIntegrityObjectsVisible(boolean value)
  */
 public void setValue(Object val)
 {
-	final int deviceType = com.cannontech.database.data.pao.PAOGroups.getDeviceType( ((DeviceBase)val).getPAOType() );
+	final int deviceType = PaoType.getPaoTypeId( ((DeviceBase)val).getPAOType() );
 
 	setDeviceType( deviceType );
 	

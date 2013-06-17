@@ -5,6 +5,7 @@ import java.util.Vector;
 import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.Repeater850;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.dbeditor.wizard.device.DeviceRDSTerminalPanel;
@@ -325,7 +326,7 @@ public void setValue(Object val) {
 
 	//We must assume that val is an instance of DeviceBase	
 	com.cannontech.database.data.device.DeviceBase device = (com.cannontech.database.data.device.DeviceBase) val;
-	int type = com.cannontech.database.data.pao.PAOGroups.getDeviceType( device.getPAOType() );
+	int type = PaoType.getPaoTypeId( device.getPAOType() );
 	
 	//com.cannontech.database.data.pao.YukonPAObject device = (com.cannontech.database.data.pao.YukonPAObject)val;
 	//int type = DeviceTypes.getType( device.get.getType() );

@@ -339,7 +339,7 @@ public final class DeviceDaoImpl implements DeviceDao {
     {
         int categoryInt = PAOGroups.getCategory(category);
         int paoClassInt = PAOGroups.getPAOClass(category, paoClass);
-        int typeInt = PAOGroups.getPAOType(category, type);
+        int typeInt = PaoType.getPaoTypeId(type);
         return getLiteYukonPAObject(deviceName, categoryInt, paoClassInt, typeInt);
     }
 

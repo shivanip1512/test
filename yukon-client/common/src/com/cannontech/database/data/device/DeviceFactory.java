@@ -515,7 +515,7 @@ public final class DeviceFactory {
      */
     private final static DeviceBase setDeviceDefaults( int type, DeviceBase returnDevice ) 
     {
-        returnDevice.setDeviceType( com.cannontech.database.data.pao.PAOGroups.getPAOTypeString(type) );
+        returnDevice.setDeviceType( PaoType.getPaoTypeString(type) );
 
         if( DeviceTypesFuncs.isMCT(type)
                 && (type == PAOGroups.MCT360 || type == PAOGroups.MCT370) )

@@ -31,6 +31,7 @@ import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService.PointTemplateTransferPair;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.device.DeviceBase;
@@ -114,7 +115,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
                         String text = generateDeviceChangeText(paoDefinition);
                         if (((PaoDefinition) getJListDevices().getSelectedValue()).equals(paoDefinition)) {
 
-                            int currentDeviceType = PAOGroups.getDeviceType(currentDevice.getPAOType());
+                            int currentDeviceType = PaoType.getPaoTypeId(currentDevice.getPAOType());
                             int newType = paoDefinition.getType().getDeviceTypeId();
                             
                             if (DeviceTypesFuncs.isDisconnectMCT(currentDeviceType) && (DeviceTypesFuncs.isMCT410(newType)) ) {

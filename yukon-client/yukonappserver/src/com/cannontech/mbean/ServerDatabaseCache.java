@@ -1289,7 +1289,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
             //retLBase = handleDeviceMeterGroupChange( dbType, id);
 
             //Verify that this a device that even cares about DeviceMeterGroups
-            int type = PAOGroups.getDeviceType(objectType);
+            int type = PaoType.getPaoTypeId(objectType);
             if(com.cannontech.database.data.device.DeviceTypesFuncs.usesDeviceMeterGroup(type))
             {
                 handleDeviceMeterGroupChange( dbChangeType, id);

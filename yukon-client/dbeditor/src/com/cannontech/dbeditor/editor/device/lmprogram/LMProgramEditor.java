@@ -305,7 +305,7 @@ public void setValue(Object val)
 	java.util.Vector tabs = new java.util.Vector( EDITOR_TYPES.length );
 	
 	DataInputPanel tempPanel;
-	int type = PAOGroups.getDeviceType( ((LMProgramBase)val).getPAOType() );
+	int type = PaoType.getPaoTypeId( ((LMProgramBase)val).getPAOType() );
 	PaoType paoType = PaoType.getForDbString(((LMProgramBase)val).getPAOType() );
 	setProgramType(paoType);
 	
