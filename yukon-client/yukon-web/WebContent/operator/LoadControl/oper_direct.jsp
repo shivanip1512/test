@@ -20,6 +20,7 @@
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramBase" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
 <%@ page import="com.cannontech.yukon.IMACSConnection" %>
+<%@ page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 
 <%@ page import="java.util.TreeMap" %>
 <%@ page import="java.util.Map" %>

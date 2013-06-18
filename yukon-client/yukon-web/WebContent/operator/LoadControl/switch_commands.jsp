@@ -8,6 +8,8 @@
 <%@page import="java.util.HashMap"%>
 <%@page import="com.cannontech.core.dao.PaoDao"%>
 <%@page import="com.google.common.collect.Lists"%>
+<%@ page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
+
 <jsp:directive.page import="com.cannontech.core.authorization.service.PaoPermissionService"/>
 <jsp:directive.page import="com.cannontech.spring.YukonSpringHook"/>
 <jsp:directive.page import="java.util.Set"/>

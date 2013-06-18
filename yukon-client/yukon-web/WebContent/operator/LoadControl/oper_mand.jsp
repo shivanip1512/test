@@ -19,6 +19,8 @@
 %>
 
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramCurtailment" %>
+<%@ page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
+
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="/WEB-INF/struts.tld" prefix="struts" %>
 <jsp:useBean id="checker" scope="session" class="com.cannontech.web.validate.PageBean"/>

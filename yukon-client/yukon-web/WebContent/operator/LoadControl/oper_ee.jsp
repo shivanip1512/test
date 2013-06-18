@@ -8,6 +8,7 @@
 <%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeCustomer" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeCustomerReply" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMEnergyExchangeHourlyCustomer" %>
+<%@ page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
  
 <%@ taglib uri="/WEB-INF/struts.tld" prefix="struts" %>
   

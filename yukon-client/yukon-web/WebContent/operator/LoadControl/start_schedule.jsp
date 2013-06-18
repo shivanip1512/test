@@ -6,6 +6,8 @@
 <%@ page import="com.cannontech.message.macs.message.Schedule" %>
 <%@ page import="com.cannontech.yukon.IMACSConnection" %>
 <%@ page import="com.cannontech.yukon.conns.ConnPool" %>
+<%@ page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
+
 
 <%@ taglib uri="/WEB-INF/struts.tld" prefix="struts" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
