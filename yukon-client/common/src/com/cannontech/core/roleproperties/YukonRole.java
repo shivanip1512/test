@@ -1,23 +1,14 @@
 package com.cannontech.core.roleproperties;
 
-import static com.cannontech.core.roleproperties.YukonRoleCategory.Application;
-import static com.cannontech.core.roleproperties.YukonRoleCategory.CapControl;
-import static com.cannontech.core.roleproperties.YukonRoleCategory.Consumer;
-import static com.cannontech.core.roleproperties.YukonRoleCategory.LoadControl;
-import static com.cannontech.core.roleproperties.YukonRoleCategory.Notifications;
-import static com.cannontech.core.roleproperties.YukonRoleCategory.Operator;
+import static com.cannontech.core.roleproperties.YukonRoleCategory.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;
-import com.cannontech.roles.ApplicationRoleDefs;
-import com.cannontech.roles.CapControlRoleDefs;
-import com.cannontech.roles.ConsumerRoleDefs;
-import com.cannontech.roles.LMRoleDefs;
-import com.cannontech.roles.NotificationsRoleDefs;
-import com.cannontech.roles.OperatorRoleDefs;
-import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
@@ -28,42 +19,48 @@ import com.google.common.collect.Ordering;
 public enum YukonRole implements DisplayableEnum, DatabaseRepresentationSource {
 
     // Yukon Grp associated roles moved to GlobalSettings 
-    APPLICATION_BILLING(Application, ApplicationRoleDefs.BILLING_ROLEID),
-    COMMANDER(Application, ApplicationRoleDefs.COMMANDER_ROLEID),
-    DATABASE_EDITOR(Application, ApplicationRoleDefs.DATABASE_EDITOR_ROLEID),
-    APPLICATION_ESUBSTATION_EDITOR(Application, ApplicationRoleDefs.ESUBSTATION_EDITOR_ROLEID),
-    PASSWORD_POLICY(Application, ApplicationRoleDefs.PASSWORD_POLICY_ROLEID),
-    REPORTING(Application, ApplicationRoleDefs.REPORTING_ROLEID),
-    TABULAR_DISPLAY_CONSOLE(Application, ApplicationRoleDefs.TABULAR_DISPLAY_CONSOLE_ROLEID),
-    TRENDING(Application, ApplicationRoleDefs.TRENDING_ROLEID),
-    WEB_CLIENT(Application, ApplicationRoleDefs.WEB_CLIENT_ROLEID),
+    APPLICATION_BILLING(Application, Application.baseRoleId - 6, Application.basePropertyId - 600),
+    COMMANDER(Application, Application.baseRoleId - 3, Application.basePropertyId - 300),
+    DATABASE_EDITOR(Application, Application.baseRoleId, Application.basePropertyId),
+    APPLICATION_ESUBSTATION_EDITOR(Application, Application.baseRoleId - 7, Application.basePropertyId - 700),
+    PASSWORD_POLICY(Application, Application.baseRoleId - 10, Application.basePropertyId - 1000),
+    REPORTING(Application, Application.baseRoleId - 9, Application.basePropertyId - 900),
+    TABULAR_DISPLAY_CONSOLE(Application, Application.baseRoleId - 1, Application.basePropertyId - 100),
+    TRENDING(Application, Application.baseRoleId -2, Application.basePropertyId - 200),
+    WEB_CLIENT(Application, Application.baseRoleId - 8, Application.basePropertyId - 800),
     
-    CBC_SETTINGS(CapControl, CapControlRoleDefs.CBC_SETTINGS_ROLEID),
-    CBC_ONELINE_CAP_SETTINGS(CapControl, CBCOnelineSettingsRole.CAP_ROLEID),
-    CBC_ONELINE_FEEDER_SETTINGS(CapControl, CBCOnelineSettingsRole.FDR_ROLEID),
-    CBC_ONELINE_SUB_SETTINGS(CapControl, CBCOnelineSettingsRole.SUB_ROLEID),
+    CBC_SETTINGS(CapControl, CapControl.baseRoleId, CapControl.basePropertyId),
+    CBC_ONELINE_SUB_SETTINGS(Cbc_Oneline, Cbc_Oneline.baseRoleId, Cbc_Oneline.basePropertyId),
+    CBC_ONELINE_FEEDER_SETTINGS(Cbc_Oneline, Cbc_Oneline.baseRoleId - 1, Cbc_Oneline.basePropertyId - 100),
+    CBC_ONELINE_CAP_SETTINGS(Cbc_Oneline, Cbc_Oneline.baseRoleId - 2, Cbc_Oneline.basePropertyId - 200),
+
     
-    RESIDENTIAL_CUSTOMER(Consumer, ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_ROLEID),
+    RESIDENTIAL_CUSTOMER(Consumer, Consumer.baseRoleId, Consumer.basePropertyId),
     
-    LM_DIRECT_LOADCONTROL(LoadControl, LMRoleDefs.DIRECT_LOADCONTROL_ROLEID),
+    LM_DIRECT_LOADCONTROL(LoadControl, LoadControl.baseRoleId, LoadControl.basePropertyId),
     
-    NOTIFICATION_CONFIGURATION(Notifications, NotificationsRoleDefs.CONFIGURATION_ROLEID),
-    IVR(Notifications, NotificationsRoleDefs.IVR_ROLEID),
+    IVR(Notifications, Notifications.baseRoleId, Notifications.basePropertyId),
+    NOTIFICATION_CONFIGURATION(Notifications, Notifications.baseRoleId - 1, Notifications.basePropertyId - 100),
     
-    OPERATOR_ADMINISTRATOR(Operator, OperatorRoleDefs.ADMINISTRATOR_ROLEID),
-    CI_CURTAILMENT(Operator, OperatorRoleDefs.CI_CURTAILMENT_ROLEID),
-    CONSUMER_INFO(Operator, OperatorRoleDefs.CONSUMER_INFO_ROLEID),
-    DEVICE_ACTIONS(Operator, OperatorRoleDefs.DEVICE_ACTIONS_ROLEID),
-    OPERATOR_ESUBSTATION_DRAWINGS(Operator, OperatorRoleDefs.ESUBSTATION_DRAWINGS_ROLEID),
-    INVENTORY(Operator, OperatorRoleDefs.INVENTORY_ROLEID),
-    METERING(Operator, OperatorRoleDefs.METERING_ROLEID),
-    ODDS_FOR_CONTROL(Operator, OperatorRoleDefs.ODDS_FOR_CONTROL_ROLEID),
-    SCHEDULER(Operator, OperatorRoleDefs.SCHEDULER_ROLEID),
-    WORK_ORDER(Operator, OperatorRoleDefs.WORK_ORDER_ROLEID),
+    OPERATOR_ADMINISTRATOR(Operator, Operator.baseRoleId, Operator.basePropertyId),
+    CI_CURTAILMENT(Operator, Operator.baseRoleId - 11, Operator.basePropertyId - 1100),
+    
+    /*This one was apparently extended to have two spaces for property IDs, hence the ArrayList implementation
+     * of basePropertyID.
+     */
+    CONSUMER_INFO(Operator, Operator.baseRoleId - 1, Operator.basePropertyId - 100, Operator.basePropertyId - 800),
+    DEVICE_ACTIONS(Operator, Operator.baseRoleId - 13, Operator.basePropertyId - 1300),
+    OPERATOR_ESUBSTATION_DRAWINGS(Operator, Operator.baseRoleId - 6, Operator.basePropertyId - 600),
+    INVENTORY(Operator, Operator.baseRoleId - 9, Operator.basePropertyId - 900),
+    METERING(Operator, Operator.baseRoleId - 2, Operator.basePropertyId - 200),
+    ODDS_FOR_CONTROL(Operator, Operator.baseRoleId - 7, Operator.basePropertyId - 700),
+    SCHEDULER(Operator, Operator.baseRoleId - 12, Operator.basePropertyId - 1200),
+    WORK_ORDER(Operator, Operator.baseRoleId - 10, Operator.basePropertyId - 1000),
     ;
 
     private final YukonRoleCategory category;
     private final int roleId;
+    private List<Integer> baseRolePropertyIds;
 
     public final static Function<YukonRole, String> CATEGORY_FUNCTION = new Function<YukonRole, String>() {
         @Override
@@ -103,13 +100,29 @@ public enum YukonRole implements DisplayableEnum, DatabaseRepresentationSource {
         lookup = builder.build();
     }
 
-    private YukonRole(YukonRoleCategory category, int roleId) {
+    /*
+     * Support splitting of baseRolePropertyIDs into chunks, Used by
+     * CONSUMER_INFO.
+     */
+    private YukonRole(YukonRoleCategory category, int roleId, int ... baseRolePropertyIds) {
         this.category = category;
         this.roleId = roleId;
+        this.baseRolePropertyIds = new ArrayList<Integer>(1);
+        for(int i = 0; i < baseRolePropertyIds.length; i++){
+            this.baseRolePropertyIds.add(baseRolePropertyIds[i]);
+        }
     }
     
     public YukonRoleCategory getCategory() {
         return category;
+    }
+    
+    public int getBasePropertyId(){
+        return this.getBasePropertyId(0);
+    }
+    
+    public int getBasePropertyId(int i){
+        return this.baseRolePropertyIds.get(i);
     }
     
     public static YukonRole getForId(int roleId) throws IllegalArgumentException {

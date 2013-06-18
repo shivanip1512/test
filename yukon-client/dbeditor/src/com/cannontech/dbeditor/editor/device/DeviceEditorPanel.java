@@ -6,6 +6,7 @@ import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.device.Repeater850;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.dbeditor.wizard.device.DeviceRDSTerminalPanel;
@@ -214,7 +215,7 @@ public Object[] createNewPanel(int panelIndex)
 		case 10:
 			String showIt = 
 				ClientSession.getInstance().getRolePropertyValue(
-					DBEditorRole.TRANS_EXCLUSION);
+					YukonRoleProperty.TRANS_EXCLUSION);
 	
 			if( "TRUE".equalsIgnoreCase(showIt) )
 			{
@@ -229,7 +230,7 @@ public Object[] createNewPanel(int panelIndex)
 		case 11:
 			String showItToo = 
 				ClientSession.getInstance().getRolePropertyValue(
-					DBEditorRole.TRANS_EXCLUSION);
+					YukonRoleProperty.TRANS_EXCLUSION);
 	
 			if( "TRUE".equalsIgnoreCase(showItToo) )
 			{

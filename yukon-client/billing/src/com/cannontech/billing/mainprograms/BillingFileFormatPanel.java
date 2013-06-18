@@ -26,7 +26,7 @@ import com.cannontech.common.device.groups.service.DeviceGroupTreeFactory;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
 import com.cannontech.common.gui.tree.CustomRenderJTree;
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.roles.application.BillingRole;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -1065,7 +1065,7 @@ private void initialize() {
 		if(session == null) 		
 			System.exit(-1);
         
-		if(!session.checkRole(BillingRole.ROLEID)) 
+		if(!session.checkRole(YukonRole.APPLICATION_BILLING.getRoleId())) 
 		{
 		  JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.", "Access Denied", JOptionPane.WARNING_MESSAGE);
 		  System.exit(-1);				

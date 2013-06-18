@@ -1,8 +1,7 @@
 package com.cannontech.dbeditor.wizard.device.lmgroup;
 
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.roles.application.DBEditorRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 
 /**
  * This type was created in VisualAge.
@@ -663,7 +662,7 @@ private javax.swing.JTextField getJtextFieldUtilRange() {
 
 			ivjJtextFieldUtilRange.setText("(Util range: " + 
 				ClientSession.getInstance().getRolePropertyValue(
-				DBEditorRole.UTILITY_ID_RANGE) +")" );
+				YukonRoleProperty.UTILITY_ID_RANGE) +")" );
 
 			ivjJtextFieldUtilRange.setToolTipText( ivjJtextFieldUtilRange.getText() );
 			ivjJtextFieldUtilRange.setBackground( getJPanelUtilSec().getBackground() );
@@ -1183,7 +1182,7 @@ public boolean isInputValid()
 	{
 		String idRange = 
 			ClientSession.getInstance().getRolePropertyValue(
-				DBEditorRole.UTILITY_ID_RANGE );
+				YukonRoleProperty.UTILITY_ID_RANGE.getPropertyId() );
 
 		int res = java.util.Arrays.binarySearch( 
 					com.cannontech.common.util.CtiUtilities.decodeRangeIDString( idRange, com.cannontech.common.util.CtiUtilities.MAX_UTILITY_ID ),

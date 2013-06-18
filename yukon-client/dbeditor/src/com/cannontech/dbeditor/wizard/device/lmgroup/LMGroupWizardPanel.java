@@ -3,6 +3,7 @@ package com.cannontech.dbeditor.wizard.device.lmgroup;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.ClientRights;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.roles.application.DBEditorRole;
 /**
@@ -35,7 +36,7 @@ public class LMGroupWizardPanel extends com.cannontech.common.wizard.WizardPanel
 	//hex value representing some privileges of the user on this machine
 	public static final long SPECIAL_RIPPLE = Long.parseLong( 
 		ClientSession.getInstance().getRolePropertyValue(
-		DBEditorRole.OPTIONAL_PRODUCT_DEV), 16 );
+		YukonRoleProperty.DATABASE_EDITOR_OPTIONAL_PRODUCT_DEV), 16 );
 
 /**
  * LMDeviceWizardPanel constructor comment.

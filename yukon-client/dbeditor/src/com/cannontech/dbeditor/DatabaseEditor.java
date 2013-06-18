@@ -81,6 +81,8 @@ import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DBDeletionDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -160,8 +162,6 @@ import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.roles.application.DBEditorRole;
-import com.cannontech.roles.application.TDCRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -2020,7 +2020,7 @@ public static void main(String[] args) {
     {
         ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
         clientStartupHelper.setAppName("DBEditor");
-        clientStartupHelper.setRequiredRole(DBEditorRole.ROLEID);
+        clientStartupHelper.setRequiredRole(YukonRole.DATABASE_EDITOR.getRoleId());
         clientStartupHelper.setContext("com.cannontech.context.dbeditor");
         clientStartupHelper.setSplashUrl(CtiUtilities.DBEDITOR_SPLASH);
 
@@ -2206,7 +2206,7 @@ private void readConfigParameters()
 	try
 	{	 			
 	    /* If getRolePropertyValue fails (returns ""), we will get a NumberFormatExcption, handled below. */
-		decimalPlaces = Integer.parseInt(ClientSession.getInstance().getRolePropertyValue(TDCRole.DECIMAL_PLACES));
+		decimalPlaces = Integer.parseInt(ClientSession.getInstance().getRolePropertyValue(YukonRoleProperty.DECIMAL_PLACES));
 	}
 	catch( Exception e )
 	{
@@ -2236,7 +2236,7 @@ private void readConfigParameters()
 	try
 	{
 		showLm = ClientSession.getInstance().getRolePropertyValue(
-			DBEditorRole.DBEDITOR_LM).trim().equalsIgnoreCase("TRUE");
+			YukonRoleProperty.DBEDITOR_LM).trim().equalsIgnoreCase("TRUE");
 	}
 	catch( Exception e )
 	{
@@ -2246,7 +2246,7 @@ private void readConfigParameters()
 	try
 	{
 		showSystem = ClientSession.getInstance().getRolePropertyValue(
-			DBEditorRole.DBEDITOR_SYSTEM).trim().equalsIgnoreCase("TRUE");
+			YukonRoleProperty.DBEDITOR_SYSTEM).trim().equalsIgnoreCase("TRUE");
 	}
 	catch( Exception e )
 	{
@@ -2257,7 +2257,7 @@ private void readConfigParameters()
 	try
 	{
 		accessOfLoginNotAllowed = ClientSession.getInstance().getRolePropertyValue(
-			DBEditorRole.PERMIT_LOGIN_EDIT).trim().equalsIgnoreCase("FALSE");
+			YukonRoleProperty.PERMIT_LOGIN_EDIT).trim().equalsIgnoreCase("FALSE");
 	}
 	catch( Exception e )
 	{
@@ -2646,7 +2646,7 @@ public void setDatabase(DatabaseTypes whichDatabase)
 				try {
 				    show_protocol = Long.parseLong( 
 				                             ClientSession.getInstance().getRolePropertyValue(
-				                                                             DBEditorRole.OPTIONAL_PRODUCT_DEV), 16 );
+				                                                             YukonRoleProperty.DATABASE_EDITOR_OPTIONAL_PRODUCT_DEV), 16 );
 				}
 				catch (Exception e) {
 				    show_protocol = 0;

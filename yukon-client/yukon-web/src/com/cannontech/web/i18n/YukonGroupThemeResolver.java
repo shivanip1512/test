@@ -10,7 +10,6 @@ import org.springframework.web.servlet.ThemeResolver;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.util.ServletUtil;
 
 public class YukonGroupThemeResolver implements ThemeResolver {
@@ -21,7 +20,7 @@ public class YukonGroupThemeResolver implements ThemeResolver {
     public String resolveThemeName(HttpServletRequest request) {
         LiteYukonUser yukonUser = ServletUtil.getYukonUser(request);
         String rolePropertyValue = rolePropertyDao.getPropertyStringValue(
-                                                       YukonRoleProperty.getForId(WebClientRole.THEME_NAME),
+                                                       YukonRoleProperty.THEME_NAME,
                                                        yukonUser);
         if (StringUtils.isBlank(rolePropertyValue)) {
             return defaultThemeName;

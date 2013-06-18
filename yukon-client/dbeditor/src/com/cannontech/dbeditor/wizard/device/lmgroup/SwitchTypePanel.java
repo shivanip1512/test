@@ -13,8 +13,8 @@ import javax.swing.ListSelectionModel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.ClientRights;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.device.lm.LMFactory;
-import com.cannontech.roles.application.DBEditorRole;
 
 public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPanel 
 {
@@ -25,7 +25,7 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
 	//hex value representing some privileges of the user on this machine
 	public static final long SHOW_PROTOCOL = Long.parseLong( 
 		ClientSession.getInstance().getRolePropertyValue(
-		DBEditorRole.OPTIONAL_PRODUCT_DEV), 16 );
+		YukonRoleProperty.DATABASE_EDITOR_OPTIONAL_PRODUCT_DEV), 16 );
 
     private static final PaoType [] GROUP_LIST = {
         PaoType.LM_GROUP_DIGI_SEP,

@@ -10,7 +10,7 @@ package com.cannontech.roles;
  * Use the property id base for each category as the inital value when enumerating the categories role property ids.
  * @author Aaron Lauinger
  */
-interface RoleDefs {
+public interface RoleDefs {
 	/* 
 	* The base roleids for each category
 	*/	 

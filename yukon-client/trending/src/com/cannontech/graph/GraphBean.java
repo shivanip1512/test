@@ -27,7 +27,6 @@ import com.cannontech.graph.buffer.html.PeakHtml;
 import com.cannontech.graph.buffer.html.TabularHtml;
 import com.cannontech.graph.buffer.html.UsageHtml;
 import com.cannontech.graph.model.TrendModel;
-import com.cannontech.roles.application.TrendingRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.util.ServletUtil;
@@ -311,14 +310,14 @@ public class GraphBean extends Graph
 			if( logSummary.action.equals(ActivityLogActions.SCAN_DATA_NOW_ACTION))
 			{
 			    RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
-                if( logSummary.count >= rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.getForId(TrendingRole.MAXIMUM_DAILY_SCANS), liteYukonUser) )
+                if( logSummary.count >= rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.MAXIMUM_DAILY_SCANS, liteYukonUser) )
 				{
 					return new SessionAttribute( ServletUtil.ATT_ERROR_MESSAGE, "Maximum Scans allowed for today exceeded" );
 				}
 							
 				Date now = new Date();
 				long sinceLast = now.getTime() - logSummary.maxTimeStamp.getTime();
-				long duration = rolePropertyDao.getPropertyLongValue(YukonRoleProperty.getForId(TrendingRole.MAXIMUM_DAILY_SCANS), liteYukonUser) * 36000;
+				long duration = rolePropertyDao.getPropertyLongValue(YukonRoleProperty.MAXIMUM_DAILY_SCANS, liteYukonUser) * 36000;
 				if (sinceLast <= duration)
 				{
 					long waitTime = duration - sinceLast;

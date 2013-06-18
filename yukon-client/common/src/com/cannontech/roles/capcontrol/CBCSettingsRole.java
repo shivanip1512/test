@@ -1,6 +1,5 @@
 package com.cannontech.roles.capcontrol;
 
-import com.cannontech.roles.ApplicationRoleDefs;
 import com.cannontech.roles.CapControlRoleDefs;
 
 /**
@@ -30,16 +29,16 @@ public interface CBCSettingsRole
 	public static final int PFACTOR_DECIMAL_PLACES = CapControlRoleDefs.CBC_PROPERTYID_BASE - 7;
 	public static final int CBC_ALLOW_OVUV = CapControlRoleDefs.CBC_PROPERTYID_BASE - 8;
 	public static final int CBC_DATABASE_EDIT = CapControlRoleDefs.CBC_PROPERTYID_BASE - 10;
-    public static final int SHOW_FLIP_COMMAND = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 11;
-    public static final int SHOW_CB_ADDINFO = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 12;
-    public static final int AVAILABLE_DEFINITION = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 13;
-    public static final int UNAVAILABLE_DEFINITION = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 14;
-    public static final int TRIPPED_DEFINITION = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 15;
-    public static final int CLOSED_DEFINITION = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 16;
-    public static final int ADD_COMMENTS = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 17;
-    public static final int MODIFY_COMMENTS = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 18;
-    public static final int SYSTEM_WIDE_CONTROLS = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 19;
-    public static final int FORCE_COMMENTS = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 20;
+    public static final int SHOW_FLIP_COMMAND = CapControlRoleDefs.CBC_PROPERTYID_BASE - 11;
+    public static final int SHOW_CB_ADDINFO = CapControlRoleDefs.CBC_PROPERTYID_BASE - 12;
+    public static final int AVAILABLE_DEFINITION = CapControlRoleDefs.CBC_PROPERTYID_BASE - 13;
+    public static final int UNAVAILABLE_DEFINITION = CapControlRoleDefs.CBC_PROPERTYID_BASE - 14;
+    public static final int TRIPPED_DEFINITION = CapControlRoleDefs.CBC_PROPERTYID_BASE - 15;
+    public static final int CLOSED_DEFINITION = CapControlRoleDefs.CBC_PROPERTYID_BASE - 16;
+    public static final int ADD_COMMENTS = CapControlRoleDefs.CBC_PROPERTYID_BASE - 17;
+    public static final int MODIFY_COMMENTS = CapControlRoleDefs.CBC_PROPERTYID_BASE - 18;
+    public static final int SYSTEM_WIDE_CONTROLS = CapControlRoleDefs.CBC_PROPERTYID_BASE - 19;
+    public static final int FORCE_COMMENTS = CapControlRoleDefs.CBC_PROPERTYID_BASE - 20;
     public static final int ALLOW_AREA_CONTROLS = CapControlRoleDefs.CBC_PROPERTYID_BASE - 21;
     public static final int ALLOW_SUBSTATION_CONTROLS = CapControlRoleDefs.CBC_PROPERTYID_BASE - 22;
     public static final int ALLOW_SUBBUS_CONTROLS = CapControlRoleDefs.CBC_PROPERTYID_BASE - 23;

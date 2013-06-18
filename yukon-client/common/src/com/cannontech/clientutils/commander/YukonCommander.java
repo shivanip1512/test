@@ -59,6 +59,7 @@ import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.DBChangeLiteListener;
@@ -86,7 +87,6 @@ import com.cannontech.database.model.TreeModelEnum;
 import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.roles.application.CommanderRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
@@ -1529,7 +1529,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		{
 	        ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
 	        clientStartupHelper.setAppName("Commander");
-	        clientStartupHelper.setRequiredRole(CommanderRole.ROLEID);
+	        clientStartupHelper.setRequiredRole(YukonRole.COMMANDER.getRoleId());
 	        clientStartupHelper.setSplashUrl(CtiUtilities.COMMANDER_SPLASH);
 
 	        clientStartupHelper.doStartup();

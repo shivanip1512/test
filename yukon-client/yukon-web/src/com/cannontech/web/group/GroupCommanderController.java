@@ -218,7 +218,7 @@ public class GroupCommanderController {
                 }
             });
             if (!commandStrings.contains(commandString)) {
-                throw NotAuthorizedException.trueProperty(userContext.getYukonUser(), CommanderRole.EXECUTE_MANUAL_COMMAND);
+                throw NotAuthorizedException.trueProperty(userContext.getYukonUser(), YukonRoleProperty.EXECUTE_MANUAL_COMMAND);
             }
         }
         

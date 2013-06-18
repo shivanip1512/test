@@ -42,6 +42,7 @@ import com.cannontech.common.editor.PropertyPanelListener;
 import com.cannontech.common.gui.image.ImageChooser;
 import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.common.util.SwingUtil;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.esub.Drawing;
@@ -59,7 +60,6 @@ import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
 import com.cannontech.esub.util.ESubDrawingUpdater;
-import com.cannontech.roles.application.EsubEditorRole;
 import com.cannontech.user.SystemUserContext;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
@@ -522,7 +522,7 @@ public class Editor extends JPanel {
 	    try {
             ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
             clientStartupHelper.setAppName(APPLICATION_NAME);
-            clientStartupHelper.setRequiredRole(EsubEditorRole.ROLEID);
+            clientStartupHelper.setRequiredRole(YukonRole.APPLICATION_ESUBSTATION_EDITOR.getRoleId());
             frame = new JFrame() {};
             clientStartupHelper.setParentFrame(frame);
             clientStartupHelper.doStartup();

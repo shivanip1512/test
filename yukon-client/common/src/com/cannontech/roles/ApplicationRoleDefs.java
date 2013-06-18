@@ -4,6 +4,7 @@ package com.cannontech.roles;
  * Role ID definitions for the Application category of roles.
  * @author aaron
  */
+
 public interface ApplicationRoleDefs extends RoleDefs {
 	
 	public static final int DATABASE_EDITOR_ROLEID = APPLICATION_ROLEID_BASE;	

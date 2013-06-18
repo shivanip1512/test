@@ -32,8 +32,6 @@
     <bean id="moveInMoveOutService" class="com.cannontech.amr.moveInMoveOut.service.impl.MoveInMoveOutServiceImpl">
         <property name="moveInDefinition" ref="moveInJob"/>
         <property name="moveOutDefinition" ref="moveOutJob"/>
-        
-        <property name="calculatedPointService" ref="calculatedPointService"/>
     </bean>
 
     <!-- Moving JobDefinitions -->

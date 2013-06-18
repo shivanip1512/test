@@ -32,7 +32,6 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.IDatabaseCache;
@@ -109,6 +108,10 @@ public class AuthDaoImpl implements AuthDao {
 	{
 		return rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(rolePropertyID), user);
 	}
+	
+    public String getRolePropertyValue(LiteYukonUser user, YukonRoleProperty property) {
+        return rolePropertyDao.getPropertyStringValue(property, user);
+    }
     
     public String getRolePropertyValue(int userID, int rolePropertyID) {
         LiteYukonUser liteYukonUser = yukonUserDao.getLiteYukonUser(userID);
@@ -291,7 +294,8 @@ public class AuthDaoImpl implements AuthDao {
             throw new IllegalArgumentException("User cannot be null.");
 
         TimeZone timeZone;
-        String timeZoneStr = getRolePropertyValue( user, WebClientRole.DEFAULT_TIMEZONE);
+        YukonRoleProperty defaultTimezone = YukonRoleProperty.DEFAULT_TIMEZONE;
+        String timeZoneStr = getRolePropertyValue( user, defaultTimezone);
         
         if (StringUtils.isNotBlank(timeZoneStr)) {
             try {

@@ -4,8 +4,8 @@ package com.cannontech.dbeditor.wizard.point;
  * This type was created in VisualAge.
  */
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.roles.application.DBEditorRole;
 
 public class PointWizardPanel extends com.cannontech.common.wizard.WizardPanel
 {
@@ -83,7 +83,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		try
 		{
 			editPointID = Boolean.parseBoolean(ClientSession.getInstance().getRolePropertyValue(
-					 DBEditorRole.POINT_ID_EDIT));
+					 YukonRoleProperty.POINT_ID_EDIT));
 		}
 		catch (java.util.MissingResourceException e)
 		{
@@ -142,7 +142,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		try
 		{
 			editPointID = Boolean.parseBoolean(ClientSession.getInstance().getRolePropertyValue(
-					 DBEditorRole.POINT_ID_EDIT));
+					 YukonRoleProperty.POINT_ID_EDIT.getPropertyId()));
 		}
 		catch (java.util.MissingResourceException e )
 		{
@@ -169,7 +169,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		try
 		{
 			editPointID = Boolean.parseBoolean(ClientSession.getInstance().getRolePropertyValue(
-					 DBEditorRole.POINT_ID_EDIT));
+					 YukonRoleProperty.POINT_ID_EDIT.getPropertyId()));
 		}
 		catch (java.util.MissingResourceException e)
 		{
@@ -200,7 +200,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		try
 		{
 			editPointID = Boolean.parseBoolean(ClientSession.getInstance().getRolePropertyValue(
-					 DBEditorRole.POINT_ID_EDIT));
+					 YukonRoleProperty.POINT_ID_EDIT.getPropertyId()));
 		}
 		catch (java.util.MissingResourceException e)
 		{

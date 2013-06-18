@@ -10,6 +10,7 @@ import javax.swing.JTabbedPane;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.dbeditor.wizard.port.PooledPortListPanel;
@@ -113,7 +114,7 @@ public Object[] createNewPanel(int panelIndex)
 			boolean showIt = false;
 			try
 			{
-			    Boolean.parseBoolean(ClientSession.getInstance().getRolePropertyValue(DBEditorRole.TRANS_EXCLUSION));
+			    Boolean.parseBoolean(ClientSession.getInstance().getRolePropertyValue(YukonRoleProperty.TRANS_EXCLUSION));
 			}
 			catch (Exception e)
 			{

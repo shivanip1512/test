@@ -47,6 +47,7 @@ import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.GraphDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.Transaction;
@@ -76,7 +77,6 @@ import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendProperties;
 import com.cannontech.jfreechart.chart.YukonChartPanel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.roles.application.TrendingRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 
@@ -2002,7 +2002,7 @@ private void initialize()
 		ClientSession session = ClientSession.getInstance();
 		RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
 		boolean graphEdit = rolePropertyDao.getPropertyBooleanValue(
-		                                        YukonRoleProperty.getForId(TrendingRole.GRAPH_EDIT_GRAPHDEFINITION), session.getUser());
+		                                        YukonRoleProperty.GRAPH_EDIT_GRAPHDEFINITION, session.getUser());
 		if( !graphEdit )
 		{
 			getTrendMenu().getCreateMenuItem().setEnabled(false);
@@ -2127,7 +2127,7 @@ public static void main(String[] args)
         {
         ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
         clientStartupHelper.setAppName("Trending");
-        clientStartupHelper.setRequiredRole(TrendingRole.ROLEID);
+        clientStartupHelper.setRequiredRole(YukonRole.TRENDING.getRoleId());
         clientStartupHelper.setSplashUrl(CtiUtilities.TRENDING_SPLASH);
         
         // creates a stupid anonymous class to create a unique class name for the main frame

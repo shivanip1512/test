@@ -82,6 +82,10 @@ public class ClientSession {
 	    return rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(rolePropertyID), getUser());
 	}
 	
+	public String getRolePropertyValue(YukonRoleProperty yukonRoleProperty) {
+	    return getRolePropertyValue(yukonRoleProperty.getPropertyId());
+	}
+	
 	public static synchronized ClientSession getInstance() {
 		if(instance == null) {
 			instance = new ClientSession();

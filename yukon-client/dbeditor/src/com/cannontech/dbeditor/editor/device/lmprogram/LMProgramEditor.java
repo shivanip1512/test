@@ -3,13 +3,13 @@ package com.cannontech.dbeditor.editor.device.lmprogram;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.device.lm.LMProgramBase;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramBasePanel;
 import com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramControlWindowPanel;
-import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.user.UserUtils;
 /**
  * This type was created in VisualAge.
@@ -323,7 +323,7 @@ public void setValue(Object val)
 				try {
 				    allowMemCntrl = Boolean.parseBoolean(
 				                               ClientSession.getInstance().getRolePropertyValue(
-				                                                               DBEditorRole.ALLOW_MEMBER_PROGRAMS).trim());
+				                                                               YukonRoleProperty.ALLOW_MEMBER_PROGRAMS).trim());
 				}
 				catch (Exception e)
 				{/*Leave allowMemCntrl false*/}

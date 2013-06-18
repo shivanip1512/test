@@ -53,6 +53,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -62,7 +63,6 @@ import com.cannontech.database.data.user.YukonGroup;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.user.YukonGroupRole;
 import com.cannontech.database.model.DBTreeNode;
-import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.IDatabaseCache;
@@ -656,14 +656,14 @@ public class UserRolePanel extends DataInputPanel implements TreeSelectionListen
 
 	/**
 	 * Returns true if the input for this panel is valid. Currently only checks
-	 * the WebClientRole.DEFAULT_TIMEZONE role property for valid timezones.
+	 * the YukonRoleProperty.DEFAULT_TIMEZONE role property for valid time zones.
 	 * 
 	 * @return boolean
 	 */
 	public boolean isInputValid() {
 		for (int i = 0; i < getJTablePropertyModel().getRowCount(); i++) {
 			RolePropertyRow propertyRow = getJTablePropertyModel().getRowAt(i);
-			if (propertyRow.getLiteProperty().getRolePropertyID() == WebClientRole.DEFAULT_TIMEZONE) {
+			if (propertyRow.getLiteProperty().getRolePropertyID() == YukonRoleProperty.DEFAULT_TIMEZONE.getPropertyId()) {
 				if (!isDefaultTimeZoneValid(propertyRow)) {
 					return false;
 				}

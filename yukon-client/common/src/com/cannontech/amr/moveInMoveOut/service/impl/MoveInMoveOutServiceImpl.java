@@ -574,10 +574,4 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
         this.moveInDefinition = moveInDefinition;
     }
 
-    @Required
-    public void setCalculatedPointService(
-            CalculatedPointService calculatedPointService) {
-        this.calculatedPointService = calculatedPointService;
-    }
-
 }

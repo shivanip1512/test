@@ -189,7 +189,7 @@ public interface AuthDao {
 
     /**
      * This method returns the TimeZone for the given user.  
-     * First, the WebClientRole.TIMEZONE role property is checked, if found return
+     * First, the YUkonRoleProperty.TIMEZONE role property is checked, if found return
      * else if isBlank, then the ConfigurationRole.DEFAULT_TIMEZONE role property is checked, if found return
      * else if isBlank, then return the server timezone.
      * Throws BadConfigurationException when timeZone string value is not valid.

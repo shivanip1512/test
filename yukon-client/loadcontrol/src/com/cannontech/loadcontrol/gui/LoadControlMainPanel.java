@@ -13,8 +13,8 @@ import com.cannontech.common.gui.panel.CompositeJSplitPane;
 import com.cannontech.common.gui.panel.ManualChangeJPanel;
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.debug.gui.ObjectInfoDialog;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
@@ -42,7 +42,6 @@ import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.loadcontrol.popup.ControlAreaPopUpMenu;
 import com.cannontech.loadcontrol.popup.GroupPopUpMenu;
 import com.cannontech.loadcontrol.popup.ProgramPopUpMenu;
-import com.cannontech.roles.application.TDCRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tdc.TDCMainPanel;
 import com.cannontech.tdc.data.Display;
@@ -1121,7 +1120,7 @@ private void initClientConnection()
 	//hex value representing the privileges of the user on this machine
 	try {
         userRightsInt = Integer.parseInt(ClientSession.getInstance()
-            .getRolePropertyValue(TDCRole.LOADCONTROL_EDIT), 16);
+            .getRolePropertyValue(YukonRoleProperty.LOADCONTROL_EDIT), 16);
     } catch (NumberFormatException e) {
         CTILogger.warn("Unable to parse user rights integer from TDCRole.LOADCONTROL_EDIT, " +
                        "must be valid hex integer (less than 8 characters).", e);

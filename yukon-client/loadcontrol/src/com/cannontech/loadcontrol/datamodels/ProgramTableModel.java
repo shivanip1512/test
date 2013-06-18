@@ -7,11 +7,11 @@ import java.awt.Color;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.events.LCGenericTableModelEvent;
-import com.cannontech.roles.application.TDCRole;
 import com.cannontech.user.SystemUserContext;
 
 public class ProgramTableModel extends javax.swing.table.AbstractTableModel implements javax.swing.event.TableModelListener, IProgramTableModel
@@ -60,7 +60,7 @@ public class ProgramTableModel extends javax.swing.table.AbstractTableModel impl
 	      showRedCol = 
 	         Boolean.valueOf(
 	            ClientSession.getInstance().getRolePropertyValue(
-	               TDCRole.LC_REDUCTION_COL));
+	               YukonRoleProperty.LC_REDUCTION_COL));
 	   }
 	   catch( Exception e)
 	   {}

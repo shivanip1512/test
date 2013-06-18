@@ -12,6 +12,8 @@ import javax.swing.JRootPane;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.ClientRights;
 import com.cannontech.common.util.SwingUtil;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.message.macs.message.MACSCategoryChange;
 import com.cannontech.message.util.ConnStateChange;
 import com.cannontech.message.util.MessageEvent;
@@ -312,7 +314,7 @@ private void initialize()
 		//hex value representing the privelages of the user on this machine
 		userRightsInt = Integer.parseInt( 
 				ClientSession.getInstance().getRolePropertyValue(
-				TDCRole.MACS_EDIT), 16 );
+				YukonRoleProperty.MACS_EDIT), 16 );
 	}
    catch (java.util.MissingResourceException e)
    {
