@@ -13,9 +13,6 @@
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
 <%@ page import="com.cannontech.stars.energyCompany.dao.EnergyCompanyDao" %>
 <%@ page import="com.cannontech.analysis.ReportFilter"%>
-<%@ page import="com.cannontech.roles.application.CommanderRole" %>
-<%@ page import="com.cannontech.roles.application.WebClientRole" %>
-<%@ page import="com.cannontech.roles.application.ReportingRole" %>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
 <%@ page import="com.cannontech.roles.capcontrol.CBCSettingsRole" %>
@@ -234,10 +231,10 @@ function makeFirstSelectedFilterValueVisible() {
 <%
 	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat((String)pageContext.getAttribute("dateFormat"));
 	RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
-	String bulletImg = "<img src='../WebConfig/" + rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(WebClientRole.NAV_BULLET_SELECTED), lYukonUser) + "' width='9' height='9'>";
-	String bulletImgExp = "<img src='../WebConfig/" + rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(WebClientRole.NAV_BULLET_EXPAND), lYukonUser) + "' width='9' height='9'>";
-    String connImgMid = "<img src='../WebConfig/" + rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(WebClientRole.NAV_CONNECTOR_MIDDLE), lYukonUser) + "' width='10' height='12'>";
-    String connImgBtm = "<img src='../WebConfig/" + rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(WebClientRole.NAV_CONNECTOR_BOTTOM), lYukonUser) + "' width='10' height='12'>";
+	String bulletImg = "<img src='../WebConfig/" + rolePropertyDao.getPropertyStringValue(YukonRoleProperty.NAV_BULLET_SELECTED, lYukonUser) + "' width='9' height='9'>";
+	String bulletImgExp = "<img src='../WebConfig/" + rolePropertyDao.getPropertyStringValue(YukonRoleProperty.NAV_BULLET_EXPAND, lYukonUser) + "' width='9' height='9'>";
+    String connImgMid = "<img src='../WebConfig/" + rolePropertyDao.getPropertyStringValue(YukonRoleProperty.NAV_CONNECTOR_MIDDLE, lYukonUser) + "' width='10' height='12'>";
+    String connImgBtm = "<img src='../WebConfig/" + rolePropertyDao.getPropertyStringValue(YukonRoleProperty.NAV_CONNECTOR_BOTTOM, lYukonUser) + "' width='10' height='12'>";
 	
 	String linkHtml = null;
 	String linkImgExp = null;

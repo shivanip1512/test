@@ -15,7 +15,6 @@ import com.cannontech.core.dynamic.SignalListener;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.dispatch.message.Signal;
-import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.user.checker.RolePropertyUserCheckerFactory;
 import com.cannontech.user.checker.UserChecker;
 import com.cannontech.core.dao.NotFoundException;

@@ -1,3 +1,4 @@
+<%@page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 <html>
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
@@ -185,7 +186,7 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=YukonRoleProperty.STYLE_SHEET.getPropertyId()%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
 <SCRIPT LANGUAGE="JAVASCRIPT" TYPE="TEXT/JAVASCRIPT">
   <!-- Hide the script from older browsers
@@ -217,7 +218,7 @@
           <td valign="bottom" height="102"> 
             <table width="657" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%=YukonRoleProperty.HEADER_LOGO.getPropertyId()%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
               </tr>
               <tr> 
                 <td width="253" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp;Load 

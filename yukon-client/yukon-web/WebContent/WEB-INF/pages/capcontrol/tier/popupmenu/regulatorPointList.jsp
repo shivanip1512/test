@@ -1,6 +1,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 
 <cti:standardPage title="Regulator Points and TS" module="capcontrol_internal">
 <cti:includeCss link="/WebConfig/yukon/styles/da/CapcontrolGeneralStyles.css"/>     

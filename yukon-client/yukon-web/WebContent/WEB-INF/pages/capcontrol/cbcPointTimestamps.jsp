@@ -5,6 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 
 <cti:msgScope paths="modules.capcontrol.cbcPoints">
 

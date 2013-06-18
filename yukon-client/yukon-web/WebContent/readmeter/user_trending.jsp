@@ -1,13 +1,13 @@
+<%@page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 <html>
 <% String pageName = "user_trending.jsp"; %> 
 <%@ include file="include/user_header.jsp" %>
 <%@ include file="../include/trending_functions.jspf" %>
-<%@ page import="com.cannontech.roles.application.WebClientRole"%>
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <title>Trending</title>
 <link id="StyleSheet" rel="stylesheet" href="../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link id="StyleSheet" rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+<link id="StyleSheet" rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=YukonRoleProperty.STYLE_SHEET.getPropertyId()%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <link rel="stylesheet" href="../WebConfig/yukon/styles/calendarControl.css" type="text/css">
 <META NAME="robots" CONTENT="noindex, nofollow">
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -34,7 +34,7 @@
           <td width="609">
             <table width="609" cellspacing="0"  cellpadding="0" border="0">
               <tr>
-                <td colspan="4" height="74" background="../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>" width="609"></td>
+                <td colspan="4" height="74" background="../WebConfig/<cti:getProperty propertyid="<%= YukonRoleProperty.HEADER_LOGO.getPropertyId()%>" defaultvalue="yukon/DemoHeader.gif"/>" width="609"></td>
               </tr>
               <tr>
                 <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;&nbsp;</td>
@@ -96,7 +96,7 @@
                       <img id = "theGraph" src="<%=request.getContextPath()%>/servlet/GraphGenerator?action=EncodeGraph" > 
                     <%}
                   %>
-                  <br><font size="-1"><cti:getProperty propertyid="<%= TrendingRole.TRENDING_DISCLAIMER%>"/></font>
+                  <br><font size="-1"><cti:getProperty propertyid="<%= YukonRoleProperty.TRENDING_DISCLAIMER.getPropertyId() %>"/></font>
                   </center>
                 </td>
               </tr>

@@ -1,8 +1,9 @@
+<%@page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
+<%@page import="com.cannontech.core.roleproperties.YukonRole"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ page import="com.cannontech.spring.YukonSpringHook"%> 
 <%@ page import="com.cannontech.core.dao.YukonUserDao"%>
 <%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>
-<%@ page import="com.cannontech.roles.application.WebClientRole"%>
 <%@ page import="com.cannontech.util.ServletUtil" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%	
@@ -19,7 +20,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <title>Consumer Energy Services</title>
 <link rel="stylesheet" href="../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+<link rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=YukonRoleProperty.STYLE_SHEET.getPropertyId()%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <META NAME="robots" CONTENT="noindex, nofollow">
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>

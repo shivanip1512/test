@@ -4,8 +4,6 @@
 
 <%@ page import="com.cannontech.spring.YukonSpringHook"%> 
 <%@ page import="com.cannontech.stars.energyCompany.dao.EnergyCompanyDao" %>
-<%@ page import="com.cannontech.roles.application.WebClientRole"%>
-<%@ page import="com.cannontech.roles.application.TrendingRole "%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>

@@ -1,4 +1,5 @@
 <%@ page errorPage="/internalError.jsp" %>
+<%@ page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -30,7 +31,7 @@
         <c:forEach items="${innerContentCss}" var="file"><link rel="stylesheet" type="text/css" href="<cti:url value="${file}"/>" >
         </c:forEach>
         
-        <!-- Login Group specific style sheets (WebClientRole.STD_PAGE_STYLE_SHEET)-->
+        <!-- Login Group specific style sheets (YukonRoleProperty.STD_PAGE_STYLE_SHEET)-->
         <c:forEach items="${loginGroupCss}" var="file"><link rel="stylesheet" type="text/css" href="<cti:url value="${file}"/>" >
         </c:forEach>
         

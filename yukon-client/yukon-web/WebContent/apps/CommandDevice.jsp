@@ -5,11 +5,9 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <%@ page import="java.util.*" %>
-<%@ page import="com.cannontech.roles.application.WebClientRole" %>
 <%@ page import="com.cannontech.database.data.pao.YukonPAObject"%>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
 <%@ page import="com.cannontech.database.db.command.CommandCategory"%>
-<%@ page import="com.cannontech.roles.application.CommanderRole"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>

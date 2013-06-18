@@ -10,14 +10,14 @@
     <td valign="bottom" height="102"> 
 	  <table width="657" cellspacing="0" cellpadding="0" border="0">
 	    <tr> 
-		  <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
+		  <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= YukonRoleProperty.HEADER_LOGO.getPropertyId()%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
 	    </tr>
 	    <tr> 
 		  <td width="310" height="28" class="PageHeader">&nbsp;&nbsp;&nbsp;Work Orders</td>
 		  <td width="235" valign="middle">&nbsp;</td>
 		  <td width="" valign="middle" align="right" nowrap>
 <% if (session.getAttribute(ServletUtils.ATT_CONTEXT_SWITCHED) == null) { %>
-            <span class="MainText"><a href="<%=request.getContextPath()%><%=YukonSpringHook.getBean(RolePropertyDao.class).getPropertyStringValue(YukonRoleProperty.getForId(WebClientRole.HOME_URL), lYukonUser)%>" class="Link3" onclick="return warnUnsavedChanges();">Home</a></span> 
+            <span class="MainText"><a href="<%=request.getContextPath()%><%=YukonSpringHook.getBean(RolePropertyDao.class).getPropertyStringValue(YukonRoleProperty.HOME_URL, lYukonUser)%>" class="Link3" onclick="return warnUnsavedChanges();">Home</a></span> 
 <% } %>
 		  &nbsp;&nbsp;&nbsp;</td>
 		  <td width="" valign="middle" nowrap> 

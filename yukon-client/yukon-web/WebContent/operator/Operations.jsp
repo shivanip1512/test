@@ -46,7 +46,7 @@
 
 </script>
 
-    <div id="main">
+    <div id="main"><!-- start main -->
 
         <cti:operationsSetup />
         <cti:starsOperations />
@@ -360,8 +360,11 @@
                 </cti:checkRolesAndProperties>
 
             </tags:operationSection>
-
+<!-- end operationSection -->
         </cti:checkRolesAndProperties>
+<!-- end cti:checkRolesAndProperties -->
 
     </div>
+<!-- end div -->
 </cti:standardPage>
+<!-- end cti:standardPage -->

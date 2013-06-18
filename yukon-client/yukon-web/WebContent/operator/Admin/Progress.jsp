@@ -1,9 +1,9 @@
+<%@page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.stars.util.ProgressChecker" %>
 <%@ page import="com.cannontech.stars.util.task.TimeConsumingTask" %>
-<%@ page import="com.cannontech.roles.application.WebClientRole" %>
 <%@ page import="com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany" %>
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
 <%@ page import="com.cannontech.common.version.VersionTools" %>
@@ -88,7 +88,7 @@
 <meta http-equiv="Refresh" content="5">
 <% } %>
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=YukonRoleProperty.STYLE_SHEET.getPropertyId()%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">

@@ -723,7 +723,7 @@ public class UserRolePanel extends DataInputPanel implements TreeSelectionListen
 			CtiUtilities.getValidTimeZone(value);
 			return true;
 		} catch (BadConfigurationException e) {
-			setErrorString("Invalid value in WebClientRole Default TimeZone property: "
+			setErrorString("Invalid value in Default TimeZone property: "
 					+ value
 					+ " \nTimezones should be in the form \"America/Chicago\".");
 			return false;

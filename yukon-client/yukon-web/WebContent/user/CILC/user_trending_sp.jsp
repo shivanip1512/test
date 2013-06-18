@@ -42,7 +42,7 @@ if( gData != null )
         if( Integer.parseInt(gData[i][0].toString()) == graphBean.getGdefid() )
         {%>
   <tr> 
-    <td width="10"><img src="/WebConfig/<cti:getProperty property="WebClientRole.NAV_BULLET_SELECTED"/>" width="9" height="9" ></td>
+    <td width="10"><img src="/WebConfig/<cti:getProperty property="YukonRoleProperty.NAV_BULLET_SELECTED"/>" width="9" height="9" ></td>
     <td style="padding:1px"><span><%=gData[i][1] %></span></td>
   </tr>
         <%}

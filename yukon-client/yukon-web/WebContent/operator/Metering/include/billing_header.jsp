@@ -1,6 +1,5 @@
 <%@ page language="java" %>
 <%@ page import="java.util.*" %>
-<%@ page import="com.cannontech.roles.application.WebClientRole"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.billing.mainprograms.BillingFileDefaults" %>
 <%@ page import="com.cannontech.database.db.device.DeviceMeterGroup" %>

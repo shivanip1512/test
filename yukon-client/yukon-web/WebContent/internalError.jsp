@@ -8,7 +8,6 @@
 <%@page import="org.apache.commons.lang.ObjectUtils"%>
 <%@page import="com.cannontech.common.util.CtiUtilities"%>
 <jsp:directive.page import="com.cannontech.common.version.VersionTools"/>
-<jsp:directive.page import="com.cannontech.roles.application.WebClientRole"/>
 <jsp:directive.page import="org.apache.commons.lang.BooleanUtils"/>
 <jsp:directive.page import="com.cannontech.web.util.ErrorHelperFilter"/>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -23,7 +22,7 @@ try {
     LiteYukonUser user = ServletUtil.getYukonUser(request);
     RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
     homeUrl = ServletUtil.createSafeUrl(request, 
-                              rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(WebClientRole.HOME_URL), user));
+                              rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user));
 } catch (NotLoggedInException ignore) { }    
 
 
@@ -46,7 +45,7 @@ request_uri = ObjectUtils.defaultIfNull(request_uri, "no request uri");
 boolean showStack = true;
 RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
 String suppressStackStr = rolePropertyDao.getPropertyStringValue(
-                                              YukonRoleProperty.getForId(WebClientRole.SUPPRESS_ERROR_PAGE_DETAILS), 
+                                              YukonRoleProperty.SUPPRESS_ERROR_PAGE_DETAILS, 
                                               ServletUtil.getYukonUser(request));
 showStack = !BooleanUtils.toBoolean(suppressStackStr);
 

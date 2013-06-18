@@ -7,7 +7,6 @@
 <%@ page import="com.cannontech.core.dao.YukonUserDao"%>
 <%@ page import="com.cannontech.core.dao.ContactDao"%>
 <%@ page import="com.cannontech.util.ServletUtil" %>
-<%@ page import="com.cannontech.roles.application.TrendingRole"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
 <%

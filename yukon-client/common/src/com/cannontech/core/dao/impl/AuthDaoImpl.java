@@ -302,7 +302,7 @@ public class AuthDaoImpl implements AuthDao {
                 timeZone = CtiUtilities.getValidTimeZone(timeZoneStr);
                 CTILogger.debug("WebClient Role Default TimeZone found: " + timeZone.getDisplayName());
             } catch (BadConfigurationException e) {
-                throw new BadConfigurationException (e.getMessage() + ".  Invalid value in WebClientRole Default TimeZone property.");
+                throw new BadConfigurationException (e.getMessage() + ".  Invalid value in YukonRoleProperty Default TimeZone property.");
             }
         } else {
             timeZone = systemDateFormattingService.getSystemTimeZone();

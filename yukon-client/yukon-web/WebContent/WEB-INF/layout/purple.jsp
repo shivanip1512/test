@@ -1,6 +1,6 @@
+<%@page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ page import="com.cannontech.roles.application.WebClientRole"%>
 
 <cti:outputDoctype levels="${info.htmlLevel}, transitional"/>
 <html>
@@ -14,7 +14,7 @@
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/yukon.css"/>">
 
         <cti:url var="webClientRoleStyleSheet">
-          <jsp:attribute name="value" trim="true">/WebConfig/<cti:getProperty property="WebClientRole.STYLE_SHEET" /></jsp:attribute>
+          <jsp:attribute name="value" trim="true">/WebConfig/<cti:getProperty property="YukonRoleProperty.STYLE_SHEET" /></jsp:attribute>
         </cti:url>
         <link rel="stylesheet" type="text/css" href="${webClientRoleStyleSheet}" >
 
@@ -26,7 +26,7 @@
         <c:forEach items="${innerContentCss}" var="file"><link rel="stylesheet" type="text/css" href="<cti:url value="${file}"/>" >
         </c:forEach>
         
-        <!-- Login Group specific style sheets (WebClientRole.STD_PAGE_STYLE_SHEET)-->
+        <!-- Login Group specific style sheets (YukonRoleProperty.STD_PAGE_STYLE_SHEET)-->
         <c:forEach items="${loginGroupCss}" var="file"><link rel="stylesheet" type="text/css" href="<cti:url value="${file}"/>" >
         </c:forEach>
         
