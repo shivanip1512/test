@@ -18,6 +18,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
 import org.apache.commons.lang.StringUtils;
+import org.jdom.JDOMException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Controller;
@@ -28,10 +29,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.EnergyCompanyNotFoundException;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
@@ -46,7 +50,6 @@ import com.cannontech.web.menu.LayoutSkinEnum;
 import com.cannontech.web.menu.ModuleBase;
 import com.cannontech.web.menu.PageInfo;
 import com.cannontech.web.menu.renderer.LeftSideMenuRenderer;
-import com.cannontech.web.menu.renderer.MenuRenderer;
 import com.cannontech.web.menu.renderer.StandardMenuRenderer;
 import com.cannontech.web.taglib.StandardPageInfo;
 import com.cannontech.web.taglib.StandardPageTag;
@@ -55,12 +58,15 @@ import com.google.common.collect.ImmutableList.Builder;
 
 @Controller
 public class LayoutController {
+	
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private CommonModuleBuilder moduleBuilder;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private PageDetailProducer pageDetailProducer;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private StandardMenuRenderer stdMenuRender;
     
     private List<String> layoutScriptFiles;
     
@@ -77,10 +83,12 @@ public class LayoutController {
         builder.add(JsLibrary.JQUERY_FORM.getPath());
         builder.add(JsLibrary.JQUERY_PLACEHOLDER.getPath());
         builder.add(JsLibrary.JQUERY_TRAVERSABLE.getPath());
+        builder.add(JsLibrary.JQUERY_TIP_TIP.getPath());
 
         //add the other standard libs
         builder.add(JsLibrary.PROTOTYPE.getPath());
     	builder.add(JsLibrary.YUKON_UI.getPath());
+    	builder.add(JsLibrary.YUKON_ALERTS.getPath());
         builder.add("/JavaScript/yukonGeneral.js");
         if (configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)) {
             builder.add("/JavaScript/basicLogger.js");
@@ -91,7 +99,6 @@ public class LayoutController {
         builder.add("/JavaScript/dataUpdater.js");
         builder.add("/JavaScript/simpleCookies.js");
         builder.add("/JavaScript/simpleDialog.js");
-        builder.add("/JavaScript/alert.js");
         builder.add("/JavaScript/javaWebStartLauncher.js");
         builder.add("/JavaScript/yukon/util/analytics_manager.js");
         
@@ -100,7 +107,7 @@ public class LayoutController {
     
     // StandardPageTag forwards to here!
     @RequestMapping("/")
-    public String display(HttpServletRequest request, HttpServletResponse response, ModelMap map, Locale locale) throws JspException {
+    public String display(final HttpServletRequest request, final HttpServletResponse response, ModelMap map, Locale locale) throws JspException {
 
         // get data passed over - in attributes
         final BodyContent bodyContent = StandardPageTag.getBodyContent(request);
@@ -113,7 +120,7 @@ public class LayoutController {
             }
         });
         
-        StandardPageInfo tagInfo = StandardPageTag.getStandardPageInfo(request);
+        final StandardPageInfo tagInfo = StandardPageTag.getStandardPageInfo(request);
         map.addAttribute("info", tagInfo);
         
         final YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -180,47 +187,67 @@ public class LayoutController {
         
         LayoutSkinEnum skin = moduleBase.getSkin();
         
-        // handle new and old methods for specifying menu (but not both)
-        boolean showNewMenu = false;
-        if (pageInfo != null) {
-            showNewMenu = pageInfo.isRenderMenu();
-        }
-        boolean showOldMenu = tagInfo.isShowMenu();
-        boolean showMenu = false;
-        if (showOldMenu && showNewMenu) {
-            throw new IllegalStateException("Menu cannot be specified on JSP and in module_config.xml");
-        }
-        
-        String menuSelection = null;
-        if (showOldMenu) {
-            menuSelection = tagInfo.getMenuSelection();
-            showMenu = true;
-        } else if (showNewMenu) {
-            menuSelection = pageInfo.getMenuSelection();
-            showMenu = true;
-        }
-        
-        if (showMenu) {
-            // setup menu
-            final MenuRenderer menuRenderer;
-            if (skin.isLeftSideMenu()) {
-                menuRenderer = new LeftSideMenuRenderer(request, moduleBase, messageSourceResolver);
-            } else {
-                menuRenderer = new StandardMenuRenderer(request, moduleBase, pageInfo, messageSourceResolver);
+        // setup menu
+        if (skin.isLeftSideMenu()) {
+        	// handle new and old methods for specifying menu (but not both)
+        	boolean showNewMenu = false;
+            if (pageInfo != null) {
+                showNewMenu = pageInfo.isRenderMenu();
             }
-            menuRenderer.setMenuSelection(menuSelection);
-            // if bread crumbs were specified within the JSP, use them (old style)
-            String breadCrumbs = tagInfo.getBreadCrumbs();
-            if (breadCrumbs == null) {
-                // otherwise get the from the PageDetail object (new style)
-                breadCrumbs = pageDetail.getBreadCrumbText();
+            boolean showOldMenu = tagInfo.isShowMenu();
+            boolean showMenu = false;
+            if (showOldMenu && showNewMenu) {
+                throw new IllegalStateException("Menu cannot be specified on JSP and in module_config.xml");
             }
-            menuRenderer.setBreadCrumb(breadCrumbs);
-            menuRenderer.setHomeUrl("/home");
-            map.addAttribute("menuRenderer", new Writable() {
+            
+            if (showMenu) {
+	            String menuSelection = null;
+	            if (showOldMenu) {
+	                menuSelection = tagInfo.getMenuSelection();
+	                showMenu = true;
+	            } else if (showNewMenu) {
+	                menuSelection = pageInfo.getMenuSelection();
+	                showMenu = true;
+	            }
+	            
+	        	final LeftSideMenuRenderer menuRenderer = new LeftSideMenuRenderer(request, moduleBase, messageSourceResolver);
+	            menuRenderer.setMenuSelection(menuSelection);
+	            // if bread crumbs were specified within the JSP, use them (old style)
+	            String breadCrumbs = tagInfo.getBreadCrumbs();
+	            if (breadCrumbs == null) {
+	                // otherwise get the from the PageDetail object (new style)
+	                breadCrumbs = pageDetail.getBreadCrumbText();
+	            }
+	            menuRenderer.setBreadCrumb(breadCrumbs);
+	            menuRenderer.setHomeUrl("/home");
+	            map.addAttribute("menuRenderer", new Writable() {
+	                @Override
+	                public void write(Writer out) throws IOException {
+	                    menuRenderer.renderMenu(out);
+	                }
+	            });
+            }
+        } else {
+        	map.addAttribute("menuRenderer", new Writable() {
                 @Override
                 public void write(Writer out) throws IOException {
-                    menuRenderer.renderMenu(out);
+                    try {
+						stdMenuRender.renderMenu(request, out);
+					} catch (JDOMException e) {
+						throw new IOException("Problem parsing menu_config.xml for menus.", e);
+					}
+                }
+            });
+        	
+        	map.addAttribute("bcRenderer", new Writable() {
+                @Override
+                public void write(Writer out) throws IOException {
+                	String breadCrumbs = tagInfo.getBreadCrumbs();
+                    if (breadCrumbs == null) {
+                        /* Get the crumbs from the PageDetail object (new style) */
+                        breadCrumbs = pageDetail.getBreadCrumbText();
+                    }
+                    out.write(breadCrumbs);
                 }
             });
         }
@@ -229,15 +256,17 @@ public class LayoutController {
         String username = yukonUser.getUsername();
         String energyCompanyName = null;
         
-        try{
+        try {
             YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(yukonUser);
             energyCompanyName = energyCompany.getName();
-        }catch(EnergyCompanyNotFoundException e){
+        } catch (EnergyCompanyNotFoundException e) {
            //The user does not need an Energy Company just to log in.
         }
         
         map.addAttribute("energyCompanyName", energyCompanyName);
         map.addAttribute("username", username);
+        
+    	map.addAttribute("displayName", buildDisplayName(yukonUserDao.getLiteContact(yukonUser.getLiteID()), yukonUser));
         
         boolean showContextualNavigation = pageInfo != null && pageInfo.isShowContextualNavigation();
         map.addAttribute("showContextualNavigation", showContextualNavigation);
@@ -258,7 +287,26 @@ public class LayoutController {
         return skin.getViewName();
     }
     
-    @ModelAttribute("yukonVersion")
+    private String buildDisplayName(LiteContact contact, LiteYukonUser user) {
+		if (contact == null) {
+			return user.getUsername();
+		} else if (StringUtils.isBlank(contact.getContFirstName()) && StringUtils.isBlank(contact.getContFirstName())) {
+			return user.getUsername();
+		} else if (contact.getContFirstName().equalsIgnoreCase(CtiUtilities.STRING_NONE) && contact.getContLastName().equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
+			return user.getUsername();
+		}
+		if (contact.getContFirstName().equalsIgnoreCase(CtiUtilities.STRING_NONE) || StringUtils.isBlank(contact.getContFirstName())) {
+			return user.getUsername();
+		} else {
+			String displayName = contact.getContFirstName();
+			if (!contact.getContLastName().equalsIgnoreCase(CtiUtilities.STRING_NONE) && !StringUtils.isBlank(contact.getContLastName())) {
+				displayName += " " + contact.getContLastName();
+			}
+			return displayName;
+		}
+	}
+
+	@ModelAttribute("yukonVersion")
     public String getYukonVersion() {
         return VersionTools.getYUKON_VERSION();
     }

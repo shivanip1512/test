@@ -108,34 +108,31 @@
         			
         		</form>
         			
-       			<br>
-	
-				<cti:displayForPageEditModes modes="CREATE">
-					<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_attr" labelBusy="${scheduleButtonText}" label="${scheduleButtonText}" />
-				</cti:displayForPageEditModes>
-				
-				<cti:displayForPageEditModes modes="EDIT">
+                <div class="pageActionArea">	
+					<cti:displayForPageEditModes modes="CREATE">
+						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_attr" labelBusy="${scheduleButtonText}" label="${scheduleButtonText}" />
+					</cti:displayForPageEditModes>
 					
-					<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_attr" labelBusy="${updateButtonText}" label="${updateButtonText}" />
-					
-					<c:if test="${status ne 'RUNNING'}">
-					<c:choose>
-						<c:when test="${disabled}">
-							<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${enableJobButtonText}" label="${enableJobButtonText}" />
-						</c:when>
-						<c:otherwise>
-							<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${disableJobButtonText}" label="${disableJobButtonText}" />
-						</c:otherwise>
-					</c:choose>
-					</c:if>
-					
-					<tags:slowInput myFormId="disabledAndDeleteJobForm" labelBusy="${disableAndDeleteJobButtonText}" label="${disableAndDeleteJobButtonText}" />
-					
-				</cti:displayForPageEditModes>
-        	
+					<cti:displayForPageEditModes modes="EDIT">
+						
+						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_attr" labelBusy="${updateButtonText}" label="${updateButtonText}" />
+						
+						<c:if test="${status ne 'RUNNING'}">
+						<c:choose>
+							<c:when test="${disabled}">
+								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${enableJobButtonText}" label="${enableJobButtonText}" />
+							</c:when>
+							<c:otherwise>
+								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${disableJobButtonText}" label="${disableJobButtonText}" />
+							</c:otherwise>
+						</c:choose>
+						</c:if>
+						
+						<tags:slowInput myFormId="disabledAndDeleteJobForm" labelBusy="${disableAndDeleteJobButtonText}" label="${disableAndDeleteJobButtonText}" />
+						
+                    </cti:displayForPageEditModes>
+                </div>
         	</cti:tabbedContentSelectorContent>
-        	
-        	
         	
         	<%-- COMMAND TAB --%>
         	<cti:tabbedContentSelectorContent selectorName="${commandRequestTypeLabel}" initiallySelected="${requestType == 'SCHEDULED_GROUP_COMMAND'}">
@@ -187,31 +184,30 @@
         			
         		</form>
         			
-       			<br>
-                
-				<cti:displayForPageEditModes modes="CREATE">
-					<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_cmd" labelBusy="${scheduleButtonText}" label="${scheduleButtonText}" />
-				</cti:displayForPageEditModes>
-					
-				<cti:displayForPageEditModes modes="EDIT">
-
-					<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_cmd" labelBusy="${updateButtonText}" label="${updateButtonText}" />
-					
-					<c:if test="${status ne 'RUNNING'}">
-					<c:choose>
-						<c:when test="${disabled}">
-							<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${enableJobButtonText}" label="${enableJobButtonText}" />
-						</c:when>
-						<c:otherwise>
-							<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${disableJobButtonText}" label="${disableJobButtonText}" />
-						</c:otherwise>
-					</c:choose>
-					</c:if>
-					
-					<tags:slowInput myFormId="disabledAndDeleteJobForm" labelBusy="${disableAndDeleteJobButtonText}" label="${disableAndDeleteJobButtonText}" />
-
-			     </cti:displayForPageEditModes>
-        	
+                <div class="pageActionArea">
+					<cti:displayForPageEditModes modes="CREATE">
+						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_cmd" labelBusy="${scheduleButtonText}" label="${scheduleButtonText}" />
+					</cti:displayForPageEditModes>
+						
+					<cti:displayForPageEditModes modes="EDIT">
+	
+						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_cmd" labelBusy="${updateButtonText}" label="${updateButtonText}" />
+						
+						<c:if test="${status ne 'RUNNING'}">
+						<c:choose>
+							<c:when test="${disabled}">
+								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${enableJobButtonText}" label="${enableJobButtonText}" />
+							</c:when>
+							<c:otherwise>
+								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${disableJobButtonText}" label="${disableJobButtonText}" />
+							</c:otherwise>
+						</c:choose>
+						</c:if>
+						
+						<tags:slowInput myFormId="disabledAndDeleteJobForm" labelBusy="${disableAndDeleteJobButtonText}" label="${disableAndDeleteJobButtonText}" />
+	
+				     </cti:displayForPageEditModes>
+        	   </div>
         	</cti:tabbedContentSelectorContent>
         
         </cti:tabbedContentSelector>

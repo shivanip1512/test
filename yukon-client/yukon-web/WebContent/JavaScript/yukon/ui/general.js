@@ -53,6 +53,28 @@ Yukon.ui = {
     autoWire: function() {
         // register listeners
         
+        /* Setup jquery ui tooltips, all elements with a 'title' attribute
+         * will have a nice looking tooltip.
+         * To give an item a custom tooltip, give it a class of 'f-has-tooltip'
+         * and follow it with an item of class f-tooltip that has the content */
+        jQuery(document).tooltip({
+            items: "*",
+            content: function() {
+                var element = jQuery(this);
+                
+                var toolTipped = element.closest(".f-has-tooltip");
+                
+                if ( toolTipped.length ) {
+                    var tip = toolTipped.nextAll(".f-tooltip").first();
+                    return tip.html();
+                }
+                else {
+                    var tip = element.attr('title');
+                    return tip;
+                }
+            }
+        });
+                
         /* initialize our keyboard table traversal (j/k keys) */
         jQuery(".compactResultsTable.f_traversable").traverse('tr', {
             table_row_helper: true
@@ -78,24 +100,41 @@ Yukon.ui = {
         // clear page blocker
         jQuery(document).on('click', '.f_clearBlocker', Yukon.ui.unblockPage);
         
-     // Disable a form element after clicked
-        jQuery(document).on('click', '.f_disableAfterClick', function(){
+        // Disable a form element after clicked
+        jQuery(document).on('click', '.f_disableAfterClick', function() {
         	var button = jQuery(this);
-            if(button.is(":input")){
+            if (button.is(":input")) {
                 this.disabled = true;
                 var group = button.attr('data-disable-group');
                 if (group != '') {
-                    jQuery("button[data-disable-group='" + group + "']").each(function(idx){
+                    jQuery("[data-disable-group='" + group + "']").each(function(idx){
                         this.disabled = true;
                     });
                 }
               
+                // if this is a busy button, add the spinner icon and use the busy text
+                if (button.is("[data-busy]")) {
+                    // if this button has an icon hide it
+                    button.children(".icon").hide();
+                    // only one of the spinner icons should be there
+                    button.children(".icon-action-spinner").show();
+                    button.children(".icon-loading").show();
+                    
+                    var label = button.children(".label");
+                    var busyText = button.attr("data-busy");
+                    if (label.length > 0 && busyText.length > 0) {
+                        var originalText = label.html(); 
+                        label.html(busyText);
+                        button.attr("data-busy", originalText); // just incase we need to put it back
+                    }
+                }
+                
                 //if this is a submit button, trigger the submit event on the form
-                if(button.is(":submit")){
+                if (button.is(":submit")) {
                 	var form = jQuery(this.form);
                 	
                 	//insert the name and or value of the button into the form action
-                	if(button.attr("name").length != 0){
+                	if (typeof button.attr("name") != "undefined" && button.attr("name").length != 0) {
                 		form.prepend('<input name="'+ button.attr("name") + '" value="' + button.attr("value") + '" type="hidden"/>');
                 	}
                     form.trigger("submit");
@@ -117,8 +156,31 @@ Yukon.ui = {
         
         // close popup on submit event
         jQuery(document).on('click', 'button.f_closePopupOnSubmit', function(event){
-            jQuery(event).closest('.popUpDiv').hide();
+            jQuery(event).closest('.popUpDiv').dialog('close');
         });
+
+        jQuery(document).on('click', '.f_setHomePage', function(event) {
+            event.preventDefault ? event.preventDefault() : event.returnValue = false;  // IE8 requires returnValue
+            event.stopPropagation();
+
+            var userId = jQuery("#changeHomepage_userId").val();
+            var send = document.location.href;
+            jQuery.ajax({
+                type: "POST",
+                url: "/user/updatePreference.json",
+                data: {'userId': userId, 'prefName': 'HOME_URL', 'prefValue': send},
+            }).done( function(data) {
+                if (data.success) {
+                    alert("SAVED");
+                } else {
+                    alert("INTERNAL ERROR #9471: FAILED SAVING");
+                }
+            }).fail( function(nada) {
+                alert("INTERNAL ERROR #9472: FAILED SAVING");
+            });
+            return false;
+        });
+
         
         // resize it with the window
         
@@ -131,8 +193,10 @@ Yukon.ui = {
             
             Yukon.ui.formatPhone(elem);
         });
+        jQuery(document).on('blur', 'input.f_formatPhone', function(event){
+            Yukon.ui.formatPhone(event.target);
+        });
         
-
         $$("input.f_toggle:checkbox").each(function(elem){
             elem.observe('change', function(event){
                 Yukon.ui.toggleInputs(event.element());
@@ -207,20 +271,20 @@ Yukon.ui = {
     },
     
     block: function(event){
-       var blockElement = jQuery(event.target).closest(".f_block_this");
-       if(blockElement[0]){
-           Yukon.uiUtils.elementGlass.show(blockElement[0]);
+       var blockElement = jQuery(event.target).closest(".f_block_this")[0];
+       if(blockElement){
+           Yukon.uiUtils.elementGlass.show(blockElement);
        }else{
            Yukon.uiUtils.pageGlass.show();
        }
     },
     
     unblock: function(element){
-        element = jQuery(element);
-        if(element.hasClass("f_block_this")){
-            Yukon.uiUtils.elementGlass.hide(element);
+        var blockElement = jQuery(event.target).closest(".f_block_this")[0];
+        if(blockElement){
+            Yukon.uiUtils.elementGlass.hide(blockElement);
         }else{
-            Yukon.uiUtils.elementGlass.hide(element.closest(".f_block_this"));
+            Yukon.uiUtils.pageGlass.hide();
         }
     },
 
@@ -233,11 +297,11 @@ Yukon.ui = {
     },
     
     flashSuccess: function(markup){
-        jQuery("#Content").addMessage({message: markup, messageClass: "userMessage CONFIRM"});
+        jQuery(".main-container").addMessage({message: markup, messageClass: "userMessage CONFIRM"});
     },
     
     flashError: function(markup) {
-        jQuery("#Content").addMessage({message: markup, messageClass: "userMessage ERROR"});
+        jQuery(".main-container").addMessage({message: markup, messageClass: "userMessage ERROR"});
     },
     
     formatPhone: function(input){
@@ -254,7 +318,6 @@ Yukon.ui = {
             }
         } else {
             input.value = "";
-            input.removeClassName('error');
         }
     },
     

@@ -213,6 +213,7 @@ This page should be tested at 1024x768.
     allowEmptySelection="false"
     multiSelectMode="false"
     immediateSelectMode="false"
+    icon="icon-folder-edit"
     endAction="sampleEndAction"/></td>
   <td><input id="p7_input"></td>
   <td>pick7</td>
@@ -227,6 +228,7 @@ This page should be tested at 1024x768.
     type="${pickerType}"
     destinationFieldId="p8_input"
     linkType="button"
+    icon="icon-folder-edit"
     nameKey="pick8"
     allowEmptySelection="false"
     multiSelectMode="true"
@@ -398,6 +400,7 @@ This page should be tested at 1024x768.
     destinationFieldId="p16_input"
     linkType="selection"
     selectionProperty="${itemNameProperty}"
+    icon="icon-add"
     nameKey="pick16"/></td>
   <td><input id="p16_input"></td>
   <td>${itemNameProperty}</td>
@@ -425,6 +428,7 @@ This page should be tested at 1024x768.
     type="${pickerType}"
     destinationFieldId="p18_input"
     linkType="selection"
+    icon="icon-add"
     selectionProperty="${itemNameProperty}"
     nameKey="pick18"
     allowEmptySelection="true"/></td>
@@ -440,6 +444,7 @@ This page should be tested at 1024x768.
     type="${pickerType}"
     destinationFieldId="p19_input"
     linkType="selection"
+    icon="icon-add"
     selectionProperty="${itemNameProperty}"
     nameKey="pick19"
     allowEmptySelection="false"
@@ -457,6 +462,7 @@ This page should be tested at 1024x768.
     type="${pickerType}"
     destinationFieldId="p20_input"
     linkType="selection"
+    icon="icon-folder-edit"
     selectionProperty="${itemIdProperty}"
     nameKey="pick20"
     allowEmptySelection="false"

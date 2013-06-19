@@ -115,6 +115,5 @@
     <bean class="com.cannontech.support.service.impl.SupportBundleEventLogDateRangeWriter"> 
         <property name="zipFilename" value="EventLogAllResultsInDateRange.csv"/>
         <property name="name" value="eventLogCsvSource"/>
-    </bean>
-
+    </bean>  
 </beans>

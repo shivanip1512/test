@@ -185,6 +185,11 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
     // GET CONTACT DTO
     @Override
     public ContactDto getContactDto(int contactId, YukonUserContext userContext) {
+        return getContactDto(contactId, true, true, true, userContext);
+    }
+    
+    @Override
+    public ContactDto getContactDto(int contactId, boolean setDtoHomePhone, boolean setDtoWorkPhone, boolean setDtoEmail, YukonUserContext userContext) {
 
     	LiteContact contact = null;
     	if (contactId <= 0) {
@@ -205,9 +210,15 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
     	
     	List<LiteContactNotification> notificationsForContact = contactNotificationDao.getNotificationsForContact(contactId);
     	
-    	contactDto.setHomePhone(getAndFormatAndRemoveFirstOfType(notificationsForContact, ContactNotificationType.HOME_PHONE, userContext));
-    	contactDto.setWorkPhone(getAndFormatAndRemoveFirstOfType(notificationsForContact, ContactNotificationType.WORK_PHONE, userContext));
-    	contactDto.setEmail(getAndFormatAndRemoveFirstOfType(notificationsForContact, ContactNotificationType.EMAIL, userContext));
+    	if (setDtoHomePhone) {
+            contactDto.setHomePhone(getAndFormatAndRemoveFirstOfType(notificationsForContact, ContactNotificationType.HOME_PHONE, userContext));
+    	}
+        if (setDtoWorkPhone) {
+            contactDto.setWorkPhone(getAndFormatAndRemoveFirstOfType(notificationsForContact, ContactNotificationType.WORK_PHONE, userContext));
+        }
+        if (setDtoEmail) {
+            contactDto.setEmail(getAndFormatAndRemoveFirstOfType(notificationsForContact, ContactNotificationType.EMAIL, userContext));
+        }
 
     	for (LiteContactNotification notification : notificationsForContact) {
     		
@@ -259,6 +270,26 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
             contact = contactDao.getContact(contactDto.getContactId());
         }
         
+        updateContactFromContactDto(contact, contactDto);
+    }
+    
+    @Override
+    @Transactional
+    public void saveContactDto(ContactDto contactDto, LiteYukonUser user) {
+
+        // save contact
+        LiteContact contact;
+        if (contactDto.getContactId() <= 0) {
+            contact = contactService.createContact(contactDto.getFirstName(), contactDto.getLastName(), user);
+        } else {
+            contact = contactDao.getContact(contactDto.getContactId());
+        }
+        
+        updateContactFromContactDto(contact, contactDto);
+    }
+    
+    @Transactional
+    protected void updateContactFromContactDto(LiteContact contact, ContactDto contactDto) {
         // By using a null for loginId in the updateContact method the login id will not be updated.  
         // It does NOT mean we are removing the login from the contact. 
         contactService.updateContact(contact, contactDto.getFirstName(), contactDto.getLastName(), null);

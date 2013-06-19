@@ -30,11 +30,13 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @Controller
 @RequestMapping("archiveDataAnalysis/results/*")
 public class AdaResultsController {
+    
     private final static int TABULAR_SIZE_LIMIT = 5000; //maximum number of data points before tabular link is disabled
     private final static int BAR_WIDTH = 400;
-    private ArchiveDataAnalysisDao archiveDataAnalysisDao;
-    private ArchiveDataAnalysisCollectionProducer adaCollectionProducer;
-    private RolePropertyDao rolePropertyDao;
+    
+    @Autowired private ArchiveDataAnalysisDao archiveDataAnalysisDao;
+    @Autowired private ArchiveDataAnalysisCollectionProducer adaCollectionProducer;
+    @Autowired private RolePropertyDao rolePropertyDao;
     
     @RequestMapping
     public String view(ModelMap model, int analysisId, HttpServletRequest request, YukonUserContext userContext) throws ServletRequestBindingException, DeviceCollectionCreationException {
@@ -86,18 +88,4 @@ public class AdaResultsController {
         return "archiveDataAnalysis/results.jsp";
     }
     
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setArchiveDataAnalysisDao(ArchiveDataAnalysisDao archiveDataAnalysisDao) {
-        this.archiveDataAnalysisDao = archiveDataAnalysisDao;
-    }
-    
-    @Autowired
-    public void setArchiveDataAnalysisCollectionProducer(ArchiveDataAnalysisCollectionProducer adaCollectionProducer) {
-        this.adaCollectionProducer = adaCollectionProducer;
-    }
 }

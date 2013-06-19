@@ -10,10 +10,9 @@
     
     <tags:setFormEditMode mode="${mode}"/>
 
-    <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
+    <div class="column_14_10">
 
-        <cti:dataGridCell>
-
+        <div class="column one">
             <form:form commandName="group" action="/adminSetup/roleGroup/edit" method="post">
                 <form:hidden path="groupID"/>
                 <input type="hidden" value="${group.groupID}" name="roleGroupId">
@@ -43,7 +42,7 @@
                         <cti:button nameKey="cancel" name="cancel" type="submit"/>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
-                        <cti:button nameKey="edit" name="edit" type="submit"/>
+                        <cti:button nameKey="edit" icon="icon-pencil" name="edit" type="submit"/>
                     </cti:displayForPageEditModes>
                     <cti:button nameKey="expireAllPasswords" id="expireAllPasswordsButton" name="expireAllPasswords"/>
                     <tags:confirmDialog nameKey=".confirmExpireAllPasswords" on="#expireAllPasswordsButton"  argument="${group.groupName}" submitName="expireAllPasswords" />
@@ -51,10 +50,9 @@
                 </div>
             </form:form>
                 
-        </cti:dataGridCell>
+        </div>
             
-        <cti:dataGridCell>
-            
+        <div class="column two nogutter">
             <cti:displayForPageEditModes modes="VIEW">
                 
                 <tags:boxContainer2 nameKey="rolesContainer">
@@ -87,6 +85,7 @@
                     <div class="actionArea">
                         <form action="/adminSetup/roleGroup/addRole" method="post">
                             <input type="hidden" value="${roleGroupId}" name="roleGroupId">
+                            <cti:button nameKey="add" type="submit" id="addButton" icon="icon-add"/>
                             <select name="newRoleId">
                                 <c:forEach var="availableCategory" items="${availableRolesMap}">
                                     <optgroup label="<cti:formatObject value="${availableCategory.key}"/>">
@@ -96,15 +95,11 @@
                                     </optgroup>
                                 </c:forEach>
                             </select>
-                            <cti:button nameKey="add" type="submit" id="addButton"/>
                         </form>
                     </div>
                 </tags:boxContainer2>
                 
             </cti:displayForPageEditModes>
-            
-        </cti:dataGridCell>
-        
-    </cti:dataGrid>
-    
+        </div>
+    </div>
 </cti:standardPage>

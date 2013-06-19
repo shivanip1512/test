@@ -21,7 +21,7 @@ jQuery(function() {
     <form:form commandName="settingsBean" action="save" id="settingsForm" method="post">
         <form:hidden path="ecId"/>
 
-            <h2 class="standardPageHeading"><i:inline key=".pageTitle"/></h2>
+            <h2 class="page-heading"><i:inline key=".pageTitle"/></h2>
             <div class="highlight fr clear"><i:inline key=".legend"/></div>
             <c:forEach items="${categories}" var="category">
 
@@ -71,7 +71,7 @@ jQuery(function() {
                                     <c:set var="inputClass" value="${status.error ? 'error' : ''}"/>
                                     <c:set var="style" value="${empty settingsBean.settings[setting.extra].comments ? 'display:none' : ''}"/>
                                     <c:if test="${empty settingsBean.settings[setting.extra].comments}">
-                                        <cti:button styleClass="f_addCommentBtn" nameKey="energyCompanySettings.addComment" type="button" name="add" value="${setting.extra}"  renderMode="labeledImage"/>
+                                        <cti:button classes="f_addCommentBtn" nameKey="energyCompanySettings.addComment" type="button" name="add" value="${setting.extra}" renderMode="labeledImage" icon="icon-pencil"/>
                                     </c:if>
 
                                     <form:textarea rows="3" cols="27" 

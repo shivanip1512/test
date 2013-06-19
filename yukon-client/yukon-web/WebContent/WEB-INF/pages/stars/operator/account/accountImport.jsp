@@ -10,24 +10,17 @@
         <cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" />
         
         <cti:url var="importImg" value="/WebConfig/yukon/Icons/import_by_DEVICE_TYPE.gif"/>
-        <cti:msg var="instructionsText" key="yukon.web.modules.operator.accountImport.instructionsText" />
         
         <tags:boxContainer2 nameKey="fileUploadContainer">
-            <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
-        
-                <cti:dataGridCell>
-        
+        	<div class="column_12_12">
+        		<div class="column one">
                     <form:form id="importForm" commandName="accountImportData" action="/stars/operator/account/uploadImportFiles" enctype="multipart/form-data">
                     
                         <%-- note --%>
-                        <table>
-                            <tr valign="top">
-                                <td class="fwb"><i:inline key=".noteLabel"/></td>
-                                <td style="font-size:11px;"><i:inline key=".noteText"/></td>
-                            </tr>
-                        </table>
-                        
-                        <br>
+                        <div>
+                                <span class="fwb"><i:inline key=".noteLabel"/></span>
+                                <span class="notes"><i:inline key=".noteText"/></span>
+                        </div>
                         
                         <tags:nameValueContainer2>
                             <tags:nameValue2 nameKey=".accountImportFile" ><input type="file" name="accountImportFile" size="35"></tags:nameValue2>
@@ -36,21 +29,21 @@
                         </tags:nameValueContainer2>
                         
                         <div class="actionArea box stacked">
-                            <div class="fl"><cti:button nameKey="prescan" type="submit" styleClass="f_blocker"/></div>
+                            <div class="fl"><cti:button nameKey="prescan" type="submit" classes="f_blocker"/></div>
                         </div>
                     </form:form>
                     
-                </cti:dataGridCell>
+                </div>
                 
-                <cti:dataGridCell>
+                <div class="column two nogutter">
                     
                     <%-- instructions --%>
-                    <table>
-                        <tr>
-                            <td class="fwb"><i:inline key=".instructionsLabel"/></td>
-                            <td>${instructionsText}</td>
-                        </tr>
-                    </table>
+                            <span class="fwb"><i:inline key=".instructionsLabel"/></span>
+                            <ul class="disc stacked">
+                                <li><i:inline key=".instructionsText1" /></li>
+                                <li><i:inline key=".instructionsText2" /></li>
+                                <li><i:inline key=".instructionsText3" /></li>
+                            </ul>
                     
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".sampleFiles">
@@ -60,10 +53,11 @@
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                     
-                </cti:dataGridCell>
+                </div>
+            </div>
                 
-                <cti:dataGridCell>
-                
+            <div class="column_12_12">    
+                <div class="column one">
                     <div class="box" style="background-color:#CDCDCD;padding:10px;">
                         <div class="fl"><img src="${importImg}"></div>
                         <div class="fl" style="margin-left:20px;">
@@ -105,10 +99,9 @@
                         </table>
                     </div>
                     
-                </cti:dataGridCell>
+                </div>
                 
-                <cti:dataGridCell>
-                        
+                <div class="column two nogutter">
                     <div class="box" style="background-color:#CDCDCD;padding:10px;">
                         <div class="fl"><img src="${importImg}"></div>
                         <div class="fl" style="margin-left:20px;">
@@ -157,8 +150,8 @@
                             </tr>
                         </table>
                     </div>
-                </cti:dataGridCell>
-            </cti:dataGrid>
+                </div>
+            </div>
         
         </tags:boxContainer2>
   </cti:checkEnergyCompanyOperator>

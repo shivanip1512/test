@@ -50,7 +50,7 @@ if(typeof(WaterLeakReport) === 'undefined'){
                 jQuery(".filter_container .f_filter_date_range .f_filter_to_date_clicked").bind("click", this._filter_to_date_clicked);
                 jQuery(".filter_container .f_filter_date_range").bind("click", this._filter_date_range_clicked);
                 jQuery(".filter_container .f_filter_threshold_clicked").bind("click", this._filter_threshold_clicked);
-                jQuery(".filter_container .f_disabled_devices .f_filter_reset_disabled_devices_clicked").bind("click", this._filter_reset_disabled_devices_clicked);
+                jQuery(".filter_container .f_filter_reset_disabled_devices_clicked").bind("click", this._filter_reset_disabled_devices_clicked);
                 jQuery(".filter_container .f_disabled_devices").bind("click", this._filter_disabled_devices_clicked);
                 jQuery(".filter_container .f_reset_filter_submit").bind("click", this.reset_filter_submit);
 
@@ -146,9 +146,6 @@ if(typeof(WaterLeakReport) === 'undefined'){
             if (WaterLeakReport._f_filter_values.length > 0) {
                 WaterLeakReport._restore_filter_values();
             }
-            var filter_text = jQuery("#filter_shortcut_text").val();
-            jQuery("button.leakFilterSubmitButton").before('<span class="filter_shortcut">'+filter_text+'</span>');
-
             //remove the stupid <br> tag that screws up styling for threshold errors
             jQuery(document.getElementById("threshold.errors")).prev("br").remove();
 

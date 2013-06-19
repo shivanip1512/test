@@ -1,9 +1,10 @@
-<%@ tag body-content="empty" %>
+<%@ tag body-content="empty" trimDirectiveWhitespaces="true" %>
+
 <%@ attribute name="id" required="true"%>
-<%@ attribute name="title"%>
+<%@ attribute name="on" description="Registers click event on the element to open this popup."%>
 <%@ attribute name="onClose"%>
-<%@ attribute name="styleClass" required="false"%>
-<%@ attribute name="on" description="registers click event on the element with this CSS selector"%>
+<%@ attribute name="styleClass"%>
+<%@ attribute name="title"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -17,5 +18,4 @@
     <c:set var="title" value="title not specified"/>
 </c:if>
 
-<tags:simplePopup id="${id}" title="${pageScope.title}" onClose="${pageScope.onClose}"
-    styleClass="${pageScope.styleClass}" on="${pageScope.on}"/>
+<tags:simplePopup id="${id}" title="${pageScope.title}" onClose="${pageScope.onClose}" styleClass="${pageScope.styleClass}" on="${pageScope.on}"/>

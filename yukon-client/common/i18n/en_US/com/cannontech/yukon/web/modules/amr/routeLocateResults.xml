@@ -3,28 +3,29 @@
 <properties>
 
     <!-- RESULTS routeLocateResults.jsp -->
-    <entry key="yukon.web.modules.amr.routeLocateResults.pageTitle">Locate Route Results</entry>
-    <entry key="yukon.web.modules.amr.routeLocateResults.header">Results</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateResults.pageName">Locate Route Results</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateResults.contextualPageName">Results</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateResults.header">Results</entry>
     
-    <entry key="yukon.web.modules.amr.routeLocateResults.noteLabel">Note:</entry>
-    <entry key="yukon.web.modules.amr.routeLocateResults.noteText"><![CDATA[
+    <entry key="yukon.web.modules.tools.bulk.routeLocateResults.noteLabel">Note:</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateResults.noteText"><![CDATA[
         When locating completes, the "View/Set Routes" button will become enabled to allow you to view or set updated routes.
     ]]></entry>
     
-    <entry key="yukon.web.modules.amr.routeLocateResults.progressLabel">Progress</entry>
-    <entry key="yukon.web.modules.amr.routeLocateResults.canceledLabel">Canceled</entry>
-    <entry key="yukon.web.modules.amr.routeLocateResults.inProgress">Running...</entry>
-    <entry key="yukon.web.modules.amr.routeLocateResults.complete">Complete.</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateResults.progressLabel">Progress</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateResults.canceledLabel">Canceled</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateResults.inProgress">Running...</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateResults.complete">Complete.</entry>
     
-    <entry key="yukon.web.modules.amr.routeLocateResults.successLabel">Route Located</entry>
-    <entry key="yukon.web.modules.amr.routeLocateResults.failureLabel">Route Not Found</entry>
-    <entry key="yukon.web.modules.amr.routeLocateResults.commandsCanceled">Commands were canceled.</entry>
-    <entry key="yukon.web.modules.amr.routeLocateResults.collectionActionOnAllDevicesLabel">Choose New Operation For All Devices</entry>
-    <entry key="yukon.web.modules.amr.routeLocateResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateResults.successLabel">Route Located</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateResults.failureLabel">Route Not Found</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateResults.commandsCanceled">Commands were canceled.</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateResults.collectionActionOnAllDevicesLabel">Choose New Operation For All Devices</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
     
-    <entry key="yukon.web.modules.amr.routeLocateResults.cancelLocateButtonLabel">Cancel Locate</entry>
-    <entry key="yukon.web.modules.amr.routeLocateResults.setRoutesButtonLabel">Set Routes</entry>
-    <entry key="yukon.web.modules.amr.routeLocateResults.viewRoutesButtonLabel">View Routes</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateResults.cancelLocateButton.label">Cancel Locate</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateResults.setRoutesButton.label">Set Routes</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateResults.viewRoutesButton.label">View Routes</entry>
     
     
 </properties>

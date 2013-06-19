@@ -42,6 +42,7 @@ table.routeTable {
 table.routeTable td {
 	text-align: center;
     font-size: 11px;
+    border: 1px solid #ccc;
 }
 
 table.routeTable tr:hover td.available {

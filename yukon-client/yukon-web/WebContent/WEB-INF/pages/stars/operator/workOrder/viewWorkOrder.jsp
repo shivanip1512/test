@@ -5,47 +5,46 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-
 <cti:standardPage module="operator" page="workOrder.${mode}">
 <tags:setFormEditMode mode="${mode}"/>
 
     <script type="text/javascript">
-
-        Event.observe(window, "load", function() {
-
-            if ( $('workOrderBase.currentStateId') != null) {
-                var initialState = $F('workOrderBase.currentStateId');
-                Event.observe('workOrderBase.currentStateId', "change", function() {
-                    var newState = $F('workOrderBase.currentStateId');
-                    var enabled = initialState != newState;
-
-                    if ($("eventDateDatePart") != null && 
-                        $("eventDateTimePart") != null) {
-                        setDateTimeInputEnabled('eventDate', enabled);    
+        jQuery(function() {
+            var curStateSel = jQuery('select[name="workOrderBase.currentStateId"]');
+            if ( curStateSel.length > 0 ) {
+                var initialState = curStateSel.val();
+                jQuery(curStateSel).bind('change', function(ev) {
+                    var newState = curStateSel.val(),
+                        enabled = initialState !== newState;
+                    // see http://stackoverflow.com/questions/31044/is-there-an-exists-function-for-jquery?rq=1
+                    // for raging debate on how to do this best
+                    if ( 0 !== jQuery("#eventDateDatePart").length &&
+                        0 !== jQuery("#eventDateTimePart").length ) {
+                        setDateTimeInputEnabled('eventDate', enabled);
                     }
                 });
             }
         });
 
-        YEvent.observeSelectorClick('#workOrderConfirmCancel', function() {
-            $('confirmDeleteWorkOrderDialog').hide();
+        jQuery('#workOrderConfirmCancel', function() {
+            jQuery('#confirmDeleteWorkOrderDialog').dialog('close');
         });
-    
+
         var assignedServiceCompanyChanged = function() {
-            if( $('workOrderBase.currentStateId').value != ${assignedEntryId} ) {
-                $('workOrderBase.currentStateId').value = ${assignedEntryId};
-                $('currentStateChangedDialog').show();
+            var curStateSel = jQuery('select[name="workOrderBase.currentStateId"]');
+            if (curStateSel.val() != ${assignedEntryId} ) {
+                curStateSel.val(${assignedEntryId});
+                jQuery('#currentStateChangedDialog').dialog('open');
             }
             setDateTimeInputEnabled('eventDate', true);
         }
 
         var combineDateAndTimeFieldsAndSubmit = function() {
-        	var dateReported = $("eventDateDatePart");
-        	if (dateReported != null) {
+            var dateReported = jQuery('#eventDateDatePart');
+            if (0 !== dateReported.length) {
                 combineDateAndTimeFields('eventDate');
             }
-
-        	return true;
+            return true;
         }
 
     </script>
@@ -56,7 +55,7 @@
           <input type="hidden" name="accountId" value="${accountId}">
           <input type="hidden" name="deleteWorkOrderId" value="${workOrderDto.workOrderBase.orderId}">
           <div class="actionArea">
-            <cti:button id="workOrderConfirmDelete" type="submit" nameKey="delete"/>
+            <cti:button id="workOrderConfirmDelete" type="submit" nameKey="delete" classes="primary action"/>
             <cti:button id="workOrderConfirmCancel" type="button" nameKey="cancel"/>  
           </div>
         </form>
@@ -110,7 +109,7 @@
                         <i:simplePopup titleKey=".currentStateChangedTitle" id="currentStateChangedDialog">
                         	<cti:msg2 key=".currentStateChanged"/>
                         	<div class="actionArea">
-                        		<cti:button nameKey="ok" onclick="$('currentStateChangedDialog').hide()"/>
+                        		<cti:button nameKey="ok" onclick="jQuery('#currentStateChangedDialog').hide()"/>
                        		</div>
                         </i:simplePopup>
                         
@@ -141,16 +140,14 @@
             
                             <tags:textareaNameValue nameKey=".actionTaken" path="workOrderBase.actionTaken" rows="4" cols="23"/>
                         </tags:nameValueContainer2>
-                        <br>
-                        <div style="text-align: right;">
+                        <div class="actionArea stacked">
                             <%-- GENERATE REPORTS --%>
                             <cti:url var="pdfExportUrl" value="/stars/operator/workOrder/generateWorkOrderReport">
                                 <cti:param name="export" value="PDF"/>
                                 <cti:param name="accountId" value="${accountId}"/>
                                 <cti:param name="workOrderId" value="${workOrderDto.workOrderBase.orderId}"/>
                             </cti:url>
-                            <cti:labeledImg nameKey="pdfExport" href="${pdfExportUrl}"/>
-                    
+                            <cti:button nameKey="pdfExport" href="${pdfExportUrl}" icon="icon-pdf"/>
                         </div>
 
                         <tags:boxContainer2 nameKey="eventHistory">
@@ -178,7 +175,7 @@
         
         <%-- buttons --%>
         <cti:displayForPageEditModes modes="CREATE,EDIT">
-            <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
+            <cti:button nameKey="save" type="submit" classes="f_blocker"/>
             <cti:displayForPageEditModes modes="CREATE">
                 <cti:url value="/stars/operator/workOrder/workOrderList" var="cancelUrl">
                     <cti:param name="accountId" value="${accountId}"/>
@@ -203,7 +200,7 @@
                     <cti:param name="accountId" value="${accountId}"/>
                     <cti:param name="workOrderId" value="${workOrderDto.workOrderBase.orderId}"/>
                 </cti:url>
-                <cti:button nameKey="edit" href="${editUrl}"/>
+                <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
             </cti:checkRolesAndProperties>
         </cti:displayForPageEditModes>
         

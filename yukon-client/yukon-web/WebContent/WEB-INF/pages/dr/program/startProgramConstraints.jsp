@@ -5,6 +5,8 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
+<cti:msgScope paths="yukon.web.modules.dr.program.startProgram">
+
 <cti:url var="submitUrl" value="/dr/program/start/start"/>
 <form:form id="startProgramForm" commandName="backingBean" action="${submitUrl}"
     onsubmit="return submitFormViaAjax('drDialog', 'startProgramForm');">
@@ -26,18 +28,17 @@
         </c:forEach>
     </c:if>
 
-    <h1 class="dialogQuestion">
-    	<cti:msg key="yukon.web.modules.dr.program.startProgram.confirmQuestion"
-    		htmlEscape="true" argument="${program.name}"/>
-    </h1>
+    <h4 class="dialogQuestion">
+    	<cti:msg2 key=".confirmQuestion" htmlEscape="true" argument="${program.name}"/>
+    </h4>
 
     <dr:programStartInfo page="startProgram"/>
 
     <c:if test="${empty violations.constraintContainers}">
-        <p><cti:msg key="yukon.web.modules.dr.program.startProgram.noConstraintsViolated"/></p>
+        <p><cti:msg2 key=".noConstraintsViolated"/></p>
     </c:if>
     <c:if test="${!empty violations.constraintContainers}">
-        <p><cti:msg key="yukon.web.modules.dr.program.startProgram.constraintsViolated"/></p>
+        <p><cti:msg2 key=".constraintsViolated"/></p>
         <ul>
             <c:forEach var="violation" items="${violations.constraintContainers}">
                 <li><cti:msg2 key="${violation.constraintTemplate}"/></li>
@@ -48,7 +49,7 @@
         <c:if test="${overrideAllowed}">
             <p><input type="checkbox" id="overrideConstraints" name="overrideConstraints">
             <label for="overrideConstraints">
-                <cti:msg key="yukon.web.modules.dr.program.startProgram.overrideConstraints"/>
+                <cti:msg2 key=".overrideConstraints"/>
             </label></p>
         </c:if>
     </c:if>
@@ -61,12 +62,11 @@
         <c:if test="${backingBean.addAdjustments}">
             <cti:url var="backUrl" value="/dr/program/start/gearAdjustments"/>
         </c:if>
-        <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.backButton"/>"
-            onclick="submitFormViaAjax('drDialog', 'startProgramForm', '${backUrl}')"/>
+        <cti:button nameKey="back" onclick="submitFormViaAjax('drDialog', 'startProgramForm', '${backUrl}')"/>
+        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
         <c:if test="${empty violations.constraintContainers || overrideAllowed}">
-            <input type="submit" id="okButton" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.okButton"/>"/>
+            <cti:button nameKey="ok" id="okButton" classes="primary action" type="submit"/>
         </c:if>
-        <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.cancelButton"/>"
-            onclick="parent.$('drDialog').hide()"/>
     </div>
 </form:form>
+</cti:msgScope>

@@ -25,7 +25,7 @@
                         <cti:param name="pointId" value="${pointId}" />
                         <cti:param name="attribute" value="${attribute}" />
                     </cti:url>
-                    <a class="f_ajaxPage pv_history labeled_icon_right history" 
+                    <a class="f_ajaxPage pv_history" 
                         data-selector="#${uid}" 
                         href="${showHistoricalReadingsUrl}"
                         title="<cti:msg2 key="yukon.common.historyTooltip"/>">

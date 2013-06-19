@@ -56,7 +56,7 @@
 		<%-- BUTTONS --%>
         <div class="pageActionArea">
 		<cti:displayForPageEditModes modes="EDIT">
-            <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
+            <cti:button nameKey="save" type="submit" classes="f_blocker"/>
             <cti:url value="/stars/operator/residence/view" var="viewUrl">
                 <cti:param name="accountId" value="${accountId}"/>
             </cti:url>
@@ -67,7 +67,7 @@
                 <cti:url value="/stars/operator/residence/edit" var="editUrl">
                     <cti:param name="accountId" value="${accountId}"/>
                 </cti:url>
-                <cti:button nameKey="edit" href="${editUrl}"/>
+                <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
             </cti:checkRolesAndProperties>
         </cti:displayForPageEditModes>
         </div>

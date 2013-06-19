@@ -29,7 +29,7 @@
                 var str = [];
                 str.push('<li>');
                     str.push('<span class="remove fr">');
-                        str.push('<a class="simpleLink icon icon_remove" title="" href="javascript:removeDesignationCode()">remove</a>');
+                        str.push("<a class='f_remove' href='javascript:removeDesignationCode()'><span class='icon icon-cross'></span></a>");
                     str.push('</span>');
                     str.push(designationCode);
                     str.push('<input type="hidden" value="0" name="designationCodes['+ ++DC_INDEX +'].id"/>');
@@ -136,7 +136,7 @@
                 
                 Event.observe('findDesignationCode', 'keydown', preventSubmit);
                 
-                YEvent.observeSelectorClick('a.icon_remove', removeDesignationCode);
+                YEvent.observeSelectorClick('a.f_remove', removeDesignationCode);
             });
         </script>
 
@@ -179,7 +179,7 @@
                                     <li>
                                     <cti:displayForPageEditModes modes="EDIT,CREATE">
                                         <c:if test="${canEditDesignationCodes}">
-                                            <span class="remove fr"><a href="#" class="remove icon icon_remove simpleLink">remove</a></span>
+                                            <span class="remove fr"><a href="#" class="remove"><i class="icon icon-cross"></i></a></span>
                                         </c:if>
                                         <span class="value"><spring:escapeBody htmlEscape="true">${serviceCompany.designationCodes[row.index].value}</spring:escapeBody></span>
                                         <tags:hidden path="designationCodes[${row.index}].id" />
@@ -241,7 +241,7 @@
                     <cti:param name="ecId" value="${ecId}"/>
                     <cti:param name="serviceCompanyId" value="${serviceCompany.companyId}"/>
                 </cti:url>
-                <cti:button nameKey="edit" href="${serviceCompanyEditUrl}"/>
+                <cti:button nameKey="edit" icon="icon-pencil" href="${serviceCompanyEditUrl}"/>
             </cti:displayForPageEditModes>
             
             <!-- Save/Update -->

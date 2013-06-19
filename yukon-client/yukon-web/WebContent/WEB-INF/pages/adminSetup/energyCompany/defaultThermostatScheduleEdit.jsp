@@ -98,7 +98,7 @@
                                     omitEditor="true">
                                     
             <div class="actions">
-                <cti:button nameKey="edit" renderMode="labeledImage" styleClass="editDefaultSchedule edit_${schedule.accountThermostatScheduleId}" />
+                <cti:button nameKey="edit" icon="icon-pencil" renderMode="labeledImage" classes="editDefaultSchedule edit_${schedule.accountThermostatScheduleId}" />
             </div>
         </tags:thermostatScheduleWidget>
                 
@@ -121,7 +121,7 @@
                 
                     <div class="actionArea">
                         <div class="fr">
-                            <cti:button nameKey="next" styleClass="f_next"/>
+                            <cti:button nameKey="next" classes="f_next"/>
                         </div>
                     </div>
                 </div>
@@ -141,9 +141,9 @@
                 
                     <div class="actions">
                         <div class="fr">
-                            <cti:button nameKey="chooseMode" styleClass="f_prev"/>
-                            <cti:button nameKey="save" styleClass="save f_blocker" />
-                            <cti:button nameKey="cancel" styleClass="cancel" />
+                            <cti:button nameKey="chooseMode" classes="f_prev"/>
+                            <cti:button nameKey="save" classes="save f_blocker" />
+                            <cti:button nameKey="cancel" classes="cancel" />
                         </div>
                     </div>
                 </div>

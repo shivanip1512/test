@@ -18,14 +18,18 @@ import org.springframework.beans.factory.wiring.BeanWiringInfoResolver;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.ui.context.Theme;
+import org.springframework.ui.context.ThemeSource;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.ThemeResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
@@ -65,12 +69,24 @@ public class YukonTagSupport extends SimpleTagSupport {
     protected MessageSourceAccessor getMessageSource() {
     	HttpServletRequest request = getRequest();
 		Theme theme = RequestContextUtils.getTheme(request);
+		if (theme == null) {
+		    ThemeResolver themeResolver = YukonSpringHook.getBean(DispatcherServlet.THEME_RESOLVER_BEAN_NAME, ThemeResolver.class);
+            ThemeSource themeSource = (ThemeSource) getApplicationContext();
+            if (themeResolver != null && themeSource != null) {
+                String themeName = themeResolver.resolveThemeName(request);
+                theme = themeSource.getTheme(themeName);
+            }
+		}
+		if (theme == null) {
+		    throw new NullPointerException("RequestContextUtils.getTheme(request) returned null?!");
+		}
 		MessageSource messageSource = theme.getMessageSource();
 		Locale locale = RequestContextUtils.getLocale(request);
 		MessageSourceAccessor messageSourceAccessor = new MessageSourceAccessor(messageSource, locale);
 		
 		return messageSourceAccessor;
     }
+
     @Override
     public void setJspContext(JspContext pc) {
         super.setJspContext(pc);

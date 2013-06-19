@@ -18,8 +18,13 @@ jQuery(function (){
 			jQuery("#whatsThisToggle").on("mouseenter", "", _mouseenter);
 		});
 	});
-});
 
+    jQuery(".trend-settings-anchor").click(function(e) {
+    	jQuery(".trend-settings").toggle();
+        e.stopPropagation();
+        return true;
+    });
+});
 </script>
 
 <c:choose>
@@ -28,7 +33,7 @@ jQuery(function (){
     
         <%-- DESCRIPTION POPUP --%>
 		<c:if test="${attributeGraphType.description != null}">
-			<div style="font-size: 10px; text-align: right; position: relative">
+            <div style="font-size: 10px; text-align: right; position: relative">
 				<span id="whatsThisToggle"><cti:msg2 key=".whatsThis"/></span>
 				<div id="whatsThisText" class="widgetPopup" style="display:none; text-align: left; right:30px;">
 					<cti:msg2 key="${attributeGraphType.description}"/>
@@ -43,7 +48,8 @@ jQuery(function (){
 			converterType="${attributeGraphType.converterType}"
 			graphType="${graphType}"/>
 
-		<table class="compactResultsTable">
+        <div class="fr"><a href="javascript:void(0);" class="trend-settings-anchor"><i class="icon icon-cog"></i></a></div>
+		<table class="compactResultsTable trend-settings dn">
 		
     		<%-- ATTRIBUTES GRAPH TYPES --%>
     		<tr>
@@ -107,7 +113,7 @@ jQuery(function (){
 							<div class="fl">
 								<dt:dateRange startName="startDateParam" startValue="${startDate}" endName="stopDateParam" endValue="${stopDate}" forceIncludes="true" />
 							</div>
-                            <tags:widgetActionRefreshImage nameKey="reloadUsingCustomDates" method="render"/>
+                            <tags:widgetActionRefreshImage nameKey="reloadUsingCustomDates" method="render" icon="icon-arrow-refresh"/>
         				</td>
         			</tr>
         		</c:when>

@@ -9,11 +9,12 @@ Yukon.ui.passwordManager = {
 	
 	init: function(args){
 		jQuery.extend(this, args);
-		jQuery(".f_check_password").keyup(function(e){
-			
+		jQuery(".f_check_password").keyup(function(event){
+
 			jQuery("button.unlock").attr("disabled", "true");
 			jQuery("#loginBackingBean").ajaxSubmit({
-				url: 'checkPassword',
+				url: '/login/checkPassword',
+                type: "POST",
 				dataType: 'json',
 				success: function(data){
 					Yukon.ui.passwordManager.indicatePassFail(data);
@@ -24,12 +25,13 @@ Yukon.ui.passwordManager = {
 					return false;
 				}
 			});
+			return false;
 		});
 		
-		jQuery("input:password").keyup(function(e){
+		jQuery("input:password:not(.f_current)").keyup(function(e){
 			var confirm = jQuery("input.confirm[type=password]").val();
 			var password = jQuery("input.new[type=password]").val();
-			var meetsRequirements = jQuery(".description ul:first > li.fail");
+			var meetsRequirements = jQuery(".description ul:first > li > .icon-cross");
 			jQuery(".no_match").toggleClass("vh", confirm === password);
 			if(meetsRequirements.length == 0 && 
 				confirm === password && 
@@ -42,14 +44,13 @@ Yukon.ui.passwordManager = {
 	},
 	
 	indicatePassFail: function(data){
-		jQuery(".password_manager .fail, .password_manager .pass").removeClass("fail").removeClass("pass");
+        jQuery(".password_manager .icon-accept, .password_manager .icon-cross, .password_manager .icon-blank").removeClass("icon-accept").removeClass("icon-cross").removeClass("icon-blank");
 		var errors = ['policy_errors', 'rule_errors'];
 		var validations = ['policy_validations', 'rule_validations'];
-		
 		for(var i=0; i<validations.length; i++){
 			if(data[validations[i]]){
 				for(var j=0; j<data[validations[i]].length; j++){
-					jQuery("." + data[validations[i]][j]).addClass("pass");
+					jQuery("." + data[validations[i]][j] + " .icon").removeClass("icon-cross").addClass("icon-accept");
 				}
 			}
 		}
@@ -57,8 +58,7 @@ Yukon.ui.passwordManager = {
 		for(var i=0; i<errors.length; i++){
             if(data[errors[i]]){
                 for(var j=0; j<data[errors[i]].length; j++){
-                    jQuery("." + data[errors[i]][j]).removeClass("pass");
-                    jQuery("." + data[errors[i]][j]).addClass("fail");
+                    jQuery("." + data[errors[i]][j] + " .icon").removeClass("icon-accept").addClass("icon-cross");
                 }
             }
         }

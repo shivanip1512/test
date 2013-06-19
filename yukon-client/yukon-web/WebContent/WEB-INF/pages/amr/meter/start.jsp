@@ -4,29 +4,26 @@
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="amr" page="meteringStart">
-	
+
 	<ct:widgetContainer identify="false">
 
-		<table class="widgetColumns">
-		
-			<tr>
-		
-				<td class="widgetColumnCell first">
-				
+		<div class="column_12_12">
+            <div class="column one">
+
 				    <ct:widget bean="deviceDataMonitorsWidget"/>
-				
+
 					<%-- OUTAGE MONITORS WIDGET --%>
 					<ct:widget bean="outageMonitorsWidget"/>
-					
+
 					<%-- TAMPER FLAGS WIDGET --%>
 					<ct:widget bean="tamperFlagMonitorsWidget"/>
-                    
+
                     <%-- STATUS POINT MONITORS WIDGET --%>
                     <ct:widget bean="statusPointMonitorsWidget"/>
-                    
+
                     <%-- PORTER RESPONSE MONITORS WIDGET --%>
                     <ct:widget bean="porterResponseMonitorsWidget"/>
-                    
+
                     <%-- VALIDATION MONITORS WIDGET --%>
                     <ct:widget bean="validationMonitorsWidget"/>
 					
@@ -35,20 +32,14 @@
 						<ct:widget bean="scheduledGroupRequestExecutionWidget"/>
 					</cti:checkRolesAndProperties>
 					
-				</td>
-				
-				<td class="widgetColumnCell last">
+            </div>
+            <div class="column two nogutter">
                     <cti:msg2 key="yukon.web.widgets.meterSearchWidget.helpText" var="helpText"/>
 					<ct:widget bean="meterSearchWidget" helpText="${helpText}" />
 					<cti:checkRolesAndProperties value="DEVICE_ACTIONS">
                         <ct:widget bean="systemActionsMenuWidget" />
                     </cti:checkRolesAndProperties>
-				</td>
-			
-			</tr>
-			
-		</table>
-
-	</ct:widgetContainer>
-
+            </div>
+        </div>
+    </ct:widgetContainer>
 </cti:standardPage>

@@ -1,16 +1,11 @@
 var jwsCurrentUrl = "";
 
 function jwsLaunch(url) {
-  $('javaWebStartPopup').show();
-  jwsCurrentUrl = url;
-}
-
-function jwsClosePopup() {
-  $('javaWebStartPopup').hide();
+    jQuery('#javaWebStartPopup').dialog("open");
+    jwsCurrentUrl = url;
 }
 
 function jwsRelaunchCurrent() {
-  $('javaWebStartPopup').hide();
-  window.location.replace(jwsCurrentUrl);
+    jQuery('#javaWebStartPopup').dialog("close");
+    window.location.replace(jwsCurrentUrl);
 }
-

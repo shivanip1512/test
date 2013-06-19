@@ -1,14 +1,13 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage module="amr" page="pointImport">
+<cti:standardPage module="tools" page="bulk.pointImport">
     <cti:includeScript link="/JavaScript/pointImport.js"/>
     
-        <div class="colmask doublepage">
-            <div class="colleft">
-                <div class="col1">
+        <div class="column_12_12">
+                <div class="column one">
                     <cti:msg2 var="importTitle" key=".importHeader"/>
                     <tags:sectionContainer title="${importTitle}">
                         <div class="stacked"><i:inline key=".importDescription"/></div>
@@ -37,7 +36,9 @@
                                     <i:inline key=".ignoreInvalidText"/>
                                 </tags:nameValue2>
                             </tags:nameValueContainer2>
-                            <br><cti:button type="submit" nameKey="importSubmitButton"/>
+                            <div class="actionArea">
+                                <cti:button type="submit" nameKey="importSubmitButton" classes="primary action f_disableAfterClick" busy="true"/>
+                            </div>
                         </form>
                         </tags:sectionContainer>
                     <div id="calculationInstructions" style="display:none;">
@@ -50,7 +51,7 @@
                     
                 </div>
         
-                <div class="col2">
+                <div class="column two nogutter">
                     <cti:msg2 var="importInstructions" key=".importInstructionsHeader"/>
                     <tags:sectionContainer title="${importInstructions}">
                         <div class="stacked"><i:inline key=".importInstructions"/></div>
@@ -71,6 +72,5 @@
                         </div>
                     </tags:sectionContainer>
                 </div>
-            </div>
         </div>
 </cti:standardPage>

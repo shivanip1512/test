@@ -11,7 +11,7 @@ import org.apache.ecs.html.Select;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.menu.CommonMenuException;
+import com.cannontech.web.menu.ModuleConfigException;
 import com.cannontech.web.menu.option.MenuOption;
 import com.cannontech.web.menu.option.SimpleMenuOption;
 import com.cannontech.web.menu.option.SubMenuOption;
@@ -58,7 +58,7 @@ public class SelectMenuOptionRenderer {
 	                        optGroup.addElement(portalOption);
 	                    } else {
 	                        // multiple menu levels aren't supported here
-	                        throw new CommonMenuException("StandardMenuRenderer quick links only support two level menus");
+	                        throw new ModuleConfigException("StandardMenuRenderer quick links only support two level menus");
 	                    }
 	                }
 	                select.addElement(optGroup);

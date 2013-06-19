@@ -10,13 +10,9 @@
     <entry key="yukon.web.widgetClasses.DeviceDataMonitorsWidget.violations">Violations</entry>
     <entry key="yukon.web.widgetClasses.DeviceDataMonitorsWidget.monitoring">Monitoring</entry>
     <entry key="yukon.web.widgetClasses.DeviceDataMonitorsWidget.enabled">Enabled</entry>
-    <entry key="yukon.web.widgetClasses.DeviceDataMonitorsWidget.edit.imageUrl">/WebConfig/yukon/Icons/cog_go.gif</entry>
-    <entry key="yukon.web.widgetClasses.DeviceDataMonitorsWidget.edit.hoverUrl">/WebConfig/yukon/Icons/cog_go_over.gif</entry>
     <entry key="yukon.web.widgetClasses.DeviceDataMonitorsWidget.edit.hoverText">Edit Device Data Monitor Details ({0})</entry>
     <entry key="yukon.web.widgetClasses.DeviceDataMonitorsWidget.enable.hoverText">Enable ({0})</entry>
-    <entry key="yukon.web.widgetClasses.DeviceDataMonitorsWidget.enable.imageUrl">/WebConfig/yukon/Icons/gray_circle.png</entry>
     <entry key="yukon.web.widgetClasses.DeviceDataMonitorsWidget.disable.hoverText">Disable ({0})</entry>
-    <entry key="yukon.web.widgetClasses.DeviceDataMonitorsWidget.disable.imageUrl">/WebConfig/yukon/Icons/green_circle.png</entry>
     
     <!-- DeviceDataMonitorController edit.jsp & view.jsp (create, edit, & view) -->
     <entry key="yukon.web.modules.amr.deviceDataMonitor.title">Device Data Monitoring</entry>

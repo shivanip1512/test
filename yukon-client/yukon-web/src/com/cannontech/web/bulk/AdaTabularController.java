@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.bulk.collection.device.ArchiveDataAnalysisCollectionProducer;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.DevicePointValuesHolder;
 import com.cannontech.common.bulk.service.ArchiveDataAnalysisService;
@@ -31,16 +33,20 @@ import com.google.common.collect.Lists;
 @Controller
 @RequestMapping("archiveDataAnalysis/tabular/*")
 public class AdaTabularController {
-    private ArchiveDataAnalysisDao archiveDataAnalysisDao;
-    private DateFormattingService dateFormattingService;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private PointFormattingService pointFormattingService;
-    private ArchiveDataAnalysisService archiveDataAnalysisService;
+    
+    @Autowired private ArchiveDataAnalysisDao archiveDataAnalysisDao;
+    @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private PointFormattingService pointFormattingService;
+    @Autowired private ArchiveDataAnalysisService archiveDataAnalysisService;
+    @Autowired private ArchiveDataAnalysisCollectionProducer adaCollectionProducer;
     
     @RequestMapping
     public String view(ModelMap model, int analysisId) {
         Analysis analysis = archiveDataAnalysisDao.getAnalysisById(analysisId);
         model.addAttribute("analysis", analysis);
+        DeviceCollection collection = adaCollectionProducer.buildDeviceCollection(analysisId);
+        model.addAttribute("deviceCollection", collection);
         
         List<DevicePointValuesHolder> devicePointValuesList = archiveDataAnalysisDao.getAnalysisPointValues(analysisId);
         model.addAttribute("devicePointValuesList", devicePointValuesList);
@@ -60,7 +66,7 @@ public class AdaTabularController {
         
         //convert date/times into String array for header
         String[] headerRow = new String[dateTimeList.size()+1];
-        headerRow[0] = messageSourceAccessor.getMessage("yukon.web.modules.amr.analysis.tabular.deviceName");
+        headerRow[0] = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.analysisr.deviceName");
         for(int i = 0; i < dateTimeList.size(); i++) {
             headerRow[i+1] = dateFormattingService.format(dateTimeList.get(i), DateFormatEnum.DATEHM, userContext);
         }
@@ -92,28 +98,4 @@ public class AdaTabularController {
         return null;
     }
     
-    @Autowired
-    public void setArchiveDataAnalysisService(ArchiveDataAnalysisService archiveDataAnalysisService) {
-        this.archiveDataAnalysisService = archiveDataAnalysisService;
-    }
-    
-    @Autowired
-    public void setArchiveDataAnalysisDao(ArchiveDataAnalysisDao archiveDataAnalysisDao) {
-        this.archiveDataAnalysisDao = archiveDataAnalysisDao;
-    }
-    
-    @Autowired
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
-    @Autowired
-    public void setPointFormattingService(PointFormattingService pointFormattingService) {
-        this.pointFormattingService = pointFormattingService;
-    }
 }

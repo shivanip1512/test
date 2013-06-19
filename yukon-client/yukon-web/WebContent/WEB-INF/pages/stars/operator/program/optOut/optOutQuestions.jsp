@@ -37,7 +37,7 @@
         </table>
 
      <div class="pageActionArea">
-         <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
+         <cti:button nameKey="save" type="submit" classes="f_blocker"/>
          
          <button type="submit" name="cancel"><i:inline key=".cancel"/></button>
      </div>

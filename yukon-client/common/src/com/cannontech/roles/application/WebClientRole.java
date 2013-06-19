@@ -19,7 +19,7 @@ public interface WebClientRole {
     // -9 was moved to EnergyCompanyRole then moved to EnergyCompanySetting
 	// -10 was removed YUK-9135
 	public static final int JAVA_WEB_START_LAUNCHER_ENABLED = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 12;
-	public static final int SUPPRESS_ERROR_PAGE_DETAILS = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 14;
+	// -14 (SUPPRESS_ERROR_PAGE_DETAILS) was moved to YukonUserPreferences per YUK-12223/12065
 	public static final int DATA_UPDATER_DELAY_MS = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 15;
     public static final int STD_PAGE_STYLE_SHEET = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 16;  // Standard Page CSS
     public static final int THEME_NAME = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 17;  // Theme Name

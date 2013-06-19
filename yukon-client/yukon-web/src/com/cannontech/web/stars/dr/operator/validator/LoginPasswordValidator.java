@@ -15,7 +15,14 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.stars.dr.operator.model.LoginBackingBean;
 import com.google.common.collect.Lists;
 
+/**
+ * Validates:
+ *      * maximum lengths of both fields
+ *      * if they match
+ *      * checks vs password policy.
+ */
 public class LoginPasswordValidator extends SimpleValidator<LoginBackingBean> {
+    public static final int PASSWORD_MAXIMUM_CHAR_LENGTH = 64;
 
     private PasswordPolicyService passwordPolicyService;
     private UserGroupDao userGroupDao;
@@ -29,11 +36,16 @@ public class LoginPasswordValidator extends SimpleValidator<LoginBackingBean> {
     	this.userGroupDao = userGroupDao;
     }
 
+    /**
+     * REQUIRES:
+     *          LoginBackingBean.getPassword1()
+     *          LoginBackingBean.getPassword2()
+     */
     @Override
     public void doValidation(LoginBackingBean loginBackingBean, Errors errors) {
         // Password Validation
-        YukonValidationUtils.checkExceedsMaxLength(errors, "password1", loginBackingBean.getPassword1(), 64);
-        YukonValidationUtils.checkExceedsMaxLength(errors, "password2", loginBackingBean.getPassword2(), 64);
+        YukonValidationUtils.checkExceedsMaxLength(errors, "password1", loginBackingBean.getPassword1(), PASSWORD_MAXIMUM_CHAR_LENGTH);
+        YukonValidationUtils.checkExceedsMaxLength(errors, "password2", loginBackingBean.getPassword2(), PASSWORD_MAXIMUM_CHAR_LENGTH);
 
         if (!loginBackingBean.getPassword1().equals(loginBackingBean.getPassword2())) {
             passwordError(errors, "yukon.web.modules.operator.account.loginInfoError.passwordNoMatch");

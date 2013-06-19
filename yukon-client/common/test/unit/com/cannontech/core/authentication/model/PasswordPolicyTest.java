@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.cannontech.common.user.UserAuthenticationInfo;
+import com.cannontech.util.UnitTestUtil;
 import com.google.common.collect.Lists;
 
 public class PasswordPolicyTest {
@@ -106,7 +107,7 @@ public class PasswordPolicyTest {
     @Test
     public void testPasswordAge_JustChanged() {
         Duration passwordAge = passwordPolicyOne.getPasswordAge(USER_JUST_CHANGED);
-        Assert.assertTrue(withinOneMinute(passwordAge, Duration.standardHours(18)));
+        Assert.assertTrue(UnitTestUtil.withinOneMinute(passwordAge, Duration.standardHours(18)));
 
         Assert.assertFalse(passwordPolicyOne.isPasswordAgeRequirementMet(USER_JUST_CHANGED));
     }
@@ -114,7 +115,7 @@ public class PasswordPolicyTest {
     @Test
     public void testPasswordAge_TwoDaysAgo() {
         Duration passwordAge = passwordPolicyOne.getPasswordAge(USER_CHANGED_TWO_DAYS_AGO);
-        Assert.assertTrue(withinOneMinute(passwordAge, Duration.standardDays(2)));
+        Assert.assertTrue(UnitTestUtil.withinOneMinute(passwordAge, Duration.standardDays(2)));
 
         Assert.assertTrue(passwordPolicyOne.isPasswordAgeRequirementMet(USER_CHANGED_TWO_DAYS_AGO));
     }    
@@ -122,18 +123,8 @@ public class PasswordPolicyTest {
     @Test
     public void testPasswordAge_ThreeMonthsAgo() {
         Duration passwordAge = passwordPolicyOne.getPasswordAge(USER_CHANGED_THREE_MONTHS_AGO);
-        Assert.assertTrue(withinOneMinute(passwordAge, Duration.standardDays(90)));
+        Assert.assertTrue(UnitTestUtil.withinOneMinute(passwordAge, Duration.standardDays(90)));
 
         Assert.assertTrue(passwordPolicyOne.isPasswordAgeRequirementMet(USER_CHANGED_THREE_MONTHS_AGO));
-    }
-
-    /**
-     * There are cases in this test where we need handle "now" changing while the test is running.
-     * This method will return true if the two durations are within a single second of each other.
-     */
-    private boolean withinOneMinute(Duration duration1, Duration duration2) {
-        Duration wiggleRoom = Duration.standardMinutes(1); 
-        return duration1.minus(wiggleRoom).isShorterThan(duration2)
-                && duration1.plus(wiggleRoom).isLongerThan(duration2);
     }
 }

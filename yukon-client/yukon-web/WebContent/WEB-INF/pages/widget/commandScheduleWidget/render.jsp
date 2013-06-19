@@ -6,7 +6,7 @@
 
 <c:choose>
     <c:when test="${empty schedules}">
-        <div>
+        <div class="empty-list">
             <i:inline key="yukon.web.widgets.commandScheduleWidget.noSchedules"/>
         </div>
     </c:when>
@@ -44,10 +44,10 @@
                         <td class="enabledColumn">
                             <c:choose>
                                 <c:when test="${schedule.enabled}">
-                                    <tags:widgetActionRefreshImage method="disable" nameKey="disable" scheduleId="${schedule.commandScheduleId}" />
+                                    <tags:widgetActionRefreshImage method="disable" nameKey="disable" scheduleId="${schedule.commandScheduleId}" icon="icon-enabled" btnClass="fr"/>
                                 </c:when>
                                 <c:when test="${not schedule.enabled}">
-                                    <tags:widgetActionRefreshImage method="enable" nameKey="enable" scheduleId="${schedule.commandScheduleId}"/> 
+                                    <tags:widgetActionRefreshImage method="enable" nameKey="enable" scheduleId="${schedule.commandScheduleId}" icon="icon-disabled" btnClass="fr"/> 
                                 </c:when>
                             </c:choose>
                         </td>
@@ -62,6 +62,6 @@
     <form id="createNewScheduleForm_${widgetParameters.widgetId}" action="/stars/operator/inventory/commandSchedule" method="get">
         <tags:widgetActionRefresh nameKey="disableAll" method="disableAll"/>
         <input type="hidden" value="0" name="scheduleId">
-        <cti:button nameKey="create" type="submit"/>
+        <cti:button nameKey="create" icon="icon-plus-green" type="submit"/>
     </form>
 </div>

@@ -52,5 +52,5 @@ YEvent.observeSelectorClick('#recentEventsView', function(){
 </tags:formElementContainer>
 
 <div class="actionArea">
-    <cti:button nameKey="recentEvents.view" id="recentEventsView" styleClass="f_blocker"/>
+    <cti:button nameKey="recentEvents.view" id="recentEventsView" classes="f_blocker"/>
 </div>

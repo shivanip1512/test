@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -178,7 +177,7 @@ public class LoginServiceImpl implements LoginService {
 
         String voice_home_url = "/voice/notification.jsp";
 
-        if( user != null )
+        if (user != null)
         {
             HttpSession session = request.getSession();
 
@@ -214,7 +213,7 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public LiteYukonUser internalLogin(HttpServletRequest request, HttpSession session, String username, boolean saveCurrentUser) {
         LiteYukonUser user = yukonUserDao.findUserByUsername(username);
-        if (user == null || StringUtils.isBlank(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user)))
+        if (user == null)
             return null;
         
         Properties oldContext = null;
@@ -233,8 +232,8 @@ public class LoginServiceImpl implements LoginService {
         
         String referer = this.getReferer(request);
         if(referer == null)
-            referer = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
-        
+            referer = "/home";
+
         // Save the old session context and where to direct the browser when the new user logs off
         if (oldContext != null) {
             session.setAttribute( SAVED_YUKON_USERS, new Pair<Properties, String>(oldContext, referer) );

@@ -15,7 +15,7 @@
 	</tags:operationSection>
 </c:if>
 
-<tags:simplePopup title="Yukon Client Launcher" id="javaWebStartPopup" onClose="jwsClosePopup()">
+<tags:simplePopup title="Yukon Client Launcher" id="javaWebStartPopup">
 <div style="text-align:center;padding: 15px;">
 <button onclick="jwsRelaunchCurrent()">Launch Application</button>
 </div>

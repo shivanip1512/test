@@ -77,11 +77,11 @@ public class ExporterReportGeneratorServiceImplTest {
     
     StaticMessageSource messageSource = new StaticMessageSource();
     {
-        messageSource.addMessage("yukon.web.modules.amr.archivedValueExporter.previewUOMValue", Locale.US, "UnitOfMeasure");
-        messageSource.addMessage("yukon.web.modules.amr.archivedValueExporter.previewMeterNumber", Locale.US, "Meter Number");
-        messageSource.addMessage("yukon.web.modules.amr.archivedValueExporter.previewMeterName", Locale.US, "Meter Name");
-        messageSource.addMessage("yukon.web.modules.amr.archivedValueExporter.previewMeterAddress", Locale.US, "Meter Address");
-        messageSource.addMessage("yukon.web.modules.amr.archivedValueExporter.previewMeterRoute", Locale.US, "Meter Route");
+        messageSource.addMessage("yukon.web.modules.tools.bulk.archivedValueExporter.previewUOMValue", Locale.US, "UnitOfMeasure");
+        messageSource.addMessage("yukon.web.modules.tools.bulk.archivedValueExporter.previewMeterNumber", Locale.US, "Meter Number");
+        messageSource.addMessage("yukon.web.modules.tools.bulk.archivedValueExporter.previewMeterName", Locale.US, "Meter Name");
+        messageSource.addMessage("yukon.web.modules.tools.bulk.archivedValueExporter.previewMeterAddress", Locale.US, "Meter Address");
+        messageSource.addMessage("yukon.web.modules.tools.bulk.archivedValueExporter.previewMeterRoute", Locale.US, "Meter Route");
         messageSource.addMessage("yukon.common.attribute.builtInAttribute.USAGE", Locale.US, "Usage");
     }
     YukonUserContextMessageSourceResolverMock messageSourceResolver = new YukonUserContextMessageSourceResolverMock();

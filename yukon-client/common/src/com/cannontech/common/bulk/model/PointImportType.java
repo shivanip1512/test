@@ -35,6 +35,6 @@ public enum PointImportType implements DisplayableEnum {
     
     @Override
     public String getFormatKey() {
-        return "yukon.web.modules.amr.pointImport.importType." + this.name();
+        return "yukon.web.modules.tools.bulk.pointImport.importType." + this.name();
     }
 }

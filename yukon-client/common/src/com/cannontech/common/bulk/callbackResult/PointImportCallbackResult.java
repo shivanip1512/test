@@ -28,14 +28,14 @@ public class PointImportCallbackResult extends LoggingCallbackResult<ImportRow, 
     @Override
     public void processedObject(int rowNumber, ImportRow row) {
         super.processedObject(rowNumber, row);
-        String logString = messageSourceAccessor.getMessage("yukon.web.modules.amr.pointImport.operationSuccessful", rowNumber+1);
+        String logString = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.pointImport.operationSuccessful", rowNumber+1);
         log.add(logString);
     }
     
     @Override
     public void receivedProcessingException(int rowNumber, ImportRow row, ProcessorCallbackException exception) {
         super.receivedProcessingException(rowNumber, row, exception);
-        String logString = messageSourceAccessor.getMessage("yukon.web.modules.amr.pointImport.operationFailed", rowNumber+1, exception.getMessage());
+        String logString = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.pointImport.operationFailed", rowNumber+1, exception.getMessage());
         log.add(logString);
         failedRows.add(rowNumber);
     }

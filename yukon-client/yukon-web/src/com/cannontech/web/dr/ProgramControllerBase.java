@@ -27,13 +27,14 @@ import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.google.common.collect.Maps;
 
 public class ProgramControllerBase {
-    protected ControlAreaService controlAreaService = null;
-    protected ScenarioDao scenarioDao = null;
-    protected ProgramService programService = null;
-    protected PaoAuthorizationService paoAuthorizationService;
-    protected ProgramControllerHelper programControllerHelper;
-    protected RolePropertyDao rolePropertyDao;
-    protected DemandResponseEventLogService demandResponseEventLogService;
+    
+    @Autowired protected ControlAreaService controlAreaService;
+    @Autowired protected ScenarioDao scenarioDao;
+    @Autowired protected ProgramService programService;
+    @Autowired protected PaoAuthorizationService paoAuthorizationService;
+    @Autowired protected ProgramControllerHelper programControllerHelper;
+    @Autowired protected RolePropertyDao rolePropertyDao;
+    @Autowired protected DemandResponseEventLogService demandResponseEventLogService;
 
     protected void addGearsToModel(DisplayablePao program, ModelMap modelMap) {
         List<LMProgramDirectGear> gears = Collections.emptyList();
@@ -104,39 +105,4 @@ public class ProgramControllerBase {
         return programIndexTargetGearMap;
     }
 
-    @Autowired
-    public void setControlAreaService(ControlAreaService controlAreaService) {
-        this.controlAreaService = controlAreaService;
-    }
-    
-    @Autowired
-    public void setScenarioDao(ScenarioDao scenarioDao) {
-        this.scenarioDao = scenarioDao;
-    }
-
-    @Autowired
-    public void setProgramService(ProgramService programService) {
-        this.programService = programService;
-    }
-
-    @Autowired
-    public void setPaoAuthorizationService(PaoAuthorizationService paoAuthorizationService) {
-        this.paoAuthorizationService = paoAuthorizationService;
-    }
-
-    @Autowired
-    public void setProgramControllerHelper(
-            ProgramControllerHelper programControllerHelper) {
-        this.programControllerHelper = programControllerHelper;
-    }
-
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setDemandResponseEventLogService(DemandResponseEventLogService demandResponseEventLogService) {
-        this.demandResponseEventLogService = demandResponseEventLogService;
-    }
 }

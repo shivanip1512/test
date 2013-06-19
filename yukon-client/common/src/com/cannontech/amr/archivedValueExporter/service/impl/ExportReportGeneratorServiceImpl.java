@@ -59,7 +59,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     @Autowired private UnitMeasureDao unitMeasureDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
-    public static String baseKey = "yukon.web.modules.amr.archivedValueExporter.";
+    public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
 
     private static String previewUOMValueKey = baseKey + "previewUOMValue";
     private static String previewMeterNumberKey = baseKey + "previewMeterNumber";

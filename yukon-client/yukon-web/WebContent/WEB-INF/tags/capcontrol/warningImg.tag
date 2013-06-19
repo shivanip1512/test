@@ -6,17 +6,15 @@
 <input type="hidden" id="warning_${paoId}" value='<cti:capControlValue paoId="${paoId}" type="${type}" format="WARNING_FLAG"/>'>
                     
 <span id="warning_${paoId}_ok" style="display: none;">
-    <img src="/WebConfig/yukon/da/green.png" class="tierImg"  alt="">
+    <img src="/WebConfig/yukon/da/green.png">
 </span>
 
-<span id="warning_${paoId}_alert" style="display: none;" 
-      onmouseover="showDynamicPopupAbove('warningPopup_${paoId}');" 
-      onmouseout="nd();">
-    <img src="/WebConfig/yukon/da/yellow.png" class="tierImg"  alt="">
+<span id="warning_${paoId}_alert" style="display: none;" class="f-has-tooltip">
+    <img src="/WebConfig/yukon/da/yellow.png">
 </span>
 
 <cti:dataUpdaterCallback function="updateWarningImage('warning_${paoId}')" initialize="true" value="${type}/${paoId}/WARNING_FLAG"/>            
     
-<span class="ccVarLoadPopup" id="warningPopup_${paoId}" style="display: none;">
+<span class="f-tooltip" id="warningPopup_${paoId}" style="display: none;">
     <cti:capControlValue paoId="${paoId}" type="${type}" format="WARNING_FLAG_MESSAGE"/> 
 </span>

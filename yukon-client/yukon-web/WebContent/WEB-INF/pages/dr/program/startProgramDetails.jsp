@@ -4,6 +4,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<cti:msgScope paths="yukon.web.modules.dr.program.startProgram">
 
 <script type="text/javascript">
 targetCycleGears = {
@@ -19,7 +20,7 @@ targetCycleGears = {
 submitForm = function() {
     combineDateAndTimeFields('startDate');
     combineDateAndTimeFields('stopDate');
-    if (targetCycleGears[$('gearNumber').value] && $('addAdjustmentsCheckbox').checked) {
+    if (targetCycleGears[document.getElementById('gearNumber').value] && document.getElementById('addAdjustmentsCheckbox').checked) {
         url = '<cti:url value="/dr/program/start/gearAdjustments"/>';
     } else {
         url = '<cti:url value="/dr/program/start/constraints"/>';
@@ -28,19 +29,19 @@ submitForm = function() {
 }
 
 startNowChecked = function() {
-    setDateTimeInputEnabled('startDate', !$('startNowCheckbox').checked);
+    setDateTimeInputEnabled('startDate', !document.getElementById('startNowCheckbox').checked);
 }
 
 scheduleStopChecked = function() {
-    setDateTimeInputEnabled('stopDate', $('scheduleStopCheckbox').checked);
+    setDateTimeInputEnabled('stopDate', document.getElementById('scheduleStopCheckbox').checked);
 }
 
 gearChanged = function() {
-    if (targetCycleGears[$('gearNumber').value]) {
-        $('addAdjustmentsArea').show();
+    if (targetCycleGears[document.getElementById('gearNumber').value]) {
+        jQuery('#addAdjustmentsArea').show();
     } else {
-        $('addAdjustmentsArea').hide();
-        $('addAdjustmentsCheckbox').checked = false;
+        jQuery('#addAdjustmentsArea').hide();
+        document.getElementById('addAdjustmentsCheckbox').checked = false;
         updateSubmitButtons();
     }
 }
@@ -50,27 +51,23 @@ updateSubmitButtons = function() {
     if (${autoObserveConstraintsAllowed}) {
         autoObservingConstraints = true;
         if (${checkConstraintsAllowed}) {
-            autoObservingConstraints = $('autoObserveConstraints').checked;
+            autoObservingConstraints = document.getElementById('autoObserveConstraints').checked;
         }
     }
 
-    if ($('addAdjustmentsCheckbox').checked || !autoObservingConstraints) {
-        $('okButton').disable();
-        $('nextButton').enable();
-	}
-	else {
-        $('okButton').enable();
-        $('nextButton').disable();
+    if (document.getElementById('addAdjustmentsCheckbox').checked || !autoObservingConstraints) {
+        jQuery('#okButton').hide();
+        jQuery('#nextButton').show();
+	} else {
+	    jQuery('#okButton').show();
+	    jQuery('#nextButton').hide();
 	}
 }
 </script>
 
 <cti:flashScopeMessages/>
 
-<h1 class="dialogQuestion">
-    <cti:msg key="yukon.web.modules.dr.program.startProgram.confirmQuestion"
-    	htmlEscape="true" argument="${program.name}"/>
-</h1>
+<h4 class="dialogQuestion stacked"><cti:msg2 key=".confirmQuestion" htmlEscape="true" argument="${program.name}"/></h4>
 
 <form:form id="startProgramForm" commandName="backingBean" onsubmit="return submitForm();">
     <form:hidden path="programId"/>
@@ -80,9 +77,9 @@ updateSubmitButtons = function() {
     <table class="compactResultsTable">
         <thead>
             <tr class="headerRow">
-                <th><cti:msg key="yukon.web.modules.dr.program.startProgram.gear"/></th>
-                <th><cti:msg key="yukon.web.modules.dr.program.startProgram.startTime"/></th>
-                <th><cti:msg key="yukon.web.modules.dr.program.startProgram.stopTime"/></th>
+                <th><cti:msg2 key=".gear"/></th>
+                <th><cti:msg2 key=".startTime"/></th>
+                <th><cti:msg2 key=".stopTime"/></th>
             </tr>
         </thead>
         <tfoot></tfoot>
@@ -106,7 +103,7 @@ updateSubmitButtons = function() {
                                 <form:checkbox path="addAdjustments" id="addAdjustmentsCheckbox"
                                     onclick="updateSubmitButtons();"/>
                                 <label for="addAdjustmentsCheckbox">
-                                    <cti:msg key="yukon.web.modules.dr.program.startProgram.addAdjustments"/>
+                                    <cti:msg2 key=".addAdjustments"/>
                                 </label><br>
                             </div>
                         </td></tr>
@@ -117,7 +114,7 @@ updateSubmitButtons = function() {
                         <tr><td>
                             <form:checkbox path="startNow" id="startNowCheckbox" onclick="startNowChecked()"/>
                             <label for="startNowCheckbox">
-                                <cti:msg key="yukon.web.modules.dr.program.startProgram.startNow"/>
+                                <cti:msg2 key=".startNow"/>
                             </label><br>
                         </td></tr>
                         <tr><td>
@@ -131,7 +128,7 @@ updateSubmitButtons = function() {
                         <tr><td>
                             <form:checkbox path="scheduleStop" id="scheduleStopCheckbox" onclick="scheduleStopChecked()"/>
                             <label for="scheduleStopCheckbox">
-                                <cti:msg key="yukon.web.modules.dr.program.startProgram.scheduleStop"/>
+                                <cti:msg2 key=".scheduleStop"/>
                             </label><br>
                         </td></tr>
                         <tr><td>
@@ -156,24 +153,24 @@ updateSubmitButtons = function() {
             <form:checkbox path="autoObserveConstraints" id="autoObserveConstraints"
                 onclick="updateSubmitButtons();"/>
             <label for="autoObserveConstraints">
-                <cti:msg key="yukon.web.modules.dr.program.startProgram.autoObserveConstraints"/>
+                <cti:msg2 key=".autoObserveConstraints"/>
             </label>
         </c:if>
         <c:if test="${!checkConstraintsAllowed}">
             <%-- They have to automatically observe constraints. --%>
-            <cti:msg key="yukon.web.modules.dr.program.startProgram.constraintsWillBeObserved"/>
+            <cti:msg2 key=".constraintsWillBeObserved"/>
             <input type="hidden" name="autoObserveConstraints" value="true"/>
         </c:if>
     </c:if>
     <br>
 
     <div class="actionArea">
+        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
         <c:if test="${autoObserveConstraintsAllowed || checkConstraintsAllowed}">
-            <input id="nextButton" type="submit" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.nextButton"/>"/>
-            <input id="okButton" type="submit" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.okButton"/>"/>
+            <cti:button id="nextButton" nameKey="next" classes="primary action" type="submit"/>
+            <cti:button id="okButton" nameKey="ok" classes="primary action" type="submit"/>
             <script type="text/javascript">updateSubmitButtons();</script>
         </c:if>
-        <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.cancelButton"/>"
-            onclick="parent.$('drDialog').hide()"/>
     </div>
 </form:form>
+</cti:msgScope>

@@ -50,8 +50,8 @@
 
 <div class="reportHeader">
     <strong><i:inline key=".export"/>&nbsp;</strong>
-    <cti:labeledImg nameKey="csvReport" href="${csvUrl}"/> |
-    <cti:labeledImg nameKey="pdfReport" href="${pdfUrl}"/>
+    <cti:button renderMode="labeledImage" nameKey="csvReport" href="${csvUrl}" icon="icon-csv"/> |
+    <cti:button renderMode="labeledImage" nameKey="pdfReport" href="${pdfUrl}" icon="icon-csv"/> |
 </div>
 
 <table class="resultsTable">

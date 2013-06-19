@@ -1,107 +1,103 @@
+<%@ tag body-content="empty" %>
+
+<%@ attribute name="accountId" required="true" type="java.lang.String"%>
+<%@ attribute name="actionPath" required="true" type="java.lang.String"%>
 <%@ attribute name="schedule" required="true" type="com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule" %>
-<%@ attribute name="thermostatType" required="true" type="com.cannontech.stars.dr.hardware.model.SchedulableThermostatType"%>
+<%@ attribute name="temperatureUnit" required="true" type="java.lang.String"%>
 <%@ attribute name="thermostatId" required="true" type="java.lang.String"%>
 <%@ attribute name="thermostatIds" required="true" type="java.lang.String"%>
-<%@ attribute name="accountId" required="true" type="java.lang.String"%>
-<%@ attribute name="temperatureUnit" required="true" type="java.lang.String"%>
-<%@ attribute name="actionPath" required="true" type="java.lang.String"%>
+<%@ attribute name="thermostatType" required="true" type="com.cannontech.stars.dr.hardware.model.SchedulableThermostatType"%>
+
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msg2 var="heatLabel"  key="yukon.common.thermostat.mode.HEAT"/>
 <cti:msg2 var="coolLabel"  key="yukon.common.thermostat.mode.COOL"/>
+<cti:msg2 var="heatLabel"  key="yukon.common.thermostat.mode.HEAT"/>
 
-<div class="schedule small editor ${pageScope.styleClass} ${pageScope.schedule.thermostatScheduleMode}">
-    <form id="form_${pageScope.schedule.accountThermostatScheduleId}" method="POST" action="${actionPath}" onsubmit="Yukon.ThermostatScheduleEditor.prepForm(this);">
-        <input type="hidden" name="accountId" value="${pageScope.accountId}">
-        <input type="hidden" name="thermostatId" value="${pageScope.thermostatId}">
-        <input type="hidden" name="thermostatIds" value="${pageScope.thermostatIds}">
-        <input type="hidden" name="schedulableThermostatType" value="${pageScope.schedule.thermostatType}">
-        <input type="hidden" name="scheduleId" value="${pageScope.schedule.accountThermostatScheduleId}">
+<div class="schedule editor ${pageScope.styleClass} ${schedule.thermostatScheduleMode}">
+    
+    <form id="form_${schedule.accountThermostatScheduleId}" method="POST" action="${actionPath}" onsubmit="Yukon.ThermostatScheduleEditor.prepForm(this);">
+        
+        <input type="hidden" name="accountId" value="${accountId}">
+        <input type="hidden" name="schedulableThermostatType" value="${thermostatType}">
+        <input type="hidden" name="scheduleId" value="${schedule.accountThermostatScheduleId}">
         <input type="hidden" name="scheduleMode" value="">
         <input type="hidden" name="schedules" value="">
-        <input type="hidden" name="thermostatScheduleMode" value="${pageScope.schedule.thermostatScheduleMode}">
+        <input type="hidden" name="thermostatId" value="${thermostatId}">
+        <input type="hidden" name="thermostatIds" value="${thermostatIds}">
+        <input type="hidden" name="thermostatScheduleMode" value="${schedule.thermostatScheduleMode}">
         
-        <div style="line-height: 26px;">
-            <div class="temp tempLabel ${temperatureUnit}">
+        <div class="box clearfix">
+            <div class="box fl">
+                <label for="scheduleName"><i:inline key="yukon.web.modules.operator.thermostat.schedules.name"/></label>
+                <input type="text" name="scheduleName" value="${fn:escapeXml(schedule.scheduleName)}" initialValue="${fn:escapeXml(schedule.scheduleName)}" size="40" maxlength="60">
+            </div>
+            <div class="box fr tempLabel ${temperatureUnit}">
                 <span class="F"><i:inline key="yukon.web.defaults.fahrenheit"/></span>
                 <span class="C"><i:inline key="yukon.web.defaults.celsius"/></span>
             </div>
-            <div class="box fl">
-                <label for="scheduleName"><i:inline key="yukon.web.modules.operator.thermostat.schedules.name"/></label>
-            </div>
-            <input type="text" name="scheduleName" value="<spring:escapeBody htmlEscape="true">${pageScope.schedule.scheduleName}</spring:escapeBody>" initialValue="<spring:escapeBody htmlEscape="true">${pageScope.schedule.scheduleName}</spring:escapeBody>" size="40" maxlength="60">
         </div>
-        <div class="days fl">
+        
+
+        <div class="rows striped-list">
             <span class="labels">
-                <label class="label fl"></label>
-                <c:forEach var="period" items="${pageScope.thermostatType.periodStyle.realPeriods}">
+                <c:forEach var="period" items="${thermostatType.periodStyle.realPeriods}">
                     <div class="period">
-                        <div class="period">
-                            <div class="info time">
-                                <i:inline key="yukon.web.components.thermostat.period.${period}" />
-                            </div>
-                            <div class="temp heat">
-                                <i:inline key="yukon.common.thermostat.mode.HEAT"/>
-                            </div>
-                            <div class="temp cool">
-                                <i:inline key="yukon.common.thermostat.mode.COOL"/>
-                            </div>
+                        <div class="time-label">
+                            <i:inline key="yukon.web.components.thermostat.period.${period}" />
+                        </div>
+                        <div class="temp-label">
+                            <i:inline key="yukon.common.thermostat.mode.HEAT"/>
+                        </div>
+                        <div class="temp-label">
+                            <i:inline key="yukon.common.thermostat.mode.COOL"/>
                         </div>
                     </div>
                 </c:forEach>
             </span>
-            <c:forEach var="day" items="${pageScope.schedule.entriesByTimeOfWeekMultimapAsMap}">
-                <div class="day active">
+            
+            <c:forEach var="row" items="${schedule.entriesByTimeOfWeekMultimapAsMap}">
+                <div class="row active clearfix">
                     <div class="periods">
                         <c:choose>
                             <c:when test="${schedule.thermostatScheduleMode == 'ALL'}">
-                                <label class="label fl"><i:inline key="yukon.web.components.thermostat.schedule.EVERYDAY_abbr" /></label>
+                                <label class="row-label fl"><i:inline key="yukon.web.components.thermostat.schedule.EVERYDAY_abbr"/></label>
                             </c:when>
                             <c:otherwise>
-                                <label class="label fl"><i:inline key="yukon.web.components.thermostat.schedule.${day.key}_abbr" /></label>
+                                <label class="row-label fl"><i:inline key="yukon.web.components.thermostat.schedule.${row.key}_abbr"/></label>
                             </c:otherwise>
                         </c:choose>
-                        <c:forEach var="period" items="${day.value}">
+                        <c:forEach var="period" items="${row.value}">
                         <!-- Comeup with a better way to determine mode -->
                             <c:choose>
                                 <c:when test="${period.heatTemp.value gt -1}">
                                     <div class="period period_edit ${period.timeOfWeek}">
-                                        <input type="hidden" name="timeOfWeek"
-                                            value="${period.timeOfWeek}">
+                                        <input type="hidden" name="timeOfWeek" value="${period.timeOfWeek}">
                                         <div class="info time">
                                             <input type="hidden" class="time"
                                                 name="secondsFromMidnight"
                                                 value="${period.startTime}"
                                                 initialValue="${period.startTime}"
                                                 defaultValue="${period.startTime}">
-                                            <input type="text" class="time f_selectAll"
-                                                maxlength="8">
+                                            <input type="text" class="f_selectAll" maxlength="8">
                                         </div>
 
-                                        <div
-                                            class="temp heat ${pageScope.temperatureUnit}"
-                                            title="${heatLabel}">
-                                            <input type="text" 
-                                                   class="heat_F f_selectAll"
+                                        <div class="temp heat ${pageScope.temperatureUnit}" title="${heatLabel}">
+                                            <input type="text" class="heat_F f_selectAll"
                                                    maxlength="4" data-temperatureMode="HEAT"><i:inline key="yukon.web.defaults.degree"/>
-                                            <input
-                                                type="hidden"
-                                                value="${period.heatTemp.value}"
-                                                initialValue="${period.heatTemp.value}"
-                                                name="heat_F"
-                                                defaultValue="${period.heatTemp.value}">
+                                            <input type="hidden"
+                                                   value="${period.heatTemp.value}"
+                                                   initialValue="${period.heatTemp.value}"
+                                                   name="heat_F"
+                                                   defaultValue="${period.heatTemp.value}">
                                         </div>
-                                        <div
-                                            class="temp cool ${pageScope.temperatureUnit}"
-                                            title="${coolLabel}">
-                                            <input type="text"
-                                                   class="cool_F f_selectAll"
+                                        <div class="temp cool ${pageScope.temperatureUnit}" title="${coolLabel}">
+                                            <input type="text" class="cool_F f_selectAll"
                                                    maxlength="4" data-temperatureMode="COOL"><i:inline key="yukon.web.defaults.degree"/>
                                             <input type="hidden"
                                                    value="${period.coolTemp.value}" 

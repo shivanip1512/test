@@ -2,28 +2,26 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-    <!-- HOME routeLocateHome.jsp -->
-    <entry key="yukon.web.modules.amr.routeLocateHome.pageTitle">Locate Route</entry>
-    <entry key="yukon.web.modules.amr.routeLocateHome.header">Choose Routes</entry>
-    <entry key="yukon.web.modules.amr.routeLocateHome.noteLabel">Note:</entry>
-    <entry key="yukon.web.modules.amr.routeLocateHome.noteText">Choose one or more routes. Use the Locate Route button to begin route location for each device.</entry>
-    
-    <entry key="yukon.web.modules.amr.routeLocateHome.autoUpdateRouteText">Automatically set route when found?</entry>
-    <entry key="yukon.web.modules.amr.routeLocateHome.locateButton">Locate Route</entry>
-    <entry key="yukon.web.modules.amr.routeLocateHome.noRoutesSelectedError">No routes selected.</entry>
-    
-    <entry key="yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.STOP_TIME">{finished|{stopTime|BOTH}|In Progress...}</entry>
-    <entry key="yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.IS_COMPLETE_TEXT">Complete</entry>
-    <entry key="yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.IS_CANCELED_TEXT">Canceled</entry>
-    <entry key="yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.IS_IN_PROGRESS_TEXT">In Progress</entry>
-    
-    <entry key="yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.header">Recent Route Locate Operations:</entry>
-    <entry key="yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.updateTime">Time</entry>
-    <entry key="yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.located">Route Located</entry>
-    <entry key="yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.notLocated">Not Found</entry>
-    <entry key="yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.resultsDetail">Detail</entry>
-    <entry key="yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.detailLink">View</entry>
-    <entry key="yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.status">Status</entry>
-    <entry key="yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.performNewActionLinkTitle">Perform another action on these devices</entry>
+    <!-- routeLocateHome.jsp -->
+    <entry key="yukon.web.modules.tools.bulk.routeLocateHome.pageName">Locate Route</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateHome.contextualPageName">Locate Route</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateHome.header">Choose Routes</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateHome.noteLabel">Note:</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateHome.noteText">Choose one or more routes. Use the Locate Route button to begin route location for each device.</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateHome.autoUpdateRouteText">Automatically set route when found?</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateHome.locateRoute.label">Locate Route</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateHome.noRoutesSelectedError">No routes selected.</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateHome.recentRouteLocateResults.STOP_TIME">{finished|{stopTime|BOTH}|In Progress...}</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateHome.recentRouteLocateResults.IS_COMPLETE_TEXT">Complete</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateHome.recentRouteLocateResults.IS_CANCELED_TEXT">Canceled</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateHome.recentRouteLocateResults.IS_IN_PROGRESS_TEXT">In Progress</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateHome.recentRouteLocateResults.header">Recent Route Locate Operations:</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateHome.recentRouteLocateResults.updateTime">Time</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateHome.recentRouteLocateResults.located">Route Located</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateHome.recentRouteLocateResults.notLocated">Not Found</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateHome.recentRouteLocateResults.resultsDetail">Detail</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateHome.recentRouteLocateResults.detailLink">View</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateHome.recentRouteLocateResults.status">Status</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateHome.recentRouteLocateResults.performNewActionLinkTitle">Perform another action on these devices</entry>
     
 </properties>

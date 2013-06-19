@@ -11,6 +11,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.pao.definition.model.PaoTypeIcon;
 
 @Configurable("paoTypeIconTagPrototype")
 public class PaoTypeIconTag extends YukonTagSupport {
@@ -22,13 +23,13 @@ public class PaoTypeIconTag extends YukonTagSupport {
     public void doTag() throws JspException, IOException {
         PaoType paoType = yukonPao.getPaoIdentifier().getPaoType();
 
-        String deviceIconTypeClass = null;
+        String classname = null;
         if (paoDefinitionDao.isTagSupported(paoType, PaoTag.DEVICE_ICON_TYPE)) {
-            deviceIconTypeClass = paoDefinitionDao.getValueForTagString(paoType, PaoTag.DEVICE_ICON_TYPE);
+            classname = PaoTypeIcon.valueOf(paoDefinitionDao.getValueForTagString(paoType, PaoTag.DEVICE_ICON_TYPE).toUpperCase()).getIcon();
         }
 
         JspWriter out = getJspContext().getOut();
-        out.print("<span class=\"icon "+deviceIconTypeClass+"\"></span>");
+        out.print("<span class=\"icon "+classname+"\"></span>");
         
     }
     

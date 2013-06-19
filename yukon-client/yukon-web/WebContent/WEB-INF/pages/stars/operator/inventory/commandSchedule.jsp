@@ -71,18 +71,18 @@
         <br>
         
         <div>
-            <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
+            <cti:button nameKey="save" type="submit" classes="f_blocker"/>
             <cti:displayForPageEditModes modes="EDIT">
-                <cti:button nameKey="delete" type="button" onclick="javascript:$('confirmDeletePopup').show();"/>
+                <cti:button nameKey="delete" type="button" id="delete_confirm"/>
             </cti:displayForPageEditModes>
             <cti:button nameKey="cancel" type="submit" name="cancel"/>
         </div>
         
-        <tags:simplePopup title="${confirmDeleteTitle}" id="confirmDeletePopup" styleClass="mediumSimplePopup">
+        <tags:simplePopup title="${confirmDeleteTitle}" id="confirmDeletePopup" on="#delete_confirm">
             <i:inline key=".confirmDeleteMessage"/>
             <div class="actionArea">
-                <cti:button nameKey="ok" type="submit" name="delete"/>
-                <cti:button nameKey="cancel" type="button" onclick="javascript:$('confirmDeletePopup').hide();"/>
+                <cti:button nameKey="ok" type="submit" name="delete" classes="primary action"/>
+                <cti:button nameKey="cancel" type="button" onclick="javascript:jQuery('#delete_confirm').dialog('close');"/>
             </div>
         </tags:simplePopup>
     

@@ -58,5 +58,10 @@
 	<classpathentry kind="lib" path="/third-party/jackson-all-1.9.1.jar"/>
 	<classpathentry kind="lib" path="/third-party/SchemaCompare.jar" sourcepath="/SchemaCompare"/>
 	<classpathentry kind="lib" path="/third-party/axis.jar" sourcepath="/third-party/linked-sources/axis-1_4-with-mods.zip"/>
+	<classpathentry kind="lib" path="/third-party/jsoup-1.7.2.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

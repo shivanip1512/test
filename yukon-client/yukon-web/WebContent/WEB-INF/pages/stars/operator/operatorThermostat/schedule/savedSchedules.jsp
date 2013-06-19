@@ -14,7 +14,7 @@
 <cti:includeScript link="/JavaScript/thermostatScheduleEditor.js"/>
 <cti:includeScript link="/JavaScript/lib/JSON/2.0/json2.js"/>
 
-<script>
+<script type="text/javascript">
 var TIME_SLIDER = null;
 jQuery(function(){
     Yukon.ThermostatScheduleEditor.init({
@@ -70,41 +70,41 @@ jQuery(function(){
                     </div>
                     <br>
                     <br>
-                    <cti:button nameKey="help" styleClass="help fl"/>
-                    <cti:button nameKey="create" styleClass="create fl"/>
+                    <cti:button nameKey="help" icon="icon-help" classes="f-help fl"/>
+                    <cti:button nameKey="create" icon="icon-plus-green" classes="f-create fl"/>
                     <cti:url var="historyUrl" value="/stars/operator/thermostat/history/view">
                         <cti:param name="accountId" value="${accountId}" />
                         <cti:param name="thermostatIds" value="${thermostatIds}"/>
                     </cti:url>
-                    <cti:button nameKey="history" href="${historyUrl}" />
+                    <cti:button nameKey="history" icon="icon-time" href="${historyUrl}" />
                 </c:when>
                 <c:otherwise>
                     <div class="schedules fl">
                         <%-- THERMOSTAT NAMES --%>
                         <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/selectedThermostatsFragment.jsp" />
                         <c:if test="${not empty currentSchedule}">
-                        	<tags:sectionContainer2 nameKey="lastSent">
-	                            <div>
-	                                <tags:thermostatScheduleWidget schedule="${currentSchedule}"
-	                                    thermostatId="${thermostatId}"
-	                                    thermostatIds="${thermostatIds}"
-	                                    accountId="${accountId}"
-	                                    temperatureUnit="${temperatureUnit}"
-	                                    actionPath="/stars/operator/thermostatSchedule/save"
-	                                    thermostatType="${thermostatType}"
-	                                    styleClass="vh"/>
-	                            </div>
+                            <tags:sectionContainer2 nameKey="lastSent">
+                                <div>
+                                    <tags:thermostatScheduleWidget schedule="${currentSchedule}"
+                                        thermostatId="${thermostatId}"
+                                        thermostatIds="${thermostatIds}"
+                                        accountId="${accountId}"
+                                        temperatureUnit="${temperatureUnit}"
+                                        actionPath="/stars/operator/thermostatSchedule/save"
+                                        thermostatType="${thermostatType}"
+                                        styleClass="vh"/>
+                                </div>
                             </tags:sectionContainer2>
                         </c:if>
                         <div class="box clear">
                             <div class="fr button-container">
-                                <cti:button nameKey="create" styleClass="create fl"/>
-                                <cti:button nameKey="help" styleClass="help fl"/>
+                                <cti:button nameKey="create" icon="icon-plus-green" classes="f-create fl"/>
+                                <cti:button nameKey="help" icon="icon-help" classes="f-help fl"/>
                                 <cti:url var="historyUrl" value="/stars/operator/thermostat/history/view">
                                     <cti:param name="accountId" value="${accountId}" />
                                     <cti:param name="thermostatIds" value="${thermostatIds}"/>
                                 </cti:url>
-                                <cti:button nameKey="history" href="${historyUrl}" />
+                                <cti:button nameKey="history" icon="icon-time" href="${historyUrl}" />
                             </div>
                             <div class="tempControls fl">
                                 <form method="post" action="/stars/operator/thermostatSchedule/updateTemperaturePreference">
@@ -138,7 +138,7 @@ jQuery(function(){
 
 <!-- Create Schedule Wizard -->
 <div class="schedule">
-    <i:simplePopup titleKey=".createSchedule.title" id="createSchedule" on=".create" >
+    <i:simplePopup titleKey=".createSchedule.title" id="createSchedule" on=".f-create" >
         <div class="f_wizard">
             <div class="f_page page_0">
                 <div class="box">
@@ -155,7 +155,7 @@ jQuery(function(){
             
                 <div class="actionArea">
                     <div class="fr">
-                        <cti:button nameKey="next" styleClass="f_next"/>
+                        <cti:button nameKey="next" classes="f_next"/>
                     </div>
                 </div>
             </div>
@@ -175,12 +175,12 @@ jQuery(function(){
             
                 <div class="actions">
                     <div class="fr">
-                        <cti:button nameKey="previous" styleClass="f_prev"/>
-                        <cti:button nameKey="save" styleClass="save f_blocker" />
-                        <cti:button nameKey="cancel" styleClass="cancel" />
+                        <cti:button nameKey="previous" classes="f_prev"/>
+                        <cti:button nameKey="save" classes="f-save f_blocker primary action" />
+                        <cti:button nameKey="cancel" classes="f-cancel" />
                     </div>
                     <div class="fl">
-                        <cti:button nameKey="recommendedSettings" renderMode="labeledImage" styleClass="createDefault"/>
+                        <cti:button nameKey="recommendedSettings" renderMode="labeledImage" classes="f-createDefault" icon="icon-wrench"/>
                     </div>
                 </div>
             </div>
@@ -188,32 +188,10 @@ jQuery(function(){
     </i:simplePopup>
 </div>
 
-<i:simplePopup titleKey=".help.title" id="help" on=".help">
+<i:simplePopup titleKey=".help.title" id="help" on=".f-help" options="{width:600}">
 <div class="help pad">
         <cti:msg2 key="yukon.web.modules.consumer.savedSchedules.hint"/>
     </div>
 </i:simplePopup>
 
-<!-- shared action forms -->
-<form name="deleteSchedule" method="POST" action="/stars/operator/thermostatSchedule/delete">
-    <input type="hidden" name="scheduleId">
-    <input type="hidden" name="thermostatId" value="${thermostatId}">
-    <input type="hidden" name="thermostatIds" value="${thermostatIds}">
-    <input type="hidden" name="accountId" value="${accountId}">
-    <cti:msg2 var="delete_message" key="yukon.web.modules.operator.thermostat.deleteConfirm" />
-    <input type="hidden" name="message" value="${delete_message}"/>
-    <tags:confirmDialog nameKey=".deleteConfirm" styleClass="smallSimplePopup f_blocker" submitName="delete" on=".delete"/>
-</form>
-
-<form name="sendSchedule" method="POST" action="/stars/operator/thermostatSchedule/send">
-    <input type="hidden" name="scheduleId">
-    <input type="hidden" name="thermostatIds" value="${thermostatIds}">
-    <input type="hidden" name="accountId" value="${accountId}">
-    <input type="hidden" name="temperatureUnit" value="${temperatureUnit}">
-    <cti:msg2 var="send_message" key="yukon.web.modules.operator.thermostat.sendConfirm" />
-    <input type="hidden" name="message" value="${send_message}"/>
-    <tags:confirmDialog nameKey=".sendConfirm" styleClass="smallSimplePopup f_blocker" submitName="send" on=".send"/>
-</form>
-<!--  END action forms -->
-    
 </cti:standardPage>

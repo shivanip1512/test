@@ -1,5 +1,7 @@
 <%@ attribute name="method" required="true" type="java.lang.String"%>
 <%@ attribute name="nameKey" required="true" type="java.lang.String"%>
+<%@ attribute name="icon" required="true" type="java.lang.String" %>
+
 <%@ attribute name="arguments" required="false" type="java.lang.String"%>
 <%@ attribute name="btnClass" required="false" type="java.lang.String"%>
 <%@ attribute name="showConfirm" required="false" type="java.lang.String"%>
@@ -54,7 +56,7 @@
 </script>
 
 <span id="${thisId}">
-    <cti:button nameKey="${nameKey}" id="linkImg_${uniqueId}" renderMode="image" arguments="${arguments}" onclick="widgetActionRefreshImageConfirm_${uniqueId}();" styleClass="${btnClass}"/>
+    <cti:button nameKey="${nameKey}" id="linkImg_${uniqueId}" renderMode="image" arguments="${arguments}" onclick="widgetActionRefreshImageConfirm_${uniqueId}();" classes="${btnClass}" icon="${icon}"/>
     <span class="widgetAction_waiting" style="display:none">
         <img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="<cti:msg2 key="yukon.web.components.waiting"/>">
     </span>

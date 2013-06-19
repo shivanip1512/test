@@ -89,7 +89,7 @@
                         <tags:captcha captchaPublicKey="${captchaPublicKey}" captchaTheme="clean" captchaEnabled="${captchaEnabled}" locale="${locale}"/>
                         <br>
                         
-                        <cti:button type="submit" nameKey="resetPassword" name="resetPassword" styleClass="f_disableAfterClick"/>
+                        <cti:button type="submit" nameKey="resetPassword" name="resetPassword" classes="f_disableAfterClick"/>
                         <cti:url value="/login.jsp" var="loginPage"/>
                         <cti:button href="${loginPage}" nameKey="cancel"/>
                     </form:form>

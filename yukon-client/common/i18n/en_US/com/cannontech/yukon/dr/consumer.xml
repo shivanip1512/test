@@ -89,10 +89,8 @@
     <entry key="yukon.web.modules.consumer.contacts.firstName">First Name</entry>
     <entry key="yukon.web.modules.consumer.contacts.lastName">Last Name</entry>
     <entry key="yukon.web.modules.consumer.contacts.addNotification.label">Add Notification</entry>
-    <entry key="yukon.web.modules.consumer.contacts.addNotification.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
     <entry key="yukon.web.modules.consumer.contacts.contactSaved">Contact Saved</entry>
     <entry key="yukon.web.modules.consumer.contacts.createNewContact.label">Create New Contact</entry>
-    <entry key="yukon.web.modules.consumer.contacts.createNewContact.imageUrl">/WebConfig/yukon/Icons/wand.png</entry>
     
     <entry key="yukon.web.modules.consumer.contacts.error.blankNotification">Must not be blank.</entry>
     <entry key="yukon.web.modules.consumer.contacts.error.firstNameRequired">First name is required.</entry>
@@ -391,9 +389,7 @@
  	<entry key="yukon.web.modules.consumer.alternateEnrollment.available.none">No available alternate enrollments</entry>
  	<entry key="yukon.web.modules.consumer.alternateEnrollment.active.none">No active alternate enrollments</entry>
  	<entry key="yukon.web.modules.consumer.alternateEnrollment.switch.label">Switch</entry>
- 	<entry key="yukon.web.modules.consumer.alternateEnrollment.switch.imageUrl">/WebConfig/yukon/Icons/changeout.gif</entry>
  	<entry key="yukon.web.modules.consumer.alternateEnrollment.revert.label">Revert</entry>
- 	<entry key="yukon.web.modules.consumer.alternateEnrollment.revert.imageUrl">/WebConfig/yukon/Icons/changeout.gif</entry>
 
     <!-- enrollment.jsp -->
     <entry key="yukon.dr.consumer.enrollment.header">Programs - Enrollment</entry>

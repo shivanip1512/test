@@ -20,8 +20,6 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.core.authentication.service.impl.SimpleMessageDigestHasher;
 import com.cannontech.core.dao.YukonUserDao;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.login.access.UrlAccessChecker;
@@ -33,7 +31,6 @@ public class IntegrationLoginController {
 
     private SimpleMessageDigestHasher simpleHasher;
     private LoginService loginService;
-    private RolePropertyDao rolePropertyDao;
     private UrlAccessChecker urlAccessChecker;
     private ConfigurationSource config;
     private YukonUserDao yukonUserDao;
@@ -51,8 +48,7 @@ public class IntegrationLoginController {
         LiteYukonUser user = validateLogin(request, response);
         String redirect = null;
         if (user != null) {
-            String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
-            redirect = ServletUtil.createSafeUrl(request, homeUrl);
+            redirect = "/home";
 
             boolean hasUrlAccess = urlAccessChecker.hasUrlAccess(redirect, user);
             if (!hasUrlAccess) {
@@ -114,11 +110,6 @@ public class IntegrationLoginController {
     @Autowired
     public void setLoginService(LoginService loginService) {
         this.loginService = loginService;
-    }
-
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
     }
 
     @Autowired

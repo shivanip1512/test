@@ -12,19 +12,19 @@
     <c:forEach items="${attributes}" var="attribute">
         <c:choose>
             <c:when test="${not supportedAttributes[attribute]}">
-	            <tags:nameValue2 label="${attribute}">
-				    <i:inline key=".unsupported"/>
-        		</tags:nameValue2>
-			</c:when>
-	        <c:when test="${not existingAttributes[attribute]}">
-    			<tags:nameValue2 label="${attribute}">
-			        <i:inline key=".notConfigured"/>
-	    		</tags:nameValue2>
-    		</c:when>
+                <tags:nameValue2 label="${attribute}">
+                    <i:inline key=".unsupported"/>
+                </tags:nameValue2>
+            </c:when>
+            <c:when test="${not existingAttributes[attribute]}">
+                <tags:nameValue2 label="${attribute}">
+                    <i:inline key=".notConfigured"/>
+                </tags:nameValue2>
+            </c:when>
             <c:otherwise>
-            	<tags:nameValue2 label="${attribute}">
+                <tags:nameValue2 label="${attribute}">
                     <tags:attributeValue device="${device}" attribute="${attribute}"/>
-				</tags:nameValue2>
+                </tags:nameValue2>
                 <c:if test="${attribute == previousReadingsAttribute}">
                     <tags:nameValue2 nameKey=".previousUsage">
                         <select onChange="${widgetParameters.widgetId}_usageSelection()"
@@ -59,8 +59,8 @@ function ${widgetParameters.widgetId}_usageSelection() {
 function ${widgetParameters.widgetId}_prependPrevious(allIdentifierValues) {
 
     // get formatted results
-    var valueIdentifier = allIdentifierValues.get('valueIdentifier');
-    var fullIdentifier = allIdentifierValues.get('fullIdentifier');
+    var valueIdentifier = allIdentifierValues.valueIdentifier;
+    var fullIdentifier = allIdentifierValues.fullIdentifier;
 
     // adjust the drop down (won't add duplicates)
     yukonGeneral_addOptionToTopOfSelect(jQuery(document.getElementById('${widgetParameters.widgetId}'+'_prevSelect')),valueIdentifier,fullIdentifier);
@@ -70,30 +70,29 @@ function ${widgetParameters.widgetId}_prependPrevious(allIdentifierValues) {
 }
 
 function ${widgetParameters.widgetId}_updateCurrent(allIdentifierValues) {
-    ${widgetParameters.widgetId}_currentUsage = allIdentifierValues.get('valueIdentifier');
+    var fn = "${widgetParameters.widgetId}_updateCurrent: ";
+    ${widgetParameters.widgetId}_currentUsage = allIdentifierValues.valueIdentifier;
     // update difference
     ${widgetParameters.widgetId}_updateDifference();
 }
 
 function ${widgetParameters.widgetId}_updateDifference() {
-  var currentUsage = ${widgetParameters.widgetId}_currentUsage;
+    var currentUsage = ${widgetParameters.widgetId}_currentUsage;
   
-  if (currentUsage == null) {
-	  return false;
-  }
-  
-  var previousVal = jQuery(document.getElementById('${widgetParameters.widgetId}_prevSelect')).val();
-  var totalUsage = currentUsage - previousVal;
-  var elem = jQuery(document.getElementById('${widgetParameters.widgetId}_totalConsumption'));
-  var previousTotalUsage = elem.data("totalUsage"); 
-  elem.data("totalUsage", totalUsage);
-  elem.html(totalUsage.toFixed(3));
-  
-  //only makes sense to draw attention to the updated value if it actually changed
-  if(previousVal && !jQuery(elem).hasClass('untouched') && totalUsage != previousTotalUsage){
-	  jQuery(elem).flashYellow(3.5);
-  }
-  jQuery(elem).removeClass('untouched');
+    if (currentUsage == null) {
+        return false;
+    }
+    var previousVal = jQuery(document.getElementById('${widgetParameters.widgetId}_prevSelect')).val();
+    var totalUsage = currentUsage - previousVal;
+    var elem = jQuery(document.getElementById('${widgetParameters.widgetId}_totalConsumption'));
+    var previousTotalUsage = elem.data("totalUsage"); 
+    elem.data("totalUsage", totalUsage);
+    elem.html(totalUsage.toFixed(3));
+    //only makes sense to draw attention to the updated value if it actually changed
+    if(previousVal && !jQuery(elem).hasClass('untouched') && totalUsage != previousTotalUsage){
+        jQuery(elem).flashYellow(3.5);
+    }
+    jQuery(elem).removeClass('untouched');
 }
 </script>
 

@@ -12,9 +12,8 @@
 
 	<ct:widgetContainer deviceId="${deviceId}" identify="false">
 
-		<table class="widgetColumns">
-			<tr>
-				<td class="widgetColumnCell first" valign="top">
+        <div class="column_12_12">
+            <div class="column one">
 				    <ct:widget bean="meterInformationWidget" />
 	
 					<ct:widget bean="waterMeterReadingsWidget" />
@@ -46,15 +45,10 @@
 	                    <a href="${collectionActionsUrl}"><i:inline key=".otherActions"/></a><br/>
 	                    
 					</ct:boxContainer2>
-	
-				</td>
-				<td class="widgetColumnCell last" valign="top">
-	
-					<ct:widget bean="waterCsrTrendWidget" tabularDataViewer="archivedDataReport" />
-				</td>
-			</tr>
-		</table>
-
-	</ct:widgetContainer>
-
+            </div>
+            <div class="column two nogutter">
+                <ct:widget bean="waterCsrTrendWidget" tabularDataViewer="archivedDataReport" />
+            </div>
+        </div>
+    </ct:widgetContainer>
 </cti:standardPage>

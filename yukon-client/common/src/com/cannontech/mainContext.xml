@@ -148,7 +148,7 @@
                 <value>classpath:com/cannontech/yukon/web/components</value>
                 <value>classpath:com/cannontech/yukon/web/displayableEnums</value>
                 <value>classpath:com/cannontech/yukon/web/tags</value>
-                <value>classpath:com/cannontech/yukon/web/googleAnalytics</value>
+<!--                 <value>classpath:com/cannontech/yukon/web/googleAnalytics</value> -->
                 <value>classpath:com/cannontech/yukon/web/import</value>
                 <value>classpath:com/cannontech/yukon/web/modules/consumer/general</value>
                 <value>classpath:com/cannontech/yukon/web/modules/consumer/root</value>
@@ -160,8 +160,6 @@
                 <value>classpath:com/cannontech/yukon/web/modules/widgets/rfnOutagesWidget</value>
                 <value>classpath:com/cannontech/yukon/web/modules/widgets/meterEventsWidget</value>
                 <value>classpath:com/cannontech/yukon/common/device/attributeRead</value>
-                <value>classpath:com/cannontech/yukon/common/device/fdrTranslationManagement</value>
-                <value>classpath:com/cannontech/yukon/common/device/bulk</value>
                 <value>classpath:com/cannontech/yukon/common/device/archiveAnalysis</value>
                 <value>classpath:com/cannontech/yukon/common/device/commander</value>
                 <value>classpath:com/cannontech/yukon/common/device/group</value>
@@ -225,6 +223,9 @@
                 <value>classpath:com/cannontech/yukon/web/modules/operator/workOrder</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/inventory</value>
                 <value>classpath:com/cannontech/yukon/web/modules/visualDisplays/visualDisplays</value>
+                <value>classpath:com/cannontech/yukon/web/modules/tools/root</value>
+                <value>classpath:com/cannontech/yukon/web/modules/tools/bulk</value>
+                <value>classpath:com/cannontech/yukon/web/modules/tools/fdrTranslationManagement</value>
                 <value>classpath:com/cannontech/yukon/web/modules/trending</value>
                 <value>classpath:com/cannontech/yukon/web/modules/support/databaseMigration</value>
                 <value>classpath:com/cannontech/yukon/web/modules/support/databaseMigrationTemplate</value>
@@ -232,6 +233,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/support/eventViewer</value>
                 <value>classpath:com/cannontech/yukon/web/modules/support/errorCodesViewer</value>
                 <value>classpath:com/cannontech/yukon/web/modules/deviceConfig/root</value>
+                <value>classpath:com/cannontech/yukon/web/modules/user/root</value>
                 <value>classpath:com/cannontech/yukon/web/modules/widgets/common</value>
                 <value>classpath:com/cannontech/yukon/web/modules/widgets/commandScheduleWidget</value>
                 <value>classpath:com/cannontech/yukon/web/modules/widgets/deviceReconfigMonitorsWidget</value>

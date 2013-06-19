@@ -17,7 +17,6 @@
 		</c:choose>
 	</strong>
 	(<a href="${zoneVoltagePointsUrl}"><i:inline key=".editPoints"/></a>)
-	<tags:alternateRowReset />
 	<table class="compactResultsTable zoneVoltagePoints">
 		<tr>
 			<th></th>
@@ -41,7 +40,7 @@
     			<c:set var="lowerLimit" value="${strategyLimits.lowerLimit}"/>
     			<c:set var="upperLimit" value="${strategyLimits.upperLimit}"/>
 			</c:if>
-			<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
+			<tr>
 				<td>
 					<span class="gutter"><strong>Device: </strong></span>
 					<spring:escapeBody htmlEscape="true">${voltagePoint.paoName}</spring:escapeBody>

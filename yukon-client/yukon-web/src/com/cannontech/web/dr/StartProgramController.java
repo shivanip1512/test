@@ -10,6 +10,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONObject;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -41,7 +43,6 @@ import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -52,10 +53,9 @@ import com.google.common.collect.Maps;
 @CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
 @RequestMapping("/program/start/*")
 public class StartProgramController extends ProgramControllerBase {
-    private StartProgramDatesValidator datesValidator =
-        new StartProgramDatesValidator();
-    private StartProgramAdjustmentsValidator gearAdjustmentsValidator =
-        new StartProgramAdjustmentsValidator();
+    
+    private StartProgramDatesValidator datesValidator = new StartProgramDatesValidator();
+    private StartProgramAdjustmentsValidator gearAdjustmentsValidator = new StartProgramAdjustmentsValidator();
 
     /**
      * Page one of the "start program" saga.
@@ -173,7 +173,11 @@ public class StartProgramController extends ProgramControllerBase {
         if (!checkConstraintsAllowed) {
             // they're not allowed to do anything...they got here by hacking
             // (or a bug)
-            ServletUtils.closePopup(resp, "drDialog");
+            JSONObject json = new JSONObject();
+            json.put("action", "reload");
+            
+            resp.setContentType("application/json");
+            resp.getWriter().write(json.toString());
             return null;
         }
 
@@ -240,7 +244,11 @@ public class StartProgramController extends ProgramControllerBase {
                                                                 startDate);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.startProgram.programStartRequested"));
         
-        ServletUtils.closePopup(resp, "drDialog");
+        JSONObject json = new JSONObject();
+        json.put("action", "reload");
+        
+        resp.setContentType("application/json");
+        resp.getWriter().write(json.toString());
         return null;
     }
 
@@ -445,7 +453,11 @@ public class StartProgramController extends ProgramControllerBase {
         if (!checkConstraintsAllowed) {
             // they're not allowed to do anything...they got here by hacking
             // (or a bug)
-            ServletUtils.closePopup(resp, "drDialog");
+            JSONObject json = new JSONObject();
+            json.put("action", "reload");
+            
+            resp.setContentType("application/json");
+            resp.getWriter().write(json.toString());
             return null;
         }
 
@@ -599,7 +611,11 @@ public class StartProgramController extends ProgramControllerBase {
         if(backingBean.getControlAreaId() != null){
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.startMultiplePrograms.controlAreaStartRequested"));
         }
-        ServletUtils.closePopup(resp, "drDialog");
+        JSONObject json = new JSONObject();
+        json.put("action", "reload");
+        
+        resp.setContentType("application/json");
+        resp.getWriter().write(json.toString());
         return null;
     }
 

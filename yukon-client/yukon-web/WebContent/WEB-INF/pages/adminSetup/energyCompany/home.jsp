@@ -22,11 +22,8 @@ jQuery(document).on('click', 'button.loginButton',function() {
     <form action="parentLogin" method="post" id="parentLoginForm">
         <input type="hidden" name="loginAsUserId" id="loginAsUserId">
     </form>
-
-    <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
-    
-        <%-- LEFT SIDE COLUMN --%>
-        <cti:dataGridCell>
+    <div class="column_8_16">
+        <div class="column one nogutter">
             <tags:boxContainer2 nameKey="companiesContainer">
                 
                 <div class="membersContainer">
@@ -42,7 +39,7 @@ jQuery(document).on('click', 'button.loginButton',function() {
                                     <c:if test="${canManageMembers && company.parent != null}">
                                         <c:set var="parentLoginId" value="${parentLogins[company.energyCompanyId]}"/>
                                         <c:if test="${not empty parentLoginId && parentLoginId != loggedInUserId && previousUserId != parentLoginId}">
-                                            <cti:button nameKey="login" styleClass="loginButton" name="${parentLoginId}"/>
+                                            <cti:button nameKey="login" classes="loginButton" name="${parentLoginId}"/>
                                         </c:if>
                                     </c:if>
                                 </td>
@@ -54,20 +51,13 @@ jQuery(document).on('click', 'button.loginButton',function() {
                 <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
                     <div class="actionArea">
                         <form action="/adminSetup/energyCompany/new">
-                            <cti:button nameKey="create" type="submit" name="create"/>
+                            <cti:button nameKey="create" icon="icon-plus-green" type="submit" name="create"/>
                         </form>
                     </div>
                 </cti:checkRolesAndProperties>
             
             </tags:boxContainer2>
-        
-        </cti:dataGridCell>
-        
-        <%-- RIGHT SIDE COLUMN --%>
-        <cti:dataGridCell>
-            
-        </cti:dataGridCell>
-    
-    </cti:dataGrid>
+        </div>
+    </div>
 
 </cti:standardPage>

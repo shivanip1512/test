@@ -2,33 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msg var="pageTitle" key="yukon.common.device.bulk.collectionActions.pageTitle"/>
-
-<cti:standardPage title="${pageTitle}" module="amr">
-
-    <cti:standardMenu menuSelection="" />
-    
-    <%-- BREAD CRUMBS --%>
-    <cti:breadCrumbs>
-        
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        
-        <%-- bulk home --%>
-        <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
-        
-        <%-- device selection --%>
-        <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle"/>
-        <cti:crumbLink url="/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
-        
-        <%-- collection actions --%>
-        <cti:msg var="collectionActionsPageTitle" key="yukon.common.device.bulk.collectionActions.pageTitle"/>
-        <cti:crumbLink>${collectionActionsPageTitle}</cti:crumbLink>
-        
-    </cti:breadCrumbs>
-    
-    <h2>${pageTitle}</h2>
-    <br>
+<cti:standardPage module="tools" page="bulk.collectionActions">
 
     <tags:bulkActionContainer   key="yukon.common.device.bulk.collectionActions" deviceCollection="${deviceCollection}">
         

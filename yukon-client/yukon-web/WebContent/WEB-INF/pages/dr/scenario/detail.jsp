@@ -16,18 +16,7 @@
     <tags:layoutHeadingPrefixPart>
         <dr:favoriteIcon paoId="${scenarioId}" isFavorite="${isFavorite}"/>
     </tags:layoutHeadingPrefixPart>
-
-    <table class="widgetColumns">
-        <tr>
-            <td class="widgetColumnCell first" valign="top">
-                <div class="widgetContainer">
-                <cti:msg var="boxTitle" key="yukon.web.modules.dr.scenarioDetail.heading.info"/>
-                <tags:abstractContainer type="box" title="${boxTitle}">
-                </tags:abstractContainer>
-                </div>
-            </td>
-            <td class="widgetColumnCell last" valign="top">
-                <div class="widgetContainer">
+    <div class="fr">
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.scenarioDetail.heading.actions"/>
                 <tags:abstractContainer type="box" title="${boxTitle}">
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${scenario}">
@@ -116,17 +105,12 @@
                         <br>
                     </cti:checkPaoAuthorization>
                 </tags:abstractContainer>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td class="widgetColumnCell" colspan="2">
-                <div class="widgetContainer">
-                    <c:set var="baseUrl" value="/dr/scenario/detail"/>
-                    <%@ include file="../program/programList.jspf" %>
-                </div>
-            </td>
-        </tr>
-    </table>
+    </div>
+    <div class="column_24">
+    <div class="column one nogutter">
+        <c:set var="baseUrl" value="/dr/scenario/detail"/>
+        <%@ include file="../program/programList.jspf" %>
+    </div>
+    </div>
 
 </cti:standardPage>

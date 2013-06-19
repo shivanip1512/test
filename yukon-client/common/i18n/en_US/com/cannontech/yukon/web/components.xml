@@ -40,128 +40,60 @@
 	<entry key="yukon.web.components.slowInput.cancel.label">Cancel</entry>
 	<entry key="yukon.web.components.slowInput.cancel.labelBusy">Canceling</entry>
 
-    <entry key="yukon.web.components.image.edit.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
-    <entry key="yukon.web.components.image.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
     <entry key="yukon.web.components.image.edit.hoverText">Edit</entry>
     <entry key="yukon.web.components.image.edit.label">Edit</entry>
     
-    <entry key="yukon.web.components.image.info.imageUrl">/WebConfig/yukon/Icons/information.gif</entry>
-    <entry key="yukon.web.components.image.info.hoverUrl">/WebConfig/yukon/Icons/information_over.gif</entry>
     <entry key="yukon.web.components.image.info.hoverText">Info</entry>
 	
-    <entry key="yukon.web.components.image.help.imageUrl">/WebConfig/yukon/Icons/help.gif</entry>
-    <entry key="yukon.web.components.image.help.hoverUrl">/WebConfig/yukon/Icons/help_over.gif</entry>
     <entry key="yukon.web.components.image.help.hoverText">What's This?</entry>
     
-    <entry key="yukon.web.components.image.copy.imageUrl">/WebConfig/yukon/Icons/copy.gif</entry>
-    <entry key="yukon.web.components.image.copy.hoverUrl">/WebConfig/yukon/Icons/copy_over.gif</entry>
     <entry key="yukon.web.components.image.copy.hoverText">Copy</entry>
     
-    <entry key="yukon.web.components.image.view.imageUrl">/WebConfig/yukon/Icons/magnifier.gif</entry>
-    <entry key="yukon.web.components.image.view.hoverUrl">/WebConfig/yukon/Icons/magnifier_over.gif</entry>
-    <entry key="yukon.web.components.image.view.hoverText"></entry>
-
-    <entry key="yukon.web.components.image.deviceCollection.imageUrl">/WebConfig/yukon/Icons/magnifier.gif</entry>
-    <entry key="yukon.web.components.image.deviceCollection.disabled.imageUrl">/WebConfig/yukon/Icons/indicator_arrows.gif</entry>
-    <entry key="yukon.web.components.image.deviceCollection.hoverUrl">/WebConfig/yukon/Icons/magnifier_zoom_in.gif</entry>
     <entry key="yukon.web.components.image.deviceCollection.hoverText">View Selected Devices</entry>
 
-    <entry key="yukon.web.components.image.inventoryCollection.imageUrl">/WebConfig/yukon/Icons/magnifier.gif</entry>
-    <entry key="yukon.web.components.image.inventoryCollection.disabled.imageUrl">/WebConfig/yukon/Icons/indicator_arrows.gif</entry>
-    <entry key="yukon.web.components.image.inventoryCollection.hoverUrl">/WebConfig/yukon/Icons/magnifier_zoom_in.gif</entry>
     <entry key="yukon.web.components.image.inventoryCollection.hoverText">View Selected Inventory</entry>
     
-    <entry key="yukon.web.components.image.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
-    <entry key="yukon.web.components.image.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
     <entry key="yukon.web.components.image.add.hoverText">Add</entry>
     <entry key="yukon.web.components.image.add.label">Add</entry>
     
-    <entry key="yukon.web.components.image.remove.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
-    <entry key="yukon.web.components.image.remove.hoverUrl">/WebConfig/yukon/Icons/delete_over.png</entry>
     <entry key="yukon.web.components.image.remove.hoverText">Remove</entry>
     
-    <entry key="yukon.web.components.image.filter.imageUrl">/WebConfig/yukon/Icons/filter.gif</entry>
-    <entry key="yukon.web.components.image.filter.hoverUrl">/WebConfig/yukon/Icons/filter_over.gif</entry>
     <entry key="yukon.web.components.image.filter.hoverText">Filter</entry>
     <entry key="yukon.web.components.image.filter.label">Filter</entry>
-	<entry key="yukon.web.components.image.disabledEdit.imageUrl">/WebConfig/yukon/Icons/pencil_disabled_gray.gif</entry>
-	<entry key="yukon.web.components.image.disabledEdit.hoverUrl">/WebConfig/yukon/Icons/pencil_disabled_gray.gif</entry>
-	<entry key="yukon.web.components.image.disabledRemove.imageUrl">/WebConfig/yukon/Icons/delete_disabled_gray.gif</entry>
-	<entry key="yukon.web.components.image.disabledRemove.hoverUrl">/WebConfig/yukon/Icons/delete_disabled_gray.gif</entry>
 
-
-    <entry key="yukon.web.components.image.meterDetail.imageUrl">/WebConfig/yukon/Icons/meter.gif</entry>
-    <entry key="yukon.web.components.image.meterDetail.hoverUrl">/WebConfig/yukon/Icons/meter_over.gif</entry>
     <entry key="yukon.web.components.image.meterDetail.hoverText">Meter Detail</entry>
 
-	<entry key="yukon.web.components.image.up.imageUrl">/WebConfig/yukon/Icons/green_arrow_up.gif</entry>
-	<entry key="yukon.web.components.image.up.hoverUrl">/WebConfig/yukon/Icons/green_arrow_up_over.gif</entry>
 	<entry key="yukon.web.components.image.up.hoverText">Move Up</entry>
-	<entry key="yukon.web.components.image.up.disabled.imageUrl">/WebConfig/yukon/Icons/green_arrow_up_disabled.gif</entry>
 
-	<entry key="yukon.web.components.image.down.imageUrl">/WebConfig/yukon/Icons/green_arrow_down.gif</entry>
-	<entry key="yukon.web.components.image.down.hoverUrl">/WebConfig/yukon/Icons/green_arrow_down_over.gif</entry>
 	<entry key="yukon.web.components.image.down.hoverText">Move Down</entry>
-	<entry key="yukon.web.components.image.down.disabled.imageUrl">/WebConfig/yukon/Icons/green_arrow_down_disabled.gif</entry>
 
-    <entry key="yukon.web.components.image.selectionPicker.imageUrl">/WebConfig/yukon/Icons/database_add.png</entry>
-    <entry key="yukon.web.components.image.selectionPicker.hoverUrl">/WebConfig/yukon/Icons/database_add_over.png</entry>
     <entry key="yukon.web.components.image.selectionPicker.hoverText">Select items</entry>
     <entry key="yukon.web.components.image.selectionPicker.label">None selected</entry>
 
-    <entry key="yukon.web.components.image.zoom.imageUrl">/WebConfig/yukon/Icons/magnifier.gif</entry>
-    <entry key="yukon.web.components.image.zoom.hoverUrl">/WebConfig/yukon/Icons/magnifier_over.gif</entry>
     <entry key="yukon.web.components.image.zoom.hoverText">View all currently selected items.</entry>
-
-	<entry key="yukon.web.components.image.flashingGreenUpArrow.imageUrl">/WebConfig/yukon/Icons/arrow_up_green_anim.gif</entry>
-	<entry key="yukon.web.components.image.flashingGreenUpArrow.hoverUrl">/WebConfig/yukon/Icons/arrow_up_green_anim.gif</entry>
-	<entry key="yukon.web.components.image.flashingGreenUpArrow.hoverText"></entry>
-
-	<entry key="yukon.web.components.image.flashingOrangeUpArrow.imageUrl">/WebConfig/yukon/Icons/arrow_up_orange_anim.gif</entry>
-	<entry key="yukon.web.components.image.flashingOrangeUpArrow.hoverUrl">/WebConfig/yukon/Icons/arrow_up_orange_anim.gif</entry>
-	<entry key="yukon.web.components.image.flashingOrangeUpArrow.hoverText"></entry>
-
-	<entry key="yukon.web.components.image.flashingGreenDownArrow.imageUrl">/WebConfig/yukon/Icons/arrow_down_green_anim.gif</entry>
-	<entry key="yukon.web.components.image.flashingGreenDownArrow.hoverUrl">/WebConfig/yukon/Icons/arrow_down_green_anim.gif</entry>
-	<entry key="yukon.web.components.image.flashingGreenDownArrow.hoverText"></entry>
-
-	<entry key="yukon.web.components.image.flashingOrangeDownArrow.imageUrl">/WebConfig/yukon/Icons/arrow_down_orange_anim.gif</entry>
-	<entry key="yukon.web.components.image.flashingOrangeDownArrow.hoverUrl">/WebConfig/yukon/Icons/arrow_down_orange_anim.gif</entry>
-	<entry key="yukon.web.components.image.flashingOrangeDownArrow.hoverText"></entry>
-
-	<entry key="yukon.web.components.image.greenUpArrow.imageUrl">/WebConfig/yukon/Icons/arrow_up_green.gif</entry>
-	<entry key="yukon.web.components.image.greenUpArrow.hoverUrl">/WebConfig/yukon/Icons/arrow_up_green.gif</entry>
-	<entry key="yukon.web.components.image.greenUpArrow.hoverText"></entry>
-
-	<entry key="yukon.web.components.image.orangeUpArrow.imageUrl">/WebConfig/yukon/Icons/arrow_up_orange.png</entry>
-	<entry key="yukon.web.components.image.orangeUpArrow.hoverUrl">/WebConfig/yukon/Icons/arrow_up_orange.png</entry>
-	<entry key="yukon.web.components.image.orangeUpArrow.hoverText"></entry>
-
-	<entry key="yukon.web.components.image.greenDownArrow.imageUrl">/WebConfig/yukon/Icons/arrow_down_green.gif</entry>
-	<entry key="yukon.web.components.image.greenDownArrow.hoverUrl">/WebConfig/yukon/Icons/arrow_down_green.gif</entry>
-	<entry key="yukon.web.components.image.greenDownArrow.hoverText"></entry>
-
-	<entry key="yukon.web.components.image.orangeDownArrow.imageUrl">/WebConfig/yukon/Icons/arrow_down_orange.png</entry>
-	<entry key="yukon.web.components.image.orangeDownArrow.hoverUrl">/WebConfig/yukon/Icons/arrow_down_orange.png</entry>
-	<entry key="yukon.web.components.image.orangeDownArrow.hoverText"></entry>
 
     <entry key="yukon.web.components.picker.nothingSelected">Nothing has been selected.</entry>
     <entry key="yukon.web.components.picker.selectedItemsDialogTitle">Selected Items</entry>
     <entry key="yukon.web.components.picker.close">Close</entry>
+    
+    <entry key="yukon.web.components.button.selectionPicker.hoverText">Select items</entry>
+    <entry key="yukon.web.components.button.selectionPicker.label">None selected</entry>
 
     <entry key="yukon.web.components.tokenRequest.passwordPrompt">Password</entry>
 
+    <entry key="yukon.web.components.button.logout.label">Logout</entry>
+    <entry key="yukon.web.components.button.login.label">Login</entry>
+    <entry key="yukon.web.components.button.profile.label">Profile</entry>
+    
     <entry key="yukon.web.components.button.create.label">Create</entry>
-    <entry key="yukon.web.components.button.create.imageUrl">/WebConfig/yukon/Icons/wand.png</entry>
-    <entry key="yukon.web.components.button.create.hoverUrl">/WebConfig/yukon/Icons/wand_over.png</entry>
     
     <entry key="yukon.web.components.button.home.label">Home</entry>
 
     <entry key="yukon.web.components.button.help.label">Help</entry>
-    <entry key="yukon.web.components.button.help.imageUrl">/WebConfig/yukon/Icons/help.gif</entry>
-    <entry key="yukon.web.components.button.help.hoverUrl">/WebConfig/yukon/Icons/help_over.gif</entry>
     
     <entry key="yukon.web.components.button.ok.label">OK</entry>
+    
+    <entry key="yukon.web.components.button.close.label">Close</entry>
     
     <entry key="yukon.web.components.button.load.label">Load</entry>
     
@@ -183,7 +115,7 @@
     
     <entry key="yukon.web.components.button.readNow.label">Read Now</entry>
     <entry key="yukon.web.components.button.readNow.labelBusy">Sending</entry>
-
+    
     <entry key="yukon.web.components.button.reset.label">Reset</entry>
     
     <entry key="yukon.web.components.button.back.label">Back</entry>
@@ -206,47 +138,32 @@
     <entry key="yukon.web.components.button.next.label">Next</entry>
     <entry key="yukon.web.components.button.previous.label">Previous</entry>
     
-    <entry key="yukon.web.components.button.remove.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
-    <entry key="yukon.web.components.button.remove.hoverUrl">/WebConfig/yukon/Icons/delete_over.png</entry>
     <entry key="yukon.web.components.button.remove.hoverText">Remove</entry>
+    <entry key="yukon.web.components.button.remove.label">Remove</entry>
 
-    <entry key="yukon.web.components.button.disabledRemove.imageUrl">/WebConfig/yukon/Icons/delete_disabled_gray.gif</entry>
     <entry key="yukon.web.components.button.disabledRemove.label">Remove</entry>
 
-    <entry key="yukon.web.components.button.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
-    <entry key="yukon.web.components.button.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
     <entry key="yukon.web.components.button.add.hoverText">Add</entry>
     <entry key="yukon.web.components.button.add.label">Add</entry>
     
-    <entry key="yukon.web.components.button.edit.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
-    <entry key="yukon.web.components.button.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
     <entry key="yukon.web.components.button.edit.hoverText">Edit</entry>
     <entry key="yukon.web.components.button.edit.label">Edit</entry>
     
-    <entry key="yukon.web.components.button.info.imageUrl">/WebConfig/yukon/Icons/information.gif</entry>
-    <entry key="yukon.web.components.button.info.hoverUrl">/WebConfig/yukon/Icons/information_over.gif</entry>
     <entry key="yukon.web.components.button.info.hoverText">Info</entry>
     <entry key="yukon.web.components.button.info.label">Info</entry>
     
-    <entry key="yukon.web.components.button.copy.imageUrl">/WebConfig/yukon/Icons/copy.gif</entry>
-    <entry key="yukon.web.components.button.copy.hoverUrl">/WebConfig/yukon/Icons/copy_over.gif</entry>
     <entry key="yukon.web.components.button.copy.hoverText">Copy</entry>
     <entry key="yukon.web.components.button.copy.label">Copy</entry>
     
-    <entry key="yukon.web.components.button.disabledEdit.imageUrl">/WebConfig/yukon/Icons/pencil_disabled_gray.gif</entry>
     <entry key="yukon.web.components.button.disabledEdit.hoverText">Edit</entry>
     <entry key="yukon.web.components.button.disabledEdit.label">Edit</entry>
 
-    <entry key="yukon.web.components.button.meterDetail.imageUrl">/WebConfig/yukon/Icons/meter.gif</entry>
     <entry key="yukon.web.components.button.meterDetail.label">Meter Detail</entry>
     
-    <entry key="yukon.web.components.button.filter.imageUrl">/WebConfig/yukon/Icons/filter.gif</entry>
     <entry key="yukon.web.components.button.filter.label">Filter</entry>
     
-    <entry key="yukon.web.components.button.csv.imageUrl">/WebConfig/yukon/Icons/excel.gif</entry>
     <entry key="yukon.web.components.button.csv.label">Export to CSV</entry>
     
-    <entry key="yukon.web.components.button.pdf.imageUrl">/WebConfig/yukon/Icons/pdf.gif</entry>
     <entry key="yukon.web.components.button.pdf.label">Export to PDF</entry>
     
     <entry key="yukon.web.components.csv">CSV</entry>
@@ -255,22 +172,18 @@
     <entry key="yukon.web.components.export">Export:</entry>
     <entry key="yukon.web.components.jstree.input.search.tooltip">Begin typing to search for a node in the tree. Matches will be highlighted with blue text. Hit 'Enter' to cycle through the results.</entry>
 
-    <entry key="yukon.web.components.button.up.imageUrl">/WebConfig/yukon/Icons/green_arrow_up.gif</entry>
-    <entry key="yukon.web.components.button.up.hoverUrl">/WebConfig/yukon/Icons/green_arrow_up_over.gif</entry>
     <entry key="yukon.web.components.button.up.hoverText">Move Up</entry>
 
-    <entry key="yukon.web.components.button.up.disabled.imageUrl">/WebConfig/yukon/Icons/green_arrow_up_disabled.gif</entry>
-    <entry key="yukon.web.components.button.up.disabled.hoverUrl">/WebConfig/yukon/Icons/green_arrow_up_over.gif</entry>
-
-    <entry key="yukon.web.components.button.down.imageUrl">/WebConfig/yukon/Icons/green_arrow_down.gif</entry>
-    <entry key="yukon.web.components.button.down.hoverUrl">/WebConfig/yukon/Icons/green_arrow_down_over.gif</entry>
     <entry key="yukon.web.components.button.down.hoverText">Move Down</entry>
-
-    <entry key="yukon.web.components.button.down.disabled.imageUrl">/WebConfig/yukon/Icons/green_arrow_down_disabled.gif</entry>
-    <entry key="yukon.web.components.button.down.disabled.hoverUrl">/WebConfig/yukon/Icons/green_arrow_down_over.gif</entry>
 
     <entry key="yukon.web.components.button.search.label">Search</entry>
     <entry key="yukon.web.components.button.download.label">Download</entry>
+    <entry key="yukon.web.components.button.upload.label">Upload</entry>
+    <entry key="yukon.web.components.button.showAll.label">Show All</entry>
+    <entry key="yukon.web.components.button.select.label">Select</entry>
+    <entry key="yukon.web.components.button.verify.label">Verify</entry>
+    <entry key="yukon.web.components.button.read.label">Read</entry>
+    <entry key="yukon.web.components.button.read.labelBusy">Reading</entry>
 
     <entry key="yukon.web.components.pageloading">Loading…</entry>
     <entry key="yukon.web.components.waiting">Waiting…</entry>

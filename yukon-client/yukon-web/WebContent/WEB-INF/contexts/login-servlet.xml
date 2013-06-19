@@ -19,8 +19,6 @@
         class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <props>
-                <prop key="/index.jsp">indexController</prop>
-                <prop key="/home">indexController</prop>
                 <prop key="controller">loginController</prop>
                 <prop key="/login.jsp">loginController</prop>
                 <prop key="/servlet/LoginController">
@@ -39,8 +37,6 @@
     <bean id="themeResolver" class="com.cannontech.web.i18n.YukonUrlThemeResolver">
         <property name="defaultThemeName" value="default"/>
     </bean>
-
-    <bean id="indexController" class="com.cannontech.web.login.IndexController" />
 
     <bean id="loginController" class="com.cannontech.web.login.YukonLoginController">
         <property name="methodNameResolver" ref="methodNameResolver" />

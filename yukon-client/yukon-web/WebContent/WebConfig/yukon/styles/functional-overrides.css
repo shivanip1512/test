@@ -8,9 +8,9 @@ tr{display:table-row}
 td {display:table-cell;vertical-align:top}
 
 /* layout basics */
-.fr { float:right; }
-.fl { float:left; }
-.fn {float:none;}
+.fr {float:right !important;}
+.fl {float:left !important;}
+.fn {float:none !important;}
 
 .dn { display: none; }
 .di { display: inline; }
@@ -42,6 +42,7 @@ td {display:table-cell;vertical-align:top}
 .B0{bottom:0px}
 .L0{left:0px}
 .P0{padding:0px}
+.M0{margin:0}
 .box,.oh{overflow:hidden}
 .oa{overflow:auto}
 .ov{overflow:visible}
@@ -49,7 +50,7 @@ td {display:table-cell;vertical-align:top}
 .tal{text-align:left}
 .tac{text-align:center}
 .tar{text-align:right}
-h1, h2, h3, h4, h5, h6, b, strong, .fwb{font-weight:bold}
+.fwb{font-weight:bold}
 .fwn{font-weight:normal}
 .wsnw{white-space: nowrap}
 .wsn{white-space: normal}
@@ -66,3 +67,6 @@ h1, h2, h3, h4, h5, h6, b, strong, .fwb{font-weight:bold}
 
 .scroll_y {overflow-y: auto;}
 .scroll_x {overflow-x: auto;}
+
+.wrn {word-wrap: normal;}
+.wrbw {word-wrap: break-word;}

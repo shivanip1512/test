@@ -16,7 +16,7 @@
 
 	    //assumes data is of type Hash
 		return function(data) {
-			var requestCount = data.get('requestCount');
+			var requestCount = data.requestCount;
 			var statsDivName = 'statsDiv_' + '${id}';
 			var noStatsDivName = 'noStatsDiv_' + '${id}';
 

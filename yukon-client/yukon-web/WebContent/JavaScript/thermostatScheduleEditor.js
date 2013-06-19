@@ -88,48 +88,33 @@ Yukon.ThermostatScheduleEditor = {
         	Yukon.ThermostatScheduleEditor[this.value]();
         });
         
-        jQuery(".send").click(function(e){
-        	//confirmation popup already shown at this point
-        	//I would use data binding here but cti:button tag doesn't cleanly allow for it
-        	var form = jQuery(this).closest('form');
-        	jQuery("form[name=sendSchedule] input[name=scheduleId]").val(form.find("input[name=scheduleId]").val());
-        	jQuery("form[name=sendSchedule] p:first").text(jQuery("form[name=sendSchedule] input[name=message]").val().replace("{0}", form.find("input[name=scheduleName]").val()));
-        });
-        
-        jQuery(".delete").click(function(e){
-        	//confirmation popup already shown at this point
-        	//I would use data binding here but cti:button tag doesn't cleanly allow for it
-        	var form = jQuery(this).closest('.popUpDiv').find("form");
-        	jQuery("form[name=deleteSchedule] input[name=scheduleId]").val(form.find("input[name=scheduleId]").val());
-        	jQuery("form[name=deleteSchedule] p:first").text(jQuery("form[name=deleteSchedule] input[name=message]").val().replace("{0}", form.find("input[name=scheduleName]").val()));
-        });
-        
-        jQuery(".cancel").click(function(e){
-        	jQuery(this).closest(".popUpDiv").hide();
-        	jQuery(this).closest(".popUpDiv").find('form input[initialValue]').each(function(index, input){
+        jQuery(".f-cancel").click(function(e){
+            var dialog = jQuery(this).closest("[id^=editSchedule], #createSchedule");
+            dialog.dialog('close');
+            dialog.find('form input[initialValue]').each(function(index, input){
         		input.value = input.getAttribute('initialValue');
         	});
         	Yukon.ThermostatScheduleEditor.renderTime();
         	Yukon.ThermostatScheduleEditor[Yukon.ThermostatScheduleEditor.thermostat.COOL.temperature.unit]();
         });
         
-        jQuery(".copy").click(function(e){
+        jQuery(".f-copy").click(function(e){
         	var form = jQuery("#editSchedule_"+ jQuery(this).closest("form").find("input[name=scheduleId]").val());
         	jQuery("input[name=scheduleId]", form).val(-1);
         	jQuery("input[name=scheduleName]", form).val(form.find('input[name=copyName]').val());
-        	jQuery("button.delete", form).hide();
+        	jQuery("button.f-delete", form).hide();
         	
         	//change title
         	jQuery('.titleBar .title', form).html(jQuery('input[name=copyTitle]', form).val());
         });
         
-        jQuery(".edit").click(function(e){
+        jQuery(".f-edit").click(function(e){
         	var scheduleId = jQuery(this).closest("form").find("input[name=scheduleId]").val();
         	var form = jQuery("editSchedule_" + scheduleId);
         	jQuery("input[name=scheduleId]", form).val(scheduleId);
         	jQuery("input[name=scheduleName]", form).val(jQuery("input[name=scheduleName]", form).val());
         	
-        	jQuery("button.delete", form).show();
+        	jQuery("button.f-delete", form).show();
         	
         	//clear error messages
         	Yukon.ThermostatScheduleEditor.clearErrors(form);
@@ -161,16 +146,16 @@ Yukon.ThermostatScheduleEditor = {
         	jQuery("input[name=scheduleId]", editForm).val(id);
         	jQuery("input[name=scheduleName]", editForm).val(name);
         	
-        	jQuery("button.delete", editForm).hide();
+        	jQuery("button.f-delete", editForm).hide();
         });
         
-        jQuery(document).on('click', '.save', function(e){
+        jQuery(document).on('click', '.f-save', function(e){
         	var form = null;
         	if(jQuery(e.target).closest("#createSchedule")[0]){
         		var mode = jQuery("#createSchedule_body input[name=defaultScheduleMode]:checked").val();
-        		form = jQuery(this).closest('.popUpDiv').find('.'+ mode +' form');
+        		form = jQuery(this).closest('#createSchedule').find('.'+ mode +' form');
         	}else{
-        		form = jQuery(this).closest('.popUpDiv').find('form');
+        		form = jQuery(this).closest('[id^=editSchedule]').find('form');
         	}
         	Yukon.ThermostatScheduleEditor.prepForm(form);
         	
@@ -188,7 +173,7 @@ Yukon.ThermostatScheduleEditor = {
         					if(input[0]){
         						jQuery("input[name="+ error +"]", form).addClass('error').after("<div class='errorMessage box'><small>" + errors[error] + "</small></div>");
         					}else{
-        						jQuery(".days", form).parent().prepend("<div class='errorMessage box'><small>" + errors[error] + "</small></div>");
+        						jQuery(".rows", form).parent().prepend("<div class='errorMessage box'><small>" + errors[error] + "</small></div>");
         					}
         				}
         			}else{
@@ -208,7 +193,7 @@ Yukon.ThermostatScheduleEditor = {
                 jQuery(this).closest('.f_page').find('.f_next').removeAttr('disabled');
         });
         
-        jQuery(document).on('click', '.create', function(e){
+        jQuery(document).on('click', '.f-create', function(e){
             //show type picker
             Yukon.ThermostatScheduleEditor.clearErrors(jQuery("#createSchedule_body"));
             Yukon.ui.wizard.reset(jQuery("#createSchedule_body"));
@@ -229,9 +214,9 @@ Yukon.ThermostatScheduleEditor = {
             });
         });
         
-        jQuery(document).on('click', '.default', function(e){
+        jQuery(document).on('click', '.f-default', function(e){
             //find 'recommended schedule in the create popup
-            var ourForm = jQuery(this).closest(".popUpDiv").find('form');
+            var ourForm = jQuery(this).closest("[id^=editSchedule], #createSchedule").find('form');
             var mode = jQuery("input[name=thermostatScheduleMode]", ourForm).val();
             var recForm = jQuery("#createSchedule ." + mode +" form");
             
@@ -239,7 +224,7 @@ Yukon.ThermostatScheduleEditor = {
             
         });
         
-        jQuery(document).on('click', '.createDefault', function(e){
+        jQuery(document).on('click', '.f-createDefault', function(e){
             //find 'recommended schedule in the create popup
             var ourForm = jQuery("#createSchedule .schedule.editor.active");
             var mode = jQuery("input[name=thermostatScheduleMode]", ourForm).val();
@@ -259,7 +244,7 @@ Yukon.ThermostatScheduleEditor = {
         });
         
         //show the schedules
-        jQuery(".schedule").removeClass("vh");
+        jQuery(".schedule, .schedule.editor").removeClass("vh");
     },
     
     initArgs: function(args) {
@@ -273,23 +258,23 @@ Yukon.ThermostatScheduleEditor = {
     
     resetDefaults: function(args){
         if(args.recForm != null){
-            var days = jQuery(".day", args.ourForm);
-            var defaultDays = jQuery(".day", args.recForm);
-            for(var i=0; i<days.length; i++){
+            var rows = jQuery(".row", args.ourForm);
+            var defaultDays = jQuery(".row", args.recForm);
+            for(var i=0; i<rows.length; i++){
                 //copy values over
-                var times = jQuery("input[name=secondsFromMidnight]", days[i]);
+                var times = jQuery("input[name=secondsFromMidnight]", rows[i]);
                 var defaultTimes = jQuery("input[name=secondsFromMidnight]", defaultDays[i]);
                 for(var j=0; j<times.length; j++){
                     times[j].value = defaultTimes[j].getAttribute("defaultValue");
                 }
                 
-                var heatTemps = jQuery("input[name=heat_F]", days[i]);
+                var heatTemps = jQuery("input[name=heat_F]", rows[i]);
                 var defaultHeatTemps = jQuery("input[name=heat_F]", defaultDays[i]);
                 for(var j=0; j<heatTemps.length; j++){
                     heatTemps[j].value = defaultHeatTemps[j].getAttribute("defaultValue");
                 }
                 
-                var coolTemps = jQuery("input[name=cool_F]", days[i]);
+                var coolTemps = jQuery("input[name=cool_F]", rows[i]);
                 var defaultCoolTemps = jQuery("input[name=cool_F]", defaultDays[i]);
                 for(var j=0; j<coolTemps.length; j++){
                     coolTemps[j].value = defaultCoolTemps[j].getAttribute("defaultValue");
@@ -398,7 +383,7 @@ Yukon.ThermostatScheduleEditor = {
         // 1/2 width of the targetted item + 1/2 width of slider
         var offsetLeft = input.offset().left + (input.width()/2) - (tempSlider.width()/2) - jQuery(window).scrollLeft();
         //height of the input plus the height of the chevron
-        var offsetTop = input.offset().top + input.height() + 16 - jQuery(window).scrollTop();
+        var offsetTop = input.offset().top + input.height() + 9 - jQuery(window).scrollTop();
         //position the slider
         tempSlider.css({top: offsetTop+"px", left: offsetLeft+"px"});
     },
@@ -433,7 +418,7 @@ Yukon.ThermostatScheduleEditor = {
     },
     
     timeKeydown: function(event){
-        //don't bother processing iff not the UP or DOWN key
+        //don't bother processing if not the UP or DOWN key
         if(event.keyCode != KEYDOWN && event.keyCode != KEYUP){
             return;
         }
@@ -528,7 +513,7 @@ Yukon.ThermostatScheduleEditor = {
         // 1/2 width of the targetted item + 1/2 width of slider
         var offsetLeft = input.offset().left + (input.width()/2) - (timeSlider.width()/2) - jQuery(window).scrollLeft();
         //height of the input plus the height of the chevron
-        var offsetTop = input.offset().top + input.height() + 16 - jQuery(window).scrollTop();
+        var offsetTop = input.offset().top + input.height() + 9 - jQuery(window).scrollTop();
         //position the slider
         timeSlider.css({top: offsetTop+"px", left: offsetLeft+"px"});
     },
@@ -675,7 +660,7 @@ Yukon.ThermostatManualEditor = {
         jQuery("input[name=temperature_display]").blur(_self.onBlurTemperatureDisplay);
         jQuery("input[name=temperature_display]").focus(_self.onFocusTemperatureDisplay);
         jQuery("#sendSettingsSubmit").click(_self.prepForm);
-        jQuery(".closePopup").click(function(event){jQuery(this).closest(".popUpDiv").hide();});
+        jQuery(".closePopup").click(function(event){jQuery(this).closest("[id^=editSchedule], #createSchedule").dialog('close');});
         jQuery(".editLabel, .cancelLabelEdit").click(_self.toggleLabelEditor);
         
         _self.render();

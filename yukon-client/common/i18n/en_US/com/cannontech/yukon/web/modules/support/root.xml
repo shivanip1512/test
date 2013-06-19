@@ -2,11 +2,65 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-    <entry key="yukon.web.modules.support.pageTitle">Yukon Support Information</entry>
     <entry key="yukon.web.modules.support.moduleName">Support</entry>
+    <entry key="yukon.web.modules.support.cancel">Cancel</entry>
+
+    <!--support.jsp -->
+    <entry key="yukon.web.modules.support.support.pageName">Yukon Support</entry>
+    
+    <entry key="yukon.web.modules.support.support.phone.header">Phone:</entry>
+    <entry key="yukon.web.modules.support.support.phone.value">1-800-815-2258</entry>
+    <entry key="yukon.web.modules.support.support.email.header">Email:</entry>
+    <entry key="yukon.web.modules.support.support.email.value">EAS-Support@cooperindustries.com</entry>
+    <entry key="yukon.web.modules.support.support.hours.header">Hours:</entry>
+    <entry key="yukon.web.modules.support.support.hours.value">Mon-Fri 9AM-5PM Central</entry>
+    
+    <entry key="yukon.web.modules.support.support.pageList.title">Support Pages</entry>
+    <entry key="yukon.web.modules.support.support.manuals.title">Manuals</entry>
+    <entry key="yukon.web.modules.support.support.contact.title">Contact Customer Support</entry>
+    <entry key="yukon.web.modules.support.support.bundle.title">Support Bundle</entry>
+    <entry key="yukon.web.modules.support.support.logs.title">Today's Logs</entry>
+    <entry key="yukon.web.modules.support.support.allLogs">View All Logs</entry>
+    <entry key="yukon.web.modules.support.support.dbInfo.title">Database Info</entry>
+    <entry key="yukon.web.modules.support.support.rma">RMA Form</entry>
+    <entry key="yukon.web.modules.support.support.rma.link">http://www.cannontech.com/support/CustomerServiceRMA.asp</entry>
+    
+    <entry key="yukon.web.modules.support.support.ftpUpload.title">Upload Support Bundle</entry>
+
+
+    <entry key="yukon.web.modules.support.manuals.admin.title">Administrator Manual</entry>
+    <entry key="yukon.web.modules.support.manuals.amiAdmin.title">AMI Administrator</entry>
+    <entry key="yukon.web.modules.support.manuals.amiUser.title">AMI User</entry>
+    <entry key="yukon.web.modules.support.manuals.csr.title">CSR Operations</entry>
+    <entry key="yukon.web.modules.support.manuals.drAdmin.title">DR Administration</entry>
+    <entry key="yukon.web.modules.support.manuals.drUser.title">DR User</entry>
+    <entry key="yukon.web.modules.support.manuals.daAdmin.title">Distribution Automation Administration</entry>
+    <entry key="yukon.web.modules.support.manuals.daUser.title">Distribution Automation User</entry>
+    <entry key="yukon.web.modules.support.manuals.additional.title">More...</entry>
+
+    <entry key="yukon.web.modules.support.manuals.admin.link">http://portal.cooperpowereas.net/sites/Marketing/ProductDocuments/Smart%20Grid/Yukon%20Enterprise%20Software/Yukon%20Admin%20Manual%205.6/Yukon5.6DRAdminManual.pdf</entry>
+    <entry key="yukon.web.modules.support.manuals.amiAdmin.link">http://portal.cooperpowereas.net/sites/Marketing/ProductDocuments/Smart%20Grid/Yukon%20Enterprise%20Software/Yukon%20Admin%20Manual%205.6/Yukon5.6AMIAdminManual.pdf</entry>
+    <entry key="yukon.web.modules.support.manuals.amiUser.link">http://portal.cooperpowereas.net/sites/Marketing/ProductDocuments/Smart%20Grid/Yukon%20Enterprise%20Software/Yukon%20Users%20Manual%205.6/Yukon5.6AMIUsersManual.pdf</entry>
+    <entry key="yukon.web.modules.support.manuals.csr.link">http://portal.cooperpowereas.net/sites/Marketing/ProductDocuments/Smart%20Grid/Yukon%20Enterprise%20Software/Yukon%20CSR%20Operations%20Overview%205.6/Yukon5.6CSROverview.pdf</entry>
+    <entry key="yukon.web.modules.support.manuals.drAdmin.link">http://portal.cooperpowereas.net/sites/Marketing/ProductDocuments/Smart%20Grid/Yukon%20Enterprise%20Software/Yukon%20Admin%20Manual%205.6/Yukon5.6DRAdminManual.pdf</entry>
+    <entry key="yukon.web.modules.support.manuals.drUser.link">http://portal.cooperpowereas.net/sites/Marketing/ProductDocuments/Smart%20Grid/Yukon%20Enterprise%20Software/Yukon%20Users%20Manual%205.6/Yukon5.6DRUsersManual.pdf</entry>
+    <entry key="yukon.web.modules.support.manuals.daAdmin.link">http://portal.cooperpowereas.net/sites/Marketing/ProductDocuments/Smart%20Grid/Yukon%20Enterprise%20Software/Yukon%20Admin%20Manual%205.6/Yukon5.6DAAdminManual.pdf</entry>
+    <entry key="yukon.web.modules.support.manuals.daUser.link">http://portal.cooperpowereas.net/sites/Marketing/ProductDocuments/Smart%20Grid/Yukon%20Enterprise%20Software/Yukon%20Users%20Manual%205.6/Yukon5.6DAUsersManual.pdf</entry>
+    <entry key="yukon.web.modules.support.manuals.additional.link">http://www.cannontech.com/support/docs/yukon.asp</entry>
+    
+    <entry key="yukon.web.modules.support.logFile.UNKNOWN">{0}</entry>
+    <entry key="yukon.web.modules.support.logFile.CALC">Calc Logic</entry>
+    <entry key="yukon.web.modules.support.logFile.CAP_CONTROL">Cap Control</entry>
+    <entry key="yukon.web.modules.support.logFile.CCU_SIMULATOR">CCU Simulator</entry>
+    <entry key="yukon.web.modules.support.logFile.DISPATCH">Dispatch</entry>
+    <entry key="yukon.web.modules.support.logFile.LOAD_MANAGEMENT">Load Management</entry>
+    <entry key="yukon.web.modules.support.logFile.PORTER">Porter</entry>
+    <entry key="yukon.web.modules.support.logFile.SCANNER">Scanner</entry>
+    <entry key="yukon.web.modules.support.logFile.SERVICE_MANAGER">Service Manager</entry>
+    <entry key="yukon.web.modules.support.logFile.WEB_SERVER">Web Server</entry>
 
     <!-- info.jsp -->
-    <entry key="yukon.web.modules.support.system.pageName">System</entry>
+    <entry key="yukon.web.modules.support.system.pageName">System Info</entry>
     <entry key="yukon.web.modules.support.system.versionDetails">Version Details</entry>
     <entry key="yukon.web.modules.support.system.buildInformation">Build Information</entry>
     <entry key="yukon.web.modules.support.system.systemInformation">System Information</entry>
@@ -44,47 +98,18 @@
     <!-- database/info.jsp -->
     <entry key="yukon.web.modules.support.databaseInfo.pageName">Database Information</entry>
     <entry key="yukon.web.modules.support.databaseInfo.dbConnection">DB Connection</entry>
-    <entry key="yukon.web.modules.support.databaseInfo.dbConnection.jdbcUrl">JDBC URL:</entry>
-    <entry key="yukon.web.modules.support.databaseInfo.dbConnection.jdbcUser">JDBC User:</entry>
+    <entry key="yukon.web.modules.support.databaseInfo.dbConnection.jdbcUrl">JDBC URL</entry>
+    <entry key="yukon.web.modules.support.databaseInfo.dbConnection.jdbcUser">JDBC User</entry>
 
     <!-- database/validate.jsp -->
-    <entry key="yukon.web.modules.support.databaseValidate.pageName">Database Validate</entry>
+    <entry key="yukon.web.modules.support.databaseValidate.pageName">Database Validation</entry>
     <entry key="yukon.web.modules.support.databaseValidate.oracleWarning">Validation of your database schema is in progress (this process may take several minutes).</entry>
     <entry key="yukon.web.modules.support.databaseValidate.loading">loading...</entry>
     <entry key="yukon.web.modules.support.databaseValidate.msgError.alreadyRunning">Database validation process is already running.  Please try again later.</entry>
     <entry key="yukon.web.modules.support.databaseValidate.msgError.noAccessToMetadata">System does not have access to database metadata.  Database validation cannot be completed.</entry>
     <entry key="yukon.web.modules.support.databaseValidate.msgError.valitationNotSupported">Your current database configuration is not currently supported by our validation system.</entry>
 
-    <entry key="yukon.web.modules.support.scheduler.pageName">Jobs</entry>
-
-    <!-- scheduler/active.jsp -->
-    <entry key="yukon.web.modules.support.scheduler.active.pageName">Active</entry>
-    <entry key="yukon.web.modules.support.scheduler.active.column.jobName">Job Name</entry>
-    <entry key="yukon.web.modules.support.scheduler.active.column.startTime">Start Time</entry>
-    <entry key="yukon.web.modules.support.scheduler.active.column.running">Running</entry>
-    <entry key="yukon.web.modules.support.scheduler.active.abortButton">Abort</entry>
-
-    <!-- scheduler/status.jsp -->
-    <entry key="yukon.web.modules.support.scheduler.status.pageName">Status</entry>
-    <entry key="yukon.web.modules.support.scheduler.status.column.jobName">Job Name</entry>
-    <entry key="yukon.web.modules.support.scheduler.status.column.start">Start</entry>
-    <entry key="yukon.web.modules.support.scheduler.status.column.stop">Stop</entry>
-    <entry key="yukon.web.modules.support.scheduler.status.column.state">State</entry>
-    <entry key="yukon.web.modules.support.scheduler.status.column.disabled">Disabled</entry>
-    <entry key="yukon.web.modules.support.scheduler.status.column.errorMessage">Error Message</entry>
-
-    <!-- scheduler/jobs.jsp -->
-    <entry key="yukon.web.modules.support.scheduler.jobs.pageName">All</entry>
-    <entry key="yukon.web.modules.support.scheduler.jobs.enabled">Enabled</entry>
-    <entry key="yukon.web.modules.support.scheduler.jobs.disabled">Disabled</entry>
-    <entry key="yukon.web.modules.support.scheduler.jobs.repeatingJobs">Repeating Jobs</entry>
-    <entry key="yukon.web.modules.support.scheduler.jobs.oneTimeJobs">One Time Jobs</entry>
-    <entry key="yukon.web.modules.support.scheduler.jobs.column.jobName">Job Name</entry>
-    <entry key="yukon.web.modules.support.scheduler.jobs.column.beanName">Bean Name</entry>
-    <entry key="yukon.web.modules.support.scheduler.jobs.column.username">Username</entry>
-    <entry key="yukon.web.modules.support.scheduler.jobs.column.cronString">Cron String</entry>
-    <entry key="yukon.web.modules.support.scheduler.jobs.column.scheduledStart">Scheduled Start</entry>
-    <entry key="yukon.web.modules.support.scheduler.jobs.column.enabled">Enable/Disable</entry>
+    <entry key="yukon.web.modules.adminSetup.jobsscheduler.pageName">Jobs</entry>
 
     <entry key="yukon.web.modules.support.pointInjection.pageName">Point Injection</entry>
 
@@ -111,6 +136,7 @@
     <entry key="yukon.web.modules.support.supportBundle.pageName">Support Bundle</entry>
 
     <entry key="yukon.web.modules.support.supportBundle.title">Support Bundle</entry>
+    <entry key="yukon.web.modules.support.supportBundle.ftpUpload.failed.NO_FILE">Could not find file {0} </entry>
     <entry key="yukon.web.modules.support.supportBundle.ftpUpload.failed.SEND_ERROR">The file upload failed. Please try again. Contact support if this happens
         again.</entry>
     <entry key="yukon.web.modules.support.supportBundle.ftpUpload.failed.INVALID_CREDENTIALS">Please contact technical support (invalid credentials).</entry>
@@ -137,15 +163,11 @@
     <entry key="yukon.web.modules.support.supportBundle.previousHeading">Previous Bundles</entry>
     <entry key="yukon.web.modules.support.supportBundle.noPreviousBundlesLbl">No Previous Support Bundles Found</entry>
     <entry key="yukon.web.modules.support.supportBundle.downloadBtn.label">Download</entry>
-    <entry key="yukon.web.modules.support.supportBundle.downloadBtn.imageUrl">/WebConfig/yukon/Icons/green_arrow_down.gif</entry>
     <entry key="yukon.web.modules.support.supportBundle.ftpUploadBtn.label">Upload Via FTP</entry>
-    <entry key="yukon.web.modules.support.supportBundle.ftpUploadBtn.imageUrl">/WebConfig/yukon/Icons/green_arrow_up.gif</entry>
     <entry key="yukon.web.modules.support.supportBundle.bundleInProgressMsg">There is already a bundle in progress.</entry>
     <entry key="yukon.web.modules.support.supportBundle.viewProgressBtn.label">View Progress</entry>
     <entry key="yukon.web.modules.support.supportBundle.includeLbl">Include</entry>
     <entry key="yukon.web.modules.support.supportBundle.startUpload.label">Start Upload</entry>
-    <entry key="yukon.web.modules.support.supportBundle.okImg.imageUrl">/WebConfig/yukon/Icons/enable.gif</entry>
-    <entry key="yukon.web.modules.support.supportBundle.okImg.label">Ok</entry>
 
     <entry key="yukon.web.modules.support.supportBundle.bundleCreationStatus.label">Status</entry>
     <entry key="yukon.web.modules.support.supportBundle.bundleCreationStatus.doneMsg">Done</entry>
@@ -190,10 +212,7 @@
 
     <entry key="yukon.web.modules.support.pickerTest.buttonPickers.title">Button Pickers</entry>
     <entry key="yukon.web.modules.support.pickerTest.pick7.label">Pick 7 (i18n)</entry>
-    <entry key="yukon.web.modules.support.pickerTest.pick7.imageUrl">/WebConfig/yukon/Icons/folder_edit.gif</entry>
-    <entry key="yukon.web.modules.support.pickerTest.pick7.hoverUrl">/WebConfig/yukon/Icons/folder_edit_over.gif</entry>
     <entry key="yukon.web.modules.support.pickerTest.pick8.label">Pick 8 (i18n)</entry>
-    <entry key="yukon.web.modules.support.pickerTest.pick8.imageUrl">/WebConfig/yukon/Icons/folder_edit.gif</entry>
     <entry key="yukon.web.modules.support.pickerTest.pick9.label">Pick 9 (i18n)</entry>
     <entry key="yukon.web.modules.support.pickerTest.pick11.label">Pick 11 (i18n)</entry>
 
@@ -204,14 +223,9 @@
 
     <entry key="yukon.web.modules.support.pickerTest.selectionPickers.title">Selection Pickers</entry>
     <entry key="yukon.web.modules.support.pickerTest.pick16.label">Pick 2 (i18n)</entry>
-    <entry key="yukon.web.modules.support.pickerTest.pick16.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
     <entry key="yukon.web.modules.support.pickerTest.pick18.label">Pick 4 (i18n)</entry>
-    <entry key="yukon.web.modules.support.pickerTest.pick18.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
-    <entry key="yukon.web.modules.support.pickerTest.pick18.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
     <entry key="yukon.web.modules.support.pickerTest.pick19.label">Pick 5 (i18n)</entry>
-    <entry key="yukon.web.modules.support.pickerTest.pick19.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
     <entry key="yukon.web.modules.support.pickerTest.pick20.label">Pick 6 (i18n)</entry>
-    <entry key="yukon.web.modules.support.pickerTest.pick20.imageUrl">/WebConfig/yukon/Icons/folder_edit.gif</entry>
 
     <entry key="yukon.web.modules.support.pickerTest.rememberingPickers.title">Remembering Pickers</entry>
     <entry key="yukon.web.modules.support.pickerTest.inlinePickers.title">Inline Pickers</entry>
@@ -502,6 +516,8 @@
     <entry key="yukon.web.modules.support.fileExportHistory.types.METER_EVENTS">Meter Events Report</entry>
     <entry key="yukon.web.modules.support.fileExportHistory.types.scheduleAppender">Schedule:</entry>
     
+    <entry key="yukon.web.modules.support.threadDump.pageName">Thread Dump</entry>
+
     <!-- routeUsage.jsp -->
     <entry key="yukon.web.modules.support.routeUsage.pageName">Route Usage</entry>
     <entry key="yukon.web.modules.support.routeUsage.fixedBit">Fixed Bit</entry>
@@ -549,4 +565,20 @@
     <entry key="yukon.web.modules.support.deviceDef.info.tags.valueSupport.yes">Yes</entry>
     <entry key="yukon.web.modules.support.deviceDef.info.tags.valueSupport.no">No</entry>
     <entry key="yukon.web.modules.support.deviceDef.info.tags.values">Values</entry>
+    
+    <!-- siteMap.jsp -->
+    <entry key="yukon.web.modules.support.siteMap.pageName">Site Map</entry>
+    <entry key="yukon.web.modules.support.siteMap.noPermissions">Permissions required to view page: {0}</entry>
+
+    <entry key="yukon.web.menu.support">Support</entry>
+    <entry key="yukon.web.menu.development">Development</entry>
+    
+    <entry key="yukon.web.menu.assets.workOrderReports">Work Order Reports</entry>
+    <entry key="yukon.web.menu.assets.newWorkOrder">New Work Order</entry>
+    
+    <entry key="yukon.web.menu.tools.deviceGroupUpload">Device Group Upload</entry>
+    <entry key="yukon.web.menu.tools.manageIndex">Manage Indexes</entry>
+    
+    <entry key="yukon.web.menu.support.category">Event Log (By Category)</entry>
+    <entry key="yukon.web.menu.support.type">Event Log (By Type)</entry>
 </properties>

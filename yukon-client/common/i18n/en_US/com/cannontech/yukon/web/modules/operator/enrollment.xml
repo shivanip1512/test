@@ -117,8 +117,6 @@
 	<entry key="yukon.web.modules.operator.alternateEnrollment.available.none">No available alternate enrollments</entry>
 	<entry key="yukon.web.modules.operator.alternateEnrollment.active.none">No active alternate enrollments</entry>
 	<entry key="yukon.web.modules.operator.alternateEnrollment.switch.label">Switch</entry>
-	<entry key="yukon.web.modules.operator.alternateEnrollment.switch.imageUrl">/WebConfig/yukon/Icons/changeout.gif</entry>
 	<entry key="yukon.web.modules.operator.alternateEnrollment.revert.label">Revert</entry>
-	<entry key="yukon.web.modules.operator.alternateEnrollment.revert.imageUrl">/WebConfig/yukon/Icons/changeout.gif</entry>
 
 </properties>

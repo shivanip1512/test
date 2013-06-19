@@ -92,7 +92,7 @@
 			</ul>
 
 			<div class="pageActionArea">
-                <cti:button nameKey="send" styleClass="f_blocker f_sendEventArchive"/>
+                <cti:button nameKey="send" classes="f_blocker f_sendEventArchive"/>
             </div>
         </form:form>
     </tags:sectionContainer2>

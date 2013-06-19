@@ -44,7 +44,7 @@ jQuery('#viewCommentsOption').click(function(event) {
 <div id="menuPopupBoxContainer">
 	<input type="hidden" id="dialogTitle" value="${paoName}">
    
-    <ul class="capcontrolMenu detail">
+    <ul class="capcontrolMenu detail simple-list">
     
         <%--Commands --%>
         <input type="hidden" name="paoId" value="${paoId}">

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="yukon.web.modules.user.title">ILLEGAL</entry>
+
+    <entry key="yukon.web.modules.user.moduleName">User</entry>
+    
+    <entry key="yukon.web.modules.user.username">Username</entry>
+    <entry key="yukon.web.modules.user.firstname">First Name</entry>
+    <entry key="yukon.web.modules.user.lastname">Last Name</entry>
+    <entry key="yukon.web.modules.user.email">Email</entry>
+    <entry key="yukon.web.modules.user.profile.changePassword.lastChanged">Password Last Changed</entry>
+    <entry key="yukon.web.modules.user.profile.changePassword.button.label">Change Password</entry>
+
+    <entry key="yukon.web.modules.user.profile.changePassword.title">Change Password</entry>
+
+    <entry key="yukon.web.modules.user.profile.changePassword.success">Your password was updated</entry>
+    <entry key="yukon.web.modules.user.profile.changePassword.error.system_save">Internal error while saving your change: {0}</entry>
+    <entry key="yukon.web.modules.user.profile.changePassword.error.auth.unsupported">You are not allowed to update your password</entry>
+    <entry key="yukon.web.modules.user.profile.changePassword.error.user.mismatch">You can only update your own password</entry>
+    <entry key="yukon.web.modules.user.profile.changePassword.error.user.notAuthenticated">Password is invalid</entry>
+    <entry key="yukon.web.modules.user.profile.changePassword.error.currentpassword.required">Current Password is required</entry>
+    <entry key="yukon.web.modules.user.profile.changePassword.error.newpassword.required">New Password is required</entry>
+    <entry key="yukon.web.modules.user.profile.changePassword.error.newpassword.too_long">New Password maximum {0} chars</entry>
+    <entry key="yukon.web.modules.user.profile.changePassword.error.newpassword.badformat">New Password is wrong format, requires: 1 Capital letter, 1 lower-case letter, 1 digit, 1 symbol, at least 8 long</entry>
+    <entry key="yukon.web.modules.user.profile.changePassword.error.confirmpassword.required">Confirm Password is required</entry>
+    <entry key="yukon.web.modules.user.profile.changePassword.error.confirmpassword.nomatch">Confirm Password does not match New Password</entry>
+
+
+    <!-- /user/preferences.jsp -->
+    <entry key="yukon.web.modules.user.profile.VIEW.pageName">Profile</entry>
+    <entry key="yukon.web.modules.user.profile.EDIT.pageName">Edit Profile</entry>
+    <entry key="yukon.web.modules.user.profile.clearTokens">Clear All Tokens</entry>
+    <entry key="yukon.web.modules.user.profile.preferences">Preferences</entry>
+    <entry key="yukon.web.modules.user.profile.contactInfo">Contact Info</entry>
+
+    <entry key="yukon.web.modules.user.activityStream.title">Activity Stream</entry>
+    <entry key="yukon.web.modules.user.additionContactInfo.title">Additional Contact Info</entry>
+    <entry key="yukon.web.modules.user.groups.title">User Group</entry>
+    <entry key="yukon.web.modules.user.preferences.title">Preferences</entry>
+    <entry key="yukon.web.modules.user.userInfo.title">User Info</entry>
+
+    <entry key="yukon.web.modules.user.activityStream.filter.time.today">Today</entry>
+    <entry key="yukon.web.modules.user.activityStream.filter.time.week_1">1 Week</entry>
+    <entry key="yukon.web.modules.user.activityStream.filter.time.month_1">1 Month</entry>
+    <entry key="yukon.web.modules.user.activityStream.filter.time.all">All</entry>
+
+    <entry key="yukon.web.modules.user.profile.preferences.default.title">Reset to Default</entry>
+    <entry key="yukon.web.modules.user.profile.preferences.default.all">All Preferences</entry>
+    <entry key="yukon.web.modules.user.profile.preferences.default.all.button.label">Restore Defaults</entry>
+    <entry key="yukon.web.modules.user.profile.preferences.confirmResetAll.title">Reset All Preferences</entry>
+    <entry key="yukon.web.modules.user.profile.preferences.confirmResetAll.message">Do you want to reset all your preferences back to their default state?</entry>
+
+    <entry key="yukon.web.modules.user.profile.EDIT.usernameRequired">Username is required</entry>
+    <entry key="yukon.web.modules.user.profile.EDIT.usernameTooShort">Username must be at least {0} characters long</entry>
+
+    <entry key="yukon.web.modules.user.profile.EDIT.FAIL.cannotEditOtherUser">You are not allowed to edit that user's profile.</entry>
+    <entry key="yukon.web.modules.user.profile.EDIT.FAIL.databaseProblem">There was an internal error.  Please try again later or contact support.</entry>
+
+    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_TIME_DURATION">Graph Time Duration</entry>
+    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_TIME_DURATION.DAY_1">1 Day</entry>
+    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_TIME_DURATION.WEEK_1">1 Wk</entry>
+    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_TIME_DURATION.MONTH_1">1 Mo</entry>
+    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_TIME_DURATION.MONTH_1.tooltip">1 Month</entry>
+    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_TIME_DURATION.MONTH_3">3 Mo</entry>
+    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_TIME_DURATION.MONTH_3.tooltip">3 Months</entry>
+    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_TIME_DURATION.YEAR_1">1 Year</entry>
+    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_VISUAL_TYPE">Graph Visual Type</entry>
+    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_VISUAL_TYPE.BAR">Bar</entry>
+    <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_VISUAL_TYPE.LINE">Line</entry>
+    
+    <entry key="yukon.web.modules.user.preferences.ERROR_PAGE_SHOW_DETAILS">Error Page Details</entry>
+    <!-- Unfortunately these 2 are used when defaults.  See the enum strings below -->
+    <entry key="yukon.web.modules.user.preferences.ERROR_PAGE_SHOW_DETAILS.SHOW">Show</entry>
+    <entry key="yukon.web.modules.user.preferences.ERROR_PAGE_SHOW_DETAILS.HIDE">Hide</entry>
+    <entry key="yukon.web.modules.user.preferences.HOME_URL">Home URL</entry>
+    <entry key="yukon.web.modules.user.preferences.HOME_URL.blank"></entry>
+    <entry key="yukon.web.modules.user.preferences.HOME_URL.blank.printable">[blank]</entry>
+    
+    <entry key="yukon.web.modules.user.preferences.TF.TRUE">True</entry>
+    <entry key="yukon.web.modules.user.preferences.TF.FALSE">False</entry>
+    <entry key="yukon.web.modules.user.preferences.SHOW_HIDE.SHOW">Show</entry>
+    <entry key="yukon.web.modules.user.preferences.SHOW_HIDE.HIDE">Hide</entry>
+
+    <entry key="yukon.web.modules.user.preferences.url.bad_format">Enter a valid URL</entry>
+
+</properties>

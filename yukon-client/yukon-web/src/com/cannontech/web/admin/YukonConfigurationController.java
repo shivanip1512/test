@@ -70,18 +70,18 @@ public class YukonConfigurationController {
         });
         
         Builder<GlobalSettingSubCategory, String> b = ImmutableMap.builder();
-        b.put(GlobalSettingSubCategory.AMI, "meter1");
-        b.put(GlobalSettingSubCategory.AUTHENTICATION, "lock");
-        b.put(GlobalSettingSubCategory.DR, "lightbulb");
-        b.put(GlobalSettingSubCategory.YUKON_SERVICES, "gear");
-        b.put(GlobalSettingSubCategory.WEB_SERVER, "world");
-        b.put(GlobalSettingSubCategory.BILLING, "money_bag");
-        b.put(GlobalSettingSubCategory.CALC_HISTORICAL, "calculator");
-        b.put(GlobalSettingSubCategory.GRAPHING, "stats_lines");
-        b.put(GlobalSettingSubCategory.MULTISPEAK, "access_point");
-        b.put(GlobalSettingSubCategory.VOICE, "phone");
-        b.put(GlobalSettingSubCategory.OPEN_ADR, "openadr");
-        b.put(GlobalSettingSubCategory.MISC, "folder");
+        b.put(GlobalSettingSubCategory.AMI, "icon-32-meter1");
+        b.put(GlobalSettingSubCategory.AUTHENTICATION, "icon-32-lock");
+        b.put(GlobalSettingSubCategory.DR, "icon-32-lightbulb");
+        b.put(GlobalSettingSubCategory.YUKON_SERVICES, "icon-32-gear");
+        b.put(GlobalSettingSubCategory.WEB_SERVER, "icon-32-world");
+        b.put(GlobalSettingSubCategory.BILLING, "icon-32-money-bag");
+        b.put(GlobalSettingSubCategory.CALC_HISTORICAL, "icon-32-calculator");
+        b.put(GlobalSettingSubCategory.GRAPHING, "icon-32-stats-lines");
+        b.put(GlobalSettingSubCategory.MULTISPEAK, "icon-32-access-point");
+        b.put(GlobalSettingSubCategory.VOICE, "icon-32-phone");
+        b.put(GlobalSettingSubCategory.OPEN_ADR, "icon-32-openadr");
+        b.put(GlobalSettingSubCategory.MISC, "icon-32-folder");
         iconMap = b.build();
     }
     

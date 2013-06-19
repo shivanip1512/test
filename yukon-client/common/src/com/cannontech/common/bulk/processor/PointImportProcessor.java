@@ -66,7 +66,7 @@ public abstract class PointImportProcessor extends SingleProcessor<ImportRow> {
                     removePoint(row);
                     break;
                 default:
-                    String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.pointImport.error.unhandledAction", action);
+                    String error = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.pointImport.error.unhandledAction", action);
                     throw new ProcessingException(error);
             }
         }
@@ -95,13 +95,13 @@ public abstract class PointImportProcessor extends SingleProcessor<ImportRow> {
         if(pao != null) {
             paoId = pao.getPaoIdentifier().getPaoId();
         } else {
-            String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.pointImport.error.invalidDevice", deviceName);
+            String error = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.pointImport.error.invalidDevice", deviceName);
             throw new ProcessingException(error);
         }
         
         //point should not already exist
         if(pointDao.findPointByName(pao, pointName) != null) {
-            String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.pointImport.error.pointExists", pointName, deviceName);
+            String error = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.pointImport.error.pointExists", pointName, deviceName);
             throw new ProcessingException(error);
         }
         return paoId;
@@ -113,7 +113,7 @@ public abstract class PointImportProcessor extends SingleProcessor<ImportRow> {
         PaoType paoType = ImportPaoType.valueOf(row.getValue(DEVICE_TYPE.NAME));
         YukonPao pao = paoDao.findYukonPao(deviceName, paoType);
         if(pao == null) {
-            String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.pointImport.error.invalidDevice", deviceName);
+            String error = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.pointImport.error.invalidDevice", deviceName);
             throw new ProcessingException(error);
         }
         
@@ -121,7 +121,7 @@ public abstract class PointImportProcessor extends SingleProcessor<ImportRow> {
         String pointName = row.getValue(POINT_NAME.NAME);
         LitePoint litePoint = pointDao.findPointByName(pao, pointName);
         if(litePoint == null) {
-            String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.pointImport.error.pointDoesNotExist", pointName, deviceName);
+            String error = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.pointImport.error.pointDoesNotExist", pointName, deviceName);
             throw new ProcessingException(error);
         }
         
@@ -131,7 +131,7 @@ public abstract class PointImportProcessor extends SingleProcessor<ImportRow> {
             dbPersistentDao.performDBChange(heavyPoint, TransactionType.DELETE);
         } catch(PersistenceException e) {
             log.error("An unexpected error occurred deleting point \"" + pointName + "\" on device \"" + deviceName, e);
-            String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.pointImport.error.unknownError");
+            String error = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.pointImport.error.unknownError");
             throw new ProcessingException(error);
         }
     }

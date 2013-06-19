@@ -50,9 +50,8 @@
     </c:if>
 
     <div class="actionArea">
-        <cti:button nameKey="ok" type="submit"/>
-        <input class="formSubmit" type="button" value="<cti:msg2 key=".cancel"/>"
-            onclick="parent.$('peDialog').hide()"/>
+        <cti:button nameKey="ok" classes="primary action" type="submit"/>
+        <cti:button nameKey="cancel" onclick="jQuery('#peDialog').dialog('close');"/>
     </div>
 </form:form>
 

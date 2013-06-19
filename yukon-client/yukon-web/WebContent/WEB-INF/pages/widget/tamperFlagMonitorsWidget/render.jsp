@@ -5,10 +5,6 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<c:url var="cog" value="/WebConfig/yukon/Icons/cog_go.gif"/>
-<c:url var="cogOver" value="/WebConfig/yukon/Icons/cog_go_over.gif"/>
-
-
 <%-- ERROR --%>
 <c:if test="${not empty tamperFlagMonitorsWidgetError}">
   	<div class="errorMessage">${tamperFlagMonitorsWidgetError}</div>
@@ -17,8 +13,10 @@
 <%-- TABLE --%>
 <cti:url var="submitUrl" value="/amr/tamperFlagProcessing/edit"/>
 <form action="${submitUrl}" method="get">
-<c:choose>
-<c:when test="${fn:length(monitors) > 0}">
+<c:if test="${empty monitors}">
+    <span class="empty-list"><i:inline key=".noMonitors"/></span>
+</c:if>
+<c:if test="${not empty monitors}">
 
 <table class="compactResultsTable">
     <thead>
@@ -51,7 +49,7 @@
     				
     			<%-- action icons --%>
     			<td>
-                        <cti:button nameKey="edit" renderMode="image" href="${viewTamperFlagProcessingUrl}" arguments="${monitorName}"/>
+                        <cti:button nameKey="edit" renderMode="image" href="${viewTamperFlagProcessingUrl}" arguments="${monitorName}" icon="icon-cog-go"/>
     			</td>
     			
     			<%-- monitor name --%>
@@ -74,11 +72,11 @@
     				<c:choose>
     					<c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
     						<tags:widgetActionRefreshImage method="toggleEnabled" tamperFlagMonitorId="${monitorId}"
-                                                           nameKey="disable" arguments="${monitorName}"/>
+                                                           nameKey="disable" arguments="${monitorName}" icon="icon-enabled" btnClass="fr"/>
     					</c:when>
     					<c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
     						<tags:widgetActionRefreshImage method="toggleEnabled" tamperFlagMonitorId="${monitorId}" 
-                                                           nameKey="enable" arguments="${monitorName}"/>
+                                                           nameKey="enable" arguments="${monitorName}" icon="icon-disabled" btnClass="fr"/>
     					</c:when>
     				</c:choose>
     			</td>
@@ -89,14 +87,10 @@
     </tbody>
 
 </table>
-</c:when>
+</c:if>
 
-<c:otherwise>
-	<i:inline key=".noMonitors"/>
-</c:otherwise>
-</c:choose>
 
 <div class="actionArea">
-    <cti:button nameKey="create" type="submit" styleClass="f_blocker"/>
+    <cti:button nameKey="create" icon="icon-plus-green" type="submit" classes="f_blocker fr"/>
 </div>
 </form>

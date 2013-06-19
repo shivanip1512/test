@@ -29,7 +29,7 @@ jQuery(function() {
     jQuery(document).on('click', '#rfReadNow', function(event) {
         var url = '<cti:url value="/stars/operator/hardware/${readPath}/readNow"/>';
         
-        jQuery("<a class=\"fl loading labeled_icon\"/>").insertBefore(jQuery("#rfReadNow span"));
+        jQuery("<a class=\"fl icon icon-loading\"/>").insertBefore(jQuery("#rfReadNow span"));
         jQuery("#rfReadNow span").html('${reading}');
         jQuery("#rfReadNow span").addClass("buttonBusy");
         
@@ -66,14 +66,8 @@ jQuery(function() {
 
 <cti:url var="submitUrl" value="/stars/operator/hardware/config/commit"/>
 
-
-<c:if test="${!isZigbee}">
-    <c:set var="nonZigbeeFormat" value="rightmenu"/>
-</c:if>
-
-<div class="colmask ${nonZigbeeFormat}">
-    <div class="colleft">
-        <div class="col1">
+<div class="column_16_8">
+        <div class="column one">
                 <form:form id="editForm" name="editForm" action="${submitUrl}" commandName="configuration">
                     <input id="actionInput" type="hidden" name="action" value=""/>
                     <tags:hidden path="accountId"/>
@@ -151,14 +145,14 @@ jQuery(function() {
                                 <c:if test="${configurable}">
                                     <input type="submit" value="<cti:msg2 key=".config"/>"
                                            title="<cti:msg2 key=".config.description"/>"
-                                           onclick="$('actionInput').value = 'config';" class="formSubmit">
+                                           onclick="jQuery('#actionInput').val('config');" class="formSubmit">
                                     <input type="submit" value="<cti:msg2 key=".saveToBatch"/>"
                                            title="<cti:msg2 key=".saveToBatch.description"/>"
-                                           onclick="$('actionInput').value = 'saveToBatch';" class="formSubmit">
+                                           onclick="jQuery('#actionInput').val('saveToBatch');" class="formSubmit">
                                 </c:if>
                                 <input type="submit" value="<cti:msg2 key=".saveConfigOnly"/>"
                                        title="<cti:msg2 key=".saveConfigOnly.description"/>"
-                                       onclick="$('actionInput').value = 'saveConfigOnly';" class="formSubmit">
+                                       onclick="jQuery('#actionInput').val('saveConfigOnly');" class="formSubmit">
                             </c:if>
                         </cti:checkRolesAndProperties>
                         <cti:url var="cancelUrl" value="/stars/operator/hardware/list">
@@ -196,7 +190,7 @@ jQuery(function() {
                 </c:if>
         </div>
         <c:if test="${!isZigbee}">
-            <div class="col2">
+            <div class="column two nogutter">
                 <div class="columnContent">
                     <c:if test="${configurable}">
                         <tags:formElementContainer nameKey="serviceStatus">
@@ -217,7 +211,7 @@ jQuery(function() {
                                        <cti:param name="accountId" value="${accountId}"/>
                                        <cti:param name="inventoryId" value="${param.inventoryId}"/>
                                     </cti:url>
-                                    <a class="labeled_icon enable" href="${enableUrl}"><i:inline key="yukon.web.components.button.enable.label"/></a>
+                                    <a class="button naked" href="${enableUrl}"><i class="icon icon-accept"></i><span class="label"><i:inline key="yukon.web.components.button.enable.label"/></span></a>
                                 </li>
                                 
                                 <li>
@@ -225,7 +219,7 @@ jQuery(function() {
                                        <cti:param name="accountId" value="${accountId}"/>
                                        <cti:param name="inventoryId" value="${param.inventoryId}"/>
                                     </cti:url>
-                                    <a class="labeled_icon disable cl" href="${disableUrl}"><i:inline key="yukon.web.components.button.disable.label"/></a>
+                                    <a class="cl button naked" href="${disableUrl}"><i class="icon icon-delete"></i><span class="label"><i:inline key="yukon.web.components.button.disable.label"/></span></a>
                                 </li>
                             </ul>
                         </tags:formElementContainer>
@@ -233,7 +227,6 @@ jQuery(function() {
                 </div>
             </div>
         </c:if>
-    </div>
 </div>
 
 </cti:standardPage>

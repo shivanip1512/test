@@ -1,43 +1,31 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msg var="pageTitle" key="yukon.common.device.bulk.massDeleteResults.pageTitle"/>
-
-<cti:standardPage title="${pageTitle}" module="amr">
-
-    <cti:standardMenu menuSelection="" />
+<cti:standardPage module="tools" page="bulk.massDeleteResults">
 
     <%-- BREAD CRUMBS --%>
     <cti:breadCrumbs>
-    
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
+        
+        <cti:msg2 key="yukon.web.menu.home" var="homeCrumb"/>
+        <cti:crumbLink url="/operator/Operations.jsp" title="${homeCrumb}"/>
         
         <%-- bulk home --%>
-        <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
+        <cti:msg var="bulkOperationsPageTitle" key="yukon.web.modules.tools.bulk.home.pageName"/>
         <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
         
         <%-- device selection --%>
-        <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle"/>
+        <cti:msg var="deviceSelectionPageTitle" key="yukon.web.modules.tools.bulk.deviceSelection.pageName"/>
         <cti:crumbLink url="/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
         
         <%-- mass delete --%>
-        <cti:crumbLink>${pageTitle}</cti:crumbLink>
+        <cti:crumbLink><cti:msg2 key=".pageName"/></cti:crumbLink>
         
     </cti:breadCrumbs>
-    
-    <%-- TITLE --%>
-    <h2>${pageTitle}</h2>
-    <br>
-    
-    <%-- BOX --%>
+
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.massDeleteResults.header"/>
-    <tags:boxContainer title="${headerTitle}" id="massDeleteResultsContainer" hideEnabled="false">
-    
-        <%-- RESULTS --%>
-        <tags:backgroundProcessResultHolder resultsTypeMsgKey="massDelete"
-                                     callbackResult="${callbackResult}" />
-    
-    </tags:boxContainer>
+    <tags:sectionContainer title="${headerTitle}" id="massDeleteResultsContainer">
+        <tags:backgroundProcessResultHolder resultsTypeMsgKey="massDelete" callbackResult="${callbackResult}" />
+    </tags:sectionContainer>
     
 </cti:standardPage>

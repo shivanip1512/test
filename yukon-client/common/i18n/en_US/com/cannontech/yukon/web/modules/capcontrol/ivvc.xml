@@ -18,17 +18,11 @@
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.up.label">Tap Up</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.down.hoverText">Click to Tap Down</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.down.label">Tap Down</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.scan.imageUrl">/WebConfig/yukon/Icons/transmit_blue.png</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.scan.hoverUrl">/WebConfig/yukon/Icons/transmit_blue_over.png</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.scan.hoverText">Click to Scan</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.scan.label">Send Integrity Scan</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.disable.label">Disable Remote Control</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.disable.imageUrl">/WebConfig/yukon/Icons/disable.gif</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.disable.hoverUrl">/WebConfig/yukon/Icons/disable_over.gif</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.disable.hoverText">Click to Disable</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.enable.label">Enable Remote Control</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.enable.imageUrl">/WebConfig/yukon/Icons/enable.gif</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.enable.hoverUrl">/WebConfig/yukon/Icons/enable_over.gif</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.enable.hoverText">Click to Enable</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.attributes.title">Voltage Regulator Attributes</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.attributesRegAll.title">All Regulator Attributes</entry>
@@ -49,8 +43,6 @@
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.capBanks.bankVoltage">Voltage</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.capBanks.unassignedBanks">* Not assigned to any Zone.</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.capBanks.noCbc">None assigned</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.capBanks.bankCommands.imageUrl">/WebConfig/yukon/Icons/cog.png</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.capBanks.bankCommands.hoverUrl">/WebConfig/yukon/Icons/cog_over.png</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.ivvcEvents.title">Recent Events</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.ivvcEvents.deviceName">IVVC Device</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.ivvcEvents.description">Event Description</entry>
@@ -60,6 +52,8 @@
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.voltagePoints.title">Voltage Points</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.otherActions.title">Other Actions</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.otherActions.voltageDeltas">Voltage Deltas</entry>
+	
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.questionable.hoverText">Questionable Quality</entry>
 	
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.pageName">Voltage Deltas</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.pageDescription">Voltage Deltas</entry>
@@ -154,11 +148,7 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.phase">Phase</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.point.name">Name</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.point.device">Device</entry>	
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.picker.imageUrl">/WebConfig/yukon/Icons/folder_edit.gif</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.picker.hoverUrl">/WebConfig/yukon/Icons/folder_edit_over.gif</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.picker.hoverText">Click To Select Regulator</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.delete.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.delete.hoverUrl">/WebConfig/yukon/Icons/delete_over.png</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.delete.hoverText">Click to remove</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.zoneName">A zone name is required.</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.substationBusId">A Substation Bus is required.</entry>

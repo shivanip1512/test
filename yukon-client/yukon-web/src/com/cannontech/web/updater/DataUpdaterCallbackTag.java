@@ -48,7 +48,7 @@ public class DataUpdaterCallbackTag extends YukonTagSupport implements DynamicAt
         
         if (initialize) {
             // now actually print out a call to the function
-            out.print(function + "($H({");
+            out.print(function + "({");
 
             firstId = true;
             for(String identifierName : identifierAttributes.keySet()) {
@@ -68,7 +68,7 @@ public class DataUpdaterCallbackTag extends YukonTagSupport implements DynamicAt
                     firstId = false;
                 }
             }
-            out.print("}));");
+            out.print("});");
         }
         
         out.print("\n</script>");

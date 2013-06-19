@@ -12,8 +12,6 @@ import com.cannontech.web.menu.MenuFeatureSet;
  */
 public interface MenuRenderer {
 
-    public String renderMenu();
-
     public void renderMenu(Writer out) throws IOException;
 
     public void setBreadCrumb(String breadCrumbs);

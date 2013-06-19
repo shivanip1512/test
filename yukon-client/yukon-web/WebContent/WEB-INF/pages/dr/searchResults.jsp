@@ -20,13 +20,13 @@
 	<cti:msg var="submitButtonAlt"
 		key="yukon.web.modules.dr.searchResults.searchBoxSubmitAlt" />
         
-	<div id="findForm" class="box">
+	<div id="findForm" class="box actionArea">
 	   <form accept-charset="ISO-8859-1" method="get" action="/dr/search" enctype="application/x-www-form-urlencoded">
             <label class="box fl">
                 <cti:msg key="yukon.web.modules.dr.searchResults.searchBoxLabel" />
                 <input type="text" id="textinput" class="search_text" value="${quickSearchBean.name}" name="name" />
             </label>
-            <input type="submit" class="icon search_button" alt="${submitButtonAlt}" src="${submitButtonSrc}" />
+            <cti:button nameKey="search" type="submit" icon="icon-magnifier" classes="fl"/>
 	   </form>
     </div>
 	<br />

@@ -44,6 +44,7 @@
 <entry key="yukon.web.manageIndexes">Manage Indexes</entry>
 <entry key="yukon.web.metering">Metering</entry>
 <entry key="yukon.web.migrateEnrollmentInformation">Migrate Enrollment Information</entry>
+<entry key="yukon.web.genericUpload">Generic Upload</entry>
 
 <entry key="yukon.web.oddsForControl">Odds for Control</entry>
 <entry key="yukon.web.options">Options</entry>

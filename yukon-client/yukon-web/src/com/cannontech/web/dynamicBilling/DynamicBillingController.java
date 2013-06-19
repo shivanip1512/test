@@ -10,8 +10,7 @@ import java.util.Set;
 
 import javax.servlet.ServletException;
 
-import net.sf.jsonOLD.JSONArray;
-import net.sf.jsonOLD.JSONObject;
+import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -43,6 +42,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.JsonHelper;
 
 @Controller
 @RequestMapping(value = "/*")
@@ -52,17 +52,18 @@ public class DynamicBillingController {
     @Autowired private DynamicBillingFormatter dynamicFormatter;
     @Autowired private DynamicBillingFileDao dynamicBillingFileDao;
 	@Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private JsonHelper jsonHelper;
 	@Autowired private ScheduledFileExportService scheduledFileExportService;
 	
-    @RequestMapping
+    @RequestMapping(value = "_overview.html")
     public String overview(ModelMap model) {
         List<DynamicFormat> allRows = dynamicBillingFileDao.retrieveAll();
         model.addAttribute("allRows", allRows);
         
-        return "overview.jsp";
+        return "_overview.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping(value = "_create.html")
     public String create(ModelMap model, final YukonUserContext context) {
         List<String> availableFields = generateFieldList(BillableField.values());
         availableFields.add(0, "Plain Text");
@@ -92,8 +93,8 @@ public class DynamicBillingController {
         return "formatDetail.jsp";
     }
 
-    @RequestMapping
-    public String delete(int availableFormat, ModelMap model) {
+    @RequestMapping(value = "_delete.json")
+    public @ResponseBody JSONObject delete(int availableFormat, ModelMap model) {
         // delete the selected format
         dynamicBillingFileDao.delete(availableFormat);
         //delete jobs using this format
@@ -102,11 +103,11 @@ public class DynamicBillingController {
         // retrieve the new list of format names after deletion
         List<DynamicFormat> allRows = dynamicBillingFileDao.retrieveAll();
         model.addAttribute("allRows", allRows);
-        
-        return "redirect:overview.jsp";
+
+        return jsonHelper.succeed(); // "redirect:overview.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping(value = "_edit.html")
     public String edit(int availableFormat, ModelMap model, final YukonUserContext context) {
         // retrieve the format information
         DynamicFormat formatSelected = dynamicBillingFileDao.retrieve(availableFormat);
@@ -158,7 +159,7 @@ public class DynamicBillingController {
      * saved copied format will have a different fid
      * 
      */
-    @RequestMapping
+    @RequestMapping(value = "_copy.html")
     public String copy(int availableFormat, ModelMap model, final YukonUserContext context) {
         // retrieve the format information, 
         // assert that this is a copy into the name
@@ -205,8 +206,8 @@ public class DynamicBillingController {
         return "formatDetail.jsp";
     }
     
-    @RequestMapping
-    public String save(int formatId, String formatName, String footer, String header, String delimiter, String fieldArray, ModelMap model) {
+    @RequestMapping(value = "_save.json")
+    public @ResponseBody JSONObject save(int formatId, String formatName, String footer, String header, String delimiter, String fieldArray, ModelMap model) {
         // retrieve all information from the page and save it to db
         DynamicFormat savedFormat = parseIntoDynamicFormat(formatId, formatName, footer, header, delimiter, fieldArray);
         dynamicBillingFileDao.save(savedFormat);
@@ -216,7 +217,7 @@ public class DynamicBillingController {
 
         model.addAttribute("allRows", allRows);
 
-        return "redirect:overview.jsp";
+        return jsonHelper.succeed(); // "redirect:overview.jsp";
     }
 
     /**
@@ -339,7 +340,7 @@ public class DynamicBillingController {
         
         // selectedFields is an JSON String representation containing the fields
         // that customer chooses
-        JSONArray myJSONArray = new JSONArray(fieldArray);
+        net.sf.jsonOLD.JSONArray myJSONArray = new net.sf.jsonOLD.JSONArray(fieldArray);
         
         // for loop for temporarily saving the selected fields, as well as the
         // formats associated(date, value)
@@ -348,9 +349,9 @@ public class DynamicBillingController {
             field.setFormat("");
             field.setFormatId(format.getFormatId());
             field.setOrder(i);
-            
-            JSONObject object = myJSONArray.getJSONObject(i);
-            
+
+            net.sf.jsonOLD.JSONObject object = myJSONArray.getJSONObject(i);
+
             field.setName(object.getString("field"));
             field.setFormat(object.getString("format"));
             

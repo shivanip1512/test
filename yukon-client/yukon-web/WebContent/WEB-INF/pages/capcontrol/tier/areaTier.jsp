@@ -11,14 +11,19 @@
 <script type="text/javascript">
 jQuery(function() {
     jQuery(document).tooltip({
-        items: "a.area_name",
+        items: "*",
         content: function() {
             var element = jQuery(this);
-            var tip = element.prev('.area_stats');
-            return tip.html();
+            
+            if ( element.closest('.area_name').length ) {
+                var tip = element.prev('.area_stats');
+                return tip.html();
+            }
+            else {
+                var tip = element.attr('title');
+                return tip;
+            }
         },
-        tooltipClass: "tooltip",
-        position: { my: "left top+15", at: "left bottom", collision: "flipfit" }
     });
 });
 </script>
@@ -32,24 +37,17 @@ jQuery(function() {
 	<c:if test="${!isSpecialArea}">
         <cti:checkRolesAndProperties value="SYSTEM_WIDE_CONTROLS">
 			<cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                <div class="fr">
-                    <tags:boxContainer2 nameKey="systemActions" hideEnabled="false" styleClass="systemCommands padBottom">
-                        <div id="systemCommandLink">
-                            <tags:dynamicChoose updaterString="CAPCONTROL/SYSTEM_ENABLE_COMMAND" suffix="">
-                                <tags:dynamicChooseOption optionId="enabled">
-                                    <cti:button nameKey="disableSystem" renderMode="labeledImage" onclick="doSystemCommand(${systemStatusCommandId})" id="systemOn"/>
-                                </tags:dynamicChooseOption>
-                                <tags:dynamicChooseOption optionId="disabled">
-                                    <cti:button nameKey="enableSystem" renderMode="labeledImage" onclick="doSystemCommand(${systemStatusCommandId})" id="systemOff"/>
-                                </tags:dynamicChooseOption>
-                            </tags:dynamicChoose>
-                        </div>
-        				<div>
-                            <cti:button nameKey="resetOpCount" renderMode="labeledImage" onclick="doSystemCommand(${resetOpCountCommandId})" id="systemResetOpCountsLink"/>
-        				</div>
-                    </tags:boxContainer2>
+                <div class="fr clearfix stacked">
+                    <tags:dynamicChoose updaterString="CAPCONTROL/SYSTEM_ENABLE_COMMAND" suffix="">
+                        <tags:dynamicChooseOption optionId="enabled">
+                            <cti:button nameKey="disableSystem" onclick="doSystemCommand(${systemStatusCommandId})" id="systemOn" icon="icon-delete" classes="left"/>
+                        </tags:dynamicChooseOption>
+                        <tags:dynamicChooseOption optionId="disabled">
+                            <cti:button nameKey="enableSystem" onclick="doSystemCommand(${systemStatusCommandId})" id="systemOff" icon="icon-accept" classes="left"/>
+                        </tags:dynamicChooseOption>
+                    </tags:dynamicChoose>
+                    <cti:button nameKey="resetOpCount" onclick="doSystemCommand(${resetOpCountCommandId})" id="systemResetOpCountsLink" icon="icon-arrow-undo" classes="right"/>
                 </div>
-				<br>
 			</cti:checkRolesAndProperties>
 		</cti:checkRolesAndProperties>
 	</c:if>
@@ -107,7 +105,7 @@ jQuery(function() {
                             <div id="allAreas${thisAreaId}" class="dn area_stats">
                                 <c:forEach var="station" items="${viewableArea.subStations}">
                                         <div class="detail fwb">${station.name}</div>
-                                        <ul class="detail">
+                                        <ul class="detail simple-list">
                                             <li class="fl" style="margin-left:10px;"><i:inline key=".feeders" arguments="${station.feederCount}"/></li>
                                             <li class="fl" style="margin-left:10px;"><i:inline key=".banks" arguments="${station.capBankCount}"/></li>
                                         </ul>
@@ -119,9 +117,9 @@ jQuery(function() {
 	        			</td>
                         
                         <td>
-                            <cti:img nameKey="${editKey}" href="${editUrl}" styleClass="tierIconLink"/>
+                            <cti:icon nameKey="${editKey}" href="${editUrl}" icon="icon-pencil"/>
 	                        <c:if test="${hasEditingRole}">
-                                <cti:img nameKey="remove" href="${deleteUrl}" styleClass="tierIconLink"/>
+                                <cti:icon nameKey="remove" href="${deleteUrl}" icon="icon-cross"/>
                             </c:if>
                         </td>
 	        			

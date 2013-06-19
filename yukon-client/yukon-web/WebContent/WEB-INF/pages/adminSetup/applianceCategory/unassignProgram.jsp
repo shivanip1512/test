@@ -13,18 +13,16 @@
 <cti:url var="submitUrl" value="unassignProgram">
     <cti:param name="ecId" value="${ecId}"/>
 </cti:url>
-<form id="inputForm" action="${submitUrl}"
-    onsubmit="return submitFormViaAjax('acDialog', 'inputForm')">
+<form id="unassignProgramForm_${assignedProgram.assignedProgramId}" action="${submitUrl}"
+    onsubmit="return submitFormViaAjax('acDialog', 'unassignProgramForm_${assignedProgram.assignedProgramId}')">
     <input type="hidden" name="applianceCategoryId" value="${applianceCategory.applianceCategoryId}"/>
     <input type="hidden" name="assignedProgramId" value="${assignedProgram.assignedProgramId}"/>
 
-    <p>
-        <cti:msg2 key="${confirmationQuestion}"/>
-    </p>
+    <p><cti:msg2 key="${confirmationQuestion}"/></p>
 
     <div class="actionArea">
-        <cti:button type="submit" nameKey="ok"/>
-        <cti:button nameKey="cancel" onclick="$('acDialog').hide()"/>
+        <cti:button type="submit" nameKey="ok" classes="primary action"/>
+        <cti:button nameKey="cancel" onclick="jQuery('#acDialog').dialog('close');"/>
     </div>
 </form>
 

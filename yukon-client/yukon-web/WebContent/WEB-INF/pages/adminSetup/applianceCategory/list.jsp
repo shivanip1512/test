@@ -50,7 +50,7 @@
         <cti:param name="ecId" value="${ecId}"/>
     </cti:url>
     <div class="actionArea">
-        <cti:button nameKey="create" href="${createUrl}"/>
+        <cti:button nameKey="create" icon="icon-plus-green" href="${createUrl}"/>
     </div>
 </tags:boxContainer2>
 

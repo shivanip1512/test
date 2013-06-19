@@ -15,15 +15,11 @@
  *          * closing the dialog
  */
 
-if(typeof(Yukon) === 'undefined'){
-    Yukon = {};
-}
+if (typeof(Yukon) === 'undefined') Yukon = {};
+if (typeof(Yukon.Dialog) === 'undefined') Yukon.Dialog = {};
 
-if(typeof(Yukon.Dialog) === 'undefined'){
-    Yukon.Dialog = {};
-}
-
-if(typeof(Yukon.Dialog.ConfirmationManager) === 'undefined'){
+if (typeof(Yukon.Dialog.ConfirmationManager) === 'undefined') {
+    
     Yukon.Dialog.ConfirmationManager = {
             _initialized: false,
             _dialogs: [],
@@ -45,7 +41,7 @@ if(typeof(Yukon.Dialog.ConfirmationManager) === 'undefined'){
              *      strings.ok:string       - ok button string
              *      strings.cancel:string   - cancel button string
              */
-            add: function(args){
+            add: function(args) {
                 //initialize the dialog if needed
                 Yukon.Dialog.ConfirmationManager._init();
                 
@@ -62,7 +58,7 @@ if(typeof(Yukon.Dialog.ConfirmationManager) === 'undefined'){
                 
                 jQuery.extend(defaults, args);
                 
-                if(defaults.on){
+                if (defaults.on) {
                     //store the data on the element
                     var element = jQuery(defaults.on);
                     element.data("args", defaults);

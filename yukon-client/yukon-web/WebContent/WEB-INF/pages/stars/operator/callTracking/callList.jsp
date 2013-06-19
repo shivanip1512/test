@@ -62,7 +62,7 @@
     						<form id="deleteCallForm" action="/stars/operator/callTracking/deleteCall" method="post">
     							<input type="hidden" name="accountId" value="${accountId}">
     							<input type="hidden" name="deleteCallId" value="${callReportWrapper.callReport.callId}">
-                                <cti:button nameKey="remove" type="submit" renderMode="image"/>
+                                <cti:button nameKey="remove" type="submit" renderMode="image" icon="icon-cross"/>
     						</form>
     					</td>
     				</cti:displayForPageEditModes>
@@ -77,7 +77,7 @@
         <div class="actionArea">
             <form id="createCallForm" action="/stars/operator/callTracking/create" method="get">
                 <input type="hidden" name="accountId" value="${accountId}">
-                <cti:button nameKey="create" type="submit"/>
+                <cti:button nameKey="create" icon="icon-plus-green" type="submit"/>
             </form>
         </div>
     </cti:displayForPageEditModes>

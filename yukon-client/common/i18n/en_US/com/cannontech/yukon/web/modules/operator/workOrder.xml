@@ -38,7 +38,6 @@
     <entry key="yukon.web.modules.operator.workOrder.CREATE.pageName">Create Work Order</entry> 
 
     <entry key="yukon.web.modules.operator.workOrder.pdfExport.label">Printable Work Order</entry>
-    <entry key="yukon.web.modules.operator.workOrder.pdfExport.imageUrl">/WebConfig/yukon/Icons/pdf.gif</entry>
     <entry key="yukon.web.modules.operator.workOrder.pdfExport.hoverText">Click to open a printable pdf.</entry>
 
     <entry key="yukon.web.modules.operator.workOrder.workOrderContainer.title">Work Order</entry>

@@ -8,15 +8,11 @@
 
     <cti:includeCss link="/WebConfig/yukon/styles/lib/dynatree/deviceGroup.css"/>
 
-	<div style="float: right;">
-		<amr:searchResultsLink></amr:searchResultsLink>
-	</div>
-
 	<ct:widgetContainer deviceId="${deviceId}" identify="false">
 
-		<table class="widgetColumns">
-			<tr>
-				<td class="widgetColumnCell first" valign="top">
+		<div class="column_12_12 clear">
+            <div class="one column">
+				
 				    <ct:widget bean="meterInformationWidget" />
 
                     <c:choose>
@@ -89,12 +85,12 @@
                        
 						<!-- Actions: Manual Commander -->
 						<cti:checkRolesAndProperties value="ENABLE_WEB_COMMANDER">
-                        	<c:if test="${porterCommandRequestsSupported}">
+                        	
 								<cti:url var="commanderUrl" value="/amr/manualCommand/home">
         							<cti:param name="deviceId" value="${deviceId}" />
         						</cti:url>
         						<a href="${commanderUrl}"><i:inline key=".manualCommander"/></a><br/>
-        					</c:if>
+        				
         				</cti:checkRolesAndProperties>
 	                        
                         <!-- Actions: Locate Route -->
@@ -117,8 +113,9 @@
 	                    
 					</ct:boxContainer2>
 	
-				</td>
-				<td class="widgetColumnCell last" valign="top">
+            </div>
+            
+            <div class="column two nogutter">
 	
 					<ct:widget bean="csrTrendWidget" tabularDataViewer="archivedDataReport" />
 					
@@ -149,10 +146,15 @@
 					<c:if test="${configSupported}">
 	                    <ct:widget bean="configWidget" />
 	                </c:if>
-				</td>
-			</tr>
-		</table>
+	        </div>
+	    </div>
 
 	</ct:widgetContainer>
-
+<c:if test="${searchResults != null}">
+<script type="text/javascript">
+  jQuery('#b-search-results').attr("data-href", "${searchResults}");
+  jQuery('#b-search-results').attr("title", "<cti:msg2 key='yukon.web.backToSearchResults'/>");
+  jQuery('#b-search-results').show();
+</script>
+</c:if>
 </cti:standardPage>

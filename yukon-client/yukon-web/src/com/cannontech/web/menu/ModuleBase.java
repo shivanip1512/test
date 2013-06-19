@@ -17,6 +17,7 @@ import com.google.common.collect.Maps;
  * to content they have permission to see.
  */
 public class ModuleBase {
+	
     private String moduleName;
     private SearchProducer searchProducer;
     private MenuBase portalLinks;
@@ -99,4 +100,5 @@ public class ModuleBase {
     public void addScriptFiles(String scriptFile) {
         scriptFiles.add(scriptFile);
     }
+    
 }

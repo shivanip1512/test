@@ -111,6 +111,10 @@ public class EventLogFactoryBeanTest {
             public RowMapperWithBaseQuery<EventLog> getEventLogRowMapper() {
                 return null;
             }
+            @Override
+            public SearchResult<EventLog> findEventsByStringAndPaginate(String searchString, Integer firstRowIndex, Integer pageRowCount) {
+                return null;
+            }
         };
         
         eventLogFactoryBean.setEventLogDao(eventLogDaoMock);
@@ -208,6 +212,10 @@ public class EventLogFactoryBeanTest {
             }
             @Override
             public RowMapperWithBaseQuery<EventLog> getEventLogRowMapper() {
+                return null;
+            }
+            @Override
+            public SearchResult<EventLog> findEventsByStringAndPaginate(String searchString, Integer firstRowIndex, Integer pageRowCount) {
                 return null;
             }
         };

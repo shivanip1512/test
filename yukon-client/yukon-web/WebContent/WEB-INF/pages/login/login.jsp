@@ -1,155 +1,118 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-<%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
     <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
-        <title><cti:msg key="yukon.web.login.pageTitle"/></title>
-
-        <link rel="stylesheet" type="text/css" href="WebConfig/yukon/styles/reset.css">
-        <link rel="stylesheet" type="text/css" href="WebConfig/yukon/styles/yukon.css">
-        <link rel="stylesheet" type="text/css" href="WebConfig/yukon/styles/shared/loginStyles.css">
+        <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+        <title><cti:msg2 key="yukon.web.login.pageTitle"/></title>
+        
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/reset.css"/>">
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/layout.css"/>">
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/yukon.css"/>">
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/functional-overrides.css"/>">
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/buttons/css/buttons.css"/>" >
             
-        <cti:css key="yukon.web.login.loginStyles"/>
+        <cti:includeScript link="JQUERY" force="true"/>
+        <cti:includeScript link="JQUERY_PLACEHOLDER" force="true"/>
+        <script type="text/javascript">
+        jQuery(function(){
+            jQuery.placeholder();
+        });
+        </script>
     </head>
 
-    <body class="blank_module" onLoad="document.forms.form1.USERNAME.focus()">
-
-        <div id="Header">
-            <div class="stdhdr_left">
-                <div id="TopLeftLogo"><cti:logo key="yukon.web.layout.standard.upperleftlogo"></cti:logo></div>
-                <div id="TopLeftLogo2"><cti:logo key="yukon.web.layout.standard.uppermiddlelogo"></cti:logo></div>
-            </div>
-            <div class="stdhdr_right">
-                <div id="TopRightLogo"><cti:logo key="yukon.web.layout.standard.upperrightlogo"></cti:logo></div>
-            </div>
-            <div class="stdhdr_clear"></div>
-        </div>
-        <div id='Menu'>
-
-            <div id='topMenu' class="primary_background">
-                <div>
-                    <div class='stdhdr_leftSide'></div>
-                    <div class='stdhdr_rightSide'></div>
-                    <div style='clear: both'></div>
+    <body onLoad="document.forms.form1.USERNAME.focus()">
+        <div id="page">
+            <header class="yukon-header">
+                <div class="outer" role="banner">
+                    <div class="inner"></div>
                 </div>
-            </div>
-            <div id='bottomBar'>
-                <div>
-                    <div class='stdhdr_leftSide'></div>
-                    <div style='clear: both'></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="loginMain">
-
-            <div class="loginTopSection">
-                <div class="formTopLogo">
-                    <cti:logo key="yukon.web.login.formTopLogo"></cti:logo>
-                </div>
-                <div class="loginTitleText">
-                    <cti:msg key="yukon.web.login.titleText"></cti:msg>
-                </div>
-            </div>
-
-            <div class="loginMainSection">
-            
-                <cti:msg var="loginTitle" key="yukon.web.login.login"></cti:msg>
-                <ct:boxContainer title="${loginTitle}" hideEnabled="false">
-                    <cti:flashScopeMessages/>
-                    
-                    <c:if test="${!empty param.failed}">
-                        <div class="loginErrorMsg">
-                           <cti:msg key="yukon.web.login.invalidLogin"></cti:msg>
-                        </div>
-                    </c:if>
-
-                    <c:if test="${!empty param.retrySeconds}">
-                        <div class="loginErrorMsg">
-                           <cti:msg key="yukon.web.login.retry" argument="${param.retrySeconds}"></cti:msg>
-                        </div>
-                    </c:if>
-                    
-                    <c:if test="${!empty param.invalid}">
-                        <div class="loginErrorMsg">
-                           <cti:msg key="yukon.web.login.invalidUrlAccess"></cti:msg>
-                        </div>
-                    </c:if>
-
-                    <div class="loginIntroText">
-                        <cti:msg key="yukon.web.login.enterLogin"></cti:msg>
+                <div class="nav">
+                    <div class="navOut">
+                        <nav role="navigation">
+                            <ul>
+                                <li class="logo" style="background: transparent;">
+                                    <a href="/operator/Operations.jsp">
+                                        <img src="/WebConfig/yukon/layout/YukonBW2.png" alt="Yukon Home">
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
-
-                    <form name="form1" method="post" action="<cti:url value="/servlet/LoginController"/>">
-                        <table class="loginTable">
-                            <tr>
-                                <td align="right">
-			                        <cti:msg key="yukon.web.login.username"></cti:msg>
-                                </td>
-                                <td align="left" valign="bottom">
-                                    <input type="text" autocomplete="off" id="USERNAME" name="USERNAME" class="loginTextInput">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td align="right">
-			                        <cti:msg key="yukon.web.login.password"></cti:msg>
-                                </td>
-                                <td align="left" valign="bottom">
-                                    <input type="password" autocomplete="off" name="PASSWORD">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" align="center">
-                                    <input type="checkbox" name="rememberme">
-			                        <cti:msg key="yukon.web.login.rememberMe"></cti:msg>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" align="center">
-			                        <cti:msg var="submitText" key="yukon.web.login.submit"></cti:msg>
-                                    <input type="submit" name="login" value="${submitText}">
-                                </td>
-                            </tr>
-                        </table>
-                        <cti:checkGlobalSetting setting="ENABLE_PASSWORD_RECOVERY">
-                            <div class="loginHelp">
-                                <cti:msg var="forgotPasswordText" key="yukon.web.login.forgotPassword"/>
-                                <c:choose>
-                                    <c:when test="${useOldForgottenPasswordPage}">
-                                        <a href="<cti:url value="/login/forgotPassword"/>">
-            		                        ${forgotPasswordText}
-                                        </a>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <a href="<cti:url value="/login/forgottenPassword"/>">
-                                            ${forgotPasswordText}
-                                        </a>
-                                    </c:otherwise>
-                                </c:choose>
-                            </div>
-                        </cti:checkGlobalSetting>
-                        <input type="hidden" name="REDIRECTED_FROM" value="<spring:escapeBody htmlEscape="true">${param.REDIRECTED_FROM}</spring:escapeBody>">
-                        <input type="hidden" name="ACTION" value="LOGIN">
-                    </form>
-
-                </ct:boxContainer>
-            </div>
-            <div class="loginTopSection">
-                <div class="formBottomLogo">
-                    <cti:logo key="yukon.web.login.formBottomLogo"></cti:logo>
                 </div>
-            </div>
-            
-            
+            </header>
+            <section id="content" style="min-height: 420px;">
+                <div class="login-content">
+                    <div class="column_12_12 clear">
+                        <div class="one column">
+                            <div class="faded-round-box" style="visibility: hidden;"></div>
+                            <div><h1 class="tagline">Optimizing Energy Delivery</h1></div>
+                        </div>
+                        <div class="two column nogutter">
+                            <div class="faded-round-box login-form">
+                                <cti:flashScopeMessages/>
+                                <c:if test="${!empty param.failed}">
+                                    <div class="loginErrorMsg">
+                                        <cti:msg2 key="yukon.web.login.invalidLogin"/>
+                                    </div>
+                                </c:if>
+                                <c:if test="${!empty param.retrySeconds}">
+                                    <div class="loginErrorMsg">
+                                        <cti:msg2 key="yukon.web.login.retry" argument="${param.retrySeconds}"/>
+                                    </div>
+                                </c:if>
+                                <c:if test="${!empty param.invalid}">
+                                    <div class="loginErrorMsg">
+                                        <cti:msg2 key="yukon.web.login.invalidUrlAccess"/>
+                                    </div>
+                                </c:if>
+                                <form name="form1" method="post" action="<cti:url value="/servlet/LoginController"/>">
+                                    <div class="clearfix stacked"><input type="text" id="login_email" name="USERNAME" class="fl" placeholder="<cti:msg2 key="yukon.web.login.username"/>"></div>
+                                    <div class="clearfix">
+                                        <input type="password" id="login_password" name="PASSWORD" autocomplete="off" placeholder="<cti:msg2 key="yukon.web.login.password"/>" class="fl">
+                                        <a href="/login/forgottenPassword">
+                                            <button id="forgot-btn" class="fl"><span class="label"><cti:msg2 key="yukon.web.login.forgot"/></span></button>
+                                        </a>
+                                    </div>
+                                    <div class="actionArea">
+                                        <label class="fl remember-me"><input type="checkbox" id="remember_me"><cti:msg2 key="yukon.web.login.rememberMe"/></label>
+                                        <button type="submit" name="login" class="action primary">
+                                            <span class="label"><cti:msg2 key="yukon.web.login.login"/></span>
+                                        </button>
+                                        <input type="hidden" name="REDIRECTED_FROM" value="${fn:escapeXml(param.REDIRECTED_FROM)}">
+                                        <input type="hidden" name="ACTION" value="LOGIN">
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+			<footer id="yukon-footer" class="yukon-footer">
+				<div class="utility">
+					<div class="footerNav">
+						<nav>
+							<ul>
+								<li><a href="/billing">Help</a></li>
+								<li><a href="/billing">Contact Us</a></li>
+							</ul>
+						</nav>
+					</div>
+				</div>
+				<div class="footer">
+					<div class="footerNav clearfix">
+						<div class="wrapper">
+							<div class="legal">
+								<p class="copyright">
+									<cti:msg2 key="yukon.web.layout.standard.copyrightFull" />
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</footer>
         </div>
-
-        <div class="loginCopyright">
-            <cti:msg key="yukon.web.layout.standard.copyrightFull"></cti:msg>
-        </div>
-
     </body>
 </html>

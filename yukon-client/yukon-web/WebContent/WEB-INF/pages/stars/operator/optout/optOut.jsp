@@ -8,25 +8,25 @@
 <h3><cti:msg key="yukon.dr.operator.optout.header"/></h3>
 
 <c:if test="${!empty currentOptOutList && allOptedOut}">
-	<cti:msg key="yukon.dr.operator.optout.allOptedOut"/>
+    <cti:msg key="yukon.dr.operator.optout.allOptedOut"/>
 </c:if>
 <c:if test="${!empty currentOptOutList && !optOutsAvailable}">
     <cti:msg key="yukon.dr.operator.optout.noOptOutsAvailable"/>
 </c:if>
 
 <c:if test="${!allOptedOut}">
-	<cti:msg key="yukon.dr.operator.optout.description"/><br><br>
+    <cti:msg key="yukon.dr.operator.optout.description"/><br><br>
 
-	<form action="/stars/operator/optout/optout2" method="POST">
-	    <table>
-	        <tr>
-	            <td align="right">
-	                <cti:msg key="yukon.dr.operator.optout.startDate"/>
-	            </td>
+    <form action="/stars/operator/optout/optout2" method="POST">
+        <table>
+            <tr>
+                <td align="right">
+                    <cti:msg key="yukon.dr.operator.optout.startDate"/>
+                </td>
 
-	            <cti:formatDate  value="${currentDate}" type="DATE" var="formattedDate"/>
+                <cti:formatDate  value="${currentDate}" type="DATE" var="formattedDate"/>
 
-	            <cti:getProperty var="optOutTodayOnly" property="ConsumerInfoRole.OPT_OUT_TODAY_ONLY" />
+                <cti:getProperty var="optOutTodayOnly" property="ConsumerInfoRole.OPT_OUT_TODAY_ONLY" />
 
                 <td align="left">
                     <c:choose>
@@ -35,40 +35,40 @@
                             <spring:escapeBody htmlEscape="true">${formattedDate}</spring:escapeBody>
                         </c:when>
                         <c:otherwise>
-                        	<dt:date name="startDate" value="${currentDate}" />
+                            <dt:date name="startDate" value="${currentDate}" />
                         </c:otherwise>
                     </c:choose>
                 </td>
-	        </tr>
+            </tr>
 
-	        <tr>
-	            <td align="right">
-	                <cti:msg key="yukon.dr.operator.optout.duration"/>
-	            </td>
+            <tr>
+                <td align="right">
+                    <cti:msg key="yukon.dr.operator.optout.duration"/>
+                </td>
 
-	            <td align="left">
-	                <select name="durationInDays">
-	                    
-	                    <c:forEach var="optOutPeriod" items="${optOutPeriodList}">
-	                    
-	                       <c:set var="key" value="${(optOutPeriod == 1) ? 'yukon.dr.operator.optout.day' : 'yukon.dr.operator.optout.days' }"/>
-	                    
-	                       <option value="${optOutPeriod}"><spring:escapeBody htmlEscape="true">${optOutPeriod}</spring:escapeBody><cti:msg key="${key}"/></option>
-	                    
-	                    </c:forEach>
-	                    
-	                </select>
-	            </td>
-	        </tr>
+                <td align="left">
+                    <select name="durationInDays">
+                        
+                        <c:forEach var="optOutPeriod" items="${optOutPeriodList}">
+                        
+                           <c:set var="key" value="${(optOutPeriod == 1) ? 'yukon.dr.operator.optout.day' : 'yukon.dr.operator.optout.days' }"/>
+                        
+                           <option value="${optOutPeriod}"><spring:escapeBody htmlEscape="true">${optOutPeriod}</spring:escapeBody><cti:msg key="${key}"/></option>
+                        
+                        </c:forEach>
+                        
+                    </select>
+                </td>
+            </tr>
 
-	        <tr>
-	            <td align="center" colspan="2">
-	                <br>
-	                <input type="submit" value="<cti:msg key='yukon.dr.operator.optout.apply'/>" class="formSubmit">
-	            </td>
-	        </tr>
-	    </table>
-	</form>
+            <tr>
+                <td align="center" colspan="2">
+                    <br>
+                    <input type="submit" value="<cti:msg key='yukon.dr.operator.optout.apply'/>" class="formSubmit">
+                </td>
+            </tr>
+        </table>
+    </form>
 </c:if>
 
 
@@ -149,13 +149,13 @@
                 <td><spring:escapeBody htmlEscape="true">${inventory.displayName}</spring:escapeBody></td>
                 <td>${optOutCounts[inventory.inventoryId].usedOptOuts}</td>
                 <c:if test="${!noOptOutLimits}">
-    	            <td>
-    	                <form action="/stars/operator/optOut/allowAnother" method="post">
-    	                    <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
-    	                    <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.allowAnother"/>" class="formSubmit">
-    	                </form>
-    	            </td>
-    	        </c:if>
+                    <td>
+                        <form action="/stars/operator/optOut/allowAnother" method="post">
+                            <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
+                            <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.allowAnother"/>" class="formSubmit">
+                        </form>
+                    </td>
+                </c:if>
                 <td>
                     <c:choose>
                         <c:when test="${noOptOutLimits}">
@@ -167,20 +167,20 @@
                     </c:choose>
                 </td>
                 <c:if test="${!noOptOutLimits}">
-    	            <td>
-    	               <c:choose>
-    	                   <c:when test="${optOutLimit <= optOutCounts[inventory.inventoryId].remainingOptOuts}">
-    	                       <cti:msg key="yukon.dr.operator.optout.atLimit"/>
-    	                   </c:when>
-    	                   <c:otherwise>
-    			                <form action="/stars/operator/optOut/resetToLimit" method="post">
-    			                    <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
-    			                    <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.clear"/>" class="formSubmit">
-    			                </form>
-    	                   </c:otherwise>
-    	               </c:choose>
-    	            </td>
-    	        </c:if>
+                    <td>
+                       <c:choose>
+                           <c:when test="${optOutLimit <= optOutCounts[inventory.inventoryId].remainingOptOuts}">
+                               <cti:msg key="yukon.dr.operator.optout.atLimit"/>
+                           </c:when>
+                           <c:otherwise>
+                                <form action="/stars/operator/optOut/resetToLimit" method="post">
+                                    <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
+                                    <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.clear"/>" class="formSubmit">
+                                </form>
+                           </c:otherwise>
+                       </c:choose>
+                    </td>
+                </c:if>
             </tr>
         </c:forEach>
     </tbody>

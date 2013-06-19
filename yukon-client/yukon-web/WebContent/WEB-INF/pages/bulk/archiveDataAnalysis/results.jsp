@@ -5,28 +5,16 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage module="amr" page="analysis.results">
+<cti:standardPage module="tools" page="bulk.analysis.results">
 
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        <%-- metering --%>
-        <cti:msg var="metersPageTitle" key="yukon.web.modules.amr.meteringStart.pageName" />
-        <cti:crumbLink url="/meter/start" title="${metersPageTitle}" />
-        <%-- ADA List --%>
-        <cti:msg var="adaListPageTitle" key="yukon.web.modules.amr.analysis.list.pageName" />
-        <cti:crumbLink url="/bulk/archiveDataAnalysis/list/view" title="${adaListPageTitle}" />
-        <%-- ADA Results --%>
-        <cti:crumbLink><i:inline key="yukon.web.modules.amr.analysis.results.pageName"/></cti:crumbLink>
-    </cti:breadCrumbs>
-    
     <div class="smallBoldLabel notesSection">
         <tags:selectedDevices id="deviceColletion" deviceCollection="${deviceCollection}" />
     </div>
     
-    <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
+    <div class="column_12_12">
     
         <%-- Analysis Info --%>
-        <cti:dataGridCell>
+        <div class="column one">
             <tags:formElementContainer nameKey="analysisInfo">
                 
                 <tags:nameValueContainer2>
@@ -57,10 +45,11 @@
                 </tags:nameValueContainer2>
                 
             </tags:formElementContainer>
-        </cti:dataGridCell>
+        </div>
         
         <%-- Actions --%>
-        <cti:dataGridCell>
+
+        <div class="column two nogutter">
             <tags:formElementContainer nameKey="actions">
                 
                 <ul class="buttonStack">
@@ -69,10 +58,10 @@
                         <c:url var="readUrl" value="/bulk/archiveDataAnalysis/read/readNow">
                             <c:param name="analysisId" value="${result.analysis.analysisId}"/>
                         </c:url>
-                        <li><cti:button nameKey="read" renderMode="labeledImage" href="${readUrl}"/></li>
+                        <li><cti:button nameKey="read" renderMode="labeledImage" href="${readUrl}" icon="icon-control-play-blue"/></li>
                         <%-- 
                         not enabled in 5.3.2 
-                        <li><cti:button nameKey="scheduleRead" renderMode="labeledImage"/></li> 
+                        <li><cti:button nameKey="scheduleRead" renderMode="labeledImage" icon="icon-calendar"/></li> 
                         --%>
                     </c:if>
                     
@@ -80,7 +69,7 @@
                     <c:url var="csvUrl" value="/bulk/archiveDataAnalysis/tabular/csv">
                         <c:param name="analysisId" value="${result.analysis.analysisId}"/>
                     </c:url>
-                    <li><cti:button nameKey="csv" renderMode="labeledImage" href="${csvUrl}"/></li>
+                    <li><cti:button nameKey="csv" renderMode="labeledImage" href="${csvUrl}" icon="icon-csv"/></li>
                     
                     <%-- TABULAR BUTTON --%>
                     <c:choose>
@@ -88,10 +77,10 @@
                             <c:url var="tabularUrl" value="/bulk/archiveDataAnalysis/tabular/view">
                                 <c:param name="analysisId" value="${result.analysis.analysisId}"/>
                             </c:url>
-                            <li><cti:button nameKey="viewTabular" renderMode="labeledImage" href="${tabularUrl}"/></li>
+                            <li><cti:button nameKey="viewTabular" renderMode="labeledImage" href="${tabularUrl}" icon="icon-application-view-columns"/></li>
                         </c:when>
                         <c:otherwise>
-                            <li><cti:button nameKey="viewTabularDisabled" renderMode="labeledImage" disabled="true"/></li>
+                            <li><cti:button nameKey="viewTabularDisabled" renderMode="labeledImage" disabled="true" icon="icon-application-view-columns"/></li>
                         </c:otherwise>
                     </c:choose>
                     
@@ -99,7 +88,7 @@
                     <c:url var="reanalyzeUrl" value="/bulk/archiveDataAnalysis/home/reanalyze">
                         <c:param name="oldAnalysisId" value="${result.analysis.analysisId}"/>
                     </c:url>
-                    <li><cti:button nameKey="reanalyze" renderMode="labeledImage" href="${reanalyzeUrl}"/></li>
+                    <li><cti:button nameKey="reanalyze" renderMode="labeledImage" href="${reanalyzeUrl}" icon="icon-arrow-rotate-clockwise"/></li>
                     
                     <%-- COLLECTION ACTIONS BUTTON --%>
                     <c:url var="collectionActionsUrl" value="/bulk/collectionActions">
@@ -107,15 +96,16 @@
                             <c:param name="${p.key}" value="${p.value}"/>
                         </c:forEach>
                     </c:url>
-                    <li><cti:button nameKey="collectionActions" renderMode="labeledImage" href="${collectionActionsUrl}"/></li>
+                    <li><cti:button nameKey="collectionActions" renderMode="labeledImage" href="${collectionActionsUrl}" icon="icon-wrench"/></li>
                 
                 </ul>
             </tags:formElementContainer>
-        </cti:dataGridCell>
+        </div>
     
-    </cti:dataGrid>
+    </div>
     
     <%-- Results Data --%>
+    <div class="clear">
     <tags:pagedBox2 nameKey="resultsTable" searchResult="${result.searchResult}" baseUrl="results" >
         
         <table class="compactResultsTable">
@@ -138,5 +128,6 @@
         </table>
         
     </tags:pagedBox2>
+    </div>
     
 </cti:standardPage>

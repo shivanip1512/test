@@ -32,11 +32,11 @@ var setMappedNameId = function() {
 		if (overwrite) {
 	
 			var url = '/multispeak/setup/lmMappings/addOrUpdateMapping';
-			var params = $H({
+			var params = {
 			    'strategyName': $('strategyName').value,
 			    'substationName': $('substationName').value,
 			    'mappedNameId': $('mappedNameId').value
-			});
+			};
 	    
 			new Ajax.Request(url, {
 				'parameters': params,
@@ -66,10 +66,10 @@ var setMappedNameId = function() {
 function getMappedName(callback) {
 
 	var url = '/multispeak/setup/lmMappings/findMapping';
-	var params = $H({
+	var params = {
 	    'strategyName': $('strategyName').value,
 	    'substationName': $('substationName').value
-	});
+	};
 	
 	 new Ajax.Request(url, {
 	   'parameters': params,
@@ -117,10 +117,10 @@ function reloadAllMappingsTable(col, isReorder) {
 
 	// call reload
 	var url = '/multispeak/setup/lmMappings/reloadAllMappingsTable';
-	var params = $H({
+	var params = {
 	    'col': currentOrderByColum,
 	    'ascending': currentAscendingOrder
-	});
+	};
 	
 	new Ajax.Updater('allMappingsTableDiv', url, {
 	   'parameters': params,
@@ -140,9 +140,9 @@ function removeLmMapping(mspLMInterfaceMappingId) {
 	}
 	
 	var url = '/multispeak/setup/lmMappings/removeMapping';
-	var params = $H({
+	var params = {
 	    'mspLMInterfaceMappingId': mspLMInterfaceMappingId
-	});
+	};
 	
 	 new Ajax.Request(url, {
 	   'parameters': params,

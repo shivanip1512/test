@@ -64,15 +64,6 @@ public class LeftSideMenuRenderer implements MenuRenderer {
     }
 
     @Override
-    public String renderMenu() {
-
-        MenuBase menuBase = this.moduleBase.getMenuBase();
-        Div menuDiv = this.buildMenu(menuBase);
-
-        return menuDiv.toString();
-    }
-
-    @Override
     public void renderMenu(Writer out) throws IOException {
 
         MenuBase menuBase = this.moduleBase.getMenuBase();

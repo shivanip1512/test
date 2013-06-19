@@ -7,6 +7,8 @@ import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONObject;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
@@ -30,7 +33,6 @@ import com.cannontech.dr.loadgroup.filter.LoadGroupsForMacroLoadGroupFilter;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -38,6 +40,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @Controller
 @CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
 public class LoadGroupController {
+    
     @Autowired private LoadGroupService loadGroupService;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
     @Autowired private ProgramService programService;
@@ -120,7 +123,7 @@ public class LoadGroupController {
     }
 
     @RequestMapping("/loadGroup/sendShed")
-    public String sendShed(HttpServletResponse resp, ModelMap modelMap, int loadGroupId,
+    public @ResponseBody JSONObject sendShed(HttpServletResponse resp, ModelMap modelMap, int loadGroupId,
             int durationInSeconds, YukonUserContext userContext,
             FlashScope flashScope) throws IOException {
 
@@ -138,8 +141,10 @@ public class LoadGroupController {
                                                              durationInSeconds);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.loadGroup.sendShedConfirm.shedSent"));
         
-        ServletUtils.closePopup(resp, "drDialog");
-        return null;
+        JSONObject json = new JSONObject();
+        json.put("action", "reload");
+        
+        return json;
     }
     
     @RequestMapping("/loadGroup/sendRestoreConfirm")
@@ -157,7 +162,7 @@ public class LoadGroupController {
     }
 
     @RequestMapping("/loadGroup/sendRestore")
-    public String sendRestore(HttpServletResponse resp, ModelMap modelMap, int loadGroupId, YukonUserContext userContext,
+    public @ResponseBody JSONObject sendRestore(HttpServletResponse resp, ModelMap modelMap, int loadGroupId, YukonUserContext userContext,
                               FlashScope flashScope) throws IOException {
 
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
@@ -172,8 +177,10 @@ public class LoadGroupController {
         demandResponseEventLogService.threeTierLoadGroupRestore(yukonUser, loadGroup.getName());
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.loadGroup.sendRestoreConfirm.restoreSent"));
         
-        ServletUtils.closePopup(resp, "drDialog");
-        return null;
+        JSONObject json = new JSONObject();
+        json.put("action", "reload");
+        
+        return json;
     }
 
     @RequestMapping("/loadGroup/sendEnableConfirm")
@@ -192,7 +199,7 @@ public class LoadGroupController {
     }
     
     @RequestMapping("/loadGroup/setEnabled")
-    public String setEnabled(HttpServletResponse resp, ModelMap modelMap, int loadGroupId,
+    public @ResponseBody JSONObject setEnabled(HttpServletResponse resp, ModelMap modelMap, int loadGroupId,
                              boolean isEnabled, YukonUserContext userContext,
                              FlashScope flashScope) throws IOException {
 
@@ -213,8 +220,10 @@ public class LoadGroupController {
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.loadGroup.sendEnableConfirm.disabled"));
         }
 
-        ServletUtils.closePopup(resp, "drDialog");
-        return null;
+        JSONObject json = new JSONObject();
+        json.put("action", "reload");
+        
+        return json;
     }
 
     @InitBinder

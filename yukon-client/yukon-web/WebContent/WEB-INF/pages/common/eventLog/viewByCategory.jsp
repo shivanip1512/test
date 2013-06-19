@@ -2,6 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
@@ -38,26 +39,18 @@
                 
             </tags:nameValueContainer2>
             <br>
-            <cti:msg2 var="filterButtonLabel" key=".filterButton"/>
-            <input value="${filterButtonLabel}" type="submit">
+            <button type="submit"><i class="icon icon-filter"></i><span class="label"><i:inline key=".filterButton"/></span></button>
+            <c:choose>
+	            <c:when test="${maxCsvRows > searchResult.hitCount}">
+	                <cti:button nameKey="csvExport" href="${csvLink}" icon="icon-page-excel"/>
+	            </c:when>
+	            <c:otherwise>
+	                <cti:button nameKey="csvExport" id="csvExportButton" icon="icon-page-excel"/>
+	                <tags:confirmDialog nameKey=".confirmExport" on="#csvExportButton" href="${csvLink}" styleClass="f_closePopupOnSubmit" submitName="export"/>
+	            </c:otherwise>
+	        </c:choose>
         </form:form>
     </tags:sectionContainer>
-
-    <%-- GENERATE REPORTS --%>
-    <c:choose>
-        <c:when test="${maxCsvRows > searchResult.hitCount}">
-            <div style="text-align: right;">
-                <cti:labeledImg nameKey="csvExport" href="${csvLink}"/>
-            </div>
-        </c:when>
-        <c:otherwise>
-            <div style="text-align: right;">
-                <cti:labeledImg nameKey="csvExport" id="csvExportButton"/>
-            </div>
-            <tags:confirmDialog nameKey=".confirmExport" on="#csvExportButton" href="${csvLink}" styleClass="f_closePopupOnSubmit" submitName="export"/>
-        </c:otherwise>
-    </c:choose>
-
 
     <%-- Event Log Results --%>
     <cti:msg var="eventsTitle" key="yukon.common.events.title"/>

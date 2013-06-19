@@ -10,16 +10,17 @@
        <list>
             <value>com/cannontech/amr/amrContext.xml</value>
             <value>com/cannontech/jobs/jobContext.xml</value>
-            <value>com/cannontech/web/devDatabaseContext.xml</value>
-            <value>com/cannontech/web/serverContext.xml</value>
             <value>com/cannontech/common/alert/alertContext.xml</value>
 			<value>com/cannontech/common/search/searchContext.xml</value>
 			<value>com/cannontech/multispeak/client/applicationContext.xml</value>
 			<value>com/cannontech/billing/billingContext.xml</value>
 			<value>com/cannontech/cbc/cbcContext.xml</value>
-            <value>com/cannontech/report/reportContext.xml</value>
-            <value>com/cannontech/web/scheduledFileExport/scheduledFileExport.xml</value>
             <value>com/cannontech/remoteServicesContext.xml</value>
+            <value>com/cannontech/report/reportContext.xml</value>
+            <value>com/cannontech/web/devDatabaseContext.xml</value>
+            <value>com/cannontech/web/scheduledFileExport/scheduledFileExport.xml</value>
+            <value>com/cannontech/web/serverContext.xml</value>
+            <value>com/cannontech/web/commonContext.xml</value>
        </list>
      </constructor-arg>
      <constructor-arg>

@@ -2,29 +2,28 @@
 // becuase updater are contained in tags used throughout page instead of usual place at
 // bottom of page, this occurs sometimes =\
 
+
 function updateProgressBar(pbarId, totalCount, completionCallback) {
-  //assumes data is of type Hash
     return function(data) {
         var progressContainer = getProgressBarContainer(pbarId);
         if (progressContainer == null) {
             return;
         }
 
-        var completedCount = data.get('completedCount');
+        var completedCount = data.completedCount;
         setupProgressBar(pbarId, completedCount, totalCount, completionCallback);
     };
 }
 
 function updateProgressBarWithDynamicTotal(pbarId, completionCallback) {
-  //assumes data is of type Hash
     return function(data) {
         var progressContainer = getProgressBarContainer(pbarId);
         if (progressContainer == null) {
             return;
         }
 
-        var completedCount = data.get('completedCount');
-        var totalCount = data.get('totalCount');
+        var completedCount = data.completedCount;
+        var totalCount = data.totalCount;
         updateTotalCount(pbarId, totalCount);
         setupProgressBar(pbarId, completedCount, totalCount, completionCallback);
     };
@@ -50,20 +49,18 @@ function setupProgressBar(pbarId, completedCount, totalCount, completionCallback
 }
 
 function updateSuccessFailureProgressBar(pbarId, totalCount, completionCallback) {
-    // assumes data is of type Hash
     return function(data) {
-        var successCompletedCount = data.get('successCompletedCount');
-        var failureCompletedCount = data.get('failureCompletedCount');
+        var successCompletedCount = data.successCompletedCount;
+        var failureCompletedCount = data.failureCompletedCount;
         setupSuccessFailureProgressBar(pbarId, totalCount, successCompletedCount, failureCompletedCount, completionCallback);
     };
 }
 
 function updateSuccessFailureProgressBarWithDynamicTotal(pbarId, completionCallback) {
-    // assumes data is of type Hash
     return function(data) {
-        var successCompletedCount = data.get('successCompletedCount');
-        var failureCompletedCount = data.get('failureCompletedCount');
-        var totalCount = data.get('totalCount');
+        var successCompletedCount = data.successCompletedCount;
+        var failureCompletedCount = data.failureCompletedCount;
+        var totalCount = data.totalCount;
         updateTotalCount(pbarId, totalCount);
         setupSuccessFailureProgressBar(pbarId, totalCount, successCompletedCount, failureCompletedCount, completionCallback);
     };
@@ -122,9 +119,8 @@ function getProgressBarContainer(pbarId) {
 }
 
 function abortProgressBar(pbarId) {
-  //assumes data is of type Hash
     return function(data) {
-        if (data.get('isAborted') == 'true') {
+        if (data.isAborted === 'true') {
             var progressContainer = getProgressBarContainer(pbarId);
 
             // Check if we are a normal progress bar or success / fail progress bar
@@ -139,17 +135,15 @@ function abortProgressBar(pbarId) {
 }
 
 function updateProgressStatus(pDescId) {
-  //assumes data is of type Hash
     return function(data) {
-    	var statusText = data.get('statusText');
-    	$('progressStatus_' + pDescId).innerHTML = statusText;
+        var statusText = data.statusText;
+        $('progressStatus_' + pDescId).innerHTML = statusText;
     };
 }
 
 function toggleElementsWhenTrue(elementsToToggle, show) {
-  //assumes data is of type Hash
     return function(data) {
-        var value = data.get('value');
+        var value = data.value;
         
         if (value == 'true') {
             

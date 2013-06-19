@@ -97,9 +97,7 @@
 	</script>
 
 	<cti:url var="baseUrl" value="/capcontrol/ivvc/zone/voltageDeltas" />
-	<tags:pagedBox2 nameKey="deltas" searchResult="${searchResults}"
-		baseUrl="${baseUrl}" showAllUrl="${baseUrl}">
-		<tags:alternateRowReset />
+	<tags:pagedBox2 nameKey="deltas" searchResult="${searchResults}" baseUrl="${baseUrl}" showAllUrl="${baseUrl}">
 
 		<form:form id="deltaForm" action="/capcontrol/ivvc/zone/deltaUpdate" method="POST" commandName="zoneVoltageDeltas">
 			<input type="hidden" name="zoneId" id="zoneId" value="${zoneId}">
@@ -124,7 +122,7 @@
 
 				<c:forEach var="pointDelta" items="${searchResults.resultList}" varStatus="status">
 
-					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
+					<tr>
 						<td class="dn bankAndPointIds">
 							<input class="pointDeltaBankId" type="hidden" value="${pointDelta.bankId}"/>
 							<input class="pointDeltaPointId" type="hidden" value="${pointDelta.pointId}"/>
@@ -187,7 +185,7 @@
 				</c:forEach>
 			</table>
 			<div id="deltaFormButtons" class="actionArea dn">
-				<cti:button id="deltaSubmitBtn" nameKey="update" type="submit"/>
+				<cti:button id="deltaSubmitBtn" nameKey="update" type="submit" classes="primary action"/>
 			    <cti:button nameKey="cancel" type="reset" id="deltaReset"/>
 			</div>
 		</form:form>

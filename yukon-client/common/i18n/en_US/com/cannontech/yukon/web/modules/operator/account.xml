@@ -136,9 +136,9 @@
 	<entry key="yukon.web.modules.operator.accountImport.noteLabel">Note:</entry>
 	<entry key="yukon.web.modules.operator.accountImport.noteText">Please enter the import file(s). Leave the field empty if you do not have the corresponding file.</entry>
 	<entry key="yukon.web.modules.operator.accountImport.instructionsLabel">Instructions:</entry>
-    <entry key="yukon.web.modules.operator.accountImport.instructionsText"><![CDATA[ 
-        Files must contain a header row with valid columns as listed in the tables below.<br><br>Accounts can be imported using the file structure described below.<br><br>Hardware can be imported using the hardware file structure described below.
-    ]]></entry>
+    <entry key="yukon.web.modules.operator.accountImport.instructionsText1">Files must contain a header row with valid columns as listed in the tables below.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.instructionsText2">Accounts can be imported using the file structure described below.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.instructionsText3">Hardware can be imported using the hardware file structure described below.</entry>
 	<entry key="yukon.web.modules.operator.accountImport.accountImportFile">Customer File</entry>
 	<entry key="yukon.web.modules.operator.accountImport.hardwareImportFile">Hardware File</entry>
 	<entry key="yukon.web.modules.operator.accountImport.email">Email (optional)</entry>

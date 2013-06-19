@@ -149,8 +149,14 @@ public class PageDetailProducer {
         previousCrumbs += CRUMB_SEPERATOR;
         
         String label = getPagePart("crumbTitle", pageContext, messageSourceAccessor);
-        String link = expressionLanguageResolver.resolveElExpression(pageContext.pageInfo.getLinkExpression(), request);
-        
+        String link = null;
+        try {
+            link = expressionLanguageResolver.resolveElExpression(pageContext.pageInfo.getLinkExpression(), request);
+        } catch (Exception e) {
+            // Sometimes we can't resolve a link for a crumb, ie collection actions link
+            // for a collection that was just deleted.
+        }
+            
         String thisCrumb;
         thisCrumb = createLink(label, link);
         String result = previousCrumbs + thisCrumb;

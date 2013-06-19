@@ -16,7 +16,7 @@
 
         <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/functional-overrides.css">
         <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/yukon.css">
-        <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/icons.css">
+        <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/Icons/silk/icons.css">
         <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/shared/loginStyles.css">
 
         <script type="text/javascript" src="/JavaScript/lib/jQuery/jquery-1.8.3.min.js"></script>
@@ -103,7 +103,7 @@
                         </tags:nameValueContainer2>
                         
                         <div style="float:right">
-	                        <cti:button nameKey="changePassword" type="submit" name="changePassword" styleClass="unlock" />
+	                        <cti:button nameKey="changePassword" type="submit" name="changePassword" classes="unlock" />
 	                        <small><a href="/"><i:inline key="yukon.web.components.dialog.cancel" /></a></small>
                         </div>
                         

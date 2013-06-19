@@ -107,9 +107,75 @@
 	    
 %>
 
-
-<cti:standardPage module="reporting" title="Reports"> 
+<cti:standardPage module="reporting" title="Reports">
 <cti:standardMenu menuSelection="<%= menuSelection %>"/>
+
+<c:set var="reportGroup" value="${REPORT_BEAN.getReportGroup()}" />
+<cti:linkTabbedContainer mode="section">
+    <cti:checkRolesAndProperties value="AMR_REPORTS_GROUP">
+        <cti:msg var="tab_name" key="yukon.web.menu.config.reporting.reports.metering.tab.title" />
+        <c:url var="tab_url" value="/analysis/Reports.jsp?groupType=METERING" />
+        <c:set var="on_tab" value='${reportGroup == "METERING"}'/>
+        <cti:linkTab selectorName="${tab_name}" tabHref="${tab_url}" initiallySelected="${on_tab}"/>
+    </cti:checkRolesAndProperties>
+
+    <cti:checkRolesAndProperties value="LOAD_MANAGEMENT_REPORTS_GROUP">
+        <cti:msg var="tab_name" key="yukon.web.menu.config.reporting.reports.management.tab.title" />
+        <c:url var="tab_url" value="/analysis/Reports.jsp?groupType=LOAD_MANAGEMENT" />
+        <c:set var="on_tab" value='${reportGroup == "LOAD_MANAGEMENT"}'/>
+        <cti:linkTab selectorName="${tab_name}" tabHref="${tab_url}" initiallySelected="${on_tab}"/>
+    </cti:checkRolesAndProperties>
+
+    <cti:checkRolesAndProperties value="CAP_CONTROL_REPORTS_GROUP">
+        <cti:msg var="tab_name" key="yukon.web.menu.config.reporting.reports.capcontrol.tab.title" />
+        <c:url var="tab_url" value="/analysis/Reports.jsp?groupType=CAP_CONTROL" />
+        <c:set var="on_tab" value='${reportGroup == "CAP_CONTROL"}'/>
+        <cti:linkTab selectorName="${tab_name}" tabHref="${tab_url}" initiallySelected="${on_tab}"/>
+    </cti:checkRolesAndProperties>
+
+    <cti:checkRolesAndProperties value="STARS_REPORTS_GROUP">
+        <cti:msg var="tab_name" key="yukon.web.menu.config.reporting.reports.stars.tab.title" />
+        <c:url var="tab_url" value="/analysis/Reports.jsp?groupType=STARS" />
+        <c:set var="on_tab" value='${reportGroup == "STARS"}'/>
+        <cti:linkTab selectorName="${tab_name}" tabHref="${tab_url}" initiallySelected="${on_tab}"/>
+    </cti:checkRolesAndProperties>
+
+    <cti:checkRolesAndProperties value="ADMIN_REPORTS_GROUP">
+        <cti:msg var="tab_name" key="yukon.web.menu.config.reporting.reports.administrator.tab.title" />
+        <c:url var="tab_url" value="/analysis/Reports.jsp?groupType=ADMINISTRATIVE" />
+        <c:set var="on_tab" value='${reportGroup == "ADMINISTRATIVE"}'/>
+        <cti:linkTab selectorName="${tab_name}" tabHref="${tab_url}" initiallySelected="${on_tab}"/>
+    </cti:checkRolesAndProperties>
+
+    <cti:checkRolesAndProperties value="CI_CURTAILMENT_REPORTS_GROUP">
+        <cti:msg var="tab_name" key="yukon.web.menu.config.reporting.reports.cni.tab.title" />
+        <c:url var="tab_url" value="/analysis/Reports.jsp?groupType=CCURT" />
+        <c:set var="on_tab" value='${reportGroup == "CCURT"}'/>
+        <cti:linkTab selectorName="${tab_name}" tabHref="${tab_url}" initiallySelected="${on_tab}"/>
+    </cti:checkRolesAndProperties>
+
+    <cti:checkRolesAndProperties value="DATABASE_REPORTS_GROUP">
+        <cti:msg var="tab_name" key="yukon.web.menu.config.reporting.reports.database.tab.title" />
+        <c:url var="tab_url" value="/analysis/Reports.jsp?groupType=DATABASE" />
+        <c:set var="on_tab" value='${reportGroup == "DATABASE"}'/>
+        <cti:linkTab selectorName="${tab_name}" tabHref="${tab_url}" initiallySelected="${on_tab}"/>
+    </cti:checkRolesAndProperties>
+
+    <cti:checkRolesAndProperties value="SETTLEMENT_REPORTS_GROUP">
+        <cti:msg var="tab_name" key="yukon.web.menu.config.reporting.reports.settlement.tab.title" />
+        <c:url var="tab_url" value="/analysis/Reports.jsp?groupType=SETTLEMENT" />
+        <c:set var="on_tab" value='${reportGroup == "SETTLEMENT"}'/>
+        <cti:linkTab selectorName="${tab_name}" tabHref="${tab_url}" initiallySelected="${on_tab}"/>
+    </cti:checkRolesAndProperties>
+
+    <cti:checkRolesAndProperties value="STATISTICAL_REPORTS_GROUP">
+        <cti:msg var="tab_name" key="yukon.web.menu.config.reporting.reports.statistical.tab.title" />
+        <c:url var="tab_url" value="/analysis/Reports.jsp?groupType=STATISTICAL" />
+        <c:set var="on_tab" value='${reportGroup == "STATISTICAL"}'/>
+        <cti:linkTab selectorName="${tab_name}" tabHref="${tab_url}" initiallySelected="${on_tab}"/>
+    </cti:checkRolesAndProperties>
+
+</cti:linkTabbedContainer>
 
 <script>
 
@@ -218,8 +284,10 @@ function makeFirstSelectedFilterValueVisible() {
     				y++;
     		}
     		} 
-    	listbox.selectedIndex=0;//this and next line prompt the listbox to 'wake up' 
-    	listbox.options[0].selected=false; 
+    	listbox.selectedIndex=0;//this and selected=false prompt the listbox to 'wake up'
+    	if (listbox.options.length > 0) {
+            listbox.options[0].selected=false; 
+    	}
     	for (y=selectedOptions.length-1;y>-1;y--){//start from the end and work backwards so first selected item is the one scrolled to. 
     		listbox.options[selectedOptions[y]].selected=true;//select the options required 
     	}
@@ -604,8 +672,7 @@ function makeFirstSelectedFilterValueVisible() {
 				             	
 				             	<img src="/WebConfig/yukon/Icons/add.png">
 								<cti:msg key="yukon.web.chooseGroups" />
-	                            </tags:pickerDialog>
-	                             
+	                             </tags:pickerDialog>
 	                            <br>
 	                            <span id="selectedGroupNamesSpan" style="font-weight:bold;font-size:12px;"></span>
                              

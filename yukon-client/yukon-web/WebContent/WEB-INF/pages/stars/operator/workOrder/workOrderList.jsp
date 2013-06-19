@@ -13,32 +13,37 @@
 
 
 <script type="text/javascript">
-YEvent.observeSelectorClick('a[id^=deleteButton_]', function(event) {
-    event.stop();
-    
-    var parentElement = Event.findElement(event, 'td');
-    var confirmMsg = $F(parentElement.down('input[name=confirmMessage]'));
-    var accountId = $F(parentElement.down('input[name=accountId]'));
-    var orderId = $F(parentElement.down('input[name=deleteWorkOrderId]'));
-    
-    var confirmPopup = $('confirmPopup');
+// does not work unless wrapped in doc ready
+jQuery(function() {
+    jQuery('a[id^=deleteButton_]').bind('click', function(ev) {
+        var parEl,
+            confirmMsg,
+            accountId,
+            orderId,
+            confirmPopup,
+            messageContainer,
+            accountIdDest,
+            orderIdDest;
+        ev.stopPropagation();
+        parEl = jQuery(ev.target).parents('td');
+        confirmMsg = jQuery(parEl).find('input[name=confirmMessage]').val();
+        accountId = jQuery(parEl).find('input[name=accountId]').val();
+        orderId = jQuery(parEl).find('input[name=deleteWorkOrderId]').val();
+        confirmPopup = jQuery('#confirmPopup');
+        messageContainer = jQuery(confirmPopup).find('div[id=confirmMessage]');
+        jQuery(messageContainer).html(confirmMsg);
+        accountIdDest = jQuery(confirmPopup).find('input[name=accountId]');
+        jQuery(accountIdDest).attr('value',accountId);
+        orderIdDest = jQuery(confirmPopup).find('input[name=deleteWorkOrderId]');
+        jQuery(orderIdDest).attr('value',orderId);
+        jQuery('#confirmPopup').dialog('open');
+    });
 
-    var messageContainer = confirmPopup.down('div[id=confirmMessage]');
-    messageContainer.innerHTML = confirmMsg;
-    var accountIdDest = confirmPopup.down('input[name=accountId]');
-    Element.writeAttribute(accountIdDest, 'value', accountId);
-    var orderIdDest = confirmPopup.down('input[name=deleteWorkOrderId]');
-    Element.writeAttribute(orderIdDest, 'value', orderId);
-    confirmPopup.show();
-});
-
-YEvent.observeSelectorClick('#confirmCancel', function(event) {
-    $('confirmPopup').hide();
+    jQuery('#confirmCancel').click(function(event) {
+            jQuery('#confirmPopup').dialog('close');
+    });
 });
 </script>
-
-
-
 
 <tags:setFormEditMode mode="${mode}"/>
 
@@ -97,7 +102,7 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
                             <input type="hidden" name="confirmMessage" value="${confirmMessage}"/>
                             <input type="hidden" name="accountId" value="${accountId}">
                             <input type="hidden" name="deleteWorkOrderId" value="${workOrder.workOrderBase.orderId}">
-                            <a href="#" class="icon icon_remove" id="deleteButton_${workOrder.workOrderBase.orderId}">remove</a>
+                            <a href="#" id="deleteButton_${workOrder.workOrderBase.orderId}"><i class="icon icon-cross"></i></a>
                         </div>
                     </td>
                 </cti:displayForPageEditModes>
@@ -108,7 +113,7 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
     
     <%-- Confirm Dialog for delete work order --%>
     <cti:msg2 key=".deleteWorkOrderConfirmation.title" var="confirmDialogTitle"/>
-    <tags:simplePopup title="${confirmDialogTitle}" id="confirmPopup" styleClass="smallSimplePopup">
+    <tags:simplePopup title="${confirmDialogTitle}" id="confirmPopup" options="{width:600}">
         <form action="/stars/operator/workOrder/deleteWorkOrder" method="post">
             <input type="hidden" name="accountId" value="">
             <input type="hidden" name="deleteWorkOrderId" value="">
@@ -125,7 +130,7 @@ YEvent.observeSelectorClick('#confirmCancel', function(event) {
         <div class="actionArea">
             <form id="createWorkOrderForm" action="/stars/operator/workOrder/create" method="get">
                 <input type="hidden" name="accountId" value="${accountId}">
-                <cti:button nameKey="create" type="submit"/>
+                <cti:button nameKey="create" icon="icon-plus-green" type="submit"/>
             </form>
         </div>
     </cti:displayForPageEditModes>

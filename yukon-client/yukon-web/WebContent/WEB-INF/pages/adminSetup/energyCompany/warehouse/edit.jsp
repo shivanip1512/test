@@ -44,7 +44,7 @@
             </cti:displayForPageEditModes>
 
             <cti:displayForPageEditModes modes="EDIT">
-                <cti:button nameKey="delete" styleClass="delete"/>
+                <cti:button nameKey="delete" classes="delete"/>
                 <tags:confirmDialog nameKey="confirmDelete" id="delete" submitName="delete" on="button.delete" />
             </cti:displayForPageEditModes>
 

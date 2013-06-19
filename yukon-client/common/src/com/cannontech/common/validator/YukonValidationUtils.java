@@ -16,6 +16,27 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class YukonValidationUtils extends ValidationUtils {
+    /**
+     * Simplified URL definitions as they're meant to be used internally to Yukon.
+     * The largest part left out is the parameter string, eg. "?param1=val&..."
+     */
+    public static final String BASIC_URL_PATH_FRAGMENT = "(/[a-zA-Z0-9_\\-]+)*/?(\\.[a-z]+)?";
+    public static final String BASIC_URL_PATH_REGEX = "\\A"+ BASIC_URL_PATH_FRAGMENT +"\\Z";
+    public static final String BASIC_RESTFUL_URL_REGEX = "\\Ahttps?\\://([a-zA-Z0-9_\\-]+\\.)*[a-zA-Z0-9]+(\\:[0-9]+)?"+ BASIC_URL_PATH_FRAGMENT +"\\Z";
+
+    public static boolean isBasicUrl(String input) {
+        if (input == null) {
+            return false;
+        }
+        return input.matches(BASIC_RESTFUL_URL_REGEX);
+    }
+
+    public static boolean isUrlPath(String input) {
+        if (input == null) {
+            return false;
+        }
+        return input.matches(BASIC_URL_PATH_REGEX);
+    }
 
 	public static void checkExceedsMaxLength(Errors errors, String field, String fieldValue, int max) {
 		
@@ -30,7 +51,7 @@ public class YukonValidationUtils extends ValidationUtils {
             errors.rejectValue(field, "yukon.web.error.isBlank", "Cannot be blank.");
         }
     }
-   
+
     public static <T extends Comparable<T>> void checkRange(Errors errors,
             String field, T fieldValue, T min, T max, boolean required) {
         if (fieldValue == null) {

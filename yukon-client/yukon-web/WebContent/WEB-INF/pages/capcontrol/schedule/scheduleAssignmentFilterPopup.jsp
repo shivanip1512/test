@@ -37,7 +37,7 @@
             </tags:nameValue2>
         </tags:nameValueContainer2>
 		<div class="actionArea">
-            <cti:button nameKey="filter" type="submit"/>
+            <cti:button nameKey="filter" type="submit" classes="primary action"/>
             <cti:button nameKey="clearFilter" onclick="clearFilter()"/>
 		</div>
 	</form>

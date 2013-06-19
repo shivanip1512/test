@@ -132,6 +132,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return false;
     }
 
+    /**
+     * This method checks to see if the user's login will expire in a certain amount of time in the future.
+     * This checks the login's password age against the password policy's allowed age.
+     */
+    @Override
+    public boolean doesPasswordExpireInDays(LiteYukonUser user, int numberOfDays) {
+        UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
+        PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user);
+        if (passwordPolicy != null && passwordPolicy.getMaxPasswordAge() != Duration.ZERO) {
+            Duration warningAge = passwordPolicy.getPasswordAge(userAuthenticationInfo).plus(Duration.standardDays(numberOfDays));
+            return passwordPolicy.getMaxPasswordAge().isShorterThan(warningAge);
+        }
+
+        return false;
+    }
+
     @Override
     public void setAuthenticationCategory(LiteYukonUser user, AuthenticationCategory authenticationCategory) {
         AuthType authType = authenticationCategory.getSupportingAuthType();

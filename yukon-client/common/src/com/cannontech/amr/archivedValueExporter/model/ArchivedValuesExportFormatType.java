@@ -7,7 +7,7 @@ public enum ArchivedValuesExportFormatType implements DisplayableEnum {
     FIXED_ATTRIBUTE,
     DYNAMIC_ATTRIBUTE;
 
-    private final static String baseKey =  "yukon.web.modules.amr.archivedValueExporter.formatType.";
+    private final static String baseKey =  "yukon.web.modules.tools.bulk.archivedValueExporter.formatType.";
     
     @Override
     public String getFormatKey() {

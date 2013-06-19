@@ -8,27 +8,40 @@
     
     <script type="text/javascript">
         function importFinished() {
-            $('cancelButton').disable();
-
+            jQuery('#cancelButton').attr('disabled','disabled');
+        
             var params = {'resultId': '${resultId}'};
-            new Ajax.Request('/stars/operator/account/importResult', {
-                method: 'get',
-                parameters: params,
-                onSuccess: function(resp, json) {
-                    var prescan = ${prescan};
-                	if(json.passed == false) {
-                        $('errorsLink').show();
-                    } else if(prescan == true) {
-                        $('importButton').enable();
+            jQuery.ajax({
+                dataType: "json",
+                url: '/stars/operator/account/importResult',
+                data: params
+            }).done(function(data, status, xhrobj) {
+                var jsonResp,
+                    prescan;
+                prescan = ${prescan};
+                // this gets our JSON response
+                jsonResp = jQuery.parseJSON(xhrobj.getResponseHeader('X-JSON'));
+                try {
+                    if(jsonResp.passed === false) {
+                        jQuery('#errorsLink').show();
+                        jQuery('#importButton').attr('disabled','disabled');
+                        jQuery('#importButton').hide();
+                    } else if(prescan === true) {
+                        jQuery('#importButton').removeAttr('disabled');
                     }
+                } catch(badajaxex) {
                 }
             });
         }
 
         function showErrorsTable() {
             var params = {'resultId': '${resultId}'};
-            new Ajax.Updater('importErrorsDiv', '/stars/operator/account/importErrors', {method: 'get', evalScripts: 'true', parameters: params});
-            $('importErrorsDiv').show();
+            jQuery.ajax({
+                url: '/stars/operator/account/importErrors',
+                data: params
+            }).done(function(data, status, xhrobj) {
+                jQuery('#importErrorsDiv').html(data).show();
+            });
         }
     </script>
     

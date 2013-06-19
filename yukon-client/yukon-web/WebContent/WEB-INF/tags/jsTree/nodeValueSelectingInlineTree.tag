@@ -15,8 +15,7 @@
 <%-- see inlineTree.tag for parameter descriptions --%>
 <%@ attribute name="id"                 required="true"     type="java.lang.String"%>
 <%@ attribute name="dataJson"           required="true"     type="java.lang.String"%>
-<%@ attribute name="width"              required="false"    type="java.lang.Integer"%>
-<%@ attribute name="height"             required="false"    type="java.lang.Integer"%>
+<%@ attribute name="maxHeight"          required="false"    type="java.lang.Integer" description="The max-height in pixels for the internal tree div. Example: maxHeight='300'. Defaults is 500."%>
 <%@ attribute name="highlightNodePath"  required="false"    type="java.lang.String"%>
 <%@ attribute name="includeControlBar"  required="false"    type="java.lang.Boolean"%>
 <%@ attribute name="styleClass"         required="false"    type="java.lang.String"%>
@@ -85,8 +84,7 @@
                     treeParameters="${pageScope.treeParams}"
                     dataJson="${dataJson}"
                     multiSelect="${pageScope.multiSelect}"
-                    width="${width}"
-                    height="${height}"
+                    maxHeight="${pageScope.maxHeight}"
                     highlightNodePath="${pageScope.highlightNodePath}"
                     includeControlBar="${pageScope.includeControlBar}" 
                     styleClass="${pageScope.styleClass}"/>

@@ -47,14 +47,14 @@ public class TranslationImportCallbackResult extends LoggingCallbackResult<Strin
     @Override
     public void processedObject(int rowNumber, String[] row) {
         super.processedObject(rowNumber, row);
-        String logString = messageSourceAccessor.getMessage("yukon.web.modules.amr.fdrTranslationManagement.operationSuccessful", rowNumber+1);
+        String logString = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.fdrTranslationManagement.operationSuccessful", rowNumber+1);
         log.add(logString);
     }
     
     @Override
     public void receivedProcessingException(int rowNumber, String[] row, ProcessorCallbackException exception) {
         super.receivedProcessingException(rowNumber, row, exception);
-        String logString = messageSourceAccessor.getMessage("yukon.web.modules.amr.fdrTranslationManagement.operationFailed", rowNumber+1, exception.getMessage());
+        String logString = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.fdrTranslationManagement.operationFailed", rowNumber+1, exception.getMessage());
         log.add(logString);
         failedRows.add(rowNumber);
     }

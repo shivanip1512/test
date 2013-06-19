@@ -8,7 +8,7 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:standardPage page="archivedValueExporter.${mode}" module="amr">
+<cti:standardPage module="tools" page="bulk.archivedValueExporter.${mode}">
 
     <script type="text/javascript">
     function ajaxSubmitForm(rowIndex, action, dialogSelector) {
@@ -375,15 +375,16 @@
                                 <td><cti:msg2 key="${attribute.dataSelection}" />
                                 </td>
                                 <td>${fn:escapeXml(attribute.daysPrevious)}</td>
-                                <td><cti:button nameKey="edit" styleClass="editAttributeBtn f_blocker" renderMode="image" /> <cti:button nameKey="remove"
-                                        styleClass="removeAttributeBtn f_blocker" renderMode="image" />
+                                <td>
+                                    <cti:button nameKey="edit" icon="icon-pencil" classes="editAttributeBtn f_blocker" renderMode="image" />
+                                    <cti:button nameKey="remove" icon="icon-cross" classes="removeAttributeBtn f_blocker" renderMode="image" />
                                 </td>
                             </tr>
                         </c:forEach>
                     </tbody>
                 </table>
                 <div class="actionArea">
-                    <cti:button id="addAttributeBtn" nameKey="add" styleClass="f_blocker" />
+                    <cti:button id="addAttributeBtn" nameKey="add" classes="f_blocker" icon="icon-add"/>
                 </div>
             </tags:boxContainer2>
         </c:if>
@@ -428,22 +429,22 @@
                             <td>
                                 <c:choose>
                                     <c:when test="${row.first}">
-                                        <cti:button nameKey="up.disabled" renderMode="image" disabled="true"/>
+                                        <cti:button nameKey="up.disabled" renderMode="image" disabled="true" icon="icon-bullet-go-up"/>
                                     </c:when>
                                     <c:otherwise>
-                                        <cti:button nameKey="up" styleClass="upFieldBtn f_blocker" renderMode="image" />
+                                        <cti:button nameKey="up" classes="upFieldBtn f_blocker" renderMode="image" icon="icon-bullet-go-up"/>
                                     </c:otherwise>
                                 </c:choose> 
                                 <c:choose>
                                     <c:when test="${row.last}">
-                                        <cti:button nameKey="down.disabled" renderMode="image" disabled="true"/>
+                                        <cti:button nameKey="down.disabled" renderMode="image" disabled="true" icon="icon-bullet-go-down"/>
                                     </c:when>
                                     <c:otherwise>
-                                        <cti:button nameKey="down" styleClass="downFieldBtn f_blocker" renderMode="image" />
+                                        <cti:button nameKey="down" classes="downFieldBtn f_blocker" renderMode="image" icon="icon-bullet-go-down"/>
                                     </c:otherwise>
                                 </c:choose>
-                                <cti:button nameKey="edit" styleClass="editFieldBtn f_blocker" renderMode="image" />
-                                <cti:button nameKey="remove" styleClass="removeFieldBtn f_blocker" renderMode="image" />
+                                <cti:button nameKey="edit" icon="icon-pencil" classes="editFieldBtn f_blocker" renderMode="image" />
+                                <cti:button nameKey="remove" classes="removeFieldBtn f_blocker" renderMode="image"  icon="icon-cross"/>
                             </td>
                             <tags:hidden path="format.fields[${row.index}].fieldId" />
                             <tags:hidden path="format.fields[${row.index}].attribute.attributeId" />
@@ -465,7 +466,7 @@
                 </tbody>
             </table>
             <div class="actionArea">
-                <cti:button id="addFieldBtn" nameKey="add" styleClass="f_blocker" />
+                <cti:button id="addFieldBtn" nameKey="add" classes="f_blocker" icon="icon-add"/>
             </div>
         </tags:boxContainer2>
         
@@ -479,7 +480,7 @@
             </tags:boxContainer2>
         </c:if>
         <div class="pageActionArea">
-            <cti:button id="saveBtn" nameKey="save" styleClass="f_blocker" />
+            <cti:button id="saveBtn" nameKey="save" classes="f_blocker f_disableAfterClick primary action"/>
             <dialog:confirm on="#deleteBtn" nameKey="confirmDelete" argument="${backingBean.format.formatName}" />
             <c:if test="${backingBean.format.formatId != 0}">
                 <cti:button id="deleteBtn" nameKey="delete" />

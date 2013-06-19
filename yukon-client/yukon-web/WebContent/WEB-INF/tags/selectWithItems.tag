@@ -42,7 +42,7 @@
 	<c:set var="theInputClass" value="${pageScope.inputClass} error"/>
 </c:if>
 
-<form:select path="${path}" id="${path}" cssClass="${theInputClass}" onchange="${pageScope.onchange}">
+<form:select path="${path}" cssClass="${theInputClass}" onchange="${pageScope.onchange}">
     <c:if test="${not empty pageScope.defaultItemLabel}">
         <form:option value="${pageScope.defaultItemValue}">${pageScope.defaultItemLabel}</form:option>
     </c:if>

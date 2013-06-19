@@ -34,59 +34,67 @@
 </cti:url>
 
 <cti:displayForPageEditModes modes="CREATE,EDIT">
-    <script type="text/javascript">
-    lastDisplayName = false;
-    sameAsNameClicked = function() {
-        if ($('sameAsName').checked) {
-            lastDisplayName = $('displayNameInput').value;
-            $('displayNameInput').value = $('nameInput').value;
-            $('displayNameInput').disable();
-        } else {
-            if (lastDisplayName) {
-                $('displayNameInput').value = lastDisplayName;
-            }
-            $('displayNameInput').enable(); 
+<script type="text/javascript">
+lastDisplayName = false;
+sameAsNameClicked = function() {
+    if (document.getElementById('sameAsName').checked) {
+        lastDisplayName = document.getElementById('displayNameInput').value;
+        document.getElementById('displayNameInput').value = document.getElementById('nameInput').value;
+        document.getElementById('displayNameInput').disabled = "disabled";
+    } else {
+        if (lastDisplayName) {
+            document.getElementById('displayNameInput').value = lastDisplayName;
         }
+        document.getElementById('displayNameInput').removeAttribute("disabled");
     }
+};
 
-    nameChanged = function() {
-        if ($('sameAsName').checked) {
-            $('displayNameInput').value = $('nameInput').value;
-        }
+nameChanged = function() {
+    if (document.getElementById('sameAsName').checked) {
+        document.getElementById('displayNameInput').value = document.getElementById('nameInput').value;
     }
+};
 
-    submitForm = function() {
-        nameChanged();
-        $('displayNameInput').enable();
-        return true;
-    }
+submitForm = function() {
+    nameChanged();
+    document.getElementById('displayNameInput').removeAttribute("disabled");
+    return true;
+};
 
-    jQuery(function() {
-        sameAsNameClicked();
-      });
-    </script>
+jQuery(function() {
+    sameAsNameClicked();
+});
+</script>
 </cti:displayForPageEditModes>
 
 <cti:displayForPageEditModes modes="VIEW">
-    <script type="text/javascript">
-    function clearFilter() {
-        window.location = '${clearFilterUrl}';
-    }
-    </script>
+<script type="text/javascript">
+function clearFilter() {
+    window.location = '${clearFilterUrl}';
+}
+</script>
 
-    <c:if test="${isEditable}">
-        <form>
-            <script type="text/javascript">
-            var assignProgramsDialogTitle = '<cti:msg2 key=".assignProgramsDialogTitle" javaScriptEscape="true"/>';
-            function assignPrograms(devices) {
-                openSimpleDialog('acDialog', $('assignProgramForm').action,
-                        assignProgramsDialogTitle, $('assignProgramForm').serialize(true));
-                return true;
-            }
-            </script>
-            <input type="hidden" id="programsToAssign" name="programsToAssign"/>
-        </form>
-    </c:if>
+<c:if test="${isEditable}">
+<script type="text/javascript">
+var assignProgramsDialogTitle = '<cti:msg2 key=".assignProgramsDialogTitle" javaScriptEscape="true"/>';
+function assignPrograms(devices) {
+    submitFormViaAjax('acDialog', 'assignProgramForm', null, assignProgramsDialogTitle);
+    return true;
+}
+</script>
+<form id="assignProgramForm" action="assignProgram">
+    <input type="hidden" name="applianceCategoryId" value="${applianceCategoryId}"/>
+    <input type="hidden" name="ecId" value="${param.ecId}"/>
+    
+    <tags:pickerDialog destinationFieldName="programsToAssign" 
+        endAction="assignPrograms"
+        id="programPicker"
+        linkType="none" 
+        memoryGroup="programPicker"
+        multiSelectMode="true" 
+        type="applianceCategoryProgramPicker"/> 
+</form>
+</c:if>
 
     <i:simplePopup id="filterDialog" titleKey=".filters">
         <form:form action="${baseUrl}" commandName="backingBean" method="get">
@@ -102,27 +110,14 @@
             </table>
 
             <div class="actionArea">
-                <cti:button type="submit" nameKey="filterButton"/>
+                <cti:button type="submit" nameKey="filterButton" classes="primary action"/>
                 <cti:button nameKey="showAllButton" onclick="clearFilter();"/>
             </div>
         </form:form>
     </i:simplePopup>
-
-    <c:if test="${isEditable}">
-        <cti:url var="assignProgramUrl" value="assignProgram"/>
-        <form id="assignProgramForm" action="${assignProgramUrl}">
-            <input type="hidden" name="applianceCategoryId" value="${applianceCategoryId}"/>
-            <input type="hidden" name="ecId" value="${param.ecId}"/>
-            <tags:pickerDialog type="applianceCategoryProgramPicker" id="programPicker"
-                linkType="none" multiSelectMode="true" memoryGroup="programPicker"
-                destinationFieldName="programsToAssign" endAction="assignPrograms">
-            </tags:pickerDialog>
-        </form>
-    </c:if>
 </cti:displayForPageEditModes>
 
-<cti:url var="submitUrl" value="save"/>
-<form:form id="inputForm" commandName="applianceCategory" action="${submitUrl}" onsubmit="return submitForm()">
+<form:form id="appCatForm" commandName="applianceCategory" action="save" onsubmit="return submitForm()">
 
 <form:hidden path="energyCompanyId"/>
 <form:hidden path="applianceCategoryId"/>
@@ -221,83 +216,88 @@
         </c:if>
         <c:if test="${!empty assignedPrograms.resultList}">
         <table id="programList" class="compactResultsTable rowHighlighting">
-            <tr>
-                <th>
-                    <tags:sortLink nameKey="programName" baseUrl="${baseUrl}"
-                        fieldName="PROGRAM_NAME" isDefault="${!applianceCategory.consumerSelectable}"/>
-                </th>
-                <th>
-                    <i:inline key=".actions"/>
-                </th>
-                <c:if test="${applianceCategory.consumerSelectable}">
-                    <th>
-                        <tags:sortLink nameKey="displayOrder" baseUrl="${baseUrl}"
-                            fieldName="PROGRAM_ORDER" isDefault="true"/>
-                    </th>
-                </c:if>
-            </tr>
-            <c:forEach var="assignedProgram" items="${assignedPrograms.resultList}">
-                <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                    <td>
-                        <dr:assignedProgramName assignedProgram="${assignedProgram}"/>
-                    </td>
-                    <td>
-                        <cti:url var="editProgramUrl" value="editAssignedProgram">
-                            <cti:param name="ecId" value="${ecId}"/>
-                            <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
-                            <cti:param name="assignedProgramId" value="${assignedProgram.assignedProgramId}"/>
-                        </cti:url>
-                        <tags:simpleDialogLink2 dialogId="acDialog"
-                            nameKey="editAssignedProgram" skipLabel="true" 
-                            actionUrl="${editProgramUrl}"/>
-
-                        <c:if test="${isEditable}">
-                            <cti:url var="unassignProgramUrl" value="confirmUnassignProgram">
-                                <cti:param name="ecId" value="${ecId}"/>
-                                <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
-                                <cti:param name="assignedProgramId" value="${assignedProgram.assignedProgramId}"/>
-                            </cti:url>
-                            <tags:simpleDialogLink2 dialogId="acDialog"
-                                nameKey="unassignProgram" skipLabel="true"
-                                actionUrl="${unassignProgramUrl}"/>
-                        </c:if>
-                    </td>
-                    <c:if test="${applianceCategory.consumerSelectable}">
-                    <td>
-                        <c:if test="${isEditable}">
-                            <c:if test="${assignedProgram.first}">
-                                <cti:img nameKey="up.disabled"/>
-                            </c:if>
-                            <c:if test="${!assignedProgram.first}">
-                                <cti:url var="moveProgramUpUrl" value="moveProgram">
-                                    <cti:param name="direction" value="up"/>
-                                    <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
-                                    <cti:param name="assignedProgramId" value="${assignedProgram.assignedProgramId}"/>
-                                </cti:url>
-                                <cti:img nameKey="up" href="javascript:simpleAJAXRequest('${moveProgramUpUrl}')"/>
-                            </c:if>
-                            <c:if test="${assignedProgram.last}">
-                                <cti:img nameKey="down.disabled"/>
-                            </c:if>
-                            <c:if test="${!assignedProgram.last}">
-                                <cti:url var="moveProgramDownUrl" value="moveProgram">
-                                    <cti:param name="direction" value="down"/>
-                                    <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
-                                    <cti:param name="assignedProgramId" value="${assignedProgram.assignedProgramId}"/>
-                                </cti:url>
-                                <cti:img nameKey="down" href="javascript:simpleAJAXRequest('${moveProgramDownUrl}')"/>
-                            </c:if>
-                        </c:if>
-                        ${assignedProgram.programOrder}
-                    </td>
-                    </c:if>
-                </tr>
-            </c:forEach>
+            <thead>
+	            <tr>
+	                <th>
+	                    <tags:sortLink nameKey="programName" baseUrl="${baseUrl}"
+	                        fieldName="PROGRAM_NAME" isDefault="${!applianceCategory.consumerSelectable}"/>
+	                </th>
+	                <th>
+	                    <i:inline key=".actions"/>
+	                </th>
+	                <c:if test="${applianceCategory.consumerSelectable}">
+	                    <th>
+	                        <tags:sortLink nameKey="displayOrder" baseUrl="${baseUrl}"
+	                            fieldName="PROGRAM_ORDER" isDefault="true"/>
+	                    </th>
+	                </c:if>
+	            </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+	            <c:forEach var="assignedProgram" items="${assignedPrograms.resultList}">
+	                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+	                    <td>
+	                        <dr:assignedProgramName assignedProgram="${assignedProgram}"/>
+	                    </td>
+	                    <td>
+	                        <cti:url var="editProgramUrl" value="editAssignedProgram">
+	                            <cti:param name="ecId" value="${ecId}"/>
+	                            <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
+	                            <cti:param name="assignedProgramId" value="${assignedProgram.assignedProgramId}"/>
+	                        </cti:url>
+	                        <tags:simpleDialogLink2 dialogId="acDialog" icon="icon-pencil"
+	                            nameKey="editAssignedProgram" skipLabel="true" 
+	                            actionUrl="${editProgramUrl}"/>
+	
+	                        <c:if test="${isEditable}">
+	                            <cti:url var="unassignProgramUrl" value="confirmUnassignProgram">
+	                                <cti:param name="ecId" value="${ecId}"/>
+	                                <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
+	                                <cti:param name="assignedProgramId" value="${assignedProgram.assignedProgramId}"/>
+	                            </cti:url>
+	                            <tags:simpleDialogLink2 dialogId="acDialog"
+	                                nameKey="unassignProgram" skipLabel="true"
+	                                actionUrl="${unassignProgramUrl}" icon="icon-cross"/>
+	                        </c:if>
+	                    </td>
+	                    <c:if test="${applianceCategory.consumerSelectable}">
+	                    <td>
+	                        <c:if test="${isEditable}">
+	                            <c:if test="${assignedProgram.first}">
+	                                <cti:button renderMode="image" nameKey="up.disabled" disabled="true" icon="icon-bullet-go-up"/>
+	                            </c:if>
+	                            <c:if test="${!assignedProgram.first}">
+	                                <cti:url var="moveProgramUpUrl" value="moveProgram">
+	                                    <cti:param name="direction" value="up"/>
+	                                    <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
+	                                    <cti:param name="assignedProgramId" value="${assignedProgram.assignedProgramId}"/>
+	                                </cti:url>
+	                                <cti:button renderMode="image" nameKey="up" href="javascript:simpleAJAXRequest('${moveProgramUpUrl}')" icon="icon-bullet-go-up"/>
+	                            </c:if>
+	                            <c:if test="${assignedProgram.last}">
+	                                <cti:button renderMode="image" nameKey="down.disabled" disabled="true" icon="icon-bullet-go-down"/>
+	                            </c:if>
+	                            <c:if test="${!assignedProgram.last}">
+	                                <cti:url var="moveProgramDownUrl" value="moveProgram">
+	                                    <cti:param name="direction" value="down"/>
+	                                    <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
+	                                    <cti:param name="assignedProgramId" value="${assignedProgram.assignedProgramId}"/>
+	                                </cti:url>
+	                                <cti:button nameKey="down" renderMode="image" icon="icon-bullet-go-down" href="javascript:simpleAJAXRequest('${moveProgramDownUrl}')"/>
+	                            </c:if>
+	                        </c:if>
+	                        ${assignedProgram.programOrder}
+	                    </td>
+	                    </c:if>
+	                </tr>
+	            </c:forEach>
+            </tbody>
         </table>
         </c:if>
         <c:if test="${isEditable}">
             <div class="actionArea">
-                <cti:button nameKey="assignPrograms" onclick="programPicker.show()"/>
+                <cti:button nameKey="assignPrograms" onclick="programPicker.show()" icon="icon-add"/>
 
                 <c:if test="${canAddVirtual}">
                     <cti:url var="createVirtualProgramUrl" value="createVirtualProgram">
@@ -305,7 +305,7 @@
                         <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
                     </cti:url>
                     <tags:dialogButton dialogId="acDialog" nameKey="createVirtualProgram"
-                        actionUrl="${createVirtualProgramUrl}"/>
+                        actionUrl="${createVirtualProgramUrl}" icon="icon-plus-green"/>
                 </c:if>
             </div>
         </c:if>
@@ -320,7 +320,7 @@
                 <cti:param name="ecId" value="${ecId}"/>
                 <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
             </cti:url>
-            <cti:button nameKey="edit" href="${editUrl}"/>
+            <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
         </c:if>
     </cti:displayForPageEditModes>
 

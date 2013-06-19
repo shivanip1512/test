@@ -1,38 +1,38 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<cti:msgScope paths="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues">
 	<cti:flashScopeMessages/>
    
-    <p class="dialogQuestion">
-        <cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.instructions" argument="${controlArea.name}" />
+    <p class="dialogQuestion stacked">
+        <cti:msg2 key=".instructions" argument="${controlArea.name}" />
     </p>
 
     <cti:url var="submitUrl" value="/dr/controlArea/sendChangeTimeWindowConfirm"/>
     
-   
     <form:form id="getChangeTimeWindowValues" commandName="controlAreaTimeWindowDto" action="${submitUrl}" onsubmit="return submitFormViaAjax('drDialog', 'getChangeTimeWindowValues');">
     
         <input type="hidden" name="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>
-        <table>
+        <table class="stacked">
             <tr>
-                <td><cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.startTime"/></td>
+                <td><cti:msg2 key=".startTime"/></td>
                 <td><tags:input path="startTime" maxlength="5" size="5"/></td>
             </tr>
             <tr>
-                <td><cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.stopTime"/></td>
+                <td><cti:msg2 key=".stopTime"/></td>
                 <td><tags:input path="stopTime" maxlength="5" size="5"/></td>
             </tr>
         </table>
         
         <p class="dialogFootnote">
-            <cti:msg2 key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.noteText"/>
+            <cti:msg2 key=".noteText"/>
         </p>
         
         <div class="actionArea">
-            <input type="submit" value="<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.okButton"/>"/>
-            <input type="button" value="<cti:msg key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.cancelButton"/>"
-                onclick="parent.$('drDialog').hide()"/>
+            <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
+            <cti:button nameKey="ok" classes="primary action" type="submit"/>
         </div>
     </form:form>
+</cti:msgScope>

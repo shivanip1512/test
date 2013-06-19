@@ -6,9 +6,8 @@
 
 <cti:msgScope paths="modules.support.localization">
     <form:form action="view" modelAttribute="localizationBackingBean" enctype="multipart/form-data">
-        <div class="doublepage">
-            <div class="colleft">
-                <div class="col1">
+        <div class="column_12_12">
+                <div class="column one">
                     <div>
                         <i:inline key=".modified" />
                     </div>
@@ -35,7 +34,7 @@
                     </div>
                 </div>
 
-                <div class="col2">
+                <div class="column two nogutter">
                     <div>
                         <i:inline key=".base" />
                     </div>
@@ -61,7 +60,6 @@
                         <input type="file" name="baseCustom">
                     </div>
                 </div>
-            </div>
         </div>
 
         <input type="hidden" name="task" value="COMPARE" /> 

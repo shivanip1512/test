@@ -18,8 +18,6 @@ import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.exception.PasswordExpiredException;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.login.access.UrlAccessChecker;
@@ -30,7 +28,6 @@ public class YukonLoginController extends MultiActionController {
     @Autowired private LoginCookieHelper loginCookieHelper;
     @Autowired private LoginService loginService;
     @Autowired private PasswordResetService passwordResetService;
-    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private UrlAccessChecker urlAccessChecker;
 
     public ModelAndView view(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
@@ -88,8 +85,7 @@ public class YukonLoginController extends MultiActionController {
         if (redirectedFrom != null && !redirectedFrom.equals("")) {
             redirect = redirectedFrom;
         } else {
-    		String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
-    		redirect = ServletUtil.createSafeUrl(request, homeUrl);
+            redirect = "/home";
         }
     
         boolean hasUrlAccess = urlAccessChecker.hasUrlAccess(redirect, user);

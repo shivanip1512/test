@@ -16,17 +16,17 @@
     <c:otherwise>
         <span class="wsnw">
             <c:if test="${empty pageScope.showHistoricalReadings || pageScope.showHistoricalReadings}">
-                <cti:pointValue pointId="${pointId}" format="DATE" cssClass="fl"/>
                 <cti:uniqueIdentifier var="uid" prefix="historicalReadings_" />
                 <cti:url var="showHistoricalReadingsUrl" value="/meter/historicalReadings/view">
                     <cti:param name="div_id" value="${uid}" />
                     <cti:param name="pointId" value="${pointId}" />
                     <cti:param name="deviceId" value="${deviceId}" />
                 </cti:url>
-                <a class="f_ajaxPage pv_history labeled_icon_right history" 
+                <a class="f_ajaxPage pv_history" 
                     data-selector="#${uid}" 
                     href="${showHistoricalReadingsUrl}"
                     title="<cti:msg2 key="yukon.common.historyTooltip"/>">
+                    <cti:pointValue pointId="${pointId}" format="DATE" cssClass="fl"/>
                 </a>
                 <div id="${uid}"></div>
             </c:if>

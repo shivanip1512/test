@@ -45,66 +45,46 @@
 
 <script type="text/javascript">
     function showAddSwitchPopup() {
-        $('addSwitchPopup').show();
+        jQuery('#addSwitchPopup').show();
     }
 
     function checkSerialNumber() {
-        $('serialNumberUnavailable').show();
+        jQuery('#serialNumberUnavailable').show();
     }
 
     function showInvCheckingPopup(type) {
-        if(type == 'switch') {
-            $('addSwitchType').value = $F('switchTypeToAdd');
-            showSimplePopup($('inventoryCheckingSwitchPopup'));
-        } else if (type == 'gateway') {
-            $('addGatewayType').value = $F('gatewayTypeToAdd');
-            showSimplePopup($('inventoryCheckingGatewayPopup'));
+        if(type === 'switch') {
+            jQuery('#addSwitchType').val(jQuery('#switchTypeToAdd').val());
+            showSimplePopup('inventoryCheckingSwitchPopup');
+        } else if (type === 'gateway') {
+            jQuery('#addGatewayType').val(jQuery('#gatewayTypeToAdd').val());
+            showSimplePopup('inventoryCheckingGatewayPopup');
         } else {
-            $('addTstatType').value = $F('tstatTypeToAdd');
-            showSimplePopup($('inventoryCheckingThermostatPopup'));
+            jQuery('#addTstatType').val(jQuery('#tstatTypeToAdd').val());
+            showSimplePopup('inventoryCheckingThermostatPopup');
         }
     }
 
     function addMeter() {
-        var form = $('addMeterForm');
+        var form = jQuery('#addMeterForm');
         form.submit();
         return true;
     }
 
     function changeOut(oldId, isMeter) {
-        $('oldInventoryId').value = oldId;
+        jQuery('#oldInventoryId').val(oldId);
 
         if(isMeter) {
-            $('isMeter').value = 'true';
+            jQuery('#isMeter').val('true');
         } else {
-            $('isMeter').value = 'false';
+            jQuery('#isMeter').val('false');
         }
         
-        var form = $('changeOutForm');
+        var form = jQuery('#changeOutForm');
         form.submit();
         return true;
     }
     
-    jQuery(function() {
-        if ($('inventoryCheckingThermostatPopup').visible())
-            adjustDialogSizeAndPosition('inventoryCheckingThermostatPopup');
-        if ($('inventoryCheckingGatewayPopup').visible())
-            adjustDialogSizeAndPosition('inventoryCheckingGatewayPopup');
-        if ($('inventoryCheckingSwitchPopup').visible())
-            adjustDialogSizeAndPosition('inventoryCheckingSwitchPopup');
-        if ($('addFromWarehousePopup'))
-            adjustDialogSizeAndPosition('addFromWarehousePopup');
-        if ($('addFromAccountPopup'))
-            adjustDialogSizeAndPosition('addFromAccountPopup');
-        if ($('createSerialPopup'))
-            adjustDialogSizeAndPosition('createSerialPopup');
-        if ($('notFoundSerial'))
-            adjustDialogSizeAndPosition('notFoundSerial');
-        if ($('sameAccountPopup'))
-            adjustDialogSizeAndPosition('sameAccountPopup');
-        if ($('anotherECPopup'))
-            adjustDialogSizeAndPosition('anotherECPopup');
-    });
 </script>
 
 <c:choose>
@@ -311,7 +291,7 @@
             <input type="hidden" name="hardwareTypeId" value="${checkingAdd.hardwareTypeId}">
             
             <div class="actionArea">
-                <cti:button nameKey="ok" type="submit" styleClass="f_blocker"/>
+                <cti:button nameKey="ok" type="submit" classes="f_blocker"/>
                 <cti:button nameKey="cancel" onclick="window.location='${hardwareListUrl}';"/>
             </div>
             
@@ -330,7 +310,7 @@
         <div class="hardwarePopup"><i:inline key=".error.notFound.serialNumber" arguments="${notFoundSerial}"/></div>
         
         <div class="actionArea">
-            <cti:button nameKey="ok" type="submit" styleClass="f_blocker"/>
+            <cti:button nameKey="ok" type="submit" classes="f_blocker"/>
             <cti:button nameKey="cancel" onclick="window.location='${hardwareListUrl}';"/>
         </div>
         
@@ -411,11 +391,12 @@
                                                     endAction="function(items) { return changeOut(${hwSwitch.inventoryId}, false); }" 
                                                     linkType="button"
                                                     buttonRenderMode="image"
+                                                    icon="icon-arrow-swap"
                                                     styleClass="vat"
                                                     nameKey="changeOut"/>
                                         </c:if>
                                     </cti:checkRolesAndProperties>
-                                    <cti:img nameKey="editConfig" href="${editConfigUrl}${hwSwitch.inventoryId}"/>
+                                    <cti:icon nameKey="editConfig" href="${editConfigUrl}${hwSwitch.inventoryId}" icon="icon-cog-edit"/>
                                 </td>
                             </tr>
                         </c:forEach>
@@ -443,11 +424,11 @@
                     <c:choose>
                         <c:when test="${not inventoryChecking}">
                             <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
-                                <cti:button nameKey="add" type="submit"/>
+                                <cti:button nameKey="add" type="submit" icon="icon-add"/>
                             </cti:checkRolesAndProperties>
                         </c:when>
                         <c:otherwise>
-                            <cti:button nameKey="add" onclick="showInvCheckingPopup('switch');" dialogButton="true"/>
+                            <cti:button nameKey="add" icon="icon-add" onclick="showInvCheckingPopup('switch');" dialogButton="true"/>
                         </c:otherwise>
                     </c:choose>
                 </form>
@@ -497,21 +478,22 @@
                                                     endAction="function(items) { return changeOut(${thermostat.inventoryId}, false); }" 
                                                     linkType="button"
                                                     buttonRenderMode="image"
+                                                    icon="icon-arrow-swap"
                                                     nameKey="changeOut"/>
                                         </c:if>
                                     </cti:checkRolesAndProperties>
                                     
-                                    <cti:img nameKey="editConfig" href="${editConfigUrl}${thermostat.inventoryId}"/>
+                                    <cti:icon nameKey="editConfig" href="${editConfigUrl}${thermostat.inventoryId}" icon="icon-cog-edit"/>
                                     
                                     <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT">
                                         <c:if test="${thermostat.hardwareType.supportsSchedules}">
-                                            <cti:img nameKey="savedSchedules" href="${savedSchedulesUrl}${thermostat.inventoryId}"/>
+                                            <cti:icon nameKey="savedSchedules" href="${savedSchedulesUrl}${thermostat.inventoryId}" icon="icon-clipboard"/>
                                         </c:if>
                                         <c:if test="${thermostat.hardwareType.supportsManualAdjustment}">
-                                            <cti:img nameKey="manual" href="${editManualUrl}${thermostat.inventoryId}"/>
+                                            <cti:icon nameKey="manual" href="${editManualUrl}${thermostat.inventoryId}" icon="icon-wrench"/>
                                         </c:if>
                                     </cti:checkRolesAndProperties>
-                                    <cti:img nameKey="history" href="${thermostatHistoryUrl}${thermostat.inventoryId}" />
+                                    <cti:icon nameKey="history" href="${thermostatHistoryUrl}${thermostat.inventoryId}" icon="icon-time"/>
                                         
                                 </td>
                             </tr>
@@ -548,11 +530,11 @@
                         <c:choose>
                             <c:when test="${not inventoryChecking}">
                                 <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
-                                    <cti:button nameKey="add" type="submit"/>
+                                    <cti:button nameKey="add" type="submit" icon="icon-add"/>
                                 </cti:checkRolesAndProperties>
                             </c:when>
                             <c:otherwise>
-                                <cti:button nameKey="add" onclick="showInvCheckingPopup('thermostat');" dialogButton="true"/>
+                                <cti:button nameKey="add" onclick="showInvCheckingPopup('thermostat');" dialogButton="true" icon="icon-add"/>
                             </c:otherwise>
                         </c:choose>
                     </form>
@@ -572,7 +554,6 @@
                 <i:inline key=".meters.none"/>
             </c:when>
             <c:otherwise>
-                <tags:alternateRowReset/>
                 <table class="compactResultsTable aligned_4_actions">
                     <thead>
                         <tr>
@@ -625,16 +606,17 @@
                                                         endAction="function(items) { return changeOut(${meter.inventoryId}, true); }" 
                                                         linkType="button"
                                                         buttonRenderMode="image"
+                                                        icon="icon-arrow-swap"
                                                         nameKey="changeOut"/>
                                             </c:if>
                                             
                                         </cti:checkRolesAndProperties>
                                         
-                                        <cti:img nameKey="editConfig" href="${editMeterConfigUrl}${meter.deviceId}"/>
+                                        <cti:icon nameKey="editConfig" href="${editMeterConfigUrl}${meter.deviceId}" icon="icon-cog-edit"/>
                                         
                                         <cti:checkRolesAndProperties value="METERING">
                                             <cti:paoDetailUrl  yukonPao="${meter.yukonPao}">
-                                                <cti:img nameKey="meterDetail" />
+                                                <cti:icon nameKey="meterDetail" icon="icon-control-equalizer-blue"/>
                                             </cti:paoDetailUrl>
                                         </cti:checkRolesAndProperties>
                                     </td>
@@ -660,7 +642,7 @@
                             <td>
                                 <c:choose>
                                     <c:when test="${starsMeters}">
-                                        <cti:button nameKey="add" type="submit"/>
+                                        <cti:button nameKey="add" type="submit" icon="icon-add"/>
                                     </c:when>
                             
                                     <c:otherwise>
@@ -671,6 +653,7 @@
                                                 immediateSelectMode="true"
                                                 endAction="addMeter" 
                                                 linkType="button" 
+                                                icon="icon-add"
                                                 nameKey="add"/>
                                     </c:otherwise>
                                 </c:choose>
@@ -729,6 +712,7 @@
                                                     endAction="function(items) { return changeOut(${gateway.inventoryId}, false); }" 
                                                     nameKey="changeOut"
                                                     linkType="button"
+                                                    icon="icon-arrow-swap"
                                                     buttonRenderMode="image"/>
                                         </c:if>
                                     </cti:checkRolesAndProperties>
@@ -759,11 +743,11 @@
                         <c:choose>
                             <c:when test="${not inventoryChecking}">
                                 <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
-                                    <cti:button nameKey="add" type="submit"/>
+                                    <cti:button nameKey="add" type="submit" icon="icon-add"/>
                                 </cti:checkRolesAndProperties>
                             </c:when>
                             <c:otherwise>
-                                <cti:button nameKey="add" type="button" onclick="showInvCheckingPopup('gateway');" dialogButton="true"/>
+                                <cti:button nameKey="add" type="button" icon="icon-add" onclick="showInvCheckingPopup('gateway');" dialogButton="true"/>
                             </c:otherwise>
                         </c:choose>
     

@@ -7,7 +7,6 @@
     <entry key="yukon.web.modules.operator.metering.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.operator.metering.trend.title">Metering</entry>
     <entry key="yukon.web.modules.operator.metering.trends.title">Trends</entry>
-    <entry key="yukon.web.modules.operator.metering.trends.title">Trends</entry>
     <entry key="yukon.web.modules.operator.metering.trends.selectTrends">Edit</entry>
     <entry key="yukon.web.modules.operator.metering.trends.noDataSelected">No Data Set Selected </entry>
     <entry key="yukon.web.modules.operator.metering.noTrends"><![CDATA[

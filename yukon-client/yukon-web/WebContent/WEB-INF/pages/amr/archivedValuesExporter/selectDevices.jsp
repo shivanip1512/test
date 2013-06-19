@@ -7,9 +7,9 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 
-<cti:standardPage page="archivedValueExporter.selectDevices" module="amr">
-    <tags:boxContainer2 nameKey="selectionContainer">
+<cti:standardPage page="bulk.archivedValueExporter.selectDevices" module="tools">
+    <tags:sectionContainer2 nameKey="selectionContainer">
         <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson"/>
         <tags:deviceSelection action="selected" groupDataJson="${groupDataJson}" pickerType="devicePicker"/>
-    </tags:boxContainer2>
+    </tags:sectionContainer2>
 </cti:standardPage>

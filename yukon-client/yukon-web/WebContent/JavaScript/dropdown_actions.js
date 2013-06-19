@@ -59,7 +59,7 @@ jQuery(function() {
         if (typeof(target.data('menu_items')) !== 'undefined') {
             menu.toggle();
         } else {
-            target.find(".cog").removeClass("cog").addClass("loading");
+            target.find(".icon-cog").removeClass("icon-cog").addClass("icon-loading");
             var params = {};
             target.closest(".f_dropdown_outer_container").prev(".params").find("input").each(function() {
                 params[jQuery(this).attr("name")] = jQuery(this).val();
@@ -81,7 +81,7 @@ jQuery(function() {
                     }
                     target.data({'menu_items': true});
                     menu.append(items.join(''));
-                    target.find(".loading").removeClass("loading").addClass("cog");
+                    target.find(".icon-loading").removeClass("icon-loading").addClass("icon-cog");
                     positionDropdownMenu(menu, target);
                 }
             });

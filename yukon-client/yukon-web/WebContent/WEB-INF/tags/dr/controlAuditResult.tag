@@ -67,33 +67,5 @@
         <cti:param name="type" value="${type}"/>
         <cti:param name="auditId" value="${auditId}"/>
     </cti:url>
-    <div class="compactResultsPaging">
-        <div class="pagingArea">
-            <span class="fl previousLink">
-                <c:choose>
-                    <c:when test="${result.previousNeeded}">
-                        <a href="${prevUrl}" class="labeled_icon prev f_ajaxPaging">
-                            <i:inline key="yukon.common.paging.previous"/>
-                        </a>
-                    </c:when>
-                    <c:otherwise>
-                        <span class="labeled_icon prev_disabled"><i:inline key="yukon.common.paging.previous"/></span>
-                    </c:otherwise>
-                </c:choose>
-            </span>
-            <span class="fl pageNumText"><i:inline key="yukon.common.paging.viewing" arguments="${result.startIndex + 1},${result.endIndex},${result.hitCount}" argumentSeparator=","/></span>
-            <span class="fl nextLink">
-                <c:choose>
-                    <c:when test="${result.nextNeeded}">
-                        <a href="${nextUrl}" class="labeled_icon_right next f_ajaxPaging">
-                            <i:inline key="yukon.common.paging.next"/>
-                        </a>
-                    </c:when>
-                    <c:otherwise>
-                        <span class="labeled_icon_right next_disabled"><i:inline key="yukon.common.paging.next"/></span>
-                    </c:otherwise>
-                </c:choose>
-            </span>
-    </div>
-    </div>
+    <dr:pagingResultsControl prevUrl="${prevUrl}" nextUrl="${nextUrl}" result="${result}"/>
 </c:if>

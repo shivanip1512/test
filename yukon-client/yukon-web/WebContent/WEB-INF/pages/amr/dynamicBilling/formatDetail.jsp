@@ -6,16 +6,6 @@
 <cti:msgScope paths="modules.amr.billing.DETAIL">
 <cti:msg2 key=".pageName" var="pageName"/>
 
-<cti:standardPage title="${pageName}" module="amr">
-
-
-<cti:standardMenu menuSelection="billing|setup"/>
-<cti:breadCrumbs>
-	<cti:msg key="yukon.web.components.button.home.label" var="homeLabel"/>
-    <cti:crumbLink url="/operator/Operations.jsp" title="${homeLabel}" />
-    <cti:crumbLink url="/dynamicBilling/overview" title="Billing Setup" />
-    &gt; <cti:msg2 key=".contextualPageName"/>
-</cti:breadCrumbs>
 
 <script type="text/javascript">
     jQuery(function() {selectedFieldsChanged();});
@@ -38,34 +28,25 @@
 
 <script>
 BILLING_ERRORS = {
-		fieldsNotEmpty:"<cti:msg2 key=".errors.fieldsNotEmpty"/>",
-		nameNotEmpty:"<cti:msg2 key=".errors.nameNotEmpty"/>",
-		nameMaxLength:"<cti:msg2 key=".errors.nameMaxLength"/>",
-		invalidPattern:"<cti:msg2 key=".errors.invalidPattern"/>",
-		invalidFormat:"<cti:msg2 key=".errors.invalidFormat"/>",
-		errorSaving:"<cti:msg2 key=".errors.errorSaving"/>"
+        fieldsNotEmpty:"<cti:msg2 key=".errors.fieldsNotEmpty"/>",
+        nameNotEmpty:"<cti:msg2 key=".errors.nameNotEmpty"/>",
+        nameMaxLength:"<cti:msg2 key=".errors.nameMaxLength"/>",
+        invalidPattern:"<cti:msg2 key=".errors.invalidPattern"/>",
+        invalidFormat:"<cti:msg2 key=".errors.invalidFormat"/>",
+        errorSaving:"<cti:msg2 key=".errors.errorSaving"/>"
 };
 </script>
-        
-<cti:includeScript link="/JavaScript/yukonGeneral.js"/>
-<cti:includeScript link="/JavaScript/dynamicBillingFileGenerator.js"/>
 
-    <table class="widgetColumns">
-        <tr>
-            <td>
-                <h2 style="display: inline;">
-                    ${title }
-                </h2>
-            </td>
-        </tr>
-    </table>
-    <br>
+    <h2 >
+        ${title }
+    </h2>
+
     
     <div align="center">
         <div id="errorMsg" class="error">&nbsp;</div>
     </div>
 
-    <form id="begin" name="begin" action="" method="post" autocomplete="off">
+    <form id="billingFormatForm" name="billingFormatForm" action="" method="post" autocomplete="off">
     
         <%--  FORMAT SETUP --%>
         <cti:msg2 key=".formatSetup.title" var="formatSetup"/>
@@ -107,14 +88,13 @@ BILLING_ERRORS = {
         <br>
         
         <!--  start Field pair columns -->
-        <div class="colmask doublepage singleCol">
-            <div class="colleft">
-                <div class="col1">
+        <div class="column_12_12">
+                <div class="column one">
             <%--  FIELD SETUP --%>
                     <ct:sectionContainer2 nameKey=".fieldSetup" id="dbgFieldSetup">
                     <div><h4 style="display: inline;"><cti:msg2 key=".selectedFields"/></h4><span class="error">*</span></div>
-                    <div class="leftChildren">
-                        <div style="width:260px;">
+                    <div>
+                        <div>
                             <select id="selectedFields" name="selectedFields" style="width:260px;" size="7" onchange="selectedFieldsChanged()" >
                                 <c:forEach var="field" items="${selectedFields}" varStatus="status">
                                     <c:set var="selected" value=""/>
@@ -125,15 +105,16 @@ BILLING_ERRORS = {
                                 </c:forEach>
                             </select>
                         </div>
-                        <div style="padding-left:10px;" class="equalWidthButtons">
+                        <div class="actionArea">
                             <cti:msg2 key=".moveUp" var="moveUp"/>
                             <cti:msg2 key=".moveDown" var="moveDown"/>
                             <cti:msg2 key=".remove" var="remove"/>
                             <cti:msg2 key=".addFields" var="addFields"/>
-                                <input type="button" id="upArrowButton" onclick="yukonGeneral_moveOptionPositionInSelect(selectedFields, -1);selectedFieldsChanged();" value="${moveUp}" disabled="disabled">
-                                <input type="button" id="downArrowButton" onclick="yukonGeneral_moveOptionPositionInSelect(selectedFields, 1);selectedFieldsChanged();" value="${moveDown}" disabled="disabled">
-                                <input type="button" id="removeButton" onclick="removeFromSelected();" value="${remove}" disabled="disabled">
-                                <input type="button" id="addButton" onclick="addFieldButton();" value="${addFields}">
+                            <input type="button" class="button fl" id="upArrowButton" onclick="yukonGeneral_moveOptionPositionInSelect(selectedFields, -1);selectedFieldsChanged();" value="${moveUp}" disabled="disabled">
+                            <input type="button" class="button fl" id="downArrowButton" onclick="yukonGeneral_moveOptionPositionInSelect(selectedFields, 1);selectedFieldsChanged();" value="${moveDown}" disabled="disabled">
+                            <input type="button" class="button fl" id="removeButton" onclick="removeFromSelected();" value="${remove}" disabled="disabled">
+                            <input type="button" class="button fl" id="addButton" onclick="addFieldButton();" value="${addFields}">
+                            
                         </div>
                         
                         <div id="addFieldsDropDown" style="display:none;">
@@ -149,12 +130,12 @@ BILLING_ERRORS = {
                             <input type="button" onclick="addToSelected('${defaultRoundingMode}');" value="${add}"><br>
                             <input type="button" onclick="addFieldButton();" value="${done}">
                         </div>
+                    </div>
                     </ct:sectionContainer2>
-                </div>
                 </div>
             
                 <%--  FORMAT SELECTED FIELD --%>
-                <div class="col2">
+                <div class="column two nogutter">
                     <ct:sectionContainer2 nameKey="formatSelectedField" id="dbgFormatSelectedField">
                     <font size="1"><cti:msg2 key=".formatSelectedFieldHelp"/></font>        
                     <div>
@@ -302,7 +283,7 @@ BILLING_ERRORS = {
                     <br>
             </div>
         </div>
-    </div>
+
         <br>
         
         <%--  FORMAT PREVIEW --%>        
@@ -313,16 +294,12 @@ BILLING_ERRORS = {
                 updateFormatName();
             </script>
             
-            <br>
-            <cti:msg2 key=".save" var="save"/>
-            <cti:msg2 key=".cancel" var="cancel"/>
-            <input type="button" onclick="saveButton();" value="${save}">
-            <input type="button" onclick="cancelButton();" value="${cancel}">
-            
         </ct:sectionContainer2>
-        
+        <div class="pageActionArea stacked">
+            <cti:button nameKey="save" classes="primary action" onclick="saveButton();"/>
+            <cti:button nameKey="cancel" id="btnCancelSetup" />
+            
+        </div>
     </form>
-    
-</cti:standardPage>
 
 </cti:msgScope>

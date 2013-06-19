@@ -34,7 +34,7 @@ public enum FieldType implements Displayable{
     public static final Set<FieldType> DYNAMIC_ATTRIBUTE_FIELD_TYPES = 
             ImmutableSet.of(ADDRESS, ATTRIBUTE_NAME, DEVICE_NAME, METER_NUMBER, PLAIN_TEXT, POINT_NAME, ROUTE, POINT_TIMESTAMP, UNIT_OF_MEASURE, POINT_VALUE, POINT_QUALITY); 
     
-    private final static String keyPrefix = "yukon.web.modules.amr.archivedValueExporter.fieldType.";
+    private final static String keyPrefix = "yukon.web.modules.tools.bulk.archivedValueExporter.fieldType.";
     
     private String description;
 

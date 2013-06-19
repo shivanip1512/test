@@ -1,36 +1,11 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:msg var="pageTitle" key="yukon.common.device.bulk.updateConfirm.pageTitle"/>
-
-<cti:standardPage title="${pageTitle}" module="amr">
-
-    <cti:standardMenu menuSelection="" />
-
-    <%-- BREAD CRUMBS --%>
-    <cti:breadCrumbs>
-        
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        
-        <%-- bulk home --%>
-        <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
-        
-        <%-- upload --%>
-        <cti:msg var="updateUploadPageTitle" key="yukon.common.device.bulk.updateUpload.pageTitle"/>
-        <cti:crumbLink url="/bulk/update/upload" title="${updateUploadPageTitle}" />
-        
-        <%-- confirm --%>
-        <cti:crumbLink>${pageTitle}</cti:crumbLink>
-        
-    </cti:breadCrumbs>
-    
-    <h2>${pageTitle}</h2>
-    <br>
+<cti:standardPage module="tools" page="bulk.updateConfirm">
 
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.updateConfirm.header"/>
-    <tags:boxContainer title="${headerTitle}" id="updateConfirmContainer" hideEnabled="false">
+    <tags:sectionContainer title="${headerTitle}" id="updateConfirmContainer">
     
         <form id="updateConfirmForm" action="/bulk/update/doUpdate" method="post">
             
@@ -59,19 +34,17 @@
             </table>
                 
             <%-- SUBMIT BUTTONS --%>
-            <cti:msg var="updateButton" key="yukon.common.device.bulk.updateConfirm.updateButton"/>
-            <cti:msg var="cancelButton" key="yukon.common.device.bulk.updateConfirm.cancelButton"/>
             <cti:url var="cancelUrl" value="/bulk/update/upload"/>
-            
-            <br>
-            <input type="button" id="cancelButton" value="${cancelButton}" onclick="window.location='${cancelUrl}'"  class="formSubmit">
-            <tags:slowInput myFormId="updateConfirmForm" label="${updateButton}" labelBusy="${updateButton}" />
+            <div class="pageActionArea">
+                <cti:button nameKey="update" type="submit" classes="f_disableAfterClick primary action" busy="true"/>
+                <cti:button nameKey="cancel" id="cancelButton" onclick="window.location='${cancelUrl}'"/>
+            </div>
             
             <%-- UPDATE INFO ID --%>
             <input type="hidden" name="fileInfoId" value="${parsedResult.bulkFileInfo.id}">
             
         </form>
         
-    </tags:boxContainer>
+    </tags:sectionContainer>
     
  </cti:standardPage>

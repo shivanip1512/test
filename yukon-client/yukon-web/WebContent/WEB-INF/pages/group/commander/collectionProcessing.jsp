@@ -5,19 +5,9 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
-<cti:standardPage title="Group Processing" module="amr">
+<cti:standardPage module="tools" page="bulk.sendCommand">
 
-	<cti:standardMenu menuSelection="devicegroups|commander"/>
-	
-   	<cti:breadCrumbs>
-	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-	    <cti:crumbLink title="Group Processing"/>
-	</cti:breadCrumbs>
-
-	<h2>Group Command Processing</h2>
-	<br>
-  
-    <tags:bulkActionContainer key="yukon.common.device.group" deviceCollection="${deviceCollection}">
+    <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.sendCommand" deviceCollection="${deviceCollection}">
   
 	<%-- ERROR MSG --%>
     <c:if test="${not empty param.errorMsg}">
@@ -42,8 +32,7 @@
             <input type="text" name="emailAddress" value="" size="40">
             <br><br>
 
-            <tags:slowInput myFormId="collectionProcessingForm" labelBusy="Execute" label="Execute"></tags:slowInput>
-			
+			<cti:button nameKey="execute" type="submit" classes="f_disableAfterClick primary action" busy="true"/>
 		</form>
 	</div>
   

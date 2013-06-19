@@ -47,7 +47,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
-                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="f_blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>
@@ -62,7 +62,7 @@
                 <form action="/debug/loadControlService/inputs/getAllCurrentlyActivePrograms" method="post">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".run" >
-                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="f_blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>
@@ -99,7 +99,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
-                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="f_blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>
@@ -139,7 +139,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
-                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="f_blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>
@@ -170,7 +170,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
-                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="f_blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>
@@ -201,7 +201,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
-                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="f_blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>
@@ -219,7 +219,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
-                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="f_blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>
@@ -259,7 +259,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
-                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="f_blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>
@@ -297,7 +297,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
-                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="f_blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>
@@ -331,7 +331,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
-                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="f_blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>
@@ -365,7 +365,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
-                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="f_blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>
@@ -393,7 +393,7 @@
                         </tags:nameValue2>                        
                         
                         <tags:nameValue2 nameKey=".run">
-                            <cti:button nameKey="testBtn" type="submit" styleClass="f_blocker"/>
+                            <cti:button nameKey="testBtn" type="submit" classes="f_blocker"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form>

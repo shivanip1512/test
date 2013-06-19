@@ -1,7 +1,8 @@
+<%@ tag body-content="empty" trimDirectiveWhitespaces="true"%>
+
 <%@ attribute name="searchResult" required="true" type="com.cannontech.common.search.SearchResult" %>
 <%@ attribute name="baseUrl" required="true" type="java.lang.String" %>
 <%@ attribute name="itemsPerPage" required="true" type="java.lang.Integer" %>
-<%@ tag body-content="empty" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>

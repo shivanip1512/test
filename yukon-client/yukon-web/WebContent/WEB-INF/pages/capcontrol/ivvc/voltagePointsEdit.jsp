@@ -33,7 +33,6 @@
 	<tags:boxContainer2 nameKey=".title">
 		<form:form id="voltagePointsForm" action="updateVoltagePoints" commandName="zoneVoltagePointsHolder">
 			<input name="zoneId" value="${zoneId}" type="hidden"/>
-			<tags:alternateRowReset />
 			<table class="compactResultsTable ">
 				<thead>
 				<tr>
@@ -66,7 +65,7 @@
 						<c:set var="disabledInput" value="true"/>
 					</c:if>
 				
-					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
+					<tr>
 						<td><spring:escapeBody htmlEscape="true">${voltagePoint.paoName}</spring:escapeBody></td>
 						<td>
 		                    <cti:url value="/editor/pointBase.jsf" var="pointLink">
@@ -117,7 +116,7 @@
 			</table>
 			<div class="pageActionArea">
                 <c:if test="${hasEditingRole}">
-					<cti:button nameKey="save" type="submit"/>
+					<cti:button nameKey="save" type="submit" classes="primary action"/>
 					
 					<cti:url var="zoneVoltagePointsUrl" value="/capcontrol/ivvc/zone/voltagePoints">
 				    	<cti:param name="zoneId" value="${zoneId}"/>

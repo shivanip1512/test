@@ -12,7 +12,7 @@
             <cti:param name="orderBy" value="${orderBy}"/>
             <cti:param name="descending" value="${descending}"/>
         </cti:url>
-        <a id="exportCsv" href="${download}" class="labeled_icon csv title-bar-tool"><i:inline key="yukon.web.components.button.csv.label"/></a>
+        <a id="exportCsv" href="${download}" class="button naked fr" style="margin-right: 10px;"><i class="icon icon-page-excel"></i><span class="label"><i:inline key="yukon.web.components.button.csv.label"/></span></a>
     </c:set>
      
      <tags:boxContainer2 nameKey="currentPointValues" arguments="${deviceName}" titleLinkHtml="${actionsMenu}" hideEnabled="true" showInitially="true">

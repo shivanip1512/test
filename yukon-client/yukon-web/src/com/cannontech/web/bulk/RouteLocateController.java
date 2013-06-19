@@ -154,6 +154,7 @@ public class RouteLocateController {
         
         RouteLocateResult result = routeLocateExecutor.getResult(resultId);
         model.addAttribute("result", result);
+        model.addAttribute("deviceCollection", result.getDeviceCollection());
         
         long deviceCount = result.getDeviceCollection().getDeviceCount();
         model.addAttribute("deviceCount", deviceCount);
@@ -171,6 +172,7 @@ public class RouteLocateController {
         
         RouteLocateResult result = routeLocateExecutor.getResult(resultId);
         model.addAttribute("result", result);
+        model.addAttribute("deviceCollection", result.getDeviceCollection());
 
         // FOUND/NOT FOUND LISTS
         List<DeviceRouteLocation> foundRoutes = new ArrayList<DeviceRouteLocation>();

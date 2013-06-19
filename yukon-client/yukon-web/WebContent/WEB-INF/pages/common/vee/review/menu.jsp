@@ -31,9 +31,8 @@ Please restart the Yukon Service Manager to resume processing.
 </div>
 </c:if>
 	
-<table class="widgetColumns">
-    <tr>
-        <td class="widgetColumnCell" valign="top">
+<div class="column_12_12">
+    <div class="column one">
             <tags:abstractContainer type="box" title="Accept All" styleClass="widgetContainer">
                 <p class="warningMessage">
                 This will insert the OK tag for the any RawPointHistory value that has the identical
@@ -71,8 +70,8 @@ Please restart the Yukon Service Manager to resume processing.
                     <input type="submit" value="Delete">
                 </form>
             </tags:abstractContainer>	
-        </td>
-        <td class="widgetColumnCell" valign="top">
+    </div>
+    <div class="column two nogutter">
             <tags:abstractContainer type="box" title="Recalculate Tags" styleClass="widgetContainer">
                 <p class="warningMessage">
                 The following options will reset the validation engine so that it reprocesses
@@ -89,9 +88,6 @@ Please restart the Yukon Service Manager to resume processing.
                     Delete all tags: <input type="submit" value="Reset">
                 </form>
             </tags:abstractContainer>	
-        </td>
-    </tr>
-</table>
-
-
+    </div>
+</div>
 </cti:standardPage>

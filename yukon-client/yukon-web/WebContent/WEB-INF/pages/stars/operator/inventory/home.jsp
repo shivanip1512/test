@@ -7,111 +7,93 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:url var="action" value="/stars/operator/inventory/setupFilterRules"/>
 
 <cti:standardPage module="operator" page="inventory.home">
 
-    <cti:checkEnergyCompanyOperator showError="true" >
-        <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
-        
-        <script type="text/javascript">
-        function submitSelectionForm(items) {
-            $('selectByInventoryPickerForm').submit();
-            return true;
-        }
-        function addMeter() {
-            $('addMeterForm').submit();
-            return true;
-        }
-    
-        function showFileUpload() {
-            $('fileUploadPopup').show();
-        }
-    
-        function closeFileUpload() {
-            $('fileUpload.dataFile').value = '';
-            $('fileUploadPopup').hide();
-        }
-        </script>
+<cti:checkEnergyCompanyOperator showError="true" >
+<cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
+<cti:url var="action" value="/stars/operator/inventory/setupFilterRules"/>
+
+<cti:msg2 key="yukon.web.defaults.upload" var="uploadText"/>
+<cti:msg2 key="yukon.common.cancel" var="cancelText"/>
+
+<script type="text/javascript">
+function submitSelectionForm(items) {
+    jQuery('#selectByInventoryPickerForm').submit();
+    return true;
+}
+function addMeter() {
+    jQuery('#addMeterForm').submit();
+    return true;
+}
+
+function showFileUpload() {
+	var buttons = [{text: '${uploadText}', click: function() {jQuery('#fileUploadPopup form').submit();}}
+                  ,{text: '${cancelText}', click: function() {jQuery('#fileUploadPopup input[type=file]').val('');jQuery(this).dialog("close");}}];
+    jQuery('#fileUploadPopup').dialog({width:500, 'buttons': buttons});
+}
+</script>
         
         <tags:widgetContainer identify="false">
         
-            <cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-bottom:10px;" tableClasses="inventoryOperationsLayout">
+        <div class="column_12_12">
+            <div class="one column">
             
-                <%-- LEFT SIDE COLUMN --%>
-                <cti:dataGridCell>
-                
-                    <tags:boxContainer2 nameKey="deviceSelection" hideEnabled="false">
-                        <table class="inventoryActionsTable">
-                        
-                            <%-- INVENTORY PICKER--%>
-                            <tr>
-                                <td class="button top">
-                                    <form id="selectByInventoryPickerForm" action="/stars/operator/inventory/inventoryActions" method="post">
-                                        <input type="hidden" name="collectionType" value="idList"/>
-                                        <input type="hidden" name="idList.ids" id="inventoryIds"/>
-                                        <tags:pickerDialog type="lmHardwareBasePicker" extraArgs="${energyCompanyId}" id="inventoryPicker" multiSelectMode="true" 
-                                                                destinationFieldId="inventoryIds" endAction="submitSelectionForm" linkType="button" buttonStyleClass="buttonGroup" nameKey="selectInventoryButton"/>
+                <tags:boxContainer2 nameKey="deviceSelection" hideEnabled="false">
+                    <table class="inventoryActionsTable">
+                        <%-- INVENTORY PICKER--%>
+                        <tr>
+                            <td>
+                                <form id="selectByInventoryPickerForm" action="/stars/operator/inventory/inventoryActions" method="post">
+                                    <input type="hidden" name="collectionType" value="idList"/>
+                                    <input type="hidden" name="idList.ids" id="inventoryIds"/>
+                                    <tags:pickerDialog type="lmHardwareBasePicker" 
+                                                        extraArgs="${energyCompanyId}" 
+                                                        id="inventoryPicker" 
+                                                        multiSelectMode="true" 
+                                                        destinationFieldId="inventoryIds" 
+                                                        endAction="submitSelectionForm" 
+                                                        nameKey="selectInventoryButton"><i:inline key=".selectInventoryButton.label"/></tags:pickerDialog>
+                                </form>
+                            </td>
+                            <td><i:inline key=".selectInventoryDescription"/></td>
+                        </tr>
+                        <%-- INVENTORY FILTER --%>
+                        <tr>
+                            <td><a href="setupFilterRules"><i:inline key=".selectFilterButton.label"/></a></td>
+                            <td><i:inline key=".selectFilterDescription"/></td>
+                        </tr>
+                        <%-- FILE UPLOAD --%>
+                        <tr>
+                            <td>
+                                <a href="javascript:showFileUpload();"><i:inline key=".selectFileButton.label"/></a>
+                                <div id="fileUploadPopup" title="${fileUploadTitle}" class="dn">
+                                    <cti:url var="submitUrl" value="/stars/operator/inventory/uploadFile"/>
+                                    <form method="post" action="${submitUrl}" enctype="multipart/form-data">
+                                        <tags:nameValueContainer2>
+                                            <tags:nameValue2 nameKey=".fileLabel">
+                                                <input type="file" id="fileUpload.dataFile" name="fileUpload.dataFile" size="40">
+                                                <input type="hidden" name="collectionType" value="fileUpload">
+                                                <input type="hidden" name="fileUpload.energyCompanyId" value="${energyCompanyId}">
+                                            </tags:nameValue2>
+                                        </tags:nameValueContainer2>
                                     </form>
-                                </td>
-                    
-                                <td class="description top"><i:inline key=".selectInventoryDescription"/></td>
-                            </tr>
-                            
-                            <%-- INVENTORY FILTER --%>
-                            <tr>
-                                <td class="button middle">
-                                    <form id="selectByFilterForm" action="/stars/operator/inventory/setupFilterRules" method="get">
-                                        <cti:button nameKey="selectFilterButton" type="submit" styleClass="buttonGroup" name="filterButton"/>
-                                    </form>
-                                </td>
-                    
-                                <td class="description middle"><i:inline key=".selectFilterDescription"/></td>
-                            </tr>
-                    
-                            <%-- FILE UPLOAD --%>
-                            <tr>
-                                <td class="button">
-                                    <cti:button nameKey="selectFileButton" type="button" styleClass="buttonGroup" name="fileButton" onclick="showFileUpload()"/>
-                                    <tags:simplePopup id="fileUploadPopup" title="${fileUploadTitle}" styleClass="mediumSimplePopup">
-                                        <cti:url var="submitUrl" value="/stars/operator/inventory/uploadFile"/>
-                                        <form method="post" action="${submitUrl}" enctype="multipart/form-data">
-                                            <tags:nameValueContainer2>
-                                                <tags:nameValue2 nameKey=".fileLabel">
-                                                    <input type="file" id="fileUpload.dataFile" name="fileUpload.dataFile" size="40">
-                                                    <input type="hidden" name="collectionType" value="fileUpload">
-                                                    <input type="hidden" name="fileUpload.energyCompanyId" value="${energyCompanyId}">
-                                                </tags:nameValue2>
-                                            </tags:nameValueContainer2>
-                                            <div class="actionArea">
-                                                <cti:button nameKey="ok" type="submit" styleClass="f_blocker"/>
-                                                <cti:button nameKey="cancel" onclick="closeFileUpload();"/>
-                                            </div>
-                                        </form>
-                                    </tags:simplePopup>
-                                </td>
-                    
-                                <td class="description"><i:inline key=".selectFileDescription"/></td>
-                            </tr>
-                        </table>
-                                 
-                    </tags:boxContainer2>
-                    
-                    <br>
-                    
-                    <%-- DEVICE RECONFIG MONITORS WIDGET --%>
-                    <tags:widget bean="deviceReconfigMonitorsWidget"/>
-                    
-                    <br>
-                    
-                    <%-- COMMAND SCHEDULE WIDGET --%>
-                    <tags:widget bean="commandScheduleWidget" />
+                                </div>
+                            </td>
+                            <td><i:inline key=".selectFileDescription"/></td>
+                        </tr>
+                    </table>
+                </tags:boxContainer2>
                 
-                </cti:dataGridCell>
+                <%-- DEVICE RECONFIG MONITORS WIDGET --%>
+                <tags:widget bean="deviceReconfigMonitorsWidget"/>
                 
-                <%-- RIGHT SIDE COLUMN --%>
-                <cti:dataGridCell>
-                
+                <%-- COMMAND SCHEDULE WIDGET --%>
+                <tags:widget bean="commandScheduleWidget" />
+            
+            </div>
+            
+            <div class="two column nogutter">
                     <%--SEARCH --%>
                     <c:if test="${showSearch}">
                         <%@ include file="search.jsp" %>
@@ -131,18 +113,17 @@
                                         </select>
                                     </form>
                                 </li>
-                                <c:if test="${showAddByRange}">
-                                    <li>
-                                        <form action="abr/view" method="post">
-                                            <cti:button nameKey="addHardwareByRange" id="addHardwareByRangeBtn" type="submit"/>
-                                            <select name="hardwareTypeId">
-                                                <c:forEach items="${addHardwareByRangeTypes}" var="deviceType">
-                                                    <option value="${deviceType.entryID}"><spring:escapeBody htmlEscape="true">${deviceType.entryText}</spring:escapeBody></option>
-                                                </c:forEach>
-                                            </select>
-                                        </form>
-                                    </li>
-                                </c:if>
+                                <li>
+                                    <form action="abr/view" method="post">
+                                        <cti:button nameKey="addHardwareByRange" id="addHardwareByRangeBtn" type="submit"/>
+                                        <select name="hardwareTypeId">
+                                            <c:forEach items="${addHardwareByRangeTypes}" var="deviceType">
+                                                <option value="${deviceType.entryID}"><spring:escapeBody htmlEscape="true">${deviceType.entryText}</spring:escapeBody></option>
+                                            </c:forEach>
+                                        </select>
+                                    </form>
+                                </li>
+                                
                                 <c:if test="${showAddMeter}">
                                     <li>
                                         <form action="addMeter/view" id="addMeterForm">
@@ -164,17 +145,12 @@
                     </c:if>
                         
                     <c:if test="${showLinks}">
-                        <br>
-                        
                         <tags:boxContainer2 nameKey="links">
                             <a href="/stars/operator/inventory/zbProblemDevices/view"><i:inline key=".zbProblemDevices" /></a>
                         </tags:boxContainer2>
                     </c:if>
-                    
-                </cti:dataGridCell>
-                
-            </cti:dataGrid>
-    
+                </div>
+            </div>
         </tags:widgetContainer>
     </cti:checkEnergyCompanyOperator>
 </cti:standardPage>

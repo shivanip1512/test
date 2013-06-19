@@ -242,9 +242,6 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
     -moz-box-shadow: #444 0 10px 30px;
     box-shadow: #444 0 10px 30px;
 }
-.ui-dialog.smallDialog {
-    border: 6px solid #666;
-}
 .ui-dialog .ui-dialog-titlebar {
     position: relative;
     background-color: #F7F7F7;
@@ -611,3 +608,83 @@ body .ui-tooltip { border-width: 2px; }
 .ui-widget-overlay { background: #666666 url(images/ui-bg_inset-soft_20_666666_1x100.png) 50% bottom repeat-x; opacity: .5;filter:Alpha(Opacity=50); }
 .ui-widget-shadow { margin: -5px 0 0 -5px; padding: 5px; background: #000000 url(images/ui-bg_flat_10_000000_40x100.png) 50% 50% repeat-x; opacity: .2;filter:Alpha(Opacity=20); -moz-border-radius: 5px; -khtml-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px; }
 
+
+/** CUSTOM YUKON STYLING **/
+.ui-dialog, .ui-dialog-content {box-sizing: content-box;} /* stops resizing from adding lots of right margin, since we are doing *{box-sizing: border-box;} now */
+.ui-dialog {
+    border: 1px solid #acacac;
+    -webkit-box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    -webkit-transition: margin-top 0.25s ease-in-out;
+    -moz-transition: margin-top 0.25s ease-in-out;
+    transition: margin-top 0.25s ease-in-out;
+}
+
+.ui-dialog .ui-dialog-content {
+    padding: 5px 20px; /* fat sides since occational scroll bar :( */
+}
+
+.ui-dialog .ui-dialog-title {
+    padding: 8px;
+    font-size: inherit;
+}
+.ui-dialog .ui-dialog-titlebar {
+    background-image: none;
+    background-color: #f7f7f7;
+    border: 1px solid #eaeaea;
+}
+.ui-dialog .ui-dialog-titlebar-close {
+    right: .6em;
+}
+
+.ui-widget-overlay {
+    background: #fff;
+    opacity: 0.5;
+    -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+    filter: alpha(opacity=50);
+}
+
+.ui-dialog .ui-dialog-buttonpane {
+    border: none;
+}
+
+.ui-tabs-box .ui-widget-header a, .ui-widget-header li.ui-state-active a:visited {
+    border-color: #CCCCCC #CCCCCC #FFFFFF !important;
+}
+div.ui-tabs-box > .ui-tabs-nav > li {
+    border-radius: 0;
+    border: medium none;
+    margin: 0.332em 0 0 1px;
+    background-color: #FFFFFF;
+    position: static;
+}
+div.ui-tabs-box > .ui-tabs-nav > li a {
+    font-weight: normal;
+    text-decoration: none;
+    padding: 3px 6px 1px 6px;
+    font-size: 13px;
+    line-height: 1.3077;
+    border: medium none;
+    color: #3565A5 !important;
+}
+div.ui-tabs-box > .ui-tabs-nav > li a:hover {
+    border: 1px solid #DDDDDD;
+    border-bottom: none;
+    padding: 2px 5px 1px 5px;
+}
+div.ui-tabs-box > .ui-tabs-nav > li.ui-tabs-active {
+    padding-bottom: 0;
+}
+div.ui-tabs-box > .ui-tabs-nav > li.ui-tabs-active a,
+div.ui-tabs-box > .ui-tabs-nav > li.ui-tabs-active a:hover {
+    color: #333333 !important;
+    border: 1px solid #BBBBBB;
+    border-bottom-color: #FFFFFF;
+    padding: 2px 5px 1px 5px;
+}
+div.ui-tabs-header .ui-tabs-panel {
+    border-left: medium none !important;
+    border-right: medium none !important;
+    border-bottom: medium none !important;
+}

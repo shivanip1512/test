@@ -8,17 +8,13 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msg var="headerTitle" key="${key}.header"/>
-<tags:boxContainer title="${headerTitle}" id="collectionActionsContainer" hideEnabled="false">
-
-    <%-- SELECTED DEVICES POPUP, NOTE TO USER --%>
-    <table cellpadding="2">
-    
+<tags:sectionContainer title="${headerTitle}" id="collectionActionsContainer">
+    <div class="stacked">
+        <%-- SELECTED DEVICES POPUP, NOTE TO USER --%>
         <c:if test="${not empty pageScope.deviceCollection}">
-        <tr>
-            <td valign="top" colspan="2" class="smallBoldLabel">
+            <div class="smallBoldLabel vat">
                 <tags:selectedDevices deviceCollection="${pageScope.deviceCollection}" id="selectedDevices"/>
-            </td>
-        </tr>
+            </div>
         </c:if>
         
         <%-- NOTE --%>
@@ -26,16 +22,10 @@
         <cti:msg var="noteText" key="${key}.noteText" arguments="${pageScope.noteTextArguments}" />
         
         <c:if test="${not empty noteLabel && not empty noteText}">
-            <tr>
-                <td valign="top" class="smallBoldLabel" <c:if test="${not empty pageScope.noteLabelStyle}">style="${pageScope.noteLabelStyle}"</c:if>>${noteLabel}</td>
-                <td style="font-size:11px;">
-                    ${noteText}
-                </td>
-            </tr>
+                <span class="smallBoldLabel vat" <c:if test="${not empty pageScope.noteLabelStyle}">style="${pageScope.noteLabelStyle}"</c:if>>${noteLabel}</span>
+                <span class="notes">${noteText}</span>
         </c:if>
-    </table>
-    <br>
+    </div>
     
 <jsp:doBody/>
-    
-</tags:boxContainer>
+</tags:sectionContainer>

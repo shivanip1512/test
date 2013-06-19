@@ -9,7 +9,7 @@ public enum DataRangeType implements DisplayableEnum {
     SINCE_LAST_CHANGE_ID,
     ;
 
-    private static final String keyPrefix = "yukon.web.modules.amr.archivedValueExporter.dataRangeType.";
+    private static final String keyPrefix = "yukon.web.modules.tools.bulk.archivedValueExporter.dataRangeType.";
 
     @Override
     public String getFormatKey() {

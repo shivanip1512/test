@@ -30,26 +30,18 @@
         
         function showCmdCanceldMsg() {
             return function(data) {
-                if (data.get('isCanceled') == 'true') {
-                    $('cmdCanceldMsg').show();
+                if (data.isCanceled === 'true') {
+                    jQuery('#cmdCanceldMsg').show();
                 }
             };
         }
 
         function refreshResults(kind, theDiv) {
-
             if (theDiv.visible()) {
-            
                 var url = '/group/commander/' + kind;
-                
-                var params = $H({
-                    'resultKey': '${result.key}'
-                });
-            
-                var updater = new Ajax.Updater (theDiv, url, {'parameters': params});
+                jQuery('#' + theDiv).load(url, 'resultKey': '${result.key}');
             }
         }
-    
     </script>
     
     <h2>Group Command Processing Result Detail</h2>

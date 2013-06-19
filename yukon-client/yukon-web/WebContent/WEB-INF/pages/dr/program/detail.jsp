@@ -12,21 +12,17 @@
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <dr:favoriteIconSetup/>
-	
-	<c:set var="programId" value="${program.paoIdentifier.paoId}"/>
-	<tags:layoutHeadingPrefixPart>
-		<dr:favoriteIcon paoId="${programId}" isFavorite="${isFavorite}"/>
-	</tags:layoutHeadingPrefixPart>
-	
-    <table class="widgetColumns">
-        <tr>
-            <td class="widgetColumnCell first" valign="top">
+
+    <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
+    <tags:layoutHeadingPrefixPart>
+        <dr:favoriteIcon paoId="${programId}" isFavorite="${isFavorite}"/>
+    </tags:layoutHeadingPrefixPart>
+
+    <div class="column_12_12 clear">
+        <div class="column one">
 
                 <%-- Program Info section --%>
-
-                <div class="widgetContainer">
-                <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.info"/>
-                <tags:abstractContainer type="box" title="${boxTitle}">
+                <tags:boxContainer2 nameKey="heading.info">
                     <tags:nameValueContainer>
                         <cti:checkRolesAndProperties value="PROGRAM_STATE">
                             <cti:msg var="fieldName" key="yukon.web.modules.dr.programDetail.info.state"/>
@@ -73,47 +69,38 @@
                         </cti:checkRolesAndProperties>
                         --%>
                     </tags:nameValueContainer>
-                </tags:abstractContainer>
-                </div>
-            </td>
-            <td class="widgetColumnCell last" valign="top">
-
+                </tags:boxContainer2>
+        </div>
+        <div class="column two nogutter">
                 <%-- 
                     Program Actions section each action has a simpleDialogLink that
                     pops open a dialog for the action.  The available actions are based
                     on the dynamically updated SHOW_ACTION value
                 --%>
-
-                <div class="widgetContainer">
-                <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.actions"/>
-                <tags:abstractContainer type="box" title="${boxTitle}">
+                <tags:boxContainer2 nameKey="heading.actions">
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}">
-                        
+
                         <%-- Actions are enabled only if the user has CONTROL_COMMAND for LM objects --%>
 
                         <tags:dynamicChoose updaterString="DR_PROGRAM/${programId}/SHOW_ACTION" suffix="${programId}">
                             <tags:dynamicChooseOption optionId="unknown">
                                 <cti:msg var="programUnknown" key="yukon.web.modules.dr.programDetail.unknown"/>
-                                <span class="disabledAction" title="${programUnknown}">
+                                <div class="disabledAction" title="${programUnknown}">
                                     <cti:logo key="yukon.web.modules.dr.programDetail.actions.startIcon.disabled"/>
                                     <cti:msg key="yukon.web.modules.dr.programDetail.actions.start"/>
-                                </span>
-                                <br>
-                                <span class="disabledAction" title="${programUnknown}">
+                                </div>
+                                <div class="disabledAction" title="${programUnknown}">
                                     <cti:logo key="yukon.web.modules.dr.programDetail.actions.stopIcon.disabled"/>
                                     <cti:msg key="yukon.web.modules.dr.programDetail.actions.stop"/>
-                                </span>
-                                <br>
-                                <span class="disabledAction" title="${programUnknown}">
+                                </div>
+                                <div class="disabledAction" title="${programUnknown}">
                                     <cti:logo key="yukon.web.modules.dr.programDetail.actions.changeGearsIcon.disabled"/>
                                     <cti:msg key="yukon.web.modules.dr.programDetail.actions.changeGears"/>
-                                </span>
-                                <br>
-                                <span class="disabledAction" title="${programUnknown}">
+                                </div>
+                                <div class="disabledAction" title="${programUnknown}">
                                     <cti:logo key="yukon.web.modules.dr.programDetail.actions.disableIcon.disabled"/>
                                     <cti:msg key="yukon.web.modules.dr.programDetail.actions.disable"/>
-                                </span>
-                                <br>
+                                </div>
                             </tags:dynamicChooseOption>
 
                             <tags:dynamicChooseOption optionId="runningEnabled">
@@ -341,22 +328,17 @@
                             <cti:msg key="yukon.web.modules.dr.programDetail.actions.disable"/>
                         </div>
                     </cti:checkPaoAuthorization>
-                </tags:abstractContainer>
-                </div>
-            </td>
-        </tr>
+                </tags:boxContainer2>
+        </div>
+    </div>
 
-        <%-- Child Load Groups for the Program --%>
-        <tr>
-            <td class="widgetColumnCell" colspan="2">
-                <div class="widgetContainer">
-                    <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.loadGroups"/>
-                    <c:set var="baseUrl" value="/dr/program/detail"/>
-                    <%@ include file="../loadGroup/loadGroupList.jspf" %>
-                </div>
-            </td>
-        </tr>
-
+    <%-- Child Load Groups for the Program --%>
+    <div class="column_24">
+        <div class="column one nogutter">
+            <c:set var="baseUrl" value="/dr/program/detail"/>
+            <%@ include file="../loadGroup/loadGroupList.jspf" %>
+        </div>
+    </div>
         <c:set var="showControlAreas" value="false"/>
         <c:set var="showScenarios" value="false"/>
         <cti:checkRolesAndProperties value="SHOW_CONTROL_AREAS">
@@ -366,19 +348,16 @@
             <c:set var="showScenarios" value="true"/>
         </cti:checkRolesAndProperties>
 
-        <c:if test="${showControlAreas || showScenarios}">
-        <tr>
+        <div class="column_12_12">
+            <div class="column one">
             <c:if test="${showControlAreas}">
-            <td class="widgetColumnCell first" valign="top">
-                <div class="widgetContainer">
                     <%-- 
                         Parent Control Area for the Program - has a link to Control Area detail if
                         the user has permission to view the Control Area 
                     --%>
-                    <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.parents.controlArea"/>
-                    <tags:abstractContainer title="${boxTitle}" type="box">
+                    <tags:boxContainer2 nameKey="parents.controlArea">
                         <c:if test="${empty parentControlArea}">
-                            <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.noControlArea"/></p>
+                            <span class="empty-list"><cti:msg key="yukon.web.modules.dr.programDetail.parents.noControlArea"/></span>
                         </c:if>
                         <c:if test="${!empty parentControlArea}">
                             <cti:checkPaoAuthorization permission="LM_VISIBLE" pao="${parentControlArea}">
@@ -394,21 +373,18 @@
                                 </span>
                             </cti:checkPaoAuthorization>
                         </c:if>
-                    </tags:abstractContainer>
-                </div>
-            </td>
+                    </tags:boxContainer2>
             </c:if>
-            <c:if test="${showScenarios}">
-            <td class="widgetColumnCell last" valign="top">
-                <div class="widgetContainer">
-                    <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.parents.scenarios"/>
-                    <tags:abstractContainer title="${boxTitle}" type="box">
+            </div>
+            <div class="column two nogutter">
+                <c:if test="${showScenarios}">
+                    <tags:boxContainer2 nameKey="parents.scenarios">
                         <%-- 
                             Parent Scenario(s) for the Program - has a link to Scenario detail if
                             the user has permission to view the Scenario 
                         --%>
                         <c:if test="${empty parentScenarios}">
-                            <p><cti:msg key="yukon.web.modules.dr.programDetail.parents.noScenarios"/></p>
+                            <span class="empty-list"><cti:msg key="yukon.web.modules.dr.programDetail.parents.noScenarios"/></span>
                         </c:if>
                         <c:if test="${!empty parentScenarios}">
                             <c:forEach var="parentScenario" items="${parentScenarios}">
@@ -426,11 +402,9 @@
                                 </cti:checkPaoAuthorization>
                             </c:forEach>
                         </c:if>
-                    </tags:abstractContainer>
-                </div>
-            </td>
-            </c:if>
-        </tr>
-        </c:if>
+                    </tags:boxContainer2>
+                </c:if>
+            </div>
+        </div>
     </table>
 </cti:standardPage>

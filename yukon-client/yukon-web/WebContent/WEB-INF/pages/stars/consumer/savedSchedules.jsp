@@ -85,8 +85,8 @@ jQuery(function(){
                 </div>
         <br>
         <br>
-        <cti:button nameKey="help" styleClass="help fl"/>
-        <cti:button nameKey="create" styleClass="create fl"/>
+        <cti:button nameKey="help" classes="help fl"/>
+        <cti:button nameKey="create" icon="icon-plus-green" classes="create fl"/>
     </c:when>
     <c:otherwise>
         <div class="schedules fl">
@@ -106,8 +106,8 @@ jQuery(function(){
             </c:if>
             <div class="box clear">
                 <div class="fr button-container">
-                    <cti:button nameKey="create" styleClass="create fl"/>
-                    <cti:button nameKey="help" styleClass="help fl"/>
+                    <cti:button nameKey="create" icon="icon-plus-green" classes="create fl"/>
+                    <cti:button nameKey="help" classes="help fl"/>
                 </div>
                 <div class="tempControls fl">
                     <form method="post" action="/stars/consumer/thermostat/schedule/updateTemperaturePreference">
@@ -153,7 +153,7 @@ jQuery(function(){
         
             <div class="actionArea">
                 <div class="fr">
-                    <cti:button nameKey="next" styleClass="f_next"/>
+                    <cti:button nameKey="next" classes="f_next"/>
                 </div>
             </div>
         </div>
@@ -173,12 +173,12 @@ jQuery(function(){
         
             <div class="actions">
                 <div class="fr">
-                    <cti:button nameKey="previous" styleClass="f_prev"/>
-                    <cti:button nameKey="save" styleClass="save f_blocker" />
-                    <cti:button nameKey="cancel" styleClass="cancel" />
+                    <cti:button nameKey="previous" classes="f_prev"/>
+                    <cti:button nameKey="save" classes="save f_blocker" />
+                    <cti:button nameKey="cancel" classes="cancel" />
                 </div>
                 <div class="fl">
-                    <cti:button nameKey="recommendedSettings" renderMode="labeledImage" styleClass="createDefault"/>
+                    <cti:button nameKey="recommendedSettings" renderMode="labeledImage" classes="createDefault" icon="icon-wrench"/>
                 </div>
             </div>
         </div>

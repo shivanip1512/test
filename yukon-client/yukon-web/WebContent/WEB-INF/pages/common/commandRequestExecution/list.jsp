@@ -119,7 +119,7 @@
     
     <%-- RESULTS TABLE --%>
     <div style="padding-bottom:5px;">
-		<cti:button nameKey="filter" styleClass="navlink" renderMode="labeledImage" id="filterButton" />
+		<cti:button nameKey="filter" classes="navlink" renderMode="labeledImage" id="filterButton" icon="icon-filter"/>
     </div>
 
     <table id="cresTable" class="resultsTable activeResultsTable rowHighlighting">

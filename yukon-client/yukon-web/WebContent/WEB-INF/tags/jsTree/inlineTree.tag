@@ -2,11 +2,6 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
-<%-- RENDER TO DIV SETUP --%>
-<%-- width and height are used to size either the div element the tree is rendered to --%>
-<%@ attribute name="width" required="false" type="java.lang.Integer"%>
-<%@ attribute name="height" required="false" type="java.lang.Integer"%>
-
 <%-- BASICS --%>
 <%-- id will be the internal id of the tree, also will be name of dom elememt to access tree in jsp --%>
 <%-- treeCss allows you to customize the styling of the tree's icons, etc --%>
@@ -18,11 +13,11 @@
 <%@ attribute name="includeControlBar" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="multiSelect" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
+<%@ attribute name="maxHeight" required="false" type="java.lang.Integer" description="The max-height in pixels for the internal tree div. Example: maxHeight='300'. Defaults is 500."%>
 
 <%-- STATIC JSON --%>
 <%-- json should be a dictionary starting with attributes of the root node (root node is supplied by you!) --%>
 <%@ attribute name="dataJson" required="false" type="java.lang.String"%>
-
 
 <cti:includeScript link="JQUERY_COOKIE" />
 <cti:includeScript link="JQUERY_SCROLLTO" />
@@ -33,6 +28,8 @@
     <c:when test="${not empty pageScope.treeCss}"><cti:includeCss link="${treeCss}"/></c:when>
     <c:otherwise><cti:includeCss link="/JavaScript/extjs_cannon/resources/css/tree.css"/></c:otherwise>
 </c:choose>
+
+<c:set var="maxHeight" value="${not empty maxHeight and maxHeight > 0  ? maxHeight : 500}"/>
 
 <script type="text/javascript">
 
@@ -59,7 +56,7 @@
         }
     }
 
-    jQuery(document).ready(function(){
+    jQuery(function(){
         //dataJson
         <c:choose>
             <c:when test="${not empty pageScope.dataJson}">
@@ -131,14 +128,8 @@
         jQuery(document.getElementById("${id}")).dynatree(args);
     });
 </script>
-<c:if test="${not empty width && width > 0}">
-    <c:set var="treeWidth" value="width:${width}px;"/>
-</c:if>
-<c:if test="${not empty height && height > 0}">
-    <c:set var="treeHeight" value="height:${height}px;"/>
-</c:if>
 
-<div id="internalTreeContainer_${id}"  class="inlineTree ${pageScope.styleClass}" style="${treeWidth} ${treeHeight}">
+<div id="internalTreeContainer_${id}" class="inlineTree contained ${pageScope.styleClass}">
 
     <c:if test="${not empty pageScope.includeControlBar and pageScope.includeControlBar}">
         <div class="tree_helper_controls">
@@ -165,7 +156,7 @@
 
     <%-- THE TREE GOES HERE --%>
     <div class="tree_container">
-        <div id="${id}" class="fl treeCanvas" style="height: ${height - 27}px; width:100%; overflow:auto;"></div>
+        <div id="${id}" class="fl treeCanvas" style="width:100%; overflow:auto;max-height: ${maxHeight}px;"></div>
     </div>
 
 </div>

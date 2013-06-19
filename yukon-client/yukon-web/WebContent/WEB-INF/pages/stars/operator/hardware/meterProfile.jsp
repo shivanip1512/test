@@ -11,10 +11,10 @@
     
 <script type="text/javascript">
 jQuery(document).on('click', '#deleteBtn', function() {
-    jQuery('#deleteHardwarePopup').show();
+    jQuery('#deleteHardwarePopup').dialog('open');
 });
 jQuery(document).on('click', '#cancelDeleteBtn', function() {
-    jQuery('#deleteHardwarePopup').hide();
+    jQuery('#deleteHardwarePopup').dialog('close');
 });
 </script>
     
@@ -128,7 +128,7 @@ jQuery(document).on('click', '#cancelDeleteBtn', function() {
                         <cti:param name="accountId" value="${accountId}"/>
                         <cti:param name="inventoryId" value="${inventoryId}"/>
                     </cti:url>
-                    <cti:button nameKey="edit" href="${editUrl}"/>
+                    <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
                 </cti:checkRolesAndProperties>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">

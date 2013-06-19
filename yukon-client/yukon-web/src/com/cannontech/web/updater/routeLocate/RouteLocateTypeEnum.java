@@ -29,7 +29,7 @@ public enum RouteLocateTypeEnum {
         public Object getValue(RouteLocateResult routeLocateResult) {
             
             
-            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.STOP_TIME");
+            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.web.modules.tools.bulk.routeLocateHome.recentRouteLocateResults.STOP_TIME");
             resolvableTemplate.addData("stopTime", routeLocateResult.getStopTime());
             
             if (routeLocateResult.isComplete() || routeLocateResult.isCanceled())
@@ -73,12 +73,12 @@ public enum RouteLocateTypeEnum {
         	ResolvableTemplate resolvableTemplate = null;
         	
         	if(routeLocateResult.isCanceled()){
-        	    resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.IS_CANCELED_TEXT");
+        	    resolvableTemplate = new ResolvableTemplate("yukon.web.modules.tools.bulk.routeLocateHome.recentRouteLocateResults.IS_CANCELED_TEXT");
         	} else {
             	if (routeLocateResult.isComplete()) {
-            		resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.IS_COMPLETE_TEXT");
+            		resolvableTemplate = new ResolvableTemplate("yukon.web.modules.tools.bulk.routeLocateHome.recentRouteLocateResults.IS_COMPLETE_TEXT");
             	} else {
-        	        resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.IS_IN_PROGRESS_TEXT");
+        	        resolvableTemplate = new ResolvableTemplate("yukon.web.modules.tools.bulk.routeLocateHome.recentRouteLocateResults.IS_IN_PROGRESS_TEXT");
         	    }
         	}
         	

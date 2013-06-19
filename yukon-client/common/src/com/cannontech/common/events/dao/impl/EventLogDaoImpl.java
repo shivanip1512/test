@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.jfree.util.Log;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -342,6 +343,37 @@ public class EventLogDaoImpl implements EventLogDao {
     }
 
 
+    @Override
+    public SearchResult<EventLog> findEventsByStringAndPaginate(String searchString, Integer firstRowIndex, Integer pageRowCount) {
+
+        SearchResult<EventLog> results = new SearchResult<EventLog>();
+        if (StringUtils.isEmpty(searchString)) {
+            Log.warn("getPagedSearchResultByUsername(..): Attempted query with blank searchString.  Returning no results.");
+            return results;
+        }
+
+        /* Get row count. */
+        SqlStatementBuilder countSql = new SqlStatementBuilder();
+        countSql.append("SELECT COUNT(*)");
+        countSql.append("FROM EventLog EL");
+        countSql.append("WHERE").appendFragment(getEventLogColumnSqlFragment(searchString));
+        int hitCount = yukonJdbcTemplate.queryForInt(countSql);
+        
+        /* Get paged data. */
+        SqlStatementBuilder sql = findAllSqlStatementBuilder();
+        sql.append("WHERE").appendFragment(getEventLogColumnSqlFragment(searchString));
+        sql.append("ORDER BY EL.EventTime DESC, EL.EventLogId DESC");
+        
+        PagingResultSetExtractor<EventLog> rse = 
+            new PagingResultSetExtractor<EventLog>(firstRowIndex, pageRowCount, eventLogRowMapper);
+        yukonJdbcTemplate.query(sql, rse);
+        results.setResultList(rse.getResultList());
+        results.setBounds(firstRowIndex, pageRowCount, hitCount);
+        
+        return results;
+    }
+
+
     /**
      * This method returns an sql fragment that contains an ORed liked list of all
      * the supplied event categories.
@@ -452,6 +484,14 @@ public class EventLogDaoImpl implements EventLogDao {
         sql.append(")");
         sql.append("AND EL.EventTime").lt(stopDate);
         sql.append("AND EL.EventTime").gte(startDate);
+        return sql;
+    }
+
+    private SqlStatementBuilder findAllSqlStatementBuilder() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT EventLogId, EventType, EventTime, String1, String2, String3, String4, String5, String6, Int7, Int8, Int9, Int10, Date11, Date12");
+        sql.append("FROM EventLog EL");
+
         return sql;
     }
 

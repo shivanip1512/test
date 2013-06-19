@@ -10,14 +10,14 @@
 
 <script type="text/javascript">
 function addOperatorUserGroups() {
-    $('operatorUserGroupsForm').submit();
+    document.getElementById('operatorUserGroupsForm').submit();
 }
 
 function addCustomerUserGroups() {
-    $('customerUserGroupsForm').submit();
+    document.getElementById('customerUserGroupsForm').submit();
 }
 
-Event.observe(window, "load", function() {
+jQuery(function() {
     operatorUserGroupPicker.excludeIds = ${cti:jsonString(operatorUserGroupIds)};
     customerUserGroupPicker.excludeIds = ${cti:jsonString(customerUserGroupIds)};
 });
@@ -25,10 +25,10 @@ Event.observe(window, "load", function() {
 
     <tags:setFormEditMode mode="${mode}"/>
     
-        <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
+        <div class="column_10_14">
         
             <%-- LEFT SIDE COLUMN --%>
-            <cti:dataGridCell>
+            <div class="column one">
                 <form:form commandName="generalInfo" method="post" action="update">
                     <form:hidden path="ecId"/>
                     
@@ -65,7 +65,7 @@ Event.observe(window, "load", function() {
                     <div class="pageActionArea">
                         <cti:displayForPageEditModes modes="VIEW">
                             <c:if test="${canEdit}">
-                                <cti:button nameKey="edit" type="submit" name="edit"/>
+                                <cti:button nameKey="edit" icon="icon-pencil" type="submit" name="edit"/>
                             </c:if>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="EDIT">
@@ -81,12 +81,12 @@ Event.observe(window, "load", function() {
                     </div>
                 
                 </form:form>
-            </cti:dataGridCell>
+            </div>
             
             <cti:displayForPageEditModes modes="VIEW">
                 
                 <%-- RIGHT SIDE COLUMN --%>
-                <cti:dataGridCell>
+                <div class="column two nogutter">
             
                     <tags:boxContainer2 nameKey="membersContainer" styleClass="membersContainer">
                         <form action="manageMembers" method="post">
@@ -118,7 +118,7 @@ Event.observe(window, "load", function() {
                                                         <c:if test="${canManageMembers}">
                                                             <td class="removeColumn">
                                                                 <div class="dib">
-                                                                    <cti:button nameKey="remove" type="submit" name="remove" value="${company.energyCompanyId}" renderMode="image"/>
+                                                                    <cti:button nameKey="remove" type="submit" name="remove" value="${company.energyCompanyId}" renderMode="image" icon="icon-cross"/>
                                                                 </div>
                                                             </td>
                                                         </c:if>
@@ -130,13 +130,13 @@ Event.observe(window, "load", function() {
                                 </c:otherwise>
                             </c:choose>
                             
-                            <div class="actionArea clearfix full_width" style="min-width: 380px;">
+                            <div class="actionArea" style="min-width: 380px;">
                                 <c:if test="${canCreateMembers}">
-                                    <cti:button nameKey="create" type="submit" name="create" styleClass="fl"/>
+                                    <cti:button nameKey="create" icon="icon-plus-green" type="submit" name="create" classes="fl"/>
                                 </c:if>
                                 <c:if test="${canManageMembers && !empty memberCandidates}">
-                                    <cti:button nameKey="add" type="submit" name="add" styleClass="fr"/>
-                                    <select name="newMemberId" class="fr" style="margin: 3px 3px 0 0;">
+                                    <cti:button nameKey="add" type="submit" name="add" classes="fr" icon="icon-add"/>
+                                    <select name="newMemberId" class="fr" style="margin: 0 3px 0 0;">
                                         <c:forEach items="${memberCandidates}" var="member">
                                             <option value="${member.energyCompanyId}">${member.name}</option>
                                         </c:forEach>
@@ -166,7 +166,7 @@ Event.observe(window, "load", function() {
                                                 <c:if test="${fn:length(operatorUserGroups) > 1}">
                                                     <td class="removeColumn">
                                                         <div class="dib">
-                                                            <cti:button nameKey="remove" type="submit" name="removeOperatorUserGroup" value="${userGroup.userGroupId}" renderMode="image"/>
+                                                            <cti:button nameKey="remove" type="submit" name="removeOperatorUserGroup" value="${userGroup.userGroupId}" renderMode="image" icon="icon-cross"/>
                                                         </div>
                                                     </td>
                                                 </c:if>
@@ -177,7 +177,7 @@ Event.observe(window, "load", function() {
                             </div>
                             <div class="actionArea">
                                 <tags:pickerDialog type="userGroupPicker" id="operatorUserGroupPicker" linkType="button" nameKey="add"
-                                    destinationFieldId="operatorUserGroupIds" multiSelectMode="true" endAction="addOperatorUserGroups"/>
+                                    destinationFieldId="operatorUserGroupIds" multiSelectMode="true" endAction="addOperatorUserGroups" icon="icon-add"/>
                             </div>
                         </form>
                         
@@ -203,7 +203,7 @@ Event.observe(window, "load", function() {
                                                         <td><spring:escapeBody htmlEscape="true">${userGroup.userGroupName}</spring:escapeBody></td>
                                                         <td class="removeColumn">
                                                             <div class="dib">
-                                                                <cti:button nameKey="remove" type="submit" name="removeCustomerUserGroup" value="${userGroup.userGroupId}" renderMode="image"/>
+                                                                <cti:button nameKey="remove" type="submit" name="removeCustomerUserGroup" value="${userGroup.userGroupId}" renderMode="image" icon="icon-cross"/>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -219,16 +219,16 @@ Event.observe(window, "load", function() {
                                 </table>
                             </div>
                             <div class="actionArea">
-                                <tags:pickerDialog type="userGroupPicker" id="customerUserGroupPicker" linkType="button" nameKey="add"
+                                <tags:pickerDialog type="userGroupPicker" id="customerUserGroupPicker" linkType="button" nameKey="add" icon="icon-add"
                                     destinationFieldId="customerUserGroupIds" multiSelectMode="true" endAction="addCustomerUserGroups"/>
                             </div>
                         </form>
                     </tags:boxContainer2>
                     
-                </cti:dataGridCell>
+                </div>
                     
             </cti:displayForPageEditModes>
         
-        </cti:dataGrid>
+        </div>
         
 </cti:standardPage>

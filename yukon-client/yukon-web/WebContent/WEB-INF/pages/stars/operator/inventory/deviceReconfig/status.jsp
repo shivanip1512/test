@@ -82,7 +82,7 @@
             
             <br>
             
-            <cti:button nameKey="delete" styleClass="f_open_delete_confirm_dialog"/>
+            <cti:button nameKey="delete" classes="f_open_delete_confirm_dialog"/>
             <cti:url value="/stars/operator/inventory/home" var="inventory_home_url"></cti:url>
             <cti:button nameKey="cancel" href="${inventory_home_url}"/>
             <form action="/stars/operator/inventory/inventoryActions/deviceReconfig/delete" method="post">

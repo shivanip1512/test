@@ -4,15 +4,13 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
+<cti:msgScope paths="yukon.web.modules.dr.program">
+
 <script>
 jQuery(function() {
     jQuery('#disableAllCheckbox').click(function(){
-        var disable = jQuery(this).is(':checked')
+        var disable = jQuery(this).is(':checked');
         jQuery('.disableProgramCheckbox').prop("checked", disable);
-    });
-    
-    jQuery('#cancelButton').click(function(){
-        jQuery('#drDialog').hide();
     });
     
     jQuery('.disableProgramCheckbox').click(function(event) {
@@ -31,69 +29,70 @@ jQuery(function() {
 
 <c:choose>
     <c:when test="${enable}">
-        <cti:msg var="dialogHeader" key="yukon.web.modules.dr.program.sendEnableProgramsConfirm.confirmQuestion"
-            htmlEscape="true" argument="${parent.name}"/>
-        <cti:msg var="boxTitle" key="yukon.web.modules.dr.program.sendEnableProgramsConfirm.programSelectTitle"/>
+        <cti:msg2 var="dialogHeader" key=".sendEnableProgramsConfirm.confirmQuestion" htmlEscape="true" argument="${parent.name}"/>
+        <cti:msg2 var="boxTitle" key=".sendEnableProgramsConfirm.programSelectTitle"/>
     </c:when>
     <c:otherwise>
-        <cti:msg var="dialogHeader" key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.confirmQuestion"
-            htmlEscape="true" argument="${parent.name}"/>
-        <cti:msg var="boxTitle" key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.programSelectTitle"/>
+        <cti:msg2 var="dialogHeader" key=".sendDisableProgramsConfirm.confirmQuestion" htmlEscape="true" argument="${parent.name}"/>
+        <cti:msg2 var="boxTitle" key=".sendDisableProgramsConfirm.programSelectTitle"/>
     </c:otherwise>
 </c:choose>
 
-<h1 class="dialogQuestion">
-    ${dialogHeader}
-</h1>
-<br>
+<h4 class="dialogQuestion stacked">${dialogHeader}</h4>
+
 <cti:url var="submitUrl" value="/dr/program/enableDisablePrograms"/>
 <form id="disableProgramsForm" action="${submitUrl}" onsubmit="return submitFormViaAjax('drDialog', 'disableProgramsForm');">
     <input type="hidden" name="enable" value="${enable}">
-    <tags:abstractContainer type="box" title="${boxTitle}">
-        <div class="dialogScrollArea">
+    <tags:boxContainer title="${boxTitle}">
+        <div class="scrollingContainer_medium">
             <table class="compactResultsTable">
-                <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                    <th><cti:msg key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.programName"/></th>
-                    <th><cti:msg key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.gears"/></th>
-                    <th><cti:msg key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.currentState"/></th>
-                </tr>
-                <c:forEach var="program" varStatus="status" items="${programs}">
-                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                        <td>
-                            <label>
-                                <input type="checkbox" class="disableProgramCheckbox" name="disableProgram" value="${program.paoIdentifier.paoId}">
-                                ${fn:escapeXml(program.name)}
-                            </label>
-                        </td><td>
-                            ${fn:escapeXml(gears[status.index])}
-                        </td><td class="${states[status.index].styleString}">
-                            <i:inline key="${states[status.index]}"/>
-                        </td>
-                    </tr>
-                </c:forEach>
+                <thead>
+	                <tr>
+	                    <th><cti:msg2 key=".sendDisableProgramsConfirm.programName"/></th>
+	                    <th><cti:msg2 key=".sendDisableProgramsConfirm.gears"/></th>
+	                    <th><cti:msg2 key=".sendDisableProgramsConfirm.currentState"/></th>
+	                </tr>
+                </thead>
+                <tfoot></tfoot>
+                <tbody>
+	                <c:forEach var="program" varStatus="status" items="${programs}">
+	                    <tr>
+	                        <td>
+	                            <label>
+	                                <input type="checkbox" class="disableProgramCheckbox" name="disableProgram" value="${program.paoIdentifier.paoId}">
+	                                ${fn:escapeXml(program.name)}
+	                            </label>
+	                        </td>
+	                        <td>${fn:escapeXml(gears[status.index])}</td>
+	                        <td class="${states[status.index].styleString}"><i:inline key="${states[status.index]}"/></td>
+	                    </tr>
+	                </c:forEach>
+                </tbody>
             </table>
         </div>
-    </tags:abstractContainer>
-    <br>
+    </tags:boxContainer>
+
     <label>
         <input type="checkbox" id="disableAllCheckbox">
         <c:if test="${enable}">
-            <cti:msg key="yukon.web.modules.dr.program.sendEnableProgramsConfirm.enableAllPrograms"/>
+            <cti:msg2 key=".sendEnableProgramsConfirm.enableAllPrograms"/>
         </c:if>
         <c:if test="${!enable}">
-            <cti:msg key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.disableAllPrograms"/>
+            <cti:msg2 key=".sendDisableProgramsConfirm.disableAllPrograms"/>
         </c:if>
     </label>
     <c:if test="${!enable}">
         <br>
         <label>
             <input type="checkbox" name="supressRestoration" value="true">
-            <cti:msg key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.supressRestoration"/>
+            <cti:msg2 key=".sendDisableProgramsConfirm.supressRestoration"/>
         </label>
     </c:if>
     
     <div class="actionArea">
-        <input type="submit" value="<cti:msg key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.okButton"/>"/>
-        <input type="button" id="cancelButton" value="<cti:msg key="yukon.web.modules.dr.program.sendDisableProgramsConfirm.cancelButton"/>"/>
+        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
+        <cti:button nameKey="ok" classes="primary action" type="submit"/>
     </div>
 </form>
+
+</cti:msgScope>

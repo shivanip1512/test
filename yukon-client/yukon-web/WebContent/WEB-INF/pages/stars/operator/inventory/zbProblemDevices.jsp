@@ -8,7 +8,7 @@
 <cti:standardPage module="operator" page="zbProblemDevices">
 
     <div class="exportLink">
-        <cti:button nameKey="csv" renderMode="labeledImage" href="/stars/operator/inventory/zbProblemDevices/csv"/>
+        <cti:button nameKey="csv" renderMode="labeledImage" href="/stars/operator/inventory/zbProblemDevices/csv" icon="icon-csv"/>
     </div>
     
     <table class="resultsTable" style="width:100%;">

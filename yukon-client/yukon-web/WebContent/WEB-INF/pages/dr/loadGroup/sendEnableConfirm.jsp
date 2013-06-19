@@ -1,27 +1,27 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-    <h1 class="dialogQuestion">
+<cti:msgScope paths="yukon.web.modules.dr.loadGroup">
+    <h3 class="dialogQuestion stacked">
         <c:choose>
             <c:when test="${isEnabled}">
-                <cti:msg key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.confirmQuestion"
-                	htmlEscape="true" argument="${loadGroup.name}"/>
+                <i:inline key=".sendEnableConfirm.confirmQuestion" arguments="${fn:escapeXml(loadGroup.name)}"/>
             </c:when>
             <c:otherwise>
-                <cti:msg key="yukon.web.modules.dr.loadGroup.sendDisableConfirm.confirmQuestion"
-                	htmlEscape="true" argument="${loadGroup.name}"/>
+                <i:inline key=".sendDisableConfirm.confirmQuestion" arguments="${fn:escapeXml(loadGroup.name)}"/>
             </c:otherwise>
         </c:choose>
-    </h1>
-
+    </h3>
+    
     <cti:url var="submitUrl" value="/dr/loadGroup/setEnabled"/>
-    <form id="sendEnableForm" action="${submitUrl}"
-        onsubmit="return submitFormViaAjax('drDialog', 'sendEnableForm');">
+    <form id="sendEnableForm" action="${submitUrl}" onsubmit="return submitFormViaAjax('drDialog', 'sendEnableForm');">
         <input type="hidden" name="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
         <input type="hidden" name="isEnabled" value="${isEnabled}"/>
         <div class="actionArea">
-            <input type="submit" value="<cti:msg key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.okButton"/>"/>
-            <input type="button" value="<cti:msg key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.cancelButton"/>"
-                onclick="parent.$('drDialog').hide()"/>
+            <cti:button nameKey="ok" type="submit" classes="primary action"/>
+            <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
         </div>
     </form>
+</cti:msgScope>

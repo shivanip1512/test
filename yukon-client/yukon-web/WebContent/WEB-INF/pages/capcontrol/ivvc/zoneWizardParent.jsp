@@ -9,13 +9,12 @@
 <tags:standardPopup pageName="ivvc" module="capcontrol" popupName="zoneWizard">
 
 <script type="text/javascript">
-
     submitParentSelect = function() {
-        submitFormViaAjax('zoneWizardPopup', 'zoneParentForm', null, false);
+        submitFormViaAjax('zoneWizardPopup', 'zoneParentForm');
     }
     
     cancelZoneWizard = function() {
-        $('zoneWizardPopup').hide();
+        jQuery('#zoneWizardPopup').dialog('close');
     }
 </script>
 
@@ -42,7 +41,7 @@
     </tags:nameValueContainer2>
     <div class="actionArea">
         <cti:button nameKey="cancel" onclick="cancelZoneWizard()"/>
-        <cti:button nameKey="next" onclick="submitParentSelect()"/>
+        <cti:button nameKey="next" onclick="submitParentSelect()" classes="primary action"/>
     </div>
 
 </form:form>

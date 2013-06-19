@@ -7,20 +7,16 @@
     <cti:url var="submitUrl" value="/stars/operator/account/search"/>
     <form action="${submitUrl}" method="get">
 
-    	<div style="padding-top:8px;padding-bottom:8px;">
-    		
-    		<select name="searchBy" onchange="$('searchValue').value = ''">
+    	<div class="actionArea">
+    		<input type="text" name="searchValue" value="${searchValue}" class="fr">
+    		<select name="searchBy" onchange="$('searchValue').value = ''" class="fr">
     			<c:forEach var="operatorAccountSearchBy" items="${operatorAccountSearchBys}" >
     				<option value="${operatorAccountSearchBy}" <c:if test="${operatorAccountSearchBy == searchBy}">selected</c:if>>
     					<i:inline key="${operatorAccountSearchBy.formatKey}"/>
     				</option>
     			</c:forEach>
     		</select>
-    		
-    		<input type="text" name="searchValue" value="${searchValue}">
-    		
-            <cti:button nameKey="search" type="submit" styleClass="f_blocker"/>
-    	
+            <cti:button nameKey="search" type="submit" classes="f_blocker fr"/>
     	</div>
     	
     </form>

@@ -1,81 +1,14 @@
 /**
- * Adjust the given dialog's size to ensure it fits within the browser window
- * and adjust its position to center it in that window.
- */
-function adjustDialogSizeAndPosition(dialogId) {
-    var dialogDiv = $(dialogId);
-    // If the dialog has more specific area to scroll, scroll that one instead of the whole dialog.
-    var scrollAreaDiv = $(dialogId).down('.boxContainer_content');
-
-    // Try to force things back to their natural state.
-    dialogDiv.setStyle({'maxWidth': '', 'maxHeight': ''});
-    if (scrollAreaDiv) {
-        scrollAreaDiv.setStyle({'width': '', 'height': ''});
-    }
-    dialogDiv.show();
-
-    // Now, the dialog box is a as big as it wants to be, let's make sure it fits in the window
-    // and center it.
-    var viewportDimensions = document.viewport.getDimensions();
-
-    var dialogLayout = dialogDiv.getLayout();
-
-    var minPadding = 10;
-    var dialogWidth = dialogLayout.get('width');
-    var dialogWidthWithBorder = dialogLayout.get('margin-box-width');
-    var borderWidth = dialogWidthWithBorder - dialogWidth;
-    var dialogHeight = dialogLayout.get('height');
-    var dialogHeightWithBorder = dialogLayout.get('margin-box-height');
-    var borderHeight = dialogHeightWithBorder - dialogHeight;
-    var nonScrollWidth = 0;
-    var nonScrollHeight = 0;
-
-    if (scrollAreaDiv) {
-        // Find the difference in size between the dialog box and the scroll area...we'll put
-        // aside that much space when we fix the scroll area's size.
-        var scrollAreaDivLayout = scrollAreaDiv.getLayout();
-        nonScrollWidth = dialogWidth - scrollAreaDivLayout.get('width');
-        nonScrollHeight = dialogHeight - scrollAreaDivLayout.get('height');
-    }
-
-    var needsToShrink = false;
-    if (dialogWidthWithBorder > viewportDimensions.width - minPadding) {
-        dialogWidth = viewportDimensions.width - minPadding - borderWidth;
-        needsToShrink = true;
-    }
-    if (dialogHeightWithBorder > viewportDimensions.height - minPadding) {
-        dialogHeight = viewportDimensions.height - minPadding - borderHeight;
-        needsToShrink = true;
-    }
-
-    if (scrollAreaDiv && needsToShrink) {
-        // Fix the size of the scroll area to (wholeDialogDimensions - unscrolledArea) so the
-        // rest of the dialog doesn't scroll, but instead this area only does.
-        scrollAreaDiv.setStyle({
-            'width': (dialogWidth - nonScrollWidth) + "px",
-            'height': (dialogHeight - nonScrollHeight) + "px"
-        });
-    }
-
-    if (needsToShrink) {
-        dialogDiv.setStyle({
-            'maxWidth': dialogWidth + "px",
-            'maxHeight': dialogHeight + "px"
-        });
-    }
-
-    var x = (viewportDimensions.width - dialogWidth - borderWidth) / 2;
-    var y = (viewportDimensions.height - dialogHeight - borderHeight) / 4;
-    dialogDiv.setStyle({'left': x + "px", 'top': y + "px"});
-}
-
-/**
- * Make an AJAX request with the given URL (innerHtmlUrl) and populate the
- * dialog specified by dialogId with the response. This method will show a busy
- * cursor while waiting for the request. If the request contains JSON with an
- * "action" value of "close", the dialog box will be closed instead of
- * populated. Once the dialog box is populated, its size and position will be
- * adjusted to center and ensure it fits.
+ * Make an AJAX request with the given url and populate the dialog specified 
+ * by dialogId with the response. This method will show a busy cursor while 
+ * waiting for the request. 
+ * 
+ * If the request contains JSON with an "action", the action will be performed 
+ * instead of opening the dialog.
+ * 
+ * Supported actions: 
+ *      "close", the dialog box will be closed.
+ *      "reload", the page will be reloaded.
  * 
  * @param dialogId
  *            The id of the dialog box, normally created with tags:simpleDialog.
@@ -88,48 +21,42 @@ function adjustDialogSizeAndPosition(dialogId) {
  *            of the dialog box will not be changed.
  * @param parameters
  *            Any parameters that need to be passed along with the request.
- * @param skipShow
- *            Set this to true to skip sizing, positioning and displaying the
- *            dialog box.
  * @param method
  *            The HTTP method ('get' or 'post'). 'post' is the default.
+ * @param options
+ *            The json object representing the dialog options.
  */
-function openSimpleDialog(dialogId, innerHtmlUrl, title, parameters, skipShow, method) {
-    Yukon.ui.blockPage();
-
-    if (arguments.length > 2 && title) {
-        $(dialogId + '_title').innerHTML = title;
-    }
-
-    var onComplete = function(transport, json) {
-    	if (json && json.action == 'close') {
-    		$(dialogId).hide();
-    	} else {
-    		if (!skipShow) {
-    		    adjustDialogSizeAndPosition(dialogId);
-    		    $(dialogId).show();
-    		}
-    	}
-    	Yukon.ui.unblockPage();
-    };
-
-    new Ajax.Updater($(dialogId + '_body'), innerHtmlUrl, {
-        'evalScripts': true,
-        'method': method ? method : 'post',
-        'parameters': parameters,
-        'onComplete': onComplete
-    });
+function openSimpleDialog(dialogId, url, title, parameters, method, options) {
     
-//    jQuery.ajax({
-//        url: innerHtmlUrl,
-//        data: parameters,
-//        method: method ? method : 'post',
-//        success: function(data){
-//            jQuery(document.getElementById(dialogId+'_body')).html(data);
-//            onComplete();
-//        },
-//        error: onComplete
-//    });
+    if (arguments.length > 2 && title) {
+        jQuery("#" + dialogId).dialog("option", "title", title);
+    }
+    
+    method = (typeof method == "undefined") ? "post" : method;
+    
+    jQuery.ajax({
+        type: method,
+        url: url,
+        data: parameters
+    })
+    .done(function(data, textStatus, jqXHR) {
+        var dialog = jQuery("#" + dialogId);
+        if (data.action) {
+            if (data.action == "close") {
+                dialog.dialog("close");
+            } else if (data.action == "reload") {
+                window.location = window.location;
+            } else {
+                throw new Error("Action not supported: " + data.action);
+            }
+        } else {
+            dialog.html(data);
+            if (arguments.length > 2 && options) {
+                dialog.dialog("option", options);
+            }
+            dialog.dialog("open");
+        }
+    });
 }
 
 /**
@@ -148,13 +75,45 @@ function openSimpleDialog(dialogId, innerHtmlUrl, title, parameters, skipShow, m
  *            of the dialog box will not be changed.
  * @param method
  *            The HTTP method ('get' or 'post'). 'post' is the default.
+ * @param options
+ *            The json object representing the dialog options.
  */
-function submitFormViaAjax(dialogId, formId, url, title, method, skipShow) {
-    if (arguments.length < 3 || url == null) {
-        url = $(formId).action;
+function submitFormViaAjax(dialogId, formId, url, title, method, options) {
+    
+    var done = function (data, textStatus, jqXHR) {
+        if (data.action) {
+            if (data.action == "close") {
+                jQuery("#" + dialogId).dialog("close");
+            } else if (data.action == "reload") {
+                window.location = window.location;
+            } else {
+                throw new Error("Action not supported: " + data.action);
+            }
+        } else {
+            var dialog = jQuery("#" + dialogId);
+            dialog.html(data);
+            dialog.dialog("option", "width", 600);
+            if (arguments.length > 2 && title) {
+                dialog.dialog("option", "title", title);
+            }
+            if (arguments.length > 2 && options) {
+                dialog.dialog("option", options);
+            }
+            dialog.dialog("open");
+        }
+        
+    };
+    
+    var options = {success: done};
+    if (arguments.length > 2 && url) {
+        options.url = url;
     }
-    openSimpleDialog(dialogId, url, title, $(formId).serialize(true), skipShow, method);
-    return false; // useful if we want to use this for "onsubmit" on a form
+    
+    jQuery("#" + formId).ajaxSubmit(options);
+    
+    // !!! Important !!! 
+    // always return false to prevent standard browser submit and page navigation 
+    return false;
 }
 
 /**
@@ -163,37 +122,37 @@ function submitFormViaAjax(dialogId, formId, url, title, method, skipShow) {
  * The action is specified by setting the JSON variable 'action'.
  * 
  * @param url
- *            The URL of the request to make.
+ *            (String) The URL of the request to make.
+ * @param data
+ *            (JSON) A json object of request parameters
  */
-function simpleAJAXRequest(url) {
-    var successCallback = function(transport, json) {
+function simpleAJAXRequest(url, data) {
+    Yukon.ui.blockPage();
+    
+    jQuery.get(url,data)
+    .done(function(json, textStatus, jqXHR) {
         Yukon.ui.unblockPage();
         if (json.action === 'reload') {
             window.location = window.location;
         }
-    };
-
-    var errorCallback = function(transport) {
-        Yukon.ui.unblockPage();
+    })
+    .fail(function(jqXHR, textStatus, errorThrown) {
         alert('error making request');
-    };
-
-    var options = {
-            'evalScript': true,
-            'method': 'post',
-            'onSuccess': successCallback,
-            'onFailure': errorCallback
-            };
-    Yukon.ui.blockPage();
-    new Ajax.Request(url, options);
+    })
+    .always(function() {Yukon.ui.unblockPage();});
 }
 
+/**
+ * Class the JQuery UI Dialog open method on the element with the provided id. 
+ * 
+ * @param popupId
+ *            The id of the element to open the dialog for.
+ * @param initialFocus (Optional) 
+ *            The id of the element in the dialog to give focus to.
+ */
 function showSimplePopup(popupId, initialFocus) {
-    adjustDialogSizeAndPosition(popupId);
-    $(popupId).show();
+    jQuery("#" + popupId).dialog("open");
     if (initialFocus) {
-        $(initialFocus).focus();
-    } else if ($(popupId).down("input:first[type='text']")) {
-        $(popupId).down("input:first[type='text']").focus();
+        document.getElementById(initialFocus).focus();
     }
 }

@@ -26,14 +26,9 @@
 </script>
 
     <tags:widgetContainer deviceId="${deviceId}" identify="false">
-        <table class="widgetColumns">
-            <tr>
-                <td class="widgetColumnCell" valign="top">
-                    <div style="width:600px;">
                     <tags:widgetContainer deviceId="${deviceId}">
                        <tags:widget bean="meterInformationWidget" />
                     </tags:widgetContainer>
-                    </div>
                     <tags:boxContainer2 nameKey="executeCommand" hideEnabled="false" styleClass="widgetContainer">
                         <form name="commandForm" method="POST" action="/servlet/CommanderServlet">
                 
@@ -68,11 +63,6 @@
                             </div>
                         </form>
                     </tags:boxContainer2>
-        
-                </td>
-            </tr>
-        </table>
-    
     </tags:widgetContainer>
     
 </cti:standardPage>		

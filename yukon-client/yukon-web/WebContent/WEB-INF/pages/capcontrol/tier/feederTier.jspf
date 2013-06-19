@@ -40,11 +40,11 @@
                 
                 <%-- Actions --%>
                 <td class="wsnw">
-                    <cti:img nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${feederId}" styleClass="tierIconLink"/>
+                    <cti:icon nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${feederId}" icon="icon-pencil"/>
                     <c:if test="${hasEditingRole}">
-                        <cti:img nameKey="remove" href="/editor/deleteBasePAO.jsf?value=${feederId}" styleClass="tierIconLink"/>
+                        <cti:icon nameKey="remove" href="/editor/deleteBasePAO.jsf?value=${feederId}" icon="icon-cross"/>
                     </c:if>
-                    <cti:img nameKey="location" href="/capcontrol/capbank/capBankLocations?value=${feederId}&amp;specialArea=${isSpecialArea}" styleClass="tierIconLink"/>
+                    <cti:icon nameKey="location" href="/capcontrol/capbank/capBankLocations?value=${feederId}&amp;specialArea=${isSpecialArea}" icon="icon-interstate"/>
                 </td>
                 
                 <%-- State --%>
@@ -63,10 +63,7 @@
                     <c:set var="isPowerFactorControlled" value="${viewfeeder.feeder.powerFactorControlled}"/>
                     <c:choose>
                         <c:when test="${viewfeeder.individualFeederControlled || viewfeeder.ivvcControlled}">
-                            <span <c:if test="${viewfeeder.showTargetTooltip}">
-                                    onmouseover="showDynamicPopupAbove('feederPFPopup_${feederId}_${isPowerFactorControlled}');"
-                                    onmouseout="nd();"
-                                </c:if>>
+                            <span class="f-has-tooltip">
                                 <c:choose>
                                     <c:when test="${viewfeeder.ivvcControlled}">
                                         <span class="ivvcTargetLabel"><i:inline key=".ivvcUpper"/></span>
@@ -81,43 +78,45 @@
                                     </c:otherwise>
                                 </c:choose>
                             </span>
+                            <c:if test="${viewfeeder.showTargetTooltip}">
+                                <div class="f-tooltip dn">
+                                    <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET_MESSAGE"/>    
+                                </div>
+                            </c:if>
                         </c:when>
                         <c:otherwise>
                            <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET"/>
                         </c:otherwise>
                     </c:choose>
-                    <div class="ccPFPopup" id="feederPFPopup_${feederId}_${isPowerFactorControlled}" style="display: none;">
-                        <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET_MESSAGE"/>    
-                   </div>
                 </td>
                 
                 <%-- kVAR Load / Est. --%>
                 <td class="wsnw">
                     <c:choose>
                         <c:when test="${viewfeeder.feeder.usePhaseData}">
-                            <span onmouseover="showDynamicPopupAbove('feederVarLoadPopup_${feederId}');" onmouseout="nd();">
+                            <span class="f-has-tooltip">
                                 <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD"/>
                                 <cti:classUpdater type="FEEDER" identifier="${feederId}/KVAR_LOAD_QUALITY">
-                                    <cti:img nameKey="questionableQuality" styleClass="tierImg"/>
+                                    <cti:icon nameKey="questionableQuality" icon="icon-bullet-red"/>
                                 </cti:classUpdater>    
                                 <i:inline key=".statSeparator"/> 
                                 <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD_EST"/>
                             </span>
+                            <div class="f-tooltip dn">
+                                <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD_MESSAGE"/> 
+                            </div>
                           </c:when>
                           <c:otherwise>
                             <span>
                                 <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD"/>
                                 <cti:classUpdater type="FEEDER" identifier="${feederId}/KVAR_LOAD_QUALITY">
-                                    <cti:img nameKey="questionableQuality" styleClass="tierImg"/>
+                                    <cti:icon nameKey="questionableQuality" icon="icon-bullet-red"/>
                                  </cti:classUpdater>
                                 <i:inline key=".statSeparator"/>  
                                 <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD_EST"/>
                             </span>
                           </c:otherwise>
                     </c:choose>
-                    <div class="ccVarLoadPopup" id="feederVarLoadPopup_${feederId}" style="display: none;">
-                        <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD_MESSAGE"/> 
-                    </div>
                 </td>
                 
                 <%-- Date/Time --%>
@@ -135,12 +134,12 @@
                     <span id="kwVolts_${feederId}">
                         <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KW"/> 
                         <cti:classUpdater type="FEEDER" identifier="${feederId}/WATT_QUALITY">
-                            <cti:img nameKey="questionableQuality" styleClass="tierImg"/>
+                            <cti:icon nameKey="questionableQuality" icon="icon-bullet-red"/>
                         </cti:classUpdater>
                         <i:inline key=".statSeparator"/> 
                         <cti:capControlValue paoId="${feederId}" type="FEEDER" format="VOLTS"/>
                         <cti:classUpdater type="FEEDER" identifier="${feederId}/VOLT_QUALITY">
-                            <cti:img nameKey="questionableQuality" styleClass="tierImg"/>
+                            <cti:icon nameKey="questionableQuality" icon="icon-bullet-red"/>
                         </cti:classUpdater>
                     </span>
                 </td>
@@ -160,7 +159,7 @@
 
 <c:if test="${fn:length(feederList) > 1}">
     <tags:boxContainerFooter>
-        <cti:labeledImg nameKey="filter"/>
+        <i class="icon icon-filter"></i>
         <select id='feederFilter' onchange='applyFeederSelectFilter(this);'>
             <option><cti:msg2 key=".allFeeders"/></option>
             <c:forEach var="feeder" items="${feederList}">
@@ -169,5 +168,3 @@
         </select>
     </tags:boxContainerFooter>
 </c:if>
-
-<br>

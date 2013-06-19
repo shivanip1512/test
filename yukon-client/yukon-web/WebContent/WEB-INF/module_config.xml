@@ -1,716 +1,419 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<?xml-stylesheet type="text/xsl" href="module_config.xsl"?>
-<mainmenu>
+<?xml version="1.0" encoding="UTF-8"?>
+<modules xmlns="http://yukon.cannontech.com/modules"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://yukon.cannontech.com/modules modules.xsd">
   <!-- 
-     If you need to add functionality to the menu, please see the following classes:
+     If you need to add functionality to the module, please see the following classes:
        com.cannontech.web.menu.CommonMenuBuilder
        com.cannontech.web.menu.StandardMenuRenderer
        
-     The <requireRoleProperty> tag can be used under the <option> and <module> elements.
+     The <requireRoleProperty> tag can be used under the <module> and <page> elements.
      More than one tag can be specified if needed. The "value" attribute accepts a standard
      RoleAndPropertyDescriptionService compatible expression.
      
-     Be sure to use <link> for normal URLs (context path will be added)
-     and <action> to call a JavaScript function via the javascript: protocol.
+     Be sure to use <link> for normal URLs (context path will be added).
      
      CSS and JS files that should be included on every page of the module 
-     can be declared with the <css file=""/> and <script file=""/> tags
-     respectively.
+     can be declared with the <css file=""/> and <script file=""/> tags.
   -->
-  
-  <portals>
-    <options>
-      <!-- Consumer Account Information -->
-      <option name="consumerAccountInformation">
-        <requireRoleProperty value="CONSUMER_INFO" />
 
-        <options>
-          <option name="newAccount">
-            <requireRoleProperty value="OPERATOR_NEW_ACCOUNT_WIZARD" />
-            <link>/stars/operator/account/accountCreate</link>
-          </option>
-          <option name="accountImport">
-            <requireRoleProperty value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" />
-            <link>/stars/operator/account/accountImport</link>
-          </option>          
-          <option name="optOutAdmin">
-            <link>/stars/operator/optOut/admin</link>
-          </option>
-        </options>
-      </option>
-
-      <!-- Metering -->
-      <option name="metering">
-        <requireRoleProperty value="METERING,APPLICATION_BILLING,TRENDING,SCHEDULER,DEVICE_ACTIONS" />
-
-        <options>
-          <option name="allTrends">
-            <link>/operator/Metering/Metering.jsp</link>
-            <requireRoleProperty value="TRENDING" />
-          </option>
-
-          <option name="bulkImporter">
-            <link>/amr/bulkimporter/home</link>
-            <requireRoleProperty value="METERING" />
-            <requireRoleProperty value="IMPORTER_ENABLED" />
-          </option>
-
-          <option name="metering">
-            <link>/meter/start</link>
-            <requireRoleProperty value="METERING,APPLICATION_BILLING,SCHEDULER" />
-          </option>
-
-          <option name="bulkOperations">
-            <link>/bulk/bulkHome</link>
-            <requireRoleProperty value="DEVICE_ACTIONS" />
-          </option>
-        </options>
-      </option>
-
-      <!-- Load Response -->
-      <option name="loadResponse">
-        <requireRoleProperty value="LM_DIRECT_LOADCONTROL" />
-
-        <options>
-          <option name="direct">
-            <link>/operator/LoadControl/oper_direct.jsp</link>
-            <requireRoleProperty value="LM_DIRECT_LOADCONTROL" />
-            <requireRoleProperty value="DIRECT_CONTROL" />
-          </option>
-
-          <option name="ciCurtailment">
-            <link>/cc/programSelect.jsf</link>
-            <requireRoleProperty value="CI_CURTAILMENT" />
-          </option>
-
-          <option name="oddsForControl">
-            <link>/operator/Consumer/Odds.jsp</link>
-            <requireRoleProperty value="ODDS_FOR_CONTROL" />
-          </option>
-
-          <option name="demandResponse">
-            <link>/dr/home</link>
-            <requireRoleProperty value="LM_DIRECT_LOADCONTROL" />
-            <requireRoleProperty value="DEMAND_RESPONSE" />
-          </option>
-        </options>
-      </option>
-
-      <!-- Distribution Automation -->
-      <option name="distributionAutomation">
-        <options>
-          <option name="capControl">
-            <requireRoleProperty value="CBC_SETTINGS" />
-            <link>/capcontrol/tier/areas</link>
-          </option>
-          <option name="eSub">
-            <requireRoleProperty value="OPERATOR_ESUBSTATION_DRAWINGS_VIEW" />
-            <link>/esub/home</link>
-          </option>
-          <option name="importer">
-            <link>/capcontrol/import/view</link>
-            <requireRoleProperty value="CAP_CONTROL_IMPORTER" />
-          </option>
-        </options>
-      </option>
-
-      <!-- Word Orders -->
-      <option name="workOrders">
-        <requireRoleProperty value="WORK_ORDER" />
-        <options>
-          <option name="serviceOrderList">
-            <link>operator/WorkOrder/WOFilter.jsp</link>
-            <requireRoleProperty value="WORK_ORDER_SHOW_ALL" />
-          </option>
-        </options>
-      </option>
-
-      <!-- Hardware Inventory -->
-      <option name="hardwareInventory">
-        <requireRoleProperty value="INVENTORY" />
-
-        <options>
-        
-          <option name="purchasing">
-            <link>/operator/Hardware/PurchaseTrack.jsp</link>
-            <requireRoleProperty value="PURCHASING_ACCESS" />
-          </option>
-          <option name="inventory">
-            <link>/stars/operator/inventory/home</link>
-          </option>
-
-        </options>
-      </option>
-
-      <!-- Analysis -->
-      <option name="analysis">
-
-        <options>
-          <option name="reporting">
-            <link>/analysis/Reports.jsp</link>
-            <requireRoleProperty value="REPORTING" />
-          </option>
-
-          <option name="commander">
-            <link>/commander/select</link>
-            <requireRoleProperty value="ENABLE_WEB_COMMANDER" />
-          </option>
-          <option name="archivedDateExport">
-            <link>/amr/archivedValuesExporter/view</link>
-            <requireRoleProperty value="ARCHIVED_DATA_EXPORT"/>
-          </option>
-          <option name="visualDisplays">
-            <link>/multispeak/visualDisplays/loadManagement/home</link>
-            <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
-          </option>
-
-          <option name="surveys">
-            <link>/stars/survey/list</link>
-            <requireRoleProperty value="OPERATOR_SURVEY_EDIT" />
-          </option>
-
-        </options>
-      </option>
-
-      <!-- Administration -->
-      <option name="administration">
-        <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
-
-        <options>
-          <option name="systemAdministration">
-            <link>/adminSetup/systemAdmin</link>
-          </option>
-          <option name="viewBatchCommands">
-            <link>/operator/Admin/SwitchCommands.jsp</link>
-            <requireRoleProperty value="ADMIN_VIEW_BATCH_COMMANDS" />
-          </option>
-
-          <option name="viewScheduledOptOutEvents">
-            <link>/stars/operator/optOut/admin/viewScheduled</link>
-            <requireRoleProperty value="ADMIN_VIEW_OPT_OUT_EVENTS" />
-          </option>
-
-          <option name="support">
-            <link>/support/</link>
-            <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
-          </option>
-
-          <option name="viewLogs">
-            <link>/support/logging/menu</link>
-            <requireRoleProperty value="ADMIN_VIEW_LOGS" />
-          </option>
-
-          <option name="manageIndexes">
-            <link>/index/manage</link>
-            <requireRoleProperty value="ADMIN_MANAGE_INDEXES" />
-          </option>
-
-          <option name="deviceConfiguration">
-            <link>/deviceConfiguration?home</link>
-            <requireRoleProperty value="ADMIN_VIEW_CONFIG" />
-          </option>
-
-        </options>
-      </option>
-
-    </options>
-  </portals>
-
-  <!--  Modules -->
   <module name="amr">
-    <skin name="STANDARD" />
+    <skin name="STANDARD"/>
     <css file="/WebConfig/yukon/styles/amrStyles.css"/>
-    <menu>
-      <options>
-        <option name="meters">
-          <link>/meter/start</link>
-        </option>
-        <option name="billing">
-          <requireRoleProperty value="APPLICATION_BILLING" />
-          <link>/operator/Metering/Billing.jsp</link>
-          <options>
-            <option name="generation">
-              <link>/operator/Metering/Billing.jsp</link>
-            </option>
-            <option name="setup">
-              <requireRoleProperty value="DYNAMIC_BILLING_FILE_SETUP" />
-              <link>/dynamicBilling/overview</link>
-            </option>
-            <option name="schedules">
-              <link>/scheduledBilling/jobs</link>
-            </option>
-          </options>
-        </option>
-        <option name="scheduler">
-          <requireRoleProperty value="SCHEDULER" />
-          <link>/macsscheduler/schedules/view</link>
-        </option>
-        <option name="devicegroups">
-          <link>/group/editor/home</link>
-          <options>
-            <option name="home">
-              <link>/group/editor/home</link>
-            </option>
-            <option name="commander">
-              <link>/group/commander/groupProcessing</link>
-              <requireRoleProperty value="GROUP_COMMANDER" />
-            </option>
-            <option name="groupMeterRead">
-              <link>/group/groupMeterRead/homeGroup</link>
-            </option>
-            <option name="updater">
-              <link>/group/updater/upload</link>
-			  <requireRoleProperty value="BULK_UPDATE_OPERATION" />
-            </option>
-          </options>
-        </option>
-        <option name="commandRequestExecution">
-          <requireRoleProperty value="SCHEDULER" />
-          <link>/group/scheduledGroupRequestExecutionResults/jobs</link>
-          <options>
-            <option name="scheduleLogs">
-              <link>/group/scheduledGroupRequestExecutionResults/jobs</link>
-            </option>
-            <option name="createSchedule">
-              <requireRoleProperty value="MANAGE_SCHEDULES" />
-              <link>/group/scheduledGroupRequestExecution/home</link>
-            </option>
-          </options>
-        </option>
-      </options>
-    </menu>
-    <search bean="amrSearchProducer" />
-	<pages>
-        <page name="meteringStart" type="BASIC">
-            <link>/meter/start</link>
-            <menu>meters</menu>
+    <search bean="amrSearchProducer"/>
+    <pages>
+      <page name="meteringStart" type="BASIC">
+        <link>/meter/start</link>
+        <pages>
+          <page name="outageProcessingParent" type="BASIC">
             <pages>
-                <page name="outageProcessingParent" type="BASIC">
-                    <menu>meters</menu>
-                    <pages>
-                        <page name="outageProcessing" type="DETAIL">
-                            <menu>meters</menu>
-                            <labelArgument>${outageMonitor.outageMonitorName}</labelArgument>
-                        </page>
-                        <page name="outageMonitorConfig" type="DETAIL">
-                            <menu>meters</menu>
-                            <labelArgument>${outageMonitor.outageMonitorName}</labelArgument>
-                        </page>
-                        <page name="outageMonitorConfig.EDIT" type="DETAIL">
-                            <menu>meters</menu>
-                            <labelArgument>${outageMonitor.outageMonitorName}</labelArgument>
-                        </page>
-                        <page name="outageMonitorConfig.CREATE" type="DETAIL">
-                            <menu>meters</menu>
-                        </page>
-                    </pages>
-                </page>
-                <page name="tamperFlagProcessingParent" type="BASIC">
-                    <menu>meters</menu>
-                    <pages>
-                        <page name="tamperFlagProcessing" type="DETAIL">
-                            <menu>meters</menu>
-                            <labelArgument>${tamperFlagMonitor.tamperFlagMonitorName}</labelArgument>
-                        </page>
-                        <page name="tamperFlagEditor.EDIT" type="DETAIL">
-                            <menu>meters</menu>
-                            <labelArgument>${tamperFlagMonitor.tamperFlagMonitorName}</labelArgument>
-                        </page>
-                        <page name="tamperFlagEditor.CREATE" type="DETAIL">
-                            <menu>meters</menu>
-                        </page>
-                    </pages>
-                </page>
-                <page name="statusPointMonitorProcessing" type="BASIC">
-                    <menu>meters</menu>
-                    <pages>
-                        <page name="statusPointMonitorView" type="DETAIL">
-                            <menu>meters</menu>
-                            <labelArgument>${statusPointMonitor.statusPointMonitorName}</labelArgument>
-                        </page>
-                        <page name="statusPointMonitorEditor" type="DETAIL">
-                            <menu>meters</menu>
-                            <labelArgument>${statusPointMonitor.statusPointMonitorName}</labelArgument>
-                        </page>
-                        <page name="statusPointMonitorCreator" type="DETAIL">
-                            <menu>meters</menu>
-                        </page>
-                    </pages>
-                </page>
-                <page name="deviceDataProcessing" type="BASIC">
-                    <menu>meters</menu>
-                    <pages>
-                        <page name="deviceDataMonitor.VIEW" type="DETAIL">
-                            <menu>meters</menu>
-                            <labelArgument>${monitor.name}</labelArgument>
-                        </page>
-                        <page name="deviceDataMonitor.EDIT" type="DETAIL">
-                            <menu>meters</menu>
-                            <labelArgument>${monitor.name}</labelArgument>
-                        </page>
-                        <page name="deviceDataMonitor.CREATE" type="BASIC">
-                            <menu>meters</menu>
-                        </page>
-                    </pages>
-                </page>
-                <page name="porterResponseProcessing" type="BASIC">
-                    <menu>meters</menu>
-                    <pages>
-                        <page name="porterResponseMonitor.VIEW" type="DETAIL">
-                            <menu>meters</menu>
-                            <labelArgument>${monitorDto.name}</labelArgument>
-                        </page>
-                        <page name="porterResponseMonitor.EDIT" type="DETAIL">
-                            <menu>meters</menu>
-                            <labelArgument>${monitorDto.name}</labelArgument>
-                        </page>
-                        <page name="porterResponseMonitor.CREATE" type="DETAIL">
-                            <menu>meters</menu>
-                            <labelArgument>${monitorDto.name}</labelArgument>
-                        </page>
-                    </pages>
-                </page>
-                <page name="validationProcessing" type="BASIC">
-                    <menu>meters</menu>
-                    <pages>
-                        <page name="validationEditor.EDIT" type="DETAIL">
-                            <menu>meters</menu>
-                            <labelArgument>${editPageDesc}</labelArgument>
-                        </page>
-                        <page name="validationEditor.CREATE" type="BASIC">
-                            <menu>meters</menu>
-                        </page>
-                    </pages>
-                </page>
-                <page name="scheduledGroupRequestProcessing" type="BASIC">
-                    <menu>commandRequestExecution</menu>
-                    <pages>
-                        <page name="scheduledGroupRequestHome.CREATE" type="DETAIL">
-                            <menu>commandRequestExecution|createSchedule</menu>
-                        </page>
-                        <page name="scheduledGroupRequestHome.EDIT" type="DETAIL">
-                            <menu>commandRequestExecution</menu>
-                            <labelArgument>${scheduleName}</labelArgument>
-                        </page>
-                        <page name="scheduledGroupRequestAllJobs">
-                            <menu>commandRequestExecution|scheduleLogs</menu>
-                            <link>/group/scheduledGroupRequestExecutionResults/jobs</link>
-                            <pages>
-                                <page name="scheduledGroupRequestDetail" type="DETAIL">
-                                    <menu>commandRequestExecution|scheduledGroupCommands</menu>
-                                    <labelArgument>${jobWrapper.name}</labelArgument>
-                                </page>
-                            </pages>
-                        </page>
-                    </pages>
-                </page>
-                <page name="meterSearchResults" type="BASIC">
-                    <menu>meters</menu>
-                    <pages>
-                        <page name="meterDetail.electric" type="DETAIL">
-                            <menu>meters</menu>
-                            <labelArgument>${deviceName}</labelArgument>
-                            <link>/meter/home?deviceId=${deviceId}</link>
-                            <pages>
-                                <page name="moveIn" type="BASIC">
-                                    <menu>meters</menu>
-                                </page>
-                                <page name="moveOut" type="BASIC">
-                                    <menu>meters</menu>
-                                </page>
-                                <page name="highBill" type="BASIC">
-                                    <menu>meters</menu>
-                                </page>
-                                <page name="meterDetailProfile" type="BASIC">
-                                    <menu>meters</menu>
-                                </page>
-                                <page name="meterDetailVoltageAndTou" type="BASIC">
-                                    <menu>meters</menu>
-                                </page>
-                                <page name="manualCommand" type="BASIC">
-                                    <menu>meters</menu>
-                                </page>
-                                <page name="meterDetailLocateRoute" type="BASIC">
-                                    <menu>meters</menu>
-                                </page>
-                                <page name="meterPoints" type="BASIC">
-                                    <menu>meters</menu>
-                                </page>
-                            </pages>
-                        </page>
-                        <page name="meterDetail.water" type="DETAIL">
-                            <menu>meters</menu>
-                            <labelArgument>${deviceName}</labelArgument>
-                            <link>/meter/water/home?deviceId=${deviceId}</link>
-                        </page>
-                    </pages>
-                </page>
-                <page name="phaseDetectProcessing" type="BASIC">
-                    <menu>meters</menu>
-                    <pages>
-                        <page name="phaseDetect.home" type="DETAIL">
-                            <menu>meters</menu>
-                        </page>
-                        <page name="phaseDetect.routeSelection" type="DETAIL">
-                            <menu>meters</menu>
-                        </page>
-                        <page name="phaseDetect.clearPhaseData" type="DETAIL">
-                            <menu>meters</menu>
-                        </page>
-                        <page name="phaseDetect.testSettings" type="DETAIL">
-                            <menu>meters</menu>
-                        </page>
-                        <page name="phaseDetect.sendTest" type="DETAIL">
-                            <menu>meters</menu>
-                        </page>
-                        <page name="phaseDetect.readBetweenPhaseTest" type="DETAIL">
-                            <menu>meters</menu>
-                        </page>
-                        <page name="phaseDetect.results" type="DETAIL">
-                            <menu>meters</menu>
-                        </page>
-                    </pages>
-                </page>
-		        <page name="meterEventsReport.selectDevices" type="BASIC">
-		            <menu>meters</menu>
-					<link>/amr/meterEventsReport/selectDevices</link>
-					<pages>
-		                <page name="meterEventsReport.report" type="DETAIL">
-		                    <menu>meters</menu>
-		                </page>
-                	</pages>
-		        </page>
-		        <page name="meterEventsReport.jobs" type="BASIC">
-		        	<menu>meters</menu>
-		        </page>
-		        <page name="waterLeakReport.report" type="BASIC">
-		            <menu>meters</menu>
-					<pages>
-                        <page name="waterLeakReport.report.intervalData" type="DETAIL">
-                            <menu>meters</menu>
-                        </page>
-                	</pages>
-		        </page>
-		        <page name="waterLeakReport.jobs" type="BASIC">
-		        	<menu>meters</menu>
-		        </page>
+              <page name="outageProcessing" type="DETAIL">
+                <labelArgument>${outageMonitor.outageMonitorName}</labelArgument>
+              </page>
+              <page name="outageMonitorConfig" type="DETAIL">
+                <labelArgument>${outageMonitor.outageMonitorName}</labelArgument>
+              </page>
+              <page name="outageMonitorConfig.EDIT" type="DETAIL">
+                <labelArgument>${outageMonitor.outageMonitorName}</labelArgument>
+              </page>
+              <page name="outageMonitorConfig.CREATE" type="DETAIL">
+              </page>
             </pages>
-        </page>
-        <page name="archivedValueExporter" type="BASIC">
-            <menu></menu>
-            <link>/amr/archivedValuesExporter/view</link>
+          </page>
+          <page name="tamperFlagProcessingParent" type="BASIC">
             <pages>
-                <page name="archivedValueExporter.EDIT" type="DETAIL">
-                    <menu></menu>
-                </page>
-                <page name="archivedValueExporter.CREATE" type="DETAIL">
-                    <menu></menu>
-                </page>
-                <page name="archivedValueExporter.selectDevices" type="BASIC">
-                    <menu></menu>
-                    <link>/amr/archivedValueExporter/selectDevices</link>
-                </page>
+              <page name="tamperFlagProcessing" type="DETAIL">
+                <labelArgument>${tamperFlagMonitor.tamperFlagMonitorName}</labelArgument>
+              </page>
+              <page name="tamperFlagEditor.EDIT" type="DETAIL">
+                <labelArgument>${tamperFlagMonitor.tamperFlagMonitorName}</labelArgument>
+              </page>
+              <page name="tamperFlagEditor.CREATE" type="DETAIL">
+              </page>
             </pages>
-        </page>
-        <page name="archivedValueExporterScheduleSetup" type="BASIC">
-        	<menu></menu>
-            <link>/amr/archivedValuesExporter/scheduleReport</link>
-        </page>
-        <page name="analysis.home" type="BASIC">
-            <menu></menu>
+          </page>
+          <page name="statusPointMonitorProcessing" type="BASIC">
             <pages>
-                <page name="analysis.progress" type="DETAIL">
-                    <menu></menu>
-                </page>
-                <page name="analysis.list" type="BASIC">
-                    <menu></menu>
-                </page>
-                <page name="analysis.results" type="BASIC">
-                    <menu></menu>
-                    <pages>
-                        <page name="analysis.tabular" type="DETAIL">
-                            <menu></menu>
-                        </page>
-                        <page name="analysis.readResults" type="DETAIL">
-                            <menu></menu>
-                        </page>
-                    </pages>
-                </page>   
+              <page name="statusPointMonitorView" type="DETAIL">
+                <labelArgument>${statusPointMonitor.statusPointMonitorName}</labelArgument>
+              </page>
+              <page name="statusPointMonitorEditor" type="DETAIL">
+                <labelArgument>${statusPointMonitor.statusPointMonitorName}</labelArgument>
+              </page>
+              <page name="statusPointMonitorCreator" type="DETAIL">
+              </page>
             </pages>
-        </page>
-        <page name="bulkOperations" type="BASIC">
-            <menu></menu>
-            <link>/bulk/bulkHome</link>
+          </page>
+          <page name="deviceDataProcessing" type="BASIC">
             <pages>
-                <page name="fdrTranslationManagement" type="BASIC">
-                    <menu></menu>
-                    <pages>
-                        <page name="fdrTranslationManagement.import" type="DETAIL">
-                            <menu></menu>
-                        </page>
-                    </pages>
-                </page>
-                <page name="pointImport" type="BASIC">
-                    <menu></menu>
-                    <link>/bulk/pointImport/upload</link>
-                    <pages>
-                        <page name="pointImport.results" type="DETAIL">
-                            <menu></menu>
-                        </page>
-                    </pages>
-                </page>
+              <page name="deviceDataMonitor.VIEW" type="DETAIL">
+                <labelArgument>${monitor.name}</labelArgument>
+              </page>
+              <page name="deviceDataMonitor.EDIT" type="DETAIL">
+                <labelArgument>${monitor.name}</labelArgument>
+              </page>
+              <page name="deviceDataMonitor.CREATE" type="BASIC">
+              </page>
             </pages>
-        </page>
+          </page>
+          <page name="porterResponseProcessing" type="BASIC">
+            <pages>
+              <page name="porterResponseMonitor.VIEW" type="DETAIL">
+                <labelArgument>${monitorDto.name}</labelArgument>
+              </page>
+              <page name="porterResponseMonitor.EDIT" type="DETAIL">
+                <labelArgument>${monitorDto.name}</labelArgument>
+              </page>
+              <page name="porterResponseMonitor.CREATE" type="DETAIL">
+                <labelArgument>${monitorDto.name}</labelArgument>
+              </page>
+            </pages>
+          </page>
+          <page name="validationProcessing" type="BASIC">
+            <pages>
+              <page name="validationEditor.EDIT" type="DETAIL">
+                <labelArgument>${editPageDesc}</labelArgument>
+              </page>
+              <page name="validationEditor.CREATE" type="BASIC">
+              </page>
+            </pages>
+          </page>
+          <page name="scheduledGroupRequestProcessing" type="BASIC">
+            <pages>
+              <page name="scheduledGroupRequestHome.CREATE" type="DETAIL">
+              </page>
+              <page name="scheduledGroupRequestHome.EDIT" type="DETAIL">
+                <labelArgument>${scheduleName}</labelArgument>
+              </page>
+              <page name="scheduledGroupRequestAllJobs" type="BASIC">
+                <link>/group/scheduledGroupRequestExecutionResults/jobs</link>
+                <pages>
+                  <page name="scheduledGroupRequestDetail" type="DETAIL">
+                    <labelArgument>${jobWrapper.name}</labelArgument>
+                  </page>
+                </pages>
+              </page>
+            </pages>
+          </page>
+          <page name="meterSearchResults" type="BASIC">
+            <pages>
+              <page name="meterDetail.electric" type="DETAIL"
+                favorite="true" home="true" actions="true">
+                <link>/meter/home?deviceId=${deviceId}</link>
+                <labelArgument>${deviceName}</labelArgument>
+                <pages>
+                  <page name="moveIn" type="BASIC">
+                  </page>
+                  <page name="moveOut" type="BASIC">
+                  </page>
+                  <page name="highBill" type="BASIC">
+                  </page>
+                  <page name="meterDetailProfile" type="BASIC">
+                  </page>
+                  <page name="meterDetailVoltageAndTou" type="BASIC">
+                  </page>
+                  <page name="manualCommand" type="BASIC">
+                  </page>
+                  <page name="meterDetailLocateRoute" type="BASIC">
+                  </page>
+                  <page name="meterPoints" type="BASIC">
+                  </page>
+                </pages>
+              </page>
+              <page name="meterDetail.water" type="DETAIL">
+                <link>/meter/water/home?deviceId=${deviceId}</link>
+                <labelArgument>${deviceName}</labelArgument>
+              </page>
+            </pages>
+          </page>
+          <page name="phaseDetectProcessing" type="BASIC">
+            <pages>
+              <page name="phaseDetect.home" type="DETAIL"/>
+              <page name="phaseDetect.routeSelection" type="DETAIL"/>
+              <page name="phaseDetect.clearPhaseData" type="DETAIL"/>
+              <page name="phaseDetect.testSettings" type="DETAIL"/>
+              <page name="phaseDetect.sendTest" type="DETAIL"/>
+              <page name="phaseDetect.readBetweenPhaseTest" type="DETAIL"/>
+              <page name="phaseDetect.results" type="DETAIL"/>
+            </pages>
+          </page>
+          <page name="meterEventsReport.selectDevices" type="BASIC">
+            <link>/amr/meterEventsReport/selectDevices</link>
+            <pages>
+              <page name="meterEventsReport.report" type="DETAIL"/>
+            </pages>
+          </page>
+          <page name="meterEventsReport.jobs" type="BASIC"/>
+          <page name="waterLeakReport.report" type="BASIC">
+          <pages>
+            <page name="waterLeakReport.report.intervalData" type="DETAIL"/>
+          </pages>
+		  </page>
+          <page name="waterLeakReport.jobs" type="BASIC"/>
+        </pages>
+      </page>
+      <page name="deviceGroupUpload" type="BASIC"/>
     </pages>
   </module>
 
-  <module name="monitors">
+  <module name="tools">
+    <skin name="STANDARD"/>
+    <pages>
+      <page name="bulk.home" type="BASIC">
+        <link>/bulk/bulkHome</link>
+        <pages>
+          <page name="bulk.fdrTranslationManagement" type="BASIC">
+            <pages>
+              <page name="bulk.fdrTranslationManagement.import" type="BASIC"/>
+            </pages>
+          </page>
+          <page name="bulk.updateUpload" type="BASIC">
+            <link>/bulk/update/upload</link>
+            <pages>
+              <page name="bulk.updateConfirm" type="BASIC"/>
+              <page name="bulk.updateResults" type="BASIC"/>
+            </pages>
+          </page>
+          <page name="bulk.importUpload" type="BASIC">
+            <link>/bulk/import/upload</link>
+            <pages>
+              <page name="bulk.importConfirm" type="BASIC"/>
+              <page name="bulk.importResults" type="BASIC"/>
+            </pages>
+          </page>
+          <page name="bulk.pointImport" type="BASIC">
+            <link>/bulk/pointImport/upload</link>
+            <pages>
+              <page name="bulk.pointImport.results" type="DETAIL"/>
+            </pages>
+          </page>
+          <page name="bulk.archivedValueExporter" type="BASIC">
+            <link>/amr/archivedValuesExporter/view</link>
+            <pages>
+              <page name="bulk.archivedValueExporter.EDIT" type="BASIC"/>
+              <page name="bulk.archivedValueExporter.CREATE" type="BASIC"/>
+              <page name="bulk.archivedValueExporter.selectDevices" type="BASIC">
+                <link>/amr/archivedValueExporter/selectDevices</link>
+              </page>
+            </pages>
+          </page>
+          <page name="archivedValueExporterScheduleSetup" type="BASIC">
+            <link>/amr/archivedValuesExporter/scheduleReport</link>
+          </page>
+          <page name="bulk.deviceSelection" type="BASIC">
+            <link>/bulk/deviceSelection</link>
+            <pages>
+              <page name="bulk.collectionActions" type="BASIC">
+                <link>/bulk/collectionActions?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
+                <pages>
+                  <page name="bulk.collectionActions.deviceCollectionReport" type="BASIC"/>
+                  <page name="bulk.analysis.home" type="BASIC">
+                    <link>/bulk/archiveDataAnalysis/home/setup?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
+                    <pages>
+                      <page name="bulk.analysis.progress" type="BASIC"/>
+                      <page name="bulk.analysis.list" type="BASIC"/>
+                      <page name="bulk.analysis.results" type="BASIC">
+                        <link>/bulk/archiveDataAnalysis/results/view?analysisId=${analysis.analysisId}</link>
+                        <pages>
+                          <page name="bulk.analysis.tabular" type="BASIC"/>
+                          <page name="bulk.analysis.readResults" type="BASIC"/>
+                        </pages>
+                      </page>
+                    </pages>
+                  </page>
+                  <page name="bulk.assignConfig" type="BASIC">
+                    <link>/bulk/config/assignConfig?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
+                    <pages>
+                      <page name="bulk.assignConfigResults" type="BASIC"/>
+                    </pages>
+                  </page>
+                  <page name="bulk.unassignConfig" type="BASIC">
+                    <link>/bulk/config/unassignConfig?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
+                    <pages>
+                      <page name="bulk.unassignConfigResults" type="BASIC"/>
+                    </pages>
+                  </page>
+                  <page name="bulk.sendConfig" type="BASIC">
+                    <link>/bulk/config/sendConfig?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
+                  </page>
+                  <page name="bulk.readConfig" type="BASIC">
+                    <link>/bulk/config/readConfig?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
+                  </page>
+                  <page name="bulk.verifyConfig" type="BASIC">
+                    <link>/bulk/config/verifyConfig?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
+                    <pages>
+                      <page name="bulk.verifyConfigResults" type="BASIC"/>
+                    </pages>
+                  </page>
+                  <page name="bulk.addPointsHome" type="BASIC">
+                    <link>/bulk/addPoints/home?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
+                    <pages>
+                      <page name="bulk.addPointsResults" type="BASIC"/>
+                    </pages>
+                  </page>
+                  <page name="bulk.updatePointsHome" type="BASIC">
+                    <link>/bulk/updatePoints/home?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}&amp;sharedPoints=${sharedPoints}&amp;restorePoints=${restorePoints}&amp;maskMissingPoints=${maskMissingPoints}</link>
+                    <pages>
+                      <page name="bulk.updatePointsResults" type="BASIC"/>
+                    </pages>
+                  </page>
+                  <page name="bulk.removePointsHome" type="BASIC">
+                    <link>/bulk/removePoints/home?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}&amp;sharedPoints=${sharedPoints}</link>
+                    <pages>
+                      <page name="bulk.removePointsResults" type="BASIC"/>
+                    </pages>
+                  </page>
+                  <page name="bulk.addToGroup" type="BASIC"/>
+                  <page name="bulk.removeFromGroup" type="BASIC"/>
+                  <page name="bulk.readAttribute" type="BASIC"/>
+                  <page name="bulk.routeLocateHome" type="BASIC">
+                    <link>/bulk/routeLocate/home?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
+                    <pages>
+                      <page name="bulk.routeLocateResults" type="BASIC">
+                        <link>/bulk/routeLocate/results?resultId=${resultId}</link>
+                        <pages>
+                          <page name="bulk.routeLocateSettings" type="BASIC"/>
+                        </pages>
+                      </page>
+                    </pages>
+                  </page>
+                  <page name="bulk.sendCommand" type="BASIC">
+                    <link>/group/commander/collectionProcessing?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
+                  </page>
+                  <page name="bulk.changeDeviceTypeChoose" type="BASIC">
+                    <link>/bulk/changeDeviceType/chooseDeviceType?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
+                    <pages>
+                      <page name="bulk.changeDeviceTypeResults" type="BASIC"/>
+                    </pages>
+                  </page>
+                  <page name="bulk.massChangeSelect" type="BASIC">
+                    <link>/bulk/massChange/massChangeSelect?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}&amp;selectedBulkFieldName=${massChangeBulkFieldName}</link>
+                    <pages>
+                      <page name="bulk.massChangeOptions" type="BASIC">
+                        <link>/bulk/massChangeOptions?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}&amp;massChangeBulkFieldName=${massChangeBulkFieldName}</link>
+                        <pages>
+                          <page name="bulk.massChangeResults" type="BASIC"/>
+                        </pages>
+                      </page>
+                    </pages>
+                  </page>
+                  <page name="bulk.massDeleteConfirm" type="BASIC">
+                    <link></link>
+                    <pages>
+                      <page name="bulk.massDeleteResults" type="BASIC"/>
+                    </pages>
+                  </page>
+                </pages>
+              </page>
+            </pages>
+          </page>
+        </pages>
+      </page>
+    </pages>
+  </module>
+
+  <module name="monitors"><!-- had some vee menus before -->
     <skin name="STANDARD" />
-    <menu>
-      <options>
-        <option name="validation">
-          <options>
-            <option name="review">
-              <link>/common/veeReview/home</link>
-            </option>
-            <option name="helper">
-              <link>/common/vee/helper/menu</link>
-            </option>
-          </options>
-        </option>
-      </options>
-    </menu>
   </module>
 
   <module name="dr">
     <skin name="STANDARD" />
-    <menu>
-      <options>
-        <option name="home">
-          <link>/dr/home</link>
-          <options>
-            <option name="scenarios">
-              <requireRoleProperty value="SHOW_SCENARIOS" />
-              <link>/dr/scenario/list</link>
-            </option>
-            <option name="controlareas">
-              <requireRoleProperty value="SHOW_CONTROL_AREAS" />
-              <link>/dr/controlArea/list</link>
-            </option>
-            <option name="programs">
-              <link>/dr/program/list</link>
-            </option>
-            <option name="loadgroups">
-              <link>/dr/loadGroup/list</link>
-            </option>
-          </options>
-        </option>
-        <dynamicOptions bean="drOptOutMenuOption" />
-      </options>
-    </menu>
-    
+    <search bean="drSearchProducer" />
     <pages>
-    	<page name="home" type="LANDING">
-    		<menu>home</menu>
-    		<link>/dr/home</link>
-    		<pages>
-    			<page name="scenarioList" type="BASIC">
-    				<menu>home|scenarios</menu>
-    				<link>/dr/scenario/list</link>
-    				<pages>
-    					<page name="scenarioDetail" type="DETAIL">
-    						<menu>home|scenarios</menu>
-    						<link>/dr/scenario/detail</link>
-    						<labelArgument>${scenario.name}</labelArgument>
-    					</page>
-    				</pages>
-    			</page>
-    			<page name="controlAreaList" type="BASIC">
-    				<menu>home|controlareas</menu>
-    				<link>/dr/controlArea/list</link>
-    				<pages>
-    					<page name="controlAreaDetail" type="DETAIL">
-    						<menu>home|controlareas</menu>
-    						<link>/dr/controlArea/detail</link>
-    						<labelArgument>${controlArea.name}</labelArgument>
-    					</page>
-    				</pages>
-    			</page>
-    			<page name="programList" type="BASIC">
-    				<menu>home|programs</menu>
-    				<link>/dr/program/list</link>
-    				<pages>
-    					<page name="programDetail" type="DETAIL">
-    						<menu>home|programs</menu>
-    						<link>/dr/program/detail</link>
-    						<labelArgument>${program.name}</labelArgument>
-    					</page>
-    				</pages>
-    			</page>
-    			<page name="loadGroupList" type="BASIC">
-    				<menu>home|loadgroups</menu>
-    				<link>/dr/loadGroup/list</link>
-    				<pages>
-    					<page name="loadGroupDetail" type="DETAIL">
-    						<menu>home|loadgroups</menu>
-    						<link>/dr/loadGroup/detail</link>
-    						<labelArgument>${loadGroup.name}</labelArgument>
-    					</page>
-    				</pages>
-    			</page>
-    			<page name="searchResults" type="BASIC" hideSearch="true">
-    				<menu>home</menu>
-    				<link>/dr/search</link>
-    			</page>
-    			<page name="optOutAdmin" type="BASIC">
-    				<menu>optout|admin</menu>
-    				<link>/stars/operator/optOut/admin</link>
-    			</page>
-    			<page name="optOutScheduledEvents" type="BASIC">
-    				<menu>optout|scheduledevents</menu>
-    				<link>/stars/operator/optOut/admin/viewScheduled</link>
-    			</page>
+        <page name="home" type="LANDING">
+            <link>/dr/home</link>
+            <pages>
+                <page name="scenarioList" type="BASIC">
+                    <link>/dr/scenario/list</link>
+                    <pages>
+                        <page name="scenarioDetail" type="DETAIL">
+                            <link>/dr/scenario/detail</link>
+                            <labelArgument>${scenario.name}</labelArgument>
+                        </page>
+                    </pages>
+                </page>
+                <page name="controlAreaList" type="BASIC">
+                    <link>/dr/controlArea/list</link>
+                    <pages>
+                        <page name="controlAreaDetail" type="DETAIL">
+                            <link>/dr/controlArea/detail</link>
+                            <labelArgument>${controlArea.name}</labelArgument>
+                        </page>
+                    </pages>
+                </page>
+                <page name="programList" type="BASIC">
+                    <link>/dr/program/list</link>
+                    <pages>
+                        <page name="programDetail" type="DETAIL">
+                            <link>/dr/program/detail</link>
+                            <labelArgument>${program.name}</labelArgument>
+                        </page>
+                    </pages>
+                </page>
+                <page name="loadGroupList" type="BASIC">
+                    <link>/dr/loadGroup/list</link>
+                    <pages>
+                        <page name="loadGroupDetail" type="DETAIL">
+                            <link>/dr/loadGroup/detail</link>
+                            <labelArgument>${loadGroup.name}</labelArgument>
+                        </page>
+                    </pages>
+                </page>
+                <page name="searchResults" type="BASIC" hideSearch="true">
+                    <link>/dr/search</link>
+                </page>
+                <page name="optOutAdmin" type="BASIC">
+                    <link>/stars/operator/optOut/admin</link>
+                </page>
+                <page name="optOutScheduledEvents" type="BASIC">
+                    <link>/stars/operator/optOut/admin/viewScheduled</link>
+                </page>
                 <page name="surveyList" type="BASIC">
-                    <menu>optout|surveyList</menu>
                     <link>/stars/optOutSurvey/list</link>
                 </page>
-    		</pages>
-    	</page>
+            </pages>
+        </page>
     </pages>
-    <search bean="drSearchProducer" />	
   </module>
 
   <module name="survey">
     <skin name="STANDARD"/>
-    <menu>
-      <options>
-        <option name="list">
-          <link>/stars/survey/list</link>
-        </option>
-      </options>
-    </menu>
-
     <pages>
       <page name="list" type="BASIC">
-        <menu>list</menu>
         <link>/stars/survey/list</link>
         <pages>
           <page name="add" type="BASIC">
-            <menu>survey</menu>
             <link>/stars/survey/create</link>
           </page>
           <page name="edit" type="DETAIL">
-            <menu>survey</menu>
             <link>/stars/survey/edit?surveyId=${survey.surveyId}</link>
             <labelArgument>${survey.surveyName}</labelArgument>
             <pages>
               <page name="reportConfig" type="DETAIL_CHILD">
-                <menu>survey</menu>
                 <link>/stars/surveyReport/config?surveyId=${survey.surveyId}</link>
                 <labelArgument>${survey.surveyName}</labelArgument>
                 <pages>
                   <page name="report" type="DETAIL_CHILD">
-                    <menu>survey</menu>
                     <link>/stars/surveyReport/report?surveyId=${survey.surveyId}</link>
                     <labelArgument>${survey.surveyName}</labelArgument>
                   </page>
@@ -727,8 +430,826 @@
     <skin name="INNER" />
   </module>
 
+  <module name="capcontrol">
+    <skin name="STANDARD" />
+    <css file="/WebConfig/yukon/styles/da/CapcontrolGeneralStyles.css" />
+    <search bean="capControlSearchProducer" />
+    <pages>
+        <page name="areas.normal" type="LANDING">
+            <link>/capcontrol/tier/areas</link>
+            <pages>
+                <page name="areas.special" type="BASIC">
+                </page>
+                <page name="area" type="DETAIL">
+                    <link>/capcontrol/tier/substations?isSpecialArea=${isSpecialArea}&amp;bc_areaId=${bc_areaId}</link>
+                    <labelArgument>${bc_areaName}</labelArgument>
+                    <pages>
+                        <page name="substation" type="DETAIL">
+                            <link>/capcontrol/tier/feeders?isSpecialArea=${isSpecialArea}&amp;substationId=${substationId}</link>
+                            <labelArgument>${substationName}</labelArgument>
+                            <pages>
+                                <page name="capbankLocations" type="DETAIL_CHILD">
+                                    <labelArgument>${substationName}</labelArgument>
+                                </page>
+                                <page name="ivvc.busView" type="DETAIL">
+                                    <link>/capcontrol/ivvc/bus/detail?subBusId=${subBusId}&amp;isSpecialArea=${isSpecialArea}</link>
+                                    <labelArgument>${subBusName}</labelArgument>
+                                    <pages>
+                                        <page name="ivvc.zoneDetail" type="DETAIL">
+                                            <link>/capcontrol/ivvc/zone/detail?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
+                                            <labelArgument>${zoneName}</labelArgument>
+                                            <pages>
+                                                <page name="ivvc.voltagePoints" type="DETAIL">
+                                                    <link>/capcontrol/ivvc/zone/voltagePoints?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
+                                                </page>
+                                                <page name="ivvc.zoneVoltageDeltas" type="DETAIL">
+                                                    <link>/capcontrol/ivvc/zone/voltageDeltas?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
+                                                </page>
+                                            </pages>
+                                        </page>
+                                    </pages>
+                                </page>
+                            </pages>
+                        </page>
+                    </pages>
+                </page>
+                <page name="scheduleAssignments" type="BASIC">
+                    <link>/capcontrol/schedule/scheduleAssignments</link>
+                </page>
+                <page name="schedules" type="BASIC">
+                    <link>/capcontrol/schedule/schedules</link>
+                </page>
+                <page name="strategies" type="BASIC">
+                    <link>/capcontrol/strategy/strategies</link>
+                </page>
+                <page name="movedCapBanks" type="BASIC">
+                    <link>/capcontrol/move/movedCapBanks</link>
+                </page>
+                <page name="search.general" type="BASIC">
+                </page>
+                <page name="search.orphanedSubs" type="BASIC">
+                </page>
+                <page name="search.orphanedBuses" type="BASIC">
+                </page>
+                <page name="search.orphanedFeeders" type="BASIC">
+                </page>
+                <page name="search.orphanedBanks" type="BASIC">
+                </page>
+                <page name="search.orphanedCbcs" type="BASIC">
+                </page>
+                <page name="search.orphanedRegulators" type="BASIC">
+                </page>
+                <page name="recentEvents" type="DETAIL_CHILD">
+                </page>
+            </pages>
+        </page>
+        <page name="import" type="BASIC">
+        </page>
+    </pages>
+  </module>
+
+  <module name="capcontrol_internal">
+    <!-- The module is used for the inner frames that are used on the cap control pages. -->
+    <skin name="INNER" />
+    <css file="/WebConfig/yukon/styles/da/CapcontrolGeneralStyles.css" />
+  </module>
+
+  <module name="commercialcurtailment">
+    <skin name="STANDARD" />
+    <css file="/cc/base.css" />
+    <css file="/WebConfig/yukon/styles/commcurtaillogos.css" />
+  </module>
+
+  <module name="commercialcurtailment_user">
+    <skin name="STANDARD" />
+    <css file="/cc/base.css" />
+    <css file="/WebConfig/yukon/styles/commcurtaillogos.css" />
+  </module>
+
+  <module name="reporting">
+    <skin name="STANDARD" />
+    <script file="/JavaScript/change_monitor.js" />
+  </module>
+
+  <module name="esub">
+    <skin name="STANDARD" />
+    <css file="esub.css" />
+  </module>
+
+  <module name="stars">
+    <skin name="PURPLE" />
+  </module>
+
+  <module name="support">
+    <skin name="STANDARD" />
+    <css file="/WebConfig/yukon/styles/supportStyles.css"/>
+    <pages>
+        <page name="support" type="BASIC">
+            <link>/support</link>
+            <pages>
+                <page name="logLanding" type="BASIC">
+                    <requireRoleProperty value="ADMIN_EVENT_LOGS" />
+                    <link>/support/logging/menu</link>
+                    <pages>
+                        <page name="logMenu" type="BASIC">
+                            <link>/support/logging/menu?file=${rootlessDirFileString}</link>
+                            <labelArgument>${rootlessDirFileString}</labelArgument>
+                            <pages>
+                                <page name="logTail" type="DETAIL">
+                                    <link>/support/logging/view?file=${file}</link>
+                                    <labelArgument>${logFile.identifier}</labelArgument>
+                                </page>
+                            </pages>
+                        </page>
+                    </pages>
+                </page>
+                <page name="databaseInfo" type="BASIC">
+                </page>
+                <page name="siteMap" type="BASIC">
+                </page>
+                <page name="databaseValidate" type="BASIC">
+                </page>
+                <page name="databaseMigration" type="BASIC">
+                    <requireRoleProperty value="ADMIN_DATABASE_MIGRATION"/>
+                </page>
+                <page name="webServices.eimTest" type="BASIC">
+                </page>
+                <page name="webServices.loadControl" type="BASIC">
+                </page>
+                <page name="webServices.account" type="BASIC">
+                </page>
+                <page name="pointInjection" type="BASIC">
+                     <requireRoleProperty value="DEVELOPMENT_MODE" />
+                </page>
+                <page name="bulkPointInjection" type="BASIC">
+                     <requireRoleProperty value="DEVELOPMENT_MODE" />
+                </page>
+                <page name="uiToolkitDemo" type="BASIC">
+                     <requireRoleProperty value="DEVELOPMENT_MODE" />
+                </page>
+                <page name="setup" type="BASIC">
+                    <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
+                </page>
+                <page name="system" type="BASIC">
+                </page>
+                <page name="deviceDef" type="BASIC">
+                </page>
+                <page name="errorCodes" type="BASIC">
+                </page>
+                <page name="supportBundle" type = "BASIC">
+                </page>
+                <page name="localization" type = "BASIC">
+                </page>
+                <page name="uiDemos" type="BASIC">
+                     <requireRoleProperty value="DEVELOPMENT_MODE" />
+                </page>
+                <page name="setupDatabase" type="BASIC">
+                     <requireRoleProperty value="DEVELOPMENT_MODE" />
+                </page>
+                <page name="miscellaneousMethod" type="BASIC">
+                     <requireRoleProperty value="DEVELOPMENT_MODE" />
+                </page>
+                <page name="rfnTest" type="BASIC">
+                     <requireRoleProperty value="DEVELOPMENT_MODE" />
+                    <pages>
+                        <page name="rfnTest.viewMeterReadArchive" type="DETAIL">
+                        </page>
+                        <page name="rfnTest.viewEventArchive" type="DETAIL">
+                        </page>
+                        <page name="rfnTest.viewAlarmArchive" type="DETAIL">
+                        </page>
+                    </pages>
+                </page>
+                <page name="fileExportHistory" type="BASIC">
+                </page>
+                <page name="threadDump" type="BASIC">
+                </page>
+                <page name="routeUsage" type="BASIC">
+                </page>
+            </pages>
+        </page>
+    </pages>
+  </module>
+
+  <module name="blank">
+      <skin name="STANDARD" />
+      <pages>
+          <page name="bulkImporter" type="BASIC">
+          </page>
+      </pages>
+  </module>
+  
+  <module name="dr_user">
+    <skin name="STANDARD" />
+  </module>
+
+  <module name="operations">
+    <skin name="STANDARD" />
+    <css file="/WebConfig/yukon/styles/operationsStyles.css" />
+  </module>
+
+    <module name="adminSetup">
+        <skin name="STANDARD" />
+        <pages>
+            <page name="systemAdministration" type="LANDING">
+                <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
+                <link>/adminSetup/systemAdmin</link>
+                <pages>
+                    <page name="security" type="BASIC">
+                    </page>
+                    <page name="config" type="BASIC">
+                        <link>/adminSetup/config/view</link>
+                        <pages>
+                            <page name="config.category" type="BLANK">
+                                <link>/adminSetup/config/category</link>
+                            </page>
+                        </pages>
+                    </page>
+                    
+                    <page name="substationToRouteMapping" type="BASIC">
+                        <link>/multispeak/setup/routemapping/mappings</link>
+                    </page>
+                
+                    <page name="multispeak" type="BASIC">
+                        <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
+                        <link>/multispeak/setup/home</link>
+                        <pages>
+                            <page name="interfaces" type="BASIC">
+                                <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
+                                <link>/multispeak/setup/home</link>
+                            </page>
+                            <page name="lmMappings" type="BASIC">
+                                <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
+                                <link>/multispeak/setup/lmMappings/home</link>
+                            </page>
+                            <page name="deviceGroupSyncHome" type="BASIC">
+                                <link>/multispeak/setup/deviceGroupSync/home</link>
+                                <pages>
+                                    <page name="deviceGroupSyncProgress" type="BASIC">
+                                        <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
+                                        <link>/multispeak/setup/deviceGroupSync/progress</link>
+                                    </page>
+                                </pages>
+                            </page>
+                        </pages>
+                    </page>
+                    <page name="userEditor" type="BASIC">
+                        <requireRoleProperty value="ADMIN_SUPER_USER" />
+                        <link>/adminSetup/userEditor/home</link>
+                        <pages>
+                            <page name="roleGroupEditor.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
+                                <link>/adminSetup/roleGroup/view?roleGroupId=${roleGroupId}</link>
+                                <labelArgument>${roleGroupName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/roleGroupInfoFragment.jsp</infoInclude>
+                                <pages>
+                                    <page name="roleGroupEditor.EDIT" type="DETAIL_CHILD">
+                                        <link>/adminSetup/roleGroup/edit?roleGroupId=${roleGroupId}</link>
+                                        <labelArgument>${roleGroupName}</labelArgument>
+                                    </page>
+                                    <page name="userGroups" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <link>/adminSetup/roleGroup/userGroups?roleGroupId=${roleGroupId}</link>
+                                        <labelArgument>${roleGroupName}</labelArgument>
+                                    </page>
+                                    <page name="roles" type="DETAIL">
+                                        <link>/adminSetup/roleEditor/view?roleGroupId=${roleGroupId}&amp;roleId=${roleId}</link>
+                                        <labelArgument>${roleName}</labelArgument>
+                                    </page>
+                                </pages>
+                            </page>
+                            <page name="userEditor.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
+                                <link>/adminSetup/user/view?userId=${userId}</link>
+                                <labelArgument>${editingUsername}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/userInfoFragment.jsp</infoInclude>
+                                <pages>
+                                    <page name="userEditor.EDIT" type="DETAIL_CHILD">
+                                        <link>/adminSetup/user/edit?userId=${userId}</link>
+                                        <labelArgument>${editingUsername}</labelArgument>
+                                    </page>
+                                    <page name="userPermissions" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
+                                        <link>/adminSetup/user/permissions?userId=${userId}</link>
+                                        <labelArgument>${editingUsername}</labelArgument>
+                                    </page>
+                                </pages>
+                            </page>
+                            <page name="userGroupEditor.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
+                                <link>/adminSetup/userGroup/view?userGroupId=${userGroupId}</link>
+                                <labelArgument>${userGroupName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/userGroupInfoFragment.jsp</infoInclude>
+                                <pages>
+                                    <page name="userGroupEditor.EDIT" type="DETAIL_CHILD">
+                                        <link>/adminSetup/userGroup/edit?userId=${userId}</link>
+                                        <labelArgument>${userGroupName}</labelArgument>
+                                    </page>
+                                    <page name="userGroupAssociation" type="DETAIL_CHILD">
+                                        <link>/adminSetup/userGroup/association</link>
+                                        <labelArgument>${userGroupName}</labelArgument>
+                                    </page>
+                                    <page name="users" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <link>/adminSetup/userGroup/users?userGroupId=${userGroupId}</link>
+                                        <labelArgument>${userGroupName}</labelArgument>
+                                    </page>
+                                    <page name="roleGroups" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <link>/adminSetup/userGroup/roleGroups?userGroupId=${userGroupId}</link>
+                                        <labelArgument>${userGroupName}</labelArgument>
+                                    </page>
+                                    <page name="groupPermissions" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
+                                        <link>/adminSetup/userGroup/permissions?userGroupId=${userGroupId}</link>
+                                        <labelArgument>${userGroupName}</labelArgument>
+                                    </page>
+                                </pages>
+                            </page>
+                        </pages>
+                    </page>
+                    <page name="maintenance" type="BASIC">
+                        <requireRoleProperty value="ADMIN_SUPER_USER" />
+                        <link>/adminSetup/maintenance/view</link>
+                        <pages>
+                            <page name="maintenance.EDIT" type="DETAIL_WITH_INFO">
+                                <link>/adminSetup/maintenance/edit</link>
+                                <labelArgument>${jobNameMsg}</labelArgument>
+                            </page>
+                        </pages>
+                    </page>
+                    <page name="home" type="BASIC">
+                        <link>/adminSetup/energyCompany/home?ecId=${ecId}</link>
+                        <pages>
+                            <page name="createEnergyCompany" type="BASIC">
+                                <link>/adminSetup/energyCompany/new</link>
+                            </page>
+                            <page name="generalInfo.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
+                                <link>/adminSetup/energyCompany/general/view?ecId=${ecId}</link>
+                                <labelArgument>${energyCompanyName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
+                                <pages>
+                                    <page name="generalInfo.EDIT" type="DETAIL_CHILD_WITH_INFO">
+                                        <link>/adminSetup/energyCompany/generalInfo?ecId=${ecId}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                    </page>
+                                    <page name="deleteEnergyCompanyConfirm" type="DETAIL_CHILD_WITH_INFO">
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                    </page>
+                                    <page name="energyCompanySettings" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <requireCanEditEnergyCompany/>
+                                        <link>/adminSetup/energyCompany/settings/view?ecId=${ecId}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                    </page>
+                                    <page name="operatorLogin.home" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <link>/adminSetup/energyCompany/operatorLogin/home?ecId=${ecId}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                        <pages>
+                                            <page name="operatorLogin.VIEW" type="DETAIL">
+                                                <link>/adminSetup/energyCompany/operatorLogin/view?operatorLoginId=${operatorLogin.userId}&amp;ecId=${ecId}</link>
+                                                <labelArgument>${operatorLogin.username}</labelArgument>
+                                                <pages>
+                                                    <page name="operatorLogin.EDIT" type="DETAIL_CHILD">
+                                                        <labelArgument>${operatorLogin.username}</labelArgument>
+                                                    </page>
+                                                </pages>
+                                            </page>
+                                            <page name="operatorLogin.CREATE" type="BASIC" contributeToMenu="false">
+                                            </page>
+                                        </pages>
+                                    </page>
+                                    <page name="applianceCategory.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <link>/adminSetup/energyCompany/applianceCategory/list?ecId=${ecId}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                        <pages>
+                                            <page name="applianceCategory.VIEW" type="DETAIL">
+                                                <link>/adminSetup/energyCompany/applianceCategory/view?ecId=${ecId}&amp;applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
+                                                <labelArgument>${applianceCategory.categoryLabel}</labelArgument>
+                                                <pages>
+                                                    <page name="applianceCategory.EDIT" type="DETAIL_CHILD">
+                                                        <link>/adminSetup/energyCompany/applianceCategory/edit?ecId=${ecId}&amp;applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
+                                                        <labelArgument>${applianceCategory.categoryLabel}</labelArgument>
+                                                    </page>
+                                                </pages>
+                                            </page>
+                                            <page name="applianceCategory.CREATE" type="BASIC">
+                                                <link>/adminSetup/energyCompany/applianceCategory/create?ecId=${ecId}</link>
+                                            </page>
+                                        </pages>
+                                    </page>
+                                    <page name="applianceCategory.PROGRAMS" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <link>/adminSetup/energyCompany/applianceCategory/programs?ecId=${ecId}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                    </page>
+                                    <page name="serviceCompany.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES, OPERATOR_CONSUMER_INFO_WORK_ORDERS"/>
+                                        <link>/adminSetup/energyCompany/serviceCompany/list?ecId=${ecId}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                        <pages>
+                                            <page name="serviceCompany.VIEW" type="DETAIL" contributeToMenu="false">
+                                                <link>/adminSetup/energyCompany/serviceCompany/view?serviceCompanyId=${serviceCompany.companyId}&amp;ecId=${ecId}</link>
+                                                <labelArgument>${serviceCompany.companyName}</labelArgument>
+                                                <pages>
+                                                    <page name="serviceCompany.EDIT" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
+                                                        <link>/adminSetup/energyCompany/serviceCompany/edit?serviceCompany=${serviceCompanyId}</link>
+                                                        <labelArgument>${serviceCompany.companyName}</labelArgument>
+                                                    </page>
+                                                </pages>
+                                            </page>
+                                            <page name="serviceCompany.CREATE" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
+                                                <link>/adminSetup/energyCompany/serviceCompany/create?ecId=${ecId}</link>
+                                            </page>
+                                        </pages>
+                                    </page>
+                                    <page name="warehouse.home" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <requireRoleProperty value="ADMIN_MULTI_WAREHOUSE"/>
+                                        <link>/adminSetup/energyCompany/warehouse/home?ecId=${ecId}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                        <pages>
+                                            <page name="warehouse.VIEW" type="DETAIL">
+                                                <link>/adminSetup/energyCompany/warehouse/view?warehouseId=${warehouseDto.warehouse.warehouseID}&amp;ecId=${ecId}</link>
+                                                <labelArgument>${warehouseDto.warehouse.warehouseName}</labelArgument>
+                                                <pages>
+                                                    <page name="warehouse.EDIT" type="DETAIL_CHILD">
+                                                        <link>/adminSetup/energyCompany/warehouse/edit?warehouseId=${warehouseId}</link>
+                                                        <labelArgument>${warehouseDto.warehouse.warehouseName}</labelArgument>
+                                                    </page>
+                                                </pages>
+                                            </page>
+                                            <page name="warehouse.CREATE" type="DETAIL" contributeToMenu="false">
+                                                <link>/adminSetup/energyCompany/warehouse/create?id=${id}</link>
+                                            </page>
+                                        </pages>
+                                    </page>
+                                    <page name="routesAndSubstations.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <link>/adminSetup/energyCompany/routesAndSubstations/view?ecId=${ecId}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                        <pages>
+                                            <page name="routesAndSubstations.EDIT" type="DETAIL_CHILD_WITH_INFO">
+                                                <link>/adminSetup/energyCompany/routesAndSubstations/edit?ecId=${ecId}</link>
+                                                <labelArgument>${energyCompanyName}</labelArgument>
+                                            </page>
+                                        </pages>
+                                    </page>
+                                    <page name="list.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <link>/adminSetup/energyCompany/list/list?ecId=${ecId}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                        <pages>
+                                            <page name="list.VIEW" type="DETAIL">
+                                                <link>/adminSetup/energyCompany/list/view?ecId=${ecId}&amp;listId=${list.listId}</link>
+                                                <labelArgument>${list.type}</labelArgument>
+                                                <pages>
+                                                    <page name="list.EDIT" type="DETAIL_CHILD">
+                                                        <link>/adminSetup/energyCompany/list/edit?ecId=${ecId}&amp;listId=${list.listId}</link>
+                                                        <labelArgument>${list.type}</labelArgument>
+                                                    </page>
+                                                </pages>
+                                            </page>
+                                        </pages>
+                                    </page>
+                                    <page name="schedules.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT"/>
+                                        <link>/adminSetup/energyCompany/schedules/view?ecId=${ecId}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                        <pages>
+                                            <page name="schedules.EDIT" type="DETAIL_CHILD">
+                                                <link>/adminSetup/energyCompany/schedules/edit?ecId=${ecId}&amp;type=${type}</link>
+                                                <labelArgument>${typeStr}</labelArgument>
+                                            </page>
+                                        </pages>
+                                    </page>
+                                    <page name="settlements.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <requireRoleProperty value="ENABLE_SETTLEMENTS"/>
+                                        <link>/adminSetup/energyCompany/settlement/list?ecId=${ecId}</link>
+                                        <labelArgument>${energyCompanyName}</labelArgument>
+                                        <pages>
+                                            <page name="settlements.EDIT" type="DETAIL">
+                                                <link>/adminSetup/energyCompany/settlement/edit?ecId=${ecId}</link>
+                                                <labelArgument>${settlementName}</labelArgument>
+                                            </page>
+                                        </pages>
+                                    </page>
+                                </pages>
+                            </page>
+                        </pages>
+                    </page>
+                </pages>
+            </page>
+            <page name="jobsscheduler" type="BASIC">
+                <pages>
+                    <page name="jobsscheduler.active" type="BASIC">
+                    </page>
+                    <page name="jobsscheduler.status" type="BASIC">
+                    </page>
+                    <page name="jobsscheduler.all" type="BASIC">
+                    </page>
+                </pages>
+            </page>
+        </pages>
+    </module>
+    
+    <module name="operator">
+        <skin name="STANDARD" />
+        <search bean="operatorAccountSearchProducer" />
+        <pages>
+            <page name="home" type="LANDING" hideSearch="true">
+                <link>/stars/operator/home</link>
+            </page>
+            <page name="accountImport" type="BASIC" hideSearch="true">
+                <link>/stars/operator/account/import</link>
+            </page>
+            <page name="accountList" type="BASIC" hideSearch="true">
+                <link>/stars/operator/account/search</link>
+                <pages>
+                    <page name="account.CREATE" type="BASIC" hideSearch="true">
+                        <link>/stars/operator/account/accountCreate</link>
+                    </page>
+                    <page name="account.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
+                        <link>/stars/operator/account/view?accountId=${accountId}</link>
+                        <labelArgument>${accountNumber}</labelArgument>
+                        <infoInclude>/WEB-INF/pages/stars/operator/accountInfoFragment.jsp</infoInclude>
+                        <pages>
+                            <page name="account.EDIT" type="DETAIL_CHILD_WITH_INFO">
+                                <link>/stars/operator/account/edit?accountId=${accountId}</link>
+                                <labelArgument>${accountNumber}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/stars/operator/accountInfoFragment.jsp</infoInclude>
+                            </page>
+                            <page name="contactList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <link>/stars/operator/contacts/contactList?accountId=${accountId}</link>
+                                <labelArgument>${accountNumber}</labelArgument>
+                                <pages>
+                                    <page name="contact.VIEW" type="DETAIL">
+                                        <link>/stars/operator/contacts/view?accountId=${accountId}&amp;contactId=${contactId}</link>
+                                        <labelArgument>${firstName}</labelArgument>
+                                        <labelArgument>${lastName}</labelArgument>
+                                        <pages>
+                                            <page name="contact.EDIT" type="DETAIL_CHILD">
+                                                <link>/stars/operator/contacts/edit?accountId=${accountId}&amp;contactId=${contactId}</link>
+                                                <labelArgument>${firstName}</labelArgument>
+                                                <labelArgument>${lastName}</labelArgument>
+                                            </page>
+                                        </pages>
+                                    </page>
+                                    <page name="contact.CREATE" type="BASIC">
+                                        <link>/stars/operator/contacts/create?accountId=${accountId}&amp;contactId=0</link>
+                                        <labelArgument>${firstName}</labelArgument>
+                                        <labelArgument>${lastName}</labelArgument>
+                                    </page>
+                                </pages>
+                            </page>
+                            <page name="residence" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_RESIDENCE" />
+                                <link>/stars/operator/residence/view?accountId=${accountId}</link>
+                                <labelArgument>${accountNumber}</labelArgument>
+                            </page>
+                            <page name="callList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
+                                <link>/stars/operator/callTracking/callList?accountId=${accountId}</link>
+                                <labelArgument>${accountNumber}</labelArgument>
+                                <pages>
+                                    <page name="viewCall.CREATE" type="BASIC">
+                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
+                                        <link>/stars/operator/callTracking/viewCall?accountId=${accountId}</link>
+                                        <labelArgument>${callNumber}</labelArgument>
+                                    </page>
+                                    <page name="viewCall.VIEW" type="DETAIL">
+                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
+                                        <link>/stars/operator/callTracking/view?accountId=${accountId}</link>
+                                        <labelArgument>${callNumber}</labelArgument>
+                                        <pages>
+                                            <page name="viewCall.EDIT" type="DETAIL_CHILD">
+                                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
+                                                <link>/stars/operator/callTracking/edit?accountId=${accountId}</link>
+                                                <labelArgument>${callNumber}</labelArgument>
+                                            </page>
+                                        </pages>
+                                    </page>
+                                </pages>
+                            </page>
+                            <page name="metering" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA, OPERATOR_CONSUMER_INFO_METERING_CREATE" />
+                                <link>/stars/operator/metering/viewTrend?accountId=${accountId}</link>
+                                <labelArgument>${accountNumber}</labelArgument>
+                                <pages>
+                                    <page name="selectTrends" type="DETAIL_CHILD_WITH_INFO">
+                                        <link>/stars/operator/metering/selectTrends?accountId=${accountId}&amp;trendId={trendId}</link>
+                                        <labelArgument>${accountNumber}</labelArgument>
+                                    </page>
+                                </pages>
+                            </page>
+                            <page name="controlHistory" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <link>/stars/operator/program/controlHistory?accountId=${accountId}</link>
+                                <labelArgument>${accountNumber}</labelArgument>
+                                <pages>
+                                    <page name="completeControlHistory" type="DETAIL">
+                                        <link>/stars/operator/program/completeControlHistory?accountId=${accountId}</link>
+                                        <labelArgument>${program.programName}</labelArgument>
+                                    </page>
+                                </pages>
+                            </page>
+                            <page name="enrollmentList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_PROGRAMS_ENROLLMENT" />
+                                <link>/stars/operator/enrollment/list?accountId=${accountId}</link>
+                                <labelArgument>${accountNumber}</labelArgument>
+                                <pages>
+                                    <page name="enrollmentHistory" type="DETAIL_CHILD_WITH_INFO">
+                                        <link>/stars/operator/enrollment/history?accountId=${accountId}</link>
+                                    </page>
+                                </pages>
+                            </page>
+                            <page name="alternateEnrollment" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                   <requireRoleProperty value="ALTERNATE_PROGRAM_ENROLLMENT"/>
+                                   <link>/stars/operator/ae/view?accountId=${accountId}</link>
+                                   <labelArgument>${accountNumber}</labelArgument>
+                               </page>
+                            <page name="optOut.main" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <link>/stars/operator/program/optOut/view?accountId=${accountId}</link>
+                                <labelArgument>${accountNumber}</labelArgument>
+                                <pages>
+                                    <page name="optOut.inventoryList" type="DETAIL_CHILD_WITH_INFO">
+                                        <labelArgument>${optOutBackingBean.startDate}</labelArgument>
+                                    </page>
+                                    <page name="optOut.confirm" type="DETAIL_CHILD_WITH_INFO">
+                                    </page>
+                                    <page name="optOut.history" type="DETAIL_CHILD_WITH_INFO">
+                                    </page>
+                                </pages>
+                            </page>
+                            <page name="appliance.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_APPLIANCES" />
+                                <link>/stars/operator/appliances/applianceList?accountId=${accountId}</link>
+                                <labelArgument>${accountNumber}</labelArgument>
+                                <pages>
+                                    <page name="appliance.edit" type="DETAIL">
+                                        <labelArgument>${applianceCategoryName}</labelArgument>
+                                    </page>
+                                    <page name="appliance.new" type="BASIC">
+                                    </page>
+                                </pages>
+                            </page>
+                            <page name="hardware.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES" />
+                                <link>/stars/operator/hardware/list?accountId=${accountId}</link>
+                                <labelArgument>${accountNumber}</labelArgument>
+                                <pages>
+                                    <page name="hardware.CREATE" type="BASIC">
+                                        <labelArgument>${displayName}</labelArgument>
+                                    </page>
+                                    <page name="hardware.VIEW" type="DETAIL">
+                                        <link>/stars/operator/hardware/view?accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
+                                        <labelArgument>${displayName}</labelArgument>
+                                        <pages>
+                                            <page name="hardware.EDIT" type="DETAIL_CHILD">
+                                                <labelArgument>${displayName}</labelArgument>
+                                            </page>
+                                            <page name="thermostatManual.single" type="DETAIL_CHILD_WITH_INFO">
+                                                <labelArgument>${displayName}</labelArgument>
+                                            </page>
+                                            <page name="thermostatHistory.single" type="DETAIL_CHILD_WITH_INFO">
+                                                <labelArgument>${displayName}</labelArgument>
+                                            </page>
+                                            <page name="thermostat.schedules.single" type="BASIC">
+                                                <labelArgument>${displayName}</labelArgument>
+                                            </page>
+                                        </pages>
+                                    </page>
+                                    <page name="meterProfile.CREATE" type="BASIC">
+                                    </page>
+                                    <page name="meterProfile.VIEW" type="DETAIL">
+                                        <link>/stars/operator/hardware/viewMeterProfile?accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
+                                        <labelArgument>${displayName}</labelArgument>
+                                        <pages>
+                                            <page name="meterProfile.EDIT" type="DETAIL_CHILD">
+                                                <labelArgument>${displayName}</labelArgument>
+                                            </page>
+                                        </pages>
+                                    </page>
+                                    <page name="hardwareConfig" type="DETAIL">
+                                        <labelArgument>${displayName}</labelArgument>
+                                    </page>
+                                    <page name="meterConfig" type="DETAIL">
+                                        <labelArgument>${displayName}</labelArgument>
+                                    </page>
+                                    <page name="thermostatSelect" type="DETAIL_CHILD">
+                                        <link>/stars/operator/thermostatSelect/select?accountId=${accountId}</link>
+                                        <labelArgument>${accountNumber}</labelArgument>
+                                        <pages>
+                                            <page name="thermostat.schedules.multiple" type="BASIC">
+                                                <labelArgument>${displayName}</labelArgument>
+                                            </page>
+                                            <page name="thermostatHistory.multiple" type="DETAIL_CHILD_WITH_INFO">
+                                                <labelArgument>${displayName}</labelArgument>
+                                            </page>
+                                            <page name="thermostatManual.multiple" type="DETAIL_CHILD_WITH_INFO">
+                                                <labelArgument>${displayName}</labelArgument>
+                                            </page>
+                                        </pages>
+                                    </page>
+                                </pages>
+                            </page>
+                            <page name="workOrder.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
+                                <link>/stars/operator/workOrder/workOrderList?accountId=${accountId}</link>
+                                <labelArgument>${accountNumber}</labelArgument>
+                                <pages>
+                                    <page name="workOrder.VIEW" type="DETAIL">
+                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
+                                        <labelArgument>${workOrderDto.workOrderBase.orderNumber}</labelArgument>
+                                    </page>
+                                    <page name="workOrder.EDIT" type="DETAIL">
+                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
+                                        <labelArgument>${workOrderDto.workOrderBase.orderNumber}</labelArgument>
+                                    </page>
+                                    <page name="workOrder.CREATE" type="DETAIL">
+                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
+                                    </page>
+                                </pages>
+                            </page>
+                            <page name="accountLog" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                <link>/stars/operator/account/accountLog?accountId=${accountId}</link>
+                                <labelArgument>${accountNumber}</labelArgument>
+                            </page>
+                        </pages>
+                    </page>
+                </pages>
+            </page>
+            <page name="inventory.home" type="BLANK">
+                <link>/stars/operator/inventory/home</link>
+                <pages>
+                    <page name="inventory.list" type="BASIC">
+                    </page>
+                    <page name="inventory.CREATE" type="BASIC">
+                    </page>
+                    <page name="inventory.VIEW" type="DETAIL">
+                        <labelArgument>${displayName}</labelArgument>
+                        <pages>
+                            <page name="inventory.EDIT" type="DETAIL_CHILD">
+                                <labelArgument>${displayName}</labelArgument>
+                            </page>
+                        </pages>
+                    </page>
+                    <page name="abr.setup" type="BASIC">
+                        <labelArgument>${type}</labelArgument>
+                    </page>
+                    <page name="zbProblemDevices" type="BASIC">
+                    </page>
+                    <page name="filterSelection" type="DETAIL">
+                        <link>/stars/operator/inventory/setupFilterRules</link>
+                    </page>
+                    <page name="commandSchedule.CREATE" type="BASIC">
+                        <labelArgument>${displayName}</labelArgument>
+                    </page>
+                    <page name="commandSchedule.EDIT" type="DETAIL">
+                        <labelArgument>${displayName}</labelArgument>
+                    </page>
+                    <page name="inventoryActions" type="DETAIL">
+                        <link>/stars/operator/inventory/inventoryActions?${local:convertMapToQueryHtml(inventoryCollection.collectionParameters)}</link>
+                        <pages>
+                            <page name="deviceReconfig" type="BASIC">
+                            </page>
+                            <page name="deleteInventory" type="BASIC">
+                            </page>
+                            <page name="changeType" type="BASIC">
+                            </page>
+                            <page name="changeStatus" type="BASIC">
+                            </page>
+                            <page name="changeServiceCompany" type="BASIC">
+                            </page>
+                            <page name="changeWarehouse" type="BASIC">
+                            </page>
+                            <page name="inventoryConfiguration" type="BASIC">
+                            </page>
+                            <page name="saveToFile" type="BASIC">
+                            </page>
+                            <page name="resendConfig" type="BASIC">
+                            </page>
+                            <page name="controlAudit" type="BASIC">
+                            </page>
+                        </pages>
+                    </page>
+                    <page name="deviceReconfigStatus" type="DETAIL_CHILD">
+                        <labelArgument>${taskName}</labelArgument>
+                    </page>
+                </pages>
+            </page>
+        </pages>
+    </module>
+  
+  <module name="userlm">
+    <skin name="STANDARD" />
+    <css file="/WebConfig/yukon/styles/yukon.css" />
+  </module>
+
+  <module name="commander">
+    <skin name="STANDARD" />
+  </module>
+
+  <module name="commanderSelect">
+    <skin name="STANDARD" />
+  </module>
+
+  <module name="visualDisplays">
+    <skin name="STANDARD" />
+  </module>
+  
   <module name="consumer">
     <skin name="LEFT_SIDE_MENU" />
+    <css file="/WebConfig/yukon/styles/consumer/StarsConsumerStyles.css" />
+    <script file="/JavaScript/hideReveal.js" />
     <menu>
       <options>
         <option name="account">
@@ -751,8 +1272,7 @@
         <option name="programs">
           <options>
             <option name="controlHistory">
-              <requireRoleProperty
-                value="RESIDENTIAL_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY" />
+              <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY" />
                 <link>/stars/consumer/controlhistory</link>
             </option>
             <dynamicOptions bean="enrollmentMenuOption">
@@ -780,8 +1300,7 @@
           <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_QUESTIONS_FAQ" />
           <options>
             <option name="contactUs">
-              <requireRoleProperty
-                value="RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL" />
+              <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL" />
               <link>/stars/consumer/contactus</link>
             </option>
             <dynamicOptions id="faq" bean="faqMenuOption">
@@ -790,8 +1309,7 @@
           </options>
         </option>
         <option name="administration">
-          <requireRoleProperty
-            value="RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME, RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_PASSWORD" />
+          <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME, RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_PASSWORD" />
           <options>
             <option name="changeLogin">
               <link>/stars/consumer/changelogin</link>
@@ -800,1456 +1318,19 @@
         </option>
       </options>
     </menu>
-    <css file="/WebConfig/yukon/styles/consumer/StarsConsumerStyles.css" />
-    <script file="/JavaScript/hideReveal.js" />
   </module>
 
-  <module name="capcontrol">
-    <menu>
-      <options>
-      
-        <option name="create">
-          <requireRoleProperty value="CBC_DATABASE_EDIT" />
-          <options>
-            <option name="area">
-              <link>/editor/cbcWizBase.jsf?type=4002</link>
-            </option>
-            <option name="specialarea">
-              <link>/editor/cbcWizBase.jsf?type=4003</link>
-            </option>
-            <option name="substation">
-              <link>/editor/cbcWizBase.jsf?type=4004</link>
-            </option>
-            <option name="substationbus">
-              <link>/editor/cbcWizBase.jsf?type=4000</link>
-            </option>
-            <option name="feeder">
-              <link>/editor/cbcWizBase.jsf?type=4001</link>
-            </option>
-            <option name="capbank">
-              <link>/editor/cbcWizBase.jsf?type=1050</link>
-            </option>
-            <option name="cbc">
-              <link>/editor/cbcWizBase.jsf?type=1051</link>
-            </option>
-            <option name="schedule">
-              <link>/editor/cbcWizBase.jsf?type=4005</link>
-            </option>
-            <option name="strategy">
-              <link>/editor/cbcWizBase.jsf?type=4006</link>
-            </option>
-            <option name="voltageregulator">
-              <link>/editor/cbcWizBase.jsf?type=4007</link>
-            </option>
-          </options>
-        </option>
-        
-        <option name="view">
-          <options>
-            <option name="schedules">
-              <link>/capcontrol/schedule/schedules</link>
-            </option>
-            <option name="strategies">
-              <link>/capcontrol/strategy/strategies</link>
-            </option>
-            <option name="scheduleassignment">
-              <link>/capcontrol/schedule/scheduleAssignments</link>
-            </option>
-            <option name="recentcapbankmoves">
-              <link>/capcontrol/move/movedCapBanks</link>
-            </option>
-            <option name="specialareas">
-              <link>/capcontrol/tier/areas?isSpecialArea=true</link>
-            </option>
-          </options>
-        </option>
-        
-        <option name="orphans">
-          <options>
-            <option name="orphanedsubstations">
-              <link>/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubstations__</link>
-            </option>
-            <option name="orphanedsubstationbuses">
-              <link>/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubBuses__</link>
-            </option>
-            <option name="orphanedfeeders">
-              <link>/capcontrol/search/searchResults?cbc_lastSearch=__cti_oFeeders__</link>
-            </option>
-            <option name="orphanedcapbanks">
-              <link>/capcontrol/search/searchResults?cbc_lastSearch=__cti_oBanks__</link>
-            </option>
-            <option name="orphanedcbcs">
-              <link>/capcontrol/search/searchResults?cbc_lastSearch=__cti_oCBCs__</link>
-            </option>
-            <option name="orphanedregulators">
-              <link>/capcontrol/search/searchResults?cbc_lastSearch=__cti_oRegulators__</link>
-            </option>
-          </options>
-        </option>
-      </options>
-    </menu>
-            
-    <search bean="capControlSearchProducer" />
-    
-    <skin name="STANDARD" />
-    <css file="/WebConfig/yukon/styles/da/CapcontrolGeneralStyles.css" />
-    <pages>
-        <page name="areas.normal" type="LANDING">
-            <menu></menu>
-            <link>/capcontrol/tier/areas</link>
-            <pages>
-                <page name="areas.special" type="BASIC">
-                    <menu></menu>
-                </page>
-                <page name="area" type="DETAIL">
-                    <menu></menu>
-                    <link>/capcontrol/tier/substations?isSpecialArea=${isSpecialArea}&amp;bc_areaId=${bc_areaId}</link>
-                    <labelArgument>${bc_areaName}</labelArgument>
-                    <pages>
-                        <page name="substation" type="DETAIL">
-                            <menu></menu>
-                            <link>/capcontrol/tier/feeders?isSpecialArea=${isSpecialArea}&amp;substationId=${substationId}</link>
-                            <labelArgument>${substationName}</labelArgument>
-                            <pages>
-                                <page name="capbankLocations" type="DETAIL_CHILD">
-                                    <menu></menu>
-                                    <labelArgument>${substationName}</labelArgument>
-                                </page>
-                                <page name="ivvc.busView" type="DETAIL">
-                                    <menu></menu>
-                                    <link>/capcontrol/ivvc/bus/detail?subBusId=${subBusId}&amp;isSpecialArea=${isSpecialArea}</link>
-                                    <labelArgument>${subBusName}</labelArgument>
-                                    <pages>
-		                                <page name="ivvc.zoneDetail" type="DETAIL">
-		                                    <menu></menu>
-											<link>/capcontrol/ivvc/zone/detail?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
-		                                    <labelArgument>${zoneName}</labelArgument>
-		                                    <pages>
-				                                <page name="ivvc.voltagePoints" type="DETAIL">
-				                                    <menu></menu>
-													<link>/capcontrol/ivvc/zone/voltagePoints?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
-				                                </page>
-				                                <page name="ivvc.zoneVoltageDeltas" type="DETAIL">
-				                                    <menu></menu>
-													<link>/capcontrol/ivvc/zone/voltageDeltas?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
-				                                </page>
-		                                    </pages>
-		                                </page>
-                                    </pages>
-                                </page>
-                            </pages>
-                        </page>
-                    </pages>
-                </page>
-                <page name="scheduleAssignments" type="BASIC">
-                    <menu>view|scheduleassignment</menu>
-                    <link>/capcontrol/schedule/scheduleAssignments</link>
-                </page>
-                <page name="schedules" type="BASIC">
-                    <menu>view|schedules</menu>
-                    <link>/capcontrol/schedule/schedules</link>
-                </page>
-                <page name="strategies" type="BASIC">
-                    <menu>view|strategies</menu>
-                    <link>/capcontrol/strategy/strategies</link>
-                </page>
-                <page name="movedCapBanks" type="BASIC">
-                    <menu>view|recentcapbankmoves</menu>
-                    <link>/capcontrol/move/movedCapBanks</link>
-                </page>
-                <page name="search.general" type="BASIC">
-                    <menu></menu>
-                </page>
-                <page name="search.orphanedSubs" type="BASIC">
-                    <menu>orphans|orphanedsubstations</menu>
-                </page>
-                <page name="search.orphanedBuses" type="BASIC">
-                    <menu>orphans|orphanedsubstationbuses</menu>
-                </page>
-                <page name="search.orphanedFeeders" type="BASIC">
-                    <menu>orphans|orphanedfeeders</menu>
-                </page>
-                <page name="search.orphanedBanks" type="BASIC">
-                    <menu>orphans|orphanedcapbanks</menu>
-                </page>
-                <page name="search.orphanedCbcs" type="BASIC">
-                    <menu>orphans|orphanedcbcs</menu>
-                </page>
-                <page name="search.orphanedRegulators" type="BASIC">
-                    <menu>orphans|orphanedregulators</menu>
-                </page>
-                <page name="recentEvents" type="DETAIL_CHILD">
-                    <menu></menu>
-                </page>
-            </pages>
-        </page>
-        <page name="import" type="BASIC">
-            <menu>import</menu>
-        </page>
-    </pages>
-  </module>
-
-  <module name="capcontrol_internal">
-    <!--
-      The module is used for the inner frames that are used on the cap
-      control pages.
-    -->
-    <skin name="INNER" />
-    <css file="/WebConfig/yukon/styles/da/CapcontrolGeneralStyles.css" />
-  </module>
-
-  <module name="commercialcurtailment">
-    <menu>
-      <options>
-        <option name="ccurt_events">
-          <link>/cc/programSelect.jsf</link>
-        </option>
-        <option name="ccurt_setup">
-          <options>
-            <option name="ccurt_programs">
-              <link>/cc/programList.jsf</link>
-            </option>
-            <option name="ccurt_groups">
-              <link>/cc/groupList.jsf</link>
-            </option>
-            <option name="ccurt_customers">
-              <link>/cc/customerList.jsf</link>
-            </option>
-          </options>
-        </option>
-      </options>
-    </menu>
-    <css file="/cc/base.css" />
-    <css file="/WebConfig/yukon/styles/commcurtaillogos.css" />
-    <skin name="STANDARD" />
-  </module>
-
-  <module name="commercialcurtailment_user">
-    <menu>
-      <options>
-        <option name="control">
-          <link>/cc/user/overview.jsf</link>
-        </option>
-        <option name="trending">
-          <link>/user/CILC/user_trending_sp.jsp</link>
-        </option>
-        <option name="profile">
-          <link>/user/CILC/customerProfile.jsf</link>
-        </option>
-      </options>
-    </menu>
-    <css file="/cc/base.css" />
-    <css file="/WebConfig/yukon/styles/commcurtaillogos.css" />
-    <skin name="STANDARD" />
-  </module>
-
-  <module name="reporting">
-    <menu>
-      <options>
-        <option name="reports">
-          <options>
-            <option name="administrator">
-              <link>/analysis/Reports.jsp?groupType=ADMINISTRATIVE</link>
-              <requireRoleProperty value="ADMIN_REPORTS_GROUP" />
-            </option>
-            <option name="metering">
-              <link>/analysis/Reports.jsp?groupType=METERING</link>
-              <requireRoleProperty value="AMR_REPORTS_GROUP" />
-            </option>
-            <option name="capcontrol">
-              <link>/analysis/Reports.jsp?groupType=CAP_CONTROL</link>
-              <requireRoleProperty value="CAP_CONTROL_REPORTS_GROUP" />
-            </option>
-            <option name="statistical">
-              <link>/analysis/Reports.jsp?groupType=STATISTICAL</link>
-              <requireRoleProperty value="STATISTICAL_REPORTS_GROUP" />
-            </option>
-            <option name="database">
-              <link>/analysis/Reports.jsp?groupType=DATABASE</link>
-              <requireRoleProperty value="DATABASE_REPORTS_GROUP" />
-            </option>
-            <option name="management">
-              <link>/analysis/Reports.jsp?groupType=LOAD_MANAGEMENT</link>
-              <requireRoleProperty value="LOAD_MANAGEMENT_REPORTS_GROUP" />
-            </option>
-            <option name="stars">
-              <link>/analysis/Reports.jsp?groupType=STARS</link>
-              <requireRoleProperty value="STARS_REPORTS_GROUP" />
-            </option>
-            <option name="settlement">
-              <link>/analysis/Reports.jsp?groupType=SETTLEMENT</link>
-              <requireRoleProperty value="SETTLEMENT_REPORTS_GROUP" />
-            </option>
-            <option name="cni">
-              <link>/analysis/Reports.jsp?groupType=CCURT</link>
-              <requireRoleProperty value="CI_CURTAILMENT_REPORTS_GROUP" />
-            </option>
-          </options>
-        </option>
-      </options>
-    </menu>
-    <skin name="STANDARD" />
-    <script file="/JavaScript/change_monitor.js" />
-  </module>
-
-  <module name="esub">
-    <skin name="STANDARD" />
-    <css file="esub.css" />
-  </module>
-
-  <module name="stars">
-    <skin name="PURPLE" />
-  </module>
-
-  <module name="support">
-    <skin name="STANDARD" />
-    <css file="/WebConfig/yukon/styles/supportStyles.css"/>
-
-    <menu>
-      <options>
-        <option name="information">
-          <link>/support/</link>
-          <options>
-            <option name="system">
-              <link>/support/</link>
-            </option>
-            <option name="deviceDef">
-              <link>/common/deviceDefinition.xml</link>
-            </option>
-            <option name="errorCodes">
-              <link>/support/errorCodes/view</link>
-            </option>
-            <option name="supportBundle">
-              <link>/support/supportBundle/view</link>
-            </option>
-            <option name="localization">
-              <link>/support/localization/view</link>
-            </option>
-          </options>
-        </option>
-        <option name="logs">
-          <requireRoleProperty value="ADMIN_VIEW_LOGS" />
-          <link>/support/logging/menu</link>
-        </option>
-        <option name="database">
-          <link>/support/database/info</link>
-          <options>
-            <option name="info">
-              <link>/support/database/info</link>
-            </option>
-            <option name="compare">
-              <requireRoleProperty value="ADMIN_VIEW_LOGS" />
-              <link>/support/database/validate/home</link>
-            </option>
-            <option name="migration">
-              <link>/support/database/migration/home</link>
-              <requireRoleProperty value="ADMIN_DATABASE_MIGRATION" />
-            </option>
-          </options>
-        </option>
-        <option name="scheduler">
-          <link>/support/scheduler/active</link>
-          <options>
-            <option name="active">
-              <link>/support/scheduler/active</link>
-            </option>
-            <option name="status">
-              <link>/support/scheduler/status</link>
-            </option>
-            <option name="jobs">
-              <link>/support/scheduler/jobs</link>
-            </option>
-          </options>
-        </option>
-        <option name="events">
-          <link>/common/eventLog/viewByCategory</link>
-          <requireRoleProperty value="ADMIN_EVENT_LOGS" />
-          <options>
-            <option name="byCategory">
-              <link>/common/eventLog/viewByCategory</link>
-            </option>
-            <option name="byType">
-              <link>/common/eventLog/viewByType</link>
-            </option>
-          </options>
-        </option>
-        <option name="development">
-          <requireRoleProperty value="DEVELOPMENT_MODE" />
-          <link>/support/development/pointInjection/main</link>
-          <options>
-            <option name="pointInjection">
-              <link>/support/development/pointInjection/main</link>
-            </option>
-            <option name="bulkPointInjection">
-              <link>/support/development/bulkPointInjection/main</link>
-            </option>
-            <option name="uiToolkitDemo">
-              <link>/support/development/uiToolkitDemo/main</link>
-            </option>
-            <option name="uiDemos">
-              <link>/support/development/uiDemos/main</link>
-            </option>
-            <option name="setupDatabase">
-              <link>/support/development/setupDatabase/main</link>
-            </option>
-            <option name="miscellaneousMethods">
-              <link>/support/development/miscellaneousMethod/main</link>
-            </option>
-            <option name="rfn">
-              <link>/support/development/rfn/viewBase</link>
-            </option>
-          </options>
-        </option> 
-        <option name="webServices">
-          <requireRoleProperty value="ENABLE_WEB_DEBUG_PAGES" />
-          <link>/support/development/eimTest/main</link>
-          <options>
-            <option name="eimTest">
-              <link>/support/development/eimTest/main</link>
-            </option>
-            <option name="loadControl">
-              <link>/debug/loadControlService/inputs/home</link>
-            </option>
-            <option name="account">
-              <link>/debug/accountService/inputs/home</link>
-            </option>
-          </options>
-        </option>
-        <option name="fileExportHistory">
-          <link>/support/fileExportHistory/list</link>
-        </option>
-        <option name="other">
-          <link>/support/threadDump</link>
-          <options>
-            <option name="threadDump">
-              <link>/support/threadDump</link>
-            </option>
-            <option name="routeUsage">
-              <link>/support/routeUsage</link>
-            </option>
-          </options>
-        </option>
-      </options>
-    </menu>
-
-    <pages>
-        <page name="supportLanding" type="LANDING">
-            <pages>
-                <page name="logLanding" type="BASIC">
-                    <requireRoleProperty value="ADMIN_EVENT_LOGS" />
-                    <link>/support/logging/menu</link>
-                    <pages>
-                        <page name="logMenu" type="BASIC">
-                            <menu>logs</menu>
-                            <link>/support/logging/menu?file=${rootlessDirFileString}</link>
-                            <labelArgument>${rootlessDirFileString}</labelArgument>
-                            <pages>
-                                <page name="logTail" type="DETAIL">
-                                    <menu>logs</menu>
-                                    <link>/support/logging/view?file=${file}</link>
-                                    <labelArgument>${logFile.identifier}</labelArgument>
-                                </page>
-                            </pages>
-                        </page>
-                    </pages>
-                </page>
-                <page name="databaseInfo" type="BASIC">
-                    <menu>database|info</menu>
-                </page>
-                <page name="databaseValidate" type="BASIC">
-                    <menu>database|compare</menu>
-                </page>
-                <page name="databaseMigration" type="BASIC">
-                    <requireRoleProperty value="ADMIN_DATABASE_MIGRATION"/>
-                    <menu>database|migration</menu>
-                </page>
-                <page name="webServices.eimTest" type="BASIC">
-                    <menu>webServices|eimTest</menu>
-                </page>
-                <page name="webServices.loadControl" type="BASIC">
-                    <menu>webServices|loadControl</menu>
-                </page>
-                <page name="webServices.account" type="BASIC">
-                    <menu>webServices|account</menu>
-                </page>
-                <page name="pointInjection" type="BASIC">
-                     <requireRoleProperty value="DEVELOPMENT_MODE" />
-                    <menu>development|pointInjection</menu>
-                </page>
-                <page name="bulkPointInjection" type="BASIC">
-                     <requireRoleProperty value="DEVELOPMENT_MODE" />
-                    <menu>development|bulkPointInjection</menu>
-                </page>
-                <page name="uiToolkitDemo" type="BASIC">
-                     <requireRoleProperty value="DEVELOPMENT_MODE" />
-                    <menu>development|uiToolkitDemo</menu>
-                </page>
-                <page name="setup" type="BASIC">
-                    <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
-                    <menu>other|setup</menu>
-                </page>
-                <page name="system" type="BASIC">
-                    <menu>information|system</menu>
-                </page>
-                <page name="deviceDef" type="BASIC">
-                    <menu>information|deviceDef</menu>
-                </page>
-                <page name="errorCodes" type="BASIC">
-                    <menu>information|errorCodes</menu>
-                </page>
-                <page name="supportBundle" type = "BASIC">
-                    <menu>information|supportBundle</menu>
-                </page>
-                <page name="localization" type = "BASIC">
-                    <menu>information|localization</menu>
-                </page>
-                <page name="uiDemos" type="BASIC">
-                     <requireRoleProperty value="DEVELOPMENT_MODE" />
-                    <menu>development|uiDemos</menu>
-                </page>
-                <page name="setupDatabase" type="BASIC">
-                     <requireRoleProperty value="DEVELOPMENT_MODE" />
-                    <menu>development|setupDatabase</menu>
-                </page>
-                <page name="miscellaneousMethod" type="BASIC">
-                     <requireRoleProperty value="DEVELOPMENT_MODE" />
-                    <menu>development|miscellaneousMethod</menu>
-                </page>
-                <page name="rfnTest" type="BASIC">
-                     <requireRoleProperty value="DEVELOPMENT_MODE" />
-                    <menu>development|rfn</menu>
-                    <pages>
-                        <page name="rfnTest.viewMeterReadArchive" type="DETAIL">
-                            <menu>development|rfn</menu>
-                        </page>
-                        <page name="rfnTest.viewEventArchive" type="DETAIL">
-                            <menu>development|rfn</menu>
-                        </page>
-                        <page name="rfnTest.viewAlarmArchive" type="DETAIL">
-                            <menu>development|rfn</menu>
-                        </page>
-                    </pages>
-                </page>
-                <page name="scheduler" type="BASIC">
-                    <menu>scheduler|active</menu>
-                    <pages>
-                        <page name="scheduler.active" type="BASIC">
-                            <menu>scheduler|active</menu>
-                        </page>
-                        <page name="scheduler.status" type="BASIC">
-                            <menu>scheduler|status</menu>
-                        </page>
-                        <page name="scheduler.jobs" type="BASIC">
-                            <menu>scheduler|jobs</menu>
-                        </page>
-                    </pages>
-                </page>
-                <page name="fileExportHistory" type="BASIC">
-                	<menu>fileExportHistory</menu>
-                </page>
-                <page name="threadDump" type="BASIC">
-                    <menu>other|threadDump</menu>
-                </page>
-                <page name="routeUsage" type="BASIC">
-                    <menu>other|routeUsage</menu>
-                </page>
-            </pages>
-            <link>/support/</link>
-        </page>
-    </pages>
-    
-  </module>
-
-  <module name="blank">
-      <skin name="STANDARD" />
-      <pages>
-          <page name="bulkImporter" type="BASIC">
-            <menu>blank</menu>
-          </page>
-      </pages>
-  </module>
-  
-  <module name="dr_user">
-    <skin name="STANDARD" />
-  </module>
-
-  <module name="operations">
-    <skin name="STANDARD" />
-    <css file="/WebConfig/yukon/styles/operationsStyles.css" />
-  </module>
-
-    <module name="adminSetup">
+    <module name="user">
         <skin name="STANDARD" />
-        <menu>
-            <options>
-                <option name="energyCompanySetup">
-                    <requireEcOperatorOrSuperUser/>
-                    <link>/adminSetup/energyCompany/home</link>
-                    <options>
-                        <option name="home">
-                            <link>/adminSetup/energyCompany/home</link>
-                        </option>
-                    </options>
-                </option>
-                <option name="multispeak">
-                    <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
-                    <link>/multispeak/setup/home</link>
-                    <options>
-                        <option name="interfaces">
-                            <link>/multispeak/setup/home</link>
-                        </option>
-                        <option name="lmMappings">
-                            <link>/multispeak/setup/lmMappings/home</link>
-                        </option>
-                        <option name="synchronization">
-                            <link>/multispeak/setup/deviceGroupSync/home</link>
-                        </option>
-                    </options>
-                </option>
-                <option name="usersEditor">
-                    <requireRoleProperty value="ADMIN_SUPER_USER" />
-                    <link>/adminSetup/userEditor/home</link>
-                    <options>
-                        <option name="home">
-                            <link>/adminSetup/userEditor/home</link>
-                        </option>
-                    </options>
-                </option>
-                <option name="substationToRouteMapping">
-                    <link>/adminSetup/substations/routeMapping/view</link>
-                    <options>
-                        <option name="home">
-                            <link>/adminSetup/substations/routeMapping/view</link>
-                        </option>
-                    </options>
-                </option>
-                <option name="maintenance">
-                    <requireRoleProperty value="ADMIN_SUPER_USER" />
-                    <link>/adminSetup/maintenance/view</link>
-                </option>
-                <option name="system">
-                    <requireRoleProperty value="ADMIN_SUPER_USER" />
-                    <link>/adminSetup/config/view</link>
-                    <options>
-                        <option name="config">
-                            <link>/adminSetup/config/view</link>
-                        </option>
-                        <option name="security">
-                            <link>/adminSetup/security/view</link>
-                        </option>
-                    </options>
-                </option>
-            </options>
-        </menu>
-        
         <pages>
-            <page name="systemAdministration" type="LANDING">
-                <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
-                <menu>adminSetup</menu>
-                <link>/adminSetup/systemAdmin</link>
+            <page name="profile.VIEW" type="BASIC">
+                <link>/user/profile</link>
                 <pages>
-                    <page name="security" type="BASIC">
-                        <menu>system|security</menu>
-                    </page>
-                    <page name="config" type="BASIC">
-                        <menu>system|config</menu>
-                        <link>/adminSetup/config/view</link>
-                        <pages>
-                            <page name="config.category" type="BLANK">
-                                <menu>system|config</menu>
-                                <link>/adminSetup/config/category</link>
-                            </page>
-                        </pages>
-                    </page>
-                    
-                    <page name="substationToRouteMapping" type="BASIC">
-                        <menu>substationToRouteMapping|home</menu>
-                        <link>/multispeak/setup/routemapping/mappings</link>
-                    </page>
-                
-                    <page name="multispeak" type="BASIC">
-                        <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
-                        <menu>multispeak|interfaces</menu>
-                        <link>/multispeak/setup/home</link>
-                        <pages>
-                            <page name="interfaces" type="BASIC">
-                                <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
-                                <menu>multispeak|interfaces</menu>
-                                <link>/multispeak/setup/home</link>
-                            </page>
-                            <page name="lmMappings" type="BASIC">
-                                <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
-                                <menu>multispeak|lmMappings</menu>
-                                <link>/multispeak/setup/lmMappings/home</link>
-                            </page>
-                            <page name="deviceGroupSyncHome" type="BASIC">
-                                <menu>multispeak|synchronization</menu>
-                                <link>/multispeak/setup/deviceGroupSync/home</link>
-                                <pages>
-                                	<page name="deviceGroupSyncProgress" type="BASIC">
-                                		<requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
-                                		<menu>multispeak|synchronization</menu>
-										<link>/multispeak/setup/deviceGroupSync/progress</link>
-									</page>
-								</pages>
-                            </page>
-                        </pages>
-                    </page>
-                    <page name="userEditor" type="BASIC">
-                        <requireRoleProperty value="ADMIN_SUPER_USER" />
-                        <menu>userEditor|user</menu>
-                        <link>/adminSetup/userEditor/home</link>
-                        <pages>
-                            <page name="roleGroupEditor.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
-                                <menu>userEditor|home</menu>
-                                <link>/adminSetup/roleGroup/view?roleGroupId=${roleGroupId}</link>
-                                <labelArgument>${roleGroupName}</labelArgument>
-                                <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/roleGroupInfoFragment.jsp</infoInclude>
-                                <pages>
-                                    <page name="roleGroupEditor.EDIT" type="DETAIL_CHILD">
-                                        <menu>userEditor|home</menu>
-                                        <link>/adminSetup/roleGroup/edit?roleGroupId=${roleGroupId}</link>
-                                        <labelArgument>${roleGroupName}</labelArgument>
-                                    </page>
-                                    <page name="userGroups" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                        <menu>userEditor|home</menu>
-                                        <link>/adminSetup/roleGroup/userGroups?roleGroupId=${roleGroupId}</link>
-                                        <labelArgument>${roleGroupName}</labelArgument>
-                                    </page>
-                                    <page name="roles" type="DETAIL">
-                                        <menu>userEditor|home</menu>
-                                        <link>/adminSetup/roleEditor/view?roleGroupId=${roleGroupId}&amp;roleId=${roleId}</link>
-                                        <labelArgument>${roleName}</labelArgument>
-                                    </page>
-                                </pages>
-                            </page>
-                            <page name="userEditor.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
-                                <menu>userEditor|home</menu>
-                                <link>/adminSetup/user/view?userId=${userId}</link>
-                                <labelArgument>${editingUsername}</labelArgument>
-                                <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/userInfoFragment.jsp</infoInclude>
-                                <pages>
-                                    <page name="userEditor.EDIT" type="DETAIL_CHILD">
-                                        <menu>userEditor|home</menu>
-                                        <link>/adminSetup/user/edit?userId=${userId}</link>
-                                        <labelArgument>${editingUsername}</labelArgument>
-                                    </page>
-                                    <page name="userPermissions" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                    	<requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
-                                        <menu>userEditor|home</menu>
-                                        <link>/adminSetup/user/permissions?userId=${userId}</link>
-                                        <labelArgument>${editingUsername}</labelArgument>
-                                    </page>
-                                </pages>
-                            </page>
-                            <page name="userGroupEditor.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
-                                <menu>userEditor|home</menu>
-                                <link>/adminSetup/userGroup/view?userGroupId=${userGroupId}</link>
-                                <labelArgument>${userGroupName}</labelArgument>
-                                <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/userGroupInfoFragment.jsp</infoInclude>
-                                <pages>
-                                    <page name="userGroupEditor.EDIT" type="DETAIL_CHILD">
-                                        <menu>userEditor|home</menu>
-                                        <link>/adminSetup/userGroup/edit?userId=${userId}</link>
-                                        <labelArgument>${userGroupName}</labelArgument>
-                                    </page>
-                                    <page name="userGroupAssociation" type="DETAIL_CHILD">
-                                        <menu>userEditor|home</menu>
-                                        <link>/adminSetup/userGroup/association</link>
-                                        <labelArgument>${userGroupName}</labelArgument>
-                                    </page>
-                                    <page name="users" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                        <menu>userEditor|home</menu>
-                                        <link>/adminSetup/userGroup/users?userGroupId=${userGroupId}</link>
-                                        <labelArgument>${userGroupName}</labelArgument>
-                                    </page>
-                                    <page name="roleGroups" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                        <menu>userEditor|home</menu>
-                                        <link>/adminSetup/userGroup/roleGroups?userGroupId=${userGroupId}</link>
-                                        <labelArgument>${userGroupName}</labelArgument>
-                                    </page>
-                                    <page name="groupPermissions" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                        <requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
-                                        <menu>userEditor|home</menu>
-                                        <link>/adminSetup/userGroup/permissions?userGroupId=${userGroupId}</link>
-                                        <labelArgument>${userGroupName}</labelArgument>
-                                    </page>
-                                </pages>
-                            </page>
-                        </pages>
-                    </page>
-                    <page name="maintenance" type="BASIC">
-                        <requireRoleProperty value="ADMIN_SUPER_USER" />
-                        <menu>maintenance|home</menu>
-                        <link>/adminSetup/maintenance/view</link>
-                        <pages>
-                            <page name="maintenance.EDIT" type="DETAIL_WITH_INFO">
-                                <menu>maintenance|home</menu>
-                                <link>/adminSetup/maintenance/edit</link>
-                                <labelArgument>${jobNameMsg}</labelArgument>
-                            </page>
-                        </pages>
-                    </page>
-                    <page name="home" type="BASIC">
-                        <menu>energyCompanySetup|home"</menu>
-                        <link>/adminSetup/energyCompany/home?ecId=${ecId}</link>
-                        <pages>
-                            <page name="createEnergyCompany" type="BASIC">
-                                <menu>energyCompanySetup|home</menu>
-                                <link>/adminSetup/energyCompany/new</link>
-                            </page>
-                            <page name="generalInfo.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
-                                <menu>energyCompanySetup|home</menu>
-                                <link>/adminSetup/energyCompany/general/view?ecId=${ecId}</link>
-                                <labelArgument>${energyCompanyName}</labelArgument>
-                                <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
-                                <pages>
-                                    <page name="generalInfo.EDIT" type="DETAIL_CHILD_WITH_INFO">
-                                        <menu>energyCompanySetup|home</menu>
-                                        <link>/adminSetup/energyCompany/generalInfo?ecId=${ecId}</link>
-                                        <labelArgument>${energyCompanyName}</labelArgument>
-                                    </page>
-                                    <page name="deleteEnergyCompanyConfirm" type="DETAIL_CHILD_WITH_INFO">
-                                        <menu>energyCompanySetup|home</menu>
-                                        <labelArgument>${energyCompanyName}</labelArgument>
-                                    </page>
-                                    <page name="energyCompanySettings" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                        <requireCanEditEnergyCompany/>
-                                        <menu>energyCompanySetup|home</menu>
-                                        <link>/adminSetup/energyCompany/settings/view?ecId=${ecId}</link>
-                                        <labelArgument>${energyCompanyName}</labelArgument>
-                                    </page>
-                                    <page name="operatorLogin.home" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                        <menu>energyCompany|home</menu>
-                                        <link>/adminSetup/energyCompany/operatorLogin/home?ecId=${ecId}</link>
-                                        <labelArgument>${energyCompanyName}</labelArgument>
-                                        <pages>
-                                            <page name="operatorLogin.VIEW" type="DETAIL">
-                                                <menu>energyCompany|home</menu>
-                                                <link>/adminSetup/energyCompany/operatorLogin/view?operatorLoginId=${operatorLogin.userId}&amp;ecId=${ecId}</link>
-                                                <labelArgument>${operatorLogin.username}</labelArgument>
-                                                <pages>
-                                                    <page name="operatorLogin.EDIT" type="DETAIL_CHILD">
-                                                        <menu>energyCompany|home</menu>
-                                                        <labelArgument>${operatorLogin.username}</labelArgument>
-                                                    </page>
-                                                </pages>
-                                            </page>
-                                            <page name="operatorLogin.CREATE" type="BASIC" contributeToMenu="false">
-                                                <menu>energyCompany|home</menu>
-                                            </page>
-                                        </pages>
-                                    </page>
-                                    <page name="applianceCategory.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                        <menu>energyCompanySetup|home</menu>
-                                        <link>/adminSetup/energyCompany/applianceCategory/list?ecId=${ecId}</link>
-                                        <labelArgument>${energyCompanyName}</labelArgument>
-                                        <pages>
-                                            <page name="applianceCategory.VIEW" type="DETAIL">
-                                                <menu>energyCompanySetup|home</menu>
-                                                <link>/adminSetup/energyCompany/applianceCategory/view?ecId=${ecId}&amp;applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
-                                                <labelArgument>${applianceCategory.categoryLabel}</labelArgument>
-                                                <pages>
-                                                    <page name="applianceCategory.EDIT" type="DETAIL_CHILD">
-                                                        <menu>energyCompanySetup|home</menu>
-                                                        <link>/adminSetup/energyCompany/applianceCategory/edit?ecId=${ecId}&amp;applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
-                                                        <labelArgument>${applianceCategory.categoryLabel}</labelArgument>
-                                                    </page>
-                                                </pages>
-                                            </page>
-                                            <page name="applianceCategory.CREATE" type="BASIC">
-                                                <menu>energyCompanySetup|home</menu>
-                                                <link>/adminSetup/energyCompany/applianceCategory/create?ecId=${ecId}</link>
-                                            </page>
-                                        </pages>
-                                    </page>
-                                    <page name="applianceCategory.PROGRAMS" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                        <link>/adminSetup/energyCompany/applianceCategory/programs?ecId=${ecId}</link>
-                                        <menu>energyCompanySetup|home</menu>
-                                        <labelArgument>${energyCompanyName}</labelArgument>
-                                    </page>
-                                    <page name="serviceCompany.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES, OPERATOR_CONSUMER_INFO_WORK_ORDERS"/>
-                                        <link>/adminSetup/energyCompany/serviceCompany/list?ecId=${ecId}</link>
-                                        <labelArgument>${energyCompanyName}</labelArgument>
-                                        <menu>energyCompanySetup|home</menu>
-                                        <pages>
-                                            <page name="serviceCompany.VIEW" type="DETAIL" contributeToMenu="false">
-                                                <menu>energyCompanySetup|home</menu>
-                                                <link>/adminSetup/energyCompany/serviceCompany/view?serviceCompanyId=${serviceCompany.companyId}&amp;ecId=${ecId}</link>
-                                                <labelArgument>${serviceCompany.companyName}</labelArgument>
-                                                <pages>
-                                                    <page name="serviceCompany.EDIT" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
-                                                        <menu>energyCompanySetup|home</menu>
-                                                        <link>/adminSetup/energyCompany/serviceCompany/edit?serviceCompany=${serviceCompanyId}</link>
-                                                        <labelArgument>${serviceCompany.companyName}</labelArgument>
-                                                    </page>
-                                                </pages>
-                                            </page>
-                                            <page name="serviceCompany.CREATE" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
-                                                <menu>energyCompanySetup|home</menu>
-                                                <link>/adminSetup/energyCompany/serviceCompany/create?ecId=${ecId}</link>
-                                            </page>
-                                        </pages>
-                                    </page>
-                                    <page name="warehouse.home" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                        <requireRoleProperty value="ADMIN_MULTI_WAREHOUSE"/>
-                                        <menu>energyCompany|home</menu>
-                                        <link>/adminSetup/energyCompany/warehouse/home?ecId=${ecId}</link>
-                                        <labelArgument>${energyCompanyName}</labelArgument>
-                                        <pages>
-                                            <page name="warehouse.VIEW" type="DETAIL">
-                                                <menu>energyCompany|home</menu>
-                                                <link>/adminSetup/energyCompany/warehouse/view?warehouseId=${warehouseDto.warehouse.warehouseID}&amp;ecId=${ecId}</link>
-                                                <labelArgument>${warehouseDto.warehouse.warehouseName}</labelArgument>
-                                                <pages>
-                                                    <page name="warehouse.EDIT" type="DETAIL_CHILD">
-                                                        <menu>energyCompany|home</menu>
-                                                        <link>/adminSetup/energyCompany/warehouse/edit?warehouseId=${warehouseId}</link>
-                                                        <labelArgument>${warehouseDto.warehouse.warehouseName}</labelArgument>
-                                                    </page>
-                                                </pages>
-                                            </page>
-                                            <page name="warehouse.CREATE" type="DETAIL" contributeToMenu="false">
-                                                <menu>energyCompany|home</menu>
-                                                <link>/adminSetup/energyCompany/warehouse/create?id=${id}</link>
-                                            </page>
-                                        </pages>
-                                    </page>
-                                    <page name="routesAndSubstations.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                        <menu>energyCompanySetup|home</menu>
-                                        <link>/adminSetup/energyCompany/routesAndSubstations/view?ecId=${ecId}</link>
-                                        <labelArgument>${energyCompanyName}</labelArgument>
-                                        <pages>
-                                            <page name="routesAndSubstations.EDIT" type="DETAIL_CHILD_WITH_INFO">
-                                                <menu>energyCompanySetup|home</menu>
-                                                <link>/adminSetup/energyCompany/routesAndSubstations/edit?ecId=${ecId}</link>
-                                                <labelArgument>${energyCompanyName}</labelArgument>
-                                            </page>
-                                        </pages>
-                                    </page>
-                                    <page name="list.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                        <menu>energyCompanySetup|home</menu>
-                                        <link>/adminSetup/energyCompany/list/list?ecId=${ecId}</link>
-                                        <labelArgument>${energyCompanyName}</labelArgument>
-                                        <pages>
-                                            <page name="list.VIEW" type="DETAIL">
-                                                <menu>energyCompanySetup|home</menu>
-                                                <link>/adminSetup/energyCompany/list/view?ecId=${ecId}&amp;listId=${list.listId}</link>
-                                                <labelArgument>${list.type}</labelArgument>
-                                                <pages>
-                                                    <page name="list.EDIT" type="DETAIL_CHILD">
-                                                        <menu>energyCompanySetup|home</menu>
-                                                        <link>/adminSetup/energyCompany/list/edit?ecId=${ecId}&amp;listId=${list.listId}</link>
-                                                        <labelArgument>${list.type}</labelArgument>
-                                                    </page>
-                                                </pages>
-                                            </page>
-                                        </pages>
-                                    </page>
-                                    <page name="schedules.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT"/>
-                                        <menu>energyCompanySetup|home</menu>
-                                        <link>/adminSetup/energyCompany/schedules/view?ecId=${ecId}</link>
-                                        <labelArgument>${energyCompanyName}</labelArgument>
-                                        <pages>
-                                            <page name="schedules.EDIT" type="DETAIL_CHILD">
-                                                <menu>energyCompanySetup|home</menu>
-                                                <link>/adminSetup/energyCompany/schedules/edit?ecId=${ecId}&amp;type=${type}</link>
-                                                <labelArgument>${typeStr}</labelArgument>
-                                            </page>
-                                        </pages>
-                                    </page>
-                                    <page name="settlements.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                        <requireRoleProperty value="ENABLE_SETTLEMENTS"/>
-                                        <menu>energyCompanySetup|home</menu>
-                                        <link>/adminSetup/energyCompany/settlement/list?ecId=${ecId}</link>
-                                        <labelArgument>${energyCompanyName}</labelArgument>
-                                        <pages>
-                                            <page name="settlements.EDIT" type="DETAIL">
-                                                <menu>energyCompanySetup|home</menu>
-                                                <link>/adminSetup/energyCompany/settlement/edit?ecId=${ecId}</link>
-                                                <labelArgument>${settlementName}</labelArgument>
-                                            </page>
-                                        </pages>
-                                    </page>
-                                </pages>
-                            </page>
-                        </pages>
+                    <page name="profile.EDIT" type="BASIC">
                     </page>
                 </pages>
             </page>
         </pages>
     </module>
     
-    <module name="operator">
-        <skin name="STANDARD" />
-        <search bean="operatorAccountSearchProducer" />
-        
-        <menu>
-            <options>
-                <option name="account">
-                    <link>/stars/operator/home</link>
-                    <options>
-                        <option name="accounts">
-                            <link>/stars/operator/account/search</link>
-                        </option>
-                    </options>
-                </option>
-                <option name="inventory">
-                    <link>/stars/operator/inventory/home</link>
-                </option>
-            </options>
-        </menu>
-
-        <pages>
-            <page name="home" type="LANDING" hideSearch="true">
-                <menu>account|accounts</menu>
-                <link>/stars/operator/home</link>
-            </page>
-            <page name="accountImport" type="BASIC" hideSearch="true">
-                <menu>account|accounts</menu>
-                <link>/stars/operator/account/import</link>
-            </page>
-            <page name="accountList" type="BASIC" hideSearch="true">
-                <menu>account|accounts</menu>
-                <link>/stars/operator/account/search</link>
-                <pages>
-                    <page name="account.CREATE" type="BASIC" hideSearch="true">
-                        <menu>account|accounts</menu>
-                        <link>/stars/operator/account/accountCreate</link>
-                    </page>
-                    <page name="account.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
-                        <menu>account|accounts</menu>
-                        <link>/stars/operator/account/view?accountId=${accountId}</link>
-                        <labelArgument>${accountNumber}</labelArgument>
-                        <infoInclude>/WEB-INF/pages/stars/operator/accountInfoFragment.jsp</infoInclude>
-                        <pages>
-                            <page name="account.EDIT" type="DETAIL_CHILD_WITH_INFO">
-                                <menu>account|accounts</menu>
-                                <link>/stars/operator/account/edit?accountId=${accountId}</link>
-                                <labelArgument>${accountNumber}</labelArgument>
-                                <infoInclude>/WEB-INF/pages/stars/operator/accountInfoFragment.jsp</infoInclude>
-                            </page>
-                            <page name="contactList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <menu>account|accounts</menu>
-                                <link>/stars/operator/contacts/contactList?accountId=${accountId}</link>
-                                <labelArgument>${accountNumber}</labelArgument>
-                                <pages>
-                                    <page name="contact.VIEW" type="DETAIL">
-                                        <menu>account|accounts</menu>
-                                        <link>/stars/operator/contacts/view?accountId=${accountId}&amp;contactId=${contactId}</link>
-                                        <labelArgument>${firstName}</labelArgument>
-                                        <labelArgument>${lastName}</labelArgument>
-                                        <pages>
-                                            <page name="contact.EDIT" type="DETAIL_CHILD">
-                                                <menu>account|accounts</menu>
-                                                <link>/stars/operator/contacts/edit?accountId=${accountId}&amp;contactId=${contactId}</link>
-                                                <labelArgument>${firstName}</labelArgument>
-                                                <labelArgument>${lastName}</labelArgument>
-                                            </page>
-                                        </pages>
-                                    </page>
-                                    <page name="contact.CREATE" type="BASIC">
-                                        <menu>account|accounts</menu>
-                                        <link>/stars/operator/contacts/create?accountId=${accountId}&amp;contactId=0</link>
-                                        <labelArgument>${firstName}</labelArgument>
-                                        <labelArgument>${lastName}</labelArgument>
-                                    </page>
-                                </pages>
-                            </page>
-                            <page name="residence" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_RESIDENCE" />
-                                <menu>account|accounts</menu>
-                                <link>/stars/operator/residence/view?accountId=${accountId}</link>
-                                <labelArgument>${accountNumber}</labelArgument>
-                            </page>
-                            <page name="callList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
-                                <menu>account|accounts</menu>
-                                <link>/stars/operator/callTracking/callList?accountId=${accountId}</link>
-                                <labelArgument>${accountNumber}</labelArgument>
-                                <pages>
-                                    <page name="viewCall.CREATE" type="BASIC">
-                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
-                                        <menu>account|accounts</menu>
-                                        <link>/stars/operator/callTracking/viewCall?accountId=${accountId}</link>
-                                        <labelArgument>${callNumber}</labelArgument>
-                                    </page>
-                                    <page name="viewCall.VIEW" type="DETAIL">
-                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
-                                        <menu>account|accounts</menu>
-                                        <link>/stars/operator/callTracking/view?accountId=${accountId}</link>
-                                        <labelArgument>${callNumber}</labelArgument>
-                                        <pages>
-                                            <page name="viewCall.EDIT" type="DETAIL_CHILD">
-                                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
-                                                <menu>account|accounts</menu>
-                                                <link>/stars/operator/callTracking/edit?accountId=${accountId}</link>
-                                                <labelArgument>${callNumber}</labelArgument>
-                                            </page>
-                                        </pages>
-                                    </page>
-                                </pages>
-                            </page>
-                            <page name="metering" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA, OPERATOR_CONSUMER_INFO_METERING_CREATE" />
-                                <menu>account|accounts</menu>
-                                <link>/stars/operator/metering/viewTrend?accountId=${accountId}</link>
-                                <labelArgument>${accountNumber}</labelArgument>
-                                <pages>
-                                    <page name="selectTrends" type="DETAIL_CHILD_WITH_INFO">
-                                        <menu>account|accounts</menu>
-                                        <link>/stars/operator/metering/selectTrends?accountId=${accountId}&amp;trendId={trendId}</link>
-                                        <labelArgument>${accountNumber}</labelArgument>
-                                    </page>
-                                </pages>
-                            </page>
-                            <page name="controlHistory" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <menu>account|accounts</menu>
-                                <link>/stars/operator/program/controlHistory?accountId=${accountId}</link>
-                                <labelArgument>${accountNumber}</labelArgument>
-                                <pages>
-                                    <page name="completeControlHistory" type="DETAIL">
-                                        <menu>account|accounts</menu>
-                                        <link>/stars/operator/program/completeControlHistory?accountId=${accountId}</link>
-                                        <labelArgument>${program.programName}</labelArgument>
-                                    </page>
-                                </pages>
-                            </page>
-                            <page name="enrollmentList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_PROGRAMS_ENROLLMENT" />
-                                <menu>account|accounts</menu>
-                                <link>/stars/operator/enrollment/list?accountId=${accountId}</link>
-                                <labelArgument>${accountNumber}</labelArgument>
-                                <pages>
-                                    <page name="enrollmentHistory" type="DETAIL_CHILD_WITH_INFO">
-                                        <menu>account|accounts</menu>
-                                        <link>/stars/operator/enrollment/history?accountId=${accountId}</link>
-                                    </page>
-                                </pages>
-                            </page>
-                            <page name="alternateEnrollment" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-				 	 	 	    <requireRoleProperty value="ALTERNATE_PROGRAM_ENROLLMENT"/>
-				 	 	 	    <menu>account|accounts</menu>
-				 	 	 	    <link>/stars/operator/ae/view?accountId=${accountId}</link>
-				 	 	 	    <labelArgument>${accountNumber}</labelArgument>
-				 	 	 	</page>
-                            <page name="optOut.main" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <menu>account|accounts</menu>
-                                <link>/stars/operator/program/optOut/view?accountId=${accountId}</link>
-                                <labelArgument>${accountNumber}</labelArgument>
-                                <pages>
-                                    <page name="optOut.inventoryList" type="DETAIL_CHILD_WITH_INFO">
-                                        <menu>account|accounts</menu>
-                                        <labelArgument>${optOutBackingBean.startDate}</labelArgument>
-                                    </page>
-                                    <page name="optOut.confirm" type="DETAIL_CHILD_WITH_INFO">
-                                        <menu>account|accounts</menu>
-                                    </page>
-                                    <page name="optOut.history" type="DETAIL_CHILD_WITH_INFO">
-                                        <menu>account|accounts</menu>
-                                    </page>
-                                </pages>
-                            </page>
-                            <page name="appliance.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_APPLIANCES" />
-                                <menu>account|accounts</menu>
-                                <link>/stars/operator/appliances/applianceList?accountId=${accountId}</link>
-                                <labelArgument>${accountNumber}</labelArgument>
-                                <pages>
-                                    <page name="appliance.edit" type="DETAIL">
-                                        <menu>account|accounts</menu>
-                                        <labelArgument>${applianceCategoryName}</labelArgument>
-                                    </page>
-                                    <page name="appliance.new" type="BASIC">
-                                        <menu>account|accounts</menu>
-                                    </page>
-                                </pages>
-                            </page>
-                            <page name="hardware.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES" />
-                                <menu>account|accounts</menu>
-                                <link>/stars/operator/hardware/list?accountId=${accountId}</link>
-                                <labelArgument>${accountNumber}</labelArgument>
-                                <pages>
-                                    <page name="hardware.CREATE" type="BASIC">
-                                        <menu>account|accounts</menu>
-                                        <labelArgument>${displayName}</labelArgument>
-                                    </page>
-                                    <page name="hardware.VIEW" type="DETAIL">
-                                        <menu>account|accounts</menu>
-                                        <labelArgument>${displayName}</labelArgument>
-                                        <link>/stars/operator/hardware/view?accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
-                                        <pages>
-                                            <page name="hardware.EDIT" type="DETAIL_CHILD">
-                                                <menu>account|accounts</menu>
-                                                <labelArgument>${displayName}</labelArgument>
-                                            </page>
-                                            <page name="thermostatManual.single" type="DETAIL_CHILD_WITH_INFO">
-                                                <menu>account|accounts</menu>
-                                                <labelArgument>${displayName}</labelArgument>
-                                            </page>
-                                            <page name="thermostatHistory.single" type="DETAIL_CHILD_WITH_INFO">
-                                                <menu>account|accounts</menu>
-                                                <labelArgument>${displayName}</labelArgument>
-                                            </page>
-                                            <page name="thermostat.schedules.single" type="BASIC">
-                                                <menu>account|accounts</menu>
-                                                <labelArgument>${displayName}</labelArgument>
-                                            </page>
-                                        </pages>
-                                    </page>
-                                    <page name="meterProfile.CREATE" type="BASIC">
-                                        <menu>account|accounts</menu>
-                                    </page>
-                                    <page name="meterProfile.VIEW" type="DETAIL">
-                                        <menu>account|accounts</menu>
-                                        <labelArgument>${displayName}</labelArgument>
-                                        <link>/stars/operator/hardware/viewMeterProfile?accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
-                                        <pages>
-                                            <page name="meterProfile.EDIT" type="DETAIL_CHILD">
-                                                <menu>account|accounts</menu>
-                                                <labelArgument>${displayName}</labelArgument>
-                                            </page>
-                                        </pages>
-                                    </page>
-                                    <page name="hardwareConfig" type="DETAIL">
-                                        <menu>account|accounts</menu>
-                                        <labelArgument>${displayName}</labelArgument>
-                                    </page>
-                                    <page name="meterConfig" type="DETAIL">
-                                        <menu>account|accounts</menu>
-                                        <labelArgument>${displayName}</labelArgument>
-                                    </page>
-                                    <page name="thermostatSelect" type="DETAIL_CHILD">
-                                        <menu>account|accounts</menu>
-                                        <link>/stars/operator/thermostatSelect/select?accountId=${accountId}</link>
-                                        <labelArgument>${accountNumber}</labelArgument>
-                                        <pages>
-                                            <page name="thermostat.schedules.multiple" type="BASIC">
-                                                <menu>account|accounts</menu>
-                                                <labelArgument>${displayName}</labelArgument>
-                                            </page>
-                                            <page name="thermostatHistory.multiple" type="DETAIL_CHILD_WITH_INFO">
-                                                <menu>account|accounts</menu>
-                                                <labelArgument>${displayName}</labelArgument>
-                                            </page>
-                                            <page name="thermostatManual.multiple" type="DETAIL_CHILD_WITH_INFO">
-                                                <menu>account|accounts</menu>
-                                                <labelArgument>${displayName}</labelArgument>
-                                            </page>
-                                        </pages>
-                                    </page>
-                                </pages>
-                            </page>
-                            <page name="workOrder.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
-                                <menu>account|accounts</menu>
-                                <link>/stars/operator/workOrder/workOrderList?accountId=${accountId}</link>
-                                <labelArgument>${accountNumber}</labelArgument>
-                                <pages>
-                                    <page name="workOrder.VIEW" type="DETAIL">
-                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
-                                        <menu>account|accounts</menu>
-                                        <labelArgument>${workOrderDto.workOrderBase.orderNumber}</labelArgument>
-                                    </page>
-                                    <page name="workOrder.EDIT" type="DETAIL">
-                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
-                                        <menu>account|accounts</menu>
-                                        <labelArgument>${workOrderDto.workOrderBase.orderNumber}</labelArgument>
-                                    </page>
-                                    <page name="workOrder.CREATE" type="DETAIL">
-                                        <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
-                                        <menu>account|accounts</menu>
-                                    </page>
-                                </pages>
-                            </page>
-                            <page name="accountLog" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                <menu>account|accounts</menu>
-                                <link>/stars/operator/account/accountLog?accountId=${accountId}</link>
-                                <labelArgument>${accountNumber}</labelArgument>
-                            </page>
-                        </pages>
-                    </page>
-                </pages>
-            </page>
-            <page name="inventory.home" type="BLANK">
-                <menu>inventory|</menu>
-                <link>/stars/operator/inventory/home</link>
-                <pages>
-                    <page name="inventory.list" type="BASIC">
-                        <menu>inventory|</menu>
-                    </page>
-                    <page name="inventory.CREATE" type="BASIC">
-                        <menu>inventory|</menu>
-                    </page>
-                    <page name="inventory.VIEW" type="DETAIL">
-                        <labelArgument>${displayName}</labelArgument>
-                        <menu>inventory|</menu>
-                        <pages>
-                            <page name="inventory.EDIT" type="DETAIL_CHILD">
-                                <labelArgument>${displayName}</labelArgument>
-                                <menu>inventory|</menu>
-                            </page>
-                        </pages>
-                    </page>
-                    <page name="abr.setup" type="BASIC">
-                        <labelArgument>${type}</labelArgument>
-                        <menu>inventory|</menu>
-                    </page>
-                    <page name="zbProblemDevices" type="BASIC">
-                        <menu>inventory|</menu>
-                    </page>
-                    <page name="filterSelection" type="DETAIL">
-                        <menu>inventory|</menu>
-                        <link>/stars/operator/inventory/setupFilterRules</link>
-                    </page>
-                    <page name="commandSchedule.CREATE" type="BASIC">
-                        <menu>inventory|</menu>
-                        <labelArgument>${displayName}</labelArgument>
-                    </page>
-                    <page name="commandSchedule.EDIT" type="DETAIL">
-                        <menu>inventory|</menu>
-                        <labelArgument>${displayName}</labelArgument>
-                    </page>
-                    <page name="inventoryActions" type="DETAIL">
-                        <menu>inventory|</menu>
-                        <link>/stars/operator/inventory/inventoryActions?${local:convertMapToQueryHtml(inventoryCollection.collectionParameters)}</link>
-                        <pages>
-                            <page name="deviceReconfig" type="BASIC">
-                                <menu>inventory|</menu>
-                            </page>
-                            <page name="deleteInventory" type="BASIC">
-                                <menu>inventory|</menu>
-                            </page>
-                            <page name="changeType" type="BASIC">
-                                <menu>inventory|</menu>
-                            </page>
-                            <page name="changeStatus" type="BASIC">
-                                <menu>inventory|</menu>
-                            </page>
-                            <page name="changeServiceCompany" type="BASIC">
-                                <menu>inventory|</menu>
-                            </page>
-                            <page name="changeWarehouse" type="BASIC">
-                                <menu>inventory|</menu>
-                            </page>
-                            <page name="inventoryConfiguration" type="BASIC">
-                                <menu>inventory|</menu>
-                            </page>
-                            <page name="saveToFile" type="BASIC">
-                                <menu>inventory|</menu>
-                            </page>
-                            <page name="resendConfig" type="BASIC">
-                                <menu>inventory|</menu>
-                            </page>
-                            <page name="controlAudit" type="BASIC">
-                                <menu>inventory|</menu>
-                            </page>
-                        </pages>
-                    </page>
-                    <page name="deviceReconfigStatus" type="DETAIL_CHILD">
-                        <menu>inventory|</menu>
-                        <labelArgument>${taskName}</labelArgument>
-                    </page>
-                </pages>
-            </page>
-        </pages>
-    </module>
-  
-  <module name="userlm">
-    <skin name="STANDARD" />
-    <css file="/WebConfig/yukon/styles/yukon.css" />
-  </module>
-
-  <module name="commander">
-    <menu>
-      <options>
-        <option name="deviceselection">
-          <link>/commander/select</link>
-        </option>
-      </options>
-    </menu>
-    <skin name="STANDARD" />
-    <css file="/WebConfig/yukon/styles/commanderStyles.css" />
-    <css file="/WebConfig/yukon/Base.css" />
-  </module>
-
-  <module name="commanderSelect">
-    <skin name="STANDARD" />
-    <css file="/WebConfig/yukon/styles/commanderStyles.css" />
-
-    <menu>
-      <options>
-        <option name="devices">
-          <options>
-            <option name="mct">
-              <link>/commander/select?category=MCT</link>
-            </option>
-            <option name="ied">
-              <link>/commander/select?category=IED</link>
-            </option>
-            <option name="rtu">
-              <link>/commander/select?category=RTU</link>
-            </option>
-            <option name="transmitter">
-              <link>/commander/select?category=TRANSMITTER</link>
-            </option>
-            <option name="group">
-              <link>/group/commander/groupProcessing</link>
-              <requireRoleProperty value="GROUP_COMMANDER" />
-            </option>
-          </options>
-        </option>
-        <option name="lm">
-          <options>
-            <option name="group">
-              <link>/commander/select?category=LMGROUP</link>
-            </option>
-            <option name="xcom">
-              <link>/commander/command/xcom</link>
-              <requireRoleProperty value="EXPRESSCOM_SERIAL_MODEL" />
-            </option>
-            <option name="vcom">
-              <link>/commander/command/vcom</link>
-              <requireRoleProperty value="VERSACOM_SERIAL_MODEL" />
-            </option>
-            <option name="205serial">
-              <link>/commander/command/sa205</link>
-              <requireRoleProperty value="DCU_SA205_SERIAL_MODEL" />
-            </option>
-            <option name="305serial">
-              <link>/commander/command/sa305</link>
-              <requireRoleProperty value="DCU_SA305_SERIAL_MODEL" />
-            </option>
-          </options>
-        </option>
-        <option name="capcontrol">
-          <options>
-            <option name="capcontrolsub">
-              <link>/commander/select?category=CAP</link>
-            </option>
-          </options>
-        </option>
-      </options>
-    </menu>
-  </module>
-
-  <module name="visualDisplays">
-    <skin name="STANDARD" />
-    <css file="/WebConfig/yukon/Base.css" />
-
-    <menu>
-      <options>
-        <option name="loadManagement">
-          <link>/multispeak/visualDisplays/loadManagement/home</link>
-        </option>
-
-        <option name="probabilityForPeakLoad">
-          <link>/multispeak/visualDisplays/probabilityForPeak/home</link>
-        </option>
-      </options>
-    </menu>
-  </module>
-</mainmenu>
+</modules>

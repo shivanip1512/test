@@ -1,104 +1,104 @@
 
 function yukonGeneral_setSelectToValue(selectId, selectedValue) {
-	
-	for (var i = 0; i < $(selectId).options.length; i++) {
-		if ($(selectId).options[i].value == selectedValue) { 
-			$(selectId).selectedIndex = i;
-			break;
-		}
-	}
+    
+    for (var i = 0; i < $(selectId).options.length; i++) {
+        if ($(selectId).options[i].value == selectedValue) { 
+            $(selectId).selectedIndex = i;
+            break;
+        }
+    }
 }
 
 function yukonGeneral_moveOptionPositionInSelect(selectElement, direction) {
-	
-	//this contains all the selected indexes
-	var index = new Array(); 
-	index[0] = -1;
-	//the array index to remember all the selection of the user :)
-	indexNo = 0; 
-	var selectList = selectElement;
-	
-	//loop to remember all the selection in the select element
-	for (var i = 0; i < selectElement.options.length; i++){	
-		if (selectElement.options[ i ].selected){
-			index[indexNo] = i;
-			indexNo ++;
-		}
-	}
-	
-	//if no options are selected, quit
+    
+    //this contains all the selected indexes
+    var index = new Array(); 
+    index[0] = -1;
+    //the array index to remember all the selection of the user :)
+    indexNo = 0; 
+    var selectList = selectElement;
+    
+    //loop to remember all the selection in the select element
+    for (var i = 0; i < selectElement.options.length; i++){    
+        if (selectElement.options[ i ].selected){
+            index[indexNo] = i;
+            indexNo ++;
+        }
+    }
+    
+    //if no options are selected, quit
     if (index[0] == -1) { //none selected
         return false;
     }
     
     //if selection is at the top, can't move up anymore
     if ( index[0] + direction == -1 && direction == -1){ 
-    	return false;
+        return false;
     }
     
     //if selection is at the bottom and can't move down anymore
     if ( index.last() == selectElement.options.length - 1 && direction == 1){ 
-    	return false;
+        return false;
     }
     
     //all the options of the select
     var options = selectElement.options;
     
     //clone the select element - for ie fix 
-	var copy = $A(options).clone(); 
+    var copy = $A(options).clone(); 
 
-	//empty the whole select so that ie doesn't complain unable to insert
+    //empty the whole select so that ie doesn't complain unable to insert
     while (selectElement.options.length > 0) { 
-		selectElement.options[0] = null;
-	}
-	
-	//the logic is going down = going up but reversed...
-	
-	//going down
-	if (direction == 1){ 
-		j = index.length;
-		for (var i = 0; i< index.length; i++){
-			
-			//we do it reverse of the going up
-			var routeIndex = index[j - 1]; 
-			var routeIndex2 = routeIndex + direction;
-			
-			var temp1 = copy[routeIndex]; 
-			var temp2 = copy[routeIndex2];
-			
-			//swap the elements
-			copy[routeIndex] = temp2;
-			copy[routeIndex2] = temp1;
-			
-			//the reverse index is decremented
-			j --; 
-		}
-	}
-	//going up
-	else{
-		for (var i = 0; i < index.length; i++){ 
-		
-			//simple swapping
-			var routeIndex = index[i];
-			var routeIndex2 = routeIndex + direction;
-			
-			var temp1 = copy[routeIndex];
-			var temp2 = copy[routeIndex2];
-				
-			copy[routeIndex] = temp2;
-			copy[routeIndex2] = temp1;
-		}
-	}
-	
-	//copy the array back to the select element
-	for (var x = 0; x < copy.length; x++) { 
-		selectElement.options[x] = copy[x];
-	}
+        selectElement.options[0] = null;
+    }
+    
+    //the logic is going down = going up but reversed...
+    
+    //going down
+    if (direction == 1){ 
+        j = index.length;
+        for (var i = 0; i< index.length; i++){
+            
+            //we do it reverse of the going up
+            var routeIndex = index[j - 1]; 
+            var routeIndex2 = routeIndex + direction;
+            
+            var temp1 = copy[routeIndex]; 
+            var temp2 = copy[routeIndex2];
+            
+            //swap the elements
+            copy[routeIndex] = temp2;
+            copy[routeIndex2] = temp1;
+            
+            //the reverse index is decremented
+            j --; 
+        }
+    }
+    //going up
+    else{
+        for (var i = 0; i < index.length; i++){ 
+        
+            //simple swapping
+            var routeIndex = index[i];
+            var routeIndex2 = routeIndex + direction;
+            
+            var temp1 = copy[routeIndex];
+            var temp2 = copy[routeIndex2];
+                
+            copy[routeIndex] = temp2;
+            copy[routeIndex2] = temp1;
+        }
+    }
+    
+    //copy the array back to the select element
+    for (var x = 0; x < copy.length; x++) { 
+        selectElement.options[x] = copy[x];
+    }
 
-	//highlight all the previously selected elements in their new position
-	for (var j = 0; j < index.length; j++){ 
-		selectList.options[index[j] + direction].selected = true;
-	}
+    //highlight all the previously selected elements in their new position
+    for (var j = 0; j < index.length; j++){ 
+        selectList.options[index[j] + direction].selected = true;
+    }
 
     return true;
 }
@@ -151,13 +151,13 @@ function stickyCheckboxes_retrieve(id) {
 }
 
 function activeResultsTable_highLightRow(row) {
-	row = $(row);
-	row.addClassName('hover');
+    row = $(row);
+    row.addClassName('hover');
 }
 
 function activeResultsTable_unHighLightRow(row){
-	row = $(row);
-	row.removeClassName('hover');
+    row = $(row);
+    row.removeClassName('hover');
 }
 
 function cancelCommands(resultId, url, ccid, cancelingText, finishedText) {
@@ -184,7 +184,7 @@ function cancelCommands(resultId, url, ccid, cancelingText, finishedText) {
     };
     
     var onFailure = function(transport, json) {
-    	showCancelResult(ccid, transport.responseText);
+        showCancelResult(ccid, transport.responseText);
         $('cancelButton' + ccid).value = orgCancelButtonText;
         $('cancelButton' + ccid).enable();
     };
@@ -205,53 +205,53 @@ function showCancelResult(ccid, msg) {
 // pass table css selectors
 // columns in each table will be made to have the same width as the widest element in that column across all tables
 function alignTableColumnsByTable() {
-	
-	var tableSelectors = $A(arguments);
+    
+    var tableSelectors = $A(arguments);
     
     Event.observe(window, "load", function() {
-    	
-    	var tablesToAlign = $$(tableSelectors);
-    	
-    	var columnSizes = $A();
-    	tablesToAlign.each(function(table) {
-    		
-    		var rowsToAlign = table.getElementsBySelector("tr");
-    		rowsToAlign.each(function(tr) {
-        		
-        		var cells = tr.getElementsBySelector("td");
-        		for (var index = 0; index < cells.length - 1; ++index) {
-        			var cell = cells[index];
-        			if (!columnSizes[index] || cell.getWidth() > columnSizes[index]) {
-        				columnSizes[index] = cell.getWidth();
-        			}
-        		}
-        	});
-    	});
-    	
-    	
-    	tablesToAlign.each(function(table) {
-    		
-    		var rowsToAlign = table.getElementsBySelector("tr");
-    		rowsToAlign.each(function(tr) {
-        		
-        		var cells = tr.getElementsBySelector("td");
-        		for (var index = 0; index < cells.length - 1; ++index) {
-        			var cell = cells[index];
-        			cell.setStyle({width: columnSizes[index]+'px'});
-        		}
-        	});
-    	});
-    	
-	});
+        
+        var tablesToAlign = $$(tableSelectors);
+        
+        var columnSizes = $A();
+        tablesToAlign.each(function(table) {
+            
+            var rowsToAlign = table.getElementsBySelector("tr");
+            rowsToAlign.each(function(tr) {
+                
+                var cells = tr.getElementsBySelector("td");
+                for (var index = 0; index < cells.length - 1; ++index) {
+                    var cell = cells[index];
+                    if (!columnSizes[index] || cell.getWidth() > columnSizes[index]) {
+                        columnSizes[index] = cell.getWidth();
+                    }
+                }
+            });
+        });
+        
+        
+        tablesToAlign.each(function(table) {
+            
+            var rowsToAlign = table.getElementsBySelector("tr");
+            rowsToAlign.each(function(tr) {
+                
+                var cells = tr.getElementsBySelector("td");
+                for (var index = 0; index < cells.length - 1; ++index) {
+                    var cell = cells[index];
+                    cell.setStyle({width: columnSizes[index]+'px'});
+                }
+            });
+        });
+        
+    });
 }
 
 /**
  * Flashes the background of an element 'Yukon yellow'
- * @param element	[DOM node] we want to give a temporary splash of yellow
+ * @param element    [DOM node] we want to give a temporary splash of yellow
  * @param duration  [float] how long the effect should last in seconds
  */
 function flashYellow(element, duration) {
-	jQuery(element).flashYellow(duration);
+    jQuery(element).flashYellow(duration);
 }
 
 var YEvent = new Object();
@@ -274,7 +274,7 @@ Object.extend(YEvent, {
     
     markBusy: function(element) {
         var disabledElement = element.cloneNode(true);
-        disabledElement.addClassName('ajaxBusy icon loading');
+        disabledElement.addClassName('ajaxBusy icon icon-loading');
         try {
             disabledElement.disable();
             element.blur();
@@ -311,7 +311,7 @@ jQuery(function() {
 });
 
 function hideUpdateWarning() {
-    $('updatedWarning').hide();
+    jQuery("#updatedWarning").dialog("close");
 }
 
 jQuery(function() {
@@ -363,11 +363,11 @@ jQuery(function() {
  * is called after the window has already been loaded, the method is called immediately.
  */
 function callAfterMainWindowLoad(func) {
-	if (window.loadComplete) {
-	    func();
-	} else {
-	    jQuery(function() { func();});
-	}
+    if (window.loadComplete) {
+        func();
+    } else {
+        jQuery(function() { func();});
+    }
 }
 
 function generateMessageCode(prefix, input) {
@@ -393,21 +393,49 @@ function changeInputType(inputElement, inputType) {
 }
 
 function getHeaderJSON(xhr) {
-	var json;
-	try { json = xhr.getResponseHeader('X-Json'); }
-	catch(e) {}
+    var json;
+    try { json = xhr.getResponseHeader('X-Json'); }
+    catch(e) {}
 
-	if (json) {
-		return eval('(' + json + ')');
-	}
-	return {};
+    if (json) {
+        return eval('(' + json + ')');
+    }
+    return {};
 }
 
 jQuery(function() {
-    jQuery(document).on('click', 'h3.toggle-title', function (event) {
-        jQuery(event.currentTarget).closest('div.titledContainer').each(function(index, elem){
+    jQuery(document).on('click', '.toggle-title', function (event) {
+        jQuery(event.currentTarget).closest('.titledContainer').each(function(index, elem){
             jQuery(elem).toggleClass("collapsed");
-            jQuery(elem).find('div.content').toggle();
+            jQuery(elem).find('.content').toggle();
        });
+    });
+});
+
+/**  Button dropdown menu behavior */
+jQuery(function() {
+    jQuery(".dropdown .button, .dropdown button").click(function () {
+        if (!jQuery(this).find('span.toggle').hasClass('active')) {
+            jQuery('.dropdown-slider').slideUp();
+            jQuery('span.toggle').removeClass('active');
+        }
+        
+        jQuery(this).parent().find('.dropdown-slider').slideToggle('fast');
+        jQuery(this).find('span.toggle').toggleClass('active');
+        
+        return false;
+    });
+});
+jQuery(document).bind('click', function (e) {
+    if (e.target.id != jQuery('.dropdown').attr('class')) {
+        jQuery('.dropdown-slider').slideUp();
+        jQuery('span.toggle').removeClass('active');
+    }
+});
+
+/** Popup for swing client launcher */
+jQuery(function() {
+    jQuery(document).on('click', 'f_apps_launcher', function (event) {
+        //TODO client launcher popup
     });
 });

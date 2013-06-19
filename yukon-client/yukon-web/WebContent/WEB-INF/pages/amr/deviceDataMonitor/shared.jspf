@@ -56,8 +56,8 @@
                     <p><i:inline key=".missingPoints.helpDialog.addPointsBody"/></p>
                 </tags:sectionContainer2>
                 <div class="actionArea">
-                    <a class="labeled_icon add fr f_add_points_btn" href="${addPointsLink}" style="margin-right: 20px;">
-                        <i:inline key=".addPoints.label"/>
+                    <a class="button naked f_add_points_btn" href="${addPointsLink}" style="margin-right: 20px;">
+                        <i class="icon icon-add"></i><span class="label"><i:inline key=".addPoints.label"/></span>
                     </a>
                 </div>
             </c:if>

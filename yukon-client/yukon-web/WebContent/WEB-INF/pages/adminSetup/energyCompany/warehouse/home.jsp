@@ -42,7 +42,7 @@
             <cti:url var="createWarehouseUrl" value="${baseUrl}/new">
                 <cti:param name="ecId" value="${ecId}"/>
             </cti:url>
-            <cti:button nameKey="create" href="${createWarehouseUrl}" name="createWarehouse" />
+            <cti:button nameKey="create" icon="icon-plus-green" href="${createWarehouseUrl}" name="createWarehouse" />
         </div>
     </tags:boxContainer2>
 </cti:standardPage>

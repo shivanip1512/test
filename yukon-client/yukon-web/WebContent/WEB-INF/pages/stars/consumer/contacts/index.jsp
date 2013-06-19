@@ -29,14 +29,17 @@
 		    	<cti:url var="editUrl" value="/stars/consumer/contacts/edit">
 					<cti:param name="contactId" value="${primaryContact.contactID}"/>
 				</cti:url>
-	    		<a href="${editUrl}" class="fr labeled_icon icon_pencil"><i:inline key=".editContact"/></a>
+	    		<a href="${editUrl}" class="fr button naked"><i class="icon icon-pencil"></i><span class="label"><i:inline key=".editContact"/></span></a>
     		</h3>
 	    	<c:if test="${fn:length(primaryContact.liteContactNotifications) eq 0}">
 		    	<h4><i:inline key=".noNotifications" /></h4>
 	    	</c:if>
 	    	<ul>
 		    	<c:forEach var="notification" items="${primaryContact.liteContactNotifications}">
-		    		<li><label><i:inline key="yukon.web.modules.operator.contactNotificationEnum.${notification.contactNotificationType}"/></label><spring:escapeBody javaScriptEscape="true" htmlEscape="true" >${notification.notification}</spring:escapeBody></li>
+		    		<li>
+		    		    <label><i:inline key="yukon.web.modules.operator.contactNotificationEnum.${notification.contactNotificationType}"/></label>
+		    		    <div class="fl"><spring:escapeBody javaScriptEscape="true" htmlEscape="true" >${notification.notification}</spring:escapeBody></div>
+		    		</li>
 		    	</c:forEach>
 	    	</ul>
 	   	</div>
@@ -57,14 +60,14 @@
 						</cti:url>
 			    		<form action="${deleteUrl}" method="POST">
 							<input type="hidden" name="contactID" value="${contact.contactID}"/>
-				    		<a id="contact_${contact.contactID}" href="javascript:void();" class="fr labeled_icon icon_remove"><i:inline key=".removeContact"/></a>
+				    		<a id="contact_${contact.contactID}" href="javascript:void();" class="fr button naked"><i class="icon icon-cross"></i><span class="label"><i:inline key=".removeContact"/></span></a>
 							<tags:confirmDialog nameKey=".removeContact" on="#contact_${contact.contactID}" argument="${contact.contFirstName} ${contact.contLastName}" />
 						</form>
 						
 				    	<cti:url var="editUrl" value="/stars/consumer/contacts/edit">
 							<cti:param name="contactId" value="${contact.contactID}"/>
 						</cti:url>
-			    		<a href="${editUrl}" class="fr labeled_icon icon_pencil"><i:inline key=".editContact"/></a>
+			    		<a href="${editUrl}" class="fr button naked"><i class="icon icon-pencil"></i><span class="label"><i:inline key=".editContact"/></span></a>
 		    		</h3>
 		    		<c:if test="${fn:length(contact.liteContactNotifications) eq 0}">
 			    		<h4><i:inline key=".noNotifications" /></h4>
@@ -98,5 +101,5 @@
     </c:if>
     
     <cti:url value="/stars/consumer/contacts/new" var="newContactUrl" />
-    <cti:button nameKey="createNewContact" href="${newContactUrl}"/>
+    <cti:button nameKey="createNewContact" href="${newContactUrl}" icon="icon-plus-green"/>
 </cti:standardPage>

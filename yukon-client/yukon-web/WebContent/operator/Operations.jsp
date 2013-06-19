@@ -42,8 +42,6 @@
 	    jQuery(document).on('change', '.resetFieldOnChange', resetFieldOnChange);
 	});
 
-
-
 </script>
 
     <div id="main"><!-- start main -->
@@ -51,6 +49,7 @@
         <cti:operationsSetup />
         <cti:starsOperations />
         
+        <%-- 
         <cti:checkRolesAndProperties value="CONSUMER_INFO">
 
             <tags:operationSection sectionName="Consumer Account Information" sectionImageName="ConsumerLogo">
@@ -363,7 +362,7 @@
 <!-- end operationSection -->
         </cti:checkRolesAndProperties>
 <!-- end cti:checkRolesAndProperties -->
-
+        --%>
     </div>
 <!-- end div -->
 </cti:standardPage>

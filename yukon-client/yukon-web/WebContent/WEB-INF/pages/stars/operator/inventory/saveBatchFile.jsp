@@ -113,6 +113,7 @@
                                                        multiSelectMode="false"
                                                        immediateSelectMode="true"
                                                        selectionProperty="paoName"
+                                                       icon="icon-add"
                                                        destinationFieldId="groupId"/>
                                 </div>
                             </div>

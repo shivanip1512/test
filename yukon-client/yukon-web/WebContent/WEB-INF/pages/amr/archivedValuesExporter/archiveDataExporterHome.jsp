@@ -7,7 +7,8 @@
 <%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
-<cti:standardPage page="archivedValueExporter" module="amr">
+<cti:standardPage page="bulk.archivedValueExporter" module="tools">
+
     <cti:msg2 var="runTitle" key=".run"/>
     <cti:msg2 var="scheduleTitle" key=".schedule"/>
     <cti:msg2 var="okBtnMsg" key="yukon.common.okButton"/>
@@ -27,8 +28,8 @@
 
 <script type="text/javascript">
 function addFormatIdToLink(linkHref) {
-	var formatIdLink = jQuery('.'+linkHref);
-	var formatIdFragment = "?selectedFormatId="+jQuery('#formatId').val();
+    var formatIdLink = jQuery('.'+linkHref);
+    var formatIdFragment = "?selectedFormatId="+jQuery('#formatId').val();
     formatIdLink.attr('data-href', linkHref + formatIdFragment);
 };
 
@@ -48,14 +49,14 @@ function showAttributeRow() {
 function runOkPressed() {
     jQuery('#runDialog').dialog('close');
     jQuery('#runInputsDiv').clone().appendTo(jQuery('#exporterForm'));
-	submitForm('generateReport');
+    submitForm('generateReport');
     jQuery('#exporterForm #runInputsDiv').remove();
 };
 
 function scheduleOkPressed() {
     jQuery('#scheduleDialog').dialog('close');
     jQuery('#scheduleInputsDiv').clone().appendTo(jQuery('#exporterForm'));
-	submitForm('scheduleReport');
+    submitForm('scheduleReport');
     jQuery('#exporterForm #scheduleInputsDiv').remove();
 };
 
@@ -71,12 +72,12 @@ function createOkCancelDialog(dialogIdentifier, titleMsg, okFunction) {
               'modal' : true,
               'buttons' : buttons };
     if(jQuery('#archivedValuesExportFormatType').val() == 'FIXED_ATTRIBUTE' && titleMsg == '${scheduleTitle}') {
-    	//format=fixed and scheduling, no further user feedback required
-    	//DataRangeType.END_DATE is the only option
-    	jQuery(dialogIdentifier).dialog(dialogOpts);
-    	okFunction();
+        //format=fixed and scheduling, no further user feedback required
+        //DataRangeType.END_DATE is the only option
+        jQuery(dialogIdentifier).dialog(dialogOpts);
+        okFunction();
     } else {
-    	jQuery(dialogIdentifier).dialog(dialogOpts);
+        jQuery(dialogIdentifier).dialog(dialogOpts);
     }
 }
 
@@ -88,43 +89,41 @@ function submitForm(action) {
 
 function toggleForm(dialogId, archivedValuesExporterFormat, dataRangeTypes, fixedDataRangeTypes, dynamicDataRangeTypes) {
 
-	for (var i = 0;  i < dataRangeTypes.size(); i++) {
-		var dataRangeType = dataRangeTypes[i];
-		var dataRangeTypeDiv= dialogId+' .'+dataRangeType;
-		var dataRangeTypeInput = dataRangeTypeDiv + ' [name $= \'DataRange.dataRangeType\'] ';
+    for (var i = 0;  i < dataRangeTypes.size(); i++) {
+        var dataRangeType = dataRangeTypes[i];
+        var dataRangeTypeDiv= dialogId+' .'+dataRangeType;
+        var dataRangeTypeInput = dataRangeTypeDiv + ' [name $= \'DataRange.dataRangeType\'] ';
 
-		if (archivedValuesExporterFormat == 'FIXED_ATTRIBUTE' &&
-			jQuery.inArray(dataRangeType, fixedDataRangeTypes) != -1 ) {
-            jQuery(dataRangeTypeDiv).show();
-			jQuery(dataRangeTypeInput).click();
-		} else if (archivedValuesExporterFormat == 'DYNAMIC_ATTRIBUTE' &&
-				jQuery.inArray(dataRangeType, dynamicDataRangeTypes) != -1) {
+        if (archivedValuesExporterFormat == 'FIXED_ATTRIBUTE' &&
+            jQuery.inArray(dataRangeType, fixedDataRangeTypes) != -1 ) {
             jQuery(dataRangeTypeDiv).show();
             jQuery(dataRangeTypeInput).click();
-			
-		} else {
-		    jQuery(dataRangeTypeDiv).hide();
-		}
-	}
+        } else if (archivedValuesExporterFormat == 'DYNAMIC_ATTRIBUTE' &&
+                jQuery.inArray(dataRangeType, dynamicDataRangeTypes) != -1) {
+            jQuery(dataRangeTypeDiv).show();
+            jQuery(dataRangeTypeInput).click();
+            
+        } else {
+            jQuery(dataRangeTypeDiv).hide();
+        }
+    }
 }
 
 jQuery(function() {
-	var dataRangeTypes = ${dataRangeTypes};
-	var fixedRunDataRangeTypes = ${fixedRunDataRangeTypes};
-	var dynamicRunDataRangeTypes = ${dynamicRunDataRangeTypes};
-	var fixedScheduleDataRangeTypes = ${fixedScheduleDataRangeTypes};
-	var dynamicScheduleDataRangeTypes = ${dynamicScheduleDataRangeTypes};
-	
-	showAttributeRow();
-	addFormatIdToLinks();
-	
-	jQuery('#runDialog').hide();
-	jQuery('#scheduleDialog').hide();
+    var dataRangeTypes = ${dataRangeTypes};
+    var fixedRunDataRangeTypes = ${fixedRunDataRangeTypes};
+    var dynamicRunDataRangeTypes = ${dynamicRunDataRangeTypes};
+    var fixedScheduleDataRangeTypes = ${fixedScheduleDataRangeTypes};
+    var dynamicScheduleDataRangeTypes = ${dynamicScheduleDataRangeTypes};
+    
+    showAttributeRow();
+    addFormatIdToLinks();
+    
     toggleForm('#runDialog', jQuery('#archivedValuesExportFormatType').val(), dataRangeTypes, fixedRunDataRangeTypes, dynamicRunDataRangeTypes);
     toggleForm('#scheduleDialog', jQuery('#archivedValuesExportFormatType').val(), dataRangeTypes, fixedScheduleDataRangeTypes, dynamicScheduleDataRangeTypes);
-	
+    
     jQuery('#runButton').click(function(event) { 
-    	createOkCancelDialog('#runDialog', '${runTitle}', function() { runOkPressed(); });
+        createOkCancelDialog('#runDialog', '${runTitle}', function() { runOkPressed(); });
     });
     
     jQuery('#scheduleButton').click(function(event) { 
@@ -143,7 +142,7 @@ jQuery(function() {
     });
     
     jQuery('#formatId').change(function(event) {
-    	addFormatIdToLinks();
+        addFormatIdToLinks();
         toggleForm('#runDialog', jQuery('#archivedValuesExportFormatType').val(), dataRangeTypes, fixedRunDataRangeTypes, dynamicRunDataRangeTypes);
         toggleForm('#scheduleDialog', jQuery('#archivedValuesExportFormatType').val(), dataRangeTypes, fixedScheduleDataRangeTypes, dynamicScheduleDataRangeTypes);
         showAttributeRow();
@@ -151,123 +150,121 @@ jQuery(function() {
     });
 });
 </script>
-	<div class="colmask doublepage clearfix">
-    <div class="colleft">
-        <div class="col1">
-            <!-- Create/edit -->
-		    <tags:boxContainer2 nameKey="generateReport" styleClass="stacked">
-                <c:if test="${empty allFormats}">
-                    <span class="empty-list"><i:inline key=".noFormatsCreated"/></span>
-                </c:if>
-		        <form:form id="exporterForm" commandName="archivedValuesExporter" action="${action}">
-			        <form:hidden path="archivedValuesExportFormatType"/>
-			        <cti:deviceCollection deviceCollection="${archivedValuesExporter.deviceCollection}" />
-			
-		            <tags:nameValueContainer2 id="formatContainer" naturalWidth="false">
-	                    <c:if test="${not empty allFormats}">
-                            <tags:nameValue2 nameKey="yukon.web.defaults.devices">
-                                <a href="javascript:void(0);" class="selectDevices labeled_icon_right icon_folder_edit" title="<cti:msg2 key=".chooseDevices.tooltip"/>">
-                                    <c:if test="${empty archivedValuesExporter.deviceCollection.deviceCount}">
-                                        <span class="empty-list"><i:inline key="yukon.web.defaults.noDevices"/></span>
-                                    </c:if>
-                                    <c:if test="${not empty archivedValuesExporter.deviceCollection.deviceCount}">
-                                        <i:inline key="${archivedValuesExporter.deviceCollection.description}"/>
-                                    </c:if>
-                                </a>
-                                <c:if test="${archivedValuesExporter.deviceCollection.deviceCount > 0}">
-                                    <span style="margin-left: 5px;"><tags:selectedDevicesPopup deviceCollection="${deviceCollection}"/></span>
+        <!-- Create/edit -->
+        <tags:sectionContainer2 nameKey="generateReport" styleClass="stacked">
+            <c:if test="${empty allFormats}">
+                <span class="empty-list"><i:inline key=".noFormatsCreated"/></span>
+            </c:if>
+            <form:form id="exporterForm" commandName="archivedValuesExporter" action="${action}">
+                <form:hidden path="archivedValuesExportFormatType"/>
+                <cti:deviceCollection deviceCollection="${archivedValuesExporter.deviceCollection}" />
+        
+                <tags:nameValueContainer2 id="formatContainer" naturalWidth="false">
+                    <c:if test="${not empty allFormats}">
+                        <tags:nameValue2 nameKey=".existingFormat">
+                            <form:select path="formatId" cssClass="fl" cssStyle="margin-right:5px;">
+                                <form:options items="${allFormats}" itemValue="formatId" title="formatName" itemLabel="formatName" />
+                            </form:select>
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey="yukon.web.defaults.devices">
+                            <a href="javascript:void(0);" class="selectDevices clearfix" title="<cti:msg2 key=".chooseDevices.tooltip"/>">
+                                <c:if test="${empty archivedValuesExporter.deviceCollection.deviceCount}">
+                                    <span class="empty-list"><i:inline key="yukon.web.defaults.noDevices"/></span>
                                 </c:if>
-                            </tags:nameValue2>
+                                <c:if test="${not empty archivedValuesExporter.deviceCollection.deviceCount}">
+                                    <span class="label"><i:inline key="${archivedValuesExporter.deviceCollection.description}"/></span><i class="icon icon-folder-edit"></i>
+                                </c:if>
+                            </a>
 		                    <tags:nameValue2 nameKey=".existingFormat">
-		                        <form:select path="formatId" cssClass="fl" cssStyle="margin-right:5px;">
+		                        <form:select path="formatId">
 		                            <form:options items="${allFormats}" itemValue="formatId" title="formatName" itemLabel="formatName" />
 		                        </form:select>
                             </tags:nameValue2>
                             <c:if test="${archivedValuesExporter.deviceCollection.deviceCount > 0}">
-                                <tags:nameValue2 nameKey="yukon.web.defaults.deviceCount">${archivedValuesExporter.deviceCollection.deviceCount}</tags:nameValue2>
+                                <tags:selectedDevicesPopup deviceCollection="${deviceCollection}"/>
                             </c:if>
-	                    </c:if>
-                        
-                        <tags:nameValue2 nameKey=".attribute" rowId="attributeRow">
-                            <tags:attributeSelector attributes="${groupedAttributes}" 
-                                fieldName="attribute"
-                                multipleSize="8"
-                                groupItems="true"/>
                         </tags:nameValue2>
-		            </tags:nameValueContainer2>
-		
-	            </form:form>
-                <div class="actionArea clearfix full_width button-container">
-                    <c:if test="${not empty allFormats}">
-                        <c:choose>
-                            <c:when test="${empty deviceCollection}">
-                                <c:set var="disableRunSchedule" value="true"/>
-                                <cti:msg2 var="runScheduleTitle" key=".noDevices.tooltip"/>
-                            </c:when>
-                            <c:otherwise>
-                                <c:set var="disableRunSchedule" value="false"/>
-                            </c:otherwise>
-                        </c:choose>
-                        <cti:button id="runButton" nameKey="run" title="${runScheduleTitle}" disabled="${disableRunSchedule}" styleClass="fl" />
-                        <cti:button id="scheduleButton" nameKey="schedule" title="${runScheduleTitle}" disabled="${disableRunSchedule}" styleClass="fl"/>
+                        <c:if test="${archivedValuesExporter.deviceCollection.deviceCount > 0}">
+                            <tags:nameValue2 nameKey="yukon.web.defaults.deviceCount">${archivedValuesExporter.deviceCollection.deviceCount}</tags:nameValue2>
+                        </c:if>
                     </c:if>
-                    <c:if test="${not empty allFormats}">
-                        <cti:button nameKey="edit" href="edit" styleClass="edit fl"/>
-                        <cti:button nameKey="copy" href="copy" styleClass="copy fl"/>
-                    </c:if>
-                    <cti:button nameKey="create" id="create-format-button"/>
-                </div>
-			</tags:boxContainer2>
-		</div>
-		
-		<div class="col2">
-	
-		<%-- Jobs  --%>
-			<tags:boxContainer2 nameKey="jobsBox">
-				<div class="scrollingContainer_small" style="max-height: 249px;">
-                    <c:if test="${fn:length(filterResult.resultList) > 0}">
-    					<table id="jobsTable" class="compactResultsTable">
-    						<thead>
-    							<th><i:inline key=".nameHeader"/></th>
-    							<th><i:inline key=".scheduleHeader"/></th>
-    							<th><i:inline key=".nextRunHeader"/></th>
-    							<th><i:inline key=".actionsHeader"/></th>
-    						</thead>
-    						<tfoot></tfoot>
-    						<tbody>
-    							<c:forEach var="job" items="${filterResult.resultList}">
-    								<tr>
-    									<td>${fn:escapeXml(job.name)}</td>
-    									<td>${job.cronString}</td>
-    									<td><cti:dataUpdaterValue type="JOB" identifier="${job.id}/NEXT_RUN_DATE"/></td>
-    									<td>
-    										<cti:url var="editUrl" value="scheduleReport">
-    											<cti:param name="jobId" value="${job.id}"/>
-    										</cti:url>
-    										<cti:button nameKey="edit" renderMode="image" href="${editUrl}"/>
-    										<cti:url var="historyUrl" value="/support/fileExportHistory/list">
-    											<cti:param name="initiator" value="Archived Data Export Schedule: ${job.name}"/>
-    										</cti:url>
-    										<cti:button nameKey="history" renderMode="image" href="${historyUrl}"/>
-    										<cti:url var="deleteUrl" value="deleteJob">
-    											<cti:param name="jobId" value="${job.id}"/>
-    										</cti:url>
-                                            <cti:button id="deleteScheduleItem_${job.id}" nameKey="remove" renderMode="image" href="${deleteUrl}"/>
-                                            <dialog:confirm on="#deleteScheduleItem_${job.id}" nameKey="confirmDelete" argument="${job.name}"/>
-    									</td>
-    								</tr>
-    							</c:forEach>
-    						</tbody>
-    					</table>
-                    </c:if>
-					<c:if test="${fn:length(filterResult.resultList) == 0}">
-                        <span class="empty-list" colspan="3"><i:inline key=".noJobs"/></span>
-					</c:if>
-				</div>
-			</tags:boxContainer2>
-		</div>
-	</div>
-	
+                    
+                    <tags:nameValue2 nameKey=".attribute" rowId="attributeRow">
+                        <tags:attributeSelector attributes="${groupedAttributes}" 
+                            fieldName="attribute"
+                            multipleSize="8"
+                            groupItems="true"/>
+                    </tags:nameValue2>
+                </tags:nameValueContainer2>
+    
+            </form:form>
+            <div class="actionArea">
+                <c:if test="${not empty allFormats}">
+                    <c:choose>
+                        <c:when test="${empty deviceCollection}">
+                            <c:set var="disableRunSchedule" value="true"/>
+                            <cti:msg2 var="runScheduleTitle" key=".noDevices.tooltip"/>
+                        </c:when>
+                        <c:otherwise>
+                            <c:set var="disableRunSchedule" value="false"/>
+                        </c:otherwise>
+                    </c:choose>
+                    <cti:button id="runButton" nameKey="run" title="${runScheduleTitle}" disabled="${disableRunSchedule}" classes="fl" icon="icon-page-white-excel"/>
+                    <cti:button id="scheduleButton" nameKey="schedule" title="${runScheduleTitle}" disabled="${disableRunSchedule}" classes="fl" icon="icon-calendar-view-day"/>
+                </c:if>
+                <c:if test="${not empty allFormats}">
+                    <cti:button nameKey="edit" icon="icon-pencil" href="edit"/>
+                    <cti:button nameKey="copy" icon="icon-page-copy" href="copy"/>
+                </c:if>
+                <cti:button nameKey="create" icon="icon-plus-green" id="create-format-button"/>
+            </div>
+        </tags:sectionContainer2>
+    
+    <%-- Jobs  --%>
+        <tags:boxContainer2 nameKey="jobsBox">
+            <div class="scrollingContainer_small" style="max-height: 249px;">
+                <c:if test="${fn:length(filterResult.resultList) > 0}">
+                    <table id="jobsTable" class="compactResultsTable">
+                        <thead>
+                            <th><i:inline key=".nameHeader"/></th>
+                            <th><i:inline key=".scheduleHeader"/></th>
+                            <th><i:inline key=".nextRunHeader"/></th>
+                            <th><i:inline key=".actionsHeader"/></th>
+                        </thead>
+                        <tfoot></tfoot>
+                        <tbody>
+                            <c:forEach var="job" items="${filterResult.resultList}">
+                                <tr>
+                                    <td>${fn:escapeXml(job.name)}</td>
+                                    <td>${job.cronString}</td>
+                                    <td><cti:dataUpdaterValue type="JOB" identifier="${job.id}/NEXT_RUN_DATE"/></td>
+                                    <td>
+                                        <cti:url var="editUrl" value="scheduleReport">
+                                            <cti:param name="jobId" value="${job.id}"/>
+                                        </cti:url>
+                                        <cti:button nameKey="edit" icon="icon-pencil" renderMode="image" href="${editUrl}"/>
+                                        <cti:url var="historyUrl" value="/support/fileExportHistory/list">
+                                            <cti:param name="initiator" value="Archived Data Export Schedule: ${job.name}"/>
+                                        </cti:url>
+                                        <cti:button nameKey="history" renderMode="image" href="${historyUrl}" icon="icon-script"/>
+                                        <cti:url var="deleteUrl" value="deleteJob">
+                                            <cti:param name="jobId" value="${job.id}"/>
+                                        </cti:url>
+                                        <cti:button id="deleteScheduleItem_${job.id}" nameKey="remove" renderMode="image" href="${deleteUrl}"/>
+                                        <dialog:confirm on="#deleteScheduleItem_${job.id}" nameKey="confirmDelete" argument="${job.name}"/>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </c:if>
+                <c:if test="${fn:length(filterResult.resultList) == 0}">
+                    <span class="empty-list" colspan="3"><i:inline key=".noJobs"/></span>
+                </c:if>
+            </div>
+        </tags:boxContainer2>
+    </div>
+    
     <div id="runDialog" >
          <cti:flashScopeMessages />
          <form:form id="runForm" commandName="archivedValuesExporter" >

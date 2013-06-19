@@ -140,7 +140,7 @@
                                 <cti:param name="accountId" value="${accountId}"/>
                                 <cti:param name="applianceId" value="${starsAppliance.applianceID}"/>
                             </cti:url>
-                            <cti:button nameKey="edit" href="${editUrl}"/>
+                            <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
                         </cti:checkRolesAndProperties>
                     </cti:displayForPageEditModes>
                     

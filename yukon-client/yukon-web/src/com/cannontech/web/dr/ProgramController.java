@@ -8,6 +8,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONObject;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.favorites.dao.FavoritesDao;
@@ -41,7 +44,6 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -116,7 +118,7 @@ public class ProgramController extends ProgramControllerBase {
     }
     
     @RequestMapping
-    public String changeGear(HttpServletResponse resp, ModelMap modelMap, int programId, int gearNumber, 
+    public @ResponseBody JSONObject changeGear(HttpServletResponse resp, ModelMap modelMap, int programId, int gearNumber, 
                              YukonUserContext userContext, FlashScope flashScope) throws IOException {
         
         DisplayablePao program = programService.getProgram(programId);
@@ -131,8 +133,9 @@ public class ProgramController extends ProgramControllerBase {
         demandResponseEventLogService.threeTierProgramChangeGear(yukonUser, program.getName());
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.getChangeGearValue.gearChanged"));
 
-        ServletUtils.closePopup(resp, "drDialog");
-        return null;
+        JSONObject json = new JSONObject();
+        json.put("action", "reload");
+        return json;
     }
     
     @RequestMapping
@@ -211,7 +214,7 @@ public class ProgramController extends ProgramControllerBase {
   }
     
     @RequestMapping
-    public String changeMultipleGears(HttpServletResponse resp, ModelMap model, @ModelAttribute("backingBean") ChangeMultipleGearsBackingBean backingBean,
+    public @ResponseBody JSONObject changeMultipleGears(HttpServletResponse resp, ModelMap model, @ModelAttribute("backingBean") ChangeMultipleGearsBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) throws IOException {
         
 
@@ -246,8 +249,10 @@ public class ProgramController extends ProgramControllerBase {
         if (gearChanged) {
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.getChangeGearValue.multipleGearChanged"));
         }
-        ServletUtils.closePopup(resp, "drDialog");
-        return null;
+        
+        JSONObject json = new JSONObject();
+        json.put("action", "reload");
+        return json;
     }
     
     @RequestMapping
@@ -266,7 +271,7 @@ public class ProgramController extends ProgramControllerBase {
     }
     
     @RequestMapping
-    public String setEnabled(HttpServletResponse resp, ModelMap modelMap, int programId, boolean isEnabled,
+    public @ResponseBody JSONObject setEnabled(HttpServletResponse resp, ModelMap modelMap, int programId, boolean isEnabled,
             YukonUserContext userContext, FlashScope flashScope) throws IOException {
         
         DisplayablePao program = programService.getProgram(programId);
@@ -286,8 +291,9 @@ public class ProgramController extends ProgramControllerBase {
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.sendEnableConfirm.disabled"));
         }
         
-        ServletUtils.closePopup(resp, "drDialog");
-        return null;
+        JSONObject json = new JSONObject();
+        json.put("action", "reload");
+        return json;
     }
     
     @RequestMapping
@@ -364,17 +370,19 @@ public class ProgramController extends ProgramControllerBase {
     }
     
     @RequestMapping
-    public String enableDisablePrograms(HttpServletResponse resp, ModelMap modelMap, HttpServletRequest request, FlashScope flashScope,
+    public @ResponseBody JSONObject enableDisablePrograms(HttpServletResponse resp, ModelMap modelMap, HttpServletRequest request, FlashScope flashScope,
                       Boolean supressRestoration, boolean enable) throws IOException {
         
         String[] programIds = request.getParameterValues("disableProgram");
+        
+        JSONObject json = new JSONObject();
+        json.put("action", "reload");
         
         if(programIds == null) {
             YukonMessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.modules.dr.program.sendDisableProgramsConfirm.noProgramsSelected");
             flashScope.setError(message);
 
-            ServletUtils.closePopup(resp, "drDialog");
-            return null;
+            return json;
         }
         
         for(String programIdString : programIds) {
@@ -395,8 +403,7 @@ public class ProgramController extends ProgramControllerBase {
         }
         flashScope.setConfirm(message);
         
-        ServletUtils.closePopup(resp, "drDialog");
-        return null;
+        return json;
     }
     
     private void addFilterErrorsToFlashScopeIfNecessary(ModelMap model,

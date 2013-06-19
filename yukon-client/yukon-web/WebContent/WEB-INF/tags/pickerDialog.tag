@@ -1,3 +1,5 @@
+<%@ tag trimDirectiveWhitespaces="true" %>
+
 <%@ attribute name="type" required="true" description="Spring bean name of the Picker class"%>
 <%@ attribute name="id" required="true" description="Unique id for this picker"%>
 <%@ attribute name="destinationFieldId" description="Id of field to place selected items on picker close"%>
@@ -14,6 +16,7 @@
 <%@ attribute name="extraArgs" description="Dynamic inputs to picker search" rtexprvalue="true"%>
 <%@ attribute name="extraDestinationFields" description="used when a selection has been made and the picker is closed.  It's a semicolon separated list of: [property]:[fieldId]"%>
 <%@ attribute name="buttonStyleClass" description="Class to style the button with"%>
+<%@ attribute name="icon" description="Icon class to use for button."%>
 <%@ attribute name="anchorStyleClass" description="Class to style the anchor with"%>
 <%@ attribute name="selectionProperty" description="Required with a linkType of 'selection', used to determine name of property from selected item to display in label.  Not used with other linkType values."%>
 <%@ attribute name="allowEmptySelection" description="Allow an empty selection.  Only valid when 'multiSelectMode' is true."%>
@@ -28,6 +31,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:includeScript link="/JavaScript/picker.js"/>
 <cti:includeScript link="/JavaScript/simpleDialog.js"/>
@@ -35,15 +39,18 @@
 
 <c:set var="containerDivArg" value="null"/>
 <c:if test="${!empty  pageScope.containerDiv}">
-    <c:set var="containerDivArg" value="$('${pageScope.containerDiv}')"/>
+    <c:set var="containerDivArg" value="jQuery('#${pageScope.containerDiv}')"/>
 </c:if>
+
+<cti:msg2 var="okText" key="yukon.common.okButton"/>
+<cti:msg2 var="cancelText" key="yukon.common.cancel"/>
 
 <script type="text/javascript">
     // Only create picker if not already created.  This tag gets called more than
     // once if it's used inside a widget and the widget is updated.  Since the user
     // isn't navigating off the page, we want to keep the same picker.
     if (window.${id} == undefined) {
-        ${id} = new Picker('${type}', '${pageScope.destinationFieldName}', '${id}', '${pageScope.extraDestinationFields}', ${containerDivArg});
+        ${id} = new Picker('${okText}', '${cancelText}', '${type}', '${pageScope.destinationFieldName}', '${id}', '${pageScope.extraDestinationFields}', ${containerDivArg});
 
         <c:if test="${pageScope.multiSelectMode}">
             ${id}.multiSelectMode = true;
@@ -92,13 +99,9 @@
         <cti:msg2 var="selectedItemsDialogTitleMsg" key=".selectedItemsDialogTitle"/>
         <cti:msg2 var="closeMsg" key=".close"/>
     </cti:msgScope>
-    <tags:simplePopup title="${selectedItemsDialogTitleMsg}" id="picker_${id}_selectedItemsPopup">
-        <div id="picker_${id}_selectedItemsDisplayArea" class="dialogScrollArea"></div>
-        <div class="actionArea">
-            <input type="button" onclick="$('picker_${id}_selectedItemsPopup').hide()"
-                value="${closeMsg}"/>
-        </div>
-    </tags:simplePopup>
+    <d:inline okEvent="none" nameKey="" title="${selectedItemsDialogTitleMsg}" id="picker_${id}_selectedItemsPopup">
+        <div id="picker_${id}_selectedItemsDisplayArea"></div>
+    </d:inline>
 </c:if>
 
 <span id="picker_${id}_inputArea">
@@ -127,7 +130,7 @@
                         <c:set var="renderMode" value="${pageScope.buttonRenderMode}"/>
                     </c:if>
                     <cti:button nameKey="${pageScope.nameKey}" onclick="${id}.show()" renderMode="${pageScope.renderMode}" 
-                        styleClass="${pageScope.buttonStyleClass}"/>
+                        classes="${pageScope.buttonStyleClass}" icon="${pageScope.icon}" />
         	    </c:when>
         	    <c:when test="${pageScope.linkType == 'selection'}">
                     <c:if test="${empty pageScope.selectionProperty}">
@@ -137,11 +140,10 @@
                     <c:if test="${empty pageScope.nameKey}">
                         <c:set var="nameKey" value="selectionPicker"/>
                     </c:if>
-                    <cti:labeledImg id="picker_${id}_label" nameKey="${pageScope.nameKey}"
-                        labelStyleClass="noSelectionPickerLabel"
-                        href="javascript:${id}.show()" imageOnRight="true"/>
+                    <cti:button id="picker_${id}_label"  nameKey="${pageScope.nameKey}" classes="noSelectionPickerLabel" renderMode="labeledImage" icon="icon-database-add"
+                        onclick="${id}.show()" imageOnRight="true"/>
                     <c:if test="${pageScope.multiSelectMode}">
-                        <cti:img id="picker_${id}_showSelectedImg" href="javascript:${id}.showSelected()" nameKey="zoom"/>
+                        <cti:icon id="picker_${id}_showSelectedImg" href="javascript:${id}.showSelected()" nameKey="zoom" icon="icon-magnifier"/>
                     </c:if>
         	    </c:when>
         	    <c:otherwise>

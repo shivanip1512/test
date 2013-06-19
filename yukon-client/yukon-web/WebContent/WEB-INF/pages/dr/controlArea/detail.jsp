@@ -1,8 +1,9 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="dr" page="controlAreaDetail">
 
@@ -14,95 +15,80 @@
 
     <c:set var="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>
     <tags:layoutHeadingPrefixPart>
-    	<dr:favoriteIcon paoId="${controlAreaId}" isFavorite="${isFavorite}"/>
+        <dr:favoriteIcon paoId="${controlAreaId}" isFavorite="${isFavorite}"/>
     </tags:layoutHeadingPrefixPart>
 
-    <table class="widgetColumns">
-        <tr>
-            <td class="widgetColumnCel first" valign="top">
-
-                <%-- Control Area Info section --%>
-
-                <div class="widgetContainer">
-                <cti:msg var="boxTitle" key="yukon.web.modules.dr.controlAreaDetail.heading.info"/>
-                <tags:abstractContainer type="box" title="${boxTitle}">
-                    <tags:nameValueContainer>
-                        <cti:checkRolesAndProperties value="CONTROL_AREA_STATE">
-                            <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.state"/>
-                            <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
-                                <dr:controlAreaState controlAreaId="${controlAreaId}"/>
-                            </tags:nameValue>
-                        </cti:checkRolesAndProperties>
-                        <cti:checkRolesAndProperties value="CONTROL_AREA_PRIORITY">
-                            <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.priority"/>
-                            <tags:nameValue name="${fieldName}">
-                                <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/PRIORITY"/>
-                            </tags:nameValue>
-                        </cti:checkRolesAndProperties>
-                        <cti:checkRolesAndProperties value="CONTROL_AREA_TIME_WINDOW">
-                            <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.startStop"/>
-                            <tags:nameValue name="${fieldName}">
-                                <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/START"/>
-                                <cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.separator"/>
-                                <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/STOP"/>
-                            </tags:nameValue>
-                        </cti:checkRolesAndProperties>
-                        <%--
-                        <cti:checkRolesAndProperties value="CONTROL_AREA_LOAD_CAPACITY">
-                            <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.loadCapacity"/>
-                            <tags:nameValue name="${fieldName}">
-                                <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/LOAD_CAPACITY"/>
-                            </tags:nameValue>
-                        </cti:checkRolesAndProperties>
-                        --%>
-
-                        <c:if test="${!empty controlArea.triggers}">
-                            <c:forEach var="trigger" items="${controlArea.triggers}">
-                                <cti:checkRolesAndProperties value="CONTROL_AREA_VALUE_THRESHOLD,CONTROL_AREA_PEAK_PROJECTION,CONTROL_AREA_ATKU">
-                                    <c:set var="triggerNumber" value="${trigger.triggerNumber}"/>
-                                    <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.trigger" argument="${triggerNumber}"/>
-                                    <tags:nameValue name="${fieldName}" isSection="true">
-                                        <cti:checkRolesAndProperties value="CONTROL_AREA_VALUE_THRESHOLD">
-                                            <cti:msg var="thresholdTitle" key="yukon.web.modules.dr.controlAreaDetail.info.valueThreshold"/>
-                                            <tags:nameValue name="${thresholdTitle}">
-                                                <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/VALUE_THRESHOLD"/>
-                                            </tags:nameValue>
-                                        </cti:checkRolesAndProperties>
-                                        <cti:checkRolesAndProperties value="CONTROL_AREA_PEAK_PROJECTION">
-                                            <cti:msg var="peakTitle" key="yukon.web.modules.dr.controlAreaDetail.info.peakProjection"/>
-                                            <tags:nameValue name="${peakTitle}">
-                                                <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/PEAK_PROJECTION"/>
-                                            </tags:nameValue>
-                                        </cti:checkRolesAndProperties>
-                                        <cti:checkRolesAndProperties value="CONTROL_AREA_ATKU">
-                                            <cti:msg var="atkuTitle" key="yukon.web.modules.dr.controlAreaDetail.info.atku"/>
-                                            <tags:nameValue name="${atkuTitle}">
-                                                <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/ATKU"/>
-                                            </tags:nameValue>
-                                        </cti:checkRolesAndProperties>
-                                    </tags:nameValue>
-                                </cti:checkRolesAndProperties>
-                            </c:forEach>
-                        </c:if>
-                    </tags:nameValueContainer>
+    <div class="column_12_12">
+        <div class="column one">
+            <tags:boxContainer2 nameKey="heading.info">
+                <tags:nameValueContainer2 tableClass="stacked">
+                    <cti:checkRolesAndProperties value="CONTROL_AREA_STATE">
+                        <tags:nameValue2 nameKey=".info.state">
+                            <dr:controlAreaState controlAreaId="${controlAreaId}"/>
+                        </tags:nameValue2>
+                    </cti:checkRolesAndProperties>
+                    <cti:checkRolesAndProperties value="CONTROL_AREA_PRIORITY">
+                        <tags:nameValue2 nameKey=".info.priority">
+                            <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/PRIORITY"/>
+                        </tags:nameValue2>
+                    </cti:checkRolesAndProperties>
+                    <cti:checkRolesAndProperties value="CONTROL_AREA_TIME_WINDOW">
+                        <tags:nameValue2 nameKey=".info.startStop">
+                            <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/START"/>
+                            <i:inline key=".info.separator"/>
+                            <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/STOP"/>
+                        </tags:nameValue2>
+                    </cti:checkRolesAndProperties>
+                    <%--
+                    <cti:checkRolesAndProperties value="CONTROL_AREA_LOAD_CAPACITY">
+                        <cti:msg var="fieldName" key="yukon.web.modules.dr.controlAreaDetail.info.loadCapacity"/>
+                        <tags:nameValue name="${fieldName}">
+                            <cti:dataUpdaterValue type="DR_CONTROLAREA" identifier="${controlAreaId}/LOAD_CAPACITY"/>
+                        </tags:nameValue>
+                    </cti:checkRolesAndProperties>
+                    --%>
+              </tags:nameValueContainer2>
+              <tags:nameValueContainer2>
+                    
                     <c:if test="${empty controlArea.triggers}">
-                        <br/>
-                        <cti:msg key="yukon.web.modules.dr.controlAreaDetail.info.noTriggers"/>
+                        <span class="empty-list"><i:inline key=".info.noTriggers"/></span>
                     </c:if>
-                </tags:abstractContainer>
-                </div>
-            </td>
-            <td class="widgetColumnCell last" valign="top">
+                    <c:if test="${!empty controlArea.triggers}">
+                        <c:forEach var="trigger" items="${controlArea.triggers}">
+                            <cti:checkRolesAndProperties value="CONTROL_AREA_VALUE_THRESHOLD,CONTROL_AREA_PEAK_PROJECTION,CONTROL_AREA_ATKU">
+                                <c:set var="triggerNumber" value="${trigger.triggerNumber}"/>
+                                <tags:nameValue2 rowClass="smallBoldLabel" nameKey=".info.trigger" argument="${triggerNumber}"></tags:nameValue2>
+                                <tags:nameValue2 nameKey=".info.loadCapacity">
+                                    <cti:checkRolesAndProperties value="CONTROL_AREA_VALUE_THRESHOLD">
+                                        <tags:nameValue2 nameKey=".info.valueThreshold">
+                                            <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/VALUE_THRESHOLD"/>
+                                        </tags:nameValue2>
+                                    </cti:checkRolesAndProperties>
+                                    <cti:checkRolesAndProperties value="CONTROL_AREA_PEAK_PROJECTION">
+                                        <tags:nameValue2 nameKey=".info.peakProjection">
+                                            <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/PEAK_PROJECTION"/>
+                                        </tags:nameValue2>
+                                    </cti:checkRolesAndProperties>
+                                    <cti:checkRolesAndProperties value="CONTROL_AREA_ATKU">
+                                        <tags:nameValue2 nameKey=".info.atku">
+                                            <cti:dataUpdaterValue type="DR_CA_TRIGGER" identifier="${controlAreaId}/${triggerNumber}/ATKU"/>
+                                        </tags:nameValue2>
+                                    </cti:checkRolesAndProperties>
+                                </tags:nameValue2>
+                            </cti:checkRolesAndProperties>
+                        </c:forEach>
+                    </c:if>
+                </tags:nameValueContainer2>
+            </tags:boxContainer2>
+        </div>
+        <div class="column two nogutter">
 
                 <%--
                     Control Area Actions section each action has a simpleDialogLink that
                     pops open a dialog for the action.  The available actions are based
                     on the dynamically updated SHOW_ACTION value
                 --%>
-
-                <div class="widgetContainer">
-                <cti:msg var="boxTitle" key="yukon.web.modules.dr.controlAreaDetail.heading.actions"/>
-                <tags:abstractContainer type="box" title="${boxTitle}">
+                <tags:boxContainer2 nameKey="heading.actions">
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${controlArea}">
 
                         <%-- Actions are enabled only if the user has CONTROL_COMMAND for LM objects --%>
@@ -110,47 +96,42 @@
 
                             <%-- Actions are disabled if the user does not have CONTROL_COMMAND for LM objects --%>
                             <tags:dynamicChooseOption optionId="noAssignedPrograms">
-                                <cti:msg var="disabledMessage" key="yukon.web.modules.dr.controlAreaDetail.noAssignedPrograms"/>
-                                <span class="disabledAction" title="${disabledMessage}">
+                                <cti:msg2 var="disabledMessage" key=".noAssignedPrograms"/>
+                                <div class="disabledAction" title="${disabledMessage}">
                                     <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon.disabled"/>
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
-                                </span>
-                                <br>
-                                <span class="disabledAction" title="${disabledMessage}">
+                                    <i:inline key=".actions.start"/>
+                                </div>
+                                <div class="disabledAction" title="${disabledMessage}">
                                     <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon.disabled"/>
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.stop"/>
-                                </span>
-                                <br>
-                                <span class="disabledAction" title="${disabledMessage}">
+                                    <i:inline key=".actions.stop"/>
+                                </div>
+                                <div class="disabledAction" title="${disabledMessage}">
                                     <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon.disabled"/>
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
-                                </span>
-                                <br>
-                                <span class="disabledAction" title="${disabledMessage}">
+                                    <i:inline key=".actions.triggersChange"/>
+                                </div>
+                                <div class="disabledAction" title="${disabledMessage}">
                                     <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon.disabled"/>
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
-                                </span>
+                                    <i:inline key=".actions.dailyTimeChange"/>
+                                </div>
                                 <br>
-                                <span class="disabledAction" title="${disabledMessage}">
+                                <div class="disabledAction" title="${disabledMessage}">
                                     <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.disableIcon.disabled"/>
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
-                                </span>
+                                    <i:inline key=".actions.disable"/>
+                                </div>
                                 <br>
-                                <span class="disabledAction" title="${disabledMessage}">
-                                	<cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.enableProgramsIcon.disabled"/>
-                                	<cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.enablePrograms"/>
-                                </span>
+                                <div class="disabledAction" title="${disabledMessage}">
+                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.enableProgramsIcon.disabled"/>
+                                    <i:inline key=".actions.enablePrograms"/>
+                                </div>
+                                <div class="disabledAction" title="${disabledMessage}">
+                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.disableProgramsIcon.disabled"/>
+                                    <i:inline key=".actions.disablePrograms"/>
+                                </div>
                                 <br>
-                                <span class="disabledAction" title="${disabledMessage}">
-                                	<cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.disableProgramsIcon.disabled"/>
-                                	<cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.disablePrograms"/>
-                                </span>
-                                <br>
-                                <span class="disabledAction" title="${disabledMessage}">
+                                <div class="disabledAction" title="${disabledMessage}">
                                     <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon.disabled"/>
-                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
-                                </span>
-                                <br>
+                                    <i:inline key=".actions.resetPeak"/>
+                                </div>
                             </tags:dynamicChooseOption>
 
                             <%-- Actions shown when the Control Area is enabled but not fully active --%>
@@ -208,7 +189,6 @@
                                     logoKey="yukon.web.modules.dr.controlAreaDetail.actions.disableIcon"
                                     labelKey="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
                                 <br>
-                                
                                 <cti:url var="changeScenarioGearsUrl" value="/dr/program/changeGearMultiplePopup">
                                      <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
@@ -218,7 +198,6 @@
                                             logoKey="yukon.web.modules.dr.programDetail.actions.changeGearsIcon"
                                             labelKey="yukon.web.modules.dr.programDetail.actions.changeGears"/>
                                 <br>
-                                
                                 <cti:url var="sendEnableProgramsUrl" value="/dr/program/sendEnableDisableProgramsConfirm">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                     <cti:param name="enable" value="true"/>
@@ -771,20 +750,15 @@
                             <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
                         </div>
                     </cti:checkPaoAuthorization>
-                </tags:abstractContainer>
+                </tags:boxContainer2>
                 </div>
-            </td>
-        </tr>
+        </div>
+    </div>
 
-        <%-- Child programs for the control area --%>
-        <tr>
-            <td class="widgetColumnCell" colspan="2">
-                <div class="widgetContainer">
-				    <c:set var="baseUrl" value="/dr/controlArea/detail"/>
-				    <%@ include file="../program/programList.jspf" %>
-                </div>
-            </td>
-        </tr>
-    </table>
-
+    <div class="column_24">
+        <div class="column one nogutter">
+            <c:set var="baseUrl" value="/dr/controlArea/detail"/>
+            <%@ include file="../program/programList.jspf" %>
+        </div>
+    </div>
 </cti:standardPage>

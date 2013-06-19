@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONObject;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
@@ -54,7 +57,6 @@ import com.cannontech.dr.program.filter.ForControlAreaFilter;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -245,7 +247,7 @@ public class ControlAreaController {
     }
 
     @RequestMapping("/controlArea/setEnabled")
-    public String setEnabled(HttpServletResponse resp, ModelMap modelMap, int controlAreaId,
+    public @ResponseBody JSONObject setEnabled(HttpServletResponse resp, ModelMap modelMap, int controlAreaId,
                              boolean isEnabled, YukonUserContext userContext, FlashScope flashScope) throws IOException {
 
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
@@ -267,8 +269,9 @@ public class ControlAreaController {
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.controlArea.sendEnableConfirm.disabled"));
         }
 
-        ServletUtils.closePopup(resp, "drDialog");
-        return null;
+        JSONObject json = new JSONObject();
+        json.put("action", "reload");
+        return json;
     }
 
     @RequestMapping("/controlArea/sendResetPeakConfirm")
@@ -286,7 +289,7 @@ public class ControlAreaController {
     }
 
     @RequestMapping("/controlArea/resetPeak")
-    public String resetPeak(HttpServletResponse resp, ModelMap modelMap, int controlAreaId, 
+    public @ResponseBody JSONObject resetPeak(HttpServletResponse resp, ModelMap modelMap, int controlAreaId, 
                             YukonUserContext userContext, FlashScope flashScope) throws IOException {
 
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
@@ -302,8 +305,9 @@ public class ControlAreaController {
                                                                     controlArea.getName());
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.controlArea.sendResetPeakConfirm.peakReset"));
 
-        ServletUtils.closePopup(resp, "drDialog");
-        return null;
+        JSONObject json = new JSONObject();
+        json.put("action", "reload");
+        return json;
     }
 
     // TIME WINDOW - show
@@ -368,7 +372,7 @@ public class ControlAreaController {
 
     // TIME WINDOW - send
     @RequestMapping("/controlArea/changeTimeWindow")
-    public String changeTimeWindow(HttpServletResponse resp, ModelMap modelMap, int controlAreaId,
+    public @ResponseBody JSONObject changeTimeWindow(HttpServletResponse resp, ModelMap modelMap, int controlAreaId,
                                    String startTime, String stopTime, YukonUserContext userContext, 
                                    FlashScope flashScope) throws IOException {
 
@@ -393,8 +397,9 @@ public class ControlAreaController {
 
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.controlArea.sendChangeTimeWindowConfirm.timeWindowChanged"));
 
-        ServletUtils.closePopup(resp, "drDialog");
-        return null;
+        JSONObject json = new JSONObject();
+        json.put("action", "reload");
+        return json;
     }
 
     // TRIGGER VALUES - show
@@ -462,7 +467,11 @@ public class ControlAreaController {
 
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.controlArea.getChangeTriggerValues.triggerValueChanged"));
 
-        ServletUtils.closePopup(resp, "drDialog");
+        JSONObject json = new JSONObject();
+        json.put("action", "reload");
+        
+        resp.setContentType("application/json");
+        resp.getWriter().write(json.toString());
         return null;
     }
     

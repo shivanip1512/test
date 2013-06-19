@@ -1,10 +1,18 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="commanderSelect" page="select">
+<style type="text/css">
+.secondary-menu {
+    margin: -15px auto 15px auto;
+    width: 98%;
+    background-color: #EEEEFF;
+    padding: 2px 5px;
+}
+</style>
     <cti:standardMenu menuSelection="${menuSelection}" />
     
     <%-- BREAD CRUMBS --%>
@@ -16,9 +24,52 @@
         <cti:crumbLink><i:inline key=".pageTitle"/></cti:crumbLink>
     </cti:breadCrumbs>
     
-    <h2><i:inline key=".pageTitle"/></h2>
-    <br>
-    
+    <h2 class="page-heading"><i:inline key=".pageTitle"/></h2>
+    <p>&nbsp;</p>
+
+<c:set var="isDevicesPage" value='${category == "MCT" || category == "IED" || category == "RTU" || category == "TRANSMITTER"}'/>
+<c:set var="isLoadMngtPage" value='${category == "LMGROUP"}'/>
+<cti:linkTabbedContainer mode="section" id="page_header_tab_container">
+    <cti:msg var="tab_name" key="yukon.web.menu.config.commanderSelect.devices" />
+    <c:set var="on_tab" value='${isDevicesPage}'/>
+    <cti:linkTab tabId="deviceTab" selectorName="${tab_name}" tabHref="javascript:void(0);" initiallySelected="${on_tab}"/>
+
+    <cti:msg var="tab_name" key="yukon.web.menu.config.commanderSelect.lm" />
+    <c:set var="on_tab" value='${isLoadMngtPage}'/>
+    <cti:linkTab tabId="loadMgtTab" selectorName="${tab_name}" tabHref="javascript:void(0);" initiallySelected="${on_tab}"/>
+
+    <c:url var="tab_url" value="/commander/select?category=CAP" />
+    <cti:msg var="tab_name" key="yukon.web.menu.config.commanderSelect.capcontrol" />
+    <cti:linkTab tabId="capControlTab" selectorName="${tab_name}" tabHref="${tab_url}" initiallySelected='${category == "CAP"}' />
+</cti:linkTabbedContainer>
+
+<%-- START Secondary Menu --%>
+    <div id="menuL2Devices" class="secondary-menu<c:if test="${not isDevicesPage}"> dn</c:if>">
+        <c:url var="tab_url" value="/commander/select" />
+        <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.devices.mct" showPlainText='${category == "MCT"}' href="${tab_url}" />
+        |
+        <c:url var="tab_url" value="/commander/select?category=IED" />
+        <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.devices.ied" showPlainText='${category == "IED"}' href="${tab_url}" />
+        |
+        <c:url var="tab_url" value="/commander/select?category=RTU" />
+        <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.devices.rtu" showPlainText='${category == "RTU"}' href="${tab_url}" />
+        |
+        <c:url var="tab_url" value="/commander/select?category=TRANSMITTER" />
+        <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.devices.transmitter" showPlainText='${category == "TRANSMITTER"}' href="${tab_url}" />
+    </div>
+
+    <div id="menuL2LoadMgt" class="secondary-menu<c:if test="${not isLoadMngtPage}"> dn</c:if>">
+        <c:url var="tab_url" value="/commander/select?category=LMGROUP" />
+        <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.lm.group" showPlainText='${category == "LMGROUP"}' href="${tab_url}" />
+        |
+        <c:url var="tab_url" value="/commander/command/xcom" />
+        <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.lm.xcom.tab.title" showPlainText='${false}' href="${tab_url}" />
+        |
+        <c:url var="tab_url" value="/commander/command/vcom" />
+        <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.lm.vcom.tab.title" showPlainText='${false}' href="${tab_url}" />
+    </div>
+<%-- END Secondary Menu --%>
+
     <script>
         jQuery(function() {
             jQuery('.f_show_all').click(function () {
@@ -28,74 +79,94 @@
                 
                 jQuery('#filterForm')[0].submit();
             });
+            
+            jQuery('#loadMgtTab').click(function(){
+                jQuery('#menuL2Devices').hide();
+                jQuery('#menuL2LoadMgt').show();
+                jQuery('#deviceTab').removeClass('ui-tabs-active ui-state-active');
+                jQuery('#capControlTab').removeClass('ui-tabs-active ui-state-active');
+                jQuery('#loadMgtTab').addClass('ui-tabs-active ui-state-active');
+            });
+            jQuery('#deviceTab').click(function(){
+                jQuery('#menuL2LoadMgt').hide();
+                jQuery('#menuL2Devices').show();
+                jQuery('#loadMgtTab').removeClass('ui-tabs-active ui-state-active');
+                jQuery('#capControlTab').removeClass('ui-tabs-active ui-state-active');
+                jQuery('#deviceTab').addClass('ui-tabs-active ui-state-active');
+            });
         });
     </script>
     
     <cti:url var="baseUrl" value="/commander/select"/>
     
-    <form id="filterForm" action="${baseUrl}">
-        <tags:boxContainer2 nameKey="deviceSearch">
-            <input type="hidden" name="startIndex" value="${deviceSearchResults.startIndex}" />
-            <input type="hidden" name="itemsPerPage" value="${deviceSearchResults.count}" />
-            <input type="hidden" name="orderBy" value="${orderBy}" />
-            <input type="hidden" name="category" value="${category}" />
-            
-            <div class="filters">
+    <tags:boxContainer2 nameKey="deviceSearch">
+        <form id="filterForm" action="${baseUrl}">
+            <input type="hidden" name="startIndex" value="${deviceSearchResults.startIndex}"> 
+            <input type="hidden" name="itemsPerPage" value="${deviceSearchResults.count}">
+            <input type="hidden" name="orderBy" value="${orderBy}">
+            <input type="hidden" name="category" value="${category}">
+
+            <div class="filters clearfix">
                 <c:forEach var="filter" items="${filters}">
                     <c:if test="${filter.searchField.visible}">
-                    <div class="searchFilterContainer">
-                        <label for="${filter.name}"><i:inline key="${filter}" /> </label><input
-                            type="text" id="${filter.name}" name="${filter.name}"
-                            value="${filter.filterValue}"
-                        />
-                    </div>
+                        <div class="gridBox-thirds" style="margin-bottom: 5px;text-align: right;">
+                            <label style="margin-right: 20px;">
+                                <i:inline key="${filter}"/>
+                                <input type="text" id="${filter.name}" name="${filter.name}" value="${filter.filterValue}">
+                            </label> 
+                        </div>
                     </c:if>
                 </c:forEach>
             </div>
-            
-            <div class="actionArea clear">
+
+            <div class="actionArea">
                 <cti:button nameKey="search" type="submit" />
-                <cti:button nameKey="showAll" styleClass="f_show_all"/>
+                <cti:button nameKey="showAll" classes="f_show_all" />
             </div>
-        </tags:boxContainer2>
-    </form>
+        </form>
+    </tags:boxContainer2>
     
-    <br>
-    
-    <cti:msg2 var="deviceSearchResultsTitle" key=".deviceSearchResults.title" />
-    <tags:pagedBox title="${deviceSearchResultsTitle}" searchResult="${deviceSearchResults}" baseUrl="${baseUrl}" pageByHundereds="true">
-        <table class="compactResultsTable rowHighlighting">
-            <c:if test="${deviceSearchResults.hitCount > 0}">
-                <tr>
-                <c:forEach var="field" items="${fields}">
-                    <c:if test="${field.visible}">
-                    <th><tags:sortLink nameKey="deviceSearchField.${field}" baseUrl="${baseUrl}" fieldName="${field}" sortParam="orderBy"/></th>
-                    </c:if>
-                </c:forEach>
-                </tr>
-            </c:if>
-            <c:forEach var="searchResultRow" items="${deviceSearchResults.resultList}">
-                <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                    <c:forEach var="field" items="${fields}">
-                        <c:if test="${field.visible}">
-                        <c:set var="value" value="${fn:escapeXml(searchResultRow.map[field.fieldName])}"/>
-                        <c:choose>
-                            <c:when test="${field eq 'NAME'}">
-                            <cti:url var="commandUrl" value="/commander/command">
-                                <cti:param name="deviceId" value="${searchResultRow.map['id']}"/>
-                            </cti:url>
-                            <td><a href="${commandUrl}">${value}</a></td>
-                            </c:when>
-                            <c:when test="${field eq 'TYPE'}"><td>${value}</td></c:when>
-                            <c:otherwise><td><c:choose>
-                                <c:when test="${empty value}">-</c:when>
-                                <c:otherwise>${value}</c:otherwise>
-                            </c:choose></td></c:otherwise>
-                        </c:choose>
-                        </c:if>
-                    </c:forEach>
-                </tr>
-            </c:forEach>
-        </table>
-    </tags:pagedBox>
+    <tags:pagedBox2 nameKey="deviceSearchResults" searchResult="${deviceSearchResults}" baseUrl="${baseUrl}" pageByHundereds="true">
+        <c:if test="${deviceSearchResults.hitCount == 0}">
+            <span class="empty-list"><i:inline key="yukon.common.search.noResultsFound"/></span>
+        </c:if>
+        <c:if test="${deviceSearchResults.hitCount > 0}">
+            <table class="compactResultsTable rowHighlighting">
+                <thead>
+	                <tr>
+		                <c:forEach var="field" items="${fields}">
+		                    <c:if test="${field.visible}">
+		                      <th><tags:sortLink nameKey="deviceSearchField.${field}" baseUrl="${baseUrl}" fieldName="${field}" sortParam="orderBy"/></th>
+		                    </c:if>
+		                </c:forEach>
+	                </tr>
+                </thead>
+                <tfoot></tfoot>
+                <tbody>
+		            <c:forEach var="searchResultRow" items="${deviceSearchResults.resultList}">
+		                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+		                    <c:forEach var="field" items="${fields}">
+		                        <c:if test="${field.visible}">
+		                        <c:set var="value" value="${fn:escapeXml(searchResultRow.map[field.fieldName])}"/>
+		                        <c:choose>
+		                            <c:when test="${field eq 'NAME'}">
+		                            <cti:url var="commandUrl" value="/commander/command">
+		                                <cti:param name="deviceId" value="${searchResultRow.map['id']}"/>
+		                            </cti:url>
+		                            <td><a href="${commandUrl}">${value}</a></td>
+		                            </c:when>
+		                            <c:when test="${field eq 'TYPE'}"><td>${value}</td></c:when>
+		                            <c:otherwise><td><c:choose>
+		                                <c:when test="${empty value}">-</c:when>
+		                                <c:otherwise>${value}</c:otherwise>
+		                            </c:choose></td></c:otherwise>
+		                        </c:choose>
+		                        </c:if>
+		                    </c:forEach>
+		                </tr>
+		            </c:forEach>
+                </tbody>
+            </table>
+        </c:if>
+    </tags:pagedBox2>
 </cti:standardPage>

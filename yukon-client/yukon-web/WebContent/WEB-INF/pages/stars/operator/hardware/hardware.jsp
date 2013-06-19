@@ -19,14 +19,14 @@
 jQuery(function(){
     
     jQuery(document).on('click', '#refresh, button[name=commissionSubmit], button[name=decommissionSubmit]', function(event) {
-        var url = '/stars/operator/hardware/zb/';
-        var button = event.currentTarget;
-        if (button.id == 'refresh') {
+        var url = '/stars/operator/hardware/zb/',
+            button = event.currentTarget;
+        if (button.id === 'refresh') {
             url += 'refresh';
-        } else if (button.name == 'commissionSubmit') {
+        } else if (button.name === 'commissionSubmit') {
             url += 'commission';
-            jQuery('#confirmCommissionPopup').hide();
-        } else if (button.name == 'decommissionSubmit') {
+            jQuery('#confirmCommissionPopup').dialog('close');
+        } else if (button.name === 'decommissionSubmit') {
             url += 'decommission';
         }
         
@@ -40,7 +40,7 @@ jQuery(function(){
             success: function(data) {
                 jQuery('#zbCommandStatus').html(data.message);
                 jQuery('#zbCommandStatus').show();
-                if (data.success ==  true) {
+                if (data.success ===  true) {
                     jQuery('#zbCommandStatus').addClass('successMessage').removeClass('errorMessage');
                  } else {
                      jQuery('#zbCommandStatus').removeClass('successMessage').addClass('errorMessage');
@@ -59,10 +59,10 @@ jQuery(function(){
         
         var name = button.name.split('_')[0];
         var deviceId = button.name.split('_')[1];
-        if (name == 'assignedDevicesCommissionSubmit') {
+        if (name === 'assignedDevicesCommissionSubmit') {
             url += 'commission';
             jQuery('#confirmCommissionPopup_' + deviceId).hide();
-        } else if (name == 'assignedDevicesDecommissionSubmit') {
+        } else if (name === 'assignedDevicesDecommissionSubmit') {
             url += 'decommission';
         }
         
@@ -76,7 +76,7 @@ jQuery(function(){
             success: function(data) {
                 jQuery('#zbAssignedStatus').html(data.message);
                 jQuery('#zbAssignedStatus').show();
-                if (data.success ==  true) {
+                if (data.success ===  true) {
                     jQuery('#zbAssignedStatus').addClass('successMessage').removeClass('errorMessage');
                 } else {
                     jQuery('#zbAssignedStatus').removeClass('successMessage').addClass('errorMessage');
@@ -99,42 +99,43 @@ jQuery(function(){
     </cti:displayForPageEditModes>
 });
 
-
 function showDeletePopup() {
-    $('deleteHardwarePopup').show();
+    jQuery('#deleteHardwarePopup').dialog('open');
 }
 
 function hideDeletePopup() {
-	$('deleteHardwarePopup').hide();
+    jQuery('#deleteHardwarePopup').dialog('close');
 }
 
 function changeOut(oldId, isMeter) {
-    $('oldInventoryId').value = oldId;
+    var form;
+
+    jQuery('#oldInventoryId').val(oldId);
 
     if (isMeter) {
-        $('isMeter').value = 'true';
+        jQuery('#isMeter').val('true');
     } else {
-        $('isMeter').value = 'false';
+        jQuery('#isMeter').val('false');
     }
     
-    var form = $('changeOutForm');
+    form = jQuery('#changeOutForm');
     form.submit();
     return true;
 }
 
 function getCommissionConfirmationCallback() {
     return function(data) {
-        var commissionedValue = data.get('value');
+        var commissionedValue = data.value;
         
         if (${!hardware.hardwareType.gateway}) {
-            if (commissionedValue == 'Decommissioned') {
+            if (commissionedValue === 'Decommissioned') {
                 //decommissioned
-                $('decommissionedConfirmMsg').show();
-                $('commissionedConfirmMsg').hide();
+                jQuery('#decommissionedConfirmMsg').show();
+                jQuery('#commissionedConfirmMsg').hide();
             } else {
                 //commissioned - either connected or disconnected
-                $('decommissionedConfirmMsg').hide();
-                $('commissionedConfirmMsg').show();
+                jQuery('#decommissionedConfirmMsg').hide();
+                jQuery('#commissionedConfirmMsg').show();
             }
         }
     };
@@ -142,16 +143,16 @@ function getCommissionConfirmationCallback() {
 
 function getEndpointCommissionConfirmationCallback(deviceId) {
     return function(data) {
-        var commissionedValue = data.get('value');
+        var commissionedValue = data.value;
         
-        if (commissionedValue == 'Decommissioned') {
+        if (commissionedValue === 'Decommissioned') {
             //decommissioned
-            $('decommissionedConfirmMsg_' + deviceId).show();
-            $('commissionedConfirmMsg_' + deviceId).hide();
+            jQuery('#decommissionedConfirmMsg_' + deviceId).show();
+            jQuery('#commissionedConfirmMsg_' + deviceId).hide();
         } else {
             //commissioned - either connected or disconnected
-            $('decommissionedConfirmMsg_' + deviceId).hide();
-            $('commissionedConfirmMsg_' + deviceId).show();
+            jQuery('#decommissionedConfirmMsg_' + deviceId).hide();
+            jQuery('#commissionedConfirmMsg_' + deviceId).show();
         }
     };
 }
@@ -197,7 +198,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                 <tr>
                     <td>
                         <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                            <cti:button nameKey="delete" type="submit" name="delete" styleClass="f_blocker" />
+                            <cti:button nameKey="delete" type="submit" name="delete" classes="f_blocker" />
                         </cti:checkRolesAndProperties>
                         <cti:button nameKey="cancel" onclick="hideDeletePopup()"/>
                     </td>
@@ -213,16 +214,16 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
         <cti:url value="create" var="action"/>
     </cti:displayForPageEditModes>
     
-    <cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:20px;">
+    <div class="column_12_12 clearfix">
     
-        <%-- LEFT SIDE COLUMN --%>
         <%-- COMMON HARDWARE INFO --%>
-        <%@ include file="hardwareInfo.jspf" %>
-        
+        <div class="column one">
+            <%@ include file="hardwareInfo.jspf" %>
+        </div>
         <%-- RIGHT SIDE COLUMN --%>
         <cti:displayForPageEditModes modes="VIEW">
         
-            <cti:dataGridCell>
+            <div class="column two nogutter">
             
                 <%--DEVICE ACTIONS --%>
                 <tags:formElementContainer nameKey="actions">
@@ -236,7 +237,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                 <cti:param name="inventoryId" value="${inventoryId}"/>
                             </cti:url>
                             <li>
-                                <cti:button nameKey="editConfig" href="${configUrl}" renderMode="labeledImage"/>
+                                <cti:button nameKey="editConfig" href="${configUrl}" renderMode="labeledImage" icon="icon-cog-edit"/>
                             </li>
                         </c:if>
                         
@@ -251,6 +252,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                         immediateSelectMode="true"
                                         endAction="function(items) { return changeOut(${inventoryId}, false); }" 
                                         linkType="button"
+                                        icon="icon-arrow-swap"
                                         buttonRenderMode="labeledImage"/>
                             </li>
                         </c:if>
@@ -267,6 +269,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                         immediateSelectMode="true"
                                         endAction="function(items) { return changeOut(${inventoryId}, false); }" 
                                         linkType="button"
+                                        icon="icon-arrow-swap"
                                         buttonRenderMode="labeledImage"/>
                             </li>
                         </c:if>
@@ -277,7 +280,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                 <cti:param name="thermostatIds" value="${inventoryId}"/>
                             </cti:url>
                             <li>
-                                <cti:button nameKey="savedSchedules" href="${savedSchedulesUrl}" renderMode="labeledImage"/>
+                                <cti:button nameKey="savedSchedules" href="${savedSchedulesUrl}" renderMode="labeledImage" icon="icon-clipboard"/>
                             </li>
                         </c:if>
                         
@@ -287,7 +290,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                 <cti:param name="thermostatIds" value="${inventoryId}"/>
                             </cti:url>
                             <li>
-                                <cti:button nameKey="manual" href="${editManualUrl}" renderMode="labeledImage"/>
+                                <cti:button nameKey="manual" href="${editManualUrl}" renderMode="labeledImage" icon="icon-wrench"/>
                             </li>
                         </c:if>
                         
@@ -298,14 +301,14 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                 <cti:param name="meterId" value="${hardware.deviceId}"/>
                             </cti:url>
                             <li>
-                                <cti:button nameKey="editConfig" href="${configUrl}" renderMode="labeledImage"/>
+                                <cti:button nameKey="editConfig" href="${configUrl}" renderMode="labeledImage" icon="icon-cog-edit"/>
                             </li>
                         </c:if>
                         
                         <c:if test="${showMeterDetailAction}">
                             <cti:paoDetailUrl yukonPao="${hardware.yukonPao}" var="meterDetailUrl"/>
                             <li>
-                                 <cti:button nameKey="meterDetail" href="${meterDetailUrl}" renderMode="labeledImage"/>
+                                 <cti:button nameKey="meterDetail" href="${meterDetailUrl}" renderMode="labeledImage" icon="icon-control-equalizer-blue"/>
                             </li>
                         </c:if>
                         
@@ -319,7 +322,8 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                         immediateSelectMode="true" 
                                         endAction="function(items) { return changeOut(${inventoryId}, true); }" 
                                         linkType="button"
-                                        buttonRenderMode="labeledImage"/>
+                                        icon="icon-arrow-swap"
+                                        buttonRenderMode="labeledImage" />
                             </li>
                         </c:if>
                         
@@ -327,7 +331,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                         
                         <c:if test="${showTextMessageAction}">
                             <li>
-                                <cti:button nameKey="textMessage" id="sendTextMsg" renderMode="labeledImage" dialogButton="true"/>
+                                <cti:button nameKey="textMessage" id="sendTextMsg" renderMode="labeledImage" dialogButton="true" icon="icon-phone-sound"/>
                             </li>
                         </c:if>
                         
@@ -341,6 +345,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                         immediateSelectMode="true" 
                                         endAction="function(items) { return changeOut(${inventoryId}, false); }" 
                                         linkType="button"
+                                        icon="icon-arrow-swap"
                                         buttonRenderMode="labeledImage"/>
                             </li>
                         </c:if>
@@ -353,10 +358,14 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                     <cti:displayForPageEditModes modes="VIEW">
                         <tags:boxContainer2 nameKey="zigbeeStatus" styleClass="statusContainer f_block_this" id="zigbeeStatus">
                             <table class="compactResultsTable">
+                                <thead>
                                 <tr>
                                     <th><i:inline key=".status"/></th>
                                     <th><i:inline key=".timestamp"/></th>
                                 </tr>
+                                </thead>
+                                <tfoot></tfoot>
+                                <tbody>
                                 <tr>
                                     <td>
                                         <cti:pointStatusColor pointId="${hardware.commissionedId}" >
@@ -369,6 +378,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                         <cti:pointValue pointId="${hardware.commissionedId}" format="DATE"/>
                                     </td>
                                 </tr>
+                                </tbody>
                             </table>
                             <div id="zbCommandStatus" class="dn errorMessage zbCommandMsg"></div>
                             <div class="pageActionArea">
@@ -397,7 +407,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                             <p>
                                             <div class="actionArea">
                                                 <cti:button nameKey="ok" name="commissionSubmit" type="submit" />
-                                                <cti:button nameKey="cancel" onclick="$('confirmCommissionPopup').hide()" />
+                                                <cti:button nameKey="cancel" onclick="jQuery('#confirmCommissionPopup').hide()" />
                                             </div>
                                         </i:simplePopup>
                                     </cti:msgScope>
@@ -415,7 +425,6 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                 </c:if>
                             </div>
                         </tags:boxContainer2>
-                        <br>
                     </cti:displayForPageEditModes>
                 </c:if>
                 
@@ -443,8 +452,8 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                                     </cti:pointStatusColor>
                                                 </td>
                                                 <td class="wsnw last">
-                                                    <cti:button nameKey="assignedDevices.commission" renderMode="image" styleClass="assignedDevicesCommission" id="assignedDevicesCommission_${device.deviceId}"/>
-                                                    <cti:button nameKey="assignedDevices.decommission" renderMode="image" styleClass="assignedDevicesDecommission" id="assignedDevicesDecommission_${device.deviceId}"/>
+                                                    <cti:button nameKey="assignedDevices.commission" renderMode="image" classes="assignedDevicesCommission" id="assignedDevicesCommission_${device.deviceId}" icon="icon-accept"/>
+                                                    <cti:button nameKey="assignedDevices.decommission" renderMode="image" classes="assignedDevicesDecommission" id="assignedDevicesDecommission_${device.deviceId}" icon="icon-delete"/>
                                                     <cti:msgScope paths=".commissionConfirmation,">
                                                         <i:simplePopup id="confirmCommissionPopup_${device.deviceId}" styleClass="commissionConfirmationMsg smallSimplePopup" titleKey=".title" on="#assignedDevicesCommission_${device.deviceId}">
                                                             <p>
@@ -457,7 +466,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                                             <p>
                                                             <div class="actionArea">
                                                                 <cti:button name="assignedDevicesCommissionSubmit_${device.deviceId}" nameKey="ok" type="submit" />
-                                                                <cti:button nameKey="cancel" onclick="$('confirmCommissionPopup_${device.deviceId}').hide()" />
+                                                                <cti:button nameKey="cancel" onclick="jQuery('#confirmCommissionPopup_${device.deviceId}').hide()" />
                                                             </div>
                                                         </i:simplePopup>
                                                     </cti:msgScope>
@@ -473,7 +482,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                                         <cti:param name="gatewayId" value="${hardware.deviceId}"/>
                                                         <cti:param name="deviceId" value="${device.deviceId}"/>
                                                     </cti:url>
-                                                    <cti:button nameKey="remove" href="${removeUrl}" renderMode="image" styleClass="f_blocker"/>
+                                                    <cti:button nameKey="remove" href="${removeUrl}" renderMode="image" classes="f_blocker" icon="icon-cross"/>
                                                 </td>
                                             </tr>
                                         </c:forEach>
@@ -498,7 +507,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                             <option value="${device.deviceId}">${device.serialNumber}</option>
                                         </c:forEach>
                                     </select>
-                                    <cti:button nameKey="add" type="submit" styleClass="f_blocker"/>
+                                    <cti:button nameKey="add" type="submit" classes="f_blocker"/>
                                 </form>
                             </div>
                         </c:if>
@@ -518,19 +527,21 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                     <%@ include file="hardwareHistory.jspf" %>
                 </tags:formElementContainer>
                 
-            </cti:dataGridCell>
+            </div>
             
         </cti:displayForPageEditModes>
         
-    </cti:dataGrid>
+    </div>
         
     <cti:displayForPageEditModes modes="VIEW">
         <cti:checkRolesAndProperties value="${editingRoleProperty}">
-            <cti:url value="/stars/operator/hardware/edit" var="editUrl">
-                <cti:param name="accountId" value="${accountId}"/>
-                <cti:param name="inventoryId" value="${inventoryId}"/>
-            </cti:url>
-            <cti:button nameKey="edit" href="${editUrl}"/>
+            <div class="pageActionArea">
+	            <cti:url value="/stars/operator/hardware/edit" var="editUrl">
+	                <cti:param name="accountId" value="${accountId}"/>
+	                <cti:param name="inventoryId" value="${inventoryId}"/>
+	            </cti:url>
+	            <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
+            </div>
         </cti:checkRolesAndProperties>
     </cti:displayForPageEditModes>
 </cti:standardPage>

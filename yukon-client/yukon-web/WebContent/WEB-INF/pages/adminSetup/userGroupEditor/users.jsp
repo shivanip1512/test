@@ -55,7 +55,7 @@ function addUsers() {
                                         <dialog:confirm on="#remove_${user.userID}" nameKey="confirmRemove" argument="${fn:escapeXml(user.username)}" />
                                         <td class="removeColumn">
                                             <div class="dib">
-                                                <cti:button id="remove_${user.userID}" nameKey="remove" name="remove" value="${user.userID}" type="submit" renderMode="image"/>
+                                                <cti:button id="remove_${user.userID}" nameKey="remove" name="remove" value="${user.userID}" type="submit" renderMode="image" icon="icon-cross"/>
                                             </div>
                                         </td>
                                     </tr>

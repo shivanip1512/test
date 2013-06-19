@@ -16,11 +16,11 @@
 <div id="ajaxDialog"></div>
 
 <span id="templateIcons" style="display: none">
-<cti:button nameKey="up" styleClass="moveAnswerUp" renderMode="image"/>
-<cti:button nameKey="down" styleClass="moveAnswerDown" renderMode="image"/>
-<cti:button nameKey="deleteAnswer" styleClass="deleteAnswer" renderMode="image"/>
-<cti:button nameKey="up.disabled" renderMode="image" disabled="true"/>
-<cti:button nameKey="down.disabled" renderMode="image" disabled="true"/>
+<cti:button nameKey="up" classes="moveAnswerUp" renderMode="image" icon="icon-bullet-go-up"/>
+<cti:button nameKey="down" classes="moveAnswerDown" renderMode="image" icon="icon-bullet-go-down"/>
+<cti:button nameKey="deleteAnswer" classes="deleteAnswer" renderMode="image" icon="icon-cross"/>
+<cti:button nameKey="up.disabled" renderMode="image" disabled="true" icon="icon-bullet-go-up"/>
+<cti:button nameKey="down.disabled" renderMode="image" disabled="true" icon="icon-bullet-go-down"/>
 </span>
 
 <c:set var="surveyId" value="${survey.surveyId}"/>
@@ -69,7 +69,7 @@ jQuery(document).ready(function() {
 });
 
 <c:if test="${!hasBeenTaken}">
-var templateIcons = jQuery('#templateIcons > button')
+var templateIcons = jQuery('#templateIcons > button');
 moveUpIcon = templateIcons[0];
 moveDownIcon = templateIcons[1];
 deleteAnswerIcon = templateIcons[2];
@@ -78,10 +78,8 @@ moveDownDisabledIcon = templateIcons[4];
 </c:if>
 </script>
 
-<table class="widgetColumns">
-    <tr>
-        <td class="widgetColumnCell first" valign="top">
-            <div class="widgetContainer">
+<div class="column_12_12">
+    <div class="column one">
                 <tags:boxContainer2 nameKey="info">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".name">
@@ -95,30 +93,28 @@ moveDownDisabledIcon = templateIcons[4];
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </tags:boxContainer2>
-            </div>
-        </td>
-        <td class="widgetColumnCell last" valign="top">
-            <div class="widgetContainer">
+    </div>
+    <div class="column two nogutter">
                 <tags:boxContainer2 nameKey="actions">
-                    <ul>
-                        <c:if test="${hasBeenTaken}"><div id="takenNote">
-                            <i:inline key=".hasBeenTaken"/>
-                        </div></c:if>
+                    <c:if test="${hasBeenTaken}">
+                        <div id="takenNote"><i:inline key=".hasBeenTaken"/></div>
+                    </c:if>
+                    <ul class="buttonStack">
                         <c:if test="${!hasBeenTaken}">
 	                        <li>
-                                <cti:button id="editDetailsBtn" nameKey="edit"
-                                    renderMode="labeledImage" styleClass="f_blocker"/>
+                                <cti:button id="editDetailsBtn" nameKey="edit" icon="icon-pencil"
+                                    renderMode="labeledImage" classes="f_blocker"/>
                             </li>
 	                        <li>
                                 <cti:button id="addQuestionBtn" nameKey="addQuestion"
-                                    renderMode="labeledImage" styleClass="f_blocker"/>
+                                    renderMode="labeledImage" classes="f_blocker" icon="icon-add"/>
 	                        </li>
                         </c:if>
                         <cti:url var="sampleXmlUrl" value="sampleXml">
                             <cti:param name="surveyId" value="${surveyId}"/>
                         </cti:url>
                         <li>
-                            <cti:button nameKey="sampleXml" href="${sampleXmlUrl}" renderMode="labeledImage"/>
+                            <cti:button nameKey="sampleXml" href="${sampleXmlUrl}" renderMode="labeledImage" icon="icon-page-code"/>
                         </li>
                         <c:if test="${hasBeenTaken}">
                             <cti:url var="reportUrl"
@@ -126,29 +122,31 @@ moveDownDisabledIcon = templateIcons[4];
                                 <cti:param name="surveyId" value="${surveyId}"/>
                             </cti:url>
                             <li>
-                                <cti:button nameKey="report" href="${reportUrl}" renderMode="labeledImage"/>
+                                <cti:button nameKey="report" href="${reportUrl}" renderMode="labeledImage" icon="icon-application-view-columns"/>
                             </li>
                         </c:if>
                     </ul>
                 </tags:boxContainer2>
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td class="widgetColumnCell" valign="top" colspan="2">
-            <div class="widgetContainer">
+    </div>
+</div>
+<div class="column_24">
+    <div class="column one nogutter">
                 <tags:boxContainer2 nameKey="questions">
 					<c:if test="${empty questions}">
 					    <i:inline key=".noQuestions"/>
 					</c:if>
 					<c:if test="${!empty questions}">
 					    <table class="compactResultsTable rowHighlighting">
+                            <thead>
 					        <tr>
 					            <th><i:inline key=".questionKey"/></th>
 					            <th><i:inline key=".answerRequired"/></th>
 					            <th><i:inline key=".questionType"/></th>
 					            <th><i:inline key=".actions"/></th>
 					        </tr>
+                            </thead>
+                            <tfoot></tfoot>
+                            <tbody>
 					        <c:forEach var="question" varStatus="status" items="${questions}">
 					            <tr class="<tags:alternateRow odd="" even="altRow"/>"
                                     questionId="${question.surveyQuestionId}">
@@ -170,23 +168,23 @@ moveDownDisabledIcon = templateIcons[4];
 					                </td>
 					                <td>
                                         <cti:button nameKey="editQuestion" renderMode="image"
-                                            styleClass="editQuestionBtn f_blocker"/>
+                                            classes="editQuestionBtn f_blocker" icon="icon-pencil"/>
                                         <c:if test="${!hasBeenTaken}">
 						                    <c:if test="${status.first}">
 						                        <cti:button renderMode="image"
-                                                    nameKey="up.disabled" disabled="true"/>
+                                                    nameKey="up.disabled" disabled="true" icon="icon-bullet-go-up"/>
 						                    </c:if>
 						                    <c:if test="${!status.first}">
-						                        <cti:button renderMode="image" nameKey="up"
-                                                    styleClass="moveUpBtn"/>
+						                        <cti:button renderMode="image" nameKey="up" icon="icon-bullet-go-up"
+                                                    classes="moveUpBtn"/>
 						                    </c:if>
 						                    <c:if test="${status.last}">
-						                        <cti:button renderMode="image"
+						                        <cti:button renderMode="image" icon="icon-bullet-go-down"
                                                     nameKey="down.disabled" disabled="true"/>
 						                    </c:if>
 						                    <c:if test="${!status.last}">
-						                        <cti:button renderMode="image" nameKey="down"
-                                                    styleClass="moveDownBtn"/>
+						                        <cti:button renderMode="image" nameKey="down" icon="icon-bullet-go-down"
+                                                    classes="moveDownBtn"/>
 						                    </c:if>
 						                    <cti:url var="deleteUrl" value="deleteQuestion">
 						                        <cti:param name="surveyQuestionId"
@@ -195,18 +193,16 @@ moveDownDisabledIcon = templateIcons[4];
                                             <dialog:confirm on="#deleteBtn${question.surveyQuestionId}"
                                                 nameKey="confirmDelete"
                                                 argument="${question.questionKey}"/>
-                                            <cti:button id="deleteBtn${question.surveyQuestionId}"
+                                            <cti:button id="deleteBtn${question.surveyQuestionId}" icon="icon-cross"
                                                 nameKey="deleteQuestion" renderMode="image" href="${deleteUrl}"/>
 					                    </c:if>
 					                </td>
 					            </tr>
 					        </c:forEach>
+                            </tbody>
 					    </table>
 					</c:if>
                 </tags:boxContainer2>
-            </div>
-        </td>
-    </tr>
-</table>
-
+    </div>
+</div>
 </cti:standardPage>

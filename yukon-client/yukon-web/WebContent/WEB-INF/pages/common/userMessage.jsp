@@ -4,5 +4,5 @@
 
 <div class="actionArea">
     <input type="button" value="<cti:msg key="yukon.common.okButton"/>"
-        onclick="$('${popupId}').hide();"/>
+        onclick="jQuery('#${popupId}').dialog('close');"/>
 </div>

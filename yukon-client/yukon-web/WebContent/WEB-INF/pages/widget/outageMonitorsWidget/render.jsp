@@ -5,9 +5,6 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<c:url var="cog" value="/WebConfig/yukon/Icons/cog_go.gif"/>
-<c:url var="cogOver" value="/WebConfig/yukon/Icons/cog_go_over.gif"/>
-
 <%-- ERROR --%>
 <c:if test="${not empty outageMonitorsWidgetError}">
   	<div class="error"><i:inline key="${outageMonitorsWidgetError}"/></div>
@@ -44,7 +41,7 @@
     				
     			<%-- action icons --%>
     			<td>
-                    <cti:button nameKey="edit" renderMode="image" href="${viewOutageProcessingUrl}" arguments="${monitorName}"/>
+                    <cti:button nameKey="edit" renderMode="image" href="${viewOutageProcessingUrl}" arguments="${monitorName}" icon="icon-cog-go"/>
     			</td>
     			
     			<%-- monitor name --%>
@@ -67,11 +64,11 @@
     				<c:choose>
     					<c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
                             <tags:widgetActionRefreshImage method="toggleEnabled" outageMonitorId="${monitorId}" 
-                                                           nameKey="disable" arguments="${monitorName}"/>
+                                                           nameKey="disable" arguments="${monitorName}" icon="icon-enabled" btnClass="fr"/>
     					</c:when>
     					<c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
                             <tags:widgetActionRefreshImage method="toggleEnabled" outageMonitorId="${monitorId}"
-                                                           nameKey="enable" arguments="${monitorName}"/>
+                                                           nameKey="enable" arguments="${monitorName}" icon="icon-disabled" btnClass="fr"/>
     					</c:when>
     				</c:choose>
     			</td>
@@ -88,6 +85,6 @@
 
 <div class="actionArea">
     <form action="/amr/outageProcessing/monitorEditor/edit" method="get">
-        <cti:button nameKey="create" type="submit" styleClass="f_blocker"/>
+        <cti:button nameKey="create" icon="icon-plus-green" type="submit" classes="f_blocker fr"/>
     </form>
 </div>

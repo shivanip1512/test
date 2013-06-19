@@ -1,6 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<%@page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
-<%@page import="com.cannontech.core.roleproperties.dao.RolePropertyDao"%>
+<%@page import="com.cannontech.core.users.model.PreferenceShowHide"%>
+<%@page import="com.cannontech.core.users.model.YukonUserPreferenceName"%>
+<%@page import="com.cannontech.core.users.dao.YukonUserPreferenceDao"%>
 <%@page import="com.cannontech.spring.YukonSpringHook" %>
 <%@page import="com.cannontech.util.ServletUtil"%>
 <%@page import="com.cannontech.database.data.lite.LiteYukonUser"%>
@@ -16,14 +17,7 @@
 <%@page isErrorPage="true" %>
 
 <%
-
-String homeUrl = "/";
-try {
-    LiteYukonUser user = ServletUtil.getYukonUser(request);
-    RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
-    homeUrl = ServletUtil.createSafeUrl(request, 
-                              rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user));
-} catch (NotLoggedInException ignore) { }    
+String homeUrl = "/home";
 
 
 Throwable throwable = (Throwable)request.getAttribute("javax.servlet.error.exception");
@@ -41,14 +35,9 @@ Object error_type = request.getAttribute("javax.servlet.error.exception_type");
 error_type = ObjectUtils.defaultIfNull(error_type, "no error type");
 Object request_uri = request.getAttribute("javax.servlet.error.request_uri");
 request_uri = ObjectUtils.defaultIfNull(request_uri, "no request uri");
-
-boolean showStack = true;
-RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
-String suppressStackStr = rolePropertyDao.getPropertyStringValue(
-                                              YukonRoleProperty.SUPPRESS_ERROR_PAGE_DETAILS, 
-                                              ServletUtil.getYukonUser(request));
-showStack = !BooleanUtils.toBoolean(suppressStackStr);
-
+final LiteYukonUser user = ServletUtil.getYukonUser(request);
+String showStackString = YukonSpringHook.getBean(YukonUserPreferenceDao.class).getValueOrDefault(user, YukonUserPreferenceName.ERROR_PAGE_SHOW_DETAILS);
+boolean showStack = PreferenceShowHide.valueOf(showStackString) == PreferenceShowHide.SHOW;
 String friendlyExceptionMessage = ErrorHelperFilter.getFriendlyExceptionMessage(pageContext.getServletContext(), throwable);
 %>
 

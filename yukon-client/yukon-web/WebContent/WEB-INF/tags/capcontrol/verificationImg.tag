@@ -6,8 +6,8 @@
 <input type="hidden" id="verification_${paoId}" value='<cti:capControlValue paoId="${paoId}" type="${type}" format="VERIFICATION_FLAG"/>'>
                     
 <span id="verification_span_${paoId}" style="display: none;">
-    <span class="helpImg" onmouseover="statusMsgAbove(this, 'Currently being used in a Verification schedule');">
-        <img src="/WebConfig/yukon/da/flag_red.gif" class="tierImg" alt="">
+    <span>
+        <cti:icon nameKey="verificationInProgress" icon="icon-flag-red" />
     </span>
 </span>                    
                     

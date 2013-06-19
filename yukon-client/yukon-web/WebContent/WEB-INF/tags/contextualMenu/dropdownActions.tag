@@ -15,34 +15,25 @@
 
 <cti:default var="type" value="cog"/>
 
-<c:if test="${type == 'link' && not empty pageScope.key}">
-    <c:set var="dropdownTypeClass" value="with-text"/>
-</c:if>
-<c:if test="${type == 'cog'}">
-    <c:set var="dropdownTypeClass" value="with-cog"/>
-</c:if>
-
 <div class="f_dropdown_outer_container ${pageScope.containerCssClass}">
 	<div class="clearfix">
-		<div class="dropdown-container ${dropdownTypeClass} usn fr">
+		<div class="dropdown-container usn fr">
 			    <c:choose>
 				    <c:when test="${type == 'link' && not empty pageScope.key}">
-				        <a class="text_with_chevron">
-				            <span><cti:msg2 key="${pageScope.key}"/></span>
-				            <span class="arrow-down"></span>
+				        <a class="button naked">
+				            <span class="label"><cti:msg2 key="${pageScope.key}"/></span>
+				            <i class="icon icon-bullet-arrow-down"></i>
 				        </a>
 				    </c:when>
 				    <c:when test="${type == 'button'}">
 			            <cti:default var="key" value="yukon.web.defaults.actions"/>
-				        <button class="text_with_chevron">
-				            <span><cti:msg2 key="${pageScope.key}"/></span>
-				            &nbsp;<span class="arrow-down"></span>
+				        <button>
+				            <span class="label"><cti:msg2 key="${pageScope.key}"/></span>
+				            <i class="icon icon-bullet-arrow-down"></i>
 				        </button>
 				    </c:when>
 				    <c:otherwise>
-					    <a class="icon icon_with_chevron cog">
-							<span class="arrow-down"></span>
-					    </a>
+					    <a><i class="icon icon-cog"></i><i class="icon icon-bullet-arrow-down"></i></a>
 				    </c:otherwise>
 			    </c:choose>
 				<ul class="dropdown-menu dn ${pageScope.menuCssClass}">

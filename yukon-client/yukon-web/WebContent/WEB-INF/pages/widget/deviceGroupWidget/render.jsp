@@ -61,7 +61,7 @@
     <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
         <cti:checkRolesAndProperties value="DEVICE_GROUP_MODIFY">
             <div class="actionArea">
-                <cti:button nameKey="edit" type="button" id="showPopupButton" />
+                <cti:button nameKey="edit" icon="icon-pencil" type="button" id="showPopupButton" />
             </div>
         </cti:checkRolesAndProperties>
     </cti:checkRolesAndProperties>

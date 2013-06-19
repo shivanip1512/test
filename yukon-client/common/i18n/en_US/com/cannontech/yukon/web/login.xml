@@ -7,24 +7,23 @@
     <entry key="yukon.web.login.formTopLogo"></entry>
     <entry key="yukon.web.login.formBottomLogo">/WebConfig/yukon/CooperTransparent.gif</entry>
     <entry key="yukon.web.login.titleText"></entry>
-    <entry key="yukon.web.login.invalidLogin">* Invalid username/password</entry>
-    <entry key="yukon.web.login.retry">* Login disabled, please retry after {0} seconds</entry>
-    <entry key="yukon.web.login.invalidUrlAccess">* Invalid page access for user</entry>
+    <entry key="yukon.web.login.invalidLogin">Invalid username/password</entry>
+    <entry key="yukon.web.login.retry">Login disabled, please retry after {0} seconds</entry>
+    <entry key="yukon.web.login.invalidUrlAccess">Invalid page access for user</entry>
     <entry key="yukon.web.login.login">Login</entry>
     <entry key="yukon.web.login.enterLogin">Please enter your username and password below.</entry>
-    <entry key="yukon.web.login.username">Username:</entry>
-    <entry key="yukon.web.login.password">Password:</entry>
+    <entry key="yukon.web.login.username">username</entry>
+    <entry key="yukon.web.login.password">password</entry>
+    <entry key="yukon.web.login.forgot">forgot?</entry>
     <entry key="yukon.web.login.rememberMe">Remember me</entry>
-    <entry key="yukon.web.login.forgotPassword">Forgot your password?</entry>
-    <entry key="yukon.web.login.submit">Submit</entry>
     
-    <entry key="yukon.web.login.error.NONE">&lt;i&gt;** Success&lt;/i&gt;</entry>
-    <entry key="yukon.web.login.error.NO_CHANGE">&lt;i&gt;** No changes made&lt;/i&gt;</entry>
-    <entry key="yukon.web.login.error.NO_PASSWORDMATCH">&lt;i&gt;** Passwords did not match&lt;/i&gt;</entry>
-    <entry key="yukon.web.login.error.REQUIRED_FIELDS_MISSING">&lt;i&gt;** Required fields missing&lt;/i&gt;</entry>
-    <entry key="yukon.web.login.error.INVALID_CREDENTIALS">&lt;i&gt;** Invalid Credentials&lt;/i&gt;</entry>
-    <entry key="yukon.web.login.error.USER_EXISTS">&lt;i&gt;** Username already exists&lt;/i&gt;</entry>
-    <entry key="yukon.web.login.error.PASSWORD_CHANGE_NOT_SUPPORTED">&lt;i&gt;** Password changes are not supported&lt;/i&gt;</entry>
+    <entry key="yukon.web.login.error.NONE">Success</entry>
+    <entry key="yukon.web.login.error.NO_CHANGE">No changes made</entry>
+    <entry key="yukon.web.login.error.NO_PASSWORDMATCH">Passwords did not match</entry>
+    <entry key="yukon.web.login.error.REQUIRED_FIELDS_MISSING">Required fields missing</entry>
+    <entry key="yukon.web.login.error.INVALID_CREDENTIALS">Invalid Credentials</entry>
+    <entry key="yukon.web.login.error.USER_EXISTS">Username already exists</entry>
+    <entry key="yukon.web.login.error.PASSWORD_CHANGE_NOT_SUPPORTED">Password changes are not supported</entry>
     
     <!-- forgotPassword.jsp -->
     <entry key="yukon.web.forgotPassword.pageTitle">Energy Services Operations Center</entry>

@@ -3,27 +3,25 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 <cti:standardPage module="dr" page="home">
-    
     <tags:simpleDialog id="drDialog"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <dr:favoriteIconSetup/>
 
-<table class="widgetColumns">
-    <tr>
-        <td class="widgetColumnCell first" valign="top">
-            <div class="widgetContainer">
-            <c:if test="${empty favorites}">
-                <cti:msg key="yukon.web.modules.dr.home.noFavorites"/>
-            </c:if>
-            <c:if test="${!empty favorites}">
-                <cti:msg var="boxTitle" key="yukon.web.modules.dr.home.favorites"/>
-                <tags:abstractContainer type="box" title="${boxTitle}">
+    <div class="column_12_12">
+        <div class="column one">
+            <tags:boxContainer2 nameKey="favorites">
+                <c:if test="${empty favorites}">
+                    <span class="empty-list"><i:inline key=".noFavorites"/></span>
+                </c:if>
+                <c:if test="${!empty favorites}">
                     <table class="compactResultsTable rowHighlighting">
+                        <thead>
                         <tr>
                             <th></th>
                             <th>
@@ -39,19 +37,24 @@
                                     sortParam="favSort" descendingParam="favDescending"/>
                             </th>
                             <th>
-                                <cti:msg key="yukon.web.modules.dr.home.actionsHeader"></cti:msg>
+                                <i:inline key="yukon.web.modules.dr.home.actionsHeader"/>
                             </th>
                         </tr>
+                        </thead>
+                        <tfoot></tfoot>
+                        <tbody>
                         <c:forEach var="pao" items="${favorites}">
-                            <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                                <td><dr:favoriteIcon paoId="${pao.paoIdentifier.paoId}" isFavorite="true" fromHomePage="true"/></td>
+                            <tr>
+                                <td>
+                                    <dr:favoriteIcon paoId="${pao.paoIdentifier.paoId}" isFavorite="true" fromHomePage="true"/>
+                                </td>
                                 <td>
                                     <cti:paoDetailUrl yukonPao="${pao}">
                                         <spring:escapeBody htmlEscape="true">${pao.name}</spring:escapeBody>
                                     </cti:paoDetailUrl>
                                 </td>
                                 <td>
-                                    <cti:msg key="yukon.web.modules.dr.paoType.${pao.paoIdentifier.paoType}"/>
+                                    <i:inline key=".paoType.${pao.paoIdentifier.paoType}"/>
                                 </td>
                                 <td>
                                     <dr:stateText pao="${pao}"/>
@@ -61,40 +64,35 @@
                                 </td>
                             </tr>
                         </c:forEach>
+                        </tbody>
                     </table>
-                </tags:abstractContainer>
-            </c:if>
-            </div>
-        </td>
-        <td class="widgetColumnCell last" valign="top">
-            <div class="widgetContainer">
-                <cti:msg var="boxTitle" key="yukon.web.modules.dr.home.quickSearches"/>
-                <tags:abstractContainer type="box" title="${boxTitle}">
-                    <cti:checkRolesAndProperties value="SHOW_CONTROL_AREAS">
-                        <cti:url var="quickLinkUrl" value="/dr/controlArea/list">
-                            <cti:param name="state" value="active"/>
-                        </cti:url>
-                        <a href="${quickLinkUrl}"><cti:msg key="yukon.web.modules.dr.home.activeControlAreasQuickSearch"/></a><br>
-                    </cti:checkRolesAndProperties>
-                    <cti:url var="quickLinkUrl" value="/dr/program/list">
-                        <cti:param name="state" value="ACTIVE"/>
-                    </cti:url>
-                    <a href="${quickLinkUrl}"><cti:msg key="yukon.web.modules.dr.home.activeProgramsQuickSearch"/></a><br>
-                    <cti:url var="quickLinkUrl" value="/dr/loadGroup/list">
+                </c:if>
+            </tags:boxContainer2>
+        </div>
+        <div class="column two nogutter">
+            <tags:boxContainer2 nameKey="quickSearches">
+                <cti:checkRolesAndProperties value="SHOW_CONTROL_AREAS">
+                    <cti:url var="quickLinkUrl" value="/dr/controlArea/list">
                         <cti:param name="state" value="active"/>
                     </cti:url>
-                    <a href="${quickLinkUrl}"><cti:msg key="yukon.web.modules.dr.home.activeLoadGroupsQuickSearch"/></a><br>
-                </tags:abstractContainer>
-            </div>
-            <div class="widgetContainer">
-            <c:if test="${empty recents}">
-                <cti:msg key="yukon.web.modules.dr.home.noRecents"/>
-            </c:if>
-            <c:if test="${!empty recents}">
-                <cti:msg var="boxTitle" key="yukon.web.modules.dr.home.recents"/>
-                <tags:abstractContainer type="box" title="${boxTitle}">
-                    <tags:alternateRowReset/>
+                    <a href="${quickLinkUrl}"><i:inline key=".activeControlAreasQuickSearch"/></a><br>
+                </cti:checkRolesAndProperties>
+                <cti:url var="quickLinkUrl" value="/dr/program/list">
+                    <cti:param name="state" value="ACTIVE"/>
+                </cti:url>
+                <a href="${quickLinkUrl}"><i:inline key=".activeProgramsQuickSearch"/></a><br>
+                <cti:url var="quickLinkUrl" value="/dr/loadGroup/list">
+                    <cti:param name="state" value="active"/>
+                </cti:url>
+                <a href="${quickLinkUrl}"><i:inline key=".activeLoadGroupsQuickSearch"/></a><br>
+            </tags:boxContainer2>
+            <tags:boxContainer2 nameKey="recents">
+                <c:if test="${empty recents}">
+                    <span class="empty-list"><i:inline key=".noRecents" /></span>
+                </c:if>
+                <c:if test="${!empty recents}">
                     <table class="compactResultsTable rowHighlighting">
+                        <thead>
                         <tr>
                             <th></th>
                             <th>
@@ -110,9 +108,12 @@
                                     sortParam="rvSort" descendingParam="rvDescending"/>
                             </th>
                             <th>
-                                <cti:msg key="yukon.web.modules.dr.home.actionsHeader"></cti:msg>
+                                <i:inline key=".actionsHeader" />
                             </th>
                         </tr>
+                        </thead>
+                        <tfoot></tfoot>
+                        <tbody>
                         <c:forEach var="pao" items="${recents}">
                             <tr class="<tags:alternateRow odd="" even="altRow"/>">
                                 <td><dr:favoriteIcon paoId="${pao.paoIdentifier.paoId}"
@@ -124,7 +125,7 @@
                                     </cti:paoDetailUrl>
                                 </td>
                                 <td>
-                                    <cti:msg key="yukon.web.modules.dr.paoType.${pao.paoIdentifier.paoType}"/>
+                                    <i:inline key=".paoType.${pao.paoIdentifier.paoType}" />
                                 </td>
                                 <td>
                                     <dr:stateText pao="${pao}"/>
@@ -134,12 +135,10 @@
                                 </td>
                             </tr>
                         </c:forEach>
+                        </tbody>
                     </table>
-                </tags:abstractContainer>
-            </c:if>
-            </div>
-        </td>
-    </tr>
-</table>
-
+                </c:if>
+            </tags:boxContainer2>
+        </div>
+    </div>
 </cti:standardPage>

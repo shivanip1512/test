@@ -22,7 +22,7 @@
             </tags:nameValue>
         </tags:nameValueContainer>
         <div class="pageActionArea">
-            <cti:button nameKey="send" type="submit" styleClass="f_blocker"/>
+            <cti:button nameKey="send" type="submit" classes="f_blocker"/>
         </div>
     </form>
 </tags:sectionContainer>

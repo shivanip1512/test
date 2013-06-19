@@ -1,23 +1,22 @@
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="capcontrol"  page="schedules">
 
 <script type="text/javascript">
 
-jQuery(document).ready(function () {
+jQuery(function () {
     jQuery('.removeSchedule').click(function () {
         var confirmDeleteMsg = jQuery(this).next('span.confirmDelete').html();
         if (confirm(confirmDeleteMsg)) {
-            var scheduleId = jQuery(this).siblings('[id^=scheduleId_]').val();            
-            $("scheduleForm_" + scheduleId).submit();
+            var scheduleId = jQuery(this).siblings('[id^=scheduleId_]').val();
+            document.getElementById("scheduleForm_" + scheduleId).submit();
         }
     });
-} );
-
+});
 
 </script>
 
@@ -33,7 +32,7 @@ jQuery(document).ready(function () {
         <c:choose>
         
             <c:when test="${searchResult.hitCount == 0}">
-                <i:inline key=".noSchedules"/>
+                <span class="empty-list"><i:inline key=".noSchedules"/></span>
             </c:when>
         
             <c:otherwise>
@@ -52,23 +51,21 @@ jQuery(document).ready(function () {
                 
                     <tbody id="tableBody">
                         <c:forEach var="item" items="${scheduleList}">
-                            <tr class="<tags:alternateRow odd="" even="altRow"/>" id="s_${item.scheduleID}">
-                                <td nowrap="nowrap">
-                                    <spring:escapeBody htmlEscape="true">${item.scheduleName}</spring:escapeBody>
-                                </td>
+                            <tr id="s_${item.scheduleID}">
+                                <td class="wsnw">${fn:escapeXml(item.scheduleName)}</td>
                                 
                                 <td>
                                     <c:choose>
                                         <c:when test="${hasEditingRole}">
                                             <form id="scheduleForm_${item.scheduleID}" action="${action}" method="POST">
-                                                <cti:button nameKey="edit" renderMode="image" href="/editor/cbcBase.jsf?type=3&itemid=${item.scheduleID}"/>
-                                                <cti:button styleClass="removeSchedule" nameKey="remove" renderMode="image" />
+                                                <cti:button nameKey="edit" icon="icon-pencil" renderMode="image" href="/editor/cbcBase.jsf?type=3&itemid=${item.scheduleID}"/>
+                                                <cti:button classes="removeSchedule" nameKey="remove" renderMode="image" icon="icon-cross"/>
                                                 <span class="dn confirmDelete"><i:inline key=".confirmDelete" arguments="${item.scheduleName}"/></span>
                                                 <input id="scheduleId_${item.scheduleID}" name="scheduleId" type="hidden" value="${item.scheduleID}">
                                             </form>
                                         </c:when>
                                         <c:otherwise>
-                                            <cti:button nameKey="info" renderMode="image" href="/editor/cbcBase.jsf?type=3&itemid=${item.scheduleID}"/>
+                                            <cti:button nameKey="info" renderMode="image" href="/editor/cbcBase.jsf?type=3&itemid=${item.scheduleID}" icon="icon-information"/>
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
@@ -95,9 +92,7 @@ jQuery(document).ready(function () {
                                     </c:choose>
                                 </td>
                                 
-                                <td>
-                                    <spring:escapeBody htmlEscape="true">${item.intervalRateString}</spring:escapeBody>
-                                </td>
+                                <td>${fn:escapeXml(item.intervalRateString)}</td>
                                 
                                 <td>
                                     <c:choose>

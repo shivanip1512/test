@@ -1,27 +1,13 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage module="amr" page="analysis.progress">
+<cti:standardPage module="tools" page="bulk.analysis.progress">
 
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        <%-- bulk home --%>
-        <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle" />
-        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
-        <%-- device selection --%>
-        <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle" />
-        <cti:crumbLink url="/bulk/deviceSelection" title="${deviceSelectionPageTitle}" />
-        <%-- collection actions --%>
-        <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />      
-        <%-- ADA Progress --%>
-        <cti:crumbLink><i:inline key="yukon.web.modules.amr.analysis.progress.pageName"/></cti:crumbLink>
-    </cti:breadCrumbs>
-
-    <tags:boxContainer2 nameKey="yukon.web.modules.amr.analysis.progress">
+    <tags:sectionContainer2 nameKey="yukon.web.modules.tools.bulk.analysis.progress">
         
         <div class="smallBoldLabel notesSection">
             <tags:selectedDevices id="deviceColletion" deviceCollection="${deviceCollection}" />
@@ -39,10 +25,10 @@
                 <tags:nameValue2 nameKey=".pointQuality">
                     <c:choose>
                         <c:when test="${analysis.excludeBadPointQualities}">
-                            <i:inline key="yukon.web.modules.amr.analysis.normalQualitiesOnly" />
+                            <i:inline key="yukon.web.modules.tools.bulk.analysis.normalQualitiesOnly" />
                         </c:when>
                         <c:otherwise>
-                            <i:inline key="yukon.web.modules.amr.analysis.allQualities" />
+                            <i:inline key="yukon.web.modules.tools.bulk.analysis.allQualities" />
                         </c:otherwise>
                     </c:choose>
                 </tags:nameValue2>
@@ -56,13 +42,13 @@
         <div class="stacked">
             <tags:resultProgressBar totalCount="${callbackResult.totalItems}" 
                 countKey="BACKGROUNDPROCESS/${resultsId}/COMPLETED_LINES"
-                progressLabelTextKey="yukon.web.modules.amr.analysis.progress.progressLabel"
+                progressLabelTextKey="yukon.web.modules.tools.bulk.analysis.progress.progressLabel"
                 statusTextKey="BACKGROUNDPROCESS/${resultsId}/STATUS_TEXT" />
         </div>
 
         <%-- SUCCESS --%>
         <div class="fwb stacked">
-            <i:inline key="yukon.web.modules.amr.analysis.progress.successLabel" />
+            <i:inline key="yukon.web.modules.tools.bulk.analysis.progress.successLabel" />
             <span class="success">
                 <cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/SUCCESS_COUNT"/>
             </span>
@@ -70,7 +56,7 @@
 
         <%-- FAIL --%>
         <div class="fwb stacked">
-            <i:inline key="yukon.web.modules.amr.analysis.progress.failLabel" />
+            <i:inline key="yukon.web.modules.tools.bulk.analysis.progress.failLabel" />
             <span class="error">
                 <cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/PROCESSING_EXCEPTION_COUNT"/>
             </span>
@@ -83,5 +69,5 @@
             <cti:button nameKey="viewResultsButton" href="${resultsUrl}"/>
         </div>
         <cti:dataUpdaterCallback function="toggleElementsWhenTrue(['viewResultsDiv'],true)" initialize="true" value="BACKGROUNDPROCESS/${resultsId}/IS_COMPLETE_WITH_SUCCESSES" />
-    </tags:boxContainer2>
+    </tags:sectionContainer2>
 </cti:standardPage>

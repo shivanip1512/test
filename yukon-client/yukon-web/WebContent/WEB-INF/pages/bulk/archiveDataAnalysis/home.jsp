@@ -1,36 +1,22 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage module="amr" page="analysis.home">
+<cti:standardPage module="tools" page="bulk.analysis.home">
     
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        <%-- bulk home --%>
-        <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
-        <%-- device selection --%>
-        <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle"/>
-        <cti:crumbLink url="/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
-        <%-- collection actions --%>
-        <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
-        <%-- archive data analysis --%>
-        <cti:crumbLink><i:inline key="yukon.web.modules.amr.analysis.home.pageName"/></cti:crumbLink>
-    </cti:breadCrumbs>
-    
-    <cti:includeScript link="/JavaScript/CalendarTagFuncs.js"/>
-    
-    <script type="text/javascript">
-         function prepareDateTimeFields() {
-            combineDateAndTimeFields('startDate');
-            combineDateAndTimeFields('stopDate');
-        }
-    </script>
+<cti:includeScript link="/JavaScript/CalendarTagFuncs.js"/>
 
-    <tags:bulkActionContainer key="yukon.web.modules.amr.analysis.home" deviceCollection="${deviceCollection}">
+<script type="text/javascript">
+function prepareDateTimeFields() {
+  combineDateAndTimeFields('startDate');
+  combineDateAndTimeFields('stopDate');
+}
+</script>
+
+    <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.analysis.home" deviceCollection="${deviceCollection}">
         <form:form id="analyzeIntervalDataForm" commandName="backingBean" action="/bulk/archiveDataAnalysis/home/analyze" onsubmit="prepareDateTimeFields();">
             <cti:deviceCollection deviceCollection="${deviceCollection}" />            
             
@@ -38,12 +24,12 @@
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".startDateLabel">
                         <tags:dateTimeInput path="startDate" inline="true" fieldValue="${startDateInitialValue}"/>
-                        <i:inline key="yukon.web.modules.amr.analysis.home.exclusive"/>
+                        <i:inline key="yukon.web.modules.tools.bulk.analysis.home.exclusive"/>
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".stopDateLabel">
                         <tags:dateTimeInput path="stopDate" inline="true" fieldValue="${stopDateInitialValue}"/>
-                        <i:inline key="yukon.web.modules.amr.analysis.home.inclusive"/>
+                        <i:inline key="yukon.web.modules.tools.bulk.analysis.home.inclusive"/>
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".interval">

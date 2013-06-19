@@ -12,7 +12,6 @@
                                           treeParameters="{checkbox: true}"  
                                           dataJson="${allGroupsDataJson}"
                                           title=".groupTree.label"
-                                          width="432"
-                                          height="400"/>  
+                                          styleClass="contained scroll-large"/>
 </cti:msgScope>
 </dialog:ajaxPage>

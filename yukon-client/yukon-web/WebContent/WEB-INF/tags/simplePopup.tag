@@ -1,29 +1,40 @@
-<%@ attribute name="id" required="true" type="java.lang.String"%>
-<%@ attribute name="title" required="true" type="java.lang.String"%>
-<%@ attribute name="styleClass" required="false" type="java.lang.String"%>
-<%@ attribute name="onClose" required="false" type="java.lang.String"%>
-<%@ attribute name="on" description="registers click event on the element with this CSS selector"%>
-<%@ attribute name="showImmediately" required="false" type="java.lang.Boolean"%>
+<%@ tag trimDirectiveWhitespaces="true" %>
 
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ attribute name="id" required="true"%>
+<%@ attribute name="on" description="Registers a click event on the element with this CSS selector to open the popup."%>
+<%@ attribute name="onClose"%>
+<%@ attribute name="options" description="JQUI dialog options. See http://api.jqueryui.com/dialog/"%>
+<%@ attribute name="showImmediately"%>
+<%@ attribute name="style"%>
+<%@ attribute name="styleClass"%>
+<%@ attribute name="title" required="true"%>
 
-<c:if test="${empty pageScope.onClose}">
-    <c:set var="onClose" value="$('${id}').hide();"/>
-</c:if>
-<div id="${id}" class="popUpDiv simplePopup ${pageScope.styleClass}" <c:if test="${not pageScope.showImmediately}">style="display:none;"</c:if>>
-<div class="titledContainer boxContainer ${pageScope.styleClass}">
-    <div class="titleBar boxContainer_titleBar">
-        <div class="controls" onclick="${pageScope.onClose}"><img class="minMax" alt="close" src="/WebConfig/yukon/Icons/close_x.gif"></div>
-        <h3 id="${id}_title" class="title boxContainer_title">${title}</h3>
-    </div>
-    <div id="${id}_body" class="content boxContainer_content"><jsp:doBody/></div>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<div id="${id}" title="${title}" class="${pageScope.styleClass} dn" style="${pageScope.style}" role="dialog">
+    <jsp:doBody/>
 </div>
-</div>
-<c:if test="${!empty pageScope.on}">
 <script type="text/javascript">
-YEvent.observeSelectorClick('${pageScope.on}', function() {
-    $('${id}').show();
-});
-</script>
+var defaults = {width: 'auto', autoOpen: false};
+
+<c:if test="${not empty pageScope.options}">
+jQuery.extend(defaults, ${options});
 </c:if>
+
+<c:if test="${not empty pageScope.showImmediately and showImmediately == true}">
+defaults.autoOpen = true;
+</c:if>
+
+<c:if test="${not empty pageScope.onClose}">
+defaults.close = function(event, ui) {${onClose}};
+</c:if>
+jQuery('#${id}').dialog(defaults);
+
+<c:if test="${not empty pageScope.on}">
+jQuery(function() {
+    jQuery('${pageScope.on}').click(function(event) {
+        jQuery('#${id}').dialog('open');
+    });
+});
+</c:if>
+</script>

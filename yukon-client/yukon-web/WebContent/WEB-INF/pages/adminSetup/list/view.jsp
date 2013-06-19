@@ -56,7 +56,7 @@
             <cti:param name="ecId" value="${param.ecId}"/>
             <cti:param name="listId" value="${param.listId}"/>
         </cti:url>
-        <cti:button nameKey="edit" href="${editUrl}"/>
+        <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
     </div>
 </c:if>
 

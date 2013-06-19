@@ -255,16 +255,10 @@
     <entry key="yukon.web.modules.capcontrol.areas.banks">{0} {0,choice,0#Banks|1#Bank|1&lt;Banks}</entry>
     <entry key="yukon.web.modules.capcontrol.areas.stationCount">{0} {0,choice,0#Substations|1#Substation|1&lt;Substations}</entry>
     
-    <entry key="yukon.web.modules.capcontrol.areas.resetOpCount.imageUrl">/WebConfig/yukon/Icons/arrow_undo.gif</entry>
-    <entry key="yukon.web.modules.capcontrol.areas.resetOpCount.hoverUrl">/WebConfig/yukon/Icons/arrow_undo_over.gif</entry>
     <entry key="yukon.web.modules.capcontrol.areas.resetOpCount.hoverText"></entry>
     <entry key="yukon.web.modules.capcontrol.areas.resetOpCount.label">Reset All Op Counters</entry>
-    <entry key="yukon.web.modules.capcontrol.areas.disableSystem.imageUrl">/WebConfig/yukon/Icons/disable.gif</entry>
-    <entry key="yukon.web.modules.capcontrol.areas.disableSystem.hoverUrl">/WebConfig/yukon/Icons/disable_over.gif</entry>
     <entry key="yukon.web.modules.capcontrol.areas.disableSystem.hoverText">Disable everything system wide.</entry>
     <entry key="yukon.web.modules.capcontrol.areas.disableSystem.label">Disable System</entry>
-    <entry key="yukon.web.modules.capcontrol.areas.enableSystem.imageUrl">/WebConfig/yukon/Icons/enable.gif</entry>
-    <entry key="yukon.web.modules.capcontrol.areas.enableSystem.hoverUrl">/WebConfig/yukon/Icons/enable_over.gif</entry>
     <entry key="yukon.web.modules.capcontrol.areas.enableSystem.hoverText">Enable everything system wide.</entry>
     <entry key="yukon.web.modules.capcontrol.areas.enableSystem.label">Enable System</entry>
     
@@ -295,7 +289,6 @@
     <entry key="yukon.web.modules.capcontrol.substation.remove.label">Delete</entry>
     <entry key="yukon.web.modules.capcontrol.substation.location.label">Bank Locations</entry>
     <entry key="yukon.web.modules.capcontrol.substation.recentEvents">Recent Events</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.recentEvents.imageUrl">/WebConfig/yukon/Icons/application_view_columns.png</entry>
     <entry key="yukon.web.modules.capcontrol.substation.recentEvents.label">Events</entry>
     <entry key="yukon.web.modules.capcontrol.substation.recentEvents.hoverText">View recent events for selected items.</entry>
     <entry key="yukon.web.modules.capcontrol.substation.recentEvents.view.label">View</entry>
@@ -303,7 +296,6 @@
     <entry key="yukon.web.modules.capcontrol.substation.selectAllFeeders">Select All Feeders</entry>
     <entry key="yukon.web.modules.capcontrol.substation.selectAllBanks">Select All Banks</entry>
     <entry key="yukon.web.modules.capcontrol.substation.analysisTrends">Analysis Trends</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.analysis.imageUrl">/WebConfig/yukon/Icons/chart_curve.png</entry>
     <entry key="yukon.web.modules.capcontrol.substation.analysis.label">Trends</entry>
     <entry key="yukon.web.modules.capcontrol.substation.analysis.hoverText">View graphs for kVAR/Watt or Power Factor for selected items.</entry>
     <entry key="yukon.web.modules.capcontrol.substation.todayKvarWatt.label">Today kVAR/Watt</entry>
@@ -322,11 +314,11 @@
     <entry key="yukon.web.modules.capcontrol.substation.dailyMaxTotal">Daily / Max / Total Ops</entry>
     <entry key="yukon.web.modules.capcontrol.substation.allBuses">All Sub Buses</entry>
     <entry key="yukon.web.modules.capcontrol.substation.allFeeders">All Feeders</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.stateInfo"><![CDATA[System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column. <br>-V: Auto Volt Control (OV/UV) is Disabled. <br>-U: CBC reported unsolicited state change. <br>-Q: Cap Bank state reflects abnormal data quality. <br>-CF: Communications Failure. <br>-P: Partial - phase imbalance. <br>-S: Significant - questionable var response on all phases.]]></entry>
-    <entry key="yukon.web.modules.capcontrol.substation.cbOrderInfo">Order is the order the Cap Bank will control in. Commands that can be sent to a field device are initiated from this column.</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.timestampInfo">Click to see the timestamp information for the cap bank controller device.</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.addInfo">Click to see additional information for the cap bank.</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.busAddInfo">Click to see additional information for the bus.</entry>
+    <entry key="yukon.web.modules.capcontrol.substation.stateInfo.hoverText"><![CDATA[System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column. <br>-V: Auto Volt Control (OV/UV) is Disabled. <br>-U: CBC reported unsolicited state change. <br>-Q: Cap Bank state reflects abnormal data quality. <br>-CF: Communications Failure. <br>-P: Partial - phase imbalance. <br>-S: Significant - questionable var response on all phases.]]></entry>
+    <entry key="yukon.web.modules.capcontrol.substation.cbOrderInfo.hoverText">Order is the order the Cap Bank will control in. Commands that can be sent to a field device are initiated from this column.</entry>
+    <entry key="yukon.web.modules.capcontrol.substation.timestampInfo.hoverText">Click to see the timestamp information for the cap bank controller device.</entry>
+    <entry key="yukon.web.modules.capcontrol.substation.addInfo.hoverText">Click to see additional information for the cap bank.</entry>
+    <entry key="yukon.web.modules.capcontrol.substation.busAddInfo.hoverText">Click to see additional information for the bus.</entry>
     <entry key="yukon.web.modules.capcontrol.substation.opCount">Op Count:</entry>
     <entry key="yukon.web.modules.capcontrol.substation.reset">Reset</entry>
     <entry key="yukon.web.modules.capcontrol.substation.kvar">kVAR</entry>
@@ -339,20 +331,14 @@
     <entry key="yukon.web.modules.capcontrol.substation.change">Change:</entry>
     <entry key="yukon.web.modules.capcontrol.substation.moveBank">Click here to fully move or temporarily move this Cap Bank from its current parent feeder</entry>
     <entry key="yukon.web.modules.capcontrol.substation.moveBankTitle">Cap Bank Move for {0} (Pick feeder by clicking on name)</entry>
+    <entry key="yukon.web.modules.capcontrol.substation.verificationInProgress.hoverText">Currently being used in a Verification schedule</entry>
     
-    <entry key="yukon.web.modules.capcontrol.substation.questionableQuality.imageUrl">/WebConfig/yukon/Icons/bullet_red.gif</entry>
     <entry key="yukon.web.modules.capcontrol.substation.questionableQuality.hoverText">Questionable Quality</entry>
     
-    <entry key="yukon.web.modules.capcontrol.substation.oneline.imageUrl">/WebConfig/yukon/Icons/oneline.png</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.oneline.hoverUrl">/WebConfig/yukon/Icons/oneline_over.png</entry>
     <entry key="yukon.web.modules.capcontrol.substation.oneline.hoverText">Click to view One-Line</entry>
     
-    <entry key="yukon.web.modules.capcontrol.substation.location.imageUrl">/WebConfig/yukon/Icons/interstate.gif</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.location.hoverUrl">/WebConfig/yukon/Icons/interstate_over.gif</entry>
     <entry key="yukon.web.modules.capcontrol.substation.location.hoverText">Driving Directions</entry>
     
-    <entry key="yukon.web.modules.capcontrol.substation.ivvc.imageUrl">/WebConfig/yukon/Icons/ivvc.png</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.ivvc.hoverUrl">/WebConfig/yukon/Icons/ivvc_over.png</entry>
     <entry key="yukon.web.modules.capcontrol.substation.ivvc.hoverText">Click for IVVC View</entry>
     
     <entry key="yukon.web.modules.capcontrol.substation.filter.hoverUrl">/WebConfig/yukon/Icons/filter.gif</entry>
@@ -388,11 +374,17 @@
     <!-- searchResults.jsp -->
     <entry key="yukon.web.modules.capcontrol.search.general.pageName">Search Results</entry>
     <entry key="yukon.web.modules.capcontrol.search.orphanedSubs.pageName">Orphaned Substations</entry>
+    <entry key="yukon.web.modules.capcontrol.search.orphanedSubs.tab.title">Substations</entry>
     <entry key="yukon.web.modules.capcontrol.search.orphanedBuses.pageName">Orphaned Substation Buses</entry>
+    <entry key="yukon.web.modules.capcontrol.search.orphanedBuses.tab.title">Substation Buses</entry>
     <entry key="yukon.web.modules.capcontrol.search.orphanedFeeders.pageName">Orphaned Feeders</entry>
+    <entry key="yukon.web.modules.capcontrol.search.orphanedFeeders.tab.title">Feeders</entry>
     <entry key="yukon.web.modules.capcontrol.search.orphanedBanks.pageName">Orphaned Cap Banks</entry>
+    <entry key="yukon.web.modules.capcontrol.search.orphanedBanks.tab.title">Cap Banks</entry>
     <entry key="yukon.web.modules.capcontrol.search.orphanedCbcs.pageName">Orphaned CBCs</entry>
+    <entry key="yukon.web.modules.capcontrol.search.orphanedCbcs.tab.title">CBCs</entry>
     <entry key="yukon.web.modules.capcontrol.search.orphanedRegulators.pageName">Orphaned Regulators</entry>
+    <entry key="yukon.web.modules.capcontrol.search.orphanedRegulators.tab.title">Regulators</entry>
     <entry key="yukon.web.modules.capcontrol.search.searchContainer.title">Search Results For: {0}  ({1} found)</entry>
     <entry key="yukon.web.modules.capcontrol.search.itemType">Item Type</entry>
     <entry key="yukon.web.modules.capcontrol.search.description">Description</entry>
@@ -449,39 +441,25 @@
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.deleteFailed">Schedule assignment could not be deleted.</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.noScheduleAssignments">No Schedule Assignments</entry>
     
-    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.play.imageUrl">/WebConfig/yukon/Icons/control_play_blue.png</entry>
-    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.play.hoverUrl">/WebConfig/yukon/Icons/control_play_blue_over.png</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.play.hoverText">Run Multiple Commands</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.play.label">Run Multiple Schedule Assignment Commands</entry>
     
-    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.runCommand.imageUrl">/WebConfig/yukon/Icons/control_play_blue.png</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.runCommand.hoverText">Run Command</entry>
     
-    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.stopVerification.imageUrl">/WebConfig/yukon/Icons/control_stop_blue.png</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.stopVerification.hoverText">Stop Verification</entry>
     
-    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.playDisabled.imageUrl">/WebConfig/yukon/Icons/control_play_blue_disabled.png</entry>
-    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.playDisabled.hoverUrl">/WebConfig/yukon/Icons/control_play_blue_disabled.png</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.playDisabled.hoverText">You do not have permission to perform this action.</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.playDisabled.label">Run Multiple Schedule Assignment Commands</entry>
     
-    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.stop.imageUrl">/WebConfig/yukon/Icons/control_stop_blue.png</entry>
-    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.stop.hoverUrl">/WebConfig/yukon/Icons/control_stop_blue_over.png</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.stop.hoverText">Stop Multiple Commands</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.stop.label">Stop Multiple Schedule Assignment Commands</entry>
     
-    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.stopDisabled.imageUrl">/WebConfig/yukon/Icons/control_stop_blue_disabled.png</entry>
-    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.stopDisabled.hoverUrl">/WebConfig/yukon/Icons/control_stop_blue_disabled.png</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.stopDisabled.hoverText">You do not have permission to perform this action.</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.stopDisabled.label">Stop Multiple Schedule Assignment Commands</entry>
     
-    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
-    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.add.hoverText">Create a new schedule assignment</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.add.label">New Schedule Assignment </entry>
     
-    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.addDisabled.imageUrl">/WebConfig/yukon/Icons/add_disabled_gray.png</entry>
-    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.addDisabled.hoverUrl">/WebConfig/yukon/Icons/add_disabled_gray.png</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.addDisabled.hoverText">You do not have permission to perform this action.</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.addDisabled.label">New Schedule Assignment </entry>
     

@@ -400,43 +400,38 @@ div.regulatorPointDiv {
 }
 
 .myFaces_panelTabbedPane_activeHeaderCell input {
-    background-color: #cccccc !important;
+    background-color: #fff;
+	border: none;
+    color:  #555;
     padding: .3em .5em;
-    color:  #06C;
-    font-size: 14px;
-    background-image: url(../../WebConfig/yukon/Icons/boxContainerBg26pxInverted.gif);
-    background-position: left bottom;
-    background-repeat:repeat-x;
 }
 
 .myFaces_panelTabbedPane_inactiveHeaderCell input {
-    padding: .3em .5em;
+	background-color: #fff;
+	border: none;
     color:  #06C;
-    font-size: 14px;
-    background-color: #cccccc !important;
+    padding: .3em .5em;
 }
 
 .myFaces_panelTabbedPane_inactiveHeaderCell {
-    border-style: solid none none solid;
-    border-color: #777777 #777777;
+    background-color: #fff;
+    border-style: solid none solid solid;
+    border-color: #BBB #BBB #777 #BBB;
     border-width: 1px;
-    background-color: #555555 !important;
 }
 
 .myFaces_panelTabbedPane_activeHeaderCell {
-    border-style: solid none none solid;
+    border-style: solid solid none solid;
     border-color: #777777 #777777;
     border-width: 1px;
-    background-color: #cccccc !important;
 }
 
 .myFaces_panelTabbedPane_emptyHeaderCell {
-	border-left: solid #777777 1px;
+	border-left: solid #BBB 1px;
 	border-bottom: solid #777777 1px;
 }
 
 .myFaces_panelTabbedPane_subHeaderCell {
-	background-color: #cccccc !important;
     margin: 0px;
 	padding: 0px;
 	line-height: 1px;
@@ -444,6 +439,7 @@ div.regulatorPointDiv {
 	height: 1px;
 	border-top: none;
 	border-bottom: none;
+	background-color: #fff;
 }
 
 .myFaces_panelTabbedPane_subHeaderCell_last {
@@ -456,11 +452,4 @@ div.regulatorPointDiv {
     border-left: solid #777777 1px;
 }
 
-.myFaces_panelTabbedPane_subHeaderCell_active {
-	background-color: #cccccc !important;
-}
-
-.myFaces_panelTabbedPane_subHeaderCell_inactive {
-	background-color: #cccccc !important;
-	border
-}
+table[id^='editorForm'] > thead > tr > th {border:none;}

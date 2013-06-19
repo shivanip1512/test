@@ -32,7 +32,7 @@
 	<dialog:inline id="leakFilterDialog" okEvent="none" nameKey="leakFilterDialog" on=".f_open_filter_dialog"
 		options="{width: 550, 'buttons': [{text: '${filterButton}', click: function() { WaterLeakReport.filter_submit(); }, title: '${filterButtonTitle}', 'class': 'leakFilterSubmitButton' },
                                           {text: '${resetButton}', click: function() { WaterLeakReport.reset_filter_submit(); }, title: '${resetButtonTitle}' },
-                                          {text: '${cancelButton}', click: function() { jQuery(this).dialog('close'); }, title: '${cancelButtonTitle}', 'class': 'naked leakFilterCancelButton anchorUnderlineHover' }]}">
+                                          {text: '${cancelButton}', click: function() { jQuery(this).dialog('close'); }, title: '${cancelButtonTitle}', 'class': 'leakFilterCancelButton' }]}">
 		<form:form id="filterForm" action="report" method="get" commandName="backingBean">
 			<tags:sortFields backingBean="${backingBean}"/>
 			<tags:selectDevicesTabbed deviceCollection="${backingBean.deviceCollection}" tabClass="waterLeakFilterTab" individualPickerType="waterMeterPicker"
@@ -52,7 +52,7 @@
                     <tags:nameValue2 nameKey=".filter.threshold">
                         <tags:input path="threshold" size="3" inputClass="threshold_input f_threshold"/>
 						<span class="focusableFieldHolder">
-                            <a class="icon icon_help"><i:inline key=".filter.helpText" /></a>
+                            <a title="<i:inline key=".filter.helpText"/>"><i class="icon icon-help"></i></a>
 						</span>
 						<span class="focusedFieldDescription"><i:inline key=".filter.threshold.helpText"/></span>
                     </tags:nameValue2>
@@ -63,9 +63,9 @@
 					</tags:nameValue2>
 				</tags:nameValueContainer2>
 			</div>
+			<div class="filter_shortcut tac hint"><cti:msg2 key=".filterShortcutOpen"/></div>
 		</form:form>
 	</dialog:inline>
-	<input type="hidden" id="filter_shortcut_text" value="<cti:msg2 key=".filterShortcutOpen"/>"/>
     <%@ include file="leakAlgorithmDialog.jspf"%>
 	
 	<c:set var="popupTitleArgs" value=""/>

@@ -25,7 +25,7 @@
                 <option value="${eventType}"/>${eventType}</option>
             </c:forEach>
         </select>
-        <cti:img nameKey="deleteAction" href="#"/>
+        <cti:icon nameKey="deleteAction" icon="icon-cross"/>
     </span>
     
     <c:set var="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}"/>
@@ -39,7 +39,7 @@
             <cti:url var="submitUrl" value="/amr/statusPointMonitoring/delete"/>
             <form action="${submitUrl}" method="post">
                 <input type="hidden" name="statusPointMonitorId" value="${statusPointMonitorId}">
-                <cti:button nameKey="ok" type="submit" styleClass="f_blocker"/>
+                <cti:button nameKey="ok" type="submit" classes="f_blocker"/>
                 <cti:button nameKey="cancel" onclick="$('deleteConfirmDialog').hide()"/>
             </form>
         </div>
@@ -121,21 +121,21 @@
             </div>
             <br>
             <span style="float:right;">
-                <cti:button nameKey="addAction" onclick="addAction()"/>
+                <cti:button nameKey="addAction" onclick="addAction()" icon="icon-add"/>
             </span>
         </tags:boxContainer2>
 		
 		<%-- create / update / delete --%>
 		<div class="pageActionArea">
-            <cti:button nameKey="update" type="submit" styleClass="f_blocker"/>
+            <cti:button nameKey="update" type="submit" classes="f_blocker"/>
             <c:set var="enableDisableKey" value="statusPointMonitoringDisable"/>
             <c:if test="${statusPointMonitor.evaluatorStatus eq 'DISABLED'}">
                 <c:set var="enableDisableKey" value="statusPointMonitoringEnable"/>
             </c:if>
-            <cti:button nameKey="${enableDisableKey}" styleClass="f_blocker"
+            <cti:button nameKey="${enableDisableKey}" classes="f_blocker"
                 onclick="$('toggleEnabledForm').submit()"/>
             <cti:button nameKey="delete" onclick="$('deleteConfirmDialog').show()"/>
-            <cti:button nameKey="cancel" type="submit" name="cancel" styleClass="f_blocker"/>
+            <cti:button nameKey="cancel" type="submit" name="cancel" classes="f_blocker"/>
         </div>
 	</form:form>
     

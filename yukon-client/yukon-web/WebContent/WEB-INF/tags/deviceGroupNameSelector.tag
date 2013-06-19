@@ -65,6 +65,7 @@
 	}
 
 </script>
+<div class="dib wsnw">
 
 <%-- NO GROUP SELECTED TEXT --%>
 <c:if test="${empty pageScope.fieldValue}">
@@ -91,17 +92,18 @@
 </c:choose>
 <%-- EDIT FOLDER --%>
 <a href="javascript:void(0);" title="${selectDeviceGroupChooseText}"
-	class="chooseGroupIcon_${uniqueId} icon icon_folder_edit"></a>
+	class="chooseGroupIcon_${uniqueId}"><i class="icon icon-folder-edit"></i></a>
 
 <%-- MAGNIFIER ICON --%>
 <c:if test="${pageScope.showSelectedDevicesIcon}">
 	<cti:msg var="popupTitle" key="yukon.common.device.bulk.selectedDevicesPopup.popupTitle" />
 	<cti:msg var="warning" key="yukon.common.device.bulk.selectedDevicesPopup.warning" />
 	<span id="viewDevicesIconSpan_${uniqueId}" <c:if test="${empty pageScope.fieldValue}">style="display:none;"</c:if>>
-		<a id="viewSelectedDevices_${uniqueId}" href="javascript:void(0);" title="${popupTitle}" class="icon magnifier"></a>
+		<a id="viewSelectedDevices_${uniqueId}" href="javascript:void(0);" title="${popupTitle}"><i class="icon icon-magnifier"></i></a>
 		<div id="showSelectedDevices_${uniqueId}" title="${popupTitle}" class="dn"></div>
 	</span>
 </c:if>
+</div>
 
 <%-- PICKER TREE TAG --%>
 <cti:msg2 var="cancelButtonText" key="yukon.web.deviceGroups.deviceGroupPicker.cancelButton"/>
@@ -118,6 +120,4 @@
                                 dataJson="${dataJson}"
                                 title="${pickerTitleText}"
                                 noSelectionAlertText="${noGroupSelectedText}"
-                                width="432"
-                                height="400"
                                 includeControlBar="true" />

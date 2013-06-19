@@ -37,6 +37,6 @@
 
 <%-- POPUP LINK --%>
 <div class="dib">
-	<a href="javascript:void(0);" title="${warning}" class="icon magnifier f_showSelectedDevices" data-function-arguments="{'id':'${id}', 'url':'${selectedDevicesTableUrl}'}">${warning}</a>
+	<a href="javascript:void(0);" title="${warning}" class="f_showSelectedDevices" data-function-arguments="{'id':'${id}', 'url':'${selectedDevicesTableUrl}'}"><i class="icon icon-magnifier"></i></a>
 </div>
 <div title="${popupTitle}" id="${id}" class="dn"></div>

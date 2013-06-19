@@ -25,7 +25,7 @@
             <cti:param name="ecId" value="${ecId}"/>
             <cti:param name="warehouseId" value="${warehouseDto.warehouse.warehouseID}"/>
         </cti:url>
-        <cti:button nameKey="edit" onclick="javascript:window.location ='${warehouseEditUrl}'"/>
+        <cti:button nameKey="edit" icon="icon-pencil" onclick="javascript:window.location ='${warehouseEditUrl}'"/>
     </cti:checkRolesAndProperties>
     
     <cti:url var="warehouseIndexUrl" value="${baseUrl}/home">

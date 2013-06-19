@@ -94,14 +94,14 @@ var programIdsAlreadyEnrolled = [];
                                 <cti:param name="assignedProgramId" value="${programId}"/>
                             </cti:url>
                             <tags:simpleDialogLink2 dialogId="peDialog" nameKey="edit"
-                                skipLabel="true" actionUrl="${editUrl}"/>
+                                skipLabel="true" actionUrl="${editUrl}" icon="icon-pencil"/>
     
                             <cti:url var="unenrollUrl" value="/stars/operator/enrollment/confirmUnenroll">
                                 <cti:param name="accountId" value="${accountId}"/>
                                 <cti:param name="assignedProgramId" value="${programId}"/>
                             </cti:url>
                             <tags:simpleDialogLink2 dialogId="peDialog" nameKey="remove"
-                                skipLabel="true" actionUrl="${unenrollUrl}"/>
+                                skipLabel="true" actionUrl="${unenrollUrl}" icon="icon-cross"/>
                         </td>
                     </cti:checkRolesAndProperties>
                 </tr>
@@ -113,9 +113,21 @@ var programIdsAlreadyEnrolled = [];
     <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
         <script type="text/javascript">
         function addEnrollment(devices) {
-            openSimpleDialog('peDialog', $('addEnrollmentForm').action,
+            var action = window.location.protocol + '//' +
+                window.location.host +
+                jQuery('#addEnrollmentForm').attr('action'),
+                jqserialized,
+                serializedObj = {},
+                ind;
+            jqserialized = jQuery('#addEnrollmentForm').serializeArray();
+            // emulate the prototype serialize(true) functionality
+            for(ind = 0; ind < jqserialized.length; ind += 1) {
+                serializedObj[jqserialized[ind].name] = jqserialized[ind].value;
+                serializedObj[jqserialized[ind].name] = jqserialized[ind].value;
+            }
+            openSimpleDialog('peDialog', action,
                     '<spring:escapeBody javaScriptEscape="true"><cti:msg2 key=".addEnrollmentDialogTitle"/></spring:escapeBody>',
-                     $('addEnrollmentForm').serialize(true));
+                    serializedObj);
             return true;
         }
         </script>
@@ -129,7 +141,7 @@ var programIdsAlreadyEnrolled = [];
                     destinationFieldName="assignedProgramId"
                     endAction="addEnrollment" styleClass="simpleLink"
                     immediateSelectMode="true" extraArgs="${energyCompanyId}"
-                    linkType="button" nameKey="add"/>
+                    linkType="button" nameKey="add" icon="icon-add"/>
                 <script type="text/javascript">
                     programPicker.excludeIds = programIdsAlreadyEnrolled;
                 </script>

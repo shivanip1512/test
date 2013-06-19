@@ -1,50 +1,21 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:checkRolesAndProperties value="ADD_REMOVE_POINTS">
-<cti:msg var="pageTitle" key="yukon.common.device.bulk.removePointsHome.pageTitle" />
+<cti:standardPage module="tools" page="bulk.removePointsHome">
 
-<cti:standardPage page="removePointsHome" module="amr">
+<cti:includeScript link="/JavaScript/addRemovePointsBulkOperation.js"/>
+    
+<script type="text/javascript">
+jQuery(function(){
+  var sharedPoints = ${sharedPoints};
+  doToggleShowSharedPoints(sharedPoints);
+});
+</script>
 
-    <cti:standardMenu menuSelection="" />
-    
-    <cti:breadCrumbs>
-    
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        
-        <%-- bulk home --%>
-        <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
-        
-        <%-- device selection --%>
-        <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle"/>
-        <cti:crumbLink url="/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
-        
-        <%-- collection actions --%>
-        <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
-        
-        <%-- remove points --%>
-        <cti:crumbLink>${pageTitle}</cti:crumbLink>
-        
-    </cti:breadCrumbs>
-    
-    <cti:includeScript link="/JavaScript/addRemovePointsBulkOperation.js"/>
-    
-    <script type="text/javascript">
-
-    	Event.observe (window, 'load', function() {
-				var sharedPoints = ${sharedPoints};
-				doToggleShowSharedPoints(sharedPoints);
-			}
-    	);
-		
-    </script>
-
-    <h2>${pageTitle}</h2>
-    <br>
-                
     <tags:bulkActionContainer key="yukon.common.device.bulk.removePointsHome" deviceCollection="${deviceCollection}">
         
         <form id="executeRemovePointsForm" action="<cti:url value="/bulk/removePoints/execute" />">
@@ -55,10 +26,7 @@
             <%-- OPTIONS --%>
             <c:set var="optionNameWidth" value="150px" />
             <c:set var="selectInputWidth" value="300px" />
-            <c:set var="optionsTableWidth" value="50%" />
-            <table class="compactResultsTable" style="width:${optionsTableWidth}">
-	            <tr><th>Options</th></tr>
-	            <tr><td>
+            <tags:sectionContainer2 nameKey="options">
 	            <tags:nameValueContainer>
 	            
 	            	<cti:msg var="sharedPointsOptionLabel" key="yukon.common.device.bulk.removePointsHome.sharedPointsOptionLabel"/>
@@ -69,10 +37,10 @@
 		   			<c:set var="sharedPointsFalseSelected" value="${sharedPoints ? '' : 'selected'}"/>
 		   			<c:set var="sharedPointsTrueSelected" value="${sharedPoints ? 'selected' : ''}"/>
 	            	<tags:nameValue name="${sharedPointsOptionLabel}" nameColumnWidth="${optionNameWidth}">
-			            <select name="sharedPoints" style="width:${selectInputWidth};" onchange="toggleShowSharedPoints(this);">
+			            <select name="sharedPoints" style="width:${selectInputWidth};" onchange="toggleShowSharedPoints(this);" class="fl">
 			            	<option value="false" title="${sharedPointsFalseOptionTooltip}" ${sharedPointsFalseSelected}>${sharedPointsFalseOptionText}</option>
 			            	<option value="true" title="${sharedPointsTrueOptionTooltip}" ${sharedPointsTrueSelected}>${sharedPointsTrueOptionText}</option>
-			            </select> <img src="<cti:url value="/WebConfig/yukon/Icons/help.gif"/>" onclick="$('sharedPointsOptionInfoPopup').toggle();">
+			            </select><cti:icon icon="icon-help" id="shared_help" classes="cp"/>
 	            	</tags:nameValue>
 	            	
 	            	<cti:msg var="maskMissingPointsOptionLabel" key="yukon.common.device.bulk.removePointsHome.maskMissingPointsOptionLabel"/>
@@ -85,34 +53,30 @@
 	            	<tags:nameValue name="${maskMissingPointsOptionLabel}">
 	            		<c:choose>
            					<c:when test="${not maskMissingPoints}">
-				            	<input type="submit" name="maskMissingPointsSubmitButton" value="${maskMissingPointsFalseOptionText}" title="${maskMissingPointsFalseOptionTooltip}" style="width:${selectInputWidth};"> <img src="<cti:url value="/WebConfig/yukon/Icons/help.gif"/>" onclick="$('maskMissingPointsOptionInfoPopup').toggle();">
+				            	<input type="submit" name="maskMissingPointsSubmitButton" value="${maskMissingPointsFalseOptionText}" title="${maskMissingPointsFalseOptionTooltip}" style="width:${selectInputWidth};margin: 0;"><cti:icon icon="icon-help" id="missing_help" classes="cp"/>
 			           		</c:when>
 				           	<c:otherwise>
-					            	<input type="submit" name="maskMissingPointsSubmitButton" value="${maskMissingPointsTrueOptionText}" title="${maskMissingPointsTrueOptionTooltip}" style="width:${selectInputWidth};"> <img src="<cti:url value="/WebConfig/yukon/Icons/help.gif"/>" onclick="$('maskMissingPointsOptionInfoPopup').toggle();">
+					            	<input type="submit" name="maskMissingPointsSubmitButton" value="${maskMissingPointsTrueOptionText}" title="${maskMissingPointsTrueOptionTooltip}" style="width:${selectInputWidth};margin: 0;"><cti:icon icon="icon-help" id="missing_help" classes="cp"/>
 				           	</c:otherwise>
 	            		</c:choose>
 	            	</tags:nameValue>
 	            	
 	            </tags:nameValueContainer>
-	            </td></tr>
-			</table>
-			<br>
+			</tags:sectionContainer2>
 			
-			<tags:simplePopup id="maskMissingPointsOptionInfoPopup" title="${maskMissingPointsOptionLabel}" onClose="$('maskMissingPointsOptionInfoPopup').toggle();">
-			     <br>
-			     ${maskMissingPointsOptionDescription}
-			     <br><br>
-			     <tags:nameValueContainer>
-			     	<tags:nameValue name="${maskMissingPointsFalseOptionText}">${maskMissingPointsFalseOptionTooltip}<br><br></tags:nameValue>
-			     	<tags:nameValue name="${maskMissingPointsTrueOptionText}">${maskMissingPointsTrueOptionTooltip}</tags:nameValue>
-			     </tags:nameValueContainer><br>
+			<tags:simplePopup id="maskMissingPointsOptionInfoPopup" title="${maskMissingPointsOptionLabel}" on="#missing_help" options="{width: 600}">
+                <div class="warning stacked"><i:inline key="yukon.common.warningMessage" arguments="${maskMissingPointsOptionDescription}"/></div>
+                <tags:nameValueContainer>
+                    <tags:nameValue nameColumnWidth="30%" name="${maskMissingPointsFalseOptionText}">${maskMissingPointsFalseOptionTooltip}</tags:nameValue>
+                    <tags:nameValue nameColumnWidth="30%" name="${maskMissingPointsTrueOptionText}">${maskMissingPointsTrueOptionTooltip}</tags:nameValue>
+                </tags:nameValueContainer>
 			</tags:simplePopup>
 			
-			<tags:simplePopup id="sharedPointsOptionInfoPopup" title="${sharedPointsOptionLabel}" onClose="$('sharedPointsOptionInfoPopup').toggle();">
-			     <br><tags:nameValueContainer>
-			     	<tags:nameValue name="${sharedPointsFalseOptionText}">${sharedPointsFalseOptionTooltip}<br><br></tags:nameValue>
-			     	<tags:nameValue name="${sharedPointsTrueOptionText}">${sharedPointsTrueOptionTooltip}</tags:nameValue>
-			     </tags:nameValueContainer><br>
+			<tags:simplePopup id="sharedPointsOptionInfoPopup" title="${sharedPointsOptionLabel}" on="#shared_help" options="{width: 600}">
+                <tags:nameValueContainer>
+                    <tags:nameValue nameColumnWidth="30%" name="${sharedPointsFalseOptionText}">${sharedPointsFalseOptionTooltip}</tags:nameValue>
+                    <tags:nameValue nameColumnWidth="30%" name="${sharedPointsTrueOptionText}">${sharedPointsTrueOptionTooltip}</tags:nameValue>
+                </tags:nameValueContainer>
 			</tags:simplePopup>
             
             <%-- SHARED POINTS --%>
@@ -134,8 +98,7 @@
             </div>
                     
             <%-- REMOVE POINTS BUTTON --%>
-            <cti:msg var="removeButtonLabel" key="yukon.common.device.bulk.removePointsHome.removeButton"/>
-            <tags:slowInput myFormId="executeRemovePointsForm" labelBusy="${removeButtonLabel}" label="${removeButtonLabel}" />
+            <cti:button nameKey="remove" classes="action primary" type="submit"/>
 
         </form>
         

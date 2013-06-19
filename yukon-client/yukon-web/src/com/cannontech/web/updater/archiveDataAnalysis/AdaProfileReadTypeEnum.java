@@ -43,11 +43,11 @@ public enum AdaProfileReadTypeEnum {
             MessageSourceResolvable resolvable;
             
             if(adaProfileReadResult.isComplete()) {
-                resolvable = YukonMessageSourceResolvable.createSingleCode("yukon.web.modules.amr.analysis.readResults.isCompleteText");
+                resolvable = YukonMessageSourceResolvable.createSingleCode("yukon.web.modules.tools.bulk.analysis.readResults.isCompleteText");
             } else if(adaProfileReadResult.isErrorOccurred()) {
-                resolvable = YukonMessageSourceResolvable.createSingleCode("yukon.web.modules.amr.analysis.readResults.isErrorOccurredText");
+                resolvable = YukonMessageSourceResolvable.createSingleCode("yukon.web.modules.tools.bulk.analysis.readResults.isErrorOccurredText");
             } else {
-                resolvable = YukonMessageSourceResolvable.createSingleCode("yukon.web.modules.amr.analysis.readResults.inProgressText");
+                resolvable = YukonMessageSourceResolvable.createSingleCode("yukon.web.modules.tools.bulk.analysis.readResults.inProgressText");
             }
             
             return resolvable;

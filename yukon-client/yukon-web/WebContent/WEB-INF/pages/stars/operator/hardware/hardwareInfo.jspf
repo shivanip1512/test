@@ -9,27 +9,27 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <script type="text/javascript">
-YEvent.observeSelectorClick('#newButton', function(event) {
-    $('twoWayPickerContainer').hide();
-    $('newTwoWayDeviceContainer').show();
-    var deviceNameInput = $('twoWayDeviceName');
-    deviceNameInput.value = '';
+jQuery('#newButton').bind('click', function(event) {
+    var deviceNameInput;
+    jQuery('#twoWayPickerContainer').hide();
+    jQuery('#newTwoWayDeviceContainer').show();
+    deviceNameInput = jQuery('#twoWayDeviceName');
+    deviceNameInput.val('');
     deviceNameInput.focus();
-    $('creatingNewTwoWayDevice').value = true;
+    jQuery('#creatingNewTwoWayDevice').val(true);
 });
 
-YEvent.observeSelectorClick('#chooseButton', function(event) {
-    $('twoWayPickerContainer').show();
-    $('newTwoWayDeviceContainer').hide();
-    $('creatingNewTwoWayDevice').value = false;
+jQuery('#chooseButton').bind('click', function(event) {
+    jQuery('#twoWayPickerContainer').show();
+    jQuery('#newTwoWayDeviceContainer').hide();
+    jQuery('#creatingNewTwoWayDevice').val(false);
 });
 
 function updateServiceCompanyInfo() {
     var url = '/stars/operator/hardware/serviceCompanyInfo';
     var serviceCompanyId = 
-
         <cti:displayForPageEditModes modes="EDIT,CREATE">
-            $F('serviceCompanyId');
+            jQuery('#serviceCompanyId').val();
         </cti:displayForPageEditModes>
 
         <cti:displayForPageEditModes modes="VIEW">
@@ -38,15 +38,19 @@ function updateServiceCompanyInfo() {
         
     if (serviceCompanyId > 0) {
         var params = {'serviceCompanyId' : serviceCompanyId};
-        new Ajax.Updater('serviceCompanyContainer', url, {method: 'get', evalScripts: true, parameters: params});
+        jQuery.ajax({
+            url: url,
+            data: params
+        }).done(function(data, status, xhrobj) {
+            jQuery('#serviceCompanyContainer').html(data).show();
+        });
     } else {
-        $('serviceCompanyContainer').innerHTML = '';
+        jQuery('#serviceCompanyContainer').html('');
     }
 }
 
 jQuery(function() { updateServiceCompanyInfo();});
 </script>
-<cti:dataGridCell>
         
     <form:form id="updateForm" commandName="hardware" action="${action}">
     
@@ -134,7 +138,7 @@ jQuery(function() { updateServiceCompanyInfo();});
                 </tags:nameValue2>
                 
                 <tags:nameValue2 nameKey=".fieldRemoveDate">
-                	<dt:date path="fieldRemoveDate" />
+                    <dt:date path="fieldRemoveDate" />
                 </tags:nameValue2>
                 
                 <tags:textareaNameValue nameKey=".deviceNotes" path="deviceNotes" rows="4" cols="35" rowClass="wall_of_text"/>
@@ -234,13 +238,13 @@ jQuery(function() { updateServiceCompanyInfo();});
         
         <cti:displayForPageEditModes modes="EDIT,CREATE">
             <cti:checkRolesAndProperties value="${editingRoleProperty}">
-                <cti:button nameKey="save" type="submit" name="save" styleClass="f_disableAfterClick"/>
+                <cti:button nameKey="save" type="submit" name="save" classes="f_disableAfterClick primary action"/>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="${editingRoleProperty}">
                 <cti:displayForPageEditModes modes="EDIT">
                     <c:choose>
                         <c:when test="${not empty accountId}">
-                            <cti:button nameKey="deleteDevice" type="button" onclick="showDeletePopup()" dialogButton="true"/>
+                            <cti:button nameKey="deleteDevice" type="button" onclick="showDeletePopup()" dialogButton="true" classes="delete"/>
                         </c:when>
                         <c:otherwise>
                             <cti:url value="delete" var="deleteInvUrl">
@@ -264,5 +268,3 @@ jQuery(function() { updateServiceCompanyInfo();});
     </cti:displayForPageEditModes>
         
     </form:form>
-    
-</cti:dataGridCell>

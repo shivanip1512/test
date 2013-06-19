@@ -8,7 +8,7 @@ public enum AttributeField implements DisplayableEnum {
     UNIT_OF_MEASURE,
     QUALITY;
     
-    private final static String keyPrefix = "yukon.web.modules.amr.archivedValueExporter.";
+    private final static String keyPrefix = "yukon.web.modules.tools.bulk.archivedValueExporter.";
     
     @Override
     public String getFormatKey() {

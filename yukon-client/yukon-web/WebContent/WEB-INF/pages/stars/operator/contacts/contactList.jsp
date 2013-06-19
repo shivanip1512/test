@@ -8,18 +8,12 @@
 
 	<tags:setFormEditMode mode="${mode}"/>
 	
-	<script type="text/javascript">
-	
-		function deleteAdditionalContact(id) {
-
-			$('deleteAdditionalContactId').value = id;
-			$('deleteAdditionalContactForm').submit();
-		}
-		
-	</script>
-	
-	<cti:url var="add" value="/WebConfig/yukon/Icons/add.png"/>
-	<cti:url var="addOver" value="/WebConfig/yukon/Icons/add_over.png"/>
+<script type="text/javascript">
+function deleteAdditionalContact(id) {
+	jQuery('#deleteAdditionalContactId').val(id);
+	jQuery('#deleteAdditionalContactForm').submit();
+}
+</script>
 	
 	<form id="deleteAdditionalContactForm" action="/stars/operator/contacts/deleteAdditionalContact" method="post">
 		<input type="hidden" name="deleteAdditionalContactId" id="deleteAdditionalContactId"/>
@@ -93,7 +87,7 @@
     				
     					<c:choose>
     						<c:when test="${!contact.primary}">
-                                <cti:button nameKey="deleteContact" onclick="deleteAdditionalContact(${contact.contactId});" renderMode="labeledImage"/>
+                                <cti:button nameKey="deleteContact" onclick="deleteAdditionalContact(${contact.contactId});" renderMode="labeledImage" icon="icon-cross"/>
     						</c:when>
     						<c:otherwise>
     							<i:inline key=".isPrimary"/>
@@ -116,7 +110,7 @@
                         <form id="addContactForm" action="/stars/operator/contacts/create" method="get">
                             <input type="hidden" name="contactId" value="0"/>
                             <input type="hidden" name="accountId" value="${accountId}"/>
-                            <cti:button nameKey="create" type="submit"/>
+                            <cti:button nameKey="create" icon="icon-plus-green" type="submit"/>
                         </form>
                     </td>
                 </tr>

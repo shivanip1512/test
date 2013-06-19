@@ -1,36 +1,28 @@
 <script type="text/javascript">
-// Add behavior
 jQuery(function() {
-    $$('tr[id^="tr_cap"]').each(function (row) {
+    jQuery("tr[id^='tr_cap']").each( function(index, row) {
         var bankId = row.id.split('_')[2];
-        
-        // Add timestamp hover
-        var timestamp = row.down('span[id^="dateTime_"]');
-        timestamp.observe('mouseover', function() {showDynamicPopupAbove('capBankStatusPopup_' + bankId, 250); return false});
-        timestamp.observe('mouseout', function() {nd(); return false});
         
         if (${hasCapbankControl}) {
             var parentFeeder = row.down('a.parentFeeder');
             
             // Add move back link
             if (parentFeeder.hasClassName('warning')) {
-                parentFeeder.observe('click', function(event) {getMovedBankMenu(bankId, event); return false});
+                parentFeeder.observe('click', function(event) {getMovedBankMenu(bankId, event); return false;});
             } else {
                 // Add move link
-                parentFeeder.observe('mouseover', function() {statusMsgAbove(parentFeeder, '${moveBank}'); return false});
-                parentFeeder.observe('mouseout', function() {nd(); return false});
                 var title = parentFeeder.down('span.moveBankTitle').innerHTML;
-                parentFeeder.observe('click', function() {showDialog(title, '/capcontrol/move/bankMove?bankid=' + encodeURIComponent(bankId)); return false});
+                parentFeeder.observe('click', function() {showDialog(title, '/capcontrol/move/bankMove?bankid=' + encodeURIComponent(bankId)); return false;});
             }
             
             // Add menus
             var bankName = row.down('a[id^="bankName"]');
-            bankName.observe('click', function(event) {getCommandMenu(bankId, event); return false});
+            bankName.observe('click', function(event) {getCommandMenu(bankId, event); return false;});
             
             var bankState = row.down('a[id^="capbankState"]');
-            bankState.observe('click', function(event) {getMenuFromURL('${stateMenuUrl}?id=' + bankId, event); return false});
-        }
-    })
+            bankState.observe('click', function(event) {getMenuFromURL('${stateMenuUrl}?id=' + bankId, event); return false;});
+        };
+    });
 });
 </script>
 
@@ -43,15 +35,13 @@ jQuery(function() {
                 <th><i:inline key=".cbcName"/></th>
                 <th><i:inline key="yukon.web.modules.capcontrol.actions"/></th>
                 <th class="wsnw">
-                    <cti:msg2 var="cbOrderInfo" key=".cbOrderInfo"/>
                     <i:inline key=".cbName"/>
-                    <img alt="Info" class="tierImg helpImg" src="/WebConfig/yukon/Icons/information.gif" onmouseover="statusMsgAbove(this, '${cbOrderInfo}');" >
+                    <cti:icon nameKey="cbOrderInfo" icon="icon-information" classes="M0 fn" />
                 </th>
-                <th><i:inline key="yukon.web.modules.capcontrol.actions"/></th>
+                <th><i:inline key=".actions"/></th>
                 <th class="wsnw">
-                    <cti:msg2 var="stateInfo" key=".stateInfo"/>
-                    <i:inline key="yukon.web.modules.capcontrol.state"/> 
-                    <img alt="Info" class="tierImg helpImg" src="/WebConfig/yukon/Icons/information.gif" onmouseover="statusMsgAbove(this,'${stateInfo}');">  
+                    <i:inline key=".state"/>
+                    <cti:icon nameKey="stateInfo" icon="icon-information" classes="M0 fn" />
                 </th>
                 <th><i:inline key=".timestamp"/></th>
                 <th><i:inline key=".bankSize"/></th>
@@ -86,17 +76,14 @@ jQuery(function() {
                 <%-- CBC Actions --%>
                 <td class="wsnw">
                     <c:if test="${viewableCapBank.capBankDevice.controlDeviceID != 0}">
-                        <cti:img nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${viewableCapBank.capBankDevice.controlDeviceID}" styleClass="tierIconLink"/>
+                        <cti:icon nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${viewableCapBank.capBankDevice.controlDeviceID}" icon="icon-pencil"/>
                         <c:if test="${hasEditingRole}">
-                            <cti:img nameKey="copy" href="/editor/copyBase.jsf?itemid=${viewableCapBank.capBankDevice.controlDeviceID}&amp;type=1>" styleClass="tierIconLink"/>
+                            <cti:icon nameKey="copy" href="/editor/copyBase.jsf?itemid=${viewableCapBank.capBankDevice.controlDeviceID}&amp;type=1>" icon="icon-page-copy"/>
                         </c:if>
                     </c:if>
                     <c:if test="${viewableCapBank.twoWayCbc}">
-                        <cti:msg2 var="timestampInfo" key=".timestampInfo"/>
-                        <span onmouseover="statusMsgAbove(this,'${timestampInfo}');">
                             <cti:msg2 var="cbcPointsTitle" key=".cbcPointsTitle" arguments="${viewableCapBank.controlDevice.paoName}" javaScriptEscape="true"/>
-                            <cti:img nameKey="view" href="javascript:showDialog('${cbcPointsTitle}', '../capbank/cbcPoints?cbcId=${viewableCapBank.controlDevice.liteID}')" styleClass="tierIconLink"/>
-                        </span>
+                            <cti:icon nameKey="timestampInfo" href="javascript:showDialog('${cbcPointsTitle}', '../capbank/cbcPoints?cbcId=${viewableCapBank.controlDevice.liteID}')" icon="icon-magnifier"/>
                     </c:if>
                 </td>
                 
@@ -109,16 +96,13 @@ jQuery(function() {
                 
                 <%-- Bank Actions --%>
                 <td class="wsnw">
-                    <cti:img nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${bankId}" styleClass="tierIconLink"/>
+                    <cti:icon nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${bankId}" icon="icon-pencil"/>
                     <c:if test="${hasEditingRole}">
-                        <cti:img nameKey="remove" href="/editor/deleteBasePAO.jsf?value=${bankId}" styleClass="tierIconLink"/>
+                        <cti:icon nameKey="remove" href="/editor/deleteBasePAO.jsf?value=${bankId}" icon="icon-cross"/>
                     </c:if>
                     <cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
-                        <cti:msg2 var="addInfo" key=".addInfo"/>
                         <cti:msg2 var="addInfoTitle" key=".addInfoTitle" arguments="${viewableCapBank.capBankDevice.ccName}" javaScriptEscape="true"/>
-                        <span onmouseover="statusMsgAbove(this, '${addInfo}');">
-                            <cti:img nameKey="view" href="javascript:showDialog('${addInfoTitle}', '../addInfo/bank?bankId=${bankId}')" styleClass="tierIconLink"/>
-                        </span>
+                        <cti:icon nameKey="addInfo" href="javascript:showDialog('${addInfoTitle}', '../addInfo/bank?bankId=${bankId}')" icon="icon-magnifier"/>
                     </cti:checkRolesAndProperties>
                 </td>
 
@@ -131,7 +115,15 @@ jQuery(function() {
                            <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_STATUS"/>
                         <c:if test="${hasCapbankControl}"></a></c:if>
                     </cti:capBankStateColor>
-                    <div id="capBankStatusPopup_${bankId}" style="display: none">
+                    
+                </td>
+                
+                <%-- Timestamp --%>
+                <td>
+                    <span class="f-has-tooltip">
+                        <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="DATE_TIME"/> 
+                    </span>
+                    <div class="f-tooltip dn">
                         <table class='compactResultsTable'>
                             <tr>
                                 <th><i:inline key=".kvar"/></th>
@@ -165,22 +157,22 @@ jQuery(function() {
                     </div>
                 </td>
                 
-                <%-- Timestamp --%>
-                <td>
-                    <span id="dateTime_${bankId}">
-                        <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="DATE_TIME"/> 
-                    </span>
-                </td>
-                
                 <%-- Bank Size --%>
                 <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_SIZE"/></td>
                 
                 <%-- Parent Feeder --%>
                 <td class="wsnw">
-                    <c:if test="${hasCapbankControl}"><a class="parentFeeder<c:if test="${viewableCapBank.capBankDevice.bankMoved}"> warning</c:if>"  href="javascript:void(0);"></c:if>
+                    <c:if test="${hasCapbankControl}">
+                        <a class="f-has-tooltip parentFeeder" <c:if test="${viewableCapBank.capBankDevice.bankMoved}"> warning</c:if>"  href="javascript:void(0);">
+                    </c:if>
                         <span class="dn moveBankTitle"><cti:msg2 key=".moveBankTitle" arguments="${viewableCapBank.capBankDevice.ccName}"/></span>
                         <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PARENT"/>
-                     <c:if test="${hasCapbankControl}"></a></c:if>
+                     <c:if test="${hasCapbankControl}">
+                        </a>
+                        <span class="f-tooltip dn">
+                            <cti:msg2 key=".moveBank"/>
+                        </span>
+                     </c:if>
                 </td>
                 
                 <%-- Daily/Max/Total Ops --%>

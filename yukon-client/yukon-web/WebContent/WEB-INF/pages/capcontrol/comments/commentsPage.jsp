@@ -169,7 +169,7 @@
                                         </c:choose>
                                     </td>
                                     <td class="removeColumn">
-                                        <cti:button nameKey="remove" renderMode="image" onclick="deleteComment(${comment.id})" styleClass="center"/>
+                                        <cti:button nameKey="remove" renderMode="image" onclick="deleteComment(${comment.id})" classes="center" icon="icon-application-view-columns"/>
                                     </td>
                                 </tr>
                             </c:forEach>

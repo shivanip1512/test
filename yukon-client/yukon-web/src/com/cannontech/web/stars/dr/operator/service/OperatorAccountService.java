@@ -21,15 +21,35 @@ public interface OperatorAccountService {
     public void updateAccount(int accountId, OperatorGeneralUiExtras operatorGeneralUiExtras);
 	
 	public OperatorGeneralUiExtras getOperatorGeneralUiExtras(int accountId, YukonUserContext userContext);
-	
-	public ContactDto getContactDto(int contactId, YukonUserContext userContext);
-	public ContactDto getBlankContactDto(int additionalBlankNotifications);
+
+    public ContactDto getContactDto(int contactId, YukonUserContext userContext);
+    public ContactDto getBlankContactDto(int additionalBlankNotifications);
+
+    /**
+     * Load the Contact and set values within the ContactDTO, but all the caller to
+     * be selective about which ContactNotifications are removed from the collection
+     * and set on the DTO.
+     * 
+     * @param contactId
+     * @param setDtoHomePhone       true if you want the first HOME_PHONE removed from the ConNos and contactDto.setHomePhone(..)
+     * @param setDtoWorkPhone       true if you want the first WORK_PHONE removed from the ConNos and contactDto.setWorkPhone(..)
+     * @param setDtoEmail           true if you want the first EMAIL removed from the ConNos and contactDto.setEmail(..)
+     * @param userContext
+     * @return
+     */
+    public ContactDto getContactDto(int contactId, boolean setDtoHomePhone, boolean setDtoWorkPhone, boolean setDtoEmail, YukonUserContext userContext);
 	
 	/**
 	 * Add/Update contact.
 	 * Add/Updates/Delete contact notifications.
 	 */
 	public void saveContactDto(ContactDto contactDto, LiteCustomer customer);
+	/**
+	 * Creates the new primary contact (if not exists), or updates the existing.. first? contact.
+	 * @param contactDto
+	 * @param user
+	 */
+    public void saveContactDto(ContactDto contactDto, LiteYukonUser user);
 	
 	public AccountInfoFragment getAccountInfoFragment(int accountId);
 }

@@ -7,12 +7,10 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:standardPage module="adminSetup" page="serviceCompany.list">
-
-    <cti:dataGrid cols="1" tableClasses="twoColumnLayout">
-    
         <tags:boxContainer2 nameKey="infoContainer">
             
             <table class="compactResultsTable rowHighlighting">
+                <thead>
                 <tr>
                     <th><cti:msg key="yukon.web.modules.adminSetup.serviceCompany.companyName"/></th>
                     <th><cti:msg key="yukon.web.modules.adminSetup.serviceCompany.mainPhone"/></th>
@@ -20,7 +18,9 @@
                     <th><cti:msg key="yukon.web.modules.adminSetup.serviceCompany.contact"/></th>
                     <th><cti:msg key="yukon.web.modules.adminSetup.serviceCompany.addressSection.title"/></th>
                 </tr>
-                
+                </thead>
+                <tfoot></tfoot>
+                <tbody>
                 <c:forEach items="${serviceCompanies}" var="serviceCompany">
                 
                     <tr class="<tags:alternateRow odd="" even="altRow"/>">
@@ -60,6 +60,7 @@
                     </tr>
                     
                 </c:forEach>
+                </tbody>
             </table>
             
             <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES">
@@ -67,11 +68,9 @@
                     <cti:url var="createserviceCompanyUrl" value="${baseUrl}/new">
                         <cti:param name="ecId" value="${ecId}"/>
                     </cti:url>
-                    <cti:button nameKey="create" onclick="javascript:window.location='${createserviceCompanyUrl}'"/>
+                    <cti:button nameKey="create" icon="icon-plus-green" onclick="javascript:window.location='${createserviceCompanyUrl}'"/>
                 </div>
             </cti:checkRolesAndProperties>
             
         </tags:boxContainer2>
-    </cti:dataGrid>
-    
 </cti:standardPage>

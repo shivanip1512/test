@@ -38,7 +38,7 @@
 					</c:forEach>
 
 					<div class="pageActionArea">
-                        <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
+                        <cti:button nameKey="save" type="submit" classes="f_blocker"/>
                     </div>
 
 				</form>

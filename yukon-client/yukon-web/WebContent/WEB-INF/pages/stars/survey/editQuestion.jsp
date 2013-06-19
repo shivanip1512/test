@@ -96,7 +96,7 @@ jQuery(document).ready(function() {
 			    </table>
 	        </div>
             <cti:displayForPageEditModes modes="EDIT">
-                <div style="margin-top: 10px;" class="clearfix"><cti:button renderMode="labeledImage" nameKey="addAnswer" href="javascript: addAnswer()" styleClass="fl"/></div>
+                <div style="margin-top: 10px;" class="clearfix"><cti:button renderMode="labeledImage" nameKey="addAnswer" href="javascript: addAnswer()" classes="fl" icon="icon-add"/></div>
             </cti:displayForPageEditModes>
 	    </tags:boxContainer2>
     </div>

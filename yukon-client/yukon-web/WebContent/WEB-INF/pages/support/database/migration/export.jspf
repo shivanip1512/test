@@ -12,7 +12,6 @@
 <c:set var="dbPickerIcon" value="/WebConfig/yukon/Icons/database_add.png"/>
 <c:set var="bookOpenIcon" value="/WebConfig/yukon/Icons/book_open.gif"/>
 <c:set var="dbPickerIconDisabled" value="/WebConfig/yukon/Icons/database_disabled_gray.gif"/>
-<c:set var="mag" value="/WebConfig/yukon/Icons/magnifier.gif"/>
 
 <script type="text/javascript">
     function exportItems(formId) {

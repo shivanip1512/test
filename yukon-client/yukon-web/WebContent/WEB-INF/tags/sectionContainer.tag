@@ -1,3 +1,5 @@
+<%@ tag trimDirectiveWhitespaces="true" %>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
@@ -10,9 +12,6 @@
 <%@ attribute name="escapeTitle" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="hideEnabled" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="hideInitially" required="false" type="java.lang.Boolean" %>
-
-<c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
-<c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
 
 <c:if test="${hideEnabled}">
     <c:set var="h3Class" value="toggle-title"/>
@@ -39,9 +38,7 @@
             </c:choose>
             
             <c:if test="${not empty pageScope.helpText}">
-            	<a href="javascript:void(0);" onclick="$('sectionContainerInfoPopup_${thisId}').toggle();">
-            	<img src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
-            	</a>
+                <cti:icon icon="icon-help" id="help_icon_${thisId}"/>
         	</c:if>
         	
         </div>
@@ -55,7 +52,5 @@
 </div>
 
 <c:if test="${not empty pageScope.helpText}">
-	<tags:simplePopup id="sectionContainerInfoPopup_${thisId}" title="${pageScope.title}">
-     	${pageScope.helpText}
-	</tags:simplePopup>	
+    <tags:simplePopup id="sectionContainerInfoPopup_${thisId}" title="${pageScope.title}" on="#help_icon_${thisId}" options="{width:600}">${helpText}</tags:simplePopup>	
 </c:if>

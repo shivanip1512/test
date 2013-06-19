@@ -50,15 +50,15 @@ public class CalculationImportServiceImpl implements CalculationImportService {
         CALCULATION_FORMAT.addValueDependentColumn("CONSTANT", Double.class, "CALCULATION TYPE", ImportCalculationType.CONSTANT);
         CALCULATION_FORMAT.addValueDependentColumn("FUNCTION", ImportCalculationFunction.class, "CALCULATION TYPE", ImportCalculationType.FUNCTION);
         //descriptions
-        CALCULATION_FORMAT.setDescriptionKey("CALCULATION NAME", "yukon.web.modules.amr.pointImport.column.calculationName");
-        CALCULATION_FORMAT.setDescriptionKey("CALCULATION TYPE", "yukon.web.modules.amr.pointImport.column.calculationType");
-        CALCULATION_FORMAT.setDescriptionKey("DEVICE NAME", "yukon.web.modules.amr.pointImport.column.calculationDeviceName");
-        CALCULATION_FORMAT.setDescriptionKey("DEVICE TYPE", "yukon.web.modules.amr.pointImport.column.calculationDeviceType");
-        CALCULATION_FORMAT.setValidValuesKey("DEVICE TYPE", "yukon.web.modules.amr.pointImport.validValues.deviceType");
-        CALCULATION_FORMAT.setDescriptionKey("POINT NAME", "yukon.web.modules.amr.pointImport.column.calculationPointName");
-        CALCULATION_FORMAT.setDescriptionKey("OPERATION", "yukon.web.modules.amr.pointImport.column.operation");
-        CALCULATION_FORMAT.setDescriptionKey("CONSTANT", "yukon.web.modules.amr.pointImport.column.constant");
-        CALCULATION_FORMAT.setDescriptionKey("FUNCTION", "yukon.web.modules.amr.pointImport.column.function");
+        CALCULATION_FORMAT.setDescriptionKey("CALCULATION NAME", "yukon.web.modules.tools.bulk.pointImport.column.calculationName");
+        CALCULATION_FORMAT.setDescriptionKey("CALCULATION TYPE", "yukon.web.modules.tools.bulk.pointImport.column.calculationType");
+        CALCULATION_FORMAT.setDescriptionKey("DEVICE NAME", "yukon.web.modules.tools.bulk.pointImport.column.calculationDeviceName");
+        CALCULATION_FORMAT.setDescriptionKey("DEVICE TYPE", "yukon.web.modules.tools.bulk.pointImport.column.calculationDeviceType");
+        CALCULATION_FORMAT.setValidValuesKey("DEVICE TYPE", "yukon.web.modules.tools.bulk.pointImport.validValues.deviceType");
+        CALCULATION_FORMAT.setDescriptionKey("POINT NAME", "yukon.web.modules.tools.bulk.pointImport.column.calculationPointName");
+        CALCULATION_FORMAT.setDescriptionKey("OPERATION", "yukon.web.modules.tools.bulk.pointImport.column.operation");
+        CALCULATION_FORMAT.setDescriptionKey("CONSTANT", "yukon.web.modules.tools.bulk.pointImport.column.constant");
+        CALCULATION_FORMAT.setDescriptionKey("FUNCTION", "yukon.web.modules.tools.bulk.pointImport.column.function");
     }
     
     @Override
@@ -78,15 +78,15 @@ public class CalculationImportServiceImpl implements CalculationImportService {
         try {
             ImportFileValidator.validateFileStructure(data);
         } catch(DuplicateColumnNameException e) {
-            results.add("yukon.web.modules.amr.pointImport.error.duplicateColumns");
+            results.add("yukon.web.modules.tools.bulk.pointImport.error.duplicateColumns");
             results.add(e.getJoinedDuplicateColumnNames());
             return null;
         } catch(InvalidColumnNameException e) {
-            results.add("yukon.web.modules.amr.pointImport.error.invalidColumns");
+            results.add("yukon.web.modules.tools.bulk.pointImport.error.invalidColumns");
             results.add(e.getJoinedInvalidColumnNames());
             return null;
         } catch(RequiredColumnMissingException e) {
-            results.add("yukon.web.modules.amr.pointImport.error.missingRequiredColumn");
+            results.add("yukon.web.modules.tools.bulk.pointImport.error.missingRequiredColumn");
             results.add(e.getJoinedMissingColumnNames());
             return null;
         }
@@ -147,7 +147,7 @@ public class CalculationImportServiceImpl implements CalculationImportService {
                     calculation.addFunction(functionPoint.getPointID(), function.getDatabaseRepresentation());
                     break;
                 default:
-                    results.add("yukon.web.modules.amr.pointImport.error.invalidCalculationType");
+                    results.add("yukon.web.modules.tools.bulk.pointImport.error.invalidCalculationType");
                     results.add(type.toString());
                     return null;
             }
@@ -166,7 +166,7 @@ public class CalculationImportServiceImpl implements CalculationImportService {
         PaoType paoType = ImportPaoType.valueOf(row.getValue("DEVICE TYPE"));
         YukonPao pao = paoDao.findYukonPao(deviceName, paoType);
         if(pao == null) {
-            results.add("yukon.web.modules.amr.pointImport.error.invalidDeviceName");
+            results.add("yukon.web.modules.tools.bulk.pointImport.error.invalidDeviceName");
             results.add(deviceName);
             results.add(lineNum.toString());
             return null;
@@ -175,7 +175,7 @@ public class CalculationImportServiceImpl implements CalculationImportService {
         String pointName = row.getValue("POINT NAME");
         LitePoint point = pointDao.findPointByName(pao, pointName);
         if(point == null) {
-            results.add("yukon.web.modules.amr.pointImport.error.invalidPointName");
+            results.add("yukon.web.modules.tools.bulk.pointImport.error.invalidPointName");
             results.add(pointName);
             results.add(deviceName);
             results.add(lineNum.toString());

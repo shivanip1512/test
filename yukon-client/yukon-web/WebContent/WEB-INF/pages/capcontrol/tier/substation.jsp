@@ -23,7 +23,6 @@
 <cti:url var="onelineCBCServlet" value="/oneline/OnelineCBCServlet"/>
 <cti:url var="stateMenuUrl" value="/capcontrol/menu/capBankState"/>
 
-<cti:msg2 var="moveBank" key="yukon.web.modules.capcontrol.substation.moveBank"/>
 <c:set var="substationId" value="${substation.id}"/>
 
 <c:if test="${hasSubstationControl}">
@@ -158,101 +157,101 @@ function loadPointChartGreyBox(title, url) {
             <c:set var="editKey" value="info"/>
         </c:otherwise>
     </c:choose>
-    <cti:dataGrid cols="2" tableClasses="twoColumnLayout" cellStyle="width: 50%;" tableStyle="width:100%;">
+    <div class="column_12_12">
         
-        <cti:dataGridCell>
+        <div class="column one">
         
             <tags:boxContainer2 nameKey="infoContainer" styleClass="padBottom" hideEnabled="true" showInitially="true">
-                <div style="float:left;width:50%;">
-                    <tags:nameValueContainer2 tableClass="infoContainer">
-                        <tags:nameValue2 nameKey=".name">
-                            <span><spring:escapeBody>${substation.name}</spring:escapeBody></span>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".geoName">
-                            <span><spring:escapeBody>${substation.description}</spring:escapeBody></span>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".area">
-                            <span>
-                                <c:choose>
-                                    <c:when test="${areaId > 0}">
-                                        <cti:deviceName deviceId="${areaId}"/>
-                                    </c:when>
-                                    <c:otherwise><i:inline key="yukon.web.defaults.none"/></c:otherwise>
-                                </c:choose>
-                            </span>
-                        </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                    
+            	<div class="clearfix">
+	                <div style="float:left;width:50%;">
+	                    <tags:nameValueContainer2 tableClass="infoContainer">
+	                        <tags:nameValue2 nameKey=".name">
+	                            <span><spring:escapeBody>${substation.name}</spring:escapeBody></span>
+	                        </tags:nameValue2>
+	                        <tags:nameValue2 nameKey=".geoName">
+	                            <span><spring:escapeBody>${substation.description}</spring:escapeBody></span>
+	                        </tags:nameValue2>
+	                        <tags:nameValue2 nameKey=".area">
+	                            <span>
+	                                <c:choose>
+	                                    <c:when test="${areaId > 0}">
+	                                        <cti:deviceName deviceId="${areaId}"/>
+	                                    </c:when>
+	                                    <c:otherwise><i:inline key="yukon.web.defaults.none"/></c:otherwise>
+	                                </c:choose>
+	                            </span>
+	                        </tags:nameValue2>
+	                    </tags:nameValueContainer2>
+	                    
+	                </div>
+	                <div style="float:right;width:50%;">
+	                    <tags:nameValueContainer2 tableClass="infoContainer">
+	                        <tags:nameValue2 nameKey=".state" rowClass="wsnw">
+	                            <capTags:warningImg paoId="${substationId}" type="SUBSTATION"/>
+	                                <c:if test="${hasSubstationControl}"><a id="substationState_${substationId}" href="javascript:void(0);"></c:if>
+	                                <c:if test="${!hasSubstationControl}"><span id="substationState_${substationId}"></c:if>
+	                                    <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="STATE"/>
+	                                <c:if test="${hasSubstationControl}"></a></c:if>
+	                                <c:if test="${!hasSubstationControl}"></span></c:if>
+	                                <cti:dataUpdaterCallback function="updateStateColorGenerator('substationState_${substationId}')" initialize="true" value="SUBSTATION/${substationId}/STATE"/>
+	                        </tags:nameValue2>
+	                        <tags:nameValue2 nameKey=".mapLocationId">
+	                            <span>${substation.mapLocationId}</span>
+	                        </tags:nameValue2>
+	                        <tags:nameValue2 nameKey=".specialArea">
+	                            <span>
+	                                <c:choose>
+	                                    <c:when test="${specialAreaId > 0}">
+	                                        <cti:classUpdater type="SUBSTATION" identifier="${substationId}/SA_ENABLED">
+	                                            <cti:deviceName deviceId="${specialAreaId}"/>: <cti:capControlValue paoId="${specialAreaId}" type="CBCSPECIALAREA" format="STATE"/>
+	                                        </cti:classUpdater>
+	                                    </c:when>
+	                                    <c:otherwise><i:inline key="yukon.web.defaults.none"/></c:otherwise>
+	                                </c:choose>
+	                            </span>
+	                        </tags:nameValue2>
+	                    </tags:nameValueContainer2>
+	                </div>
                 </div>
-                <div style="float:right;width:50%;">
-                    <tags:nameValueContainer2 tableClass="infoContainer">
-                        <tags:nameValue2 nameKey=".state" rowClass="wsnw">
-                            <capTags:warningImg paoId="${substationId}" type="SUBSTATION"/>
-                                <c:if test="${hasSubstationControl}"><a id="substationState_${substationId}" href="javascript:void(0);"></c:if>
-                                <c:if test="${!hasSubstationControl}"><span id="substationState_${substationId}"></c:if>
-                                    <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="STATE"/>
-                                <c:if test="${hasSubstationControl}"></a></c:if>
-                                <c:if test="${!hasSubstationControl}"></span></c:if>
-                                <cti:dataUpdaterCallback function="updateStateColorGenerator('substationState_${substationId}')" initialize="true" value="SUBSTATION/${substationId}/STATE"/>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".mapLocationId">
-                            <span>${substation.mapLocationId}</span>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".specialArea">
-                            <span>
-                                <c:choose>
-                                    <c:when test="${specialAreaId > 0}">
-                                        <cti:classUpdater type="SUBSTATION" identifier="${substationId}/SA_ENABLED">
-                                            <cti:deviceName deviceId="${specialAreaId}"/>: <cti:capControlValue paoId="${specialAreaId}" type="CBCSPECIALAREA" format="STATE"/>
-                                        </cti:classUpdater>
-                                    </c:when>
-                                    <c:otherwise><i:inline key="yukon.web.defaults.none"/></c:otherwise>
-                                </c:choose>
-                            </span>
-                        </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                </div>
-                <div class="clear actionArea fl">
-                    <cti:button nameKey="location" href="/capcontrol/capbank/capBankLocations?value=${substationId}&amp;specialArea=${isSpecialArea}"/>
-                </div>
-                
-                <div class="actionArea fr">
-                    <cti:button nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${substationId}"/>
+                <div class="actionArea">
+                    <cti:button nameKey="location" href="/capcontrol/capbank/capBankLocations?value=${substationId}&amp;specialArea=${isSpecialArea}" icon="icon-interstate" classes="fl"/>
+                    <cti:button nameKey="${editKey}" href="/editor/cbcBase.jsf?type=2&amp;itemid=${substationId}" icon="icon-pencil"/>
                     <c:if test="${hasEditingRole}">
-                        <cti:button nameKey="remove" href="/editor/deleteBasePAO.jsf?value=${substationId}"/>
+                        <cti:button nameKey="remove" href="/editor/deleteBasePAO.jsf?value=${substationId}" icon="icon-cross"/>
                     </c:if>
                 </div>
         
             </tags:boxContainer2>
             
-        </cti:dataGridCell>
+        </div>
         
-        <cti:dataGridCell>
+        <div class="column two nogutter">
         
             <tags:boxContainer2 nameKey="statsContainer" styleClass="padBottom" hideEnabled="true" showInitially="true">
-                <div style="float:left;width:50%;">
-                    <tags:nameValueContainer2 tableClass="infoContainer">
-                        <tags:nameValue2 nameKey=".availableKvars">
-                            <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_AVAILABLE" />
-                        </tags:nameValue2>
-                        
-                        <tags:nameValue2 nameKey=".unavailableKvars">
-                            <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_UNAVAILABLE" />
-                        </tags:nameValue2>
-                        
-                    </tags:nameValueContainer2>
-                </div>
-                <div style="float:right;width:50%;">
-                    <tags:nameValueContainer2 tableClass="infoContainer">
-                        <tags:nameValue2 nameKey=".closedKvars">
-                            <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_CLOSED" />
-                        </tags:nameValue2>
-                        
-                        <tags:nameValue2 nameKey=".trippedKvars">
-                            <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_TRIPPED" />
-                        </tags:nameValue2>
-                        
-                    </tags:nameValueContainer2>
+                <div class="column_12_12">
+                    <div class="column one">
+                        <tags:nameValueContainer2 tableClass="infoContainer">
+                            <tags:nameValue2 nameKey=".availableKvars">
+                                <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_AVAILABLE" />
+                            </tags:nameValue2>
+                            
+                            <tags:nameValue2 nameKey=".unavailableKvars">
+                                <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_UNAVAILABLE" />
+                            </tags:nameValue2>
+                        </tags:nameValueContainer2>
+                    </div>
+                    <div class="column two nogutter">
+                        <tags:nameValueContainer2 tableClass="infoContainer">
+                            <tags:nameValue2 nameKey=".closedKvars">
+                                <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_CLOSED" />
+                            </tags:nameValue2>
+                            
+                            <tags:nameValue2 nameKey=".trippedKvars">
+                                <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_TRIPPED" />
+                            </tags:nameValue2>
+                            
+                        </tags:nameValueContainer2>
+                    </div>
                 </div>
                 <div class="clear">
                     <tags:nameValueContainer2 tableClass="infoContainer">
@@ -263,15 +262,15 @@ function loadPointChartGreyBox(title, url) {
                 </div>
                 <div class="clear actionArea">
                     <c:if test="${showAnalysis}">
-                        <cti:button nameKey="analysis" id="analysisTrendsButton"/>
+                        <cti:button nameKey="analysis" id="analysisTrendsButton" icon="icon-chart-curve"/>
                     </c:if>
-                    <cti:button nameKey="recentEvents" id="recentEventsButton"/>
+                    <cti:button nameKey="recentEvents" id="recentEventsButton" icon="icon-application-view-columns"/>
                 </div>
             </tags:boxContainer2>
         
-        </cti:dataGridCell>
+        </div>
         
-    </cti:dataGrid>
+    </div>
     
     <%@ include file="busTier.jspf" %>
     <%@ include file="feederTier.jspf" %>

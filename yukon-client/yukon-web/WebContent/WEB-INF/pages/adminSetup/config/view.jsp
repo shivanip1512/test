@@ -8,7 +8,7 @@
 
 <cti:standardPage module="adminSetup" page="config">
 
-<div class="centeredContainer split box clear dashboard">
+<div class="clear dashboard">
 
     <c:forEach items="${categories}" var="category">
         <tags:sectionContainer2 nameKey="${category.first}">
@@ -16,7 +16,7 @@
                 <c:forEach items="${category.second}" begin="0" step="2" end="${fn:length(category.second)}" var="subcategory" varStatus="status">
                     <div class="category">
                         <cti:url value="edit" var="category_url"><cti:param name="category" value="${subcategory.first}"/></cti:url>
-                        <a href="${category_url}" class="medium_icon fl ${subcategory.second}"></a>
+                        <a href="${category_url}" class="icon medium-icon fl ${subcategory.second}"></a>
                         <div class="box fl meta">
                             <a class="title" href="${category_url}"><i:inline key="yukon.common.setting.subcategory.${subcategory.first}"/></a>
                             <br/>
@@ -29,7 +29,7 @@
                 <c:forEach items="${category.second}" begin="1" step="2" end="${fn:length(category.second)}" var="subcategory" varStatus="status">
                     <div class="category">
                         <cti:url value="edit" var="category_url"><cti:param name="category" value="${subcategory.first}"/></cti:url>
-                        <a href="${category_url}" class="medium_icon fl ${subcategory.second}"></a>
+                        <a href="${category_url}" class="icon medium-icon fl ${subcategory.second}"></a>
                         <div class="box fl meta">
                             <a class="title" href="${category_url}"><i:inline key="yukon.common.setting.subcategory.${subcategory.first}"/></a>
                             <br/>

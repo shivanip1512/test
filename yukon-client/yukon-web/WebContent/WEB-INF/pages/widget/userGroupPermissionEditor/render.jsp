@@ -49,7 +49,7 @@ ${pageScope.addPao} = function() {
                                         <c:out value="${pao.type}" />
                                     </td>
                                     <td class="removeColumn">
-                                        <tags:widgetActionRefreshImage nameKey="remove" method="removePao" paoId="${pao.paoId}"/>
+                                        <tags:widgetActionRefreshImage nameKey="remove" method="removePao" paoId="${pao.paoId}" icon="icon-cross"/>
                                     </td>
                                 </tr>
                                 

@@ -43,7 +43,7 @@
             <tr>
                 <%-- edit button --%>
                 <td>
-                    <cti:button nameKey="edit" renderMode="image" href="${viewValidationMonitorEditorUrl}" arguments="${monitorName}"/>
+                    <cti:button nameKey="edit" renderMode="image" href="${viewValidationMonitorEditorUrl}" arguments="${monitorName}" icon="icon-cog-go"/>
                 </td>
                 
                 <%-- monitor name --%>
@@ -64,19 +64,19 @@
                 </td>
                 
                 <%-- enable/disable --%>
-    			<td class="${tdClass}" style="text-align:right;">
-    				<c:choose>
-    					<c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
-    						<tags:widgetActionRefreshImage  method="toggleEnabled" validationMonitorId="${monitorId}"
-                                                            nameKey="disable" arguments="${monitorName}"/>
-    					</c:when>
-    					<c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
-    						<tags:widgetActionRefreshImage method="toggleEnabled" validationMonitorId="${monitorId}"
-                                                           nameKey="enable" arguments="${monitorName}"/>
-    					</c:when>
-    				</c:choose>
-    			</td>
-    			
+                <td class="${tdClass}" style="text-align:right;">
+                    <c:choose>
+                        <c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
+                            <tags:widgetActionRefreshImage  method="toggleEnabled" validationMonitorId="${monitorId}" btnClass="fr"
+                                                            nameKey="disable" arguments="${monitorName}" icon="icon-enabled"/>
+                        </c:when>
+                        <c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
+                            <tags:widgetActionRefreshImage method="toggleEnabled" validationMonitorId="${monitorId}" btnClass="fr"
+                                                           nameKey="enable" arguments="${monitorName}" icon="icon-disabled"/>
+                        </c:when>
+                    </c:choose>
+                </td>
+                
             </tr>
         
         </c:forEach>
@@ -91,16 +91,8 @@
 </c:choose>
 
 <div class="actionArea">
-<table class="noStyle" cellpadding="0" cellspacing="0" style="width:100%;">
-	<tr>
-		<td align="left">
-			<cti:url var="reviewUrl" value="/common/veeReview/home"/>
-    		<a href="${reviewUrl}"><i:inline key=".review"/></a>
-		</td>
-		<td align="right">
-            <cti:button nameKey="create" type="submit" styleClass="f_blocker"/>
-		</td>
-	</tr>
-</table>
+    <cti:url var="reviewUrl" value="/common/veeReview/home"/>
+    <a href="${reviewUrl}"><i:inline key=".review"/></a>
+    <cti:button nameKey="create" icon="icon-plus-green" type="submit" classes="f_blocker fr"/>
 </div>
 </form>

@@ -15,6 +15,19 @@
 
 <entry key="yukon.common.reports.groupCommandSuccess.title">Group Command Success Results</entry>
 
+<entry key="yukon.web.menu.config.reporting.reports.administrator.tab.title">Administrator</entry>
+<entry key="yukon.web.menu.config.reporting.reports.metering.tab.title">Metering</entry>
+<entry key="yukon.web.menu.config.reporting.reports.capcontrol.tab.title">CapControl</entry>
+<entry key="yukon.web.menu.config.reporting.reports.statistical.tab.title">Statistical</entry>
+<entry key="yukon.web.menu.config.reporting.reports.database.tab.title">Database</entry>
+<entry key="yukon.web.menu.config.reporting.reports.management.tab.title">Load Management</entry>
+<entry key="yukon.web.menu.config.reporting.reports.stars.tab.title">Assets</entry>
+<entry key="yukon.web.menu.config.reporting.reports.cni.tab.title">C&amp;I</entry>
+<entry key="yukon.web.menu.config.reporting.reports.settlement.tab.title">Settlement</entry>
+
+<entry key="yukon.web.menu.config.commanderSelect.lm.xcom.tab.title">ExpressCom</entry>
+<entry key="yukon.web.menu.config.commanderSelect.lm.vcom.tab.title">VersaCom</entry>
+
 <entry key="yukon.common.reports.startTimeNotInclusive">Greater than 00:00, not inclusive</entry>
 <entry key="yukon.common.reports.stopTimeInclusive">Less than or equal to 00:00, inclusive</entry>
 <entry key="yukon.common.reports.filterMeterValues">Enter a comma separated list of Meter Number(s).</entry>

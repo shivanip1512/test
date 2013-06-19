@@ -49,7 +49,7 @@
         
         <cti:displayForPageEditModes modes="EDIT">
             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
+                <cti:button nameKey="save" type="submit" classes="f_blocker"/>
                 <button type="submit" name="cancel" class="formSubmit">
                         <i:inline key=".cancel"/>
                     </button>

@@ -12,8 +12,8 @@
             var totalGroupCountSpan = $('totalGroupCount');
             var supportedDevicesMsgSpan = $('supportedDevicesMsg');
 
-            totalGroupCountSpan.addClassName('icon loading');
-            supportedDevicesMsgSpan.addClassName('icon loading');
+            totalGroupCountSpan.addClassName('icon icon-loading');
+            supportedDevicesMsgSpan.addClassName('icon icon-loading');
             $('supportedDevicesHelpIcon').hide();
     
             new Ajax.Request("getCounts",{
@@ -36,8 +36,8 @@
                         }
                     }
 
-                    totalGroupCountSpan.removeClassName('icon loading');
-                    supportedDevicesMsgSpan.removeClassName('icon loading');
+                    totalGroupCountSpan.removeClassName('icon icon-loading');
+                    supportedDevicesMsgSpan.removeClassName('icon icon-loading');
                     $('supportedDevicesHelpIcon').show();
                 }
             });
@@ -108,7 +108,7 @@
                     <a href="${addPointsLink}"><i:inline key=".addPoints"/></a>
                 </c:if>
                 </span>
-                <cti:img id="supportedDevicesHelpIcon" nameKey="help" styleClass="pointer hoverableImage nameValueLogoImage" />&nbsp
+                <cti:icon id="supportedDevicesHelpIcon" nameKey="help" icon="icon-help"/>
             </tags:nameValue2>
 
 			<%-- enable/disable monitoring --%>
@@ -125,7 +125,7 @@
 						<th><i:inline key=".rulesTable.header.ruleOrder" /></th>
 						<th><i:inline key=".rulesTable.header.outcome" /></th>
 						<th><i:inline key=".rulesTable.header.errors" />
-                            <cti:img id="errorHelp" nameKey="help" styleClass="pointer hoverableImage"/>
+                            <cti:icon id="errorHelp" nameKey="help" icon="icon-help"/>
                         </th>
 						<th><i:inline key=".rulesTable.header.matchStyle" /></th>
 						<th><i:inline key=".rulesTable.header.state" /></th>
@@ -157,7 +157,7 @@
 	<div class="pageActionArea">
 		<form id="editMonitorForm" action="/amr/porterResponseMonitor/editPage" method="get">
 			<input type="hidden" name="monitorId" value="${monitorDto.monitorId}">
-            <cti:button nameKey="edit" type="submit" styleClass="f_blocker"/>
+            <cti:button nameKey="edit" icon="icon-pencil" type="submit" classes="f_blocker"/>
 		</form>
 	</div>
 

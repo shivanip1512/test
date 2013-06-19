@@ -54,10 +54,6 @@ YEvent.observeSelectorClick('#showAllButton', clearFilter);
     </form:form>
 </i:simplePopup>
 
-<table class="widgetColumns">
-    <tr>
-        <td class="widgetColumnCell" valign="top" colspan="2">
-            <div class="widgetContainer">
                 <cti:msg2 var="boxTitle" key=".assignedPrograms"/>
                 <tags:pagedBox title="${boxTitle}" searchResult="${assignedPrograms}"
                     baseUrl="programs" filterDialog="filterDialog" defaultFilterInput="programNameInput"
@@ -67,6 +63,7 @@ YEvent.observeSelectorClick('#showAllButton', clearFilter);
                     </c:if>
                     <c:if test="${!empty assignedPrograms.resultList}">
                         <table id="programList" class="compactResultsTable rowHighlighting">
+                            <thead>
                             <tr>
                                 <th>
                                     <tags:sortLink nameKey="programNameHeader" baseUrl="programs"
@@ -77,6 +74,9 @@ YEvent.observeSelectorClick('#showAllButton', clearFilter);
                                         fieldName="APPLIANCE_CATEGORY_NAME"/>
                                 </th>
                             </tr>
+                            </thead>
+                            <tfoot></tfoot>
+                            <tbody>
                             <c:forEach var="assignedProgram" items="${assignedPrograms.resultList}">
                                 <tr class="<tags:alternateRow odd="" even="altRow"/>">
                                     <td>
@@ -95,12 +95,9 @@ YEvent.observeSelectorClick('#showAllButton', clearFilter);
                                     </td>
                                 </tr>
                             </c:forEach>
+                            </tbody>
                         </table>
                     </c:if>
                 </tags:pagedBox>
-            </div>
-        </td>
-    </tr>
-</table>
 
 </cti:standardPage>

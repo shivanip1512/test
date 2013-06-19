@@ -9,6 +9,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONObject;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.search.SearchResult;
@@ -36,7 +39,6 @@ import com.cannontech.stars.dr.optout.dao.OptOutSurveyDao;
 import com.cannontech.stars.dr.optout.model.OptOutSurvey;
 import com.cannontech.stars.dr.optout.service.OptOutSurveyService;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -128,7 +130,7 @@ public class OptOutSurveyController {
     }
 
     @RequestMapping
-    public String delete(HttpServletResponse resp, ModelMap model, int optOutSurveyId, FlashScope flashScope,
+    public @ResponseBody JSONObject delete(HttpServletResponse resp, ModelMap model, int optOutSurveyId, FlashScope flashScope,
             YukonUserContext userContext) throws IOException {
         OptOutSurvey optOutSurvey =
             optOutSurveyDao.getOptOutSurveyById(optOutSurveyId);
@@ -141,8 +143,9 @@ public class OptOutSurveyController {
                                              survey.getSurveyName());
         flashScope.setConfirm(confirmMsg);
 
-        ServletUtils.closePopup(resp, "ajaxDialog");
-        return null;
+        JSONObject json = new JSONObject();
+        json.put("action", "reload");
+        return json;
     }
 
     @RequestMapping
@@ -198,7 +201,12 @@ public class OptOutSurveyController {
                                              survey.getSurveyName());
         flashScope.setConfirm(confirmMsg);
 
-        ServletUtils.closePopup(resp, "ajaxDialog");
+        JSONObject json = new JSONObject();
+        json.put("action", "reload");
+        
+        resp.setContentType("application/json");
+        resp.getWriter().print(json.toString());
+        resp.getWriter().close();
         return null;
     }
 

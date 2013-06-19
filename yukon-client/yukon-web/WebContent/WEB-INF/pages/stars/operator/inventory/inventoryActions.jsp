@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
@@ -7,146 +8,112 @@
 
     <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
 
-    <tags:boxContainer2 nameKey="actionsContainer" hideEnabled="false">
-    
-        <div class="containerHeader">
-            <table>
-                <tr>
-                    <td valign="top" colspan="2">
-                        <tags:selectedInventory inventoryCollection="${inventoryCollection}" id="inventoryCollection"/>
-                    </td>
-                </tr>
-        
-                <tr>
-                    <td class="smallBoldLabel"><i:inline key=".instructionsLabel"/></td>
-                    <td><i:inline key=".instructions"/></td>
-                </tr>
-            </table>
+    <div class="containerHeader stacked clearfix">
+        <div>
+            <tags:selectedInventory inventoryCollection="${inventoryCollection}" id="inventoryCollection"/>
         </div>
-    
-        <br>
-    
-        <cti:dataGrid cols="2" tableClasses="twoColumnLayout split">
-            <cti:checkRolesAndProperties value="DEVICE_RECONFIG">
-                <cti:dataGridCell>
-                        <table>
-                            <tr>
-                                <td class="actionCell">
-                                    <form action="inventoryConfiguration" method="get">
-                                        <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
-                                        <cti:button nameKey="deviceReconfig" type="submit" styleClass="buttonGroup"/>
-                                    </form>
-                                </td>
-                                <td class="actionCell"><i:inline key=".deviceReconfigDescription"/></td>
-                            </tr>
-                        </table>
-                </cti:dataGridCell>
-            </cti:checkRolesAndProperties>
+        <div>
+            <span class="smallBoldLabel dib fl"><i:inline key=".instructionsLabel"/></span>
+            <span class="dib fl" style="margin-left: 5px;"><i:inline key=".instructions" /></span>
+        </div>
+    </div>
+
+    <tags:sectionContainer2 nameKey="actionsContainer">
+        <div class="column_12_12 clear">
+            <div class="column one stacked">
+                <cti:checkRolesAndProperties value="DEVICE_RECONFIG">
+                    <cti:url value="inventoryConfiguration" var="url">
+                        <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                            <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                        </c:forEach>
+                    </cti:url>
+                    <a href="${url}" class="described"><cti:msg2 key=".deviceReconfig.label"/></a>
+			        <i:inline key=".deviceReconfigDescription"/>
+                </cti:checkRolesAndProperties>
+            </div>
             
             <cti:checkRolesAndProperties value="SN_DELETE_RANGE">
-                <cti:dataGridCell>
-                    <table>
-                        <tr>
-                            <td class="actionCell">
-                                <form action="deleteInventory/view" method="get">
-                                    <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
-                                    <cti:button nameKey="deleteInventory" type="submit" styleClass="buttonGroup"/>
-                                </form>
-                            </td>
-                            <td class="actionCell"><i:inline key=".deleteInventoryDescription"/></td>
-                        </tr>
-                    </table>
-                </cti:dataGridCell>
+                <div class="column two nogutter stacked">
+                     <cti:url value="deleteInventory/view" var="url">
+                        <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                            <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                        </c:forEach>
+                    </cti:url>
+                    <a href="${url}" class="described"><cti:msg2 key=".deleteInventory.label"/></a>
+                     <i:inline key=".deleteInventoryDescription"/>
+                </div>
             </cti:checkRolesAndProperties>
             
-            <cti:dataGridCell>
-                <table>
-                    <tr>
-                        <td class="actionCell">
-                            <form action="changeType/view" method="get">
-                                <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
-                                <cti:button nameKey="changeType" type="submit" styleClass="buttonGroup"/>
-                            </form>
-                        </td>
-                        <td class="actionCell"><i:inline key=".changeTypeDescription"/></td>
-                    </tr>
-                </table>
-            </cti:dataGridCell>
+        </div>
+        
+        <div  class="column_12_12 clear">
+            <div class="column one stacked">
+                <cti:url value="changeType/view" var="url">
+                    <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                        <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                    </c:forEach>
+                </cti:url>
+                <a href="${url}" class="described"><cti:msg2 key=".changeType.label"/></a>
+                <i:inline key=".changeTypeDescription"/></td>
+            </div>
             
-            <cti:dataGridCell>
-                <table>
-                    <tr>
-                        <td class="actionCell">
-                            <form action="changeStatus/view" method="get">
-                                <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
-                                <cti:button nameKey="changeStatus" type="submit" styleClass="buttonGroup"/>
-                            </form>
-                        </td>
-                        <td class="actionCell"><i:inline key=".changeStatusDescription"/></td>
-                    </tr>
-                </table>
-            </cti:dataGridCell>
+            <div class="column two nogutter stacked">
+	            <cti:url value="changeStatus/view" var="url">
+                    <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                        <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                    </c:forEach>
+                </cti:url>
+                <a href="${url}" class="described"><cti:msg2 key=".changeStatus.label"/></a>
+	            <i:inline key=".changeStatusDescription"/>
+            </div>
+        </div>
             
-            <cti:dataGridCell>
-                <table>
-                    <tr>
-                        <td class="actionCell">
-                            <form action="changeServiceCompany/view" method="get">
-                                <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
-                                <cti:button nameKey="changeServiceCompany" type="submit" styleClass="buttonGroup"/>
-                            </form>
-                        </td>
-                        <td class="actionCell"><i:inline key=".changeServiceCompanyDescription"/></td>
-                    </tr>
-                </table>
-            </cti:dataGridCell>
+        <div  class="column_12_12 clear">
+            <div class="column one stacked">
+	            <cti:url value="changeServiceCompany/view" var="url">
+                    <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                        <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                    </c:forEach>
+                </cti:url>
+                <a href="${url}" class="described"><cti:msg2 key=".changeServiceCompany.label"/></a>
+	            <i:inline key=".changeServiceCompanyDescription"/>
+            </div>
             
-            <cti:dataGridCell>
-                <table>
-                    <tr>
-                        <td class="actionCell">
-                            <form action="changeWarehouse/view" method="get">
-                                <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
-                                <cti:button nameKey="changeWarehouse" type="submit" styleClass="buttonGroup"/>
-                            </form>
-                        </td>
-                        <td class="actionCell"><i:inline key=".changeWarehouseDescription"/></td>
-                    </tr>
-                </table>
-            </cti:dataGridCell>
+            <div class="column two nogutter stacked">
+	            <cti:url value="changeWarehouse/view" var="url">
+                    <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                        <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                    </c:forEach>
+                </cti:url>
+                <a href="${url}" class="described"><cti:msg2 key=".changeWarehouse.label"/></a>
+                <i:inline key=".changeWarehouseDescription"/>
+            </div>
+        </div>
+        
+        <div  class="column_12_12 clear">
+            <div class="column one stacked">
+	            <cti:url value="controlAudit/view" var="url">
+                    <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                        <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                    </c:forEach>
+                </cti:url>
+                <a href="${url}" class="described"><cti:msg2 key=".controlAudit.label"/></a>
+	            <i:inline key=".controlAuditDescription"/>
+            </div>
             
             <c:if test="${showSaveToFile}">
-                <cti:dataGridCell>
-                    <table>
-                        <tr>
-                            <td class="actionCell">
-                                <form action="saveToBatch/setup" method="get">
-                                    <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
-                                    <cti:button nameKey="saveToFile" type="submit" styleClass="buttonGroup"/>
-                                </form>
-                            </td>
-                            <td class="actionCell"><i:inline key=".saveToFile"/></td>
-                        </tr>
-                    </table>
-                </cti:dataGridCell>
+                <div class="column two nogutter stacked">
+	                <cti:url value="saveToBatch/setup" var="url">
+	                    <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+	                        <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+	                    </c:forEach>
+	                </cti:url>
+	                <a href="${url}" class="described"><cti:msg2 key=".saveToFile.label"/></a>
+	                <i:inline key=".saveToFile"/>
+                </div>
             </c:if>
-            
-            <cti:dataGridCell>
-                    <table>
-                        <tr>
-                            <td class="actionCell">
-                                <form action="controlAudit/view" method="get">
-                                    <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
-                                    <cti:button nameKey="controlAudit" type="submit" styleClass="buttonGroup"/>
-                                </form>
-                            </td>
-                            <td class="actionCell"><i:inline key=".controlAuditDescription"/></td>
-                        </tr>
-                    </table>
-            </cti:dataGridCell>
-            
-        </cti:dataGrid>
+        </div>
      
-     </tags:boxContainer2>
+     </tags:sectionContainer2>
 
 </cti:standardPage>

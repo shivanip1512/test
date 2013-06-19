@@ -117,7 +117,7 @@ public class FdrTranslationManagerController {
         
         //Procure the import file
         if(!ServletFileUpload.isMultipartContent(request)) {
-            MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.amr.fdrTranslationManagement.error.noImportFile");
+            MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.fdrTranslationManagement.error.noImportFile");
             return prepareErrorReturn(userContext, errorMsg);
         }
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
@@ -128,10 +128,10 @@ public class FdrTranslationManagerController {
         try {
             csvReader = WebFileUtils.getTempBackedCsvReaderFromMultipartFile(dataFile);
         } catch(NoImportFileException e) {
-            MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.amr.fdrTranslationManagement.error.noImportFile");
+            MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.fdrTranslationManagement.error.noImportFile");
             return prepareErrorReturn(userContext, errorMsg);
         } catch(EmptyImportFileException e) {
-            MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.amr.fdrTranslationManagement.error.emptyImportFile");
+            MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.fdrTranslationManagement.error.emptyImportFile");
             return prepareErrorReturn(userContext, errorMsg);
         }
         
@@ -141,7 +141,7 @@ public class FdrTranslationManagerController {
         try {
             headers = fdrTranslationManagerCsvHelper.cleanAndValidateHeaders(headersArray);
         } catch(ImportFileFormatException e) {
-            MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.amr.fdrTranslationManagement.error.duplicateColumn", e.getHeaderName());
+            MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.fdrTranslationManagement.error.duplicateColumn", e.getHeaderName());
             return prepareErrorReturn(userContext, errorMsg);
         }
         
@@ -149,7 +149,7 @@ public class FdrTranslationManagerController {
         String missingHeaders = fdrTranslationManagerCsvHelper.checkForMissingDefaultImportHeaders(headers);
         if(missingHeaders != null) {
             //Error - missing default header
-            MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.amr.fdrTranslationManagement.error.defaultHeaderMissing", missingHeaders);
+            MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.fdrTranslationManagement.error.defaultHeaderMissing", missingHeaders);
             return prepareErrorReturn(userContext, errorMsg);
         }
         
@@ -159,14 +159,14 @@ public class FdrTranslationManagerController {
         try {
             interfaceInfo = fdrTranslationManagerService.getInterfaceInfo(headers, ignoreInvalidColumns);
         } catch(ImportFileFormatException e) {
-            MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.amr.fdrTranslationManagement.error.badColumn", e.getHeaderName());
+            MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.fdrTranslationManagement.error.badColumn", e.getHeaderName());
             return prepareErrorReturn(userContext, errorMsg);
         }
         
         try {
             fdrTranslationManagerCsvHelper.validateInterfaceHeadersPresent(interfaceInfo, headers);
         } catch(ImportFileFormatException e) {
-            MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.amr.fdrTranslationManagement.error.missingColumn", e.getHeaderName(), e.getInterfaceName());
+            MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.fdrTranslationManagement.error.missingColumn", e.getHeaderName(), e.getInterfaceName());
             return prepareErrorReturn(userContext, errorMsg);
         }
         

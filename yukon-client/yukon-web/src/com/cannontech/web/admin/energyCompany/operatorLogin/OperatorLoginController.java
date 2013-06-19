@@ -285,6 +285,7 @@ public class OperatorLoginController {
             StarsAdminUtil.updateLogin( liteUser, liteUser.getUsername(),null, liteUser.getLoginStatus(), userGroup);
         }
         returnJSON.put("loginStatus", liteUser.getLoginStatus());
+        returnJSON.put("icon", liteUser.getLoginStatus() == LoginStatusEnum.DISABLED ? "icon-delete" : "icon-accept");
         response.setContentType("application/json");
         PrintWriter writer = response.getWriter();
         

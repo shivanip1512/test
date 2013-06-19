@@ -9,7 +9,7 @@ public enum AdaStatus implements DisplayableEnum {
     DELETED,  //Analysis is being deleted, do not display
     ;
     
-    private final String keyPrefix = "yukon.web.modules.amr.analysis.status.";
+    private final String keyPrefix = "yukon.web.modules.tools.bulk.analysis.";
     
     public boolean isRunning() {
         return this == RUNNING;

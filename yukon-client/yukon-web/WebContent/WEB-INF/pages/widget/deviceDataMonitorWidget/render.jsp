@@ -5,9 +5,6 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<c:url var="cog" value="/WebConfig/yukon/Icons/cog_go.gif"/>
-<c:url var="cogOver" value="/WebConfig/yukon/Icons/cog_go_over.gif"/>
-
 <%-- ERROR --%>
 <c:if test="${not empty porterResponseMonitorError}">
 	<div class="errorMessage">${porterResponseMonitorError}</div>
@@ -35,7 +32,7 @@
 
 						<%-- action icons --%>
 						<td>
-	                        <cti:button nameKey="edit" renderMode="image" href="${viewMonitorUrl}" arguments="${monitor.name}"/>
+	                        <cti:button nameKey="edit" renderMode="image" href="${viewMonitorUrl}" arguments="${monitor.name}" icon="icon-cog-go"/>
 						</td>
 
 						<%-- monitor name --%>
@@ -59,12 +56,12 @@
 								<c:when test="${monitor.enabled}">
 									<tags:widgetActionRefreshImage method="toggleEnabled"
 										nameKey="disable" arguments="${monitor.name}"
-										monitorId="${monitor.id}"/>
+										monitorId="${monitor.id}" icon="icon-enabled" btnClass="fr"/>
 								</c:when>
 								<c:otherwise>
 									<tags:widgetActionRefreshImage method="toggleEnabled"
 										nameKey="enable" arguments="${monitor.name}"
-										monitorId="${monitor.id}" checked="false"/>
+										monitorId="${monitor.id}" checked="false" icon="icon-disabled" btnClass="fr"/>
 								</c:otherwise>
 							</c:choose>
 						</td>
@@ -74,10 +71,10 @@
 		</table>
 	</c:when>
 	<c:otherwise>
-        <i:inline key=".noMonitors"/>
+        <span class="empty-list"><i:inline key=".noMonitors"/></span>
     </c:otherwise>
 </c:choose>
 
 <div class="actionArea">
-    <cti:button nameKey="create" href="/amr/deviceDataMonitor/createPage" />
+    <cti:button nameKey="create" icon="icon-plus-green" href="/amr/deviceDataMonitor/createPage" classes="fr"/>
 </div>

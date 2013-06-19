@@ -9,6 +9,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONObject;
+
 import org.joda.time.Duration;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -35,7 +37,6 @@ import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -46,9 +47,8 @@ import com.google.common.collect.Maps;
 @RequestMapping("/program/stop/*")
 public class StopProgramController extends ProgramControllerBase {
 	
-    private static class StopProgramValidator
-        extends SimpleValidator<StopProgramBackingBeanBase> {
-
+    private static class StopProgramValidator extends SimpleValidator<StopProgramBackingBeanBase> {
+        
         public StopProgramValidator() {
             super(StopProgramBackingBeanBase.class);
         }
@@ -168,7 +168,11 @@ public class StopProgramController extends ProgramControllerBase {
         }
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.stopProgram.programStopRequested"));
         
-        ServletUtils.closePopup(resp, "drDialog");
+        JSONObject json = new JSONObject();
+        json.put("action", "reload");
+        
+        resp.setContentType("application/json");
+        resp.getWriter().write(json.toString());
         return null;
     }
 
@@ -333,7 +337,11 @@ public class StopProgramController extends ProgramControllerBase {
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.stopMultiplePrograms.scenarioStopRequested"));
         }
         
-        ServletUtils.closePopup(resp, "drDialog");
+        JSONObject json = new JSONObject();
+        json.put("action", "reload");
+        
+        resp.setContentType("application/json");
+        resp.getWriter().write(json.toString());
         return null;
     }
 
@@ -416,25 +424,22 @@ public class StopProgramController extends ProgramControllerBase {
     
     private void addConstraintsInfoToModel(ModelMap model, Boolean fromBack,
                                            YukonUserContext userContext, StopProgramBackingBeanBase backingBean) {
-       LiteYukonUser user = userContext.getYukonUser();
-       boolean autoObserveConstraintsAllowed =
-           rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_OBSERVE_CONSTRAINTS, user);
-       boolean checkConstraintsAllowed =
-           rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CHECK_CONSTRAINTS, user);
+        LiteYukonUser user = userContext.getYukonUser();
+        boolean autoObserveConstraintsAllowed = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_OBSERVE_CONSTRAINTS, user);
+        boolean checkConstraintsAllowed = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CHECK_CONSTRAINTS, user);
 
-       model.addAttribute("autoObserveConstraintsAllowed", autoObserveConstraintsAllowed);
-       model.addAttribute("checkConstraintsAllowed", checkConstraintsAllowed);
+        model.addAttribute("autoObserveConstraintsAllowed", autoObserveConstraintsAllowed);
+        model.addAttribute("checkConstraintsAllowed", checkConstraintsAllowed);
 
-       if (checkConstraintsAllowed && autoObserveConstraintsAllowed) {
-           // It might be more sane to change the "DEFAULT_CONSTRAINT_SELECTION"
-           // role property to something more like "AUTO_OBSERVE_CONSTRAINTS_BY_DEFAULT".
-           String defaultConstraint =
-               rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DEFAULT_CONSTRAINT_SELECTION, user);
-           if (fromBack == null || !fromBack) {
-               backingBean.setAutoObserveConstraints(defaultConstraint.equalsIgnoreCase(LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_USE]));
-           }
-       }
-   }
+        if (checkConstraintsAllowed && autoObserveConstraintsAllowed) {
+            // It might be more sane to change the "DEFAULT_CONSTRAINT_SELECTION"
+            // role property to something more like "AUTO_OBSERVE_CONSTRAINTS_BY_DEFAULT".
+            String defaultConstraint = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DEFAULT_CONSTRAINT_SELECTION, user);
+            if (fromBack == null || !fromBack) {
+                backingBean.setAutoObserveConstraints(defaultConstraint.equalsIgnoreCase(LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_USE]));
+            }
+        }
+    }
     
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {

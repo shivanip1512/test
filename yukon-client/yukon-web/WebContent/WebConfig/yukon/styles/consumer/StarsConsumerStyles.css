@@ -365,7 +365,9 @@ div.survey {
     line-height: 20px;
     width: 9em;
 }
-
+.contactCard li > div.fl {
+	line-height: 20px;
+}
 .notification {
 	margin: 0 0 5px;
 	overflow: hidden;
@@ -373,4 +375,14 @@ div.survey {
 
 .notification select, .notification input {
 	margin: 0 5px 0 0;
+}
+
+#CopyRight {
+	width: 960px;
+	margin: 0 auto;
+	padding: 20px 0;
+	clear: both;
+	font-size: .8em;
+	color: #888;
+	text-align: center;
 }

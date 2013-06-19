@@ -16,11 +16,14 @@
 <entry key="yukon.common.save">Save</entry>
 <entry key="yukon.common.help">Help</entry>
 <entry key="yukon.common.historyTooltip">Click to view history</entry>
+<entry key="yukon.common.setHomePage">Set as Homepage</entry>
 <entry key="yukon.common.loading">Loading…</entry>
 
-<entry key="yukon.common.to">to</entry>
+<entry key="yukon.common.from">From</entry>
+<entry key="yukon.common.to">To</entry>
 
 <entry key="yukon.common.warning">Warning</entry>
+<entry key="yukon.common.warningMessage">Warning: {0}</entry>
 
 <entry key="yukon.common.loginStatus.ENABLED">Enabled</entry>
 <entry key="yukon.common.loginStatus.DISABLED">Disabled</entry>
@@ -124,4 +127,8 @@
 <entry key="yukon.common.csv">CSV</entry>
 <entry key="yukon.common.pdf">PDF</entry>
 
+<entry key="yukon.common.console">Console</entry>
+<entry key="yukon.common.file">File</entry>
+
+<entry key="yukon.common.search.noResultsFound">No results found.</entry>
 </properties>

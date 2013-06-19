@@ -1,134 +1,144 @@
+<%@ tag trimDirectiveWhitespaces="true"%>
+
+<%@ attribute name="accountId" required="true" type="java.lang.String"%>
+<%@ attribute name="actionPath" required="true" type="java.lang.String"%>
 <%@ attribute name="schedule" required="true" type="com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule" %>
-<%@ attribute name="thermostatType" required="true" type="com.cannontech.stars.dr.hardware.model.SchedulableThermostatType"%>
+<%@ attribute name="temperatureUnit" required="true" type="java.lang.String"%>
 <%@ attribute name="thermostatId" required="true" type="java.lang.String"%>
 <%@ attribute name="thermostatIds" required="true" type="java.lang.String"%>
-<%@ attribute name="accountId" required="true" type="java.lang.String"%>
-<%@ attribute name="temperatureUnit" required="true" type="java.lang.String"%>
-<%@ attribute name="actionPath" required="true" type="java.lang.String"%>
-<%@ attribute name="styleClass" required="false" type="java.lang.String"%>
+<%@ attribute name="thermostatType" required="true" type="com.cannontech.stars.dr.hardware.model.SchedulableThermostatType"%>
+
 <%@ attribute name="customActions" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="omitEditor" required="false" type="java.lang.Boolean"%>
+<%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msg2 var="heatLabel"  key="yukon.common.thermostat.mode.HEAT"/>
 <cti:msg2 var="coolLabel"  key="yukon.common.thermostat.mode.COOL"/>
+<cti:msg2 var="heatLabel"  key="yukon.common.thermostat.mode.HEAT"/>
 
-<div class="schedule small ${pageScope.styleClass}" id="scheduleId_${pageScope.schedule.accountThermostatScheduleId}">
-    <div class="">
-        <form method="POST" action="${pageScope.actionPath}">
-            <input type="hidden" name="thermostatId" value="${pageScope.thermostatId}">
-            <input type="hidden" name="accountId" value="${pageScope.accountId}">
-            <input type="hidden" name="thermostatIds" value="${pageScope.thermostatIds}">
-            <input type="hidden" name="thermostatScheduleMode" value="${pageScope.schedule.thermostatScheduleMode}">
-            <input type="hidden" name="temperatureUnit" value="${pageScope.temperatureUnit}">
-            <input type="hidden" name="scheduleId" value="${pageScope.schedule.accountThermostatScheduleId}">
-            <input type="hidden" name="scheduleName" value="<spring:escapeBody htmlEscape="true">${pageScope.schedule.scheduleName}</spring:escapeBody>">
-            
-            <div class="heading">
-                <span class="title"><spring:escapeBody htmlEscape="true">${pageScope.schedule.scheduleName}</spring:escapeBody></span>
-            </div>
-            <div class="days fl">
-                <span class="labels">
-                    <label class="label fl"></label>
-                    <c:forEach var="period" items="${pageScope.thermostatType.periodStyle.realPeriods}">
-                        <div class="period">
-                            <div class="period">
-                                <div class="info time">
-                                    <i:inline key="yukon.web.components.thermostat.period.${period}" />
-                                </div>
-                                <div class="temp heat">
-                                    <i:inline key="yukon.common.thermostat.mode.HEAT"/>
-                                </div>
-                                <div class="temp cool">
-                                    <i:inline key="yukon.common.thermostat.mode.COOL"/>
-                                </div>
-                            </div>
+<div class="schedule ${pageScope.styleClass}" id="scheduleId_${schedule.accountThermostatScheduleId}">
+
+    <form method="POST" action="${actionPath}">
+    
+        <input type="hidden" name="accountId" value="${accountId}">
+        <input type="hidden" name="scheduleId" value="${schedule.accountThermostatScheduleId}">
+        <input type="hidden" name="scheduleName" value="${fn:escapeXml(schedule.scheduleName)}">
+        <input type="hidden" name="temperatureUnit" value="${temperatureUnit}">
+        <input type="hidden" name="thermostatId" value="${thermostatId}">
+        <input type="hidden" name="thermostatIds" value="${thermostatIds}">
+        <input type="hidden" name="thermostatScheduleMode" value="${schedule.thermostatScheduleMode}">
+        
+        <div class="heading">
+            <h4>${fn:escapeXml(schedule.scheduleName)}</h4>
+        </div>
+        <div class="rows striped-list">
+            <span class="labels">
+                <c:forEach var="period" items="${thermostatType.periodStyle.realPeriods}">
+                    <div class="period">
+                        <div class="time-label">
+                            <i:inline key="yukon.web.components.thermostat.period.${period}" />
                         </div>
-                    </c:forEach>
-                </span>
-                
-                <tags:alternateRowReset/>
-                <c:forEach var="day" items="${pageScope.schedule.entriesByTimeOfWeekMultimapAsMap}" varStatus="rowCounter">
-                        <div class="day active <tags:alternateRow even="even" odd="odd"/>">
-                        <div class="periods">
-                            <c:choose>
-                                <c:when test="${pageScope.schedule.thermostatScheduleMode == 'ALL'}">
-                                    <label class="label fl"><i:inline key="yukon.web.components.thermostat.schedule.EVERYDAY_abbr" /></label>
-                                </c:when>
-                                <c:otherwise>
-                                    <label class="label fl"><i:inline key="yukon.web.components.thermostat.schedule.${day.key}_abbr" /></label>
-                                </c:otherwise>
-                            </c:choose>
-                            <c:forEach var="period" items="${day.value}">
-                                <!-- Comeup with a better way to determine mode -->
-                                <c:if test="${period.heatTemp.value gt -1 }">
-                                    <div class="period period_view">
-                                        <input type="hidden" name="timeOfWeek" value="${day.key}">
-                                        <div class="info time">
-                                            <span class="time"></span>
-                                            <input type="hidden" class="time" name="secondsFromMidnight" value="${period.startTime}">
-                                        </div>
-                                        <div class="temp heat ${pageScope.temperatureUnit}" title="${heatLabel}">
-                                            <span class="value "></span><input type="hidden" value="${period.heatTemp.value}" name="heat_F"><i:inline key="yukon.web.defaults.degree"/>
-                                        </div>
-                                        <div class="temp cool ${pageScope.temperatureUnit}" title="${coolLabel}">
-                                            <span class="value "></span><input type="hidden" value="${period.coolTemp.value}" name="cool_F"><i:inline key="yukon.web.defaults.degree"/>
-                                        </div>
-                                    </div>
-                                </c:if>
-                            </c:forEach>
+                        <div class="temp-label">
+                            <i:inline key="yukon.common.thermostat.mode.HEAT"/>
+                        </div>
+                        <div class="temp-label">
+                            <i:inline key="yukon.common.thermostat.mode.COOL"/>
                         </div>
                     </div>
                 </c:forEach>
-                
-            </div>
-            <c:choose>
-                <c:when test="${pageScope.customActions}">
-                    <jsp:doBody/>
-                </c:when>
-                <c:otherwise>
-                    <div class="actions">
-                        <cti:button nameKey="edit" renderMode="labeledImage" styleClass="edit edit_${pageScope.schedule.accountThermostatScheduleId}" />
-                        <cti:button nameKey="sendNow" renderMode="labeledImage" styleClass="send" />
-                        <cti:button nameKey="copy" renderMode="labeledImage" styleClass="copy copy_${pageScope.schedule.accountThermostatScheduleId}" />
+            </span>
+            
+            <c:forEach var="row" items="${schedule.entriesByTimeOfWeekMultimapAsMap}">
+                <div class="row active clearfix">
+                    <div class="periods">
+                        <c:choose>
+                            <c:when test="${schedule.thermostatScheduleMode == 'ALL'}">
+                                <label class="row-label fl"><i:inline key="yukon.web.components.thermostat.schedule.EVERYDAY_abbr" /></label>
+                            </c:when>
+                            <c:otherwise>
+                                <label class="row-label fl"><i:inline key="yukon.web.components.thermostat.schedule.${row.key}_abbr" /></label>
+                            </c:otherwise>
+                        </c:choose>
+                        <c:forEach var="period" items="${row.value}">
+                            <!-- Comeup with a better way to determine mode -->
+                            <c:if test="${period.heatTemp.value gt -1 }">
+                                <div class="period period_view">
+                                    <input type="hidden" name="timeOfWeek" value="${row.key}">
+                                    <div class="info time">
+                                        <span class="time"></span>
+                                        <input type="hidden" class="time" name="secondsFromMidnight" value="${period.startTime}">
+                                    </div>
+                                    <div class="temp heat ${temperatureUnit}" title="${heatLabel}">
+                                        <span class="value "></span><input type="hidden" value="${period.heatTemp.value}" name="heat_F"><i:inline key="yukon.web.defaults.degree"/>
+                                    </div>
+                                    <div class="temp cool ${temperatureUnit}" title="${coolLabel}">
+                                        <span class="value "></span><input type="hidden" value="${period.coolTemp.value}" name="cool_F"><i:inline key="yukon.web.defaults.degree"/>
+                                    </div>
+                                </div>
+                            </c:if>
+                        </c:forEach>
                     </div>
-                </c:otherwise>
-            </c:choose>
-        </form>
-    </div>
+                </div>
+            </c:forEach>
+            
+        </div>
+        <c:choose>
+            <c:when test="${pageScope.customActions}">
+                <jsp:doBody/>
+            </c:when>
+            <c:otherwise>
+                <div class="actions pageActionArea">
+                    <cti:button nameKey="edit" icon="icon-pencil" renderMode="labeledImage" classes="f-edit edit_${schedule.accountThermostatScheduleId}" />
+                    <cti:button nameKey="sendNow" renderMode="labeledImage" classes="f-send" icon="icon-date-go" data-form="#send_${schedule.accountThermostatScheduleId}"/>
+                    <cti:button nameKey="copy" renderMode="labeledImage" classes="f-copy copy_${schedule.accountThermostatScheduleId}" icon="icon-page-copy"/>
+                </div>
+            </c:otherwise>
+        </c:choose>
+    </form>
+    <form id="send_${schedule.accountThermostatScheduleId}" action="/stars/operator/thermostatSchedule/send" method="POST" class="dn">
+        <input type="hidden" name="scheduleId" value="${schedule.accountThermostatScheduleId}">
+        <input type="hidden" name="thermostatIds" value="${thermostatIds}">
+        <input type="hidden" name="accountId" value="${accountId}">
+        <input type="hidden" name="temperatureUnit" value="${temperatureUnit}">
+        <d:confirm on=".f-send" nameKey="sendConfirm" argument="${fn:escapeXml(schedule.scheduleName)}"/>
+    </form>
     <c:if test="${empty pageScope.omitEditor or not pageScope.omitEditor}">
-        <i:simplePopup  titleKey="yukon.web.modules.operator.thermostat.schedules.editSchedule.title" 
-                        arguments="${pageScope.schedule.scheduleName}" 
-                        id="editSchedule_${pageScope.schedule.accountThermostatScheduleId}" 
-                        on=".edit_${pageScope.schedule.accountThermostatScheduleId}, .copy_${pageScope.schedule.accountThermostatScheduleId}">
+        <i:simplePopup titleKey="yukon.web.modules.operator.thermostat.schedules.editSchedule.title" 
+                       arguments="${fn:escapeXml(schedule.scheduleName)}" 
+                       id="editSchedule_${schedule.accountThermostatScheduleId}" 
+                       on=".edit_${schedule.accountThermostatScheduleId}, .copy_${schedule.accountThermostatScheduleId}">
                         <cti:msg2 var="copyPrefix" key="yukon.web.defaults.copy.prefix"/>
-                        <input type="hidden" name="copyName" value="${copyPrefix} ${pageScope.schedule.scheduleName}"/>
+                        <input type="hidden" name="copyName" value="${copyPrefix} ${fn:escapeXml(schedule.scheduleName)}"/>
                         <input type="hidden" name="copyTitle" value="<i:inline key="yukon.web.modules.operator.thermostat.schedules.createSchedule.title"/>"/>
-                        <input type="hidden" name="editTitle" value="<i:inline key="yukon.web.modules.operator.thermostat.schedules.editSchedule.title" arguments="${pageScope.schedule.scheduleName}"/>"/>
-            <div class="container">
-                 <tags:thermostatScheduleEditor schedule="${pageScope.schedule}"
-                                        thermostatId="${pageScope.thermostatId}"
-                                        thermostatIds="${pageScope.thermostatIds}"
-                                        accountId="${pageScope.accountId}"
-                                        temperatureUnit="${pageScope.temperatureUnit}"
-                                        actionPath="${pageScope.actionPath}"
-                                        thermostatType="${pageScope.thermostatType}"
+                        <input type="hidden" name="editTitle" value="<i:inline key="yukon.web.modules.operator.thermostat.schedules.editSchedule.title" arguments="${fn:escapeXml(schedule.scheduleName)}"/>"/>
+            <div class="container clearfix">
+                 <tags:thermostatScheduleEditor schedule="${schedule}"
+                                        thermostatId="${thermostatId}"
+                                        thermostatIds="${thermostatIds}"
+                                        accountId="${accountId}"
+                                        temperatureUnit="${temperatureUnit}"
+                                        actionPath="${actionPath}"
+                                        thermostatType="${thermostatType}"
                                         styleClass="${pageScope.styleClass}"/>
             </div>
-            <div class="actions">
-                <div class="fr">
-                    <cti:button nameKey="save"  styleClass="f_blocker save"/>
-                    <cti:button nameKey="delete" styleClass="delete" />
-                    <cti:button nameKey="cancel" styleClass="cancel" />
-                </div>
-                <div class="fl">
-                    <cti:button nameKey="recommendedSettings" renderMode="labeledImage" styleClass="default"/>
-                </div>
+            <div class="actionArea">
+                <cti:button nameKey="save" classes="f_blocker primary action f-save"/>
+                <form action="/stars/operator/thermostatSchedule/delete" method="POST">
+                    <input type="hidden" name="scheduleId" value="${schedule.accountThermostatScheduleId}">
+                    <input type="hidden" name="thermostatId" value="${thermostatId}">
+                    <input type="hidden" name="thermostatIds" value="${thermostatIds}">
+                    <input type="hidden" name="accountId" value="${accountId}">
+                    <cti:button nameKey="delete" classes="f-delete" name="delete" type="submit"/>
+                    <d:confirm on=".f-delete" nameKey="deleteConfirm" argument="${fn:escapeXml(schedule.scheduleName)}"/>
+                </form>
+                <cti:button nameKey="cancel" classes="f-cancel"/>
+                <cti:button nameKey="recommendedSettings" renderMode="labeledImage" classes="fl f-default" icon="icon-wrench"/>
             </div>
         </i:simplePopup>
     </c:if>

@@ -17,9 +17,9 @@
 <%@ attribute name="triggerElement" required="false" type="java.lang.String"%>
 <%@ attribute name="dataJson" required="true" type="java.lang.String"%>
 <%@ attribute name="title" required="true" type="java.lang.String"%>
-<%@ attribute name="width" required="true" type="java.lang.Integer"%>
-<%@ attribute name="height" required="true" type="java.lang.Integer"%>
+<%@ attribute name="maxHeight" required="false" type="java.lang.Integer" description="The max-height in pixels for the internal tree div. Example: maxHeight='300'. Defaults is 500."%>
 <%@ attribute name="noSelectionAlert" required="false" type="java.lang.String"%>
+<%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 
 <%-- POPUP TREE --%>
 <cti:msg2 var="titleText"  key="${title}" javaScriptEscape="true"/>
@@ -81,7 +81,7 @@
                 dataJson="${dataJson}"
                 treeParameters="${pageScope.treeParameters}"
                 multiSelect="true"
-                width="${width}"
-                height="${height}" 
-                includeControlBar="true" />     
+                maxHeight="${pageScope.maxHeight}" 
+                includeControlBar="true"
+                styleClass="${pageScope.styleClass}"/>
                                 

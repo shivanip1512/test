@@ -4,15 +4,6 @@
 
 <%@ attribute name="title" required="true" type="java.lang.String"%>
 
-<c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
-<c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
-
 <cti:uniqueIdentifier var="uniqueId" prefix="helpInfoPopup_"/>
-
-<a href="javascript:void(0);" onclick="$('${uniqueId}').toggle();">
-<img src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
-</a>
-
-<tags:simplePopup id="${uniqueId}" title="${title}">
-     <jsp:doBody/>
-</tags:simplePopup>
+<cti:icon icon="icon-help" id="icon_${uniqueId}" classes="cp"/>
+<tags:simplePopup id="${uniqueId}" title="${title}" on="#icon_${uniqueId}"><jsp:doBody/></tags:simplePopup>

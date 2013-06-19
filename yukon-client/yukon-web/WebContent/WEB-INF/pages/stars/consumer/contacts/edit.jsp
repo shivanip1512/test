@@ -37,7 +37,7 @@
 			<div class="fl">
 				<input type="text" name="liteContactNotifications[0].notification" maxlength="120"/>
 			</div>
-			<span class="icon icon_remove f_removeNotification" title="">::DELETE::</span>
+			<span class="f_removeNotification"><i class="icon icon-cross"></i></span>
 		</div>
 	</div>
 	
@@ -86,7 +86,7 @@
 									<div class="fl">
 										<p>
 											<form:input path="liteContactNotifications[${row.index}].notification" maxlength="120" cssClass="fl" cssErrorClass="error fl" />
-											<span class="icon icon_remove f_removeNotification" title="">::DELETE::</span>
+											<a href="javascript:void(0);" class="f_removeNotification"><i class="icon icon-cross"></i></a>
 										</p>
 										<p>
 											<form:errors path="liteContactNotifications[${row.index}].notification" cssClass="errorMessage fl" />
@@ -96,7 +96,7 @@
 							</c:forEach>
 						</div>
 						
-						<cti:button nameKey="addNotification" styleClass="f_addNotification"/>
+						<cti:button nameKey="addNotification" classes="f_addNotification" icon="icon-add"/>
 					</tags:nameValue2>
 				</tags:nameValueContainer2>
 			</tags:sectionContainer2>
@@ -104,7 +104,7 @@
 			<cti:displayForPageEditModes modes="EDIT,CREATE">
 		           <cti:button nameKey="save" type="submit"/>
 		           <cti:url value="/stars/consumer/contacts" var="cancelUrl" />
-		           <a href="${cancelUrl}"><i:inline key="yukon.common.cancel"/></a>
+		           <cti:button nameKey="cancel" href="${cancelUrl}"/>
 		       </cti:displayForPageEditModes>
 		</form:form>
 	</div>

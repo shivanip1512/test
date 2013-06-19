@@ -528,7 +528,7 @@ public class ServletUtils {
     @Deprecated
     public static void closePopup(HttpServletResponse resp, String popupId) throws IOException {
         resp.getWriter().print("<script type=\"text/javascript\">");
-        resp.getWriter().print("$('" + popupId + "').hide();");
+        resp.getWriter().print("jQuery('#" + popupId + "').dialog('close');");
         resp.getWriter().print("window.location = window.location;");
         resp.getWriter().print("</script>");
     }

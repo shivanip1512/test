@@ -73,20 +73,21 @@ public class OptOutAdminController {
     @RequestMapping(value = "/operator/optOut/admin", method = RequestMethod.GET)
     public String view(YukonUserContext userContext, ModelMap model, Boolean emptyProgramName, Boolean programNotFound) throws Exception {
         
-    	rolePropertyDao.verifyAnyProperties(userContext.getYukonUser(), 
+        final LiteYukonUser user = userContext.getYukonUser();
+    	rolePropertyDao.verifyAnyProperties(user, 
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_STATUS,
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE,
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS,
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT);
     	
-    	if(yukonEnergyCompanyService.isEnergyCompanyOperator(userContext.getYukonUser())){
-        	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
+    	if(yukonEnergyCompanyService.isEnergyCompanyOperator(user)){
+        	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
         	model.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
     
         	systemOptOuts(null, userContext, model);
     
         	// programNameEnabledMap
-        	OptOutEnabled defaultOptOutEnabledSetting = optOutStatusService.getDefaultOptOutEnabled(userContext.getYukonUser());
+        	OptOutEnabled defaultOptOutEnabledSetting = optOutStatusService.getDefaultOptOutEnabled(user);
         	Map<Integer, OptOutEnabled> programSpecificEnabledOptOuts = 
         	    optOutStatusService.getProgramSpecificEnabledOptOuts(energyCompany.getEnergyCompanyId()); 
     
@@ -101,8 +102,8 @@ public class OptOutAdminController {
             model.addAttribute("energyCompanyOptOutEnabledSetting", defaultOptOutEnabledSetting);
     
             // programNameCountsMap
-            OptOutCountsTemporaryOverride defaultOptOutCountsSetting = optOutStatusService.getDefaultOptOutCounts(userContext.getYukonUser());
-    		List<OptOutCountsTemporaryOverride> programSpecificOptOutCounts = optOutStatusService.getProgramSpecificOptOutCounts(userContext.getYukonUser());
+            OptOutCountsTemporaryOverride defaultOptOutCountsSetting = optOutStatusService.getDefaultOptOutCounts(user);
+    		List<OptOutCountsTemporaryOverride> programSpecificOptOutCounts = optOutStatusService.getProgramSpecificOptOutCounts(user);
     		
     		Map<String, OptOutCounts> programNameCountsMap = Maps.newLinkedHashMap();
     		for (OptOutCountsTemporaryOverride setting : programSpecificOptOutCounts) {
@@ -128,6 +129,9 @@ public class OptOutAdminController {
     		model.addAttribute("emptyProgramName", emptyProgramName);
     		model.addAttribute("programNotFound", programNotFound);
     	}
+    	
+    	// Second column
+    	setupScheduledOptOuts(user, model);
 		
 		return "operator/optout/optOutAdmin.jsp";
     }
@@ -266,9 +270,8 @@ public class OptOutAdminController {
     	
     	return "redirect:/stars/operator/optOut/admin";
     }
-    
-    @RequestMapping(value = "/operator/optOut/admin/viewScheduled", method = RequestMethod.GET)
-    public String viewScheduledOptOuts(LiteYukonUser user, ModelMap map) throws Exception {
+
+    public void setupScheduledOptOuts(LiteYukonUser user, ModelMap map) throws Exception {
     	
     	rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_VIEW_OPT_OUT_EVENTS, user);
     	
@@ -307,8 +310,6 @@ public class OptOutAdminController {
 			}
 		}
 		map.addAttribute("customerSearchList", customerSearchList);
-    	
-    	return "operator/optout/scheduledEvents.jsp";
     }
     
     /**

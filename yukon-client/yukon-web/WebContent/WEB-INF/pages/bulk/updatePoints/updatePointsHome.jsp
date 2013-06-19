@@ -1,53 +1,26 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:checkRolesAndProperties value="ADD_REMOVE_POINTS">
-<cti:msg var="pageTitle" key="yukon.common.device.bulk.updatePointsHome.pageTitle" />
 
-<cti:standardPage page="updatePointsHome" module="amr">
+<cti:standardPage module="tools" page="bulk.updatePointsHome">
 
-    <cti:standardMenu menuSelection="" />
-    
-    <cti:breadCrumbs>
-    
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        
-        <%-- bulk home --%>
-        <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
-        
-        <%-- device selection --%>
-        <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle"/>
-        <cti:crumbLink url="/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
-        
-        <%-- collection actions --%>
-        <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
-        
-        <%-- update points --%>
-        <cti:crumbLink>${pageTitle}</cti:crumbLink>
-        
-    </cti:breadCrumbs>
-    
-    <cti:includeScript link="/JavaScript/addRemovePointsBulkOperation.js"/>
-    
-    <script type="text/javascript">
+<cti:includeScript link="/JavaScript/addRemovePointsBulkOperation.js"/>
+<script type="text/javascript">
 
-        Event.observe (window, 'load', function() {
-                var sharedPoints = ${sharedPoints};
-                doToggleShowSharedPoints(sharedPoints);
-            }
-        );
+jQuery(function(){
+  var sharedPoints = ${sharedPoints};
+  doToggleShowSharedPoints(sharedPoints);
+});
 
-        function fieldToModifyChanged() {
-        	new Ajax.Updater('fieldSpecificOptions', '/bulk/updatePoints/getSpecificOptions', {method: 'get'});
-        }
-        
-    </script>
+function fieldToModifyChanged() {
+  jQuery('#fieldSpecificOptions').load('/bulk/updatePoints/getSpecificOptions');
+}
+</script>
 
-    <h2 class="standardPageHeading">${pageTitle}</h2>
-                
     <tags:bulkActionContainer key="yukon.common.device.bulk.updatePointsHome" deviceCollection="${deviceCollection}">
         
         <form id="executeUpdatePointsForm" action="<cti:url value="/bulk/updatePoints/execute" />">
@@ -56,8 +29,7 @@
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
             
             <%-- OPTIONS --%>
-            <cti:msg2 var="optionsTitle" key="yukon.common.device.bulk.options.title"/>
-            <tags:sectionContainer title="${optionsTitle}" styleClass="half_width">
+            <tags:sectionContainer2 nameKey="options" styleClass="half_width">
                 <tags:nameValueContainer>
                     <cti:msg var="sharedPointsOptionLabel" key="yukon.common.device.bulk.updatePointsHome.sharedPointsOptionLabel"/>
                     <cti:msg var="sharedPointsTrueOptionText" key="yukon.common.device.bulk.updatePointsHome.sharedPointsTrueOptionText"/>
@@ -67,10 +39,10 @@
                     <c:set var="sharedPointsTrueSelected" value="${sharedPoints ? 'selected' : ''}"/>
                     <c:set var="sharedPointsFalseSelected" value="${sharedPoints ? '' : 'selected'}"/>
                     <tags:nameValue name="${sharedPointsOptionLabel}">
-                        <select name="sharedPoints" onchange="toggleShowSharedPoints(this);">
+                        <select name="sharedPoints" onchange="toggleShowSharedPoints(this);" class="fl">
                             <option value="true" title="${sharedPointsTrueOptionTooltip}" ${sharedPointsTrueSelected}>${sharedPointsTrueOptionText}</option>
                             <option value="false" title="${sharedPointsFalseOptionTooltip}" ${sharedPointsFalseSelected}>${sharedPointsFalseOptionText}</option>
-                        </select> <img src="<cti:url value="/WebConfig/yukon/Icons/help.gif"/>" onclick="$('sharedPointsOptionInfoPopup').toggle();">
+                        </select><cti:icon id="shared_help" icon="icon-help" classes="cp"/>
                     </tags:nameValue>
                 
                     <cti:msg var="maskExistingPointsOptionLabel" key="yukon.common.device.bulk.updatePointsHome.maskExistingPointsOptionLabel"/>
@@ -83,30 +55,32 @@
                     <tags:nameValue name="${maskExistingPointsOptionLabel}">
                         <c:choose>
                             <c:when test="${not maskExistingPoints}">
-                                <input type="submit" name="maskExistingPointsSubmitButton" value="${maskExistingPointsFalseOptionText}" title="${maskExistingPointsFalseOptionTooltip}"> <img src="<cti:url value="/WebConfig/yukon/Icons/help.gif"/>" onclick="$('maskExistingPointsOptionInfoPopup').toggle();">
+                                <input type="submit" name="maskExistingPointsSubmitButton" value="${maskExistingPointsFalseOptionText}" title="${maskExistingPointsFalseOptionTooltip}" style="margin: 0;">
+                                <cti:icon icon="icon-help" id="mask_help" classes="cp"/>
                             </c:when>
                             <c:otherwise>
-                                    <input type="submit" name="maskExistingPointsSubmitButton" value="${maskExistingPointsTrueOptionText}" title="${maskExistingPointsTrueOptionTooltip}"> <img src="<cti:url value="/WebConfig/yukon/Icons/help.gif"/>" onclick="$('maskExistingPointsOptionInfoPopup').toggle();">
+                                <input type="submit" name="maskExistingPointsSubmitButton" value="${maskExistingPointsTrueOptionText}" title="${maskExistingPointsTrueOptionTooltip}" style="margin: 0;">
+                                <cti:icon icon="icon-help" id="mask_help" classes="cp"/>
                             </c:otherwise>
                         </c:choose>
                     </tags:nameValue>
                 
                 </tags:nameValueContainer>
-            </tags:sectionContainer>
+            </tags:sectionContainer2>
             
-            <tags:simplePopup id="sharedPointsOptionInfoPopup" title="${sharedPointsOptionLabel}" onClose="$('sharedPointsOptionInfoPopup').toggle();">
-                 <br><tags:nameValueContainer>
-                    <tags:nameValue name="${sharedPointsFalseOptionText}">${sharedPointsFalseOptionTooltip}<br><br></tags:nameValue>
-                    <tags:nameValue name="${sharedPointsTrueOptionText}">${sharedPointsTrueOptionTooltip}</tags:nameValue>
-                 </tags:nameValueContainer><br>
+            <tags:simplePopup id="sharedPointsOptionInfoPopup" title="${sharedPointsOptionLabel}" on="#shared_help" options="{width: 600}">
+                 <tags:nameValueContainer>
+                    <tags:nameValue nameColumnWidth="30%" name="${sharedPointsFalseOptionText}">${sharedPointsFalseOptionTooltip}</tags:nameValue>
+                    <tags:nameValue nameColumnWidth="30%" name="${sharedPointsTrueOptionText}">${sharedPointsTrueOptionTooltip}</tags:nameValue>
+                 </tags:nameValueContainer>
             </tags:simplePopup>
             
-            <tags:simplePopup id="maskExistingPointsOptionInfoPopup" title="${maskExistingPointsOptionLabel}" onClose="$('maskExistingPointsOptionInfoPopup').toggle();">
-                 <br><tags:nameValueContainer>
-                    <tags:nameValue name="${maskExistingPointsFalseOptionText}">${maskExistingPointsFalseOptionTooltip}<br><br></tags:nameValue>
-                    <tags:nameValue name="${maskExistingPointsTrueOptionText}">${maskExistingPointsTrueOptionTooltip}</tags:nameValue>
-                 </tags:nameValueContainer><br>
-                 <div class="error">${maskExistingPointsOptionDescription}</div>
+            <tags:simplePopup id="maskExistingPointsOptionInfoPopup" title="${maskExistingPointsOptionLabel}" on="#mask_help" options="{width: 600}">
+                 <div class="warning stacked"><i:inline key="yukon.common.warningMessage" arguments="${maskExistingPointsOptionDescription}"/></div>
+                 <tags:nameValueContainer>
+                    <tags:nameValue nameColumnWidth="30%" name="${maskExistingPointsFalseOptionText}">${maskExistingPointsFalseOptionTooltip}</tags:nameValue>
+                    <tags:nameValue nameColumnWidth="30%" name="${maskExistingPointsTrueOptionText}">${maskExistingPointsTrueOptionTooltip}</tags:nameValue>
+                 </tags:nameValueContainer>
             </tags:simplePopup>
             
             <%-- SHARED POINTS --%>
@@ -128,28 +102,16 @@
             </div>
             
             <%-- UPDATE POINTS OPTIONS --%>
-            <div id="updateOptionsDiv">
-                <table>
-                    <tr>
-                        <td style="padding-right: 10px;">
-                            <b>Select update type: </b>
-                            <select id="fieldToModify" name="fieldToModify">
-                                <c:forEach var="pointField" items="${pointFields}">
-                                    <option value="${pointField}">${pointField.displayValue}</option>
-                                </c:forEach>
-                            </select>
-                        </td>
-                        <td>
-                            <span style="font-weight: bold;">Value: </span>
-                            <input type="text" name="setValue">
-                        </td>
-                        <td>
-                            <cti:msg var="updateButtonLabel" key="yukon.common.device.bulk.updatePointsHome.updateButton"/>
-                            <tags:slowInput myFormId="executeUpdatePointsForm" labelBusy="${updateButtonLabel}" label="${updateButtonLabel}" />
-                            
-                        </td>
-                    </tr>
-                </table>
+            <div id="updateOptionsDiv" class="pageActionArea">
+                <span class="fl">Select update type: </span>
+                <select id="fieldToModify" name="fieldToModify" class="fl" style="margin-left: 10px;">
+                    <c:forEach var="pointField" items="${pointFields}">
+                        <option value="${pointField}">${pointField.displayValue}</option>
+                    </c:forEach>
+                </select>
+                <span class="fl" style="margin-left: 10px;">Value: </span>
+                <input type="text" name="setValue" class="fl" style="margin-left: 10px;">
+                <cti:button nameKey="update" classes="action primary" type="submit"/>
             </div>
         </form>
 

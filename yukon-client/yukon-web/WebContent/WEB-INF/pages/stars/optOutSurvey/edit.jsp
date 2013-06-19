@@ -12,20 +12,20 @@
 
 <script type="text/javascript">
 specifyStopDateChecked = function() {
-    setDateTimeInputEnabled('stopDate', $('specifyStopDateCheckbox').checked);
+    setDateTimeInputEnabled('stopDate', jQuery('#specifyStopDateCheckbox').is(":checked");
 }
 
 submitForm = function() {
     combineDateAndTimeFields('startDate');
     combineDateAndTimeFields('stopDate');
-    return submitFormViaAjax('ajaxDialog', 'inputForm');
+    return submitFormViaAjax('ajaxDialog', 'optOutSurveyForm');
 }
 </script>
 
 <cti:flashScopeMessages/>
 
 <cti:url var="submitUrl" value="/stars/optOutSurvey/save"/>
-<form:form id="inputForm" commandName="optOutSurveyDto" action="${submitUrl}"
+<form:form id="optOutSurveyForm" commandName="optOutSurveyDto" action="${submitUrl}"
     onsubmit="return submitForm()">
     <form:hidden path="optOutSurveyId"/>
     <form:hidden path="energyCompanyId"/>
@@ -61,8 +61,8 @@ submitForm = function() {
     </tags:nameValueContainer2>
 
     <div class="actionArea">
-        <cti:button nameKey="ok" type="submit"/>
-        <cti:button nameKey="cancel" onclick="parent.$('ajaxDialog').hide()"/>
+        <cti:button nameKey="ok" type="submit" classes="primary action"/>
+        <cti:button nameKey="cancel" onclick="jQuery('#ajaxDialog').dialog('close');"/>
     </div>
 </form:form>
 

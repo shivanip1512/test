@@ -46,6 +46,7 @@ import com.cannontech.web.util.ListBackingBean;
 import com.google.common.collect.Ordering;
 
 public class LoadGroupControllerHelper {
+    
     public static class LoadGroupListBackingBean extends ListBackingBean {
         private String state;
         private DateRange lastAction = new DateRange();
@@ -82,12 +83,12 @@ public class LoadGroupControllerHelper {
             }
     };
 
-    private LoadGroupService loadGroupService = null;
-    private PaoAuthorizationService paoAuthorizationService;
-    private DatePropertyEditorFactory datePropertyEditorFactory;
-    private LoadGroupFieldService loadGroupFieldService;
-    private LoadGroupNameField loadGroupNameField;
-    private FavoritesDao favoritesDao;
+    @Autowired private LoadGroupService loadGroupService;
+    @Autowired private PaoAuthorizationService paoAuthorizationService;
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private LoadGroupFieldService loadGroupFieldService;
+    @Autowired private LoadGroupNameField loadGroupNameField;
+    @Autowired private FavoritesDao favoritesDao;
 
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         // Since Range uses generics, spring can't determine the type of the
@@ -190,35 +191,4 @@ public class LoadGroupControllerHelper {
         }
     }
 
-    @Autowired
-    public void setLoadGroupService(LoadGroupService loadGroupService) {
-        this.loadGroupService = loadGroupService;
-    }
-
-    @Autowired
-    public void setPaoAuthorizationService(
-            PaoAuthorizationService paoAuthorizationService) {
-        this.paoAuthorizationService = paoAuthorizationService;
-    }
-
-    @Autowired
-    public void setDatePropertyEditorFactory(
-            DatePropertyEditorFactory datePropertyEditorFactory) {
-        this.datePropertyEditorFactory = datePropertyEditorFactory;
-    }
-    
-    @Autowired
-    public void setLoadGroupFieldService(LoadGroupFieldService loadGroupFieldService) {
-        this.loadGroupFieldService = loadGroupFieldService;
-    }
-    
-    @Autowired
-    public void setLoadGroupNameField(LoadGroupNameField loadGroupNameField) {
-        this.loadGroupNameField = loadGroupNameField;
-    }
-
-    @Autowired
-    public void setFavoritesDao(FavoritesDao favoritesDao) {
-        this.favoritesDao = favoritesDao;
-    }
 }

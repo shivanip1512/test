@@ -92,11 +92,6 @@ div.resultBar > div {
     padding-right: 5px;
 }
 
-.additionalSchedulerJobs {
-    margin: 5px 0px 0px 8px;
-    font-size: 12px;
-}
-
 #jobsTable th.enabledStatus {
     text-align: right;
     width: 80px;
@@ -104,11 +99,6 @@ div.resultBar > div {
 #jobsTable td.nextRunDate,
 #jobsTable td.runSchedule {
     white-space: nowrap;
-}
-
-.additionalSchedulerJobs {
-    margin: 5px 0px 0px 8px;
-    font-size: 12px;
 }
 
 .eventStatusCleared,
@@ -121,16 +111,6 @@ div.resultBar > div {
 .eventStatusActive,
 .eventStatusBad {
     color:#D14836;
-}
-
-#eventsFilterForm table.twoColumnLayout {
-	width: 100%;
-}
-
-#eventsFilterForm .icon_help,
-.viewGroupLink,
-.deviceMagIcon {
-	margin-left: 5px;
 }
 
 /* WaterLeakReport START */
@@ -163,29 +143,12 @@ div.resultBar > div {
     border-right: none;
 }
 
-.ui-dialog .ui-dialog-buttonpane button.leakFilterCancelButton {
-	margin-left: -7px;
-    color: #0066CC;
-}
-.ui-dialog .ui-dialog-buttonpane button.leakFilterCancelButton:hover {
-    text-decoration: underline;
-}
-
 form#filterForm .threshold_input {
 	float: left;
 	margin-right: 5px;
 }
 form#filterForm .icon_help {
 	top: 1px;
-}
-
-.filter_shortcut {
-	font-size: 12px;
-    font-style: italic;
-    position: absolute;
-    left: 8px;
-    width: 320px;
-    margin: .9em 0.4em 0.5em 0;
 }
 
 #algorithmDialog ul {

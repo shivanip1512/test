@@ -10,7 +10,7 @@
 <script type="text/javascript">
 submitForm = function() {
     combineDateAndTimeFields('startTime');
-    return submitFormViaAjax('textMsgDialog', 'myform', '/stars/operator/hardware/zb/sendTextMessage');
+    return submitFormViaAjax('textMsgDialog', 'myform');
 }
 </script>
 
@@ -19,7 +19,7 @@ submitForm = function() {
 <!-- Send Text Message Popup -->
 <tags:setFormEditMode mode="${mode}"/>
 
-<form:form commandName="textMessage" id="myform" onsubmit="return submitForm();">
+<form:form commandName="textMessage" id="myform" onsubmit="return submitForm();" action="/stars/operator/hardware/zb/sendTextMessage">
     <form:hidden path="accountId"/>
     <form:hidden path="inventoryId"/>
     <form:hidden path="gatewayId"/>
@@ -40,8 +40,8 @@ submitForm = function() {
         </tags:nameValue2>
     </tags:nameValueContainer2>
     <div class="actionArea">
-        <cti:button nameKey="send" type="submit" styleClass="f_blocker"/>
-        <cti:button nameKey="cancel" onclick="$('textMsgDialog').hide()"/>
+        <cti:button nameKey="send" type="submit" classes="primary action"/>
+        <cti:button nameKey="cancel" onclick="jQuery('#textMsgDialog').dialog('close');"/>
     </div>
 </form:form>
 

@@ -9,9 +9,9 @@
 
 	<cti:flashScopeMessages/>
 
-    <h1 class="dialogQuestion">
+    <p class="dialogQuestion">
         <i:inline key=".instructions" arguments="${controlArea.name}" />
-    </h1>
+    </p>
 
     <cti:url var="submitUrl" value="/dr/controlArea/triggerChange"/>
         
@@ -50,9 +50,8 @@
         </c:forEach>
 
         <div class="actionArea">
-            <input type="submit" value="<cti:msg2 key=".okButton"/>"/>
-            <input type="button" value="<cti:msg2 key=".cancelButton"/>"
-                onclick="parent.$('drDialog').hide()"/>
+            <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
+            <cti:button nameKey="ok" classes="primary action" type="submit"/>
         </div>
     </form:form>
 </cti:msgScope>

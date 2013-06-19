@@ -62,11 +62,11 @@
     };
     
     cancelZoneWizard = function() {
-        $('zoneWizardPopup').hide();
+        jQuery("#zoneWizardPopup").dialog("close");
     };
     
     backToTypeSelect = function() {
-        submitFormViaAjax('zoneWizardPopup', 'zoneDetailsForm', '/capcontrol/ivvc/wizard/wizardParentSelected', false);
+        submitFormViaAjax('zoneWizardPopup', 'zoneDetailsForm', '/capcontrol/ivvc/wizard/wizardParentSelected');
     };
 
     zoneSubmit = function() {
@@ -78,25 +78,25 @@
 <tags:setFormEditMode mode="${mode}"/>
 
 <cti:displayForPageEditModes modes="EDIT">
-	<cti:url var="action"  value="/capcontrol/ivvc/wizard/updateZone"/>
+    <cti:url var="action"  value="/capcontrol/ivvc/wizard/updateZone"/>
 </cti:displayForPageEditModes>
 <cti:displayForPageEditModes modes="CREATE">
-	<cti:url var="action" value="/capcontrol/ivvc/wizard/createZone"/>
+    <cti:url var="action" value="/capcontrol/ivvc/wizard/createZone"/>
 </cti:displayForPageEditModes>
 
 <form:form id="zoneDetailsForm" commandName="zoneDto" action="${action}" >
-	<form:hidden path="zoneId"/>
+    <form:hidden path="zoneId"/>
     <form:hidden path="parentId"/>
     <form:hidden path="substationBusId" id="selectedBusId"/>
     <input type="hidden" name="zoneType" value="${zoneDto.zoneType}"/>
-	
-	<span id="errorOnPage" style="display:none" class="errorIndicator">
-		<i:inline key=".error.missingFields"/>
-	</span>
+    
+    <span id="errorOnPage" style="display:none" class="errorIndicator">
+        <i:inline key=".error.missingFields"/>
+    </span>
 
-	<tags:nameValueContainer2>
-		<%-- Zone Name --%>
-		<tags:inputNameValue path="name" nameKey=".label.name" size="25"/>
+    <tags:nameValueContainer2>
+        <%-- Zone Name --%>
+        <tags:inputNameValue path="name" nameKey=".label.name" size="25"/>
 
         <%-- Zone Type --%>
         <tags:nameValue2 nameKey=".label.zoneType">
@@ -142,23 +142,22 @@
         </tags:nameValue2>
 
         <c:choose>
-    		<%-- Regulator Selection - Gang --%>
+            <%-- Regulator Selection - Gang --%>
             <c:when test="${zoneDto.zoneType ==  gangOperated}">
-        		<tags:nameValue2 nameKey=".label.regulator">
+                <tags:nameValue2 nameKey=".label.regulator">
                     <tags:bind path="regulator.regulatorId">
-            			<tags:pickerDialog 	id="voltageGangRegulatorPicker${zoneDto.zoneId}" 
-            				type="availableVoltageRegulatorGangPicker" 
+                        <tags:pickerDialog id="voltageGangRegulatorPicker${zoneDto.zoneId}" 
+                            type="availableVoltageRegulatorGangPicker" 
                             destinationFieldName="regulator.regulatorId"
                             initialId="${zoneDto.regulator.regulatorId}"
                             selectionProperty="paoName"
                             linkType="selection"
                             extraArgs="${zoneDto.zoneId}"
                             useInitialIdsIfEmpty="true"
-            				multiSelectMode="false"
-            				immediateSelectMode="true">
-            			</tags:pickerDialog>
+                            multiSelectMode="false"
+                            immediateSelectMode="true"/>
                     </tags:bind>
-        		</tags:nameValue2>
+                </tags:nameValue2>
             </c:when>
     
             <%-- Regulator Selection - Three Phase --%>
@@ -178,8 +177,7 @@
                                 useInitialIdsIfEmpty="true"
                                 multiSelectMode="false"
                                 immediateSelectMode="true" 
-                                allowEmptySelection="true">
-                            </tags:pickerDialog>
+                                allowEmptySelection="true"/>
                         </tags:bind>
                     </tags:nameValue2>
                 </c:forEach>
@@ -199,8 +197,7 @@
                             extraArgs="${zoneDto.zoneId}"
                             useInitialIdsIfEmpty="true"
                             multiSelectMode="false"
-                            immediateSelectMode="true">
-                        </tags:pickerDialog>
+                            immediateSelectMode="true"/>
                     </tags:bind>
                 </tags:nameValue2>
             </c:when>
@@ -209,101 +206,100 @@
         <%-- Graph Start Position --%>
         <tags:inputNameValue path="graphStartPosition" nameKey=".label.graphStartPosition" size="2"/>
 
-	</tags:nameValueContainer2>
+    </tags:nameValueContainer2>
     
     <table>
         <tr>
             <c:if test="${zoneDto.zoneType != singlePhase}">
                 <td>
-                	<tags:boxContainer2 nameKey="assignedVoltageDevice" hideEnabled="false" showInitially="true" styleClass="zoneWizardCapBanks">
+                    <tags:boxContainer2 nameKey="assignedVoltageDevice" hideEnabled="false" showInitially="true" styleClass="zoneWizardCapBanks">
                         <tags:dynamicTable items="${zoneDto.bankAssignments}" nameKey="dynamicTable"
                             id="bankTable" addButtonClass="bankAddItem" noBlockOnAdd="true">
                         <div class="zoneWizardTableScrollArea">
-            			<table class="compactResultsTable">
-            				<thead>
-            					<tr>
-            						<th><i:inline key=".table.bank.name"/></th>
-            						<th><i:inline key=".table.bank.device"/></th>
-            						<th><i:inline key=".table.position"/></th>
-            						<th><i:inline key=".table.distance"/></th>
-            						<th class="removeColumn"><i:inline key=".table.remove"/></th>
-            					</tr>
-            				</thead>
+                        <table class="compactResultsTable">
+                            <thead>
+                                <tr>
+                                    <th><i:inline key=".table.bank.name"/></th>
+                                    <th><i:inline key=".table.bank.device"/></th>
+                                    <th><i:inline key=".table.position"/></th>
+                                    <th><i:inline key=".table.distance"/></th>
+                                    <th class="removeColumn"><i:inline key=".table.remove"/></th>
+                                </tr>
+                            </thead>
                             <tbody>
-            					<c:forEach var="row" varStatus="status" items="${zoneDto.bankAssignments}">
-            						<tr>
-            							<td>
-            								<form:hidden path="bankAssignments[${status.index}].id" id="bankAssignments[${status.index}].id"/>
-            								<form:hidden path="bankAssignments[${status.index}].name" htmlEscape="true"/>
-            								<form:hidden path="bankAssignments[${status.index}].device" htmlEscape="true"/>
+                                <c:forEach var="row" varStatus="status" items="${zoneDto.bankAssignments}">
+                                    <tr>
+                                        <td>
+                                            <form:hidden path="bankAssignments[${status.index}].id" id="bankAssignments[${status.index}].id"/>
+                                            <form:hidden path="bankAssignments[${status.index}].name" htmlEscape="true"/>
+                                            <form:hidden path="bankAssignments[${status.index}].device" htmlEscape="true"/>
                                             <form:hidden path="bankAssignments[${status.index}].deletion" class="isDeletionField"/>
-            								<spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>
-            							</td>
-            							<td>
-            								<spring:escapeBody htmlEscape="true">${row.device}</spring:escapeBody>
-            							</td>
-            							<td>
-            								<tags:input path="bankAssignments[${status.index}].graphPositionOffset" size="1"/>
+                                            <spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>
                                         </td>
-            							<td>
-            								<tags:input path="bankAssignments[${status.index}].distance" size="3"/>
-            							</td>
+                                        <td>
+                                            <spring:escapeBody htmlEscape="true">${row.device}</spring:escapeBody>
+                                        </td>
+                                        <td>
+                                            <tags:input path="bankAssignments[${status.index}].graphPositionOffset" size="1"/>
+                                        </td>
+                                        <td>
+                                            <tags:input path="bankAssignments[${status.index}].distance" size="3"/>
+                                        </td>
                                         <tags:dynamicTableActionsCell tableId="bankTable"
                                             isFirst="${status.first}" isLast="${status.last}" skipMoveButtons="true"/>
-            						</tr>
+                                    </tr>
                                     <tags:dynamicTableUndoRow columnSpan="5" nameKey="undoRow"/>
-            					</c:forEach>
+                                </c:forEach>
                             </tbody>
-            			</table>
+                        </table>
                         </div>
                         </tags:dynamicTable>
-                		<div class="actionArea">
-                			<tags:pickerDialog 	id="bankPicker" 
-                				type="availableCapBankPicker"
-                				multiSelectMode="true"
-                				endAction="addBankHandler"
-                                extraArgs="${zoneDto.substationBusId}"/>
-                            <script type="text/javascript">
-                                bankPicker.excludeIds = [
-                                    <c:forEach var="bank" varStatus="status" items="${zoneDto.bankAssignments}">
-                                        ${bank.id}<c:if test="${!status.last}">,</c:if>
-                                    </c:forEach> ];
-                            </script>
-                		</div>
-                	</tags:boxContainer2>
+                        <tags:pickerDialog endAction="addBankHandler"
+                            extraArgs="${zoneDto.substationBusId}"
+                            id="bankPicker" 
+                            multiSelectMode="true"
+                            type="availableCapBankPicker"
+                            linkType="none"/>
+                        <script type="text/javascript">
+                            bankPicker.excludeIds = [
+                                <c:forEach var="bank" varStatus="status" items="${zoneDto.bankAssignments}">
+                                    ${bank.id}<c:if test="${!status.last}">,</c:if>
+                                </c:forEach> ];
+                        </script>
+                    </tags:boxContainer2>
                 </td>
             </c:if>
             <td>
-            	<tags:boxContainer2 nameKey="assignedVoltagePoint" hideEnabled="false" showInitially="true" styleClass="zoneWizardVoltagePoints">
+                <tags:boxContainer2 nameKey="assignedVoltagePoint" hideEnabled="false" showInitially="true" styleClass="zoneWizardVoltagePoints">
                     <c:set var="addItemParameters" value="{'zoneType': '${zoneDto.zoneType}'}"/>
                     <tags:dynamicTable items="${zoneDto.pointAssignments}" nameKey="dynamicTable"
                         id="pointTable" addItemParameters="${addItemParameters}" addButtonClass="pointAddItem"  
                         noBlockOnAdd="true">
                     <div class="zoneWizardTableScrollArea">
-            		<table class="compactResultsTable">
-            			<thead>
-            				<tr>
-            					<th><i:inline key=".table.point.name"/></th>
-            					<th><i:inline key=".table.point.device"/></th>
+                    <table class="compactResultsTable">
+                        <thead>
+                            <tr>
+                                <th><i:inline key=".table.point.name"/></th>
+                                <th><i:inline key=".table.point.device"/></th>
                                 <th><i:inline key=".table.phase"/></th>
-            					<th><i:inline key=".table.position"/></th>
-            					<th><i:inline key=".table.distance"/></th>
-            					<th class="removeColumn"><i:inline key=".table.remove"/></th>
-            				</tr>
-            			</thead>
-            			<tbody>
-            				<c:forEach var="row" varStatus="status" items="${zoneDto.pointAssignments}">
-            					<tr>
-            						<td>
-            							<form:hidden path="pointAssignments[${status.index}].id" id="pointAssignments[${status.index}].id"/>
-            							<form:hidden path="pointAssignments[${status.index}].name" htmlEscape="true"/>
-            							<form:hidden path="pointAssignments[${status.index}].device" htmlEscape="true"/>
+                                <th><i:inline key=".table.position"/></th>
+                                <th><i:inline key=".table.distance"/></th>
+                                <th class="removeColumn"><i:inline key=".table.remove"/></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="row" varStatus="status" items="${zoneDto.pointAssignments}">
+                                <tr>
+                                    <td>
+                                        <form:hidden path="pointAssignments[${status.index}].id" id="pointAssignments[${status.index}].id"/>
+                                        <form:hidden path="pointAssignments[${status.index}].name" htmlEscape="true"/>
+                                        <form:hidden path="pointAssignments[${status.index}].device" htmlEscape="true"/>
                                         <form:hidden path="pointAssignments[${status.index}].deletion" class="isDeletionField"/>
-            							<spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>
-            						</td>
-            						<td>
-            							<spring:escapeBody htmlEscape="true">${row.device}</spring:escapeBody>
-            						</td>
+                                        <spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>
+                                    </td>
+                                    <td>
+                                        <spring:escapeBody htmlEscape="true">${row.device}</spring:escapeBody>
+                                    </td>
                                     <td>
                                         <c:choose>
                                             <c:when test="${phaseUneditable}">
@@ -321,48 +317,47 @@
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
-            						<td>
+                                    <td>
                                         <tags:input path="pointAssignments[${status.index}].graphPositionOffset" size="1"/>
                                     </td>
-            						<td>
-            							<tags:input path="pointAssignments[${status.index}].distance" size="3"/>
-            						</td>
+                                    <td>
+                                        <tags:input path="pointAssignments[${status.index}].distance" size="3"/>
+                                    </td>
                                     <tags:dynamicTableActionsCell tableId="pointTable"
                                         isFirst="${status.first}" isLast="${status.last}" skipMoveButtons="true"/>
-            					</tr>
+                                </tr>
                                 <tags:dynamicTableUndoRow columnSpan="6" nameKey="undoRow"/>
-            				</c:forEach>
-            			</tbody>
-            		</table>
+                            </c:forEach>
+                        </tbody>
+                    </table>
                     </div>
                     </tags:dynamicTable>
-            		<div class="actionArea">
-            			<tags:pickerDialog 	id="pointPicker" 
-            				type="voltPointPicker"
-            				multiSelectMode="true"
-            				endAction="addPointHandler"/>
-                        <script type="text/javascript">
-                            pointPicker.excludeIds = [
-                                <c:forEach var="pointId" varStatus="status" items="${usedPointIds}">
-                                    ${pointId}<c:if test="${!status.last}">,</c:if>
-                                </c:forEach> ];
-                        </script>
-            		</div>
-            	</tags:boxContainer2>
-        	</td>
+                    <tags:pickerDialog endAction="addPointHandler"
+                        id="pointPicker" 
+                        multiSelectMode="true"
+                        type="voltPointPicker"
+                        linkType="none"/>
+                    <script type="text/javascript">
+                        pointPicker.excludeIds = [
+                            <c:forEach var="pointId" varStatus="status" items="${usedPointIds}">
+                                ${pointId}<c:if test="${!status.last}">,</c:if>
+                            </c:forEach> ];
+                    </script>
+                </tags:boxContainer2>
+            </td>
         </tr>
     </table>
 
-	<div class="actionArea">
-		<cti:displayForPageEditModes modes="EDIT">
-			<cti:button nameKey="save" onclick="zoneSubmit()"/>
+    <div class="actionArea">
+        <cti:displayForPageEditModes modes="EDIT">
+            <cti:button nameKey="save" onclick="zoneSubmit()" classes="primary action"/>
             <cti:button nameKey="cancel" onclick="cancelZoneWizard()"/>
-		</cti:displayForPageEditModes>
-		<cti:displayForPageEditModes modes="CREATE">
+        </cti:displayForPageEditModes>
+        <cti:displayForPageEditModes modes="CREATE">
             <cti:button nameKey="back" onclick="backToTypeSelect()"/>
-            <cti:button nameKey="create" onclick="zoneSubmit()"/>
-		</cti:displayForPageEditModes>
-	</div>
+            <cti:button nameKey="create" onclick="zoneSubmit()" classes="primary action"/>
+        </cti:displayForPageEditModes>
+    </div>
     
 </form:form>
 

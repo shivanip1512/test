@@ -390,13 +390,13 @@
 <!-- Demand Response Home -->
 <entry key="yukon.web.modules.dr.home.pageTitle">Demand Response</entry>
 <entry key="yukon.web.modules.dr.home.noFavorites">No Favorites</entry>
-<entry key="yukon.web.modules.dr.home.favorites">Favorites</entry>
-<entry key="yukon.web.modules.dr.home.quickSearches">Quick Searches</entry>
+<entry key="yukon.web.modules.dr.home.favorites.title">Favorites</entry>
+<entry key="yukon.web.modules.dr.home.quickSearches.title">Quick Searches</entry>
 <entry key="yukon.web.modules.dr.home.activeControlAreasQuickSearch">Active Control Areas</entry>
 <entry key="yukon.web.modules.dr.home.activeProgramsQuickSearch">Active Programs</entry>
 <entry key="yukon.web.modules.dr.home.activeLoadGroupsQuickSearch">Active Load Groups</entry>
 <entry key="yukon.web.modules.dr.home.noRecents">No Recently Viewed Items</entry>
-<entry key="yukon.web.modules.dr.home.recents">Recently Viewed Items</entry>
+<entry key="yukon.web.modules.dr.home.recents.title">Recently Viewed Items</entry>
 <entry key="yukon.web.modules.dr.home.nameHeader.linkText">Name</entry>
 <entry key="yukon.web.modules.dr.home.typeHeader.linkText">Type</entry>
 <entry key="yukon.web.modules.dr.home.stateHeader.linkText">State</entry>
@@ -487,7 +487,7 @@
 <!-- Control Area Detail -->
 <entry key="yukon.web.modules.dr.controlAreaDetail.pageTitle">Control Area {0}</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.controlArea">Control Area {0}</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.heading.info">Info</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.heading.info.title">Info</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.info.state">State</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.info.valueThreshold">Value/Threshold</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.info.peakProjection">Peak/Projection</entry>
@@ -498,7 +498,7 @@
 <entry key="yukon.web.modules.dr.controlAreaDetail.info.trigger">Trigger {0}</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.info.noTriggers">No triggers found</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.info.separator">-</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.heading.actions">Actions</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.heading.actions.title">Actions</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.noControl">You do not have permission to control this control area</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.noAssignedPrograms">There are currently no programs assigned to this control area.</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.inactive">This control area is not active.</entry>
@@ -561,15 +561,15 @@
 <entry key="yukon.web.modules.dr.programList.filter.to">to</entry>
 <entry key="yukon.web.modules.dr.programList.filter.min">(min)</entry>
 <entry key="yukon.web.modules.dr.programList.filter.max">(max)</entry>
-<entry key="yukon.web.modules.dr.programList.filter.name">Name:</entry>
-<entry key="yukon.web.modules.dr.programList.filter.state">State:</entry>
+<entry key="yukon.web.modules.dr.programList.filter.name">Name</entry>
+<entry key="yukon.web.modules.dr.programList.filter.state">State</entry>
 <entry key="yukon.web.modules.dr.programList.filter.state.all">All</entry>
 <entry key="yukon.web.modules.dr.programList.filter.state.active">Active</entry>
 <entry key="yukon.web.modules.dr.programList.filter.state.scheduled">Scheduled</entry>
 <entry key="yukon.web.modules.dr.programList.filter.state.inactive">Inactive</entry>
-<entry key="yukon.web.modules.dr.programList.filter.start">Start:</entry>
-<entry key="yukon.web.modules.dr.programList.filter.stop">Stop:</entry>
-<entry key="yukon.web.modules.dr.programList.filter.priority">Priority:</entry>
+<entry key="yukon.web.modules.dr.programList.filter.start">Start</entry>
+<entry key="yukon.web.modules.dr.programList.filter.stop">Stop</entry>
+<entry key="yukon.web.modules.dr.programList.filter.priority">Priority</entry>
 <entry key="yukon.web.modules.dr.programList.filter.loadCapacity">Load Capacity</entry>
 <entry key="yukon.web.modules.dr.programList.filter.submit">Filter</entry>
 <entry key="yukon.web.modules.dr.programList.filter.clear">Show All</entry>
@@ -591,7 +591,7 @@
 <!-- Program Detail -->
 <entry key="yukon.web.modules.dr.programDetail.pageTitle">Program {0}</entry>
 <entry key="yukon.web.modules.dr.programDetail.program">Program {0}</entry>
-<entry key="yukon.web.modules.dr.programDetail.heading.info">Info</entry>
+<entry key="yukon.web.modules.dr.programDetail.heading.info.title">Info</entry>
 <entry key="yukon.web.modules.dr.programDetail.info.state">State</entry>
 <entry key="yukon.web.modules.dr.programDetail.info.start">Start</entry>
 <entry key="yukon.web.modules.dr.programDetail.info.stop">Stop</entry>
@@ -599,12 +599,11 @@
 <entry key="yukon.web.modules.dr.programDetail.info.priority">Priority</entry>
 <entry key="yukon.web.modules.dr.programDetail.info.reduction">Reduction</entry>
 <entry key="yukon.web.modules.dr.programDetail.info.loadCapacity">Load Capacity</entry>
-<entry key="yukon.web.modules.dr.programDetail.heading.actions">Actions</entry>
+<entry key="yukon.web.modules.dr.programDetail.heading.actions.title">Actions</entry>
 <entry key="yukon.web.modules.dr.programDetail.noControl">You do not have permission to control this program</entry>
 <entry key="yukon.web.modules.dr.programDetail.unknown">This program is not in Load Management</entry>
 <entry key="yukon.web.modules.dr.programDetail.notRunning">This program is not running.</entry>
 <entry key="yukon.web.modules.dr.programDetail.alreadyRunning">This program is already running.</entry>
-<entry key="yukon.web.modules.dr.programDetail.start.imageUrl">/WebConfig/yukon/Icons/control_play_blue.png</entry>
 <entry key="yukon.web.modules.dr.programDetail.start.label">Start Program</entry>
 <entry key="yukon.web.modules.dr.programDetail.actions.start">Start Program</entry>
 <entry key="yukon.web.modules.dr.programDetail.actions.startIcon">/WebConfig/yukon/Icons/control_play_blue.png</entry>
@@ -635,11 +634,11 @@
 
 <entry key="yukon.web.modules.dr.programDetail.heading.loadGroups">Load Groups</entry>
 
-<entry key="yukon.web.modules.dr.programDetail.parents.controlArea">Control Area</entry>
+<entry key="yukon.web.modules.dr.programDetail.parents.controlArea.title">Control Area</entry>
 <entry key="yukon.web.modules.dr.programDetail.parents.noControlArea">
     This program is not included in a control area.
 </entry>
-<entry key="yukon.web.modules.dr.programDetail.parents.scenarios">Scenarios</entry>
+<entry key="yukon.web.modules.dr.programDetail.parents.scenarios.title">Scenarios</entry>
 <entry key="yukon.web.modules.dr.programDetail.parents.noScenarios">
     This program is not included in any scenarios.
 </entry>
@@ -655,12 +654,12 @@
 <entry key="yukon.web.modules.dr.loadGroupList.filter.to">to</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.filter.min">(min)</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.filter.max">(max)</entry>
-<entry key="yukon.web.modules.dr.loadGroupList.filter.name">Name:</entry>
-<entry key="yukon.web.modules.dr.loadGroupList.filter.state">State:</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.filter.name">Name</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.filter.state">State</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.filter.state.all">All</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.filter.state.active">Active</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.filter.state.inactive">Inactive</entry>
-<entry key="yukon.web.modules.dr.loadGroupList.filter.lastAction">Last Action:</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.filter.lastAction">Last Action</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.filter.loadCapacity">Load Capacity</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.filter.submit">Filter</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.filter.clear">Show All</entry>
@@ -673,14 +672,14 @@
 
 <!-- Load Group Detail -->
 <entry key="yukon.web.modules.dr.loadGroupDetail.pageTitle">Load Group {0}</entry>
-<entry key="yukon.web.modules.dr.loadGroupDetail.heading.info">Info</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.heading.info.title">Info</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.info.state">State</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.info.lastAction">Last Action</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.info.controlStatistics">Day/Month/Season/Year Hrs</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.info.reduction">Reduction</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.info.loadCapacity">Load Capacity</entry>
 
-<entry key="yukon.web.modules.dr.loadGroupDetail.heading.actions">Actions</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.heading.actions.title">Actions</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.unknown">This load group is not in Load Management</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.disabled">This load group is disabled and cannot be controlled.</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.noControl">You do not have permission to control this load group</entry>
@@ -708,13 +707,13 @@
 <entry key="yukon.web.modules.dr.loadGroupDetail.note.macroLoadGroup">This is a macro load group.</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.heading.loadGroups">Load Groups</entry>
 
-<entry key="yukon.web.modules.dr.loadGroupDetail.parents.programs">Programs</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.parents.programs.title">Programs</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.parents.noPrograms">
     This load group is not included in any programs.
 </entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.parents.noPermission">You do not have permission to view this program.</entry>
 
-<entry key="yukon.web.modules.dr.loadGroupDetail.parents.macroLoadGroups">Macro Load Groups</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.parents.macroLoadGroups.title">Macro Load Groups</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.parents.noMacroLoadGroups">
     This load group is not included in any macro load groups.
 </entry>

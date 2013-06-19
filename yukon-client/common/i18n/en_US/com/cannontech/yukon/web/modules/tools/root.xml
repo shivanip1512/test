@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+    <entry key="yukon.web.modules.tools.moduleName">Tools</entry>
+    
+    <!-- module wide key -->
+    <entry key="yukon.web.modules.tools.options.title">Options</entry>
+</properties>

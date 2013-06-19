@@ -18,24 +18,18 @@
     <entry key="yukon.web.modules.operator.hardware.list.pageDescription">{0}</entry>
     
     <!-- Action Images -->
-    <entry key="yukon.web.modules.operator.hardware.manual.imageUrl">/WebConfig/yukon/Icons/wrench.gif</entry>
     <entry key="yukon.web.modules.operator.hardware.manual.label">Manual Adjustment</entry>
     <entry key="yukon.web.modules.operator.hardware.manual.hoverText">Manual Adjustment</entry>
 
-    <entry key="yukon.web.modules.operator.hardware.editConfig.imageUrl">/WebConfig/yukon/Icons/cog_edit.gif</entry>
     <entry key="yukon.web.modules.operator.hardware.editConfig.label">Edit Configuration</entry>
     <entry key="yukon.web.modules.operator.hardware.editConfig.hoverText">Edit device configuration</entry>
     
-    <entry key="yukon.web.modules.operator.hardware.history.imageUrl">/WebConfig/yukon/Icons/time.gif</entry>
-    <entry key="yukon.web.modules.operator.hardware.history.hoverUrl">/WebConfig/yukon/Icons/time_over.gif</entry>
     <entry key="yukon.web.modules.operator.hardware.history.label">View History</entry>
     <entry key="yukon.web.modules.operator.hardware.history.hoverText">View Thermostat History</entry>
 
-    <entry key="yukon.web.modules.operator.hardware.savedSchedules.imageUrl">/WebConfig/yukon/Icons/clipboard.gif</entry>
     <entry key="yukon.web.modules.operator.hardware.savedSchedules.label">Schedules</entry>
     <entry key="yukon.web.modules.operator.hardware.savedSchedules.hoverText">View Schedules</entry>
 
-    <entry key="yukon.web.modules.operator.hardware.changeOut.imageUrl">/WebConfig/yukon/Icons/changeout.gif</entry>
     <entry key="yukon.web.modules.operator.hardware.changeOut.hoverText">Change out this device for a different device.</entry>
     <entry key="yukon.web.modules.operator.hardware.changeOut.label">Change Out Device</entry>
     
@@ -113,7 +107,7 @@
     <entry key="yukon.web.modules.operator.hardware.confirmationRequired">Confirmation Required</entry>
     <entry key="yukon.web.modules.operator.hardware.displayDuration">Display Duration</entry>
     <entry key="yukon.web.modules.operator.hardware.startTime">Scheduled Start Time</entry>
-    <entry key="yukon.web.modules.operator.hardware.hardwarePoints.title">Hardware Points</entry>
+    <entry key="yukon.web.modules.operator.hardware.hardwarePoints.title">Device Readings</entry>
     <entry key="yukon.web.modules.operator.hardware.pointName">Name</entry>
     <entry key="yukon.web.modules.operator.hardware.pointValue">Value</entry>
     <entry key="yukon.web.modules.operator.hardware.readNow.label">Read Now</entry>
@@ -168,8 +162,6 @@
     <entry key="yukon.web.modules.operator.hardware.switches.title">Switches</entry>
     <entry key="yukon.web.modules.operator.hardware.displayType.SWITCH">Switch Type</entry>
     <entry key="yukon.web.modules.operator.hardware.switches.none">No Switches</entry>
-    <entry key="yukon.web.modules.operator.hardware.switches.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
-    <entry key="yukon.web.modules.operator.hardware.switches.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
     <entry key="yukon.web.modules.operator.hardware.switches.add.hoverText">Add a switch to this account.</entry>
     <entry key="yukon.web.modules.operator.hardware.switches.add">Add Switch</entry>
     
@@ -177,8 +169,6 @@
     <entry key="yukon.web.modules.operator.hardware.thermostats.title">Thermostats</entry>
     <entry key="yukon.web.modules.operator.hardware.displayType.THERMOSTAT">Thermostat Type</entry>
     <entry key="yukon.web.modules.operator.hardware.thermostats.none">No Thermostats</entry>
-    <entry key="yukon.web.modules.operator.hardware.thermostats.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
-    <entry key="yukon.web.modules.operator.hardware.thermostats.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
     <entry key="yukon.web.modules.operator.hardware.thermostats.add.hoverText">Add a thermostat to this account.</entry>
     <entry key="yukon.web.modules.operator.hardware.thermostats.add">Add Thermostat</entry>
     <entry key="yukon.web.modules.operator.hardware.thermostats.selectMultiple">Select Multiple</entry>
@@ -204,15 +194,12 @@
     <entry key="yukon.web.modules.operator.hardware.decommission.disabled.hoverText">Device must be assigned to a gateway to use the Decommission command</entry>
     <entry key="yukon.web.modules.operator.hardware.decommission.disabled.label">Decommission</entry>
 
-    <entry key="yukon.web.modules.operator.hardware.textMessage.imageUrl">/WebConfig/yukon/Icons/phone_sound.png</entry>
     <entry key="yukon.web.modules.operator.hardware.textMessage.hoverText">Send a text message to the gateway</entry>
     <entry key="yukon.web.modules.operator.hardware.textMessage.label">Send Text Message</entry>
 
-    <entry key="yukon.web.modules.operator.hardware.assignedDevices.commission.imageUrl">/WebConfig/yukon/Icons/enable.gif</entry>
     <entry key="yukon.web.modules.operator.hardware.assignedDevices.commission.hoverText">Commission this device</entry>
     <entry key="yukon.web.modules.operator.hardware.assignedDevices.commission.label">Commission</entry>
 
-    <entry key="yukon.web.modules.operator.hardware.assignedDevices.decommission.imageUrl">/WebConfig/yukon/Icons/disable.gif</entry>
     <entry key="yukon.web.modules.operator.hardware.assignedDevices.decommission.hoverText">Decommission this device</entry>
     <entry key="yukon.web.modules.operator.hardware.assignedDevices.decommission.label">Decommission</entry>
     
@@ -240,8 +227,6 @@
     <entry key="yukon.web.modules.operator.hardware.displayType.METER">Meter Type</entry>
     <entry key="yukon.web.modules.operator.hardware.meters.none">No Meters</entry>
     <entry key="yukon.web.modules.operator.hardware.meters.meterNumber">Meter Number</entry>
-    <entry key="yukon.web.modules.operator.hardware.meters.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
-	<entry key="yukon.web.modules.operator.hardware.meters.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
 	<entry key="yukon.web.modules.operator.hardware.meters.add.hoverText">Add a meter to this account.</entry>
 	<entry key="yukon.web.modules.operator.hardware.meters.add">Add Meter</entry>
     
@@ -252,8 +237,6 @@
     <entry key="yukon.web.modules.operator.hardware.gateways.connectedDevice">Connected Device</entry>
     <entry key="yukon.web.modules.operator.hardware.gateways.none">No Gateways</entry>
     <entry key="yukon.web.modules.operator.hardware.gateways.gatewayMac">Gateway Mac</entry>
-    <entry key="yukon.web.modules.operator.hardware.gateways.add.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
-	<entry key="yukon.web.modules.operator.hardware.gateways.add.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
 	<entry key="yukon.web.modules.operator.hardware.gateways.add.hoverText">Add a gateway to this account.</entry>
 	<entry key="yukon.web.modules.operator.hardware.gateways.add">Add Gateway</entry>
     

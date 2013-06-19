@@ -4,6 +4,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="dr" page="loadGroupDetail">
 
@@ -12,26 +13,21 @@
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <dr:favoriteIconSetup/>
-	
-	<c:set var="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
-	<tags:layoutHeadingPrefixPart>
-		<dr:favoriteIcon paoId="${loadGroupId}" isFavorite="${isFavorite}"/>
-	</tags:layoutHeadingPrefixPart>
-	
-    <table class="widgetColumns">
-        <c:if test="${loadGroup.paoIdentifier.paoType != 'MACRO_GROUP'}">
-        <tr>
-            <td class="widgetColumnCell first" valign="top">
 
+    <c:set var="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
+    <tags:layoutHeadingPrefixPart>
+        <dr:favoriteIcon paoId="${loadGroupId}" isFavorite="${isFavorite}"/>
+    </tags:layoutHeadingPrefixPart>
+
+    <c:if test="${loadGroup.paoIdentifier.paoType != 'MACRO_GROUP'}">
+        <div class="column_12_12">
+        <div class="column one">
                 <%-- Load Group Info section --%>
-
-                <div class="widgetContainer">
-                <cti:msg var="boxTitle" key="yukon.web.modules.dr.loadGroupDetail.heading.info"/>
-                <tags:abstractContainer type="box" title="${boxTitle}">
+                <tags:boxContainer2 nameKey="heading.info">
                     <tags:nameValueContainer>
                         <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.state"/>
                         <cti:checkRolesAndProperties value="LOAD_GROUP_STATE">
-                            <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
+                            <tags:nameValue name="${fieldName}">
                                 <dr:loadGroupState loadGroupId="${loadGroupId}"/>
                             </tags:nameValue>
                         </cti:checkRolesAndProperties>
@@ -62,20 +58,16 @@
                         </cti:checkRolesAndProperties>
                         --%>
                     </tags:nameValueContainer>
-                </tags:abstractContainer>
-                </div>
-            </td>
-            <td class="widgetColumnCell last" valign="top">
-                <cti:msg var="boxTitle" key="yukon.web.modules.dr.loadGroupDetail.heading.actions"/>
-
+                </tags:boxContainer2>
+            </div>
+            <div class="column two nogutter">
                 <%--
                     Load Group Actions section each action has a simpleDialogLink that
                     pops open a dialog for the action.  The available actions are based
                     on the dynamically updated SHOW_ACTION value
                 --%>
 
-                <div class="widgetContainer">
-                <tags:abstractContainer type="box" title="${boxTitle}">
+                <tags:boxContainer2 nameKey="heading.actions">
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${loadGroup}">
 
                         <%-- Actions are enabled only if the user has CONTROL_COMMAND for LM objects --%>
@@ -169,35 +161,26 @@
                             <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.disable"/>
                         </div>
                     </cti:checkPaoAuthorization>
-                </tags:abstractContainer>
-                </div>
-            </td>
-        </tr>
+                </tags:boxContainer2>
+            </div>
+            </div>
         </c:if>
 
         <%-- Child Load Groups for the Macro Load Group --%>
         <c:if test="${loadGroup.paoIdentifier.paoType == 'MACRO_GROUP'}">
-        <tr>
-            <td class="widgetColumnCell" colspan="2">
                 <div class="widgetContainer">
-                    <p><cti:msg key="yukon.web.modules.dr.loadGroupDetail.note.macroLoadGroup"/></p><br>
-
-                    <cti:msg var="boxTitle" key="yukon.web.modules.dr.loadGroupDetail.heading.loadGroups"/>
+                    <i:inline key=".note.macroLoadGroup"/>
                     <c:set var="baseUrl" value="/dr/loadGroup/detail"/>
                     <%@ include file="../loadGroup/loadGroupList.jspf" %>
                 </div>
-            </td>
-        </tr>
         </c:if>
 
         <%-- Parent Programs and macro load groups --%>
-        <tr>
-            <td class="widgetColumnCell first" valign="top">
-                <div class="widgetContainer">
-                    <cti:msg var="boxTitle" key="yukon.web.modules.dr.loadGroupDetail.parents.programs"/>
-                    <tags:abstractContainer title="${boxTitle}" type="box">
+        <div class="column_12_12">
+            <div class="column one">
+                    <tags:boxContainer2 nameKey="parents.programs">
                         <c:if test="${empty parentPrograms}">
-                            <p><cti:msg key="yukon.web.modules.dr.loadGroupDetail.parents.noPrograms"/></p>
+                            <span class="empty-list"><cti:msg key="yukon.web.modules.dr.loadGroupDetail.parents.noPrograms"/></span>
                         </c:if>
                         <c:if test="${!empty parentPrograms}">
                             <c:forEach var="parentProgram" items="${parentPrograms}">
@@ -215,15 +198,12 @@
                                 </cti:checkPaoAuthorization>
                             </c:forEach>
                         </c:if>
-                    </tags:abstractContainer>
-                </div>
-            </td>
-            <td class="widgetColumnCell last" valign="top">
-                <div class="widgetContainer">
-                    <cti:msg var="boxTitle" key="yukon.web.modules.dr.loadGroupDetail.parents.macroLoadGroups"/>
-                    <tags:abstractContainer title="${boxTitle}" type="box">
+                    </tags:boxContainer2>
+            </div>
+            <div class="column two nogutter">
+                    <tags:boxContainer2 nameKey="parents.macroLoadGroups">
                         <c:if test="${empty parentLoadGroups}">
-                            <p><cti:msg key="yukon.web.modules.dr.loadGroupDetail.parents.noMacroLoadGroups"/></p>
+                            <span class="empty-list"><cti:msg key="yukon.web.modules.dr.loadGroupDetail.parents.noMacroLoadGroups"/></span>
                         </c:if>
                         <c:if test="${!empty parentLoadGroups}">
                             <c:forEach var="parentLoadGroup" items="${parentLoadGroups}">
@@ -241,9 +221,7 @@
                                 </cti:checkPaoAuthorization>
                             </c:forEach>
                         </c:if>
-                    </tags:abstractContainer>
-                </div>
-            </td>
-        </tr>
-    </table>
+                    </tags:boxContainer2>
+            </div>
+        </div>
 </cti:standardPage>

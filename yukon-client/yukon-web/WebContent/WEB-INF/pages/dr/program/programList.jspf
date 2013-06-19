@@ -35,118 +35,68 @@
 
 <%-- Program filtering popup section --%>
 
-<cti:msg var="filterLabel"
-	key="yukon.web.modules.dr.programList.filters" />
+<cti:msg var="filterLabel" key="yukon.web.modules.dr.programList.filters" />
 <tags:simplePopup id="filterPopup" title="${filterLabel}">
     <cti:flashScopeMessages/>
 
 	<form:form action="${submitUrl}" commandName="backingBean" method="get">
 		<c:if test="${!empty param.controlAreaId}">
-			<input type="hidden" name="controlAreaId"
-				value="${param.controlAreaId}" />
+			<input type="hidden" name="controlAreaId" value="${param.controlAreaId}" />
 		</c:if>
 		<c:if test="${!empty param.scenarioId}">
 			<input type="hidden" name="scenarioId" value="${param.scenarioId}" />
 		</c:if>
 		<tags:sortFields backingBean="${backingBean}" />
-		<cti:msg var="minStr"
-			key="yukon.web.modules.dr.programList.filter.min" />
-		<cti:msg var="maxStr"
-			key="yukon.web.modules.dr.programList.filter.max" />
+		<cti:msg var="minStr" key="yukon.web.modules.dr.programList.filter.min" />
+		<cti:msg var="maxStr" key="yukon.web.modules.dr.programList.filter.max" />
 		<cti:msg var="toStr" key="yukon.web.modules.dr.programList.filter.to" />
 
-		<table cellspacing="10">
-			<tr>
-				<cti:msg var="fieldName"
-					key="yukon.web.modules.dr.programList.filter.name" />
-				<td>${fieldName}</td>
-				<td><form:input path="name" size="40" /></td>
-				<cti:checkRolesAndProperties value="PROGRAM_STATE">
-					<cti:msg var="fieldName"
-						key="yukon.web.modules.dr.programList.filter.state" />
-					<td>${fieldName}</td>
-					<td><form:select path="state">
-						<form:option value="ALL">
-							<cti:msg key="yukon.web.modules.dr.programList.filter.state.all" />
-						</form:option>
-						<form:option value="ACTIVE">
-							<cti:msg
-								key="yukon.web.modules.dr.programList.filter.state.active" />
-						</form:option>
-						<form:option value="SCHEDULED">
-							<cti:msg
-								key="yukon.web.modules.dr.programList.filter.state.scheduled" />
-						</form:option>
-						<form:option value="INACTIVE">
-							<cti:msg
-								key="yukon.web.modules.dr.programList.filter.state.inactive" />
-						</form:option>
-					</form:select></td>
-				</cti:checkRolesAndProperties>
-			</tr>
-
+		<tags:nameValueContainer>
+			<cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.name" />
+			<tags:nameValue name="${fieldName}">
+                <form:input path="name" size="40" />
+			</tags:nameValue>
+			<cti:checkRolesAndProperties value="PROGRAM_STATE">
+				<cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.state" />
+				<tags:nameValue name="${fieldName}">
+				    <form:select path="state">
+                        <form:option value="ALL"><cti:msg key="yukon.web.modules.dr.programList.filter.state.all" /></form:option>
+                        <form:option value="ACTIVE"><cti:msg key="yukon.web.modules.dr.programList.filter.state.active" /></form:option>
+                        <form:option value="SCHEDULED"><cti:msg key="yukon.web.modules.dr.programList.filter.state.scheduled" /></form:option>
+                        <form:option value="INACTIVE"><cti:msg key="yukon.web.modules.dr.programList.filter.state.inactive" /></form:option>
+				    </form:select>
+				</tags:nameValue>
+			</cti:checkRolesAndProperties>
 			<cti:checkRolesAndProperties value="PROGRAM_START,PROGRAM_PRIORITY">
-				<tr>
-					<cti:checkRolesAndProperties value="PROGRAM_START">
-						<cti:msg var="fieldName"
-							key="yukon.web.modules.dr.programList.filter.start" />
-						<td>${fieldName}</td>
-						<td>
-						    <table>
-						        <tr>
-									<dt:dateRange startPath="start.min" endPath="start.max" >
-										${toStr}
-									</dt:dateRange>
-						        </tr>
-						    </table>
-					    </td>
-					</cti:checkRolesAndProperties>
-
-					<cti:checkRolesAndProperties value="PROGRAM_PRIORITY">
-						<cti:msg var="fieldName"
-							key="yukon.web.modules.dr.programList.filter.priority" />
-						<td>${fieldName}</td>
-						<td>
-                            <table>
-                                <tr>
-                                    <td><tags:input path="priority.min" size="5" />&nbsp;${minStr}</td>
-                                    <td><tags:input path="priority.max" size="5" />&nbsp;${maxStr}</td>
-                                </tr>
-                            </table>
-                        </td>
-					</cti:checkRolesAndProperties>
-				</tr>
+				<cti:checkRolesAndProperties value="PROGRAM_START">
+					<cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.start" />
+					<tags:nameValue name="${fieldName}">
+                        <dt:dateRange startPath="start.min" endPath="start.max" ><span class="fl" style="margin-right: 5px;">${toStr}</span></dt:dateRange>
+                    </tags:nameValue>
+				</cti:checkRolesAndProperties>
+				<cti:checkRolesAndProperties value="PROGRAM_PRIORITY">
+					<cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.priority" />
+					<tags:nameValue name="${fieldName}">
+					   <tags:input path="priority.min" size="5" />&nbsp;${minStr}
+                       <tags:input path="priority.max" size="5" />&nbsp;${maxStr}
+                    </tags:nameValue>
+				</cti:checkRolesAndProperties>
 			</cti:checkRolesAndProperties>
 
-			<cti:checkRolesAndProperties
-				value="PROGRAM_STOP,PROGRAM_LOAD_CAPACITY">
-				<tr>
-					<cti:checkRolesAndProperties value="PROGRAM_STOP">
-						<cti:msg var="fieldName"
-							key="yukon.web.modules.dr.programList.filter.stop" />
-						<td>${fieldName}</td>
-                        <td>
-                            <table>
-                                <tr>
-									<td>
-										<dt:dateRange startPath="stop.min" endPath="stop.max" >
-											${toStr}
-										</dt:dateRange>
-									</td>
-                                </tr>
-                            </table>
-                        </td>
-					</cti:checkRolesAndProperties>
-				</tr>
+			<cti:checkRolesAndProperties value="PROGRAM_STOP,PROGRAM_LOAD_CAPACITY">
+				<cti:checkRolesAndProperties value="PROGRAM_STOP">
+					<cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.stop" />
+					<tags:nameValue name="${fieldName}">
+                        <dt:dateRange startPath="stop.min" endPath="stop.max" ><span class="fl" style="margin-right: 5px;">${toStr}</span></dt:dateRange>
+                    </tags:nameValue>
+                </cti:checkRolesAndProperties>
 			</cti:checkRolesAndProperties>
-		</table>
-
-		<br>
-		<div class="actionArea"><input type="submit"
-			value="<cti:msg key="yukon.web.modules.dr.programList.filter.submit"/>" />
-		<input type="button"
-			value="<cti:msg key="yukon.web.modules.dr.programList.filter.clear"/>"
-			onclick="javascript:clearFilter()" /></div>
+		</tags:nameValueContainer>
+		
+		<div class="actionArea">
+            <cti:button nameKey="filter" classes="primary action" type="submit"/>
+            <cti:button nameKey="showAll" onclick="javascript:clearFilter()"/>
+        </div>
 	</form:form>
 </tags:simplePopup>
 

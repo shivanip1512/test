@@ -127,7 +127,7 @@ YEvent.observeSelectorClick('.bulkInject', function(event) {
         </tags:nameValue2>
     </tags:nameValueContainer2>
     <div class="pageActionArea">
-        <cti:button nameKey="send" type="submit" styleClass="bulkInject f_blocker" />
+        <cti:button nameKey="send" type="submit" classes="bulkInject f_blocker" />
     </div>
 </form:form>
 </cti:standardPage>

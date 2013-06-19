@@ -55,15 +55,15 @@ jQuery(function(){
 </style>
 --%>
 
-<div class="centeredContainer twoThirds box clear dashboard">
+<div class="box clear dashboard">
     <form:form action="/adminSetup/config/update" id="settingsForm" method="post">
         <form:hidden path="category"/>
         
         
-        <div class="clear_both oh">
+        <div class="clear oh">
 	        <div class="category">
 	            <cti:url value="edit" var="category_url"><cti:param name="category" value="${category}"/></cti:url>
-	            <a href="${category_url}" class="medium_icon fl ${category_icon}"></a>
+	            <a href="${category_url}" class="icon medium-icon fl ${category_icon}"></a>
 	            <div class="box fl meta">
 	                <a class="title" href="javascript:void(0);"><i:inline key="yukon.common.setting.subcategory.${category}"/></a>
 	                <br/>
@@ -132,7 +132,7 @@ jQuery(function(){
         </div>
         <div class="pageActionArea stickyPanel" style="min-height: 24px;">
             <div>
-                <cti:button nameKey="save" name="save" type="submit"/>&nbsp;
+                <cti:button nameKey="save" name="save" type="submit" classes="primary action"/>&nbsp;
                 <cti:button nameKey="cancel" name="cancel" href="view"/>
             </div>
         </div>

@@ -15,15 +15,13 @@
 <%@ attribute name="dataJson" required="false" type="java.lang.String"%>
 
 <%-- POPUP WINDOW SETUP --%>
-<%-- width and height are used to size the popup its rendered in --%>
 <%-- buttonsList is used to add buttons (with handlers) to the window. It is not required. --%>
 <%-- windowAttributes should be convertable to a js hash and contains any configs to override default window panel configs --%>
 <%-- It should be in form of a list of hash. buttonsList should look something like this:  --%>
-<%-- [{text:'Button 1', handler:doAction1();},{text:'Button 2', handler:doAction1();}] --%>
+<%-- [{text:'Button 1', click:doAction1();},{text:'Button 2', click:doAction1();}] --%>
 <%-- where doAction1() and doAction2() are javascript functions in your jsp --%>
 <%@ attribute name="title" required="false" type="java.lang.String"%>
-<%@ attribute name="width" required="true" type="java.lang.Integer"%>
-<%@ attribute name="height" required="true" type="java.lang.Integer"%>
+<%@ attribute name="maxHeight" required="false" type="java.lang.Integer" description="The max-height in pixels for the internal tree div. Example: maxHeight='300'. Defaults is 500."%>
 <%@ attribute name="windowAttributes" required="false" type="java.lang.String"%>
 <%@ attribute name="buttonsList" required="false" type="java.lang.String"%>
 
@@ -41,10 +39,9 @@
                  treeParameters="${treeParameters}"
                  highlightNodePath="${highlightNodePath}"
                  dataJson="${dataJson}"
-                 width="${width}"
-                 height="${height}"
+                 maxHeight="${pageScope.maxHeight}"
                  includeControlBar="${includeControlBar}"
-                 styleClass="${styleClass} popupTree"
+                 styleClass="${styleClass} popupTree contained"
                  multiSelect="${multiSelect}" />
         </div>
     </div>
@@ -69,14 +66,14 @@
         
         var args = {
                 modal: true,
-                width: ${width} + 16,
                 <c:if test="${not empty pageScope.title}">
                 title: "${title}",
                 </c:if>
+                minWidth: 300,
                 buttons: buttons,
-                resizable: false,
+                resizable: true,
                 autoOpen: false,
-                draggable: false
+                draggable: true
             };
         
         <c:if test="${!empty pageScope.windowAttributes}">

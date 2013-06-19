@@ -50,7 +50,7 @@
                         <td>${task.numberOfItems}</td>
                         
                         <td class="removeColumn">
-                            <tags:widgetActionRefreshImage method="delete" taskId="${task.inventoryConfigTaskId}"
+                            <tags:widgetActionRefreshImage method="delete" taskId="${task.inventoryConfigTaskId}" icon="icon-cross"
                                                            nameKey="delete" arguments="${task.taskName}" showConfirm="true"/>
                         </td>
                         

@@ -1,8 +1,8 @@
 function checkPageExpire() {
-	var paoIds = [];
-	jQuery("input[id^='paoId_']").each(function() {
-		paoIds.push(jQuery(this).val());
-	});
+    var paoIds = [];
+    jQuery("input[id^='paoId_']").each(function() {
+        paoIds.push(jQuery(this).val());
+    });
     
     jQuery.ajax({
         url: "/capcontrol/pageExpire",
@@ -10,7 +10,7 @@ function checkPageExpire() {
         success: function(data) {
             var expired = eval(data);
             if (expired) {
-                jQuery("#updatedWarning").show();
+            jQuery("#updatedWarning").dialog("open");
                 return;    
             }
             setTimeout(checkPageExpire, 15000);
@@ -22,28 +22,29 @@ function getCommandMenu(id, event) {
     getMenuFromURL('/capcontrol/menu/commandMenu?id=' + id, event);
 }
 
+//TODO FIX ME!!
 function showDialog(title, url) {
-	Yukon.ui.blockPage();
-	jQuery.ajax({
-		url: url,
-		success: function(data, status, raw){
-			if (data && data.action == 'close') {
-				jQuery("#contentPopup").dialog('close');
-	    	} else {
-	    		jQuery("#contentPopup").removeClass("simplePopup").html(data);
-	    		jQuery("#contentPopup").dialog({
-	    			title: title,
-	    			resizable: false,
-	    			width: 800,
-	    			position: ["center", 50]
-	    		});
-	    	}
-			Yukon.ui.unblockPage();
-		},
-		error: function(){
-			Yukon.ui.unblockPage();
-		}
-	});
+    Yukon.ui.blockPage();
+    jQuery.ajax({
+        url: url,
+        success: function(data, status, raw){
+            if (data && data.action == 'close') {
+                jQuery("#contentPopup").dialog('close');
+            } else {
+                jQuery("#contentPopup").removeClass("simplePopup").html(data);
+                jQuery("#contentPopup").dialog({
+                    title: title,
+                    resizable: false,
+                    width: 800,
+                    position: ["center", 50]
+                });
+            }
+            Yukon.ui.unblockPage();
+        },
+        error: function(){
+            Yukon.ui.unblockPage();
+        }
+    });
 }
 
 function getMovedBankMenu(id, event) {
@@ -51,28 +52,28 @@ function getMovedBankMenu(id, event) {
 }
 
 function getMenuFromURL(url, event, params) {
-	/*
-	 *  In IE the event does not pass through the ajax request
-	 *  so the attributes of the event need to be set and passed
-	 *  as variables.
-	 */
+    /*
+     *  In IE the event does not pass through the ajax request
+     *  so the attributes of the event need to be set and passed
+     *  as variables.
+     */
     
     if (typeof(params) != 'undefined') {
-    	if (!("position" in params)) {
-    		params.position = [event.pageX, event.pageY];
-    	}
-    	if (!("modal" in params)) {
-    		params.modal = false;
-    	}
+        if (!("position" in params)) {
+            params.position = [event.pageX, event.pageY];
+        }
+        if (!("modal" in params)) {
+            params.modal = false;
+        }
     } else {
-    	params = {position: [event.clientX, event.clientY], modal: false};
+        params = {position: [event.clientX, event.clientY], modal: false};
     }
     
     jQuery.ajax({
         url: url,
         complete: function(data) {
-        	jQuery("#menuPopup").html(data.responseText);
-        	showMenuPopup(params);
+            jQuery("#menuPopup").html(data.responseText);
+            showMenuPopup(params);
         }
     });
 }
@@ -97,49 +98,19 @@ jQuery(document).on('click', 'div.dynamicTableWrapper .bankAddItem', function(ev
 });
 
 function hideMenu() {
-	jQuery('#menuPopup').dialog("close");
+    jQuery('#menuPopup').dialog("close");
 }
 
 function hideContentPopup() {
-	jQuery('#contentPopup').hide();
+    jQuery('#contentPopup').dialog("close");
 }
 
 function checkAll(allCheckBox, selector) {
     jQuery(selector).prop("checked", allCheckBox.checked);
 }
 
-function expandRow(itemId, imgId) {
-    var img = jQuery("#" + imgId)[0];
-    var expand = false;
-    if (img.src.indexOf('nav-minus.gif') > 0) {
-        img.src='/WebConfig/yukon/da/nav-plus.gif';
-    } else {
-        img.src = '/WebConfig/yukon/da/nav-minus.gif';
-        expand = true;
-    }
-
-    if (expand) {
-    	jQuery("#" + itemId + " tr").show();
-    } else {
-    	jQuery("#" + itemId + " tr").hide();
-    }
-}
-
-function statusMsgAbove(elem, message) {
-    elem.onmouseout = function (e) {nd();};
-    overlib(message, ABOVE,  WIDTH, 260, CSSCLASS, TEXTFONTCLASS, 'flyover detail');
-}
-
-function showDynamicPopup(containerId, popupWidth) {
-    overlib(jQuery("#" + containerId).html(), WIDTH, popupWidth, CSSCLASS, TEXTFONTCLASS, 'flyover detail');
-}
-
-function showDynamicPopupAbove(containerId, popupWidth) {
-    overlib(jQuery("#" + containerId).html(), ABOVE, WIDTH, popupWidth, CSSCLASS, TEXTFONTCLASS, 'flyover detail');
-}
-
 function addLockButtonForButtonGroup (groupId, secs) {
-	jQuery(document).ready(function() {
+    jQuery(document).ready(function() {
         var buttons = jQuery("#" + groupId + " input");
 
         for (var i=0; i<buttons.length; i++) {
@@ -147,44 +118,26 @@ function addLockButtonForButtonGroup (groupId, secs) {
         }
     });
     
-    if (secs != null) {
-        pause(secs * 1000);
-    }
 }
 
 function lock_buttons(el_id) {
-	//el_id comes in looking like this: "editorForm:hdr_submit_button_1"
-	jQuery(document.getElementById(el_id)).click(function() {
-		jQuery("input.stdButton").each(function() {
-			if (this.id != el_id) {
-				this.disabled = true;
-			} else {
-				setTimeout("jQuery(\"[id='" + el_id + "']\")[0].disabled=true;", 1);
-			}
-		});
-	});
+    //el_id comes in looking like this: "editorForm:hdr_submit_button_1"
+    jQuery(document.getElementById(el_id)).click(function() {
+        jQuery("input.stdButton").each(function() {
+            if (this.id != el_id) {
+                this.disabled = true;
+            } else {
+                setTimeout("jQuery(\"[id='" + el_id + "']\")[0].disabled=true;", 1);
+            }
+        });
+    });
 }
 
 function lockButtonsPerSubmit (groupId) {
     jQuery("#" + groupId + " input").each(function() {
-    	this.disabled = true;
+        this.disabled = true;
     });
 }
-
-function pause(numberMillis) {
-    var now = new Date();
-    var exitTime = now.getTime() + numberMillis;
-    while (true) {
-        now = new Date();
-        if (now.getTime() > exitTime) {
-            return;
-        }
-    }
-}
-
-function onGreyBoxClose() {
-    window.location.href = window.location.href;
- }
 
 function showAlertMessageForAction(action, item, result, success) {
     if (action != '') {
@@ -214,7 +167,7 @@ function showMessage(message) {
 }
 
 function hideAlertMessage() {
-	jQuery('#alertMessageContainer').hide("fade", {}, 3000);
+    jQuery('#alertMessageContainer').hide("fade", {}, 3000);
 }
 
 //BANK MOVE JS

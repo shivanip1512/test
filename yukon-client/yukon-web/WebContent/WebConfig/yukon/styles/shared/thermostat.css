@@ -1,90 +1,66 @@
-.dn {display:none;}
-.fl {float:left;}
-.fr {float:right;}
-.vh {visibility: hidden;}
+.schedules {margin-bottom: 45px; overflow:hidden;}
+ul.schedules > li {position: relative; float: left; display: block; clear: both; margin-bottom: 20px; padding: 10px 10px 0;}
 
-.schedule {overflow: hidden; float: left; clear: both; padding-bottom: 20px; margin-bottom: 20px;}
-.schedule:after {clear: both;content: ".";display: block;height: 0;line-height: 0;visibility: hidden}
+.schedule {padding: 20px; display: inline-block;overflow: hidden; float: left; clear: both;}
+.schedule .heading {border-bottom: 1px solid #ccc;}
+.schedule .heading h4 {margin-bottom: 5px;}
 
-.schedule .labels {display:none;}
-.schedule .periods, .schedule .labels {overflow:hidden; float: left;}
-.schedule.small .labels {display: inherit;}
-.schedule .period, .schedule .info {float: left;}
-.schedule .period {margin-left: -1px;}
+.row {clear: both; display: block; overflow:hidden;margin:3px 0;}
 
-/*LARGE FORMAT*/
-.schedule .F span.C, .schedule .C span.F {display: none;}
-.schedule .info {width: 70px;}
-.schedule .temp small {float:none; display: block;}
-.schedule .heat {background-color: orange; border-radius: 5px 0 0 5px; -moz-border-radius: 5px 0 0 5px; -webkit-border-radius: 5px 0 0 5px;}
-.schedule.editor .heat {border-radius: 0; -moz-border-radius: 0; -webkit-border-radius: 0;}
-.schedule .cool {background-color: lightBlue; border-radius: 0 5px 5px 0; -moz-border-radius: 0 5px 5px 0; -webkit-border-radius: 0 5px 5px 0;}
-.schedule .name {color: green; font-size: 12px;}
-.schedule .time {font-size: 18px;}
-.schedule.small .days{margin: 10px 0; width: 615px; overflow: hidden;}
-.schedule .day {clear: both; display: block; overflow:hidden;}
-.schedule .actions {overflow: hidden; clear: both; margin: 10px 0; max-width: 560px;}
-.schedule .actions {margin: 10px 0 10px 38px;}
-.schedule .actions button {font-size: 12px;}
-.schedule .period {padding: 10px; width: 180px;}
-.schedule .labels .period {border-bottom: dotted 1px #ccc; color: green; font-size: 12px; padding: 10px 10px 5px;}
-.schedule.small .label {padding: 0; margin-top: 5px; margin-right: 5px; font-size: 10px; text-align:right; height: 1em; width: 33px;}
-.schedule .label {color: green; font-size: 12px;}
-.schedule .odd .period {background: #efefef;}
-.schedule .even .period {background: white;}
-.schedule .temp {float: left; padding: 2px 2px; border: solid 1px #CCC; color: #fff; text-align: center; width: 30px; font-size: 10px;}
+.periods, .labels {overflow:hidden; float: left;}
+.labels {margin: 5px 0  0 25px;}
+.row-label {font-style: italic;padding: 0;text-align:right;width: 33px;background-color: #fff;padding-right: 5px;}
+.time-label, .temp-label {float:left; text-align: center;}
+.time-label {font-weight:bold;width:70px;}
+.temp-label {width:45px;}
 
-/*SMALL FORMAT*/
-.schedule.small .labels .temp {border: none; background: white; color: green;}
-.schedule.small .labels * {border: none !important; padding-top: 0 !important; padding-bottom: 0 !important;}
-.schedule.small .temp input {font-size: 10px; width: 23px; text-align:right; border: none; padding: 0;}
-.schedule.small .info {width:60px; float: left;}
-.schedule.small .info input {font-size: 10px; width: 55px; text-align: right;}
-.schedule.small .temp small {display: none;}
-.schedule.small .heat {background-color: orange; padding-left: 4px;}
-.schedule.small .cool {background-color: lightBlue; padding-right: 4px;}
-.schedule.small .name {color: green; font-size: 10px;}
-.schedule.small .time {font-size: 10px; text-align:right; padding: 3px 2px 2px 0;}
-.schedule.editor .time{padding: 0;}
-.schedule.editor .time {padding: 2px 2px; border-radius: 5px 0 0 5px; -moz-border-radius: 5px 0 0 5px; -webkit-border-radius: 5px 0 0 5px; border: solid 1px #ccc;}
-.schedule.editor .time input {border: none;padding: 0;height: 18px; /* the degree mark bumps the temp heights from 13px to 18px for some reason */}
-.schedule.small {margin-top: -1px; border-top: dotted 1px #ccc; padding: 20px; display: inline-block;}
-.schedule.small .period {padding: 2px 0; width: 145px;}
-.schedule.small .period .name {display:none;}
-.schedule ul.schedules > li {position: relative; float: left; display: block; clear: both; margin-bottom: 20px; padding: 10px 10px 0;}
-.schedule .heading {font-size: 16px; margin: 0 0 5px 38px; border-bottom: solid 1px #DDD;}
-.schedule li.current {border: solid 1px #666;}
-.schedule li.current .helper {margin: 0 0 15px; background: lightYellow; font-style: italic; padding: 5px 10px; font-size: 12px; border: solid 1px orange;}
-.schedule .type {font-size: 12px; position: absolute; top: 8px; right: 14px;}
-.schedule .heading .editor {float: left;}
-.schedule .schedules {margin-bottom: 45px; overflow:hidden;}
-.schedule .schedule div.simplePopup {width: 630px;}
-.schedule .title.current small {color: green; font-style:normal; font-weight:bold;}
-.schedule .icon_labeled{padding: 2px 0 5px 20px; margin-right: 10px; text-decoration: none !important; font-size: 12px; cursor: pointer; color: #666 !important;}
-.schedule .icon_labeled:hover {color: #000 !important;}
-.schedule a.edit {background: transparent url(../../Icons/edit.gif) top left no-repeat;}
-.schedule a.send {background: transparent url(../../Icons/lightning_go.gif) top left no-repeat;}
-.schedule a.save {background: transparent url(../../Icons/accept.png) top left no-repeat;}
-.schedule a.cancel {background: transparent url(../../Icons/cancel.gif) left top no-repeat;}
-.schedule a.default {background: transparent url('http://cdn5.iconfinder.com/data/icons/fugue/bonus/icons-24/ui-color-picker-default.png') left top no-repeat;}
-.schedule .editing .editor {display: inherit;}
-.slider {position: fixed; width: 250px; height: 29px; background: white; border: solid 4px #333; box-shadow: 0 0 5px rgba(0,0,0,0.5); z-index: 1001; left:-999em;   /* scriptaculous in all its wonderfulness can't handle elements being hidden on creation. */ border-radius: 8px; -moz-border-radius: 8px; -webkit-border-radius: 8px; font-size: 10px;}
-.slider .ui-slider-handle {height: 20px; width: 20px; background: transparent url(../../Icons/slider-handle.png) top left no-repeat; margin-top: -7px; margin-left: -10px;}
-.slider .track {width: 230px; height: 1px; border: solid 1px #666; background-color: #999; position: absolute; left: 9px; top: 19px;}
-.slider .label {margin: 0 5px;}
-.slider .startLabel, .slider .endLabel {margin: 0 5px;}
-.chevron {font-size: 0; height: 0; line-height: 0; border-style: solid; border-color: transparent; /* chevron color */ border-bottom-color: #333; /* for left pointers, right border is 0 */ border-width: 0 23px 16px; float: left; margin: -20px 100px;}
-.schedule .pad {padding: 15px;}
-.schedule .help ol {list-style: decimal; padding-left: 20px;}
-.schedule .help ol li {margin: 0 0 15px;}
+.period {width: 165px;}
+.period, .info {float: left;height: 24px;}
+.info .time, .row-label {line-height: 24px;margin-right: 5px;}
+
+.temp {float: left; padding: 2px; border: solid 1px #CCC; color: #fff; text-align: center; width: 45px;}
+.temp.heat {border-radius: 5px 0 0 5px;-moz-border-radius: 5px 0 0 5px;-webkit-border-radius: 5px 0 0 5px;}
+.temp.cool {border-radius: 0 5px 5px 0;-moz-border-radius: 0 5px 5px 0;-webkit-border-radius: 0 5px 5px 0;}
+
 .tempControls {padding: 5px;}
-.schedule .tempLabel {border: none; color: #333; font-size: 12px; float: right;}
+.tempControls label {margin-left: 5px;}
+
+.F span.C, .C span.F {display: none;}
+
+.actions button.naked {margin-right:15px;}
+
+/* Editor Mode */
+.schedule.editor .info.time, .schedule.editor .temp {border: 1px solid #ccc;padding: 2px;}
+.schedule.editor .info.time {border-radius: 5px 0 0 5px;border-right: none;}
+.schedule.editor .temp.heat {border-radius: 0;}
+.schedule.editor .info.time input[type=text], .schedule.editor .temp input[type=text] {border: none;padding: 0;height:18px;text-align: center;}
+.schedule.editor .info.time input[type=text] {width:60px;}
+.schedule.editor .temp input[type=text] {width:30px;}
+.schedule.editor .labels {margin-left: 30px;}
+.tempLabel {border: none; color: #333;float: right;}
+
+/* Slider */
+.slider {position: fixed;width: 250px;height: 40px;background: white;border: solid 2px #666;box-shadow: 0 0 5px rgba(0,0,0,0.5);z-index: 2000;left: -999em;border-radius: 3px;}
+.slider .track {width: 230px; height: 1px; border: solid 1px #666; background-color: #999; position: absolute; left: 9px; top: 24px;}
+.slider .ui-slider-handle {height: 20px; width: 20px; background: transparent url(../../Icons/slider-handle.png) top left no-repeat; margin-top: -5px; margin-left: -10px;}
+.slider .row-label {margin: 0 5px;}
+.slider .startLabel, .slider .endLabel {margin: 0 5px;}
+.chevron {font-size: 0;height: 0;line-height: 0;border-style: solid;border-color: transparent;border-bottom-color: #666;border-width: 0 10px 9px;float: left;margin: -11px 115px;}
+
+/* Random Stuff for the Page */
+.pad {padding: 15px;}
+
+.help ol {list-style: decimal; padding-left: 20px;}
+.help ol li {margin: 0 0 15px;}
+
+/* Manual Thermostat Adjustment Widget */
 .manualThermostat {margin-right: 20px;}
 .manualThermostat ul {padding: 0; margin: 0; line-height: 1.1em;}
+.manualThermostat .temperatureDisplay .temperature {height: 1.3em;width: 3em;}
 .manualThermostat input:disabled {background-color: #f0f0f0; color: #ccc;}
 .manualThermostat .thermostatModes {margin: 0 18px;}
-.manualThermostat h2 {font-weight: bold; font-size: 1em;}
-.manualThermostat li {font-size: 12px; padding-left: 20px; cursor: pointer; list-style: none;}
+.manualThermostat h2 {font-weight: bold;}
+.manualThermostat li {padding-left: 20px; cursor: pointer; list-style: none;}
 .manualThermostat .pipes li {padding-left: 8px;}
 .manualThermostat .mode.selected, .manualThermostat .state.selected {background: transparent url(../../Icons/triangle-right.gif) 5px 3px no-repeat;}
 .manualThermostat .temperature {border-radius: 8px;}

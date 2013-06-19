@@ -1,8 +1,7 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msg var="pageTitle" key="yukon.common.device.bulk.verifyConfigResults.pageTitle"/>
 <cti:msg var="successLabel" key="yukon.common.device.bulk.verifyConfigResults.successLabel"/>
 <cti:msg var="failureLabel" key="yukon.common.device.bulk.verifyConfigResults.failureLabel"/>
 <cti:msg var="unsupportedLabel" key="yukon.common.device.bulk.verifyConfigResults.unsupportedLabel"/>
@@ -13,32 +12,8 @@
 <cti:msg var="deviceTypeColumn" key="yukon.common.device.bulk.verifyConfigResults.deviceTypeColumn"/>
 <cti:msg var="verifyResultsColumn" key="yukon.common.device.bulk.verifyConfigResults.verifyResultsColumn"/>
 
-<cti:standardPage title="${pageTitle}" module="amr">
-    <cti:includeCss link="/WebConfig/yukon/styles/yukon.css"/>
-    <cti:standardMenu menuSelection="" />
+<cti:standardPage module="tools" page="bulk.verifyConfigResults">
 
-    <%-- BREAD CRUMBS --%>
-    <cti:breadCrumbs>
-        
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        
-        <%-- bulk home --%>
-        <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
-        
-        <%-- device selection --%>
-        <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle"/>
-        <cti:crumbLink url="/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
-        
-        <%-- collection actions --%>
-        <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
-        
-        <tags:crumbLinkByMap url="/bulk/config/verifyConfig" parameterMap="${deviceCollection.collectionParameters}" titleKey="yukon.common.device.bulk.verifyConfig.pageTitle" />
-        
-        <%-- verify config results --%>
-        <cti:crumbLink>${pageTitle}</cti:crumbLink>
-        
-    </cti:breadCrumbs>
     <cti:url value="/meter/home" var="meterHomeUrl"/>
     
     <script type="text/javascript">
@@ -46,9 +21,6 @@
         window.location = "${meterHomeUrl}?deviceId=" + id;
     }
     </script>
-    
-    <h2>${pageTitle}</h2>
-    <br>
     
     <c:choose>
         <c:when test="${not empty exceptionReason}">

@@ -10,9 +10,8 @@
 
     <tags:setFormEditMode mode="${mode}"/>
 
-    <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
-        <cti:dataGridCell>
-
+    <div class="column_12_12">
+        <div class="column one">
             <form:form commandName="userGroup" action="edit" method="post">
                 <form:hidden path="userGroupId"/>
 
@@ -35,13 +34,13 @@
                         <cti:button nameKey="cancel" href="${cancelUrl}"/>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
-                        <cti:button nameKey="edit" name="edit" type="submit"/>
+                        <cti:button nameKey="edit" icon="icon-pencil" name="edit" type="submit"/>
                     </cti:displayForPageEditModes>
                 </div>
             </form:form>
-        </cti:dataGridCell>
+        </div>
         
-        <cti:dataGridCell>
+        <div class="column two nogutter">
             <cti:displayForPageEditModes modes="VIEW">
                 <tags:boxContainer2 nameKey="rolesContainer">
 
@@ -50,19 +49,19 @@
                             <i:inline key=".noRoles"/>
                         </c:when>
                         <c:otherwise>
-                            <div class="rolesContainer wsnw">
+                            <div class="rolesContainer">
                                 <c:forEach var="category" items="${roles}">
                                     <c:if test="${not empty category.key}">
                                         <ul class="groupedList">
                                             <li><span class="group detail"><cti:formatObject value="${category.key}"/></span>
                                                 <ul class="groupedItem">
                                                     <c:forEach var="roleGroupPair" items="${category.value}">
-                                                        <li class="detail">
+                                                        <li>
                                                             <cti:url value="/adminSetup/roleGroup/view" var="roleGroupUrl">
                                                                 <cti:param name="roleGroupId" value="${roleGroupPair.second.groupID}"/>
                                                             </cti:url>
                                                             <cti:formatObject value="${roleGroupPair.first}"/>
-                                                            &nbsp;<a href="${roleGroupUrl}"><spring:escapeBody htmlEscape="true">(${roleGroupPair.second})</spring:escapeBody></a>
+                                                            &nbsp;<a href="${roleGroupUrl}" class="detail wsnw">(${fn:escapeXml(roleGroupPair.second)})</a>
                                                         </li>
                                                     </c:forEach>
                                                 </ul>
@@ -77,6 +76,6 @@
                 </tags:boxContainer2>
             </cti:displayForPageEditModes>
             
-        </cti:dataGridCell>
-    </cti:dataGrid>
+        </div>
+    </div>
 </cti:standardPage>

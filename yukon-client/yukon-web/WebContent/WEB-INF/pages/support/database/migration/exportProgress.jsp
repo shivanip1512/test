@@ -13,13 +13,13 @@
 <cti:standardPage title="${pageTitle}" module="support">
 
     <cti:breadCrumbs>
-	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-	    <cti:crumbLink url="/support/" title="Support" />
-	    <cti:crumbLink url="/support/database/migration/home" title="${homePageTitle}" />
-	    <cti:crumbLink>${pageTitle}</cti:crumbLink>
-	</cti:breadCrumbs>
-	
-	<cti:standardMenu menuSelection="database|migration"/>
+        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
+        <cti:crumbLink url="/support" title="Support" />
+        <cti:crumbLink url="/support/database/migration/home" title="${homePageTitle}" />
+        <cti:crumbLink>${pageTitle}</cti:crumbLink>
+    </cti:breadCrumbs>
+    
+    <cti:standardMenu menuSelection="database|migration"/>
 
     <h2>${pageTitle}</h2>
     <br>
@@ -28,54 +28,54 @@
 
         jQuery(function() {
 
-		    <c:if test="${not migrationStatus.complete}">
-		    	$('downloadButton').disable();
-		    </c:if>
+            <c:if test="${not migrationStatus.complete}">
+                jQuery('#downloadButton').disable();
+            </c:if>
 
-	    });
+        });
 
-	    function enableMigrationExportDownloadButton() {
-		    try {
-                $('downloadButton').enable();
+        function enableMigrationExportDownloadButton() {
+            try {
+                jQuery('#downloadButton').enable();
 
-	    		// may not be rendered yet
-		    } catch(e){}
-	    }
+                // may not be rendered yet
+            } catch(e){}
+        }
     
     </script>
     
     <tags:boxContainer title="${boxTitle}" hideEnabled="false">
     
-		<tags:nameValueContainer>
-			<tags:nameValue name="File Location" nameColumnWidth="120px">
-				${migrationStatus.exportFile.path}
-			</tags:nameValue>
-		</tags:nameValueContainer>
-		<br>
-	    
-	    <%-- PROGRESS BAR --%>
-	    <tags:resultProgressBar totalCount="${migrationStatus.totalCount}"
-	                            progressLabelTextKey="yukon.web.modules.support.databaseMigration.exportProgress.progressLabel"
-	                            countKey="DATABASE_MIGRATION/${migrationStatus.id}/EXPORT_COMPLETED_ITEMS"
-	                            statusTextKey="DATABASE_MIGRATION/${migrationStatus.id}/EXPORT_STATUS_TEXT"
+        <tags:nameValueContainer>
+            <tags:nameValue name="File Location" nameColumnWidth="120px">
+                ${migrationStatus.exportFile.path}
+            </tags:nameValue>
+        </tags:nameValueContainer>
+        <br>
+        
+        <%-- PROGRESS BAR --%>
+        <tags:resultProgressBar totalCount="${migrationStatus.totalCount}"
+                                progressLabelTextKey="yukon.web.modules.support.databaseMigration.exportProgress.progressLabel"
+                                countKey="DATABASE_MIGRATION/${migrationStatus.id}/EXPORT_COMPLETED_ITEMS"
+                                statusTextKey="DATABASE_MIGRATION/${migrationStatus.id}/EXPORT_STATUS_TEXT"
                                 statusClassKey="DATABASE_MIGRATION/${migrationStatus.id}/EXPORT_STATUS_CLASS"
-	        	                hideCount="true"
+                                hideCount="true"
                                 completionCallback="enableMigrationExportDownloadButton"/>
 
         <div class="ErrorMsg">
             <cti:dataUpdaterValue type="DATABASE_MIGRATION" identifier="${migrationStatus.id}/EXPORT_ERROR_TEXT" />
         </div>
-		
-		<%-- DOWNLOAD --%>	
-		<br>
-		<form id="downloadExportFileForm" action="/support/database/migration/downloadExportFile" method="post">
-	    	<input type="hidden" name="fileKey" value="${migrationStatus.id}">
-	    </form>
-	    
-	    <input type="button" id="downloadButton" value="${downloadButton}" onclick="$('downloadExportFileForm').submit();" />
+        
+        <%-- DOWNLOAD --%>    
+        <br>
+        <form id="downloadExportFileForm" action="/support/database/migration/downloadExportFile" method="post">
+            <input type="hidden" name="fileKey" value="${migrationStatus.id}">
+        </form>
+        
+        <input type="button" id="downloadButton" value="${downloadButton}" onclick="jQuery('#downloadExportFileForm').submit();" />
 
    </tags:boxContainer>
-   	
+       
    
     
     

@@ -16,11 +16,13 @@ import com.cannontech.web.updater.UpdateValue;
 
 @Configurable("capControlValueTagPrototype")
 public class CapControlValueTag extends YukonTagSupport {
+	
     private DataUpdaterService updaterService;
     private int paoId;
     private boolean isPaoIdSet;
     private String format;
     private String type;
+    private String styleClass;
     private boolean isTypeSet;
     
     @Override
@@ -39,7 +41,7 @@ public class CapControlValueTag extends YukonTagSupport {
         UpdateValue value = updaterService.getFirstValue(id, getUserContext());
 
         JspWriter out = getJspContext().getOut();
-        out.print("<span cannonUpdater=\"" + StringEscapeUtils.escapeHtml(value.getFullIdentifier()) + "\">");
+        out.print("<span cannonUpdater=\"" + StringEscapeUtils.escapeHtml(value.getFullIdentifier()) + "\" " + "class=\"" + styleClass + "\"" + ">");
         out.print(value.getValue());
         out.print("</span>");
     }
@@ -55,7 +57,11 @@ public class CapControlValueTag extends YukonTagSupport {
     }
     
     public void setFormat(String format) {
-        this.format = format;
+    	this.format = format;
+    }
+    
+    public void setStyleClass(String styleClass) {
+        this.styleClass = styleClass;
     }
 
     @Required

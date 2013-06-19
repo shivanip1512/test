@@ -38,7 +38,7 @@
                                     <td>${fn:escapeXml(userGroup.userGroupDescription)}</td>
                                     <td class="removeColumn">
                                         <div class="dib">
-                                            <cti:button nameKey="remove" name="remove" value="${userGroup.userGroupId}" type="submit" renderMode="image"/>
+                                            <cti:button nameKey="remove" name="remove" value="${userGroup.userGroupId}" type="submit" renderMode="image" icon="icon-cross"/>
                                         </div>
                                     </td>
                                 </tr>

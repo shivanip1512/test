@@ -59,7 +59,7 @@
                     </tbody>
                 </table>
                 <div class="actionArea">
-                    <cti:button nameKey="switch" id="enroll_alternate" type="submit"/>
+                    <cti:button nameKey="switch" id="enroll_alternate" type="submit" icon="icon-arrow-swap"/>
                 </div>
             </form>
         </c:otherwise>
@@ -109,7 +109,7 @@
                     </tbody>
                 </table>
                 <div class="actionArea">
-                    <cti:button nameKey="revert" id="enroll_normal" type="submit"/>
+                    <cti:button nameKey="revert" id="enroll_normal" type="submit" icon="icon-arrow-swap"/>
                 </div>
             </form>
         </c:otherwise>

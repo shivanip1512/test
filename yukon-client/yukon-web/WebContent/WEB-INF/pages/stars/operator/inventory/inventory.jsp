@@ -17,31 +17,28 @@
     <cti:displayForPageEditModes modes="CREATE">
         <cti:url value="/stars/operator/inventory/create" var="action"/>
     </cti:displayForPageEditModes>
-    
-    <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
-    
-        <%-- LEFT SIDE COLUMN --%>
-        <%-- COMMON HARDWARE INFO --%>
-        <%@ include file="../hardware/hardwareInfo.jspf" %>
-        
-        <%-- RIGHT SIDE COLUMN --%>
+
+    <div class="column_12_12">
+        <div class="column one">
+            <%@ include file="../hardware/hardwareInfo.jspf" %>
+        </div>
+
         <cti:displayForPageEditModes modes="VIEW">
-            <cti:dataGridCell>
-                
-                <%-- COMMON HARDWARE HISTORY --%>
+            <div class = "column two nogutter">
                 <%@ include file="../hardware/hardwareHistory.jspf" %>
-                
-            </cti:dataGridCell>
+            </div>
         </cti:displayForPageEditModes>
+    </div>
     
-    </cti:dataGrid>
-    
+
     <cti:displayForPageEditModes modes="VIEW">
         <cti:checkRolesAndProperties value="${editingRoleProperty}">
             <cti:url value="/stars/operator/inventory/edit" var="editUrl">
                 <cti:param name="inventoryId" value="${hardware.inventoryId}"/>
             </cti:url>
-            <cti:button nameKey="edit" href="${editUrl}"/>
+		    <div class="pageActionArea clear">
+                <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
+		    </div>
         </cti:checkRolesAndProperties>
     </cti:displayForPageEditModes>
 </cti:msgScope>

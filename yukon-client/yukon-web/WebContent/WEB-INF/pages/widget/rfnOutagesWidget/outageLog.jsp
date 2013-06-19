@@ -14,7 +14,7 @@ jQuery(document).ready(flashYellow(jQuery('#reloadedAt')[0], 2));
         <c:choose>
             <c:when test="${empty logs}"><i><i:inline key=".noLogs"/></i></c:when>
             <c:otherwise>
-                <table class="resultsTable detail">
+                <table class="compactResultsTable rowHighlighting">
                 	<thead>
                         <tr>
                             <th><i:inline key=".start"/></th>
@@ -25,7 +25,7 @@ jQuery(document).ready(flashYellow(jQuery('#reloadedAt')[0], 2));
                     <tfoot></tfoot>
                     <tbody>
                         <c:forEach items="${logs}" var="log">
-                            <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                            <tr>
                                 <c:choose>
         	                        <c:when test="${!log.invalid}">
         		                        <td><cti:formatDate value="${log.start}" type="BOTH"/></td>

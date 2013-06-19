@@ -6,6 +6,7 @@
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
     <entry key="yukon.common.device.groupMeterRead.home.pageTitle">Group Attribute Read</entry>
+    <entry key="yukon.common.device.groupMeterRead.home.tab.title">Attribute Read</entry>
     <entry key="yukon.common.device.groupMeterRead.home.selectAttributeLabel">Select Attribute(s)</entry>
     <entry key="yukon.common.device.groupMeterRead.home.selectGroupLabel">Group:</entry>
     <entry key="yukon.common.device.groupMeterRead.home.recentResultsLinkLabel">Recent Results:</entry>

@@ -27,41 +27,31 @@
 			<cti:param name="descending" value="${param.descending}" />
 		</c:if>
 	</cti:url>
+	
+<script type="text/javascript">
+function clearFilter() {
+    window.location = '${clearFilterUrl}';
+}
+</script>
 
-	<script type="text/javascript">
-		    function clearFilter() {
-		        window.location = '${clearFilterUrl}';
-		    }
-		    </script>
-
-	<cti:msg var="filterLabel"
-		key="yukon.web.modules.dr.scenarioList.filters" />
+	<cti:msg var="filterLabel" key="yukon.web.modules.dr.scenarioList.filters" />
 	<tags:simplePopup id="filterPopup" title="${filterLabel}">
-		<form:form action="${submitUrl}" commandName="backingBean"
-			method="get">
+		<form:form action="${submitUrl}" commandName="backingBean" method="get">
 			<tags:sortFields backingBean="${backingBean}" />
-
-			<table cellspacing="10">
-				<tr>
-					<cti:msg var="fieldName"
-						key="yukon.web.modules.dr.scenarioList.filter.name" />
-					<td>${fieldName}</td>
-					<td><form:input path="name" size="40" /></td>
-				</tr>
-			</table>
-
-			<br>
-			<div class="actionArea"><input type="submit"
-				value="<cti:msg key="yukon.web.modules.dr.scenarioList.filter.submit"/>" />
-			<input type="button"
-				value="<cti:msg key="yukon.web.modules.dr.scenarioList.filter.clear"/>"
-				onclick="javascript:clearFilter()" /></div>
+			<tags:nameValueContainer>
+				<cti:msg var="fieldName" key="yukon.web.modules.dr.scenarioList.filter.name" />
+				<tags:nameValue name="${fieldName}">
+					<form:input path="name" size="40" />
+				</tags:nameValue>
+			</tags:nameValueContainer>
+            <div class="actionArea">
+                <cti:button nameKey="filter" classes="primary action" type="submit"/>
+                <cti:button nameKey="showAll" onclick="javascript:clearFilter()"/>
+            </div>
 		</form:form>
 	</tags:simplePopup>
-	<br>
 
-	<cti:msg var="scenarioTitle"
-		key="yukon.web.modules.dr.scenarioList.scenarios" />
+	<cti:msg var="scenarioTitle" key="yukon.web.modules.dr.scenarioList.scenarios" />
 	<tags:pagedBox title="${scenarioTitle}" searchResult="${searchResult}"
 		filterDialog="filterPopup" baseUrl="${baseUrl}"
 		isFiltered="${isFiltered}" showAllUrl="${clearFilterUrl}">
@@ -104,7 +94,7 @@
 
     <c:if test="${hasFilterErrors}">
         <script type="text/javascript">
-            $('filterPopup').show();
+            jQuery("#filterPopup").dialog("open");
         </script>
     </c:if>
 </cti:standardPage>

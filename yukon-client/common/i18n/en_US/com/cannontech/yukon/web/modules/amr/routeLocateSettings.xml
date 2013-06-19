@@ -3,20 +3,21 @@
 <properties>
 
     <!-- ROUTE SETTINGS routeLocateRouteSettings.jsp -->
-    <entry key="yukon.web.modules.amr.routeLocateSettings.pageTitle">Route Settings</entry>
-    <entry key="yukon.web.modules.amr.routeLocateSettings.boxTitle">Route Values</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateSettings.pageName">Route Settings</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateSettings.contextualPageName">Settings</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateSettings.boxTitle">Route Values</entry>
     
-    <entry key="yukon.web.modules.amr.routeLocateSettings.tableHeader.deviceName">Device Name</entry>
-    <entry key="yukon.web.modules.amr.routeLocateSettings.tableHeader.currentRoute">Current Route</entry>
-    <entry key="yukon.web.modules.amr.routeLocateSettings.tableHeader.foundOnRoute">Found On Route</entry>
-    <entry key="yukon.web.modules.amr.routeLocateSettings.tableHeader.update">Update</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateSettings.tableHeader.deviceName">Device Name</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateSettings.tableHeader.currentRoute">Current Route</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateSettings.tableHeader.foundOnRoute">Found On Route</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateSettings.tableHeader.update">Update</entry>
     
-    <entry key="yukon.web.modules.amr.routeLocateSettings.tableText.updateButtonText">Set Found Route</entry>
-    <entry key="yukon.web.modules.amr.routeLocateSettings.tableText.noRouteFound">Not Found</entry>
-    <entry key="yukon.web.modules.amr.routeLocateSettings.tableText.currentRoute">Current Route:</entry>
-    <entry key="yukon.web.modules.amr.routeLocateSettings.tableText.hasNoRoute">No Route Set</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateSettings.tableText.updateButtonText.label">Set Found Route</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateSettings.tableText.noRouteFound">Not Found</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateSettings.tableText.currentRoute">Current Route:</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateSettings.tableText.hasNoRoute">No Route Set</entry>
     
-    <entry key="yukon.web.modules.amr.routeLocateSettings.updateInfo.oldRouteName">Previous Route</entry>
-    <entry key="yukon.web.modules.amr.routeLocateSettings.updateInfo.newRouteName">Updated To:</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateSettings.updateInfo.oldRouteName">Previous Route</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateSettings.updateInfo.newRouteName">Updated To:</entry>
     
 </properties>

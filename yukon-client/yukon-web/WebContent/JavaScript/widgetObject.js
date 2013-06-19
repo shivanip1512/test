@@ -249,7 +249,7 @@ function JsWidgetObject(shortName, parameters) {
 
 	    var url = "/widget/" + this.shortName + "/" + cmd;
 
-	    openSimpleDialog(dialogId, url, key, oldParams, width, height);
+	    openSimpleDialog(dialogId, url, key, oldParams, width, height); // this must be broken
   };
 
 }

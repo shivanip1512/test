@@ -278,10 +278,8 @@ button
 					</td>
                 </tr>
             </table>
-            <div class="clearfix">
-		    <div class="colmask doublepage">
-		        <div class="colleft">
-		            <div class="col1">
+		    <div class="column_12_12 clearfix">
+		            <div class="column one">
                         <div class="columnHeader"><h2>Inside A Table</h2></div><br/>
                         <table class="compactResultsTable rowHighlighting contextual-menu-list">
                             <thead>
@@ -310,7 +308,7 @@ button
                             </tbody>
                         </table>
                        </div>
-                       <div class="col2">
+                       <div class="column two nogutter">
                            <div class="columnHeader"><h2>Relavent Markup</h2></div><br/>
 							The only real "required" markup for this to work correctly is to
 							have a class of <strong>contextual-menu-list</strong> on the table, a class of
@@ -343,8 +341,6 @@ button
 &lt;/table&gt;
 </pre>
                     </div>
-                </div>
-            </div>
             </div>
         </cti:tabbedContentSelectorContent>
 

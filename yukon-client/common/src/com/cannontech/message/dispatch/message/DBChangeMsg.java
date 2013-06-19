@@ -66,6 +66,8 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
     public static final int CHANGE_USER_GROUP_DB = 37;
     public static final int CHANGE_YUKON_PAOBJECT_ENCRYPTION_KEY_DB = 38;
     public static final int CHANGE_ENCRYPTION_KEY_DB = 39;
+    public static final int CHANGE_USER_PREFERENCE_DB = 40;
+    public static final int CHANGE_USER_PREFERENCE_DB_DELETE_BY_USER_ID = 41;
 
     /*Possible values for the Categories field
      *NOTE: If you are using the CHANGE_PAO_DB database field you will
@@ -81,6 +83,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
     public static final String CAT_HOLIDAY_SCHEDULE = "HolidaySchedule";
     public static final String CAT_ENERGY_COMPANY = "EnergyCompany";
     public static final String CAT_YUKON_USER = "YukonUser";
+    public static final String CAT_YUKON_USER_PREFERENCE = "YukonUserPreference";
     public static final String CAT_USER_GROUP = "UserGroup";
     public static final String CAT_CUSTOMER = "Customer";
     public static final String CAT_CI_CUSTOMER = "CICustomer";

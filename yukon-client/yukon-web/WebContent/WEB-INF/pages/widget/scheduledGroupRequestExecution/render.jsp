@@ -46,7 +46,7 @@
 			<tr id="tr_${jobWrapper.job.id}">
 				<%-- actions --%>
 				<td>
-	                <cti:button nameKey="edit" renderMode="image" href="${viewScheduleDetailsUrl}" arguments="${jobWrapper.name}"/>
+	                <cti:button nameKey="edit" renderMode="image" href="${viewScheduleDetailsUrl}" arguments="${jobWrapper.name}" icon="icon-script"/>
 				</td>
 				
 				<%-- name --%>	
@@ -65,11 +65,11 @@
 	                    <cti:dataUpdaterValue type="JOB" identifier="${jobWrapper.job.id}/STATE_TEXT"/>
 	                </span>
 	                <span id="jobRunningSpan_${jobWrapper.job.id}" <c:if test="${not (jobWrapper.jobStatus eq 'RUNNING')}">style="display:none;"</c:if>>
-	                    <span class="fl"><tags:updateableProgressBar totalCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_REQUEST_COUNT_FOR_JOB"
+	                    <tags:updateableProgressBar totalCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_REQUEST_COUNT_FOR_JOB"
 	                        countKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_SUCCESS_RESULTS_COUNT_FOR_JOB"
 	                        failureCountKey="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_FAILURE_RESULTS_COUNT_FOR_JOB"
-	                        borderClasses="scheduledRequestProgressBarBorder" hideCount="true" hidePercent="true"/></span>
-	                    <i id="cancel_${jobWrapper.job.id}" class="icon icon_remove stopButton" title="<cti:msg2 key="yukon.common.cancel"/>"></i>
+	                        borderClasses="scheduledRequestProgressBarBorder" hideCount="true" hidePercent="true"/>
+	                	<cti:button nameKey="cancel" id="cancel_${jobWrapper.job.id}" classes="stopButton" renderMode="image" arguments="${jobWrapper.name}" icon="icon-cross"/>
 	                	<d:confirm on="#cancel_${jobWrapper.job.id}" nameKey="cancelConfirm" argument="${jobWrapper.name}" />
 	                </span>
 	            </td>
@@ -78,12 +78,12 @@
 				<c:if test="${canManage}">
 	                <td style="text-align:right;">
 	                    <span id="disableSpan_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'DISABLED' || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
-	                        <tags:widgetActionRefreshImage method="toggleEnabled" jobId="${jobWrapper.job.id}"
-	                                                       nameKey="disable" arguments="${jobWrapper.name}"/>
+	                        <tags:widgetActionRefreshImage method="toggleEnabled" jobId="${jobWrapper.job.id}" btnClass="fr"
+	                                                       nameKey="disable" arguments="${jobWrapper.name}" icon="icon-disabled"/>
 	                    </span>
 	                    <span id="enableSpan_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'ENABLED' || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
-	                        <tags:widgetActionRefreshImage method="toggleEnabled" jobId="${jobWrapper.job.id}"
-	                                                       nameKey="enable" arguments="${jobWrapper.name}"/>
+	                        <tags:widgetActionRefreshImage method="toggleEnabled" jobId="${jobWrapper.job.id}" btnClass="fr"
+	                                                       nameKey="enable" arguments="${jobWrapper.name}" icon="icon-enabled"/>
 	                    </span>
 	                </td>
 				</c:if>
@@ -105,12 +105,11 @@
 
 <c:otherwise>
 	<i:inline key=".noSchedules"/>
-	<br>
 </c:otherwise>
 </c:choose>
 
-    <div class="additionalSchedulerJobs fl">
-        <a href="/group/scheduledGroupRequestExecutionResults/jobs">
+    <div class="actionArea">
+        <a href="/group/scheduledGroupRequestExecutionResults/jobs" class="fl">
         	<c:choose>
 				<c:when test="${numAdditionalJobs != null}">
 	            	<i:inline key=".viewDetailsWithAdditional" arguments="${numAdditionalJobs}"/>
@@ -120,11 +119,8 @@
 				</c:otherwise>
         	</c:choose>
         </a>
+        <c:if test="${canManage}">
+		    <cti:button nameKey="create" type="submit" classes="f_blocker fr" icon="icon-plus-green"/>
+		</c:if>
     </div>
-
-<c:if test="${canManage}">
-	<div style="text-align:right;padding-top:5px;">
-        <cti:button nameKey="create" type="submit" styleClass="f_blocker"/>
-	</div>
-</c:if>
 </form>

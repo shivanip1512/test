@@ -13,7 +13,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.CTILogger;
@@ -22,18 +21,22 @@ import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SimpleCallback;
-import com.cannontech.common.util.SqlGenerator;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
-import com.cannontech.database.AbstractRowCallbackHandler;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -60,37 +63,27 @@ public final class ContactDaoImpl implements ContactDao {
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private DbChangeManager dbChangeManager;
     
-    private final ParameterizedRowMapper<LiteContact> rowMapper = new LiteContactRowMapper();
-
-    
-	/**
-	 * ContactFuncs constructor comment.
-	 */
-	private ContactDaoImpl() 
-	{
-		super();
-	}
+    private final YukonRowMapper<LiteContact> rowMapper = new LiteContactRowMapper();
 
     @Override
     public LiteContact getContact(int contactId) {
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT ContactId, ContFirstName, ContLastName, LogInID, AddressID");
+        sql.append("FROM Contact");
+        sql.append("WHERE ContactId").eq(contactId);
 
-        StringBuilder sql = new StringBuilder("SELECT *");
-        sql.append(" FROM Contact");
-        sql.append(" WHERE ContactId = ?");
-
-        LiteContact contact = yukonJdbcTemplate.queryForObject(sql.toString(),
-                                                                rowMapper,
-                                                                contactId);
+        LiteContact contact = yukonJdbcTemplate.queryForObject(sql, rowMapper);
         return contact;
-
     }
 	
 	@Override
     public List<LiteContact> getContactsByLoginId(int loginId) {
-	    StringBuilder sql = new StringBuilder("SELECT *");
-        sql.append(" FROM Contact");
-        sql.append(" WHERE LoginId = ?");
-	    final List<LiteContact> contactList = yukonJdbcTemplate.query(sql.toString(), rowMapper,loginId);
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT ContactId, ContFirstName, ContLastName, LogInID, AddressID");
+        sql.append("FROM Contact");
+        sql.append("WHERE LoginId").eq(loginId);
+        
+	    final List<LiteContact> contactList = yukonJdbcTemplate.query(sql, rowMapper);
         return contactList;
     }
     
@@ -98,15 +91,14 @@ public final class ContactDaoImpl implements ContactDao {
     public Map<Integer, LiteContact> getContacts(List<Integer> contactIds) {
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
 
-        final List<LiteContact> contactList = template.query(new SqlGenerator<Integer>() {
+        final List<LiteContact> contactList = template.query(new SqlFragmentGenerator<Integer>() {
             @Override
-            public String generate(List<Integer> subList) {
+            public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-                sqlBuilder.append("SELECT * FROM Contact WHERE ContactID IN (");
-                sqlBuilder.append(subList);
-                sqlBuilder.append(")");
-                String sql = sqlBuilder.toString();
-                return sql;
+                sqlBuilder.append("SELECT ContactId, ContFirstName, ContLastName, LogInID, AddressID");
+                sqlBuilder.append("FROM Contact");
+                sqlBuilder.append("WHERE ContactID").in(subList);
+                return sqlBuilder;
             }
         }, contactIds, rowMapper);
         
@@ -392,7 +384,10 @@ public final class ContactDaoImpl implements ContactDao {
      */
 	@Override
     public boolean isPrimaryContact(int contactId) {
-	    String sql = "SELECT PrimaryContactId FROM " + Customer.TABLE_NAME + " WHERE PrimaryContactId = " + contactId;
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT PrimaryContactId");
+		sql.append("FROM Customer");
+		sql.append("WHERE PrimaryContactId").eq(contactId);;
 	    try {
 	    	yukonJdbcTemplate.queryForInt(sql);
 	        return true;
@@ -436,64 +431,63 @@ public final class ContactDaoImpl implements ContactDao {
 
     @Override
     public LiteContact getPrimaryContactForAccount(int accountId) {
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT c.ContactId, c.ContFirstName, c.ContLastName, c.LogInID, c.AddressID");
+        sql.append("FROM Contact c, Customer cu, CustomerAccount ca");
+        sql.append("WHERE c.ContactId = cu.PrimaryContactId");
+        sql.append("AND cu.CustomerId = ca.CustomerId");
+        sql.append("AND ca.AccountId").eq(accountId);
 
-        StringBuilder sql = new StringBuilder("SELECT c.*");
-        sql.append(" FROM Contact c, Customer cu, CustomerAccount ca");
-        sql.append(" WHERE c.ContactId = cu.PrimaryContactId");
-        sql.append(" AND cu.CustomerId = ca.CustomerId");
-        sql.append(" AND ca.AccountId = ?");
-
-        LiteContact contact = yukonJdbcTemplate.queryForObject(sql.toString(),
-                                                                rowMapper,
-                                                                accountId);
+        LiteContact contact = yukonJdbcTemplate.queryForObject(sql, rowMapper);
         return contact;
     }
     
 
     @Override
     public List<LiteContact> getAdditionalContactsForCustomer(int customerId) {
-        
-        StringBuilder sql = new StringBuilder("SELECT c.*");
-        sql.append(" FROM Contact c, CustomerAdditionalContact cac");
-        sql.append(" WHERE c.ContactId = cac.ContactId");
-        sql.append(" AND cac.CustomerId = ?");
-        sql.append(" ORDER BY cac.Ordering");
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT c.ContactId, c.ContFirstName, c.ContLastName, c.LogInID, c.AddressID");
+        sql.append("FROM Contact c, CustomerAdditionalContact cac");
+        sql.append("WHERE c.ContactId = cac.ContactId");
+        sql.append("AND cac.CustomerId").eq(customerId);
+        sql.append("ORDER BY cac.Ordering");
 
-        List<LiteContact> contactList = yukonJdbcTemplate.query(sql.toString(),
-                                                                 rowMapper,
-                                                                 customerId);
+        List<LiteContact> contactList = yukonJdbcTemplate.query(sql, rowMapper);
 
         return contactList;
     }
     
     @Override
-    public List<Integer> getAdditionalContactIdsForCustomer(int customerId){
-        String sql = "SELECT ContactId FROM CustomerAdditionalContact WHERE Customerid = ?";
-        List<Integer> contactIds = yukonJdbcTemplate.query(sql, new IntegerRowMapper(), customerId);
+    public List<Integer> getAdditionalContactIdsForCustomer(int customerId) {
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT ContactId");
+    	sql.append("FROM CustomerAdditionalContact");
+    	sql.append("WHERE Customerid").eq(customerId);
+    	
+        List<Integer> contactIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
         return contactIds;
     }
 
     @Override
     public List<LiteContact> getAdditionalContactsForAccount(int accountId) {
 
-        StringBuilder sql = new StringBuilder("SELECT c.*");
-        sql.append(" FROM Contact c, CustomerAdditionalContact cac, Customer cu, CustomerAccount ca");
-        sql.append(" WHERE c.ContactId = cac.ContactId");
-        sql.append(" AND cac.CustomerId = cu.CustomerId");
-        sql.append(" AND cu.CustomerId = ca.CustomerId");
-        sql.append(" AND ca.AccountId = ?");
-        sql.append(" ORDER BY cac.Ordering");
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT c.ContactId, c.ContFirstName, c.ContLastName, c.LogInID, c.AddressID");
+        sql.append("FROM Contact c, CustomerAdditionalContact cac, Customer cu, CustomerAccount ca");
+        sql.append("WHERE c.ContactId = cac.ContactId");
+        sql.append("AND cac.CustomerId = cu.CustomerId");
+        sql.append("AND cu.CustomerId = ca.CustomerId");
+        sql.append("AND ca.AccountId").eq(accountId);
+        sql.append("ORDER BY cac.Ordering");
 
-        List<LiteContact> contactList = yukonJdbcTemplate.query(sql.toString(),
-                                                                 rowMapper,
-                                                                 accountId);
+        List<LiteContact> contactList = yukonJdbcTemplate.query(sql, rowMapper);
 
         return contactList;
     }
     
     @Override
     public int getAllContactCount() {
-        String sql = "select count(*) from Contact";
+    	SqlStatementBuilder sql = new SqlStatementBuilder("select count(*) from Contact");
         int count = yukonJdbcTemplate.queryForInt(sql);
         return count;
     }
@@ -501,20 +495,19 @@ public final class ContactDaoImpl implements ContactDao {
     @Override
     public void callbackWithAllContacts(final SimpleCallback<LiteContact> callback) {
         // the following code may look familiar, I lifted it from the ContactLoader!
-
+    	
         //get all the customer contacts that are assigned to a customer
-        String sqlString = 
-            "SELECT cnt.contactID, cnt.ContFirstName, cnt.ContLastName, " + 
-            "cnt.Loginid, cnt.AddressID " + 
-            "FROM Contact cnt " +
-            "where cnt.ContactID > " + CtiUtilities.NONE_ZERO_ID + " " +
-            "order by cnt.ContLastName, cnt.ContFirstName";
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT cnt.contactID, cnt.ContFirstName, cnt.ContLastName, cnt.Loginid, cnt.AddressID");
+        sql.append("FROM Contact cnt");
+        sql.append("where cnt.ContactID").gt(CtiUtilities.NONE_ZERO_ID);
+        sql.append("order by cnt.ContLastName, cnt.ContFirstName");
 
         final LiteContactNoNotificationsRowMapper liteContactNoNotificationsRowMapper = new LiteContactNoNotificationsRowMapper();
-        yukonJdbcTemplate.getJdbcOperations().query(sqlString, new AbstractRowCallbackHandler() {
+        yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
-            public void processRow(ResultSet rs, int rowNum) throws SQLException {
-                LiteContact lc = liteContactNoNotificationsRowMapper.mapRow(rs, rowNum);
+            public void processRow(YukonResultSet rs) throws SQLException {
+                LiteContact lc = liteContactNoNotificationsRowMapper.mapRow(rs);
                 try {
                     callback.handle(lc);
                 } catch (Exception e) {
@@ -675,15 +668,14 @@ public final class ContactDaoImpl implements ContactDao {
      * 
      * Note: this mapper MUST be used within a transaction
      */
-    private class LiteContactRowMapper implements
-            ParameterizedRowMapper<LiteContact> {
+    private class LiteContactRowMapper implements YukonRowMapper<LiteContact> {
         
         private final LiteContactNoNotificationsRowMapper baseMapper = new LiteContactNoNotificationsRowMapper();
 
         @Override
-        public LiteContact mapRow(ResultSet rs, int rowNum) throws SQLException {
+        public LiteContact mapRow(YukonResultSet rs) throws SQLException {
 
-            LiteContact contact = baseMapper.mapRow(rs, rowNum);
+            LiteContact contact = baseMapper.mapRow(rs);
             
             List<LiteContactNotification> notifications = contactNotificationDao
 					.getNotificationsForContact(contact.getContactID());
@@ -694,9 +686,9 @@ public final class ContactDaoImpl implements ContactDao {
 
     }
     
-    private class LiteContactNoNotificationsRowMapper implements ParameterizedRowMapper<LiteContact> {
+    private class LiteContactNoNotificationsRowMapper implements YukonRowMapper<LiteContact> {
         @Override
-        public LiteContact mapRow(ResultSet rs, int rowNum) throws SQLException {
+        public LiteContact mapRow(YukonResultSet rs) throws SQLException {
             int id = rs.getInt("ContactId");
             int loginId = rs.getInt("LoginId");
             int addressId = rs.getInt("AddressId");

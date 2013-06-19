@@ -83,7 +83,7 @@ public class PointImportController {
         if(importType.needsCalcFile()) {
             //get the calculation file
             if(!ServletFileUpload.isMultipartContent(request)) {
-                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.pointImport.error.noCalcImportFile"));
+                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.pointImport.error.noCalcImportFile"));
                 return "redirect:upload";
             }
             MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
@@ -94,10 +94,10 @@ public class PointImportController {
             try {
                 csvReader = WebFileUtils.getTempBackedCsvReaderFromMultipartFile(dataFile);
             } catch(NoImportFileException e) {
-                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.pointImport.error.noCalcImportFile"));
+                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.pointImport.error.noCalcImportFile"));
                 return "redirect:upload";
             } catch(EmptyImportFileException e) {
-                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.pointImport.error.errorProcessingCalcFile"));
+                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.pointImport.error.errorProcessingCalcFile"));
                 return "redirect:upload";
             }
             

@@ -8,7 +8,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.jsonOLD.JSONObject;
+import net.sf.json.JSONObject;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -44,7 +45,6 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.digi.exception.DigiNotConfiguredException;
@@ -89,7 +89,7 @@ public class ZigBeeHardwareController {
     @Autowired private NextValueHelper nextValueHelper;
     
     @RequestMapping
-    public void readNow(HttpServletResponse resp, YukonUserContext context, int deviceId) throws IOException {
+    public @ResponseBody JSONObject readNow(HttpServletResponse resp, YukonUserContext context, int deviceId) throws IOException {
         final MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         final ZigbeeDevice device = zigbeeDeviceDao.getZigbeeDevice(deviceId);
         final JSONObject json = new JSONObject();
@@ -107,9 +107,7 @@ public class ZigBeeHardwareController {
             json.put("message", accessor.getMessage(keyPrefix + "error.readNowFailed", e.getMessage()));
         }
         
-        resp.setContentType("application/json");
-        resp.getWriter().print(json.toString());
-        resp.getWriter().close();
+        return json;
     }
     
     @RequestMapping
@@ -439,7 +437,12 @@ public class ZigBeeHardwareController {
             flash.setConfirm(new YukonMessageSourceResolvable(keyPrefix + "messageSent", gatewaySerialNumber));
         }
         
-        ServletUtils.closePopup(resp, "textMsgDialog");
+        JSONObject json = new JSONObject();
+        json.put("action", "reload");
+        
+        resp.setContentType("application/json");
+        resp.getWriter().print(json.toString());
+        resp.getWriter().close();
         return null;
     }
     

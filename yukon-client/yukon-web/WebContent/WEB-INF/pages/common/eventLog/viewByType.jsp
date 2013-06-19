@@ -40,9 +40,8 @@
                         </c:forEach>
                         
                     </tags:nameValueContainer2>
-                    <br>
-                    <div style="text-align:right">
-                        <input type="submit" value="<cti:msg2 key=".filter"/>" />
+                    <div class="actionArea">
+                        <cti:button nameKey="filter" type="submit" classes="action primary"/>
                     </div>
                 </form:form>
             </c:when>
@@ -58,18 +57,17 @@
             <td>
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".eventType">
+                        <a id="showPopupButton" title="<cti:msg2 key=".eventLogTypeTreeSector.hoverText"/>" href="javascript:void(0);">
                         <c:choose>
-                            <c:when test="${empty eventLogTypeBackingBean or 
-                                     empty eventLogTypeBackingBean.eventLogType}">
-                                <span class="subtle" style="font-style:italic;"><i:inline key=".noEventLogTypeSelected" /></span>
+                            <c:when test="${empty eventLogTypeBackingBean or empty eventLogTypeBackingBean.eventLogType}">
+                                <span class="label empty-list"><i:inline key=".noEventLogTypeSelected" /></span>
                             </c:when>
                             <c:otherwise>
-                                <spring:escapeBody htmlEscape="true">${eventLogTypeBackingBean.eventLogType}</spring:escapeBody>
+                                <span class="label">${eventLogTypeBackingBean.eventLogType}</span>
                             </c:otherwise>
                         </c:choose>
-                        
-                        <cti:img nameKey="eventLogTypeTreeSector" id="showPopupButton"  />                        
-                        
+                            <i class="icon icon-folder"></i>
+                        </a>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </td>
@@ -77,7 +75,6 @@
     
         <tr>
             <td>
-            
                 <%-- EVENT CATEGORY HIERARCHY BOX --%>
                 <cti:msg2 var="selectEventLog" key=".selectEventLog"/>
                 <cti:msg2 var="cancel" key=".cancel"/>
@@ -88,31 +85,23 @@
                                triggerElement="showPopupButton"
                                dataJson="${allEventCategoriesDataJson}" highlightNodePath="${extSelectedNodePath}"
                                title="${selectEventLog}"
-                               width="432"
-                               height="400"
                                treeParameters="{onActivate: TreeHelper.redirect_node_data_href_onActivate}"
-                               includeControlBar="true" />
-
-            </td>    
+                               includeControlBar="true" styleClass="contained"/>
+            </td>
         </tr>
         
     </table>
-
-    <%-- GENERATE REPORTS --%>
-    <c:choose>
-        <c:when test="${maxCsvRows > searchResult.hitCount}">
-            <div style="text-align: right;">
-                <cti:labeledImg nameKey="csvExport" href="${csvLink}"/>
-            </div>
-        </c:when>
-        <c:otherwise>
-            <div style="text-align: right;">
-                <cti:labeledImg nameKey="csvExport" id="csvExportButton"/>
-            </div>
-            <tags:confirmDialog nameKey=".confirmExport" on="#csvExportButton" href="${csvLink}" styleClass="f_closePopupOnSubmit" submitName="export"/>
-        </c:otherwise>
-    </c:choose>
-
+    <div class="actionArea stacked">
+	    <c:choose>
+	        <c:when test="${maxCsvRows > searchResult.hitCount}">
+	            <cti:button nameKey="csvExport" href="${csvLink}" icon="icon-page-excel"/>
+	        </c:when>
+	        <c:otherwise>
+	            <cti:button nameKey="csvExport" id="csvExportButton" icon="icon-page-excel"/>
+	            <tags:confirmDialog nameKey=".confirmExport" on="#csvExportButton" href="${csvLink}" styleClass="f_closePopupOnSubmit" submitName="export"/>
+	        </c:otherwise>
+	    </c:choose>
+    </div>
     <cti:msg var="eventsTitle" key="yukon.common.events.title"/>
     <tags:pagedBox filterDialog="filterPopup" title="${eventsTitle}" searchResult="${searchResult}" baseUrl="${baseUrl}" pageByHundereds="true">
     

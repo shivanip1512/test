@@ -130,7 +130,7 @@ YEvent.observeSelectorClick('.addRuleTableRow', function(event) {
 						<th class="orderColumn"><i:inline key=".rulesTable.header.ruleOrder" /></th>
                         <th class="outcomeColumn"><i:inline key=".rulesTable.header.outcome" /></th>
                         <th class="errorsColumn"><i:inline key=".rulesTable.header.errors" />
-                            <cti:img id="errorHelp" nameKey="help" styleClass="pointer hoverableImage"/>
+                            <cti:icon id="errorHelp" nameKey="help" icon="icon-help"/>
                         </th>
                         <th class="matchColumn"><i:inline key=".rulesTable.header.matchStyle" /></th>
                         <th class="stateColumn"><i:inline key=".rulesTable.header.state" /></th>
@@ -173,12 +173,12 @@ YEvent.observeSelectorClick('.addRuleTableRow', function(event) {
 								</form:select>
 							</td>
 							<td class="removeColumn">
-								<cti:img nameKey="rulesTable.delete" styleClass="removeRow pointer"/>
+								<cti:icon nameKey="rulesTable.delete" classes="removeRow" icon="icon-cross"/>
 							</td>
 						</tr>
 						<tr style="display: none" id="rule_${key}_undo" class="undoRow">
                             <td colspan="1">
-                                <cti:img nameKey="rulesTable.delete"/>
+                                <cti:icon nameKey="rulesTable.delete" icon="icon-cross"/>
                             </td>
 							<td colspan="4"><i:inline key=".rulesTable.removedRow"/></td>
 							<td colspan="1">
@@ -190,7 +190,7 @@ YEvent.observeSelectorClick('.addRuleTableRow', function(event) {
 			</table>
 			</div>
             <div class="actionArea">
-                <cti:button nameKey="rulesTable.add" styleClass="addRuleTableRow"/>
+                <cti:button nameKey="rulesTable.add" classes="addRuleTableRow" icon="icon-add"/>
             </div>
 		</tags:boxContainer2>
 

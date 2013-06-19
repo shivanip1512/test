@@ -7,6 +7,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONObject;
+
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.model.EventSource;
@@ -42,7 +45,6 @@ import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -219,7 +221,7 @@ public class OperatorEnrollmentController {
     }
 
     @RequestMapping
-    public String save(HttpServletResponse resp, ModelMap model, int assignedProgramId, boolean isAdd,
+    public @ResponseBody JSONObject save(HttpServletResponse resp, ModelMap model, int assignedProgramId, boolean isAdd,
             @ModelAttribute ProgramEnrollment programEnrollment,
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment, FlashScope flashScope) throws IOException {
@@ -229,7 +231,7 @@ public class OperatorEnrollmentController {
                             userContext, accountInfoFragment, flashScope);
     }
 
-    private String save(HttpServletResponse resp, ModelMap model, int assignedProgramId,
+    private @ResponseBody JSONObject save(HttpServletResponse resp, ModelMap model, int assignedProgramId,
             @ModelAttribute ProgramEnrollment programEnrollment,
             String saveTypeKey,
             YukonUserContext userContext,
@@ -270,8 +272,9 @@ public class OperatorEnrollmentController {
             flashScope.setError(message);
         }
      
-        ServletUtils.closePopup(resp, "peDialog");
-        return null;
+        JSONObject json = new JSONObject();
+        json.put("action", "reload");
+        return json;
     }
 
     @RequestMapping
@@ -287,7 +290,7 @@ public class OperatorEnrollmentController {
     }
 
     @RequestMapping
-    public String unenroll(HttpServletResponse resp, ModelMap model, int assignedProgramId,
+    public @ResponseBody JSONObject unenroll(HttpServletResponse resp, ModelMap model, int assignedProgramId,
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment, FlashScope flashScope) throws IOException {
         DisplayableEnrollmentProgram displayableEnrollmentProgram =

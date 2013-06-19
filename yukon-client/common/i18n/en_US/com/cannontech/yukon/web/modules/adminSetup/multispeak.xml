@@ -21,6 +21,7 @@
     <entry key="yukon.web.modules.adminSetup.interfaces.updated">The interface {0} was updated.</entry>
     
     <entry key="yukon.web.modules.adminSetup.interfaces.title">MultiSpeak Interface Setup</entry>
+    <entry key="yukon.web.modules.adminSetup.interfaces.home.tab.title">Setup</entry>
     
     <!-- device group sync pages -->
     <!-- enum entries -->
@@ -38,6 +39,7 @@
     
     <!-- sync home.jsp -->
     <entry key="yukon.web.modules.adminSetup.deviceGroupSyncHome.pageName">Device Group Sync</entry>
+    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncHome.tab.title">Synchronization</entry>
     
     <entry key="yukon.web.modules.adminSetup.deviceGroupSyncHome.startContainer.title">Synchronize Device Groups</entry>
     <entry key="yukon.web.modules.adminSetup.deviceGroupSyncHome.startButton">Sync Now</entry>
@@ -130,6 +132,7 @@
     
     <!-- lmMappings home.jsp -->
     <entry key="yukon.web.modules.adminSetup.lmMappings.pageName">LM Mappings</entry>
+    <entry key="yukon.web.modules.adminSetup.lmMappings.tab.title">LM Mappings</entry>
     <entry key="yukon.web.modules.adminSetup.lmMappings.mappingsContainer.title">LM Mappings</entry>
     <entry key="yukon.web.menu.config.adminSetup.multispeak.lmMappings">LM Mappings</entry>
     

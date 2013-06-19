@@ -4,6 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="grid" tagdir="/WEB-INF/tags/jqGrid" %>
 
+<cti:msgScope paths="yukon.common">
 <%-- INPUTS --%>
 <c:if test="${not empty metaInfo}">
     <br/>
@@ -33,18 +34,9 @@
 
 <%-- PURE HTML EXPORT OPTIONS --%>
 <c:if test="${pureHtml}">
-	<br>
-	<div style="text-align:right;width:95%;padding-bottom:5px;">
-		<b>Export:&nbsp;</b>
-        <a href="${csvUrl}" style="text-decoration:none;color:#000;">
-        	<img src="/WebConfig/yukon/Icons/excel.gif">
-        	CSV
-        </a>
-        |
-        <a href="${pdfUrl}" style="text-decoration:none;color:#000;">
-        	<img src="/WebConfig/yukon/Icons/pdf.gif">
-        	PDF
-        </a>
+	<div class="actionArea stacked">
+        <cti:button nameKey="csv" href="${csvUrl}" icon="icon-page-white-excel"/>
+        <cti:button nameKey="pdf" href="${pdfUrl}" icon="icon-pdf"/>
 	</div>
 </c:if>
 
@@ -57,7 +49,6 @@
 		<c:if test="${not empty pageScope.width}">
 			<c:set var="gridWidth" value="${pageScope.width}" />
 		</c:if>
-		
 		
 		<grid:report title="${reportTitle}" 
             height="${height}" 
@@ -76,12 +67,15 @@
 		<table class="resultsTable">
 		
 		    <!-- header -->
-		    <tr>
-		        <c:forEach var="ci" items="${columnInfo}">
-		            <th style="text-align:${ci.align};width:${ci.columnWidthPercentage}%">${ci.label}</th>
-		        </c:forEach>
-		    </tr>
-		    
+            <thead>
+    		    <tr>
+    		        <c:forEach var="ci" items="${columnInfo}">
+    		            <th style="text-align:${ci.align};width:${ci.columnWidthPercentage}%">${ci.label}</th>
+    		        </c:forEach>
+    		    </tr>
+            </thead>
+		    <tfoot></tfoot>
+            <tbody>
 		    <!-- data -->
 		    <c:forEach var="rowData" items="${data}">
 		        <tr class="<tags:alternateRow odd="" even="altRow"/>">
@@ -90,9 +84,10 @@
 		            </c:forEach>
 		        </tr>
 		    </c:forEach>
-		
+		    </tbody>
 		</table>
 
 	</c:otherwise>
 
 </c:choose>
+</cti:msgScope>

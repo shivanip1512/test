@@ -48,14 +48,19 @@ jQuery(function() {
 });
 
 function updateControlEvents(controlPeriod) {
-    new Ajax.Updater('controlEventsDiv', '${innerViewUrl}', {
-        'method': 'POST', //IE caches GET requests
-        'parameters': { 
+
+    jQuery.ajax({
+        type: "POST",
+        url: '${innerViewUrl}',
+        data: { 
             'programId': '${program.programId}',
             'controlPeriod': controlPeriod
         }
-    });    
+    }).done(function(data) {
+            jQuery('#controlEventsDiv').html(data).show();
+        });
 }
+
 </script>  
         
 </cti:standardPage>    

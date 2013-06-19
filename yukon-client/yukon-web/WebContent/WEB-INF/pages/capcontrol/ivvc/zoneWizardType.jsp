@@ -11,16 +11,16 @@
 <script type="text/javascript">
     zoneTypeChange = function(zoneType) {
         if (zoneType == 'SINGLE_PHASE') {
-            $('phaseSelector').removeClassName('dn');
+            jQuery('#phaseSelector').removeClass('dn');
         } else {
-            $('phaseSelector').addClassName('dn');
+            jQuery('#phaseSelector').addClass('dn');
         }
     };
     backToParentSelect = function() {
-        submitFormViaAjax('zoneWizardPopup', 'zoneTypeForm', '/capcontrol/ivvc/wizard/wizardSelectParent', false);
+        submitFormViaAjax('zoneWizardPopup', 'zoneTypeForm', '/capcontrol/ivvc/wizard/wizardSelectParent');
     };
     submitTypeSelect = function() {
-        submitFormViaAjax('zoneWizardPopup', 'zoneTypeForm', null, false);
+        submitFormViaAjax('zoneWizardPopup', 'zoneTypeForm', null);
     };
 </script>
 
@@ -57,15 +57,13 @@
             </form:select>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".label.parentZone">
-            <span id="selectedParentZoneIdInType" class="disabledRow">
-                <spring:escapeBody htmlEscape="true">${parentZoneName}</spring:escapeBody>
-            </span>
+            <span id="selectedParentZoneIdInType" class="disabledRow">${fn:escapeXml(parentZoneName)}</span>
         </tags:nameValue2>
     </tags:nameValueContainer2>
 
     <div class="actionArea">
         <cti:button nameKey="back" onclick="backToParentSelect()"/>
-        <cti:button nameKey="next" onclick="submitTypeSelect()"/>
+        <cti:button nameKey="next" onclick="submitTypeSelect()" classes="primary action"/>
     </div>
 </form:form>
 

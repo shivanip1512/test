@@ -13,10 +13,10 @@
             <form:form method="POST" commandName="encryptionKey" action="saveNewKey" autocomplete="off">
                 <h3><i:inline key=".addNewKeyHeading" /></h3>
                 <tags:nameValue2 nameKey=".keyName">
-                    <tags:input path="name" size="50" />
+                    <tags:input path="name" size="30" />
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".key">
-                    <tags:input path="value" size="50" />
+                    <tags:input path="value" size="30" />
                 </tags:nameValue2>
             </form:form>
         </tags:nameValueContainer2>
@@ -157,17 +157,16 @@
                                     <td class="removeColumn">
                                         <c:choose>
 	                                        <c:when test="${key.currentlyUsed}">
-												<a class="fr icon icon_remove_disabled"
-													title="<cti:msg2 key=".deleteKeyBtnDisabledTitle"/>">
-                                                    <cti:msg2 key=".deleteKeyBtnDisabledTitle"/>
+												<a class="button naked" disabled="disabled" title="<cti:msg2 key=".deleteKeyBtnDisabledTitle"/>">
+                                                    <i class="icon icon-cross"></i>
                                                 </a>
 											</c:when>
 	                                        <c:otherwise>
 												<a type="submit" id="deleteKeyBtn_${key.encryptionKeyId}"
 													href="javascript:submitForm('keys_${key.encryptionKeyId}')"
-													class="fr icon icon_remove"
+													class="button naked"
 													title="<cti:msg2 key=".deleteKeyBtnTitle"/>">
-													<cti:msg2 key=".deleteKeyBtnTitle"/>
+													<i class="icon icon-cross"></i>
                                                 </a>
 											</c:otherwise>
                                         </c:choose>
@@ -179,7 +178,7 @@
                 <div class="pageActionArea">
 	                <cti:button id="addNewKeyBtn" nameKey="addKeyBtn" disabled="${blockingError}" />
 	                <cti:button id="importKeyFileBtn" nameKey="importKeyFileBtn" disabled="${blockingError}" />
-	                <cti:button id="viewPublicKeyBtn" nameKey="viewPublicKeyBtn"  styleClass="f_blocker2" />
+	                <cti:button id="viewPublicKeyBtn" nameKey="viewPublicKeyBtn"  classes="f_blocker2" />
                 </div>
             </tags:boxContainer2>
         </cti:dataGridCell>

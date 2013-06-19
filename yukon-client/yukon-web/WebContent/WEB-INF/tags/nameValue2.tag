@@ -9,6 +9,7 @@
 <%@ attribute name="excludeColon" required="false" %>
 <%@ attribute name="rowId" %>
 <%@ attribute name="rowClass" %>
+<%@ attribute name="valueClass" %>
 
 <c:choose>
 	<c:when test="${nameValueContainter2}">
@@ -46,7 +47,7 @@
 				
 			</td>
 			
-			<td class="value"><jsp:doBody/></td>
+			<td class="value<c:if test="${!empty valueClass}"> ${valueClass}</c:if>"><jsp:doBody/></td>
 		</tr>
 	</c:when>
 	<c:otherwise>

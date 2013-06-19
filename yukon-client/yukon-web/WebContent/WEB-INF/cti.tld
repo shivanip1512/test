@@ -522,6 +522,11 @@
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+    <attribute>
+      <name>styleClass</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
   </tag>
 
   <tag>
@@ -1436,127 +1441,51 @@
     </tag>
 
     <tag>
-        <name>img</name>
-        <tag-class>com.cannontech.web.i18n.ImageTag</tag-class>
+        <name>icon</name>
+        <tag-class>com.cannontech.web.i18n.IconTag</tag-class>
+        <dynamic-attributes>true</dynamic-attributes>
         <body-content>empty</body-content>
         <description>
-            Outputs localized image optionally wrapped in an anchor tag.
+            Outputs span with icon background optionally wrapped in an anchor tag.
+            'icon' is the only required attribute.  'nameKey' can be used to 
+            specify hover text.
         </description>
         <attribute>
-            <name>nameKey</name>
+            <name>icon</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-                Base i18n key, with ".imageUrl", specifies the main image,
-                with ".hoverUrl" for optional hover image and with ".hoverText"
-                for optional hover text 
+                Class name of icon to use.  See 'icons.css' for icon class names. Assumes 16px icon. 
+            </description>
+        </attribute>
+        <attribute>
+            <name>nameKey</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Base i18n key used to find optional ".hoverText" for span element title attribute. 
             </description>
         </attribute>
         <attribute>
             <name>id</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
-            <description>id for generated HTML img tag</description>
-        </attribute>
-        <attribute>
-            <name>name</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-            <description>name for generated HTML img tag</description>
-        </attribute>
-        <attribute>
-            <name>type</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-            <description>type of tag: possible values are 'img' or 'input' (default is 'img')</description>
-        </attribute>
-        <attribute>
-            <name>value</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-            <description>value of the generate HTML input tag (only valid when type = 'input')</description>
+            <description>Id for generated span element, defaults to 'icon_X' where X is a randon number. </description>
         </attribute>
         <attribute>
             <name>href</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-                href for anchor tag; if not specified, no anchor tag generated
+                'href' for anchor element. If not specified, no anchor element is generated.
             </description>
         </attribute>
         <attribute>
-            <name>styleClass</name>
+            <name>classes</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-                link class, defaults to 'simpleLink', applied to anchor tag if
-                href specified, unused if no href specified
-            </description>
-        </attribute>
-    </tag>
-
-    <tag>
-        <name>labeledImg</name>
-        <tag-class>com.cannontech.web.i18n.LabeledImageTag</tag-class>
-        <body-content>empty</body-content>
-        <description>
-            Outputs localized image and label optionally wrapped in an anchor tag.
-        </description>
-        <attribute>
-            <name>nameKey</name>
-            <required>true</required>
-            <rtexprvalue>true</rtexprvalue>
-            <description>
-                Base i18n key, with ".imageUrl", specifies the main image,
-                with ".label" for required label key, with ".hoverUrl" for
-                optional hover image and with ".hoverText" for optional hover
-                text 
-            </description>
-        </attribute>
-        <attribute>
-            <name>id</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-            <description>
-                id for generated span tag wrapping image and label
-            </description>
-        </attribute>
-        <attribute>
-            <name>href</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-            <description>
-                href for anchor tag; if not specified, no anchor tag generated
-            </description>
-        </attribute>
-        <attribute>
-            <name>styleClass</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-            <description>
-                link class, defaults to 'simpleLink', applied to wrapping span
-            </description>
-        </attribute>
-        <attribute>
-            <name>imgStyleClass</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-            <description>class for img</description>
-        </attribute>
-        <attribute>
-            <name>labelStyleClass</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-            <description>
-                class for label, applied to span wrapping just the label
-            </description>
-        </attribute>
-        <attribute>
-            <name>imageOnRight</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-            <description>
-                true if image should show to the right of the text, has no effect if there is no image or no text
+                CSS class names applied to generated span element.
             </description>
         </attribute>
     </tag>
@@ -1565,6 +1494,7 @@
         <name>button</name>
         <tag-class>com.cannontech.web.i18n.ButtonTag</tag-class>
         <body-content>empty</body-content>
+        <dynamic-attributes>true</dynamic-attributes>
         <description>
             Outputs localized button with optional image and label.
         </description>
@@ -1573,10 +1503,8 @@
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-                Base i18n key.  Use with ".label" for label, with ".imageUrl"
-                for main image, with ".hoverUrl" for optional hover image and
-                with ".hoverText" for optional hover text.  At least one of
-                .label and .imageUrl is required.
+                Base i18n key.  Use with ".label" for label, with ".hoverText" for optional hover text.
+                "nameKey" is require when renderMode is 'button' (the default) or 'labeledImage'.
             </description>
         </attribute>
         <attribute>
@@ -1593,7 +1521,7 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-                id for generated button tag wrapping image and span
+                Id for generated button element.
             </description>
         </attribute>
         <attribute>
@@ -1601,7 +1529,7 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-                Adds "onclick" which causes button to navigate to given URL.
+                Adds "data-href" attribute which causes button to navigate to given URL.
             </description>
         </attribute>
         <attribute>
@@ -1609,15 +1537,15 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-                onclick for button tag
+                Onclick for button element.
             </description>
         </attribute>
         <attribute>
-            <name>styleClass</name>
+            <name>classes</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-                button class, button class will always contain 'formSumbit'
+                Class attribute applied to the button element.
             </description>
         </attribute>
         <attribute>
@@ -1625,7 +1553,7 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-                button type (sumbit, button, reset), defaults to button if not supplied
+                Button type (sumbit, button, reset), defaults to button if not supplied.
             </description>
         </attribute>
         <attribute>
@@ -1633,7 +1561,7 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-                button name
+                Name attribute of the button element.
             </description>
         </attribute>
         <attribute>
@@ -1641,7 +1569,7 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-                button value
+                Value attribute of the button element.
             </description>
         </attribute>
         <attribute>
@@ -1649,7 +1577,7 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-                true if image should show to the right of the text, has no effect if there is no image or no text
+                'true' if image should show to the right of the text, has no effect if there is no image or no text.
             </description>
         </attribute>
         <attribute>
@@ -1657,7 +1585,7 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-                disables the button when set to true
+                Sets the 'disabled' attribute of the button when set to 'true'.
             </description>
         </attribute>
         <attribute>
@@ -1665,7 +1593,7 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-                the html title attribute of the button
+                Title attribute of the button element.
             </description>
         </attribute>
         <attribute>
@@ -1673,8 +1601,8 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-                renderMode is to describe how the button should look:
-                Possible values for renderMode are 'image', 'labeledImage' and 'button' (default)
+                'renderMode' is to describe how the button should look.
+                Possible values for renderMode are 'image', 'labeledImage', 'imageButton', and 'button' (default).
             </description>
         </attribute>
         <attribute>
@@ -1684,6 +1612,24 @@
             <description>
                 When 'true' will display the button as a dialog button adding '...' to the end of the button text.
                 Signifies the button will ask for more infomation before doing the action. Default is 'false'.
+            </description>
+        </attribute>
+        <attribute>
+            <name>icon</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                The class name of the icon to use for this button.
+            </description>
+        </attribute>
+        <attribute>
+            <name>busy</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Sets the 'data-busy' attribute of the button when set to 'true'.
+                If the .labelBusy key exists, it is used for button text after clicked.
+                This attribute requires the f_disableAfterClick class. 
             </description>
         </attribute>
     </tag>
@@ -2026,10 +1972,22 @@
     <tag-class>com.cannontech.web.taglib.TabbedContentSelectorTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
-        <name>cssClass</name>
+        <name>classes</name>
         <required>false</required>
         <rtexprvalue>true</rtexprvalue>
-        <description>Class name applied to the div.</description>
+        <description>Class names applied to the div.</description>
+    </attribute>
+    <attribute>
+        <name>mode</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>'rounded' is default, the new mode is 'box', 'header' is like box but only has a line across the top.</description>
+    </attribute>
+    <attribute>
+        <name>id</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>The id to use for the top-level HTML element.</description>
     </attribute>
    	<description>
         Organizes content into columns using cti:dataGridCell tags.
@@ -2150,6 +2108,66 @@
             The default value.  If unspecified, the body of the tag will be used.
         </description>
     </attribute>
+  </tag>
+
+  <tag>
+    <name>linkTabbedContainer</name>
+    <tag-class>com.cannontech.web.taglib.LinkTabbedTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+        <name>classes</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Class names applied to the div.</description>
+    </attribute>
+    <attribute>
+        <name>id</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>The id applied to the div - if blank, one is generated and set.</description>
+    </attribute>
+    <attribute>
+        <name>mode</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>the new mode is 'box', 'header' is like box but only has a line across the top.</description>
+    </attribute>
+    <description>
+        Uses jQuery tabs...
+    </description>
+  </tag>
+
+  <tag>
+    <name>linkTab</name>
+    <tag-class>com.cannontech.web.taglib.LinkTabTag</tag-class>
+    <body-content>scriptless</body-content>
+     <attribute>
+        <name>selectorName</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Printable text used within the tab</description>
+    </attribute>
+    <attribute>
+        <name>initiallySelected</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Tab selected</description>
+    </attribute>
+    <attribute>
+        <name>tabHref</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Set to a valid URL/URL-path</description>
+    </attribute>
+    <attribute>
+        <name>tabId</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Tab li element id. If not specified a generated unique value will be used.</description>
+    </attribute>
+    <description>
+        If tabHref is blank, the body content of this tag is used as the href if it is also not blank/whitespace.
+    </description>
   </tag>
 
   <function>

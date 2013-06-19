@@ -4,17 +4,17 @@
 
 <cti:msgScope paths="modules.dr.surveyList">
 
-<h1 class="dialogQuestion">
+<h4 class="dialogQuestion stacked">
     <cti:msg2 key=".confirmDelete" arguments="${optOutSurvey.surveyName}"/>
-</h1>
+</h4>
 
 <cti:url var="deleteUrl" value="/stars/optOutSurvey/delete"/>
 <form id="confirmForm" action="${deleteUrl}">
     <input type="hidden" name="optOutSurveyId" value="${optOutSurvey.optOutSurveyId}"/>
 
     <div class="actionArea">
-        <cti:button nameKey="ok" onclick="submitFormViaAjax('ajaxDialog', 'confirmForm')"/>
-        <cti:button nameKey="cancel" onclick="parent.$('ajaxDialog').hide()"/>
+        <cti:button nameKey="ok" onclick="submitFormViaAjax('ajaxDialog', 'confirmForm')" classes="primary action"/>
+        <cti:button nameKey="cancel" onclick="jQuery('#ajaxDialog').dialog('close');"/>
     </div>
 </form>
 

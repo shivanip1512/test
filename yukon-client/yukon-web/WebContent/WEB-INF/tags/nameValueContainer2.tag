@@ -9,8 +9,10 @@
 <table class="nameValueTable <c:if test="${empty pageScope.naturalWidth || pageScope.naturalWidth == true}">naturalWidth </c:if>${pageScope.tableClass}" 
        <c:if test="${!empty pageScope.style}">style="${pageScope.style}"</c:if>
        <c:if test="${!empty pageScope.id}">id="${pageScope.id}"</c:if>>
-       
-	<jsp:doBody/>
-	
+    <tbody>
+
+    <jsp:doBody/>
+
+    </tbody>
 </table>
 <c:set var="nameValueContainter2" value="false" scope="request"/>

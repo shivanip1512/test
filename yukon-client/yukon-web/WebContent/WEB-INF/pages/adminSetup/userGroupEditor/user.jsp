@@ -12,8 +12,8 @@
 var supportsPasswordSet = ${cti:jsonString(supportsPasswordSet)};
 var originalAuthCategory = '${user.authCategory}';
 
-YEvent.observeSelectorClick('#cancelChangePassword', function(event) {
-    $('changePasswordPopup').hide();
+jQuery('#cancelChangePassword').click(function(event) {
+    jQuery('#changePasswordPopup').dialog('close');
 });
 
 jQuery(function() {
@@ -58,9 +58,9 @@ jQuery(function() {
     <tags:setFormEditMode mode="${mode}"/>
     <cti:msg2 var="none" key="yukon.web.defaults.none"/>
 
-    <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
+    <div class="column_12_12">
 
-        <cti:dataGridCell>
+        <div class="column one">
 
             <form:form commandName="user" action="edit" method="post">
                 <form:hidden path="userId"/>
@@ -128,18 +128,18 @@ jQuery(function() {
                         <cti:button nameKey="cancel" href="${cancelUrl}"/>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
-                        <cti:button nameKey="edit" name="edit" type="submit"/>
+                        <cti:button nameKey="edit" icon="icon-pencil" name="edit" type="submit"/>
                         <c:if test="${supportsPasswordSet[user.authCategory]}">
-                            <cti:button nameKey="changePassword" id="changePasswordButton" type="button"/>
+                            <cti:button nameKey="changePassword" id="changePasswordButton" type="button" icon="icon-key"/>
                         </c:if>
                     </cti:displayForPageEditModes>
                     <cti:button nameKey="unlockUser" name="unlockUser" id="unlockUser"  type="submit"/>
                 </div>
             </form:form>
                 
-        </cti:dataGridCell>
+        </div>
         
-        <cti:dataGridCell>
+        <div class="column two nogutter">
             
             <cti:displayForPageEditModes modes="VIEW">
                 
@@ -149,15 +149,15 @@ jQuery(function() {
                             <i:inline key=".noRoles"/>
                         </c:when>
                         <c:otherwise>
-                            <div class="rolesContainer wsnw">
+                            <div class="rolesContainer">
                                 <c:forEach var="category" items="${roles}">
                                     <ul class="groupedList">
-                                        <li><span class="group detail"><cti:formatObject value="${category.key}"/></span>
+                                        <li><span class="group"><cti:formatObject value="${category.key}"/></span>
                                             <ul class="groupedItem">
                                                 <c:forEach var="roleGroupPair" items="${category.value}">
-                                                    <li class="detail">
+                                                    <li>
                                                         <cti:formatObject value="${roleGroupPair.first}"/>
-                                                        &nbsp;<span><spring:escapeBody htmlEscape="true">(${roleGroupPair.second})</spring:escapeBody></span>
+                                                        &nbsp;<span class="detail wsnw">(${fn:escapeXml(roleGroupPair.second)})</span>
                                                     </li>
                                                 </c:forEach>
                                             </ul>
@@ -171,8 +171,8 @@ jQuery(function() {
                 
             </cti:displayForPageEditModes>
             
-        </cti:dataGridCell>
+        </div>
         
-    </cti:dataGrid>
+    </div>
     
 </cti:standardPage>

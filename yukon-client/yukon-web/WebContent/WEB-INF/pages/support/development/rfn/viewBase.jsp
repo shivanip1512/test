@@ -27,10 +27,8 @@ jQuery(function() {
    });
 });
 </script>
-
-<div class="colmask one-third-left clearfix">
-    <div class="colleft">
-        <div class="col1">
+<div class="column_8_16">
+        <div class="column one">
             <tags:sectionContainer2 nameKey="tests" styleClass="rfnTestContainer">
                 <div><a href="viewMeterReadArchiveRequest"><i:inline key=".meterReadArchiveRequest.label"/></a></div>
                 <div><a href="viewEventArchiveRequest"><i:inline key=".eventArchiveRequest.label"/></a></div>
@@ -38,13 +36,12 @@ jQuery(function() {
                 <div><a href="viewLcrReadArchiveRequest"><i:inline key=".lcrReadArchiveRequest.label"/></a></div>
             </tags:sectionContainer2>
         </div>
-        <div class="col2">
+        <div class="column two nogutter">
             <tags:sectionContainer title="Actions">
                 <div><button id="startupNotif">Resend Startup Notif</button></div>
                 <div><button id="calcStressTest" class="danger">Calc Stress Test</button><span class="error">DO NOT CLICK</span></div>
                 <div><button id="clearCache">Clear Cache</button></div>
             </tags:sectionContainer>
         </div>
-    </div>
 </div>
 </cti:standardPage>

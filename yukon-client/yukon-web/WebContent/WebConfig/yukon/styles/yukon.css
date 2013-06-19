@@ -1,124 +1,126 @@
 /*
-
-	This file defines the basic look and feel of Yukon operations.  Elements
-	containers, widgets, fonts, colors are all defined here.
-	
-	This file can be included on consumer pages to reuse container styles.
-
+    This file defines the basic look and feel of Yukon.
+    This file can be included on consumer pages to reuse container styles.
+    
+    TABLE OF CONTENTS:
+    HEADINGS
+    LINKS
+    COLORS
+    FORM FIELDS
+    VERTICAL MENUS
+    TABLES
+    PROGRESS BARS
+    LISTS
+    CONTAINERS
+    FLASHSCOPES
+    PIPES
+    COLOR CODING
+    DIALOGS
+    FIELD HELPER
+    SCROLLING
+    WIDGETS
+    CATEGORIES AND SETTINGS
+    MISC
+    DATE/TIME PICKER
+    DROPDOWN COG MENU
+    MODAL/BLOCKING GLASS
+    TILES
+    CONNECTION WARNING
 */
 
-body {font-family: Arial,Helvetica,sans-serif; line-height:1.3em;font-size:14px;color:#555;}
+/* HEADINGS */
+.page-heading {display: inline-block; float:left; margin: 0;}
+h1{font-size: 1.3em;}
+h2{font-size: 1.17em;}
+h3{font-size: 1.0em;}
+h4{font-size: .95em;}
+h5{font-size: .9em;}
+h6{font-size: .8em;}
+
+/* LINKS */
 a, .vertical_menu a:hover {text-decoration:none;}
 a:hover, a:focus {text-decoration:underline;outline:0;}
+a:link,a:visited {color: #06C;text-decoration: none;}
+a.described {margin-right: 10px;}
 
-/* primary color */
+/* COLORS */
 a, .primary_color, .vertical_menu li.selected a, .vertical_menu a:hover, .ui-widget-content a, h3.toggle-title, #subMenu a:visited, .perPageArea a:visited {color:#06C;}
 .primary_background {background-color:#06c; color:white;}
-::-moz-selection, ::selection {background-color:#06c; color:white;} /* IE 9 does not support pseudo element selector '::selection' and will ignore the entire rule, therefore it must be separate */
+::-moz-selection, ::selection {background-color:#06c; color:white;} /* IE 9 does not support pseudo element selector '::selection' and will ignore the entire rule, therefore it must be in it's own rule */
 .primary_background a, .primary_background a:visited {color:white}
+.highlight, .primary_background .highlight {color: #FF9900;}
 
-a:visited {color: #003399;}
-
-/* highlight color */
-.highlight, .primary_background .highlight, #topMenu a:hover, #topMenu a:focus, #subMenu a.selected, #topMenu a.selected, .breadCrumbs a, .breadCrumbs {color: #FF9900;}
-
-/* headings */
-h1 {font-size: 1.3em;font-weight:bold;}
-.standardPageHeading{margin-bottom:.8em;}
-
-/* shared form field attributes */
-input[type=text],input[type=password], button, input[type=submit], input[type=button], input[type=reset], textarea, select, .datetimeEntry_wrap {border:solid 1px #ccc; border-radius:2px; color:#555;}
-input, button, textarea {padding:2px 5px;}
-input:focus, button:focus, textarea:focus, select:focus, button:hover, input[type=submit]:hover, input[type=submit]:focus, input[type=button]:hover, input[type=button]:focus {border:solid 1px #4373A3;box-shadow:0 0 5px lightBlue;outline:0;color:black;}
-input::-moz-focus-inner, button::-moz-focus-inner, textarea::-moz-focus-inner, select::-moz-focus-inner {border:0}
-select {margin:0;}
-input {background:white;padding:2px 5px;}
-button, input[type=submit], input[type=button], input[type=reset] {color:#333;border:solid 1px #888; cursor:pointer; background-color:#efefef; background:linear-gradient(#efefef, #cccccc); text-shadow: 1px 1px 0 white;}
-
-button:hover, input[type=submit]:hover, input[type=button]:hover {color:black; background:linear-gradient(#efefef, #bbbbbb);text-shadow:1px 1px 0 #eeeeee;}
-button:active, input[type=submit]:active, input[type=button]:active {color:black; background:#cccccc;text-shadow:1px 1px 0 #eeeeee;}
-button:disabled:not(.naked), input[type=submit]:disabled:not(.naked), input[type=button]:disabled:not(.naked) {color: #999; border:solid 1px #CCC !important; background:linear-gradient(#efefef, #DEDEDE); text-shadow: 1px 1px 0 white;box-shadow:none;cursor:not-allowed;}
-button .hoverableImage, button.image img {margin-top:-3px; top: 3px; margin-right: 5px; position:relative;}
-button.image {padding: 0; width: 16px; height: 16px;}
-
-button.danger {color:white; background-color:#D14836; text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25); border-color:#802D2D;}
-button.danger {
-    background-image: -webkit-linear-gradient(top, #EE5F5B, #BD362F); /* Chrome10+, Safari5.1+ */
-    background-image:    -moz-linear-gradient(top, #EE5F5B, #BD362F); /* FF3.6+ */
-    background-image:     -ms-linear-gradient(top, #EE5F5B, #BD362F); /* IE10+ */
-    background-image:      -o-linear-gradient(top, #EE5F5B, #BD362F); /* Opera 11.10+ */
-    background-image:         linear-gradient(top, #EE5F5B, #BD362F); /* W3C */
+/* FORM FIELDS */
+input[type=email], input[type=number], input[type=password], input[type=tel], input[type=text], input[type=url] {
+	-webkit-appearance: none;
+	appearance: none;
+	background: #fff;
+	border: 1px solid #d9d9d9;
+	border-top: 1px solid #c0c0c0;
+	-webkit-border-radius: 2px;
+	-moz-border-radius: 2px;
+	border-radius: 2px;
+	display: inline-block;
+	height: 26px;
+	margin: 0;
+	padding: 0 8px;
+	-webkit-transition: border .1s ease-in-out,background-color .1s ease-in-out;
+    -moz-transition: border .1s ease-in-out,background-color .1s ease-in-out;
+    -ms-transition: border .1s ease-in-out,background-color .1s ease-in-out;
+    -o-transition: border .1s ease-in-out,background-color .1s ease-in-out;
+    transition: border .1s ease-in-out,background-color .1s ease-in-out;
 }
-button.danger:hover {background:#BD362F; border-color:#802D2D;box-shadow:0 0 5px #D14836;}
-button.danger:active {background:#F55656;}
 
-button.primary {color:white; background-color:#06C; text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25); border-color:#06C;}
-button.primary {
-    background-image: -webkit-linear-gradient(top, #17D, #06C); /* Chrome10+, Safari5.1+ */
-    background-image:    -moz-linear-gradient(top, #17D, #06C); /* FF3.6+ */
-    background-image:     -ms-linear-gradient(top, #17D, #06C); /* IE10+ */
-    background-image:      -o-linear-gradient(top, #17D, #06C); /* Opera 11.10+ */
-    background-image:         linear-gradient(top, #17D, #06C); /* W3C */
+input[type=email]:hover, input[type=number]:hover, input[type=password]:hover, input[type=tel]:hover, input[type=text]:hover, input[type=url]:hover {
+	border: 1px solid #b9b9b9;
+	border-top: 1px solid #a0a0a0;
+	-webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+	-moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+	box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
 }
-button.primary:hover {background:#06C; border-color:#06C;box-shadow:0 0 5px #06C;}
-button.primary:active {background:#06C;}
 
-button.naked, button.naked:hover {border:none; background:transparent; box-shadow:none;}
-.button-container button {margin-right: 4px;}
+input[type=email]:focus, input[type=number]:focus, input[type=password]:focus, input[type=tel]:focus, input[type=text]:focus, input[type=url]:focus {
+	outline: none;
+	border: 1px solid #06c;
+	-webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+	-moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+}
 
-input[type="text"], textarea { -webkit-background-clip: padding-box; background-clip: padding-box; -webkit-transition: border .2s ease-in-out,background-color .2s ease-in-out; -moz-transition: border .2s ease-in-out,background-color .2s ease-in-out; -ms-transition: border .2s ease-in-out,background-color .2s ease-in-out; -o-transition: border .2s ease-in-out,background-color .2s ease-in-out; transition: border .2s ease-in-out,background-color .2s ease-in-out; }
-/* containing block may need to float left or clear, should be variable width for these to work */
-.equalWidthButtons input { margin-bottom: 0.75em; margin-top: 0; width: 100%; float: left; clear: both; }
-.equalWidthButtons input:last-child { margin-bottom: 0; }
+input[type=checkbox], input[type=radio] {margin: 3px;}
+input[type=radio]:focus {outline:none;}
 
-
-#MainContainer {padding: 20px;}
-#Content > .centeredContainer, .dashboard {margin:0 auto; width: 960px;}
-#Content > .leftContainer, .dashboard {margin-left: 0;}
-
-/* Navigation Menu */
-#Header {width:100%; margin:0;padding:0;overflow:hidden;}
-#Header img {float:right;margin: 10px;}
-#topMenu, #subMenu, #bottomBar {padding: 5px 20px;}
-#topMenu a {padding:0 5px 0 6px;}
-#topMenu a.first{padding-left: 0;}
-#topMenu a:hover, #topMenu a:focus {text-decoration:none;}
-#subMenu {min-height:1.3em; background:#efefef; border-bottom:solid 1px #ccc;}
-#topMenu a, #subMenu a {font-weight: bold;}
-.StandardWithNavLayout #ContentWrapper {margin-left:139px; padding-left: 10px;border-left: solid 1px #ccc; min-height:600px; /*I guess... but specifying a height here just feels wrong*/}
-#LeftColumn {float:left; width: 140px;}
-#LeftColumn .detail {margin-bottom:10px;}
-#alertSpan a, #alertSpan a:hover, #alertSpan a:focus {color: white;}
-#alertSpan {background-color: #D14836; border-radius: 2px;margin: 0 5px;height: 20px;line-height: 20px; padding: 0 2px;}
-
-/* vertical menus */
-.vertical_menu {background:#EEE; border:solid 1px #ccc; border-style:solid none solid solid; overflow:hidden; z-index:100;}
+/* VERTICAL MENUS */
+#LeftColumn .info-fragment, #LeftColumn .bumper {border-right: 1px solid #ccc;}
+#LeftColumn .bumper {min-height: 120px;}
+#LeftColumn .info-fragment {padding-bottom: 10px; font-size: .9em;}
+.vertical_menu {background:#EEE; border:solid 1px #ccc; border-style:solid none solid solid; overflow:hidden; z-index:100;border-radius: 2px 0 0 2px;}
+.vertical_menu ul {margin: 0;padding: 0; list-style-type: none;}
 .vertical_menu li {border: solid 1px #ccc; border-style: solid solid none none; margin-top: -1px; padding: 3px 1px 3px 8px;}
 .vertical_menu li.selected, .vertical_menu li:hover, .vertical_menu li:focus {background:white;border-right:solid 1px white;}
 .vertical_menu li.selected {border-left:solid 5px #ccc;}
 .vertical_menu a {color:inherit; display:block; word-wrap:break-word;text-shadow: 1px 1px 0 white;}
 
-/* Copyright */
-#CopyRight {width:960px; margin: 0 auto; padding: 20px 0; clear:both; font-size: .8em; color: #888; text-align:center;}
 
-/* Table Styles */
+/* TABLES */
 table {width: auto; border-collapse:collapse;}
-table td, table th {padding:2px 5px;}
+table td, table th {padding:3px 5px;vertical-align: top;}
 table th, .TitleHeader, .columnHeader {background:white; text-align:left; font-weight:bold; border-bottom:solid 1px #ccc;}
 table.naturalWidth {width: auto;}
 
 table.nowrap th, table.nowrap td {white-space: nowrap;}
 
-.compactResultsTable, .inputTable, .resultsTable, .nameValueTable {width:100%;border-collapse:collapse;}
+.compactResultsTable, .resultsTable, .nameValueTable {width:100%;border-collapse:collapse;}
 .compactResultsTable tr.focused, .compactResultsTable tr.focused:nth-child(2n) { background-color: #DAE2FF;}
-.compactResultsTable {font-size:0.8em;}
-.compactResultsTable tr:nth-child(even), .inputTable tr:nth-child(even), .resultsTable tr:nth-child(even), .striped-list > div:nth-child(even), .striped tr:nth-child(even) {background-color:#f6f6f6;}
-.compactResultsTable td, .inputTable td, .resultsTable td, .nameValueTable td {border:none;}
+.compactResultsTable {font-size:0.9em;}
+.compactResultsTable tr:nth-child(even), .resultsTable tr:nth-child(even), .striped-list > div:nth-child(even), .striped tr:nth-child(even) {background-color:#f6f6f6;}
+.compactResultsTable td, .resultsTable td, .nameValueTable td {border:none;}
+.compactResultsTable td .icon {margin-left: 0;}
 .compactResultsPaging {border-top: 1px solid #ccc;}
 .compactResultsPaging .pagingArea {float: right; margin: -1px 50px 0 0; border: 1px solid #ccc; border-style: none solid solid solid; padding: 5px 10px;background-color: white;}
 .compactResultsPaging span {line-height: 16px;}
 .compactResultsPaging .pageNumText {margin: 0 10px;}
-.nameValueTable .name {font-size: .9em;}
+.nameValueTable .name {color: #666;}
 .nameValueTable .value {color: #333;}
 
 .rowHighlighting tr:hover, .highlighted {background-color:#dedede !important;}
@@ -127,9 +129,8 @@ table.nowrap th, table.nowrap td {white-space: nowrap;}
 
 .two-column-split {width:100%;}
 .two-column-split th, .two-column-split td {width:50%;}
-/* END Table Styles */
 
-/*Default Progress Bar classes - start */
+/* PROGRESS BARS */
 div.progressBar .box {margin-right: 5px;}
 div.progressBarBorder {height: 12px;width: 102px;border: 1px solid black;background-color: #ECECEC;}
 div.progressBarInnerSuccess,div.progressBarInnerFailure {position: absolute;}
@@ -147,42 +148,58 @@ div.progressBarInnerFailure {
     background: -moz-linear-gradient(top, #8C0C10, #8C0C10 10%, #BF0F12, #8C0C10 50%, #BF0F12 90%, #8C0C10); /* for firefox 3.6+ */
 }
 .progressBarPercentComplete, .progressBarCompletedCount {font-size: 11px;}
-/*Default Progress Bar classes - end */
-
-/* Custom Progress Bar classes - start*/
 .progressBar .scheduledRequestProgressBarBorder {width: 55px;}
-/* Custom Progress Bar classes - end*/
 
 /* LISTS */
+.buttonStack {padding: 0; list-style-type: none; margin: 0;}
 .buttonStack li {margin-bottom: 5px;}
+.buttonStack li:after {clear: both;content: ".";display: block;height: 0;line-height: 0;visibility: hidden;}
 .labeledImageStack li {padding-bottom: 23px;}
 ul.disc li {list-style-type: disc; margin-left: 25px;}
+.groupedList {padding-left: 0;}
+.groupedList > li {list-style: none;}
+.groupedList .group {font-weight: bold;}
+.groupedList .groupedItem {list-style: none;}
+.simple-list, .resultList {padding: 0;margin:0;list-style: none;}
 .tree-list li li {margin-left: 15px;}
 .tree-list li li li {margin-left: 30px;}
 
 /* CONTAINERS */
 .toggle-title {cursor: pointer; background: white url(../Icons/icon_blockexpanded.png) no-repeat scroll 0 8px; padding-left: 14px; display: inline;}
 .collapsed .toggle-title {background: url("../Icons/icon_blockcollapsed.png") no-repeat scroll 3px 5px #FFFFFF;}
+.titleBar h3, .pagedBox .title h3 {margin: 0;}
+.controls .icon {margin:1px 0 0 0;}
 
-.boxContainer, .pagedBox, .tabbedContainer {margin-bottom: 20px;}
-.pagedBox, .sectionContainer, .boxContainer, .inlineTree, .resultsTable, .liteContainer {border:solid 1px #ccc; border-radius:3px;} /* .titledContainer, */
-.pagedBox > .title, .inlineTree > .tree_helper_controls, .resultsTable th {border-radius:3px 3px 0 0;} /* .titledContainer > .titleBar, */
+.boxContainer, .boxContainerFooter, .pagedBox, .tabbedContainer {margin-bottom: 20px;}
+.pagedBox, .sectionContainer, .boxContainer, .inlineTree, .resultsTable, .liteContainer {border:solid 1px #ccc; border-radius:2px;} /* .titledContainer, */
+.pagedBox > .title, .inlineTree > .tree_helper_controls, .resultsTable th {border-radius:2px 2px 0 0;} /* .titledContainer > .titleBar, */
 .resultsTable th {border-bottom: solid 1px #ccc;}
 .content, .titledContainer > .titleBar, .pagedBox > .title, .pagedBox > .content, .pagedBox > .footer, .boxContainerFooter {padding: 5px 10px; overflow:hidden;}
 .content, .pagedBox > .content {padding-bottom: 10px;}
-.pagedBox > .title, .pagedBox > .footer, .boxContainer_titleBar, .resultsTable th, .boxContainerFooter {background-color:#efefef;} /* .titledContainer > .titleBar, */
+.pagedBox > .title, .pagedBox > .footer, .boxContainer_titleBar, .resultsTable th, .boxContainerFooter {background-color:whiteSmoke;} /* .titledContainer > .titleBar, */
 .titledContainer > .content, .pagedBox > .content, .pagedBox > .footer, .sectionContainer > .content, .sectionContainer > .footer {border-top: solid 1px #ccc;}
 .titledContainer > .titleBar, .pagedBox > .title, .pagedBox > .footer, .ui-dialog .ui-dialog-title {text-shadow:1px 1px 0 white;}
-.titledContainer > .titleBar, .pagedBox > .title, .ui-dialog .ui-dialog-title {border-radius: 3px 3px 0 0;}
-.pagedBox > .footer, .sectionContainer > .footer {border-radius: 0 0 3px 3px;}
+.titledContainer > .titleBar, .pagedBox > .title, .ui-dialog .ui-dialog-title {border-radius: 2px 2px 0 0;}
+.pagedBox > .footer, .sectionContainer > .footer {border-radius: 0 0 2px 2px;}
 .titledContainer > .titleBar h3, .pagedBox > .title h3, .pagedBox > .footer h3, .ui-dialog .ui-dialog-title h3 {display: inline-block;}
-.actionArea {text-align:right; margin-top: 20px;}
-.pageActionArea {margin: 20px 0;}
-.pagingArea, .perPageArea {font-weight: normal;} /* TODO: change title span to h3 to avoid this 'undo' css rule, move bottom-margin on h's to new rule .page-title */
+
+.actionArea {margin-top: 20px;}
+.actionArea:before, .actionArea:after {content: " ";display: table;}
+.actionArea:after {clear: both;}
+.actionArea, .pageActionArea, .buttonStack li {line-height: 26px;}
+.actionArea select:not([multiple]), .pageActionArea select:not([multiple]) {height: 26px;} 
+.actionArea input[type=text], .pageActionArea input[type=text] {line-height: 22px;}
+.actionArea button, .actionArea .button, .actionArea select:not([multiple]) {float: right;}
+.actionArea select:not([multiple]), .actionArea input[type=text], .actionArea input[type=search],
+.buttonStack select:not([multiple]), .buttonStack input[type=text], .buttonStack input[type=search] { padding: 3px 5px 3px 5px;border-radius: 2px;border: 1px solid #aaa;}
+.pageActionArea {margin-top: 20px;}
+.pageActionArea:before, .pageActionArea:after {content: " ";display: table;}
+.pageActionArea:after {clear: both;}
+.ui-dialog .actionArea {padding: 0 10px;}
 
 .titledContainer .filter_container, .pagedBox .filter_container, .sectionContainer .filter_container {border-bottom: 1px dashed #ccc; margin: 0 0 6px; padding: 0 0 6px;}
 .titledContainer .filter_container a:hover, .titledContainer .filter_container a:focus, .pagedBox .filter_container a:hover, .pagedBox .filter_container a:focus {background: #ddd}
-.titledContainer .filter_container a , .pagedBox .filter_container a , .sectionContainer .filter_container a {border: solid 1px #ccc; background: #EEEEEE; border-radius: 3px; color: #555; font-size: 10px; padding:2px; margin: 0 5px 5px;} 
+.titledContainer .filter_container a , .pagedBox .filter_container a , .sectionContainer .filter_container a {border: solid 1px #ccc; background: #EEEEEE; border-radius: 2px; color: #555; font-size: 10px; padding:2px; margin: 0 5px 5px;} 
 .titledContainer .filter_container .value , .pagedBox .filter_container .value , .sectionContainer .filter_container .value {color: #444; font-weight: bold;}
 
 .triangleContainer {margin-bottom: 0px;}
@@ -194,13 +211,16 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 
 .pagedBox .contextArea {margin: 0 20px 0 0; font-weight: normal;} /* TODO: change title span to h3 to avoid this 'undo' font css rule, move bottom-margin on h's to new rule .page-title */
 .pagedBox .contextArea .navLink {position: relative;}
+.pagingArea {min-width: 250px; white-space: nowrap; display: inline-block; float: right;}
+.pagingArea .pageNumText, .pagingArea .nextLink, .pagingArea .previousLink {padding-left: 10px; line-height: 16px;display: inline-block;float: left;}
+
 .pagedBox .contextArea button.fancy {position: relative;font-size: 13px!important; border: solid 1px #777; background-color: #efefef; /* Old browsers */
     background-image: -webkit-linear-gradient(top, #efefef, #ddd); /* Chrome10+, Safari5.1+ */
     background-image:    -moz-linear-gradient(top, #efefef, #ddd); /* FF3.6+ */
     background-image:     -ms-linear-gradient(top, #efefef, #ddd); /* IE10+ */
     background-image:      -o-linear-gradient(top, #efefef, #ddd); /* Opera 11.10+ */
     background-image:         linear-gradient(top, #efefef, #ddd); /* W3C */
-    color: #555; border-radius: 3px; padding: 4px 8px 4px 8px !important; margin: 0 7px 0 0; text-shadow: 0 1px 0 #EFEFEF;
+    color: #555; border-radius: 2px; padding: 4px 8px 4px 8px !important; margin: 0 7px 0 0; text-shadow: 0 1px 0 #EFEFEF;
 }
 .pagedBox .contextArea button.fancy:hover {background-color: #ddd; color: #333; border-color: #666 !important; cursor: pointer;}
 .pagedBox .contextArea button.fancy:active {background-color: #ddd; /* Old browsers */
@@ -215,48 +235,47 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 .pagedBox .contextArea button.fancy:disabled:hover {background: #efefef !important;color: #999 !important;border: solid 1px #ccc !important;cursor: default;}
 .pagedBox .contextArea button.fancy:focus {outline: none !important;}
 
-.boxContainer.with_footer {border-radius: 3px 3px 0 0;margin-bottom: 0;}
-.boxContainerFooter {border:1px solid #ccc;border-radius: 0 0 3px 3px;border-top: none;}
+.boxContainer.with_footer {border-radius: 2px 2px 0 0;margin-bottom: 0;}
+.boxContainerFooter {border:1px solid #ccc;border-radius: 0 0 2px 2px;border-top: none;}
 .flyover, .tooltip {background-color: white; padding: 2px; border: 2px solid #666;box-shadow: 9px;}
-.empty-list {font-style: italic; color: #676767;}
 
 .i18nInline {outline: red dotted thin;}
 .i18nInline .i18nInlineDebug {display: none;}
 .i18nInline:hover .i18nInlineDebug {display: inline;position: absolute;background: white;border: thin #eee solid;padding: 4px;}
-/* END CONTAINERS */
 
-/* Flash Scope */
+.button-container button {margin-right: 4px;} /* may not need now */
+
+.ui-tabs-active > .ui-tabs-anchor {font-weight: bold !important;}
+
+/* FLASH SCOPES */
 .page_help,.page_warning,.page_error {line-height: 1.3em; font-size: 12px; padding: 5px 10px 5px 25px; border-radius: 2px; border-width: 1px; border-style: solid; margin-bottom: 10px;}
 .page_help ul,.page_warning ul,.page_error ul {list-style: disc inside none;}
 .page_help {border-color: #06C; background: #EAF1FD url('/WebConfig/yukon/Icons/information.gif') 5px 4px no-repeat;}
 .page_warning {line-height: 1.3em; border-color: #FBB117; background: #FFFFDA url('/WebConfig/yukon/Icons/warning.gif') 5px 4px no-repeat;}
 .page_error {border-color: ##D14836; background: #FFDDDD url('/WebConfig/yukon/Icons/error.gif') 5px 4px no-repeat;}
 
-/* Pipes */
+/* PIPES */
 ul.pipes {overflow:hidden; display:inline-block;}
 ul.pipes li {display:inline; border-left:solid 1px #ccc; margin:0 0 0 -1px; padding:2px 7px 2px 5px;}
 ul.pipes li.first {padding-left:0;}
 
-/* Color Coding */
-.error, .errorMessage {color: #D14836}
+/* COLOR CODING */
+.error, .errorMessage {color: #D14836 !important}
 .success, .successMessage {color: #093;}
-.warn, .warning, .warningMessage {color:#FBB117}
-.disabled, .disabled a {color:#555; cursor:default;}
+.warn, .warning, .warningMessage {color:#ff8c00 !important}
+.disabled, .disabled a {color:#888; cursor:default;}
 .disabled, .disabled a, .disabled:hover, .disabled a:hover {text-decoration: none;}
 .subtle, .setting .detail > span {color:#555;}
-
 /* used on consumer pages, delete during consumer overhaul */
-div.message, div.userMessage {border-radius:3px; padding: 2px 30px; border-style:solid; border-width:1px; margin-bottom: 10px;}
+div.message, div.userMessage {border-radius:2px; padding: 2px 30px; border-style:solid; border-width:1px; margin-bottom: 10px;}
 .userMessage.error, .userMessage.ERROR {background:pink url(../Icons/error.gif) 5px no-repeat; border-color:#D14836;}
 .userMessage.success, .userMessage.CONFIRM {background:#C3FDB8 url("../Icons/enable.gif") 5px no-repeat; padding-left: 30px; border-color:#093; color:#333;}
 .userMessage.info {background:lightBlue url(../Icons/information.gif) 5px no-repeat; border-color:blue;}
 .userMessage.warn, .userMessage.WARNING {color:#333;background:#FFFFDA url(../Icons/warning.gif) 5px no-repeat; border-color:#FBB117;}
-
 input.error {background: pink;border-color:#D14836;}
-/* END Color Coding */
 
-/* Dialogs */
-.popUpDiv, .widgetPopup, .ui-dialog {background:white;position:fixed;box-shadow:0 10px 30px #444; border:solid 1px #bbb; border-radius:3px; z-index: 1000;} 
+/* DIALOGS */
+.popUpDiv, .widgetPopup, .ui-dialog {background:white;position:fixed;box-shadow:0 10px 30px #444; border:solid 1px #bbb; border-radius:2px; z-index: 1000;} 
 .widgetPopup {padding: 10px 20px;}
 .simplePopup {left:75px;top:15%;}
 .popUpDiv .controls, .titledContainer .controls, .pagedBox .controls {float:right;cursor:pointer;}
@@ -264,62 +283,10 @@ input.error {background: pink;border-color:#D14836;}
 
 /* FIELD HELPER (fieldHelper.js) */
 .pointingPopup_container {height: 100px; position: absolute; right: 168px; top: 188px; width: 300px; z-index: 1007; }
-.pointingPopup_content {background: none repeat scroll 0 0 white; border: 3px solid #CCCCCC;   	-webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3); 	-moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3); box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3); float: right; min-height: 2em; padding: 5px; width: 274px; font-size: 12px; word-break: break-word;}
-.pointingPopup_chevron {border-top: 10px solid transparent; 	border-bottom: 10px solid transparent; 	border-right: 10px solid #CCCCCC; float: left; font-size: 0; line-height: 0; margin-top: 20px; width: 0; }
-/* END FIELD HELPER */
-/* END Dialogs */
+.pointingPopup_content {background: none repeat scroll 0 0 white; border: 3px solid #CCCCCC;    -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);     -moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3); box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3); float: right; min-height: 2em; padding: 5px; width: 274px; font-size: 12px; }
+.pointingPopup_chevron {border-top: 10px solid transparent; border-bottom: 10px solid transparent;  border-right: 10px solid #CCCCCC; float: left; font-size: 0; line-height: 0; margin-top: 20px; width: 0; }
 
-/* Table Layouts, please kill me! */
-.twoColumnLayout, .widgetColumns {border-spacing:10px; border-collapse:table;}
-.widgetColumns .widgetColumnCell {width: 50%; padding:0;}
-.twoColumnLayout > tbody > tr > td.first, .widgetColumns > tbody > tr > td.first {padding:0 10px 0 0 !important;}
-.twoColumnLayout > tbody > tr > td.last, .widgetColumns > tbody > tr > td.last {padding:0 0 0 10px !important;}
-.widgetColumns, .pickerHeader > table {width:100%;}
-/* END Table Layouts */
-
-/* NORMAL LAYOUTS */
-/* column container */
-.colmask {float:left; width:100%; /* width of whole page */}
-/* common column settings */
-.colright, .colmid, .colleft {float:left; width:100%; position:relative;}
-.col1, .col2, .col3 {float:left; position:relative; padding:0 0 1em 0; /*overflow:hidden; */}
-/* 2 Column (double page) settings */
-.doublepage .colleft {right:50%; /* right column width */}
-.doublepage .col1 {
-    width:49%; /* left column content width (column width minus left and right padding) */
-    left:50%; /* right column width plus left column left padding */
-}
-.doublepage .col2 {
-    width:49%; /* right column content width (column width minus left and right padding) */
-    left:52%; /* (right column width) plus (left column left and right padding) plus (right column left padding) */
-}
-/* 2 Column (right menu) settings */
-.rightmenu .colleft {right:25%; /* right column width */}
-.rightmenu .col1 {
-    width:71%; /* left column content width (left column width minus left and right padding) */
-    left:27%; /* (right column width) plus (left column left padding) */
-}
-.rightmenu .col2 {
-    width:21%; /* right column content width (right column width minus left and right padding) */
-    left:31%; /* (right column width) plus (left column left and right padding) plus (right column left padding) */
-}
-/* 2 Columns (col1 one third, col2 two thirds) settings */
-.one-third-left .colleft {right:25%; /* right column width */}
-.one-third-left .col1 {
-    width:37%; /* left column content width (left column width minus left and right padding) */
-    left:25%; /* (right column width) plus (left column left padding) */
-}
-.one-third-left .col2 {
-    width:61%; /* right column content width (right column width minus left and right padding) */
-    left:27%; /* (right column width) plus (left column left and right padding) plus (right column left padding) */
-}
-
- /* Use these for blocks that need to sit horizontally adjacent */
-.leftChildren { float: left; clear: both; }
-.leftChildren div { float: left; }
-/* END NORMAL LAYOUTS */
-
-/* scrollable divs */
+/* SCROLLING */
 .scrollingContainer_350, .scrollingContainer_large, .largeDialogScrollArea, .inlineTree.scroll-large .treeCanvas {overflow: auto; overflow-x: hidden; max-height:350px;}
 .scrollingContainer_350 td.last, .scrollingContainer_large td.last, .largeDialogScrollArea {padding-right: 20px !important;} /* make sure scrollbar does not hide content */
 .scrollingContainer_200, .scrollingContainer_medium, .dialogScrollArea {overflow: auto; overflow-x: hidden; max-height:160px;}
@@ -327,95 +294,88 @@ input.error {background: pink;border-color:#D14836;}
 .scrollingContainer_160, .scrollingContainer_small, .smallDialogScrollArea {overflow: auto; overflow-x: hidden; max-height:160px;}
 .scrollingContainer_160 td.last, .scrollingContainer_small td.last, .smallDialogScrollArea td.last {padding-right: 20px !important;} /* make sure scrollbar does not hide content */
 
-/* legacy icons */
-.graycssicon, .cssicon {border-radius:3px; cursor:pointer;}
-.graycssicon {background:#ccc; cursor: not-allowed;}
-.cssicon {background:#CC3300;}
+body ::-webkit-scrollbar {background: transparent;border: rgba(0, 0, 0, 0.2) solid;border-width: 0;}
+body ::-webkit-scrollbar:vertical {width: 15px;}
+body ::-webkit-scrollbar-corner {background: transparent;}
+body ::-webkit-scrollbar-thumb {border: 2px solid white;background-color: rgba(0, 0, 0, 0.2);}
+body ::-webkit-scrollbar-thumb:hover {background-color: rgba(0, 0, 0, 0.3);}
+body ::-webkit-scrollbar-thumb:active {background-color: rgba(0, 0, 0, 0.5);}
+body ::-webkit-scrollbar-button{display:none}
 
-/* 
-operations: operationsStyles.css to be moved here later when we redo operations page 
-*/
-
-.detail {font-size: 80%;}
-
-/* widgets */
+/* WIDGETS */
 .input_button {display:inline-block;overflow:hidden;}
-.input_button input {float:left; border-radius: 3px 0 0 3px;}
-.input_button button {float:left; border-radius: 0 3px 3px 0;margin-left: -1px; padding-top: 18px; width: 30px;}
+.input_button input {float:left; border-radius: 2px 0 0 2px;}
+.input_button button {float:left; border-radius: 0 2px 2px 0;margin-left: -1px; padding-top: 18px; width: 30px;}
 
-/* Dashboards */
+/* CATEGORIES AND SETTINGS  */
 .dashboard .category {width: 440px; margin: 0 30px 30px 0; float:left; overflow:hidden;}
 .dashboard .category > img {float:left; margin: 0 10px 20px; border-radius: 5px; padding: 5px; border:solid 1px #ccc; box-shadow: 0 5px 10px rgba(0,0,0,0.2)}
 .dashboard .subcategory {overflow:hidden; float:left; margin: 0 10px;}
 .dashboard .subcategory li {margin: 0 0 10px;}
-.category .medium_icon {margin: 5px 15px 15px 5px; }
+.category .medium-icon {margin: 5px 15px 15px 5px; }
 .category .meta {margin-top: 5px;}
-
-strong, span.smallBoldLabel, .groupedList .group {font-weight: bold;}
-.notes, .smallBoldLabel {font-size: 11px;}
-
-.monospace, .code {font-family: Courier,monospace; font-size: 12px;}
-.monospace {white-space: pre;}
-.focusedFieldDescription {display:none;}
-
-.inlineTree {overflow:hidden;}
-
-/* MISC */
-.clearfix:after {clear: both;content: ".";display: block;height: 0;line-height: 0;visibility: hidden}
-.clearfix {display: inline-block}
-html[xmlns] .clearfix {display: block;}
-* html .clearfix {height: 1%;}
-.code {font-color: #333; background-color: #ccc; border: dashed 1px #666; padding: 4px 8px; overflow-x: auto; margin: 10px;}
-.no_padding {padding:0;}
-.no_margin {margin:0;}
-.full_width {width: 100%}
-.half_width {width: 50%}
-.clear_both {clear:both;}
-.stacked {margin-bottom: 10px;} /*  Soley for spacing vertically stacked elements */
-.wall_of_text .value {max-width: 300px;}
-.title-bar-tool {float:right !important;margin-right: 10px;}
-.dialog-no-buttons {margin-bottom: 20px;} /* buffer to get content (like scroll bar) from running into drag handle in dialogs with no button bar */
-
 .setting {border-top: dotted 1px #ccc; margin-top: -1px; padding: 10px 0;}
 .setting > .fl {margin-left: 10px;}
 .setting_details {width: 460px;}
 .setting_default_indicator {width:10px; min-height:1px;}
 .setting_comments {width:250px; text-align: center;}
 .setting_name {width:192px;}
-.setting .detail {color: #888; font-size: 90%}
 .categoryTitle {padding: 12px; padding-top: 16px; font-weight: bold; border-bottom:solid 1px #CCC;}
-.groupedList .group {font-weight: bold;}
-.groupedList .groupedItem {margin: 2px 0 0 20px;}
- 
- /* dateTime Pickers */
-.datetimeEntry_wrap {display: inline-block; overflow: hidden; background: #ccc; -webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px; float: left; margin-right: 5px;}
-.datetimeEntry_wrap.date {width: 135px;}
+
+/* MISC */
+.clearfix:before, .clearfix:after {content: " ";display: table;}
+.clearfix:after {clear: both;}
+.code {font-color: #333; background-color: #eee; border: dashed 1px #bbb; padding: 4px 8px; overflow-x: auto; margin: 10px;}
+.code .console {border-bottom: 1px dashed #bbb;}
+.no_padding {padding:0;}
+.no_margin {margin:0;}
+.full_width {width: 100%}
+.half_width {width: 50%}
+.stacked {margin-bottom: 10px;} /*  Soley for spacing vertically stacked elements */
+.wall_of_text .value {max-width: 300px;}
+.title-bar-tool {float:right !important;margin-right: 10px;}
+.dialog-no-buttons {margin-bottom: 20px;} /* buffer to get content (like scroll bar) from running into drag handle in dialogs with no button bar */
+.detail {color: #777; font-size: .9em;}
+strong, .smallBoldLabel, .groupedList .group {font-weight: bold;}
+.notes, .smallBoldLabel {font-size: 11px;}
+.monospace, .code {font-family: Courier,monospace; font-size: 12px;}
+.monospace {white-space: pre;}
+.focusedFieldDescription {display:none;}
+.inlineTree {overflow:hidden;}
+.short-width {max-width: 200px;} /* :( */
+hr, .divider {border-top: 1px solid #ccc;border-style: solid none none none;clear: both;}
+.empty-list {font-style: italic; color: #676767;}
+.hint {font-style: italic;}
+
+ /* DATE/TIME PICKERS */
+.datetimeEntry_wrap {display: inline-block; overflow: hidden; background: #ccc; -webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px; float: left; margin-right: 5px;border: 1px solid #aaa;height: 22px;}
+.datetimeEntry_wrap.date {width: 142px;}
 .datetimeEntry_wrap.dateTime {min-width: 171px;}
 .datetimeEntry_wrap.time {width: 102px;}
-.datetimeEntry_wrap input { padding: 2px; float: left; height: 16px; border: solid 1px white;}
+.datetimeEntry_wrap input { padding: 2px; float: left; height: 20px; border: solid 1px white;}
 .datetimeEntry_wrap img {margin: 3px;}
 .datetimeEntry_wrap .datetimeEntry_control {display: none !important;}
 .datetimeEntry_wrap input[disabled] {color: #999};
 .datetimeEntry_wrap input[disabled] + .ui-datepicker-trigger {cursor: auto;} 
 .ui-datepicker.hide_minutes .ui_tpicker_minute_label,.ui-datepicker.hide_minutes .ui_tpicker_minute{display: none;}
-.datetimeEntry_wrap .timezone_container {line-height: 21px; margin-left: -31px; float: left; color: #999; font-size: 13px; padding-right: 5px;}
+.datetimeEntry_wrap .timezone_container {line-height: 23px; margin-left: -31px; float: left; color: #999; font-size: 13px; padding-right: 5px;}
 input.datePicker, input.timePicker, input.dateTimePicker {border-radius: 2px 0 0 2px;}
-input.datePicker {width: 7.5em;}
-input.timePicker {width: 5em;}
+input.datePicker {width: 114px;}
+input.timePicker {width: 74px;}
 input.dateTimePicker {margin: 0;}
 .ui-datepicker-trigger:hover {cursor: pointer;}
 .icon_datePicker {width: 20px; background: transparent url(../Icons/StartCalendar.png) top left no-repeat;}
 .icon_datePicker:hover {background: transparent url(../Icons/StartCalendar_over.png) top left no-repeat;}
 .icon_datePicker_disabled {width: 20px; background: transparent url(../Icons/StartCalendar_disabled_gray.png) top left no-repeat; cursor: not-allowed;}
 
-/* dropdown cog menu start */
+/* DROPDOWN COG MENU */
 .dropdown-container {display: inline-block;}
-.dropdown-container.with-cog {width: 30px;}
-.dropdown-container.with-text {margin: 0; width: inherit; }
+.dropdown-container > a > .icon:first-child {margin-right: 0;}
+.dropdown-container > a > .icon:nth-child(2) {margin-left: 0;}
+.dropdown-container.menu-open {display: block; visibility: visible;}
 .contextual-menu-list .dropdown-container {visibility: hidden; margin-top: 0px;}
 .contextual-menu-list tr.focused .dropdown-container {visibility: visible;}
 .contextual-menu-list tr:hover td.contextual-menu .dropdown-container {visibility: visible;}
-.dropdown-container.menu-open {display: block; visibility: visible;}
 .ui-datepicker::before,
 .dropdown-menu::before {position: absolute; top: -7px; display: inline-block; border-right: 7px solid transparent; border-bottom: 7px solid #ccc; border-left: 7px solid transparent; border-bottom-color: rgba(0, 0, 0, 0.2); content: '';}
 .ui-datepicker::after, .dropdown-menu::after {position: absolute; top: -6px; display: inline-block; border-right: 6px solid transparent; border-bottom: 6px solid #ffffff; border-left: 6px solid transparent; content: '';}
@@ -424,31 +384,24 @@ input.dateTimePicker {margin: 0;}
 .dropdown-menu.menu-right::before {left: 14px; right: auto;}
 .dropdown-menu.menu-right::after {left: 15px; right: auto;}
 .ui-datepicker::before {left:3.5em;right:auto;border-bottom-color: #999;}
-.dropdown-menu {display: none; position: absolute; /*right: 0*/; left: auto; top: 100%; text-align: left; z-index: 1000; float: left; min-width: 160px; padding: 4px 0; margin: 1px 0 0; color: #999; list-style: none; background-color: #ffffff; border: 1px solid #ccc; border: 1px solid rgba(0, 0, 0, 0.2); *border-right-width: 2px; *border-bottom-width: 2px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); -webkit-background-clip: padding-box; -moz-background-clip: padding; background-clip: padding-box; font-size: 13px; -webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px;}
+.dropdown-menu {display: none; position: absolute; left: auto; top: 100%; text-align: left; z-index: 1000; float: left; min-width: 160px; padding: 4px 0; margin: 1px 0 0; color: #999; list-style: none; background-color: #ffffff; border: 1px solid #ccc; border: 1px solid rgba(0, 0, 0, 0.2); *border-right-width: 2px; *border-bottom-width: 2px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); -webkit-background-clip: padding-box; -moz-background-clip: padding; background-clip: padding-box; font-size: 13px; -webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px;}
 .dropdown-menu.long-menu-list {font-size: 11px;}
 .dropdown-menu a {display: block; padding: 0 15px; clear: both; font-weight: normal; line-height: 18px; color: #555; white-space: nowrap; text-decoration: none; cursor: pointer;}
 .dropdown-menu li a:hover, .dropdown-menu .active a, .dropdown-menu .active a:hover {color: #06C; text-decoration: none; background-color: whiteSmoke;}
 .dropdown-menu .divider {height: 1px; margin: 3px 1px; overflow: hidden; background-color: #E5E5E5; border-bottom: 1px solid white;}
 .dropdown-container a {cursor: pointer;}
-/* dropdown cog menu end */
 
-/* search widget */
-#findForm {font-size: 1em;}
-#findForm select {margin-right: 5px; float: left;}
-#textInput {margin: 0; height: 14px; padding: 2px 5px; border: solid 1px #999; border-style: 2px 0 0 2px; -webkit-border-radius: 2px 0 0 2px; -moz-border-radius: 2px 0 0 2px; border-radius: 2px 0 0 2px; float: left;}
-#findForm .searchButton {margin: 0 0 0 -1px; height: 20px; width: 40px; overflow: hidden; padding: 1px 10px; border: 1px solid #999; -webkit-border-radius: 0 2px 2px 0; -moz-border-radius: 0 2px 2px 0; border-radius: 0 2px 2px 0; background-color: #ccc; float:left; cursor: pointer;}
-#findForm .searchButton:focus, #findForm .searchButton:hover {border-color: #2F5BB7; background-color: #0066CC;}
-#findForm .searchButton:active {background: #357AEB; background-image: linear-gradient(bottom,#4D90FE,#357AEB); background-image: -webkit-linear-gradient(bottom,#4D90FE,#357AEB); background-image: -moz-linear-gradient(top,#4D90FE,#357AEB); background-image: -ms-linear-gradient(top,#4D90FE,#357AEB);}
-#findForm .searchButton span {height: 16px; width: 25px; background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NDJCNEUwNzM4OTY0MTFFMEE0MDNEODlCOThCNUNBOTgiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NDJCNEUwNzQ4OTY0MTFFMEE0MDNEODlCOThCNUNBOTgiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo0MkI0RTA3MTg5NjQxMUUwQTQwM0Q4OUI5OEI1Q0E5OCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo0MkI0RTA3Mjg5NjQxMUUwQTQwM0Q4OUI5OEI1Q0E5OCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Po7ONFMAAADISURBVHjanFJBCsIwEFzrF7z04h9E/Efx5MEHePHmr4T6hFLwF6G/sKW0lLixEwh1AtGB6SaZne22G7HWCrhT1sqXneHiE+fC6BcX5Wg5RujU7CoPSDTKs3KLaHA+sA7co0JCE2mvgV4xcwuxiJgL6C0zTxDziDmHPi21TER6mbEXDn/efykYT8o316ztQzAm93dPyg2iCUZ2/WfOIe7M7DtwN6pDYof9LVZAYldvwZIVSDXTApmk46h8BPv16vP631D6Ym8BBgAsamp63yCdlAAAAABJRU5ErkJggg==") no-repeat center center;display: inline-block;}
-
+/* MODAL/BLOCKING GLASS */
 #modal_glass {padding-bottom: 100px; text-align:center;}
-#modal_glass, #modal_glass .tint {position: fixed; top:0; left:0; z-index:100000; /*hahah*/ height: 100%; width: 100%;}
+#modal_glass, #modal_glass .tint {position: fixed; top:0; left:0; z-index:100000; height: 100%; width: 100%;}
 #modal_glass .loading {padding: 20px 20px 20px 40px; display:inline-block; border: solid 1px #CCCCCC; background: #FFF url(../Icons/busy_rotation.gif) 14px /* (padding - image.height)/2 */ center no-repeat; margin: 70px auto 0; -moz-box-shadow: 0 0 100px #666; -webkit-box-shadow: 0 0 100px #666; box-shadow: 0 0 100px #666; -moz-border-radius: 8px; -webkit-border-radius: 8px; border-radius: 8px 8px 8px 8px; /* yea! IE9 support requires all corners be specified */ opacity: 1; filter:alpha(opacity=100); z-index:100001; /*hahah*/position: relative; font-size: 16px; color: #666;}
 .glass {background: #000 url(../Icons/busy_rotation.gif) center no-repeat; opacity: 0.1; filter: alpha(opacity=10); position: absolute;}
 .message {padding: 5px 20px;}
 .loading .message {padding: 0 0 0 20px; border: none;}
-div.toggle {padding-left: 30px;}
-div.disabled {color: #666;}
-span.info {font-size: 11px; color: #333; background: lightYellow; border: solid 1px orange; display:block; padding: 5px 10px; margin: 0 0 10px;}
+
+/* TILES */
+.tiles .column.one {clear:left;}
+
+/* CONNECTION WARNING */
 #cannonUpdaterErrorDiv {position: fixed;bottom: 0;left: 0;right: 0;background: #D14836;color: white;font-weight: bold;text-align: center;padding: 3px;}
 #cannonUpdaterErrorDiv .alert {padding-top: 64px;width: 64px;position: absolute;bottom: 0;left: 10px;}

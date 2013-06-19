@@ -3,34 +3,24 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="amr" page="meterDetailProfile">
-
     <tags:widgetContainer deviceId="${deviceId}">
-    <table class="widgetColumns">
-        
-        <tr>
-            <td class="widgetColumnCell first" valign="top">
+        <div class="column_12_12">
+            <div class="column one">
                 <c:if test="${lpSupported}">
                     <tags:widget bean="profileWidget" />
                 </c:if>
-                
+
                 <c:if test="${peakReportSupported}">
                     <tags:widget bean="peakReportWidget" />
                 </c:if>
-                
-            </td>
-            
-            <td class="widgetColumnCell last" valign="top">
-            
+            </div>
+            <div class="column two nogutter">
                 <tags:widget bean="meterInformationWidget" />
-                
+
                 <c:if test="${lpSupported && profileCollection}">
                     <tags:widget bean="pendingProfilesWidget" />
                 </c:if>
-            
-            </td>
-        </tr>
-        
-    </table>
+            </div>
+        </div>
     </tags:widgetContainer>
-	
 </cti:standardPage>

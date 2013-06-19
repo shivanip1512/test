@@ -12,17 +12,12 @@
     <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.tableHeader.scheduleDescription">Run Schedule</entry>
     <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.tableHeader.status">Status</entry>
     <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.tableHeader.enabled">Enabled</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.edit.imageUrl">/WebConfig/yukon/Icons/script.gif</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.edit.hoverUrl">/WebConfig/yukon/Icons/script_over.gif</entry>
     <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.edit.hoverText">Edit Schedule Details ({0})</entry>
     <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.tooltip.running">{0} Success / {1} Missed / {2} Total</entry>
     <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.tooltip.notRunning">Last Run: {0} Success / {1} Missed / {2} Total</entry>
 	<entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.enable.hoverText">Enable ({0})</entry>
-	<entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.enable.imageUrl">/WebConfig/yukon/Icons/gray_circle.png</entry>
     <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.disable.hoverText">Disable ({0})</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.disable.imageUrl">/WebConfig/yukon/Icons/green_circle.png</entry>
     <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.cancel.hoverText">Cancel current run of {0}</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.cancel.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
     <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.cancelConfirm.title">Stop Scheduled Request Execution</entry>
     <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.cancelConfirm.message">Are you sure you want to stop "{0}"?</entry>
     
@@ -87,11 +82,8 @@
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.executions.tableHeader.status.linkText">Status</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.executions.tableHeader.enabled">Enabled</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.enable.hoverText">Enable ({0})</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.enable.imageUrl">/WebConfig/yukon/Icons/gray_circle.png</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.disable.hoverText">Disable ({0})</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.disable.imageUrl">/WebConfig/yukon/Icons/green_circle.png</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.cancel.hoverText">Cancel current run of {0}</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.cancel.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.cancelConfirm.title">Stop Scheduled Request Execution</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.cancelConfirm.message">Are you sure you want to stop "{0}"?</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequestAllJobs.noJobs.createAccess"><![CDATA[

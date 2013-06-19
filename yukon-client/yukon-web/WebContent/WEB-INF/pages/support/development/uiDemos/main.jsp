@@ -16,12 +16,17 @@ jQuery(function() {
 
 <div id="tabs">
     <ul>
+        <li><a href="#buttonsTab">Buttons</a></li>
         <li><a href="#pickersTab">Pickers</a></li>
         <li><a href="#i18nTab">I18N</a></li>
         <li><a href="#i18nScopesTab">I18N Scopes</a></li>
         <li><a href="#dialogsTab">Dialogs</a></li>
         <li><a href="#moreTab">More</a></li>
     </ul>
+
+    <div id="buttonsTab" class="clearfix">
+        <%@ include file="buttons.jspf" %>
+    </div>
 
     <div id="pickersTab">
         <%@ include file="pickers.jspf" %>

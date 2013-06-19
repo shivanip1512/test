@@ -105,7 +105,7 @@ import com.google.common.collect.Sets;
 @CheckRoleProperty(YukonRoleProperty.ARCHIVED_DATA_EXPORT)
 public class ArchivedValuesExporterController {
 
-    public static String baseKey = "yukon.web.modules.amr.archivedValueExporter.";
+    public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
 
     private static DataRangeType[] FIXED_RUN_DATA_RANGE_TYPES = {DataRangeType.END_DATE};
     private static DataRangeType[] FIXED_SCHEDULE_DATA_RANGE_TYPES = {DataRangeType.END_DATE};
@@ -186,7 +186,7 @@ public class ArchivedValuesExporterController {
 		String jobName = task.getName();
 		jobManager.deleteJob(job);
 		
-		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.archivedValueExporter.deletedJobSuccess", jobName));
+		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.archivedValueExporter.deletedJobSuccess", jobName));
 		return "redirect:view";
     }
     
@@ -556,10 +556,10 @@ public class ArchivedValuesExporterController {
     	
     	if(jobId == null) {
     		scheduledFileExportService.scheduleFileExport(exportData, userContext, request);
-    		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.archivedValueExporterScheduleSetup.scheduleSuccess", exportData.getScheduleName()));
+    		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.archivedValueExporterScheduleSetup.scheduleSuccess", exportData.getScheduleName()));
     	} else {
     		scheduledFileExportService.updateFileExport(exportData, userContext, request, jobId);
-    		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.archivedValueExporterScheduleSetup.updateSuccess", exportData.getScheduleName()));
+    		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.archivedValueExporterScheduleSetup.updateSuccess", exportData.getScheduleName()));
     	}
     	
     	return "redirect:view";

@@ -14,28 +14,28 @@
 <script type="text/javascript">
 <c:if test="${!backingBean.multiple}">
 sameAsProgramNameClicked = function() {
-    if ($('sameAsProgramName').checked) {
-        $('displayNameInput').value = $('programNameInput').value;
-        $('displayNameInput').disable();
+    if (document.getElementById('sameAsProgramName').checked) {
+        document.getElementById('displayNameInput').value = document.getElementById('programNameInput').value;
+        document.getElementById('displayNameInput').disabled = "disabled";
     } else {
-        $('displayNameInput').enable(); 
+        document.getElementById('displayNameInput').removeAttribute("disabled"); 
     }
     sameAsDisplayNameClicked();
     updateDisplayNameKey();
 }
 
 sameAsDisplayNameClicked = function() {
-    if ($('sameAsDisplayName').checked) {
-        $('shortNameInput').value = $('displayNameInput').value;
-        $('shortNameInput').disable();
+    if (document.getElementById('sameAsDisplayName').checked) {
+        document.getElementById('shortNameInput').value = document.getElementById('displayNameInput').value;
+        document.getElementById('shortNameInput').disabled = "disabled";
     } else {
-        $('shortNameInput').enable(); 
+        document.getElementById('shortNameInput').removeAttribute("disabled"); 
     }
 }
 
 displayNameChanged = function() {
-    if ($('sameAsDisplayName').checked) {
-        $('shortNameInput').value = $('displayNameInput').value;
+    if (document.getElementById('sameAsDisplayName').checked) {
+        document.getElementById('shortNameInput').value = document.getElementById('displayNameInput').value;
     }
     updateDisplayNameKey();
 }
@@ -43,36 +43,37 @@ displayNameChanged = function() {
 updateDisplayNameKey = function() {
     // This prefix must match com.cannontech.stars.dr.program.model.Program.java
     var prefix = 'yukon.dr.program.displayname.'; 
-    var displayNameKey = generateMessageCode(prefix, $('displayNameInput').value);
+    var displayNameKey = generateMessageCode(prefix, document.getElementById('displayNameInput').value);
 
-    $('displayNameKeyArea').innerHTML = displayNameKey;
+    document.getElementById('displayNameKeyArea').innerHTML = displayNameKey;
 }
 </c:if>
 
-
 submitForm = function() {
     <c:if test="${!backingBean.multiple}">
-        $('displayNameInput').enable();
+        document.getElementById('displayNameInput').removeAttribute("disabled");
         displayNameChanged();
-        $('shortNameInput').enable();
+        document.getElementById('shortNameInput').removeAttribute("disabled");
     </c:if>
-    return submitFormViaAjax('acDialog', 'inputForm')
+    return submitFormViaAjax('acDialog', 'assignedProgramForm');
 };
 
 jQuery(function(){
     jQuery("#picker_assignedProgramPicker_label a").click(function(e) {
-        jQuery("#acDialog").hide();
+        jQuery("#acDialog").dialog("close");
         e.stopPropagation();
         return true;
     });
 });
 
 showProgramEditor = function() {
-    jQuery("#acDialog").show();
+    jQuery("#acDialog").dialog("open");
 };
 
-YEvent.observeSelectorClick('#sameAsProgramName', sameAsProgramNameClicked);
-YEvent.observeSelectorClick('#sameAsDisplayName', sameAsDisplayNameClicked);
+jQuery(function(){
+    jQuery("#sameAsProgramName").click(function(){sameAsProgramNameClicked();});
+    jQuery("#sameAsDisplayName").click(function(){sameAsDisplayNameClicked();});
+});
 </script>
 </cti:displayForPageEditModes>
 
@@ -82,7 +83,7 @@ YEvent.observeSelectorClick('#sameAsDisplayName', sameAsDisplayNameClicked);
 <i:inline key=".editingMultiple"/>
 </c:if>
 
-<form:form id="inputForm" commandName="backingBean" action="saveAssignedProgram" onsubmit="return submitForm()">
+<form:form id="assignedProgramForm" commandName="backingBean" action="saveAssignedProgram" onsubmit="return submitForm()">
     <input type="hidden" name="ecId" value="${param.ecId}"/>
     <form:hidden path="virtual"/>
     <form:hidden path="multiple"/>
@@ -225,9 +226,9 @@ YEvent.observeSelectorClick('#sameAsDisplayName', sameAsDisplayNameClicked);
 
     <div class="actionArea">
         <cti:displayForPageEditModes modes="EDIT,CREATE">
-            <cti:button type="submit" nameKey="ok"/>
+            <cti:button type="submit" nameKey="ok" classes="primary action"/>
         </cti:displayForPageEditModes>
-        <cti:button nameKey="cancel" onclick="$('acDialog').hide()"/>
+        <cti:button nameKey="cancel" onclick="jQuery('#acDialog').dialog('close');"/>
     </div>
 
 </form:form>

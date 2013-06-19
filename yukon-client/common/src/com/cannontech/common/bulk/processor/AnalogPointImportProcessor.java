@@ -37,7 +37,7 @@ public class AnalogPointImportProcessor extends ScalarPointImportProcessor {
             int pointOffset = Integer.valueOf(row.getValue(POINT_OFFSET.NAME));
             
             if(pointDao.deviceHasPoint(paoId, pointOffset, PointTypes.ANALOG_POINT)) {
-                String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.pointImport.error.pointOffsetInUse", pointOffset, deviceName);
+                String error = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.pointImport.error.pointOffsetInUse", pointOffset, deviceName);
                 throw new ProcessingException(error);
             }
             

@@ -30,9 +30,6 @@ function taskFinished() {
 
     <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
     
-    <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
-        <cti:dataGridCell>
-    
             <tags:formElementContainer nameKey="settings">
                 <form:form action="do" commandName="abr">
                     <tags:hidden path="hardwareTypeId"/>
@@ -81,10 +78,6 @@ function taskFinished() {
                     </cti:displayForPageEditModes>
                 </form:form>
             </tags:formElementContainer>
-        
-        </cti:dataGridCell>
-        
-        <cti:dataGridCell>
     
             <cti:displayForPageEditModes modes="VIEW">
                 
@@ -135,7 +128,7 @@ function taskFinished() {
                                 <c:set var="buttonClass" value="dn"/>
                                 <c:set var="linkClass" value="db"/>
                             </c:if>
-                            <cti:button nameKey="cancel" type="sumbit" name="cancel" id="cancelTaskBtn" styleClass="${buttonClass}"/>
+                            <cti:button nameKey="cancel" type="sumbit" name="cancel" id="cancelTaskBtn" classes="${buttonClass}"/>
                             <a id="homeLink" href="/stars/operator/inventory/home" class="${linkClass}"><i:inline key=".inventoryHome"/></a>
                         </div>
                         <cti:dataUpdaterEventCallback function="taskFinished" id="INVENTORY_TASK/${task.taskId}/IS_COMPLETE" />
@@ -143,9 +136,6 @@ function taskFinished() {
                     </tags:formElementContainer>
                 </form>
             </cti:displayForPageEditModes>
-        
-        </cti:dataGridCell>
-    </cti:dataGrid>
     
     <div id="failedContainer"></div>
 </cti:standardPage>

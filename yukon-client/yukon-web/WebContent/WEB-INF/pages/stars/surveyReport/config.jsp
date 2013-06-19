@@ -22,114 +22,116 @@ var answerMessagesById = {};
 
 
 function reportTypeChanged() {
-	if ($F('reportTypeSelect') === 'detail') {
-		$('accountNumberRow').show();
-		$('deviceSerialNumberRow').show();
-	} else {
-        $('accountNumberRow').hide();
-        $('deviceSerialNumberRow').hide();
-	}
+    if (jQuery('#reportTypeSelect').val() === 'detail') {
+        jQuery('#accountNumberRow').show();
+        jQuery('#deviceSerialNumberRow').show();
+    } else {
+        jQuery('#accountNumberRow').hide();
+        jQuery('#deviceSerialNumberRow').hide();
+    }
 }
 
 var questionsById = ${cti:jsonString(questionsById)};
 
 function selectAllChanged() {
-	var checkboxes = $$('#answerList input');
-	var checked = $('selectAll').checked;
-	for (var index = 0; index < checkboxes.length; index++) {
-		if (checkboxes[index].id != 'selectAll') {
-			checkboxes[index].checked = checked;
-		}
-	}
+    var checkboxes = jQuery('#answerList input'),
+        checked = jQuery('#selectAll').prop("checked"),
+        index;
+    for (index = 0; index < checkboxes.length; index++) {
+        if (jQuery(checkboxes[index]).attr('id') !== 'selectAll') {
+            jQuery(checkboxes[index]).prop('checked', checked);
+        }
+    }
 }
 
 function answerCheckboxChanged() {
-	var selectAllChecked = true;
-    var checkboxes = $$('#answerList input');
-    for (var index = 0; index < checkboxes.length; index++) {
-        if (checkboxes[index].id != 'selectAll') {
-            if (!checkboxes[index].checked) {
+    var selectAllChecked = true,
+        checkboxes = jQuery('#answerList input'),
+        index;
+    for (index = 0; index < checkboxes.length; index++) {
+        if (jQuery(checkboxes[index]).attr('id') !== 'selectAll') {
+            if (!jQuery(checkboxes[index]).prop("checked")) {
                 selectAllChecked = false;
                 break;
             }
         }
     }
-    $('selectAll').checked = selectAllChecked;
+    jQuery('#selectAll').prop("checked", selectAllChecked);
 }
 
 function questionChanged() {
-	var answerList = $('answerList');
-    var listItems = answerList.getElementsBySelector('.generated');
-    for (var index = 0; index < listItems.length; index++) {
-        answerList.removeChild(listItems[index]);
-    }
-    var questionId = $F('questionSelect');
+    var answerList = jQuery('#answerList');
+    answerList.remove('.generated');
+    var questionId = jQuery('#questionSelect').val();
     var question = questionsById[questionId];
-	if (question.questionType == 'DROP_DOWN') {
-        var includeOtherAnswersItem = $('includeOtherAnswersItem');
-	    for (var index = 0; index < question.answers.length; index++) {
-	        var listItem = document.createElement('li');
-	        listItem.className = 'generated';
-	        var answer = question.answers[index];
-	        var answerId = answer.surveyQuestionAnswerId;
-	        listItem.innerHTML = '<input type="checkbox" name="answerId"' +
-	            ' onclick="answerCheckboxChanged()" id="answerId_' +
-	            answerId + '" value="' + answerId + '"><label for="answerId_' +
-	            answerId + '"> ' + answerMessagesById[answerId] + '</label>';
-	        answerList.insertBefore(listItem, includeOtherAnswersItem);
-	    }
-	    if (question.textAnswerAllowed) {
-	    	includeOtherAnswersItem.show();
-	    } else {
-	    	includeOtherAnswersItem.hide();
-	    }
-	    if (question.answerRequired) {
-            $('includeUnansweredItem').hide();
-        } else {
-            $('includeUnansweredItem').show();
+    if (question.questionType === 'DROP_DOWN') {
+        var includeOtherAnswersItem = jQuery('#includeOtherAnswersItem');
+        for (var index = 0; index < question.answers.length; index++) {
+            var listItem = document.createElement('li');
+            listItem.className = 'generated';
+            var answer = question.answers[index];
+            var answerId = answer.surveyQuestionAnswerId;
+            listItem.innerHTML = '<input type="checkbox" name="answerId"' +
+                ' onclick="answerCheckboxChanged()" id="answerId_' +
+                answerId + '" value="' + answerId + '"><label for="answerId_' +
+                answerId + '"> ' + answerMessagesById[answerId] + '</label>';
+            answerList.insertBefore(listItem, includeOtherAnswersItem[0]);
         }
-        $('answersRow').show();
-	} else {
-		$('answersRow').hide();
-	}
-	answerCheckboxChanged();
+        if (question.textAnswerAllowed) {
+            includeOtherAnswersItem.show();
+        } else {
+            includeOtherAnswersItem.hide();
+        }
+        if (question.answerRequired) {
+            jQuery('#includeUnansweredItem').hide();
+        } else {
+            jQuery('#includeUnansweredItem').show();
+        }
+        jQuery('#answersRow').show();
+    } else {
+        jQuery('#answersRow').hide();
+    }
+    answerCheckboxChanged();
     // show all answers by default
-    $('selectAll').checked = true;
+    jQuery('#selectAll').prop("checked", true);
     selectAllChanged();
 }
 
 function programsChosen(programs) {
     if (programs && programs.length) {
-    	$('noProgramsSelected').hide();
+        jQuery('#noProgramsSelected').hide();
     } else {
-        $('noProgramsSelected').show();
+        jQuery('#noProgramsSelected').show();
     }
-	return true;
+    return true;
 }
 
 function updateFieldsFromBackingBean() {
+    var initialAnswers,
+        index;
+
     //deselect everything
-    $$("#answerList input:checkbox").each(
-            function(el) {
-                el.setValue(false);
-            });
+    jQuery("#answerList input:checkbox").each(
+        function(idx, el) {
+            jQuery(el).prop("checked", false);
+    });
     
-	var initialAnswers = ${cti:jsonString(reportConfig.answerId)};
-	for (var index = 0; index < initialAnswers.length; index++) {
-	    $('answerId_' + initialAnswers[index]).checked = true;
-	}
+    initialAnswers = ${cti:jsonString(reportConfig.answerId)};
+    for (index = 0; index < initialAnswers.length; index++) {
+        jQuery('#answerId_' + initialAnswers[index]).prop("checked", true);
+    }
 
     if(${cti:jsonString(reportConfig.includeUnanswered)}) {
-        $('includeUnanswered').checked = true;
+        jQuery('#includeUnanswered').prop("checked", true);
     }
     
     if(${cti:jsonString(reportConfig.includeOtherAnswers)}) {
-        $('includeOtherAnswers').checked = true;
+        jQuery('#includeOtherAnswers').prop("checked", true);
     }
 
     //if no report type exists, select all
     if(!${cti:jsonString(reportConfig.reportType)}) {
-        $('selectAll').checked = true;
+        jQuery('#selectAll').prop("checked", true);
         selectAllChanged();
     } else {
         answerCheckboxChanged();
@@ -150,10 +152,10 @@ function updateFieldsFromBackingBean() {
 
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".reportType">
-		    <form:select id="reportTypeSelect" path="reportType" onchange="reportTypeChanged()">
-		        <form:option value="summary"><i:inline key=".summary"/></form:option>
-		        <form:option value="detail"><i:inline key=".detail"/></form:option>
-		    </form:select>
+            <form:select id="reportTypeSelect" path="reportType" onchange="reportTypeChanged()">
+                <form:option value="summary"><i:inline key=".summary"/></form:option>
+                <form:option value="detail"><i:inline key=".detail"/></form:option>
+            </form:select>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".startDate">
             <dt:date path="startDate" />

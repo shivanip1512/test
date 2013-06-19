@@ -6,29 +6,29 @@
 
 <cti:standardPage module="adminSetup" page="userPermissions">
 
-  <tags:widgetContainer userId="${param.userId}" identify="true">
+    <tags:widgetContainer userId="${param.userId}" identify="true">
   
-    <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
+        <div class="columns_12_12">
             
-            <cti:dataGridCell>
+            <div class="column one">
                 <div>
                     <span class="smallBoldLabel"><i:inline key=".instructions"/></span>
                     <span class="notes"><i:inline key=".lm.notes"/></span>
                 </div>
                 <tags:widget bean="userPermissionEditorWidget" pickerType="lmDevicePicker"
                     permission="LM_VISIBLE" allow="true"/>
-            </cti:dataGridCell>
+            </div>
             
-            <cti:dataGridCell>
+            <div class="column two nogutter">
                 <div>
                     <span class="smallBoldLabel"><i:inline key=".instructions"/></span>
                     <span class="notes"><i:inline key=".cc.notes"/></span>
                 </div>
                 <tags:widget bean="userPermissionEditorWidget" pickerType="capControlAreaPicker"
                     permission="PAO_VISIBLE" allow="false" permissionDescription="Cap Control Object Visibility"/>
-            </cti:dataGridCell>
+            </div>
             
-        </cti:dataGrid>
+        </div>
     </tags:widgetContainer>
   
   <c:if test="${!empty authThrottleDto}">

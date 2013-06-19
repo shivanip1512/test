@@ -49,7 +49,7 @@
                 </c:forEach>
             </div>
             <div class="actionArea clear">
-                <cti:button nameKey="search" name="filter" value="true" type="submit" />
+                <cti:button nameKey="search" name="filter" value="true" type="submit" classes="primary"/>
                 <cti:button nameKey="showAll" onclick="javascript:clearFilter()" />
             </div>
         </tags:boxContainer2>

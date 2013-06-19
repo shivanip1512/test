@@ -1,21 +1,22 @@
+<%@ tag trimDirectiveWhitespaces="true"%>
+
+<%@ attribute name="arguments" type="java.lang.Object"%>
+<%@ attribute name="argumentSeparator"%>
+<%@ attribute name="baseUrl" required="true"%>
+<%@ attribute name="defaultFilterInput"%>
+<%@ attribute name="filterDialog"%>
+<%@ attribute name="id"%>
+<%@ attribute name="isFiltered" type="java.lang.Boolean"%>
+<%@ attribute name="nameKey" required="true"%>
+<%@ attribute name="pageByHundereds"%>
+<%@ attribute name="searchResult" required="true" type="com.cannontech.common.search.SearchResult"%>
+<%@ attribute name="showAllUrl"%>
+<%@ attribute name="styleClass"%>
+<%@ attribute name="titleLinkHtml"%>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-
-<%@ attribute name="nameKey" required="true" %>
-<%@ attribute name="arguments" required="false" type="java.lang.Object"%>
-<%@ attribute name="argumentSeparator" required="false" type="java.lang.String"%>
-
-<%@ attribute name="baseUrl" required="true" %>
-<%@ attribute name="id" %>
-<%@ attribute name="filterDialog" %>
-<%@ attribute name="defaultFilterInput" %>
-<%@ attribute name="searchResult" required="true" type="com.cannontech.common.search.SearchResult" %>
-<%@ attribute name="isFiltered" type="java.lang.Boolean" %>
-<%@ attribute name="showAllUrl" %>
-<%@ attribute name="titleLinkHtml" %>
-<%@ attribute name="pageByHundereds" %>
-<%@ attribute name="styleClass" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:msgScope paths=".${nameKey},">
     <c:choose>
@@ -39,7 +40,5 @@
         showAllUrl="${pageScope.showAllUrl}"
         titleLinkHtml="${pageScope.titleLinkHtml}"
         styleClass="${pageScope.styleClass}">
-        
     <jsp:doBody/>
-    
 </tags:pagedBox>

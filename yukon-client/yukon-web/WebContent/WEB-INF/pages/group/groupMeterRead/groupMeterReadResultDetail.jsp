@@ -40,20 +40,12 @@
     <cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
     
     <script type="text/javascript">
-        
         function refreshResults(kind, theDiv) {
-
             if (theDiv.visible()) {
-            
                 var url = '/group/groupMeterRead/' + kind;
-
-                var params = $H({
-                    'resultKey': '${resultWrapper.result.key}'
-                });
-                var updater = new Ajax.Updater (theDiv, url, {'parameters': params});
+                jQuery('#' + theDiv).load(url, 'resultKey': '${resultWrapper.result.key}');
             }
         }
-    
     </script>
     
     <h2>${pageTitle}</h2>
@@ -61,7 +53,7 @@
 
     <tags:boxContainer id="readLogsDetailContainer" hideEnabled="false">
     
-    	<jsp:attribute name="title">
+        <jsp:attribute name="title">
             Reading '${attributesDescription}' on <cti:msg key="${resultWrapper.result.deviceCollection.description}"/>
         </jsp:attribute>
         
@@ -82,10 +74,10 @@
         <%-- PROGRESS --%>
         <c:set var="totalCount" value="${resultWrapper.result.originalDeviceCollectionCopy.deviceCount}" />
         <tags:resultProgressBar totalCount="${totalCount}"
-        						 countKey="GROUP_METER_READ/${resultKey}/COMPLETED_ITEMS"
-        						 progressLabelTextKey="yukon.common.device.groupMeterRead.resultDetail.progressLabel"
-        						 statusTextKey="GROUP_METER_READ/${resultKey}/STATUS_TEXT"
-        						 statusClassKey="GROUP_METER_READ/${resultKey}/STATUS_CLASS">
+                                 countKey="GROUP_METER_READ/${resultKey}/COMPLETED_ITEMS"
+                                 progressLabelTextKey="yukon.common.device.groupMeterRead.resultDetail.progressLabel"
+                                 statusTextKey="GROUP_METER_READ/${resultKey}/STATUS_TEXT"
+                                 statusClassKey="GROUP_METER_READ/${resultKey}/STATUS_CLASS">
                     
             <%-- device collection action --%>
             <div id="allDevicesActionsDiv" style="display:none;">
@@ -99,19 +91,19 @@
             <%-- cre action --%>
             <div id="creResultsDiv" style="display:none;">
             
-            	<c:if test="${not empty resultWrapper.result.commandRequestExecutionIdentifier}">
+                <c:if test="${not empty resultWrapper.result.commandRequestExecutionIdentifier}">
             
-	                <br>
-	                
-	                <cti:msg var="creResultsText" key="yukon.common.device.groupMeterRead.resultDetail.creResults"/>
-	                
-	                <cti:url var="creResultsUrl" value="/common/commandRequestExecutionResults/detail">
-	                	<cti:param name="commandRequestExecutionId" value="${resultWrapper.result.commandRequestExecutionIdentifier.commandRequestExecutionId}"/>
-	                </cti:url>
-	                
-	                <cti:link href="${creResultsUrl}" key="yukon.common.device.groupMeterRead.resultDetail.creResults" class="small"/>
-							
-				</c:if>
+                    <br>
+                    
+                    <cti:msg var="creResultsText" key="yukon.common.device.groupMeterRead.resultDetail.creResults"/>
+                    
+                    <cti:url var="creResultsUrl" value="/common/commandRequestExecutionResults/detail">
+                        <cti:param name="commandRequestExecutionId" value="${resultWrapper.result.commandRequestExecutionIdentifier.commandRequestExecutionId}"/>
+                    </cti:url>
+                    
+                    <cti:link href="${creResultsUrl}" key="yukon.common.device.groupMeterRead.resultDetail.creResults" class="small"/>
+                            
+                </c:if>
                 
             </div>
                                 

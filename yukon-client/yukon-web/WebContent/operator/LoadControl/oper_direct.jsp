@@ -7,11 +7,11 @@
 <jsp:directive.page import="java.util.Set"/>
 <jsp:directive.page import="com.cannontech.core.authorization.support.Permission"/>
 <%
-	/*
-	 *oper_direct.jsp
-     *	
-	 *Lists all of the lm direct programs and macs schedules associated with the the currently logged in operator.
-	 */
+/*
+ * oper_direct.jsp
+ * 
+ * Lists all of the lm direct programs and macs schedules associated with the the currently logged in operator.
+ */
 %>
 
 <%@ include file="include/oper_header.jspf" %>  

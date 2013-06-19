@@ -11,22 +11,18 @@ Picker.alreadySelectedHoverMessage = '<cti:msg2 key=".alreadySelectedHover"/>';
 </script>
 
 <div id="${id}">
-    <div class="pickerHeader">
-        <table>
-            <tr>
-                <td class="queryStringArea" nowrap="nowrap">
+    <div class="column_12_12">
+        <div class="column one">
                     <label>
                         <i:inline key=".query"/> <input type="text" id="picker_${id}_ss" name="ss" onkeyup="${id}.doKeyUp();false;"/>
                     </label>
                     <a id="picker_${id}_showAllLink" href="javascript:${id}.showAll()">
                         <i:inline key=".showAll"/>
                     </a>
-                </td>
-                <td class="pagingArea">
+        </div>
+        <div class="column two nogutter pagingArea">
                     <tags:nextPrevLinks previousUrl="javascript:${id}.previous()" nextUrl="javascript:${id}.next()" mode="javascript"/>
-                </td>
-            </tr>
-        </table>
+        </div>
     </div>
 
     <div id="picker_${id}_nothingSelected" style="display:none" class="errorMessage"><i:inline key=".nothingSelected"/></div>

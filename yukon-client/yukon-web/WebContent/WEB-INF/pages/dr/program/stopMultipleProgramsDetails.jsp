@@ -4,6 +4,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<cti:msgScope paths="yukon.web.modules.dr.program.stopMultiplePrograms">
 
 <script type="text/javascript">
 
@@ -186,10 +187,10 @@ jQuery(function(){
         //assumes data is of type Hash
         return function(data) {
             if (data.get('state').startsWith('running') || data.get('state').startsWith('scheduled')) {
-                $('stopProgramCheckbox' + index).enable();
+                jQuery('#stopProgramCheckbox' + index).removeAttr("disabled");
             } else {
-                $('stopProgramCheckbox' + index).disable();
-                $('stopProgramCheckbox' + index).checked = false;
+                jQuery('#stopProgramCheckbox' + index).attr("disabled", "disabled");
+                document.getElementById('stopProgramCheckbox' + index).checked = false;
             }
             updateComponents();
         }
@@ -201,16 +202,14 @@ jQuery(function(){
 
 <cti:flashScopeMessages/>
 
-<h1 class="dialogQuestion">
+<h4 class="dialogQuestion stacked">
     <c:if test="${!empty controlArea}">
-        <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.confirmQuestion.controlArea"
-            argument="${controlArea.name}"/>
+        <cti:msg2 key=".confirmQuestion.controlArea" argument="${controlArea.name}"/>
     </c:if>
     <c:if test="${!empty scenario}">
-        <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.confirmQuestion.scenario"
-            argument="${scenario.name}"/>
+        <cti:msg2 key=".confirmQuestion.scenario" argument="${scenario.name}"/>
     </c:if>
-</h1>
+</h4>
 
 <cti:url var="submitUrl" value="/dr/program/stop/stopMultiple"/>
 <form:form id="stopProgramForm" commandName="backingBean" onsubmit="return submitForm();">
@@ -219,14 +218,14 @@ jQuery(function(){
 
     <table class="compactResultsTable">
         <tr>
-            <th><cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.stopTime"/></th>
+            <th><cti:msg2 key=".stopTime"/></th>
         </tr>
         <tr><td>
             <table>
                 <tr><td>
                     <form:checkbox path="stopNow" id="stopNowCheckbox"/>
                     <label for="stopNowCheckbox">
-                        <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.stopNow"/>
+                        <cti:msg2 key=".stopNow"/>
                     </label>
                 </td></tr>
                 <tr><td>
@@ -238,20 +237,20 @@ jQuery(function(){
     </table>
     <br>
 
-    <cti:msg var="boxTitle" key="yukon.web.modules.dr.program.stopMultiplePrograms.programs"/>
-    <tags:abstractContainer type="box" title="${boxTitle}">
+    <cti:msg2 var="boxTitle" key=".programs"/>
+    <tags:boxContainer title="${boxTitle}">
     <div class="dialogScrollArea">
     <table class="compactResultsTable">
-        <tr class="<tags:alternateRow odd="" even="altRow"/>">
-            <th><cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.stopProgramName"/></th>
+        <tr>
+            <th><cti:msg2 key=".stopProgramName"/></th>
             
              <c:if test="${stopGearAllowed}">
-                <th><cti:msg key="yukon.web.modules.dr.program.changeMultipleGears.stopGearLbl"/></th>
+                <th><cti:msg2 key="yukon.web.modules.dr.program.changeMultipleGears.stopGearLbl"/></th>
              </c:if>
-            <th><cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.currentState"/></th>
+            <th><cti:msg2 key=".currentState"/></th>
             
             <c:if test="${!empty scenarioPrograms}">
-                <th><cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.stopOffset"/></th>
+                <th><cti:msg2 key=".stopOffset"/></th>
             </c:if>
         </tr>
         <c:forEach var="program" varStatus="status" items="${programs}">
@@ -260,7 +259,7 @@ jQuery(function(){
                 <c:set var="gears" value="${gearsByProgramId[programId]}"/>
             </c:if>
             <c:set var="currentGear" value="${currentGearByProgramId[programId]}"/>
-            <tr class="<tags:alternateRow odd="" even="altRow"/>">
+            <tr>
                 <td>
                     <form:hidden path="programStopInfo[${status.index}].programId"/>
                     <form:checkbox path="programStopInfo[${status.index}].stopProgram" id="stopProgramCheckbox${status.index}" cssClass="f_singleProgramChecked"/>
@@ -281,7 +280,7 @@ jQuery(function(){
                             </form:select>
                         </c:if>
                         <c:if test="${fn:length(gears) < 2}">
-                           <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.gearChangeUnavailable"/>
+                           <cti:msg2 key=".gearChangeUnavailable"/>
                         </c:if>
                     </td>
                 </c:if>
@@ -297,18 +296,17 @@ jQuery(function(){
         </c:forEach>
     </table>
     </div>
-    </tags:abstractContainer>
-    <br>
+    </tags:boxContainer>
 
     <input type="checkbox" id="allProgramsCheckbox"/>
     <label for="allProgramsCheckbox">
-        <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.stopAllPrograms"/>
+        <cti:msg2 key=".stopAllPrograms"/>
     </label><br>
     
     <c:if test="${stopGearAllowed}">
         <input type="checkbox" id="allProgramsUseStopGearsCheckbox"/>
         <label for="allProgramsUseStopGearsCheckbox">
-            <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.allProgramsUseStopGears"/>
+            <cti:msg2 key=".allProgramsUseStopGears"/>
         </label><br>
     </c:if>
     
@@ -316,21 +314,22 @@ jQuery(function(){
         <c:if test="${checkConstraintsAllowed}">
             <form:checkbox path="autoObserveConstraints" id="autoObserveConstraints" onclick="updateSubmitButtons();"/>
             <label for="autoObserveConstraints">
-                <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.autoObserveConstraints"/>
+                <cti:msg2 key=".autoObserveConstraints"/>
             </label>
         </c:if>
         <c:if test="${!checkConstraintsAllowed}">
             <%-- They have to automatically observe constraints. --%>
-            <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.constraintsWillBeObserved"/>
+            <cti:msg2 key=".constraintsWillBeObserved"/>
         </c:if>
     </c:if>
     <br>
 
     <div class="actionArea">
+        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
         <c:if test="${autoObserveConstraintsAllowed || checkConstraintsAllowed}">
-            <input id="nextButton" type="submit" value="<cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.nextButton"/>"/>
+            <cti:button nameKey="next" id="nextButton" classes="primary action" type="submit"/>
         </c:if>
-        <input id="okButton" type="submit" value="<cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.okButton"/>"/>
-        <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.cancelButton"/>" onclick="parent.$('drDialog').hide()"/>
+        <cti:button nameKey="ok" classes="primary action" type="submit"/>
     </div>
 </form:form>
+</cti:msgScope>

@@ -4,8 +4,6 @@
 
     <!-- home.jsp -->
     <entry key="yukon.web.modules.adminSetup.home.pageName">Energy Companies</entry>
-    <entry key="yukon.web.modules.adminSetup.home.create.imageUrl">/WebConfig/yukon/Icons/wand.png</entry>
-    <entry key="yukon.web.modules.adminSetup.home.create.hoverUrl">/WebConfig/yukon/Icons/wand_over.png</entry>
     <entry key="yukon.web.modules.adminSetup.home.create.label">Create</entry>
     <entry key="yukon.web.modules.adminSetup.home.name">Name</entry>
     <entry key="yukon.web.modules.adminSetup.home.login.label">Login</entry>
@@ -20,7 +18,6 @@
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.defaultOperatorUser.title">Admin Operator User</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.defaultOperatorUser.note">The admin operator user belongs to the primary operator group selected and the energy company's admin group and can therefore edit energy company settings.</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.note">Note:</entry>
-    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.username">Username</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.password">Password</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.confirmPassword">Confirm Password</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.defaultRoute">Default Route</entry>
@@ -46,8 +43,6 @@
     <!--  Energy company settings -->
     <entry key="yukon.web.modules.adminSetup.energyCompanySettings.pageName">Settings</entry>
     <entry key="yukon.web.modules.adminSetup.energyCompanySettings.addComment.label">Add Comment</entry>
-    <entry key="yukon.web.modules.adminSetup.energyCompanySettings.addComment.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
-    <entry key="yukon.web.modules.adminSetup.energyCompanySettings.addComment.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
     <entry key="yukon.web.modules.adminSetup.energyCompanySettings.nonDefault"><![CDATA[<b>*</b>]]></entry>
     <entry key="yukon.web.modules.adminSetup.energyCompanySettings.default">Default</entry>
     <entry key="yukon.web.modules.adminSetup.energyCompanySettings.updated">Updated</entry>
@@ -77,9 +72,6 @@
     <entry key="yukon.web.modules.adminSetup.generalInfo.requireAtLeastOneOpGroup">At least one operator group is required.</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.customerGroupsUpdatedSuccessful">Residential Customer Groups Updated Successfully</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.customerGroupsInUse">Residential Customer(s) in Selected Group Are Assigned to This Energy Company</entry>
-    <entry key="yukon.web.modules.adminSetup.generalInfo.editRoles.imageUrl">/WebConfig/yukon/Icons/pencil.png</entry>
-    <entry key="yukon.web.modules.adminSetup.generalInfo.editRoles.hoverUrl">/WebConfig/yukon/Icons/pencil_over.png</entry>
-    <entry key="yukon.web.modules.adminSetup.generalInfo.editRoles.label">Edit Roles</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.name">Name</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.address">Address</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.phone">Main Phone #</entry>

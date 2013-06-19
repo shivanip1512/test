@@ -56,16 +56,17 @@ jQuery(function() {
         var deviceName = row.children('td[name=deviceName]').html();
         var eventId = row[0].id.split('_')[1];
         
-        var url = "/capcontrol/schedule/startSchedule";
-        new Ajax.Request(url, {'parameters': {'eventId': eventId, 'deviceName': deviceName},
-            onComplete: function(transport, json) {
-                if (!json.success) {
-                    showAlertMessageForAction(scheduleName, '', json.resultText, 'red');
-                } else {
-                    showAlertMessageForAction(scheduleName, '', json.resultText, 'green');
-                }
+        jQuery.getJSON("/capcontrol/schedule/startSchedule", {
+            'eventId': eventId, 
+            'deviceName': deviceName
+        }).done(function(json) {
+            if (!json.success) {
+                showAlertMessageForAction(scheduleName, '', json.resultText, 'red');
+            } else {
+                showAlertMessageForAction(scheduleName, '', json.resultText, 'green');
             }
         });
+        
     });
 });
 
@@ -74,28 +75,32 @@ jQuery(function() {
         var row = jQuery(event.currentTarget).closest('tr');
         
         var deviceName = row.children('td[name=deviceName]').html();
-        var deviceId = jQuery(event.currentTarget).attr('name');
+        var deviceId = jQuery(event.currentTarget).attr('name').always(function() {
+            
+        });
         
-        var url = "/capcontrol/schedule/stopSchedule";
-        new Ajax.Request(url, {'parameters': {'deviceId': deviceId, 'deviceName': deviceName},
-            onComplete: function(transport, json) {
-                if(!json.success) {
-                    showAlertMessageForAction('<cti:msg2 key=".stopSchedule" javaScriptEscape="true"/>', '', json.resultText, 'red');
-                } else {
-                    showAlertMessageForAction('<cti:msg2 key=".stopSchedule" javaScriptEscape="true"/>', '', json.resultText, 'green');
-                }
-        } });
+        jQuery.getJSON("/capcontrol/schedule/stopSchedule", {
+            'deviceId': deviceId, 
+            'deviceName': deviceName
+        }).done(function(json) {
+            if(!json.success) {
+                showAlertMessageForAction('<cti:msg2 key=".stopSchedule" javaScriptEscape="true"/>', '', json.resultText, 'red');
+            } else {
+                showAlertMessageForAction('<cti:msg2 key=".stopSchedule" javaScriptEscape="true"/>', '', json.resultText, 'green');
+            }
+        });
+        
     });
 });
 
 function setOvUv(eventId, ovuv) {
-    var url = "/capcontrol/schedule/setOvUv";
-    new Ajax.Request(url, {'parameters': {'eventId': eventId, 'ovuv': ovuv}, 
-        onComplete: function(transport, json) {
-            if (!json.success) {
-                showAlertMessageForAction('OvUv', '', json.resultText, 'red');
-            }
-        } 
+    jQuery.getJSON("/capcontrol/schedule/setOvUv", {
+        'eventId': eventId, 
+        'ovuv': ovuv
+    }).done(function(json) {
+        if (!json.success) {
+            showAlertMessageForAction('OvUv', '', json.resultText, 'red');
+        }
     });
 }
 
@@ -107,7 +112,7 @@ function startMultiScheduleAssignmentPopup(schedule, command) {
     var url = '/capcontrol/schedule/startMultiScheduleAssignmentPopup';
     var title = '<cti:msg2 key=".play.label" javaScriptEscape="true"/>';
     var parameters = {'schedule': schedule, 'command': command};
-    openSimpleDialog('contentPopup', url, title, parameters, null, 'get');
+    openSimpleDialog('contentPopup', url, title, parameters, 'get');
     $('contentPopup').toggle(); 
 }
 
@@ -115,14 +120,14 @@ function stopMultiScheduleAssignmentPopup(schedule, command) {
     var url = '/capcontrol/schedule/stopMultiScheduleAssignmentPopup';
     var title = '<cti:msg2 key=".stop.label" javaScriptEscape="true"/>';
     var parameters = {'schedule': schedule, 'command': command};
-    openSimpleDialog('contentPopup', url, title, parameters, null, 'get'); 
+    openSimpleDialog('contentPopup', url, title, parameters, 'get'); 
 }
 
 function newScheduleAssignmentPopup(schedule, command) {
     var url = '/capcontrol/schedule/newScheduleAssignmentPopup';
     var title = '<cti:msg2 key=".add.label" javaScriptEscape="true"/>';
     var parameters = {'schedule': schedule, 'command': command};
-    openSimpleDialog('contentPopup', url, title, parameters, null, 'get'); 
+    openSimpleDialog('contentPopup', url, title, parameters, 'get'); 
 }
 </script>
     
@@ -142,36 +147,36 @@ function newScheduleAssignmentPopup(schedule, command) {
     </c:choose>
 </c:if>
 
-    <div class="fl padBottom">
+    <div class="fl">
         <tags:boxContainer2 nameKey="actionsContainer">
             <ul class="buttonStack">
                 <li>
                     <c:choose>
                         <c:when test="${hasActionRoles == true}">
-                            <cti:button nameKey="play" renderMode="labeledImage" onclick="startMultiScheduleAssignmentPopup('${param.schedule}', '${param.command}');"/>
+                            <cti:button nameKey="play" renderMode="labeledImage" onclick="startMultiScheduleAssignmentPopup('${param.schedule}', '${param.command}');" icon="icon-control-play-blue"/>
                         </c:when>
                         <c:otherwise>
-                            <cti:button nameKey="playDisabled" renderMode="labeledImage"/>
+                            <cti:button nameKey="playDisabled" renderMode="labeledImage" icon="icon-control-play-blue"/>
                         </c:otherwise>
                     </c:choose>
                 </li>
                 <li>
                     <c:choose>
                         <c:when test="${hasActionRoles == true}">
-                            <cti:button nameKey="stop" renderMode="labeledImage" onclick="stopMultiScheduleAssignmentPopup('${param.schedule}', '${param.command}');"/>
+                            <cti:button nameKey="stop" renderMode="labeledImage" onclick="stopMultiScheduleAssignmentPopup('${param.schedule}', '${param.command}');" icon="icon-control-stop-blue"/>
                         </c:when>
                         <c:otherwise>
-                            <cti:button nameKey="stopDisabled" renderMode="labeledImage"/>
+                            <cti:button nameKey="stopDisabled" renderMode="labeledImage" icon="icon-control-stop-blue"/>
                         </c:otherwise>
                     </c:choose>
                 </li>
                 <li>
                     <c:choose>
                         <c:when test="${hasEditingRole == true}">
-                            <cti:button nameKey="add" renderMode="labeledImage" onclick="newScheduleAssignmentPopup('${param.schedule}', '${param.command}');"/>
+                            <cti:button nameKey="add" renderMode="labeledImage" onclick="newScheduleAssignmentPopup('${param.schedule}', '${param.command}');" icon="icon-add"/>
                         </c:when>
                         <c:otherwise>
-                            <cti:button nameKey="addDisabled" renderMode="labeledImage"/>
+                            <cti:button nameKey="addDisabled" renderMode="labeledImage" icon="icon-add" disabled="true"/>
                         </c:otherwise>
                     </c:choose>
                 </li>
@@ -219,9 +224,9 @@ function newScheduleAssignmentPopup(schedule, command) {
                                     <!-- Actions -->
                                     <c:choose>
                                         <c:when test="${hasActionRoles == true}">
-                                            <cti:button styleClass="runSchedule" nameKey="runCommand" renderMode="image"/>
+                                            <cti:button classes="runSchedule" nameKey="runCommand" renderMode="image" icon="icon-control-play-blue"/>
                                             <c:if test="${(item.commandName != confirmCommand)&&(item.commandName != sendTimeSyncsCommand)}">
-                                                <cti:button styleClass="stopSchedule" nameKey="stopVerification" renderMode="image" name="${item.paoId}"/>
+                                                <cti:button classes="stopSchedule" nameKey="stopVerification" renderMode="image" name="${item.paoId}" icon="icon-control-stop-blue"/>
                                             </c:if>
                                         </c:when>
                                         <c:otherwise>
@@ -232,7 +237,7 @@ function newScheduleAssignmentPopup(schedule, command) {
                                         </c:otherwise>
                                     </c:choose>
                                     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                                        <cti:button nameKey="remove" renderMode="image" styleClass="deleteAssignment"/>
+                                        <cti:button nameKey="remove" renderMode="image" classes="deleteAssignment" icon="icon-cross"/>
                                         <span class="dn"><i:inline key=".confirmDeleteMsg" arguments="${item.scheduleName},${item.deviceName}" argumentSeparator=","/></span>
                                     </cti:checkRolesAndProperties>
                                 </td>

@@ -7,9 +7,8 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="amr" page="statusPointMonitorView">
-    <div class="colmask doublepage">
-        <div class="colleft">
-            <div class="col1">
+    <div class="column_12_12">
+            <div class="column one">
                 <%-- MAIN DETAILS --%>
                 <tags:formElementContainer nameKey="sectionHeader">
                     <tags:nameValueContainer2>
@@ -47,13 +46,13 @@
                     <div class="pageActionArea">        
                         <form action="/amr/statusPointMonitoring/editPage" method="get">
                             <input type="hidden" name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}">
-                            <cti:button nameKey="edit" type="submit" styleClass="f_blocker"/>
+                            <cti:button nameKey="edit" icon="icon-pencil" type="submit" classes="f_blocker"/>
                         </form>
                     </div>
                 
                 </tags:formElementContainer>
             </div>
-            <div class="col2">
+            <div class="column two nogutter">
                 <c:if test="${not empty statusPointMonitor.processors}">
                     <tags:boxContainer2 nameKey="stateActionsTable" id="resTable" styleClass="mediumContainer">
                         <table class="compactResultsTable">
@@ -78,6 +77,5 @@
                     </tags:boxContainer2>
                 </c:if>
             </div>
-        </div>
     </div>
 </cti:standardPage>

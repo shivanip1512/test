@@ -12,6 +12,7 @@
     <context:component-scan base-package="com.cannontech.web.support" />
 
     <bean class="com.cannontech.web.support.LocalizationService"/>
+    <bean class="com.cannontech.web.util.JsonHelper"/>
 
 	<bean id="annotationMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
         <property name="order" value="1"/>
@@ -23,14 +24,6 @@
 
     <bean name="/database/info" class="com.cannontech.web.support.DatabaseInformationController"/>
 
-    <bean name="/scheduler/*" class="com.cannontech.web.support.SchedulerDebugController">
-        <property name="jobManager" ref="jobManager"/>
-        <property name="yukonJobDao" ref="yukonJobDao"/>
-        <property name="jobStatusDao" ref="jobStatusDao"/>
-        <property name="scheduledOneTimeJobDao" ref="scheduledOneTimeJobDao"/>
-        <property name="scheduledRepeatingJobDao" ref="scheduledRepeatingJobDao"/>
-    </bean>
-    
     <bean name="/threadDump" class="com.cannontech.web.support.ThreadDumpController"/>
     
     <!-- use jsp page for view -->
@@ -46,4 +39,6 @@
         </constructor-arg>
         <property name="defaultUri" value="http://example.com/WebService"/>
     </bean>
+    
+    <bean class="com.cannontech.web.support.SiteMapHelper"/>
 </beans>

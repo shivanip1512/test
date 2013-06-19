@@ -13,7 +13,7 @@
 	function setCount_${id}() {
 		
 		return function(data) {
-			var deviceCount = data.get('deviceCount');
+			var deviceCount = data.deviceCount;
 
 			var countWithLinkName = 'countWithLink_' + '${id}';
 			var countWithoutLinkName = 'countWithoutLink_' + '${id}';

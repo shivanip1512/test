@@ -1,3 +1,5 @@
+<%@ tag trimDirectiveWhitespaces="true" %>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
@@ -10,38 +12,15 @@
 <cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
 
 <script type="text/javascript">
-    
-    function refreshErrors(theDiv) {
-
-        if (theDiv.visible()) {
-        
-            var url = '/bulk/processingExceptionErrorsRefresh';
-            
-            var params = $H({
-                'resultsId': '${resultsId}'
-            });
-        
-            var updater = new Ajax.Updater (theDiv, url, {
-          
-              'parameters': params,
-              
-              'onSuccess': function(response) {
-                           },
-              
-              'onException': function(response) {
-                           }
-            });
-        }
+  function refreshErrors(id) {
+    if (jQuery('#' + id).is(':visible')) {
+        jQuery('#' + id).load('/bulk/processingExceptionErrorsRefresh',{'resultsId' : '${resultsId}'});
     }
-    
-    function submitForm(id) {
-        $(id).submit();
-    }
-        
+  }
+  function submitForm(id) {
+    document.getElementById(id).submit();
+  }
 </script>
-
-
-
 
 <%-- NOTE --%>
 <table>
@@ -53,14 +32,11 @@
     </tr>
 </table>
 
-
-
 <%-- PROGRESS --%>
 <tags:resultProgressBar totalCount="${callbackResult.totalItems}"
     					countKey="BACKGROUNDPROCESS/${resultsId}/COMPLETED_LINES"
 						progressLabelTextKey="yukon.common.device.bulk.${resultsTypeMsgKey}Results.progressLabel"
 						statusTextKey="BACKGROUNDPROCESS/${resultsId}/STATUS_TEXT" />
-
       
 <%-- SUCCESS COUNT --%>
 <br>
@@ -70,26 +46,15 @@
 <c:if test="${callbackResult.successDevicesSupported}">
 
     <div id="successActionsDiv" style="padding:4px;display:none;">
-    	
-    	<ul style="padding-left:0px; margin-top:0px;">
-    	
-    	<%-- device collection action --%>
-    	<li>
         <cti:link href="/bulk/collectionActions" key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel" class="small">
             <cti:mapParam value="${callbackResult.successDeviceCollection.collectionParameters}"/>
         </cti:link>
         <tags:selectedDevicesPopup deviceCollection="${callbackResult.successDeviceCollection}" />
-        </li>
-        
-        </ul>
-    
     </div>
     
     <cti:dataUpdaterCallback function="toggleElementsWhenTrue(['successActionsDiv'],true)" initialize="true" value="BACKGROUNDPROCESS/${resultsId}/IS_COMPLETE_WITH_SUCCESSES" />
 
 </c:if>
-
-
 
 <%-- FAILURE COUNT --%>
 <br>
@@ -98,7 +63,7 @@
 <%-- FAILURE DETAILS --%>
 <div id="errorActionsDiv" style="padding:4px;display:none;">
 
-    <ul style="padding-left:0px; margin-top:0px;">
+    <ul class="simple-list">
 
     <%-- FAILURE DEVICE COLLECTION --%> 
     <c:if test="${callbackResult.failureDevicesSupported}">
@@ -119,7 +84,7 @@
     
     <%-- FAILURE DETAILS LINK --%>
     <c:if test="${callbackResult.failureReasonsListSupported}">
-	    <a href="javascript:void(0);" onclick="$('processingErrorsDiv${resultsId}').toggle();refreshErrors($('processingErrorsDiv${resultsId}'));" class="small"><cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.processingExceptionErrorListLabel" /></a>
+	    <a href="javascript:void(0);" onclick="$('processingErrorsDiv${resultsId}').toggle();refreshErrors('processingErrorsDiv${resultsId}');" class="small"><cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.processingExceptionErrorListLabel" /></a>
 	    
 	    <div id="processingErrorsDiv${resultsId}" style="display:none;"></div>
 	</c:if>

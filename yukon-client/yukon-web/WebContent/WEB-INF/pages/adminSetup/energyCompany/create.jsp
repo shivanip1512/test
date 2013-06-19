@@ -15,10 +15,9 @@
             <input type="hidden" name="parentId" value="${parentId}">
         </c:if>
     
-        <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
+        <div class="column_12_12">
         
-            <%-- LEFT SIDE COLUMN --%>
-            <cti:dataGridCell>
+            <div class="column one">
                     
                 <tags:formElementContainer nameKey="generalInfo">
                     <tags:nameValueContainer2>
@@ -52,10 +51,8 @@
                     
                 </tags:formElementContainer>
                 
-            </cti:dataGridCell>
-            
-            <%-- RIGHT SIDE COLUMN --%>
-            <cti:dataGridCell>
+            </div>
+            <div class="column two nogutter">
                 
                 <tags:formElementContainer nameKey="defaultOperatorUser">
                     <div><span class="smallBoldLabel"><i:inline key=".note"/></span>&nbsp;<span class="notes"><i:inline key=".defaultOperatorUser.note"/></span></div>
@@ -70,9 +67,8 @@
                     </tags:nameValueContainer2>
                 </tags:formElementContainer>
                 
-            </cti:dataGridCell>
-        
-        </cti:dataGrid>
+            </div>
+        </div>
         
         <div class="pageActionArea">
             <cti:button nameKey="save" type="submit" name="save"/>

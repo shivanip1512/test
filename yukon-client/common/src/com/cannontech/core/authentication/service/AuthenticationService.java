@@ -54,6 +54,12 @@ public interface AuthenticationService {
     boolean isPasswordExpired(LiteYukonUser user);
 
     /**
+     * This method checks to see if the user's login will expire in a certain amount of time in the future.
+     * This checks the login's password age against the password policy's allowed age.
+     */
+    public boolean doesPasswordExpireInDays(LiteYukonUser user, int numberOfDays);
+
+    /**
      * Indicates if the underlying authentication method for the user
      * supports setting the password to a new value. For example, LDAP 
      * and RADIUS do not support this.

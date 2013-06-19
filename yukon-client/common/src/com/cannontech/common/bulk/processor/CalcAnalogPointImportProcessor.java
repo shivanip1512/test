@@ -44,7 +44,7 @@ private Map<String, PointCalculation> calcMap;
         String calculationId = row.getValue(CALCULATION.NAME);
         PointCalculation calculation = calcMap.get(calculationId);
         if(calculation == null) {
-            String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.pointImport.error.invalidCalculation");
+            String error = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.pointImport.error.invalidCalculation");
             throw new ProcessingException(error);
         }
         builder.setCalculation(calculation);

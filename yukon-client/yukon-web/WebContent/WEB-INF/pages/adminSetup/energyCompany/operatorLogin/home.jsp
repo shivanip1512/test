@@ -12,19 +12,24 @@
     jQuery(function() {
         jQuery("a.toggle_status").click(function(event) {
             event.preventDefault();// We don't want the anchor href to submit a GET request
-            var anchor = jQuery(event.target);
-            anchor.addClass("loading");
+            var anchor = jQuery(event.currentTarget);
+            var icon = anchor.find('.icon');
+            var originalClasses = icon.attr('class');
+            icon.addClass("icon-loading");
             jQuery.ajax({
                 type: "POST",
                 url: anchor.attr("href"),
                 datatype: "json",
                 success: function(jsonResponse) {
-                    anchor.removeClass("ENABLED").removeClass("DISABLED").removeClass("loading");
-                    anchor.addClass(jsonResponse.loginStatus);
-                    anchor.attr("title",jsonResponse.loginStatus);
+                    icon.removeClass("icon-accept");
+                    icon.removeClass("icon-delete");
+                    icon.removeClass("icon-loading");
+                    icon.addClass(jsonResponse.icon);
+                    icon.attr("title",jsonResponse.loginStatus);
                 },
                 error: function() {
-                    anchor.removeClass("loading");
+                    icon.removeClass("icon-loading");
+                    icon.attr("class", originalClasses);
                 }
             });
         });
@@ -53,10 +58,18 @@
                                 <cti:param name="operatorLoginId" value="${login.userID}"/>
                             </cti:url>
                             <c:if test="${currentUserId != login.userID}">
-                                <a href="${operatorLoginUpdateUrl}" class="icon ${login.loginStatus} toggle_status" title="${login.loginStatus}">${login.loginStatus}</a>
+                                <c:choose>
+	                                <c:when test="${login.loginStatus == 'DISABLED'}">
+	                                    <c:set var="cssClass" value="icon-delete"/>
+	                                </c:when>
+	                                <c:otherwise>
+	                                   <c:set var="cssClass" value="icon-accept"/>
+	                                </c:otherwise>
+                                </c:choose>
+                                <a href="${operatorLoginUpdateUrl}" class="button naked toggle_status" title="${login.loginStatus}"><i class="icon ${cssClass}"></i></a>
                             </c:if>
                             <c:if test="${currentUserId == login.userID}">
-                                <a class="icon enable_disabled" title="<i:inline key=".unableToDeleteCurrentUser"/>"><i:inline key=".unableToDeleteCurrentUser"/></a>
+                                <a class="button naked" disabled="disabled" title="<i:inline key=".unableToDeleteCurrentUser"/>"><i class="icon icon-accept"></i></a>
                             </c:if>
                         </div>
                         </td>
@@ -68,7 +81,7 @@
             <cti:param name="ecId" value="${ecId}"/>
         </cti:url>
         <div class="actionArea">
-            <cti:button nameKey="create" href="${operatorLoginCreateUrl}"/>
+            <cti:button nameKey="create" icon="icon-plus-green" href="${operatorLoginCreateUrl}"/>
         </div>
     </tags:boxContainer2>
     </div>

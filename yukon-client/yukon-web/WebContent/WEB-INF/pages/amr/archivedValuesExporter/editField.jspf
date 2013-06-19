@@ -61,7 +61,7 @@
                             <form:option value="${roundingMode}"><cti:msg2 key="${roundingMode}"/></form:option>
                         </c:forEach>
                     </form:select>
-                 <a id="helperRounding" href="javascript:void(0);"><cti:img nameKey="helpRoundingMode" styleClass="hoverableImage" /> </a>
+                 <a id="helperRounding" href="javascript:void(0);"><cti:icon nameKey="helpRoundingMode" icon="icon-help"/></a>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".readingPattern" rowClass="ATTRIBUTE_VALUE POINT_VALUE">
                     <select name="patternSelect" id="patternSelect" data-selection="#patternSelect" data-field-to-display="#readingPattern" data-skip-disable="true">
@@ -80,7 +80,7 @@
                         </option>
                     </select>
                     <tags:input id="readingPattern" path="valuePattern" size="10" maxlength="30" />
-                    <a id="helperValue" href="javascript:void(0);"> <cti:img nameKey="helpReadingPattern" styleClass="hoverableImage" /> </a>
+                    <a id="helperValue" href="javascript:void(0);"><cti:icon nameKey="helpReadingPattern" icon="icon-help"/></a>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".timestampPattern" rowClass="ATTRIBUTE_TIMESTAMP POINT_TIMESTAMP">
                     <select id="timestampPatternSelect" data-selection="#timestampPatternSelect" data-field-to-display="#timestampPattern" data-skip-disable="true">
@@ -102,7 +102,7 @@
                         </option>
                     </select>
                     <tags:input id="timestampPattern" path="timestampPattern" size="10" maxlength="30"/>
-                    <a id="helperTimestamp" href="javascript:void(0);"> <cti:img nameKey="helpTimestampPattern" styleClass="hoverableImage" /> </a>
+                    <a id="helperTimestamp" href="javascript:void(0);"><cti:icon nameKey="helpTimestampPattern" icon="icon-help"/></a>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".fieldSize"
                     rowClass="METER_NUMBER ROUTE DEVICE_NAME ADDRESS RF_MANUFACTURER RF_MODEL RF_SERIAL_NUMBER ATTRIBUTE ATTRIBUTE_NAME ATTRIBUTE_TIMESTAMP ATTRIBUTE_VALUE ATTRIBUTE_UNIT_OF_MEASURE ATTRIBUTE_QUALITY POINT_QUALITY POINT_NAME POINT_TIMESTAMP POINT_VALUE UNIT_OF_MEASURE">

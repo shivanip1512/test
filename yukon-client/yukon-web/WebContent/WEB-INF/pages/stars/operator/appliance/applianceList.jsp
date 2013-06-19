@@ -13,7 +13,7 @@
             <script type="text/javascript">
     
                 function showCreateAppliancePopup() {
-                    $('createAppliancePopup').show();
+                    jQuery('#createAppliancePopup').show();
                 }
          
             </script>
@@ -41,7 +41,7 @@
                     </ct:nameValueContainer2>
                     <div class="actionArea">
                         <cti:button nameKey="ok" type="submit"/>
-                        <cti:button nameKey="cancel" onclick="$('createAppliancePopup').hide();"/>
+                        <cti:button nameKey="cancel" onclick="jQuery('#createAppliancePopup').dialog('close');"/>
                     </div>
                 </form>
             </i:simplePopup>
@@ -105,7 +105,7 @@
                                         <cti:param name="applianceId" value="${displayableApplianceListEntry.applianceId}" />
                                         <cti:param name="delete" />
                                     </cti:url>
-                                    <cti:img href="${deleteApplianceUrl}" nameKey="deleteAppliance"/>
+                                    <cti:icon href="${deleteApplianceUrl}" nameKey="deleteAppliance" icon="icon-cross"/>
 
                                  </td>
                              </cti:checkRolesAndProperties>
@@ -122,7 +122,7 @@
                     <tr align="right">
                         <td colspan="4">
                             <br>
-                            <cti:button nameKey="create" type="submit" onclick="showCreateAppliancePopup();"/>
+                            <cti:button nameKey="create" icon="icon-plus-green" type="submit" onclick="showCreateAppliancePopup();"/>
                         </td>
                     </tr>
                 </cti:checkRolesAndProperties>

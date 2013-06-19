@@ -10,7 +10,9 @@ import com.cannontech.web.security.annotation.AuthorizeByCparm;
 @RequestMapping("/development/uiToolkitDemo/*")
 @AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class UIToolkitDemo {
+	
     @RequestMapping("main")
     public void main() {
     }
+    
 }

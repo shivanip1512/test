@@ -9,7 +9,7 @@
 
     <cti:includeScript link="/JavaScript/temperature.js"/>
     <cti:includeScript link="/JavaScript/thermostatScheduleEditor.js"/>
-	<cti:includeCss link="/WebConfig/yukon/styles/consumer/StarsConsumerStyles.css"/>
+    <cti:includeCss link="/WebConfig/yukon/styles/consumer/StarsConsumerStyles.css"/>
     <cti:includeCss link="/WebConfig/yukon/styles/shared/thermostat.css"/>
     
     <cti:msg var="degreesCelsius" key="yukon.web.modules.operator.thermostatManual.degreesCelsius" />
@@ -43,46 +43,46 @@ jQuery(function(){
     <c:set var="multipleThermostatsSelected" value="${fn:length(thermostatNames) > 1}"></c:set>
 
     <table class="thermostatPageContent">
-    	<tr>
-    	   <td>
+        <tr>
+           <td>
                 <%-- THERMOSTAT NAMES --%>
                 <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/selectedThermostatsFragment.jsp" />
             </td>
         </tr>
         <tr>
-    		<%-- THE SCHEDULE UI --%>
-    		<td>
+            <%-- THE SCHEDULE UI --%>
+            <td>
    
-   				<tags:formElementContainer nameKey="manualUiContainerHeader" styleClass="oh">
-   				
-   					<%-- INSTRUCTIONS --%>
-				    <div class="plainText">
-				    	<cti:url var="scheduleUrl" value="/stars/operator/thermostatSchedule/savedSchedules">
-				    		<cti:param name="accountId" value="${accountId}"/>
-				    		<cti:param name="thermostatIds" value="${thermostatIds}"/>
-				    	</cti:url>
+                   <tags:formElementContainer nameKey="manualUiContainerHeader" styleClass="oh">
+                   
+                       <%-- INSTRUCTIONS --%>
+                    <div class="plainText">
+                        <cti:url var="scheduleUrl" value="/stars/operator/thermostatSchedule/savedSchedules">
+                            <cti:param name="accountId" value="${accountId}"/>
+                            <cti:param name="thermostatIds" value="${thermostatIds}"/>
+                        </cti:url>
 
                         <c:if test="${autoModeEnabledCommandView}">
                             <cti:msg key="yukon.web.modules.operator.thermostatManual.autoModeDisclaimer" />
                             <br><br>
                         </c:if>
-				        <cti:msg key="yukon.web.modules.operator.thermostatManual.instructionText" arguments="${scheduleUrl}" htmlEscape="false"/>
-				    </div>
-				    <br>
+                        <cti:msg key="yukon.web.modules.operator.thermostatManual.instructionText" arguments="${scheduleUrl}" htmlEscape="false"/>
+                    </div>
+                    <br>
     
-				    <c:set var="runProgram" value="${event.runProgram}" />
-				    
-				            <div class="fl oh">
-				            
-				                <!-- Thermostat settings table -->
-							    <c:choose>
-							    	<c:when test="${multipleThermostatsSelected}">
-							    		<cti:msg var="settingsLabel" key="yukon.web.modules.operator.thermostatManual.multipleLabel" />
-							    	</c:when>
-							    	<c:otherwise>
-							    		<c:set var="settingsLabel" value="${thermostatNames[0]}"/>
-							    	</c:otherwise>
-							    </c:choose>
+                    <c:set var="runProgram" value="${event.runProgram}" />
+                    
+                            <div class="fl oh">
+                            
+                                <!-- Thermostat settings table -->
+                                <c:choose>
+                                    <c:when test="${multipleThermostatsSelected}">
+                                        <cti:msg var="settingsLabel" key="yukon.web.modules.operator.thermostatManual.multipleLabel" />
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:set var="settingsLabel" value="${thermostatNames[0]}"/>
+                                    </c:otherwise>
+                                </c:choose>
                                 
                                 <tags:thermostatManualEditor thermostat="${thermostat}"
                                                              actionPath="/stars/operator/thermostatManual/save" 
@@ -91,44 +91,46 @@ jQuery(function(){
                                                              thermostatIds="${thermostatIds}"
                                                              accountId="${accountId}" 
                                                              autoEnabledMode="${autoModeEnabledCommandView}"/>
-				            </div>
-				            <div style="padding-left:20px;font-size:11px;" class="oh">
-				            
-				            	<%-- INSTRUCTIONS --%>
-				                <cti:msg key="yukon.web.modules.operator.thermostatManual.stepText" />
-				                <cti:msg key="yukon.web.modules.operator.thermostatManual.runProgramText" />
-				                
+                            </div>
+                            <div style="padding-left:20px;font-size:11px;" class="oh">
+                            
+                                <%-- INSTRUCTIONS --%>
+                                <div class="clearfix stacked">
+                                    <cti:msg key="yukon.web.modules.operator.thermostatManual.stepText" />
+                                    <cti:msg key="yukon.web.modules.operator.thermostatManual.runProgramText" />
+                                </div>
                                 <%-- Auto Enabled Manual Page --%>
                                 <c:if test="${!autoModeEnabledCommandView && autoModeEnabled}">
-                                    <br><br>
                                     <cti:url var="autoEnabledManualUrl" value="/stars/operator/thermostatManual/autoEnabledView">
                                         <cti:param name="accountId" value="${accountId}" />
                                         <cti:param name="thermostatIds" value="${thermostatIds}"/>
                                     </cti:url>
-                                    <cti:button nameKey="autoEnabledManual" href="${autoEnabledManualUrl}" />
+                                    <div class="clearfix stacked"><cti:button nameKey="autoEnabledManual" href="${autoEnabledManualUrl}" /></div>
                                 </c:if>
                                 
-				                <%-- RUN PROGRAM BUTTON --%>
-				                <br><br>
-				                <form action="/stars/operator/thermostatManual/runProgram" method="post" >
-				                	<input name="accountId" type="hidden" value="${accountId}" />
-				                    <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
-				                    <cti:msg var="runProgramText" key="yukon.web.modules.operator.thermostatManual.runProgram" />
-				                    <input id="temperatureUnitRun" type="hidden" name="temperatureUnit" value="F">
-				                    <input name="runProgram" type="submit" value="${runProgramText}" style="width:100px;"/>
-				                </form>
-                                <br>
+                                <%-- RUN PROGRAM BUTTON --%>
+                                <form action="/stars/operator/thermostatManual/runProgram" method="post" >
+                                    <input name="accountId" type="hidden" value="${accountId}" />
+                                    <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
+                                    <cti:msg var="runProgramText" key="yukon.web.modules.operator.thermostatManual.runProgram" />
+                                    <input id="temperatureUnitRun" type="hidden" name="temperatureUnit" value="F">
+                                    <div class="clearfix stacked">
+                                        <button type="submit" name="runProgram">
+                                            <span class="label">${runProgramText}</span>
+                                        </button>
+                                    </div>
+                                </form>
                                 <cti:url var="historyUrl" value="/stars/operator/thermostat/history/view">
                                     <cti:param name="accountId" value="${accountId}" />
                                     <cti:param name="thermostatIds" value="${thermostatIds}"/>
                                 </cti:url>
-                                <cti:button nameKey="history" href="${historyUrl}" />
-				            </div>
-				    
-				</tags:formElementContainer>
-			</td>
-		</tr>
-	</table>
+                                <div class="clearfix stacked"><cti:button nameKey="history" href="${historyUrl}" /></div>
+                            </div>
+                    
+                </tags:formElementContainer>
+            </td>
+        </tr>
+    </table>
     
      
 </cti:standardPage>

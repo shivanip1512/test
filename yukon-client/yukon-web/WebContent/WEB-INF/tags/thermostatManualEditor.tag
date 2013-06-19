@@ -27,8 +27,8 @@
     
                         <span id="editName" style="display: none;">
                             <form:input path="deviceLabel" maxlength="60" />
-                            <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
-                            <cti:button nameKey="cancel" styleClass="cancelLabelEdit"/>
+                            <cti:button nameKey="save" type="submit" classes="f_blocker"/>
+                            <cti:button nameKey="cancel" classes="cancelLabelEdit"/>
                         </span> 
                         <span id="thermostatName">
                             <spring:escapeBody>${thermostat.deviceLabel}</spring:escapeBody>
@@ -129,16 +129,17 @@
             <label for="holdCheck"><i:inline key="yukon.web.modules.operator.thermostatManual.hold" /></label>
         </div>
         
-        
-        <div class="box tac">
+        <div class="actionArea">
             <cti:msg2 var="saveText" key="yukon.web.modules.operator.thermostatManual.submit" />
-            <input id="sendSettingsSubmit" type="button" value="${saveText}" class="formSubmit" popup_id="confirmPopup_${event.eventId}" />
+            <button id="sendSettingsSubmit" popup_id="confirmPopup_${event.eventId}" class="primary action">
+                <span class="label">${saveText}</span>
+            </button>
         </div>
     </div>
 </div>
 
 <%-- Confirm Dialog for send settings --%>
-<i:simplePopup titleKey=".sendConfirm.title" on="sendSettingsSubmit" id="confirmPopup_${event.eventId}" styleClass="smallSimplePopup">
+<i:simplePopup titleKey=".sendConfirm.title" on="#sendSettingsSubmit" id="confirmPopup_${event.eventId}" styleClass="smallSimplePopup">
     
     <form action="${actionPath}" method="post">
         <input type="hidden" name="accountId"  value="${accountId}" />
@@ -179,8 +180,8 @@
         </tags:nameValueContainer2>
         
         <div class="actionArea">
-            <cti:button nameKey="ok" type="submit" styleClass="f_blocker"/> 
-            <cti:button nameKey="cancel" id="confirmCancel" styleClass="closePopup" />
+            <cti:button nameKey="ok" type="submit" classes="f_blocker"/> 
+            <cti:button nameKey="cancel" id="confirmCancel" onclick="jQuery('#confirmPopup_${event.eventId}').dialog('close')"/>
         </div>
     </form>
 </i:simplePopup>

@@ -1,8 +1,9 @@
+
 function updateStateColorGenerator(id) {
   //assumes data is of type Hash
     return function(data) {
         var anchorTag = $(id);
-        var state = data.get('value');
+        var state = data.value;
         var color = '#fff';
         if (state.indexOf('Pending') != -1) {
             color = '#F09100';
@@ -21,7 +22,7 @@ function updateWarningImage(id) {
         var alertSpan = $(id + '_alert');
         var okSpan = $(id + '_ok');
         
-        var isWarning = eval(data.get('value'));
+        var isWarning = eval(data.value);
         if (isWarning) {
             okSpan.hide();
             alertSpan.show();
@@ -38,7 +39,7 @@ function updateDualBusImage(id) {
         var primarySpan = $(id + '_primary');
         var alternateSpan = $(id + '_alternate');
         
-        var icon = data.get('value');
+        var icon = data.value;
         
         if (icon == 'Primary') {
             primarySpan.show();
@@ -61,7 +62,7 @@ function updateCapBankWarningImage(id) {
         var yellowLocalSpan = $(id + '_yellow_local');
         var greenLocalSpan = $(id + '_green_local');
         
-        var icon = data.get('value');
+        var icon = data.value;
         
         if (icon == 'GreenRemote') {
             yellowSpan.hide();
@@ -94,7 +95,7 @@ function updateRegulatorModeIndicator(id) {
         var greenLocalSpan = $(id + '_local_normal');
         var greenNormalSpan = $(id + '_normal');
         
-        var icon = data.get('value');
+        var icon = data.value;
         
         if (icon == 'none') {
             yellowLocalSpan.hide();
@@ -125,15 +126,15 @@ function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
             
             hideAll();
 
-            var modeA = data.get('modeA');
-            var modeB = data.get('modeB');
-            var modeC = data.get('modeC');
-            var tapIconA = data.get('tapA');
-            var tapIconB = data.get('tapB');
-            var tapIconC = data.get('tapC');
-            var tapTooltipA = data.get('tapTooltipA');
-            var tapTooltipB = data.get('tapTooltipB');
-            var tapTooltipC = data.get('tapTooltipC');
+            var modeA = data.modeA;
+            var modeB = data.modeB;
+            var modeC = data.modeC;
+            var tapIconA = data.tapA;
+            var tapIconB = data.tapB;
+            var tapIconC = data.tapC;
+            var tapTooltipA = data.tapTooltipA;
+            var tapTooltipB = data.tapTooltipB;
+            var tapTooltipC = data.tapTooltipC;
             
             setMode(modeA, divPhaseA);
             setMode(modeB, divPhaseB);
@@ -149,9 +150,9 @@ function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
             
             hideAll();
             
-            var mode = data.get('mode');
-            var icon = data.get('value');
-            var tapTooltip = data.get('tapTooltip');
+            var mode = data.mode;
+            var icon = data.value;
+            var tapTooltip = data.tapTooltip;
 
             setMode(mode, divPhaseA);
             setMode(mode, divPhaseB);
@@ -167,9 +168,9 @@ function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
             
             hideAll();
 
-            var mode = data.get('mode');
-            var icon = data.get('value');
-            var tapTooltip = data.get('tapTooltip');
+            var mode = data.mode;
+            var icon = data.value;
+            var tapTooltip = data.tapTooltip;
             var divPhase;
 
             if (phase == 'A') {
@@ -291,7 +292,7 @@ function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
 function updateVerificationImage(spanId) {
   //assumes data is of type Hash
     return function(data) {
-        var isVerification = eval(data.get('value'));
+        var isVerification = eval(data.value);
         if (isVerification) {
             $(spanId).show();
         } else {

@@ -14,7 +14,7 @@
                 
                 <div style="padding-top:8px;padding-bottom:8px;">
                     
-                    <select name="searchBy" onchange="$('accountSearchValue').value = ''">
+                    <select name="searchBy" onchange="jQuery('#accountSearchValue').val('')">
                         <c:forEach var="operatorAccountSearchBy" items="${operatorAccountSearchBys}" >
                             <option value="${operatorAccountSearchBy}" <c:if test="${operatorAccountSearchBy == accountSearchResultHolder.searchBy}">selected</c:if>>
                                 <cti:msg2 key="${operatorAccountSearchBy.formatKey}"/>

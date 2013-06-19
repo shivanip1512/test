@@ -7,7 +7,7 @@
     function toggleConnectButtons() {
       //assumes data is of type Hash
         return function(data) {
-            var rawValue = data.get('rawValue');
+            var rawValue = data.rawValue;
             // connected states
             if (rawValue == 0 || rawValue == 2) {
                 jQuery('#connectSpan').show();

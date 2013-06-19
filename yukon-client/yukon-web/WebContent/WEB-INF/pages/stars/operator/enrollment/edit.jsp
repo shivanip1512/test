@@ -6,34 +6,60 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-
+<cti:msgScope paths="modules.operator.enrollmentEdit,modules.operator.enrollmentList">
 <script type="text/javascript">
-enrollmentChanged = function(inventoryId) {
-    var isEnrolled = $('enrolledCB' + inventoryId).checked;
-    if (isEnrolled) {
-        $('relaySelect' + inventoryId).enable();
-        if ($('okBtn')) {
-            $('okBtn').disabled = false;
+    inventoryIds = [];
+    updateOKButton = function() {
+        var index;
+        for (index = 0; index < inventoryIds.length; index++) {
+            if (jQuery('#enrolledCB' + inventoryIds[index]).is(":checked")) {
+                jQuery('#okBtn').removeAttr("disabled");
+                return;
+            }
         }
-    } else {
-        $('relaySelect' + inventoryId).disable();
-        updateOKButton();
-    }
-}
-
-inventoryIds = [];
-updateOKButton = function() {
-    for (var index = 0; index < inventoryIds.length; index++) {
-        if ($('enrolledCB' + inventoryIds[index]).checked) {
-            $('okBtn').disabled = false;
-            return;
+        jQuery('#okBtn').attr("disabled","disabled");
+    };
+    enrollmentChanged = function(inventoryId) {
+        var isEnrolled = jQuery('#enrolledCB' + inventoryId).is(":checked");
+        if (isEnrolled) {
+            jQuery('#relaySelect' + inventoryId).removeAttr("disabled");
+            if (0 < jQuery('#okBtn').length) {
+                jQuery('#okBtn').removeAttr("disabled");
+            }
+        } else {
+            jQuery('#relaySelect' + inventoryId).attr("disabled","disabled");
+            updateOKButton();
         }
-    }
-    $('okBtn').disabled = true;
-}
+    };
+    
+    jQuery(function() {
+        var okEnabled = false,
+            index,
+            inventoryId;
+        // the inventoryIds array is not populated, apparently not until the data
+        // is fetched from the server, so we must wait a couple seconds for the data to arrive
+        if(0 === inventoryIds.length) {
+            setTimeout(function() {
+                for (index = 0; index < inventoryIds.length; index++) {
+                    inventoryId = inventoryIds[index];
+                    if (jQuery('#enrolledCB' + inventoryId).is(":checked")) {
+                        okEnabled = true;
+                        jQuery('#relaySelect' + inventoryId).removeAttr("disabled");
+                    } else {
+                        jQuery('#relaySelect' + inventoryId).attr("disabled","disabled");
+                    }
+                }
+                if(true === jQuery('#okBtn').is(":disabled")) {
+                    jQuery('#okBtn').removeAttr("disabled");
+                }
+                else {
+                    jQuery('#okBtn').attr("disabled","disabled");
+                }
+            }, 2500);
+        }
+    });
 </script>
 
-<cti:msgScope paths="modules.operator.enrollmentEdit,modules.operator.enrollmentList">
 
 <div><i:inline key=".headerMessage" arguments="${assignedProgram.displayName}"/></div>
 
@@ -89,6 +115,7 @@ updateOKButton = function() {
                         </label></td>
                         <td class="relay">
                             <form:select id="relaySelect${inventoryId}"
+                                onchange="enrollmentChanged(${inventoryId});"
                                 path="inventoryEnrollments[${status.index}].relay">
                                 <form:option value="0"><cti:msg2 key=".noRelay"/></form:option>
                                 <c:forEach var="relayNumber" begin="1"
@@ -105,23 +132,9 @@ updateOKButton = function() {
     </tags:boxContainer2>
 
     <div class="actionArea">
-        <cti:button id="okBtn" nameKey="ok" type="submit" styleClass="f_blocker"/>
-        <input class="formSubmit" type="button" value="<cti:msg2 key=".cancel"/>"
-            onclick="parent.$('peDialog').hide()"/>
+        <cti:button id="okBtn" nameKey="ok" type="submit" classes="primary action"/>
+        <cti:button nameKey="cancel" onclick="jQuery('#peDialog').dialog('close');"/>
     </div>
-    <script type="text/javascript">
-    var okEnabled = false;
-    for (var index = 0; index < inventoryIds.length; index++) {
-        var inventoryId = inventoryIds[index];
-        if ($('enrolledCB' + inventoryId).checked) {
-        	okEnabled = true;
-            $('relaySelect' + inventoryId).enable();
-        } else {
-            $('relaySelect' + inventoryId).disable();
-        }
-    }
-    $('okBtn').disabled = !okEnabled;
-    </script>
 
 </form:form>
 

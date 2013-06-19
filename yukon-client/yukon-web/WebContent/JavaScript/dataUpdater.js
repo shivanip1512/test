@@ -1,165 +1,207 @@
 /* see the dataUpdateEnabler.tag to see where this is referenced */
-
 var disableHighlight = false;
-var cannonDataUpdateRegistrations = $A();
+var jqcannonDataUpdateRegistrations = [];
 var _updaterTimeout = null;
 
 function initiateCannonDataUpdate(url, delayMs) {
-    var lastUpdate = 0;
-    var failureCount = 0;
-    var processResponseCallback = function(transport) {
-    	var someValueHasUpdated = false;
+    var lastUpdate = 0,
+        failureCount = 0;
+    function processResponseCallback(transport) {
+        var someValueHasUpdated = false,
+            content = transport.responseText,
+            jqresponseStruc = JSON.parse(content),
+            updateElems,
+            updateClassElems,
+            updateColorElems;
         
         // looks like stuff is working, hide error div
-        $('cannonUpdaterErrorDiv').hide();
+        jQuery('#cannonUpdaterErrorDiv').hide();
         failureCount = 0;
         
-        var content = transport.responseText;
-        var responseStruc = content.evalJSON(); // fails when server is shutdown if this is an onSuccess callback!
-        // find all of the updatable elements
-        var updatableElements = $$('span[cannonUpdater]');
-        updatableElements.each(function(it) {
-            var id = it.readAttribute('cannonUpdater');
-            // use the cannonUpdater "id" to look up value in response
-            var newData = responseStruc.data[id];
-            if (newData != null && newData != it.innerHTML) {
-                // data was sent and is different than current
-                it.innerHTML = newData.escapeHTML();
-                someValueHasUpdated = true;
-                // make it glow
-                if (!disableHighlight) {
-                    flashYellow(it, 3.5);
-                }    
+        // find all of the updateable elements
+        updateElems = jQuery('[cannonUpdater]');
+        jQuery.each(updateElems, function(key, val) {
+            var newData,
+                attVal = jQuery(val).attr('cannonUpdater');
+            if ("undefined" === typeof attVal) {
+                return;
             }
-           
+            newData = jqresponseStruc.data[attVal];
+            if ("undefined" !== typeof newData) {
+                if (jQuery(val).html() !== newData) {
+                    // escape html: creates a div in isolation, sets its text
+                    // to whatever's in newData, then effectively escapes it 
+                    // via the html function
+                    newData = jQuery("<div>").text(newData).html();
+                    jQuery(val).html(newData);
+                    someValueHasUpdated = true;
+                    if (!disableHighlight) {
+                        jQuery(val).flashYellow(3.5);
+                    }    
+                }
+            }
         });
-        
+
         // update the classes
-        var updatableClassElements = $$('span[cannonClassUpdater]');
-        updatableClassElements.each(function(it) {
-            var id = it.readAttribute('cannonClassUpdater');
-            // use the cannonUpdater "id" to look up value in response
-            var newData = responseStruc.data[id];
-            if (typeof newData !== 'undefined' && it.className != newData) {
-                // data was sent and is different than current
-            	it.className = newData;
+        updateClassElems = jQuery('[cannonClassUpdater]');
+        jQuery.each(updateClassElems, function(key, val) {
+            var id = jQuery(val).attr('cannonClassUpdater'),
+                newData,
+                className;
+            if ("undefined" === typeof id) {
+                return;
+            }
+            newData = jqresponseStruc.data[id];
+            className = jQuery(val).attr('class');
+            if ("undefined" !== typeof newData && className !== newData) {
+                jQuery(val).attr('class', newData);
             }
         });
-        
+
         // update the colors
-        var updatableColorElements = $$('span[cannonColorUpdater]');
-        updatableColorElements.each(function(it) {
-            var id = it.readAttribute('cannonColorUpdater');
-            // use the cannonUpdater "id" to look up value in response
-            var newData = responseStruc.data[id];
-            try{
-                var jqIt = jQuery(it);
-                var format = jqIt.attr('data-format');
-                var current_value = format == 'background' ? it.style.backgroundColor : it.style.color;
-	            if (newData && newData != current_value) {
-	                // data was sent and is different than current
-	                if (format == 'background') {
-	                    jqIt.css({'background-color': newData});
-	                    jqIt.children().css({'background-color': newData});
-	                } else {
-	                    jqIt.css({'color': newData});
-                        jqIt.children().css({'color': newData});
-	                }
-	            }
-            }catch(err){
-            	//do nothing, thanks ie!
+        updateColorElems = jQuery('[cannonColorUpdater]');
+        jQuery.each(updateColorElems, function(key, val) {
+            var id = jQuery(val).attr('cannonColorUpdater'),
+                newData,
+                format, // what are typical/legal values for this?
+                backgroundColor,
+                color,
+                current_value,
+                // TODO: stick this in yukon general or someplace
+                rgb2hex = function(rgb) {
+                    var compositeRgb,
+                        hex = function(x) {
+                            return ("0" + parseInt(x, 10).toString(16)).slice(-2);
+                        };
+                    if ("undefined" === typeof rgb || "" === rgb || null === rgb) {
+                        return '#000000';
+                    }
+                    rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+))?\)$/);
+                    compositeRgb = hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+                    compositeRgb = compositeRgb.toLowerCase();
+                    return "#" + compositeRgb;
+                };
+            if ("undefined" === typeof id) {
+                return;
+            }
+            newData = jqresponseStruc.data[id];
+            newData = "undefined" === typeof newData ? newData : newData.toLowerCase();
+            format = jQuery(val).attr('data-format');
+            backgroundColor = jQuery(val).css("background-color");
+            color = jQuery(val).css("color");
+            current_value = format == 'background' ? backgroundColor : color;
+            // OK, jquery (and plain old javascript) returns color values in rgb format:
+            // rgb(0, 153, 51)
+            // but we need:
+            // #009933
+            // S-O to the rescue again:
+            // http://stackoverflow.com/questions/1740700/how-to-get-hex-color-value-rather-than-rgb-value?lq=1
+            // modified the solution proposed by Zach Katz
+            if ("undefined" !== typeof newData && newData !== rgb2hex(current_value)) {
+                // data was sent and is different than current
+                if (format === 'background') {
+                    jQuery(val).css({'background-color': newData});
+                    jQuery(val).children().css({'background-color': newData});
+                } else {
+                    jQuery(val).css({'color': newData});
+                    jQuery(val).children().css({'color': newData});
+                }
             }
         });
-        
-        // find all of the callbacks
-        // cannonDataUpdateRegistrations is a $A {prototype array} of $H {prototype hash} objects
-        cannonDataUpdateRegistrations.each(function(it) {
-            
-            var idMap = $H(it.get('identifierMap'));
-            var allIdentifierValues = $H();
-            
-            if( idMap.keys().length == 0 && someValueHasUpdated) {
-            	//callback for any value change when no identifiers provided
-            	it.get('callback')();
-            	return;
+
+        jqcannonDataUpdateRegistrations.forEach(function(it, index, ar) {
+            var idMap = it.identifierMap,
+                allIdentifierValues = {},
+                gotNewData = false;
+            if ("undefined" === typeof idMap && someValueHasUpdated) {
+                (it.callback)();
+                return;
             }
-           
-            idMap.keys().each(function(idFieldName) {
-            	var newData = responseStruc.data[idMap.get(idFieldName)];
-            	if(newData) {
-                    allIdentifierValues.set(idFieldName, responseStruc.data[idMap.get(idFieldName)]);
-            	}
+            jQuery.each(idMap, function(key, val) {
+                var newData = jqresponseStruc.data[idMap[key]];
+                if ("undefined" !== typeof newData) {
+                    gotNewData = true;
+                    allIdentifierValues[key] = newData;
+                }
             });
-            
-            if(allIdentifierValues.keys().length >0) {
-                it.get('callback')(allIdentifierValues);
-            } 
+            if (true === gotNewData) {
+                (it.callback)(allIdentifierValues);
+            }
         });
+
         // save latest date
-        lastUpdate = responseStruc.toDate;
+        lastUpdate = jqresponseStruc.toDate;
         // schedule next update
-        if(_updaterTimeout) {
+        if (_updaterTimeout) {
             clearTimeout(_updaterTimeout);
         }
         _updaterTimeout = setTimeout(doUpdate, delayMs);
-    };
+    } // end of processResponseCallback
     
     var failureCallback = function() {
         // something bad happened, show user that updates are off
         failureCount += 1;
-        $('cannonUpdaterErrorDivCount').innerHTML = failureCount;
+        jQuery('#cannonUpdaterErrorDivCount').innerHTML = failureCount;
         if (failureCount > 1) {
-            $('cannonUpdaterErrorDiv').show();
+            jQuery('#cannonUpdaterErrorDiv').show();
         }
-        // schedule another update incase the server comes back, but slow it down a bit
-        if(_updaterTimeout) {
+        // schedule another update in case the server comes back, but slow it down a bit
+        if (_updaterTimeout) {
             clearTimeout(_updaterTimeout);
         }
         _updaterTimeout = setTimeout(doUpdate, delayMs * 5);
     };
     
     var warnStaleData = function() {
-        jQuery('#updatedWarning').show();
+        jQuery("#updatedWarning").dialog("open");
     };
     
-    var doUpdate = function() {
+    function doUpdate() {
         // if none exist on this page, get out
         // build up JS object to be used for request
-        var requestData = $H({
-            'fromDate': lastUpdate
+        var reqData = {
+                'fromDate': lastUpdate,
+                'data' : []
+            },
+            updaters = [
+                '',
+                'Class',
+                'Color'
+            ],
+            getUpdater = function(updateName) {
+                var fullName = 'cannon' + updateName + 'Updater',
+                    updateElems = jQuery('[' + fullName + ']'),
+                    updateData = jQuery.makeArray(updateElems).map(function(al) {
+                        return jQuery(al).attr(fullName);
+                    });
+                return updateData;
+            },
+            json_reqData;
+
+        jQuery.each(updaters, function(index, updateStr) {
+            var addedData = getUpdater(updateStr);
+            reqData.data = reqData.data.concat(addedData);
+        });
+        jqcannonDataUpdateRegistrations.forEach(function(it, index, ar) {
+            var idMap = it.identifierMap;
+            jQuery.each(idMap, function(key, val) {
+                reqData.data = reqData.data.concat(val);
+            });
         });
 
-        // get all elements that have the cannonUpdater attribute on them
-        var updatableElements = $$('span[cannonUpdater]');
-        // create an array of strings, with the value of the cannonUpdater attribute for each element
-        // use readAttribute to avoid IE weirdness
-        requestData.set('data', updatableElements.invoke('readAttribute', 'cannonUpdater'));
-        
-        var updatableClassElements = $$('span[cannonClassUpdater]');
-        requestData.set('data', requestData.get('data').concat(updatableClassElements.invoke('readAttribute', 'cannonClassUpdater')));
-        
-        var updatableColorElements = $$('span[cannonColorUpdater]');
-        requestData.set('data', requestData.get('data').concat(updatableColorElements.invoke('readAttribute', 'cannonColorUpdater')));
-        
-        // add elements from JS registrations
-        cannonDataUpdateRegistrations.each(function(it) {
-        
-        	var idMap = it.get('identifierMap');
-        	requestData.set('data', requestData.get('data').concat(idMap.values()));
-        });
-        
-        if (requestData.get('data').length == 0) {
+        if (0 === reqData.data.length) {
             // schedule next update
-            if(_updaterTimeout) {
+            if (_updaterTimeout) {
                 clearTimeout(_updaterTimeout);
             }
             _updaterTimeout = setTimeout(doUpdate, delayMs);
             return;
         }
-        
+        json_reqData = JSON.stringify(reqData);
+
         new Ajax.Request(url, {
             method: 'post',
-            postBody: Object.toJSON(requestData),
+            postBody: json_reqData,
             contentType: 'application/json',
             on200: processResponseCallback, // this odd combination seems to be the only
                                             // way to detect that the server is shutdown
@@ -170,42 +212,41 @@ function initiateCannonDataUpdate(url, delayMs) {
             onFailure: failureCallback,      
             onException: failureCallback    
         });
+        reqData.data = [];
         
-        requestData = null;
-        updatableElements = null;
-    };
-    if(_updaterTimeout) {
+    }
+    if (_updaterTimeout) {
         clearTimeout(_updaterTimeout);
     }
     _updaterTimeout = setTimeout(doUpdate, delayMs);
 }
 
 /**
- * @param	callback		{function}
- * @param	identifierMap	{Object} cloned as a new Prototype Hash object
+ * @param    callback        {function}
+ * @param    identifierMap    {Object} cloned as a new Prototype Hash object
  */
 function cannonDataUpdateRegistration(callback, identifierMap) {
-	// callback will include the formatted string as its one argument
-	cannonDataUpdateRegistrations.push($H({
-        'identifierMap': $H(identifierMap),
+    // callback will include the formatted string as its one argument
+
+    jqcannonDataUpdateRegistrations.push({
+        'identifierMap': identifierMap,
         'callback': callback
-    }));
+    });
 }
 
 /**
  * 
- * @param callback		{function}
- * @param identifier	{DOM id}
+ * @param callback        {function}
+ * @param identifier    {DOM id}
  */
 function cannonDataUpdateEventRegistration(callback, identifier) {
-	var didIt = false;
-	var callbackWrapper = function(data) {
-	    // data is assumed to be a $H
-		if (!didIt && data.get('boolean') == 'true') {
-			didIt = true;
-		    callback();
-		}
-	};
+    var didIt = false;
+    var callbackWrapper = function(data) {
+        if (!didIt && data.boolean === true) {
+            didIt = true;
+            callback();
+        }
+    };
     cannonDataUpdateRegistration(callbackWrapper, {'boolean': identifier});  
 }
 

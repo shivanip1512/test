@@ -16,14 +16,14 @@ import com.cannontech.support.service.SupportBundleWriter;
 import com.google.common.collect.Lists;
 
 public class SupportBundle {
+
     public static enum BundleRangeSelection implements DisplayableEnum {
         ONE_WEEK(Weeks.ONE),
         TWO_WEEKS(Weeks.TWO),
         ONE_MONTH(Months.ONE),
         EVERYTHING(Years.years(100));
 
-        private static final String keyPrefix =
-            "yukon.web.modules.support.supportBundle.bundleRangeSelection.";
+        private static final String keyPrefix = "yukon.web.modules.support.supportBundle.bundleRangeSelection.";
 
         final private Period period;
 

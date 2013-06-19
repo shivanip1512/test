@@ -22,17 +22,17 @@
         <cti:button type="submit" name="task" value="DUMP" nameKey="dumpKeys" />
     </form:form>
 
-    <div id="tabs" class="tabbedContainer">
+    <div id="tabs" class="tabbedContainer clearfix">
         <ul>
             <li><a href="#searchTab"><i:inline key=".search" /></a></li>
             <li><a href="#compareTab"><i:inline key=".compare" /></a></li>
         </ul>
 
-        <div id="searchTab">
+        <div id="searchTab" class="clearfix">
             <%@ include file="search.jspf"%>
         </div>
 
-        <div id="compareTab">
+        <div id="compareTab" class="clearfix">
             <%@ include file="compare.jspf"%>
         </div>
     </div>

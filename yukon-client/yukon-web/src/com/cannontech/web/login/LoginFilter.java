@@ -83,7 +83,6 @@ public class LoginFilter implements Filter {
         ImmutableList.of("/capcontrol/**",
                          "/operator/**",
                          "/editor/**",
-                         "/user/**",
                          "/servlet/SOAPClient/**",
                          "/jws/*");
     

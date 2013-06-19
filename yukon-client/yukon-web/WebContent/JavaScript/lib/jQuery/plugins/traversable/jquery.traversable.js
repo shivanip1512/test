@@ -1,5 +1,5 @@
 /*
- * jQuery Traverse jQuery plugin for traversing elements within containers with the keyboard
+ * jQuery Traverse plugin for traversing elements within containers with the keyboard
  *
  * Copyright (c) 2012 Alex Delegard
  *

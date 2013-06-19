@@ -7,7 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.jsonOLD.JSONObject;
+import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
@@ -57,7 +58,6 @@ import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.user.YukonUserContext;
@@ -74,6 +74,7 @@ import com.google.common.collect.Lists;
 @Controller
 @RequestMapping("/energyCompany/applianceCategory/*")
 public class ApplianceCategoryController {
+    
     private final static String baseKey = "yukon.web.modules.adminSetup.applianceCategory";
 
     @Autowired private AssignedProgramDao assignedProgramDao;
@@ -496,8 +497,11 @@ public class ApplianceCategoryController {
             throw new RuntimeException("invalid form values");
         }
 
-        ServletUtils.closePopup(response, "acDialog");
-
+        JSONObject json = new JSONObject();
+        json.put("action", "reload");
+        
+        response.setContentType("application/json");
+        response.getWriter().write(json.toString());
         return null;
     }
 
@@ -528,43 +532,44 @@ public class ApplianceCategoryController {
     }
 
     @RequestMapping
-    public String unassignProgram(HttpServletResponse response, ModelMap model, int applianceCategoryId, 
-                                  int assignedProgramId, YukonUserContext context) throws IOException {
+    public @ResponseBody JSONObject unassignProgram(int applianceCategoryId, int assignedProgramId, YukonUserContext context) {
         verifyAssignedProgramAC(assignedProgramId, applianceCategoryId);
         ApplianceCategory applianceCategory = applianceCategoryDao.getById(applianceCategoryId);
         energyCompanyService.verifyEditPageAccess(context.getYukonUser(),
                                                   applianceCategory.getEnergyCompanyId());
         applianceCategoryService.unassignProgram(applianceCategoryId, assignedProgramId, context);
 
-        ServletUtils.closePopup(response, "acDialog");
-
-        return null;
+        JSONObject json = new JSONObject();
+        json.put("action", "reload");
+        
+        return json;
     }
 
+    public enum Direction {up,down}
+    
     @RequestMapping
-    public void moveProgram(HttpServletResponse response, ModelMap model, int applianceCategoryId,
-                            int assignedProgramId, String direction, YukonUserContext context) {
+    public @ResponseBody JSONObject moveProgram(int applianceCategoryId,
+                                                int assignedProgramId, 
+                                                Direction direction, 
+                                                YukonUserContext context) {
+        
         verifyAssignedProgramAC(assignedProgramId, applianceCategoryId);
         ApplianceCategory applianceCategory = applianceCategoryDao.getById(applianceCategoryId);
-        energyCompanyService.verifyEditPageAccess(context.getYukonUser(),
-                                                  applianceCategory.getEnergyCompanyId());
-        JSONObject object = new JSONObject();
+        energyCompanyService.verifyEditPageAccess(context.getYukonUser(), applianceCategory.getEnergyCompanyId());
+        
+        JSONObject json = new JSONObject();
 
-        if ("up".equals(direction)) {
-            applianceCategoryService.moveAssignedProgramUp(applianceCategoryId,
-                                                           assignedProgramId,
-                                                           context);
-        } else if ("down".equals(direction)) {
-            applianceCategoryService.moveAssignedProgramDown(applianceCategoryId,
-                                                             assignedProgramId,
-                                                             context);
+        if (direction == Direction.up) {
+            applianceCategoryService.moveAssignedProgramUp(applianceCategoryId, assignedProgramId, context);
+        } else if (direction == Direction.down) {
+            applianceCategoryService.moveAssignedProgramDown(applianceCategoryId, assignedProgramId, context);
         } else {
-            throw new RuntimeException("invalid diirection [" + direction + "]");
+            throw new IllegalArgumentException("invalid direction [" + direction + "]");
         }
-        object.put("action", "reload");
+        
+        json.put("action", "reload");
 
-        response.addHeader("X-JSON", object.toString());
-        response.setContentType("text/plain");
+        return json;
     }
 
     /**

@@ -32,13 +32,11 @@
                     </c:forEach>
                 </select>
             </td>
-			<td class="removeColumn">
-                <cti:img nameKey="delete" styleClass="removeRow pointer"/>
-            </td>
+			<td class="removeColumn"><cti:icon nameKey="delete" classes="removeRow pointer" icon="icon-cross"/></td>
 		</tr>
         <tr id="rule_${newMapKey}_undo" class="undoRow" style="display: none">
             <td colspan="1">
-                <cti:img nameKey="delete"/>
+                <cti:icon nameKey="delete" icon="icon-cross"/>
             </td>
             <td colspan="4" class="removed"><i:inline key=".rulesTable.removedRow"/></td>
             <td colspan="1" class="removed">

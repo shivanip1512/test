@@ -50,6 +50,7 @@ import com.cannontech.web.util.ListBackingBean;
 import com.google.common.collect.Ordering;
 
 public class ProgramControllerHelper {
+    
     public static class ProgramListBackingBean extends ListBackingBean {
         private String state;
         private DateRange start = new DateRange();
@@ -115,12 +116,12 @@ public class ProgramControllerHelper {
             }
     };
 
-    private ProgramService programService = null;
-    private PaoAuthorizationService paoAuthorizationService;
-    private DatePropertyEditorFactory datePropertyEditorFactory;
-    private ProgramFieldService programFieldService;
-    private ProgramNameField programNameField;
-    private FavoritesDao favoritesDao;
+    @Autowired private ProgramService programService;
+    @Autowired private PaoAuthorizationService paoAuthorizationService;
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private ProgramFieldService programFieldService;
+    @Autowired private ProgramNameField programNameField;
+    @Autowired private FavoritesDao favoritesDao;
 
     public void initBinder(WebDataBinder binder, YukonUserContext userContext, String page) {
         if (binder.getTarget() != null) {
@@ -237,33 +238,4 @@ public class ProgramControllerHelper {
         modelMap.addAttribute("favoritesByPaoId", favoritesByPaoId);
     }
 
-    @Autowired
-    public void setProgramService(ProgramService programService) {
-        this.programService = programService;
-    }
-
-    @Autowired
-    public void setPaoAuthorizationService(PaoAuthorizationService paoAuthorizationService) {
-        this.paoAuthorizationService = paoAuthorizationService;
-    }
-
-    @Autowired
-    public void setDatePropertyEditorFactory(DatePropertyEditorFactory datePropertyEditorFactory) {
-        this.datePropertyEditorFactory = datePropertyEditorFactory;
-    }
-    
-    @Autowired
-    public void setProgramFieldService(ProgramFieldService programFieldService) {
-        this.programFieldService = programFieldService;
-    }
-    
-    @Autowired
-    public void setProgramNameField(ProgramNameField programNameField) {
-        this.programNameField = programNameField;
-    }
-
-    @Autowired
-    public void setFavoritesDao(FavoritesDao favoritesDao) {
-        this.favoritesDao = favoritesDao;
-    }
 }

@@ -111,12 +111,12 @@
                     <cti:param name="ecId" value="${ecId}"/>
                     <cti:param name="operatorLoginId" value="${operatorLogin.userId}"/>
                 </cti:url>
-                <cti:button nameKey="edit" href="${operatorLoginEditUrl}"/>
+                <cti:button nameKey="edit" icon="icon-pencil" href="${operatorLoginEditUrl}"/>
             </cti:displayForPageEditModes>
 
             <cti:displayForPageEditModes modes="EDIT">
                 <c:if test="${!isPrimaryOperator}">
-                    <cti:button nameKey="delete" name="delete" styleClass="delete"/>
+                    <cti:button nameKey="delete" name="delete" classes="delete"/>
                     <tags:confirmDialog nameKey="confirmDelete" id="delete" submitName="delete" on="button.delete" />
                 </c:if>
             </cti:displayForPageEditModes>

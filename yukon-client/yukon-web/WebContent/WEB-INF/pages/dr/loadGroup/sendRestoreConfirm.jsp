@@ -1,18 +1,18 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-    <h1 class="dialogQuestion">
-    	<cti:msg key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.confirmQuestion"
-    		htmlEscape="true" argument="${loadGroup.name}"/>
-    </h1>
-
+<cti:msgScope paths="yukon.web.modules.dr.loadGroup.sendRestoreConfirm">
+    <h3 class="dialogQuestion stacked"><i:inline key=".confirmQuestion" arguments="${fn:escapeXml(loadGroup.name)}"/></h3>
+    
     <cti:url var="submitUrl" value="/dr/loadGroup/sendRestore"/>
     <form id="sendRestoreForm" action="${submitUrl}"
         onsubmit="return submitFormViaAjax('drDialog', 'sendRestoreForm');">
         <input type="hidden" name="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
         <div class="actionArea">
-            <input type="submit" value="<cti:msg key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.okButton"/>"/>
-            <input type="button" value="<cti:msg key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.cancelButton"/>"
-                onclick="parent.$('drDialog').hide()"/>
+            <cti:button nameKey="ok" type="submit" classes="primary action"/>
+            <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
         </div>
     </form>
+</cti:msgScope>

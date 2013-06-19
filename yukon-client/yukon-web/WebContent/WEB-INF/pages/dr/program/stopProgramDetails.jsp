@@ -4,13 +4,14 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<cti:msgScope paths="yukon.web.modules.dr.program.stopProgram">
 
 <script type="text/javascript">
 submitForm = function() {
     combineDateAndTimeFields('stopDate');
     url = '<cti:url value="/dr/program/stop/stop"/>';
     <c:if test="${stopGearAllowed}">
-        if (!$('stopNowCheckbox').checked && $('useStopGearCheckbox').checked) {
+        if (!document.getElementById('stopNowCheckbox').checked && document.getElementById('useStopGearCheckbox').checked) {
             url = '<cti:url value="/dr/program/stop/constraints"/>';
         }
     </c:if>
@@ -18,18 +19,18 @@ submitForm = function() {
 }
 
 updateComponentAvailability = function() {
-    setDateTimeInputEnabled('stopDate', !$('stopNowCheckbox').checked);
+    setDateTimeInputEnabled('stopDate', !document.getElementById('stopNowCheckbox').checked);
     <c:if test="${stopGearAllowed}">
-        $('useStopGearCheckbox').disabled = $('stopNowCheckbox').checked;
+    document.getElementById('useStopGearCheckbox').disabled = document.getElementById('stopNowCheckbox').checked;
 
-        if (!$('stopNowCheckbox').checked && $('useStopGearCheckbox').checked) {
-            $('gearNumber').disabled = false;
-            $('okButton').disable();
-            $('nextButton').enable();
+        if (!document.getElementById('stopNowCheckbox').checked && document.getElementById('useStopGearCheckbox').checked) {
+            document.getElementById('gearNumber').disabled = false;
+            jQuery('#okButton').hide();
+            jQuery('#nextButton').show();
         } else {
-            $('gearNumber').disabled = true;
-            $('okButton').enable();
-            $('nextButton').disable();
+            document.getElementById('gearNumber').disabled = true;
+            jQuery('#okButton').show();
+            jQuery('#nextButton').hide();
         }
     </c:if>
 }
@@ -37,10 +38,9 @@ updateComponentAvailability = function() {
 
 <cti:flashScopeMessages/>
 
-<h1 class="dialogQuestion">
-    <cti:msg key="yukon.web.modules.dr.program.stopProgram.confirmQuestion"
-    	htmlEscape="true" argument="${program.name}"/>
-</h1>
+<h4 class="dialogQuestion stacked">
+    <cti:msg2 key=".confirmQuestion" htmlEscape="true" argument="${program.name}"/>
+</h4>
 
 <form:form id="stopProgramForm" commandName="backingBean" onsubmit="return submitForm();">
     <form:hidden path="programId"/>
@@ -52,9 +52,9 @@ updateComponentAvailability = function() {
     <table class="compactResultsTable">
         <thead>
             <tr>
-                <th><cti:msg key="yukon.web.modules.dr.program.stopProgram.stopTime"/></th>
+                <th><cti:msg2 key=".stopTime"/></th>
                 <c:if test="${stopGearAllowed}">
-                    <th><cti:msg key="yukon.web.modules.dr.program.stopProgram.stopGear"/></th>
+                    <th><cti:msg2 key=".stopGear"/></th>
                 </c:if>
             </tr>
         </thead>
@@ -66,7 +66,7 @@ updateComponentAvailability = function() {
                         <tr><td>
                             <form:checkbox path="stopNow" id="stopNowCheckbox" onclick="updateComponentAvailability()"/>
                             <label for="stopNowCheckbox">
-                                <cti:msg key="yukon.web.modules.dr.program.stopProgram.stopNow"/>
+                                <cti:msg2 key=".stopNow"/>
                             </label>
                         </td></tr>
                         <tr><td>
@@ -81,7 +81,7 @@ updateComponentAvailability = function() {
                         <tr><td>
                             <form:checkbox path="useStopGear" id="useStopGearCheckbox" onclick="updateComponentAvailability()"/>
                             <label for="useStopGearCheckbox">
-                                <cti:msg key="yukon.web.modules.dr.program.stopProgram.useStopGear"/>
+                                <cti:msg2 key=".useStopGear"/>
                             </label>
                         </td></tr>
                         <tr><td>
@@ -99,20 +99,18 @@ updateComponentAvailability = function() {
         </tbody>
     </table>
 
-    <br>
-    <br>
 
     <div class="actionArea">
-        <input id="okButton" type="submit" value="<cti:msg key="yukon.web.modules.dr.program.stopProgram.okButton"/>"/>
         <c:if test="${stopGearAllowed}">
-            <input id="nextButton" type="submit" value="<cti:msg key="yukon.web.modules.dr.program.stopProgram.nextButton"/>"/>
+            <cti:button id="nextButton" nameKey="next" classes="primary action" type="submit"/>
             <script type="text/javascript">updateComponentAvailability();</script>
         </c:if>
-        <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.stopProgram.cancelButton"/>"
-            onclick="parent.$('drDialog').hide()"/>
+        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
+        <cti:button nameKey="ok" classes="primary action" type="submit"/>
     </div>
 </form:form>
 
 <script type="text/javascript">
 updateComponentAvailability();
 </script>
+</cti:msgScope>

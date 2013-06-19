@@ -195,10 +195,8 @@ public class EnergyCompanyController {
         if(newSession != null) {
             newSession.setAttribute(ServletUtils.NAVIGATE, nav);
         }
-        
-        String redirect = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, memberOperatorLogin);
-        
-        return "redirect:" + redirect;
+
+        return "redirect:/home";
     }
     
     /* Model Attributes */

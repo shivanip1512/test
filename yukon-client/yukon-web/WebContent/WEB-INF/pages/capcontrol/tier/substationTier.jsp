@@ -69,9 +69,9 @@
     				</td>
                     
                     <td class="wsnw">
-                        <cti:img nameKey="${editKey}" href="${editUrl}" styleClass="tierIconLink"/>
+                        <cti:icon nameKey="${editKey}" href="${editUrl}" icon="icon-pencil"/>
                         <c:if test="${hasEditingRole}">
-                            <cti:img nameKey="remove" href="${deleteUrl}" styleClass="tierIconLink"/>
+                            <cti:icon nameKey="remove" href="${deleteUrl}"  icon="icon-cross"/>
                         </c:if>
                     </td>
                     

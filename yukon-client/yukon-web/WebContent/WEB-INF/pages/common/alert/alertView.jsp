@@ -22,7 +22,7 @@
                     <input type="hidden" name="alertId" value="${alert.id}">
                     <img style="cursor: pointer;" title="<cti:msg key="yukon.web.alerts.table.clear.tooltip"/>"
                          src="<cti:url value="/WebConfig/yukon/Icons/accept.png"/>"
-                         onclick="javascript:alert_clearAlert(${alert.id});">
+                         onclick="javascript:Yukon.Alerts.clearAlert(${alert.id});">
                 </td>
             </tr>
         </c:forEach>

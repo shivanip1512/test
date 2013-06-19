@@ -1,220 +1,208 @@
-<%@ tag  dynamic-attributes="extraInputs" %>
+<%@ tag dynamic-attributes="extraInputs" trimDirectiveWhitespaces="true" %>
 <%@ attribute name="action" required="true" type="java.lang.String"%>
 <%@ attribute name="groupDataJson" required="true" type="java.lang.String"%>
 <%@ attribute name="pickerType" required="true" type="java.lang.String"%>
 <%@ attribute name="blockOnSubmit" required="false" type="java.lang.Boolean"%>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 
-<c:set var="tree_id" value="bulkDeviceSelectionByGroupTree" />
-<cti:msg var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
-<c:set var="byAddrPopupId" value="byAddrPopup" />
+<cti:msgScope paths="yukon.common.device.bulk.deviceSelection">
 
-<cti:msg2 var="dataFileNoteAddress" key="yukon.common.device.bulk.deviceSelection.dataFileNote.address"/>
-<cti:msg2 var="dataFileNotePaoName" key="yukon.common.device.bulk.deviceSelection.dataFileNote.paoName"/>
-<cti:msg2 var="dataFileNoteDeviceId" key="yukon.common.device.bulk.deviceSelection.dataFileNote.deviceId"/>
-<cti:msg2 var="dataFileNoteMeterNumber" key="yukon.common.device.bulk.deviceSelection.dataFileNote.meterNumber"/>
-<cti:msg2 var="dataFileNoteBulk" key="yukon.common.device.bulk.deviceSelection.dataFileNote.bulk"/>
+<script type="text/javascript">
+jQuery(function(){
+    jQuery("#selectDevicesButton").click(function(e) {selectDevicesPicker.show();});
 
-<script>
-    jQuery(document).ready(function(){
-        jQuery("#addByAddressForm button").click(function(e){
-            jQuery(e.currentTarget).attr("disabled","disabled");
-                
-            var errors = validateAddressRange();
-            if(errors.length === 0){
-                //submit the form
-                jQuery(e.currentTarget).closest("form")[0].submit();
-                 return true;
-            } else {
-                //show the error
-                jQuery(errors.join(",")).show().addClass("error");
-                jQuery(e.currentTarget).removeAttr("disabled");
-                return false;
-            }
-                
-            });
-        
-        
-        jQuery("#addByAddressForm input:text").keyup(function(e){
-            jQuery(e.currentTarget).val(jQuery(e.currentTarget).val().replace(/\D/g, ''));
-        });
+    jQuery("#addByAddressForm button").click(function(e) {
+        jQuery(e.currentTarget).attr("disabled","disabled");
+          
+        var errors = validateAddressRange();
+        if (errors.length === 0) {
+            //submit the form
+            jQuery(e.currentTarget).closest("form")[0].submit();
+            return true;
+        } else {
+            //show the error
+            jQuery(errors.join(",")).show().addClass("error");
+            jQuery(e.currentTarget).removeAttr("disabled");
+            return false;
+        }
     });
+
+    jQuery("#addByAddressForm input:text").keyup(function(e) {
+        jQuery(e.currentTarget).val(jQuery(e.currentTarget).val().replace(/\D/g, ''));
+    });
+});
+
+function selectDevices(devices) {
+    var ids = [];
+    
+    // Get the id out of each of the selected devices
+    for (var i=0;i<devices.length;i++) {
+        ids[i] = devices[i].paoId;
+    }
+    
+    document.getElementById('deviceIds').value = ids;
+    if ('${blockOnSubmit}') {
+        Yukon.ui.blockPage();
+    }
+    document.getElementById('selectDevicesForm').submit();
+    return true;
+}
+
+function submitSelectDevicesByGroupForm() {
+
+    if (document.getElementById('group.name').value == '') {
+        alert('${noGroupSelectedAlertText}');
+        return false;
+    }
+    if ('${blockOnSubmit}') {
+        Yukon.ui.blockPage();
+    }
+    document.getElementById('selectDevicesByGroupForm').submit();
+}
+
+function selectDevicesByAddress() {
+    return true;
+}
+
+function updateFileNote(id){
+
+    var selection = document.getElementById(id + '_uploadType').value;
+    var fileNote = document.getElementById(id + '_fileNote');
+    
+    if (selection == 'ADDRESS') {
+        fileNote.innerHTML = '${dataFileNoteAddress}';
+    } else if (selection == 'PAONAME') {
+        fileNote.innerHTML = '${dataFileNotePaoName}';
+    } else if (selection == 'DEVICEID') {
+        fileNote.innerHTML = '${dataFileNoteDeviceId}';
+    } else if (selection == 'METERNUMBER') {
+        fileNote.innerHTML = '${dataFileNoteMeterNumber}';
+    } else if (selection == 'BULK') {
+        fileNote.innerHTML = '${dataFileNoteBulk}';
+    }
+}
+
+function toggleByAddrPopup(id) {
+    clearErrors();
+    clearAddrFields();
+    togglePopup(id);
+    if (jQuery('#' + id).is(':visible')) { 
+        jQuery('#' + id + '_startRange').focus();
+    }
+}
+
+function clearAddrFields(id) {
+    clearErrors();
+    jQuery('#' + id + '_startRange').val('');
+    jQuery('#' + id + '_endRange').val('');
+}
+
+function toggleByFileUploadPopup(id) {
+    togglePopup(id);
+    if (jQuery('#' + id).is(':visible')) {
+        jQuery('#' + id + '_uploadType')[0].options[0].selected = true;
+        updateFileNote(id);
+        jQuery('#' + id + '_uploadType').focus();
+    }
+}
+
+function togglePopup(id) {
+    var popupElem = jQuery('#' + id);
+    if (popupElem.is(':visible')) {
+        popupElem.dialog('close');
+    } else {
+        popupElem.dialog('open');
+    }
+}
+
+function clearErrors() {
+    jQuery(".undefinedStartAddress, .undefinedEndAddress, .lessThanZero, .outOfRange, .startTooHigh, .endTooHigh").removeClass('error');
+    jQuery(".rangeMsg").hide();
+}
+
+function validateAddressRange() {
+    clearErrors();
+    var start = parseInt(jQuery("#${byAddrPopupId}_startRange").val());
+    var end = parseInt(jQuery("#${byAddrPopupId}_endRange").val());
+    var errors = [];
+    var MAX_INT = 2147483648; //Maximum 32-bit integer, which is how the range values are eventually interpreted
+    
+    //separate errors
+    if (isNaN(start)) {
+        errors.push(".undefinedStartAddress");
+    }
+    
+    if (isNaN(end)) {
+        errors.push(".undefinedEndAddress");
+    }
+    
+    if (start < 0) {
+        errors.push(".lessThanZero");
+    }
+    
+    if (start > MAX_INT) {
+        errors.push(".startTooHigh");
+    }
+    
+    if (end > MAX_INT) {
+        errors.push(".endTooHigh");
+    }
+          
+    if (start > end) {
+        errors.push(".outOfRange");
+    }
+    
+    return errors;
+};
 </script>
 
-    <script type="text/javascript">
+<c:set var="tree_id" value="bulkDeviceSelectionByGroupTree" />
+<c:set var="byAddrPopupId" value="byAddrPopup" />
+
+<cti:msg2 var="noGroupSelectedAlertText" key=".selectDevicesByGroupTree.noGroupSelectedAlertText" />
+<cti:msg2 var="dataFileNoteAddress" key=".dataFileNote.address"/>
+<cti:msg2 var="dataFileNotePaoName" key=".dataFileNote.paoName"/>
+<cti:msg2 var="dataFileNoteDeviceId" key=".dataFileNote.deviceId"/>
+<cti:msg2 var="dataFileNoteMeterNumber" key=".dataFileNote.meterNumber"/>
+<cti:msg2 var="dataFileNoteBulk" key=".dataFileNote.bulk"/>
+<cti:msg2 key=".cancel" var="cancel" />
     
-        function selectDevices(devices) {
-            var ids = [];
-            
-            // Get the id out of each of the selected devices
-            for(var i=0;i<devices.length;i++){
-                ids[i] = devices[i].paoId;
-            }
-            
-            $('deviceIds').value = ids;
-            if ('${blockOnSubmit}') {
-            	Yukon.ui.blockPage();
-            }
-            $('selectDevicesForm').submit();
-            return true;
-        }
-
-        function submitSelectDevicesByGroupForm() {
-        
-            if ($('group.name').value == '') {
-                alert('${noGroupSelectedAlertText}');
-                return false;
-            }
-            if ('${blockOnSubmit}') {
-            	Yukon.ui.blockPage();
-            }
-            $('selectDevicesByGroupForm').submit();
-        }
-
-        function selectDevicesByAddress() {
-            return true;
-        }
-        
-        function updateFileNote(id){
-        
-            var selection = $F(id + '_uploadType');
-            var fileNote = $(id + '_fileNote');
-            
-            if(selection == 'ADDRESS') {
-                fileNote.update('${dataFileNoteAddress}');
-            } else if(selection == 'PAONAME') {
-                fileNote.update('${dataFileNotePaoName}');
-            } else if(selection == 'DEVICEID') {
-                fileNote.update('${dataFileNoteDeviceId}');
-            } else if(selection == 'METERNUMBER') {
-                fileNote.update('${dataFileNoteMeterNumber}');
-            } else if(selection == 'BULK') {
-                fileNote.update('${dataFileNoteBulk}');
-            }
-        }
-        
-        function toggleByAddrPopup(id) {
-            clearErrors();
-            $(id + '_startRange').value = '';
-            $(id + '_endRange').value = '';
-            togglePopup(id);
-            if ($(id).visible()) { 
-                $(id + '_startRange').focus();
-            }
-        }
-        
-        function toggleByFileUploadPopup(id) {
-            togglePopup(id);
-            if ($(id).visible()) {
-                $(id + '_uploadType').options[0].selected = true;
-                updateFileNote(id);
-                $(id + '_uploadType').focus();
-            }
-        }
-        
-        function togglePopup(id) {
-            $(id).toggle();
-        }
-        
-        function clearErrors(){
-            jQuery(".undefinedStartAddress, .undefinedEndAddress, .lessThanZero, .outOfRange, .startTooHigh, .endTooHigh").removeClass('error');
-            jQuery(".rangeMsg").hide();
-        }
-        
-        function validateAddressRange(){
-            clearErrors();
-            var start = parseInt(jQuery("#${byAddrPopupId}_startRange").val());
-            var end = parseInt(jQuery("#${byAddrPopupId}_endRange").val());
-            var errors = [];
-            var MAX_INT = 2147483648; //Maximum 32-bit integer, which is how the range values are eventually interpreted
-            
-            //separate errors
-            if(isNaN(start)){
-                errors.push(".undefinedStartAddress");
-            }
-            
-            if(isNaN(end)){
-                errors.push(".undefinedEndAddress");
-            }
-            
-            if(start < 0){
-                errors.push(".lessThanZero");
-            }
-            
-            if(start > MAX_INT){
-                errors.push(".startTooHigh");
-            }
-            
-            if(end > MAX_INT){
-                errors.push(".endTooHigh");
-            }
-                  
-            if(start > end){
-                errors.push(".outOfRange");
-            }
-            
-            return errors;
-        };
-    </script>
+<div class="column_12_12">
+    <div class="column one">
     
-	<cti:msg key="yukon.common.device.bulk.deviceSelection.cancel" var="cancel" />
-
-    <table cellspacing="10">
-    
-
-    <%-- DEVICES --%>
-    <tr>
-    
-        <td>
-        
-            <cti:msg var="SelectDevicesLabel" key="yukon.common.device.bulk.deviceSelection.selectDevices" />
-
-            <input type="button" id="selectDevicesButton" value="${SelectDevicesLabel}" onclick="javascript:selectDevicesPicker.show()" class="full_width" />
-            
-
-            <form id="selectDevicesForm" method="post" action="${action}">
+        <%-- DEVICES --%>
+        <div class="pageActionArea">
+            <form id="selectDevicesForm" method="post" action="${action}" class="dn">
                 <input type="hidden" id="deviceIds" name="idList.ids" />
                 <input type="hidden" name="collectionType" value="idList" />
                 <tags:mapToHiddenInputs values="${pageScope.extraInputs}"/>
             </form>
-            
-		    <tags:pickerDialog id="selectDevicesPicker" type="${pageScope.pickerType}"
-		        destinationFieldId="deviceIds" multiSelectMode="true" linkType="none"
-		        endAction="selectDevices"/>
-        </td>
+            <tags:pickerDialog id="selectDevicesPicker" 
+                type="${pageScope.pickerType}"
+                destinationFieldId="deviceIds" 
+                multiSelectMode="true" 
+                linkType="none"
+                endAction="selectDevices"/>
+            <cti:button nameKey="selectByDevice" id="selectDevicesButton"/>
+            <span><i:inline key=".selectDevicesTitle"/></span>
+        </div>
         
-        <td>
-            <cti:msg key="yukon.common.device.bulk.deviceSelection.selectDevicesTitle" />
-        </td>
-    
-    </tr>
-    
-    <%-- GROUP --%>
-    <tr>
-        <td>
-            
-            
-            
-            
-            <cti:msg var="addDeviceTitle" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTitle" />
-            <cti:msg var="addDeviceLabel" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroup" />
-            <cti:msg var="rootLabel" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.rootLabel" />
-            <cti:msg var="submitButtonText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.submitButtonText" />
-            <cti:msg var="cancelButtonText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.cancelButtonText" />
-            
-            <input type="button" id="selectByGroupButton" value="${addDeviceLabel}" class="full_width" />
-            
+        <%-- GROUP --%>
+        <div class="pageActionArea">
+            <cti:msg2 var="addDeviceTitle" key=".selectDevicesByGroupTitle" />
+            <cti:msg2 var="rootLabel" key=".selectDevicesByGroupTree.rootLabel" />
+            <cti:msg2 var="submitButtonText" key=".selectDevicesByGroupTree.submitButtonText" />
+            <cti:msg2 var="cancelButtonText" key=".selectDevicesByGroupTree.cancelButtonText" />
             
             <form id="selectDevicesByGroupForm" method="get" action="${action}">
-                
                 <input type="hidden" name="collectionType" value="group" />
                 <tags:mapToHiddenInputs values="${pageScope.extraInputs}"/>
-                                                    
-                <jsTree:nodeValueSelectingPopupTree    fieldId="group.name"
+                <jsTree:nodeValueSelectingPopupTree fieldId="group.name"
                                                     fieldName="group.name"
                                                     nodeValueName="groupName"
                                                     submitButtonText="${submitButtonText}"
@@ -224,41 +212,29 @@
                                                     triggerElement="selectByGroupButton"
                                                     dataJson="${groupDataJson}"
                                                     title="${addDeviceTitle}"
-                                                    width="432"
-                                                    height="400"
                                                     includeControlBar="true"/>
-                                
-            </form>                    
-                                
-        </td>
-        
-        <td>
-            ${addDeviceTitle}
-        </td>
-	
-    </tr>
+            </form>
+            <cti:button nameKey="selectDevicesByGroup" id="selectByGroupButton"/>
+            <span>${addDeviceTitle}</span>
+        </div>
+    </div>
     
-	
-    <%-- ADDRESS RANGE --%>
-    <tr>
-        <td>
+    <div class="column two nogutter">
+        
+        <%-- ADDRESS RANGE --%>
+        <div class="pageActionArea">
+        
+            <cti:msg2 var="selectAddressPopupTitle" key=".selectAddressPopupTitle" />
 
-            <cti:msg var="selectAddressPopupTitle" key="yukon.common.device.bulk.deviceSelection.selectAddressPopupTitle" />
-            <cti:msg var="selectAddressLabel" key="yukon.common.device.bulk.deviceSelection.selectDevicesByAddress" />
-
-            <input type="button" id="addressButton" value="${selectAddressLabel}" onclick="toggleByAddrPopup('${byAddrPopupId}');" class="full_width"/>
-            
-            <tags:simplePopup id="${byAddrPopupId}" title="${selectAddressPopupTitle}" styleClass="deviceSelectionPopup"  onClose="toggleByAddrPopup('${byAddrPopupId}');">
-                
+            <tags:simplePopup id="${byAddrPopupId}" title="${selectAddressPopupTitle}" styleClass="deviceSelectionPopup"  onClose="clearAddrFields('${byAddrPopupId}');">
                 <form id="addByAddressForm" method="get" action="${action}">
-                
                     <ul style="color: red">
-                        <cti:msg key="yukon.common.device.bulk.deviceSelection.errLessThanZero" var="lessThanZero"/>
-                        <cti:msg key="yukon.common.device.bulk.deviceSelection.errOutOfRange" var="outOfRange"/>
-                        <cti:msg key="yukon.common.device.bulk.deviceSelection.errNoStart" var="noStart"/>
-                        <cti:msg key="yukon.common.device.bulk.deviceSelection.errNoEnd" var="noEnd"/>
-                        <cti:msg key="yukon.common.device.bulk.deviceSelection.errBigStart" var="startTooHigh"/>
-                        <cti:msg key="yukon.common.device.bulk.deviceSelection.errBigEnd" var="endTooHigh"/>
+                        <cti:msg2 key=".errLessThanZero" var="lessThanZero"/>
+                        <cti:msg2 key=".errOutOfRange" var="outOfRange"/>
+                        <cti:msg2 key=".errNoStart" var="noStart"/>
+                        <cti:msg2 key=".errNoEnd" var="noEnd"/>
+                        <cti:msg2 key=".errBigStart" var="startTooHigh"/>
+                        <cti:msg2 key=".errBigEnd" var="endTooHigh"/>
                         
                         <li class="dn rangeMsg lessThanZero">${lessThanZero}</li>
                         
@@ -275,8 +251,8 @@
                     
                     <input type="hidden" name="collectionType" value="addressRange" />
                     
-                    <cti:msg2 var="startOfRangeLabel" key="yukon.common.device.bulk.deviceSelection.startOfRangeLabel" />
-                    <cti:msg2 var="endOfRangeLabel" key="yukon.common.device.bulk.deviceSelection.endOfRangeLabel" />
+                    <cti:msg2 var="startOfRangeLabel" key=".startOfRangeLabel" />
+                    <cti:msg2 var="endOfRangeLabel" key=".endOfRangeLabel" />
                     
                     <tags:nameValueContainer>
                         <tags:nameValue name="${startOfRangeLabel}">
@@ -286,62 +262,47 @@
                             <input type="text" id="${byAddrPopupId}_endRange" name="addressRange.end" class="undefinedEndAddress outOfRange endTooHigh" />
                         </tags:nameValue>
                     </tags:nameValueContainer>
-                    
-                    <br>
-                    <cti:msg var="selectDevicesPopupButtonText" key="yukon.common.device.bulk.deviceSelection.selectDevicesPopupButtonText" />
-                    <button class="f_blocker">${selectDevicesPopupButtonText}</button>
+                    <div class="actionArea">
+                        <cti:button nameKey="select" classes="primary action f_blocker"/>
+                    </div>
                     <tags:mapToHiddenInputs values="${pageScope.extraInputs}"/>
-                
                 </form>
-                
             </tags:simplePopup>
+            <cti:button nameKey="selectDevicesByAddress" id="addressButton" onclick="toggleByAddrPopup('${byAddrPopupId}');"/>
+            <span><i:inline key=".selectDevicesByAddressTitle"/></span>
+        </div>
         
-        </td>
-        
-        <td>
-            <cti:msg key="yukon.common.device.bulk.deviceSelection.selectDevicesByAddressTitle" />
-        </td>
-    
-    </tr>
-    
-    <%-- FILE UPLOAD --%>
-    <tr>
-        <td>
-            
+        <%-- FILE UPLOAD --%>
+        <div class="pageActionArea">
             <c:set var="byFileUploadId" value="byFileUpload" />
-            <cti:msg var="selectDataFilePopupTitle" key="yukon.common.device.bulk.deviceSelection.selectDataFilePopupTitle" />
-            <cti:msg var="selectFileLabel" key="yukon.common.device.bulk.deviceSelection.selectDevicesByFile" />
+            <cti:msg2 var="selectDataFilePopupTitle" key=".selectDataFilePopupTitle" />
             
-            <input type="button" id="fileButton" value="${selectFileLabel}" onclick="toggleByFileUploadPopup('${byFileUploadId}');" class="full_width"/>
-        
-            <tags:simplePopup id="${byFileUploadId}" title="${selectDataFilePopupTitle}" styleClass="deviceSelectionPopup" onClose="toggleByFileUploadPopup('${byFileUploadId}');">
-                
+            <tags:simplePopup id="${byFileUploadId}" title="${selectDataFilePopupTitle}" styleClass="deviceSelectionPopup">
                 <form id="addByFileUploadForm" method="post" action="${action}" enctype="multipart/form-data">
-                
                     <input type="hidden" name="collectionType" value="fileUpload" />
                     <input type="hidden" name="isFileUpload" value="true" />
                     
-                    <cti:msg var="typeLabel" key="yukon.common.device.bulk.deviceSelection.selectDataFileType" />
-                    <cti:msg var="dataFileLabel" key="yukon.common.device.bulk.deviceSelection.selectDataFile" />
+                    <cti:msg2 var="typeLabel" key=".selectDataFileType" />
+                    <cti:msg2 var="dataFileLabel" key=".selectDataFile" />
                     
                     <tags:nameValueContainer>
                     
                         <tags:nameValue name="${typeLabel}">
                             <select id="${byFileUploadId}_uploadType" name="fileUpload.uploadType" onchange="updateFileNote('${byFileUploadId}')">
                                 <option value="ADDRESS">
-                                    <cti:msg key="yukon.common.device.bulk.deviceSelection.dataFileAddress" />
+                                    <cti:msg2 key=".dataFileAddress" />
                                 </option>
                                 <option value="PAONAME">
-                                    <cti:msg key="yukon.common.device.bulk.deviceSelection.dataFileName" />
+                                    <cti:msg2 key=".dataFileName" />
                                 </option>
                                 <option value="METERNUMBER">
-                                    <cti:msg key="yukon.common.device.bulk.deviceSelection.dataFileMeterNumber" />
+                                    <cti:msg2 key=".dataFileMeterNumber" />
                                 </option>
                                 <option value="DEVICEID">
-                                    <cti:msg key="yukon.common.device.bulk.deviceSelection.dataFileDeviceId" />
+                                    <cti:msg2 key=".dataFileDeviceId" />
                                 </option>
                                 <option value="BULK">
-                                    <cti:msg key="yukon.common.device.bulk.deviceSelection.dataFileBulk" />
+                                    <cti:msg2 key=".dataFileBulk" />
                                 </option>
                             </select>
                         </tags:nameValue>
@@ -355,22 +316,16 @@
                     </tags:nameValueContainer>
                     
                     <br>
-                    <cti:msg var="selectDevicesPopupButtonText" key="yukon.common.device.bulk.deviceSelection.selectDevicesPopupButtonText" />
+                    <cti:msg2 var="selectDevicesPopupButtonText" key=".selectDevicesPopupButtonText" />
                     <tags:slowInput myFormId="addByFileUploadForm" labelBusy="${selectDevicesPopupButtonText}" label="${selectDevicesPopupButtonText}" />
                     <tags:mapToHiddenInputs values="${pageScope.extraInputs}"/>
-                    
-                
                 </form>
-                
             </tags:simplePopup>
-        
-        </td>
-        
-        <td>
-            <cti:msg key="yukon.common.device.bulk.deviceSelection.selectDevicesByFileTitle" />
-        </td>
-        
-    </tr>
- 
- </table>
-   
+            
+            <cti:button nameKey="selectDevicesByFile" id="fileButton" onclick="toggleByFileUploadPopup('${byFileUploadId}');"/>
+            <span><i:inline key=".selectDevicesByFileTitle" /></span>
+        </div>
+    </div>
+</div>
+    
+</cti:msgScope>

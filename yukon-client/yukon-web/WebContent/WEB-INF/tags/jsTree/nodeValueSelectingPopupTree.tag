@@ -18,8 +18,7 @@
 <%@ attribute name="highlightNodePath" required="false" type="java.lang.String"%>
 <%@ attribute name="dataJson" required="true" type="java.lang.String"%>
 <%@ attribute name="title" required="true" type="java.lang.String"%>
-<%@ attribute name="width" required="true" type="java.lang.Integer"%>
-<%@ attribute name="height" required="true" type="java.lang.Integer"%>
+<%@ attribute name="maxHeight"          required="false"    type="java.lang.Integer" description="The max-height in pixels for the internal tree div. Example: maxHeight='300'. Defaults is 500."%>
 <%@ attribute name="noSelectionAlertText" required="false" type="java.lang.String"%>
 <%@ attribute name="multiSelect"        required="false"     type="java.lang.Boolean"%>
 <%@ attribute name="includeControlBar" required="false" type="java.lang.Boolean"%>
@@ -72,9 +71,8 @@
                 highlightNodePath="${pageScope.highlightNodePath}"
                 dataJson="${dataJson}"
                 title="${title}"
-                width="${width}"
-                height="${height}" 
-                buttonsList="[{text:'${submitButtonText}', click:submitNodeSelection_${id}},{text:'${cancelButtonText}', click:cancelNodeSelection_${id}}]"
+                maxHeight="${pageScope.maxHeight}"
+                buttonsList="[{text:'${cancelButtonText}', click:cancelNodeSelection_${id}},{text:'${submitButtonText}', click:submitNodeSelection_${id}, class:'primary action'}]"
                 multiSelect="${multiSelect}"
                 includeControlBar="${includeControlBar}"
                 styleClass="${styleClass}" />

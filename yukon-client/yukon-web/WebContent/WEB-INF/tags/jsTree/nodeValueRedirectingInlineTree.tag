@@ -6,13 +6,12 @@
 <%@ attribute name="hrefBase" required="true" type="java.lang.String"%>
 <%@ attribute name="otherHrefParameters" required="true" type="java.lang.String"%>
 <%@ attribute name="multiSelect"        required="false"     type="java.lang.Boolean"%>
+<%@ attribute name="maxHeight" required="false" type="java.lang.Integer" description="The max-height in pixels for the internal tree div. Example: maxHeight='300'. Defaults is 500."%>
 
 <%-- PASS THROUGH PARAMETERS TO jsTree:inlineTree --%>
 <%-- see inlineTree.tag for parameter descriptions --%>
 <%@ attribute name="id" required="true" type="java.lang.String"%>
 <%@ attribute name="dataJson" required="true" type="java.lang.String"%>
-<%@ attribute name="width" required="true" type="java.lang.Integer"%>
-<%@ attribute name="height" required="true" type="java.lang.Integer"%>
 <%@ attribute name="highlightNodePath" required="false" type="java.lang.String"%>
 <%@ attribute name="includeControlBar" required="false" type="java.lang.Boolean"%>
 
@@ -45,8 +44,7 @@ function redirectToNameValue_${id}(node) {
                 treeCss="/WebConfig/yukon/styles/lib/dynatree/deviceGroup.css"
                 treeParameters="{onActivate: redirectToNameValue_${id}}"
                 dataJson="${dataJson}"
-                width="${width}"
-                height="${height}"
+                maxHeight="${pageScope.maxHeight}"
                 highlightNodePath="${pageScope.highlightNodePath}"
                 includeControlBar="${pageScope.includeControlBar}"
-                styleClass="bn contained" />
+                styleClass="bn contained"/>

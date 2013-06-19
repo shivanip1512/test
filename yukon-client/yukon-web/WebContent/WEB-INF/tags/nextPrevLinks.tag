@@ -1,3 +1,5 @@
+<%@ tag trimDirectiveWhitespaces="true" body-content="empty"%>
+
 <%@ attribute name="mode" required="true" %>
 <%@ attribute name="baseUrl" %>
 <%@ attribute name="previousUrl" %>
@@ -19,76 +21,46 @@ If it's "javascript", nextUrl and previousUrl are required.
 <c:set var="nextEnabled" value="true"/>
 
 <c:if test="${pageScope.mode == 'jsp'}">
-	<c:set var="currentPage" value="${param.page}"/>
-	<c:if test="${empty currentPage}">
-	    <c:set var="currentPage" value="1"/>
-	</c:if>
+    <c:set var="currentPage" value="${param.page}"/>
+    <c:if test="${empty currentPage}">
+        <c:set var="currentPage" value="1"/>
+    </c:if>
 
-	<c:if test="${currentPage <= 1}">
-	    <c:set var="previousEnabled" value="false"/>
-	</c:if>
-	<c:if test="${currentPage >= pageScope.searchResult.numberOfPages ||
-	               pageScope.searchResult.count >= pageScope.searchResult.hitCount}">
-	    <c:set var="nextEnabled" value="false"/>
-	</c:if>
+    <c:if test="${currentPage <= 1}">
+        <c:set var="previousEnabled" value="false"/>
+    </c:if>
+    <c:if test="${currentPage >= pageScope.searchResult.numberOfPages ||
+                   pageScope.searchResult.count >= pageScope.searchResult.hitCount}">
+        <c:set var="nextEnabled" value="false"/>
+    </c:if>
 </c:if>
-
-<c:if test="${pageScope.mode == 'javascript'}">
-<c:set var="disabledNextStyle" value=" style=\"display: none;\""/>
-<c:set var="disabledPreviousStyle" value=" style=\"display: none;\""/>
-</c:if>
-
-<div class="fr">
-    <table>
-        <tr>
-            <td class="previousLink">
-                <c:if test="${pageScope.mode == 'javascript' || !previousEnabled}">
-	                <div class="disabledAction"${disabledPreviousStyle}>
-	                    <tags:pageNumberLink direction="previous" enabled="false"/>
-	                </div>
-	            </c:if>
-                <c:if test="${previousEnabled}">
-                    <div class="enabledAction">
-	                    <c:if test="${pageScope.mode == 'jsp'}">
-                            <tags:pageNumberLink pageNumber="${currentPage - 1}" 
-                                direction="previous"
-                                baseUrl="${pageScope.baseUrl}" enabled="true"/>
-	                    </c:if>
-	                    <c:if test="${pageScope.mode == 'javascript'}">
-	                        <tags:pageNumberLink direction="previous"
-	                            url="${pageScope.previousUrl}" enabled="true"/>
-	                    </c:if>
-	                </div>
-                </c:if>
-            </td>
-
-            <td class="pageNumText no_padding" >
-			    <c:if test="${!empty pageScope.searchResult && pageScope.searchResult.hitCount > 0}">
-			        <cti:msg key="yukon.common.paging.viewing"
-			            arguments="${pageScope.searchResult.startIndex + 1},${pageScope.searchResult.endIndex},${pageScope.searchResult.hitCount}"/>
-			    </c:if>
-            </td>
-
-            <td class="nextLink">
-                <c:if test="${pageScope.mode == 'javascript' || !nextEnabled}">
-                    <div class="disabledAction"${disabledNextStyle}>
-                        <tags:pageNumberLink direction="next" enabled="false"/>
-                    </div>
-                </c:if>
-                <c:if test="${nextEnabled}">
-                    <div class="enabledAction">
-                        <c:if test="${pageScope.mode == 'jsp'}">
-                            <tags:pageNumberLink pageNumber="${currentPage + 1}" 
-                                direction="next"
-                                baseUrl="${pageScope.baseUrl}" enabled="true"/>
-                        </c:if>
-                        <c:if test="${pageScope.mode == 'javascript'}">
-                            <tags:pageNumberLink direction="next"
-                                url="${pageScope.nextUrl}" enabled="true"/>
-                        </c:if>
-                    </div>
-                </c:if>
-            </td>
-        </tr>
-    </table>
-</div>
+<input type="hidden" class="f_current_page_index_from_1" value="${currentPage}" />
+<span class="pagingArea clearfix">
+    <c:if test="${pageScope.mode == 'javascript' || !previousEnabled}">
+        <tags:pageNumberLink direction="previous" enabled="false" classes="dn"/>
+    </c:if>
+    <c:if test="${previousEnabled}">
+        <c:if test="${pageScope.mode == 'jsp'}">
+            <tags:pageNumberLink pageNumber="${currentPage - 1}" direction="previous" baseUrl="${pageScope.baseUrl}" enabled="true"/>
+        </c:if>
+        <c:if test="${pageScope.mode == 'javascript'}">
+            <tags:pageNumberLink direction="previous" url="${pageScope.previousUrl}" enabled="true"/>
+        </c:if>
+    </c:if>
+    <span class="pageNumText">
+        <c:if test="${!empty pageScope.searchResult && pageScope.searchResult.hitCount > 0}">
+            <cti:msg key="yukon.common.paging.viewing" arguments="${pageScope.searchResult.startIndex + 1},${pageScope.searchResult.endIndex},${pageScope.searchResult.hitCount}"/>
+        </c:if>
+    </span>
+    <c:if test="${pageScope.mode == 'javascript' || !nextEnabled}">
+        <tags:pageNumberLink direction="next" enabled="false" classes="dn"/>
+    </c:if>
+    <c:if test="${nextEnabled}">
+        <c:if test="${pageScope.mode == 'jsp'}">
+            <tags:pageNumberLink pageNumber="${currentPage + 1}" direction="next" baseUrl="${pageScope.baseUrl}" enabled="true"/>
+        </c:if>
+        <c:if test="${pageScope.mode == 'javascript'}">
+            <tags:pageNumberLink direction="next" url="${pageScope.nextUrl}" enabled="true"/>
+        </c:if>
+    </c:if>
+</span>

@@ -1,22 +1,24 @@
 package com.cannontech.web.i18n;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.tagext.DynamicAttributes;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 
-import com.cannontech.util.ServletUtil;
 import com.cannontech.web.taglib.MessageScopeHelper;
 import com.cannontech.web.taglib.MessageScopeHelper.MessageScope;
 import com.cannontech.web.taglib.UniqueIdentifierTag;
 import com.cannontech.web.taglib.YukonTagSupport;
 
-public class ButtonTag extends YukonTagSupport {
+public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
     
     protected String id = null;
     protected String title = null;
@@ -24,7 +26,8 @@ public class ButtonTag extends YukonTagSupport {
     protected String arguments = null;
     protected String href = null;
     protected String onclick = null;
-    protected String styleClass = null;
+    protected String classes = null;
+    protected String icon = null;
 
     /* type is the actual type attribute of the generated HTML button tag
      * Possible values are 'submit', 'reset' and 'button' (default) */
@@ -34,14 +37,17 @@ public class ButtonTag extends YukonTagSupport {
     protected String value = null;
     protected boolean imageOnRight = false;
     protected boolean disabled = false;
+    protected boolean busy = false;
 
     /* Will add hint to button that it will ask for more info before doing the action.
      * Currently adds ellipsis to end of button text. */
     protected boolean dialogButton = false;
 
     /* renderMode is to describe how the button should look:
-     * Possible values for renderMode are 'image', 'labeledImage' and 'button' (default) */
+     * Possible values for renderMode are 'image', 'labeledImage', 'imageButton' and 'button' (default) */
     protected String renderMode = "button";
+    
+    private Map<String, Object> dynamicAttributes = new HashMap<>();
 
     public void setId(String id) {
         this.id = id;
@@ -67,8 +73,12 @@ public class ButtonTag extends YukonTagSupport {
         this.onclick = onclick;
     }
 
-    public void setStyleClass(String styleClass) {
-        this.styleClass = styleClass;
+    public void setClasses(String classes) {
+        this.classes = classes;
+    }
+    
+    public void setIcon(String icon) {
+    	this.icon = icon;
     }
 
     public void setType(String type) {
@@ -90,6 +100,10 @@ public class ButtonTag extends YukonTagSupport {
     public void setDisabled(Boolean disabled) {
         this.disabled = disabled;
     }
+    
+    public void setBusy(Boolean busy) {
+        this.busy = busy;
+    }
 
     public void setRenderMode(String renderMode) {
         this.renderMode = renderMode;
@@ -101,51 +115,24 @@ public class ButtonTag extends YukonTagSupport {
 
     @Override
     public void doTag() throws JspException, IOException, NoSuchMessageException {
-        if (StringUtils.isBlank(id)) {
-            id = UniqueIdentifierTag.generateIdentifier(getJspContext(), "button");
-        }
-
-        String classes = "pointer";
-
-        if (!disabled) {
-            classes += " hoverableImageContainer";
-        }
-
-        if (renderMode.equalsIgnoreCase("labeledImage") || renderMode.equalsIgnoreCase("image")) {
-            classes += " naked"; // draws a button with no border and transparent background
-        }
-
-        if (renderMode.equalsIgnoreCase("labeledImage")) {
-            classes += " labeledImage"; // adds text decoration underline when hovering over button
-        }
-
-        if (renderMode.equalsIgnoreCase("image")) {
-            classes += " image";
-        }
-
-        if (StringUtils.isNotBlank(styleClass)) {
-            classes += " " + styleClass;
-        }
-
+    	
+    	RenderMode mode = renderMode == null ? RenderMode.BUTTON : getModeForAttribute(renderMode);
+    	
+        MessageScope scope = MessageScopeHelper.forRequest(getRequest());
         try {
-            MessageScopeHelper.forRequest(getRequest()).pushScope("." + nameKey, "components.button." + nameKey);
+            scope.pushScope("." + nameKey, "components.button." + nameKey);
 
-            MessageScope messageScope = MessageScopeHelper.forRequest(getRequest());
-
-            /* Image Url */
-            MessageSourceResolvable imgUrlResolvable = messageScope.generateResolvable(".imageUrl");
-            String imageUrl = getLocalMessage(imgUrlResolvable, false);
 
             /* Button Text */
             String labelText = "";
             boolean override = false;
             /* Allow localizers to override the complete button text for any specific button.
-             * This means the dialogButton attribut's appending of ellipsis feature will not be respected. */
-            MessageSourceResolvable overrideLabelTextResolvable = messageScope.generateResolvable(".label.override", arguments);
+             * This means the dialogButton attribute's appending of ellipsis feature will not be respected. */
+            MessageSourceResolvable overrideLabelTextResolvable = scope.generateResolvable(".label.override", arguments);
             labelText = getLocalMessage(overrideLabelTextResolvable, false);
 
             if (StringUtils.isBlank(labelText)) {
-                MessageSourceResolvable labelTextResolvable = messageScope.generateResolvable(".label", arguments);
+                MessageSourceResolvable labelTextResolvable = scope.generateResolvable(".label", arguments);
                 labelText = getLocalMessage(labelTextResolvable, false);
                 if (StringUtils.isNotBlank(labelText)) {
                     labelText = StringEscapeUtils.escapeHtml(labelText);
@@ -154,131 +141,106 @@ public class ButtonTag extends YukonTagSupport {
                 override = true;
             }
 
-            if (StringUtils.isBlank(imageUrl) && StringUtils.isBlank(labelText)) {
-                throw new RuntimeException("at least one of .imageUrl or .label is required for " + nameKey);
+            if (StringUtils.isBlank(labelText) && (mode == RenderMode.BUTTON || mode == RenderMode.LABELED_IMAGE)) {
+                throw new RuntimeException(".label is required for " + nameKey);
             }
 
             if (dialogButton && !override) {
                 String ellipsis = getMessageSource().getMessage("yukon.web.defaults.moreInfoSuffix");
                 labelText += ellipsis;
             }
-
-            if ((renderMode.equalsIgnoreCase("labeledImage") || renderMode.equalsIgnoreCase("image")) 
-                    && StringUtils.isBlank(imageUrl)) {
-                throw new RuntimeException(".imageUrl is required for " + nameKey + " when renderMode is 'image' or 'labeledImage'");
+            
+            /* Busy Text */
+            MessageSourceResolvable busyTextResolvable = scope.generateResolvable(".labelBusy", arguments);
+            String busyText = getLocalMessage(busyTextResolvable, false);
+            if (StringUtils.isNotBlank(busyText)) {
+                busyText = StringEscapeUtils.escapeHtml(busyText);
+            }
+            
+            /* Icon */
+            if ((mode == RenderMode.LABELED_IMAGE || mode == RenderMode.IMAGE) 
+                    && StringUtils.isBlank(icon)) {
+                throw new RuntimeException("'icon' is required when renderMode is 'image' or 'labeledImage'");
             }
 
             /* Hover Text */
-            MessageSourceResolvable hoverTextResolvable = messageScope.generateResolvable(".hoverText", arguments);
+            MessageSourceResolvable hoverTextResolvable = scope.generateResolvable(".hoverText", arguments);
             String hoverText = getLocalMessage(hoverTextResolvable, false);
-            if (!StringUtils.isBlank(hoverText)) {
+            if (StringUtils.isNotBlank(hoverText)) {
                 hoverText = StringEscapeUtils.escapeHtml(hoverText);
             }
 
-            JspWriter out = getJspContext().getOut();
-
-            out.write("<button id=\"");
-            out.write(id);
-            out.write("\"");
-            
-            /* Title */
-            if (title != null) {
-                out.write(" title=\"");
-                out.write(title);
-                out.write("\"");
-            }
-
-            /* Type */
-            out.write(" type=\"");
-            out.write(type);
-            out.write("\"");
-
-            /* Name */
-            if (name != null) {
-                out.write(" name=\"");
-                out.write(name);
-                out.write("\"");
-            }
-
-            /* Value */
-            if (value != null) {
-                out.write(" value=\"");
-                out.write(value);
-                out.write("\"");
-            }
-
             /* Class */
-            out.write(" class=\"");
-            out.write(classes);
-            out.write("\"");
-
-            /* Title */
-            if (hoverText != null) {
-                out.write(" title=\"");
-                out.write(hoverText);
-                out.write("\"");
+            StringBuilder classes = new StringBuilder().append("button");
+            if (mode == RenderMode.LABELED_IMAGE || mode == RenderMode.IMAGE) {
+                classes.append(" naked"); // draws a button with no border and transparent background
             }
-
-            if (disabled) {
-                out.write(" disabled=\"disabled\"");
+            if (StringUtils.isNotBlank(this.classes)) {
+            	classes.append(" " + this.classes);
             }
+            
+            id = StringUtils.isBlank(id) ? UniqueIdentifierTag.generateIdentifier(getJspContext(), "button") : id;
 
-            if (StringUtils.isNotBlank(onclick)) {
-                out.write(" onclick=\"" + onclick + "\"");
+            JspWriter out = getJspContext().getOut();
+            out.write("<button role=\"button\" id=\"" + id + "\" type=\"" + type + "\" class=\"" + classes.toString() + "\"");
+            
+            for (String attributeName : dynamicAttributes.keySet()) {
+                out.write(" " + attributeName + "=\"" + dynamicAttributes.get(attributeName) + "\"");
             }
-
-            if (StringUtils.isNotBlank(href)) {
-                out.write(" data-href=\"" + href + "\"");
+            
+            if (StringUtils.isNotBlank(labelText)) out.write(" aria-label=\"" + labelText + "\"");
+            if (StringUtils.isNotBlank(title)) out.write(" title=\"" + title + "\"");
+            if (StringUtils.isNotBlank(name)) out.write(" name=\"" + name + "\"");
+            if (StringUtils.isNotBlank(value)) out.write(" value=\"" + value + "\"");
+            if (StringUtils.isNotBlank(hoverText)) out.write(" title=\"" + hoverText + "\"");
+            if (StringUtils.isNotBlank(onclick)) out.write(" onclick=\"" + onclick + "\"");
+            if (StringUtils.isNotBlank(href)) out.write(" data-href=\"" + href + "\"");
+            if (disabled) out.write(" disabled=\"disabled\"");
+            
+            if (busy) {
+                if (StringUtils.isNotBlank(busyText)) {
+                    out.write(" data-busy=\"" + busyText + "\""); 
+                } else {
+                    out.write(" data-busy");
+                }
             }
 
             out.write(">");
 
-            boolean hasImage = StringUtils.isNotBlank(imageUrl);
-
-            if (hasImage) {
-                imageUrl = ServletUtil.createSafeUrl(getRequest(), imageUrl);
-                if (!imageOnRight) {
-                    writeImage(out, imageUrl);
-                }
+            boolean hasImage = StringUtils.isNotBlank(icon);
+            
+            if (hasImage && !imageOnRight) {
+            	out.write("<i class=\"icon " + icon + "\"></i>");
+            }
+            
+            if (busy && !imageOnRight) {
+                out.write("<i class=\"icon icon-loading\"></i>");
             }
 
-            if (!renderMode.equalsIgnoreCase("image") && !StringUtils.isBlank(labelText)) {
-                out.write("<span");
-                if (hasImage) {
-                    out.write(" class=\"");
-                    out.write(imageOnRight ? "leftOfImageLabel" : "rightOfImageLabel");
-                    if (renderMode.equalsIgnoreCase("labeledImage")) {
-                        out.write(" primary_color");
-                    }
-                    out.write("\"");
-                }
-                out.write(">");
+            if (mode != RenderMode.IMAGE 
+                    && mode != RenderMode.BUTTON_IMAGE
+                    && !StringUtils.isBlank(labelText)) {
+                out.write("<span class=\"label\">");
                 out.write(labelText);
                 out.write("</span>");
             }
 
             if (hasImage && imageOnRight) {
-                writeImage(out, imageUrl);
+            	out.write("<i class=\"icon " + icon + "\"></i>");
+            }
+            
+            if (busy && imageOnRight) {
+                out.write("<i class=\"icon icon-loading\"></i>");
             }
 
             out.write("</button>");
 
         } finally {
-            MessageScopeHelper.forRequest(getRequest()).popScope();
+            scope.popScope();
         }
     }
 
-    private void writeImage(JspWriter out, String imageUrl) throws IOException {
-        String imageClass = "logoImage";
-        if (!disabled) {
-            imageClass += " hoverableImage";
-        }
-        out.write("<img class=\"" + imageClass + "\" src=\"");
-        out.write(imageUrl);
-        out.write("\" alt=\"\">");
-    }
-
-    protected String getLocalMessage(MessageSourceResolvable resolvable, boolean required) {
+    private String getLocalMessage(MessageSourceResolvable resolvable, boolean required) {
         String retVal;
         try {
             retVal = getMessageSource().getMessage(resolvable);
@@ -289,5 +251,34 @@ public class ButtonTag extends YukonTagSupport {
             return null;
         }
         return retVal;
+    }
+    
+    /* renderMode is to describe how the button should look:
+     * Possible values for renderMode are 'image', 'labeledImage' and 'button' (default) */
+    private enum RenderMode {
+    	IMAGE("image"),
+    	LABELED_IMAGE("labeledImage"),
+    	BUTTON_IMAGE("buttonImage"),
+    	BUTTON("button");
+    	
+    	private String attributeName;
+    	
+    	private RenderMode(String attributeName) {
+    		this.attributeName = attributeName;
+    	}
+    }
+    
+    private RenderMode getModeForAttribute(String attribute) {
+		for (RenderMode mode : RenderMode.values()) {
+			if (mode.attributeName.equalsIgnoreCase(attribute)) {
+				return mode;
+			}
+		}
+		throw new IllegalArgumentException("Invalid render mode [" + attribute + "], possible values are image, labeledImage, buttonImage, and button (default)");
+	}
+
+    @Override
+    public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
+        dynamicAttributes.put(localName, value == null ? "" : value);
     }
 }

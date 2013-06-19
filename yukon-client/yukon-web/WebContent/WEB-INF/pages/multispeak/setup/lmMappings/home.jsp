@@ -3,9 +3,25 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
-<cti:standardPage module="adminSetup" page="lmMappings">	
+<cti:standardPage module="adminSetup" page="lmMappings">
   <cti:includeScript link="/JavaScript/lmMappings.js"/>
-	
+
+<cti:linkTabbedContainer mode="section" id="page_header_tab_container">
+    <c:url var="tab_url" value="/multispeak/setup/home" />
+    <cti:msg var="tab_name" key="yukon.web.modules.adminSetup.interfaces.home.tab.title" />
+    <c:set var="on_tab" value='${isDevicesPage}'/>
+    <cti:linkTab tabId="deviceTab" selectorName="${tab_name}" tabHref="${tab_url}"/>
+
+    <c:url var="tab_url" value="/multispeak/setup/lmMappings/home" />
+    <cti:msg var="tab_name" key="yukon.web.modules.adminSetup.lmMappings.tab.title" />
+    <c:set var="on_tab" value='${isLoadMngtPage}'/>
+    <cti:linkTab tabId="loadMgtTab" selectorName="${tab_name}" tabHref="${tab_url}" initiallySelected="${true}"/>
+
+    <c:url var="tab_url" value="/multispeak/setup/deviceGroupSync/home" />
+    <cti:msg var="tab_name" key="yukon.web.modules.adminSetup.deviceGroupSyncHome.tab.title" />
+    <cti:linkTab tabId="deviceGroupTab" selectorName="${tab_name}" tabHref="${tab_url}"/>
+</cti:linkTabbedContainer>
+  
     <tags:boxContainer2 nameKey="mappingsContainer" id="container" hideEnabled="false">
 
 		<%-- FIND/ADD MAPPINGS --%>

@@ -8,6 +8,8 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import net.sf.json.JSONObject;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Period;
@@ -21,7 +23,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.View;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.capcontrol.ScheduleCommand;
 import com.cannontech.cbc.commands.CapControlCommandExecutor;
@@ -57,7 +59,6 @@ import com.cannontech.web.capcontrol.filter.ScheduleAssignmentFilter;
 import com.cannontech.web.capcontrol.filter.ScheduleAssignmentRowMapper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.util.JsonView;
 
 
 @Controller
@@ -304,8 +305,8 @@ public class ScheduleController {
 	/**
      * Run a single schedule assignment command.
      */
-	@RequestMapping(method=RequestMethod.POST)
-	public View startSchedule(Integer eventId, String deviceName, YukonUserContext context, ModelMap map) {
+	@RequestMapping
+	public @ResponseBody JSONObject startSchedule(Integer eventId, String deviceName, YukonUserContext context, ModelMap map) {
 	    MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
 	    String result;
 	    PaoScheduleAssignment assignment = paoScheduleDao.getScheduleAssignmentByEventId(eventId);
@@ -316,33 +317,37 @@ public class ScheduleController {
 	        result = accessor.getMessage("yukon.web.modules.capcontrol.scheduleAssignments.startedScheduleFailed", assignment.getCommandName());
 	    }
 	    
-	    map.addAttribute("sentCommand", assignment.getCommandName());
-	    map.addAttribute("success", success);
-        map.addAttribute("resultText" , result);
-        return new JsonView();
+	    JSONObject json = new JSONObject();
+	    
+	    json.put("sentCommand", assignment.getCommandName());
+	    json.put("success", success);
+	    json.put("resultText" , result);
+        
+        return json;
 	}
 	
 	/**
      * Send a stop verify command to the specified subbus. 
      */
-	@RequestMapping(method=RequestMethod.POST)
-    public View stopSchedule(Integer deviceId, String deviceName, YukonUserContext context, ModelMap map) throws ServletException {
+	@RequestMapping
+	public @ResponseBody JSONObject stopSchedule(Integer deviceId, String deviceName, YukonUserContext context, ModelMap map) throws ServletException {
 	    MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
 	    
 	    String result = accessor.getMessage("yukon.web.modules.capcontrol.scheduleAssignments.stopVerify", deviceName);
+	    JSONObject json = new JSONObject();
 	    try {
             executor.execute(CommandHelper.buildStopVerifyBanks(context.getYukonUser(), CommandType.STOP_VERIFICATION, deviceId));
             
-            map.addAttribute("success", true);
-            map.addAttribute("resultText" , result);
+            json.put("success", true);
+            json.put("resultText" , result);
         } catch (CommandExecutionException e) {
             log.warn("caught exception in stopSchedule", e);
             
-            map.addAttribute("success", false);
-            map.addAttribute("resultText" , result);
+            json.put("success", false);
+            json.put("resultText" , result);
         }
 	    
-	    return new JsonView();
+	    return json;
 	}
 	
 	@RequestMapping(method=RequestMethod.POST)
@@ -391,8 +396,9 @@ public class ScheduleController {
     }
 	
     @RequestMapping(method = RequestMethod.POST)
-    public View setOvUv(Integer eventId, Integer ovuv, ModelMap map, YukonUserContext context) {
+    public @ResponseBody JSONObject setOvUv(Integer eventId, Integer ovuv, ModelMap map, YukonUserContext context) {
         boolean success = false;
+        JSONObject json = new JSONObject();
         try {
             PaoScheduleAssignment assignment = paoScheduleDao.getScheduleAssignmentByEventId(eventId);
             assignment.setDisableOvUv(ovuv == 0 ? "Y" : "N");
@@ -403,7 +409,7 @@ public class ScheduleController {
             map.addAttribute("resultText" , resultText);
         }
         map.addAttribute("success", success);
-        return new JsonView();
+        return json;
     }
 
 	@RequestMapping(method=RequestMethod.POST)

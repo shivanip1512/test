@@ -54,7 +54,7 @@
 		
 		<%-- buttons --%>
         <cti:displayForPageEditModes modes="EDIT,CREATE">
-            <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
+            <cti:button nameKey="save" type="submit" classes="f_blocker"/>
             
             <cti:displayForPageEditModes modes="EDIT">
                 <cti:url value="/stars/operator/callTracking/view" var="cancelUrl">
@@ -79,7 +79,7 @@
                     <cti:param name="accountId" value="${accountId}"/>
                     <cti:param name="callId" value="${callReport.callId}"/>
                 </cti:url>
-                <cti:button nameKey="edit" href="${editUrl}"/>
+                <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
             </cti:checkRolesAndProperties>
         </cti:displayForPageEditModes>
         

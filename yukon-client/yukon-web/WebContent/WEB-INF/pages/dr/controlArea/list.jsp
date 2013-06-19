@@ -108,15 +108,12 @@
 				</cti:checkRolesAndProperties>
 			</table>
 
-			<br>
-			<div class="actionArea"><input type="submit"
-				value="<cti:msg key="yukon.web.modules.dr.controlAreaList.filter.submit"/>" />
-			<input type="button"
-				value="<cti:msg key="yukon.web.modules.dr.controlAreaList.filter.clear"/>"
-				onclick="javascript:clearFilter()" /></div>
+			<div class="actionArea">
+				<cti:button nameKey="filter" type="submit" classes="action primary"/>
+				<cti:button nameKey="showAll" onclick="javascript:clearFilter()"/>
+            </div>
 		</form:form>
 	</tags:simplePopup>
-	<br>
 
 	<%-- Main Control Area list table section --%>
 

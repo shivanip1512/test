@@ -42,6 +42,7 @@ import com.cannontech.web.util.ListBackingBean;
 @Controller
 @CheckRoleProperty(value={YukonRoleProperty.SHOW_SCENARIOS,YukonRoleProperty.DEMAND_RESPONSE}, requireAll=true)
 public class ScenarioController {
+    
     @Autowired private ScenarioDao scenarioDao;
     @Autowired private ScenarioService scenarioService;
     @Autowired private PaoAuthorizationService paoAuthorizationService;

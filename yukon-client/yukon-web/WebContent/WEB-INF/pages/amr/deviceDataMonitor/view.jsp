@@ -11,25 +11,24 @@
 
     <%@ include file="shared.jspf"%>
 
-    <div class="colmask doublepage">
-        <div class="colleft">
-            <div class="col1">
-			    <tags:sectionContainer2 nameKey="settings" styleClass="${settings_section_class}">
-				    <tags:nameValueContainer2>
-						
-						<input type="hidden" id="monitorId" value="${monitor.id}"/>
-						
-						<%-- monitor name --%>
-						<tags:nameValue2 nameKey=".name">${fn:escapeXml(monitor.name)}</tags:nameValue2>
-						
-						<tags:nameValue2 nameKey=".deviceGroup">
-						    <cti:url var="deviceGroupUrl" value="/group/editor/home">
-						        <cti:param name="groupName">${monitor.groupName}</cti:param>
-						    </cti:url>
-						    <a href="${deviceGroupUrl}">${fn:escapeXml(monitor.groupName)}</a>
-						</tags:nameValue2>
-			
-						<tags:nameValue2 nameKey=".deviceGroupCount">${monitoringCount}</tags:nameValue2>
+    <div class="column_12_12 clearfix">
+            <div class="column one">
+                <tags:sectionContainer2 nameKey="settings" styleClass="${settings_section_class}">
+                    <tags:nameValueContainer2>
+                        
+                        <input type="hidden" id="monitorId" value="${monitor.id}"/>
+                        
+                        <%-- monitor name --%>
+                        <tags:nameValue2 nameKey=".name">${fn:escapeXml(monitor.name)}</tags:nameValue2>
+                        
+                        <tags:nameValue2 nameKey=".deviceGroup">
+                            <cti:url var="deviceGroupUrl" value="/group/editor/home">
+                                <cti:param name="groupName">${monitor.groupName}</cti:param>
+                            </cti:url>
+                            <a href="${deviceGroupUrl}">${fn:escapeXml(monitor.groupName)}</a>
+                        </tags:nameValue2>
+            
+                        <tags:nameValue2 nameKey=".deviceGroupCount">${monitoringCount}</tags:nameValue2>
                         <tags:nameValue2 nameKey=".supportedDevices">
                             ${supportedDevices}
                         </tags:nameValue2>
@@ -43,40 +42,39 @@
                             ${monitoringEnabled}
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
-			    </tags:sectionContainer2>
-            </div>
-            <div class="col2">
-                <tags:sectionContainer2 nameKey="processors" styleClass="${processors_section_class}">
-			        <div class="smallDialogScrollArea">
-				        <table class="compactResultsTable">
-				            <thead>
-				                <tr>
-				                    <th><i:inline key=".processors.attribute" /></th>
-				                    <th><i:inline key=".processors.stateGroup" /></th>
-				                    <th><i:inline key=".processors.state" /></th>
-				                </tr>
-				            </thead>
-				            <tbody>
-				                <c:if test="${fn:length(monitor.processors) == 0}">
-				                    <tr>
-										<td class="empty-list" colspan="3">
-				                            <i:inline key=".noProcessors" />
-										</td>
-									</tr>
-				                </c:if>
-				                <c:forEach var="processor" items="${monitor.processors}">
-				                    <tr>
-				                        <td><i:inline key="${processor.attribute}"/></td>
-				                        <td>${processor.stateGroup}</td>
-				                        <td>${processor.state.stateText}</td>
-				                    </tr>
-				                </c:forEach>
-				            </tbody>
-				        </table>
-			        </div>
                 </tags:sectionContainer2>
             </div>
-        </div>
+            <div class="column two nogutter">
+                <tags:sectionContainer2 nameKey="processors" styleClass="${processors_section_class}">
+                    <div class="smallDialogScrollArea">
+                        <table class="compactResultsTable">
+                            <thead>
+                                <tr>
+                                    <th><i:inline key=".processors.attribute" /></th>
+                                    <th><i:inline key=".processors.stateGroup" /></th>
+                                    <th><i:inline key=".processors.state" /></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:if test="${fn:length(monitor.processors) == 0}">
+                                    <tr>
+                                        <td class="empty-list" colspan="3">
+                                            <i:inline key=".noProcessors" />
+                                        </td>
+                                    </tr>
+                                </c:if>
+                                <c:forEach var="processor" items="${monitor.processors}">
+                                    <tr>
+                                        <td><i:inline key="${processor.attribute}"/></td>
+                                        <td>${processor.stateGroup}</td>
+                                        <td>${processor.state.stateText}</td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
+                </tags:sectionContainer2>
+            </div>
     </div>
 
     <%-- update / enable_disable / delete / cancel --%>
@@ -84,7 +82,7 @@
         <cti:url value="/amr/deviceDataMonitor/editPage" var="editUrl">
             <cti:param name="monitorId" value="${monitor.id}"/>
         </cti:url>
-        <cti:button nameKey="edit" href="${editUrl}"/>
+        <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
         <cti:button nameKey="back" href="/meter/start"/>
     </div>
 

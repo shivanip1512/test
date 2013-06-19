@@ -66,7 +66,7 @@
         
 </form>
 
-<tags:simpleDialog id="mspAddDialog" onClose="$('mspAddDialog').hide();SubstationToRouteMappings_disableInputs(false);"/>
+<tags:simpleDialog id="mspAddDialog" onClose="SubstationToRouteMappings_disableInputs(false);"/>
 
 
 

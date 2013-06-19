@@ -52,6 +52,7 @@ import com.google.common.collect.Ordering;
  * Controller for DR quick search
  */
 public class QuickSearchController {
+    
     @Autowired private FilterService filterService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private FavoritesDao favoritesDao;

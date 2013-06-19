@@ -10,9 +10,6 @@
 
 <cti:includeScript link="/JavaScript/cronExpressionData.js"/>
 
-<c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
-<c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
-
 <c:set var="allowChange" value="true"/>
 <c:if test="${!empty pageScope.allowTypeChange}">
     <c:set var="allowChange" value="${pageScope.allowTypeChange}"/>
@@ -173,16 +170,16 @@
 <div id="${id}_cronExpCustomDiv" style="display:none;">
 
 	<i:inline key="yukon.web.components.cronPicker.cronExpression"/><br>
-	<input type="text" name="${id}_CRONEXP_CUSTOM_EXPRESSION" value="${state.customExpression}"> 
-	<img onclick="$('${id}_customCronExpressInfoPopup').toggle();" src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
+	<input type="text" name="${id}_CRONEXP_CUSTOM_EXPRESSION" value="${state.customExpression}" class="fl"> 
+	<cti:icon icon="icon-help" id="cron_help_icon"/>
 	
     <cti:msg2 var="cronTitle" key="yukon.web.components.cronPicker.cronHelpTitle"/>
-	<tags:simplePopup id="${id}_customCronExpressInfoPopup" title="${cronTitle}">
-        <br>
+	<tags:simplePopup id="${id}_customCronExpressInfoPopup" title="${cronTitle}" on="#cron_help_icon">
         <i:inline key="yukon.web.components.cronPicker.cronHelpStart" />
-        <a href="http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/TutorialLesson06"
-            target="_blank"><i:inline key="yukon.web.components.cronPicker.cronHelpLink"/></a><i:inline key="yukon.web.components.cronPicker.cronHelpEnd" />
-        <br><br>
+        <a href="http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/TutorialLesson06" target="_blank">
+            <i:inline key="yukon.web.components.cronPicker.cronHelpLink"/>
+        </a>
+        <i:inline key="yukon.web.components.cronPicker.cronHelpEnd" />
     </tags:simplePopup>
 	
 </div>

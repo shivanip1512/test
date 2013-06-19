@@ -33,36 +33,41 @@
         </c:if>
         <c:if test="${surveys.hitCount > 0}">
             <table id="surveyList" class="compactResultsTable rowHighlighting">
-                <tr>
-                    <th><cti:msg2 key=".name"/></th>
-                    <th><cti:msg2 key=".key"/></th>
-                    <th><cti:msg2 key=".actions"/></th>
-                </tr>
-                <c:forEach var="survey" items="${surveys.resultList}">
-                    <c:set var="surveyId" value="${survey.surveyId}"/>
-                    <c:url var="surveyUrl" value="edit">
-                        <c:param name="surveyId" value="${surveyId}"/>
-                    </c:url>
-                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                        <td><a href="${surveyUrl}">${fn:escapeXml(survey.surveyName)}</a></td>
-                        <td>${survey.surveyKey}</td>
-                        <td>
-                            <cti:url var="deleteUrl" value="delete">
-                                <cti:param name="surveyId" value="${surveyId}"/>
-                            </cti:url>
-                            <dialog:confirm on="#deleteBtn${surveyId}" nameKey="confirmDelete"
-                                argument="${survey.surveyName}"/>
-                            <cti:button id="deleteBtn${surveyId}" nameKey="delete" renderMode="image" href="${deleteUrl}" />
-                        </td>
-                    </tr>
-                </c:forEach>
+                <thead>
+	                <tr>
+	                    <th><cti:msg2 key=".name"/></th>
+	                    <th><cti:msg2 key=".key"/></th>
+	                    <th><cti:msg2 key=".actions"/></th>
+	                </tr>
+                </thead>
+                <tfoot></tfoot>
+                <tbody>
+	                <c:forEach var="survey" items="${surveys.resultList}">
+	                    <c:set var="surveyId" value="${survey.surveyId}"/>
+	                    <c:url var="surveyUrl" value="edit">
+	                        <c:param name="surveyId" value="${surveyId}"/>
+	                    </c:url>
+	                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
+	                        <td><a href="${surveyUrl}">${fn:escapeXml(survey.surveyName)}</a></td>
+	                        <td>${survey.surveyKey}</td>
+	                        <td>
+	                            <cti:url var="deleteUrl" value="delete">
+	                                <cti:param name="surveyId" value="${surveyId}"/>
+	                            </cti:url>
+	                            <dialog:confirm on="#deleteBtn${surveyId}" nameKey="confirmDelete"
+	                                argument="${survey.surveyName}"/>
+	                            <cti:button id="deleteBtn${surveyId}" nameKey="delete" renderMode="image" href="${deleteUrl}" icon="icon-cross"/>
+	                        </td>
+	                    </tr>
+	                </c:forEach>
+                </tbody>
             </table>
         </c:if>
 
         <div class="actionArea">
             <cti:url var="sampleXmlUrl" value="sampleXml"/>
-            <cti:button nameKey="sampleXml" href="${sampleXmlUrl}"/>
-            <cti:button id="addSurveyBtn" nameKey="add" styleClass="f_blocker"/>
+            <cti:button nameKey="sampleXml" href="${sampleXmlUrl}" icon="icon-page-code"/>
+            <cti:button id="addSurveyBtn" nameKey="add" classes="f_blocker" icon="icon-add"/>
         </div>
     </tags:pagedBox2>
 </cti:standardPage>

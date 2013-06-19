@@ -3,7 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
 
-<cti:standardPage module="amr" page="analysis.list">
+<cti:standardPage module="tools" page="bulk.analysis.list">
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
@@ -11,7 +11,7 @@
         <cti:msg var="metersPageTitle" key="yukon.web.modules.amr.meteringStart.pageName" />
         <cti:crumbLink url="/meter/start" title="${metersPageTitle}" />
         <%-- ADA List --%>
-        <cti:crumbLink><i:inline key="yukon.web.modules.amr.analysis.list.pageName"/></cti:crumbLink>
+        <cti:crumbLink><i:inline key="yukon.web.modules.tools.bulk.analysis.list.pageName"/></cti:crumbLink>
     </cti:breadCrumbs>
     
     <script>
@@ -23,7 +23,7 @@
     }
     
     function deleteAnalysis() {
-        $('deleteConfirmationPopup').hide();
+        jQuery('#deleteConfirmationPopup').dialog('close');
         var url = "/bulk/archiveDataAnalysis/list/delete?analysisId=" + deleteConfirmAnalysisId;
         window.location = url;
     }
@@ -38,14 +38,14 @@
     <tags:boxContainer2 nameKey="title">
         <table class="compactResultsTable">
             <tr>
-                <th><i:inline key="yukon.web.modules.amr.analysis.list.runDate"/></th>
-                <th><i:inline key="yukon.web.modules.amr.analysis.attribute"/></th>
-                <th><i:inline key="yukon.web.modules.amr.analysis.list.numberOfDevices"/></th>
-                <th><i:inline key="yukon.web.modules.amr.analysis.list.range"/></th>
-                <th><i:inline key="yukon.web.modules.amr.analysis.interval"/></th>
-                <th><i:inline key="yukon.web.modules.amr.analysis.pointQuality"/></th>
-                <th><i:inline key="yukon.web.modules.amr.analysis.list.status"/></th>
-                <th><i:inline key="yukon.web.modules.amr.analysis.list.actions"/></th>
+                <th><i:inline key="yukon.web.modules.tools.bulk.analysis.list.runDate"/></th>
+                <th><i:inline key="yukon.web.modules.tools.bulk.analysis.attribute"/></th>
+                <th><i:inline key="yukon.web.modules.tools.bulk.analysis.list.numberOfDevices"/></th>
+                <th><i:inline key="yukon.web.modules.tools.bulk.analysis.list.range"/></th>
+                <th><i:inline key="yukon.web.modules.tools.bulk.analysis.interval"/></th>
+                <th><i:inline key="yukon.web.modules.tools.bulk.analysis.pointQuality"/></th>
+                <th><i:inline key="yukon.web.modules.tools.bulk.analysis.list.status"/></th>
+                <th><i:inline key="yukon.web.modules.tools.bulk.analysis.list.actions"/></th>
             </tr>
             
             <c:forEach items="${analysisMap}" var="analysisEntry">
@@ -70,10 +70,10 @@
                         <td>
                             <c:choose>
                                 <c:when test="${analysisEntry.key.excludeBadPointQualities}">
-                                    <i:inline key="yukon.web.modules.amr.analysis.list.normalOnly"/>
+                                    <i:inline key="yukon.web.modules.tools.bulk.analysis.list.normalOnly"/>
                                 </c:when>
                                 <c:otherwise>
-                                    <i:inline key="yukon.web.modules.amr.analysis.list.allQualities"/>
+                                    <i:inline key="yukon.web.modules.tools.bulk.analysis.list.allQualities"/>
                                 </c:otherwise>
                             </c:choose>
                         </td>
@@ -88,8 +88,8 @@
                                     <cti:link href="${analysisProgressUrl}" key="${analysisEntry.key.status.formatKey}"/>
                                 </td>
                                 <td>
-                                    <cti:button nameKey="viewButtonAnalyzing" renderMode="image" disabled="true"/>
-                                    <cti:button id="deleteButton" nameKey="remove" renderMode="image"/>
+                                    <cti:button nameKey="viewButtonAnalyzing" renderMode="image" disabled="true" icon="icon-application-view-columns"/>
+                                    <cti:button id="deleteButton" nameKey="remove" renderMode="image" icon="icon-cross"/>
                                 </td>
                             </c:when>
                             <%-- if complete with some devices successfully analyzed, enable view, enable delete, status doesn't link--%>
@@ -101,15 +101,15 @@
                                 <td>
                                     <c:choose>
                                         <c:when test="${analysisEntry.value == 0}">
-                                            <cti:button nameKey="viewButtonNoDevices" renderMode="image" disabled="true"/>
-                                            <cti:button id="deleteButton" nameKey="remove" renderMode="image"/>
+                                            <cti:button nameKey="viewButtonNoDevices" renderMode="image" disabled="true" icon="icon-application-view-columns"/>
+                                            <cti:button id="deleteButton" nameKey="remove" renderMode="image" icon="icon-cross"/>
                                         </c:when>
                                         <c:otherwise>
                                             <cti:url var="viewUrl" value="/bulk/archiveDataAnalysis/results/view">
                                                 <cti:param name="analysisId" value="${analysisEntry.key.analysisId}"/>
                                             </cti:url>
-                                            <cti:button nameKey="viewButton" renderMode="image" href="${viewUrl}"/>
-                                            <cti:button id="deleteButton" nameKey="remove" renderMode="image"/>
+                                            <cti:button nameKey="viewButton" renderMode="image" href="${viewUrl}" icon="icon-application-view-columns"/>
+                                            <cti:button id="deleteButton" nameKey="remove" renderMode="image" icon="icon-cross"/>
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
@@ -127,8 +127,8 @@
                                     <cti:url var="viewUrl" value="/bulk/archiveDataAnalysis/results/view">
                                         <cti:param name="analysisId" value="${analysisEntry.key.analysisId}"/>
                                     </cti:url>
-                                    <cti:button nameKey="viewButton" renderMode="image" href="${viewUrl}"/>
-                                    <cti:button id="deleteButton" nameKey="remove" renderMode="image"/>
+                                    <cti:button nameKey="viewButton" renderMode="image" href="${viewUrl}" icon="icon-application-view-columns"/>
+                                    <cti:button id="deleteButton" nameKey="remove" renderMode="image" icon="icon-cross"/>
                                 </td>
                             </c:when>
                         </c:choose>
@@ -138,11 +138,11 @@
         </table>
     </tags:boxContainer2>
     
-    <i:simplePopup id="deleteConfirmationPopup" styleClass="mediumSimplePopup" titleKey="yukon.web.modules.amr.analysis.list.deleteConfirmation.title">
-        <h3 class="dialogQuestion"><cti:msg key="yukon.web.modules.amr.analysis.list.deleteConfirmation.message"/></h3>
+    <i:simplePopup id="deleteConfirmationPopup" styleClass="mediumSimplePopup" titleKey="yukon.web.modules.tools.bulk.analysis.list.deleteConfirmation.title">
+        <h3 class="dialogQuestion"><cti:msg key="yukon.web.modules.tools.bulk.analysis.list.deleteConfirmation.message"/></h3>
         <div class="actionArea">
             <cti:button nameKey="ok" onclick="deleteAnalysis()"/>
-            <cti:button nameKey="cancel" onclick="$('deleteConfirmationPopup').hide();" />
+            <cti:button nameKey="cancel" onclick="jQuery('#deleteConfirmationPopup').dialog('close');" />
         </div>
     </i:simplePopup>
     

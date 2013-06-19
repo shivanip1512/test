@@ -14,46 +14,46 @@
             <span class="lastOpLeft">
                 <%-- Last Operation was a Tap Down Operation --%>
                 <span class="tapLower" style="display: none;">
-                    <cti:img nameKey="greenDownArrow"/>
+                    <cti:icon nameKey="greenDownArrow" icon="icon-arrow-down-green"/>
                 </span>
         
                 <%-- Last Operation was a Tap Down Operation --%>
                 <%--(Warning (orange) due to some failure ie: comms lost.) --%>
                 <span class="tapLowerWarning" style="display: none;">
-                    <cti:img nameKey="orangeDownArrow"/>
+                    <cti:icon nameKey="orangeDownArrow" icon="icon-arrow-down-orange"/>
                 </span>
                 
                 <%-- Last Operation was a Tap Up Operation --%>
                 <span class="tapRaise" style="display: none;">
-                    <cti:img nameKey="greenUpArrow"/>
+                    <cti:icon nameKey="greenUpArrow" icon="icon-arrow-up-green"/>
                 </span>
                 
                 <%-- Last Operation was a Tap Up Operation --%>
                 <%--(Warning (orange) due to some failure ie: comms lost.) --%>
                 <span class="tapRaiseWarning" style="display: none;">
-                    <cti:img nameKey="orangeUpArrow"/>
+                    <cti:icon nameKey="orangeUpArrow" icon="icon-arrow-up-orange"/>
                 </span>
                 
                 <%-- Last Operation was a Tap Down Operation and occurred recently. Animated Icon --%>
                 <span class="tapLowerRecent" style="display: none;">
-                    <cti:img nameKey="flashingGreenDownArrow"/>
+                    <cti:icon nameKey="flashingGreenDownArrow" icon="icon-arrow-down-green-animated"/>
                 </span>
                 
                 <%-- Last Operation was a Tap Down Operation and occurred recently. Animated Icon --%>
                 <%--(Warning (orange) due to some failure ie: comms lost.) --%>
                 <span class="tapLowerRecentWarning" style="display: none;">
-                    <cti:img nameKey="flashingOrangeDownArrow"/>
+                    <cti:icon nameKey="flashingOrangeDownArrow" icon="icon-arrow-down-orange-animated"/>
                 </span>
                 
                 <%-- Last Operation was a Tap Up Operation and occurred recently. Animated Icon --%>
                 <span class="tapRaiseRecent" style="display: none;">
-                    <cti:img nameKey="flashingGreenUpArrow"/>
+                    <cti:icon nameKey="flashingGreenUpArrow" icon="icon-arrow-up-green-animated"/>
                 </span>
                 
                 <%-- Last Operation was a Tap Up Operation and occurred recently. Animated Icon --%>
                 <%--(Warning (orange) due to some failure ie: comms lost.) --%>
                 <span class="tapRaiseRecentWarning" style="display: none;">
-                    <cti:img nameKey="flashingOrangeUpArrow"/>
+                    <cti:icon nameKey="flashingOrangeUpArrow" icon="icon-arrow-up-orange-animated"/>
                 </span>
                 
                 <%-- Default output --%>

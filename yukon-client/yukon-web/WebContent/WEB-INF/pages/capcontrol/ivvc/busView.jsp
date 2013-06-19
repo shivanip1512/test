@@ -1,10 +1,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="capcontrol" page="ivvc.busView">
 	
@@ -24,25 +24,21 @@
     <cti:msg2 key="yukon.web.modules.capcontrol.ivvc.zoneWizard.editor.title" var="zoneEditorWizardTitle"/>
 
     <!-- Zone Wizard Dialog -->
-    <tags:simpleDialog id="zoneWizardPopup" title="" styleClass="smallSimplePopup"/>
+    <tags:simpleDialog id="zoneWizardPopup"/>
 
     <script type="text/javascript">
     	function showZoneCreationWizard(url) {
-			openSimpleDialog('zoneWizardPopup', url, "${zoneCreationWizardTitle}", null, null, 'get');
+			openSimpleDialog('zoneWizardPopup', url, "${zoneCreationWizardTitle}", null, 'get');
 		}
 
     	function showZoneEditorWizard(url) {
-			openSimpleDialog('zoneWizardPopup', url, "${zoneEditorWizardTitle}", null, null, 'get');
+			openSimpleDialog('zoneWizardPopup', url, "${zoneEditorWizardTitle}", null, 'get');
 		}
     	
 		function selectZone(event) {
 			var span = event.target;
-
-			$$('.selectedZone').each( function(n){ 
-				n.removeClassName('selectedZone');
-			});
-
-			span.addClassName('selectedZone');
+			jQuery('.selectedZone').removeClass('selectedZone');
+			jQuery(span).addClass('selectedZone');
 		}
 		
 		function ivvcAnalysisMessageRecieved(msgDivId) {
@@ -67,48 +63,9 @@
 		}
  	</script>
     
-
-	<cti:dataGrid cols="2" tableClasses="ivvcGridLayout twoColumnLayout">
-	
-		<cti:dataGridCell>
-			<tags:boxContainer2 nameKey="strategyDetails" arguments="${strategyName}" argumentSeparator=":" hideEnabled="true" showInitially="true">
-				<table class="compactResultsTable" >
-					<tr>
-						<th><i:inline key=".strategyDetails.table.setting" /></th>
-						<th><i:inline key=".strategyDetails.table.peak"/></th>
-						<th><i:inline key=".strategyDetails.table.offPeak"/></th>
-						<th><i:inline key=".strategyDetails.table.units"/></th>
-					</tr>
-					<c:forEach var="setting" items="${strategySettings}">
-						<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
-							<td>
-								<spring:escapeBody htmlEscape="true">${setting.type.displayName}</spring:escapeBody>
-							</td>
-							<td>
-								<spring:escapeBody htmlEscape="true">${setting.peakValue}</spring:escapeBody>
-							</td>
-							<td>
-								<spring:escapeBody htmlEscape="true">${setting.offPeakValue}</spring:escapeBody>
-							</td>
-							<td>
-								<spring:escapeBody htmlEscape="true">${setting.type.units}</spring:escapeBody>
-							</td>
-						</tr>
-					</c:forEach>
-				</table>
-				<c:if test="${hasEditingRole}">
-	                <div class="actionArea">
-						<cti:url var="editorUrl" value="/editor/cbcBase.jsf">
-							<cti:param name="type" value="5"/>
-							<cti:param name="itemid" value="${strategyId}"/>
-						</cti:url>
-						<cti:button nameKey="edit" href="${editorUrl}"/>
-	                </div>
-				</c:if>
-			</tags:boxContainer2>
-			
-			<br>
-
+    <div class="column_12_12">
+        <div class="column one">
+        
 			<tags:boxContainer2 nameKey="zoneList" hideEnabled="true" showInitially="true">
                 <table class="zoneListTable compactResultsTable">
                     <tr>
@@ -129,16 +86,14 @@
        						<cti:param name="zoneId" value="${zone.zoneId}"/>
     				    </cti:url>
                 
-                        <tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
+                        <tr>
                             <td class="zoneName">
                                 <c:if test="${depth > 0}">
                                     <c:forEach begin="0" end="${depth-1}">
                                         <span class="leftIndent"></span>
                                     </c:forEach>
                                 </c:if>
-                                <a href="${zoneDetailUrl}">
-                                    <spring:escapeBody htmlEscape="true">${zone.name}</spring:escapeBody>
-                                </a>
+                                <a href="${zoneDetailUrl}">${fn:escapeXml(zone.name)}</a>
                             </td>
                             <td class="zoneType">
                                 <c:choose>
@@ -151,19 +106,18 @@
                                 </c:choose>
                             </td>
                             <td class="lastOperation">
-                                <capTags:regulatorThreePhaseTapIndicator zone="${zone}" type="VOLTAGE_REGULATOR"
-                                    phaseMap="${phaseMap}"/>
+                                <capTags:regulatorThreePhaseTapIndicator zone="${zone}" type="VOLTAGE_REGULATOR" phaseMap="${phaseMap}"/>
                             </td>
                             <td>
                                 <c:choose>
                                     <c:when  test="${hasEditingRole}">
-                                        <cti:button nameKey="edit" renderMode="image" onclick="javascript:showZoneEditorWizard('${zoneEditorUrl}');"/>
-                                        <cti:button id="delete_${zone.zoneId}" nameKey="remove" renderMode="image"/>
+                                        <cti:button nameKey="edit" icon="icon-pencil" renderMode="image" onclick="javascript:showZoneEditorWizard('${zoneEditorUrl}');"/>
+                                        <cti:button id="delete_${zone.zoneId}" nameKey="remove" renderMode="image" icon="icon-cross"/>
                                         <tags:confirmDialog nameKey=".deleteConfirmation" argument="${zone.name}" submitName="delete" href="${zoneDeleteUrl}" on="#delete_${zone.zoneId}"/>
                                     </c:when>
                                     <c:otherwise>
-                                        <cti:button nameKey="disabledEdit" renderMode="image" disabled="true"/>
-                                        <cti:button nameKey="disabledRemove" renderMode="image" disabled="true"/>
+                                        <cti:button nameKey="disabledEdit" renderMode="image" disabled="true" icon="icon-pencil"/>
+                                        <cti:button nameKey="disabledRemove" renderMode="image" disabled="true" icon="icon-cross"/>
                                     </c:otherwise>
                                 </c:choose>
                             </td>
@@ -174,14 +128,14 @@
 				<c:if test="${hasEditingRole}">
 					<div class="actionArea">
         				<c:if test="${unassignedBanksExist}">
-        					<span class="strongWarningMessage fl"><i:inline key=".zoneList.unassignedBanks"/></span>
+        					<span class="warning fl"><i:inline key=".zoneList.unassignedBanks"/></span>
         				</c:if>
-						<cti:button nameKey="add" onclick="javascript:showZoneCreationWizard('${zoneCreatorUrl}');"/>
+						<cti:button nameKey="add" onclick="javascript:showZoneCreationWizard('${zoneCreatorUrl}');" icon="icon-add"/>
 					</div>
 				</c:if>
 				
 			</tags:boxContainer2>
-			<br>
+
 			<tags:boxContainer2 nameKey="busDetail" hideEnabled="true" showInitially="true">
 				<tags:alternateRowReset/>	
 				<table class="compactResultsTable">
@@ -191,8 +145,8 @@
 							<th><i:inline key=".busDetail.table.value"/></th>
 						</tr>
 					</thead>
-					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
-						<td><i:inline key=".busDetail.table.state"/>: </td>
+					<tr>
+						<td><i:inline key=".busDetail.table.state"/>:&nbsp;</td>
                         <%-- State --%>
                         <td class="wsnw">
                             <capTags:warningImg paoId="${subBusId}" type="SUBBUS"/>
@@ -205,36 +159,36 @@
                                 initialize="true" value="SUBBUS/${subBusId}/STATE"/>
                         </td>
 					</tr>
-					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
-						<td><i:inline key=".busDetail.table.volts"/>: </td>
+					<tr>
+						<td><i:inline key=".busDetail.table.volts"/>:&nbsp;</td>
 						<td>
 						    <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="VOLTS"/>
 						    <cti:classUpdater type="SUBBUS" identifier="${subBusId}/VOLT_QUALITY">
-						    	<img class="tierImg" src="/WebConfig/yukon/Icons/bullet_red.gif">
+						    	<cti:icon icon="icon-bullet-red"/>
 						    </cti:classUpdater>
 						</td>
 					</tr>
-					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
-						<td><i:inline key=".busDetail.table.kvar"/>: </td>
+					<tr>
+						<td><i:inline key=".busDetail.table.kvar"/>:&nbsp;</td>
 						<td>
 							<cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="KVAR_LOAD"/>
 							<cti:classUpdater type="SUBBUS" identifier="${subBusId}/KVAR_LOAD_QUALITY">
-								<img class="tierImg"  src="/WebConfig/yukon/Icons/bullet_red.gif">
+								<cti:icon icon="icon-bullet-red"/>
 							</cti:classUpdater>
 						</td>
 					</tr>
 					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
-						<td><i:inline key=".busDetail.table.kw"/>: </td>
+						<td><i:inline key=".busDetail.table.kw"/>:&nbsp;</td>
 						<td>
 							<cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="KW"/>
                         	<cti:classUpdater type="SUBBUS" identifier="${subBusId}/WATT_QUALITY">
-                        		<img class="tierImg"  src="/WebConfig/yukon/Icons/bullet_red.gif">
+                        		<cti:icon icon="icon-bullet-red"/>
                         	</cti:classUpdater>
                         </td>
 					</tr>
                     <c:forEach items="${allSubBusPoints}" var="point">
-                        <tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
-                            <td>${point.pointName}: </td>
+                        <tr>
+                            <td>${point.pointName}:&nbsp;</td>
                             <td>
                                 <cti:pointStatusColor pointId="${point.liteID}">
                                     <cti:pointValue pointId="${point.liteID}" format="VALUE"/>
@@ -245,16 +199,54 @@
 				</table>
                 <c:if test="${hasEditingRole}">
 	                <div class="actionArea">
+                        <a href="javascript:void(0);" class="f-show-strategy-details">Strategy Details</a>
 	                    <cti:url var="editorUrl" value="/editor/cbcBase.jsf">
 	                        <cti:param name="type" value="2"/>
 	                        <cti:param name="itemid" value="${subBusId}"/>
 	                    </cti:url>
-	                    <cti:button nameKey="edit" href="${editorUrl}"/>
+	                    <cti:button nameKey="edit" icon="icon-pencil" href="${editorUrl}"/>
 	                </div>
                 </c:if>
 			</tags:boxContainer2>
-		</cti:dataGridCell>
-		<cti:dataGridCell>
+			
+			<cti:msg2 key=".strategyDetails.title" arguments="${strategyName}" argumentSeparator=":" var="strategyTitle"/>
+            <tags:simplePopup id="strategyDetails" title="${strategyTitle}" on=".f-show-strategy-details">
+                <table class="compactResultsTable" >
+                    <thead>
+                        <tr>
+                            <th><i:inline key=".strategyDetails.table.setting"/></th>
+                            <th><i:inline key=".strategyDetails.table.peak"/></th>
+                            <th><i:inline key=".strategyDetails.table.offPeak"/></th>
+                            <th><i:inline key=".strategyDetails.table.units"/></th>
+                        </tr>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                        <c:forEach var="setting" items="${strategySettings}">
+                            <tr>
+                                <td>${fn:escapeXml(setting.type.displayName)}</td>
+                                <td>${fn:escapeXml(setting.peakValue)}</td>
+                                <td>${fn:escapeXml(setting.offPeakValue)}</td>
+                                <td>${fn:escapeXml(setting.type.units)}</td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+                <c:if test="${hasEditingRole}">
+                    <div class="actionArea">
+                        <cti:url var="editorUrl" value="/editor/cbcBase.jsf">
+                            <cti:param name="type" value="5"/>
+                            <cti:param name="itemid" value="${strategyId}"/>
+                        </cti:url>
+                        <cti:button nameKey="close" onclick="jQuery('#strategyDetails').dialog('close');"/>
+                        <cti:button nameKey="edit" icon="icon-pencil" href="${editorUrl}"/>
+                    </div>
+                </c:if>
+            </tags:simplePopup>
+        </div>
+        
+        <div class="column two nogutter">
+        
 			<cti:tabbedContentSelector>
 				<cti:msg2 var="tabName" key=".voltageProfile.title" />
 				<cti:tabbedContentSelectorContent selectorName="${tabName}">
@@ -287,15 +279,13 @@
 				</cti:tabbedContentSelectorContent>
 			</cti:tabbedContentSelector>
             
-            <br>
             <tags:boxContainer2 nameKey="ivvcAnalysisContainer">
                 <div id="ivvcAnalysisMsg" class="wsn">
-                    <span class="strongMessage"><i:inline key=".noIvvcMessage"/></span>
+                    <span class="empty-list"><i:inline key=".noIvvcMessage"/></span>
                     <span></span>
                 </div>
                 <cti:dataUpdaterCallback function="ivvcAnalysisMessageRecieved(['div#ivvcAnalysisMsg'])" initialize="true" value="CAPCONTROL/${subBusId}/IVVC_ANALYSIS_MESSAGE" />
             </tags:boxContainer2>
-		</cti:dataGridCell>
-	</cti:dataGrid>
-	
+        </div>
+    </div>
 </cti:standardPage>
