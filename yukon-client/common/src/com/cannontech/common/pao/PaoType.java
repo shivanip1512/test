@@ -449,7 +449,7 @@ public enum PaoType implements DatabaseRepresentationSource {
      * @throws IllegalArgumentException - if no match
      */
     public static PaoType getForDbString(String dbString) throws IllegalArgumentException {
-        PaoType deviceType = lookupByDbString.get(dbString.toUpperCase());
+        PaoType deviceType = lookupByDbString.get(dbString.toUpperCase().trim());
         Validate.notNull(deviceType, dbString);
         return deviceType;
     }

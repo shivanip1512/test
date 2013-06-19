@@ -330,7 +330,7 @@ public class StarsDatabaseCache implements DBChangeListener {
     		for (int i = 0; i < companies.size(); i++) {
     			LiteStarsEnergyCompany energyCompany = companies.get(i);
     			
-    			if (litePao.getPaoType().getPaoCategory().getCategoryId() == PAOGroups.CAT_ROUTE) {
+    			if (litePao.getPaoType().getPaoCategory().getPaoCategoryId() == PAOGroups.CAT_ROUTE) {
     			    EnergyCompanySettingDao energyCompanySettingDao = YukonSpringHook.getBean(EnergyCompanySettingDao.class);            
     			    boolean singleEc = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, energyCompany.getEnergyCompanyId());
     			    if (!singleEc) {

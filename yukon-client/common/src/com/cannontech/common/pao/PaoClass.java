@@ -31,6 +31,8 @@ public enum PaoClass implements DatabaseRepresentationSource {
     // legacy class id
     private final int paoClassId;
     private final String dbString;
+    private final static int INVALID = -1;
+    private final static String STRING_INVALID = "(invalid)";
 
     private final static ImmutableMap<Integer, PaoClass> lookupById;
     private final static ImmutableMap<String, PaoClass> lookupByDbString;
@@ -57,25 +59,48 @@ public enum PaoClass implements DatabaseRepresentationSource {
      * @return
      * @throws IllegalArgumentException - if no match
      */
-    public static PaoClass getForId(int paoClassId) {
+    public static PaoClass getForId(int paoClassId) throws IllegalArgumentException {
         PaoClass paoClass = lookupById.get(paoClassId);
         Validate.notNull(paoClass, Integer.toString(paoClassId));
         return paoClass;
     }
 
     /**
+     * Returns PaoClass string of specified int ID.
+     * @param classId
+     * @return If classId does not match an integer ID, an IllegalArgumentException
+     * will be thrown by getForId().
+     */
+    public static String getPaoClass(int classId) {
+        PaoClass foundClass = getForId(classId);
+        return foundClass.getDbString();
+    }
+
+
+    /**
      * Looks up the the PaoClass based on the string that is stored in the
      * PAObject table.
-     * @param dbString - type name to lookup, case insensitive
+     * @param dbString - type name to lookup
      * @return
      * @throws IllegalArgumentException - if no match
      */
     public static PaoClass getForDbString(String dbString) throws IllegalArgumentException {
-        PaoClass paoClass = lookupByDbString.get(dbString);
+        PaoClass paoClass = lookupByDbString.get(dbString.toUpperCase().trim());
         Validate.notNull(paoClass, dbString);
         return paoClass;
     }
-
+    
+    /**
+     * Return integer ID of specified PaoClass string.
+     * @param stringId
+     * @return If stringId does not match a PaoClass string, an IllegalArgumentException
+     * will be thrown by getForDbString(). 
+     */
+    public static int getPaoClass(String stringId) {
+        PaoClass foundClass = getForDbString(stringId);
+        return foundClass.getPaoClassId();
+    }
+    
     public int getPaoClassId() {
         return paoClassId;
     }

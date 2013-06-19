@@ -201,8 +201,8 @@ public final class PaoDaoImpl implements PaoDao {
             sqlBuilder.append("AND y.Category = ? "); 
             sqlBuilder.append("AND y.PAOClass = ? ");
             sqlBuilder.append("AND y.Type = ? ");
-            String stringCategory = PAOGroups.getCategory(category);
-            String stringClass = PAOGroups.getPAOClass(category, paoClass);
+            String stringCategory = PaoCategory.getPaoCategory(category);
+            String stringClass = PaoClass.getPaoClass(paoClass);
             String stringType = PaoType.getPaoTypeString(type);
             
             LiteYukonPAObject pao = 

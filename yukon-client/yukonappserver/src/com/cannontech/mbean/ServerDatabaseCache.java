@@ -285,7 +285,7 @@ public synchronized List<LiteYukonPAObject> getAllCapControlSubBuses()
 
 		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
 		{
-			if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getCategoryId() == PAOGroups.CAT_CAPCONTROL
+			if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getPaoCategoryId() == PAOGroups.CAT_CAPCONTROL
 				 && getAllYukonPAObjects().get(i).getPaoType().getDeviceTypeId() == PAOGroups.CAP_CONTROL_SUBBUS )
 				allCapControlSubBuses.add( getAllYukonPAObjects().get(i) );
 		}
@@ -304,7 +304,7 @@ public synchronized List<LiteYukonPAObject> getAllCapControlSubStations()
 
         for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
         {
-            if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getCategoryId() == PAOGroups.CAT_CAPCONTROL
+            if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getPaoCategoryId() == PAOGroups.CAT_CAPCONTROL
                  && getAllYukonPAObjects().get(i).getPaoType().getDeviceTypeId() == PAOGroups.CAP_CONTROL_SUBSTATION )
                 allCapControlSubStations.add( getAllYukonPAObjects().get(i) );
         }
@@ -381,7 +381,7 @@ public synchronized List<LiteYukonPAObject> getAllDevices()
 
 		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
 		{
-			if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getCategoryId() 
+			if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getPaoCategoryId() 
 				  == PAOGroups.CAT_DEVICE )
 				allDevices.add( getAllYukonPAObjects().get(i) );
 		}
@@ -820,7 +820,7 @@ public synchronized List<LiteYukonPAObject> getAllPorts()
 
 		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
 		{
-			if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getCategoryId() 
+			if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getPaoCategoryId() 
 				 == PAOGroups.CAT_PORT )
 				allPorts.add( getAllYukonPAObjects().get(i) );
 		}
@@ -843,7 +843,7 @@ public synchronized List<LiteYukonPAObject> getAllRoutes()
 
 		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
 		{
-			if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getCategoryId() == PAOGroups.CAT_ROUTE )
+			if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getPaoCategoryId() == PAOGroups.CAT_ROUTE )
 				allRoutes.add( getAllYukonPAObjects().get(i) );
 		}
 

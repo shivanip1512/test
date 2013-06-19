@@ -1321,7 +1321,7 @@ public class YC extends Observable implements MessageListener
 						String fileName = fileNames[i].substring(0, extIndex);
 						String category = null;
 						
-						if( PaoType.getPaoTypeId(fileName) != PAOGroups.INVALID)
+						if( PaoType.getPaoTypeId(fileName) != PaoType.INVALID)
 						{
 						    category = fileName;
 						}

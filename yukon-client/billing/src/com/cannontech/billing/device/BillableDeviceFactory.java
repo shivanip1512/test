@@ -3,7 +3,6 @@ package com.cannontech.billing.device;
 import com.cannontech.billing.device.base.BillableDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.database.data.pao.PAOGroups;
 
 /**
  * Factory class to generate BillableDevices

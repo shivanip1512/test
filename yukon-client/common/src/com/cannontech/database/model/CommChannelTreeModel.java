@@ -53,7 +53,7 @@ public class CommChannelTreeModel extends DBTreeModel {
         }
 
         boolean isDeviceValid =
-            isDeviceValid(paoType.getPaoCategory().getCategoryId(), paoType.getPaoClass().getPaoClassId(),
+            isDeviceValid(paoType.getPaoCategory().getPaoCategoryId(), paoType.getPaoClass().getPaoClassId(),
                 paoType.getDeviceTypeId());
         boolean isCoreDevice = DeviceClasses.isCoreDeviceClass(paoType.getPaoClass().getPaoClassId());
         boolean isCommChannPort = paoType.isPort();
@@ -88,7 +88,7 @@ public class CommChannelTreeModel extends DBTreeModel {
                 for (int j = 0; j < devices.size(); j++) {
                     LiteYukonPAObject liteYuk = (LiteYukonPAObject) devices.get(j);
 
-                    if (isDeviceValid(liteYuk.getPaoType().getPaoCategory().getCategoryId(), liteYuk.getPaoType()
+                    if (isDeviceValid(liteYuk.getPaoType().getPaoCategory().getPaoCategoryId(), liteYuk.getPaoType()
                         .getPaoClass().getPaoClassId(), liteYuk.getPaoType().getDeviceTypeId())) {
                         devicePortID = ((LiteYukonPAObject) devices.get(j)).getPortID();
                         if (devicePortID == portID) {

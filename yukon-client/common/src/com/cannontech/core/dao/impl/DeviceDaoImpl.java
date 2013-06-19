@@ -321,7 +321,7 @@ public final class DeviceDaoImpl implements DeviceDao {
             LiteYukonPAObject lPao = (LiteYukonPAObject) obj;
             boolean foundMatch = true;
             foundMatch &= lPao.getPaoName().equalsIgnoreCase(deviceName);
-            foundMatch &= lPao.getPaoType().getPaoCategory().getCategoryId() == category;
+            foundMatch &= lPao.getPaoType().getPaoCategory().getPaoCategoryId() == category;
             foundMatch &= lPao.getPaoType().getPaoClass().getPaoClassId() == paoClass;
             foundMatch &= lPao.getPaoType().getDeviceTypeId() == type;
             if (foundMatch) {
@@ -337,8 +337,8 @@ public final class DeviceDaoImpl implements DeviceDao {
     @Override
     public LiteYukonPAObject getLiteYukonPAObject(String deviceName, String category, String paoClass, String type)
     {
-        int categoryInt = PAOGroups.getCategory(category);
-        int paoClassInt = PAOGroups.getPAOClass(category, paoClass);
+        int categoryInt = PaoCategory.getPaoCategory(category);
+        int paoClassInt = PaoClass.getPaoClass(paoClass);
         int typeInt = PaoType.getPaoTypeId(type);
         return getLiteYukonPAObject(deviceName, categoryInt, paoClassInt, typeInt);
     }

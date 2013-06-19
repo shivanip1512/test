@@ -5,8 +5,8 @@ package com.cannontech.database.data.device.lm;
  * Creation date: (2/18/2002 9:38:37 AM)
  * @author: 
  */
+import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 
@@ -37,7 +37,7 @@ public final static com.cannontech.database.data.pao.YukonPAObject createLoadMan
 			break;
 		case PAOGroups.LM_GROUP_DIGI_SEP:
             retLm = new LMGroupDigiSep();
-            retLm.setPAOCategory(PAOGroups.getCategory(type.getPaoCategory().getCategoryId()));
+            retLm.setPAOCategory(PaoCategory.getPaoCategory(type.getPaoCategory().getPaoCategoryId()));
             retLm.setPAOClass(type.getPaoClass().getDbString());
             break;
 		case PAOGroups.LM_GROUP_VERSACOM:

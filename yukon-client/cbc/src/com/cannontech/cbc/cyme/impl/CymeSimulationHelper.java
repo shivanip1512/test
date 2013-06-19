@@ -110,7 +110,7 @@ public class CymeSimulationHelper {
         LiteYukonPAObject pao = null;
         try {
             pao = paoDao.getLiteYukonPAObject(cymeObject.getEqNo(),
-                                              paoType.getPaoCategory().getCategoryId(),
+                                              paoType.getPaoCategory().getPaoCategoryId(),
                                               paoType.getPaoClass().getPaoClassId(),
                                               paoType.getDeviceTypeId());
         } catch (NotFoundException e) {
@@ -130,7 +130,7 @@ public class CymeSimulationHelper {
         LiteYukonPAObject pao = null;
         try {
             pao = paoDao.getLiteYukonPAObject(cymeObject.getEqNo(),
-                                              paoType.getPaoCategory().getCategoryId(),
+                                              paoType.getPaoCategory().getPaoCategoryId(),
                                               paoType.getPaoClass().getPaoClassId(),
                                               paoType.getDeviceTypeId());
         } catch (NotFoundException e) {
@@ -163,7 +163,7 @@ public class CymeSimulationHelper {
         LiteYukonPAObject pao = null;
         try {
             pao = paoDao.getLiteYukonPAObject(cymeObject.getEqNo(),
-                                              paoType.getPaoCategory().getCategoryId(),
+                                              paoType.getPaoCategory().getPaoCategoryId(),
                                               paoType.getPaoClass().getPaoClassId(),
                                               paoType.getDeviceTypeId());
         } catch (NotFoundException e) {

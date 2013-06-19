@@ -140,7 +140,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
             // if this device exists already, then return
             LiteYukonPAObject liteYukonPAObject =
                 deviceDao.getLiteYukonPAObject(devCCU.getName(),
-                                               PaoCategory.DEVICE.getCategoryId(),
+                                               PaoCategory.DEVICE.getPaoCategoryId(),
                                                PaoClass.TRANSMITTER.getPaoClassId(),
                                                PaoType.CCU711.getDeviceTypeId());
             if (liteYukonPAObject != null) {
@@ -153,7 +153,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
 
         LiteYukonPAObject commChan =
             paoDao.getLiteYukonPAObject(devCCU.getCommChannel().getName(),
-                                        PaoCategory.PORT.getCategoryId(), PaoClass.PORT.getPaoClassId(),
+                                        PaoCategory.PORT.getPaoCategoryId(), PaoClass.PORT.getPaoClassId(),
                                         PaoType.TSERVER_SHARED.getDeviceTypeId());
 
         Integer portID = new Integer(commChan.getYukonID());

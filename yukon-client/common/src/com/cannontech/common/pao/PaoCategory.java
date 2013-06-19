@@ -1,32 +1,44 @@
 package com.cannontech.common.pao;
 
 import org.apache.commons.lang.Validate;
+import org.jfree.util.Log;
 
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
-public enum PaoCategory implements DatabaseRepresentationSource{
+public enum PaoCategory implements DatabaseRepresentationSource {
     DEVICE(PAOGroups.STRING_CAT_DEVICE, PAOGroups.CAT_DEVICE),
     ROUTE(PAOGroups.STRING_CAT_ROUTE, PAOGroups.CAT_ROUTE),
     PORT(PAOGroups.STRING_CAT_PORT, PAOGroups.CAT_PORT),
     CUSTOMER(PAOGroups.STRING_CAT_CUSTOMER, PAOGroups.CAT_CUSTOMER),
     CAPCONTROL(PAOGroups.STRING_CAT_CAPCONTROL, PAOGroups.CAT_CAPCONTROL),
     LOADMANAGEMENT(PAOGroups.STRING_CAT_LOADMANAGEMENT, PAOGroups.CAT_LOADCONTROL),
-    SCHEDULE("Schedule", 6), // not real
-   	;
+    SCHEDULE("Schedule", 6); // not real
    	
     private final int categoryId;
     private final String dbString;
+    private final static int INVALID = -1;
+    private final static String STRING_INVALID = "(invalid)";
     private final static ImmutableMap<String, PaoCategory> lookupByDbString;
+    private final static ImmutableMap<Integer, PaoCategory> lookupById;
 
     static {
-        Builder<String, PaoCategory> dbBuilder = ImmutableMap.builder();
-        for (PaoCategory paoCategory : values()) {
-            dbBuilder.put(paoCategory.dbString, paoCategory);
+        try {
+            Builder<String, PaoCategory> stringBuilder = ImmutableMap.builder();
+            Builder<Integer, PaoCategory> integerBuilder = ImmutableMap.builder();
+            for (PaoCategory paoCategory : values()) {
+                stringBuilder.put(paoCategory.dbString, paoCategory);
+                integerBuilder.put(paoCategory.categoryId, paoCategory);
+            }
+            lookupByDbString = stringBuilder.build();
+            lookupById = integerBuilder.build();
+
+        } catch (IllegalArgumentException e) {
+            Log.warn("Caught exception while building lookup maps.  Look for duplicate name or db string in PaoCategory.");
+            throw e;
         }
-        lookupByDbString = dbBuilder.build();
     }
 
     private PaoCategory(String dbString, int categoryId) {
@@ -38,7 +50,7 @@ public enum PaoCategory implements DatabaseRepresentationSource{
         return dbString;
     }
     
-    public int getCategoryId() {
+    public int getPaoCategoryId() {
         return categoryId;
     }
     
@@ -50,14 +62,50 @@ public enum PaoCategory implements DatabaseRepresentationSource{
     /**
      * Looks up the the PaoCategory based on the string that is stored in the
      * PAObject table.
-     * @param dbString - type name to lookup, case insensitive
+     * @param dbString - type name to lookup
      * @return
      * @throws IllegalArgumentException - if no match
      */
     public static PaoCategory getForDbString(String dbString) throws IllegalArgumentException {
-        PaoCategory paoCategory = lookupByDbString.get(dbString);
+        String lookupString = dbString.toUpperCase().trim();
+        PaoCategory paoCategory = lookupByDbString.get(lookupString);
         Validate.notNull(paoCategory, dbString);
         return paoCategory;
+    }
+    
+    /**
+     * Returns integer Id of specified PaoCategory string.
+     * @param strCategory
+     * @return If strCategory does not match a PaoCategory string, an IllegalArgumentException
+     * will be thrown by getForDbString().
+     */
+    public static int getPaoCategory(String strCategory) {
+        PaoCategory foundCategory = getForDbString(strCategory);
+        return foundCategory.getPaoCategoryId();
+    }
+    
+    /**
+     * Looks up the PaoCategory based on the integer id that is stored in the
+     * PAObject table.
+     * @param categoryId - 
+     * @return
+     * @throws IllegalArgumentException - if no match
+     */
+    public static PaoCategory getForId(int categoryId) throws IllegalArgumentException {
+        PaoCategory paoCategory = lookupById.get(categoryId);
+        Validate.notNull(paoCategory, Integer.toString(categoryId));
+        return paoCategory;
+    }
+    
+    /**
+     * Returns PaoCategory string of specified integer Id.
+     * @param categoryId
+     * @return If categoryId does not match an integer ID, an IllegalArgumentException
+     * will be thrown by getForId().
+     */
+    public static String getPaoCategory(int categoryId) {
+        PaoCategory foundCategory = lookupById.get(categoryId);
+        return foundCategory.getDbString();
     }
 
 }
