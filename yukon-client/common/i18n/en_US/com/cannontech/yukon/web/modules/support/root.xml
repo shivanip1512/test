@@ -48,17 +48,6 @@
     <entry key="yukon.web.modules.support.manuals.daUser.link">http://portal.cooperpowereas.net/sites/Marketing/ProductDocuments/Smart%20Grid/Yukon%20Enterprise%20Software/Yukon%20Users%20Manual%205.6/Yukon5.6DAUsersManual.pdf</entry>
     <entry key="yukon.web.modules.support.manuals.additional.link">http://www.cannontech.com/support/docs/yukon.asp</entry>
     
-    <entry key="yukon.web.modules.support.logFile.UNKNOWN">{0}</entry>
-    <entry key="yukon.web.modules.support.logFile.CALC">Calc Logic</entry>
-    <entry key="yukon.web.modules.support.logFile.CAP_CONTROL">Cap Control</entry>
-    <entry key="yukon.web.modules.support.logFile.CCU_SIMULATOR">CCU Simulator</entry>
-    <entry key="yukon.web.modules.support.logFile.DISPATCH">Dispatch</entry>
-    <entry key="yukon.web.modules.support.logFile.LOAD_MANAGEMENT">Load Management</entry>
-    <entry key="yukon.web.modules.support.logFile.PORTER">Porter</entry>
-    <entry key="yukon.web.modules.support.logFile.SCANNER">Scanner</entry>
-    <entry key="yukon.web.modules.support.logFile.SERVICE_MANAGER">Service Manager</entry>
-    <entry key="yukon.web.modules.support.logFile.WEB_SERVER">Web Server</entry>
-
     <!-- info.jsp -->
     <entry key="yukon.web.modules.support.system.pageName">System Info</entry>
     <entry key="yukon.web.modules.support.system.versionDetails">Version Details</entry>
@@ -579,6 +568,4 @@
     <entry key="yukon.web.menu.tools.deviceGroupUpload">Device Group Upload</entry>
     <entry key="yukon.web.menu.tools.manageIndex">Manage Indexes</entry>
     
-    <entry key="yukon.web.menu.support.category">Event Log (By Category)</entry>
-    <entry key="yukon.web.menu.support.type">Event Log (By Type)</entry>
 </properties>

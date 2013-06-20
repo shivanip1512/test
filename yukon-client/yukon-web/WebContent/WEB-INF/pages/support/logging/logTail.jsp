@@ -23,7 +23,7 @@
 		</tags:nameValue2>
 	</tags:nameValueContainer2>
 
-	<div class="stacked">
+	<div class="stacked clearfix">
 		<cti:button nameKey="download" type="button" href="download?file=${file}"/>
 		<cti:button id="pauseBtn" type="button" nameKey="pause" />
 		<cti:button id="startBtn" type="button" nameKey="resume" />

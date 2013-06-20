@@ -273,7 +273,7 @@ public class LogExplorerController {
      * 
      * Filters the files by creation date. If a file's creation date falls between the instants (inclusive) the file will be included.
      */
-    private void populateFileLists(File currentDir, Collection<File> localLogList, Collection<File> localDirectoryList, final Instant from, final Instant to) {
+    public static void populateFileLists(File currentDir, Collection<File> localLogList, Collection<File> localDirectoryList, final Instant from, final Instant to) {
         // iterates through everything in the given directory and sort into files and directories
 
     	File[] localDirAndFiles = currentDir.listFiles(FileUtil.creationDateFilter(from, to, false));
@@ -282,7 +282,7 @@ public class LogExplorerController {
 
             if (fileObj.isDirectory()) {
                 localDirectoryList.add(fileObj);
-            } else if (this.isLog(fileObj.getName())) {
+            } else if (isLog(fileObj.getName())) {
                 localLogList.add(fileObj);
             }
         }
@@ -339,7 +339,7 @@ public class LogExplorerController {
     /**
      * This method checks to see if the file extension is the right type
      */
-    public boolean isLog(String logName) {
+    public static boolean isLog(String logName) {
         return logName.endsWith("log") || logName.endsWith("xml");
     }
 
@@ -387,7 +387,7 @@ public class LogExplorerController {
 		return false;
 	}
 
-    private final Function<File, String> fileToApplicationNameFunction = new Function<File, String> () {
+    public static final Function<File, String> fileToApplicationNameFunction = new Function<File, String> () {
         // The following pattern looks for a base file name (group 1) that is the
         // leading part of the file name minus an optional underscore, a 1-8 
         // digit number, and the extension.
@@ -411,7 +411,7 @@ public class LogExplorerController {
         }
     };
     
-    public class LogFile {
+    public static class LogFile {
 
     	private File file;
     	private String identifier;

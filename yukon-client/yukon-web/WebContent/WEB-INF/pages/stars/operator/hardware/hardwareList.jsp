@@ -102,7 +102,6 @@
 <%-- INVENTORY CHECKING SWITCH POPUP --%>
 <i:simplePopup titleKey=".switches.add" 
         id="inventoryCheckingSwitchPopup" 
-        styleClass="smallSimplePopup"
         showImmediately="${showSwitchCheckingPopup}"
         onClose="window.location='${hardwareListUrl}';">
     <c:if test="${showSwitchCheckingPopup}">
@@ -128,7 +127,6 @@
 <%-- INVENTORY CHECKING THERMOSTAT POPUP --%>
 <i:simplePopup titleKey=".thermostats.add" 
         id="inventoryCheckingThermostatPopup" 
-        styleClass="smallSimplePopup" 
         showImmediately="${showThermostatCheckingPopup}"
         onClose="window.location='${hardwareListUrl}';">
     <c:if test="${showThermostatCheckingPopup}">
@@ -154,7 +152,6 @@
 <%-- INVENTORY CHECKING GATEWAY POPUP --%>
 <i:simplePopup titleKey=".gateways.add" 
         id="inventoryCheckingGatewayPopup" 
-        styleClass="smallSimplePopup" 
         showImmediately="${showGatewayCheckingPopup}"
         onClose="window.location='${hardwareListUrl}';">
     <c:if test="${showGatewayCheckingPopup}">
@@ -181,7 +178,6 @@
 <c:if test="${not empty confirmWarehouseSerial}">
     <i:simplePopup titleKey="${titleKey}" 
             id="addFromWarehousePopup" 
-            styleClass="mediumSimplePopup" 
             showImmediately="true"
             onClose="window.location='${hardwareListUrl}';">
         
@@ -279,7 +275,6 @@
 <c:if test="${not empty confirmCreateSerial}">
     <i:simplePopup titleKey="${titleKey}" 
             id="createSerialPopup" 
-            styleClass="smallSimplePopup" 
             showImmediately="true"
             onClose="window.location='${hardwareListUrl}';">
 
@@ -303,7 +298,6 @@
 <c:if test="${not empty notFoundSerial}">
     <i:simplePopup titleKey="${titleKey}" 
             id="notFoundSerialPopup" 
-            styleClass="smallSimplePopup" 
             showImmediately="true"
             onClose="window.location='${hardwareListUrl}';">
 
@@ -321,7 +315,6 @@
 <c:if test="${not empty sameAccountSerial}">
     <i:simplePopup titleKey="${titleKey}" 
             id="sameAccountPopup" 
-            styleClass="smallSimplePopup" 
             showImmediately="true"
             onClose="window.location='${hardwareListUrl}';">
 
@@ -357,7 +350,7 @@
     <tags:boxContainer2 nameKey="switches" styleClass="hardwareListContainer">
         <c:choose>
             <c:when test="${empty switches}">
-                <i:inline key=".switches.none"/>
+                <span class="empty-list"><i:inline key=".switches.none"/></span>
             </c:when>
             <c:otherwise>
                 <table class="compactResultsTable aligned_4_actions">
@@ -443,7 +436,7 @@
     <tags:boxContainer2 nameKey="thermostats" styleClass="hardwareListContainer">
         <c:choose>
             <c:when test="${empty thermostats}">
-                <i:inline key=".thermostats.none"/>
+                <span class="empty-list"><i:inline key=".thermostats.none"/></span>
             </c:when>
             <c:otherwise>
                 <tags:alternateRowReset/>
@@ -551,7 +544,7 @@
     <tags:boxContainer2 nameKey="meters" styleClass="hardwareListContainer">
         <c:choose>
             <c:when test="${empty meters}">
-                <i:inline key=".meters.none"/>
+                <span class="empty-list"><i:inline key=".meters.none"/></span>
             </c:when>
             <c:otherwise>
                 <table class="compactResultsTable aligned_4_actions">
@@ -632,35 +625,28 @@
             
         <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
             <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
-            
-                <br>
-                
-                <form action="/stars/operator/hardware/mp/create" method="get">
-                    <input type="hidden" name="accountId" value="${accountId}">
-                    <table class="popupButtonTable">
-                        <tr>
-                            <td>
-                                <c:choose>
-                                    <c:when test="${starsMeters}">
-                                        <cti:button nameKey="add" type="submit" icon="icon-add"/>
-                                    </c:when>
-                            
-                                    <c:otherwise>
-                                        <tags:pickerDialog extraArgs="${energyCompanyId}" 
-                                                id="meterPicker" 
-                                                type="availableMctPicker" 
-                                                destinationFieldId="meterId" 
-                                                immediateSelectMode="true"
-                                                endAction="addMeter" 
-                                                linkType="button" 
-                                                icon="icon-add"
-                                                nameKey="add"/>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-                        </tr>
-                    </table>
-                </form>
+                <div class="actionArea">
+                    <form action="/stars/operator/hardware/mp/create" method="get">
+                        <input type="hidden" name="accountId" value="${accountId}">
+                        <c:choose>
+                            <c:when test="${starsMeters}">
+                                <cti:button nameKey="add" type="submit" icon="icon-add"/>
+                            </c:when>
+                    
+                            <c:otherwise>
+                                <tags:pickerDialog extraArgs="${energyCompanyId}"
+                                        id="meterPicker"
+                                        type="availableMctPicker"
+                                        destinationFieldId="meterId"
+                                        immediateSelectMode="true"
+                                        endAction="addMeter"
+                                        linkType="button"
+                                        icon="icon-add"
+                                        nameKey="add"/>
+                            </c:otherwise>
+                        </c:choose>
+                    </form>
+                </div>
                 
             </cti:checkRolesAndProperties>
         </cti:checkRolesAndProperties>
@@ -673,7 +659,7 @@
     <tags:boxContainer2 nameKey="gateways" styleClass="hardwareListContainer">
         <c:choose>
             <c:when test="${empty gateways}">
-                <i:inline key=".gateways.none"/>
+                <span class="empty-list"><i:inline key=".gateways.none"/></span>
             </c:when>
             <c:otherwise>
                 <tags:alternateRowReset/>

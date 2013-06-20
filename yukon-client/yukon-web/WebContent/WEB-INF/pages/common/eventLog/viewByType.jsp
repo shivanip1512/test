@@ -14,6 +14,13 @@
     <cti:standardMenu menuSelection="events|byType" />
     <c:set var="baseUrl" value="/common/eventLog/viewByType"/>
     
+    <cti:linkTabbedContainer>
+        <cti:msg2 key=".byCategory.contextualPageName" var="byCategoryTab"/>
+        <cti:msg2 key=".byType.contextualPageName" var="byTypeTab"/>
+        <cti:linkTab selectorName="${byCategoryTab}" tabHref="viewByCategory"></cti:linkTab>
+        <cti:linkTab selectorName="${byTypeTab}" tabHref="viewByType" initiallySelected="true"></cti:linkTab>
+    </cti:linkTabbedContainer>
+    
     <%-- Filtering popup --%>
     <cti:msg2 var="eventLogFiltersTitle" key=".eventLogFilters" />
     <tags:simplePopup id="filterPopup" title="${eventLogFiltersTitle}">
@@ -107,11 +114,7 @@
     
         <c:choose>
             <c:when test="${searchResult.count == 0}">
-                <table>
-                    <tr>
-                        <td colspan="2"><cti:msg key="yukon.common.events.noResults"/></td>
-                    </tr>
-                </table>
+                <span class="empty-list"><i:inline key="yukon.common.events.noResults"/></span>
             </c:when>
             <c:otherwise>
                 <table class="compactResultsTable rowHighlighting" style="width: 100%;">

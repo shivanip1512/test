@@ -180,8 +180,8 @@ jQuery(function() {
         <tags:sectionContainer2 nameKey="logs">
              <ul class="stacked simple-list">
                 <c:forEach var="logFile" items="${todaysLogs}">
-                    <cti:url value="/support/logging/tail" var="url"><cti:param name="file" value="/${logFile.fileName}"></cti:param></cti:url>
-                    <li> <a href="${url}"> <i:inline key="${logFile.message}"/> </a></li>
+                    <cti:url value="/support/logging/view" var="url"><cti:param name="file" value="/${logFile.name}"></cti:param></cti:url>
+                    <li> <a href="${url}">${logFile.identifier}</a></li>
                 </c:forEach>
             </ul>
             <a href="/support/logging/menu?file=/&sortType=date"><i:inline key=".allLogs"/></a>

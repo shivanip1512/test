@@ -626,6 +626,14 @@
                 </page>
                 <page name="routeUsage" type="BASIC">
                 </page>
+                <page name="eventViewer" type="BASIC">
+                <pages>
+                    <page name="eventViewer.byType" type="BASIC">
+                    </page>
+                    <page name="eventViewer.byCategory" type="BASIC">
+                    </page>
+                </pages>
+            </page>
             </pages>
         </page>
     </pages>
@@ -725,7 +733,7 @@
                                         <link>/adminSetup/user/edit?userId=${userId}</link>
                                         <labelArgument>${editingUsername}</labelArgument>
                                     </page>
-                                    <page name="userPermissions" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                    <page name="userPermissions" type="DETAIL_CHILD" contributeToMenu="true">
                                         <requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
                                         <link>/adminSetup/user/permissions?userId=${userId}</link>
                                         <labelArgument>${editingUsername}</labelArgument>

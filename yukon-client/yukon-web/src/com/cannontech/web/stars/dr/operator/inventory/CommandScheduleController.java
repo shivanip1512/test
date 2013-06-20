@@ -39,11 +39,11 @@ import com.cannontech.web.stars.dr.operator.inventory.model.CommandScheduleWrapp
 @Controller
 public class CommandScheduleController {
     
-    private CommandScheduleDao commandScheduleDao;
-    private CronExpressionTagService cronExpressionTagService;
-    private CommandScheduleValidator validator;
-    private CommandScheduleEventLogService commandScheduleEventLogService;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private CommandScheduleDao commandScheduleDao;
+    @Autowired private CronExpressionTagService cronExpressionTagService;
+    @Autowired private CommandScheduleValidator validator;
+    @Autowired private CommandScheduleEventLogService commandScheduleEventLogService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     /* Command Schedule Edit/Creation page */
     @RequestMapping(value = "/operator/inventory/commandSchedule", method = RequestMethod.GET)
@@ -126,24 +126,10 @@ public class CommandScheduleController {
         
         return "redirect:home";
     }
-    
-    @RequestMapping(value = "/operator/inventory/updateSchedule", method = RequestMethod.POST, params="cancel")
-    public String cancel(@ModelAttribute("schedule") CommandScheduleWrapper schedule, BindingResult bindingResult,
-                                 ModelMap modelMap, 
-                                 YukonUserContext userContext,
-                                 HttpServletRequest request,
-                                 FlashScope flashScope,
-                                 String formUniqueId) {
-        return "redirect:home";
-    }
-    
+       
     @RequestMapping(value = "/operator/inventory/updateSchedule", method = RequestMethod.POST, params="delete")
     public String delete(@ModelAttribute("schedule") CommandScheduleWrapper schedule, BindingResult bindingResult,
-                                 ModelMap modelMap, 
-                                 YukonUserContext userContext,
-                                 HttpServletRequest request,
-                                 FlashScope flashScope,
-                                 String formUniqueId) {
+                                 FlashScope flashScope) {
         
         commandScheduleDao.delete(schedule.getCommandSchedule().getCommandScheduleId());
         
@@ -160,30 +146,4 @@ public class CommandScheduleController {
             binder.setMessageCodesResolver(msgCodesResolver);
         }
     }
-    
-    @Autowired
-    public void setCommandScheduleDao(CommandScheduleDao commandScheduleDao) {
-        this.commandScheduleDao = commandScheduleDao;
-    }
-
-    @Autowired
-    public void setCronExpressionTagService(CronExpressionTagService cronExpressionTagService) {
-        this.cronExpressionTagService = cronExpressionTagService;
-    }
-    
-    @Autowired
-    public void setCommandScheduleValidator(CommandScheduleValidator validator) {
-        this.validator = validator;
-    }
-    
-    @Autowired
-    public void setCommandScheduleEventLogService(CommandScheduleEventLogService commandScheduleEventLogService) {
-        this.commandScheduleEventLogService = commandScheduleEventLogService;
-    }
-
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
 }

@@ -36,32 +36,32 @@
             <c:choose>
                 <c:when test="${empty pageScope.endAction || pageScope.endAction == 'nothing'}">
                     <c:if test="${empty pageScope.submitName}">
-                        <cti:button classes="${pageScope.styleClass}" nameKey="ok" type="submit" />
+                        <cti:button classes="primary action ${pageScope.styleClass}" nameKey="ok" type="submit" />
                     </c:if>
                     <c:if test="${!empty pageScope.submitName}">
                         <c:if test="${empty pageScope.href}">
-                            <cti:button classes="${pageScope.styleClass}" nameKey="ok"
+                            <cti:button classes="primary action ${pageScope.styleClass}" nameKey="ok"
                                 name="${pageScope.submitName}" type="submit"/>
                         </c:if>
                         <c:if test="${!empty pageScope.href}">
-                            <cti:button classes="${pageScope.styleClass}" nameKey="ok"
+                            <cti:button classes="primary action ${pageScope.styleClass}" nameKey="ok"
                                 name="${pageScope.submitName}" href="${pageScope.href}"/>
                         </c:if>
                     </c:if>
                 </c:when>
                 <c:when test="${pageScope.endAction == 'hide'}">
                     <c:if test="${empty pageScope.submitName}">
-                        <cti:button classes="${pageScope.styleClass}" nameKey="ok" type="submit"
+                        <cti:button classes="primary action ${pageScope.styleClass}" nameKey="ok" type="submit"
                             onclick="jQuery('#${uniqueId}').dialog('close')" />
                     </c:if>
                     <c:if test="${!empty pageScope.submitName}">
                         <c:if test="${empty pageScope.href}">
-                            <cti:button classes="${pageScope.styleClass}" nameKey="ok"
+                            <cti:button classes="primary action ${pageScope.styleClass}" nameKey="ok"
                                 name="${pageScope.submitName}" type="submit" 
                                 onclick="jQuery('#${uniqueId}').dialog('close')"/>
                         </c:if>
                         <c:if test="${!empty pageScope.href}">
-                            <cti:button classes="${pageScope.styleClass}" nameKey="ok"
+                            <cti:button classes="primary action ${pageScope.styleClass}" nameKey="ok"
                                 name="${pageScope.submitName}" href="${pageScope.href}"
                                 onclick="jQuery('#${uniqueId}').dialog('close')"/>
                         </c:if>
@@ -69,16 +69,16 @@
                 </c:when>
                 <c:when test="${pageScope.endAction == 'block'}">
                     <c:if test="${empty pageScope.submitName}">
-                        <cti:button classes="${pageScope.styleClass} f_blocker" nameKey="ok"
+                        <cti:button classes="primary action ${pageScope.styleClass} f_blocker" nameKey="ok"
                             type="submit" />
                     </c:if>
                     <c:if test="${!empty pageScope.submitName}">
                         <c:if test="${empty pageScope.href}">
-                            <cti:button classes="${pageScope.styleClass}" nameKey="ok"
+                            <cti:button classes="primary action ${pageScope.styleClass}" nameKey="ok"
                                 name="${pageScope.submitName}" type="submit"/>
                         </c:if>
                         <c:if test="${!empty pageScope.href}">
-                            <cti:button classes="${pageScope.styleClass} f_blocker" nameKey="ok"
+                            <cti:button classes="primary action ${pageScope.styleClass} f_blocker" nameKey="ok"
                                 name="${pageScope.submitName}" href="${pageScope.href}"/>
                         </c:if>
                     </c:if>

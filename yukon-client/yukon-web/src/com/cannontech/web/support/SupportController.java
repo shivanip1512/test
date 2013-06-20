@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONObject;
 
 import org.joda.time.DateTimeZone;
+import org.joda.time.Instant;
 import org.joda.time.LocalDate;
 import org.jsoup.helper.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cannontech.common.i18n.Displayable;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.util.BinaryPrefix;
@@ -58,6 +58,8 @@ import com.cannontech.web.support.SiteMapHelper.SiteMapCategory;
 import com.cannontech.web.support.SiteMapHelper.SiteMapPage;
 import com.cannontech.web.support.SiteMapHelper.SiteMapWrapper;
 import com.cannontech.web.support.SupportBundle.BundleRangeSelection;
+import com.cannontech.web.support.logging.LogExplorerController;
+import com.cannontech.web.support.logging.LogExplorerController.LogFile;
 import com.cannontech.web.util.JsonHelper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -67,7 +69,6 @@ import com.google.common.collect.Sets;
 public class SupportController {
 
     private final static String baseKey = "yukon.web.modules.support.supportBundle";
-    private final static String startKey = "yukon.web.modules.support";
 
     @Autowired private SupportBundleService supportBundleService;
     @Autowired private List<SupportBundleWriter> writerList;
@@ -104,15 +105,20 @@ public class SupportController {
 
         List<File> localLogList = Lists.newArrayList();
         List<File> localDirectoryList = Lists.newArrayList();
-//        LogMenuController.populateFileLists(logDir, localLogList, localDirectoryList);
-
+        
+        Instant from;
+        Instant to;
+        DateTimeZone tz = DateTimeZone.getDefault();
+        LocalDate now = LocalDate.now(tz);
+            from = TimeUtil.toMidnightAtBeginningOfDay(now, tz);
+            to = TimeUtil.toMidnightAtEndOfDay(now, tz);
+        LogExplorerController.populateFileLists(logDir, localLogList, localDirectoryList, from, to);
+        
         List<LogFile> todaysLogs = Lists.newArrayList();
-        for( File logFile : localLogList){
-            LocalDate lastMod = new LocalDate(logFile.lastModified());
-            if(LocalDate.now().equals(lastMod)){
-               todaysLogs.add(new LogFile(logFile.getName()));
-            }
+        for (File log : localLogList){
+            todaysLogs.add( new LogFile(log, LogExplorerController.fileToApplicationNameFunction.apply(log)));
         }
+
         objectFormattingService.sortDisplayableValues(todaysLogs, null, null, context);
         
         
@@ -156,62 +162,6 @@ public class SupportController {
     }
 
 
-    public class LogFile implements Displayable {
-        private final String fileName;
-        private final MessageSourceResolvable resolvable;
-
-        public LogFile(String fileName) {
-            this.fileName = fileName;
-            
-            MessageSourceResolvable tempResolvable = 
-                    new YukonMessageSourceResolvable(startKey +".logFile.UNKNOWN", fileName);
-            
-            String key = startKey +".logFile.UNKONWN";
-            for(NiceNameMapping p : NiceNameMapping.values()){
-                if (p.getRegex().matcher(fileName).matches()){
-                     key = startKey + ".logFile." + p.name();
-                     tempResolvable = new YukonMessageSourceResolvable(key);
-                }
-            }
-            this.resolvable = tempResolvable;
-        }
-
-        public String getFileName() {
-            return fileName;
-        }
-
-        @Override
-        public MessageSourceResolvable getMessage() {
-            return resolvable;
-        }
-
-    }
-    
-    public enum NiceNameMapping{
-        CALC(Pattern.compile("^calc\\d.*")),
-        CAP_CONTROL(Pattern.compile("^capcontrol\\d.*")),
-        CCU_SIMULATOR(Pattern.compile("^ccu_simpulator\\d.*")),
-        DISPATCH(Pattern.compile("^dispatch\\d.*")),
-        LOAD_MANAGEMENT(Pattern.compile("^loadmanagement\\d.*")),
-        PORTER(Pattern.compile("^porter\\d.*")),
-        SCANNER(Pattern.compile("^scanner\\d.*")),
-        SERVICE_MANAGER(Pattern.compile("^ServiceManager_\\d.*")),
-        WEB_SERVER(Pattern.compile("^Webserver_\\d.*")),
-        
-        ;
-        
-        
-        private Pattern regex;
-        
-        NiceNameMapping(Pattern regex){
-            this.regex = regex;
-        }
-        
-        public Pattern getRegex(){
-            return regex;
-        }
-        
-    }
 
     private Validator detailsValidator = new SimpleValidator<SupportBundle>(SupportBundle.class) {
             @Override

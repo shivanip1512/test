@@ -688,3 +688,7 @@ div.ui-tabs-header .ui-tabs-panel {
     border-right: medium none !important;
     border-bottom: medium none !important;
 }
+
+.ui-tooltip {
+    border-radius: 2px;
+}

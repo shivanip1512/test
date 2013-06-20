@@ -90,11 +90,11 @@ This page shows some examples of how to use AJAX dialogs in Yukon.
 </tags:sectionContainer>
 
 <tags:sectionContainer title="In-line Dialogs">
-    <ul>
-        <li><cti:button id="sampleInlineBtn1" nameKey="inline1"/></li>
-        <li><cti:button id="sampleInlineBtn2" nameKey="inline2"/></li>
-        <li><cti:button id="sampleInlineBtn3" nameKey="inline3"/></li>
-        <li><cti:button id="sampleInlineBtn4" nameKey="inline4"/></li>
-        <li><cti:button id="sampleInlineBtn5" nameKey="inline5"/></li>
-    </ul>
+  <div class="clearfix">
+  <cti:button id="sampleInlineBtn1" nameKey="inline1"/>
+  <cti:button id="sampleInlineBtn2" nameKey="inline2"/>
+  <cti:button id="sampleInlineBtn3" nameKey="inline3"/>
+  <cti:button id="sampleInlineBtn4" nameKey="inline4"/>
+  <cti:button id="sampleInlineBtn5" nameKey="inline5"/>
+  </div>
 </tags:sectionContainer>

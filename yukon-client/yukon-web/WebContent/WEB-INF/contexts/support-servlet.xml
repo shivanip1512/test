@@ -22,8 +22,6 @@
         <property name="order" value="2"/>
     </bean>
 
-    <bean name="/database/info" class="com.cannontech.web.support.DatabaseInformationController"/>
-
     <bean name="/threadDump" class="com.cannontech.web.support.ThreadDumpController"/>
     
     <!-- use jsp page for view -->

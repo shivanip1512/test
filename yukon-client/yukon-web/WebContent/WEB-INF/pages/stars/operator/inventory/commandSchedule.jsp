@@ -2,17 +2,15 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:standardPage module="operator" page="commandSchedule.${mode}">
     <tags:setFormEditMode mode="${mode}"/>
     <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
-
-    <c:set var="action" value="/stars/operator/inventory/updateSchedule"/>
-    <cti:msg2 var="confirmDeleteTitle" key=".confirmDeleteTitle"/>
     
-    <form:form id="updateForm" commandName="schedule" action="${action}">
+    <form:form id="updateForm" commandName="schedule" action="/stars/operator/inventory/updateSchedule">
         <form:hidden path="commandSchedule.commandScheduleId"/>
         <form:hidden path="commandSchedule.startTimeCronString"/>
         <cti:uniqueIdentifier var="formUniqueId" prefix="attrFormUniqueId_" />
@@ -73,18 +71,11 @@
         <div>
             <cti:button nameKey="save" type="submit" classes="f_blocker"/>
             <cti:displayForPageEditModes modes="EDIT">
-                <cti:button nameKey="delete" type="button" id="delete_confirm"/>
+                <cti:button nameKey="delete" name="delete" type="submit" id="delete_confirm"/>
+                <d:confirm on="#delete_confirm" nameKey="confirmDelete"/>
             </cti:displayForPageEditModes>
-            <cti:button nameKey="cancel" type="submit" name="cancel"/>
+            <cti:button nameKey="cancel" href="home" />
         </div>
         
-        <tags:simplePopup title="${confirmDeleteTitle}" id="confirmDeletePopup" on="#delete_confirm">
-            <i:inline key=".confirmDeleteMessage"/>
-            <div class="actionArea">
-                <cti:button nameKey="ok" type="submit" name="delete" classes="primary action"/>
-                <cti:button nameKey="cancel" type="button" onclick="javascript:jQuery('#delete_confirm').dialog('close');"/>
-            </div>
-        </tags:simplePopup>
-    
     </form:form>
 </cti:standardPage>

@@ -9,7 +9,7 @@
     <cti:tabbedContentSelectorContent selectorName="${statusTitle}">
         <c:choose>
             <c:when test="${empty deviceStatusHistory}">
-                <i:inline key=".deviceStatusHistory.none"/>
+                <span class="empty-list"><i:inline key=".deviceStatusHistory.none"/></span>
             </c:when>
             <c:otherwise>
                 <div class="scrollingContainer_small">
@@ -41,7 +41,7 @@
     <cti:tabbedContentSelectorContent selectorName="${hardwareTitle}">
             <c:choose>
                 <c:when test="${empty hardwareHistory}">
-                    <i:inline key=".hardwareHistory.none"/>
+                    <span class="empty-list"><i:inline key=".hardwareHistory.none"/></span>
                 </c:when>
                 <c:otherwise>
                     <div class="scrollingContainer_small">

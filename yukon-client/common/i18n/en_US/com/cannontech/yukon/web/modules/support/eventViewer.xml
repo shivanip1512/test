@@ -10,6 +10,14 @@
 
     <entry key="yukon.web.modules.support.category">Category</entry>
     <entry key="yukon.web.modules.support.generateReports">Generate Reports</entry>
+    
+    <entry key="yukon.web.modules.support.eventViewer.pageName">Event Log</entry>
+
+    <entry key="yukon.web.modules.support.eventViewer.byCategory.pageName">Event Log</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byCategory.contextualPageName">By Category</entry>
+    
+    <entry key="yukon.web.modules.support.eventViewer.byType.pageName">Event Log</entry>
+    <entry key="yukon.web.modules.support.eventViewer.byType.contextualPageName">By Type</entry>
 
     <entry key="yukon.web.modules.support.eventViewer.byCategory.filterOptions">Filter Options</entry>
     <entry key="yukon.web.modules.support.eventViewer.byCategory.filterButton">Filter</entry>

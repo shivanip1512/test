@@ -8,7 +8,7 @@
 
     <tags:widgetContainer userId="${param.userId}" identify="true">
   
-        <div class="columns_12_12">
+        <div class="column_12_12">
             
             <div class="column one">
                 <div>

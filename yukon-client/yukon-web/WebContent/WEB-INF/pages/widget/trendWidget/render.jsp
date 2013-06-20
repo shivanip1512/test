@@ -5,40 +5,20 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 
-<script type="text/javascript"> 
-jQuery(function (){
-	var _mouseenter = function() {
-		// prevents buildup of mouseenter/mouseleave events
-		jQuery("#whatsThisToggle").off("mouseenter");
-		jQuery("#whatsThisText").fadeIn(200);
-	};
-
-	jQuery('#whatsThisToggle').mouseenter(_mouseenter).mouseleave(function() {
-		jQuery("#whatsThisText").fadeOut(200, function() {
-			jQuery("#whatsThisToggle").on("mouseenter", "", _mouseenter);
-		});
-	});
-
-    jQuery(".trend-settings-anchor").click(function(e) {
-    	jQuery(".trend-settings").toggle();
-        e.stopPropagation();
-        return true;
-    });
-});
-</script>
-
 <c:choose>
     
     <c:when test="${attributeGraphType != null}">
     
         <%-- DESCRIPTION POPUP --%>
 		<c:if test="${attributeGraphType.description != null}">
-            <div style="font-size: 10px; text-align: right; position: relative">
-				<span id="whatsThisToggle"><cti:msg2 key=".whatsThis"/></span>
-				<div id="whatsThisText" class="widgetPopup" style="display:none; text-align: left; right:30px;">
-					<cti:msg2 key="${attributeGraphType.description}"/>
+            <div class="pr">
+				<div class="f-has-tooltip detail">
+					<cti:msg2 key=".whatsThis"/>
 				</div>
-			</div>
+				<div class="f-tooltip dn">
+	                <cti:msg2 key="${attributeGraphType.description}"/>
+	            </div>
+            </div>
 		</c:if>
 		
 		<%-- THE CHART --%>

@@ -9,19 +9,9 @@
 
     <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING" >
         <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_APPLIANCES_CREATE">
-    
-            <script type="text/javascript">
-    
-                function showCreateAppliancePopup() {
-                    jQuery('#createAppliancePopup').show();
-                }
-         
-            </script>
 
             <%-- CREATE APPLIANCE POPUP --%>
-            <i:simplePopup titleKey=".createAppliancePopup.title" id="createAppliancePopup" 
-                           styleClass="smallSimplePopup" 
-                           showImmediately="${param.showSwitchCheckingPopup}">
+            <i:simplePopup on="#createAppliance" titleKey=".createAppliancePopup.title" id="createAppliancePopup" showImmediately="${param.showSwitchCheckingPopup}">
                 <form action="/stars/operator/appliances/applianceNew">
                     <input type="hidden" name="accountId" value="${accountId}"/>
                     <input type="hidden" name="new" />
@@ -40,7 +30,7 @@
                         </ct:nameValue2>
                     </ct:nameValueContainer2>
                     <div class="actionArea">
-                        <cti:button nameKey="ok" type="submit"/>
+                        <cti:button nameKey="ok" type="submit" classes="action primary"/>
                         <cti:button nameKey="cancel" onclick="jQuery('#createAppliancePopup').dialog('close');"/>
                     </div>
                 </form>
@@ -113,20 +103,17 @@
                      </c:forEach>
                  </c:when>
                  <c:otherwise>
-                     <i:inline key=".noAppliances"/>
+                     <span class="empty-list"><i:inline key=".noAppliances"/></span>
                  </c:otherwise>
             </c:choose>
-
-            <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING" >
-                <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_APPLIANCES_CREATE">
-                    <tr align="right">
-                        <td colspan="4">
-                            <br>
-                            <cti:button nameKey="create" icon="icon-plus-green" type="submit" onclick="showCreateAppliancePopup();"/>
-                        </td>
-                    </tr>
-                </cti:checkRolesAndProperties>
-            </cti:checkRolesAndProperties>
         </table>
+
+        <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING" >
+            <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_APPLIANCES_CREATE">
+                <div class="actionArea">
+                    <cti:button id="createAppliance" nameKey="create" icon="icon-plus-green" />
+                </div>
+            </cti:checkRolesAndProperties>
+        </cti:checkRolesAndProperties>
     </ct:boxContainer2>
 </cti:standardPage>

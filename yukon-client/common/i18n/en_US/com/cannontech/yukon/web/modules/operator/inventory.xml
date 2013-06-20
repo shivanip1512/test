@@ -331,8 +331,8 @@
     <entry key="yukon.web.modules.operator.commandSchedule.minutes">Minutes</entry>
     <entry key="yukon.web.modules.operator.commandSchedule.seconds">Seconds</entry>
     <entry key="yukon.web.modules.operator.commandSchedule.delayPeriod">Delay</entry>
-    <entry key="yukon.web.modules.operator.commandSchedule.confirmDeleteTitle">Delete</entry>
-    <entry key="yukon.web.modules.operator.commandSchedule.confirmDeleteMessage">Are you sure you want to delete this command schedule entry?</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.confirmDelete.title">Delete Schedule</entry>
+    <entry key="yukon.web.modules.operator.commandSchedule.confirmDelete.message">Are you sure you want to delete this command schedule entry?</entry>
     <entry key="yukon.web.modules.operator.commandSchedule.deleted">Command schedule entry deleted successfully.</entry>
     <entry key="yukon.web.modules.operator.commandSchedule.created">Command schedule entry created successfully.</entry>
     <entry key="yukon.web.modules.operator.commandSchedule.createSchedule">Create Command Schedule</entry>
