@@ -22,28 +22,13 @@ function getCommandMenu(id, event) {
     getMenuFromURL('/capcontrol/menu/commandMenu?id=' + id, event);
 }
 
-//TODO FIX ME!!
-function showDialog(title, url) {
-    Yukon.ui.blockPage();
-    jQuery.ajax({
-        url: url,
-        success: function(data, status, raw){
-            if (data && data.action == 'close') {
-                jQuery("#contentPopup").dialog('close');
-            } else {
-                jQuery("#contentPopup").removeClass("simplePopup").html(data);
-                jQuery("#contentPopup").dialog({
-                    title: title,
-                    resizable: false,
-                    width: 800,
-                    position: ["center", 50]
-                });
-            }
-            Yukon.ui.unblockPage();
-        },
-        error: function(){
-            Yukon.ui.unblockPage();
-        }
+function showDialog(title, url, width, height) {
+    height = height || 500;
+    width = width || 650;
+    jQuery("<div></div>").load(url).dialog({
+        title: title,
+        width: width,
+        height: height
     });
 }
 

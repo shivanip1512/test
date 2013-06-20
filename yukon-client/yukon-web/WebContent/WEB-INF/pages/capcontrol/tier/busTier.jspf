@@ -64,7 +64,7 @@
 
                     <cti:msg2 var="busAddInfoTitle" key=".busAddInfoTitle" arguments="${viewableSubBus.subBus.ccName}"/>
                     
-                    <cti:icon nameKey="busAddInfo" href="javascript:showDialog('${busAddInfoTitle}', '../addInfo/bus?busId=${subbusId}')" icon="icon-magnifier"/>
+                    <cti:icon nameKey="busAddInfo" href="javascript:showDialog('${busAddInfoTitle}', '../addInfo/bus?busId=${subbusId}', 'auto', 'auto')" icon="icon-magnifier"/>
                     
                     <cti:icon nameKey="location" href="${locationLink}" icon="icon-interstate"/>
                     <c:if test="${!hideOneLine}">

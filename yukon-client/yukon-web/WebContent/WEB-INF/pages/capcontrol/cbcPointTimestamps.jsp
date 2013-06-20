@@ -9,128 +9,136 @@
 
 <cti:msgScope paths="modules.capcontrol.cbcPoints">
 
-    <div style="overflow-y:auto;overflow-x:hidden;height:500px;">
+    <div style="overflow-y:auto;overflow-x:hidden;">
 
-        <table class="compactResultsTable rowHighlighting cbcPointTable" style="width:100%">
-            <tr>
-                <th><i:inline key=".analogPoints"/></th>
-                <th><i:inline key=".value"/></th>
-                <th><i:inline key=".timestamp"/></th>
-            </tr>
-            
-            <c:forEach var="point" items="${pointMap.ANALOG}">
-                <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                    <td><spring:escapeBody htmlEscape="true">${point.pointName}</spring:escapeBody></td>
-                    <td>
-                        <c:choose>
-                            <c:when test="${point.pointName == 'Firmware Version'}">
-                               <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.cbc.util.CapControlUtils.convertToFirmwareVersion}"/>
-                            </c:when>
-                            <c:when test="${point.pointName == 'IP Address'}">
-                                <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.cbc.util.CapControlUtils.convertToOctalIp}"/>
-                            </c:when>
-                            <c:when test="${point.pointName == 'Neutral Current Sensor'}">
-                                <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.cbc.util.CapControlUtils.convertNeutralCurrent}"/>
-                            </c:when>
-                            <c:when test="${point.pointName == 'Serial Number'}">
-                                <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.cbc.util.CapControlUtils.convertSerialNumber}"/>
-                            </c:when>
-                            <c:when test="${point.pointName == 'Last Control Reason'}">
-                                <cti:pointStatusColor pointId="${point.pointID}">
-                                    <cti:pointValue pointId="${point.pointID}" format="{state}"/>
-                                </cti:pointStatusColor>
-                            </c:when>
-                            <c:otherwise>
-                                <cti:pointValue pointId="${point.pointID}" format="SHORT"/>
-                            </c:otherwise>
-                        </c:choose>
-                    </td>
-                    <td><cti:pointValue pointId="${point.pointID}" format="DATE"/></td>
-                </tr>
-            </c:forEach>
-        </table>
-        
-        <br>
-        
-        <table class="compactResultsTable rowHighlighting cbcPointTable">
-            <tr>
-                <th><i:inline key=".accumulatorPoints"/></th>
-                <th><i:inline key=".value"/></th>
-                <th><i:inline key=".timestamp"/></th>
-            </tr>
-                
-            <c:forEach var="point" items="${pointMap.ACCUMULATOR}">
-                <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                    <td><spring:escapeBody htmlEscape="true">${point.pointName}</spring:escapeBody></td>
-                    <td><cti:pointValue pointId="${point.pointID}" format="SHORT"/></td>
-                    <td><cti:pointValue pointId="${point.pointID}" format="DATE"/></td>
-                </tr>
-            </c:forEach>
-        </table>
-        
-        <br>
-        
-        <table class="compactResultsTable rowHighlighting cbcPointTable">
-            
-            <tr>
-                <th><i:inline key=".statusPoints"/></th>
-                <th><i:inline key=".state"/></th>
-                <th><i:inline key=".timestamp"/></th>
-            </tr>
-            
-            <c:forEach var="point" items="${pointMap.STATUS}">
-                <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                    <td><spring:escapeBody htmlEscape="true">${point.pointName}</spring:escapeBody>
-                    <td class="b">
-                        <cti:pointStatusColor pointId="${point.pointID}">
-                           <cti:pointValue pointId="${point.pointID}" format="VALUE"/>
-                        </cti:pointStatusColor>
-                    </td>
-                    <td><cti:pointValue pointId="${point.pointID}" format="DATE"/></td>
-                </tr>
-            </c:forEach>
-        </table>
-        
-        <br>
-        
-        <table class="compactResultsTable rowHighlighting cbcPointTable">
-            
-            <tr>
-                <th><i:inline key=".configParams"/></th>
-                <th><i:inline key=".value"/></th>
-                <th><i:inline key=".timestamp"/></th>
-            </tr>
-            
-            <c:forEach var="point" items="${pointMap.CONFIGURABLE_PARAMETERS}">
-                <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                    <td><spring:escapeBody htmlEscape="true">${point.pointName}</spring:escapeBody>
-                    <td><cti:pointValue pointId="${point.pointID}" format="SHORT"/></td>
-                    <td><cti:pointValue pointId="${point.pointID}" format="DATE"/></td>
-                </tr>
-            </c:forEach>
-        </table>
-        
-        <c:if test="${fn:length(pointMap.MISC) > 0 }">
-            <br>
-        
-            <table class="compactResultsTable rowHighlighting cbcPointTable">
-                
+        <table class="compactResultsTable rowHighlighting cbcPointTable stacked">
+            <thead>
                 <tr>
-                    <th><i:inline key=".misc"/></th>
+                    <th><i:inline key=".analogPoints"/></th>
                     <th><i:inline key=".value"/></th>
                     <th><i:inline key=".timestamp"/></th>
                 </tr>
-                
-                <c:forEach var="point" items="${pointMap.MISC}">
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                <c:forEach var="point" items="${pointMap.ANALOG}">
+                    <tr>
+                        <td><spring:escapeBody htmlEscape="true">${point.pointName}</spring:escapeBody></td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${point.pointName == 'Firmware Version'}">
+                                   <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.cbc.util.CapControlUtils.convertToFirmwareVersion}"/>
+                                </c:when>
+                                <c:when test="${point.pointName == 'IP Address'}">
+                                    <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.cbc.util.CapControlUtils.convertToOctalIp}"/>
+                                </c:when>
+                                <c:when test="${point.pointName == 'Neutral Current Sensor'}">
+                                    <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.cbc.util.CapControlUtils.convertNeutralCurrent}"/>
+                                </c:when>
+                                <c:when test="${point.pointName == 'Serial Number'}">
+                                    <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.cbc.util.CapControlUtils.convertSerialNumber}"/>
+                                </c:when>
+                                <c:when test="${point.pointName == 'Last Control Reason'}">
+                                    <cti:pointStatusColor pointId="${point.pointID}">
+                                        <cti:pointValue pointId="${point.pointID}" format="{state}"/>
+                                    </cti:pointStatusColor>
+                                </c:when>
+                                <c:otherwise>
+                                    <cti:pointValue pointId="${point.pointID}" format="SHORT"/>
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td><cti:pointValue pointId="${point.pointID}" format="DATE"/></td>
+                    </tr>
+                </c:forEach>
+            </tbody>            
+        </table>
+        
+        <table class="compactResultsTable rowHighlighting cbcPointTable stacked">
+            <thead>
+                <tr>
+                    <th><i:inline key=".accumulatorPoints"/></th>
+                    <th><i:inline key=".value"/></th>
+                    <th><i:inline key=".timestamp"/></th>
+                </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                <c:forEach var="point" items="${pointMap.ACCUMULATOR}">
                     <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                        <td><spring:escapeBody htmlEscape="true">${point.pointName}</spring:escapeBody></td>
+                        <td><cti:pointValue pointId="${point.pointID}" format="SHORT"/></td>
+                        <td><cti:pointValue pointId="${point.pointID}" format="DATE"/></td>
+                    </tr>
+                </c:forEach>
+            </tbody>    
+        </table>
+        
+        <table class="compactResultsTable rowHighlighting cbcPointTable stacked">
+            <thead>
+                <tr>
+                    <th><i:inline key=".statusPoints"/></th>
+                    <th><i:inline key=".state"/></th>
+                    <th><i:inline key=".timestamp"/></th>
+                </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                <c:forEach var="point" items="${pointMap.STATUS}">
+                    <tr>
+                        <td><spring:escapeBody htmlEscape="true">${point.pointName}</spring:escapeBody>
+                        <td class="b">
+                            <cti:pointStatusColor pointId="${point.pointID}">
+                               <cti:pointValue pointId="${point.pointID}" format="VALUE"/>
+                            </cti:pointStatusColor>
+                        </td>
+                        <td><cti:pointValue pointId="${point.pointID}" format="DATE"/></td>
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
+        
+        <table class="compactResultsTable rowHighlighting cbcPointTable stacked">
+            <thead>
+                <tr>
+                    <th><i:inline key=".configParams"/></th>
+                    <th><i:inline key=".value"/></th>
+                    <th><i:inline key=".timestamp"/></th>
+                </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                <c:forEach var="point" items="${pointMap.CONFIGURABLE_PARAMETERS}">
+                    <tr>
                         <td><spring:escapeBody htmlEscape="true">${point.pointName}</spring:escapeBody>
                         <td><cti:pointValue pointId="${point.pointID}" format="SHORT"/></td>
                         <td><cti:pointValue pointId="${point.pointID}" format="DATE"/></td>
                     </tr>
                 </c:forEach>
+            </tbody>
+        </table>
+        
+        <c:if test="${fn:length(pointMap.MISC) > 0 }">
+            <table class="compactResultsTable rowHighlighting cbcPointTable stacked">
+                <thead>
+                    <tr>
+                        <th><i:inline key=".misc"/></th>
+                        <th><i:inline key=".value"/></th>
+                        <th><i:inline key=".timestamp"/></th>
+                    </tr>
+                </thead>
+                <tfoot></tfoot>
+                <tbody>
+                    <c:forEach var="point" items="${pointMap.MISC}">
+                        <tr>
+                            <td><spring:escapeBody htmlEscape="true">${point.pointName}</spring:escapeBody>
+                            <td><cti:pointValue pointId="${point.pointID}" format="SHORT"/></td>
+                            <td><cti:pointValue pointId="${point.pointID}" format="DATE"/></td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
             </table>
         </c:if>
     </div>
-    
 <tags:dataUpdateEnabler/>
 </cti:msgScope>

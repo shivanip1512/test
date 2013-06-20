@@ -102,7 +102,7 @@ jQuery(function() {
                     </c:if>
                     <cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
                         <cti:msg2 var="addInfoTitle" key=".addInfoTitle" arguments="${viewableCapBank.capBankDevice.ccName}" javaScriptEscape="true"/>
-                        <cti:icon nameKey="addInfo" href="javascript:showDialog('${addInfoTitle}', '../addInfo/bank?bankId=${bankId}')" icon="icon-magnifier"/>
+                        <cti:icon nameKey="addInfo" href="javascript:showDialog('${addInfoTitle}', '../addInfo/bank?bankId=${bankId}', 450)" icon="icon-magnifier"/>
                     </cti:checkRolesAndProperties>
                 </td>
 
