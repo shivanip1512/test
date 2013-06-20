@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/6/2013 1:48:39 PM                          */
+/* Created on:     6/20/2013 9:48:57 AM                         */
 /*==============================================================*/
 
 
@@ -8457,6 +8457,27 @@ alter table UserPaoPermission
 go
 
 /*==============================================================*/
+/* Table: UserPreference                                        */
+/*==============================================================*/
+create table UserPreference (
+   PreferenceId         numeric              not null,
+   UserId               numeric              not null,
+   Name                 varchar(255)         not null,
+   Value                varchar(255)         not null,
+   constraint PK_UserPreference primary key (PreferenceId)
+)
+go
+
+/*==============================================================*/
+/* Index: Indx_UserPref_UserId_Name_UNQ                         */
+/*==============================================================*/
+create unique index Indx_UserPref_UserId_Name_UNQ on UserPreference (
+UserId ASC,
+Name ASC
+)
+go
+
+/*==============================================================*/
 /* Table: ValidationMonitor                                     */
 /*==============================================================*/
 create table ValidationMonitor (
@@ -9335,6 +9356,7 @@ INSERT INTO YukonRoleProperty VALUES(-10600,-106,'Dynamic Billing File Setup','t
 INSERT INTO YukonRoleProperty VALUES(-10700,-107,'default','false','The default esub editor property');
 
 /* Web Client Role Properties */
+INSERT INTO YukonRoleProperty VALUES(-10800,-108,'home_url','/operator/Operations.jsp','The url to take the user immediately after logging into the Yukon web application');
 INSERT INTO YukonRoleProperty VALUES(-10802,-108,'style_sheet','yukon/CannonStyle.css','The web client cascading style sheet.');
 INSERT INTO YukonRoleProperty VALUES(-10803,-108,'nav_bullet_selected','yukon/Bullet.gif','The bullet used when an item in the nav is selected.');
 INSERT INTO YukonRoleProperty VALUES(-10804,-108,'nav_bullet_expand','yukon/BulletExpand.gif','The bullet used when an item in the nav can be expanded to show submenu.');
@@ -9343,6 +9365,7 @@ INSERT INTO YukonRoleProperty VALUES(-10806,-108,'log_in_url','/login.jsp','The 
 INSERT INTO YukonRoleProperty VALUES(-10807,-108,'nav_connector_bottom','yukon/BottomConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of the last hardware under each category');
 INSERT INTO YukonRoleProperty VALUES(-10808,-108,'nav_connector_middle','yukon/MidConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of every hardware except the last one under each category');
 INSERT INTO YukonRoleProperty VALUES(-10812, -108,'Java Web Start Launcher Enabled', 'true', 'Allow access to the Java Web Start Launcher for client applications.');
+INSERT INTO YukonRoleProperty VALUES(-10814, -108,'Suppress Error Page Details', 'true', 'Disable stack traces for this user.');
 INSERT INTO YukonRoleProperty VALUES(-10815, -108,'Data Updater Delay (milliseconds)', '4000', 'The number of milliseconds between requests for the latest point values on pages that support the data updater.');
 INSERT INTO YukonRoleProperty VALUES(-10816, -108,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
 INSERT INTO YukonRoleProperty VALUES(-10817, -108,'Theme Name',' ','The name of the theme to be applied to this group');
@@ -13159,6 +13182,11 @@ alter table UserPaoPermission
       references YukonPAObject (PAObjectID)
 go
 
+alter table UserPreference
+   add constraint FK_UserPref_YukonUser_UserId foreign key (UserId)
+      references YukonUser (UserID)
+go
+
 alter table VersacomRoute
    add constraint FK_VERSACOM_ROUTE_VER_ROUTE foreign key (ROUTEID)
       references Route (RouteID)
@@ -13285,18 +13313,3 @@ alter table Zone
       references Zone (ZoneId)
 go
 
-create table YukonUserPreference (
-    PreferenceId numeric not null,
-    UserId numeric not null,
-    Name varchar (255) not null,
-    Value varchar (255) not null,
-    constraint PK_YUP primary key (PreferenceId)
-)
-create unique index Indx_YUP_User_Pref_UNQ on YukonUserPreference (
-    UserId ASC,
-    Name ASC
-)
-alter table YukonUserPreference
-   add constraint FK_YUP_USERID_YU_USERID foreign key (UserId)
-      references YukonUser (UserId)
-go

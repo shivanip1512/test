@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/6/2013 1:44:43 PM                          */
+/* Created on:     6/20/2013 9:50:01 AM                         */
 /*==============================================================*/
 
 
@@ -7958,6 +7958,25 @@ alter table UserPaoPermission
    add constraint AK_USRPAOPERM unique (UserID, PaoID, Permission);
 
 /*==============================================================*/
+/* Table: UserPreference                                        */
+/*==============================================================*/
+create table UserPreference  (
+   PreferenceId         NUMBER                          not null,
+   UserId               NUMBER                          not null,
+   Name                 VARCHAR2(255)                   not null,
+   Value                VARCHAR2(255)                   not null,
+   constraint PK_UserPreference primary key (PreferenceId)
+);
+
+/*==============================================================*/
+/* Index: Indx_UserPref_UserId_Name_UNQ                         */
+/*==============================================================*/
+create unique index Indx_UserPref_UserId_Name_UNQ on UserPreference (
+   UserId ASC,
+   Name ASC
+);
+
+/*==============================================================*/
 /* Table: ValidationMonitor                                     */
 /*==============================================================*/
 create table ValidationMonitor  (
@@ -12066,6 +12085,10 @@ alter table UserPaoPermission
 alter table UserPaoPermission
    add constraint FK_USERPAOP_REF_YUKPA_YUKONPAO foreign key (PaoID)
       references YukonPAObject (PAObjectID);
+
+alter table UserPreference
+   add constraint FK_UserPref_YukonUser_UserId foreign key (UserId)
+      references YukonUser (UserID);
 
 alter table VersacomRoute
    add constraint FK_VERSACOM_ROUTE_VER_ROUTE foreign key (ROUTEID)

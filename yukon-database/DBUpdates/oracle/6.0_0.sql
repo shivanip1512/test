@@ -206,6 +206,24 @@ DELETE FROM YukonGroupRole    WHERE RolePropertyId = -10811;
 DELETE FROM YukonRoleProperty WHERE RolePropertyId = -10811;
 /* End YUK-12233 */
 
+/* Start YUK-12160 */
+CREATE TABLE UserPreference (
+    PreferenceId         NUMBER                NOT NULL,
+    UserId               NUMBER                NOT NULL,
+    Name                 VARCHAR2(255)         NOT NULL,
+    Value                VARCHAR2(255)         NOT NULL,
+    CONSTRAINT PK_UserPreference PRIMARY KEY (PreferenceId)
+);
+
+CREATE UNIQUE INDEX Indx_UserPref_UserId_Name_UNQ ON UserPreference (
+UserId ASC,
+Name ASC);
+
+ALTER TABLE UserPreference
+   ADD CONSTRAINT FK_UserPref_YukonUser_UserId FOREIGN KEY (UserId)
+      REFERENCES YukonUser (UserID);
+/* End YUK-12160 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
