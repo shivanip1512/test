@@ -5,13 +5,10 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.util.ReflectivePropertySearcher;
 
 /**
  * Attempts to match a propertyid with the LiteYukonUser
@@ -85,6 +82,6 @@ public class IsPropertyTrue extends BodyTagSupport
      * @param property The property to set
      */
     public void setProperty(String property){
-        this.setPropertyid(ReflectivePropertySearcher.getRoleProperty().getIntForName(property));
+        this.setPropertyid(YukonRoleProperty.valueOf(property).getPropertyId());
     }
 }

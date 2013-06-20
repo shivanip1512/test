@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -23,10 +22,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.esub.PointAttributes;
-import com.cannontech.esub.util.Util;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.roles.operator.EsubDrawingsRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.conns.ConnPool;
@@ -56,7 +53,7 @@ public class UpdateAttribute extends HttpServlet {
 		
 		LiteYukonUser user = (LiteYukonUser) req.getSession(false).getAttribute(LoginController.YUKON_USER);
 		
-		if(!YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(YukonRoleProperty.getForId(EsubDrawingsRole.EDIT), user)) {
+		if(!YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(YukonRoleProperty.OPERATOR_ESUBSTATION_DRAWINGS_EDIT, user)) {
 			CTILogger.info("Update request received by user without EDIT role, ip: " + req.getRemoteAddr());
 			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
 			return;

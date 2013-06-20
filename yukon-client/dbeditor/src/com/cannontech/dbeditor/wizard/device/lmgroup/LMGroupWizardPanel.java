@@ -5,7 +5,6 @@ import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.ClientRights;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.roles.application.DBEditorRole;
 /**
  * This type was created in VisualAge.
  */

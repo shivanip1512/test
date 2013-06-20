@@ -11,9 +11,9 @@ import com.cannontech.cbc.oneline.util.PointQualCheckUpdatTextList;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.AdjustablePosition;
 import com.cannontech.cbc.util.UpdaterHelper;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.message.capcontrol.streamable.Feeder;
-import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.user.YukonUserContext;
 import com.loox.jloox.LxAbstractGraph;
 import com.loox.jloox.LxAbstractText;
@@ -34,15 +34,15 @@ public class FeederUpdatableStats extends LxAbstractView implements
     private static final String LBL_WATT_VOLT = "kW/Volt: ";
     private static final String LBL_THREE_PHASE = "Phase A/B/C: ";
     
-    private UpdatableTextList 			timestamp = new UpdatableTextList(CBCOnelineSettingsRole.FDR_TIMESTAMP, this);
-    private PointQualCheckUpdatTextList varLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.FDR_KVAR,this);
-    private UpdatableTextList 			pFactor = new UpdatableTextList(CBCOnelineSettingsRole.FDR_PF,this);
-    private PointQualCheckUpdatTextList wattLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.FDR_WATT,this);
-    private UpdatableTextList 			dailyOps = new UpdatableTextList(CBCOnelineSettingsRole.FDR_OP_CNT,this);
-    private PointQualCheckUpdatTextList voltLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.FDR_VOLT,this);
-    private UpdatableTextList 			target = new UpdatableTextList(CBCOnelineSettingsRole.FDR_TARGET,this);
-    private UpdatableTextList			wattVolt = new UpdatableTextList(CBCOnelineSettingsRole.FDR_WATT_VOLT,this);
-    private UpdatableTextList			threePhase = new UpdatableTextList(CBCOnelineSettingsRole.FDR_THREE_PHASE,this);
+    private UpdatableTextList 			timestamp = new UpdatableTextList(YukonRoleProperty.FDR_TIMESTAMP.getPropertyId(), this);
+    private PointQualCheckUpdatTextList varLoad = new PointQualCheckUpdatTextList(YukonRoleProperty.FDR_KVAR.getPropertyId(),this);
+    private UpdatableTextList 			pFactor = new UpdatableTextList(YukonRoleProperty.FDR_PF.getPropertyId(),this);
+    private PointQualCheckUpdatTextList wattLoad = new PointQualCheckUpdatTextList(YukonRoleProperty.FDR_WATT.getPropertyId(),this);
+    private UpdatableTextList 			dailyOps = new UpdatableTextList(YukonRoleProperty.FDR_OP_CNT.getPropertyId(),this);
+    private PointQualCheckUpdatTextList voltLoad = new PointQualCheckUpdatTextList(YukonRoleProperty.FDR_VOLT.getPropertyId(),this);
+    private UpdatableTextList 			target = new UpdatableTextList(YukonRoleProperty.FDR_TARGET.getPropertyId(),this);
+    private UpdatableTextList			wattVolt = new UpdatableTextList(YukonRoleProperty.FDR_WATT_VOLT.getPropertyId(),this);
+    private UpdatableTextList			threePhase = new UpdatableTextList(YukonRoleProperty.FDR_THREE_PHASE.getPropertyId(),this);
     
     private LxGraph graph;
     private OnelineFeeder parent;
@@ -70,35 +70,35 @@ public class FeederUpdatableStats extends LxAbstractView implements
 
     private void initPropLabelMap() {
 
-        propLabelMap.put(CBCOnelineSettingsRole.FDR_TIMESTAMP, LBL_TIMESTAMP);
-        propLabelMap.put(CBCOnelineSettingsRole.FDR_KVAR, LBL_KVAR_LOAD);
-        propLabelMap.put(CBCOnelineSettingsRole.FDR_PF, LBL_PFACTOR);
-        propLabelMap.put(CBCOnelineSettingsRole.FDR_WATT, LBL_WATT);
-        propLabelMap.put(CBCOnelineSettingsRole.FDR_OP_CNT, LBL_DAILYOPS);
-        propLabelMap.put(CBCOnelineSettingsRole.FDR_VOLT, LBL_VOLT);
-        propLabelMap.put(CBCOnelineSettingsRole.FDR_TARGET, LBL_TARGET);
-        propLabelMap.put(CBCOnelineSettingsRole.FDR_WATT_VOLT,LBL_WATT_VOLT);
-        propLabelMap.put(CBCOnelineSettingsRole.FDR_THREE_PHASE, LBL_THREE_PHASE);
+        propLabelMap.put(YukonRoleProperty.FDR_TIMESTAMP.getPropertyId(), LBL_TIMESTAMP);
+        propLabelMap.put(YukonRoleProperty.FDR_KVAR.getPropertyId(), LBL_KVAR_LOAD);
+        propLabelMap.put(YukonRoleProperty.FDR_PF.getPropertyId(), LBL_PFACTOR);
+        propLabelMap.put(YukonRoleProperty.FDR_WATT.getPropertyId(), LBL_WATT);
+        propLabelMap.put(YukonRoleProperty.FDR_OP_CNT.getPropertyId(), LBL_DAILYOPS);
+        propLabelMap.put(YukonRoleProperty.FDR_VOLT.getPropertyId(), LBL_VOLT);
+        propLabelMap.put(YukonRoleProperty.FDR_TARGET.getPropertyId(), LBL_TARGET);
+        propLabelMap.put(YukonRoleProperty.FDR_WATT_VOLT.getPropertyId(),LBL_WATT_VOLT);
+        propLabelMap.put(YukonRoleProperty.FDR_THREE_PHASE.getPropertyId(), LBL_THREE_PHASE);
 
     }
 
     private void initPropColumnMap() {
-        propColumnMap.put(CBCOnelineSettingsRole.FDR_TIMESTAMP,
+        propColumnMap.put(YukonRoleProperty.FDR_TIMESTAMP.getPropertyId(),
                           UpdaterHelper.UpdaterDataType.FDR_SHORT_TIME_STAMP_COLUMN);        
-        propColumnMap.put(CBCOnelineSettingsRole.FDR_KVAR,
+        propColumnMap.put(YukonRoleProperty.FDR_KVAR.getPropertyId(),
                           UpdaterHelper.UpdaterDataType.FDR_ONELINE_VAR_LOAD_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.FDR_PF,
+        propColumnMap.put(YukonRoleProperty.FDR_PF.getPropertyId(),
                           UpdaterHelper.UpdaterDataType.FDR_POWER_FACTOR_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.FDR_WATT,
+        propColumnMap.put(YukonRoleProperty.FDR_WATT.getPropertyId(),
                           UpdaterHelper.UpdaterDataType.FDR_ONELINE_WATTS_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.FDR_OP_CNT,
+        propColumnMap.put(YukonRoleProperty.FDR_OP_CNT.getPropertyId(),
                           UpdaterHelper.UpdaterDataType.FDR_DAILY_OPERATIONS_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.FDR_VOLT,
+        propColumnMap.put(YukonRoleProperty.FDR_VOLT.getPropertyId(),
                           UpdaterHelper.UpdaterDataType.FDR_ONELINE_VOLTS_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.FDR_TARGET,
+        propColumnMap.put(YukonRoleProperty.FDR_TARGET.getPropertyId(),
                           UpdaterHelper.UpdaterDataType.FDR_TARGET_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.FDR_WATT_VOLT, UpdaterHelper.UpdaterDataType.FDR_ONELINE_WATTS_VOLTS_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.FDR_THREE_PHASE, UpdaterHelper.UpdaterDataType.FDR_ONELINE_THREE_PHASE_COLUMN);
+        propColumnMap.put(YukonRoleProperty.FDR_WATT_VOLT.getPropertyId(), UpdaterHelper.UpdaterDataType.FDR_ONELINE_WATTS_VOLTS_COLUMN);
+        propColumnMap.put(YukonRoleProperty.FDR_THREE_PHASE.getPropertyId(), UpdaterHelper.UpdaterDataType.FDR_ONELINE_THREE_PHASE_COLUMN);
     }
 
     private Feeder getStreamable() {

@@ -24,7 +24,7 @@ import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
 /**
- * Send out a control command.  Requires com.cannontech.roles.operator.EsubDrawingsRole.CONTROL
+ * Send out a control command.  Requires YukonRoleProperty.OPERATOR_ESUBSTATION_DRAWINGS_CONTROL
  * 
  * Required Parameters:
  * id		- The point id

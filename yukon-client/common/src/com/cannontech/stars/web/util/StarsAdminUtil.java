@@ -26,6 +26,7 @@ import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
@@ -47,7 +48,6 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
@@ -568,8 +568,8 @@ public class StarsAdminUtil {
 
 	      if(energyCompany.getOperatorAdminGroup() != null){
 	          YukonSpringHook.getBean(RoleDao.class).updateGroupRoleProperty(energyCompany.getOperatorAdminGroup(),
-	                                                            AdministratorRole.ROLEID,
-	                                                            AdministratorRole.ADMIN_MANAGE_MEMBERS,
+	                                                            YukonRole.OPERATOR_ADMINISTRATOR.getRoleId(),
+	                                                            YukonRoleProperty.ADMIN_MANAGE_MEMBERS.getPropertyId(),
 	                                                            CtiUtilities.TRUE_STRING);
 	        }
 
@@ -664,11 +664,11 @@ public class StarsAdminUtil {
 		groupDB.setGroupDescription( "Privilege group for the energy company's default operator login" );
 		
 		// Including the Admin Role to the EC admin role group
-		LiteYukonRoleProperty[] roleProps = roleDao.getRoleProperties( AdministratorRole.ROLEID );
+		LiteYukonRoleProperty[] roleProps = roleDao.getRoleProperties( YukonRole.OPERATOR_ADMINISTRATOR.getRoleId() );
 		for (int i = 0; i < roleProps.length; i++) {
 			com.cannontech.database.db.user.YukonGroupRole groupRole = new com.cannontech.database.db.user.YukonGroupRole();
 			
-			groupRole.setRoleID(AdministratorRole.ROLEID);
+			groupRole.setRoleID(YukonRole.OPERATOR_ADMINISTRATOR.getRoleId());
 			groupRole.setRolePropertyID(roleProps[i].getRolePropertyID());
 			YukonRoleProperty roleProperty = YukonRoleProperty.getForId(roleProps[i].getRolePropertyID());
 			if (topLevelEc && roleProperty == YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY) {

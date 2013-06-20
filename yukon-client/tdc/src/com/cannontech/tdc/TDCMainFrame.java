@@ -34,6 +34,8 @@ import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -41,7 +43,6 @@ import com.cannontech.message.util.Command;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
-import com.cannontech.roles.application.TDCRole;
 import com.cannontech.tdc.bookmark.BookMarkBase;
 import com.cannontech.tdc.commandevents.AckAlarm;
 import com.cannontech.tdc.createdisplay.ColumnEditorDialog;
@@ -1389,10 +1390,10 @@ public long getCurrentDisplayNumber()
 private void getExternalResources() 
 {
 	noCreationAllowed = ClientSession.getInstance().getRolePropertyValue(
-				TDCRole.TDC_EXPRESS);
+				YukonRoleProperty.TDC_EXPRESS);
 
 	TDCDefines.MAX_ROWS = Integer.parseInt(
-				ClientSession.getInstance().getRolePropertyValue( TDCRole.TDC_MAX_ROWS ) );		
+				ClientSession.getInstance().getRolePropertyValue( YukonRoleProperty.TDC_MAX_ROWS ) );		
 }
 
 
@@ -4094,7 +4095,7 @@ public static void main(final java.lang.String[] args)
     {
         ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
         clientStartupHelper.setAppName("TDC");
-        clientStartupHelper.setRequiredRole(TDCRole.ROLEID);
+        clientStartupHelper.setRequiredRole(YukonRole.TABULAR_DISPLAY_CONSOLE.getRoleId());
         clientStartupHelper.setSplashUrl(CtiUtilities.TDC_SPLASH);
 
         clientStartupHelper.doStartup();

@@ -10,9 +10,9 @@ import com.cannontech.cbc.oneline.model.UpdatableStats;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.AdjustablePosition;
 import com.cannontech.cbc.util.UpdaterHelper;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.esub.element.StaticText;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
-import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.user.YukonUserContext;
 import com.loox.jloox.LxAbstractGraph;
 import com.loox.jloox.LxAbstractText;
@@ -24,10 +24,10 @@ import com.loox.jloox.LxGraph;
 public class CapBankUpdatableStats extends LxAbstractView implements
         UpdatableStats, AdjustablePosition {
 
-    private UpdatableTextList timestamp = new UpdatableTextList(CBCOnelineSettingsRole.CAP_TIMESTAMP, this);
-    private UpdatableTextList bankSize = new UpdatableTextList(CBCOnelineSettingsRole.CAP_BANK_SIZE, this);
-    private UpdatableTextList cbcName = new UpdatableTextList(CBCOnelineSettingsRole.CAP_CBC_NAME, this);
-    private UpdatableTextList totalMaxDailyOpCount = new UpdatableTextList(CBCOnelineSettingsRole.CAP_DAILY_MAX_TOTAL_OPCNT, this);
+    private UpdatableTextList timestamp = new UpdatableTextList(YukonRoleProperty.CAP_TIMESTAMP.getPropertyId(), this);
+    private UpdatableTextList bankSize = new UpdatableTextList(YukonRoleProperty.CAP_BANK_SIZE.getPropertyId(), this);
+    private UpdatableTextList cbcName = new UpdatableTextList(YukonRoleProperty.CAP_CBC_NAME.getPropertyId(), this);
+    private UpdatableTextList totalMaxDailyOpCount = new UpdatableTextList(YukonRoleProperty.CAP_DAILY_MAX_TOTAL_OPCNT.getPropertyId(), this);
     private LxAbstractGraph graph;
     private OnelineCap parentCap;
     private YukonUserContext userContext;
@@ -52,21 +52,21 @@ public class CapBankUpdatableStats extends LxAbstractView implements
     }
 
     private void initPropLabelMap() {
-        propLabelMap.put(CBCOnelineSettingsRole.CAP_TIMESTAMP, "Updated:");
-        propLabelMap.put(CBCOnelineSettingsRole.CAP_BANK_SIZE, "Bank Size");
-        propLabelMap.put(CBCOnelineSettingsRole.CAP_DAILY_MAX_TOTAL_OPCNT, "D/M/T Op:");
-        propLabelMap.put(CBCOnelineSettingsRole.CAP_CBC_NAME, "CBC:");
+        propLabelMap.put(YukonRoleProperty.CAP_TIMESTAMP.getPropertyId(), "Updated:");
+        propLabelMap.put(YukonRoleProperty.CAP_BANK_SIZE.getPropertyId(), "Bank Size");
+        propLabelMap.put(YukonRoleProperty.CAP_DAILY_MAX_TOTAL_OPCNT.getPropertyId(), "D/M/T Op:");
+        propLabelMap.put(YukonRoleProperty.CAP_CBC_NAME.getPropertyId(), "CBC:");
 
     }
 
     private void initPropColumnMap() {
-        propColumnMap.put(CBCOnelineSettingsRole.CAP_TIMESTAMP,
+        propColumnMap.put(YukonRoleProperty.CAP_TIMESTAMP.getPropertyId(),
                 UpdaterHelper.UpdaterDataType.CB_SHORT_TIME_STAMP_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.CAP_BANK_SIZE,
+        propColumnMap.put(YukonRoleProperty.CAP_BANK_SIZE.getPropertyId(),
                           UpdaterHelper.UpdaterDataType.CB_BANK_SIZE_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.CAP_DAILY_MAX_TOTAL_OPCNT,
+        propColumnMap.put(YukonRoleProperty.CAP_DAILY_MAX_TOTAL_OPCNT.getPropertyId(),
                 UpdaterHelper.UpdaterDataType.CB_DAILY_MAX_TOTAL_OP_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.CAP_CBC_NAME, UpdaterHelper.UpdaterDataType.CB_CONTROLLER);
+        propColumnMap.put(YukonRoleProperty.CAP_CBC_NAME.getPropertyId(), UpdaterHelper.UpdaterDataType.CB_CONTROLLER);
     }
 
     private CapBankDevice getStreamable() {

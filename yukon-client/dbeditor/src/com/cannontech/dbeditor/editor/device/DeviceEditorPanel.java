@@ -11,7 +11,6 @@ import com.cannontech.database.data.device.Repeater850;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.dbeditor.wizard.device.DeviceRDSTerminalPanel;
 import com.cannontech.dbeditor.wizard.device.DeviceTNPPTerminalPanel;
-import com.cannontech.roles.application.DBEditorRole;
 
 /**
  * This type was created in VisualAge.

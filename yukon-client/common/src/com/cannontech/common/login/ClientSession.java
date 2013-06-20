@@ -78,12 +78,12 @@ public class ClientSession {
 	 * @return String representing a given role property ID
 	 */
 	public String getRolePropertyValue(int rolePropertyID) {
-	    RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
-	    return rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(rolePropertyID), getUser());
+	    return getRolePropertyValue(YukonRoleProperty.getForId(rolePropertyID));
 	}
 	
 	public String getRolePropertyValue(YukonRoleProperty yukonRoleProperty) {
-	    return getRolePropertyValue(yukonRoleProperty.getPropertyId());
+	    RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
+	    return rolePropertyDao.getPropertyStringValue(yukonRoleProperty, getUser());
 	}
 	
 	public static synchronized ClientSession getInstance() {

@@ -142,7 +142,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		try
 		{
 			editPointID = Boolean.parseBoolean(ClientSession.getInstance().getRolePropertyValue(
-					 YukonRoleProperty.POINT_ID_EDIT.getPropertyId()));
+					 YukonRoleProperty.POINT_ID_EDIT));
 		}
 		catch (java.util.MissingResourceException e )
 		{
@@ -169,7 +169,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		try
 		{
 			editPointID = Boolean.parseBoolean(ClientSession.getInstance().getRolePropertyValue(
-					 YukonRoleProperty.POINT_ID_EDIT.getPropertyId()));
+					 YukonRoleProperty.POINT_ID_EDIT));
 		}
 		catch (java.util.MissingResourceException e)
 		{
@@ -200,7 +200,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		try
 		{
 			editPointID = Boolean.parseBoolean(ClientSession.getInstance().getRolePropertyValue(
-					 YukonRoleProperty.POINT_ID_EDIT.getPropertyId()));
+					 YukonRoleProperty.POINT_ID_EDIT));
 		}
 		catch (java.util.MissingResourceException e)
 		{

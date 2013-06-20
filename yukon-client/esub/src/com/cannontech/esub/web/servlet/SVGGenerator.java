@@ -86,10 +86,10 @@ public class SVGGenerator extends HttpServlet {
 			// User requires the role specific to access this drawing
 			// and also the Esub VIEW role to see it, which should we be using?
 			if( YukonSpringHook.getBean(AuthDao.class).getRole(user, metaElem.getRoleID()) != null &&	
-				    rolePropertyDao.checkProperty(YukonRoleProperty.getForId(com.cannontech.roles.operator.EsubDrawingsRole.VIEW), user)) {				
+				    rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ESUBSTATION_DRAWINGS_VIEW, user)) {				
 							
-				boolean canEdit = rolePropertyDao.checkProperty(YukonRoleProperty.getForId(com.cannontech.roles.operator.EsubDrawingsRole.EDIT), user);
-				boolean canControl = rolePropertyDao.checkProperty(YukonRoleProperty.getForId(com.cannontech.roles.operator.EsubDrawingsRole.CONTROL), user);
+				boolean canEdit = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ESUBSTATION_DRAWINGS_EDIT, user);
+				boolean canControl = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ESUBSTATION_DRAWINGS_CONTROL, user);
 
 				SVGOptions svgOptions = new SVGOptions();
 				svgOptions.setStaticSVG(false);

@@ -39,7 +39,6 @@ import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.loadcontrol.popup.ControlAreaPopUpMenu;
-import com.cannontech.roles.loadcontrol.DirectLoadcontrolRole;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -603,12 +602,12 @@ public javax.swing.JComboBox getJComboBoxConstraints() {
 			ivjJComboBoxConstraints.setRenderer(new javax.swing.plaf.basic.BasicComboBoxRenderer.UIResource());
 			RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
 
-			if( rolePropertyDao.checkProperty(YukonRoleProperty.getForId(DirectLoadcontrolRole.ALLOW_OBSERVE_CONSTRAINTS),
+			if( rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_OBSERVE_CONSTRAINTS,
 			                        ClientSession.getInstance().getUser()))
 				ivjJComboBoxConstraints.addItem( 
 					LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_USE] );
 
-			if( rolePropertyDao.checkProperty(YukonRoleProperty.getForId(DirectLoadcontrolRole.ALLOW_CHECK_CONSTRAINTS),
+			if( rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CHECK_CONSTRAINTS,
 			                                    ClientSession.getInstance().getUser()))
 				ivjJComboBoxConstraints.addItem(
 					LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_CHECK] );
@@ -618,7 +617,7 @@ public javax.swing.JComboBox getJComboBoxConstraints() {
 				// role property
 				String defSel = 
 					YukonSpringHook.getBean(RolePropertyDao.class).getPropertyStringValue(
-					    YukonRoleProperty.getForId(DirectLoadcontrolRole.DEFAULT_CONSTRAINT_SELECTION),
+					    YukonRoleProperty.DEFAULT_CONSTRAINT_SELECTION,
 						ClientSession.getInstance().getUser());
 	
 				ivjJComboBoxConstraints.setSelectedItem( defSel );
@@ -1662,7 +1661,7 @@ private void initialize() {
 
                 canSpecifyStopGear = 
                     YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(
-                        YukonRoleProperty.getForId(DirectLoadcontrolRole.ALLOW_STOP_GEAR_ACCESS),
+                        YukonRoleProperty.ALLOW_STOP_GEAR_ACCESS,
                         ClientSession.getInstance().getUser());
                 if(canSpecifyStopGear) {
                     getJComboBoxStopGear().setVisible(true);

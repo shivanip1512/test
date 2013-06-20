@@ -1182,7 +1182,7 @@ public boolean isInputValid()
 	{
 		String idRange = 
 			ClientSession.getInstance().getRolePropertyValue(
-				YukonRoleProperty.UTILITY_ID_RANGE.getPropertyId() );
+				YukonRoleProperty.UTILITY_ID_RANGE );
 
 		int res = java.util.Arrays.binarySearch( 
 					com.cannontech.common.util.CtiUtilities.decodeRangeIDString( idRange, com.cannontech.common.util.CtiUtilities.MAX_UTILITY_ID ),

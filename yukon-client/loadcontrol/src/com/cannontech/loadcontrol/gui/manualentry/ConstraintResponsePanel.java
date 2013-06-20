@@ -17,12 +17,10 @@ import com.cannontech.common.gui.util.CheckBoxTableHeader;
 import com.cannontech.common.gui.util.CheckBoxTableRenderer;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.message.server.ServerResponseMsg;
-import com.cannontech.roles.loadcontrol.DirectLoadcontrolRole;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -195,8 +193,7 @@ private void initJTableCellComponents()
 
 	//allow the override check box if the user has the roleproperty defined
 	boolean canOverride = 
-		YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(
-			YukonRoleProperty.getForId(DirectLoadcontrolRole.ALLOW_OVERRIDE_CONSTRAINT),
+		YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(YukonRoleProperty.ALLOW_OVERRIDE_CONSTRAINT,
 	         ClientSession.getInstance().getUser());
 
 	chkBox.setEnabled( canOverride );
@@ -291,12 +288,6 @@ public void setValue(Object obj)
 			getTableModelCons().addRow( respProgs[i] );
 	}
 
-	
-	//allow the override check box if the user has the roleproperty defined
-//	boolean canOverride = 
-//		DaoFactory.getAuthDao().checkRoleProperty(
-//			ClientSession.getInstance().getUser(),
-//			DirectLoadcontrolRole.ALLOW_OVERRIDE_CONSTRAINT);
 
 }
 

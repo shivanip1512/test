@@ -20,10 +20,10 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.esub.editor.EditorPrefs;
 import com.cannontech.esub.element.DrawingMetaElement;
-import com.cannontech.roles.operator.EsubDrawingsRole;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -336,7 +336,7 @@ public class DrawingMetaElementEditorPanel extends DataInputPanel {
             try {
                 ivjYukonRoleComboBox = new JComboBox<>();
                 ivjYukonRoleComboBox.setName("YukonRoleComboBox");
-                LiteYukonRole r = YukonSpringHook.getBean(AuthDao.class).getRole(EsubDrawingsRole.ROLEID);
+                LiteYukonRole r = YukonSpringHook.getBean(AuthDao.class).getRole(YukonRole.APPLICATION_ESUBSTATION_EDITOR.getRoleId());
                 ivjYukonRoleComboBox.addItem(r);
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);

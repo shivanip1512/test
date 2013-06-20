@@ -17,8 +17,8 @@ import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.dr.account.exception.StarsAccountNotFoundException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyAssignedException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyExistsException;
@@ -95,7 +95,7 @@ public class ControllableDevicesRequestEndPoint {
         }
         
         // check authorization
-        authDao.verifyTrueProperty(user, ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE);
+        authDao.verifyTrueProperty(user, YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_CREATE.getPropertyId());
         
         // run service
         for (LmDeviceDto device : devices) {
@@ -126,7 +126,7 @@ public class ControllableDevicesRequestEndPoint {
 
         // check authorization
         authDao.verifyTrueProperty(user,
-                                   ConsumerInfoRole.CONSUMER_INFO_HARDWARES);
+                                   YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES.getPropertyId());
         
         // run service
         for (LmDeviceDto device : devices) {
@@ -163,7 +163,7 @@ public class ControllableDevicesRequestEndPoint {
 
         // check authorization
         authDao.verifyTrueProperty(user,
-                                   ConsumerInfoRole.CONSUMER_INFO_HARDWARES);
+                                   YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES.getPropertyId());
 
         // run service
         for (LmDeviceDto device : devices) {

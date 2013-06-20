@@ -14,7 +14,6 @@ import org.springframework.web.bind.ServletRequestUtils;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
 import com.cannontech.stars.database.db.report.WorkOrderBase;
@@ -59,7 +58,7 @@ public class SearchWorkOrderController extends StarsWorkorderActionController {
         // Remember the last search option
         session.setAttribute( ServletUtils.ATT_LAST_SERVICE_SEARCH_OPTION, new Integer(searchBy));
         session.setAttribute( ServletUtils.ATT_LAST_SERVICE_SEARCH_VALUE, new String(searchValue) );
-        boolean searchMembers = this.rolePropertyDao.checkProperty(YukonRoleProperty.getForId(AdministratorRole.ADMIN_MANAGE_MEMBERS), user.getYukonUser()) && 
+        boolean searchMembers = this.rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, user.getYukonUser()) && 
                                 (energyCompany.hasChildEnergyCompanies());
 
         if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ORDER_NO) {

@@ -18,7 +18,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.notifications.NotificationConfigurationRole;
 import com.cannontech.spring.YukonSpringHook;
 
 
@@ -46,7 +45,7 @@ public class NotificationTransformer {
     public NotificationTransformer(LiteEnergyCompany energyCompany, String outputType) throws TransformException {
         LiteYukonUser user = YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(energyCompany.getUserID());
         RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
-        String dirName = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(NotificationConfigurationRole.TEMPLATE_ROOT), user);
+        String dirName = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.TEMPLATE_ROOT, user);
         if (dirName.equals("")){
             throw new TransformException("Could not get Template Root Role Property for " + energyCompany);
         }

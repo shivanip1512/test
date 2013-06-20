@@ -5,11 +5,9 @@ import java.util.List;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.data.lite.LiteServiceCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
@@ -59,7 +57,7 @@ public class ManipulationBean
     
     public boolean getManageMembers()
     {
-        return YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(YukonRoleProperty.getForId(AdministratorRole.ADMIN_MANAGE_MEMBERS), currentUser) && (energyCompany.hasChildEnergyCompanies());
+        return YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, currentUser) && (energyCompany.hasChildEnergyCompanies());
     }
     
     public List<LiteStarsEnergyCompany> getAvailableMembers()

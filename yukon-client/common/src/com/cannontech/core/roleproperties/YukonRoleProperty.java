@@ -106,7 +106,7 @@ public enum YukonRoleProperty {
     LC_REDUCTION_COL(TABULAR_DISPLAY_CONSOLE, TABULAR_DISPLAY_CONSOLE.getBasePropertyId() - 11, stringType()),
     
     GRAPH_EDIT_GRAPHDEFINITION(TRENDING, TRENDING.getBasePropertyId(), booleanType()),
-    TRENDING_DISCLAIMER(TRENDING, TRENDING.getBasePropertyId() - 2, stringType()),
+    TRENDING_DISCLAIMER(TRENDING, TRENDING.getBasePropertyId() - 2, booleanType()),
     SCAN_NOW_ENABLED(TRENDING, TRENDING.getBasePropertyId() - 3, booleanType()),
     MINIMUM_SCAN_FREQUENCY(TRENDING, TRENDING.getBasePropertyId() - 5, integerType()),
     MAXIMUM_DAILY_SCANS(TRENDING, TRENDING.getBasePropertyId() - 6, integerType()),

@@ -11,11 +11,9 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
@@ -174,7 +172,7 @@ public class InventoryBean {
 	    
 	    boolean showEnergyCompany = false;
         boolean manageMembers = YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(
-                                                                                   YukonRoleProperty.getForId(AdministratorRole.ADMIN_MANAGE_MEMBERS), 
+                                                                                   YukonRoleProperty.ADMIN_MANAGE_MEMBERS, 
                                                                                    user.getYukonUser());
         boolean hasChildren = getEnergyCompany().hasChildEnergyCompanies();
         

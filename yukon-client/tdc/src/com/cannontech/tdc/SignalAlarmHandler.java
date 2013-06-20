@@ -6,9 +6,9 @@ import com.cannontech.common.login.ClientSession;
 import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.Signal;
-import com.cannontech.roles.application.TDCRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tdc.bookmark.BookMarkBase;
 import com.cannontech.tdc.bookmark.BookMarkSelectionListener;
@@ -37,7 +37,7 @@ class SignalAlarmHandler
    
    public static final int ALARMS_DISPLAYED = Integer.parseInt(
 			ClientSession.getInstance().getRolePropertyValue(
-                  TDCRole.TDC_ALARM_COUNT) );
+                  YukonRoleProperty.TDC_ALARM_COUNT) );
 
    
    private BookMarkSelectionListener bookmarkListener = null;

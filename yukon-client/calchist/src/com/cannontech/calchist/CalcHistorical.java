@@ -27,7 +27,6 @@ import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Registration;
-import com.cannontech.roles.application.CalcHistoricalRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -885,13 +884,7 @@ public static void main(java.lang.String[] args)
 	  	
 	if(session == null) 		
 		System.exit(-1);
-				
-	if(!session.checkRole(CalcHistoricalRole.ROLEID)) 
-	{
-	  CTILogger.info("User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.");
-	  System.exit(-1);				
-	}
-		
+	
 	System.setProperty("cti.app.name", "CalcHistorical");
 	CalcHistorical calcHistorical = new CalcHistorical();
 	

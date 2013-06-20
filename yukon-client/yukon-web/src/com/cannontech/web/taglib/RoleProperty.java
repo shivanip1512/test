@@ -5,13 +5,11 @@ import javax.servlet.jsp.JspException;
 
 import org.springframework.web.util.ExpressionEvaluationUtils;
 
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.util.ReflectivePropertySearcher;
 import com.cannontech.util.ServletUtil;
 /**
  * Writes out the value of a role property for the current user.
@@ -58,7 +56,7 @@ public int doStartTag() throws JspException {
             if (useId) {
                 propId = propertyid;
             } else {
-                propId = ReflectivePropertySearcher.getRoleProperty().getIntForName(property);
+                propId = YukonRoleProperty.valueOf(property).getPropertyId();
             }
 			String text = YukonSpringHook.getBean(RolePropertyDao.class).getPropertyStringValue(YukonRoleProperty.getForId(propId), user);
 			String fmat = getFormat();
@@ -146,6 +144,7 @@ public int doStartTag() throws JspException {
     public String getProperty() {
         return property;
     }
+    
     public void setProperty(String property) {
         this.property = property;
         useId = false;

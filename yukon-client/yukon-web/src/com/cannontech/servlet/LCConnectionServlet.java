@@ -29,7 +29,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -38,7 +37,6 @@ import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.message.dispatch.message.Multi;
-import com.cannontech.roles.loadcontrol.DirectLoadcontrolRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -146,9 +144,8 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 	//add any optional properties here
     optionalProps = getOptionalParams( req );
 	ResponseProg[] violatResp = null;
-    //boolean allowStopGear = currentUserID != null && authDao.checkRoleProperty(Integer.parseInt(currentUserID), DirectLoadcontrolRole.ALLOW_STOP_GEAR_ACCESS);
     boolean allowStopGear = currentUserID != null && rolePropertyDao.checkProperty(
-                                                                         YukonRoleProperty.getForId(DirectLoadcontrolRole.ALLOW_STOP_GEAR_ACCESS),
+                                                                         YukonRoleProperty.ALLOW_STOP_GEAR_ACCESS,
                                                                          yukonUserDao.getLiteYukonUser(Integer.parseInt(currentUserID)));
     if(allowStopGear && ILCCmds.PROG_STOP.equals(cmd) ) {
         optionalProps.put("allowStopGear", "true");

@@ -18,7 +18,6 @@ import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -238,7 +237,7 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
                 }
 
                 String enabled = 
-                    roleDao.getRolePropValueGroup(residentialRoleGroup, ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT, new Boolean(false).toString());
+                    roleDao.getRolePropValueGroup(residentialRoleGroup, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT.getPropertyId(), new Boolean(false).toString());
                 if(!CtiUtilities.isFalse(enabled)){ //true
                     return OptOutEnabled.ENABLED;
                 }

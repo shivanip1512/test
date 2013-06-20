@@ -14,11 +14,9 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.Pair;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
@@ -117,7 +115,7 @@ public class SearchCustAccountAction implements ActionBase {
             }
            
 			boolean searchMembers = YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(
-			                                                                           YukonRoleProperty.getForId(AdministratorRole.ADMIN_MANAGE_MEMBERS),
+			                                                                           YukonRoleProperty.ADMIN_MANAGE_MEMBERS,
 			                                                                           user.getYukonUser())
 					&& (energyCompany.hasChildEnergyCompanies());
             List<Object> accountList = null;

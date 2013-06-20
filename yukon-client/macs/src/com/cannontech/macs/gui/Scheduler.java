@@ -12,12 +12,10 @@ import javax.swing.JRootPane;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.ClientRights;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.message.macs.message.MACSCategoryChange;
 import com.cannontech.message.util.ConnStateChange;
 import com.cannontech.message.util.MessageEvent;
-import com.cannontech.roles.application.TDCRole;
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.conns.ConnPool;
 

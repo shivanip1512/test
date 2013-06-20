@@ -8,7 +8,6 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
-import com.cannontech.roles.loadcontrol.DirectLoadcontrolRole;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -42,11 +41,11 @@ public class LMSession
 		ArrayList constList = new ArrayList(8);
 		RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
 
-		if (rolePropertyDao.checkProperty(YukonRoleProperty.getForId(DirectLoadcontrolRole.ALLOW_OBSERVE_CONSTRAINTS), user))
+		if (rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_OBSERVE_CONSTRAINTS, user))
 			constList.add(
 				LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_USE] );
 
-		if(rolePropertyDao.checkProperty(YukonRoleProperty.getForId(DirectLoadcontrolRole.ALLOW_CHECK_CONSTRAINTS), user))
+		if(rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CHECK_CONSTRAINTS, user))
 			constList.add(
 				LMManualControlRequest.CONSTRAINT_FLAG_STRS[LMManualControlRequest.CONSTRAINTS_FLAG_CHECK] );	
 
@@ -54,17 +53,14 @@ public class LMSession
 	}
 
     public boolean isOverrideAllowed( LiteYukonUser user ) {
-
-        return YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(
-                                                                  YukonRoleProperty.getForId(DirectLoadcontrolRole.ALLOW_OVERRIDE_CONSTRAINT), user);
+        return YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(YukonRoleProperty.ALLOW_OVERRIDE_CONSTRAINT, user);
     }
 
 	public String getConstraintDefault( LiteYukonUser user ) {
 	    RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
 		//set first element to be the selection specified
 		// in our default role property
-		String defSel = rolePropertyDao.getPropertyStringValue(
-				                            YukonRoleProperty.getForId(DirectLoadcontrolRole.DEFAULT_CONSTRAINT_SELECTION), user);
+		String defSel = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DEFAULT_CONSTRAINT_SELECTION, user);
 		return defSel;
 	}
 

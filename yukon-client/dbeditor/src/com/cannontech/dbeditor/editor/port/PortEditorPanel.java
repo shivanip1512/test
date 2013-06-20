@@ -14,7 +14,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.dbeditor.wizard.port.PooledPortListPanel;
-import com.cannontech.roles.application.DBEditorRole;
  
 public class PortEditorPanel extends com.cannontech.common.editor.PropertyPanel implements com.cannontech.common.editor.IMultiPanelEditor
 {

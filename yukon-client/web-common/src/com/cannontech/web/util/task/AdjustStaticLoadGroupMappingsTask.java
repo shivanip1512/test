@@ -7,7 +7,6 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.Transaction;
@@ -16,7 +15,6 @@ import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCustomer;
-import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
@@ -112,7 +110,7 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 		
 		status = STATUS_RUNNING;
 		
-		boolean searchMembers = YukonSpringHook.getBean(RolePropertyDao.class).checkProperty( YukonRoleProperty.getForId(AdministratorRole.ADMIN_MANAGE_MEMBERS),  user.getYukonUser())
+		boolean searchMembers = YukonSpringHook.getBean(RolePropertyDao.class).checkProperty( YukonRoleProperty.ADMIN_MANAGE_MEMBERS,  user.getYukonUser())
 				&& energyCompany.hasChildEnergyCompanies();
 		hwsToAdjust = new ArrayList<LiteLmHardwareBase>();
         

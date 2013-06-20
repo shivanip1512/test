@@ -61,7 +61,6 @@ import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
@@ -855,7 +854,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         
         try {
             String value = YukonSpringHook.getBean(RolePropertyDao.class).getPropertyStringValue(
-                                                                              YukonRoleProperty.getForId(ConsumerInfoRole.ORDER_NUMBER_AUTO_GEN),
+                                                                              YukonRoleProperty.OPERATOR_ORDER_NUMBER_AUTO_GEN,
                                                                               user);
             if (value != null && value.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
                 value = "";

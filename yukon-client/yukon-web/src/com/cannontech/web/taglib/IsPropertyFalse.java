@@ -93,7 +93,7 @@ public class IsPropertyFalse extends BodyTagSupport
      * @param property The property to set
      */
     public void setProperty(String property){
-        this.setPropertyid(ReflectivePropertySearcher.getRoleProperty().getIntForName(property));
+        this.setPropertyid(YukonRoleProperty.valueOf(property).getPropertyId());
     }
 
 }

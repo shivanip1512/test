@@ -5,12 +5,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.operator.AdministratorRole;
-import com.cannontech.roles.operator.InventoryRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.db.hardware.StaticLoadGroupMapping;
 import com.cannontech.stars.util.StarsUtils;
@@ -73,8 +70,8 @@ public class ConfigBean
          * 
          */
         RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
-        hasResetPermission = rolePropertyDao.checkProperty(YukonRoleProperty.getForId(AdministratorRole.ADMIN_MANAGE_MEMBERS), getCurrentUser())
-                            && rolePropertyDao.checkProperty(YukonRoleProperty.getForId(InventoryRole.SN_CONFIG_RANGE), getCurrentUser());
+        hasResetPermission = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, getCurrentUser())
+                            && rolePropertyDao.checkProperty(YukonRoleProperty.SN_CONFIG_RANGE, getCurrentUser());
         return hasResetPermission;
     }
 

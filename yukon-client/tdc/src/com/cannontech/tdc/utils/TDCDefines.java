@@ -11,7 +11,7 @@ import java.util.GregorianCalendar;
 
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.ClientRights;
-import com.cannontech.roles.application.TDCRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 
 public final class TDCDefines 
 {
@@ -36,7 +36,7 @@ public final class TDCDefines
    //hex value representing the privileges of the user on this machine
    public static final long USER_RIGHTS = Long.parseLong( 
 			ClientSession.getInstance().getRolePropertyValue(
-         TDCRole.TDC_RIGHTS), 16 );
+         YukonRoleProperty.TDC_RIGHTS), 16 );
 
 
 /**

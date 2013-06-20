@@ -11,10 +11,10 @@ import com.cannontech.cbc.oneline.util.PointQualCheckUpdatTextList;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.AdjustablePosition;
 import com.cannontech.cbc.util.UpdaterHelper;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.esub.element.StaticText;
 import com.cannontech.message.capcontrol.streamable.SubBus;
-import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.user.YukonUserContext;
 import com.loox.jloox.LxAbstractGraph;
 import com.loox.jloox.LxAbstractText;
@@ -40,16 +40,16 @@ public class SubUpdatableStats extends LxAbstractView implements
     
     private static final String DAYOP_MAXOP = "Daily / Max Ops: ";
     
-    public UpdatableTextList target = new UpdatableTextList(CBCOnelineSettingsRole.SUB_TARGET, this);
-    public UpdatableTextList timestamp = new UpdatableTextList(CBCOnelineSettingsRole.SUB_TIMESTAMP, this);
-    public PointQualCheckUpdatTextList varLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.SUB_VARLOAD,this);
-    public UpdatableTextList threePhase = new UpdatableTextList(CBCOnelineSettingsRole.SUB_THREE_PHASE,this);
-    public UpdatableTextList estVarLoad = new UpdatableTextList(CBCOnelineSettingsRole.SUB_EST_VARLOAD,this);
-    public UpdatableTextList powerFactor = new UpdatableTextList(CBCOnelineSettingsRole.SUB_POWER_FACTOR,this);
-    public UpdatableTextList estPowerFactor = new UpdatableTextList(CBCOnelineSettingsRole.SUB_EST_POWER_FACTOR,this);
-    public PointQualCheckUpdatTextList wattLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.SUB_WATTS,this);
-    public PointQualCheckUpdatTextList voltLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.SUB_VOLTS,this);
-    public UpdatableTextList dayMaxOp = new UpdatableTextList( CBCOnelineSettingsRole.SUB_DAILY_MAX_OPCNT, this );
+    public UpdatableTextList target = new UpdatableTextList(YukonRoleProperty.SUB_TARGET.getPropertyId(), this);
+    public UpdatableTextList timestamp = new UpdatableTextList(YukonRoleProperty.SUB_TIMESTAMP.getPropertyId(), this);
+    public PointQualCheckUpdatTextList varLoad = new PointQualCheckUpdatTextList(YukonRoleProperty.SUB_VARLOAD.getPropertyId(),this);
+    public UpdatableTextList threePhase = new UpdatableTextList(YukonRoleProperty.SUB_THREE_PHASE.getPropertyId(),this);
+    public UpdatableTextList estVarLoad = new UpdatableTextList(YukonRoleProperty.SUB_EST_VARLOAD.getPropertyId(),this);
+    public UpdatableTextList powerFactor = new UpdatableTextList(YukonRoleProperty.SUB_POWER_FACTOR.getPropertyId(),this);
+    public UpdatableTextList estPowerFactor = new UpdatableTextList(YukonRoleProperty.SUB_EST_POWER_FACTOR.getPropertyId(),this);
+    public PointQualCheckUpdatTextList wattLoad = new PointQualCheckUpdatTextList(YukonRoleProperty.SUB_WATTS.getPropertyId(),this);
+    public PointQualCheckUpdatTextList voltLoad = new PointQualCheckUpdatTextList(YukonRoleProperty.SUB_VOLTS.getPropertyId(),this);
+    public UpdatableTextList dayMaxOp = new UpdatableTextList( YukonRoleProperty.SUB_DAILY_MAX_OPCNT.getPropertyId(), this );
 
     private OnelineSub parent;
     private LxGraph graph;
@@ -73,30 +73,30 @@ public class SubUpdatableStats extends LxAbstractView implements
 
     private void initPropLabelMap() {
 
-        propLabelMap.put(CBCOnelineSettingsRole.SUB_TARGET, TARGET);
-        propLabelMap.put(CBCOnelineSettingsRole.SUB_TIMESTAMP, TIMESTAMP);
-        propLabelMap.put(CBCOnelineSettingsRole.SUB_VARLOAD, VARLOAD);
-        propLabelMap.put(CBCOnelineSettingsRole.SUB_THREE_PHASE, THREE_PHASE);
-        propLabelMap.put(CBCOnelineSettingsRole.SUB_EST_VARLOAD, EST_VARLOAD);
-        propLabelMap.put(CBCOnelineSettingsRole.SUB_POWER_FACTOR, POWERFACTOR);
-        propLabelMap.put(CBCOnelineSettingsRole.SUB_EST_POWER_FACTOR, EST_POWERFACTOR);
-        propLabelMap.put(CBCOnelineSettingsRole.SUB_WATTS, WATTLOAD);
-        propLabelMap.put(CBCOnelineSettingsRole.SUB_VOLTS, VOLTLOAD);
-        propLabelMap.put(CBCOnelineSettingsRole.SUB_DAILY_MAX_OPCNT, DAYOP_MAXOP);
+        propLabelMap.put(YukonRoleProperty.SUB_TARGET.getPropertyId(), TARGET);
+        propLabelMap.put(YukonRoleProperty.SUB_TIMESTAMP.getPropertyId(), TIMESTAMP);
+        propLabelMap.put(YukonRoleProperty.SUB_VARLOAD.getPropertyId(), VARLOAD);
+        propLabelMap.put(YukonRoleProperty.SUB_THREE_PHASE.getPropertyId(), THREE_PHASE);
+        propLabelMap.put(YukonRoleProperty.SUB_EST_VARLOAD.getPropertyId(), EST_VARLOAD);
+        propLabelMap.put(YukonRoleProperty.SUB_POWER_FACTOR.getPropertyId(), POWERFACTOR);
+        propLabelMap.put(YukonRoleProperty.SUB_EST_POWER_FACTOR.getPropertyId(), EST_POWERFACTOR);
+        propLabelMap.put(YukonRoleProperty.SUB_WATTS.getPropertyId(), WATTLOAD);
+        propLabelMap.put(YukonRoleProperty.SUB_VOLTS.getPropertyId(), VOLTLOAD);
+        propLabelMap.put(YukonRoleProperty.SUB_DAILY_MAX_OPCNT.getPropertyId(), DAYOP_MAXOP);
 
     }
 
     private void initPropColumnMap() {
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_TARGET, UpdaterHelper.UpdaterDataType.SUB_TARGET_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_TIMESTAMP, UpdaterHelper.UpdaterDataType.SUB_SHORT_TIME_STAMP_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_VARLOAD, UpdaterHelper.UpdaterDataType.SUB_ONELINE_KVAR_LOAD_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_THREE_PHASE, UpdaterHelper.UpdaterDataType.SUB_ONELINE_THREE_PHASE_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_EST_VARLOAD, UpdaterHelper.UpdaterDataType.SUB_ONELINE_KVAR_ESTMATED_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_POWER_FACTOR, UpdaterHelper.UpdaterDataType.SUB_ONELINE_PF_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_EST_POWER_FACTOR, UpdaterHelper.UpdaterDataType.SUB_ONELINE_EST_PF_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_WATTS, UpdaterHelper.UpdaterDataType.SUB_ONELINE_WATT_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_VOLTS, UpdaterHelper.UpdaterDataType.SUB_ONELINE_VOLT_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_DAILY_MAX_OPCNT, UpdaterHelper.UpdaterDataType.SUB_ONELINE_DAILY_MAX_OPCNT_COLUMN);        
+        propColumnMap.put(YukonRoleProperty.SUB_TARGET.getPropertyId(), UpdaterHelper.UpdaterDataType.SUB_TARGET_COLUMN);
+        propColumnMap.put(YukonRoleProperty.SUB_TIMESTAMP.getPropertyId(), UpdaterHelper.UpdaterDataType.SUB_SHORT_TIME_STAMP_COLUMN);
+        propColumnMap.put(YukonRoleProperty.SUB_VARLOAD.getPropertyId(), UpdaterHelper.UpdaterDataType.SUB_ONELINE_KVAR_LOAD_COLUMN);
+        propColumnMap.put(YukonRoleProperty.SUB_THREE_PHASE.getPropertyId(), UpdaterHelper.UpdaterDataType.SUB_ONELINE_THREE_PHASE_COLUMN);
+        propColumnMap.put(YukonRoleProperty.SUB_EST_VARLOAD.getPropertyId(), UpdaterHelper.UpdaterDataType.SUB_ONELINE_KVAR_ESTMATED_COLUMN);
+        propColumnMap.put(YukonRoleProperty.SUB_POWER_FACTOR.getPropertyId(), UpdaterHelper.UpdaterDataType.SUB_ONELINE_PF_COLUMN);
+        propColumnMap.put(YukonRoleProperty.SUB_EST_POWER_FACTOR.getPropertyId(), UpdaterHelper.UpdaterDataType.SUB_ONELINE_EST_PF_COLUMN);
+        propColumnMap.put(YukonRoleProperty.SUB_WATTS.getPropertyId(), UpdaterHelper.UpdaterDataType.SUB_ONELINE_WATT_COLUMN);
+        propColumnMap.put(YukonRoleProperty.SUB_VOLTS.getPropertyId(), UpdaterHelper.UpdaterDataType.SUB_ONELINE_VOLT_COLUMN);
+        propColumnMap.put(YukonRoleProperty.SUB_DAILY_MAX_OPCNT.getPropertyId(), UpdaterHelper.UpdaterDataType.SUB_ONELINE_DAILY_MAX_OPCNT_COLUMN);        
 
     }
 
