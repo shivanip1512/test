@@ -8,26 +8,6 @@
 <cti:standardPage module="capcontrol" page="areas.${type}">
 	<%@include file="/capcontrol/capcontrolHeader.jspf"%>
 
-<script type="text/javascript">
-jQuery(function() {
-    jQuery(document).tooltip({
-        items: "*",
-        content: function() {
-            var element = jQuery(this);
-            
-            if ( element.closest('.area_name').length ) {
-                var tip = element.prev('.area_stats');
-                return tip.html();
-            }
-            else {
-                var tip = element.attr('title');
-                return tip;
-            }
-        },
-    });
-});
-</script>
-
     <c:if test="${hasAreaControl}">
         <script type="text/javascript">
             addCommandMenuBehavior('a[id^="areaState_"]');
@@ -102,7 +82,10 @@ jQuery(function() {
         			<tr>
 	        			
                         <td>
-                            <div id="allAreas${thisAreaId}" class="dn area_stats">
+	        				<a href="${substationUrl}" class="f-has-tooltip">
+	        					<spring:escapeBody htmlEscape="true">${viewableArea.area.ccName}</spring:escapeBody>
+	        				</a>
+                            <div class="f-tooltip dn">
                                 <c:forEach var="station" items="${viewableArea.subStations}">
                                         <div class="detail fwb">${station.name}</div>
                                         <ul class="detail simple-list">
@@ -111,9 +94,6 @@ jQuery(function() {
                                         </ul>
                                 </c:forEach>
                             </div>
-	        				<a href="${substationUrl}" class="area_name">
-	        					<spring:escapeBody htmlEscape="true">${viewableArea.area.ccName}</spring:escapeBody>
-	        				</a>
 	        			</td>
                         
                         <td>
