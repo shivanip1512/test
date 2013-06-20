@@ -217,10 +217,10 @@ DELETE FROM YukonRoleProperty WHERE RolePropertyId = -10811;
 
 /* Start YUK-12160 */
 CREATE TABLE UserPreference (
-    PreferenceId         NUMBER                NOT NULL,
-    UserId               NUMBER                NOT NULL,
-    Name                 VARCHAR2(255)         NOT NULL,
-    Value                VARCHAR2(255)         NOT NULL,
+    PreferenceId         NUMERIC              NOT NULL,
+    UserId               NUMERIC              NOT NULL,
+    Name                 VARCHAR(255)         NOT NULL,
+    Value                VARCHAR(255)         NOT NULL,
     CONSTRAINT PK_UserPreference PRIMARY KEY (PreferenceId)
 );
 
