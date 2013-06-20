@@ -13,6 +13,6 @@
     <tx:annotation-driven transaction-manager="transactionManager"/>
     <context:component-scan base-package="com.cannontech.web.util"/>
 
-    <bean id="yukonUserPreferenceService" class="com.cannontech.web.user.service.impl.YukonUserPreferenceServiceImpl" />
+    <bean class="com.cannontech.web.user.service.impl.UserPreferenceServiceImpl" />
 
 </beans>

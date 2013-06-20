@@ -12,39 +12,41 @@ import com.google.common.collect.ImmutableMap.Builder;
  * 
  * {@link YukonRoleProperty}    Inspiration.
  */
-public enum YukonUserPreferenceName implements DisplayableEnum {
+public enum UserPreferenceName implements DisplayableEnum {
     
-    GRAPH_DISPLAY_TIME_DURATION(InputTypeFactory.enumType(PreferenceGraphTimeDurationOption.class), PreferenceGraphTimeDurationOption.getDefault().toString()),
-    GRAPH_DISPLAY_VISUAL_TYPE(InputTypeFactory.enumType(PreferenceGraphVisualTypeOption.class), PreferenceGraphVisualTypeOption.getDefault().toString()),
-    ERROR_PAGE_SHOW_DETAILS(InputTypeFactory.enumType(PreferenceShowHide.class), PreferenceShowHide.HIDE.toString()),
+    GRAPH_DISPLAY_TIME_DURATION(InputTypeFactory.enumType(PreferenceGraphTimeDurationOption.class),
+        PreferenceGraphTimeDurationOption.getDefault().name()),
+    GRAPH_DISPLAY_VISUAL_TYPE(InputTypeFactory.enumType(PreferenceGraphVisualTypeOption.class),
+        PreferenceGraphVisualTypeOption.getDefault().name()),
+    ERROR_PAGE_SHOW_DETAILS(InputTypeFactory.enumType(PreferenceShowHide.class), PreferenceShowHide.HIDE.name()),
     HOME_URL(InputTypeFactory.stringType(), "/dashboard");
 
     // Setup the internal map for easy translations:
-    private final static ImmutableMap<String, YukonUserPreferenceName> stringToName;
+    private final static ImmutableMap<String, UserPreferenceName> stringToName;
     static {
-        Builder<String, YukonUserPreferenceName> builder = ImmutableMap.builder();
-        for (YukonUserPreferenceName prefName : values()) {
+        Builder<String, UserPreferenceName> builder = ImmutableMap.builder();
+        for (UserPreferenceName prefName : values()) {
             builder.put(prefName.name(), prefName);
         }
         stringToName = builder.build();
     }
     
-    public static YukonUserPreferenceName getName(String forName) {
-        YukonUserPreferenceName name = stringToName.get(forName);
+    public static UserPreferenceName getName(String forName) {
+        UserPreferenceName name = stringToName.get(forName);
         return name;
     }
 
     final private InputType<?> valueType;
     final private String defaultValue;
     
-    private YukonUserPreferenceName(InputType<?> valueType, String defaultValue) {
+    private UserPreferenceName(InputType<?> valueType, String defaultValue) {
         this.valueType = valueType;
         this.defaultValue = defaultValue;
     }
 
     @Override
     public String getFormatKey() {
-        return "yukon.web.modules.user.preferences."+ name();
+        return "yukon.web.modules.user.preferences." + name();
     }
 
     public InputType<?> getValueType() {

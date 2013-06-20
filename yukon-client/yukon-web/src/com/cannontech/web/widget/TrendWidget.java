@@ -39,7 +39,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.chart.service.ChartService;
 import com.cannontech.web.common.chart.service.FlotChartService;
-import com.cannontech.web.user.service.YukonUserPreferenceService;
+import com.cannontech.web.user.service.UserPreferenceService;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 import com.cannontech.web.widget.support.impl.CachingWidgetParameterGrabber;
@@ -54,7 +54,7 @@ public class TrendWidget extends WidgetControllerBase {
     private AttributeService attributeService = null;
     private Map<String, AttributeGraphType> supportedAttributeGraphMap = null;
     private DateFormattingService dateFormattingService = null;
-    @Autowired private YukonUserPreferenceService prefService;
+    @Autowired private UserPreferenceService prefService;
     private CachingWidgetParameterGrabber cachingWidgetParameterGrabber = null;
     private BuiltInAttribute defaultAttribute = null;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;

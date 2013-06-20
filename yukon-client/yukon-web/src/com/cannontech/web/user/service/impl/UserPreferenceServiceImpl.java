@@ -6,24 +6,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.common.chart.model.GraphType;
-import com.cannontech.core.users.dao.YukonUserPreferenceDao;
+import com.cannontech.core.users.dao.UserPreferenceDao;
 import com.cannontech.core.users.model.PreferenceGraphTimeDurationOption;
 import com.cannontech.core.users.model.PreferenceGraphVisualTypeOption;
-import com.cannontech.core.users.model.YukonUserPreference;
-import com.cannontech.core.users.model.YukonUserPreferenceName;
+import com.cannontech.core.users.model.UserPreference;
+import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.web.user.service.YukonUserPreferenceService;
+import com.cannontech.web.user.service.UserPreferenceService;
 
-public class YukonUserPreferenceServiceImpl implements YukonUserPreferenceService {
+public class UserPreferenceServiceImpl implements UserPreferenceService {
 
-    @Autowired private YukonUserPreferenceDao prefDao;
+    @Autowired private UserPreferenceDao prefDao;
 
     @Override
-    public YukonUserPreference savePreference(LiteYukonUser user, YukonUserPreferenceName preference, String newValue) {
+    public UserPreference savePreference(LiteYukonUser user, UserPreferenceName preference, String newValue) {
 
-        YukonUserPreference pref = prefDao.findPreference(user, preference);
+        UserPreference pref = prefDao.findPreference(user, preference);
         if(pref == null) {
-            pref = new YukonUserPreference();
+            pref = new UserPreference();
             pref.setName(preference);
             pref.setUserId(user.getUserID());
             pref.setValue(newValue);
@@ -42,12 +42,12 @@ public class YukonUserPreferenceServiceImpl implements YukonUserPreferenceServic
     }
 
     @Override
-    public String getPreference(LiteYukonUser user, YukonUserPreferenceName category) {
+    public String getPreference(LiteYukonUser user, UserPreferenceName category) {
         return prefDao.getValueOrDefault(user, category);
     }
 
     @Override
-    public List<YukonUserPreference> findAllSavedPreferencesForUser(LiteYukonUser user) {
+    public List<UserPreference> findAllSavedPreferencesForUser(LiteYukonUser user) {
         return prefDao.findAllSavedPreferencesForUser(user);
     }
 
@@ -56,11 +56,11 @@ public class YukonUserPreferenceServiceImpl implements YukonUserPreferenceServic
                                                                                  LiteYukonUser user) {
         PreferenceGraphVisualTypeOption prefType = null;
         if (requestedValueOrNull == null) {
-            String graphTypeString = this.getPreference(user, YukonUserPreferenceName.GRAPH_DISPLAY_VISUAL_TYPE);
+            String graphTypeString = this.getPreference(user, UserPreferenceName.GRAPH_DISPLAY_VISUAL_TYPE);
             prefType = PreferenceGraphVisualTypeOption.valueOf(graphTypeString);
         } else {
             prefType = PreferenceGraphVisualTypeOption.fromGraphType(requestedValueOrNull);
-            this.savePreference(user, YukonUserPreferenceName.GRAPH_DISPLAY_VISUAL_TYPE, prefType.toString());
+            this.savePreference(user, UserPreferenceName.GRAPH_DISPLAY_VISUAL_TYPE, prefType.toString());
         }
         return prefType;
     }
@@ -70,11 +70,11 @@ public class YukonUserPreferenceServiceImpl implements YukonUserPreferenceServic
                                                                                      LiteYukonUser user) {
         PreferenceGraphTimeDurationOption prefType = null;
         if (requestedValueOrNull == null) {
-            String chartPeriodString = this.getPreference(user, YukonUserPreferenceName.GRAPH_DISPLAY_TIME_DURATION);
+            String chartPeriodString = this.getPreference(user, UserPreferenceName.GRAPH_DISPLAY_TIME_DURATION);
             prefType = PreferenceGraphTimeDurationOption.valueOf(chartPeriodString);
         } else {
             prefType = PreferenceGraphTimeDurationOption.fromChartPeriod(requestedValueOrNull);
-            this.savePreference(user, YukonUserPreferenceName.GRAPH_DISPLAY_TIME_DURATION, prefType.toString());
+            this.savePreference(user, UserPreferenceName.GRAPH_DISPLAY_TIME_DURATION, prefType.toString());
         }
         return prefType;
     }

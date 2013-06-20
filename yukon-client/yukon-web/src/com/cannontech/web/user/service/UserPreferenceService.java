@@ -6,18 +6,18 @@ import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.core.users.model.PreferenceGraphTimeDurationOption;
 import com.cannontech.core.users.model.PreferenceGraphVisualTypeOption;
-import com.cannontech.core.users.model.YukonUserPreference;
-import com.cannontech.core.users.model.YukonUserPreferenceName;
+import com.cannontech.core.users.model.UserPreference;
+import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
-public interface YukonUserPreferenceService {
+public interface UserPreferenceService {
 
     /**
      * @param user
      * @param preference
      * @param newValue String value of one of the leaf enums, eg. PreferenceShowHide.HIDE > "HIDE"
      */
-    public YukonUserPreference savePreference(LiteYukonUser user, YukonUserPreferenceName preference, String newValue);
+    public UserPreference savePreference(LiteYukonUser user, UserPreferenceName preference, String newValue);
 
     public int deleteAllSavedPreferencesForUser(LiteYukonUser user);
 
@@ -26,15 +26,17 @@ public interface YukonUserPreferenceService {
      * 
      * @return String version of the enum value.
      */
-    public String getPreference(LiteYukonUser user, YukonUserPreferenceName category);
+    public String getPreference(LiteYukonUser user, UserPreferenceName category);
 
     /**
      * @param user LiteYukonUser
      * @return Gets only the ones which have been saved in the database.
      */
-    public List<YukonUserPreference> findAllSavedPreferencesForUser(LiteYukonUser user);
+    public List<UserPreference> findAllSavedPreferencesForUser(LiteYukonUser user);
 
-    public PreferenceGraphVisualTypeOption updatePreferenceOrGetDefaultGraphType(GraphType requestedValueOrNull, LiteYukonUser user);
+    public PreferenceGraphVisualTypeOption updatePreferenceOrGetDefaultGraphType(GraphType requestedValueOrNull,
+        LiteYukonUser user);
 
-    public PreferenceGraphTimeDurationOption updatePreferenceOrGetDefaultChartPeriod(ChartPeriod requestedValueOrNull, LiteYukonUser user);
+    public PreferenceGraphTimeDurationOption updatePreferenceOrGetDefaultChartPeriod(ChartPeriod requestedValueOrNull,
+        LiteYukonUser user);
 }

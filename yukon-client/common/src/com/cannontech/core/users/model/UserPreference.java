@@ -2,13 +2,13 @@ package com.cannontech.core.users.model;
 
 import java.io.Serializable;
 
-public class YukonUserPreference implements Serializable {
+public class UserPreference implements Serializable {
     
     private static final long serialVersionUID = 1L;
     
     private Integer id;
     private Integer userId;
-    private YukonUserPreferenceName name;
+    private UserPreferenceName name;
     private String value;
 
     public Integer getId() {
@@ -27,11 +27,11 @@ public class YukonUserPreference implements Serializable {
         this.userId = userId;
     }
     
-    public YukonUserPreferenceName getName() {
+    public UserPreferenceName getName() {
         return name;
     }
     
-    public void setName(YukonUserPreferenceName name) {
+    public void setName(UserPreferenceName name) {
         this.name = name;
     }
     

@@ -10,9 +10,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.users.dao.YukonUserPreferenceDao;
-import com.cannontech.core.users.model.YukonUserPreference;
-import com.cannontech.core.users.model.YukonUserPreferenceName;
+import com.cannontech.core.users.dao.UserPreferenceDao;
+import com.cannontech.core.users.model.UserPreference;
+import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -24,9 +24,9 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
-public class YukonUserPreferenceDaoImpl implements YukonUserPreferenceDao {
+public class UserPreferenceDaoImpl implements UserPreferenceDao {
 
-    public final static String TABLE_NAME = "YukonUserPreference";
+    public final static String TABLE_NAME = "UserPreference";
     public final static String FIELD_PRIMARY_KEY = "PreferenceId";
     public final static String FIELD_NAME = "Name";
     public final static String FIELD_USER_ID = "UserId";
@@ -36,81 +36,82 @@ public class YukonUserPreferenceDaoImpl implements YukonUserPreferenceDao {
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 
-    private SimpleTableAccessTemplate<YukonUserPreference> userGroupTemplate;
+    private SimpleTableAccessTemplate<UserPreference> userGroupTemplate;
 
     @PostConstruct
     public void init() {
-        userGroupTemplate = new SimpleTableAccessTemplate<YukonUserPreference>(yukonJdbcTemplate, nextValueHelper);
+        userGroupTemplate = new SimpleTableAccessTemplate<UserPreference>(yukonJdbcTemplate, nextValueHelper);
         userGroupTemplate.setTableName(TABLE_NAME);
         userGroupTemplate.setPrimaryKeyField(FIELD_PRIMARY_KEY);
         userGroupTemplate.setFieldMapper(preferenceFieldMapper);
     }
 
-    private final FieldMapper<YukonUserPreference> preferenceFieldMapper = new FieldMapper<YukonUserPreference>() {
+    private final FieldMapper<UserPreference> preferenceFieldMapper = new FieldMapper<UserPreference>() {
         @Override
-        public void extractValues(MapSqlParameterSource p, YukonUserPreference pref) {
+        public void extractValues(MapSqlParameterSource p, UserPreference pref) {
             p.addValue(FIELD_USER_ID, pref.getUserId());
             p.addValue(FIELD_NAME, pref.getName());
             p.addValue(FIELD_VALUE, pref.getValue());
         }
 
         @Override
-        public Number getPrimaryKey(YukonUserPreference pref) {
+        public Number getPrimaryKey(UserPreference pref) {
             return pref.getId();
         }
 
         @Override
-        public void setPrimaryKey(YukonUserPreference pref, int newId) {
+        public void setPrimaryKey(UserPreference pref, int newId) {
             pref.setId(newId);
         }
     };
 
     @Override
-    public void create(final YukonUserPreference pref) {
+    public void create(final UserPreference pref) {
         userGroupTemplate.insert(pref);
     }
 
     @Override
-    public void update(YukonUserPreference pref) {
+    public void update(UserPreference pref) {
         userGroupTemplate.update(pref);
 
         dbChangeManager.processDbChange(pref.getId(), 
                                         DBChangeMsg.CHANGE_USER_PREFERENCE_DB,
-                                        DBChangeMsg.CAT_YUKON_USER_PREFERENCE, 
-                                        DBChangeMsg.CAT_YUKON_USER_PREFERENCE, 
+                                        DBChangeMsg.CAT_USER_PREFERENCE, 
+                                        DBChangeMsg.CAT_USER_PREFERENCE, 
                                         DbChangeType.UPDATE);
     }
 
     @Override
-    public int delete(int yukonUserPreferenceId) {
+    public int delete(int userPreferenceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM "+ TABLE_NAME);
-        sql.append("WHERE " + FIELD_PRIMARY_KEY).eq(yukonUserPreferenceId);
+        sql.append("WHERE " + FIELD_PRIMARY_KEY).eq(userPreferenceId);
 
         int affected = yukonJdbcTemplate.update(sql);
 
-        dbChangeManager.processDbChange(yukonUserPreferenceId, 
+        dbChangeManager.processDbChange(userPreferenceId, 
                                         DBChangeMsg.CHANGE_USER_PREFERENCE_DB,
-                                        DBChangeMsg.CAT_YUKON_USER_PREFERENCE, 
-                                        DBChangeMsg.CAT_YUKON_USER_PREFERENCE, 
+                                        DBChangeMsg.CAT_USER_PREFERENCE, 
+                                        DBChangeMsg.CAT_USER_PREFERENCE, 
                                         DbChangeType.DELETE);
 
         return affected;
     }
 
-    private YukonUserPreference getPreference(LiteYukonUser user, YukonUserPreferenceName prefName) throws EmptyResultDataAccessException {
+    private UserPreference getPreference(LiteYukonUser user, UserPreferenceName prefName)
+            throws EmptyResultDataAccessException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PreferenceId, UserId, Name, Value");
         sql.append("FROM " + TABLE_NAME);
         sql.append("WHERE " + FIELD_USER_ID).eq(user.getUserID());
         sql.append("AND " + FIELD_NAME).eq(prefName);
 
-        YukonUserPreference pref = yukonJdbcTemplate.queryForObject(sql, new YukonUserPreferenceRowMapper());
+        UserPreference pref = yukonJdbcTemplate.queryForObject(sql, new RowMapper());
         return pref;
     }
 
     @Override
-    public YukonUserPreference findPreference(LiteYukonUser user, YukonUserPreferenceName prefName) {
+    public UserPreference findPreference(LiteYukonUser user, UserPreferenceName prefName) {
         try {
             return getPreference(user, prefName);
         } catch (EmptyResultDataAccessException e) {/* return nulls for find methods */}
@@ -119,14 +120,14 @@ public class YukonUserPreferenceDaoImpl implements YukonUserPreferenceDao {
     }
 
     @Override
-    public String getValueOrDefault(LiteYukonUser user, YukonUserPreferenceName prefName) {
+    public String getValueOrDefault(LiteYukonUser user, UserPreferenceName prefName) {
         if (prefName == null) {
-            throw new IllegalArgumentException("YukonUserPreferenceDaoImpl cannot get Preference for null YukonUserPreference.");
+            throw new IllegalArgumentException("UserPreferenceDaoImpl cannot get Preference for null UserPreference.");
         }
         if (user == null) {
             return prefName.getDefaultValue();
         }
-        YukonUserPreference value = findPreference(user, prefName);
+        UserPreference value = findPreference(user, prefName);
         if (value != null) {
             return value.getValue();
         }
@@ -134,13 +135,13 @@ public class YukonUserPreferenceDaoImpl implements YukonUserPreferenceDao {
     }
 
     @Override
-    public List<YukonUserPreference> findAllSavedPreferencesForUser(LiteYukonUser user) {
+    public List<UserPreference> findAllSavedPreferencesForUser(LiteYukonUser user) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT *");
         sql.append("FROM " + TABLE_NAME);
         sql.append("WHERE " + FIELD_USER_ID).eq(user.getUserID());
 
-        List<YukonUserPreference> prefs = yukonJdbcTemplate.query(sql, new YukonUserPreferenceRowMapper());
+        List<UserPreference> prefs = yukonJdbcTemplate.query(sql, new RowMapper());
         return prefs;
     }
 
@@ -154,17 +155,17 @@ public class YukonUserPreferenceDaoImpl implements YukonUserPreferenceDao {
 
         dbChangeManager.processDbChange(user.getUserID(), 
                                         DBChangeMsg.CHANGE_USER_PREFERENCE_DB_DELETE_BY_USER_ID,
-                                        DBChangeMsg.CAT_YUKON_USER_PREFERENCE, 
-                                        DBChangeMsg.CAT_YUKON_USER_PREFERENCE, 
+                                        DBChangeMsg.CAT_USER_PREFERENCE, 
+                                        DBChangeMsg.CAT_USER_PREFERENCE, 
                                         DbChangeType.DELETE);
         return rowsDeleted;
     }
 
-    public static class YukonUserPreferenceRowMapper implements YukonRowMapper<YukonUserPreference> {
+    private static class RowMapper implements YukonRowMapper<UserPreference> {
         @Override
-        public YukonUserPreference mapRow(YukonResultSet rs) throws SQLException {
-            YukonUserPreference pref = new YukonUserPreference();
-            YukonUserPreferenceName pp = YukonUserPreferenceName.valueOf(rs.getString(FIELD_NAME));
+        public UserPreference mapRow(YukonResultSet rs) throws SQLException {
+            UserPreference pref = new UserPreference();
+            UserPreferenceName pp = UserPreferenceName.valueOf(rs.getString(FIELD_NAME));
 
             pref.setId(rs.getInt(FIELD_PRIMARY_KEY));
             pref.setUserId(rs.getInt(FIELD_USER_ID));

@@ -301,8 +301,8 @@
       <sequence name="EnergyCompanySetting">
         <table name="EnergyCompanySetting" identitycolumn="EnergyCompanySettingId" initsequence="true" />
       </sequence>
-      <sequence name="YukonUserPreference">
-        <table name="YukonUserPreference" identitycolumn="PreferenceId" initsequence="true" />
+      <sequence name="UserPreference">
+        <table name="UserPreference" identitycolumn="PreferenceId" initsequence="true" />
       </sequence>
   </sequencetable>
 </sequencetables>

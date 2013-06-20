@@ -40,7 +40,7 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
-import com.cannontech.core.users.model.YukonUserPreferenceName;
+import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -58,7 +58,7 @@ import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
 import com.cannontech.web.stars.service.PasswordResetService;
 import com.cannontech.web.user.model.ChangePassword;
 import com.cannontech.web.user.model.UserProfile;
-import com.cannontech.web.user.service.YukonUserPreferenceService;
+import com.cannontech.web.user.service.UserPreferenceService;
 import com.cannontech.web.user.validator.ChangePasswordValidator;
 import com.cannontech.web.user.validator.UserProfileValidator;
 import com.cannontech.web.util.JsonHelper;
@@ -100,7 +100,7 @@ public class UserProfileController {
     @Autowired private UserProfileHelper profileHelper;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private YukonUserDao yukonUserDao;
-    @Autowired private YukonUserPreferenceService prefService;
+    @Autowired private UserPreferenceService prefService;
 
     @Autowired private UserProfileValidator userValidator;
     @Autowired private ChangePasswordValidator passwordValidator;
@@ -210,7 +210,7 @@ public class UserProfileController {
                                                      HttpServletRequest request) {
 
         profileHelper.isUserAuthorized(user, userId);
-        YukonUserPreferenceName preference = YukonUserPreferenceName.getName(prefName); // valueOf FAILS
+        UserPreferenceName preference = UserPreferenceName.getName(prefName); // valueOf FAILS
 
         // TODO FIXME: HOW to validate that prefValue is one of the options for prefName?
         if (preference.getValueType() == InputTypeFactory.stringType()) {
@@ -269,8 +269,9 @@ public class UserProfileController {
      * NOTE: Currently includes all validations.
      * NOTE: Assumes the new passwords cannot be empty/blank/spaces
      * 
-     * @param changePassword        Form/Command object - note: we do not @Valid because of checking userIds and custom passwordValidator setting.
-     * @param errors                SpringMVC Errors object
+     * @param changePassword        Form/Command object - note: we do not @Valid because of checking userIds and
+     *                              custom passwordValidator setting.
+     * @param bindingResult         SpringMVC binding result
      * @param context
      * @param req
      * @param resp
@@ -284,7 +285,7 @@ public class UserProfileController {
      */
     @RequestMapping(value = "/updatePassword.json", method = RequestMethod.POST)
     public @ResponseBody JSONObject updatePassword(@ModelAttribute(value="changePassword") ChangePassword changePassword,
-                                                   BindingResult errors,
+                                                   BindingResult bindingResult,
                                                    LiteYukonUser user,
                                                    YukonUserContext context,
                                                    HttpServletRequest req,
@@ -294,17 +295,18 @@ public class UserProfileController {
 
         JSONObject result = new JSONObject();
         if (user.getUserID() != changePassword.getUserId().intValue()) {
-            errors.reject(MSGKEY_MISMATCHED_USERS);
+            bindingResult.reject(MSGKEY_MISMATCHED_USERS);
             result.put("secondsToWait", DEFAULT_RETRY_PASSWORD_IN_SECONDS); // Not currently using this value...
-            return jsonHelper.failToJSON(result, errors, messageSourceAccessor);
+            return jsonHelper.failToJSON(result, bindingResult, messageSourceAccessor);
         }
 
         // Validate: skip the no-match message since that's already done within the UI.
         passwordValidator.setAddMessageConfirmPasswordDoesntMatch(false);
-        passwordValidator.validate(changePassword, errors);
-        result.put("secondsToWait", changePassword.getRetrySeconds() == null ? DEFAULT_RETRY_PASSWORD_IN_SECONDS : changePassword.getRetrySeconds());
+        passwordValidator.validate(changePassword, bindingResult);
+        result.put("secondsToWait", changePassword.getRetrySeconds() == null
+                ? DEFAULT_RETRY_PASSWORD_IN_SECONDS : changePassword.getRetrySeconds());
 
-        if (!errors.hasErrors()) {
+        if (!bindingResult.hasErrors()) {
             try {
                 authenticationService.setPassword(user, changePassword.getNewPassword()); // This cannot fail?
                 JSONObject json = jsonHelper.succeed(messageSourceAccessor.getMessage(MSGKEY_PASSWORD_CHANGE_SUCCESS));
@@ -312,11 +314,11 @@ public class UserProfileController {
                 return json;
             } catch (NoSuchMessageException|UnsupportedOperationException e) {
                 log.info("Failed saving new password", e);
-                errors.reject(MSGKEY_CHANGE_PASSWORD_SYSTEMERR, new Object[]{e}, e.toString());
+                bindingResult.reject(MSGKEY_CHANGE_PASSWORD_SYSTEMERR, new Object[]{e}, e.toString());
             }
         }
 
-        return jsonHelper.failToJSON(result, errors, messageSourceAccessor);
+        return jsonHelper.failToJSON(result, bindingResult, messageSourceAccessor);
     }
 
 }

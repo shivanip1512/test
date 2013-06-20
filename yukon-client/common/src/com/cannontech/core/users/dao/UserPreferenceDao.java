@@ -2,19 +2,19 @@ package com.cannontech.core.users.dao;
 
 import java.util.List;
 
-import com.cannontech.core.users.model.YukonUserPreference;
-import com.cannontech.core.users.model.YukonUserPreferenceName;
+import com.cannontech.core.users.model.UserPreference;
+import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
-public interface YukonUserPreferenceDao {
+public interface UserPreferenceDao {
 
-    public void create(YukonUserPreference pref);
-    public void update(YukonUserPreference pref);
+    public void create(UserPreference pref);
+    public void update(UserPreference pref);
     
     /**
      * Returns the amount of rows affected, which will be one or zero.
      */
-    public int delete(int yukonUserPreferenceId);
+    public int delete(int userPreferenceId);
 
     /**
      * Find the preference, if any, associated with the given user for this category
@@ -23,7 +23,7 @@ public interface YukonUserPreferenceDao {
      * @param category
      * @return Returns preference if it exists, else null.
      */
-    public YukonUserPreference findPreference(LiteYukonUser user, YukonUserPreferenceName category);
+    public UserPreference findPreference(LiteYukonUser user, UserPreferenceName category);
 
     /**
      * 
@@ -31,7 +31,7 @@ public interface YukonUserPreferenceDao {
      * @param category
      * @return If none exist in the database, then category's default is returned.
      */
-    public String getValueOrDefault(LiteYukonUser user, YukonUserPreferenceName category);
+    public String getValueOrDefault(LiteYukonUser user, UserPreferenceName category);
 
     /**
      * Return a list of all preferences the user has saved.
@@ -39,7 +39,7 @@ public interface YukonUserPreferenceDao {
      * @param user
      * @return
      */
-    public List<YukonUserPreference> findAllSavedPreferencesForUser(LiteYukonUser user);
+    public List<UserPreference> findAllSavedPreferencesForUser(LiteYukonUser user);
     
     /**
      * Used to reset the user's preferences to their defaults.

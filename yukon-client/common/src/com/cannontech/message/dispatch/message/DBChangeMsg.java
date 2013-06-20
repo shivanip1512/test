@@ -83,7 +83,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
     public static final String CAT_HOLIDAY_SCHEDULE = "HolidaySchedule";
     public static final String CAT_ENERGY_COMPANY = "EnergyCompany";
     public static final String CAT_YUKON_USER = "YukonUser";
-    public static final String CAT_YUKON_USER_PREFERENCE = "YukonUserPreference";
+    public static final String CAT_USER_PREFERENCE = "UserPreference";
     public static final String CAT_USER_GROUP = "UserGroup";
     public static final String CAT_CUSTOMER = "Customer";
     public static final String CAT_CI_CUSTOMER = "CICustomer";
@@ -192,6 +192,7 @@ public void setDbChangeType(DbChangeType dbChangeType) {
     this.dbChangeType = dbChangeType;
 }
 
+@Override
 public String toString() 
 {
     StringBuilder retString = new StringBuilder(150);

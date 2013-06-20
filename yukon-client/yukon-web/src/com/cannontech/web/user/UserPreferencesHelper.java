@@ -13,10 +13,10 @@ import org.springframework.ui.ModelMap;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.users.model.PreferenceGraphVisualTypeOption;
-import com.cannontech.core.users.model.YukonUserPreference;
-import com.cannontech.core.users.model.YukonUserPreferenceName;
+import com.cannontech.core.users.model.UserPreference;
+import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.web.user.service.YukonUserPreferenceService;
+import com.cannontech.web.user.service.UserPreferenceService;
 
 @Component
 public class UserPreferencesHelper {
@@ -24,20 +24,20 @@ public class UserPreferencesHelper {
     private static final String CSS_CLASS_ICON_CHART_BAR = "icon-chart-bar";
     private static final String CSS_CLASS_ICON_CHART_LINE = "icon-chart-line";
 
-    @Autowired private YukonUserPreferenceService prefService;
+    @Autowired private UserPreferenceService prefService;
 
     /**
      * This sets up both "userPreferenceMap" and "allPreferenceNames" within model.
      */
     public void setupUserPreferences(ModelMap model, LiteYukonUser user) {
 
-        List<YukonUserPreference> prefs = prefService.findAllSavedPreferencesForUser(user);
-        Map<String,YukonUserPreference> prefMap = new HashMap<>();
-        for(YukonUserPreference pp : prefs) {
+        List<UserPreference> prefs = prefService.findAllSavedPreferencesForUser(user);
+        Map<String,UserPreference> prefMap = new HashMap<>();
+        for(UserPreference pp : prefs) {
             prefMap.put(pp.getName().toString(), pp);
         }
         model.addAttribute("userPreferenceMap", prefMap);
-        model.addAttribute("allPreferenceNames", YukonUserPreferenceName.values());
+        model.addAttribute("allPreferenceNames", UserPreferenceName.values());
     }
 
     /**
@@ -45,7 +45,7 @@ public class UserPreferencesHelper {
      * 
      * @param model TODO
      * @postcondition   model has new entry "userPreferencesNameToDisplayOptions"
-     *                      [yukonUserPreferenceName.toString() 
+     *                      [userPreferenceName.toString() 
      *                          > ["iconONLY"
      *                              > [BAR > "icon-chart-bar"]
      *                              > [LINE > "icon-chart-line"]
@@ -61,7 +61,7 @@ public class UserPreferencesHelper {
         option1map.put(PreferenceGraphVisualTypeOption.LINE.toString(), CSS_CLASS_ICON_CHART_LINE);
         Map<String,Map<String,String>> option1Args = new HashMap<>();
         option1Args.put(JS_SIGNAL_TO_DISPLAY_ONLY_ICONS, option1map);
-        map.put(YukonUserPreferenceName.GRAPH_DISPLAY_VISUAL_TYPE.toString(), option1Args);
+        map.put(UserPreferenceName.GRAPH_DISPLAY_VISUAL_TYPE.toString(), option1Args);
         model.addAttribute("userPreferencesNameToDisplayOptions", map);
     }
 
@@ -73,7 +73,7 @@ public class UserPreferencesHelper {
      */
     public JSONArray setupPreferenceDefaults(MessageSourceAccessor accessor) {
         JSONArray prefList = new JSONArray();
-        for (YukonUserPreferenceName pref : YukonUserPreferenceName.values() ) {
+        for (UserPreferenceName pref : UserPreferenceName.values() ) {
             JSONObject jsonPref = new JSONObject();
             jsonPref.put("name", pref.toString());
             boolean isEnum = pref.getValueType().toString().startsWith("EnumType");
@@ -82,7 +82,8 @@ public class UserPreferencesHelper {
                 jsonPref.put("defaultVal", pref.getDefaultValue());
             } else {
                 String value = pref.getDefaultValue();
-                String valueType = pref.getValueType().toString();  // REQUIRED or JSON crashes with: JSONException: There is a cycle in the hierarchy!
+                // REQUIRED or JSON crashes with: JSONException: There is a cycle in the hierarchy!
+                String valueType = pref.getValueType().toString();
                 jsonPref.put("prefType", valueType);
                 jsonPref.put("defaultVal", value);
             }
