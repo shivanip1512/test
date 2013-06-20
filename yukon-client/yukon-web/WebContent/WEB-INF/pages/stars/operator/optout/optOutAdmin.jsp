@@ -67,26 +67,6 @@
             }
         }
     </script>
-
-<<<<<<< .mine
-	<table class="widgetColumns">
-		<c:set var="show">
-			<i:inline key=".countOptOuts.byProgramName.instruction.show" />
-		</c:set>
-		<c:set var="change">
-			<i:inline key=".countOptOuts.byProgramName.instruction.change" />
-		</c:set>
-		<tr>
-		    <td class="widgetColumnCell" valign="top" style="padding: 9px 0px 0px 0px">    
-		        <!-- System Information -->
-		        <cti:checkRolesAndProperties value="OPERATOR_OPT_OUT_ADMIN_STATUS">
-			    <tags:boxContainer2 nameKey="systemInfo" hideEnabled="false">
-		                <tags:nameValueContainer2>
-			                 <tags:nameValue2 rowClass="totalAccounts" nameKey=".totalAccounts">${totalNumberOfAccounts}</tags:nameValue2>
-		                     <tags:nameValue2 rowClass="todaysOptOuts" nameKey=".todaysOptOuts">${currentOptOuts}</tags:nameValue2>
-			                 <tags:nameValue2 rowClass="futureOptOuts" nameKey=".futureOptOuts">${scheduledOptOuts}</tags:nameValue2>
-			                 <cti:checkEnergyCompanySetting value="ALTERNATE_PROGRAM_ENROLLMENT" energyCompanyId="${energyCompanyId}" >
-=======
         <c:set var="show">
             <i:inline key=".countOptOuts.byProgramName.instruction.show" />
         </c:set>
@@ -96,14 +76,13 @@
         <div class="column_12_12">
             <div class="column one">
                 <!-- System Information -->
-                <cti:checkRolesAndProperties value="OPT_OUT_ADMIN_STATUS">
+                <cti:checkRolesAndProperties value="OPERATOR_OPT_OUT_ADMIN_STATUS">
                 <tags:boxContainer2 nameKey="systemInfo">
                         <tags:nameValueContainer2 tableClass="stacked">
                              <tags:nameValue2 rowClass="totalAccounts" nameKey=".totalAccounts">${totalNumberOfAccounts}</tags:nameValue2>
                              <tags:nameValue2 rowClass="todaysOptOuts" nameKey=".todaysOptOuts">${currentOptOuts}</tags:nameValue2>
                              <tags:nameValue2 rowClass="futureOptOuts" nameKey=".futureOptOuts">${scheduledOptOuts}</tags:nameValue2>
                              <cti:checkEnergyCompanySetting value="ALTERNATE_PROGRAM_ENROLLMENT" energyCompanyId="${energyCompanyId}" >
->>>>>>> .r49603
                                   <tags:nameValue2 rowClass="alternateEnrollments" nameKey=".alternateEnrollments">${alternateEnrollments}</tags:nameValue2>
                              </cti:checkEnergyCompanySetting>
                         </tags:nameValueContainer2>
@@ -216,47 +195,8 @@
                         </tags:boxContainer2>
                     </cti:checkRolesAndProperties>
                     
-<<<<<<< .mine
-    			    <!-- Cancel Current Opt Outs -->
-    			    <cti:checkRolesAndProperties value="OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT">
-    				    <tags:boxContainer2 nameKey="cancelOptOuts" hideEnabled="false">
-    				    
-    				    	<div style="font-size:11px;"><b><i:inline key=".cancelOptOuts.note.label"/></b> <i:inline key=".cancelOptOuts.note.text"/></div>
-    				        <br>
-    				        
-    				        <cti:msg key="yukon.web.modules.dr.optOutAdmin.cancelOptOuts.cancelOptOutsWarning" />
-    				        <br><br>
-    				        
-    				        <form action="/stars/operator/optOut/admin/cancelAllOptOuts" method="post">
-    				        
-    				        	<table style="padding:10px;background-color:#EEE;width:100%;">
-    				        		<tr><td>
-    				        			<b><i:inline key=".cancelOptOuts.byProgramName.instruction.label"/></b> <i:inline key=".cancelOptOuts.byProgramName.instruction.text"/>
-    				        		</td></tr>
-    				        		<tr><td style="padding-top:10px;">
-    				        		
-    				        			<%-- PROGRAM PICKER --%>
-    				        			<input type="hidden" id="cancelOptOutsProgramPaoId"> <%-- dummy destination for selected programId, unused. We actually want to submit the program name to do a lookup for webpublishingProgramId --%>
-    				        			<input type="hidden" id="cancelOptOutsProgramName" name="programName" value="">
-    				        			
-    				        			<tags:pickerDialog  type="lmProgramPicker"
-    						                                 id="cancelOptOutsProgramPicker" 
-    						                                 destinationFieldId="cancelOptOutsProgramPaoId"
-    						                                 styleClass="simpleLink"
-    						                                 immediateSelectMode="true"
-    						                                 extraDestinationFields="paoName:cancelOptOutsProgramName;paoName:cancelOptOutsProgramNameDisplaySpan"
-    						                                 extraArgs="${energyCompanyId}">
-    						             	<cti:img nameKey="add"/> <cti:msg key="yukon.web.modules.dr.chooseProgram"/>
-    		                             </tags:pickerDialog>
-    		                             
-    		                             <span id="cancelOptOutsProgramNameDisplaySpan" style="font-weight:bold;"></span>
-    		                             
-    				        		</td></tr>
-    				        	</table>
-    				        	<br>
-=======
                     <!-- Cancel Current Opt Outs -->
-                    <cti:checkRolesAndProperties value="OPT_OUT_ADMIN_CANCEL_CURRENT">
+                    <cti:checkRolesAndProperties value="OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT">
                         <tags:boxContainer2 nameKey="cancelOptOuts" hideEnabled="false">
                         
                             <div class="stacked">
@@ -294,39 +234,13 @@
                                     </div>
                                 </div>
                                 <br>
->>>>>>> .r49603
     
                                 <cti:button nameKey="cancelOptOuts.cancelAllOptOutsButton" type="submit" classes="f_blocker"/>
                             </form>    
                         </tags:boxContainer2>
-                    </cti:checkRolesAndProperties>
-    
-<<<<<<< .mine
-    			    <!-- Opt Outs Count/Don't Count -->
-    			    <cti:checkRolesAndProperties value="OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS">
-    				    <tags:boxContainer2 nameKey="countOptOuts" hideEnabled="false">
-    				        
-    				        <div style="font-size:11px;"><b><i:inline key=".countOptOuts.note.label"/></b> <i:inline key=".countOptOuts.note.text"/></div>
-    				        <br>
-    				        
-    				        <b><i:inline key=".countOptOuts.currentLimits"/></b>
-    				        <br><br>
-    			        	<table class="compactResultsTable">
-    			        		<tr>
-    			        			<th><i:inline key=".countOptOuts.currentLimits.header.programName"/></th>
-    			        			<th><i:inline key=".countOptOuts.currentLimits.header.counts"/></th>
-    			        		</tr>
-    			        		
-    			        		<c:forEach var="program" items="${programNameCountsMap}">
-    			        			<tr>
-    			        				<td>${program.key}</td>
-    			        				<td><cti:msg key="${program.value.formatKey}"/></td>
-    			        			</tr>
-    			        		</c:forEach>
-    			        	
-=======
+                    </cti:checkRolesAndProperties>  	
                     <!-- Opt Outs Count/Don't Count -->
-                    <cti:checkRolesAndProperties value="OPT_OUT_ADMIN_CHANGE_COUNTS">
+                    <cti:checkRolesAndProperties value="OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS">
                         <tags:boxContainer2 nameKey="countOptOuts" hideEnabled="false">
                             
                             <div class="stacked">
@@ -338,7 +252,6 @@
                             </div>
                             <table class="compactResultsTable stacked">
                                 <thead>
->>>>>>> .r49603
                                 <tr>
                                     <th><i:inline key=".countOptOuts.currentLimits.header.programName"/></th>
                                     <th><i:inline key=".countOptOuts.currentLimits.header.counts"/></th>

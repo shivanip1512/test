@@ -26,12 +26,7 @@
                 </td>
 
                 <cti:formatDate  value="${currentDate}" type="DATE" var="formattedDate"/>
-
-<<<<<<< .mine
 	            <cti:getProperty var="optOutTodayOnly" property="RESIDENTIAL_OPT_OUT_TODAY_ONLY" />
-=======
-                <cti:getProperty var="optOutTodayOnly" property="ConsumerInfoRole.OPT_OUT_TODAY_ONLY" />
->>>>>>> .r49603
 
                 <td align="left">
                     <c:choose>
