@@ -8,6 +8,7 @@
 
 <cti:standardPage module="support" page="setupDatabase">
 <cti:includeScript link="JQUERY_GRID"/>
+<cti:includeScript link="JQUERY_COOKIE"/>
     
 <style>
 
@@ -54,27 +55,26 @@
 
 </style>
 
-<cti:tabbedContentSelector>
-        <cti:tabbedContentSelectorContent tabId="rolePropertiesTab" selectorName="Role Properties">
-            <%@include file="devRoleProperty.jspf"%>
-        </cti:tabbedContentSelectorContent>
-        <cti:tabbedContentSelectorContent tabId="starsTab" selectorName="Stars Accounts">
-            <%@include file="devStars.jspf"%>
-        </cti:tabbedContentSelectorContent>
-        <cti:tabbedContentSelectorContent tabId="amrTab" selectorName="AMR">
-            <%@include file="devAmr.jspf"%>
-        </cti:tabbedContentSelectorContent>
-        <cti:tabbedContentSelectorContent tabId="capControlTab" selectorName="Cap Control">
-            <%@include file="devCapControl.jspf"%>
-        </cti:tabbedContentSelectorContent>
-        <cti:tabbedContentSelectorContent tabId="eventLogTab" selectorName="Event Log">
-            <%@include file="devEventLog.jspf"%>
-        </cti:tabbedContentSelectorContent>
-</cti:tabbedContentSelector>
+<div id="tabs">
+    <ul>
+        <li><a href="#rolePropertiesTab">Role Properties</a></li>
+        <li><a href="#starsTab">Stars Accounts</a></li>
+        <li><a href="#amrTab">AMR</a></li>
+        <li><a href="#capControlTab">Cap Control</a></li>
+        <li><a href="#eventLogTab">Event Log</a></li>
+    </ul>
 
+    <div id="rolePropertiesTab" class="clearfix"><%@include file="devRoleProperty.jspf"%></div>
+    <div id="starsTab" class="clearfix"><%@include file="devStars.jspf"%></div>
+    <div id="amrTab" class="clearfix"><%@include file="devAmr.jspf"%></div>
+    <div id="capControlTab" class="clearfix"><%@include file="devCapControl.jspf"%></div>
+    <div id="eventLogTab" class="clearfix"><%@include file="devEventLog.jspf"%></div>
+</div>
 
-    <script type="text/javascript">
+<script type="text/javascript">
     jQuery(function() {
+        jQuery('#tabs').tabs({'cookie' : {}, fx: { height: 'toggle', duration: 200 }});
+
             var ajaxSubmitOptions = {
                 beforeSubmit:  beforeSubmit,        // pre-submit callback 
                 success:       ajaxResponse,        // post-submit callback 

@@ -26,15 +26,17 @@
         <div class="widgetMessage"></div>
         <div class="widgetContent">
             <tags:nameValueContainer2>
-            <tags:nameValue2 nameKey=".setupDevDatabase.option.roleProperties.roleGroup">
-                <form:select path="groupName">
-                    <c:forEach items="${allGroups}" var="group">
-                        <form:option path="groupName" value="${group.groupName}">${fn:escapeXml(group.groupName)}</form:option>
-                    </c:forEach>
-                </form:select>
-            </tags:nameValue2>
+	            <tags:nameValue2 nameKey=".setupDevDatabase.option.roleProperties.roleGroup">
+	                <form:select path="groupName">
+	                    <c:forEach items="${allGroups}" var="group">
+	                        <form:option path="groupName" value="${group.groupName}">${fn:escapeXml(group.groupName)}</form:option>
+	                    </c:forEach>
+	                </form:select>
+	            </tags:nameValue2>
             </tags:nameValueContainer2>
+            <div class="pageActionArea">
+                <cti:button type="submit" nameKey="runSetup" classes="action primary"/>
+            </div>
         </div>
-        <input type="submit" value="Run Setup"/>
     </form:form>
 </div>

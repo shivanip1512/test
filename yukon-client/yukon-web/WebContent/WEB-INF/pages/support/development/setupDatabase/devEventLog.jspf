@@ -6,31 +6,33 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <div id="eventLog" class="devWidget">
-        <cti:flashScopeMessages />
-        <div class="widgetMessage"></div>
-        <form:form commandName="devEventLog" action="setupEventLog" method="post" id="setupEventLogForm">
-            <div class="widgetContent">
-                <h4>Select which Event Log Service(s) to use</h4>
-                <ul>
-                <c:forEach items="${devEventLog.eventLogTypes}" var="eventType">
-                    <li><label><tags:checkbox path="eventLogTypes[${eventType.key}]"/><i:inline key="${eventType.key}"/></label></li>
-                </c:forEach>
-                </ul>
-                <br>
-                <h4>Common parameters</h4>
-                <tags:nameValueContainer2>
-                    <tags:inputNameValue nameKey=".setupDevDatabase.option.eventLog.username" path="username"/>
-                </tags:nameValueContainer2>
-                <tags:nameValueContainer2>
-                    <tags:inputNameValue nameKey=".setupDevDatabase.option.eventLog.indicatorString" path="indicatorString"/>
-                </tags:nameValueContainer2>
-                <tags:nameValueContainer2>
-                    <tags:selectNameValue items="${eventSourceList}" nameKey=".setupDevDatabase.option.eventLog.eventSource" path="eventSource"/>
-                </tags:nameValueContainer2>
-                <tags:nameValueContainer2>
-                    <tags:inputNameValue nameKey=".setupDevDatabase.option.eventLog.iterations" path="iterations"/>
-                </tags:nameValueContainer2>
-            </div>
-            <input type="submit" value="Run Setup"/>
-        </form:form>
+    <cti:flashScopeMessages />
+    <div class="widgetMessage"></div>
+    <form:form commandName="devEventLog" action="setupEventLog" method="post" id="setupEventLogForm">
+        <div class="widgetContent">
+            <h4>Select which Event Log Service(s) to use</h4>
+            <ul>
+            <c:forEach items="${devEventLog.eventLogTypes}" var="eventType">
+                <li><label><tags:checkbox path="eventLogTypes[${eventType.key}]"/><i:inline key="${eventType.key}"/></label></li>
+            </c:forEach>
+            </ul>
+            <br>
+            <h4>Common parameters</h4>
+            <tags:nameValueContainer2>
+                <tags:inputNameValue nameKey=".setupDevDatabase.option.eventLog.username" path="username"/>
+            </tags:nameValueContainer2>
+            <tags:nameValueContainer2>
+                <tags:inputNameValue nameKey=".setupDevDatabase.option.eventLog.indicatorString" path="indicatorString"/>
+            </tags:nameValueContainer2>
+            <tags:nameValueContainer2>
+                <tags:selectNameValue items="${eventSourceList}" nameKey=".setupDevDatabase.option.eventLog.eventSource" path="eventSource"/>
+            </tags:nameValueContainer2>
+            <tags:nameValueContainer2>
+                <tags:inputNameValue nameKey=".setupDevDatabase.option.eventLog.iterations" path="iterations"/>
+            </tags:nameValueContainer2>
+        </div>
+        <div class="pageActionArea">
+            <cti:button type="submit" nameKey="runSetup" classes="action primary"/>
+        </div>
+    </form:form>
 </div>
