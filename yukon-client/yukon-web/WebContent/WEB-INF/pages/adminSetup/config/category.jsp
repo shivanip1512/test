@@ -55,6 +55,14 @@ jQuery(function(){
 </style>
 --%>
 
+<script>
+jQuery(function() {
+    jQuery(".f_addCommentBtn").click(function() {
+        jQuery(this).hide().siblings(".f_commentsShowHide").show(200).focus();
+    });
+});
+</script>
+
 <div class="box clear dashboard">
     <form:form action="/adminSetup/config/update" id="settingsForm" method="post">
         <form:hidden path="category"/>
@@ -90,51 +98,50 @@ jQuery(function(){
                         <span class="highlight">
                             <c:if test="${setting.extra.nonDefault}">
                                 <i:inline key=".nonDefault"/>
-                            </c:if>
+                         </c:if>
                         </span>
                     </div>
-                    <div class="setting_details box detail fl">
+                    <div class="setting_details_more box detail fl">
                         <div>
                             <tags:simpleInputType id="${setting.extra.type}" input="${setting.valueType}" path="${setting.path}"/>
-                            <span class="detail updated fr"><i:inline key=".updated"/>&nbsp;
+                            <span class="detail updated fr">
                                 <span>
-                                    <c:choose>
-                                        <c:when test="${not empty setting.extra.lastChanged}">
-                                            <cti:formatDate type="DATEHM" value="${setting.extra.lastChanged}"/>
-                                        </c:when>
-                                        <c:otherwise><i:inline key=".never"/></c:otherwise>
-                                    </c:choose>
+                                    <c:if test="${not empty setting.extra.lastChanged}">
+                                        <i:inline key=".updated"/>&nbsp;<cti:formatDate type="DATEHM" value="${setting.extra.lastChanged}"/>
+                                    </c:if>
                                 </span>
                             </span>
                         </div>
                         <div class="description">
                             <span class="detail"><i:inline key="yukon.common.setting.${setting.extra.type}.description"/></span>
                             <span class="detail">
-                                <i:inline key=".default"/>
-                                <span class="default">(${fn:escapeXml(setting.extra.type.defaultValue)})</span>
+                                <c:if test="${setting.extra.nonDefault}">
+                                    <span class="default"><i:inline key=".default"/>(${fn:escapeXml(setting.extra.type.defaultValue)})</span>
+                                </c:if>
                                 <form:errors path="${setting.path}" cssClass="errorMessage" element="div"/>
                             </span>
                         </div>
                     </div>
-                    <div class="setting_comments box fl">
-                        <spring:bind path="comments[${setting.extra.type}]" htmlEscape="true">
-                            <c:set var="inputClass" value="${status.error ? 'error' : ''}"/>
-                            <form:textarea rows="3" cols="27" 
+                    <div class="setting_comments box">
+                        <c:set var="inputClass" value="${status.error ? 'error' : ''}"/>
+                        <c:set var="style" value="${empty setting.extra.comments ? 'display:none' : ''}"/>
+                        <c:if test="${empty setting.extra.comments}">
+                            <cti:button classes="f_addCommentBtn" nameKey="energyCompanySettings.addComment" type="button" name="add" value="${setting.extra}" renderMode="labeledImage" icon="icon-pencil"/>
+                        </c:if>
+                        <form:textarea rows="3" cols="27" 
                                 placeholder="comments"
                                 id="${setting.extra.type}_comments"
                                 path="comments[${setting.extra.type}]"
-                                class="${inputClass}"/>
-                        </spring:bind>
+                                style="${style}"
+                                class="f_commentsShowHide ${inputClass}"/>
+                        <form:errors path="comments[${setting.extra.type}]" cssClass="errorMessage" element="div"/>
                     </div>
                 </div>
-                
             </c:forEach>
         </div>
         <div class="pageActionArea stickyPanel" style="min-height: 24px;">
-            <div>
-                <cti:button nameKey="save" name="save" type="submit" classes="primary action"/>&nbsp;
-                <cti:button nameKey="cancel" name="cancel" href="view"/>
-            </div>
+            <cti:button nameKey="save" name="save" type="submit" classes="primary action"/>
+            <cti:button nameKey="cancel" name="cancel" href="view"/>
         </div>
     </form:form>
 </div>

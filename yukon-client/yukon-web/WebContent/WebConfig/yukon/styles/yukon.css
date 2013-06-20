@@ -317,9 +317,11 @@ body ::-webkit-scrollbar-button{display:none}
 .category .meta {margin-top: 5px;}
 .setting {border-top: dotted 1px #ccc; margin-top: -1px; padding: 10px 0;}
 .setting > .fl {margin-left: 10px;}
-.setting_details {width: 460px;}
+.setting_details {width: 380px;}
+.setting_details_more {width: 520px;}
 .setting_default_indicator {width:10px; min-height:1px;}
-.setting_comments {width:250px; text-align: center;}
+.setting_comments {width:200px; text-align: center; float:right;}
+.setting_comments >  textArea {resize:vertical;}
 .setting_name {width:192px;}
 .categoryTitle {padding: 12px; padding-top: 16px; font-weight: bold; border-bottom:solid 1px #CCC;}
 

@@ -41,7 +41,9 @@
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.creationSuccessful">Energy Company {0} Created Successfully</entry>
 
     <!--  Energy company settings -->
-    <entry key="yukon.web.modules.adminSetup.energyCompanySettings.pageName">Settings</entry>
+    <entry key="yukon.web.modules.adminSetup.energyCompanySettings.navigationTitle">Settings</entry>
+    <entry key="yukon.web.modules.adminSetup.energyCompanySettings.contextualPageName">Settings</entry>
+    <entry key="yukon.web.modules.adminSetup.energyCompanySettings.pageName">Energy Company Settings</entry>
     <entry key="yukon.web.modules.adminSetup.energyCompanySettings.addComment.label">Add Comment</entry>
     <entry key="yukon.web.modules.adminSetup.energyCompanySettings.nonDefault"><![CDATA[<b>*</b>]]></entry>
     <entry key="yukon.web.modules.adminSetup.energyCompanySettings.default">Default</entry>

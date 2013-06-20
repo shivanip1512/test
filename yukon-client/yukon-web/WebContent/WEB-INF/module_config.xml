@@ -800,7 +800,7 @@
                                     <page name="deleteEnergyCompanyConfirm" type="DETAIL_CHILD_WITH_INFO">
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                     </page>
-                                    <page name="energyCompanySettings" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                    <page name="energyCompanySettings" type="BASIC" contributeToMenu="true">
                                         <requireCanEditEnergyCompany/>
                                         <link>/adminSetup/energyCompany/settings/view?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>

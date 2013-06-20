@@ -11,8 +11,7 @@
 <script>
 jQuery(function() {
     jQuery(".f_addCommentBtn").click(function() {
-        jQuery(this).hide();
-        jQuery(this).siblings(".commentTextArea").show(200).focus();
+        jQuery(this).hide().siblings(".f_commentsShowHide").show(200).focus();
     });
 });
 </script>
@@ -20,8 +19,6 @@ jQuery(function() {
 <div class="leftContainer twoThirds box dashboard">
     <form:form commandName="settingsBean" action="save" id="settingsForm" method="post">
         <form:hidden path="ecId"/>
-
-            <h2 class="page-heading"><i:inline key=".pageTitle"/></h2>
             <div class="highlight fr clear"><i:inline key=".legend"/></div>
             <c:forEach items="${categories}" var="category">
 
@@ -67,19 +64,18 @@ jQuery(function() {
                                     <span class="detail"><i:inline key="yukon.common.energyCompanySetting.${setting.extra}.description"/></span>
                                 </div>
                             </div>
-                            <div class="setting_comments box fl">
+                            <div class="setting_comments box">
                                     <c:set var="inputClass" value="${status.error ? 'error' : ''}"/>
                                     <c:set var="style" value="${empty settingsBean.settings[setting.extra].comments ? 'display:none' : ''}"/>
                                     <c:if test="${empty settingsBean.settings[setting.extra].comments}">
                                         <cti:button classes="f_addCommentBtn" nameKey="energyCompanySettings.addComment" type="button" name="add" value="${setting.extra}" renderMode="labeledImage" icon="icon-pencil"/>
                                     </c:if>
-
                                     <form:textarea rows="3" cols="27" 
                                          placeholder="comments" 
                                          id="${setting.extra}_comments" 
                                          path="settings[${setting.extra}].comments"
-                                         style="${style}"
-                                         class="commentTextArea ${inputClass}"/> 
+                                         style="${style};"
+                                         class="f_commentsShowHide ${inputClass}"/> 
                                    <form:errors path="settings[${setting.extra}].comments" cssClass="errorMessage" element="div"/>
                             </div>
                         </div>
@@ -87,10 +83,8 @@ jQuery(function() {
                 </c:forEach>
             </c:forEach>
         <div class="pageActionArea stickyPanel" style="min-height: 24px;">
-            <div>
-                <cti:button nameKey="save" name="save" type="submit"/>&nbsp;
-                <cti:button nameKey="cancel" name="cancel" href="view?ecId=${ecId}"/>
-            </div>
+            <cti:button nameKey="save" name="save" type="submit" classes="primary action"/>
+            <cti:button nameKey="cancel" name="cancel" href="view?ecId=${ecId}"/>
         </div>
     </form:form>
 </div>
