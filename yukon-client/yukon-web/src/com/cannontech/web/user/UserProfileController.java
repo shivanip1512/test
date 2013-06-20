@@ -122,7 +122,7 @@ public class UserProfileController {
         prefHelper.setupUserPreferences(model, user);
         prefHelper.buildPreferenceOptions(model);
         profileHelper.setupRoleGroups(model, user.getUserGroupId());
-        profileHelper.setupActivityStream(model, user, 0, PAGE_EVENT_ROW_COUNT);
+//        profileHelper.setupActivityStream(model, user, 0, PAGE_EVENT_ROW_COUNT);
         profileHelper.setupPasswordData(model, user);
 
         return "profile.jsp";

@@ -217,11 +217,6 @@
             </c:otherwise>
         </c:choose>
     </cti:tabbedContentSelectorContent>
-
-    <cti:msg2 key=".activityStream.title" var="activityTitle"/>
-    <cti:tabbedContentSelectorContent selectorName="${activityTitle}">
-<jsp:include page="activityStreamSection.jsp"></jsp:include>
-    </cti:tabbedContentSelectorContent>
 </cti:tabbedContentSelector>
     
     </cti:displayForPageEditModes>

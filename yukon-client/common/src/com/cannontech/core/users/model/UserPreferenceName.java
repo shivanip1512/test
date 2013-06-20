@@ -17,9 +17,9 @@ public enum UserPreferenceName implements DisplayableEnum {
     GRAPH_DISPLAY_TIME_DURATION(InputTypeFactory.enumType(PreferenceGraphTimeDurationOption.class),
         PreferenceGraphTimeDurationOption.getDefault().name()),
     GRAPH_DISPLAY_VISUAL_TYPE(InputTypeFactory.enumType(PreferenceGraphVisualTypeOption.class),
-        PreferenceGraphVisualTypeOption.getDefault().name()),
-    ERROR_PAGE_SHOW_DETAILS(InputTypeFactory.enumType(PreferenceShowHide.class), PreferenceShowHide.HIDE.name()),
-    HOME_URL(InputTypeFactory.stringType(), "/dashboard");
+        PreferenceGraphVisualTypeOption.getDefault().name());
+//    ERROR_PAGE_SHOW_DETAILS(InputTypeFactory.enumType(PreferenceShowHide.class), PreferenceShowHide.HIDE.name()),
+//    HOME_URL(InputTypeFactory.stringType(), "/dashboard");
 
     // Setup the internal map for easy translations:
     private final static ImmutableMap<String, UserPreferenceName> stringToName;
