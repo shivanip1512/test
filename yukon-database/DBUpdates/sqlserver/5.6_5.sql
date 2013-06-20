@@ -4,7 +4,8 @@
 
 /* Start YUK-12218 */
 ALTER TABLE ArchiveValuesExportFormat
-ADD TimeZoneFormat VARCHAR2(20);
+ADD TimeZoneFormat VARCHAR(20);
+GO
 
 UPDATE ArchiveValuesExportFormat
 SET TimeZoneFormat = 'LOCAL';
