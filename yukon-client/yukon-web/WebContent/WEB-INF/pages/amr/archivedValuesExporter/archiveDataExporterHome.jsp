@@ -27,15 +27,16 @@
     </div>
 
 <script type="text/javascript">
-function addFormatIdToLink(linkHref) {
-    var formatIdLink = jQuery('.'+linkHref);
+function addFormatId(selector) {
+    var formatIdLink = jQuery(selector);
     var formatIdFragment = "?selectedFormatId="+jQuery('#formatId').val();
-    formatIdLink.attr('data-href', linkHref + formatIdFragment);
+    var href = formatIdLink.attr('data-href');
+    formatIdLink.attr('data-href', href + formatIdFragment);
 };
 
-function addFormatIdToLinks() {
-    addFormatIdToLink('copy');
-    addFormatIdToLink('edit');
+function addFormatIds() {
+    addFormatId('#b-copy');
+    addFormatId('#b-edit');
 };
 
 function showAttributeRow() {
@@ -117,7 +118,7 @@ jQuery(function() {
     var dynamicScheduleDataRangeTypes = ${dynamicScheduleDataRangeTypes};
     
     showAttributeRow();
-    addFormatIdToLinks();
+    addFormatIds();
     
     toggleForm('#runDialog', jQuery('#archivedValuesExportFormatType').val(), dataRangeTypes, fixedRunDataRangeTypes, dynamicRunDataRangeTypes);
     toggleForm('#scheduleDialog', jQuery('#archivedValuesExportFormatType').val(), dataRangeTypes, fixedScheduleDataRangeTypes, dynamicScheduleDataRangeTypes);
@@ -130,7 +131,7 @@ jQuery(function() {
         createOkCancelDialog('#scheduleDialog', '${scheduleTitle}', function() { scheduleOkPressed(); });
     });
     
-    jQuery('#create-format-button').click(function(event) {
+    jQuery('#b-create').click(function(event) {
         var buttons = [{'text' : '<cti:msg2 key="yukon.web.components.button.create.label"/>','class' : 'primary', 'click' : function() {window.location.href='create?formatType=' + jQuery('input[name=newFormatType]:checked').val();}},
                        {'text' : '${cancelBtnMsg}', 'click' : function() { jQuery(this).dialog('close');}}];
         var dialogOpts = {'buttons' : buttons, 'width' : 500, 'height' : 'auto'};
@@ -142,7 +143,7 @@ jQuery(function() {
     });
     
     jQuery('#formatId').change(function(event) {
-        addFormatIdToLinks();
+        addFormatIds();
         toggleForm('#runDialog', jQuery('#archivedValuesExportFormatType').val(), dataRangeTypes, fixedRunDataRangeTypes, dynamicRunDataRangeTypes);
         toggleForm('#scheduleDialog', jQuery('#archivedValuesExportFormatType').val(), dataRangeTypes, fixedScheduleDataRangeTypes, dynamicScheduleDataRangeTypes);
         showAttributeRow();
@@ -162,7 +163,7 @@ jQuery(function() {
                 <tags:nameValueContainer2 id="formatContainer" naturalWidth="false">
                     <c:if test="${not empty allFormats}">
                         <tags:nameValue2 nameKey=".existingFormat">
-                            <form:select path="formatId" cssClass="fl" cssStyle="margin-right:5px;">
+                            <form:select path="formatId" cssClass="fl">
                                 <form:options items="${allFormats}" itemValue="formatId" title="formatName" itemLabel="formatName" />
                             </form:select>
                         </tags:nameValue2>
@@ -175,11 +176,6 @@ jQuery(function() {
                                     <span class="label"><i:inline key="${archivedValuesExporter.deviceCollection.description}"/></span><i class="icon icon-folder-edit"></i>
                                 </c:if>
                             </a>
-		                    <tags:nameValue2 nameKey=".existingFormat">
-		                        <form:select path="formatId">
-		                            <form:options items="${allFormats}" itemValue="formatId" title="formatName" itemLabel="formatName" />
-		                        </form:select>
-                            </tags:nameValue2>
                             <c:if test="${archivedValuesExporter.deviceCollection.deviceCount > 0}">
                                 <tags:selectedDevicesPopup deviceCollection="${deviceCollection}"/>
                             </c:if>
@@ -213,10 +209,10 @@ jQuery(function() {
                     <cti:button id="scheduleButton" nameKey="schedule" title="${runScheduleTitle}" disabled="${disableRunSchedule}" classes="fl" icon="icon-calendar-view-day"/>
                 </c:if>
                 <c:if test="${not empty allFormats}">
-                    <cti:button nameKey="edit" icon="icon-pencil" href="edit"/>
-                    <cti:button nameKey="copy" icon="icon-page-copy" href="copy"/>
+                    <cti:button nameKey="edit" icon="icon-pencil" href="edit" id="b-edit"/>
+                    <cti:button nameKey="copy" icon="icon-page-copy" href="copy" id="b-copy"/>
                 </c:if>
-                <cti:button nameKey="create" icon="icon-plus-green" id="create-format-button"/>
+                <cti:button nameKey="create" icon="icon-plus-green" id="b-create"/>
             </div>
         </tags:sectionContainer2>
     
@@ -265,7 +261,7 @@ jQuery(function() {
         </tags:boxContainer2>
     </div>
     
-    <div id="runDialog" >
+    <div id="runDialog" class="dn">
          <cti:flashScopeMessages />
          <form:form id="runForm" commandName="archivedValuesExporter" >
              <div id="runInputsDiv">
@@ -305,7 +301,7 @@ jQuery(function() {
          </form:form>
     </div>
     
-    <div id="scheduleDialog" >
+    <div id="scheduleDialog" class="dn">
          <cti:flashScopeMessages />
          <form:form id="scheduleForm" commandName="archivedValuesExporter" >
              <div id="scheduleInputsDiv">

@@ -210,7 +210,9 @@
           <page name="bulk.archivedValueExporter" type="BASIC">
             <link>/amr/archivedValuesExporter/view</link>
             <pages>
-              <page name="bulk.archivedValueExporter.EDIT" type="BASIC"/>
+              <page name="bulk.archivedValueExporter.EDIT" type="DETAIL_CHILD">
+                <labelArgument>${formatName}</labelArgument>
+              </page>
               <page name="bulk.archivedValueExporter.CREATE" type="BASIC"/>
               <page name="bulk.archivedValueExporter.selectDevices" type="BASIC">
                 <link>/amr/archivedValueExporter/selectDevices</link>

@@ -33,7 +33,7 @@
     <cti:standardMenu menuSelection="devicegroups|groupMeterRead"/>
 
        	<cti:breadCrumbs>
-    	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
+    	    <cti:crumbLink url="/dashboard" title="Operations Home" />
     	    <cti:crumbLink url="/group/editor/home" title="Device Groups" />
     	    <cti:crumbLink title="${pageTitle}"/>
     	</cti:breadCrumbs>

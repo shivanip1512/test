@@ -34,7 +34,7 @@
                         <nav role="navigation">
                             <ul>
                                 <li class="logo" style="background: transparent;">
-                                    <a href="/operator/Operations.jsp">
+                                    <a href="/dashboard">
                                         <img src="/WebConfig/yukon/layout/YukonBW2.png" alt="Yukon Home">
                                     </a>
                                 </li>

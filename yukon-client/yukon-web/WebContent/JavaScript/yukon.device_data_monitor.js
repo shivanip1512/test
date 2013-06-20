@@ -100,8 +100,8 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
             }
 
             // add our help icons next to the two column titles (Settings and Processors)
-            jQuery('.f_settings_section .titleBar h3').addClass('labeled_icon_right icon_help f_open_settings_help');
-            jQuery('.f_processors_section .titleBar h3').addClass('labeled_icon_right icon_help f_open_processors_help');
+            jQuery('.f_settings_section .titleBar h3').append('<i class="icon icon-help f_open_settings_help"></i>');
+            jQuery('.f_processors_section .titleBar h3').append('<i class="icon icon-help f_open_processors_help"></i>');
 
             this._initialized = true;
         },
@@ -241,12 +241,12 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
             jQuery(counts_selector + ' '
                     + DeviceDataMonitor._supported_count_details + ' '
                     + DeviceDataMonitor._supported_count_details_list).empty();
-            jQuery('.'+ DeviceDataMonitor._count_status_loading).hide();
+            jQuery('.f_loading').hide();
 
             var addStyle = data.totalMissingCount === 0 ? '': 'border-bottom: 1px dotted #ccc;';
             var helpDivId = 'totalSupportedHelpId';
             jQuery(countSel).html("<div style='"+ addStyle +"padding: 3px 0;'>"+ data.totalSupportedCountMessage 
-                    +"<a href='javascript:void(0);' class='icon_help f_showViolationHelp violation_help_link' target-id='"+ helpDivId +"' target-title='"+ data.totalSupportedCountHelpTitle +"'>&nbsp;</a>"
+                    +"<a href='javascript:void(0);' class='f_showViolationHelp violation_help_link' target-id='"+ helpDivId +"' target-title='"+ data.totalSupportedCountHelpTitle +"'><i class='icon icon-help'>&nbsp;</i></a>"
                     +"<div class='dn' id='"+ helpDivId +"'>"+ data.totalSupportedCountHelp +"</div></div>" );
 
             if (data.totalMissingCount === 0) {
@@ -303,18 +303,23 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
                     if(usedLimitQry && DeviceDataMonitor._str_equal(""+ usedLimitQry, "true")) {
                         countText = '';
                         var pt_help_title = jQuery("#pointUnknownNumberHelp").attr('target-title');
-                        postHref = '<a class="icon_warning f_showTooManyDevicesForPointHelp" href="javascript:void(0);" target-id="pointUnknownNumberHelp" target-title="'+ pt_help_title +'">&nbsp;</span>';
+                        postHref = '<a class="f_showTooManyDevicesForPointHelp" href="javascript:void(0);" target-id="pointUnknownNumberHelp" target-title="'+ pt_help_title +'"><i class="icon icon-warning">&nbsp;</i></span>';
                     }
-                    output += "<td><a class='labeled_icon magnifier error f_showProblem' href='javascript:void(0);' data-url='" + the_list_url + "' target-id='"+ popupListId +"' target-title='"+ listTitle +"'>" + countText + "</a><span class='labeled_icon loading'>"+ countText +"</span>"+ postHref +"<div class='f_problems_container problem_device_list dn' id='"+ popupListId +"'/></td>";
+                    output += "<td><a class='fl error f_showProblem' href='javascript:void(0);' data-url='" 
+                        + the_list_url + "' target-id='"+ popupListId +"' target-title='"+ listTitle +"'><i class='icon icon-magnifier'></i>" 
+                        + countText + "</a><span class='fl'><i class='icon icon-loading'></i><span class='label'>"+ countText +"</span></span>"
+                        + postHref +"<div class='f_problems_container problem_device_list dn' id='"+ popupListId +"'/></td>";
                     output += "<td>"+ missingText +"</td><td>"+ itemName +"</td>\n";
                     if(DeviceDataMonitor._check_row_type_is_point(itemType)) {
                         var add_points_url = DeviceDataMonitor._url_to_add_points_to_display_devices +'?'+ url_params;
-                        output += "<td class='fr' style='white-space:nowrap;padding-left:0.5em;'><a href='"+ add_points_url +"' class='labeled_icon add' style='margin-top: 2px;' target='_blank' data-add-key='"+ encodeURIComponent(attr_id) +"'>"+ addPointsTxt +"</a></td>";
+                        output += "<td class='fr' style='white-space:nowrap;padding-left:0.5em;'><a href='"
+                            + add_points_url +"' style='margin-top: 2px;' target='_blank' data-add-key='"+ encodeURIComponent(attr_id) +"'><i class='icon icon-add'></i><span class='label'>"+ addPointsTxt +"</span></a></td>";
                         if( refresh_key != null && DeviceDataMonitor._str_equal(attr_id, refresh_key))
                             same_point_violation_exists = true;
                     } else
                         output += "<td>&nbsp;</td>\n";
-                    jQuery(countSel).append(output +"<td><a href='javascript:void(0);' class='icon_help f_showViolationHelp violation_help_link' target-id='"+ popupHelpId +"' target-title='"+ helpTitle +"'>&nbsp;</a><div class='dn' id='"+ popupHelpId +"'>"+ helpText +"</div></td></td></tr>\n");
+                    jQuery(countSel).append(output +"<td><a href='javascript:void(0);' class='f_showViolationHelp violation_help_link' target-id='"
+                            + popupHelpId +"' target-title='"+ helpTitle +"'><i class='icon icon-help'>&nbsp;</i></a><div class='dn' id='"+ popupHelpId +"'>"+ helpText +"</div></td></td></tr>\n");
                     
                 }
             }
@@ -365,11 +370,11 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
         _hide_counts_and_show_loading: function() {
             jQuery('.f_supported_devices_count ' + DeviceDataMonitor._supported_count_details).hide();
             jQuery('.f_supported_devices_count ' + DeviceDataMonitor._supported_count).hide();
-            jQuery('.f_supported_devices_count .loading').show();
+            jQuery('.f_supported_devices_count .f_loading').show();
         },
         
         _hide_loading_and_show_counts: function() {
-            jQuery('.f_supported_devices_count .loading').hide();
+            jQuery('.f_supported_devices_count .f_loading').hide();
             jQuery('.f_supported_devices_count ' + DeviceDataMonitor._supported_count).show();
         },
         

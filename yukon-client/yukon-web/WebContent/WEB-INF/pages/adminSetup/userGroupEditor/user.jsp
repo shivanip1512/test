@@ -12,11 +12,11 @@
 var supportsPasswordSet = ${cti:jsonString(supportsPasswordSet)};
 var originalAuthCategory = '${user.authCategory}';
 
-jQuery('#cancelChangePassword').click(function(event) {
-    jQuery('#changePasswordPopup').dialog('close');
-});
-
 jQuery(function() {
+    jQuery('#cancelChangePassword').click(function(event) {
+        jQuery('#changePasswordPopup').dialog('close');
+    });
+    
     jQuery('#authCategory').change(function() {
         var newAuthCategory = jQuery('#authCategory').val();
         if (newAuthCategory !== originalAuthCategory && supportsPasswordSet[newAuthCategory]) {

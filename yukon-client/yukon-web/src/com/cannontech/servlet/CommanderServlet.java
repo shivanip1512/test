@@ -130,7 +130,7 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 			resp.sendRedirect(redirectURL);
 		}
 		else {
-			resp.sendRedirect(req.getContextPath() + "/operator/Operations.jsp");
+			resp.sendRedirect(req.getContextPath() + "/dashboard");
 		}
 	}
 }

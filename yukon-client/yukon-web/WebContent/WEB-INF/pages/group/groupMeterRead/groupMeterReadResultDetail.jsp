@@ -27,7 +27,7 @@
     <%-- BREAD CRUMBS --%>
     <cti:breadCrumbs>
     
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
+        <cti:crumbLink url="/dashboard" title="Operations Home" />
         
         <%-- results list --%>
         <cti:crumbLink url="/group/groupMeterRead/resultsList">${recentResultsTitle}</cti:crumbLink>

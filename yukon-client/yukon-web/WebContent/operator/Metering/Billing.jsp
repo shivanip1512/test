@@ -22,7 +22,7 @@
     <cti:breadCrumbs>
 
         <cti:msg key="yukon.web.components.button.home.label" var="homeLabel"/>
-        <cti:crumbLink url="/operator/Operations.jsp" title="${homeLabel}" />
+        <cti:crumbLink url="/dashboard" title="${homeLabel}" />
         &gt; ${billingTitle}
     </cti:breadCrumbs>
 

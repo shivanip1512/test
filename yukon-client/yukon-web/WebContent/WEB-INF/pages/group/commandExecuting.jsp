@@ -7,7 +7,7 @@
 <cti:standardPage title="Commander Results" module="amr">
 <cti:standardMenu menuSelection="devicegroups|commander"/>
    	<cti:breadCrumbs>
-	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
+	    <cti:crumbLink url="/dashboard" title="Operations Home" />
    	    <cti:crumbLink url="/group/commander/groupProcessing" title="Group Processing" />
 	    &gt; Command Executing
 	</cti:breadCrumbs>

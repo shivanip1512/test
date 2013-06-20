@@ -204,7 +204,7 @@
 		
 			<div class="filterCancel">
                 <cti:msg var="cancelButtonLabel" key="yukon.web.apps.selectDevice.cancelButton"/>
-				<input type='button' name='Cancel' value='${cancelButtonLabel}' onclick='location.href="../operator/Operations.jsp"'>
+				<input type='button' name='Cancel' value='${cancelButtonLabel}' onclick='location.href="../dashboard"'>
 			</div>
 	</div>
 

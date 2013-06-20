@@ -11,7 +11,7 @@
 
 <cti:breadCrumbs>
     <cti:msg2 key="yukon.web.components.button.home.label" var="homeLabel"/>
-    <cti:crumbLink url="/operator/Operations.jsp" title="${homeLabel}" />
+    <cti:crumbLink url="/dashboard" title="${homeLabel}" />
     <cti:msg2 key="yukon.web.deviceGroups.editor.title" var="deviceGroupsLabel"/>
     <cti:crumbLink title="${deviceGroupsLabel}" />
 </cti:breadCrumbs>

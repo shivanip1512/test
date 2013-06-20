@@ -8,7 +8,7 @@
     <cti:breadCrumbs>
         
         <cti:msg2 key="yukon.web.menu.home" var="homeCrumb"/>
-        <cti:crumbLink url="/operator/Operations.jsp" title="${homeCrumb}"/>
+        <cti:crumbLink url="/dashboard" title="${homeCrumb}"/>
         
         <%-- bulk home --%>
         <cti:msg var="bulkOperationsPageTitle" key="yukon.web.modules.tools.bulk.home.pageName"/>

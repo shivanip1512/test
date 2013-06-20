@@ -31,7 +31,7 @@ public enum PreferenceGraphTimeDurationOption implements DisplayableEnum {
     }
 
     public static PreferenceGraphTimeDurationOption getDefault() {
-        return YEAR_1;
+        return MONTH_3;
     }
 
     public ChartPeriod getChartPeriod() {

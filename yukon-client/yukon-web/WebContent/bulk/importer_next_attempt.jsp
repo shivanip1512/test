@@ -18,7 +18,7 @@
 		      			</em></font></td>
 		          	<td valign="middle" width="120">&nbsp;</td>
 		            <td width="" valign="middle" nowrap> 
-						<span class="MainText"><a href="<%=request.getContextPath()%>/operator/Operations.jsp" class="Link3">Home</a></span>
+						<span class="MainText"><a href="<%=request.getContextPath()%>/dashboard" class="Link3">Home</a></span>
               		</td>
 		            <td width="" valign="middle" nowrap> 
             			<span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span>

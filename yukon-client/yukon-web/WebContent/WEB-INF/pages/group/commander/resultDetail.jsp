@@ -14,7 +14,7 @@
     <%-- BREAD CRUMBS --%>
     <cti:breadCrumbs>
     
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
+        <cti:crumbLink url="/dashboard" title="Operations Home" />
         
         <%-- commander from location --%>
         <cti:crumbLink url="/group/commander/resultList" title="Recent Group Command Processing Results" />

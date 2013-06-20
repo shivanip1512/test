@@ -46,33 +46,33 @@
             </div>
             <div class="column two nogutter">
                 <tags:sectionContainer2 nameKey="processors" styleClass="${processors_section_class}">
-                    <div class="smallDialogScrollArea">
-                        <table class="compactResultsTable">
-                            <thead>
-                                <tr>
-                                    <th><i:inline key=".processors.attribute" /></th>
-                                    <th><i:inline key=".processors.stateGroup" /></th>
-                                    <th><i:inline key=".processors.state" /></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <c:if test="${fn:length(monitor.processors) == 0}">
-                                    <tr>
-                                        <td class="empty-list" colspan="3">
-                                            <i:inline key=".noProcessors" />
-                                        </td>
-                                    </tr>
-                                </c:if>
-                                <c:forEach var="processor" items="${monitor.processors}">
-                                    <tr>
-                                        <td><i:inline key="${processor.attribute}"/></td>
-                                        <td>${processor.stateGroup}</td>
-                                        <td>${processor.state.stateText}</td>
-                                    </tr>
-                                </c:forEach>
-                            </tbody>
-                        </table>
-                    </div>
+                    <c:choose>
+                        <c:when test="${fn:length(monitor.processors) == 0}">
+                            <span class="empty-list"><i:inline key=".noProcessors" /></span>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="smallDialogScrollArea">
+                                <table class="compactResultsTable">
+                                    <thead>
+                                        <tr>
+                                            <th><i:inline key=".processors.attribute" /></th>
+                                            <th><i:inline key=".processors.stateGroup" /></th>
+                                            <th><i:inline key=".processors.state" /></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach var="processor" items="${monitor.processors}">
+                                            <tr>
+                                                <td><i:inline key="${processor.attribute}"/></td>
+                                                <td>${processor.stateGroup}</td>
+                                                <td>${processor.state.stateText}</td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
                 </tags:sectionContainer2>
             </div>
     </div>

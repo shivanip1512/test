@@ -3,7 +3,7 @@
 <cti:standardPage title="Lucene Index Manager" module="blank">
 <cti:standardMenu/>
 <cti:breadCrumbs>
-    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
+    <cti:crumbLink url="/dashboard" title="Operations Home"  />
     &gt; Index Management
 </cti:breadCrumbs>
 

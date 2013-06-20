@@ -12,7 +12,7 @@ function cant_access_page () {
 {%>window.location = "<%=request.getParameter("redirectUrl")%>" ;
 <%}else{%>
 
-window.location ="/operator/Operations.jsp";
+window.location ="/dashboard";
 <%}%>
 }
 </script>

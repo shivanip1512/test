@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONArray;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
@@ -248,6 +249,7 @@ public class ArchivedValuesExporterController {
         model.addAttribute("backingBean", backingBean);
         model.addAttribute("preview", generatePreview);
         model.addAttribute("mode", PageEditMode.EDIT);
+        model.addAttribute("formatName", StringEscapeUtils.escapeHtml(format.getFormatName()));
         setupModel(model, userContext, backingBean.getFormat());
         return "archivedValuesExporter/exporter.jsp";
     }

@@ -24,7 +24,7 @@ import com.cannontech.web.stars.service.SwitchContextService;
 
 public class SOAPClientController implements Controller {
     public static final String LOGIN_URL = "/login.jsp";
-    public static final String HOME_URL = "/operator/Operations.jsp";
+    public static final String HOME_URL = "/dashboard";
     private SwitchContextService switchContextService;
     
     public void setSwitchContextService(final SwitchContextService switchContextService) {

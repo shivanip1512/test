@@ -9,7 +9,7 @@
     <cti:standardMenu menuSelection="meters" />
 
     <cti:breadCrumbs>
-		<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
+		<cti:crumbLink url="/dashboard" title="Operations Home" />
 		<cti:crumbLink url="/meter/start" title="Metering" />
 		<c:if test="${searchResults != null}">
 			<cti:crumbLink url="${searchResults}" title="Search" />

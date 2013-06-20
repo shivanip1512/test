@@ -12,7 +12,7 @@
 	</cti:url>
    	
    	<cti:breadCrumbs>
-	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
+	    <cti:crumbLink url="/dashboard" title="Operations Home" />
 	    <cti:crumbLink url="${homeUrl}" title="Groups Home" />
 	    &gt; Add Devices
 	</cti:breadCrumbs>

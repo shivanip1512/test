@@ -11,7 +11,7 @@
 <jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
 <%
     if (!YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(YukonRoleProperty.getForId(AdministratorRole.ADMIN_VIEW_BATCH_COMMANDS), lYukonUser)) {
-	    response.sendRedirect("../Operations.jsp");
+	    response.sendRedirect("/dashboard");
 	    return;
 	}
 

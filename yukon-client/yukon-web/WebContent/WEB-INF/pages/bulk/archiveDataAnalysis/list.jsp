@@ -5,15 +5,6 @@
 
 <cti:standardPage module="tools" page="bulk.analysis.list">
 
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        <%-- metering --%>
-        <cti:msg var="metersPageTitle" key="yukon.web.modules.amr.meteringStart.pageName" />
-        <cti:crumbLink url="/meter/start" title="${metersPageTitle}" />
-        <%-- ADA List --%>
-        <cti:crumbLink><i:inline key="yukon.web.modules.tools.bulk.analysis.list.pageName"/></cti:crumbLink>
-    </cti:breadCrumbs>
-    
     <script>
     var deleteConfirmAnalysisId;
     

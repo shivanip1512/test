@@ -25,9 +25,9 @@ public class HomeController {
         return "redirect:" + ServletUtil.createSafeUrl(req, homeUrl);
     }
     
-    @RequestMapping("/dashboard")//WTF WON"T THIS WORK?
+    @RequestMapping({"/dashboard", "/operator/Operations.jsp"})
     public String dashboard(HttpServletRequest req) {
-        
+        //TODO make an awesome dashboard
         return "dashboard.jsp";
     }
     

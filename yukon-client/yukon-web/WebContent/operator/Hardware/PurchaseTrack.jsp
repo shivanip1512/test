@@ -285,12 +285,12 @@
         					loadPlan(form);
         				</c:when>
                         <c:otherwise>
-                            if (warnUnsavedChanges()) location.href='../Operations.jsp'
+                            if (warnUnsavedChanges()) location.href='/dashboard'
                         </c:otherwise>
                     </c:choose>
                 </c:when>
 			    <c:otherwise>
-				    if (warnUnsavedChanges()) location.href='../Operations.jsp'
+				    if (warnUnsavedChanges()) location.href='/dashboard'
 			    </c:otherwise>
             </c:choose>
 		}

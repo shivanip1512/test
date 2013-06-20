@@ -6,7 +6,7 @@
 <cti:standardPage title="Scheduled Scripts" module="amr">
 	<cti:standardMenu menuSelection="scheduler"/>
    	<cti:breadCrumbs>
-	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
+	    <cti:crumbLink url="/dashboard" title="Operations Home" />
   	    <cti:crumbLink url="/macsscheduler/schedules/view" title="Scheduler" />
 	    &gt; Start Schedule
 	</cti:breadCrumbs>

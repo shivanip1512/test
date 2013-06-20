@@ -5,7 +5,7 @@
 <cti:standardPage title="User Assignment for Load Management Visibility" module="userlm">
 <cti:standardMenu/>
 <cti:breadCrumbs>
-    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
+    <cti:crumbLink url="/dashboard" title="Operations Home"  />
     &gt; User/Group Editor
 </cti:breadCrumbs>
 

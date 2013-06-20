@@ -19,7 +19,7 @@
     <cti:standardMenu menuSelection="devicegroups|groupMeterRead"/>
     
        	<cti:breadCrumbs>
-    	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
+    	    <cti:crumbLink url="/dashboard" title="Operations Home" />
    	        <cti:crumbLink url="/group/commander/groupProcessing" title="${groupMeterReadHomePageTitle}" />
             <cti:crumbLink title="${pageTitle}"/>
     	</cti:breadCrumbs>

@@ -26,7 +26,7 @@
     
     <cti:breadCrumbs>
     
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
+        <cti:crumbLink url="/dashboard" title="Operations Home" />
         <cti:crumbLink url="/meter/start" title="Metering" />
         <cti:url var="groupHomeUrl" value="/group/editor/home">
             <cti:param name="groupName" value="${groupName}"/>

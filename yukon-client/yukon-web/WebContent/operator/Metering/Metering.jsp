@@ -36,7 +36,7 @@
 					<td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Metering&nbsp;&nbsp;</td>
 					<td width="253" valign="middle">&nbsp;</td>
 					<td width="58" valign="middle">
-                		<div align="center"><span class="MainText"><a href="../Operations.jsp" class="Link3">Home</a></span></div>
+                		<div align="center"><span class="MainText"><a href="/dashboard" class="Link3">Home</a></span></div>
 					</td>
 					<td width="57" valign="middle"> 
 						<div align="left"><span class="MainText"><a href="<%=request.getContextPath()%>/servlet/LoginController?ACTION=LOGOUT" class="Link3">Log Off</a>&nbsp;</span></div>
