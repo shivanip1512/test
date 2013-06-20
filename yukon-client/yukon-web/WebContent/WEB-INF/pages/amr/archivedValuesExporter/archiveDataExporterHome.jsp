@@ -168,7 +168,7 @@ jQuery(function() {
                             </form:select>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey="yukon.web.defaults.devices">
-                            <a href="javascript:void(0);" class="selectDevices clearfix" title="<cti:msg2 key=".chooseDevices.tooltip"/>">
+                            <a href="javascript:void(0);" class="selectDevices clearfix fl" title="<cti:msg2 key=".chooseDevices.tooltip"/>">
                                 <c:if test="${empty archivedValuesExporter.deviceCollection.deviceCount}">
                                     <span class="empty-list"><i:inline key="yukon.web.defaults.noDevices"/></span>
                                 </c:if>
@@ -246,7 +246,7 @@ jQuery(function() {
                                         <cti:url var="deleteUrl" value="deleteJob">
                                             <cti:param name="jobId" value="${job.id}"/>
                                         </cti:url>
-                                        <cti:button id="deleteScheduleItem_${job.id}" nameKey="remove" renderMode="image" href="${deleteUrl}"/>
+                                        <cti:button id="deleteScheduleItem_${job.id}" nameKey="remove" renderMode="image" href="${deleteUrl}" icon="icon-cross"/>
                                         <dialog:confirm on="#deleteScheduleItem_${job.id}" nameKey="confirmDelete" argument="${job.name}"/>
                                     </td>
                                 </tr>

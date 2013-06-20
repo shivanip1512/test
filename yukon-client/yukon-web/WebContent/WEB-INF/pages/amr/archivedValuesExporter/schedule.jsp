@@ -5,7 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage page="archivedValueExporterScheduleSetup" module="amr">
+<cti:standardPage page="bulk.archivedValueExporterScheduleSetup" module="tools">
 	
 	<form:form id="scheduleForm" commandName="exportData" action="doSchedule">
 		<tags:boxContainer2 nameKey="adeParameters">
