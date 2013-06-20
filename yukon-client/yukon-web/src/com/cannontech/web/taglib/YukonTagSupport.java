@@ -29,7 +29,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
@@ -70,7 +69,8 @@ public class YukonTagSupport extends SimpleTagSupport {
     	HttpServletRequest request = getRequest();
 		Theme theme = RequestContextUtils.getTheme(request);
 		if (theme == null) {
-		    ThemeResolver themeResolver = YukonSpringHook.getBean(DispatcherServlet.THEME_RESOLVER_BEAN_NAME, ThemeResolver.class);
+		    ThemeResolver themeResolver =
+		            getApplicationContext().getBean(DispatcherServlet.THEME_RESOLVER_BEAN_NAME, ThemeResolver.class);
             ThemeSource themeSource = (ThemeSource) getApplicationContext();
             if (themeResolver != null && themeSource != null) {
                 String themeName = themeResolver.resolveThemeName(request);
