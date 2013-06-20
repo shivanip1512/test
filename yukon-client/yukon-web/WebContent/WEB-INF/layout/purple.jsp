@@ -14,7 +14,7 @@
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/yukon.css"/>">
 
         <cti:url var="webClientRoleStyleSheet">
-          <jsp:attribute name="value" trim="true">/WebConfig/<cti:getProperty propertyid="<%= YukonRoleProperty.STYLE_SHEET.getPropertyId() %>" /></jsp:attribute>
+          <jsp:attribute name="value" trim="true">/WebConfig/<cti:getProperty property="STYLE_SHEET" /></jsp:attribute>
         </cti:url>
         <link rel="stylesheet" type="text/css" href="${webClientRoleStyleSheet}" >
 

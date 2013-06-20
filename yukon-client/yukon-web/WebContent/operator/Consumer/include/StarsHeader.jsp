@@ -22,11 +22,6 @@
 <%@ page import="com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany" %>
 <%@ page import="com.cannontech.database.db.graph.GraphCustomerList" %>
 <%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>
-<%@ page import="com.cannontech.roles.consumer.ResidentialCustomerRole" %>
-<%@ page import="com.cannontech.roles.operator.AdministratorRole" %>
-<%@ page import="com.cannontech.roles.operator.ConsumerInfoRole" %>
-<%@ page import="com.cannontech.roles.operator.InventoryRole" %>
-<%@ page import="com.cannontech.roles.operator.WorkOrderRole" %>
 <%@ page import="com.cannontech.stars.core.dao.StarsCustAccountInformationDao"%>
 <%@ page import="com.cannontech.stars.util.ECUtils" %> 
 <%@ page import="com.cannontech.stars.util.InventoryUtils" %> 

@@ -1,5 +1,5 @@
+<%@page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 <%@page import="java.util.*" %>
-<%@page import="com.cannontech.roles.capcontrol.CBCSettingsRole" %>
 <%@page import="com.cannontech.message.capcontrol.streamable.*" %>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
@@ -7,7 +7,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/capcontrol" prefix="capTags"%>
 
 <!-- Check CapControl Role Access -->
-<cti:isPropertyFalse propertyid="<%= CBCSettingsRole.ACCESS %>">
+<cti:isPropertyFalse property="CAP_CONTROL_ACCESS">
 	<jsp:forward page="/capcontrol/redirect.jsp">
 		<jsp:param name="reason" value="Access to the page could not be granted." />
 		<jsp:param name="message" value="*** Please check your CapControlSettings.ACCESS options" />

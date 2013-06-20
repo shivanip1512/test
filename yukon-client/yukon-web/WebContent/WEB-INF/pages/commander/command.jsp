@@ -169,6 +169,81 @@
                                 </c:choose>
                             </li>
                         </c:if>
+<<<<<<< .mine
+                            <c:if test="${not empty availableCommands}">
+                                <tr> 
+                                    <td class="name"><i:inline key=".availableCommands"/></td>
+                                    <td class="value">
+                                        <tags:commanderPrompter/>
+                                        <select name="commonCommand" class="f_loadCommanderCommand" data-cmdfield="command">
+                                            <option value=""><cti:msg2 key=".availableCommands.select"/></option>
+                                            
+                                        <c:forEach var="command" items="${availableCommands}">
+                                            <option value="${command.key}">${command.value}</option>
+                                        </c:forEach>
+                                            
+                                        </select>
+                                    </td>
+                                </tr>
+                            </c:if>
+                                <tr> 
+                                    <td class="name"><i:inline key=".executeCommand"/></td>
+                                    <td class="value">
+                                        <input type="text" id="command" name="command" size="40" <cti:isPropertyFalse property="EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> value="${currentCommand}">
+                                        <cti:msg2 var="executeButtonLabel" key=".executeButton"/>
+                                        <input type="submit" name="execute" value="${executeButtonLabel}" class="f_execute">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" style="padding-top:20px;">
+                                    <div class="scroll">
+                                        <c:out value="${resultText}" escapeXml="false"/>
+                                    </div>
+                                    <br>
+                                    <cti:msg2 var="clearResultsButtonLabel" key=".clearResultsButton"/>
+                                    <cti:msg2 var="refreshButtonLabel" key=".refreshButton"/>
+                                    <input type="submit" name="clearText" value="${clearResultsButtonLabel}">
+                                    <input type="reset" name="refresh" value="${refreshButtonLabel}" class="f_refresh">
+                                    </td>
+                                </tr>
+                            </table>
+                    </form>
+                </tags:boxContainer2>
+            </td>
+            
+            <td>
+                <tags:boxContainer2 nameKey="sideMenu">
+<!-- START > Devices section -->
+                    <div class="header"><i:inline key="yukon.web.modules.commanderSelect.sideMenu.devices"/></div>
+                    <ul>
+            <c:forEach var="device" items="${deviceHistory}">
+                <c:if test="${cti:isDeviceSortByGroup(device)}">
+                        <li>
+                    <c:choose>
+                        <c:when test="${device.yukonID == deviceId}">
+                            ${fn:escapeXml(device.paoName)}
+                        </c:when>
+                        <c:otherwise>
+                            <cti:url var="commandUrl" value="/commander/command">
+                                <cti:param name="deviceId" value="${device.yukonID}"/>
+                            </cti:url>
+                            <a title="${device.paoIdentifier}" href="${commandUrl}">${fn:escapeXml(device.paoName)}</a>
+                        </c:otherwise>
+                    </c:choose>
+                        </li>
+                </c:if>
+            </c:forEach>
+                    </ul>
+<!-- END > Devices section -->
+
+                    <div class="horizontalRule"/>
+
+<!-- START > Load Management section -->
+                    <div class="header"><i:inline key="yukon.web.modules.commanderSelect.sideMenu.loadManagement"/></div>
+                    
+            <c:forEach var="device" items="${deviceHistory}">
+                <c:if test="${cti:isLoadManagementSortByGroup(device)}">
+=======
                     </c:forEach>
                 </ul>
                 <hr class="divider">
@@ -177,6 +252,7 @@
                 <h3><i:inline key="yukon.web.modules.commanderSelect.sideMenu.loadManagement"/></h3>
                 <c:forEach var="device" items="${deviceHistory}">
                     <c:if test="${cti:isLoadManagementSortByGroup(device)}">
+>>>>>>> .r49603
                         <ul>
                             <c:choose>
                                 <c:when test="${device.yukonID == deviceId}"><li>${fn:escapeXml(device.paoName)}</li></c:when>

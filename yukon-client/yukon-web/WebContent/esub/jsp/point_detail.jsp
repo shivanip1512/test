@@ -62,7 +62,7 @@
 	
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
     boolean offerControl = (PointTypes.STATUS_POINT == liteControlPoint.getPointType() 
-    	&& YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(YukonRoleProperty.getForId(com.cannontech.roles.operator.EsubDrawingsRole.CONTROL), user) 
+    	&& YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(YukonRoleProperty.OPERATOR_ESUBSTATION_DRAWINGS_CONTROL, user) 
     	&& allowControl);
 %>
 <html>

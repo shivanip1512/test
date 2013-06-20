@@ -49,7 +49,7 @@
                                     </select>
                                 </tags:nameValue2>
                                 <tags:nameValue2 nameKey=".executeCommand">
-                                    <input type="text" id="command" name="command" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="60" value="${YC_BEAN.commandString}">
+                                    <input type="text" id="command" name="command" <cti:isPropertyFalse property="EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="60" value="${YC_BEAN.commandString}">
                                     <cti:button nameKey="execute" name="execute" onclick="disableButton(this)" type="submit" />
                                 </tags:nameValue2>
                             </tags:nameValueContainer2>  

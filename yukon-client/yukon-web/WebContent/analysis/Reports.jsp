@@ -15,7 +15,6 @@
 <%@ page import="com.cannontech.analysis.ReportFilter"%>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
-<%@ page import="com.cannontech.roles.capcontrol.CBCSettingsRole" %>
 <%@ page import="com.cannontech.database.db.company.EnergyCompany" %>
 <%@ page import= "java.util.List" %>
 <%@ page import= "java.util.ArrayList" %>

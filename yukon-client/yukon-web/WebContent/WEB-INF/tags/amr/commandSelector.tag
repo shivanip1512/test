@@ -46,5 +46,5 @@
     </c:otherwise>
 </c:choose>
 <br>
-<input type="text" id="${fieldName}" style="margin-top:8px;" name="${fieldName}" value="${pageScope.selectedCommandString}" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="60" />
+<input type="text" id="${fieldName}" style="margin-top:8px;" name="${fieldName}" value="${pageScope.selectedCommandString}" <cti:isPropertyFalse property="EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="60" />
 

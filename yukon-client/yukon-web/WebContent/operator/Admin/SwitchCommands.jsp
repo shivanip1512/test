@@ -10,14 +10,14 @@
 <%@ page import="com.cannontech.core.dao.AuthDao" %>
 <jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
 <%
-    if (!YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(YukonRoleProperty.getForId(AdministratorRole.ADMIN_VIEW_BATCH_COMMANDS), lYukonUser)) {
+    if (!YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(YukonRoleProperty.ADMIN_VIEW_BATCH_COMMANDS, lYukonUser)) {
 	    response.sendRedirect("/dashboard");
 	    return;
 	}
 
 	boolean showEnergyCompany = liteEC.hasChildEnergyCompanies() && 
                                 YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(
-                                                                                   YukonRoleProperty.getForId(AdministratorRole.ADMIN_MANAGE_MEMBERS),
+                                                                                   YukonRoleProperty.ADMIN_MANAGE_MEMBERS,
                                                                                    lYukonUser);
 	List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants(liteEC);
 	
@@ -32,7 +32,7 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=YukonRoleProperty.STYLE_SHEET.getPropertyId()%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty property="STYLE_SHEET" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <script language="JavaScript">
 function changeMember(form) {
 	form.attributes["action"].value = "";

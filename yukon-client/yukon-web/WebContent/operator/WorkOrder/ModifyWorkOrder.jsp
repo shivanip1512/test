@@ -45,7 +45,7 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=YukonRoleProperty.STYLE_SHEET.getPropertyId()%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty property="STYLE_SHEET" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
 <script language="JavaScript">
 function validate(form) {
@@ -298,7 +298,7 @@ function sendWorkOrder() {
                               </tr>
                               <tr> 
                                 <td width="30%" class="TableCell"> 
-                                  <div align="right"><cti:getProperty propertyid="<%=WorkOrderRole.ADDTL_ORDER_NUMBER_LABEL%>" defaultvalue="Addtl Order #"/>:</div>
+                                  <div align="right"><cti:getProperty property="ADDTL_ORDER_NUMBER_LABEL" defaultvalue="Addtl Order #"/>:</div>
                                 </td>
                                 <td width="70%"> 
                                   <input type="text" name="AddtlOrderNumber" size="14" value="<%=liteOrder.getAdditionalOrderNumber()%>" onchange="setContentChanged(true)">

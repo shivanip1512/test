@@ -137,7 +137,7 @@ div.scroll { font-size: 12px;
 	        <tr> 
 	        	<td class="name"><cti:msg key="yukon.web.apps.commander.executeCommand"/></td>
 	            <td class="value">
-	            	<input type="text" id="command" name="command" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="40" value="<%=YC_BEAN.getCommandString()%>">
+	            	<input type="text" id="command" name="command" <cti:isPropertyFalse property="EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="40" value="<%=YC_BEAN.getCommandString()%>">
                     <cti:msg var="executeButtonLabel" key="yukon.web.apps.commander.executeButton"/>
 	                <input type="submit" name="execute" value="${executeButtonLabel}" onClick="disableButton(this)">
                 </td>

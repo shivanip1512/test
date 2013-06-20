@@ -6,7 +6,7 @@
 <c:url var="updateUrl" value="/updater/update" />
 
 <script type="text/javascript">
-initiateCannonDataUpdate("${updateUrl}", <cti:getProperty propertyid="<%=YukonRoleProperty.DATA_UPDATER_DELAY_MS.getPropertyId()%>"/>);
+initiateCannonDataUpdate("${updateUrl}", <cti:getProperty property="DATA_UPDATER_DELAY_MS"/>);
 </script>
 
 <div id="cannonUpdaterErrorDiv" style="display: none">

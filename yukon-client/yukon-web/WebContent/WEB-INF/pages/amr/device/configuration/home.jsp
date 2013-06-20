@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 
 <cti:standardPage title="Device Configuration Page" module="amr">
 <cti:standardMenu/>
@@ -21,7 +22,7 @@
 	</script>
 
 	<c:set var="editConfig" scope="page">
-		<cti:getProperty property="AdministratorRole.ADMIN_EDIT_CONFIG"/>
+        <cti:getProperty property="ADMIN_EDIT_CONFIG"/>
 	</c:set>
 
 	<h2>Device Configuration Setup</h2>

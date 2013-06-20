@@ -6007,7 +6007,7 @@
 	<bean id="requiredInputValidator" class="com.cannontech.web.input.validate.RequiredValidator" />
 	
 	<bean id="configEditSecurity" class="com.cannontech.web.input.RolePropertyInputSecurity">
-		<property name="roleProperty" value="AdministratorRole.ADMIN_EDIT_CONFIG" />
+		<property name="roleProperty" value="YukonRoleProperty.ADMIN_EDIT_CONFIG"/>
 	</bean>
 	
 </beans>

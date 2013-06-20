@@ -1,3 +1,4 @@
+<%@page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
@@ -33,7 +34,7 @@
 	</script>
 
 	<c:set var="editConfig" scope="page">
-		<cti:getProperty property="AdministratorRole.ADMIN_EDIT_CONFIG"/>
+		<cti:getProperty property="ADMIN_EDIT_CONFIG"/>
 	</c:set>
 
 	<h2>Device Configuration</h2>

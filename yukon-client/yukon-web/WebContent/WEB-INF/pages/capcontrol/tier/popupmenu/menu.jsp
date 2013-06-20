@@ -1,3 +1,4 @@
+<%@page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
@@ -39,7 +40,7 @@ jQuery('#viewCommentsOption').click(function(event) {
 </c:if>
 </script>
 
-<cti:getProperty var="warnOnCommands" property='CBCSettingsRole.CONTROL_WARNING'/>
+<cti:getProperty var="warnOnCommands" property='CONTROL_WARNING'/>
 
 <div id="menuPopupBoxContainer">
 	<input type="hidden" id="dialogTitle" value="${paoName}">

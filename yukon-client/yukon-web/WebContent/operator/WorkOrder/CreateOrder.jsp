@@ -6,7 +6,7 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=YukonRoleProperty.STYLE_SHEET.getPropertyId()%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty property="STYLE_SHEET" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <%
 int statusPending = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID();
 %>
@@ -115,7 +115,7 @@ function changeStatus(form) {
                         </tr>
                         <tr> 
                           <td width="100" class="TableCell"> 
-                            <div align="right"><cti:getProperty propertyid="<%= WorkOrderRole.ADDTL_ORDER_NUMBER_LABEL%>" defaultvalue="Addtl Order #"/>:</div>
+                            <div align="right"><cti:getProperty property="ADDTL_ORDER_NUMBER_LABEL" defaultvalue="Addtl Order #"/>:</div>
                           </td>
                           <td width="248"> 
                             <input type="text" name="AddtlOrderNumber" size="14" onchange="setContentChanged(true)">

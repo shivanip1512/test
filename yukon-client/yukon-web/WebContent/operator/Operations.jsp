@@ -2,8 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<%@ page import="com.cannontech.roles.operator.InventoryRole"%>
-<%@ page import="com.cannontech.roles.operator.WorkOrderRole"%>
+<%@ page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 
 <cti:verifyRolesAndProperties
     value="
@@ -152,7 +151,7 @@
 			<cti:msg key="yukon.web.loadResponse" var="sectionTitle" />
             <tags:operationSection sectionName="${sectionTitle}" sectionImageName="LoadResponseLogo">
                 <cti:checkRolesAndProperties value="LM_DIRECT_LOADCONTROL">
-                    <cti:isPropertyTrue property="loadcontrol.DirectLoadcontrolRole.DIRECT_CONTROL">
+                    <cti:isPropertyTrue property="DIRECT_CONTROL">
                         <tags:sectionLink>
                             <a href="LoadControl/oper_direct.jsp"><cti:msg key="yukon.web.direct"/></a>
                         </tags:sectionLink>
@@ -160,7 +159,7 @@
                 </cti:checkRolesAndProperties>
                 <cti:checkRolesAndProperties value="CI_CURTAILMENT">
                     <tags:sectionLink>
-                        <a href="<cti:url value="/cc/programSelect.jsf"/>"><cti:getProperty property="com.cannontech.roles.operator.CICurtailmentRole.CURTAILMENT_LABEL" />
+                        <a href="<cti:url value="/cc/programSelect.jsf"/>"><cti:getProperty property="CURTAILMENT_LABEL" />
                         </a>
                     </tags:sectionLink>
                 </cti:checkRolesAndProperties>
@@ -169,7 +168,7 @@
                         <a href="Consumer/Odds.jsp"><cti:msg key="yukon.web.oddsForControl"/></a>
                     </tags:sectionLink>
                 </cti:checkRolesAndProperties>
-                <cti:isPropertyTrue property="loadcontrol.DirectLoadcontrolRole.DEMAND_RESPONSE">
+                <cti:isPropertyTrue property="DEMAND_RESPONSE">
                     <tags:sectionLink>
                         <a href="/dr/home"><cti:msg key="yukon.web.operations.demandResponse" /></a>
                     </tags:sectionLink>

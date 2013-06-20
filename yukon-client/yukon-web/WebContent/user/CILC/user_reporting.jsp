@@ -7,7 +7,7 @@
 <%@ include file="../include/user_header.jsp" %>
 <title>Consumer Energy Services</title>
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=YukonRoleProperty.STYLE_SHEET.getPropertyId()%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css"> 
+<link rel="stylesheet" href="../../WebConfig/<cti:getProperty property="STYLE_SHEET" defaultvalue="yukon/CannonStyle.css"/>" type="text/css"> 
 </head>
 <body class="Background" leftmargin="0" topmargin="0">
 <META NAME="robots" CONTENT="noindex, nofollow">
@@ -42,7 +42,7 @@ function loadTarget(form)
           <td valign="top" height="102"> 
             <table width="100%" cellspacing="0"  cellpadding="0" border="0">
               <tr> 
-                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty propertyid="<%= YukonRoleProperty.HEADER_LOGO.getPropertyId()%>" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
+                <td colspan="4" height="74" background="../../WebConfig/<cti:getProperty property="HEADER_LOGO" defaultvalue="yukon/DemoHeader.gif"/>">&nbsp;</td>
               </tr>
               <tr> 
                 <td width="265" height = "28" class="PageHeader" valign="middle" align="left">&nbsp;&nbsp;&nbsp;Trending</td>
