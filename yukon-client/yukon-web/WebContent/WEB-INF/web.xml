@@ -859,6 +859,7 @@
         <url-pattern>/esub/home</url-pattern>
         <url-pattern>/servlet/LoginController</url-pattern>
         <url-pattern>/index.jsp</url-pattern>
+        <url-pattern>/operator/Operations.jsp</url-pattern>
     </servlet-mapping>
 
 	<servlet-mapping>

@@ -156,21 +156,6 @@
                  </permissions>
                 <link>WorkOrder/WorkOrder.jsp</link>
             </option>
-            <option name="purchasing">
-                <permissions>
-                    <roleProperty name="PURCHASING_ACCESS"/>
-                 </permissions>
-                <link>Hardware/PurchaseTrack.jsp</link>
-            </option>
-            <option name="batchCommands">
-                <permissions>
-                    <and>
-                        <roleProperty name="ADMIN_VIEW_BATCH_COMMANDS"/>
-                        <ecOperator/>
-                    </and>
-                </permissions>
-                <link>/operator/Admin/SwitchCommands.jsp</link>
-            </option>
             <option name="surveys">
                 <permissions>
                     <roleProperty name="OPERATOR_SURVEY_EDIT"/>

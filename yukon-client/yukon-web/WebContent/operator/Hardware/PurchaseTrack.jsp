@@ -1,3 +1,8 @@
+
+<%-- ---------------------------------------------------------------------- --%>
+<%-- These are no longer linked to but they can't be deleted until 1/1/2015 --%>
+<%-- ---------------------------------------------------------------------- --%>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <jsp:useBean id="purchaseBean" class="com.cannontech.stars.web.bean.PurchaseBean" scope="session"/>

@@ -5,6 +5,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="consumer" page="savedSchedules">
@@ -16,7 +17,6 @@
 <cti:includeScript link="/JavaScript/temperature.js"/>
 <cti:includeScript link="/JavaScript/thermostatScheduleEditor.js"/>
 <cti:includeScript link="JSON"/>
-
 
 <cti:flashScopeMessages/>
 
@@ -78,15 +78,15 @@ jQuery(function(){
         </div>
         <br>
         <div class="tempControls fl">
-                    <form method="post" action="/stars/consumer/thermostat/schedule/updateTemperaturePreference">
-                        <label><input name="units" type="radio" value="C" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celsius"/></label>
-                        <label><input name="units" type="radio" value="F" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
-                    </form>
-                </div>
+            <form method="post" action="/stars/consumer/thermostat/schedule/updateTemperaturePreference">
+                <label><input name="units" type="radio" value="C" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celsius"/></label>
+                <label><input name="units" type="radio" value="F" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
+            </form>
+        </div>
         <br>
         <br>
-        <cti:button nameKey="help" classes="help fl"/>
-        <cti:button nameKey="create" icon="icon-plus-green" classes="create fl"/>
+        <cti:button nameKey="help" icon="icon-help" classes="f-help fl"/>
+        <cti:button nameKey="create" icon="icon-plus-green" classes="f-create fl"/>
     </c:when>
     <c:otherwise>
         <div class="schedules fl">
@@ -106,8 +106,8 @@ jQuery(function(){
             </c:if>
             <div class="box clear">
                 <div class="fr button-container">
-                    <cti:button nameKey="create" icon="icon-plus-green" classes="create fl"/>
-                    <cti:button nameKey="help" classes="help fl"/>
+                    <cti:button nameKey="help" icon="icon-help" classes="f-help fl"/>
+                    <cti:button nameKey="create" icon="icon-plus-green" classes="f-create fl"/>
                 </div>
                 <div class="tempControls fl">
                     <form method="post" action="/stars/consumer/thermostat/schedule/updateTemperaturePreference">
@@ -136,7 +136,7 @@ jQuery(function(){
 </c:choose>
 
 <div class="schedule">
-<i:simplePopup titleKey=".createSchedule.title" id="createSchedule" on=".create" >
+<i:simplePopup titleKey=".createSchedule.title" id="createSchedule" on=".f-create" >
     <div class="f_wizard">
         <div class="f_page page_0">
             <div class="box">
@@ -161,24 +161,24 @@ jQuery(function(){
         <div class="f_page page_1">
             <div class="createSchedule box small">
                 <c:forEach var="schedule" items="${defaultSchedules}">
-                    <tags:thermostatScheduleEditor  schedule="${schedule}"
-                                                    thermostatId="${thermostatId}"
-                                                    thermostatIds="${thermostatIds}"
-                                                    accountId="${customerAccount.accountId}"
-                                                    temperatureUnit="${temperatureUnit}"
-                                                    actionPath="/stars/consumer/thermostat/schedule/saveJSON"
-                                                    thermostatType="${thermostatType}"/>
+                    <tags:thermostatScheduleEditor schedule="${schedule}"
+                                                   thermostatId="${thermostatId}"
+                                                   thermostatIds="${thermostatIds}"
+                                                   accountId="${customerAccount.accountId}"
+                                                   temperatureUnit="${temperatureUnit}"
+                                                   actionPath="/stars/consumer/thermostat/schedule/saveJSON"
+                                                   thermostatType="${thermostatType}"/>
                 </c:forEach>
             </div>
         
             <div class="actions">
                 <div class="fr">
                     <cti:button nameKey="previous" classes="f_prev"/>
-                    <cti:button nameKey="save" classes="save f_blocker" />
-                    <cti:button nameKey="cancel" classes="cancel" />
+                    <cti:button nameKey="save" classes="f-save f_blocker" />
+                    <cti:button nameKey="cancel" classes="f-cancel"/>
                 </div>
                 <div class="fl">
-                    <cti:button nameKey="recommendedSettings" renderMode="labeledImage" classes="createDefault" icon="icon-wrench"/>
+                    <cti:button nameKey="recommendedSettings" renderMode="labeledImage" classes="f-createDefault" icon="icon-wrench"/>
                 </div>
             </div>
         </div>
@@ -187,29 +187,10 @@ jQuery(function(){
 </div>
 
 <!-- help/hints popup -->
-<i:simplePopup titleKey=".help.title" id="help" on=".help">
-<div class="help pad">
-        <cti:msg2 key=".hint"/>
-    </div>
+<i:simplePopup titleKey=".help.title" id="help" on=".f-help" options="{width:600}">
+  <div class="help pad">
+    <cti:msg2 key=".hint"/>
+  </div>
 </i:simplePopup>
-
-<!-- shared action forms -->
-<form name="deleteSchedule" method="POST" action="/stars/consumer/thermostat/schedule/delete">
-    <input type="hidden" name="scheduleId">
-    <input type="hidden" name="thermostatIds" value="${thermostatIds}">
-    <cti:msg2 var="delete_message" key="yukon.web.modules.consumer.thermostat.deleteConfirm" />
-    <input type="hidden" name="message" value="${delete_message}"/>
-    <tags:confirmDialog nameKey=".deleteConfirm" styleClass="smallSimplePopup f_blocker" submitName="delete" on=".delete"/>
-</form>
-
-<form name="sendSchedule" method="POST" action="/stars/consumer/thermostat/schedule/send">
-    <input type="hidden" name="scheduleId">
-    <input type="hidden" name="thermostatIds" value="${thermostatIds}">
-    <input type="hidden" name="temperatureUnit" value="${temperatureUnit}">
-    <cti:msg2 var="send_message" key="yukon.web.modules.consumer.thermostat.sendConfirm" />
-    <input type="hidden" name="message" value="${send_message}"/>
-    <tags:confirmDialog nameKey=".sendConfirm" styleClass="smallSimplePopup f_blocker" submitName="send" on=".send"/>
-</form>
-<!--  END action forms -->
 
 </cti:standardPage>

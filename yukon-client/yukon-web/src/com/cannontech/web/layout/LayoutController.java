@@ -200,15 +200,17 @@ public class LayoutController {
                 throw new IllegalStateException("Menu cannot be specified on JSP and in module_config.xml");
             }
             
+            String menuSelection = null;
+            
+            if (showOldMenu) {
+                menuSelection = tagInfo.getMenuSelection();
+                showMenu = true;
+            } else if (showNewMenu) {
+                menuSelection = pageInfo.getMenuSelection();
+                showMenu = true;
+            }
+            
             if (showMenu) {
-	            String menuSelection = null;
-	            if (showOldMenu) {
-	                menuSelection = tagInfo.getMenuSelection();
-	                showMenu = true;
-	            } else if (showNewMenu) {
-	                menuSelection = pageInfo.getMenuSelection();
-	                showMenu = true;
-	            }
 	            
 	        	final LeftSideMenuRenderer menuRenderer = new LeftSideMenuRenderer(request, moduleBase, messageSourceResolver);
 	            menuRenderer.setMenuSelection(menuSelection);

@@ -101,7 +101,7 @@
             </c:otherwise>
         </c:choose>
     </form>
-    <form id="send_${schedule.accountThermostatScheduleId}" action="/stars/operator/thermostatSchedule/send" method="POST" class="dn">
+    <form id="send_${schedule.accountThermostatScheduleId}" action="send" method="POST" class="dn">
         <input type="hidden" name="scheduleId" value="${schedule.accountThermostatScheduleId}">
         <input type="hidden" name="thermostatIds" value="${thermostatIds}">
         <input type="hidden" name="accountId" value="${accountId}">
