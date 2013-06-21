@@ -98,7 +98,7 @@
         <dependent-module archiveName="castor-xml.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/castor-xml.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="commons-validator.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/yukon-web/WebContent/WEB-INF/lib/commons-validator.jar">
+        <dependent-module archiveName="commons-validator-1.4.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/commons-validator-1.4.0.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="commons-fileupload-1.2.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/commons-fileupload-1.2.1.jar">

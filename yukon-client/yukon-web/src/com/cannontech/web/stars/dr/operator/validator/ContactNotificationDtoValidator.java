@@ -1,7 +1,7 @@
 package com.cannontech.web.stars.dr.operator.validator;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.validator.GenericValidator;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
@@ -11,16 +11,18 @@ import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.web.stars.dr.operator.model.ContactNotificationDto;
 
 public class ContactNotificationDtoValidator extends SimpleValidator<ContactNotificationDto> {
-	
-	public static final int MAX_NOTIFICATION_LENGTH = 130;
 
-	private PhoneNumberFormattingService phoneNumberFormattingService;
-	
-	public ContactNotificationDtoValidator() {
-		super(ContactNotificationDto.class);
-	}
-	
-	@Override
+    public static final int MAX_NOTIFICATION_LENGTH = 130;
+
+    private EmailValidator emailValidator = EmailValidator.getInstance();
+
+    @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
+
+    public ContactNotificationDtoValidator() {
+        super(ContactNotificationDto.class);
+    }
+
+    @Override
     public void doValidation(ContactNotificationDto contactNotificationDto, Errors errors) {
 
         String notificationValue = contactNotificationDto.getNotificationValue();
@@ -48,14 +50,9 @@ public class ContactNotificationDtoValidator extends SimpleValidator<ContactNoti
             }
 
         } else if (contactNotificationType.isEmailType() || contactNotificationType.isShortEmailType()) {
-            if (!GenericValidator.isEmail(notificationValue)) {
+            if (!emailValidator.isValid(notificationValue)) {
                 errors.rejectValue("notificationValue", "yukon.web.modules.operator.accountGeneral.email.invalid");
             }
         }
     }
-
-	@Autowired
-	public void setPhoneNumberFormattingService(PhoneNumberFormattingService phoneNumberFormattingService) {
-		this.phoneNumberFormattingService = phoneNumberFormattingService;
-	}
 }

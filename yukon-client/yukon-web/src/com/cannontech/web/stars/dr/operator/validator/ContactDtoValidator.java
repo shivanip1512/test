@@ -1,7 +1,9 @@
 package com.cannontech.web.stars.dr.operator.validator;
 
+import static com.cannontech.web.stars.dr.operator.validator.ContactNotificationDtoValidator.*;
+
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.validator.GenericValidator;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
@@ -10,8 +12,6 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.web.stars.dr.operator.model.ContactDto;
 import com.cannontech.web.stars.dr.operator.model.ContactNotificationDto;
-
-import static com.cannontech.web.stars.dr.operator.validator.ContactNotificationDtoValidator.MAX_NOTIFICATION_LENGTH;
 
 
 /**
@@ -23,9 +23,10 @@ import static com.cannontech.web.stars.dr.operator.validator.ContactNotification
 public class ContactDtoValidator extends SimpleValidator<ContactDto> {
     public final static int FIRST_NAME_MAX_LENGTH = 120;
     public final static int LAST_NAME_MAX_LENGTH = 120;
+    private EmailValidator emailValidator = EmailValidator.getInstance();
 
-    private PhoneNumberFormattingService phoneNumberFormattingService;
-    private ContactNotificationDtoValidator contactNotificationDtoValidator;
+    @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
+    @Autowired private ContactNotificationDtoValidator contactNotificationDtoValidator;
     
     public ContactDtoValidator() {
         super(ContactDto.class);
@@ -60,9 +61,9 @@ public class ContactDtoValidator extends SimpleValidator<ContactDto> {
 
         // email
         String email = contactDto.getEmail();
-        if (! StringUtils.isEmpty(email)) {
+        if (!StringUtils.isEmpty(email)) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "email", email, MAX_NOTIFICATION_LENGTH);
-            if (!GenericValidator.isEmail(email)) {
+            if (!emailValidator.isValid(email)) {
                 errors.rejectValue("email", "yukon.web.modules.operator.accountGeneral.email.invalid");
             }
         }
@@ -74,15 +75,5 @@ public class ContactDtoValidator extends SimpleValidator<ContactDto> {
             contactNotificationDtoValidator.validate(contactNotificationDto, errors);
             errors.popNestedPath();
         }
-    }
-
-    @Autowired
-    public void setPhoneNumberFormattingService(PhoneNumberFormattingService phoneNumberFormattingService) {
-        this.phoneNumberFormattingService = phoneNumberFormattingService;
-    }
-    
-    @Autowired
-    public void setContactNotificationDtoValidator(ContactNotificationDtoValidator contactNotificationDtoValidator) {
-        this.contactNotificationDtoValidator = contactNotificationDtoValidator;
     }
 }
