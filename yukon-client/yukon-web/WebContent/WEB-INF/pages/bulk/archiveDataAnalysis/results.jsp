@@ -118,7 +118,7 @@
             </tr>
         
             <c:forEach items="${result.searchResult.resultList}" var="row">
-                <tr class="<tags:alternateRow odd="" even="altTableCell"/>">
+                <tr>
                     <td><cti:deviceName deviceId="${row.id.paoId}"/></td>
                     <td><cti:formatObject value="${row.id.paoType}"/></td>
                     <td>${row.holeCount}</td>

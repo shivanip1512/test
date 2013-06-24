@@ -33,7 +33,7 @@
                                 <cti:url value="/adminSetup/userGroup/view" var="editGroupUrl">
                                     <cti:param name="userGroupId" value="${userGroup.userGroupId}"/>
                                 </cti:url>
-                                <tr class="<tags:alternateRow odd="" even="altTableCell"/>">
+                                <tr>
                                     <td><a href="${editGroupUrl}">${fn:escapeXml(userGroup.userGroupName)}</a></td>
                                     <td>${fn:escapeXml(userGroup.userGroupDescription)}</td>
                                     <td class="removeColumn">
