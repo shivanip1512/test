@@ -3,7 +3,13 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://yukon.cannontech.com/api ../ThermostatScheduleResponse.xsd"
            version="1.0">
-    
+           
+    <failure>
+        <errorCode>OtherException</errorCode>
+        <errorReference>FK3836940505
+        </errorReference>
+        <errorDescription>No schedule named: test schedule10</errorDescription>
+    </failure>
     <thermostatSchedule thermostatType="UtilityPRO G2" thermostatScheduleMode="Weekday Weekend">
         <scheduleName>test schedule</scheduleName>
         <schedulePeriod timeOfWeek="Weekday">

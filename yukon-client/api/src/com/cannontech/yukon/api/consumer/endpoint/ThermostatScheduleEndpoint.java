@@ -63,8 +63,8 @@ public class ThermostatScheduleEndpoint {
                             .getAccountId(), scheduleName);
                     resp.addContent(buildResponseForAccountThermostatSchedule(customerAccount, accountThermostatSchedule));
                 } catch (EmptyResultDataAccessException e) {
-                    //didn't find a schedule
-                    log.warn("The schedule name: "+scheduleName+" does not exist.");
+                    Element fe = XMLFailureGenerator.generateFailure(thermostatSchedule, e, "OtherException", "No schedule named: " + scheduleName);
+                    resp.addContent(fe);
                     continue;
                 }
             }

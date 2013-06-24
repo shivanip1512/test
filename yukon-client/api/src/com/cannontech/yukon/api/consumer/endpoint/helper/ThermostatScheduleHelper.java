@@ -1,13 +1,18 @@
 package com.cannontech.yukon.api.consumer.endpoint.helper;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang.WordUtils;
 import org.jdom.Element;
 import org.jdom.Namespace;
+import org.joda.time.LocalTime;
+import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.util.xml.XmlUtils;
@@ -183,7 +188,17 @@ public class ThermostatScheduleHelper {
                                "Invalid number of periods for " + XmlUtils.toXmlRepresentation(timeOfWeek) + ".", ns);
             }
 
+            Map<LocalTime, Integer> times = new HashMap<>();
+            
             for (SchedulePeriod schedulePeriod : schedulePeriods) {
+                //schedule with two settings for the exact same start time is invalid
+                //count start times for each schedule period
+                Integer value = times.get(schedulePeriod.getPeriodStartTime());
+                if (value == null) {
+                    value = new Integer(0);
+                }
+                times.put(schedulePeriod.getPeriodStartTime(), ++value);
+                
                 String info = buildTimeInfo(schedulePeriod);
                 if (schedulePeriod.getCoolTemperature().compareTo(thermostatType.getLowerLimitCool()) < 0) {
                     addPeriodError(periodError,
@@ -205,6 +220,15 @@ public class ThermostatScheduleHelper {
                                    info + "The heating temperature " + schedulePeriod.getHeatTemperature()
                                            + "is too high.", ns);
                 }
+            }   
+            //remove all start times that were used only once
+            times.values().removeAll(Collections.singleton(1));
+            //create an error for the start times that were used more then once
+            for (LocalTime time : times.keySet()) {
+                addPeriodError(periodError,
+                               "Multiple settings for the exact same time ("
+                                       + time.toString(DateTimeFormat.forPattern("H:mm")) + ") are not allowed",
+                               ns);
             }
             if (!periodError.getChildren().isEmpty()) {
                 errors.addContent(periodError);
