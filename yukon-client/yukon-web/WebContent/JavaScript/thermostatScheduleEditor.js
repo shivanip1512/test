@@ -712,8 +712,8 @@ Yukon.ThermostatManualEditor = {
     },
     
     prepForm: function(event){
-    	var dialog = jQuery("#" + event.target.getAttribute("popup_id"));
-        var widget = jQuery(event.target).closest(".manualThermostat");
+    	var dialog = jQuery("#" + event.currentTarget.getAttribute("popup_id"));
+        var widget = jQuery(event.currentTarget).closest(".manualThermostat");
         
         jQuery(".unit", dialog).hide();
         
