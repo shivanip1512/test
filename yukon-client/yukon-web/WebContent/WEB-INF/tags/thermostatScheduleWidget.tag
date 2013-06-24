@@ -24,7 +24,7 @@
 
 <div class="schedule ${pageScope.styleClass}" id="scheduleId_${schedule.accountThermostatScheduleId}">
 
-    <form method="POST" action="${actionPath}">
+    <form method="POST" action="${actionPath}/save">
     
         <input type="hidden" name="accountId" value="${accountId}">
         <input type="hidden" name="scheduleId" value="${schedule.accountThermostatScheduleId}">
@@ -101,7 +101,7 @@
             </c:otherwise>
         </c:choose>
     </form>
-    <form id="send_${schedule.accountThermostatScheduleId}" action="send" method="POST" class="dn">
+    <form id="send_${schedule.accountThermostatScheduleId}" action="${actionPath}/send" method="POST" class="dn">
         <input type="hidden" name="scheduleId" value="${schedule.accountThermostatScheduleId}">
         <input type="hidden" name="thermostatIds" value="${thermostatIds}">
         <input type="hidden" name="accountId" value="${accountId}">
@@ -123,13 +123,13 @@
                                         thermostatIds="${thermostatIds}"
                                         accountId="${accountId}"
                                         temperatureUnit="${temperatureUnit}"
-                                        actionPath="${actionPath}"
+                                        actionPath="${actionPath}/save"
                                         thermostatType="${thermostatType}"
                                         styleClass="${pageScope.styleClass}"/>
             </div>
             <div class="actionArea">
                 <cti:button nameKey="save" classes="f_blocker primary action f-save"/>
-                <form action="/stars/operator/thermostatSchedule/delete" method="POST">
+                <form action="${actionPath}/delete" method="POST">
                     <input type="hidden" name="scheduleId" value="${schedule.accountThermostatScheduleId}">
                     <input type="hidden" name="thermostatId" value="${thermostatId}">
                     <input type="hidden" name="thermostatIds" value="${thermostatIds}">

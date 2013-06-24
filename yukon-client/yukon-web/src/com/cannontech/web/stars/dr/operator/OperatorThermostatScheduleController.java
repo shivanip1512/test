@@ -58,6 +58,7 @@ import com.cannontech.web.stars.dr.operator.validator.AccountThermostatScheduleV
 @Controller
 @RequestMapping(value = "/operator/thermostatSchedule/*")
 public class OperatorThermostatScheduleController {
+	
     @Autowired private AccountEventLogService accountEventLogService;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private CustomerDao customerDao;

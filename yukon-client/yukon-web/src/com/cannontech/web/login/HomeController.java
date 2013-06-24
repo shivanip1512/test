@@ -25,10 +25,15 @@ public class HomeController {
         return "redirect:" + homeUrl;
     }
     
-    @RequestMapping({"/dashboard", "/operator/Operations.jsp"})
+    @RequestMapping("/dashboard")
     public String dashboard(HttpServletRequest req) {
         //TODO make an awesome dashboard
         return "dashboard.jsp";
+    }
+    
+    @RequestMapping("/operator/Operations.jsp")
+    public String operations(HttpServletRequest req) {
+    	return "redirect:/dashboard";
     }
     
 }

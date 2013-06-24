@@ -297,7 +297,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     
     //Try to save the schedule
     //@returns JSONObject containing success or error messages
-    @RequestMapping(value = "saveJSON", 
+    @RequestMapping(value = "save", 
                     method = {RequestMethod.POST, RequestMethod.HEAD},
                     headers = "x-requested-with=XMLHttpRequest")
     public void saveJSON(HttpServletResponse response,
