@@ -24,7 +24,7 @@
             </thead>
     	    <tbody> 
     		    <c:forEach var="route" items="${routes}">
-    		        <tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
+    		        <tr>
     		            <td nowrap="nowrap" style="padding-right: 10px;">
                             <input id="read_route_${route.id}" name="read_route_${route.id}" checked="checked" type="checkbox" onclick="checkRoutes()">
     		                ${route.name}

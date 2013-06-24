@@ -177,7 +177,7 @@
 							</cti:classUpdater>
 						</td>
 					</tr>
-					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
+					<tr>
 						<td><i:inline key=".busDetail.table.kw"/>:&nbsp;</td>
 						<td>
 							<cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="KW"/>
