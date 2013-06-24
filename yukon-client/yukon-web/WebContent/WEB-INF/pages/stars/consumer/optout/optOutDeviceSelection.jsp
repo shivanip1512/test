@@ -33,7 +33,7 @@
                     <c:set var="inventoryId" value="${displayableInventory.inventoryId}"/>
                     <c:set var="optOutCount" value="${optOutCounts[inventoryId]}"/>
 
-                    <tr class="<tags:alternateRow odd='altRow' even=""/>">
+                    <tr>
                         <td align="left">
                             <c:choose>
                                 <c:when test="${noOptOutsAvailableLookup[displayableInventory]}">
@@ -69,7 +69,7 @@
                     <c:if test="${!optOutCount.optOutsRemaining || 
                              displayableInventory.currentlyOptedOut || 
                              not empty displayableInventory.currentlyScheduledOptOut}">
-                        <tr class="<tags:alternateRow odd='altRow' even="" skipToggle="true"/>">
+                        <tr>
                             <td>&nbsp;</td>
                             <td colspan="2">
                                 <c:if test="${!optOutCount.optOutsRemaining  ||

@@ -84,7 +84,7 @@
             <c:when test="${fn:length(currentOptOutList) > 0}">
 		        <table id="deviceTable" class="resultsTable">
                     <thead>
-    		        	<tr class="<ct:alternateRow odd="" even="altRow"/>">
+    		        	<tr>
     		        		<th><cti:msg key="yukon.dr.consumer.optout.device"/></th>
     		        		<th><cti:msg key="yukon.dr.consumer.optout.program"/></th>
     		        		<th><cti:msg key="yukon.dr.consumer.optout.status"/></th>
@@ -95,7 +95,7 @@
 		        	<tfoot></tfoot>
                     <tbody>
     		        	<c:forEach var="optOut" items="${currentOptOutList}">
-    			        	<tr class="<ct:alternateRow odd="" even="altRow"/>">
+    			        	<tr>
     			        		<td>
                                     <spring:escapeBody htmlEscape="true">
                                         ${optOut.inventory.displayName}
@@ -146,7 +146,7 @@
             <tfoot></tfoot>
             <tbody>
                 <c:forEach var="inventory" items="${displayableInventories}">
-                    <tr class="<ct:alternateRow odd="" even="altRow"/>">
+                    <tr>
                         <td>
                             <spring:escapeBody htmlEscape="true">
                                 ${inventory.displayName}
@@ -186,7 +186,7 @@
                     <tfoot></tfoot>
                     <tbody>
     		        	<c:forEach var="optOut" items="${previousOptOutList}">
-    			        	<tr class="<ct:alternateRow odd="" even="altRow"/>">
+    			        	<tr>
     			        		<td>
                                     <spring:escapeBody htmlEscape="true">
                                         ${optOut.inventory.displayName}

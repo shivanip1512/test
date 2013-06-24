@@ -324,7 +324,7 @@ button
         &lt;/tr&gt;
     &lt;/thead&gt;
     &lt;c:forEach begin="0" end="10" varStatus="status"&gt;
-        &lt;tr class="&lt;tags:alternateRow odd="" even="altRow"/&gt;"&gt;
+        &lt;tr&gt;
             &lt;td&gt;Some Data ${status.index+1}&lt;/td&gt;
             &lt;td&gt;Some Data ${status.index+2}&lt;/td&gt;
             &lt;td class="contextual-menu"&gt;

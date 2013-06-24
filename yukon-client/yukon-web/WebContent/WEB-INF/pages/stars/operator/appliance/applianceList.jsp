@@ -52,7 +52,7 @@
                      </tr>
 
                      <c:forEach var="displayableApplianceListEntry" items="${displayableApplianceListEntries}">
-                         <tr class="<ct:alternateRow odd="" even="altRow"/>">
+                         <tr>
                              <td>
                                  <cti:url var="editApplianceUrl" value="/stars/operator/appliances/view">
                                      <cti:param name="accountId" value="${accountId}"/>

@@ -19,7 +19,7 @@
             </tr>
             
             <c:forEach var="optOut" items="${previousOptOutList}">
-                <tr class="<tags:alternateRow odd="altRow" even=""/>">
+                <tr>
                     <td valign="top" class="nonwrapping">
                         <spring:escapeBody htmlEscape="true">${optOut.inventory.displayName}</spring:escapeBody>
                     </td>

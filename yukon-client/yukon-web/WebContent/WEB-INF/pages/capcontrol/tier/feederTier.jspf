@@ -22,7 +22,7 @@
              </tr>
         </thead>
         
-        <tags:alternateRowReset/>
+        
         
         <c:forEach var="viewfeeder" items="${feederList}">
             <c:set var="feederId" value="${viewfeeder.feeder.ccId}"/>

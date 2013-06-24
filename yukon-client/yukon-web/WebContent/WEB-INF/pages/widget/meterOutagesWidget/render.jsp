@@ -57,7 +57,7 @@
                 </c:if>
                 <c:if test="${not empty data.outageData}">
                     <c:forEach items="${data.outageData}" var="outage">
-                        <tr class="<ct:alternateRow odd="" even="altRow"/>">
+                        <tr>
                             <td>${outage.outageLogIndex}</td>
                             <td><cti:formatDate value="${outage.timestamp.pointDataTimeStamp}"
                                     type="BOTH" var="formattedTimestamp" /> ${formattedTimestamp}</td>

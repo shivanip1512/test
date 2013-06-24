@@ -132,7 +132,7 @@
 					</tr>
 
 					<c:forEach items="${monitorDto.rules}" var="rule">
-						<tr class="<tags:alternateRow odd="altTableCell" even="tableCell"/>">
+						<tr>
 							<td nowrap="nowrap">${rule.value.ruleOrder}</td>
 							<td nowrap="nowrap">
                                 <c:choose>

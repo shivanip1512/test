@@ -137,7 +137,7 @@
 			</tags:boxContainer2>
 
 			<tags:boxContainer2 nameKey="busDetail" hideEnabled="true" showInitially="true">
-				<tags:alternateRowReset/>	
+					
 				<table class="compactResultsTable">
 					<thead>
 						<tr>

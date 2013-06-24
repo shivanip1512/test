@@ -44,7 +44,7 @@
 									<c:choose>
 										<c:when test="${(!showGroupedHistory && consumer)}">
 											<c:forEach var="detailEvent" items="${groupedEvent.controlHistory}">
-												<tr class="<tags:alternateRow odd='' even='altRow'/>">
+												<tr>
 													<td class="nonwrapping"><cti:formatDate value="${detailEvent.startDate}" type="BOTH" /></td>
 													<c:choose>
 														<c:when test="${detailEvent.controlling}">
@@ -90,7 +90,7 @@
 																	<th><i:inline key=".controlDuration" /></th>
 																</tr>
 																<c:forEach var="detailEvent" items="${groupedEvent.controlHistory}">
-																	<tr class="<tags:alternateRow odd='' even='altRow'/>">
+																	<tr>
 																		<td class="nonwrapping"><cti:formatDate value="${detailEvent.startDate}" type="BOTH" /></td>
 																		<c:choose>
 																			<c:when test="${detailEvent.controlling}">

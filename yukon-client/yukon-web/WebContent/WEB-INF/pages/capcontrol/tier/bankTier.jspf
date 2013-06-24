@@ -51,7 +51,7 @@ jQuery(function() {
         </thead>
         
         <!-- Reset the alternating row style -->
-        <tags:alternateRowReset/>
+        
         
         <c:forEach var="viewableCapBank" items="${capBankList}">
             

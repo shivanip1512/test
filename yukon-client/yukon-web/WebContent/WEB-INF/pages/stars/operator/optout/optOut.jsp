@@ -91,7 +91,7 @@
             <tfoot></tfoot>
             <tbody>
                 <c:forEach var="optOut" items="${currentOptOutList}">
-                    <tr class="<ct:alternateRow odd="" even="altRow"/>">
+                    <tr>
                         <td><spring:escapeBody htmlEscape="true">${optOut.inventory.displayName}</spring:escapeBody></td>
                         <td>
                             <c:forEach var="program" items="${optOut.programList}">
@@ -145,7 +145,7 @@
     <tfoot></tfoot>
     <tbody>
         <c:forEach var="inventory" items="${displayableInventories}">
-            <tr class="<ct:alternateRow odd="" even="altRow"/>">
+            <tr>
                 <td><spring:escapeBody htmlEscape="true">${inventory.displayName}</spring:escapeBody></td>
                 <td>${optOutCounts[inventory.inventoryId].usedOptOuts}</td>
                 <c:if test="${!noOptOutLimits}">
@@ -204,7 +204,7 @@
             <tfoot></tfoot>
             <tbody>
                 <c:forEach var="optOut" items="${previousOptOutList}">
-                    <tr class="<ct:alternateRow odd="" even="altRow"/>">
+                    <tr>
                         <td><spring:escapeBody htmlEscape="true">${optOut.inventory.displayName}</spring:escapeBody></td>
                         <td>
                             <c:forEach var="program" items="${optOut.programList}">

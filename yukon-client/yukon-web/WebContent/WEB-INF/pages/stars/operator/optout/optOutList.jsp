@@ -63,7 +63,7 @@ function createJSON() {
                         <c:set var="inventoryId" value="${displayableInventory.inventoryId}"/>
                         <c:set var="optOutCount" value="${optOutCounts[inventoryId]}"/>
 
-                        <tr class="<ct:alternateRow odd="altRow" even=""/>">
+                        <tr>
                             <td align="left">
                             	<c:choose>
                             		<c:when test="${displayableInventory.currentlyOptedOut && isSameDay}">
@@ -89,7 +89,7 @@ function createJSON() {
                             </td>
                         </tr>
                         <c:if test="${!optOutCount.optOutsRemaining || displayableInventory.currentlyOptedOut}">
-                            <tr class="<ct:alternateRow odd="altRow" even="" skipToggle="true"/>">
+                            <tr>
                                 <td>&nbsp;</td>
                                 <td colspan="2">
                                 <c:if test="${!optOutCount.optOutsRemaining}">

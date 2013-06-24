@@ -439,7 +439,7 @@
                 <span class="empty-list"><i:inline key=".thermostats.none"/></span>
             </c:when>
             <c:otherwise>
-                <tags:alternateRowReset/>
+                
                 <table class="compactResultsTable aligned_4_actions">
                     <thead>
                         <tr>
@@ -662,7 +662,7 @@
                 <span class="empty-list"><i:inline key=".gateways.none"/></span>
             </c:when>
             <c:otherwise>
-                <tags:alternateRowReset/>
+                
                 <table class="compactResultsTable aligned_4_actions">
                     <thead>
                         <tr>

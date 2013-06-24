@@ -29,7 +29,7 @@
                     <c:set var="optOutCount" value="${optOutCounts[inventoryId]}"/>
 
                     <c:if test="${not noOptOutsAvailableLookup[displayableInventory]}">
-                        <tr class="<tags:alternateRow odd='altRow' even=""/>">
+                        <tr>
                             <td align="left" title="${displayableInventory.serialNumber}">
                                 <input type="hidden" name="inventoryId" value="${inventoryId}"/>
                                 <input type="hidden" id="inventory_${inventoryId}" name="inventoryIds" value="${inventoryId}"></input>
