@@ -5,6 +5,16 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 
+<script type="text/javascript"> 
+jQuery(function () {
+  jQuery(".trend-settings-anchor").click(function(e) {
+    jQuery(".trend-settings").toggle();
+      e.stopPropagation();
+      return true;
+  });
+});
+</script>
+
 <c:choose>
     
     <c:when test="${attributeGraphType != null}">
