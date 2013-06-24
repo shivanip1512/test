@@ -19,7 +19,7 @@
 				<tags:notNullDataLine value="${address.locationAddress2}"/>
 			</c:otherwise>
 		</c:choose>
-		<c:if test="${not empty address.cityName}">${fn:escapeXml(address.cityName)}, </c:if>
-		${fn:escapeXml(address.stateCode)} ${fn:escapeXml(address.zipCode)}
+		<c:if test="${not empty address.cityName}">${fn:escapeXml(address.cityName)},&nbsp;</c:if>
+		${fn:escapeXml(address.stateCode)}&nbsp;${fn:escapeXml(address.zipCode)}
     </address>
 </c:if>
