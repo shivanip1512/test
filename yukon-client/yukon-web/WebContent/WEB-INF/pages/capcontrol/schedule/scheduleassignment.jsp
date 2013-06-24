@@ -217,7 +217,11 @@ function newScheduleAssignmentPopup(schedule, command) {
                                             <input type="hidden" name="paoId" value="${item.paoId}">
                                             <cti:button  type="submit" nameKey="remove" renderMode="image" classes="deleteAssignment" icon="icon-cross"/>
                                         </form>
-                                        <d:confirm on=".deleteAssignment" nameKey="confirmDelete" argument="${item.scheduleName}, ${item.deviceName}" argumentSeparator="," />
+                                        <cti:list var="argument">
+                                            <cti:item value="${item.scheduleName}" />
+                                            <cti:item value="${item.deviceName}" />
+                                        </cti:list>
+                                        <d:confirm on=".deleteAssignment" nameKey="confirmDelete" argument="${argument}" />
                                     </cti:checkRolesAndProperties>
                                 </td>
                                 
