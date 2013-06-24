@@ -124,7 +124,7 @@
 			                    </td>
 		                        <td class="actions">
 									<a title="Remove" href="javascript:void(0);"class="removeBtn">
-                                        <cti:icon icon="icon-cross"/>
+                                        <cti:icon icon="icon-cross" classes="M0"/>
 									</a>
 								</td>
 		                    </tr>
