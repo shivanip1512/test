@@ -412,7 +412,7 @@
     				<c:if test="${event.meter.disabled}">
     					<c:set var="trClass" value="subtle"/>
     				</c:if>
-    				<tr class="<tags:alternateRow odd="" even="altRow"/> ${trClass}">
+    				<tr class="${trClass}">
     					<td>
     						<cti:paoDetailUrl  yukonPao="${event.meter}" >
     						    <c:choose>

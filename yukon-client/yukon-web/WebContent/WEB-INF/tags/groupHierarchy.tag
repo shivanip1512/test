@@ -13,7 +13,7 @@
 	<c:set var="indentLevel" value="0" />
 </c:if>
 	
-<tr class="<tags:alternateRow odd="" even="altRow"/> ${(hierarchy.group.fullName == selectedGroup)?'highlighted':''}">
+<tr class="${(hierarchy.group.fullName == selectedGroup)?'highlighted':''}">
 	<td style="border: none;">
 		<div title="${fn:escapeXml(hierarchy.group.fullName)}" style="padding-left: ${pageScope.indentLevel * 12}px">
 			<div style="float: left;">

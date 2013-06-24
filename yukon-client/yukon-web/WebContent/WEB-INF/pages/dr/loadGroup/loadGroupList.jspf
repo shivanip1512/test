@@ -144,8 +144,7 @@
     					<c:url var="loadGroupURL" value="/dr/loadGroup/detail">
     						<c:param name="loadGroupId" value="${loadGroupId}" />
     					</c:url>
-    					<tr id="loadGroupRow${loadGroupId}"
-    						class="<tags:alternateRow odd="" even="altRow"/>">
+    					<tr id="loadGroupRow${loadGroupId}">
     						<td><dr:favoriteIcon paoId="${loadGroupId}"
     							isFavorite="${favoritesByPaoId[loadGroupId]}" /></td>
     						<td><a href="${loadGroupURL}"><spring:escapeBody

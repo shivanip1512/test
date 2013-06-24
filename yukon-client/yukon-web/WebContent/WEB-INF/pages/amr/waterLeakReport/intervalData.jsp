@@ -75,7 +75,7 @@
 				<c:if test="${row.pointValueHolder.value == row.leakRate}">
 					<c:set var="leakRowClass" value="lightRedBackground" />
 				</c:if>
-				<tr class="<tags:alternateRow odd="" even="altRow"/> ${disabledClass} ${leakRowClass}">
+				<tr class="${disabledClass} ${leakRowClass}">
 					<td>
                         <cti:paoDetailUrl yukonPao="${row.meter}">
                             ${fn:escapeXml(row.meter.name)}
