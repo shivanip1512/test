@@ -90,7 +90,7 @@ jQuery(function(){
                                         thermostatIds="${thermostatIds}"
                                         accountId="${accountId}"
                                         temperatureUnit="${temperatureUnit}"
-                                        actionPath="/stars/operator/thermostatSchedule/save"
+                                        actionPath="/stars/operator/thermostatSchedule"
                                         thermostatType="${thermostatType}"
                                         styleClass="vh"/>
                                 </div>
@@ -123,7 +123,7 @@ jQuery(function(){
                                         thermostatIds="${thermostatIds}"
                                         accountId="${accountId}"
                                         temperatureUnit="${temperatureUnit}"
-                                        actionPath="/stars/operator/thermostatSchedule/save"
+                                        actionPath="/stars/operator/thermostatSchedule"
                                         thermostatType="${thermostatType}"
                                         styleClass="vh"/>
                                 </c:forEach>    
@@ -175,9 +175,9 @@ jQuery(function(){
             
                 <div class="actions">
                     <div class="fr">
+                        <cti:button nameKey="cancel" classes="f-cancel" />
                         <cti:button nameKey="previous" classes="f_prev"/>
                         <cti:button nameKey="save" classes="f-save f_blocker primary action" />
-                        <cti:button nameKey="cancel" classes="f-cancel" />
                     </div>
                     <div class="fl">
                         <cti:button nameKey="recommendedSettings" renderMode="labeledImage" classes="f-createDefault" icon="icon-wrench"/>

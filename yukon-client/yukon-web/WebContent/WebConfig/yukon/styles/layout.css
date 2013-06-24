@@ -12,6 +12,8 @@ nav, header, footer, section, aside, hgroup, section {display:block;}
 
 .bc-bar, .page-title-bar {width: 988px;margin: 0 auto;padding: 5px 0;font-size: .9em;line-height: 26px;}
 .bc-bar .breadCrumbs, .page-title-bar .page-heading {float: left; display: inline-block;}
+.page-title-bar {margin-bottom: 5px;}
+.bc-bar {padding-bottom: 0;}
 .page-title-bar .page-actions {float: right; display: inline-block;}
 .page-title-bar .page-actions .button {margin-right: 0;}
 .page-title-bar .page-actions .b-page-actions {margin-left: 15px;}
