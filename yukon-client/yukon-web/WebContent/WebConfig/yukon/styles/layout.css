@@ -98,71 +98,71 @@ nav, header, footer, section, aside, hgroup, section {display:block;}
 .column>h1:first-child,.column>h2:first-child,.column>h3:first-child,.column>h4:first-child,.column>p:first-child{margin-top:0;padding-top:0}
 .column.nogutter,.nogutter{margin-right:0}
 .column_24,.column_4_20,.column_6_18,.column_8_16,.column_10_14,.column_12_12,.column_14_10,.column_16_8,.column_18_6,.column_21_3,.column_3_18_3,.column_4_8_12,.column_4_10_10,.column_4_12_8,.column_4_14_6,.column_6_8_10,.column_6_10_8,.column_6_12_6,.column_6_15_3,.column_8_8_8,.column_8_10_6,.column_8_13_3,.column_10_8_6,.column_10_11_3,.column_12_9_3,.column_6_6_6_6{margin:0 auto;max-width: 988px}
-.column_24 .one{width:100%}
-.column_4_20 .one{width:14.97975709%}
-.column_4_20 .two{width:82.99595142%}
-.column_6_18 .one{width:23.48178138%}
-.column_6_18 .two{width:74.49392713%}
-.column_8_16 .one{width:31.98380567%}
-.column_8_16 .two{width:65.9919028340081%}
-.column_10_14 .one{width:40.48582996%}
-.column_10_14 .two{width:57.48987854%}
-.column_12_12 .one{width:48.98785425%}
-.column_12_12 .two{width:48.98785425%}
-.column_14_10 .one{width:57.48987854%}
-.column_14_10 .two{width:40.48582996%}
-.column_16_8 .one{width:65.99190283%}
-.column_16_8 .two{width:31.98380567%}
-.column_18_6 .one{width:74.49392713%}
-.column_18_6 .two{width:23.48178138%}
-.column_21_3 .one{width:87.24696356%}
-.column_21_3 .two{width:10.72874494%}
-.column_3_18_3 .one{width:10.72874494%}
-.column_3_18_3 .two{width:74.49392713%}
-.column_3_18_3 .three{width:10.72874494%}
-.column_4_8_12 .one{width:14.97975709%}
-.column_4_8_12 .two{width:31.98380567%}
-.column_4_8_12 .three{width:48.98785425%}
-.column_4_10_10 .one{width:14.97975709%}
-.column_4_10_10 .two{width:40.48582996%}
-.column_4_10_10 .three{width:40.48582996%}
-.column_4_12_8 .one{width:14.97975709%}
-.column_4_12_8 .two{width:48.98785425%}
-.column_4_12_8 .three{width:31.98380567%}
-.column_4_14_6 .one{width:14.97975709%}
-.column_4_14_6 .two{width:57.48987854%}
-.column_4_14_6 .three{width:23.48178138%}
-.column_6_8_10 .one{width:23.48178138%}
-.column_6_8_10 .two{width:31.98380567%}
-.column_6_8_10 .three{width:40.48582996%}
-.column_6_10_8 .one{width:23.48178138%}
-.column_6_10_8 .two{width:40.48582996%}
-.column_6_10_8 .three{width:31.98380567%}
-.column_6_12_6 .one{width:23.48178138%}
-.column_6_12_6 .two{width:48.98785425%}
-.column_6_12_6 .three{width:23.48178138%}
-.column_6_15_3 .one{width:23.48178138%}
-.column_6_15_3 .two{width:61.74089069%}
-.column_6_15_3 .three{width:10.72874494%}
-.column_8_8_8 .one{width:31.98380567%}
-.column_8_8_8 .two{width:31.98380567%}
-.column_8_8_8 .three{width:31.98380567%}
-.column_8_10_6 .one{width:31.98380567%}
-.column_8_10_6 .two{width:40.48582996%}
-.column_8_10_6 .three{width:23.48178138%}
-.column_8_13_3 .one{width:31.98380567%}
-.column_8_13_3 .two{width:53.2388664%}
-.column_8_13_3 .three{width:10.72874494%}
-.column_10_8_6 .one{width:40.48582996%}
-.column_10_8_6 .two{width:31.98380567%}
-.column_10_8_6 .three{width:23.48178138%}
-.column_10_11_3 .one{width:40.48582996%}
-.column_10_11_3 .two{width:44.73684211%}
-.column_10_11_3 .three{width:10.72874494%}
-.column_12_9_3 .one{width:48.98785425%}
-.column_12_9_3 .two{width:36.23481781%}
-.column_12_9_3 .three{width:10.72874494%}
-.column_6_6_6_6 .one{width:23.48178138%}
-.column_6_6_6_6 .two{width:23.48178138%}
-.column_6_6_6_6 .three{width:23.48178138%}
-.column_6_6_6_6 .four{width:23.48178138%}
+.column_24 > .one{width:100%}
+.column_4_20 > .one{width:14.97975709%}
+.column_4_20 > .two{width:82.99595142%}
+.column_6_18 > .one{width:23.48178138%}
+.column_6_18 > .two{width:74.49392713%}
+.column_8_16 > .one{width:31.98380567%}
+.column_8_16 > .two{width:65.9919028340081%}
+.column_10_14 > .one{width:40.48582996%}
+.column_10_14 > .two{width:57.48987854%}
+.column_12_12 > .one{width:48.98785425%}
+.column_12_12 > .two{width:48.98785425%}
+.column_14_10 > .one{width:57.48987854%}
+.column_14_10 > .two{width:40.48582996%}
+.column_16_8 > .one{width:65.99190283%}
+.column_16_8 > .two{width:31.98380567%}
+.column_18_6 > .one{width:74.49392713%}
+.column_18_6 > .two{width:23.48178138%}
+.column_21_3 > .one{width:87.24696356%}
+.column_21_3 > .two{width:10.72874494%}
+.column_3_18_3 > .one{width:10.72874494%}
+.column_3_18_3 > .two{width:74.49392713%}
+.column_3_18_3 > .three{width:10.72874494%}
+.column_4_8_12 > .one{width:14.97975709%}
+.column_4_8_12 > .two{width:31.98380567%}
+.column_4_8_12 > .three{width:48.98785425%}
+.column_4_10_10 > .one{width:14.97975709%}
+.column_4_10_10 > .two{width:40.48582996%}
+.column_4_10_10 > .three{width:40.48582996%}
+.column_4_12_8 > .one{width:14.97975709%}
+.column_4_12_8 > .two{width:48.98785425%}
+.column_4_12_8 > .three{width:31.98380567%}
+.column_4_14_6 > .one{width:14.97975709%}
+.column_4_14_6 > .two{width:57.48987854%}
+.column_4_14_6 > .three{width:23.48178138%}
+.column_6_8_10 > .one{width:23.48178138%}
+.column_6_8_10 > .two{width:31.98380567%}
+.column_6_8_10 > .three{width:40.48582996%}
+.column_6_10_8 > .one{width:23.48178138%}
+.column_6_10_8 > .two{width:40.48582996%}
+.column_6_10_8 > .three{width:31.98380567%}
+.column_6_12_6 > .one{width:23.48178138%}
+.column_6_12_6 > .two{width:48.98785425%}
+.column_6_12_6 > .three{width:23.48178138%}
+.column_6_15_3 > .one{width:23.48178138%}
+.column_6_15_3 > .two{width:61.74089069%}
+.column_6_15_3 > .three{width:10.72874494%}
+.column_8_8_8 > .one{width:31.98380567%}
+.column_8_8_8 > .two{width:31.98380567%}
+.column_8_8_8 > .three{width:31.98380567%}
+.column_8_10_6 > .one{width:31.98380567%}
+.column_8_10_6 > .two{width:40.48582996%}
+.column_8_10_6 > .three{width:23.48178138%}
+.column_8_13_3 > .one{width:31.98380567%}
+.column_8_13_3 > .two{width:53.2388664%}
+.column_8_13_3 > .three{width:10.72874494%}
+.column_10_8_6 > .one{width:40.48582996%}
+.column_10_8_6 > .two{width:31.98380567%}
+.column_10_8_6 > .three{width:23.48178138%}
+.column_10_11_3 > .one{width:40.48582996%}
+.column_10_11_3 > .two{width:44.73684211%}
+.column_10_11_3 > .three{width:10.72874494%}
+.column_12_9_3 > .one{width:48.98785425%}
+.column_12_9_3 > .two{width:36.23481781%}
+.column_12_9_3 > .three{width:10.72874494%}
+.column_6_6_6_6 > .one{width:23.48178138%}
+.column_6_6_6_6 > .two{width:23.48178138%}
+.column_6_6_6_6 > .three{width:23.48178138%}
+.column_6_6_6_6 > .four{width:23.48178138%}
