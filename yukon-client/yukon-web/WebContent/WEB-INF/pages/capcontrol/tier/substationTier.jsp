@@ -56,7 +56,7 @@
                     <cti:param name="isSpecialArea" value="${isSpecialArea}"/>
                 </cti:url>
             
-    	        <tr class="<tags:alternateRow odd="tableCell" even="altTableCell"/>">
+    	        <tr>
                 
     				<td>
                         <input type="hidden" id="paoId_${substationId}" value="${substationId}">

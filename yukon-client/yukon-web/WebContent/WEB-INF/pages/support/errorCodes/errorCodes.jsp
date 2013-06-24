@@ -15,7 +15,7 @@
         </tr>
 
         <c:forEach items="${allErrors}" var="error">
-            <tr class="<tags:alternateRow odd="tableCell" even="altTableCell"/>">
+            <tr>
                 <td nowrap="nowrap">${error.errorCode}</td>
                 <td nowrap="nowrap">${error.category}</td>
                 <td>${error.description}</td>

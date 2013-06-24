@@ -25,7 +25,7 @@
             
             <tbody id="tableBody">
                 <c:forEach var="bank" items="${capBankList}" varStatus="i">
-                    <tr class="<tags:alternateRow odd="tableCell" even="altTableCell"/>">
+                    <tr>
                         <td><spring:escapeBody htmlEscape="true">${bank.name}</spring:escapeBody></td>
                         <td><spring:escapeBody htmlEscape="true">${bank.serialNumber}</spring:escapeBody></td>
                         <td><spring:escapeBody htmlEscape="true">${bank.address}</spring:escapeBody></td>

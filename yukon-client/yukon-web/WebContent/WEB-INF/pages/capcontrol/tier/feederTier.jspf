@@ -28,7 +28,7 @@
             <c:set var="feederId" value="${viewfeeder.feeder.ccId}"/>
             <c:set var="parentId" value="${viewfeeder.feeder.parentID}"/>
             
-            <tr id="tr_feeder_${feederId}_parent_${parentId}" class="<tags:alternateRow odd="tableCell" even="altTableCell"/>">
+            <tr id="tr_feeder_${feederId}_parent_${parentId}">
             
                 <%-- Name --%>
                 <td class="wsnw">

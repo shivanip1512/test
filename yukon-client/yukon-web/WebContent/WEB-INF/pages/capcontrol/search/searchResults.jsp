@@ -70,7 +70,7 @@
                             <th><i:inline key=".parent"/></th>
                         </tr>
                         <c:forEach items="${searchResult.resultList}" var="row">
-                            <tr class="<tags:alternateRow odd="tableCell" even="altTableCell"/>">
+                            <tr>
             	                <td nowrap="nowrap">
                                     <c:choose>
                                         <c:when test="${row.paobject}">

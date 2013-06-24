@@ -66,7 +66,7 @@
                             <tfoot></tfoot>
                             <tbody>
                                 <c:forEach items="${statusPointMonitor.processors}" var="row" varStatus="status">
-                                    <tr class="<tags:alternateRow odd="tableCell" even="altTableCell"/>">
+                                    <tr>
                                         <td nowrap="nowrap">${prevStateStrings[status.index]}</td>
                                         <td nowrap="nowrap">${nextStateStrings[status.index]}</td>
                                         <td nowrap="nowrap"><i:inline key="${row.actionTypeEnum}"/></td>

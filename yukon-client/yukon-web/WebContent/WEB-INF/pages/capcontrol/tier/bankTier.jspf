@@ -58,7 +58,7 @@ jQuery(function() {
             <c:set var="bankId" value="${viewableCapBank.capBankDevice.ccId}"/>
             <c:set var="parentId" value="${viewableCapBank.capBankDevice.parentID}"/>
             
-            <tr id="tr_cap_${bankId}_parent_${parentId}" class="<tags:alternateRow odd="tableCell" even="altTableCell"/>">
+            <tr id="tr_cap_${bankId}_parent_${parentId}">
                 
                 <%-- CBC Name --%>
                 <td class="wsnw">
