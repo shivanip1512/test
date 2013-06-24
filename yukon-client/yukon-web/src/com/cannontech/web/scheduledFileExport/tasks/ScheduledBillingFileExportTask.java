@@ -42,19 +42,22 @@ public class ScheduledBillingFileExportTask extends ScheduledFileExportTask impl
 		
 		//Set up the File
 		String fileExtension = FileFormatTypes.getFileExtensionByFormatId(fileFormatId);
-		File exportFile = getExportFile(now, fileExtension);
-		log.debug("Scheduled billing export \"" + name + "\" file name: " + exportFile.getAbsolutePath() + exportFile.getName());
+		File archiveFile = createArchiveFile(now, fileExtension);
+		log.debug("Scheduled billing export \"" + name + "\" file name: " + archiveFile.getAbsolutePath() + archiveFile.getName());
 		
 		//Write out the billing file
-		try (OutputStream outputStream = new FileOutputStream(exportFile)){
+		try (OutputStream outputStream = new FileOutputStream(archiveFile)){
 			billingBean.generateFile(outputStream);
 		} catch(IOException e) {
 			throw new FileCreationException("Unable to generate billing file due to I/O errors.", e);			
 		}
 		log.debug("Scheduled billing export \"" + name + "\" file created.");
 		
-		//Add File Export History entry
-		ExportHistoryEntry historyEntry = addFileToExportHistory(FileExportType.BILLING, exportFile);
+		// Copy the archive file to the export file (if necessary)
+		File exportFile = copyExportFile(archiveFile);
+		
+		// Create new File Export History entry
+		ExportHistoryEntry historyEntry = createExportHistoryEntry(FileExportType.BILLING, archiveFile, exportFile);
 		
 		//Send notification emails
         prepareAndSendNotificationEmails(historyEntry);

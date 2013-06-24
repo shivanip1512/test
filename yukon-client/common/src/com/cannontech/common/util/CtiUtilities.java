@@ -69,6 +69,7 @@ public final class CtiUtilities {
                                           + System.getProperty("file.separator");
     public static final String CURRENT_DIR = System.getProperty("user.dir")
                                              + System.getProperty("file.separator");
+    public static final String EXPORT_ARCHIVE_DIR = "ExportArchive";
 
     public static final String STRING_NONE = "(none)";
     public static final String STRING_DEFAULT = "Default";
@@ -376,6 +377,10 @@ public final class CtiUtilities {
         return getYukonBase() + "/Client/export/";
     }
 
+    public final static String getArchiveDirPath() {
+        return getYukonBase() + System.getProperty("file.separator") + EXPORT_ARCHIVE_DIR;
+    }
+    
     public final static Character getFalseCharacter() {
         return falseChar;
     }

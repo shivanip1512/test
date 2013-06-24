@@ -70,22 +70,26 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 			scheduledFileExportDao.setRphIdForJob(this.getJobContext().getJob().getId(), dataRange.getChangeIdRange().getLastChangeId());
 		}
 		
-		//Write the file
-		File exportFile = getExportFile(DateTime.now() ,".csv");
+		// Create and Write to the archive file
+        File archiveFile = createArchiveFile(DateTime.now(), ".csv");
 		try (
-			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(exportFile)));
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(archiveFile)));
 		){
 			for(String row : report) {
 				writer.write(row);
 				writer.newLine();
 			}
 		} catch(IOException e) {
-			throw new FileCreationException("Unable to generate billing file due to I/O errors.", e);
+			throw new FileCreationException("Unable to generate Scheduled Archived Data file due to I/O errors.", e);
 		}
 		
-		//Add File Export History entry
-		ExportHistoryEntry historyEntry = addFileToExportHistory(FileExportType.ARCHIVED_DATA_EXPORT, exportFile);
+		// Copy the archive file to the export file (if necessary).
+		File exportFile = copyExportFile(archiveFile);
 		
+		// Create a new History entry record
+		ExportHistoryEntry historyEntry = createExportHistoryEntry(FileExportType.ARCHIVED_DATA_EXPORT, 
+		                                                          archiveFile, exportFile);
+
 		//Send notification emails
         prepareAndSendNotificationEmails(historyEntry);
 	}

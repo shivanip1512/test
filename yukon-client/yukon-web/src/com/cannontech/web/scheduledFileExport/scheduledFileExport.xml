@@ -33,10 +33,38 @@
                         </bean>
                         <bean class="com.cannontech.web.input.InputBase">
                         	<property name="field" value="appendDateToFileName"/>
-                        	<property name="displayName" value="Append Date to File Name"/>
+                        	<property name="displayName" value="Append Date/Timestamp to File Name"/>
                         	<property name="type">
                         		<bean class="com.cannontech.web.input.type.BooleanType"/>
                         	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="timestampPatternField"/>
+                            <property name="displayName" value="Pattern to use for Date/Timestamp"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="overrideFileExtension"/>
+                            <property name="displayName" value="Override the default file extension"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.BooleanType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="exportFileExtension"/>
+                            <property name="displayName" value="File Extension to use"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="includeExportCopy"/>
+                            <property name="displayName" value="Include copy of exported file."/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.BooleanType"/>
+                            </property>
                         </bean>
                         <bean class="com.cannontech.web.input.InputBase">
                         	<property name="field" value="exportFileName"/>
@@ -126,10 +154,38 @@
                         </bean>
                         <bean class="com.cannontech.web.input.InputBase">
                         	<property name="field" value="appendDateToFileName"/>
-                        	<property name="displayName" value="Append Date to File Name"/>
+                        	<property name="displayName" value="Append Date/Timestamp to File Name"/>
                         	<property name="type">
                         		<bean class="com.cannontech.web.input.type.BooleanType"/>
                         	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="timestampPatternField"/>
+                            <property name="displayName" value="Pattern to use for Date/Timestamp"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="overrideFileExtension"/>
+                            <property name="displayName" value="Override the default file extension"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.BooleanType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="exportFileExtension"/>
+                            <property name="displayName" value="File Extension to use"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="includeExportCopy"/>
+                            <property name="displayName" value="Include copy of exported file."/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.BooleanType"/>
+                            </property>
                         </bean>
                         <bean class="com.cannontech.web.input.InputBase">
                         	<property name="field" value="exportFileName"/>
@@ -247,10 +303,38 @@
                         </bean>
                         <bean class="com.cannontech.web.input.InputBase">
                         	<property name="field" value="appendDateToFileName"/>
-                        	<property name="displayName" value="Append Date to File Name"/>
+                        	<property name="displayName" value="Append Date / Timestamp to File Name"/>
                         	<property name="type">
                         		<bean class="com.cannontech.web.input.type.BooleanType"/>
                         	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="timestampPatternField"/>
+                            <property name="displayName" value="Pattern to use for Date/Timestamp"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="overrideFileExtension"/>
+                            <property name="displayName" value="Override the default file extension"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.BooleanType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="exportFileExtension"/>
+                            <property name="displayName" value="File Extension to use"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="includeExportCopy"/>
+                            <property name="displayName" value="Include copy of exported file."/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.BooleanType"/>
+                            </property>
                         </bean>
                         <bean class="com.cannontech.web.input.InputBase">
                         	<property name="field" value="exportFileName"/>
@@ -333,10 +417,38 @@
                         </bean>
                         <bean class="com.cannontech.web.input.InputBase">
                         	<property name="field" value="appendDateToFileName"/>
-                        	<property name="displayName" value="Append Date to File Name"/>
+                        	<property name="displayName" value="Append Date / Timestamp to File Name"/>
                         	<property name="type">
                         		<bean class="com.cannontech.web.input.type.BooleanType"/>
                         	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="timestampPatternField"/>
+                            <property name="displayName" value="Pattern to use for Date/Timestamp"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="overrideFileExtension"/>
+                            <property name="displayName" value="Override the default file extension"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.BooleanType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="exportFileExtension"/>
+                            <property name="displayName" value="File Extension to use"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="includeExportCopy"/>
+                            <property name="displayName" value="Include copy of exported file."/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.BooleanType"/>
+                            </property>
                         </bean>
                         <bean class="com.cannontech.web.input.InputBase">
                         	<property name="field" value="exportFileName"/>

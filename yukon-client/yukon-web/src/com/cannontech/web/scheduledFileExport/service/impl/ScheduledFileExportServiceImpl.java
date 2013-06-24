@@ -149,6 +149,10 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
 		task.setExportPath(data.getExportPath());
 		task.setNotificationEmailAddresses(data.getNotificationEmailAddresses());
 		task.setFileGenerationParameters(data.getParameters());
+		task.setTimestampPatternField(data.getTimestampPatternField());
+		task.setOverrideFileExtension(data.isOverrideFileExtension());
+		task.setExportFileExtension(data.getExportFileExtension());
+		task.setIncludeExportCopy(data.isIncludeExportCopy());
 		return task;
 	}
 	
@@ -157,9 +161,13 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
 		
 		log.debug(action + " new file export job.");
 		log.debug("Name: " + data.getScheduleName());
-		log.debug("Append date to file name: " + data.isAppendDateToFileName());
-		log.debug("Export path: " + data.getExportPath());
 		log.debug("Export file: " + data.getExportFileName());
+		log.debug("Append date to file name: " + data.isAppendDateToFileName());
+		log.debug("Timestamp Pattern: " + data.getTimestampPatternField());
+		log.debug("Override File Extension: " + data.isOverrideFileExtension());
+		log.debug("File extension: " + data.getExportFileExtension());
+		log.debug("Include file copy: " + data.isIncludeExportCopy());
+		log.debug("Export path: " + data.getExportPath());
 		log.debug("Notification email addresses: " + data.getNotificationEmailAddresses());
 		log.debug("Generation parameters: " + data.getParameters());
 	}

@@ -3,6 +3,7 @@ package com.cannontech.web.scheduledFileExport.tasks;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.mail.MessagingException;
@@ -22,8 +23,8 @@ import com.cannontech.common.fileExportHistory.service.FileExportHistoryService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.scheduledFileExport.ExportFileGenerationParameters;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.support.YukonTaskBase;
@@ -32,6 +33,7 @@ import com.cannontech.tools.email.DefaultEmailMessage;
 import com.cannontech.tools.email.EmailMessageHolder;
 import com.cannontech.tools.email.EmailService;
 import com.google.common.collect.Lists;
+import com.google.common.io.Files;
 
 /**
  * Abstract parent class of scheduled file exports. This class specifies
@@ -53,10 +55,13 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 	protected String exportFileName;
 	protected String exportPath;
 	protected String notificationEmailAddresses;
+    protected String timestampPatternField;
+    protected boolean overrideFileExtension;
+    protected String exportFileExtension;
+    protected boolean includeExportCopy;
 	
 	private Logger log = YukonLogManager.getLogger(ScheduledFileExportTask.class);
 	
-	protected static final String DEFAULT_FILE_EXTENSION = ".csv";
 	private static final String HISTORY_URL_PART = "/support/fileExportHistory/list?entryId=";
 	
 	@Override
@@ -75,6 +80,10 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 		data.setExportPath(exportPath);
 		data.setNotificationEmailAddresses(notificationEmailAddresses);
 		data.setScheduleName(name);
+		data.setTimestampPatternField(timestampPatternField);
+		data.setOverrideFileExtension(overrideFileExtension);
+		data.setExportFileExtension(exportFileExtension);
+		data.setIncludeExportCopy(includeExportCopy);
 		return data;
 	}
 	
@@ -103,7 +112,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 	}
 	
 	public String getExportFileName() {
-		return exportFileName;
+        return (null == exportFileName) ? name : exportFileName;
 	}
 	
 	public void setExportFileName(String exportFileName) {
@@ -125,23 +134,55 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 	public void setNotificationEmailAddresses(String notificationEmailAddresses) {
 		this.notificationEmailAddresses = notificationEmailAddresses;
 	}
-	
+
+    public String getTimestampPatternField() {
+        return timestampPatternField;
+    }
+
+    public void setTimestampPatternField(String timestampPattern) {
+        this.timestampPatternField = timestampPattern;
+    }
+
+    public String getExportFileExtension() {
+        return exportFileExtension;
+    }
+
+    public void setExportFileExtension(String exportFileExtension) {
+        this.exportFileExtension = exportFileExtension;
+    }
+
+    public boolean isIncludeExportCopy() {
+        return includeExportCopy;
+    }
+
+    public void setIncludeExportCopy(boolean includeExportCopy) {
+        this.includeExportCopy = includeExportCopy;
+    }
+
+    public boolean isOverrideFileExtension() {
+        return overrideFileExtension;
+    }
+
+    public void setOverrideFileExtension(boolean overrideFileExtension) {
+        this.overrideFileExtension = overrideFileExtension;
+    }
+
 	/**
 	 * Convenience method for exporting to csv.
 	 */
-	protected File exportToCsvFile(List<String[]> dataRows) {
-        File exportFile = getExportFile(DateTime.now() ,".csv");
-        try (
-            FileWriter writer = new FileWriter(exportFile);
-        ){
+    protected File archiveToCsvFile(List<String[]> dataRows) {
+        File archiveFile = createArchiveFile(DateTime.now(), ".csv");
+        try (FileWriter writer = new FileWriter(archiveFile);) {
             CSVWriter csvWriter = new CSVWriter(writer);
             csvWriter.writeAll(dataRows);
-        } catch(IOException e) {
-            throw new FileCreationException("Unable to generate scheduled export file due to I/O errors.", e);
+        } catch (IOException e) {
+            throw new FileCreationException("Unable to generate scheduled export file due to I/O errors: ", e);
         }
-        return exportFile;
+        return archiveFile;
     }
-	
+    
+    
+    
 	/**
 	 * Checks the validity of the history entry and notificationEmailAddress, then sends email
 	 * notifications.
@@ -185,46 +226,95 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 		}
 		log.debug("Scheduled " + historyEntry.getType() + " export \"" + name + "\" email notifications complete.");
 	}
-	
-	/**
-	 * Creates a File object whose path matches the specified export path, and
-	 * whose name matches the specified export file name. In addition, the current date may 
-	 * optionally be appended to the file name.
-	 */
-	protected File getExportFile(DateTime now, String fileExtension) {
-		String finalName = exportFileName;
-		if(appendDateToFileName) {
-			String dateString = dateFormattingService.format(now, DateFormatEnum.DATE, getUserContext());
-			finalName = finalName + "-" + dateString.replaceAll("/", "-");
-		}
 
-		File exportFile = new File(exportPath, finalName + fileExtension);
-		for(int i = 1; exportFile.exists(); i++) { 
-			//if an identically named file exists, add incrementing numbers
-			//to the end of the file name until there are no conflicts
-			exportFile = new File(exportPath, finalName + "(" + i + ")" + fileExtension);
-		}
-		
-		return exportFile;
-	}
+    /**
+     *  Copies from the archive file to the export file if selected. 
+     *  Returns exportFile or null if user has selected to not include export file copy. 
+     * @param archiveFile
+     * @return exportFile
+     */
+    protected File copyExportFile(File archiveFile) {
+        if (includeExportCopy) {
+            String fileName = getExportFileName(archiveFile);
+            // need to get the base and file extension...
+            String baseName = fileName.substring(0, fileName.lastIndexOf("."));
+            String fileExt = fileName.substring(fileName.lastIndexOf("."));
+            File exportFile = new File(exportPath, fileName);
+            for (int i = 1; exportFile.exists(); i++) {
+                // if an identically named file exists, add incrementing numbers to the end.
+                exportFile = new File(exportPath, baseName + "(" + i + ")" + fileExt);
+            }
+            try {
+                Files.copy(archiveFile, exportFile);
+            } catch (IOException e) {
+                log.error("Unable to copy Archive file to Export file: ", e);
+            }
+            return exportFile;
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * Create the (empty) File object in the archive path...
+     * @param timestamp
+     * @param defaultTimeExtension
+     * @return archiveFile
+     */
+    protected File createArchiveFile(DateTime now, String defaultFileExtension) {
+        String finalName = this.getExportFileName();
+        String fileExtension = defaultFileExtension;
+        String filePath = CtiUtilities.getArchiveDirPath();
+        if (appendDateToFileName) {
+            SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(timestampPatternField);
+            String dateString = DATE_FORMAT.format(now.toDate());
+            // strip characters not allowed in file names.
+            dateString = dateString.replaceAll("[\\/:*?\"><|]", "");
+            finalName = finalName + dateString;
+        }
+        if (overrideFileExtension) {
+            fileExtension = exportFileExtension;
+        }
+        fileExtension += "_" + CtiUtilities.getUuidString();
+        File archiveFile = new File(filePath, finalName + fileExtension);
+        for (int i = 1; archiveFile.exists(); i++) {
+            // if an identically named file exists, add incrementing numbers to the end...
+            archiveFile = new File(filePath, finalName + "(" + i + ")" + fileExtension);
+        }
+        return archiveFile;
+    }
 	
-	/**
-	* Creates a copy of the exported file in an archive location, and adds a related entry 
-	* to File Export History.
-	*/
-	protected ExportHistoryEntry addFileToExportHistory(FileExportType type, File exportFile) {
-		ExportHistoryEntry historyEntry = null;
-		try {
-			String initiator = getMessage(type.getFormatKey()) + " Schedule: " + name;
-			historyEntry = fileExportHistoryService.copyFile(exportFile, type, initiator);
-		} catch(IOException e) {
-			log.error("Unable to copy " + type + " export file to export history archive.", e);
-		}
-		log.debug("Scheduled " + type + " export \"" + name + "\" file added to File Export History");
-		
-		return historyEntry;
-	}
-	
+    /**
+     * Creates the History entry based on the Archive and Export file(s).
+     * @param type
+     * @param archiveFile
+     * @param exportFile
+     * @return historyEntry
+     */
+    protected ExportHistoryEntry createExportHistoryEntry(FileExportType type, File archiveFile, File exportFile) {
+        ExportHistoryEntry historyEntry = null;
+        try {
+            String initiator = getMessage(type.getFormatKey()) + " Schedule: " + name;
+            String fileName = getExportFileName(archiveFile);
+            historyEntry = fileExportHistoryService.addHistoryEntry(archiveFile, exportFile, fileName, type, initiator);
+        } catch(IOException e) {
+            log.error("Unable to create " + type + " export file history archive.", e);
+        }
+        log.debug("Scheduled " + type + " export \"" + name + "\" file added to File Export History");
+        
+        return historyEntry;
+    }
+    
+    /**
+     * Convenience method to get the filename without the uuid appendage.
+     * @param archiveFile
+     * @return
+     */
+    protected String getExportFileName(File archiveFile) {
+        String archiveName = archiveFile.getName();
+        return archiveName.substring(0, archiveName.lastIndexOf("_"));
+    }
+    
 	//Gets the appropriate email subject i18n key based on the type of file export.
 	private String getSubjectKey(FileExportType type) {
 		return "yukon.web.modules.amr.scheduledFileExport.notification.subject." + type.name();

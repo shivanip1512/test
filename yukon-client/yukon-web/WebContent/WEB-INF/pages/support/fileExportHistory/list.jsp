@@ -60,9 +60,16 @@
 							<cti:formatDate value="${exportHistoryEntry.date}" type="DATEHM"/>
 						</td>
 						<!-- EXPORT PATH -->
-						<td>
-							${exportHistoryEntry.exportPath}
-						</td>
+                        <td>
+                        <c:choose>
+                            <c:when test="${null == exportHistoryEntry.exportPath}">
+                                <cti:msg2 key="yukon.web.defaults.dashes"/>
+                            </c:when>
+                            <c:otherwise>
+                                ${exportHistoryEntry.exportPath}
+                            </c:otherwise>
+                        </c:choose>
+                        </td>
 					</tr>	
 				</c:forEach>
 				<c:if test="${fn:length(searchResult.resultList) == 0}">

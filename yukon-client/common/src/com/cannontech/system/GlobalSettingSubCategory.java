@@ -4,7 +4,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
 
 public enum GlobalSettingSubCategory implements DisplayableEnum {
 
-    BILLING(GlobalSettingCategory.APPLICATION),
+    DATA_EXPORT(GlobalSettingCategory.APPLICATION),
     CALC_HISTORICAL(GlobalSettingCategory.APPLICATION),
     GRAPHING(GlobalSettingCategory.APPLICATION),
     

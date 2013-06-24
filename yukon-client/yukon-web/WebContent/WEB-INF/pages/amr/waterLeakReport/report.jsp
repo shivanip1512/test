@@ -73,7 +73,7 @@
 		<c:set var="popupTitleArgs" value="\"${fn:escapeXml(fileExportData.scheduleName)}\""/>
 	</c:if>
 	<dialog:inline id="leakScheduleDialog" okEvent="none" nameKey="leakScheduleDialog" arguments="${popupTitleArgs}" on=".f_open_schedule_dialog"
-		options="{width: 550, 'buttons': [{text: '${empty jobId ? scheduleButton : updateButton}', click: function() {WaterLeakReport.schedule_submit();}, title: '${empty jobId ? scheduleButtonTitle : updateButtonTitle}', 'class': 'leakScheduleSubmitButton'},
+		options="{width: 650, 'buttons': [{text: '${empty jobId ? scheduleButton : updateButton}', click: function() {WaterLeakReport.schedule_submit();}, title: '${empty jobId ? scheduleButtonTitle : updateButtonTitle}', 'class': 'leakScheduleSubmitButton'},
 										  {text: '${cancelButton}', click: function() {jQuery(this).dialog('close');}, title: '${cancelButtonTitle}', 'class': 'leakScheduleCancelButton'}]}">
 		
 		<form:form id="scheduleForm" action="schedule" method="get" commandName="fileExportData">

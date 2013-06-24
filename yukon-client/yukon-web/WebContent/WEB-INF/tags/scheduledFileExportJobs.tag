@@ -38,19 +38,19 @@
 						<cti:url var="finalEditUrl" value="${editUrl}">
 							<cti:param name="jobId" value="${job.id}"/>
 						</cti:url>
-						<cti:button nameKey="edit" renderMode="image" href="${finalEditUrl}"/>
+						<cti:button nameKey="edit" renderMode="image" href="${finalEditUrl}" icon="icon-pencil"/>
 						
                         <cti:msg2 var="initiator" key="yukon.web.modules.support.fileExportHistory.types.${jobType}"/>
                         <cti:msg2 var="scheduleAppender" key="yukon.web.modules.support.fileExportHistory.types.scheduleAppender"/>
 						<cti:url var="historyUrl" value="/support/fileExportHistory/list">
 							<cti:param name="initiator" value="${initiator} ${scheduleAppender} ${job.name}"/>
 						</cti:url>
-						<cti:button nameKey="history" renderMode="image" href="${historyUrl}"/>
+						<cti:button nameKey="history" renderMode="image" href="${historyUrl}" icon="icon-script"/>
 						
 						<cti:url var="finalDeleteUrl" value="${deleteUrl}">
 							<cti:param name="jobId" value="${job.id}"/>
 						</cti:url>
-						<cti:button id="deleteItem_${job.id}" nameKey="delete" renderMode="image" href="${finalDeleteUrl}"/>
+						<cti:button id="deleteItem_${job.id}" nameKey="delete" renderMode="image" href="${finalDeleteUrl}" icon="icon-cross"/>
                         <dialog:confirm on="#deleteItem_${job.id}" nameKey="confirmDelete" argument="${job.name}"/>
 					</td>
 				</tr>

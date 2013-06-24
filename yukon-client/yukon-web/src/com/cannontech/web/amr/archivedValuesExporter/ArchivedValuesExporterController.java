@@ -486,8 +486,12 @@ public class ArchivedValuesExporterController {
     		exportData = new ScheduledFileExportData();
     		exportData.setScheduleName(task.getName());
     		exportData.setExportFileName(task.getExportFileName());
-    		exportData.setExportPath(task.getExportPath());
     		exportData.setAppendDateToFileName(task.isAppendDateToFileName());
+    		exportData.setTimestampPatternField(task.getTimestampPatternField());
+    		exportData.setOverrideFileExtension(task.isOverrideFileExtension());
+    		exportData.setExportFileExtension(task.getExportFileExtension());
+    		exportData.setIncludeExportCopy(task.isIncludeExportCopy());
+    		exportData.setExportPath(task.getExportPath());
     		exportData.setNotificationEmailAddresses(task.getNotificationEmailAddresses());
     	} else {
     		//create new schedule
@@ -511,13 +515,15 @@ public class ArchivedValuesExporterController {
             exportData = new ScheduledFileExportData();
             cronTagState = new CronExpressionTagState();
     	}
-    	
-    	model.addAttribute("exportFormat", format);
+
+        model.addAttribute("exportFormat", format);
         model.addAttribute("attributes", attributes);
         model.addAttribute("dataRange", dataRange);
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("exportData", exportData);
         model.addAttribute("cronExpressionTagState", cronTagState);
+        model.addAttribute("fileExtensionChoices", setupFileExtChoices(exportData));
+        model.addAttribute("exportPathChoices", setupExportPathChoices(exportData));
         
         return "archivedValuesExporter/schedule.jsp";
     }
@@ -553,6 +559,8 @@ public class ArchivedValuesExporterController {
 	        model.addAttribute("deviceCollection", deviceCollection);
 	        model.addAttribute("cronExpressionTagState", cronExpressionTagService.parse(scheduleCronString, userContext));
             model.addAttribute("jobId", jobId);
+            model.addAttribute("fileExtensionChoices", setupFileExtChoices(exportData));
+            model.addAttribute("exportPathChoices", setupExportPathChoices(exportData));
             return "archivedValuesExporter/schedule.jsp";
 		}
     	
@@ -664,4 +672,29 @@ public class ArchivedValuesExporterController {
         model.addAttribute("dateTimeZoneFormats", TimeZoneFormat.values());
 
     }
+    
+    private List<String> setupFileExtChoices(ScheduledFileExportData exportData) {
+        List<String> fileExtChoices = null;
+        String globalFileExtensions = globalSettingDao.getString(GlobalSettingType.SCHEDULE_PARAMETERS_AVAILABLE_FILE_EXTENSIONS);
+        fileExtChoices = com.cannontech.common.util.StringUtils.parseStringsForList(globalFileExtensions, ",");
+        if (null == exportData.getExportFileExtension()) {
+            // set the default value, initial selection
+            exportData.setExportFileExtension(fileExtChoices.get(0));
+        }
+        return fileExtChoices;
+    }
+    
+    private List<String> setupExportPathChoices(ScheduledFileExportData exportData) {
+        List<String> exportPathChoices = null;
+        String curExportPath = exportData.getExportPath(); 
+        String globalExportPaths = globalSettingDao.getString(GlobalSettingType.SCHEDULE_PARAMETERS_EXPORT_PATH);
+        exportPathChoices = com.cannontech.common.util.StringUtils.parseStringsForList(globalExportPaths, ",");
+        if (null == curExportPath) {
+            exportData.setExportPath(exportPathChoices.get(0));
+        } else {
+            exportData.setExportPath(curExportPath);
+        }
+        return exportPathChoices;
+    }
+
 }

@@ -106,16 +106,18 @@ public enum GlobalSettingType implements DisplayableEnum {
     GOOGLE_ANALYTICS_TRACKING_IDS(GlobalSettingSubCategory.WEB_SERVER, stringType(), null),
     WEB_LOGO_URL(GlobalSettingSubCategory.WEB_SERVER, stringType(), "CannonLogo.gif"),
     
-    // Billing
-    WIZ_ACTIVATE(GlobalSettingSubCategory.BILLING, booleanType(), false),
-    INPUT_FILE(GlobalSettingSubCategory.BILLING, stringType(), "c:\\yukon\\client\\bin\\BillingIn.txt"),
-    DEFAULT_BILLING_FORMAT(GlobalSettingSubCategory.BILLING, stringType(), "CTI-CSV"),
-    DEMAND_DAYS_PREVIOUS(GlobalSettingSubCategory.BILLING, integerType(), 30),
-    ENERGY_DAYS_PREVIOUS(GlobalSettingSubCategory.BILLING, integerType(), 7),
-    APPEND_TO_FILE(GlobalSettingSubCategory.BILLING, booleanType(), false),
-    REMOVE_MULTIPLIER(GlobalSettingSubCategory.BILLING, booleanType(), false),
-    COOP_ID_CADP_ONLY(GlobalSettingSubCategory.BILLING, stringType(), null), 
-    DEFAULT_ROUNDING_MODE(GlobalSettingSubCategory.BILLING, InputTypeFactory.enumType(RoundingMode.class), RoundingMode.HALF_EVEN),
+    // Data Export (previously Billing)
+    WIZ_ACTIVATE(GlobalSettingSubCategory.DATA_EXPORT, booleanType(), false),
+    INPUT_FILE(GlobalSettingSubCategory.DATA_EXPORT, stringType(), "c:\\yukon\\client\\bin\\BillingIn.txt"),
+    DEFAULT_BILLING_FORMAT(GlobalSettingSubCategory.DATA_EXPORT, stringType(), "CTI-CSV"),
+    DEMAND_DAYS_PREVIOUS(GlobalSettingSubCategory.DATA_EXPORT, integerType(), 30),
+    ENERGY_DAYS_PREVIOUS(GlobalSettingSubCategory.DATA_EXPORT, integerType(), 7),
+    APPEND_TO_FILE(GlobalSettingSubCategory.DATA_EXPORT, booleanType(), false),
+    REMOVE_MULTIPLIER(GlobalSettingSubCategory.DATA_EXPORT, booleanType(), false),
+    COOP_ID_CADP_ONLY(GlobalSettingSubCategory.DATA_EXPORT, stringType(), null), 
+    DEFAULT_ROUNDING_MODE(GlobalSettingSubCategory.DATA_EXPORT, InputTypeFactory.enumType(RoundingMode.class), RoundingMode.HALF_EVEN),
+    SCHEDULE_PARAMETERS_AVAILABLE_FILE_EXTENSIONS(GlobalSettingSubCategory.DATA_EXPORT, stringType(), ".csv,.dat,.txt"),
+    SCHEDULE_PARAMETERS_EXPORT_PATH(GlobalSettingSubCategory.DATA_EXPORT, stringType(), "c:\\yukon\\client,c:\\Windows\\Temp"),
     
     // AMI  (may fit better for future under Misc.?)
     DEVICE_DISPLAY_TEMPLATE(GlobalSettingSubCategory.AMI, InputTypeFactory.enumType(MeterDisplayFieldEnum.class), MeterDisplayFieldEnum.DEVICE_NAME),

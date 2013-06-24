@@ -72,6 +72,8 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.meterEventsReport.model.MeterEventsReportFilterBackingBean;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
@@ -110,6 +112,7 @@ public class MeterEventsReportController {
     @Autowired private ScheduledFileExportService scheduledFileExportService;
 	@Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
 	@Autowired private JobManager jobManager;
+    @Autowired private GlobalSettingDao globalSettingDao;
 	
 	private final static String reportJspPath = "meterEventsReport/report.jsp";
 	private final static String baseKey = "yukon.web.modules.amr.meterEventsReport.report";
@@ -160,8 +163,11 @@ public class MeterEventsReportController {
     public String selected(HttpServletRequest request, YukonUserContext userContext, ModelMap model)
     throws ServletRequestBindingException, DeviceCollectionCreationException {
         
-    	model.addAttribute("exportData", new ScheduledFileExportData());
+        ScheduledFileExportData exportData = new ScheduledFileExportData();
+    	model.addAttribute("exportData", exportData);
         model.addAttribute("cronExpressionTagState", new CronExpressionTagState());
+        model.addAttribute("fileExtensionChoices", setupFileExtChoices(exportData));
+        model.addAttribute("exportPathChoices", setupExportPathChoices(exportData));
     	
         setupModelMap(new MeterEventsReportFilterBackingBean(userContext), request, model, null, null, userContext, null);
         return reportJspPath;
@@ -177,6 +183,7 @@ public class MeterEventsReportController {
     	ScheduledFileExportData exportData = new ScheduledFileExportData();
     	
     	if(jobId != null) {
+    	    // existing schedule
     		ScheduledRepeatingJob job = jobManager.getRepeatingJob(jobId);
     		ScheduledMeterEventsFileExportTask task = (ScheduledMeterEventsFileExportTask) jobManager.instantiateTask(job);
     		//set schedule parameters
@@ -200,6 +207,7 @@ public class MeterEventsReportController {
     		setupCommonPageAttributes(backingBean, bindingResult, flashScope, userContext, model);
     		setupReportFromFilter(backingBean, userContext, model);
     	} else {
+    	    // new schedule
 	    	filterValidator.validate(backingBean, bindingResult);
 	        if (bindingResult.hasErrors()) {
 	            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
@@ -213,6 +221,8 @@ public class MeterEventsReportController {
     	
         model.addAttribute("exportData", exportData);
         model.addAttribute("cronExpressionTagState", cronExpressionTagState);
+        model.addAttribute("fileExtensionChoices", setupFileExtChoices(exportData));
+        model.addAttribute("exportPathChoices", setupExportPathChoices(exportData));
         return reportJspPath;
 	}
     
@@ -257,6 +267,8 @@ public class MeterEventsReportController {
             model.addAttribute("cronExpressionTagState", cronExpressionTagService.parse(exportData.getScheduleCronString(), userContext));
             model.addAttribute("daysPrevious", daysPrevious);
             model.addAttribute("scheduleError", true);
+            model.addAttribute("fileExtensionChoices", setupFileExtChoices(exportData));
+            model.addAttribute("exportPathChoices", setupExportPathChoices(exportData));
             setupCommonPageAttributes(backingBean, bindingResult, flashScope, userContext, model);
             setupReportFromFilter(backingBean, userContext, model);
     		return reportJspPath;
@@ -559,4 +571,28 @@ public class MeterEventsReportController {
         binder.registerCustomEditor(Instant.class, "toInstant", dayEndDateEditor);
     }
     
+    private List<String> setupFileExtChoices(ScheduledFileExportData exportData) {
+        List<String> fileExtChoices = null;
+        String globalFileExtensions = globalSettingDao.getString(GlobalSettingType.SCHEDULE_PARAMETERS_AVAILABLE_FILE_EXTENSIONS);
+        fileExtChoices = com.cannontech.common.util.StringUtils.parseStringsForList(globalFileExtensions, ",");
+        if (null == exportData.getExportFileExtension()) {
+            // set the default value, initial selection
+            exportData.setExportFileExtension(fileExtChoices.get(0));
+        }
+        return fileExtChoices;
+    }
+    
+    private List<String> setupExportPathChoices(ScheduledFileExportData exportData) {
+        List<String> exportPathChoices = null;
+        String curExportPath = exportData.getExportPath(); 
+        String globalExportPaths = globalSettingDao.getString(GlobalSettingType.SCHEDULE_PARAMETERS_EXPORT_PATH);
+        exportPathChoices = com.cannontech.common.util.StringUtils.parseStringsForList(globalExportPaths, ",");
+        if (null == curExportPath) {
+            exportData.setExportPath(exportPathChoices.get(0));
+        } else {
+            exportData.setExportPath(curExportPath);
+        }
+        return exportPathChoices;
+    }
+
 }

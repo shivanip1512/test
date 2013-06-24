@@ -28,26 +28,23 @@ public class FileExportHistoryServiceImpl implements FileExportHistoryService {
 	}
 
 	@Override
-	public ExportHistoryEntry copyFile(File originalFile, FileExportType type, String initiator) throws FileNotFoundException, IOException{
-		if(!originalFile.exists()) {
-			throw new FileNotFoundException("Unable to copy file " + originalFile.getPath());
-		}
-		String originalName = originalFile.getName();
-		
-		//Create an archive copy in case the original is altered.
-		//This file is named "original name + unique identifier"
-		File archiveCopy = new File(getArchivePath(), originalName + "_" + CtiUtilities.getUuidString());
-		Files.copy(originalFile, archiveCopy);
-		
-		String fullFilePath = originalFile.getCanonicalPath();
-		String filePathWithoutFileName = fullFilePath.substring(0, fullFilePath.lastIndexOf(File.separator));
-		
-		int entryId = fileExportHistoryDao.insertEntry(originalName, archiveCopy.getName(), type, initiator, filePathWithoutFileName);
-		return fileExportHistoryDao.getEntry(entryId);
+	public ExportHistoryEntry addHistoryEntry(File archiveFile, File exportFile, String fileName, FileExportType type, String initiator) 
+	            throws FileNotFoundException, IOException {
+	    if (!archiveFile.exists()) {
+	        throw new FileNotFoundException("Unable to locate archive file: " + archiveFile.getPath());
+	    }
+	    String filePathWithoutFileName = null;
+	    if (null != exportFile) {
+	        String fullFilePath = exportFile.getCanonicalPath();
+	        filePathWithoutFileName = fullFilePath.substring(0, fullFilePath.lastIndexOf(File.separator));
+	    }
+        
+        int entryId = fileExportHistoryDao.insertEntry(fileName, archiveFile.getName(), type, initiator, filePathWithoutFileName);
+        return fileExportHistoryDao.getEntry(entryId);
+	    
 	}
-	
+
 	private File getArchivePath() {
-		String base = CtiUtilities.getYukonBase();
-		return new File(base + File.separator + "ExportArchive");
+		return new File(CtiUtilities.getArchiveDirPath());
 	}
 }

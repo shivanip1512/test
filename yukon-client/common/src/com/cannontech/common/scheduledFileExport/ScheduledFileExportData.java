@@ -16,24 +16,22 @@ public class ScheduledFileExportData {
 	private String scheduleName;
 	private String scheduleCronString;
 	private ExportFileGenerationParameters parameters;
-	private String exportPath;
 	private String exportFileName;
-	private boolean appendDateToFileName;
 	private String notificationEmailAddresses; //optional
-	
-	public ScheduledFileExportData() {
+
+    private boolean appendDateToFileName;
+    private String timestampPatternField;
+    private boolean overrideFileExtension;
+    private String exportFileExtension;
+    private boolean includeExportCopy;
+    private String exportPath;
+
+    private static final String DEFAULT_TIMESTAMP_PATTERN  = "yyyyMMddHHmmss";
+
+    public ScheduledFileExportData() {
+        this.setTimestampPatternField(DEFAULT_TIMESTAMP_PATTERN);
 	}
 	
-	public ScheduledFileExportData(String scheduleName, String scheduleCronString, ExportFileGenerationParameters parameters,
-			String exportPath, String exportFileName, boolean appendDateToFileName, String notificationEmailAddresses) {
-		this.scheduleName = scheduleName;
-		this.scheduleCronString = scheduleCronString;
-		this.parameters = parameters;
-		this.exportPath = exportPath;
-		this.exportFileName = exportFileName;
-		this.appendDateToFileName = appendDateToFileName;
-		this.notificationEmailAddresses = notificationEmailAddresses;
-	}
 
 	public String getScheduleName() {
 		return scheduleName;
@@ -51,13 +49,49 @@ public class ScheduledFileExportData {
 		return exportPath;
 	}
 
-	public String getExportFileName() {
-		return exportFileName;
-	}
+    public String getExportFileName() {
+        return (null == exportFileName) ? scheduleName : exportFileName;
+    }
 
-	public boolean isAppendDateToFileName() {
-		return appendDateToFileName;
-	}
+    public String getTimestampPatternField() {
+        return timestampPatternField;
+    }
+
+    public void setTimestampPatternField(String timestampPattern) {
+        this.timestampPatternField = timestampPattern;
+    }
+
+    public String getExportFileExtension() {
+        return exportFileExtension;
+    }
+
+    public void setExportFileExtension(String exportFileExtension) {
+        this.exportFileExtension = exportFileExtension;
+    }
+
+    public boolean isAppendDateToFileName() {
+        return appendDateToFileName;
+    }
+
+    public void setAppendDateToFileName(boolean appendDateToFileName) {
+        this.appendDateToFileName = appendDateToFileName;
+    }
+
+    public boolean isIncludeExportCopy() {
+        return includeExportCopy;
+    }
+
+    public void setIncludeExportCopy(boolean includeExportCopy) {
+        this.includeExportCopy = includeExportCopy;
+    }
+
+    public boolean isOverrideFileExtension() {
+        return overrideFileExtension;
+    }
+
+    public void setOverrideFileExtension(boolean overrideFileExtension) {
+        this.overrideFileExtension = overrideFileExtension;
+    }
 
 	public String getNotificationEmailAddresses() {
 		return notificationEmailAddresses;
@@ -95,11 +129,7 @@ public class ScheduledFileExportData {
 		this.exportFileName = exportFileName;
 	}
 
-	public void setAppendDateToFileName(boolean appendDateToFileName) {
-		this.appendDateToFileName = appendDateToFileName;
-	}
-	
-	public void setNotificationEmailAddresses(String notificationEmailAddresses) {
+    public void setNotificationEmailAddresses(String notificationEmailAddresses) {
 		String input = StringUtils.trimAllWhitespace(notificationEmailAddresses);
 		if(org.apache.commons.lang.StringUtils.isNotBlank(input)) {
 			this.notificationEmailAddresses = input;

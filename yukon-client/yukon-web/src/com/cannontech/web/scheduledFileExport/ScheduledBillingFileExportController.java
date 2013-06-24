@@ -3,6 +3,7 @@ package com.cannontech.web.scheduledFileExport;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +35,8 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
@@ -57,6 +60,7 @@ public class ScheduledBillingFileExportController {
 	@Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
 	@Autowired private ScheduledFileExportService scheduledFileExportService;
 	@Autowired private ScheduledFileExportValidator scheduledFileExportValidator;
+    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
 
 	private static final int MAX_GROUPS_DISPLAYED = 2;
@@ -84,9 +88,12 @@ public class ScheduledBillingFileExportController {
 
 			exportData.setScheduleName(task.getName());
 			exportData.setExportFileName(task.getExportFileName());
+            exportData.setAppendDateToFileName(task.isAppendDateToFileName());
+            exportData.setTimestampPatternField(task.getTimestampPatternField());
+            exportData.setOverrideFileExtension(task.isOverrideFileExtension());
+            exportData.setExportFileExtension(task.getExportFileExtension());
+            exportData.setIncludeExportCopy(task.isIncludeExportCopy());
 			exportData.setExportPath(task.getExportPath());
-			exportData.setAppendDateToFileName(task.isAppendDateToFileName());
-
 			exportData.setNotificationEmailAddresses(task.getNotificationEmailAddresses());
 			cronExpressionTagState = cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
 			model.addAttribute("jobId", jobId);
@@ -99,7 +106,8 @@ public class ScheduledBillingFileExportController {
 		model.addAttribute("energyDays", energyDays);
 		model.addAttribute("removeMultiplier", removeMultiplier);
 		model.addAttribute("cronExpressionTagState", cronExpressionTagState);
-
+        model.addAttribute("fileExtensionChoices", setupFileExtChoices(exportData));
+        model.addAttribute("exportPathChoices", setupExportPathChoices(exportData));
 		Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(Arrays.asList(billGroup));
 		String groupNames = getGroupNamesString(deviceGroups, userContext);
 		model.addAttribute("groupNames", groupNames);
@@ -131,7 +139,8 @@ public class ScheduledBillingFileExportController {
         }
 
         MessageSourceResolvable msgObj = null;
-		if(jobId == null) {
+
+        if(jobId == null) {
 			//new schedule
 			scheduledFileExportService.scheduleFileExport(exportData, userContext, request);
             msgObj = new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.jobCreated", exportData.getScheduleName());
@@ -185,4 +194,29 @@ public class ScheduledBillingFileExportController {
 		
 		return groupNames;
 	}
+
+    private List<String> setupFileExtChoices(ScheduledFileExportData exportData) {
+        List<String> fileExtChoices = null;
+        String globalFileExtensions = globalSettingDao.getString(GlobalSettingType.SCHEDULE_PARAMETERS_AVAILABLE_FILE_EXTENSIONS);
+        fileExtChoices = com.cannontech.common.util.StringUtils.parseStringsForList(globalFileExtensions, ",");
+        if (null == exportData.getExportFileExtension()) {
+            // set the default value, initial selection
+            exportData.setExportFileExtension(fileExtChoices.get(0));
+        }
+        return fileExtChoices;
+    }
+    
+    private List<String> setupExportPathChoices(ScheduledFileExportData exportData) {
+        List<String> exportPathChoices = null;
+        String curExportPath = exportData.getExportPath(); 
+        String globalExportPaths = globalSettingDao.getString(GlobalSettingType.SCHEDULE_PARAMETERS_EXPORT_PATH);
+        exportPathChoices = com.cannontech.common.util.StringUtils.parseStringsForList(globalExportPaths, ",");
+        if (null == curExportPath) {
+            exportData.setExportPath(exportPathChoices.get(0));
+        } else {
+            exportData.setExportPath(curExportPath);
+        }
+        return exportPathChoices;
+    }
+
 }

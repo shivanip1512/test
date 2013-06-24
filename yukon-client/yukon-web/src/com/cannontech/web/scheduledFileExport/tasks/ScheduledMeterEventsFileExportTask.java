@@ -63,11 +63,14 @@ public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask 
 	public void start() {
 		List<String[]> dataRows = getDataRows();
         
-        //Write the file
-  		File exportFile = exportToCsvFile(dataRows);
+        //Write the archive file
+		File archiveFile = archiveToCsvFile(dataRows);
+		
+		// Copy the archive file to the export file (if necessary)
+		File exportFile = copyExportFile(archiveFile);
   		
-  		//Add File Export History entry
-  		ExportHistoryEntry historyEntry = addFileToExportHistory(FileExportType.METER_EVENTS, exportFile);
+  		// Create a new Export History entry
+  		ExportHistoryEntry historyEntry = createExportHistoryEntry(FileExportType.METER_EVENTS, archiveFile, exportFile);
         
   		//Send notification emails
         prepareAndSendNotificationEmails(historyEntry);

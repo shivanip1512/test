@@ -14,11 +14,20 @@ public interface FileExportHistoryService {
 	 */
 	public File getArchivedFile(int exportHistoryEntryId) throws FileNotFoundException;
 	
-	/**
-	 * Copies an existing file into the export archive and adds a file export history entry.
-	 * @throws FileNotFoundException if the original file cannot be accessed
-	 * @throws IOException if a problem occurs copying the original file to the archive.
-	 */
-	public ExportHistoryEntry copyFile(File originalFile, FileExportType type, String initiator) throws FileNotFoundException, IOException;
+
+    /**
+     * Creates an ExportHistoryEntry for the Archive and Export file(s).
+     * @param archiveFile
+     * @param exportFile
+     * @param fileName
+     * @param type
+     * @param initiator
+     * @return entryId
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+	public ExportHistoryEntry addHistoryEntry(File archiveFile, File exportFile, String fileName,
+                                       FileExportType type, String initiator) 
+                                               throws FileNotFoundException, IOException;
 	
 }
