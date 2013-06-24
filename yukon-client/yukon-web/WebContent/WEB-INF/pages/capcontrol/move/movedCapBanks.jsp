@@ -38,7 +38,7 @@
 		                <th><i:inline key=".capBank"/></th>
 		            </tr>
 					<c:forEach var="movedCapbank" items="${movedCaps}">
-						<tr id="tr_cap_${movedCapbank.capbank.ccId}" class="<tags:alternateRow odd="" even="altRow"/>">
+						<tr id="tr_cap_${movedCapbank.capbank.ccId}">
 							<td id="${movedCapbank.capbank.ccName}">
                                 <a href="javascript:void(0);" class="moveLink" id="${movedCapbank.capbank.ccId}">${movedCapbank.currentFeederName}</a>
                             </td>

@@ -16,7 +16,7 @@
     		<th><i:inline key=".tripOrder"/></th>
     	</tr>
     	<c:forEach var="cap" items="${capBankList}">
-    		<tr class="<tags:alternateRow odd="" even="altRow"/>">
+    		<tr>
     			<td><spring:escapeBody htmlEscape="true">${cap.ccName}</spring:escapeBody></td>
     			<td>${cap.controlOrder}</td>
     			<td>${cap.closeOrder}</td>

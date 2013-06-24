@@ -52,7 +52,7 @@
 							key="yukon.web.modules.dr.searchResults.actionsHeader" /></th>
 					</tr>
 					<c:forEach var="pao" items="${searchResult.resultList}">
-						<tr class="<tags:alternateRow odd="" even="altRow"/>">
+						<tr>
 							<td><dr:favoriteIcon paoId="${pao.paoIdentifier.paoId}"
 								isFavorite="${favoritesByPaoId[pao.paoIdentifier.paoId]}" /></td>
 							<td><cti:paoDetailUrl yukonPao="${pao}">

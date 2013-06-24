@@ -77,7 +77,7 @@ function clearFilter() {
     						<c:url var="scenarioUrl" value="/dr/scenario/detail">
     							<c:param name="scenarioId" value="${scenarioId}" />
     						</c:url>
-    						<tr class="<tags:alternateRow odd="" even="altRow"/>">
+    						<tr>
     							<td><dr:favoriteIcon paoId="${scenarioId}"
     								isFavorite="${favoritesByPaoId[scenarioId]}" /></td>
     							<td><a href="${scenarioUrl}"><spring:escapeBody

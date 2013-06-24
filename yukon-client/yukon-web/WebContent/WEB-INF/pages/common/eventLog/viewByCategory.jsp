@@ -75,7 +75,7 @@
                 </th>
             </tr>
             <c:forEach items="${searchResult.resultList}" var="event">
-                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                <tr>
                     <td nowrap="nowrap"><spring:escapeBody htmlEscape="true">${event.eventType}</spring:escapeBody></td>
                     <td nowrap="nowrap"><cti:formatDate type="BOTH" value="${event.dateTime}" /></td>
                     <td><cti:msg key="${event.messageSourceResolvable}" /></td>

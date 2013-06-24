@@ -144,7 +144,7 @@
                 <tfoot></tfoot>
                 <tbody>
 		            <c:forEach var="searchResultRow" items="${deviceSearchResults.resultList}">
-		                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+		                <tr>
 		                    <c:forEach var="field" items="${fields}">
 		                        <c:if test="${field.visible}">
 		                        <c:set var="value" value="${fn:escapeXml(searchResultRow.map[field.fieldName])}"/>

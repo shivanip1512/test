@@ -16,7 +16,7 @@
     <c:if test="${!empty applianceCategories}">
         <table class="compactResultsTable rowHighlighting">
             <c:forEach var="applianceCategory" items="${applianceCategories}">
-                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                <tr>
                     <td valign="top">
                     <c:if test="${!empty applianceCategory.icon}">
                         <img src="<cti:url value="/WebConfig/${applianceCategory.icon}"/>"/>

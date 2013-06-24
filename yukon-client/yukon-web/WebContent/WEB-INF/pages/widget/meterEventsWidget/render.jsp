@@ -23,7 +23,7 @@
                 </thead>
                 <tbody>
                     <c:forEach items="${valueMap}" var="entry">
-                        <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                        <tr>
                             <td><cti:formatDate type="BOTH" value="${entry.pointValueHolder.pointDataTimeStamp}"/></td>
                             <td><spring:escapeBody>${entry.pointName}</spring:escapeBody></td>
                             <td class="eventStatus<cti:pointValueFormatter value="${entry.pointValueHolder}" format="VALUE"/>">

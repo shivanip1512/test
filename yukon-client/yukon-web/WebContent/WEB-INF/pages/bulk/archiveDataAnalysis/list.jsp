@@ -41,7 +41,7 @@
             
             <c:forEach items="${analysisMap}" var="analysisEntry">
                 <c:if test="${analysisEntry.key.status != 'DELETED'}">
-                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                    <tr>
                         <input type="hidden" value="${analysisEntry.key.analysisId}"/>
                         <td>
                             <cti:formatDate value="${analysisEntry.key.runDate}" type="DATEHM"/>

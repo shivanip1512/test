@@ -97,7 +97,7 @@
             </c:if>
             <tbody>
             <c:forEach var="searchResultRow" items="${meterSearchResults.resultList}">
-                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                <tr>
                     <td><cti:paoDetailUrl yukonPao="${searchResultRow}">
                             <c:choose>
                                 <c:when test="${empty searchResultRow.name}"></c:when>

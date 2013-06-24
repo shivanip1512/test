@@ -148,7 +148,7 @@ moveDownDisabledIcon = templateIcons[4];
                             <tfoot></tfoot>
                             <tbody>
 					        <c:forEach var="question" varStatus="status" items="${questions}">
-					            <tr class="<tags:alternateRow odd="" even="altRow"/>"
+					            <tr
                                     questionId="${question.surveyQuestionId}">
 					                <td>
 					                    <spring:escapeBody htmlEscape="true">

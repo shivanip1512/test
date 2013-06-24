@@ -291,7 +291,7 @@ button
                             </thead>
                             <tbody>
                                    <c:forEach begin="0" end="10" varStatus="status">
-	                                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+	                                <tr>
 	                                    <td>Some Data ${status.index+1}</td>
 	                                    <td>Some Data ${status.index+2}</td>
 	                                    <td class="contextual-menu">

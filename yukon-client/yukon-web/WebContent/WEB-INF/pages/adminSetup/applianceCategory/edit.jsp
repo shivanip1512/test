@@ -236,7 +236,7 @@ function assignPrograms(devices) {
             <tfoot></tfoot>
             <tbody>
 	            <c:forEach var="assignedProgram" items="${assignedPrograms.resultList}">
-	                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+	                <tr>
 	                    <td>
 	                        <dr:assignedProgramName assignedProgram="${assignedProgram}"/>
 	                    </td>

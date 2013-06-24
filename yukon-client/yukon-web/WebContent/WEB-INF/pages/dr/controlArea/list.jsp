@@ -183,7 +183,7 @@
     						<c:url var="controlAreaUrl" value="/dr/controlArea/detail">
     							<c:param name="controlAreaId" value="${controlAreaId}" />
     						</c:url>
-    						<tr class="<tags:alternateRow odd="" even="altRow"/>">
+    						<tr>
     							<td><dr:favoriteIcon paoId="${controlAreaId}"
     								isFavorite="${favoritesByPaoId[controlAreaId]}" /></td>
     							<td><a href="${controlAreaUrl}"><spring:escapeBody

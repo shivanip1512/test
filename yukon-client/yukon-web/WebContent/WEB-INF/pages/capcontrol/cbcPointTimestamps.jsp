@@ -65,7 +65,7 @@
             <tfoot></tfoot>
             <tbody>
                 <c:forEach var="point" items="${pointMap.ACCUMULATOR}">
-                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                    <tr>
                         <td><spring:escapeBody htmlEscape="true">${point.pointName}</spring:escapeBody></td>
                         <td><cti:pointValue pointId="${point.pointID}" format="SHORT"/></td>
                         <td><cti:pointValue pointId="${point.pointID}" format="DATE"/></td>

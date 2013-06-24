@@ -191,7 +191,7 @@
                             <tfoot></tfoot>
                             <tbody>
     							<c:forEach var="point" items="${deviceInfo.points}" varStatus="status">
-    								<tr class="<tags:alternateRow odd="" even="altRow"/>">
+    								<tr>
     									<td>${status.index +1}</td>
     									<td>${point.pointTemplate.name}</td>
     									<td><cti:msg key="${point.pointType}"/></td>
@@ -228,7 +228,7 @@
                             <tfoot></tfoot>
                             <tbody>
     							<c:forEach var="attribute" items="${deviceInfo.attributes}" varStatus="status">
-    								<tr class="<tags:alternateRow odd="" even="altRow"/>">
+    								<tr>
                                         <td>${status.index +1}</td>
     									<td><cti:msg2 key="${attribute.attribute.attribute}"/></td>
 									<td><i:inline key=".lookup.default"/></td>
@@ -256,7 +256,7 @@
                             <tfoot></tfoot>
                             <tbody>
     							<c:forEach var="command" items="${deviceInfo.commands}" varStatus="status">
-    								<tr class="<tags:alternateRow odd="" even="altRow"/>">
+    								<tr>
     									<td valign="top">${status.index +1}</td>
     									<td valign="top">${command.commandDefinition.name}</td>
     									<td valign="top">
@@ -296,7 +296,7 @@
                             <tfoot></tfoot>
                             <tbody>
     							<c:forEach var="tagDefinition" items="${deviceInfo.tagDefinitions}" varStatus="status">
-    								<tr class="<tags:alternateRow odd="" even="altRow"/>">
+    								<tr>
     									<td>${status.index +1}</td>
     									<td>${tagDefinition.tag.description}</td>
                                         <c:if test="${tagDefinition.tag.tagHasValue}">

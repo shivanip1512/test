@@ -42,7 +42,7 @@
                     
                     <tbody id="tableBody">
                         <c:forEach var="item" items="${strategies}">
-                            <tr class="<tags:alternateRow odd="" even="altRow"/>" id="s_${item.strategyId}">
+                            <tr id="s_${item.strategyId}">
                                 
                                 <td>
                                     <a href="/editor/cbcBase.jsf?type=5&itemid=${item.strategyId}">

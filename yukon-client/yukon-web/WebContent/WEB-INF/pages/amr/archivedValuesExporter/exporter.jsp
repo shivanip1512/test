@@ -409,7 +409,7 @@
                 </thead>
                 <tbody>
                     <c:forEach var="field" items="${fields}" varStatus="row">
-                        <tr data-row-index="${row.index}" class="<tags:alternateRow odd="" even="altRow"/>">
+                        <tr data-row-index="${row.index}">
                             <td><spring:escapeBody htmlEscape="true"><i:inline key="${field}" /></spring:escapeBody></td>
                             <td><spring:escapeBody htmlEscape="true"><i:inline key="${field.attributeField}" /></spring:escapeBody></td>
                             <td><spring:escapeBody htmlEscape="true"><i:inline key="${field.attribute.dataSelection}" /></spring:escapeBody></td>

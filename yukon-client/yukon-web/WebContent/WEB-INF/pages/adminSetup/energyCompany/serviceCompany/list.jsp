@@ -23,7 +23,7 @@
                 <tbody>
                 <c:forEach items="${serviceCompanies}" var="serviceCompany">
                 
-                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                    <tr>
                         <td style="width:30%">
                             <cti:url var="serviceCompanyViewUrl" value="${baseUrl}/view">
                                 <cti:param name="ecId" value="${ecId}"/>

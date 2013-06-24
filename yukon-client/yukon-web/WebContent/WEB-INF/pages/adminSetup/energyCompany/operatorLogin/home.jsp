@@ -43,7 +43,7 @@
                 <th><i:inline key=".username" /></th>
                 <th class="removeColumn"><i:inline key=".loginEnabled" /></th>
                 <c:forEach items="${operatorLogins}" var="login">
-                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                    <tr>
                         <td>
                             <cti:url var="operatorLoginViewUrl" value="${baseUrl}/view">
                                 <cti:param name="ecId" value="${ecId}"/>

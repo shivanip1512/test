@@ -14,7 +14,7 @@
                 <th><i:inline key="yukon.web.modules.operator.accountImport.importAccount"/></th>
             </tr>
             <c:forEach var="importError" items="${importErrors}">
-                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                <tr>
                     <td>${importError.lineNumber}</td> 
                     <td>${importError.errorMessage}</td> 
                     <td><spring:escapeBody htmlEscape="true">${importError.importAccount}</spring:escapeBody></td>

@@ -43,7 +43,7 @@
                 <cti:msg2 var="noStopDate" key=".noStopDate"/>
                 <c:forEach var="optOutSurvey" items="${optOutSurveys.resultList}">
                     <c:set var="optOutSurveyId" value="${optOutSurvey.optOutSurveyId}"/>
-                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                    <tr>
                         <td><spring:escapeBody
                             htmlEscape="true">${optOutSurvey.surveyName}</spring:escapeBody></td>
                         <td>

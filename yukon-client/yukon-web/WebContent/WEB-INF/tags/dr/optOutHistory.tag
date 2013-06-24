@@ -10,7 +10,7 @@
 <c:choose>
     <c:when test="${fn:length(previousOptOutList) > 0}">
         <table id="deviceTable" class="compactResultsTable rowHighlighting">
-            <tr class="<tags:alternateRow odd="" even="altRow"/>">
+            <tr>
                 <th class="nonwrapping"><i:inline key=".device"/></th>
                 <th><i:inline key=".program"/></th>
                 <th class="nonwrapping"><i:inline key=".dateActive"/></th>

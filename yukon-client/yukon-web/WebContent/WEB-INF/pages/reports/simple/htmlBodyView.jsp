@@ -78,7 +78,7 @@
             <tbody>
 		    <!-- data -->
 		    <c:forEach var="rowData" items="${data}">
-		        <tr class="<tags:alternateRow odd="" even="altRow"/>">
+		        <tr>
 		            <c:forEach var="colData" items="${rowData}" varStatus="colCounter">
 		                <td>${colData}</td>
 		            </c:forEach>

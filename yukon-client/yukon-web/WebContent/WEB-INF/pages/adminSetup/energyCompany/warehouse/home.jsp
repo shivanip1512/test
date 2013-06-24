@@ -14,7 +14,7 @@
         <c:if test="${!empty warehouses}">
             <table class="compactResultsTable rowHighlighting">
                 <c:forEach items="${warehouses}" var="warehouse">
-                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                <tr>
                     <td style="width:30%">
                         <cti:url var="warehouseViewUrl" value="${baseUrl}/view">
                             <cti:param name="ecId" value="${ecId}"/>

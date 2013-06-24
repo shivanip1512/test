@@ -214,7 +214,7 @@ function newScheduleAssignmentPopup(schedule, command) {
                         <tbody id="tableBody">
                         <c:forEach var="item" items="${itemList}">
                         
-                            <tr class="<tags:alternateRow odd="" even="altRow"/>" id="s_${item.eventId}_${item.paoId}">
+                            <tr id="s_${item.eventId}_${item.paoId}">
                                 <td name="schedName"><spring:escapeBody htmlEscape="true">${item.scheduleName}</spring:escapeBody></td>
                                 
                                 <!-- Device -->

@@ -33,7 +33,7 @@
                 <th><i:inline key=".programName"/></th>
             </tr>
 	        <c:forEach var="programId" items="${optOutSurvey.programIds}">
-	            <tr class="<tags:alternateRow odd="" even="altRow"/>">
+	            <tr>
 	               <td>
 	                   <spring:escapeBody htmlEscape="true">${programNamesById[programId]}</spring:escapeBody>
 	               </td>

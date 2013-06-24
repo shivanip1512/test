@@ -54,7 +54,7 @@
                     <tbody>
                         <c:forEach var="accountSearchResult" items="${accountSearchResultHolder.accountSearchResults.resultList}">
                     
-                            <tr style="vertical-align:top;" class="<tags:alternateRow odd="" even="altRow"/>">
+                            <tr style="vertical-align:top;">
                             
                                 <td>
                                     <cti:url var="accountEditUrl" value="/stars/operator/account/view">

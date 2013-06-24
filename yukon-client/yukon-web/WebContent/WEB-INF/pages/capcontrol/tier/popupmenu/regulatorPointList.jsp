@@ -21,7 +21,7 @@
             </tr>
             
             <c:forEach var="point" items="${mappings}">
-                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                <tr>
                     <td>
                         <cti:msg2 key="${point.attribute}"/>
                     </td>

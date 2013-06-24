@@ -141,7 +141,7 @@
                         <c:otherwise>
                         
                             <c:forEach var="comment" items="${comments}">
-                                <tr id="commentRow_${comment.id}" class="<tags:alternateRow odd="" even="altRow"/>">
+                                <tr id="commentRow_${comment.id}">
                                     <td class="editable">
                                         <div id="editCommentSpan_${comment.id}" style="display: none;">
                                             <input id="editComment_${comment.id}" type="text" 

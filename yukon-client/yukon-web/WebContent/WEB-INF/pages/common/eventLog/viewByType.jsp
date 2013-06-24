@@ -127,7 +127,7 @@
                         </c:forEach>
                     </tr>
                     <c:forEach items="${searchResult.resultList}" var="row">
-                        <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                        <tr>
                         <td title="<cti:msg2 htmlEscape="true" key="${row.eventLog.messageSourceResolvable}"/>"><cti:formatDate type="FULL" value="${row.eventLog.dateTime}"/></td>
                             <c:forEach items="${row.parameters}" var="parameter">
                                 <td>

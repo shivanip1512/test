@@ -42,7 +42,7 @@
 		
 		<%-- current vs peak day per power supplier row--%>
 		<c:set var="alternate" value="${true}" scope="request"/>
-		<tr class="<tags:alternateRow odd="" even="altRow"/>">
+		<tr>
 		
 			<td>&nbsp;</td>
 		
@@ -67,7 +67,7 @@
 		
 		<%-- hourly data rows --%>
 		<c:forEach var="i" begin="1" end="24">
-			<tr class="<tags:alternateRow odd="" even="altRow"/>">
+			<tr>
 				
 				<td align="right" style="font-weight:bold;">${i}</td>
 			

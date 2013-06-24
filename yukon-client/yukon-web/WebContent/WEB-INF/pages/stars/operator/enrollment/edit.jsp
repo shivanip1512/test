@@ -103,7 +103,7 @@
                     <c:set var="inventoryId" value="${item.inventoryId}"/>
                     <script type="text/javascript">inventoryIds.push(${item.inventoryId});</script>
                     <c:set var="displayableInventory" value="${inventoryById[inventoryId]}"/>
-                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                    <tr>
                         <td>
                             <form:hidden path="inventoryEnrollments[${status.index}].inventoryId"/>
                             <form:checkbox id="enrolledCB${inventoryId}"

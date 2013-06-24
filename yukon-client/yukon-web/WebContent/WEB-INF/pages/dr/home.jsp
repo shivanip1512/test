@@ -115,7 +115,7 @@
                         <tfoot></tfoot>
                         <tbody>
                         <c:forEach var="pao" items="${recents}">
-                            <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                            <tr>
                                 <td><dr:favoriteIcon paoId="${pao.paoIdentifier.paoId}"
                                     isFavorite="${favoritesByPaoId[pao.paoIdentifier.paoId]}"
                                     fromHomePage="true" isRecentlyViewedItem="true"/></td>

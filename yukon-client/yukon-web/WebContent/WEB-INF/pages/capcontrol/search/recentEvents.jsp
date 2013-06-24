@@ -51,7 +51,7 @@
                         <tbody>
                         
                             <c:forEach var="event" items="${eventSet.controlEvents}">
-                                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                                <tr>
                                 
                                     <td>${event.formattedTimestamp}</td>
                                     

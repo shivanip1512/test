@@ -14,7 +14,7 @@
                 <th><i:inline key=".timeOfEvent" /></th>
             </tr>
             <c:forEach var="accountEvent" items="${accountEvents}">
-                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                <tr>
                     <td><spring:escapeBody htmlEscape="true">${accountEvent.actionText}</spring:escapeBody></td>
                     <td><spring:escapeBody htmlEscape="true">${accountEvent.userName}</spring:escapeBody></td>
                     <td><cti:formatDate value="${accountEvent.eventBase.eventTimestamp}" type="BOTH"/></td>

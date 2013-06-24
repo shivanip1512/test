@@ -47,7 +47,7 @@
 	                    <c:url var="surveyUrl" value="edit">
 	                        <c:param name="surveyId" value="${surveyId}"/>
 	                    </c:url>
-	                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
+	                    <tr>
 	                        <td><a href="${surveyUrl}">${fn:escapeXml(survey.surveyName)}</a></td>
 	                        <td>${survey.surveyKey}</td>
 	                        <td>

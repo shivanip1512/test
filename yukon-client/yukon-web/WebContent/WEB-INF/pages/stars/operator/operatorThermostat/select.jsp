@@ -147,7 +147,7 @@
             
                 <c:forEach var="thermostat" items="${thermostats}">
                     
-                     <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                     <tr>
                         <td  class="name">
                             <input type="checkbox" id="THERMOSTATCHECKBOX-${thermostat.id}-${thermostat.type}" onclick="checkboxChanged(this)">
                             <label for="THERMOSTATCHECKBOX-${thermostat.id}-${thermostat.type}">

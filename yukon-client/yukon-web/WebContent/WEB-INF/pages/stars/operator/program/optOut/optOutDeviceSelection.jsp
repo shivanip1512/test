@@ -27,7 +27,7 @@
                     <c:set var="inventoryId" value="${displayableInventory.inventoryId}"/>
                     <c:set var="optOutCount" value="${optOutCounts[inventoryId]}"/>
 
-                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                    <tr>
                         <td title="${displayableInventory.serialNumber}">
                             <label for="inventory_${inventoryId}">
                                 <c:choose>
