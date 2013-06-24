@@ -4,38 +4,29 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:standardPage module="operator" page="account.${mode}">
+
+<!-- make this a picker and delete style -->
+<style type="text/css">.group-dropdown {max-width: 260px;}</style>
+
     <cti:checkEnergyCompanyOperator showError="true" >
         <tags:setFormEditMode mode="${mode}"/>
         
         <cti:includeScript link="/JavaScript/yukonGeneral.js"/>
     
-        <cti:url var="deleteUrl" value="/stars/operator/account/deleteAccount">
-            <cti:param name="accountId" value="${accountId}"/>
-        </cti:url>
+        <form id="deleteAccountForm" action="/stars/operator/account/deleteAccount" method="get">
+          <input type="hidden" name="accountId" value="${accountId}">
+        </form>
+        <d:confirm on=".f-delete" nameKey="delete" argument="${accountGeneral.accountDto.accountNumber}"/>
         
-        <i:simplePopup titleKey=".confirmDeleteDialogTitle" id="confirmDeleteDialog">
-            <cti:msg2 key=".confirmDelete" arguments="${accountGeneral.accountDto.accountNumber}"/>
-            <div class="actionArea">
-                <cti:button nameKey="confirmDeleteOk" href="${deleteUrl}" classes="f_blocker" />
-                <cti:button nameKey="confirmDeleteCancel" onclick="jQuery('#confirmDeleteDialog').hide()" />
-            </div>
-        </i:simplePopup>
-    
-        <cti:url var="deleteLoginUrl" value="/stars/operator/account/deleteLogin">
-            <cti:param name="accountId" value="${accountId}"/>
-            <cti:param name="loginMode" value="${loginMode}"/>
-        </cti:url>
-        <i:simplePopup titleKey=".confirmDeleteDialogTitle" id="confirmDeleteLoginDialog">
-            <cti:msg2 key=".confirmDeleteUser" arguments="${accountGeneral.accountDto.accountNumber}"/>
-            <div class="actionArea">
-                <cti:button nameKey="confirmDeleteOk" href="${deleteLoginUrl}" classes="f_blocker"/>
-                <cti:button nameKey="confirmDeleteCancel" onclick="jQuery('#confirmDeleteLoginDialog').hide()"/>
-            </div>
-        </i:simplePopup>
+        <form id="deleteUserForm" action="/stars/operator/account/deleteLogin" method="get">
+          <input type="hidden" name="accountId" value="${accountId}">
+          <input type="hidden" name="loginMode" value="${loginMode}">
+        </form>
+        <d:confirm on=".f-delete-user" nameKey="delete.user" argument="${accountGeneral.accountDto.accountNumber}"/>
     
         <cti:url var="generatedPasswordUrl" value="/stars/operator/account/generatePassword" />
     
@@ -69,8 +60,6 @@
                 jQuery(document).on('click', 'a.f_resetPasswordDialog', resetPasswordDialog);
                 jQuery(document).on('click', '.f_prepPasswordFields', prepPasswordFields);
                 jQuery(document).on('click', '.f_generatePassword', generatePassword);
-                jQuery(document).on('click', '.f_deleteLogin', function(){jQuery('#confirmDeleteLoginDialog').show();});
-               
             });
     
             function toggleCommercialInputs(isCommercial) {
@@ -330,7 +319,8 @@
                             <tags:nameValueContainer2>
                                 <cti:msg2 var="none" key="defaults.none"/>
                                 <tags:selectNameValue nameKey=".customerGroup" path="loginBackingBean.userGroupName" items="${ecResidentialUserGroups}" 
-                                                                     itemValue="userGroupName" itemLabel="userGroupName" defaultItemLabel="${none}"/>
+                                                                     itemValue="userGroupName" itemLabel="userGroupName" defaultItemLabel="${none}"
+                                                                     inputClass="group-dropdown"/>
                                 <tags:nameValue2 nameKey=".loginEnabled"><tags:checkbox path="loginBackingBean.loginEnabled"/></tags:nameValue2>
                                 
                                 <!-- Username Field -->
@@ -389,9 +379,9 @@
                             
                             <cti:displayForPageEditModes modes="EDIT">
                                 <c:if test="${loginMode eq 'EDIT'}">
-                                    <br/>
-                                    <br/>
-                                    <button type="button" class="f_deleteLogin fr"><i:inline key=".deleteUser"/></button>
+                                    <div class="actionArea">
+                                        <cti:button nameKey="delete.user" data-form="#deleteUserForm" classes="f-delete-user"/>
+                                    </div>
                                 </c:if>
                             </cti:displayForPageEditModes>
                             
@@ -408,8 +398,10 @@
             <cti:displayForPageEditModes modes="CREATE,EDIT">
                 <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                     <cti:displayForPageEditModes modes="EDIT">
-                        <cti:button nameKey="save" type="submit" classes="f_blocker f_prepPasswordFields"/>
-                        <button type="button" onclick="jQuery('#confirmDeleteDialog').show()"><cti:msg2 key=".delete"/></button>
+                        <cti:button nameKey="save" type="submit" classes="f_blocker f_prepPasswordFields primary action"/>
+                        
+                        <cti:button nameKey="delete" classes="f-delete" data-form="#deleteAccountForm"/>
+                        
                          <cti:url value="/stars/operator/account/view" var="viewUrl">
                             <cti:param name="accountId" value="${accountId}"/>
                         </cti:url>
@@ -417,7 +409,7 @@
                     </cti:displayForPageEditModes>
                 </cti:checkRolesAndProperties>
                 <cti:displayForPageEditModes modes="CREATE">
-                    <cti:button nameKey="create" icon="icon-plus-green" type="submit" classes="f_blocker f_prepPasswordFields"/>
+                    <cti:button nameKey="create" type="submit" classes="f_blocker f_prepPasswordFields primary action"/>
                     <input name="cancelCreation" type="submit" class="formSubmit" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>">
                 </cti:displayForPageEditModes>
             </cti:displayForPageEditModes>
@@ -436,7 +428,7 @@
         <cti:displayForPageEditModes modes="EDIT">
             <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
                 <c:if test="${supportsPasswordSet and not empty passwordBean}">
-                    <dialog:inline id="passwordDialog" okEvent="e_updatePassword" on="a.f_editPassword" nameKey="passwordDialog">
+                    <d:inline id="passwordDialog" okEvent="e_updatePassword" on="a.f_editPassword" nameKey="passwordDialog">
                         <form:form id="updatePasswordForm" commandName="passwordBean" action="/stars/operator/account/updatePassword">
                             <input type="hidden" name="accountId" value="${accountId}">
                             <input type="hidden" name="loginMode" value="${loginMode}">
@@ -466,7 +458,7 @@
                                 </tags:nameValue2>
                             </tags:nameValueContainer2>
                         </form:form>
-                    </dialog:inline>
+                    </d:inline>
                 </c:if>
             </cti:checkRolesAndProperties>
         </cti:displayForPageEditModes>

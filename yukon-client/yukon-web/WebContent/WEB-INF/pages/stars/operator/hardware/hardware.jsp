@@ -61,7 +61,7 @@ jQuery(function(){
         var deviceId = button.name.split('_')[1];
         if (name === 'assignedDevicesCommissionSubmit') {
             url += 'commission';
-            jQuery('#confirmCommissionPopup_' + deviceId).hide();
+            jQuery('#confirmCommissionPopup_' + deviceId).dialog('close');
         } else if (name === 'assignedDevicesDecommissionSubmit') {
             url += 'decommission';
         }
@@ -406,8 +406,8 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                                 </div>
                                             <p>
                                             <div class="actionArea">
-                                                <cti:button nameKey="ok" name="commissionSubmit" type="submit" />
-                                                <cti:button nameKey="cancel" onclick="jQuery('#confirmCommissionPopup').hide()" />
+                                                <cti:button nameKey="ok" name="commissionSubmit" type="submit" classes="primary action"/>
+                                                <cti:button nameKey="cancel" onclick="jQuery('#confirmCommissionPopup').dialog('close')" />
                                             </div>
                                         </i:simplePopup>
                                     </cti:msgScope>
@@ -465,8 +465,8 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                                                 </div>
                                                             <p>
                                                             <div class="actionArea">
-                                                                <cti:button name="assignedDevicesCommissionSubmit_${device.deviceId}" nameKey="ok" type="submit" />
-                                                                <cti:button nameKey="cancel" onclick="jQuery('#confirmCommissionPopup_${device.deviceId}').hide()" />
+                                                                <cti:button name="assignedDevicesCommissionSubmit_${device.deviceId}" nameKey="ok" type="submit" classes="primary action"/>
+                                                                <cti:button nameKey="cancel" onclick="jQuery('#confirmCommissionPopup_${device.deviceId}').dialog('close')" />
                                                             </div>
                                                         </i:simplePopup>
                                                     </cti:msgScope>

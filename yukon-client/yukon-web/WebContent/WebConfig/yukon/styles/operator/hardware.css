@@ -58,11 +58,3 @@ tr.pickerRow td.name {
 .statusContainer {
     min-width: 400px;
 }
-
-.zbCommandMsg, .rfCommandMsg {
-    margin-top: 15px;
-}
-
-.commissionConfirmationMsg {
-    font-size: 15.2px;
-}

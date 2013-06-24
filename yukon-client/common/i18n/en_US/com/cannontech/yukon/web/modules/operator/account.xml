@@ -86,12 +86,10 @@
     <entry key="yukon.web.modules.operator.account.billingStateLabel">State</entry>
     <entry key="yukon.web.modules.operator.account.billingZipLabel">Zip</entry>
 
-    <entry key="yukon.web.modules.operator.account.delete">Delete</entry>
-    <entry key="yukon.web.modules.operator.account.confirmDeleteDialogTitle">Confirm Delete</entry>
-    <entry key="yukon.web.modules.operator.account.confirmDelete">Are you sure you want to delete account {0}?</entry>
-    <entry key="yukon.web.modules.operator.account.confirmDeleteUser">Are you sure you want to delete the user for account {0}?</entry>
-    <entry key="yukon.web.modules.operator.account.confirmDeleteOk.label">OK</entry>
-    <entry key="yukon.web.modules.operator.account.confirmDeleteCancel.label">Cancel</entry>
+    <entry key="yukon.web.modules.operator.account.delete.title">Delete Account {0}</entry>
+    <entry key="yukon.web.modules.operator.account.delete.message">Are you sure you want to delete account {0}?</entry>
+    <entry key="yukon.web.modules.operator.account.delete.user.title">Delete User</entry>
+    <entry key="yukon.web.modules.operator.account.delete.user.message">Are you sure you want to delete the user for account {0}?</entry>
 
     <entry key="yukon.web.modules.operator.account.accountCreated">Account Created</entry>
     <entry key="yukon.web.modules.operator.account.accountUpdated">Account Updated</entry>
@@ -105,7 +103,7 @@
     <entry key="yukon.web.modules.operator.account.newPassword">New Password</entry>
     <entry key="yukon.web.modules.operator.account.confirmPassword">Confirm Password</entry>
     <entry key="yukon.web.modules.operator.account.showPassword">Show Password</entry>
-    <entry key="yukon.web.modules.operator.account.deleteUser">Delete User</entry>
+    <entry key="yukon.web.modules.operator.account.delete.user.label">Delete User</entry>
     <entry key="yukon.web.modules.operator.account.generatePassword">Generate Password</entry>
     <entry key="yukon.web.modules.operator.account.changePassword">Change Password</entry>
     
