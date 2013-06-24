@@ -74,7 +74,9 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
             prefType = PreferenceGraphTimeDurationOption.valueOf(chartPeriodString);
         } else {
             prefType = PreferenceGraphTimeDurationOption.fromChartPeriod(requestedValueOrNull);
-            this.savePreference(user, UserPreferenceName.GRAPH_DISPLAY_TIME_DURATION, prefType.toString());
+            if (prefType != null) {
+            	this.savePreference(user, UserPreferenceName.GRAPH_DISPLAY_TIME_DURATION, prefType.toString());
+            }
         }
         return prefType;
     }

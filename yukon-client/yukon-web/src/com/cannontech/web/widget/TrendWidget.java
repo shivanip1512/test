@@ -111,8 +111,7 @@ public class TrendWidget extends WidgetControllerBase {
         String strRequestedChartPeriod = request.getParameter("period");
         ChartPeriod requestedChartPeriod = StringUtils.isBlank(strRequestedChartPeriod) ? null : ChartPeriod.valueOf(strRequestedChartPeriod);
         PreferenceGraphTimeDurationOption prefPeriod = prefService.updatePreferenceOrGetDefaultChartPeriod(requestedChartPeriod, user);
-        ChartPeriod chartPeriod = prefPeriod.getChartPeriod();
-        startDate = prefPeriod.backdate(startDate);
+        ChartPeriod chartPeriod = prefPeriod == null ? ChartPeriod.NOPERIOD : prefPeriod.getChartPeriod();
         String period = chartPeriod.name();
 
         if (chartPeriod == ChartPeriod.NOPERIOD) {
@@ -132,6 +131,7 @@ public class TrendWidget extends WidgetControllerBase {
             }
 
         } else {
+            startDate = prefPeriod.backdate(startDate);
             cachingWidgetParameterGrabber.removeFromCache("startDateParam");
             cachingWidgetParameterGrabber.removeFromCache("stopDateParam");
         }
