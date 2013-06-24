@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.DatabaseRepresentationSource;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.DeviceTypes;
@@ -486,12 +487,56 @@ public enum PaoType implements DatabaseRepresentationSource {
         return PaoClass.CAPCONTROL == paoClass;
     }
     
+    public static boolean isCapControl(LiteYukonPAObject lite) {
+        boolean isCategoryCapControl = lite.getPaoType().getPaoCategory() == PaoCategory.CAPCONTROL;
+        boolean isCategoryDevice = lite.getPaoType().getPaoCategory() == PaoCategory.DEVICE;
+        boolean isClassCapControl = lite.getPaoType().getPaoClass() == PaoClass.CAPCONTROL;
+        return isCategoryCapControl || isCategoryDevice && isClassCapControl;
+    }
+    
     public boolean isPort() {
         return portTypes.contains(this);
     }
     
+    public static boolean isDialupPort(int type) {
+        if (type == DIALOUT_POOL.getDeviceTypeId() ||
+                type == LOCAL_DIALUP.getDeviceTypeId() ||
+                type == LOCAL_DIALBACK.getDeviceTypeId() ||
+                type == TSERVER_DIALUP.getDeviceTypeId()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    public static boolean isDialupPort(String type) {
+        int intType = getPaoTypeId(type);
+        return isDialupPort(intType);
+    }
+    
+    public static boolean isTcpPortEligible(PaoType type) {
+        if (type == CBC_7020 || type == CBC_7022 || type == CBC_7023 || 
+                type == CBC_7024 || type == CBC_8020 || type == CBC_8024 || 
+                type == CBC_DNP || type == RTU_DNP || type == FAULT_CI || 
+                type == NEUTRAL_MONITOR) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    public static boolean isTcpPortEligible(int type) {
+        PaoType paoType = getForId(type);
+        return isTcpPortEligible(paoType);
+    }
+    
     public boolean isLmGroup() {
         return (PaoClass.LOADMANAGEMENT == paoClass || PaoClass.GROUP == paoClass);
+    }
+    
+    public static boolean isLoadManagement(LiteYukonPAObject lite) {
+        return (lite.getPaoType().getPaoClass() == PaoClass.GROUP ||
+                lite.getPaoType().getPaoClass() == PaoClass.LOADMANAGEMENT);
     }
 
     public boolean isWaterMeter() {
@@ -554,13 +599,10 @@ public enum PaoType implements DatabaseRepresentationSource {
     /**
      * Maps PaoType String IDs to their corresponding integer device IDs.
      * @param typeString
-     * @return
+     * @return If typeString does not match a PaoType string, an IllegalArgumentException
+     * will be thrown by getForDbString().
      */
-    public final static int getPaoTypeId(String typeString) {
-        if (typeString == null) {
-            return INVALID;
-        }
-        
+    public static int getPaoTypeId(String typeString) {
         PaoType device = getForDbString(typeString);
         return device.getDeviceTypeId();
     }
@@ -570,9 +612,18 @@ public enum PaoType implements DatabaseRepresentationSource {
      * @param typeId
      * @return
      */
-    public final static String getPaoTypeString(int typeId) {
+    public static String getPaoTypeString(int typeId) {
         PaoType paoTypeObject = getForId(typeId);
         return paoTypeObject.getDbString();
+    }
+    
+    public static String[] convertPaoTypes(Integer[] paoTypes) {
+        int arrayLength = paoTypes.length;
+        String[] str = new String[arrayLength];
+        for (int i = 0; i < arrayLength; i++) {
+            str[i] = getPaoTypeString(paoTypes[i]);
+        }
+        return str;
     }
     
 }

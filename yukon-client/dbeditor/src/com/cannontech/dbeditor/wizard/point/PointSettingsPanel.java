@@ -2,6 +2,7 @@ package com.cannontech.dbeditor.wizard.point;
 
 import java.util.List;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -322,7 +323,7 @@ public void setValueCapControl(Object val, Integer initialPAOId )
 	{
 		java.util.List capObjects = cache.getAllYukonPAObjects();
 		for(int i=0;i<capObjects.size();i++)
-			if( com.cannontech.database.data.pao.PAOGroups.isCapControl( (com.cannontech.database.data.lite.LiteYukonPAObject)capObjects.get(i) ) )
+			if( PaoType.isCapControl( (com.cannontech.database.data.lite.LiteYukonPAObject)capObjects.get(i) ) )
 			{
 				getDeviceComboBox().addItem( ((com.cannontech.database.data.lite.LiteYukonPAObject)capObjects.get(i)) );
 
@@ -393,7 +394,7 @@ public void setValueLM( Object val, Integer initialPAOId )
 		
 		for(int i=0;i<devices.size();i++)
 		{
-			if( com.cannontech.database.data.pao.PAOGroups.isLoadManagement( (com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i) ) )
+			if( PaoType.isLoadManagement( (com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i) ) )
 			{
 				getDeviceComboBox().addItem( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)) );
 

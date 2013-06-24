@@ -19,8 +19,7 @@ public enum PaoCategory implements DatabaseRepresentationSource {
    	
     private final int categoryId;
     private final String dbString;
-    private final static int INVALID = -1;
-    private final static String STRING_INVALID = "(invalid)";
+
     private final static ImmutableMap<String, PaoCategory> lookupByDbString;
     private final static ImmutableMap<Integer, PaoCategory> lookupById;
 
@@ -29,7 +28,7 @@ public enum PaoCategory implements DatabaseRepresentationSource {
             Builder<String, PaoCategory> stringBuilder = ImmutableMap.builder();
             Builder<Integer, PaoCategory> integerBuilder = ImmutableMap.builder();
             for (PaoCategory paoCategory : values()) {
-                stringBuilder.put(paoCategory.dbString, paoCategory);
+                stringBuilder.put(paoCategory.dbString.toUpperCase(), paoCategory);
                 integerBuilder.put(paoCategory.categoryId, paoCategory);
             }
             lookupByDbString = stringBuilder.build();
@@ -106,6 +105,15 @@ public enum PaoCategory implements DatabaseRepresentationSource {
     public static String getPaoCategory(int categoryId) {
         PaoCategory foundCategory = lookupById.get(categoryId);
         return foundCategory.getDbString();
+    }
+    
+    public static String[] convertPaoCategories(Integer[] paoCategories) {
+        int arrayLength = paoCategories.length;
+        String[] str = new String[arrayLength];
+        for (int i = 0; i < arrayLength; i++) {
+            str[i] = getPaoCategory(paoCategories[i]);
+        }
+        return str;
     }
 
 }

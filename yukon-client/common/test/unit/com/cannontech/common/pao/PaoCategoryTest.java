@@ -2,24 +2,24 @@ package com.cannontech.common.pao;
 
 import static org.junit.Assert.fail;
 
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.util.StringUtils;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 public class PaoCategoryTest {
 
-    private static final ImmutableSet<PaoCategory> allCategories =
-            ImmutableSet.of(PaoCategory.DEVICE,
-                            PaoCategory.ROUTE,
-                            PaoCategory.PORT,
-                            PaoCategory.CUSTOMER,
-                            PaoCategory.CAPCONTROL,
-                            PaoCategory.LOADMANAGEMENT);
+    private Set<PaoCategory> allCategories;
+    
+    @Before
+    public void setup() {
+        allCategories = EnumSet.allOf(PaoCategory.class);
+    }
 
     @Test
     public void testGetPaoCategoryInt() {

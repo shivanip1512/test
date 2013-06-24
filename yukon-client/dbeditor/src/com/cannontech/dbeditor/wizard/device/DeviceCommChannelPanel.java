@@ -182,7 +182,7 @@ private void checkAddress()
 		return;
 	
 	int portID = port.getLiteID();
-	if( (! PAOGroups.isDialupPort(port.getPaoType().getDeviceTypeId())) && (DeviceTypesFuncs.isCCU(deviceType) 
+	if( (! PaoType.isDialupPort(port.getPaoType().getDeviceTypeId())) && (DeviceTypesFuncs.isCCU(deviceType) 
 		 || DeviceTypesFuncs.isRTU(deviceType) ))
 	{
 	
@@ -426,7 +426,7 @@ public boolean isDialupPort()
 	if ( getPortComboBox().getSelectedItem() == null )
 		return false;
 	else
-		return PAOGroups.isDialupPort( ((LiteYukonPAObject)getPortComboBox().getSelectedItem()).getPaoType().getDeviceTypeId() );
+		return PaoType.isDialupPort( ((LiteYukonPAObject)getPortComboBox().getSelectedItem()).getPaoType().getDeviceTypeId() );
 }
 /**
  * main entrypoint - starts the part when it is run as an application

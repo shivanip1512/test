@@ -291,9 +291,9 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     private void updatePortSettings(ActionEvent arg1) {
         fireInputUpdate();
     	PaoType paoType = ((LiteYukonPAObject)getPortComboBox().getSelectedItem()).getPaoType();
-    	getDialupSettingsPanel().setVisible(PAOGroups.isDialupPort(paoType.getDeviceTypeId()) );
+    	getDialupSettingsPanel().setVisible(PaoType.isDialupPort(paoType.getDeviceTypeId()) );
     	
-    	boolean tcpport = (paoType == PaoType.TCPPORT) && (PAOGroups.isTcpPortEligible(deviceType));
+    	boolean tcpport = (paoType == PaoType.TCPPORT) && (PaoType.isTcpPortEligible(deviceType));
     	
     	getTcpIpAddressTextField().setVisible(tcpport);
     	getTcpIpAddressLabel().setVisible(tcpport);
@@ -1881,7 +1881,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
 
         if (port2 != null) {
             if (PaoType.TCPPORT == port2.getPaoType()
-                && PAOGroups.isTcpPortEligible(deviceType)) {
+                && PaoType.isTcpPortEligible(deviceType)) {
                 int id = deviceBase.getPAObjectID();
                 PaoIdentifier identifier = new PaoIdentifier(
                                                              id,
@@ -1984,7 +1984,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                                           .toString());
             }
 
-            if (PAOGroups.isDialupPort(port.getPaoType().getDeviceTypeId())) {
+            if (PaoType.isDialupPort(port.getPaoType().getDeviceTypeId())) {
                 DeviceDialupSettings dDialup = remoteBase.getDeviceDialupSettings();
 
                 getAdvancedPanel().getValue(dDialup);
@@ -2334,7 +2334,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                   
             	//verify that there are no duplicate physical address for CCUs or RTUs on a dedicated channel
             	LiteYukonPAObject port = ((LiteYukonPAObject)getPortComboBox().getSelectedItem());
-            	if(port != null && (! PAOGroups.isDialupPort(port.getPaoType().getDeviceTypeId())) && 
+            	if(port != null && (! PaoType.isDialupPort(port.getPaoType().getDeviceTypeId())) && 
             			(DeviceTypesFuncs.isCCU(deviceType) || DeviceTypesFuncs.isRTU(deviceType) )) {
             		if (!checkForDuplicateAddresses(address, deviceBase.getPAObjectID(), port.getLiteID() ) ){
             			return false;
@@ -2613,7 +2613,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     			{
     				getPortComboBox().setSelectedItem(litePort);
     				
-    				if( PAOGroups.isDialupPort(litePort.getPaoType().getDeviceTypeId()) )
+    				if( PaoType.isDialupPort(litePort.getPaoType().getDeviceTypeId()) )
     					getDialupSettingsPanel().setVisible(true);
     			}
     		}
@@ -3003,7 +3003,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
         
         PaoPropertyDao propertyDao = YukonSpringHook.getBean("paoPropertyDao", PaoPropertyDao.class);
         if (port != null) {
-            if (PaoType.TCPPORT == port.getPaoType() && PAOGroups.isTcpPortEligible(deviceType))
+            if (PaoType.TCPPORT == port.getPaoType() && PaoType.isTcpPortEligible(deviceType))
             {      
                 int id = deviceBase.getPAObjectID();
                 String value = null;

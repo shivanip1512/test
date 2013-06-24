@@ -31,7 +31,6 @@ public class CachingWidgetParameterGrabber implements WidgetParameterGrabber {
     
     @PostConstruct
     public void init() {
-        System.out.println("****** CachingWidgetParameterGrabber.init() successfully called. ******\n");
         this.cache = new MaxEntryLinkedHashMap<String, Object>(maxCacheSize, accessOrder);
     }
     

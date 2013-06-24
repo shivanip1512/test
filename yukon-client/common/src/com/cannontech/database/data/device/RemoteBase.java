@@ -122,7 +122,7 @@ public void retrieve() throws java.sql.SQLException {
 	PaoType paoType = PaoType.getForDbString(getPAOType());
 	int portId = getDeviceDirectCommSettings().getPortID();
 
-	if (PAOGroups.isTcpPortEligible(paoType) && DeviceTypesFuncs.isTcpPort(portId)) {
+	if (PaoType.isTcpPortEligible(paoType) && DeviceTypesFuncs.isTcpPort(portId)) {
 	    int deviceId = getPAObjectID();
 	    PaoPropertyDao propertyDao = YukonSpringHook.getBean("paoPropertyDao",PaoPropertyDao.class);
         try {
@@ -200,7 +200,7 @@ public boolean hasPhoneNumber()
 
 public void addTcpProperties() {
     PaoType paoType = PaoType.getForDbString(getPAOType());
-    if (PAOGroups.isTcpPortEligible(paoType)) {
+    if (PaoType.isTcpPortEligible(paoType)) {
         
         PaoPropertyDao propertyDao = YukonSpringHook.getBean("paoPropertyDao",PaoPropertyDao.class);
         int deviceId = getPAObjectID();

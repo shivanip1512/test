@@ -18,6 +18,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.creation.DeviceCreationException;
+import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
@@ -47,7 +48,6 @@ import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointInfo;
@@ -262,8 +262,8 @@ public class PointDaoImpl implements PointDao {
         paoClasses = CtiUtilities.ensureNotNull(paoClasses);
         
         String[] pointTypesStr = PointTypes.convertPointTypes(pointTypes);
-        String[] paoTypesStr = PAOGroups.convertPaoTypes(paoTypes);
-        String[] paoCategoriesStr = PAOGroups.convertPaoCategories(paoCategories);
+        String[] paoTypesStr = PaoType.convertPaoTypes(paoTypes);
+        String[] paoCategoriesStr = PaoCategory.convertPaoCategories(paoCategories);
         String[] paoClassesStr = DeviceClasses.convertPaoClasses(paoClasses);
         
         SqlUtil.buildInClause("where", "p", "pointtype", pointTypesStr, sql);

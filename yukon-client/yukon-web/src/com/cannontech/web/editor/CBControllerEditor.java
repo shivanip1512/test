@@ -524,7 +524,7 @@ public class CBControllerEditor implements ICBControllerModel {
         String cbcTypeStr = getPaoCBC().getPAOType();
         PaoType deviceType = PaoType.getForDbString(cbcTypeStr);
         
-        if (PAOGroups.isTcpPortEligible(deviceType) && deviceType.isCbc()) {
+        if (PaoType.isTcpPortEligible(deviceType) && deviceType.isCbc()) {
             return isTcpPort((RemoteBase)getPaoCBC());
         }
         

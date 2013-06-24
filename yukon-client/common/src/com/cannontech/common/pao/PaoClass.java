@@ -31,8 +31,6 @@ public enum PaoClass implements DatabaseRepresentationSource {
     // legacy class id
     private final int paoClassId;
     private final String dbString;
-    private final static int INVALID = -1;
-    private final static String STRING_INVALID = "(invalid)";
 
     private final static ImmutableMap<Integer, PaoClass> lookupById;
     private final static ImmutableMap<String, PaoClass> lookupByDbString;
@@ -42,7 +40,7 @@ public enum PaoClass implements DatabaseRepresentationSource {
         Builder<String, PaoClass> dbBuilder = ImmutableMap.builder();
         for (PaoClass paoClass : values()) {
             idBuilder.put(paoClass.paoClassId, paoClass);
-            dbBuilder.put(paoClass.dbString, paoClass);
+            dbBuilder.put(paoClass.dbString.toUpperCase(), paoClass);
         }
         lookupById = idBuilder.build();
         lookupByDbString = dbBuilder.build();

@@ -2,9 +2,11 @@ package com.cannontech.common.pao;
 
 import static org.junit.Assert.fail;
 
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.util.StringUtils;
 
@@ -13,22 +15,12 @@ import com.google.common.collect.Sets;
 
 public class PaoClassTest {
     
-    ImmutableSet<PaoClass> allClasses =
-            ImmutableSet.of(PaoClass.TRANSMITTER,
-                            PaoClass.RTU,
-                            PaoClass.IED,
-                            PaoClass.METER,
-                            PaoClass.CARRIER,
-                            PaoClass.GROUP,
-                            PaoClass.VIRTUAL,
-                            PaoClass.LOADMANAGEMENT,
-                            PaoClass.SYSTEM,
-                            PaoClass.GRID,
-                            PaoClass.ROUTE,
-                            PaoClass.PORT,
-                            PaoClass.CUSTOMER,
-                            PaoClass.CAPCONTROL,
-                            PaoClass.RFMESH);
+    private Set<PaoClass> allClasses;
+    
+    @Before
+    public void setup() {
+        allClasses = EnumSet.allOf(PaoClass.class);
+    }
 
     @Test
     public void testGetPaoClassInt() {
