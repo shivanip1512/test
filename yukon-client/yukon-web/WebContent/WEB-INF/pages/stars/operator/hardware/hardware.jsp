@@ -160,7 +160,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
 
      <!-- Text Message Popup -->
     <cti:msg2 var="textMsgTitle" key=".sendTextMsg"/>
-    <tags:simpleDialog id="textMsgDialog" styleClass="smallSimplePopup" title="${textMsgTitle}"/>
+    <tags:simpleDialog id="textMsgDialog" title="${textMsgTitle}"/>
 
     <!-- Changeout Form -->
     <cti:displayForPageEditModes modes="VIEW">
@@ -174,7 +174,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
     </cti:displayForPageEditModes>
     
     <!-- Delete Hardware Popup -->
-    <i:simplePopup styleClass="mediumSimplePopup" titleKey=".deleteDevice" id="deleteHardwarePopup" arguments="${hardware.displayName}">
+    <i:simplePopup titleKey=".deleteDevice" id="deleteHardwarePopup" arguments="${hardware.displayName}">
         <form id="deleteForm" action="/stars/operator/hardware/delete" method="post">
             <input type="hidden" name="inventoryId" value="${inventoryId}">
             <input type="hidden" name="accountId" value="${accountId}">
@@ -396,7 +396,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                     <cti:button nameKey="decommission" id="decommission"/>
                                     
                                     <cti:msgScope paths=".commissionConfirmation,">
-                                        <i:simplePopup id="confirmCommissionPopup" styleClass="commissionConfirmationMsg smallSimplePopup" titleKey=".title" on="#commission">
+                                        <i:simplePopup id="confirmCommissionPopup" styleClass="commissionConfirmationMsg" titleKey=".title" on="#commission">
                                             <p>
                                                 <div id="decommissionedConfirmMsg">
                                                     <i:inline key=".message"/>
@@ -415,7 +415,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
 
                                     <tags:confirmDialog submitName="decommissionSubmit"
                                         nameKey=".decommissionConfirmation"
-                                        styleClass="commissionConfirmationMsg smallSimplePopup" on="#decommission"
+                                        styleClass="commissionConfirmationMsg" on="#decommission"
                                         endAction="hide" />
                                 </c:if>
                                 
@@ -455,7 +455,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                                     <cti:button nameKey="assignedDevices.commission" renderMode="image" classes="assignedDevicesCommission" id="assignedDevicesCommission_${device.deviceId}" icon="icon-accept"/>
                                                     <cti:button nameKey="assignedDevices.decommission" renderMode="image" classes="assignedDevicesDecommission" id="assignedDevicesDecommission_${device.deviceId}" icon="icon-delete"/>
                                                     <cti:msgScope paths=".commissionConfirmation,">
-                                                        <i:simplePopup id="confirmCommissionPopup_${device.deviceId}" styleClass="commissionConfirmationMsg smallSimplePopup" titleKey=".title" on="#assignedDevicesCommission_${device.deviceId}">
+                                                        <i:simplePopup id="confirmCommissionPopup_${device.deviceId}" styleClass="commissionConfirmationMsg" titleKey=".title" on="#assignedDevicesCommission_${device.deviceId}">
                                                             <p>
                                                                 <div id="decommissionedConfirmMsg_${device.deviceId}">
                                                                     <i:inline key=".message"/>
@@ -473,7 +473,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                                     <cti:dataUpdaterCallback function="getEndpointCommissionConfirmationCallback('${device.deviceId}')" initialize="true" value="POINT/${device.commissionId}/VALUE"/>
                                                     <tags:confirmDialog submitName="assignedDevicesDecommissionSubmit_${device.deviceId}"
                                                         nameKey=".decommissionConfirmation" 
-                                                        styleClass="commissionConfirmationMsg smallSimplePopup" on="#assignedDevicesDecommission_${device.deviceId}"
+                                                        styleClass="commissionConfirmationMsg" on="#assignedDevicesDecommission_${device.deviceId}"
                                                         endAction="hide" />
                                                     
                                                     <cti:url value="/stars/operator/hardware/zb/removeDeviceFromGateway" var="removeUrl">

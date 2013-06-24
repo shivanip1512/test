@@ -19,7 +19,7 @@ jQuery(document).on('click', '#cancelDeleteBtn', function() {
 </script>
     
     <!-- Delete Hardware Popup -->
-    <i:simplePopup titleKey=".delete" id="deleteHardwarePopup" arguments="${hardware.displayName}" styleClass="smallSimplePopup">
+    <i:simplePopup titleKey=".delete" id="deleteHardwarePopup" arguments="${hardware.displayName}">
         <form id="deleteForm" action="/stars/operator/hardware/delete" method="post">
             <input type="hidden" name="inventoryId" value="${hardware.inventoryId}">
             <input type="hidden" name="accountId" value="${accountId}">

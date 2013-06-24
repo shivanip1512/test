@@ -129,7 +129,7 @@
         </table>
     </tags:boxContainer2>
     
-    <i:simplePopup id="deleteConfirmationPopup" styleClass="mediumSimplePopup" titleKey="yukon.web.modules.tools.bulk.analysis.list.deleteConfirmation.title">
+    <i:simplePopup id="deleteConfirmationPopup" titleKey="yukon.web.modules.tools.bulk.analysis.list.deleteConfirmation.title">
         <h3 class="dialogQuestion"><cti:msg key="yukon.web.modules.tools.bulk.analysis.list.deleteConfirmation.message"/></h3>
         <div class="actionArea">
             <cti:button nameKey="ok" onclick="deleteAnalysis()"/>

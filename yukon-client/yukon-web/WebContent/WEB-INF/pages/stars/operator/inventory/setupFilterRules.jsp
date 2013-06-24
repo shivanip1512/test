@@ -32,7 +32,7 @@
         });
     </script>
     
-    <tags:simpleDialog id="addRuleDialog" styleClass="smallSimplePopup"/>
+    <tags:simpleDialog id="addRuleDialog"/>
     
     <form:form id="selectionForm" cssClass="f_preventSubmitViaEnterKey" commandName="filterModel" action="/stars/operator/inventory/applyFilter" method="post">
         <input type="hidden" name="removeRule" id="removeRule">

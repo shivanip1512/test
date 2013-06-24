@@ -6,7 +6,7 @@
 
 <cti:standardPage module="support" page="fileExportHistory">
 	
-	<i:simplePopup titleKey=".search.title" id="searchPopup" styleClass="smallSimplePopup">
+	<i:simplePopup titleKey=".search.title" id="searchPopup">
 		<form action="list">
 			<input type="hidden" name="itemsPerPage" value="${empty itemsPerPage ? 25 : itemsPerPage}">
 			<tags:nameValueContainer2>

@@ -49,7 +49,7 @@
 
     </script>
 
-    <i:simplePopup titleKey=".deleteWorkOrderConfirmation.title" id="confirmDeleteWorkOrderDialog" styleClass="mediumSimplePopup" on="#confirmDelete">
+    <i:simplePopup titleKey=".deleteWorkOrderConfirmation.title" id="confirmDeleteWorkOrderDialog" on="#confirmDelete">
         <cti:msg2 key=".deleteWorkOrderConfirmation.message" arguments="${workOrderDto.workOrderBase.orderNumber}"/>
          <form id="deleteForm" action="/stars/operator/workOrder/deleteWorkOrder" method="post">
           <input type="hidden" name="accountId" value="${accountId}">

@@ -30,7 +30,7 @@
     
     <c:set var="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}"/>
 
-    <i:simplePopup styleClass="mediumSimplePopup" titleKey=".delete.title" id="deleteConfirmDialog">
+    <i:simplePopup titleKey=".delete.title" id="deleteConfirmDialog">
         <h1 class="dialogQuestion">
             <i:inline key=".deleteConfirm" arguments="${statusPointMonitor.statusPointMonitorName}"/>
         </h1>

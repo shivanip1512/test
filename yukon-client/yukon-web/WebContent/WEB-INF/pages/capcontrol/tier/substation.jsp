@@ -118,7 +118,7 @@ function applyCapBankFilter(feederIds) {
 }
 </script>
 
-<i:simplePopup titleKey=".recentEvents" id="recentEventsOptions" on="#recentEventsButton" styleClass="mediumSimplePopup">
+<i:simplePopup titleKey=".recentEvents" id="recentEventsOptions" on="#recentEventsButton">
     <%@ include file="recentEventsOptions.jspf" %>
 </i:simplePopup>
 

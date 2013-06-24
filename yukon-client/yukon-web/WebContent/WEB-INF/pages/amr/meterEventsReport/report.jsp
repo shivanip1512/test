@@ -302,7 +302,7 @@
 				</tags:formElementContainer>
 				
 				<i:simplePopup titleKey=".filter.eventTypes"
-					id="filterPopupEventTypes" styleClass="smallSimplePopup front"
+					id="filterPopupEventTypes" styleClass="front"
 					onClose="updateEventTypesNum()">
 		
 					<jsTree:inlineTree id="eventTree"

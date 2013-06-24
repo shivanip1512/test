@@ -33,7 +33,7 @@ jQuery(function() {
 </script>
     
     <i:simplePopup titleKey=".changePasswordPopup" arguments="${user.username}" id="changePasswordPopup" 
-            on="#changePasswordButton" styleClass="smallSimplePopup" showImmediately="${showChangePwPopup}">
+            on="#changePasswordButton" showImmediately="${showChangePwPopup}">
         <tags:setFormEditMode mode="${pwChangeFormMode}"/>
         <c:if test="${showChangePasswordErrors}">
             <cti:flashScopeMessages/>

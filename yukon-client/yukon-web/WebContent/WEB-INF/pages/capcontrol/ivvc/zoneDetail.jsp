@@ -19,7 +19,7 @@
     <cti:msg2 key="yukon.web.modules.capcontrol.ivvc.zoneWizard.editor.title" var="zoneWizardTitle"/>
 
     <!-- Zone Wizard Dialog -->
-    <tags:simpleDialog id="zoneWizardPopup" title="" styleClass="smallSimplePopup"/>
+    <tags:simpleDialog id="zoneWizardPopup" title=""/>
 
     <script type="text/javascript">
 

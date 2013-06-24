@@ -139,7 +139,7 @@
 </div>
 
 <%-- Confirm Dialog for send settings --%>
-<i:simplePopup titleKey=".sendConfirm.title" on="#sendSettingsSubmit" id="confirmPopup_${event.eventId}" styleClass="smallSimplePopup">
+<i:simplePopup titleKey=".sendConfirm.title" on="#sendSettingsSubmit" id="confirmPopup_${event.eventId}">
     
     <form action="${actionPath}" method="post">
         <input type="hidden" name="accountId"  value="${accountId}" />

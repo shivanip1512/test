@@ -21,7 +21,7 @@
     </script>
       
     <%-- FILTER POPUP --%>
-    <i:simplePopup titleKey=".filter.section" id="filterPopup" styleClass="smallSimplePopup">
+    <i:simplePopup titleKey=".filter.section" id="filterPopup">
         <cti:flashScopeMessages/>
         <form:form id="filterForm" action="/group/scheduledGroupRequestExecutionResults/jobs"
             method="get" commandName="backingBean">

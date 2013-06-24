@@ -223,7 +223,7 @@
 <c:if test="${not empty confirmAccountSerial}">
     <i:simplePopup titleKey="${titleKey}" 
             id="addFromAccountPopup" 
-            styleClass="mediumSimplePopup" 
+            
             showImmediately="true"
             onClose="window.location='${hardwareListUrl}';">
         
@@ -331,7 +331,6 @@
 <c:if test="${not empty anotherECSerial}">
     <i:simplePopup titleKey="${titleKey}" 
             id="anotherECPopup" 
-            styleClass="smallSimplePopup" 
             showImmediately="true"
             onClose="window.location='${hardwareListUrl}';">
 

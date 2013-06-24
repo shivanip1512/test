@@ -17,7 +17,7 @@
             <cti:param name="accountId" value="${accountId}"/>
         </cti:url>
         
-        <i:simplePopup titleKey=".confirmDeleteDialogTitle" id="confirmDeleteDialog" styleClass="mediumSimplePopup">
+        <i:simplePopup titleKey=".confirmDeleteDialogTitle" id="confirmDeleteDialog">
             <cti:msg2 key=".confirmDelete" arguments="${accountGeneral.accountDto.accountNumber}"/>
             <div class="actionArea">
                 <cti:button nameKey="confirmDeleteOk" href="${deleteUrl}" classes="f_blocker" />
@@ -29,7 +29,7 @@
             <cti:param name="accountId" value="${accountId}"/>
             <cti:param name="loginMode" value="${loginMode}"/>
         </cti:url>
-        <i:simplePopup titleKey=".confirmDeleteDialogTitle" id="confirmDeleteLoginDialog" styleClass="mediumSimplePopup">
+        <i:simplePopup titleKey=".confirmDeleteDialogTitle" id="confirmDeleteLoginDialog">
             <cti:msg2 key=".confirmDeleteUser" arguments="${accountGeneral.accountDto.accountNumber}"/>
             <div class="actionArea">
                 <cti:button nameKey="confirmDeleteOk" href="${deleteLoginUrl}" classes="f_blocker"/>
