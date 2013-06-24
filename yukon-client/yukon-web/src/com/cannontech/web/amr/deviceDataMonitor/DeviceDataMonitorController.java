@@ -712,8 +712,9 @@ public class DeviceDataMonitorController {
         hasPoint.removeAll(listMissingPoint);
         List<Integer> deviceIdsSupportingAttributePointStateGroup =
                 pointService.findDeviceIdsInGroupWithAttributePointStateGroupId(monitoringGroup, attribute, stateGroupId);
-        List<YukonPao> listMissingStateGroup = hasPoint;
-        for (YukonPao sd : listMissingStateGroup) {
+        List<YukonPao> listMissingStateGroup = new ArrayList<>();
+        listMissingStateGroup.addAll(hasPoint);
+        for (YukonPao sd : hasPoint) {
             if (deviceIdsSupportingAttributePointStateGroup.contains(sd.getPaoIdentifier().getPaoId())) {
                 listMissingStateGroup.remove(sd);
             }
