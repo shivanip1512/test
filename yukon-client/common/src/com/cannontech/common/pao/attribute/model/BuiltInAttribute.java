@@ -211,6 +211,7 @@ public enum BuiltInAttribute implements Attribute {
 
     // These are both informational and used for display group purposes.
     private static ImmutableSet<BuiltInAttribute> profileAttributes;
+    private static ImmutableSet<BuiltInAttribute> readableProfileAttributes;
     private static ImmutableSet<BuiltInAttribute> accumulatorAttributes;
     
     // The following maps and sets are used for displaying grouped attribute lists.
@@ -260,6 +261,12 @@ public enum BuiltInAttribute implements Attribute {
                 SUM_KVAR_LOAD_PROFILE,
                 SUM_KVA_LOAD_PROFILE,
                 SUM_KW_LOAD_PROFILE,
+                VOLTAGE_PROFILE);
+        
+        readableProfileAttributes = ImmutableSet.of(
+                LOAD_PROFILE,
+                PROFILE_CHANNEL_2,
+                PROFILE_CHANNEL_3,
                 VOLTAGE_PROFILE);
         
         //point is an accumulation; Example: Usage 
@@ -637,6 +644,10 @@ public enum BuiltInAttribute implements Attribute {
         return profileAttributes.contains(this);
     }
     
+    public boolean isReadableProfile() {
+        return readableProfileAttributes.contains(this);
+    }
+    
     public boolean isAccumulator() {
         return accumulatorAttributes.contains(this);
     }
@@ -671,6 +682,10 @@ public enum BuiltInAttribute implements Attribute {
     
     public static Set<BuiltInAttribute> getProfileAttributes() {
         return profileAttributes;
+    }
+    
+    public static Set<BuiltInAttribute> getReadableProfileAttributes() {
+        return readableProfileAttributes;
     }
     
     public boolean isRfnEventType() {
@@ -716,5 +731,4 @@ public enum BuiltInAttribute implements Attribute {
     public String getDescription() {
         return defaultDescription;
     }
-    
 }

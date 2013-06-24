@@ -35,7 +35,7 @@ jQuery('#recentEventsOption').click(function(event) {
 <c:if test="${showComments}">
 jQuery('#viewCommentsOption').click(function(event) {
     hideMenu();
-    showDialog(jQuery(event.currentTarget).find('input').val(), '/capcontrol/comments/paoComments?paoId=${paoId}');
+    showDialog(jQuery(event.currentTarget).find('input').val(), '/capcontrol/comments/paoComments?paoId=${paoId}', {}, "#contentPopup" );
 });
 </c:if>
 </script>
@@ -72,7 +72,7 @@ jQuery('#viewCommentsOption').click(function(event) {
         </c:if>
         <c:if test="${showComments}">
             <li class="menuOption" id="viewCommentsOption">
-                <input type="hidden" id="commentsTitle" value="<cti:msg2 key="yukon.web.modules.capcontrol.comments.title" arguments="${paoName}"/>">
+                <input type="hidden" value="<cti:msg2 key="yukon.web.modules.capcontrol.comments.title" arguments="${paoName}"/>">
                 <a href="javascript:void(0);"><i:inline key=".viewComments"/></a>
             </li>
         </c:if>

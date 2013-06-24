@@ -22,14 +22,13 @@ function getCommandMenu(id, event) {
     getMenuFromURL('/capcontrol/menu/commandMenu?id=' + id, event);
 }
 
-function showDialog(title, url, width, height) {
-    height = height || 500;
-    width = width || 650;
-    jQuery("<div></div>").load(url).dialog({
-        title: title,
-        width: width,
-        height: height
-    });
+function showDialog(title, url, options, selector) {
+    var dialogArgs = {'width' : 'auto', 'height': 'auto', 'title': title};
+    jQuery.extend(dialogArgs, options);
+    selector = selector || "<div></div>";
+    
+    var dialog = jQuery(selector);
+    dialog.load(url).dialog(dialogArgs);
 }
 
 function getMovedBankMenu(id, event) {

@@ -206,7 +206,7 @@ public class SiteMapHelper {
     }
 
     public enum SiteMapPage implements DisplayableEnum {
-        METERING(SiteMapCategory.AMI, "yukon.web.modules.amr.meteringStart.pageName", "/meter/start", 
+        METERING(SiteMapCategory.AMI, "yukon.web.menu.ami.dashboard", "/meter/start", //dashboard
                 MatchStyle.any, YukonRole.METERING, YukonRole.APPLICATION_BILLING, YukonRole.SCHEDULER, YukonRole.DEVICE_ACTIONS),
         BILLING(SiteMapCategory.AMI, "yukon.web.menu.config.amr.billing", "/operator/metering/billing", 
                 MatchStyle.all, YukonRole.APPLICATION_BILLING),
@@ -260,9 +260,7 @@ public class SiteMapHelper {
         ACTIVE_LOAD_GROUPS(SiteMapCategory.DR, "yukon.web.modules.dr.home.activeLoadGroupsQuickSearch", "/dr/loadGroup/list?state=active", 
                 MatchStyle.all, YukonRoleProperty.DEMAND_RESPONSE),
 
-        VOLT_VAR_MANAGEMENT(SiteMapCategory.VV, "yukon.web.voltVarManagement", "/capcontrol/tier/areas", 
-                MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS),
-        AREAS(SiteMapCategory.VV, "yukon.web.modules.capcontrol.areas.normal.pageName", "/capcontrol/tier/areas", 
+        VOLT_VAR_MANAGEMENT(SiteMapCategory.VV, "yukon.web.menu.vv.dashboard", "/capcontrol/tier/areas", 
                 MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS),
         IVVC_SCHEDULES(SiteMapCategory.VV, "yukon.web.modules.capcontrol.schedules.pageName", "/capcontrol/schedule/schedules", 
                 MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS),
@@ -285,7 +283,7 @@ public class SiteMapHelper {
 
         CREATE_ACCOUNT(SiteMapCategory.ASSETS, "yukon.web.modules.operator.account.CREATE.pageName", "/stars/operator/account/accountCreate", 
                 MatchStyle.all, OtherPermission.EC_OPERATOR, YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD),
-        ACCOUNTS_AND_INVENTORY(SiteMapCategory.ASSETS, "yukon.web.modules.operator.inventory.home.pageName", "/stars/operator/inventory/home", 
+        ACCOUNTS_AND_INVENTORY(SiteMapCategory.ASSETS, "yukon.web.menu.assets.dashboard", "/stars/operator/inventory/home", 
                 MatchStyle.all, YukonRole.INVENTORY),
         OPT_OUT(SiteMapCategory.ASSETS, "yukon.web.modules.dr.optOutAdmin.pageName", "/stars/operator/optOut/admin", 
                 MatchStyle.any, YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_STATUS, YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE, YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS,YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT),

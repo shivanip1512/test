@@ -1,5 +1,6 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -23,32 +24,7 @@
 <cti:url var="baseUrl" value="/capcontrol/schedule/scheduleAssignments" />
 <cti:url var="startMultiUrl" value="/capcontrol/schedule/startMultiple" />
 
-<form id="removeAssignmentForm" action="/capcontrol/schedule/removePao" method="post">
-    <input type="hidden" name="eventId">
-    <input type="hidden" name="paoId">
-</form> 
-
 <script type="text/javascript">
-jQuery(function() {
-    jQuery(document).on('click', 'button.deleteAssignment', function(event){
-        var jEvent = jQuery(event.currentTarget);
-        var row = jEvent.closest('tr');
-        var rowid = row[0].id;
-        var rowIdSplit = rowid.split('_'); 
-        var eventId = rowIdSplit[1];
-        var paoId = rowIdSplit[2];
-        var confirmMsg = jEvent.siblings('span.dn').html();
-        if (confirm(confirmMsg)) {
-            var removeForm = jQuery('#removeAssignmentForm');
-            var input = removeForm.children('input[name=eventId]');
-            input.val(eventId);
-            var paoInput = removeForm.children('input[name=paoId]');
-            paoInput.val(paoId);
-            removeForm.submit();
-        }
-    });
-});
-
 jQuery(function() {
     jQuery(document).on('click', 'button.runSchedule', function(event){
         var row = jQuery(event.currentTarget).closest('tr');
@@ -113,7 +89,6 @@ function startMultiScheduleAssignmentPopup(schedule, command) {
     var title = '<cti:msg2 key=".play.label" javaScriptEscape="true"/>';
     var parameters = {'schedule': schedule, 'command': command};
     openSimpleDialog('contentPopup', url, title, parameters, 'get');
-    $('contentPopup').toggle(); 
 }
 
 function stopMultiScheduleAssignmentPopup(schedule, command) {
@@ -193,7 +168,7 @@ function newScheduleAssignmentPopup(schedule, command) {
                 showAllUrl="${baseUrl}">
             <c:choose>
                 <c:when test="${searchResult.hitCount == 0}">
-                    <i:inline key=".noScheduleAssignments" />
+                    <span class="empty-list"><i:inline key=".noScheduleAssignments" /></span>
                 </c:when>
                 
                 <c:otherwise>
@@ -237,8 +212,12 @@ function newScheduleAssignmentPopup(schedule, command) {
                                         </c:otherwise>
                                     </c:choose>
                                     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                                        <cti:button nameKey="remove" renderMode="image" classes="deleteAssignment" icon="icon-cross"/>
-                                        <span class="dn"><i:inline key=".confirmDeleteMsg" arguments="${item.scheduleName},${item.deviceName}" argumentSeparator=","/></span>
+                                        <form id="removeAssignmentForm" action="/capcontrol/schedule/removePao" method="post">
+                                            <input type="hidden" name="eventId" value="${item.eventId}">
+                                            <input type="hidden" name="paoId" value="${item.paoId}">
+                                            <cti:button  type="submit" nameKey="remove" renderMode="image" classes="deleteAssignment" icon="icon-cross"/>
+                                        </form>
+                                        <d:confirm on=".deleteAssignment" nameKey="confirmDelete" argument="${item.scheduleName}, ${item.deviceName}" argumentSeparator="," />
                                     </cti:checkRolesAndProperties>
                                 </td>
                                 

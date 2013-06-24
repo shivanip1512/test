@@ -95,9 +95,6 @@
             <option name="dashboard">
                 <link>/capcontrol/tier/areas</link>
             </option>
-            <option name="areas">
-                <link>/capcontrol/tier/areas</link>
-            </option>
             <option name="schedules">
                 <link>/capcontrol/schedule/schedules</link>
             </option>

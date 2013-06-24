@@ -10,13 +10,14 @@
 <%@ attribute name="on" required="true" description="registers click event on the element with this CSS selector"%>
 <%@ attribute name="nameKey" required="true" description="The base i18n key.  This tag requires dialogTitle and confirmationMsg keys."%>
 <%@ attribute name="argument" type="java.lang.Object"%>
+<%@ attribute name="argumentSeparator" type="java.lang.Object"%>
 <%@ attribute name="disableGroup" description="Creates a 'data-disable-group' attribute on buttons at time of show to allow disabling all dialog buttons on click."%>
 
 <cti:includeScript link="/JavaScript/yukon/ui/confirm_dialog_manager.js"/>
 
 <cti:msgScope paths=".${nameKey},components.ajaxConfirm.${nameKey}">
-    <cti:msg2 var="dialogTitleMsg" key=".title" argument="${pageScope.argument}" javaScriptEscape="true"/>
-    <cti:msg2 var="confirmationMsg" key=".message" argument="${pageScope.argument}" javaScriptEscape="true"/>
+    <cti:msg2 var="dialogTitleMsg" key=".title" arguments="${pageScope.argument}" argumentSeparator="${pageScope.argumentSeparator}" javaScriptEscape="true"/>
+    <cti:msg2 var="confirmationMsg" key=".message" arguments="${pageScope.argument}" argumentSeparator="${pageScope.argumentSeparator}" javaScriptEscape="true"/>
     <cti:msgScope paths=",components.dialog">
         <cti:msg2 var="okBtnMsg" key=".ok"/>
         <cti:msg2 var="cancelBtnMsg" key=".cancel"/>

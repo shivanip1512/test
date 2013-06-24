@@ -12,7 +12,7 @@ jQuery(function() {
             } else {
                 // Add move link
                 var title = parentFeeder.down('span.moveBankTitle').innerHTML;
-                parentFeeder.observe('click', function() {showDialog(title, '/capcontrol/move/bankMove?bankid=' + encodeURIComponent(bankId)); return false;});
+                parentFeeder.observe('click', function() {showDialog(title, '/capcontrol/move/bankMove?bankid=' + encodeURIComponent(bankId), {'height': 650, 'width': 650, 'modal': true}, "#contentPopup"); return false;});
             }
             
             // Add menus
@@ -49,10 +49,7 @@ jQuery(function() {
                 <th><i:inline key=".dailyMaxTotal"/></th>
             </tr>
         </thead>
-        
-        <!-- Reset the alternating row style -->
-        
-        
+
         <c:forEach var="viewableCapBank" items="${capBankList}">
             
             <c:set var="bankId" value="${viewableCapBank.capBankDevice.ccId}"/>
@@ -83,7 +80,7 @@ jQuery(function() {
                     </c:if>
                     <c:if test="${viewableCapBank.twoWayCbc}">
                             <cti:msg2 var="cbcPointsTitle" key=".cbcPointsTitle" arguments="${viewableCapBank.controlDevice.paoName}" javaScriptEscape="true"/>
-                            <cti:icon nameKey="timestampInfo" href="javascript:showDialog('${cbcPointsTitle}', '../capbank/cbcPoints?cbcId=${viewableCapBank.controlDevice.liteID}')" icon="icon-magnifier"/>
+                            <cti:icon nameKey="timestampInfo" href="javascript:showDialog('${cbcPointsTitle}', '../capbank/cbcPoints?cbcId=${viewableCapBank.controlDevice.liteID}', {'width': 600, 'height': 600})" icon="icon-magnifier"/>
                     </c:if>
                 </td>
                 
@@ -102,7 +99,7 @@ jQuery(function() {
                     </c:if>
                     <cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
                         <cti:msg2 var="addInfoTitle" key=".addInfoTitle" arguments="${viewableCapBank.capBankDevice.ccName}" javaScriptEscape="true"/>
-                        <cti:icon nameKey="addInfo" href="javascript:showDialog('${addInfoTitle}', '../addInfo/bank?bankId=${bankId}', 450)" icon="icon-magnifier"/>
+                        <cti:icon nameKey="addInfo" href="javascript:showDialog('${addInfoTitle}', '../addInfo/bank?bankId=${bankId}', {'width': 450})" icon="icon-magnifier"/>
                     </cti:checkRolesAndProperties>
                 </td>
 

@@ -39,7 +39,7 @@ function openSimpleDialog(dialogId, url, title, parameters, method, options) {
         url: url,
         data: parameters
     })
-    .done(function(data, textStatus, jqXHR) {
+    .done(function(data) {
         var dialog = jQuery("#" + dialogId);
         if (data.action) {
             if (data.action == "close") {
@@ -92,7 +92,7 @@ function submitFormViaAjax(dialogId, formId, url, title, method, options) {
         } else {
             var dialog = jQuery("#" + dialogId);
             dialog.html(data);
-            dialog.dialog("option", "width", 600);
+            dialog.dialog();
             if (arguments.length > 2 && title) {
                 dialog.dialog("option", "title", title);
             }

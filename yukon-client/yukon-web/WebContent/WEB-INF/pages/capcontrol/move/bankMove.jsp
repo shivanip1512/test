@@ -4,19 +4,15 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree"%>
-<%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <cti:msgScope paths="yukon.web.modules.capcontrol.bankMove">
-
-<cti:url var="controlOrderPage" value="/capcontrol/move/feederBankInfo"/>
 
 <script type="text/javascript"> 
 updateFeederBankInfo = function () {
     var params = {'feederId': jQuery("#selectedFeeder").val()};
     jQuery.ajax({
-        url: '${controlOrderPage}',
+        url: '/capcontrol/move/feederBankInfo',
         method: 'post',
         data: params,
         success: function(data) {
@@ -42,8 +38,7 @@ function handleNodeClick(node, event) {
     }
 }
 
-treeInit = function() {
-    
+function getTreeStructure() {
     var areas = [];
     <c:forEach var="area" items="${allAreas}">
         var area = {title: '${cti:escapeJavaScript(area.name)}', icon: false};
@@ -69,12 +64,11 @@ treeInit = function() {
         area.children = stations;
         areas.push(area);
     </c:forEach>
-        
-    jQuery("div.bankMoveContainer div.boxContainer_content").dynatree({children: areas, keyboard: true, clickFolderMode: 3, selectMode: 1, onClick: handleNodeClick});
+    return areas;
 }
 </script>
 
-<div style="padding: 5px;">
+<div>
     <form:form commandName="bankMoveBean" action="/capcontrol/command/bankMove">
         <input type="hidden" name="oneline" value="${oneline}">
         <input type="hidden" name="substationId" value="${substationId}">
@@ -85,27 +79,26 @@ treeInit = function() {
         
         <tags:nameValueContainer2 tableClass="stacked">
             <tags:nameValue2 nameKey=".capbank">
-                <span style="font-size: 12px;"><spring:escapeBody htmlEscape="true">${bankName}</spring:escapeBody></span>
+                <span>${fn:escapeXml(bankName)}</span>
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".currentLocation">
-                <span style="font-size: 12px;"><spring:escapeBody htmlEscape="true">${path}</spring:escapeBody></span>
+                <span>${fn:escapeXml(path)}</span>
             </tags:nameValue2>
         </tags:nameValueContainer2>
     
-        <tags:boxContainer2 nameKey="feedersContainer" hideEnabled="false" styleClass="padBottom bankMoveContainer">
-            <jsTree:inlineTree id="feederTree" maxHeight="300" treeParameters="{onPostInit: treeInit()}"/>
+        <tags:boxContainer2 nameKey="feedersContainer">
+            <jsTree:inlineTree id="feederTree" maxHeight="250" treeParameters="{children: getTreeStructure(), minExpandLevel:1, clickFolderMode: 3, onClick: handleNodeClick}"/>
         </tags:boxContainer2>
 
-        <div id="controlOrders" class="padBottom clear"></div>
-        <div style="float:right;">
+        <div id="controlOrders"></div>
+        
+        <div class="actionArea">
             <cti:button nameKey="tempMove" type="submit" name="tempMove"/>
             <cti:button nameKey="move" type="submit" name="move"/>
-        </div>
-        <div style="float:left;">
-            <span><i:inline key=".controlOrder"/><form:input path="displayOrder" size="1" maxlength="3" cssStyle="margin-left:3px;"/></span>
-            <span><i:inline key=".closeOrder"/><form:input path="closeOrder" size="1" maxlength="3"  cssStyle="margin-left:3px;"/></span>
-            <span><i:inline key=".tripOrder"/><form:input path="tripOrder" size="1" maxlength="3"  cssStyle="margin-left:3px;"/></span>
+            <span><i:inline key=".controlOrder"/>&nbsp;<form:input path="displayOrder" size="1" maxlength="3"/></span>
+            <span><i:inline key=".closeOrder"/>&nbsp;<form:input path="closeOrder" size="1" maxlength="3"/></span>
+            <span><i:inline key=".tripOrder"/>&nbsp;<form:input path="tripOrder" size="1" maxlength="3"/></span>
         </div>
     </form:form>
 </div>

@@ -1,8 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:msgScope paths="yukon.web.modules.capcontrol.comments">
     <cti:url var="commentsURL" value="/capcontrol/comments/"/>
@@ -115,70 +115,67 @@
         
     </script>
     
-    <div id="comment_editor" class="scrollingContainer_large">
+    <div id="comment_editor" class="scrollingContainer_large stacked">
         <form id="commentForm" action="/capcontrol/comments/" method="POST">
             <input type="hidden" name="paoId" value="${paoId}">
             <input type="hidden" name="commentId" id="commentId" value="">
             <input type="hidden" name="comment" id="comment">
             <input type="hidden" name="submitNormal" value="${submitNormal}">
             <input type="hidden" name="redirectToOneline" value="${redirectToOneline}">
-            <table id="commentsTable" class="compactResultsTable">
-                <thead>
-                    <tr>
-                        <th><i:inline key=".comment"/></th>
-                        <th><i:inline key=".user"/></th>
-                        <th><i:inline key=".time"/></th>
-                        <th><i:inline key=".altered"/></th>
-                        <th class="removeColumn"><i:inline key=".delete"/></th>
-                    </tr>
-                </thead>
-                
-                <tbody>
-                    <c:choose>
-                        <c:when test="${empty comments}">
-                            <tr id="noCommentsRow"><td colspan="4"><i:inline key=".noComments"/></td></tr>
-                        </c:when>
-                        <c:otherwise>
-                        
-                            <c:forEach var="comment" items="${comments}">
-                                <tr id="commentRow_${comment.id}">
-                                    <td class="editable">
-                                        <div id="editCommentSpan_${comment.id}" style="display: none;">
-                                            <input id="editComment_${comment.id}" type="text" 
-                                                style="margin-right: 5px;width:350px;" 
-                                                name="editCommentInput" onKeyPress="return updateOrCancel(event, ${comment.id})" 
-                                                value="<spring:escapeBody htmlEscape="true">${comment.comment}</spring:escapeBody>">
-                                            <a href="javascript:updateComment(${comment.id})"><i:inline key=".save"/></a> <a href="javascript:cancelUpdate(${comment.id})"><i:inline key=".cancel"/></a>
-                                        </div>
-                                        <div id="comment_${comment.id}" title="<cti:msg2 key=".clickToEdit"/>" 
-                                        <c:if test="${modifyPermission}">onclick="editComment(${comment.id})"</c:if>><spring:escapeBody htmlEscape="true">${comment.comment}</spring:escapeBody></div>
-                                    </td>
+            
+            <c:if test="${empty comments}">
+                <span class="empty-list"><i:inline key=".noComments"/></span>
+            </c:if>
+            <c:if test="${not empty comments}">
+                <table id="commentsTable" class="compactResultsTable">
+                    <thead>
+                        <tr>
+                            <th><i:inline key=".comment"/></th>
+                            <th><i:inline key=".user"/></th>
+                            <th><i:inline key=".time"/></th>
+                            <th><i:inline key=".altered"/></th>
+                            <th class="removeColumn"><i:inline key=".delete.label"/></th>
+                        </tr>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                        <c:forEach var="comment" items="${comments}">
+                            <tr id="commentRow_${comment.id}">
+                                <td class="editable">
+                                    <div id="editCommentSpan_${comment.id}" style="display: none;">
+                                        <input id="editComment_${comment.id}" type="text" 
+                                            style="margin-right: 5px;width:350px;" 
+                                            name="editCommentInput" onKeyPress="return updateOrCancel(event, ${comment.id})" 
+                                            value="${fn:escapeXml(comment.comment)}">
+                                        <a href="javascript:updateComment(${comment.id})"><i:inline key=".save"/></a> <a href="javascript:cancelUpdate(${comment.id})"><i:inline key=".cancel"/></a>
+                                    </div>
+                                    <div id="comment_${comment.id}" title="<cti:msg2 key=".clickToEdit"/>" <c:if test="${modifyPermission}">onclick="editComment(${comment.id})"</c:if> >
+                                        ${fn:escapeXml(comment.comment)}
+                                    </div>
+                                </td>
+                                <c:choose>
+                                    <c:when test="${comment.userName == null}">
+                                        <td><i:inline key="yukon.web.defaults.dashes"/></td>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <td>${fn:escapeXml(comment.userName)}</td>
+                                	</c:otherwise>
+                                </c:choose>
+                                <td><cti:formatDate value="${comment.date}" type="BOTH" /></td>
+                                <td>
                                     <c:choose>
-                                    	<c:when test="${comment.userName == null}">
-                                    		<td><i:inline key="yukon.web.defaults.dashes"/></td>
-                                    	</c:when>
-                                    	<c:otherwise>
-                                    		<td><spring:escapeBody htmlEscape="true">${comment.userName}</spring:escapeBody></td>
-                                    	</c:otherwise>
+                                        <c:when test="${comment.altered}"><i:inline key="yukon.web.defaults.yes"/></c:when>
+                                        <c:otherwise><i:inline key="yukon.web.defaults.no"/></c:otherwise>
                                     </c:choose>
-                                    <td><cti:formatDate value="${comment.date}" type="BOTH" /></td>
-                                    <td>
-                                        <c:choose>
-                                            <c:when test="${comment.altered}"><i:inline key="yukon.web.defaults.yes"/></c:when>
-                                            <c:otherwise><i:inline key="yukon.web.defaults.no"/></c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                    <td class="removeColumn">
-                                        <cti:button nameKey="remove" renderMode="image" onclick="deleteComment(${comment.id})" classes="center" icon="icon-application-view-columns"/>
-                                    </td>
-                                </tr>
-                            </c:forEach>
-                            
-                        </c:otherwise>
-                    </c:choose>
-                </tbody>
-                
-            </table>
+                                </td>
+                                <td class="removeColumn">
+                                    <cti:button nameKey="remove" renderMode="image" onclick="deleteComment(${comment.id})" classes="center" icon="icon-cross"/>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+            </c:if>
         </form>
     </div>
     <c:if test="${addPermission}">
@@ -190,7 +187,7 @@
             <span class="textFieldLabel"><a href="javascript:addComment()"><i:inline key=".save"/></a> <a href="javascript:hideNewRow()"><i:inline key=".cancel"/></a></span>
         </div>
         <div class="compactResultsFooter">
-            <cti:button nameKey="add" onclick="javascript:showNewRow()"/>
+            <cti:button nameKey="add" icon="icon-add" onclick="javascript:showNewRow()"/>
         </div>
     </c:if>
 </cti:msgScope>

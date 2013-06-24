@@ -202,7 +202,7 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
        
         for(DeviceArchiveData data : dataList) {
             BuiltInAttribute attribute = (BuiltInAttribute)data.getAttribute();
-            if(!attribute.isProfile()) {
+            if(!attribute.isReadableProfile()) {
                 throw new IllegalArgumentException("Cannot create a pofile request for non-profile attribute \"" 
                                                        + attribute + "\"");
             }

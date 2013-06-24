@@ -2,14 +2,12 @@ package com.cannontech.web.bulk;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.bulk.collection.device.ArchiveDataAnalysisCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
@@ -39,7 +37,11 @@ public class AdaResultsController {
     @Autowired private RolePropertyDao rolePropertyDao;
     
     @RequestMapping
-    public String view(ModelMap model, int analysisId, HttpServletRequest request, YukonUserContext userContext) throws ServletRequestBindingException, DeviceCollectionCreationException {
+    public String view(ModelMap model, 
+            int analysisId,
+            @RequestParam(defaultValue="25") int itemsPerPage, 
+            @RequestParam(defaultValue="1") int currentPage, 
+            YukonUserContext userContext) throws ServletRequestBindingException, DeviceCollectionCreationException {
         Analysis analysis = archiveDataAnalysisDao.getAnalysisById(analysisId);
         ArchiveAnalysisResult result = new ArchiveAnalysisResult(analysis);
         
@@ -50,8 +52,6 @@ public class AdaResultsController {
         
         // Page the result
         List<PaoIdentifier> deviceIds = archiveDataAnalysisDao.getRelevantDeviceIds(analysisId);
-        int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 25);
-        int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
         int startIndex = (currentPage - 1) * itemsPerPage;
         int toIndex = startIndex + itemsPerPage;
         int numberOfResults = deviceIds.size();
@@ -69,7 +69,7 @@ public class AdaResultsController {
         
         model.addAttribute("barWidth", BAR_WIDTH);
         
-        if (analysis.getAttribute().isProfile() && rolePropertyDao.checkProperty(YukonRoleProperty.PROFILE_COLLECTION, userContext.getYukonUser())) {
+        if (analysis.getAttribute().isReadableProfile() && rolePropertyDao.checkProperty(YukonRoleProperty.PROFILE_COLLECTION, userContext.getYukonUser())) {
             model.addAttribute("showReadOption", true);
         }
         

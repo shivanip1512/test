@@ -610,7 +610,7 @@ body .ui-tooltip { border-width: 2px; }
 
 
 /** CUSTOM YUKON STYLING **/
-.ui-dialog, .ui-dialog-content {box-sizing: content-box;} /* stops resizing from adding lots of right margin, since we are doing *{box-sizing: border-box;} now */
+.ui-dialog, .ui-dialog-content {box-sizing: content-box;-moz-box-sizing: content-box;} /* stops resizing from adding lots of right margin, since we are doing *{box-sizing: border-box;} now */
 .ui-dialog {
     border: 1px solid #acacac;
     -webkit-box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);

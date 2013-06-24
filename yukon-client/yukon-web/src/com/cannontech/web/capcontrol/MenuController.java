@@ -155,7 +155,7 @@ public class MenuController {
         model.addAttribute("commands", commands);
     }
     
-    public void setupFeederModel(ModelMap model, Feeder feeder) {
+    private void setupFeederModel(ModelMap model, Feeder feeder) {
         List<CommandType> commands = Lists.newArrayList();
         commands.add(CommandType.CONFIRM_FEEDER);
         if (feeder.getCcDisableFlag()) {
@@ -172,7 +172,7 @@ public class MenuController {
         model.addAttribute("commands", commands);
     }
 
-    public void setupCapBankModel(ModelMap model, LiteYukonUser user, CapBankDevice capBank) {
+    private void setupCapBankModel(ModelMap model, LiteYukonUser user, CapBankDevice capBank) {
         int cbcDeviceId = capBank.getControlDeviceID();
         LiteYukonPAObject cbcPaoObject = paoDao.getLiteYukonPAO(cbcDeviceId);
         

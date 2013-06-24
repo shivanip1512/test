@@ -6,18 +6,18 @@
 <%-- id will be the internal id of the tree, also will be name of dom elememt to access tree in jsp --%>
 <%-- treeCss allows you to customize the styling of the tree's icons, etc --%>
 <%-- create a new css file under /JavaScript/extjs_cannon/resources/css/ that overrides styles you want --%>
-<%@ attribute name="id" required="true" type="java.lang.String"%>
-<%@ attribute name="treeCss" required="false" type="java.lang.String"%>
-<%@ attribute name="treeParameters" required="false" type="java.lang.String" description="This should be a object '{}' with arguments for tree initialization." %>
-<%@ attribute name="highlightNodePath" required="false" type="java.lang.String"%>
-<%@ attribute name="includeControlBar" required="false" type="java.lang.Boolean"%>
-<%@ attribute name="multiSelect" required="false" type="java.lang.Boolean" %>
-<%@ attribute name="styleClass" required="false" type="java.lang.String"%>
-<%@ attribute name="maxHeight" required="false" type="java.lang.Integer" description="The max-height in pixels for the internal tree div. Example: maxHeight='300'. Defaults is 500."%>
+<%@ attribute name="id" required="true"%>
+<%@ attribute name="treeCss"%>
+<%@ attribute name="treeParameters" description="This should be a object '{}' with arguments for tree initialization." %>
+<%@ attribute name="highlightNodePath"%>
+<%@ attribute name="includeControlBar" type="java.lang.Boolean"%>
+<%@ attribute name="multiSelect" type="java.lang.Boolean" %>
+<%@ attribute name="styleClass"%>
+<%@ attribute name="maxHeight" type="java.lang.Integer" description="The max-height in pixels for the internal tree div. Example: maxHeight='300'. Defaults is 500."%>
 
 <%-- STATIC JSON --%>
 <%-- json should be a dictionary starting with attributes of the root node (root node is supplied by you!) --%>
-<%@ attribute name="dataJson" required="false" type="java.lang.String"%>
+<%@ attribute name="dataJson"%>
 
 <cti:includeScript link="JQUERY_COOKIE" />
 <cti:includeScript link="JQUERY_SCROLLTO" />

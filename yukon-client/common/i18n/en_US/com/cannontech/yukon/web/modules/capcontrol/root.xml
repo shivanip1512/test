@@ -82,12 +82,13 @@
     <entry key="yukon.web.modules.capcontrol.bankMove.capbank">Cap Bank</entry>
     <entry key="yukon.web.modules.capcontrol.bankMove.tempMove.label">Temp Move</entry>
     <entry key="yukon.web.modules.capcontrol.bankMove.move.label">Move</entry>
+    <entry key="yukon.web.modules.capcontrol.bankMove.noBanks">No banks attached to feeder</entry>
     <entry key="yukon.web.modules.capcontrol.bankMove.controlOrder">Control Order</entry>
     <entry key="yukon.web.modules.capcontrol.bankMove.closeOrder">Close Order</entry>
     <entry key="yukon.web.modules.capcontrol.bankMove.tripOrder">Trip Order</entry>
     <entry key="yukon.web.modules.capcontrol.bankMove.bankName">Bank Name</entry>
     <entry key="yukon.web.modules.capcontrol.bankMove.feedersContainer.title">Select New Feeder</entry>
-    <entry key="yukon.web.modules.capcontrol.bankMove.selectedFeeder.title">Selected Feeders Banks</entry>
+    <entry key="yukon.web.modules.capcontrol.bankMove.selectedFeeder.title">{0} Banks</entry>
     <entry key="yukon.web.modules.capcontrol.bankMove.path">{0} > {1} > {2} > {3}</entry>
     
     <!-- capBankAddInfoPopup.jsp -->
@@ -138,7 +139,7 @@
     <entry key="yukon.web.modules.capcontrol.comments.user">User</entry>
     <entry key="yukon.web.modules.capcontrol.comments.time">Time</entry>
     <entry key="yukon.web.modules.capcontrol.comments.altered">Altered</entry>
-    <entry key="yukon.web.modules.capcontrol.comments.delete">Delete</entry>
+    <entry key="yukon.web.modules.capcontrol.comments.delete.label">Delete</entry>
     <entry key="yukon.web.modules.capcontrol.comments.noComments">No Comments</entry>
     <entry key="yukon.web.modules.capcontrol.comments.save">Save</entry>
     <entry key="yukon.web.modules.capcontrol.comments.cancel">Cancel</entry>
@@ -436,7 +437,8 @@
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.stopSchedule">Stop Schedule</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.command">Command</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.disableOvuv">Disable OV/UV</entry>
-    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.confirmDeleteMsg">Are you sure you want to delete schedule {0} from {1}?</entry>
+    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.confirmDelete.title">Delete Schedule</entry>
+    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.confirmDelete.message">Are you sure you want to delete schedule {0} from {1}?</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.deleteSuccess">Schedule assignment deleted successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.deleteFailed">Schedule assignment could not be deleted.</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.noScheduleAssignments">No Schedule Assignments</entry>
