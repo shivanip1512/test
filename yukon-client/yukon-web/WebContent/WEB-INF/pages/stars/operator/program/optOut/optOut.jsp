@@ -1,12 +1,13 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
-<%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
-<%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
-<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
+<%@ taglib prefix="dateTime" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:standardPage module="operator" page="optOut.main">
 
@@ -14,7 +15,7 @@
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
 <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
 <cti:uniqueIdentifier var="uniqueId" prefix="helpInfoPopup_"/>
-<i:simplePopup id="${uniqueId}" titleKey=".helpInfoTitle">
+<i:simplePopup id="${uniqueId}" titleKey=".helpInfoTitle" on="#helpIcon">
     <table class="optOutActions">
         <tr>
             <td><cti:icon nameKey="allowOne" icon="icon-gray-add"/></td>
@@ -42,9 +43,9 @@
     </cti:checkRolesAndProperties>
     
     <form:form id="optOutForm" action="/stars/operator/program/optOut/deviceSelection" commandName="optOutBackingBean">
-    
+
          <input type="hidden" name="accountId" value="${accountId}" />
-    
+
          <tags:nameValueContainer2>
          
             <tags:nameValue2 nameKey=".startDate">
@@ -55,7 +56,7 @@
                     <input type="hidden" name="startDate" value="${formattedDate}" />
                 </cti:checkRolesAndProperties>
                 <cti:checkRolesAndProperties value="!OPERATOR_OPT_OUT_TODAY_ONLY">
-                     <dt:date path="startDate" value="${optOutBackingBean.startDate}"/>
+                     <dateTime:date path="startDate" value="${optOutBackingBean.startDate}"/>
                 </cti:checkRolesAndProperties>
             </tags:nameValue2>
          
@@ -125,21 +126,14 @@
                             <cti:formatDate value="${optOut.startDate}" type="DATEHM"/>
                         </td>
                         <td valign="top">
-                            <cti:icon nameKey="cancelOptOut" id="cancel${optOut.eventId}" icon="icon-cross"/>
-                            <form action="/stars/operator/program/optOut/cancelOptOut" class="di">
-                                <input type="hidden" name="accountId" value="${accountId}"/>
-                                <input type="hidden" name="eventId" value="${optOut.eventId}"/>
-                                <tags:confirmDialog on="#cancel${optOut.eventId}" nameKey=".confirmCancelOptOut" argument="${optOut.inventory.displayName}"/>
-                            </form>
-                            
+                            <cti:icon nameKey="cancelOptOut" id="cancel${optOut.eventId}" icon="icon-cross"
+                                data-href="/stars/operator/program/optOut/cancelOptOut?accountId=${accountId}&eventId=${optOut.eventId}"/>
+                            <dialog:confirm on="#cancel${optOut.eventId}" nameKey="confirmCancelOptOut" argument="${optOut.inventory.displayName}"/>
                             <c:choose>
                                 <c:when test="${optOut.state == 'START_OPT_OUT_SENT'}">
-                                    <cti:icon nameKey="resendOptOut" id="resend${optOut.eventId}" icon="icon-control-repeat-blue"/>
-                                    <form action="/stars/operator/program/optOut/resend" class="di">
-                                        <input type="hidden" name="accountId" value="${accountId}"/>
-                                        <input type="hidden" name="inventoryId" value="${optOut.inventory.inventoryId}"/>
-                                        <tags:confirmDialog on="#resend${optOut.eventId}" nameKey=".confirmResendOptOut" argument="${optOut.inventory.displayName}"/>
-                                    </form>
+                                    <cti:icon nameKey="resendOptOut" id="resend${optOut.eventId}" icon="icon-control-repeat-blue"
+                                        data-href="/stars/operator/program/optOut/resend?accountId=${accountId}&inventoryId=${optOut.inventory.inventoryId}"/>
+                                    <dialog:confirm on="#resend${optOut.eventId}" nameKey="confirmResendOptOut" argument="${optOut.inventory.displayName}"/>
                                 </c:when>
                                 <c:otherwise>
                                     <cti:icon nameKey="resendOptOutDisabled" icon="icon-control-repeat-blue" classes="disabled" />
@@ -169,9 +163,7 @@
                     <th><i:inline key=".remaining"/></th>
                     <c:if test="${!noOptOutLimits}">
                         <th><i:inline key=".actions"/>
-                            <a href="javascript:void(0);" onclick="jQuery('#${uniqueId}').toggle();">
-                                <cti:icon nameKey="help" icon="icon-help"/>
-                            </a>
+                            <cti:icon id="helpIcon" nameKey="help" icon="icon-help" href="javascript:void(0);"/>
                         </th>
                     </c:if>
                 </tr>
@@ -194,39 +186,30 @@
                         </td>
                         <td>
                             <c:if test="${!noOptOutLimits}">
-                                <cti:icon nameKey="allowOne" id="allowOne${inventory.inventoryId}" icon="icon-gray-add"/>
-                                <form action="/stars/operator/program/optOut/allowAnother" class="di">
-                                    <input type="hidden" name="accountId" value="${accountId}"/>
-                                    <input type="hidden" name="inventoryId" value="${inventory.inventoryId}"/>
-                                    <tags:confirmDialog on="#allowOne${inventory.inventoryId}" nameKey=".confirmAllowOne" argument="${inventory.displayName}"/>
-                                </form>
-    
+                                <cti:icon nameKey="allowOne" id="allowOne${inventory.inventoryId}" icon="icon-gray-add"
+                                    data-href="/stars/operator/program/optOut/allowAnother?accountId=${accountId}&inventoryId=${inventory.inventoryId}"/>
+                                <dialog:confirm on="#allowOne${inventory.inventoryId}" nameKey="confirmAllowOne" argument="${inventory.displayName}"/>
+
                                 <c:if test="${optOutCounts[inventory.inventoryId].remainingOptOuts > 0}">
-                                    <cti:icon nameKey="decrementAllowance" id="decrementAllowance${inventory.inventoryId}" icon="icon-gray-subtract"/>
-                                    <form action="/stars/operator/program/optOut/decrementAllowances" class="di">
-                                        <input type="hidden" name="accountId" value="${accountId}"/>
-                                        <input type="hidden" name="inventoryId" value="${inventory.inventoryId}"/>
-                                        <tags:confirmDialog on="#decrementAllowance${inventory.inventoryId}" nameKey=".confirmDecrementAllowance" argument="${inventory.displayName}"/>
-                                    </form>
+                                    <cti:icon nameKey="decrementAllowance" id="decrementAllowance${inventory.inventoryId}" icon="icon-gray-subtract"
+                                        data-href="/stars/operator/program/optOut/decrementAllowances?accountId=${accountId}&inventoryId=${inventory.inventoryId}"/>
+                                    <dialog:confirm on="#decrementAllowance${inventory.inventoryId}" nameKey="confirmDecrementAllowance" argument="${inventory.displayName}"/>
                                 </c:if>
                                 <c:if test="${optOutCounts[inventory.inventoryId].remainingOptOuts <= 0}">
                                     <cti:icon nameKey="decrementAllowanceDisabled" icon="icon-gray-subtract" classes="disabled"/>
                                 </c:if>
-    
+
                                 <c:choose>
                                      <c:when test="${optOutLimit <= optOutCounts[inventory.inventoryId].remainingOptOuts}">
                                         <cti:icon nameKey="resetToLimitDisabled" icon="icon-arrow-undo" classes="disabled"/>
                                      </c:when>
                                      <c:otherwise>
-                                        <cti:icon nameKey="resetToLimit" id="resetToLimit${inventory.inventoryId}" icon="icon-arrow-undo"/>
-                                        <form action="/stars/operator/program/optOut/resetToLimit" class="di">
-                                            <input type="hidden" name="accountId" value="${accountId}"/>
-                                            <input type="hidden" name="inventoryId" value="${inventory.inventoryId}"/>
-                                            <tags:confirmDialog on="#resetToLimit${inventory.inventoryId}" nameKey=".confirmResetToLimit" argument="${inventory.displayName}"/>
-                                        </form>
+                                        <cti:icon nameKey="resetToLimit" id="resetToLimit${inventory.inventoryId}" icon="icon-arrow-undo"
+                                            data-href="/stars/operator/program/optOut/resetToLimit?accountId=${accountId}&inventoryId=${inventory.inventoryId}"/>
+                                        <dialog:confirm on="#resetToLimit${inventory.inventoryId}" nameKey="confirmResetToLimit" argument="${inventory.displayName}"/>
                                       </c:otherwise>
                                  </c:choose>
-                                                 
+
                             </c:if>
                         </td>
                     </tr>
@@ -252,6 +235,5 @@
             <a href="${optOutHistoryUrl}" ><i:inline key=".viewCompleteHistory" /></a>
         </div>
     </c:if>
-    
 </tags:boxContainer2>
 </cti:standardPage>

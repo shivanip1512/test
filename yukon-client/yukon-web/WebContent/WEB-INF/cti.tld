@@ -1470,7 +1470,7 @@
             <name>id</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
-            <description>Id for generated span element, defaults to 'icon_X' where X is a randon number. </description>
+            <description>Id for generated span element, defaults to 'icon_X' where X is a random number. </description>
         </attribute>
         <attribute>
             <name>href</name>

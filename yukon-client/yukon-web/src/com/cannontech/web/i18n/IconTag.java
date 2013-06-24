@@ -19,18 +19,18 @@ import com.cannontech.web.taglib.YukonTagSupport;
 
 public class IconTag extends YukonTagSupport implements DynamicAttributes {
 
-	private String icon = null;
-	private String id = null;
-	private String nameKey = null;
-	private String href = null;
-	private String classes = "";
-	
-	private Map<String, Object> dynamicAttributes = new HashMap<>();
+    private String icon = null;
+    private String id = null;
+    private String nameKey = null;
+    private String href = null;
+    private String classes = "";
+
+    private Map<String, Object> dynamicAttributes = new HashMap<>();
 
     public void setIcon(String icon) {
-    	this.icon = icon;
+        this.icon = icon;
     }
-    
+
     public void setId(String id) {
         this.id = id;
     }
@@ -46,7 +46,7 @@ public class IconTag extends YukonTagSupport implements DynamicAttributes {
     public void setClasses(String classes) {
         this.classes = classes;
     }
-    
+
     @Override
     public void doTag() throws JspException, IOException, NoSuchMessageException {
         MessageScope messageScope = MessageScopeHelper.forRequest(getRequest());
@@ -59,17 +59,21 @@ public class IconTag extends YukonTagSupport implements DynamicAttributes {
             if (StringUtils.isNotBlank(href)) out.write("<a href=\"" + href + "\">");
 
             out.write("<i class=\"icon " + icon + " " + classes + "\"" );
-            
+
             id = StringUtils.isBlank(id) ? UniqueIdentifierTag.generateIdentifier(getJspContext(), "icon_") : id;
             out.write(" id=\"" + id + '"');
-            
+
             String hoverText = getLocalMessage(messageScope, ".hoverText");
             if (hoverText != null) {
                 out.write(" title=\"");
                 out.write(hoverText);
                 out.write("\"");
             }
-            
+
+            for (String attributeName : dynamicAttributes.keySet()) {
+                out.write(" " + attributeName + "=\"" + dynamicAttributes.get(attributeName) + "\"");
+            }
+
             out.write("></i>");
 
             if (StringUtils.isNotBlank(href)) {
