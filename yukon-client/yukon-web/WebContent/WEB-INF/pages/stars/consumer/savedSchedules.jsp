@@ -98,7 +98,7 @@ jQuery(function(){
 	                        thermostatIds="${thermostatIds}"
 	                        accountId="${customerAccount.accountId}"
 	                        temperatureUnit="${temperatureUnit}"
-	                        actionPath="/stars/consumer/thermostat/schedule/saveJSON"
+	                        actionPath="/stars/consumer/thermostat/schedule"
 	                        thermostatType="${thermostatType}"
 	                        styleClass="vh"/>
 	                </div>
@@ -125,7 +125,7 @@ jQuery(function(){
                             thermostatIds="${thermostatIds}"
                             accountId="${customerAccount.accountId}"
                             temperatureUnit="${temperatureUnit}"
-                            actionPath="/stars/consumer/thermostat/schedule/saveJSON"
+                            actionPath="/stars/consumer/thermostat/schedule"
                             thermostatType="${thermostatType}"
                             styleClass="vh"/>
                     </c:forEach>    
@@ -166,16 +166,16 @@ jQuery(function(){
                                                    thermostatIds="${thermostatIds}"
                                                    accountId="${customerAccount.accountId}"
                                                    temperatureUnit="${temperatureUnit}"
-                                                   actionPath="/stars/consumer/thermostat/schedule/saveJSON"
+                                                   actionPath="/stars/consumer/thermostat/schedule/save"
                                                    thermostatType="${thermostatType}"/>
                 </c:forEach>
             </div>
         
             <div class="actions">
                 <div class="fr">
-                    <cti:button nameKey="previous" classes="f_prev"/>
-                    <cti:button nameKey="save" classes="f-save f_blocker" />
                     <cti:button nameKey="cancel" classes="f-cancel"/>
+                    <cti:button nameKey="previous" classes="f_prev"/>
+                    <cti:button nameKey="save" classes="f-save f_blocker primary action"/>
                 </div>
                 <div class="fl">
                     <cti:button nameKey="recommendedSettings" renderMode="labeledImage" classes="f-createDefault" icon="icon-wrench"/>

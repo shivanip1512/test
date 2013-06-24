@@ -152,7 +152,7 @@ Yukon.ThermostatScheduleEditor = {
         jQuery(document).on('click', '.f-save', function(e){
         	var form = null;
         	if(jQuery(e.target).closest("#createSchedule")[0]){
-        		var mode = jQuery("#createSchedule_body input[name=defaultScheduleMode]:checked").val();
+        		var mode = jQuery("#createSchedule input[name=defaultScheduleMode]:checked").val();
         		form = jQuery(this).closest('#createSchedule').find('.'+ mode +' form');
         	}else{
         		form = jQuery(this).closest('[id^=editSchedule]').find('form');
@@ -195,14 +195,14 @@ Yukon.ThermostatScheduleEditor = {
         
         jQuery(document).on('click', '.f-create', function(e){
             //show type picker
-            Yukon.ThermostatScheduleEditor.clearErrors(jQuery("#createSchedule_body"));
-            Yukon.ui.wizard.reset(jQuery("#createSchedule_body"));
+            Yukon.ThermostatScheduleEditor.clearErrors(jQuery("#createSchedule"));
+            Yukon.ui.wizard.reset(jQuery("#createSchedule"));
             return false;
         });
         
         jQuery(".page_0 .f_next").click(function(e){
-            var input = jQuery("#createSchedule_body input[name=defaultScheduleMode]:checked");
-            jQuery("#createSchedule_body .schedule.editor").each(function(index, elem){
+            var input = jQuery("#createSchedule input[name=defaultScheduleMode]:checked");
+            jQuery("#createSchedule .schedule.editor").each(function(index, elem){
             	elem = jQuery(elem);
                 if(!elem.hasClass(input.val())){
                     elem.hide();
