@@ -44,14 +44,16 @@
 
     <p>&nbsp;</p>
 
+<c:set var="isDevicesPage" value='${category == "MCT" || category == "IED" || category == "RTU" || category == "TRANSMITTER"}'/>
+<c:set var="isLoadMngtPage" value='${not isDevicesPage}'/>
 <cti:linkTabbedContainer mode="section" id="page_header_tab_container">
     <cti:msg var="tab_name" key="yukon.web.menu.config.commanderSelect.devices" />
     <c:set var="on_tab" value='${isDevicesPage}'/>
-    <cti:linkTab tabId="deviceTab" selectorName="${tab_name}" tabHref="javascript:void(0);"/>
+    <cti:linkTab tabId="deviceTab" selectorName="${tab_name}" tabHref="javascript:void(0);" initiallySelected="${on_tab}"/>
 
     <cti:msg var="tab_name" key="yukon.web.menu.config.commanderSelect.lm" />
     <c:set var="on_tab" value='${isLoadMngtPage}'/>
-    <cti:linkTab tabId="loadMgtTab" selectorName="${tab_name}" tabHref="javascript:void(0);" initiallySelected="${true}"/>
+    <cti:linkTab tabId="loadMgtTab" selectorName="${tab_name}" tabHref="javascript:void(0);" initiallySelected="${on_tab}"/>
 
     <c:url var="tab_url" value="/commander/select?category=CAP" />
     <cti:msg var="tab_name" key="yukon.web.menu.config.commanderSelect.capcontrol" />
@@ -59,7 +61,7 @@
 </cti:linkTabbedContainer>
 
 <%-- START Secondary Menu --%>
-    <div id="menuL2Devices" class="secondary-menu dn">
+    <div id="menuL2Devices" class="secondary-menu<c:if test="${not isDevicesPage}"> dn</c:if>">
         <c:url var="tab_url" value="/commander/select" />
         <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.devices.mct" showPlainText='${false}' href="${tab_url}" />
         |
@@ -73,7 +75,7 @@
         <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.devices.transmitter" showPlainText='${false}' href="${tab_url}" />
     </div>
 
-    <div id="menuL2LoadMgt" class="secondary-menu">
+    <div id="menuL2LoadMgt" class="secondary-menu<c:if test="${not isLoadMngtPage}"> dn</c:if>">
         <c:url var="tab_url" value="/commander/select?category=LMGROUP" />
         <tags:displayOrLink labelKey="yukon.web.menu.config.commanderSelect.lm.group" showPlainText='${false}' href="${tab_url}" />
         |
@@ -136,7 +138,7 @@
                         </tags:nameValue2>
                     </c:if>
                     <tags:nameValue2 nameKey=".executeCommand">
-                        <input type="text" id="command" name="command" size="40" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> value="${currentCommand}">
+                        <input type="text" id="command" name="command" size="40" <cti:isPropertyFalse property="EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> value="${currentCommand}">
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
                 <div class="actionArea stacked">

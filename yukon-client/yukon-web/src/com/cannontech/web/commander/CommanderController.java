@@ -112,7 +112,8 @@ public class CommanderController {
         modelMap.addAttribute("availableCommands", getAvailableCommands(ycBean, lPao, userContext));
         modelMap.addAttribute("menuSelection", getMenuSelection(deviceSearchService.getDeviceCategory(deviceId)));
         modelMap.addAttribute("redirectURI", String.format("%s?deviceId=%d", request.getRequestURI(), deviceId));
-        
+        modelMap.addAttribute("category", DeviceSearchCategory.fromLiteYukonPAObject(lPao));
+
         mapCommonAttributes(ycBean, modelMap, userContext);
 
         return "command.jsp";
