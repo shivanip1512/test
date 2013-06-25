@@ -132,37 +132,41 @@ if(typeof(MeteringBilling) === 'undefined') {
                 type: 'post',
                 data: form.serialize(),
             }).done( function(data) {
-                var success = jQuery("#billing_generation_schedule .f_success");
-                var errors = jQuery("#billing_generation_schedule .f_errors");
+                // Clear existing error indicators + messages
+                form.find("input").removeClass("error").closest("td").find("div.errorMessage").remove();
+                // anything else?
+
                 if (data.success) {
-                    errors.hide().text('');
-                    // Clear out all error indicators
-                    form.find("input").removeClass("error").closest("tr").find("td:nth-child(3)").text('').hide();
                     MeteringBilling._do_refresh_schedules_jobs_list(null, function() {
-                        alert(data.message);
+//                        alert(data.message); // What to do instead of an alert box? Or do we inform the users that it worked?
                         MeteringBilling.reset_generation_tab();
                     });
                     return false;
                 }
-
                 var haveFieldErr = new Object();
                 for(var ii=0; ii < data.errors.length; ii++) {
                     var err = data.errors[ii];
-                    if (haveFieldErr[err.field]) {
+                    if (haveFieldErr[err.field]) { // Display only one message per field
                         continue;
                     }
                     haveFieldErr[err.field] = true;
-                    var field = form.find("[name="+ err.field +"]");
-                    field.addClass("error");
-                    var row = field.closest("tr");
-                    var errTd = row.find("td:nth-child(3)");
-                    if (errTd.length < 1) { // need to create it
-                        errTd = jQuery('<td class="error"></td>');
-                        errTd.appendTo(row);
+                    var field = null;
+                    if (err.field == "scheduledCronString") {
+                        field = form.find("[name="+ err.field +"_cronExpFreq]");
+                        var opt = field.find(":selected");
+                        if (opt.val() == "WEEKLY") {
+                        	form.find("#scheduledCronString_cronExpWeeklyDiv input").addClass("error");
+                        } else if (opt.val() == "CUSTOM") {
+                        	form.find("#scheduledCronString_cronExpCustomDiv input").addClass("error");
+                        }
+                    } else {
+                        field = form.find("[name="+ err.field +"]");
+                        field.addClass("error");
                     }
-                    errTd.text(err.message).show();
+                    var row = field.closest("td");
+                    var errTd = jQuery('<div class="errorMessage">'+ err.message +'</div>');
+                    errTd.appendTo(row);
                 }
-                success.text('').hide();
             });
             return false;
         },

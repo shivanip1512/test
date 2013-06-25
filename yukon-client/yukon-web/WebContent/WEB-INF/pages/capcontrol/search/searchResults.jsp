@@ -5,7 +5,10 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
+<c:set var="showTabs" value='${pageName.equals("orphanedSubs") || pageName.equals("orphanedBuses") || pageName.equals("orphanedFeeders") || pageName.equals("orphanedBanks") || pageName.equals("orphanedCbcs") || pageName.equals("orphanedRegulators")}' />
+
 <cti:standardPage module="capcontrol" page="search.${pageName}">
+<c:if test="${showTabs}">
 <cti:linkTabbedContainer mode="section">
     <cti:msg var="name_sub" key="yukon.web.modules.capcontrol.search.orphanedSubs.tab.title" />
     <c:url var="url_sub" value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubstations__" />
@@ -37,6 +40,7 @@
     <c:set var="tab_on" value='${pageName.equals("orphanedRegulators")}' />
     <cti:linkTab selectorName="${name_reg}" tabHref="${url_reg}" initiallySelected="${tab_on}"/>
 </cti:linkTabbedContainer>
+</c:if>
 
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
     
