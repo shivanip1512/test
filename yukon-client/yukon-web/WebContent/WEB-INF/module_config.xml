@@ -342,7 +342,7 @@
     <skin name="STANDARD" />
     <search bean="drSearchProducer" />
     <pages>
-        <page name="home" type="LANDING">
+        <page name="home" type="BASIC">
             <link>/dr/home</link>
             <pages>
                 <page name="scenarioList" type="BASIC">
@@ -437,78 +437,68 @@
     <css file="/WebConfig/yukon/styles/da/CapcontrolGeneralStyles.css" />
     <search bean="capControlSearchProducer" />
     <pages>
-        <page name="areas.normal" type="LANDING">
-            <link>/capcontrol/tier/areas</link>
+      <page name="areas.normal" type="BASIC">
+        <link>/capcontrol/tier/areas</link>
+        <pages>
+          <page name="areas.special" type="BASIC"/>
+          <page name="area" type="DETAIL">
+            <link>/capcontrol/tier/substations?isSpecialArea=${isSpecialArea}&amp;bc_areaId=${bc_areaId}</link>
+            <labelArgument>${bc_areaName}</labelArgument>
             <pages>
-                <page name="areas.special" type="BASIC">
-                </page>
-                <page name="area" type="DETAIL">
-                    <link>/capcontrol/tier/substations?isSpecialArea=${isSpecialArea}&amp;bc_areaId=${bc_areaId}</link>
-                    <labelArgument>${bc_areaName}</labelArgument>
+              <page name="substation" type="DETAIL">
+                <link>/capcontrol/tier/feeders?isSpecialArea=${isSpecialArea}&amp;substationId=${substationId}</link>
+                <labelArgument>${substationName}</labelArgument>
+                <pages>
+                  <page name="capbankLocations" type="DETAIL_CHILD">
+                    <labelArgument>${substationName}</labelArgument>
+                  </page>
+                  <page name="ivvc.busView" type="DETAIL">
+                    <link>/capcontrol/ivvc/bus/detail?subBusId=${subBusId}&amp;isSpecialArea=${isSpecialArea}</link>
+                    <labelArgument>${subBusName}</labelArgument>
                     <pages>
-                        <page name="substation" type="DETAIL">
-                            <link>/capcontrol/tier/feeders?isSpecialArea=${isSpecialArea}&amp;substationId=${substationId}</link>
-                            <labelArgument>${substationName}</labelArgument>
-                            <pages>
-                                <page name="capbankLocations" type="DETAIL_CHILD">
-                                    <labelArgument>${substationName}</labelArgument>
-                                </page>
-                                <page name="ivvc.busView" type="DETAIL">
-                                    <link>/capcontrol/ivvc/bus/detail?subBusId=${subBusId}&amp;isSpecialArea=${isSpecialArea}</link>
-                                    <labelArgument>${subBusName}</labelArgument>
-                                    <pages>
-                                        <page name="ivvc.zoneDetail" type="DETAIL">
-                                            <link>/capcontrol/ivvc/zone/detail?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
-                                            <labelArgument>${zoneName}</labelArgument>
-                                            <pages>
-                                                <page name="ivvc.voltagePoints" type="DETAIL">
-                                                    <link>/capcontrol/ivvc/zone/voltagePoints?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
-                                                </page>
-                                                <page name="ivvc.zoneVoltageDeltas" type="DETAIL">
-                                                    <link>/capcontrol/ivvc/zone/voltageDeltas?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
-                                                </page>
-                                            </pages>
-                                        </page>
-                                    </pages>
-                                </page>
-                            </pages>
-                        </page>
+                      <page name="ivvc.zoneDetail" type="DETAIL">
+                        <link>/capcontrol/ivvc/zone/detail?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
+                        <labelArgument>${zoneName}</labelArgument>
+                        <pages>
+                          <page name="ivvc.voltagePoints" type="DETAIL">
+                            <link>/capcontrol/ivvc/zone/voltagePoints?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
+                          </page>
+                          <page name="ivvc.zoneVoltageDeltas" type="DETAIL">
+                            <link>/capcontrol/ivvc/zone/voltageDeltas?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
+                          </page>
+                        </pages>
+                      </page>
                     </pages>
-                </page>
-                <page name="scheduleAssignments" type="BASIC">
-                    <link>/capcontrol/schedule/scheduleAssignments</link>
-                </page>
-                <page name="schedules" type="BASIC">
-                    <link>/capcontrol/schedule/schedules</link>
-                </page>
-                <page name="strategies" type="BASIC">
-                    <link>/capcontrol/strategy/strategies</link>
-                </page>
-                <page name="movedCapBanks" type="BASIC">
-                    <link>/capcontrol/move/movedCapBanks</link>
-                </page>
-                <page name="search.general" type="BASIC">
-                </page>
-                <page name="search.orphanedSubs" type="BASIC">
-                </page>
-                <page name="search.orphanedBuses" type="BASIC">
-                </page>
-                <page name="search.orphanedFeeders" type="BASIC">
-                </page>
-                <page name="search.orphanedBanks" type="BASIC">
-                </page>
-                <page name="search.orphanedCbcs" type="BASIC">
-                </page>
-                <page name="search.orphanedRegulators" type="BASIC">
-                </page>
-                <page name="recentEvents" type="DETAIL_CHILD">
-                </page>
+                  </page>
+                </pages>
+              </page>
             </pages>
-        </page>
-        <page name="import" type="BASIC">
-        </page>
+          </page>
+          <page name="scheduleAssignments" type="BASIC">
+            <link>/capcontrol/schedule/scheduleAssignments</link>
+          </page>
+          <page name="schedules" type="BASIC">
+            <link>/capcontrol/schedule/schedules</link>
+          </page>
+          <page name="strategies" type="BASIC">
+            <link>/capcontrol/strategy/strategies</link>
+          </page>
+          <page name="movedCapBanks" type="BASIC">
+            <link>/capcontrol/move/movedCapBanks</link>
+          </page>
+          <page name="search.general" type="BASIC"/>
+          <page name="search.orphanedSubs" type="BASIC"/>
+          <page name="search.orphanedBuses" type="BASIC"/>
+          <page name="search.orphanedFeeders" type="BASIC"/>
+          <page name="search.orphanedBanks" type="BASIC"/>
+          <page name="search.orphanedCbcs" type="BASIC"/>
+          <page name="search.orphanedRegulators" type="BASIC"/>
+          <page name="recentEvents" type="DETAIL_CHILD"/>
+        </pages>
+      </page>
+      <page name="import" type="BASIC"/>
     </pages>
-  </module>
+</module>
 
   <module name="capcontrol_internal">
     <!-- The module is used for the inner frames that are used on the cap control pages. -->

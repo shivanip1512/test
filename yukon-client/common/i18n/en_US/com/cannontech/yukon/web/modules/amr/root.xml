@@ -15,7 +15,8 @@
     <!-- start.jsp -->
     <entry key="yukon.web.modules.amr.moduleName">Metering</entry>
     <entry key="yukon.web.modules.blank.moduleName"></entry>
-    <entry key="yukon.web.modules.amr.meteringStart.pageName">Metering</entry>
+    <entry key="yukon.web.modules.amr.meteringStart.pageName">AMI Dashboard</entry>
+    <entry key="yukon.web.modules.amr.meteringStart.contextualPageName">AMI</entry>
     <entry key="yukon.web.modules.amr.meteringStart.pageTitle">Metering</entry>
 
     <entry key="yukon.web.modules.amr.deviceGroupUpload.pageName">Device Group Upload</entry>

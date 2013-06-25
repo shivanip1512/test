@@ -388,7 +388,8 @@
 <entry key="yukon.web.modules.dr.loadGroup.lastActionFromTimeAfterToTime">Beginning of date range for Last Action must be before or equal to end.</entry>
 
 <!-- Demand Response Home -->
-<entry key="yukon.web.modules.dr.home.pageTitle">Demand Response</entry>
+<entry key="yukon.web.modules.dr.home.contextualPageName">Demand Response</entry>
+<entry key="yukon.web.modules.dr.home.pageName">DR Dashboard</entry>
 <entry key="yukon.web.modules.dr.home.noFavorites">No Favorites</entry>
 <entry key="yukon.web.modules.dr.home.favorites.title">Favorites</entry>
 <entry key="yukon.web.modules.dr.home.quickSearches.title">Quick Searches</entry>
