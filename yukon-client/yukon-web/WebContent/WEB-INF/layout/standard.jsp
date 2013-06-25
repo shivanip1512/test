@@ -117,7 +117,7 @@
 			</c:if>
             <div class="page-actions">
                 <button id="b-page-actions" class="fr dn"><i class="icon icon-cog"></i><i class="icon icon-bullet-arrow-down"></i></button>
-                <input type="text" class="search-field fr" placeholder="search" role="search">
+                <cti:outputContent writable="${searchRenderer}" />
                 <button id="b-search-results" class="fr dn"><i class="disabled icon icon-resultset-first"></i></button>
             </div>
 		</div>

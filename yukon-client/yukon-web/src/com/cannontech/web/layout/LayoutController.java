@@ -50,6 +50,7 @@ import com.cannontech.web.menu.LayoutSkinEnum;
 import com.cannontech.web.menu.ModuleBase;
 import com.cannontech.web.menu.PageInfo;
 import com.cannontech.web.menu.renderer.LeftSideMenuRenderer;
+import com.cannontech.web.menu.renderer.SearchRenderer;
 import com.cannontech.web.menu.renderer.StandardMenuRenderer;
 import com.cannontech.web.taglib.StandardPageInfo;
 import com.cannontech.web.taglib.StandardPageTag;
@@ -67,6 +68,7 @@ public class LayoutController {
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private StandardMenuRenderer stdMenuRender;
+    @Autowired private SearchRenderer searchRenderer;
     
     private List<String> layoutScriptFiles;
     
@@ -127,7 +129,7 @@ public class LayoutController {
         final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
         //used for determining page title etc...
-        ModuleBase moduleBase = getModuleBase(tagInfo.getModuleName());
+        final ModuleBase moduleBase = getModuleBase(tagInfo.getModuleName());
         map.addAttribute("module", moduleBase);
         
         //parse the module_config.xml and figure out our hierarchy for menus etc...
@@ -240,6 +242,13 @@ public class LayoutController {
 					}
                 }
             });
+        	
+        	map.addAttribute("searchRenderer", new Writable() {
+        	    @Override
+                public void write(Writer out) throws IOException {
+        	        searchRenderer.render(moduleBase, request, out);
+                }
+        	});
         	
         	map.addAttribute("bcRenderer", new Writable() {
                 @Override

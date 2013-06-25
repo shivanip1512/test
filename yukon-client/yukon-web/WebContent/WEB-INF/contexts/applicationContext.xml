@@ -93,6 +93,8 @@
     	<constructor-arg value="/WEB-INF/menu_config.xml"/>
     </bean>
     
+    <bean class="com.cannontech.web.menu.renderer.SearchRenderer"/>
+    
     <!-- Search Producers -->
     <bean id="operatorAccountSearchProducer" class="com.cannontech.web.menu.option.producer.OperatorAccountSearchProducer"/>
     <bean id="amrSearchProducer" class="com.cannontech.web.menu.option.producer.MeteringSearchProducer"/>

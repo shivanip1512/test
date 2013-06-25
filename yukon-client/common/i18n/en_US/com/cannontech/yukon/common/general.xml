@@ -3,6 +3,9 @@
 
 <properties>
 
+<entry key="yukon.common.search">Search</entry>
+<entry key="yukon.common.search.placeholder">search</entry>
+
 <entry key="yukon.common.deviceName">Device Name</entry>
 <entry key="yukon.common.route">Route</entry>
 <entry key="yukon.common.address">Address</entry>

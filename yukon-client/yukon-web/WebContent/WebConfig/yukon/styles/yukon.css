@@ -53,8 +53,9 @@ a, .primary_color, .vertical_menu li.selected a, .vertical_menu a:hover, .ui-wid
 .alert {background-color: #FFE6E6 !important;}
 
 /* FORM FIELDS */
-input[type=email], input[type=number], input[type=password], input[type=tel], input[type=text], input[type=url] {
+input[type=email], input[type=number], input[type=password], input[type=tel], input[type=text], input[type=url], select {
 	-webkit-appearance: none;
+	-moz-appearance: none;
 	appearance: none;
 	background: #fff;
 	border: 1px solid #d9d9d9;
@@ -63,17 +64,17 @@ input[type=email], input[type=number], input[type=password], input[type=tel], in
 	-moz-border-radius: 2px;
 	border-radius: 2px;
 	display: inline-block;
-	height: 26px;
 	margin: 0;
-	padding: 0 8px;
+	padding: 2px 5px;
 	-webkit-transition: border .1s ease-in-out,background-color .1s ease-in-out;
     -moz-transition: border .1s ease-in-out,background-color .1s ease-in-out;
     -ms-transition: border .1s ease-in-out,background-color .1s ease-in-out;
     -o-transition: border .1s ease-in-out,background-color .1s ease-in-out;
     transition: border .1s ease-in-out,background-color .1s ease-in-out;
 }
+input[type=email], input[type=number], input[type=password], input[type=tel], input[type=text], input[type=url], select:not(multiple) {height: 26px;}
 
-input[type=email]:hover, input[type=number]:hover, input[type=password]:hover, input[type=tel]:hover, input[type=text]:hover, input[type=url]:hover {
+input[type=email]:hover, input[type=number]:hover, input[type=password]:hover, input[type=tel]:hover, input[type=text]:hover, input[type=url]:hover, select:not(multiple):hover {
 	border: 1px solid #b9b9b9;
 	border-top: 1px solid #a0a0a0;
 	-webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
@@ -81,7 +82,7 @@ input[type=email]:hover, input[type=number]:hover, input[type=password]:hover, i
 	box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
 }
 
-input[type=email]:focus, input[type=number]:focus, input[type=password]:focus, input[type=tel]:focus, input[type=text]:focus, input[type=url]:focus {
+input[type=email]:focus, input[type=number]:focus, input[type=password]:focus, input[type=tel]:focus, input[type=text]:focus, input[type=url]:focus, select:not(multiple):focus {
 	outline: none;
 	border: 1px solid #06c;
 	-webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
@@ -91,6 +92,11 @@ input[type=email]:focus, input[type=number]:focus, input[type=password]:focus, i
 
 input[type=checkbox], input[type=radio] {margin: 3px;}
 input[type=radio]:focus {outline:none;}
+
+/* hack to achieve webkit only css */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    select {background: url(/WebConfig/yukon/Icons/silk/bullet_arrow_down.png) right no-repeat;padding-right: 16px;}
+}
 
 /* VERTICAL MENUS */
 #LeftColumn .info-fragment, #LeftColumn .bumper {border-right: 1px solid #ccc;}
@@ -193,12 +199,11 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 .actionArea select:not([multiple]), .pageActionArea select:not([multiple]) {height: 26px;} 
 .actionArea input[type=text], .pageActionArea input[type=text] {line-height: 22px;}
 .actionArea button, .actionArea .button, .actionArea select:not([multiple]) {float: right;}
-.actionArea select:not([multiple]), .actionArea input[type=text], .actionArea input[type=search],
-.buttonStack select:not([multiple]), .buttonStack input[type=text], .buttonStack input[type=search] { padding: 3px 5px 3px 5px;border-radius: 2px;border: 1px solid #aaa;}
+.ui-dialog .actionArea {padding: 0 10px;}
+
 .pageActionArea {margin-top: 20px;}
 .pageActionArea:before, .pageActionArea:after {content: " ";display: table;}
 .pageActionArea:after {clear: both;}
-.ui-dialog .actionArea {padding: 0 10px;}
 
 .titledContainer .filter_container, .pagedBox .filter_container, .sectionContainer .filter_container {border-bottom: 1px dashed #ccc; margin: 0 0 6px; padding: 0 0 6px;}
 .titledContainer .filter_container a:hover, .titledContainer .filter_container a:focus, .pagedBox .filter_container a:hover, .pagedBox .filter_container a:focus {background: #ddd}
