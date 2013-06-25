@@ -18,7 +18,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
         <title><cti:msg2 key=".pageTitle"/></title>
 
-        <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/reset.css">
+        <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/normalize.css">
         <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/yukon.css">
         <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/shared/loginStyles.css">
 

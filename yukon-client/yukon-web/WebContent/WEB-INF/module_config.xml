@@ -1177,7 +1177,7 @@
                     </page>
                 </pages>
             </page>
-            <page name="inventory.home" type="BLANK">
+            <page name="inventory.home" type="BASIC">
                 <link>/stars/operator/inventory/home</link>
                 <pages>
                     <page name="inventory.list" type="BASIC">
