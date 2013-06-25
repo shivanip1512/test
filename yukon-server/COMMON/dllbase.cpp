@@ -32,7 +32,7 @@
 #include "utility.h"
 #include "shlwapi.h"
 #include "encryption.h"
-
+#include "xml.h"
 #include "thread_monitor.h"
 
 using namespace std;
@@ -104,6 +104,8 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 
             // Set default database connection params
             setDatabaseParams(dbDll, dbName, dbUser, dbPassword);
+
+            Cti::parseXmlFiles( getYukonBase() );
 
             break;
         }

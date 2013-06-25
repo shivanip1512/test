@@ -18,7 +18,7 @@
                             <span class="fl"><i:inline key=".selectLabel"/></span>
                             <select id="configuration" name="configuration" class="fl" style="margin-left:5px;">
                                 <c:forEach var="config" items="${existingConfigs}">
-                                    <option value="${config.id}">${config.name}</option>
+                                    <option value="${config.configurationId}">${config.name}</option>
                                 </c:forEach>
                             </select>
                         </label>

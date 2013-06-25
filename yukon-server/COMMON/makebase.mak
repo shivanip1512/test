@@ -8,20 +8,22 @@ DLLBUILDNAME = -DCTIBASE
 
 INCLPATHS+= \
 -I$(COMMON)\include \
--I$(CPARMS)\include \
+-I$(RESOURCE)\include \
 -I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 -I$(OPENSSL)\include \
 -I$(RW) \
--I$(DBGHELP)\include
+-I$(DBGHELP)\include \
+-I$(XERCES)\include \
 
 .PATH.H = \
 .\include \
 ;$(COMMON)\include \
-;$(CPARMS)\include \
+;$(RESOURCE)\include \
 ;$(BOOST_INCLUDE) \
 ;$(RW) \
 ;$(SQLAPI)\include \
+;$(XERCES)\include \
 
 
 BASEOBJS=\
@@ -89,6 +91,9 @@ configkey.obj \
 cparms.obj \
 encryption.obj \
 BeatThePeakAlertLevel.obj \
+xml.obj \
+DeviceAttributeLookup.obj \
+
 
 CTIPROGS=\
 ctibase.dll
@@ -98,6 +103,7 @@ WINLIBS=kernel32.lib user32.lib advapi32.lib wsock32.lib winmm.lib
 
 SQLAPILIB=$(SQLAPI)\lib\$(SQLAPI_LIB).lib
 
+XERCESCLIB=$(XERCES)\lib\$(XERCES_LIB).lib
 
 COMMON_FULLBUILD = $[Filename,$(OBJ),CommonFullBuild,target]
 
@@ -117,7 +123,7 @@ $(COMMON_FULLBUILD):
 ctibase.dll:    $(COMMON_FULLBUILD) $(BASEOBJS) Makefile $(OBJ)\ctibase.res
                 @build -nologo -f $(_InputFile) id
                 @%cd $(OBJ)
-                $(CC) $(BASEOBJS) id_ctibase.obj $(WINLIBS) $(SQLAPILIB) $(OPENSSL_LIBS) $(DLLFLAGS) $(RWLIBS) $(BOOST_LIBS) $(DBGHELP_LIBS) shlwapi.lib /Fe..\$@ $(LINKFLAGS) ctibase.res
+                $(CC) $(BASEOBJS) id_ctibase.obj $(WINLIBS) $(SQLAPILIB) $(XERCESCLIB) $(OPENSSL_LIBS) $(DLLFLAGS) $(RWLIBS) $(BOOST_LIBS) $(DBGHELP_LIBS) shlwapi.lib /Fe..\$@ $(LINKFLAGS) ctibase.res
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -294,15 +300,20 @@ desolvers.obj:	precompiled.h desolvers.h dlldefs.h dsm2.h cticonnect.h \
 		dsm2err.h words.h optional.h resolvers.h pointtypes.h \
 		db_entry_defines.h devicetypes.h logger.h thread.h \
 		CtiPCPtrQueue.h
+deviceattributelookup.obj:	precompiled.h DeviceAttributeLookup.h \
+		resolvers.h types.h pointtypes.h dlldefs.h db_entry_defines.h \
+		PointAttribute.h yukon.h ctidbgmem.h
 dllbase.obj:	precompiled.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
 		words.h optional.h dbaccess.h dllbase.h ctinexus.h logger.h \
-		thread.h CtiPCPtrQueue.h encryption.h thread_monitor.h \
-		smartmap.h boostutil.h readers_writer_lock.h \
-		critical_section.h cparms.h rwutil.h database_connection.h \
-		database_reader.h row_reader.h boost_time.h configkey.h \
-		configval.h queue.h string_utility.h thread_register_data.h
+		thread.h CtiPCPtrQueue.h encryption.h xml.h resolvers.h \
+		pointtypes.h db_entry_defines.h resource_ids.h \
+		PointAttribute.h thread_monitor.h smartmap.h boostutil.h \
+		readers_writer_lock.h critical_section.h cparms.h rwutil.h \
+		database_connection.h database_reader.h row_reader.h \
+		boost_time.h configkey.h configval.h queue.h string_utility.h \
+		thread_register_data.h
 elog_cli.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		dsm2.h cticonnect.h yukon.h ctidbgmem.h netports.h mutex.h \
 		guard.h utility.h ctitime.h queues.h numstr.h dsm2err.h \
@@ -517,6 +528,11 @@ xfer.obj:	precompiled.h xfer.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
 		words.h optional.h
+xml.obj:	precompiled.h devicetypes.h logger.h dlldefs.h thread.h \
+		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
+		os2_2w32.h types.h numstr.h CtiPCPtrQueue.h xml.h resolvers.h \
+		pointtypes.h db_entry_defines.h resource_ids.h \
+		PointAttribute.h yukon.h ctidbgmem.h DeviceAttributeLookup.h
 #ENDUPDATE#
 
 include $(COMPILEBASE)\versioninfo.inc

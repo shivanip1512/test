@@ -15,7 +15,6 @@ INCLPATHS+= \
 -I$(SERVICE)\include \
 -I$(PIL)\include \
 -I$(SERVER)\include \
--I$(CPARMS)\include \
 -I$(MSG)\include \
 -I$(PROT)\include \
 -I$(BOOST_INCLUDE) \
@@ -35,7 +34,6 @@ INCLPATHS+= \
 ;$(RTDB)\include \
 ;$(SCANNER)\include \
 ;$(PORTER)\include \
-;$(CPARMS)\include \
 ;$(SERVICE)\include \
 ;$(SERVER)\include \
 ;$(PIL)\include \

@@ -353,7 +353,7 @@
 
                 <cti:checkRolesAndProperties value="ADMIN_VIEW_CONFIG">
                     <tags:sectionLink>
-                        <a href="<cti:url value="/deviceConfiguration?home"/>"><cti:msg key="yukon.web.deviceConfiguration"/></a>
+                        <a href="<cti:url value="/deviceConfiguration/home"/>"><cti:msg key="yukon.web.deviceConfiguration"/></a>
                     </tags:sectionLink>
                 </cti:checkRolesAndProperties>
 

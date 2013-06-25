@@ -20,7 +20,6 @@ INCLPATHS+= \
 ;$(DATABASE)\include \
 ;$(SCANNER)\include \
 ;$(PORTER)\include \
-;$(CPARMS)\include \
 ;$(SERVICE)\include \
 ;$(SERVER)\include \
 ;$(PIL)\include \

@@ -55,7 +55,7 @@ import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.cbc.validators.CapControlCreationModelValidator;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
-import com.cannontech.common.device.config.model.ConfigurationBase;
+import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -187,9 +187,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private ControlAlgorithm currentControlAlgorithm;
     private ControlMethod currentControlMethod;
     
-    public ConfigurationBase getDefaultDnpConfiguration() {
-        ConfigurationBase configurationBase = deviceConfigurationDao.getDefaultDNPConfiguration();
-        return configurationBase;
+    public DeviceConfiguration getDefaultDnpConfiguration() {
+        DeviceConfiguration configuration = deviceConfigurationDao.getDefaultDNPConfiguration();
+        return configuration;
     }
     
     /**

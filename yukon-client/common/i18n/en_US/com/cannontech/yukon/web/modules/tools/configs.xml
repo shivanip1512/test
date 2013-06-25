@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    
+    <!-- format:
+      first page yukon.web.modules.tools.configs
+      child pages: yukon.web.modules.tools.configs.config
+                   yukon.web.modules.tools.configs.category
+                   yukon.web.modules.tools.configs.setup
+     -->
+    
+    <!-- configs.enum.s -->
+    <entry key="yukon.web.modules.tools.configs.enum.relayTiming.seconds">{0} sec</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.relayTiming.millis">{0} ms</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.relayTiming.both">{0} sec {1} ms</entry>
+    
+    <entry key="yukon.web.modules.tools.configs.enum.tableReadInterval.minutes">{0} min</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.tableReadInterval.seconds">{0} sec</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.tableReadInterval.both">{0} min {1} sec</entry>
+    
+    <entry key="yukon.web.modules.tools.configs.enum.meterType.channelNotUsed">Channel Not Used</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.meterType.electronicMeter">Electronic Meter</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.meterType.twoWire">2-wire KYZ (form A)</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.meterType.threeWire">3-wire KYZ (form C)</entry>
+    
+    <entry key="yukon.web.modules.tools.configs.enum.whResolution.minusTwo">0.01 Wh</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.whResolution.minusOne">0.1 Wh</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.whResolution.zero">1.0 Wh</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.whResolution.one">10.0 Wh</entry>
+
+    <entry key="yukon.web.modules.tools.configs.enum.demandResolution.zero">1.0 W</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.demandResolution.one">10.0 W</entry>
+    
+    <entry key="yukon.web.modules.tools.configs.enum.electronicMeter.none">None</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.electronicMeter.s4">S4</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.electronicMeter.alphaA3">Alpha A3</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.electronicMeter.alphaPPlus">Alpha P+</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.electronicMeter.gekv">GEKV</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.electronicMeter.gekv2">GEKV2</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.electronicMeter.sentinel">Sentinel</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.electronicMeter.dnp">DNP</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.electronicMeter.gekv2c">GEKV2C</entry>
+    
+    <entry key="yukon.web.modules.tools.configs.enum.schedules.schedule1">Schedule 1</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.schedules.schedule2">Schedule 2</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.schedules.schedule3">Schedule 3</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.schedules.schedule4">Schedule 4</entry>
+
+    <entry key="yukon.web.modules.tools.configs.enum.dst.est">EST</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.dst.cst">CST</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.dst.mst">MST</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.dst.pst">PST</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.dst.alaska">Alaska</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.dst.hawaii">Hawaii</entry>
+
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.slotDisabled">Slot Disabled</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.noSegments">No Segments</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.allSegments">All Segments</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.currentLocalTime">Current Local Time</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.currentLocalDate">Current Local Date</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.totalKwh">Total kWh</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.netKwh">Net kWh</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.deliveredKwh">Delivered kWh</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.reverseKwh">Reverse kWh</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.lastIntervalKw">Last Interval kW</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.peakKw">Peak kW</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.peakKwDate">Peak kW Date</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.peakKwTime">Peak kW Time</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.lastIntervalVoltage">Last Interval Voltage</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.peakVoltage">Peak Voltage</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.peakVoltageDate">Peak Voltage Date</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.peakVoltageTime">Peak Voltage Time</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.minimumVoltage">Minimum Voltage</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.minimumVoltageDate">Minimum Voltage Date</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.minimumVoltageTime">Minimum Voltage Time</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.touRateAKwh">TOU Rate A kWh</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.touRateAPeakKw">TOU Rate A Peak kW</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.touRateADateOfPeakKw">TOU Rate A Date of Peak kW</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.touRateATimeOfPeakKw">TOU Rate A Time of Peak kW</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.touRateBKwh">TOU Rate B kWh</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.touRateBPeakKw">TOU Rate B Peak kW</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.touRateBDateOfPeakKw">TOU Rate B Date of Peak kW</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.touRateBTimeOfPeakKw">TOU Rate B Time of Peak kW</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.touRateCKwh">TOU Rate C kWh</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.touRateCPeakKw">TOU Rate C Peak kW</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.touRateCDateOfPeakKw">TOU Rate C Date of Peak kW</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.touRateCTimeOfPeakKw">TOU Rate C Time of Peak kW</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.touRateDKwh">TOU Rate D kWh</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.touRateDPeakKw">TOU Rate D Peak kW</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.touRateDDateOfPeakKw">TOU Rate D Date of Peak kW</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.displayItem.touRateDTimeOfPeakKw">TOU Rate D Time of Peak kW</entry>
+
+    <!-- Configuration Category Messages -->
+    <entry key="yukon.web.modules.tools.configs.category.dst.title">MCT Daylight Savings Time</entry>
+    <entry key="yukon.web.modules.tools.configs.category.dst.timeZoneOffset">Time Zone Offset</entry>
+    <entry key="yukon.web.modules.tools.configs.category.dst.timeZoneOffset.description">Signed offset from UTC.</entry>
+    
+    <entry key="yukon.web.modules.tools.configs.category.meterParameters.title">MCT-420 Meter Parameters</entry>
+    <entry key="yukon.web.modules.tools.configs.category.meterParameters.lcdCycleTime">LCD Cycle Time</entry>
+    <entry key="yukon.web.modules.tools.configs.category.meterParameters.lcdCycleTime.description">The number of seconds the LCD displays an item before cycling.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.meterParameters.displayDigits">Display Digits</entry>
+    <entry key="yukon.web.modules.tools.configs.category.meterParameters.displayDigits.description">The number of kWh digits displayed on the LCD panel.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.meterParameters.disconnectDisplayDisabled">Disconnect Display Disabled</entry>
+    <entry key="yukon.web.modules.tools.configs.category.meterParameters.disconnectDisplayDisabled.description">Whether the meter's disconnect display is enabled or disabled.</entry>
+    
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.title">MCT-420 Display Items</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem1">Display Item 1</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem2">Display Item 2</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem3">Display Item 3</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem4">Display Item 4</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem5">Display Item 5</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem6">Display Item 6</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem7">Display Item 7</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem8">Display Item 8</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem9">Display Item 9</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem10">Display Item 10</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem11">Display Item 11</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem12">Display Item 12</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem13">Display Item 13</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem14">Display Item 14</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem15">Display Item 15</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem16">Display Item 16</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem17">Display Item 17</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem18">Display Item 18</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem19">Display Item 19</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem20">Display Item 20</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem21">Display Item 21</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem22">Display Item 22</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem23">Display Item 23</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem24">Display Item 24</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem25">Display Item 25</entry>
+    <entry key="yukon.web.modules.tools.configs.category.displayItems.displayItem26">Display Item 26</entry>
+    
+    <entry key="yukon.web.modules.tools.configs.category.mct440DemandLoadProfile.title">MCT-440 Demand and Load Profile</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440DemandLoadProfile.kwProfileInterval">kW/kVar Profile Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440DemandLoadProfile.kwProfileInterval.description">Interval in minutes over which most recent demand is calculated</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440DemandLoadProfile.voltageProfileInterval">Voltage Profile Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440DemandLoadProfile.voltageProfileInterval.description">Interval in minutes over which most recent demand is calculated</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440DemandLoadProfile.demandInterval">Demand Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440DemandLoadProfile.demandInterval.description">Interval in minutes over which most recent demand is calculated</entry>
+
+    <entry key="yukon.web.modules.tools.configs.category.mct440Configuration.title">MCT-440 Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Configuration.enableDst">Enable DST</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Configuration.enableDst.description">If this is set, the device will action any DST changes. Clearing this will force the DST Active flag to zero.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Configuration.timeAdjustTolerance">Time Adjust Tolerance</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Configuration.timeAdjustTolerance.description">Update the RTC if it is this far away from the incoming time sync</entry>
+
+    <entry key="yukon.web.modules.tools.configs.category.mct440Addressing.title">MCT-440 Addressing</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Addressing.bronzeAddress">Bronze Address</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Addressing.leadAddress">Lead Address</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Addressing.collectionAddress">Collection Address</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Addressing.serviceProviderId">Service Provider ID</entry>
+
+    <entry key="yukon.web.modules.tools.configs.category.mct440PhaseLoss.title">MCT-440 Phase Loss</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440PhaseLoss.phaseLossThreshold">Phase Loss Threshold</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440PhaseLoss.phaseLossThreshold.description">Phase loss threshold in percentage.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440PhaseLoss.phaseLossDuration">Phase Loss Duration</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440PhaseLoss.phaseLossDuration.description">Phase loss duration in seconds.</entry>
+
+    <entry key="yukon.web.modules.tools.configs.category.mct440Tou.title">MCT-440 Time of Use - KYZ Inputs</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Tou.schedule1">Schedule 1</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Tou.schedule2">Schedule 2</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Tou.schedule3">Schedule 3</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Tou.schedule4">Schedule 4</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Tou.days">Days</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Tou.time0">Midnight</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Tou.midnightTime">00:00</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Tou.time1">Time</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Tou.time2">Time</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Tou.time3">Time</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Tou.time4">Time</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Tou.time5">Time</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Tou.time6">Time</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Tou.time7">Time</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Tou.time8">Time</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Tou.time9">Time</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Tou.holiday">Holiday</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Tou.weekday">Monday-Friday</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Tou.saturday">Saturday</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct440Tou.sunday">Sunday</entry>
+
+    <entry key="yukon.web.modules.tools.configs.category.dnp.title">DNP Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.category.dnp.internalRetries">Internal Retries</entry>
+    <entry key="yukon.web.modules.tools.configs.category.dnp.internalRetries.description">The number of retries the DNP Application Layer will attempt before reporting an error out to the device. Default: 2.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.dnp.localTime">Use Local Time</entry>
+    <entry key="yukon.web.modules.tools.configs.category.dnp.localTime.description">Enable to have Yukon interpret and send times as local instead of UTC. Default: false.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.dnp.enableDnpTimesyncs">Enable DNP Timesyncs</entry>
+    <entry key="yukon.web.modules.tools.configs.category.dnp.enableDnpTimesyncs.description">Enable to turn on DNP timesyncs. Default: false.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.dnp.omitTimeRequest">Omit Time Request</entry>
+    <entry key="yukon.web.modules.tools.configs.category.dnp.omitTimeRequest.description">Enable to allow DNP scans to omit time request. Default: false.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.dnp.enableUnsolicitedMessages">Enable Unsolicited Messages</entry>
+    <entry key="yukon.web.modules.tools.configs.category.dnp.enableUnsolicitedMessages.description">Enable to allow sending of unsolicited messages following a device restart. Default: true.</entry>
+
+    <entry key="yukon.web.modules.tools.configs.category.mct470DemandLoadProfile.title">MCT-470 Demand and Load Profile</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470DemandLoadProfile.demandInterval">Demand Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470DemandLoadProfile.demandInterval.description">Interval in minutes over which most recent demand is calculated</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470DemandLoadProfile.loadProfileInterval1">Load Profile Interval 1</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470DemandLoadProfile.loadProfileInterval1.description">Interval in minutes over which load profile values are kept.</entry>
+
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.title">MCT-470 Load Profile Channels</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel1Type">Channel #1 Meter Type</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel1Type.description">Used to determine which type of meter will populate load profile channel 1</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel1PhysicalChannel">Channel #1 Physical Channel</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel1PhysicalChannel.description">The channel of the attached meter.  In the case of a pulse meter, this indicates which physical KYZ channel of the MCT-470’s daughter board the pulse meter is attached to. In the case of an electronic meter, this indicates which load profile channel of that electronic meter to retrieve.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel1Multiplier">Channel #1 KYZ Multiplier</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel1Multiplier.description">Metering Ratio and K-Value</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel1LoadProfileResolution">Channel #1 Load Profile Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel1LoadProfileResolution.description">Resolution power for load profile.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel1PeakKWResolution">Channel #1 Peak KW Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel1PeakKWResolution.description">Resolution power for peak KW.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel1LastIntervalDemandResolution">Channel #1 Last Interval Demand Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel1LastIntervalDemandResolution.description">Resolution power for last interval demand.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel2Type">Channel #2 Meter Type</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel2Type.description">Used to determine which type of meter will populate load profile channel 2</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel2PhysicalChannel">Channel #2 Physical Channel</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel2PhysicalChannel.description">The channel of the attached meter.  In the case of a pulse meter, this indicates which physical KYZ channel of the MCT-470’s daughter board the pulse meter is attached to. In the case of an electronic meter, this indicates which load profile channel of that electronic meter to retrieve.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel2Multiplier">Channel #2 KYZ Multiplier</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel2Multiplier.description">Metering Ratio and K-Value</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel2LoadProfileResolution">Channel #2 Load Profile Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel2LoadProfileResolution.description">Resolution power for load profile.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel2PeakKWResolution">Channel #2 Peak KW Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel2PeakKWResolution.description">Resolution power for peak KW.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel2LastIntervalDemandResolution">Channel #2 Last Interval Demand Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel2LastIntervalDemandResolution.description">Resolution power for last interval demand.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel3Type">Channel #3 Meter Type</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel3Type.description">Used to determine which type of meter will populate load profile channel 3</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel3PhysicalChannel">Channel #3 Physical Channel</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel3PhysicalChannel.description">The channel of the attached meter.  In the case of a pulse meter, this indicates which physical KYZ channel of the MCT-470’s daughter board the pulse meter is attached to. In the case of an electronic meter, this indicates which load profile channel of that electronic meter to retrieve.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel3Multiplier">Channel #3 KYZ Multiplier</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel3Multiplier.description">Metering Ratio and K-Value</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel3LoadProfileResolution">Channel #3 Load Profile Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel3LoadProfileResolution.description">Resolution power for load profile.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel3PeakKWResolution">Channel #3 Peak KW Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel3PeakKWResolution.description">Resolution power for peak KW.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel3LastIntervalDemandResolution">Channel #3 Last Interval Demand Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel3LastIntervalDemandResolution.description">Resolution power for last interval demand.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel4Type">Channel #4 Meter Type</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel4Type.description">Used to determine which type of meter will populate load profile channel 4</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel4PhysicalChannel">Channel #4 Physical Channel</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel4PhysicalChannel.description">The channel of the attached meter.  In the case of a pulse meter, this indicates which physical KYZ channel of the MCT-470’s daughter board the pulse meter is attached to. In the case of an electronic meter, this indicates which load profile channel of that electronic meter to retrieve.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel4Multiplier">Channel #4 KYZ Multiplier</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel4Multiplier.description">Metering Ratio and K-Value</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel4LoadProfileResolution">Channel #4 Load Profile Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel4LoadProfileResolution.description">Resolution power for load profile.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel4PeakKWResolution">Channel #4 Peak KW Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel4PeakKWResolution.description">Resolution power for peak KW.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel4LastIntervalDemandResolution">Channel #4 Last Interval Demand Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470LoadProfileChannels.channel4LastIntervalDemandResolution.description">Resolution power for last interval demand.</entry>
+
+    <entry key="yukon.web.modules.tools.configs.category.mct470ConfigurationByte.title">MCT-470 Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470ConfigurationByte.enableDst">Enable DST</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470ConfigurationByte.enableDst.description">If this is set, the device will action any DST changes.  Clearing this will force the DST Active flag to zero.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470ConfigurationByte.electronicMeter">Electronic Meter</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470ConfigurationByte.timeAdjustTolerance">Time Adjust Tolerance</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470ConfigurationByte.timeAdjustTolerance.description">Update the RTC if it is this far away from the incoming time sync</entry>
+
+    <entry key="yukon.web.modules.tools.configs.category.addressing.title">MCT-430/470 Addressing</entry>
+    <entry key="yukon.web.modules.tools.configs.category.addressing.serviceProviderId">Service Provider ID</entry>
+
+    <entry key="yukon.web.modules.tools.configs.category.relays.title">MCT-470 Relays</entry>
+    <entry key="yukon.web.modules.tools.configs.category.relays.relayATimer">Relay A Timer</entry>
+    <entry key="yukon.web.modules.tools.configs.category.relays.relayATimer.description">Time the relay will remain closed in 250ms increments</entry>
+    <entry key="yukon.web.modules.tools.configs.category.relays.relayBTimer">Relay B Timer</entry>
+    <entry key="yukon.web.modules.tools.configs.category.relays.relayBTimer.description">Time the relay will remain closed in 250ms increments</entry>
+    
+    <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.title">MCT-470 Precanned Table</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.tableReadInterval">Table Read Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.tableReadInterval.description">Seconds between each read of the attached IED. In 15 second increments.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.meterNumber">Meter Number</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.meterNumber.description">Meter number to be read</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.tableType">Table Type</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.tableType.description">Table to use. Use caution when changing.</entry>
+
+    <entry key="yukon.web.modules.tools.configs.rate">Rate</entry>
+
+    <entry key="yukon.web.modules.tools.configs.category.tou.title">MCT-470 Time of Use - KYZ Inputs</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.schedule1">Schedule 1</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.schedule2">Schedule 2</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.schedule3">Schedule 3</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.schedule4">Schedule 4</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.time0">Midnight</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.midnightTime">00:00</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.time1">Time</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.time2">Time</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.time3">Time</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.time4">Time</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.time5">Time</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.defaultRate">Default Rate</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.holiday">Holiday</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.monday">Monday</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.tuesday">Tuesday</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.wednesday">Wednesday</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.thursday">Thursday</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.friday">Friday</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.saturday">Saturday</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.sunday">Sunday</entry>
+
+    <entry key="yukon.web.modules.tools.configs.category.mct430DemandLoadProfile.title">MCT-430 Demand and Load Profile</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430DemandLoadProfile.demandInterval">Demand Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430DemandLoadProfile.demandInterval.description">Interval in minutes over which most recent demand is calculated</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430DemandLoadProfile.loadProfileInterval1">Load Profile Interval 1</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430DemandLoadProfile.loadProfileInterval1.description">Interval in minutes over which load profile values are kept. Valid values are 5, 15, 30, and 0</entry>
+
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.title">MCT-430 Load Profile Channels</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel1Type">Channel #1 Meter Type</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel1Type.description">Used to determine which type of meter will populate load profile channel 1</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel1PhysicalChannel">Channel #1 Physical Channel</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel1PhysicalChannel.description">The channel of the attached meter.  In the case of a pulse meter, this indicates which physical KYZ channel of the MCT-470’s daughter board the pulse meter is attached to. In the case of an electronic meter, this indicates which load profile channel of that electronic meter to retrieve.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel1LoadProfileResolution">Channel #1 Load Profile Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel1LoadProfileResolution.description">Resolution power for load profile.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel1PeakKWResolution">Channel #1 Peak KW Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel1PeakKWResolution.description">Resolution power for peak KW.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel1LastIntervalDemandResolution">Channel #1 Last Interval Demand Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel1LastIntervalDemandResolution.description">Resolution power for last interval demand.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel2Type">Channel #2 Meter Type</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel2Type.description">Used to determine which type of meter will populate load profile channel 2</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel2PhysicalChannel">Channel #2 Physical Channel</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel2PhysicalChannel.description">The channel of the attached meter.  In the case of a pulse meter, this indicates which physical KYZ channel of the MCT-470’s daughter board the pulse meter is attached to. In the case of an electronic meter, this indicates which load profile channel of that electronic meter to retrieve.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel2LoadProfileResolution">Channel #2 Load Profile Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel2LoadProfileResolution.description">Resolution power for load profile.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel2PeakKWResolution">Channel #2 Peak KW Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel2PeakKWResolution.description">Resolution power for peak KW.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel2LastIntervalDemandResolution">Channel #2 Last Interval Demand Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel2LastIntervalDemandResolution.description">Resolution power for last interval demand.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel3Type">Channel #3 Meter Type</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel3Type.description">Used to determine which type of meter will populate load profile channel 3</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel3PhysicalChannel">Channel #3 Physical Channel</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel3PhysicalChannel.description">The channel of the attached meter.  In the case of a pulse meter, this indicates which physical KYZ channel of the MCT-470’s daughter board the pulse meter is attached to. In the case of an electronic meter, this indicates which load profile channel of that electronic meter to retrieve.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel3LoadProfileResolution">Channel #3 Load Profile Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel3LoadProfileResolution.description">Resolution power for load profile.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel3PeakKWResolution">Channel #3 Peak KW Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel3PeakKWResolution.description">Resolution power for peak KW.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel3LastIntervalDemandResolution">Channel #3 Last Interval Demand Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel3LastIntervalDemandResolution.description">Resolution power for last interval demand.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel4Type">Channel #4 Meter Type</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel4Type.description">Used to determine which type of meter will populate load profile channel 4</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel4PhysicalChannel">Channel #4 Physical Channel</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel4PhysicalChannel.description">The channel of the attached meter.  In the case of a pulse meter, this indicates which physical KYZ channel of the MCT-470’s daughter board the pulse meter is attached to. In the case of an electronic meter, this indicates which load profile channel of that electronic meter to retrieve.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel4LoadProfileResolution">Channel #4 Load Profile Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel4LoadProfileResolution.description">Resolution power for load profile.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel4PeakKWResolution">Channel #4 Peak KW Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel4PeakKWResolution.description">Resolution power for peak KW.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel4LastIntervalDemandResolution">Channel #4 Last Interval Demand Resolution</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430LoadProfileChannels.channel4LastIntervalDemandResolution.description">Resolution power for last interval demand.</entry>
+    
+    <entry key="yukon.web.modules.tools.configs.category.mct430ConfigurationByte.title">MCT-430 Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430ConfigurationByte.enableDst">Enable DST</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430ConfigurationByte.enableDst.description">If this is set, the device will action any DST changes.  Clearing this will force the DST Active flag to zero.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430ConfigurationByte.timeAdjustTolerance">Time Adjust Tolerance</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430ConfigurationByte.timeAdjustTolerance.description">Update the RTC if it is this far away from the incoming time sync</entry>
+
+    <entry key="yukon.web.modules.tools.configs.category.mct430PrecannedTable.title">MCT-430 Precanned Table</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430PrecannedTable.tableReadInterval">Table Read Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430PrecannedTable.tableReadInterval.description">Seconds between each read of the attached IED. In 15 second increments.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430PrecannedTable.tableType">Table Type</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mct430PrecannedTable.tableType.description">Table to use. Use caution when changing.</entry>
+    
+    <entry key="yukon.web.modules.tools.configs.categoryName">Category Name</entry>
+
+    <entry key="yukon.web.modules.tools.configs.remove.label">Delete</entry>
+    
+    <entry key="yukon.web.modules.tools.configs.confirmDelete.title">Confirm Delete</entry>
+    <entry key="yukon.web.modules.tools.configs.confirmSave.title">Confirm Save</entry>
+    <entry key="yukon.web.modules.tools.configs.confirmRemove.title">Confirm Remove</entry>
+    
+    <!-- home.jsp -->
+    <entry key="yukon.web.modules.tools.configs.pageName">Device Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.contextualPageName">Device Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.configDetails.table.noConfigs">There are no existing configurations.</entry>
+    <entry key="yukon.web.modules.tools.configs.configDetails.table.toCreate">To create a new configuration, click the Create button below.</entry>
+    <entry key="yukon.web.modules.tools.configs.configDetails.table.configName">Configuration Name</entry>
+    <entry key="yukon.web.modules.tools.configs.configDetails.table.numDevices">Number of Devices</entry>
+    <entry key="yukon.web.modules.tools.configs.categoryDetails.table.noCategories">There are no existing categories.</entry>
+    <entry key="yukon.web.modules.tools.configs.categoryDetails.table.toCreate">To create a new category, click the Create button below.</entry>
+    <entry key="yukon.web.modules.tools.configs.categoryDetails.table.categoryName">Category Name</entry>
+    <entry key="yukon.web.modules.tools.configs.categoryDetails.table.categoryType">Category Type</entry>
+    <entry key="yukon.web.modules.tools.configs.categoryDetails.table.numConfigs">Configurations</entry>
+    <entry key="yukon.web.modules.tools.configs.existingConfigs">Existing Configurations</entry>
+    <entry key="yukon.web.modules.tools.configs.existingCategories">Existing Categories</entry>
+    
+    <!-- create.jsp -->
+    <entry key="yukon.web.modules.tools.configs.setup.pageName">Create Device Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.setup.contextualPageName">Create</entry>
+    <entry key="yukon.web.modules.tools.configs.setup.supportedTypes">Supported Device Types</entry>
+    <entry key="yukon.web.modules.tools.configs.setup.directions">Select the device types which this device configuration will support.</entry>
+    <entry key="yukon.web.modules.tools.configs.setup.meter.title">Meter</entry>
+    <entry key="yukon.web.modules.tools.configs.setup.rtu.title">RTU</entry>
+    <entry key="yukon.web.modules.tools.configs.setup.cbc.title">Cap Bank Controller</entry>
+    
+    <!-- general entries -->
+    <entry key="yukon.web.modules.tools.configs.errorsExist">Errors exist in the submitted form. Please correct the problem(s) and submit again.</entry>
+    <entry key="yukon.web.modules.tools.configs.noSelectedTypes">At least one device type must be selected.</entry>
+    <entry key="yukon.web.modules.tools.configs.noneSelected">None selected</entry>
+
+    <!-- category entries -->
+    <entry key="yukon.web.modules.tools.configs.category.VIEW.pageName">Category</entry>
+    <entry key="yukon.web.modules.tools.configs.category.VIEW.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.tools.configs.category.VIEW.contextualPageName">View</entry>
+    <entry key="yukon.web.modules.tools.configs.category.EDIT.pageName">Edit Category</entry>
+    <entry key="yukon.web.modules.tools.configs.category.EDIT.contextualPageName">Edit</entry>
+    
+    <entry key="yukon.web.modules.tools.configs.category.CREATE.pageName">Create Category</entry>
+    <entry key="yukon.web.modules.tools.configs.category.CREATE.contextualPageName">Create</entry>
+    
+    <entry key="yukon.web.modules.tools.configs.category.categoryFields">Category Fields</entry>
+    <entry key="yukon.web.modules.tools.configs.category.confirmRemove.message">Are you sure you want to delete this category?</entry>
+    <entry key="yukon.web.modules.tools.configs.category.confirmSave.message">Modifying this category will affect all configurations it belongs to, and as a result, all devices those configurations are assigned to. Are you sure you want to modify this category?</entry>
+    <entry key="yukon.web.modules.tools.configs.category.saveSuccess">Device configuration category was successfully written to the database.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.deleteSuccess">Device configuration category was successfully removed from the database.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.emptyName">Category name must not be empty.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.nonNumber">A non-number value was submitted for this field.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.emptyValue">No value was supplied for this field.</entry>
+
+    <!-- configuration entries -->
+    <entry key="yukon.web.modules.tools.configs.config.VIEW.pageName">Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.config.VIEW.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.tools.configs.config.VIEW.contextualPageName">View</entry>
+    
+    <entry key="yukon.web.modules.tools.configs.config.EDIT.pageName">Edit Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.config.CREATE.pageName">Create Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.config.saveSuccess">Device configuration category was successfully written to the database.</entry>
+    <entry key="yukon.web.modules.tools.configs.config.deleteSuccess">Device configuration was successfully removed from the database.</entry>
+    <entry key="yukon.web.modules.tools.configs.config.emptyName">Configuration name must not be empty.</entry>
+    <entry key="yukon.web.modules.tools.configs.config.noCategoryChosen">No category of this type was selected.</entry>
+    <entry key="yukon.web.modules.tools.configs.config.configName">Configuration Name</entry>
+    <entry key="yukon.web.modules.tools.configs.config.configCategories">Device Configuration Categories</entry>
+    <entry key="yukon.web.modules.tools.configs.config.confirmRemove.message">Are you sure you want to delete this configuration?</entry>
+    <entry key="yukon.web.modules.tools.configs.config.confirmSave.message">Modifying this configuration will affect all devices it is assigned to. Are you sure you want to modify this configuration?</entry>
+    <entry key="yukon.web.modules.tools.configs.config.configCategories.description">Choose an existing instance of each of the categories below or create new categories to use for this configuration.</entry>
+    <entry key="yukon.web.modules.tools.configs.config.missingCategories">This device configuration is missing selections for the following category types: {0}. Please select a category for each of these types.</entry>
+    
+</properties>

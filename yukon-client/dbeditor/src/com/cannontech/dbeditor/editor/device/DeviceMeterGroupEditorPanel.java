@@ -13,7 +13,7 @@ import javax.swing.event.CaretListener;
 import javax.swing.text.JTextComponent;
 
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
-import com.cannontech.common.device.config.model.ConfigurationBase;
+import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.groups.service.FixedDeviceGroupingHack;
 import com.cannontech.common.device.groups.service.FixedDeviceGroups;
 import com.cannontech.common.device.groups.util.DeviceGroupUtil;
@@ -1125,15 +1125,17 @@ public void setValue(Object val)
 		 getChannel4CheckBox().setVisible(false);
 	  } else if( deviceType == PAOGroups.MCT470 || DeviceTypesFuncs.isMCT430(deviceType) ) {
 	      SimpleDevice device = new SimpleDevice(mctBase.getPAObjectID(), deviceType);
-          ConfigurationBase config = deviceConfigDao.findConfigurationForDevice(device);
           SwingUtil.setCheckBoxState(getChannel1CheckBox(), new Character(loadProfileCollection.charAt(0)));
           SwingUtil.setCheckBoxState(getChannel2CheckBox(), new Character(loadProfileCollection.charAt(1)));
           SwingUtil.setCheckBoxState(getChannel3CheckBox(), new Character(loadProfileCollection.charAt(2)));
           SwingUtil.setCheckBoxState(getChannel4CheckBox(), new Character(loadProfileCollection.charAt(3)));
 		
+          LightDeviceConfiguration config = deviceConfigDao.findConfigurationForDevice(device);
           if(config != null) {
-              String demandInterval = deviceConfigDao.getValueForFieldName(config.getId(), "Demand Interval");
-              String loadProfile = deviceConfigDao.getValueForFieldName(config.getId(), "Load Profile Interval 1");
+              String demandInterval = 
+                  deviceConfigDao.getValueForItemName(config.getConfigurationId(), "demandInterval");
+              String loadProfile = 
+                  deviceConfigDao.getValueForItemName(config.getConfigurationId(), "loadProfileInterval1");
               String demandString = demandInterval.equalsIgnoreCase("60") ? "1 hour" : demandInterval + " minute";
               String loadProfileString = loadProfile.equalsIgnoreCase("60") ? "1 hour" : loadProfile + " minute";
               getLastIntervalDemandRateComboBox().setSelectedItem(demandString);

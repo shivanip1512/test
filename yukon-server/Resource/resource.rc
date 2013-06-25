@@ -1,0 +1,9 @@
+#include "include/resource_ids.h"
+
+/*
+    Resource locations
+*/
+
+PAODEFINITION_XML_ID    XML     "..\\..\\yukon-client\\common\\src\\com\\cannontech\\common\\pao\\definition\\dao\\paoDefinition.xml"
+PAODEFINITION_XSD_ID    SCHEMA  "..\\..\\yukon-client\\common\\src\\com\\cannontech\\common\\pao\\definition\\dao\\paoDefinition.xsd"
+

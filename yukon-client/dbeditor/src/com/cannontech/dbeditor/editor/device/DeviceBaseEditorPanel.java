@@ -9,7 +9,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -26,8 +25,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
-import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.DNPConfiguration;
+import com.cannontech.common.device.config.model.DeviceConfiguration;
+import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.util.AdvancedPropertiesDialog;
 import com.cannontech.common.gui.util.DataInputPanel;
@@ -165,12 +165,6 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     
     private DlcAddressRangeService dlcAddressRangeService =
         YukonSpringHook.getBean("dlcAddressRangeService", DlcAddressRangeService.class);
-    
-    private final Set<PaoTag> mctConfigTags = 
-        ImmutableSet.of(
-            PaoTag.DEVICE_CONFIGURATION_420,
-            PaoTag.DEVICE_CONFIGURATION_430,
-            PaoTag.DEVICE_CONFIGURATION_470);
     
     class EventHandler implements ActionListener, CaretListener, JCValueListener {
 		public void actionPerformed(ActionEvent e) {
@@ -2449,12 +2443,12 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             MCTBase mctBase = (MCTBase) base;
            
             getJPanelMCTSettings().setVisible(true);
-            if (DatabaseEditorUtil.isTagSupported(mctBase, mctConfigTags)) {
+            if (DatabaseEditorUtil.isTagSupported(mctBase, ImmutableSet.of(PaoTag.DEVICE_CONFIGURATION))) {
                 int id = mctBase.getPAObjectID();
                 PaoType type = PaoType.getForDbString(mctBase.getPAOType());
                 SimpleDevice device = new SimpleDevice(id, type);
                 DeviceConfigurationDao deviceConfigurationDao = YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
-                ConfigurationBase config = deviceConfigurationDao.findConfigurationForDevice(device);
+                LightDeviceConfiguration config = deviceConfigurationDao.findConfigurationForDevice(device);
                 if (config != null) {
                     getAssignedMctConfigLabel().setText(config.getName());
                 } else {
@@ -2890,16 +2884,19 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             PaoType type = PaoType.getForDbString(rBase.getPAOType());
             SimpleDevice device = new SimpleDevice(id, type);
             DeviceConfigurationDao deviceConfigurationDao = YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
-            DNPConfiguration config = (DNPConfiguration) deviceConfigurationDao.findConfigurationForDevice(device);
+            LightDeviceConfiguration config = deviceConfigurationDao.findConfigurationForDevice(device);
             if(config != null) {
-                config = (DNPConfiguration) deviceConfigurationDao.getConfiguration(config.getId());
-                getAssignedDnpConfigLabel().setText(config.getName());
+                DeviceConfiguration configuration = 
+                     deviceConfigurationDao.getDeviceConfiguration(config.getConfigurationId());
                 
-                int internalRetries = config.getInternalRetries();
-                boolean localTime = config.isLocalTime();
-                boolean enableTimesyncs = config.isEnableDnpTimesyncs();
-                boolean omitTimeRequest = config.isOmitTimeRequest();
-                boolean unsolicitedEnabled = config.isEnableUnsolicitedMessages();
+                DNPConfiguration dnpConfig = deviceConfigurationDao.getDnpConfiguration(configuration);
+                getAssignedDnpConfigLabel().setText(dnpConfig.getName());
+                
+                int internalRetries = dnpConfig.getInternalRetries();
+                boolean localTime = dnpConfig.isLocalTime();
+                boolean enableTimesyncs = dnpConfig.isEnableDnpTimesyncs();
+                boolean omitTimeRequest = dnpConfig.isOmitTimeRequest();
+                boolean unsolicitedEnabled = dnpConfig.isEnableUnsolicitedMessages();
                 
                 getInternalRetriesValueLabel().setText(Integer.toString(internalRetries));
                 getLocaltimeValueLabel().setText(Boolean.toString(localTime));

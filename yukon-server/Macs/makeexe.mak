@@ -7,7 +7,6 @@ INCLPATHS+= \
 -I$(MACS)\include \
 -I$(COMMON)\include \
 -I$(SERVICE)\include \
--I$(CPARMS)\include \
 -I$(DATABASE)\include \
 -I$(RTDB)\include \
 -I$(MSG)\include \
@@ -24,7 +23,6 @@ INCLPATHS+= \
 ;$(MACS)\include \
 ;$(SCANNER)\include \
 ;$(PORTER)\include \
-;$(CPARMS)\include \
 ;$(SERVICE)\include \
 ;$(SERVER)\include \
 ;$(PIL)\include \

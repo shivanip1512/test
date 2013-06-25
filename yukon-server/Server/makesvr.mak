@@ -9,7 +9,6 @@ include $(COMPILEBASE)\rwglobal.inc
 INCLPATHS+= \
 -I$(SERVER)\include \
 -I$(COMMON)\include \
--I$(CPARMS)\include \
 -I$(DISPATCH)\include \
 -I$(MSG)\include \
 -I$(RW) \
@@ -25,7 +24,6 @@ INCLPATHS+= \
 ;$(RTDB)\include \
 ;$(SCANNER)\include \
 ;$(PORTER)\include \
-;$(CPARMS)\include \
 ;$(SERVICE)\include \
 ;$(SERVER)\include \
 ;$(PIL)\include \

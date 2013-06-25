@@ -9,7 +9,6 @@ INCLPATHS+= \
 -I$(SERVER)\include \
 -I$(DATABASE)\include \
 -I$(RTDB)\include \
--I$(CPARMS)\include \
 -I$(MSG)\include \
 -I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
@@ -23,7 +22,6 @@ INCLPATHS+= \
 ;$(RTDB)\include \
 ;$(SCANNER)\include \
 ;$(PORTER)\include \
-;$(CPARMS)\include \
 ;$(SERVICE)\include \
 ;$(SERVER)\include \
 ;$(PIL)\include \

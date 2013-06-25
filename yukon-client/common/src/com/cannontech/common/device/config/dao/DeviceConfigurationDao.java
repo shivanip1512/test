@@ -2,53 +2,95 @@ package com.cannontech.common.device.config.dao;
 
 import java.util.List;
 
-import com.cannontech.common.device.config.model.ConfigurationBase;
-import com.cannontech.common.device.config.model.ConfigurationTemplate;
-import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.device.config.model.DNPConfiguration;
+import com.cannontech.common.device.config.model.DeviceConfiguration;
+import com.cannontech.common.device.config.model.DeviceConfigurationCategory;
+import com.cannontech.common.device.config.model.DisplayableConfigurationCategory;
+import com.cannontech.common.device.config.model.LightDeviceConfiguration;
+import com.cannontech.common.device.config.model.jaxb.Category;
+import com.cannontech.common.device.config.model.jaxb.CategoryType;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.core.dao.NotFoundException;
 
 /**
  * Data Access class for device configurations
  */
 public interface DeviceConfigurationDao {
-
+    
     /**
-     * Method to get a list of all available configuration templates
-     * @return A list of templates
+     * 
+     * @param categoryType
+     * @return
      */
-    public List<ConfigurationTemplate> getAllConfigurationTemplates();
+    public Category getCategoryByType(CategoryType categoryType);
+    
+    public void saveConfiguration(DeviceConfiguration configuration);
 
+    public void deleteConfiguration(int deviceConfigurationId);
+    
+    public boolean isConfigurationDeletable(int configId);
+    
+    public void saveCategory(DeviceConfigurationCategory category);
+    
+    public void deleteCategory(int categoryId);
+    
+    public DeviceConfigurationCategory getDeviceConfigurationCategory(int categoryId);
+    
     /**
-     * Method to get a list of all existing configurations
-     * @return A list of configurations
+     * Get all device configurations in the system.
+     * @return a list containing all device configurations that exist in the database.
      */
-    public List<ConfigurationBase> getAllConfigurations();
+    public List<DeviceConfiguration> getAllDeviceConfigurations();
+    
+    public List<LightDeviceConfiguration> getAllLightDeviceConfigurations();
+    
+    public List<DisplayableConfigurationCategory> getAllDeviceConfigurationCategories();
+    
+    /**
+     * Load a configuration from the database, including all assigned categories and items.
+     * @param configId the deviceConfigurationId for the configuration
+     * @return a populated DeviceConfiguration object representing the configuration if one exists
+     *      matching the configId specified.
+     * @throws NotFoundException if no configuration exists for the given id.         
+     */
+    public DeviceConfiguration getDeviceConfiguration(int configId) throws NotFoundException;
+    
+    public boolean categoriesExistForType(String categoryType);
+    
+    /**
+     * Get the number of devices a configuration is assigned to.
+     * @param configId the configurationId of the configuration being checked
+     * @return the number of devices assigned to the specified configuration.
+     */
+    public int getNumberOfDevicesForConfiguration(int configId);
+    
+    public int getNumberOfConfigurationsForCategory(int categoryId);
+    
+    public boolean isDeviceConfigurationAvailable(PaoType paoType);
+    
+    /**
+     * Returns configuration of a device or null if the device is not assigned
+     * @param device
+     * @return ConfigurationBase
+     */
+    public LightDeviceConfiguration findConfigurationForDevice(YukonDevice device);
+    
+    public boolean isTypeSupportedByConfiguration(LightDeviceConfiguration configuration, PaoType paoType);
+    
+    /**
+     * Returns the default DNP configuration
+     */
+    public DeviceConfiguration getDefaultDNPConfiguration();
+    
+    /**
+     * Get the DNP configuration data out of a device configuration if the data is present.
+     * @param configuration the configuration the DNP data is coming out of
+     * @return a DNPConfiguration model object containing the DNP category data of the configuration.S
+     */
+    public DNPConfiguration getDnpConfiguration(DeviceConfiguration configuration);
 
-    /**
-     * Method to get a configuration by id. Returns null if no config by that id exists.
-     * @param id - Id of configuration
-     * @return Configuration
-     */
-    public ConfigurationBase getConfiguration(int id);
-
-    /**
-     * Method to get a configuration template by name
-     * @param name - Name of template to get
-     * @return The template
-     */
-    public ConfigurationTemplate getConfigurationTemplate(String name);
-
-    /**
-     * Method to persist a configuration
-     * @param configuration - Configuration to persist
-     */
-    public void save(ConfigurationBase configuration);
-
-    /**
-     * Method to delete a configuration by id
-     * @param id - Id of configuration
-     */
-    public void delete(int id);
+    public List<LightDeviceConfiguration> getAllConfigurationsByType(PaoType paoType);
 
     /**
      * This method will assign a configuration to a device if it doesn't already have an entry
@@ -57,15 +99,8 @@ public interface DeviceConfigurationDao {
      * @param device - Device to assgin configuration to
      * @throws InvalidDeviceTypeException 
      */
-    public void assignConfigToDevice(ConfigurationBase configuration, YukonDevice device) throws InvalidDeviceTypeException;
-
-    /**
-     * Method to get a list of devices that have been assigned the given
-     * configuration
-     * @param configuration - Configuration to get device list for
-     * @return List of devices assigned the configuration
-     */
-    public List<SimpleDevice> getAssignedDevices(ConfigurationBase configuration);
+    public void assignConfigToDevice(LightDeviceConfiguration configuration, YukonDevice device) 
+            throws InvalidDeviceTypeException;
 
     /**
      * Method to remove the configuration assignment from the device
@@ -75,32 +110,14 @@ public interface DeviceConfigurationDao {
     public void unassignConfig(YukonDevice device) throws InvalidDeviceTypeException;
     
     /**
-     * Returns configuration of a device or null if the device is not assigned
-     * @param device
-     * @return ConfigurationBase
-     */
-    public ConfigurationBase findConfigurationForDevice(YukonDevice device);
-    
-    /**
-     * Returns a list of configurations by type.
-     * @param type
-     * @return
-     */
-    public List<ConfigurationBase> getAllConfigurationsByType(ConfigurationType type);
-
-    /**
      * Returns the value of the device config item for the given 
      * config id and field name.
      * @param configId
      * @param fieldName
      * @return
      */
-    public String getValueForFieldName(int configId, String fieldName);
+    public String getValueForItemName(int configId, String fieldName);
     
-    /**
-     * Returns the DNP configuration in the database with the lowest ID
-     */
-    public ConfigurationBase getDefaultDNPConfiguration();
     
     /**
      * Returns true if there is already a configuration in the database

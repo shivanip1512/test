@@ -1,6 +1,6 @@
 package com.cannontech.common.bulk.processor;
 
-import com.cannontech.common.device.config.model.ConfigurationBase;
+import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.model.SimpleDevice;
 
 /**
@@ -15,7 +15,7 @@ public interface ProcessorFactory {
      * @return The processor
      */
     public Processor<SimpleDevice> createAssignConfigurationToYukonDeviceProcessor(
-            final ConfigurationBase configuration);
+            final DeviceConfiguration configuration);
     
     /**
      * Method to get a processor that will unassign a configuration from a device

@@ -10,7 +10,6 @@ INCLPATHS+= \
 -I$(MSG)\include \
 -I$(RTDB)\include \
 -I$(SERVICE)\include \
--I$(CPARMS)\include \
 -I$(SERVER)\include \
 -I$(BOOST_INCLUDE) \
 -I$(RW) \
@@ -22,7 +21,6 @@ INCLPATHS+= \
 .\include \
 ;$(COMMON)\include \
 ;$(LOADMANAGENT)\include \
-;$(CPARMS)\include \
 ;$(DATABASE)\include \
 ;$(RTDB)\include \
 ;$(SERVICE)\include \

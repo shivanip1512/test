@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+    jaxb:version="2.0">
+    
+    <xs:simpleType name="CategoryType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="dst"/>
+            <xs:enumeration value="meterParameters"/>
+            <xs:enumeration value="displayItems"/>
+            <xs:enumeration value="mct440DemandLoadProfile"/>
+            <xs:enumeration value="mct440Configuration"/>
+            <xs:enumeration value="mct440Addressing"/>
+            <xs:enumeration value="mct440PhaseLoss"/>
+            <xs:enumeration value="mct440Tou"/>
+            <xs:enumeration value="dnp"/>
+            <xs:enumeration value="mct470DemandLoadProfile"/>
+            <xs:enumeration value="mct470LoadProfileChannels"/>
+            <xs:enumeration value="mct470ConfigurationByte"/>
+            <xs:enumeration value="addressing"/>
+            <xs:enumeration value="relays"/>
+            <xs:enumeration value="mct470PrecannedTable"/>
+            <xs:enumeration value="tou"/>
+            <xs:enumeration value="mct430DemandLoadProfile"/>
+            <xs:enumeration value="mct430LoadProfileChannels"/>
+            <xs:enumeration value="mct430ConfigurationByte"/>
+            <xs:enumeration value="mct430PrecannedTable"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:complexType name="DeviceCategories">
+        <xs:choice maxOccurs="unbounded">
+            <xs:element name="category">
+                <xs:complexType>
+                    <xs:attribute name="type" type="CategoryType" use="required"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:choice>
+    </xs:complexType>
+    
+</xs:schema>

@@ -355,7 +355,7 @@ public class SiteMapHelper {
                 MatchStyle.all),
         DATA_EXPORT(SiteMapCategory.TOOLS, "yukon.web.menu.portal.analysis.archivedDateExport", "/amr/archivedValuesExporter/view", 
                 MatchStyle.all, YukonRoleProperty.ARCHIVED_DATA_EXPORT),
-        DEVICE_CONFIGURATION(SiteMapCategory.TOOLS, "yukon.web.menu.portal.administration.deviceConfiguration", "/deviceConfiguration?home", 
+        DEVICE_CONFIGURATION(SiteMapCategory.TOOLS, "yukon.web.menu.portal.administration.deviceConfiguration", "/deviceConfiguration/home", 
                 MatchStyle.all, YukonRoleProperty.ADMIN_VIEW_CONFIG),
         DEVICE_DEFINITIONS(SiteMapCategory.TOOLS, "yukon.web.menu.config.support.information.deviceDef", "/common/deviceDefinition.xml", 
                 MatchStyle.all),

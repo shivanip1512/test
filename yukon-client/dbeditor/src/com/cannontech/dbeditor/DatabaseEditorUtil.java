@@ -16,7 +16,7 @@ import org.springframework.dao.DataAccessException;
 
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
-import com.cannontech.common.device.config.model.ConfigurationBase;
+import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
@@ -25,7 +25,6 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -66,11 +65,9 @@ public final class DatabaseEditorUtil {
     public static boolean unassignDeviceConfigIfInvalid(int paoId) throws InvalidDeviceTypeException {
         YukonDevice device = deviceDao.getYukonDevice(paoId);
         
-        ConfigurationBase config = configurationDao.findConfigurationForDevice(device);
+        LightDeviceConfiguration config = configurationDao.findConfigurationForDevice(device);
         if(config != null) {
-            PaoTag configTag = config.getType().getSupportedDeviceTag();
-            boolean configSupported = paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), configTag);
-            if(!configSupported) {
+            if (!configurationDao.isTypeSupportedByConfiguration(config, device.getPaoIdentifier().getPaoType())) {
                 configurationDao.unassignConfig(device);
                 return true;
             }

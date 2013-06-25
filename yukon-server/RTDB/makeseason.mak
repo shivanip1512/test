@@ -8,7 +8,6 @@ INCLPATHS+= \
 -I$(PORTER)\include \
 -I$(MSG)\include \
 -I$(PROT)\include \
--I$(CPARMS)\include \
 -I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 -I$(RW) \
@@ -20,7 +19,6 @@ INCLPATHS+= \
 ;$(DATABASE)\include \
 ;$(SCANNER)\include \
 ;$(PORTER)\include \
-;$(CPARMS)\include \
 ;$(SERVICE)\include \
 ;$(SERVER)\include \
 ;$(PIL)\include \

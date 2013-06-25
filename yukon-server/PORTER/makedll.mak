@@ -9,7 +9,6 @@ INCLPATHS+= \
 -I$(DEVICECONFIGURATION)\include \
 -I$(RTDB)\include \
 -I$(COMMON)\include \
--I$(CPARMS)\include \
 -I$(PROT)\include \
 -I$(MSG)\include \
 -I$(BOOST_INCLUDE) \
@@ -22,13 +21,11 @@ INCLPATHS+= \
 .PATH.H = \
 .\include \
 ;$(COMMON)\include \
-;$(CPARMS)\include \
 ;$(DATABASE)\include \
 ;$(DEVICECONFIGURATION)\include \
 ;$(RTDB)\include \
 ;$(SCANNER)\include \
 ;$(PORTER)\include \
-;$(CPARMS)\include \
 ;$(SERVICE)\include \
 ;$(SERVER)\include \
 ;$(PIL)\include \

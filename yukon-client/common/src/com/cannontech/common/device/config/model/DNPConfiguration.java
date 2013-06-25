@@ -2,9 +2,12 @@ package com.cannontech.common.device.config.model;
 
 import java.io.Serializable;
 
-import com.cannontech.common.device.config.dao.ConfigurationType;
-
-public class DNPConfiguration extends ConfigurationBase implements Serializable {
+/**
+ * A small model object for the DNP configuration data. The DNP configuration data is
+ * displayed in a couple special places (DB editor and CBC editor pages) and merits its
+ * own model object to simplify the process.
+ */
+public class DNPConfiguration extends LightDeviceConfiguration implements Serializable {
     
     public static final int DEFAULT_DNP_CONFIG_ID = -1;
     
@@ -14,11 +17,10 @@ public class DNPConfiguration extends ConfigurationBase implements Serializable 
     private boolean omitTimeRequest = false;
     private boolean enableUnsolicitedMessages = true;
     
-    @Override
-    public ConfigurationType getType() {
-        return ConfigurationType.DNP;
+    public DNPConfiguration(Integer configurationId, String name) {
+        super(configurationId, name);
     }
-
+    
     public int getInternalRetries() {
         return internalRetries;
     }

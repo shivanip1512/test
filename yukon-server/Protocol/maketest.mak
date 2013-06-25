@@ -6,7 +6,6 @@ INCLPATHS+= \
 -I$(SQLAPI)\include \
 -I$(PROT)\include \
 -I$(COMMON)\include \
--I$(CPARMS)\include \
 -I$(MSG)\include \
 -I$(DATABASE)\include \
 -I$(RTDB)\include \
@@ -25,7 +24,6 @@ INCLPATHS+= \
 ;$(RTDB)\include \
 ;$(SCANNER)\include \
 ;$(PORTER)\include \
-;$(CPARMS)\include \
 ;$(SERVICE)\include \
 ;$(SERVER)\include \
 ;$(PIL)\include \

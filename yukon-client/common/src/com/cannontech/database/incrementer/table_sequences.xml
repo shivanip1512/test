@@ -114,6 +114,12 @@
       <sequence name="DeviceConfiguration">
         <table name="DeviceConfiguration" identitycolumn="DeviceConfigurationId" initsequence="true"/>
       </sequence>
+      <sequence name="DeviceConfigurationCategory">
+        <table name="DeviceConfigurationCategory" identitycolumn="DeviceConfigurationCategoryId" initsequence="true"/>
+      </sequence>
+      <sequence name="DeviceConfigDeviceTypes">
+        <table name="DeviceConfigurationDeviceTypes" identitycolumn="DeviceConfigurationDeviceTypeId" initsequence="true"/>
+      </sequence>
       <sequence name="DeviceConfigItem">
         <table name="DeviceConfigurationItem" identitycolumn="DeviceConfigurationItemId" initsequence="true"/>
       </sequence>

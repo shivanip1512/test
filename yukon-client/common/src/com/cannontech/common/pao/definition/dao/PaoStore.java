@@ -1,7 +1,6 @@
 package com.cannontech.common.pao.definition.dao;
 
 import java.util.ArrayList;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -9,13 +8,14 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.jaxb.AttributesType.Attribute;
 import com.cannontech.common.pao.definition.model.jaxb.CommandsType.Command;
+import com.cannontech.common.pao.definition.model.jaxb.DeviceCategories.Category;
 import com.cannontech.common.pao.definition.model.jaxb.Pao;
 import com.cannontech.common.pao.definition.model.jaxb.PointsType.Point;
 import com.cannontech.common.pao.definition.model.jaxb.TagType.Tag;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.IterableUtils;
 import com.cannontech.database.data.point.PointType;
 
@@ -38,6 +38,7 @@ public class PaoStore {
 	private Map<String, Command> commands = new HashMap<String, Command>();
 	private Map<String, Attribute> attributes = new HashMap<String, Attribute>();
 	private Map<String, Tag> tags = new HashMap<String, Tag>();
+	private Map<String, Category> categories = new HashMap<>();
 	
 	public PaoStore(Pao jaxbPao) { 
 		this.setId(jaxbPao.getId());
@@ -67,10 +68,12 @@ public class PaoStore {
 		if (jaxbPao.getTags() != null) {
 			this.applyTags(IterableUtils.safeList(jaxbPao.getTags().getTag()));
 		}
+		if (jaxbPao.getConfiguration() != null) {
+		    this.applyConfiguration(IterableUtils.safeList(jaxbPao.getConfiguration().getCategory()));
+		}
 	}
 
 	public void mergePaoStore(PaoStore inheritedPao) {
-
 		this.applyDisplayName(inheritedPao.getDisplayName());
 		this.applyDisplayGroup(inheritedPao.getDisplayGroup());
 		this.applyChangeGroup(inheritedPao.getChangeGroup());
@@ -79,6 +82,7 @@ public class PaoStore {
 		this.applyCommands(inheritedPao.getEnabledCommands());
 		this.applyAttributes(inheritedPao.getEnabledAttributes());
 		this.applyTags(inheritedPao.getTags());
+		this.applyConfiguration(inheritedPao.getCategories());
 	}
 	
 	// SETTERS
@@ -219,6 +223,15 @@ public class PaoStore {
 		}
 	}
 	
+	private void applyConfiguration(List<Category> categories) {
+	    for (Category category : categories) {
+	        String id = category.getType().name();
+	        Category existingCategory = this.categories.get(id);
+	        if (existingCategory == null) {
+	            this.categories.put(id, category);
+	        }
+	    }
+	}
 	
 	// GETTERS
 	public String getId() {
@@ -239,7 +252,6 @@ public class PaoStore {
 	public PaoType getPaoType() {
 		return paoType;
 	}
-	
 
 	public String getDisplayName() {
 		return displayName;
@@ -302,5 +314,16 @@ public class PaoStore {
 	        filteredTags.add(tag);
 	    }
 	    return filteredTags;
+	}
+	
+	public List<Category> getCategories() {
+	    List<Category> filteredCategories = new ArrayList<>();
+	    
+	    for (String id : this.categories.keySet()) {
+	        Category category = this.categories.get(id);
+	        filteredCategories.add(category);
+	    }
+	    
+	    return filteredCategories;
 	}
 }

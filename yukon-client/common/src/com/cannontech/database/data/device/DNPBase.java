@@ -2,6 +2,8 @@ package com.cannontech.database.data.device;
 
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DNPConfiguration;
+import com.cannontech.common.device.config.model.DeviceConfiguration;
+import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
@@ -14,7 +16,7 @@ public class DNPBase extends AddressBase implements DBCopiable {
     public void add() throws java.sql.SQLException {
         super.add();
 
-        Object[] configValues = { getPAObjectID(), getDnpConfiguration().getId() };
+        Object[] configValues = { getPAObjectID(), getDnpConfiguration().getConfigurationId() };
         add("DeviceConfigurationDeviceMap", configValues);
     }
     
@@ -25,7 +27,15 @@ public class DNPBase extends AddressBase implements DBCopiable {
                 YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
         YukonDevice device = new SimpleDevice(getPAObjectID(), PaoType.getForDbString(getPAOType()));
         
-        dnpConfiguration = (DNPConfiguration) configurationDao.findConfigurationForDevice(device);
+        LightDeviceConfiguration configuration = configurationDao.findConfigurationForDevice(device);
+        if (configuration != null) {
+            DeviceConfiguration deviceConfiguration = 
+                configurationDao.getDeviceConfiguration(configuration.getConfigurationId());
+            
+            dnpConfiguration = configurationDao.getDnpConfiguration(deviceConfiguration);
+        } else {
+            dnpConfiguration = null;
+        }
     }
 
     public void setDnpConfiguration(DNPConfiguration dnpConfiguration) {

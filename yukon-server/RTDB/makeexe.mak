@@ -4,7 +4,6 @@ include $(COMPILEBASE)\rwglobal.inc
 INCLPATHS+= \
 -I$(SERVER)\include \
 -I$(COMMON)\include \
--I$(CPARMS)\include \
 -I$(DATABASE)\include \
 -I$(DEVICECONFIGURATION)\include \
 -I$(MSG)\include \
@@ -19,12 +18,10 @@ INCLPATHS+= \
 .PATH.H = \
 .\include \
 ;$(COMMON)\include \
-;$(CPARMS)\include \
 ;$(DATABASE)\include \
 ;$(DEVICECONFIGURATION)\include \
 ;$(SCANNER)\include \
 ;$(PORTER)\include \
-;$(CPARMS)\include \
 ;$(SERVICE)\include \
 ;$(SERVER)\include \
 ;$(PIL)\include \

@@ -7,7 +7,6 @@ INCLPATHS+= \
 -I$(DEVICECONFIGURATION)\include \
 -I$(PORTER)\include \
 -I$(MSG)\include \
--I$(CPARMS)\include \
 -I$(PROT)\include \
 -I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
@@ -23,7 +22,6 @@ INCLPATHS+= \
 ;$(DEVICECONFIGURATION)\include \
 ;$(SCANNER)\include \
 ;$(PORTER)\include \
-;$(CPARMS)\include \
 ;$(SERVICE)\include \
 ;$(SERVER)\include \
 ;$(PIL)\include \

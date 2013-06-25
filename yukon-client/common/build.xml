@@ -66,6 +66,12 @@
     		<!-- Everything in this "produces" dir should be overwritten on fresh build -->
     		<produces dir="src/com/cannontech/common/pao/definition/model/jaxb"/>
         </xjc>
+    	<xjc schema="src/com/cannontech/common/device/config/configurationCategoryDefinition.xsd" package="com.cannontech.common.device.config.model.jaxb" destdir="src">
+            <arg value="-extension"/>
+            <arg value="-Xdefault-value"/>
+            <!-- Everything in this "produces" dir should be overwritten on fresh build -->
+            <produces dir="src/com/cannontech/common/device/config/model/jaxb"/>
+        </xjc>
     </target>
 	
     <!-- Run unit tests - will stop running if a failure or error occurs during a test -->

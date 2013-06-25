@@ -17,7 +17,6 @@ INCLPATHS+= \
 ;$(SCANNER)\include \
 ;$(PORTER)\include \
 ;$(RTDB)\include \
-;$(CPARMS)\include \
 ;$(SERVICE)\include \
 ;$(SERVER)\include \
 ;$(PIL)\include \

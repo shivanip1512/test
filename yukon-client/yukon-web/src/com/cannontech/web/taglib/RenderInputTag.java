@@ -51,7 +51,7 @@ public class RenderInputTag extends SimpleTagSupport {
                 pageContext.include("/WEB-INF/pages/input/plainTextType.jsp");
             }
         } catch (ServletException e) {
-            throw new JspException("Couldn't include renderer: " + renderer + " " + e);
+            throw new JspException("Couldn't include renderer: " + renderer, e);
         }
 
         if (oldInput != null) {

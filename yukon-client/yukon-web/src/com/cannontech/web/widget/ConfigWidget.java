@@ -5,7 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -15,18 +15,16 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.commands.CommandResultHolder;
-import com.cannontech.common.device.config.dao.ConfigurationType;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
-import com.cannontech.common.device.config.model.ConfigurationBase;
+import com.cannontech.common.device.config.model.DeviceConfiguration;
+import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.config.service.DeviceConfigService;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
-import com.google.common.collect.ImmutableList;
 
 /**
  * Widget used to display basic device information
@@ -35,10 +33,9 @@ import com.google.common.collect.ImmutableList;
 @RequestMapping("/configWidget/*")
 public class ConfigWidget extends WidgetControllerBase {
 
-    private MeterDao meterDao;
-    private DeviceConfigurationDao deviceConfigurationDao;
-    private DeviceConfigService deviceConfigService;
-    private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private MeterDao meterDao;
+    @Autowired private DeviceConfigurationDao deviceConfigurationDao;
+    @Autowired private DeviceConfigService deviceConfigService;
     
     /**
      * This method renders the default deviceGroupWidget
@@ -58,18 +55,16 @@ public class ConfigWidget extends WidgetControllerBase {
         ModelAndView mav = new ModelAndView("configWidget/render.jsp");
         Meter meter = getMeter(request);
         
-        List<ConfigurationBase> existingConfigs = ImmutableList.of();
-        for (ConfigurationType type : ConfigurationType.values()) {
-        	if (paoDefinitionDao.isTagSupported(meter.getPaoType(), type.getSupportedDeviceTag())) {
-                existingConfigs = deviceConfigurationDao.getAllConfigurationsByType(type);
-                break;
-        	}
-        }
+        List<LightDeviceConfiguration> existingConfigs = 
+            deviceConfigurationDao.getAllConfigurationsByType(meter.getPaoType());
+        
         mav.addObject("existingConfigs", existingConfigs);
         
-        ConfigurationBase config = deviceConfigurationDao.findConfigurationForDevice(meter);
-        mav.addObject("currentConfigId", config != null ? config.getId() : null);
+        LightDeviceConfiguration config = deviceConfigurationDao.findConfigurationForDevice(meter);
+        
+        mav.addObject("currentConfigId", config != null ? config.getConfigurationId() : null);
         mav.addObject("currentConfigName", config != null ? config.getName() : CtiUtilities.STRING_NONE);
+        
         return mav;
     }
 
@@ -90,7 +85,7 @@ public class ConfigWidget extends WidgetControllerBase {
         
         final int configId = ServletRequestUtils.getRequiredIntParameter(request, "configuration");
         if (configId > -1) {
-            ConfigurationBase configuration = deviceConfigurationDao.getConfiguration(configId);
+            DeviceConfiguration configuration = deviceConfigurationDao.getDeviceConfiguration(configId);
             deviceConfigurationDao.assignConfigToDevice(configuration, meter);
         } else {
             deviceConfigurationDao.unassignConfig(meter);
@@ -138,26 +133,6 @@ public class ConfigWidget extends WidgetControllerBase {
         VerifyResult verifyResult = deviceConfigService.verifyConfig(meter, userContext.getYukonUser());
         mav.addObject("verifyResult", verifyResult);
         return mav;
-    }
-
-    @Required
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
-    }
-
-    @Required
-    public void setDeviceConfigurationDao(DeviceConfigurationDao deviceConfigurationDao) {
-        this.deviceConfigurationDao = deviceConfigurationDao;
-    }
-    
-    @Required
-    public void setDeviceConfigService(DeviceConfigService deviceConfigService) {
-        this.deviceConfigService = deviceConfigService;
-    }
-    
-    @Required
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
     }
 }
 

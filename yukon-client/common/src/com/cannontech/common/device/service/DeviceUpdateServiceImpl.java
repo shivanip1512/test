@@ -19,13 +19,12 @@ import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.impl.CommandCallbackBase;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
-import com.cannontech.common.device.config.model.ConfigurationBase;
+import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
-import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
@@ -69,7 +68,6 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.base.Function;
-import com.google.common.base.Functions;
 import com.google.common.collect.Maps;
 
 public class DeviceUpdateServiceImpl implements DeviceUpdateService {
@@ -194,11 +192,11 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         
         //meters with a device config should only retain the config if it's appropriate for the new type
         YukonDevice device = deviceDao.getYukonDevice(changedDevice.getPAObjectID());
-        ConfigurationBase config = deviceConfigurationDao.findConfigurationForDevice(device);
-        if(config != null) {
-            PaoTag configTag = config.getType().getSupportedDeviceTag();
-            boolean configSupported = paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), configTag);
-            if(!configSupported) {
+        LightDeviceConfiguration config = deviceConfigurationDao.findConfigurationForDevice(device);
+        if (config != null) {
+            boolean configSupported = 
+                deviceConfigurationDao.isTypeSupportedByConfiguration(config, device.getPaoIdentifier().getPaoType()); 
+            if (!configSupported) {
                 try {
                     deviceConfigurationDao.unassignConfig(device);
                 } catch(InvalidDeviceTypeException e) {

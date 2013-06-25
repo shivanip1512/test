@@ -1,6 +1,6 @@
 package com.cannontech.capcontrol.creation.service;
 
-import com.cannontech.common.device.config.model.ConfigurationBase;
+import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 
@@ -25,5 +25,5 @@ public interface CapControlCreationService {
 	 * @return the PaoIdentifier representing the newly created CBC.
 	 */
 	public PaoIdentifier createCbc(PaoType paoType, String name, boolean disabled, int portId, 
-	                               ConfigurationBase configId);
+	                               LightDeviceConfiguration configId);
 }

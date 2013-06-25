@@ -7,7 +7,6 @@ INCLPATHS+= \
 -I$(COMMON)\include \
 -I$(TCL)\include \
 -I$(MSG)\include  \
--I$(CPARMS)\include \
 -I$(MESSAGE)\include \
 -I$(RW) \
 -I$(BOOST_INCLUDE) \

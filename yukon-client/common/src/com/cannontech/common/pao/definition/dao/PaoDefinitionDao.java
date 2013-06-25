@@ -17,6 +17,7 @@ import com.cannontech.common.pao.definition.model.PaoTagDefinition;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
+import com.cannontech.common.pao.definition.model.jaxb.DeviceCategories.Category;
 import com.cannontech.core.dao.NotFoundException;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ListMultimap;
@@ -45,6 +46,15 @@ public interface PaoDefinitionDao {
      */
     public BuiltInAttribute findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier);
 
+    // DEVICE CONFIGURATION
+    //============================================
+    
+    public Set<Category> getCategoriesForPaoType(PaoType paoType);
+    
+    public Set<Category> getCategoriesForPaoTypes(Set<PaoType> paoTypes);
+    
+    public boolean isDnpConfigurationType(PaoType paoType);
+    
     // POINTS
     //============================================
 

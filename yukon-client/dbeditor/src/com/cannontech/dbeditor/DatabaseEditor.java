@@ -54,6 +54,7 @@ import com.cannontech.clientutils.popup.PopUpMenuShower;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DNPConfiguration;
+import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.editor.PropertyPanel;
@@ -2548,7 +2549,9 @@ public void selectionPerformed(WizardPanelEvent event)
             // DNP devices need to be assigned the default DNP configuration on creation!
             if (newItem instanceof DNPBase) {
                 DeviceConfigurationDao configurationDao = YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
-                DNPConfiguration defaultConfig = (DNPConfiguration) configurationDao.getDefaultDNPConfiguration();
+                
+                DeviceConfiguration config = configurationDao.getDefaultDNPConfiguration();
+                DNPConfiguration defaultConfig = configurationDao.getDnpConfiguration(config);
                 
                 DNPBase dnpBase = (DNPBase)newItem;
                 dnpBase.setDnpConfiguration(defaultConfig);

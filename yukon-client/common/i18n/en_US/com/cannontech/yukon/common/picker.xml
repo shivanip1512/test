@@ -140,5 +140,10 @@
 
 <entry key="yukon.web.picker.lmHardwareBasePicker.dialogTitle">Select Inventory</entry>
 
+<!-- Device Configuration Category Picker -->
+<entry key="yukon.web.picker.categoryPicker.dialogTitle">Select Category</entry>
+
+<entry key="yukon.web.picker.configurationCategory.name">Category Name</entry>
+<entry key="yukon.web.picker.configurationCategory.categoryType">Category Type</entry>
 
 </properties>

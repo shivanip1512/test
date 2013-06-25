@@ -8,10 +8,9 @@ import com.cannontech.capcontrol.creation.model.HierarchyImportData;
 import com.cannontech.capcontrol.creation.service.CapControlCreationService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.csvImport.ImportAction;
-import com.cannontech.common.device.config.dao.ConfigurationType;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
-import com.cannontech.common.device.config.model.ConfigurationBase;
+import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -32,7 +31,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	
     @Override
     @Transactional
-    public PaoIdentifier createCbc(PaoType paoType, String name, boolean disabled, int portId, ConfigurationBase config) {
+    public PaoIdentifier createCbc(PaoType paoType, String name, boolean disabled, int portId, LightDeviceConfiguration config) {
         CompleteYukonPao pao;
         
         if (paoDefinitionDao.isTagSupported(paoType, PaoTag.ONE_WAY_DEVICE)) {
@@ -50,8 +49,8 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
         
         paoPersistenceService.createPaoWithDefaultPoints(pao, paoType);
         
-        if (paoDefinitionDao.isTagSupported(paoType, PaoTag.DEVICE_CONFIGURATION_DNP)) {
-            if (config == null || config.getType() != ConfigurationType.DNP) {
+        if (paoDefinitionDao.isDnpConfigurationType(paoType)) {
+            if (config == null || !deviceConfigurationDao.isTypeSupportedByConfiguration(config, paoType)) {
                 // No way, man. Can't create a DNP CBC without a DNP config! Assign the default.
                 log.debug("Unable to create a DNP CBC without a DNP configuration. Assigning " + 
                           name + "the default DNP Configuration.");

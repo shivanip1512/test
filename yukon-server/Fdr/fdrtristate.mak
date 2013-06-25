@@ -10,7 +10,6 @@ INCLPATHS+= \
 -I$(SERVER)\include \
 -I$(MSG)\include \
 -I$(COMMON)\include \
--I$(CPARMS)\include \
 -I$(RW) \
 
 
@@ -20,7 +19,6 @@ INCLPATHS+= \
 ;$(DATABASE)\include \
 ;$(SCANNER)\include \
 ;$(PORTER)\include \
-;$(CPARMS)\include \
 ;$(SERVICE)\include \
 ;$(SERVER)\include \
 ;$(PIL)\include \

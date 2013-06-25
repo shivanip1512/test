@@ -26,7 +26,8 @@ import com.cannontech.capcontrol.exception.CapControlHierarchyImportException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
-import com.cannontech.common.device.config.model.ConfigurationBase;
+import com.cannontech.common.device.config.model.DeviceConfiguration;
+import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.model.PaoProperty;
 import com.cannontech.common.model.PaoPropertyName;
@@ -236,8 +237,8 @@ public class CapControlImportServiceImpl implements CapControlImportService {
          * Two-way CBCs need to have a DNP config assigned. In the future, this config will
          * come from the import data.
          */
-        if (paoDefinitionDao.isTagSupported(cbcImportData.getCbcType(), PaoTag.DEVICE_CONFIGURATION_DNP)) {
-            ConfigurationBase config = deviceConfigurationDao.getDefaultDNPConfiguration();
+        if (paoDefinitionDao.isDnpConfigurationType(cbcImportData.getCbcType())) {
+            DeviceConfiguration config = deviceConfigurationDao.getDefaultDNPConfiguration();
             try {
                 SimpleDevice device = new SimpleDevice(pao.getPaoIdentifier());
                 deviceConfigurationDao.assignConfigToDevice(config, device);
@@ -349,9 +350,9 @@ public class CapControlImportServiceImpl implements CapControlImportService {
          * Two-way CBCs need to have a DNP config assigned. In the future, this config may
          * come from the import data.
          */
-        if (paoDefinitionDao.isTagSupported(cbcImportData.getCbcType(), PaoTag.DEVICE_CONFIGURATION_DNP)) {
+        if (paoDefinitionDao.isDnpConfigurationType(cbcImportData.getCbcType())) {
             YukonDevice device = new SimpleDevice(templatePao.getPaoIdentifier());
-            ConfigurationBase config = deviceConfigurationDao.findConfigurationForDevice(device);
+            LightDeviceConfiguration config = deviceConfigurationDao.findConfigurationForDevice(device);
             YukonDevice newDevice = new SimpleDevice(template.getPaoIdentifier());
             try {
                 deviceConfigurationDao.assignConfigToDevice(config, newDevice);

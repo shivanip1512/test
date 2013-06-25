@@ -2,6 +2,8 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
            jaxb:version="2.0">
+           
+    <xs:include schemaLocation="../../../device/config/deviceConfigurationCategory.xsd"/>
 
     <xs:element name="paoDefinitions">
         <xs:complexType>
@@ -59,6 +61,7 @@
             </xs:unique>
         </xs:element>
         <xs:element name="tags" type="tagType" minOccurs="0" />
+        <xs:element name="configuration" type="DeviceCategories" minOccurs="0"/>
       </xs:sequence>
       <xs:attributeGroup ref="paoAttributes" />
     </xs:complexType>

@@ -22,6 +22,7 @@ import com.cannontech.amr.meter.search.model.MeterSearchOrderBy;
 import com.cannontech.amr.meter.search.model.StandardFilterByGenerator;
 import com.cannontech.amr.meter.search.service.MeterSearchService;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.service.DeviceConfigService;
 import com.cannontech.common.device.model.PreviousReadings;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -74,7 +75,8 @@ public class MeterController extends MultiActionController {
     @Autowired private PaoDefinitionDao paoDefinitionDao = null;
     @Autowired private MspMeterSearchService mspMeterSearchService;
     @Autowired private DeviceConfigService deviceConfigService;
-
+    @Autowired private DeviceConfigurationDao deviceConfigurationDao;
+    
     public MeterController() {
         super();
     }
@@ -224,7 +226,7 @@ public class MeterController extends MultiActionController {
                 && (singlePhaseVoltageSupported || threePhaseVoltageOrCurrentSupported);
         mav.addObject("showVoltageAndTou", showVoltageAndTou);
 
-        boolean configSupported = deviceConfigService.isDeviceConfigAvailable(device.getDeviceType());
+        boolean configSupported = deviceConfigurationDao.isDeviceConfigurationAvailable(device.getDeviceType());
         mav.addObject("configSupported", configSupported);
         
         if (isRFMesh) {

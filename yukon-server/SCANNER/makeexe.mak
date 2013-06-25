@@ -10,7 +10,6 @@ INCLPATHS+= \
 -I$(DEVICECONFIGURATION)\include \
 -I$(RTDB)\include \
 -I$(MSG)\include \
--I$(CPARMS)\include \
 -I$(SERVICE)\include \
 -I$(PROT)\include \
 -I$(BOOST_INCLUDE) \
@@ -28,7 +27,6 @@ INCLPATHS+= \
 ;$(RTDB)\include \
 ;$(SCANNER)\include \
 ;$(PORTER)\include \
-;$(CPARMS)\include \
 ;$(SERVICE)\include \
 ;$(SERVER)\include \
 ;$(PIL)\include \

@@ -230,8 +230,7 @@
 	   	</property>
     </bean>
     
-    <bean id="configWidget"
-        class="com.cannontech.web.widget.ConfigWidget">
+    <bean id="configWidget" class="com.cannontech.web.widget.ConfigWidget">
         <property name="inputs">
            <set>
               <ref local="widgetInput.deviceId"/>
@@ -242,10 +241,6 @@
                 <constructor-arg value="METERING"/>
             </bean>
         </property>
-        <property name="deviceConfigurationDao" ref="deviceConfigurationDao" />
-        <property name="meterDao" ref="meterDao"/>
-        <property name="deviceConfigService" ref="deviceConfigService"/>
-        <property name="paoDefinitionDao" ref="paoDefinitionDao"/>
     </bean>
 
     <bean id="disconnectMeterWidget"
@@ -1905,6 +1900,8 @@
     </bean>
 
 	<bean name="lmHardwareBasePicker" class="com.cannontech.web.picker.v2.LmHardwareBasePicker"/>
+    
+    <bean name="categoryPicker" class="com.cannontech.web.picker.v2.ConfigurationCategoryPicker"/>
 
     <bean class="com.cannontech.web.layout.impl.HttpExpressionLanguageResolverImpl"/>
     

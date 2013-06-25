@@ -187,9 +187,7 @@
         <property name="staticProvider" ref="staticDeviceGroupProvider"/>
     </bean>
     
-    <bean id="deviceConfigService" class="com.cannontech.common.device.config.service.impl.DeviceConfigServiceImpl">
-        <property name="groupCommandExecutor" ref="groupCommandExecutor" />
-    </bean>
+    <bean id="deviceConfigService" class="com.cannontech.common.device.config.service.impl.DeviceConfigServiceImpl"/>
     
     <bean id="deviceGroupService" class="com.cannontech.common.device.groups.service.impl.DeviceGroupServiceImpl"/>
     

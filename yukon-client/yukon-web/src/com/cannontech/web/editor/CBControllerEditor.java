@@ -23,8 +23,8 @@ import com.cannontech.cbc.model.ICBControllerModel;
 import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
-import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.DNPConfiguration;
+import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -539,13 +539,18 @@ public class CBControllerEditor implements ICBControllerModel {
 	@Override
 	public DNPConfiguration getDnpConfiguration() {
 	    DeviceConfigurationDao configurationDao = 
-	            YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
+	        YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
 
 	    PaoIdentifier identifier = 
-	            new PaoIdentifier(deviceCBC.getPAObjectID(), 
-	                              PaoType.getForDbString(deviceCBC.getPAOType()));
+	        new PaoIdentifier(
+	            deviceCBC.getPAObjectID(), 
+	            PaoType.getForDbString(deviceCBC.getPAOType()));
 	    
-	    ConfigurationBase config = configurationDao.findConfigurationForDevice(new SimpleDevice(identifier));
-	    return (DNPConfiguration) configurationDao.getConfiguration(config.getId());
+	    LightDeviceConfiguration configuration = configurationDao.findConfigurationForDevice(new SimpleDevice(identifier));
+	    DNPConfiguration dnpConfig = 
+	        configurationDao.getDnpConfiguration(
+	            configurationDao.getDeviceConfiguration(configuration.getConfigurationId()));
+	    
+	    return dnpConfig;
 	}
 }

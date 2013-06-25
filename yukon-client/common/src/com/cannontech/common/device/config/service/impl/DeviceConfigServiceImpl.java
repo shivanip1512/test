@@ -26,7 +26,7 @@ import com.cannontech.common.device.commands.WaitableCommandCompletionCallbackFa
 import com.cannontech.common.device.commands.impl.PorterCommandCallback;
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
-import com.cannontech.common.device.config.model.ConfigurationBase;
+import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.config.service.DeviceConfigService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -34,10 +34,7 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
-import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SimpleCallback;
@@ -45,25 +42,24 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.Lists;
 
 public class DeviceConfigServiceImpl implements DeviceConfigService {
+    private static final Logger log = YukonLogManager.getLogger(DeviceConfigServiceImpl.class);
     
-    private GroupCommandExecutor groupCommandExecutor;
-    private CommandRequestDeviceExecutor commandRequestExecutor;
-    private Logger log = YukonLogManager.getLogger(DeviceConfigServiceImpl.class);
-    private DeviceConfigurationDao deviceConfigurationDao;
-    private MeterDao meterDao;
-    private PaoDefinitionDao paoDefinitionDao;
-    private TemporaryDeviceGroupService temporaryDeviceGroupService;
-    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-    private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
+    @Autowired private GroupCommandExecutor groupCommandExecutor;
+    @Autowired private CommandRequestDeviceExecutor commandRequestExecutor;
+    @Autowired private DeviceConfigurationDao deviceConfigurationDao;
+    @Autowired private MeterDao meterDao;
+    @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
+    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    @Autowired private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
 
     private String sendConfigCommand(DeviceCollection deviceCollection, SimpleCallback<GroupCommandResult> callback, String command, DeviceRequestType type, LiteYukonUser user) {
         List<SimpleDevice> unsupportedDevices = new ArrayList<SimpleDevice>();
         List<SimpleDevice> supportedDevices = new ArrayList<SimpleDevice>();
-        for(SimpleDevice device : deviceCollection.getDeviceList()){
-        	ConfigurationBase configurationBase = deviceConfigurationDao.findConfigurationForDevice(device);
-        	if (configurationBase != null &&
-        			paoDefinitionDao.isTagSupported(device.getDeviceType(), configurationBase.getType().getSupportedDeviceTag())) {
+        for (SimpleDevice device : deviceCollection.getDeviceList()) {
+            LightDeviceConfiguration configuration = deviceConfigurationDao.findConfigurationForDevice(device);
+        	if (configuration != null && 
+        	    deviceConfigurationDao.isTypeSupportedByConfiguration(configuration, device.getDeviceType())) {
         		supportedDevices.add(device);
         	} else {
         		unsupportedDevices.add(device);
@@ -114,13 +110,13 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             }
         };
         
-        for(YukonDevice device : devices) {
+        for (YukonDevice device : devices) {
             Meter meter = meterDao.getForYukonDevice(device);
-            ConfigurationBase configurationBase = deviceConfigurationDao.findConfigurationForDevice(device);
-            if (configurationBase != null && 
-            		paoDefinitionDao.isTagSupported(meter.getPaoType(), configurationBase.getType().getSupportedDeviceTag())) {
+            LightDeviceConfiguration configuration = deviceConfigurationDao.findConfigurationForDevice(device);
+            if (configuration != null && 
+                deviceConfigurationDao.isTypeSupportedByConfiguration(configuration, meter.getPaoType())) {
                 VerifyResult verifyResult = new VerifyResult(meter);
-                verifyResult.setConfig(configurationBase);
+                verifyResult.setConfig(configuration);
                 result.getVerifyResultsMap().put(new SimpleDevice(device.getPaoIdentifier()), verifyResult);
             }else {
                 deviceList.remove(device);
@@ -204,69 +200,11 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         return resultHolder;
     }
 
-    @Override
-    public boolean isDeviceConfigAvailable(PaoType paoType) {
-    	List<ConfigurationBase> configurations = deviceConfigurationDao.getAllConfigurations();
-    	for (ConfigurationBase configurationBase : configurations) {
-        	PaoTag paoTag = configurationBase.getType().getSupportedDeviceTag();
-        	if (paoDefinitionDao.isTagSupported(paoType, paoTag)) {
-        		return true;
-        	}
-		}
-        return false;
-    }
-    
     private CommandRequestDevice buildStandardRequest(YukonDevice device, final String command) {
         CommandRequestDevice request = new CommandRequestDevice();
         request.setDevice(new SimpleDevice(device.getPaoIdentifier()));
         
         request.setCommandCallback(new PorterCommandCallback(command));
         return request;
-    }
-    
-    @Autowired
-    public void setGroupCommandExecutor(GroupCommandExecutor groupCommandExecutor) {
-        this.groupCommandExecutor = groupCommandExecutor;
-    }
-
-    @Autowired
-    public void setCommandRequestExecutor(CommandRequestDeviceExecutor commandRequestExecutor) {
-        this.commandRequestExecutor = commandRequestExecutor;
-    }
-    
-    @Autowired
-    public void setDeviceConfigurationDao(DeviceConfigurationDao deviceConfigurationDao) {
-        this.deviceConfigurationDao = deviceConfigurationDao;
-    }
-    
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
-    }
-    
-    @Autowired
-    public void setTemporaryDeviceGroupService(TemporaryDeviceGroupService temporaryDeviceGroupService) {
-        this.temporaryDeviceGroupService = temporaryDeviceGroupService;
-    }
-    
-    @Autowired
-    public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
-        this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
-    }
-    
-    @Autowired
-    public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
-        this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
-    }
-    
-    @Autowired
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
-    }
-
-    @Autowired
-    public void setWaitableCommandCompletionCallbackFactory(
-            WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory) {
-        this.waitableCommandCompletionCallbackFactory = waitableCommandCompletionCallbackFactory;
     }
 }

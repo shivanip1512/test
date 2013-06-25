@@ -6,9 +6,8 @@ import com.cannontech.amr.meter.model.Meter;
 import com.google.common.collect.Lists;
 
 public class VerifyResult {
-    
     private Meter meter;
-    private ConfigurationBase config;
+    private LightDeviceConfiguration config;
     private List<String> matching = Lists.newArrayList();
     private List<String> discrepancies = Lists.newArrayList();
 
@@ -24,11 +23,11 @@ public class VerifyResult {
         this.meter = meter;
     }
 
-    public ConfigurationBase getConfig() {
+    public LightDeviceConfiguration getConfig() {
         return config;
     }
 
-    public void setConfig(ConfigurationBase config) {
+    public void setConfig(LightDeviceConfiguration config) {
         this.config = config;
     }
 

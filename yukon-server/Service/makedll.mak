@@ -6,7 +6,6 @@ include $(COMPILEBASE)\rwglobal.inc
 INCLPATHS+= \
 -I$(SERVICE)\include \
 -I$(COMMON)\include \
--I$(CPARMS)\include \
 -I$(RW) \
 -I$(R_COMMON)\include \
 -I$(R_SERVICE)\include \

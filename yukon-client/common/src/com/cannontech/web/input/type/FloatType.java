@@ -15,6 +15,7 @@ public class FloatType extends DefaultValidatedType<Float> {
     private String renderer = null;
 
     public FloatType() {
+        // There's no difference between how float and integer are represented, so we can use integerType.jsp here.
         setRenderer("integerType.jsp");
     }
 

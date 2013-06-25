@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<deviceConfigurationCategories
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="configurationCategoryDefinition.xsd">
+    
+    <category type="dst">
+        <enum field="timeZoneOffset" type="DstInput"/>
+    </category>
+    
+    <category type="meterParameters">
+        <integer field="lcdCycleTime" minValue="0" maxValue="15" default="8"/>
+        <integer field="displayDigits" minValue="4" maxValue="6" default="5"/>
+        <boolean field="disconnectDisplayDisabled" default="false"/>
+    </category>
+    
+    <category type="displayItems">
+        <enum field="displayItem1" type="DisplayItem" default="0"/>
+        <enum field="displayItem2" type="DisplayItem" default="0"/>
+        <enum field="displayItem3" type="DisplayItem" default="0"/>
+        <enum field="displayItem4" type="DisplayItem" default="0"/>
+        <enum field="displayItem5" type="DisplayItem" default="0"/>
+        <enum field="displayItem6" type="DisplayItem" default="0"/>
+        <enum field="displayItem7" type="DisplayItem" default="0"/>
+        <enum field="displayItem8" type="DisplayItem" default="0"/>
+        <enum field="displayItem9" type="DisplayItem" default="0"/>
+        <enum field="displayItem10" type="DisplayItem" default="0"/>
+        <enum field="displayItem11" type="DisplayItem" default="0"/>
+        <enum field="displayItem12" type="DisplayItem" default="0"/>
+        <enum field="displayItem13" type="DisplayItem" default="0"/>
+        <enum field="displayItem14" type="DisplayItem" default="0"/>
+        <enum field="displayItem15" type="DisplayItem" default="0"/>
+        <enum field="displayItem16" type="DisplayItem" default="0"/>
+        <enum field="displayItem17" type="DisplayItem" default="0"/>
+        <enum field="displayItem18" type="DisplayItem" default="0"/>
+        <enum field="displayItem19" type="DisplayItem" default="0"/>
+        <enum field="displayItem20" type="DisplayItem" default="0"/>
+        <enum field="displayItem21" type="DisplayItem" default="0"/>
+        <enum field="displayItem22" type="DisplayItem" default="0"/>
+        <enum field="displayItem23" type="DisplayItem" default="0"/>
+        <enum field="displayItem24" type="DisplayItem" default="0"/>
+        <enum field="displayItem25" type="DisplayItem" default="0"/>
+        <enum field="displayItem26" type="DisplayItem" default="0"/>
+    </category>
+    
+    <category type="mct440DemandLoadProfile">
+        <enum field="kwProfileInterval" type="Interval" default="60"/>
+        <enum field="voltageProfileInterval" type="Interval" default="60"/>
+        <enum field="demandInterval" type="Interval" default="5"/>
+    </category>
+    
+    <category type="mct440Configuration">
+        <boolean field="enableDst" default="true"/>
+        <integer field="timeAdjustTolerance" minValue="15" maxValue="255" default="15"/>
+    </category>
+        
+    <category type="mct440Addressing">
+        <integer field="bronzeAddress" minValue="0" maxValue="255" default="0"/>
+        <integer field="leadAddress" minValue="0" maxValue="4095" default="0"/>
+        <integer field="collectionAddress" minValue="0" maxValue="4095" default="0"/>
+        <integer field="serviceProviderId" minValue="0" maxValue="254" default="0"/>
+    </category>
+        
+    <category type="mct440PhaseLoss">
+        <integer field="phaseLossThreshold" minValue="0" maxValue="100" default="95"/>
+        <integer field="phaseLossDuration" minValue="0" maxValue="65535" default="5"/>
+    </category>
+    
+    <category type="mct440Tou">
+        <map field="schedule1" type="RateTime">
+            <entry field="time0"/>
+            <entry field="time1"/>
+            <entry field="time2"/>
+            <entry field="time3"/>
+            <entry field="time4"/>
+            <entry field="time5"/>
+            <entry field="time6"/>
+            <entry field="time7"/>
+            <entry field="time8"/>
+            <entry field="time9"/>
+        </map>
+        <map field="schedule2" type="RateTime">
+            <entry field="time0"/>
+            <entry field="time1"/>
+            <entry field="time2"/>
+            <entry field="time3"/>
+            <entry field="time4"/>
+            <entry field="time5"/>
+            <entry field="time6"/>
+            <entry field="time7"/>
+            <entry field="time8"/>
+            <entry field="time9"/>
+        </map>
+        <map field="schedule3" type="RateTime">
+            <entry field="time0"/>
+            <entry field="time1"/>
+            <entry field="time2"/>
+            <entry field="time3"/>
+            <entry field="time4"/>
+            <entry field="time5"/>
+            <entry field="time6"/>
+            <entry field="time7"/>
+            <entry field="time8"/>
+            <entry field="time9"/>
+        </map>
+        <map field="schedule4" type="RateTime">
+            <entry field="time0"/>
+            <entry field="time1"/>
+            <entry field="time2"/>
+            <entry field="time3"/>
+            <entry field="time4"/>
+            <entry field="time5"/>
+            <entry field="time6"/>
+            <entry field="time7"/>
+            <entry field="time8"/>
+            <entry field="time9"/>
+        </map>
+        <enum field="holiday" type="Schedule"/>
+        <enum field="weekday" type="Schedule"/>
+        <enum field="saturday" type="Schedule"/>
+        <enum field="sunday" type="Schedule"/>
+    </category>
+        
+    <category type="dnp">
+        <integer field="internalRetries" default="2"/>
+        <boolean field="localTime" default="false"/>
+        <boolean field="enableDnpTimesyncs" default="false"/>
+        <boolean field="omitTimeRequest" default="false"/>
+        <boolean field="enableUnsolicitedMessages" default="true"/>
+    </category>
+
+    <category type="mct470DemandLoadProfile">
+        <enum field="demandInterval" type="Interval" default="5"/>
+        <enum field="loadProfileInterval1" type="Interval" default="60"/>
+    </category>
+
+    <category type="mct470LoadProfileChannels">
+        <!-- Channel 1 Inputs -->
+        <enum field="channel1Type" type="Mct470MeterType" default="0"/>
+        <enum field="channel1PhysicalChannel" type="PhysicalChannel" default="0"/>
+        <enum field="channel1LoadProfileResolution" type="LoadProfileResolution" default="10.0"/>
+        <enum field="channel1PeakKWResolution" type="DemandResolution" default="10.0"/>
+        <enum field="channel1LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="10.0"/>
+        <float field="channel1Multiplier" minValue="0.0001" maxValue="50000.0" default="1.0"/>
+        <!-- Channel 2 Inputs -->
+        <enum field="channel2Type" type="Mct470MeterType" default="0"/>
+        <enum field="channel2PhysicalChannel" type="PhysicalChannel" default="1"/>
+        <enum field="channel2LoadProfileResolution" type="LoadProfileResolution" default="10.0"/>
+        <enum field="channel2PeakKWResolution" type="DemandResolution" default="10.0"/>
+        <enum field="channel2LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="10.0"/>
+        <float field="channel2Multiplier" minValue="0.0001" maxValue="50000.0" default="1.0"/>
+        <!-- Channel 3 Inputs -->
+        <enum field="channel3Type" type="Mct470MeterType" default="0"/>
+        <enum field="channel3PhysicalChannel" type="PhysicalChannel" default="2"/>
+        <enum field="channel3LoadProfileResolution" type="LoadProfileResolution" default="10.0"/>
+        <enum field="channel3PeakKWResolution" type="DemandResolution" default="10.0"/>
+        <enum field="channel3LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="10.0"/>
+        <float field="channel3Multiplier" minValue="0.0001" maxValue="50000.0" default="1.0"/>
+        <!-- Channel 4 Inputs -->
+        <enum field="channel4Type" type="Mct470MeterType" default="0"/>
+        <enum field="channel4PhysicalChannel" type="PhysicalChannel" default="3"/>
+        <enum field="channel4LoadProfileResolution" type="LoadProfileResolution" default="10.0"/>
+        <enum field="channel4PeakKWResolution" type="DemandResolution" default="10.0"/>
+        <enum field="channel4LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="10.0"/>
+        <float field="channel4Multiplier" minValue="0.0001" maxValue="50000.0" default="1.0"/>
+    </category>
+    
+    <category type="mct470ConfigurationByte">
+        <boolean field="enableDst" default="true"/>
+        <enum field="electronicMeter" type="ElectronicMeter" default="0"/>
+        <integer field="timeAdjustTolerance" minValue="15" maxValue="255" default="15"/>
+    </category>
+    
+    <category type="addressing">
+        <integer field="serviceProviderId" minValue="0" maxValue="254" default="0"/>
+    </category>
+    
+    <category type="relays">
+        <enum field="relayATimer" type="RelayTiming"/>
+        <enum field="relayBTimer" type="RelayTiming"/>
+    </category>
+    
+    <category type="mct470PrecannedTable">
+        <enum field="tableReadInterval" type="TableReadInterval" default="20"/>
+        <integer field="meterNumber" minValue="0" maxValue="500" default="0"/>
+        <integer field="tableType" minValue="1" maxValue="11" default="1"/>
+    </category>
+    
+    <category type="tou">
+        <map field="schedule1" type="RateTime">
+            <entry field="time0"/>
+            <entry field="time1"/>
+            <entry field="time2"/>
+            <entry field="time3"/>
+            <entry field="time4"/>
+            <entry field="time5"/>
+        </map>
+        <map field="schedule2" type="RateTime">
+            <entry field="time0"/>
+            <entry field="time1"/>
+            <entry field="time2"/>
+            <entry field="time3"/>
+            <entry field="time4"/>
+            <entry field="time5"/>
+        </map>
+        <map field="schedule3" type="RateTime">
+            <entry field="time0"/>
+            <entry field="time1"/>
+            <entry field="time2"/>
+            <entry field="time3"/>
+            <entry field="time4"/>
+            <entry field="time5"/>
+        </map>
+        <map field="schedule4" type="RateTime">
+            <entry field="time0"/>
+            <entry field="time1"/>
+            <entry field="time2"/>
+            <entry field="time3"/>
+            <entry field="time4"/>
+            <entry field="time5"/>
+        </map>
+        <enum field="defaultRate" type="Rate"/>
+        <enum field="holiday" type="Schedule"/>
+        <enum field="monday" type="Schedule"/>
+        <enum field="tuesday" type="Schedule"/>
+        <enum field="wednesday" type="Schedule"/>
+        <enum field="thursday" type="Schedule"/>
+        <enum field="friday" type="Schedule"/>
+        <enum field="saturday" type="Schedule"/>
+        <enum field="sunday" type="Schedule"/>
+    </category>
+    
+    <category type="mct430DemandLoadProfile">
+        <enum field="demandInterval" type="Interval" default="5"/>
+        <enum field="loadProfileInterval1" type="Interval" default="60"/>
+    </category>
+    
+    <category type="mct430LoadProfileChannels">
+        <!-- Channel 1 Inputs -->
+        <enum field="channel1Type" type="Mct430MeterType" default="0"/>
+        <enum field="channel1PhysicalChannel" type="PhysicalChannel" default="0"/>
+        <enum field="channel1LoadProfileResolution" type="LoadProfileResolution" default="10.0"/>
+        <enum field="channel1PeakKWResolution" type="DemandResolution" default="10.0"/>
+        <enum field="channel1LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="10.0"/>
+        <!-- Channel 2 Inputs -->
+        <enum field="channel2Type" type="Mct430MeterType" default="0"/>
+        <enum field="channel2PhysicalChannel" type="PhysicalChannel" default="1"/>
+        <enum field="channel2LoadProfileResolution" type="LoadProfileResolution" default="10.0"/>
+        <enum field="channel2PeakKWResolution" type="DemandResolution" default="10.0"/>
+        <enum field="channel2LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="10.0"/>
+        <!-- Channel 3 Inputs -->
+        <enum field="channel3Type" type="Mct430MeterType" default="0"/>
+        <enum field="channel3PhysicalChannel" type="PhysicalChannel" default="2"/>
+        <enum field="channel3LoadProfileResolution" type="LoadProfileResolution" default="10.0"/>
+        <enum field="channel3PeakKWResolution" type="DemandResolution" default="10.0"/>
+        <enum field="channel3LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="10.0"/>
+        <!-- Channel 4 Inputs -->
+        <enum field="channel4Type" type="Mct430MeterType" default="0"/>
+        <enum field="channel4PhysicalChannel" type="PhysicalChannel" default="3"/>
+        <enum field="channel4LoadProfileResolution" type="LoadProfileResolution" default="10.0"/>
+        <enum field="channel4PeakKWResolution" type="DemandResolution" default="10.0"/>
+        <enum field="channel4LastIntervalDemandResolution" type="LastIntervalDemandResolution" default="10.0"/>
+    </category>
+    
+    <category type="mct430ConfigurationByte">
+        <boolean field="enableDst" default="true"/>
+        <integer field="timeAdjustTolerance" minValue="15" maxValue="255" default="15"/>
+    </category>
+    
+    <category type="mct430PrecannedTable">
+        <enum field="tableReadInterval" type="TableReadInterval" default="20"/>
+        <integer field="tableType" minValue="1" maxValue="11" default="1"/>
+    </category>
+</deviceConfigurationCategories>

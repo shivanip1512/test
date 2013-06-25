@@ -3,7 +3,6 @@ include $(COMPILEBASE)\rwglobal.inc
 
 INCLPATHS+= \
 -I$(COMMON)\include \
--I$(CPARMS)\include \
 -I$(MSG)\include \
 -I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
@@ -16,7 +15,6 @@ INCLPATHS+= \
 ;$(DATABASE)\include \
 ;$(SCANNER)\include \
 ;$(PORTER)\include \
-;$(CPARMS)\include \
 ;$(SERVICE)\include \
 ;$(SERVER)\include \
 ;$(PIL)\include \

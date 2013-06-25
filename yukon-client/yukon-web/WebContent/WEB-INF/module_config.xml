@@ -179,6 +179,28 @@
   <module name="tools">
     <skin name="STANDARD"/>
     <pages>
+      <page name="configs" type="BASIC">
+        <link>/deviceConfiguration/home</link>
+        <pages>
+          <page name="configs.config.CREATE" type="BASIC"/>
+          <page name="configs.config.VIEW" type="DETAIL_CHILD">
+            <link>/deviceConfiguration/viewConfiguration?configId=${deviceConfigurationBackingBean.configId}</link>
+            <labelArgument>${deviceConfigurationBackingBean.configName}</labelArgument>
+            <pages>
+              <page name="configs.config.EDIT" type="BASIC"/>
+            </pages>
+          </page>
+          <page name="configs.category.CREATE" type="BASIC"/>
+          <page name="configs.category.VIEW" type="DETAIL_CHILD">
+            <link>/deviceConfiguration/viewCategory?categoryId=${categoryEditBean.categoryId}</link>
+            <labelArgument>${categoryEditBean.categoryName}</labelArgument>
+            <pages>
+              <page name="configs.category.EDIT" type="BASIC"/>
+            </pages>
+          </page>
+          <page name="configs.setup" type="BASIC"/>
+        </pages>
+      </page>
       <page name="bulk.home" type="BASIC">
         <link>/bulk/bulkHome</link>
         <pages>

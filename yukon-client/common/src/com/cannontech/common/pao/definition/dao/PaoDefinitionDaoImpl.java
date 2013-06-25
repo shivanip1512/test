@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,7 @@ import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigResourceLoader;
 import com.cannontech.common.config.retrieve.ConfigFile;
+import com.cannontech.common.device.config.model.jaxb.CategoryType;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -65,11 +67,13 @@ import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.definition.model.jaxb.ArchiveDefaults;
 import com.cannontech.common.pao.definition.model.jaxb.AttributesType;
+import com.cannontech.common.pao.definition.model.jaxb.DeviceCategories;
 import com.cannontech.common.pao.definition.model.jaxb.AttributesType.Attribute.BasicLookup;
 import com.cannontech.common.pao.definition.model.jaxb.CommandsType.Command;
 import com.cannontech.common.pao.definition.model.jaxb.CommandsType.Command.Cmd;
 import com.cannontech.common.pao.definition.model.jaxb.CommandsType.Command.PointRef;
 import com.cannontech.common.pao.definition.model.jaxb.ComponentTypeType;
+import com.cannontech.common.pao.definition.model.jaxb.DeviceCategories.Category;
 import com.cannontech.common.pao.definition.model.jaxb.Pao;
 import com.cannontech.common.pao.definition.model.jaxb.PaoDefinitions;
 import com.cannontech.common.pao.definition.model.jaxb.PointsType.Point;
@@ -87,10 +91,10 @@ import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.database.data.point.ControlStateType;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.database.data.point.ControlStateType;
 import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.PointUnit;
@@ -128,6 +132,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     private Multimap<PaoType, Attribute> paoTypeAttributesMultiMap = null;
     private SetMultimap<PaoType, PointTemplate> paoAllPointTemplateMap = null;
     private SetMultimap<PaoType, PointTemplate> paoInitPointTemplateMap = null;
+    private SetMultimap<PaoType, Category> paoCategoryMap = null;
     private BiMap<PaoType, PaoDefinition> paoTypeMap = null;
     private ListMultimap<String, PaoDefinition> paoDisplayGroupMap = null;
     private SetMultimap<String, PaoDefinition> changeGroupPaosMap = null;
@@ -514,6 +519,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         paoTypeMap = EnumHashBiMap.create(PaoType.class);
         paoAllPointTemplateMap = HashMultimap.create();
         paoInitPointTemplateMap = HashMultimap.create();
+        paoCategoryMap = HashMultimap.create();
         paoDisplayGroupMap = LinkedListMultimap.create();
         changeGroupPaosMap = HashMultimap.create();
         paoAttributeAttrDefinitionMap = Maps.newEnumMap(PaoType.class);
@@ -735,7 +741,12 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         }
 
         Map<String, PointTemplate> pointNameTemplateMap = new HashMap<String, PointTemplate>();
-
+        
+        // Add device configuration categories
+        for (Category category : pao.getCategories()) {
+            paoCategoryMap.put(paoType, category);
+        }
+        
         // Add pao points (non-calculated)
         populatePointMapsWithNonCalcPoints(pao, paoType, pointNameTemplateMap, javaConstant);
 
@@ -955,11 +966,11 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
                 template.setControlType(controlType);
             }
             if (point.getStateZeroControl() != null) {
-                ControlStateType stateZeroControl = ControlStateType.valueOf(point.getStateZeroControl().getValue().name());
+                ControlStateType stateZeroControl = ControlStateType.valueOf(point.getStateZeroControl().getValue().value());
                 template.setStateZeroControl(stateZeroControl);
             }
             if (point.getStateOneControl() != null) {
-                ControlStateType stateOneControl = ControlStateType.valueOf(point.getStateOneControl().getValue().name());
+                ControlStateType stateOneControl = ControlStateType.valueOf(point.getStateOneControl().getValue().value());
                 template.setStateOneControl(stateOneControl);
             }
             if (point.getStategroup() != null) {
@@ -1041,4 +1052,33 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         return pointTemplate;
     }
     
+    @Override
+    public Set<Category> getCategoriesForPaoType(PaoType paoType) {
+        Set<Category> templates = paoCategoryMap.get(paoType);
+        return Collections.unmodifiableSet(templates);
+    }
+    
+    @Override
+    public Set<Category> getCategoriesForPaoTypes(Set<PaoType> paoTypes) {
+        Set<Category> categories = new HashSet<>();
+        
+        for (PaoType paoType : paoTypes) {
+            categories.addAll(getCategoriesForPaoType(paoType));
+        }
+        
+        return Collections.unmodifiableSet(categories);
+    }
+    
+    @Override
+    public boolean isDnpConfigurationType(PaoType paoType) {
+        Set<DeviceCategories.Category> categoriesForPaoType = getCategoriesForPaoType(paoType);
+        
+        for (DeviceCategories.Category category : categoriesForPaoType) {
+            if (CategoryType.DNP.value().equals(category.getType().value())) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
 }

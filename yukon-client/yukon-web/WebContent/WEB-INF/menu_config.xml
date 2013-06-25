@@ -199,7 +199,7 @@
         <permissions>
           <roleProperty name="ADMIN_VIEW_CONFIG" />
         </permissions>
-        <link>/deviceConfiguration?home</link>
+        <link>/deviceConfiguration/home</link>
       </option>
       <option name="deviceDefinitions">
         <link>/common/deviceDefinition.xml</link>

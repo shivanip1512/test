@@ -12,7 +12,6 @@ INCLPATHS+= \
 -I$(MACS)\include \
 -I$(MSG)\include \
 -I$(PROT)\include \
--I$(CPARMS)\include \
 -I$(FDR)\include \
 -I$(RW) \
 -I$(BOOST_INCLUDE) \
@@ -30,7 +29,6 @@ INCLPATHS+= \
 ;$(DEVICECONFIGURATION)\include \
 ;$(SCANNER)\include \
 ;$(PORTER)\include \
-;$(CPARMS)\include \
 ;$(SERVICE)\include \
 ;$(SERVER)\include \
 ;$(PIL)\include \

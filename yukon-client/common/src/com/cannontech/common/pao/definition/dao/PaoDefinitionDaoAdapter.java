@@ -16,6 +16,7 @@ import com.cannontech.common.pao.definition.model.PaoTagDefinition;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
+import com.cannontech.common.pao.definition.model.jaxb.DeviceCategories.Category;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
@@ -180,6 +181,21 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
 
     @Override
     public BuiltInAttribute findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+    
+    @Override
+    public Set<Category> getCategoriesForPaoType(PaoType paoType) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+    
+    @Override
+    public Set<Category> getCategoriesForPaoTypes(Set<PaoType> paoTypes) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+    
+    @Override
+    public boolean isDnpConfigurationType(PaoType paoType) {
         throw new UnsupportedOperationException("not implemented");
     }
 }

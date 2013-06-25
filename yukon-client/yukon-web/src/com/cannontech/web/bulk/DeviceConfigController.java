@@ -31,7 +31,8 @@ import com.cannontech.common.bulk.processor.ProcessorFactory;
 import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.device.commands.VerifyConfigCommandResult;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
-import com.cannontech.common.device.config.model.ConfigurationBase;
+import com.cannontech.common.device.config.model.DeviceConfiguration;
+import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.config.service.DeviceConfigService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -75,7 +76,7 @@ public class DeviceConfigController {
         long deviceCount = deviceCollection.getDeviceCount();
         model.addAttribute("deviceCount", deviceCount);
         
-        List<ConfigurationBase> existingConfigs = deviceConfigurationDao.getAllConfigurations();
+        List<LightDeviceConfiguration> existingConfigs = deviceConfigurationDao.getAllLightDeviceConfigurations();
         model.addAttribute("existingConfigs", existingConfigs);
         
         return "config/assignConfig.jsp";
@@ -103,7 +104,7 @@ public class DeviceConfigController {
         
         // PROCESS
         final int configId = ServletRequestUtils.getRequiredIntParameter(request, "configuration"); 
-        ConfigurationBase configuration = deviceConfigurationDao.getConfiguration(configId);
+        DeviceConfiguration configuration = deviceConfigurationDao.getDeviceConfiguration(configId);
 
         Processor<SimpleDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
         

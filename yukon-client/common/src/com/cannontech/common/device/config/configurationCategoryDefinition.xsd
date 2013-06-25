@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+    jaxb:version="2.0">
+    
+    <xs:include schemaLocation="deviceConfigurationCategory.xsd"/>
+
+    <xs:complexType name="InputBase" abstract="true">
+        <xs:attribute name="field" type="xs:string" use="required"/>
+        <xs:attribute name="default" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="InputInteger">
+        <xs:complexContent>
+            <xs:extension base="InputBase">
+                <xs:attribute name="minValue" type="xs:int"/>
+                <xs:attribute name="maxValue" type="xs:int"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="InputFloat">
+        <xs:complexContent>
+            <xs:extension base="InputBase">
+                <xs:attribute name="minValue" type="xs:float"/>
+                <xs:attribute name="maxValue" type="xs:float"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="InputBoolean">
+        <xs:complexContent>
+            <xs:extension base="InputBase"/>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="InputEnum">
+        <xs:complexContent>
+            <xs:extension base="InputBase">
+                <xs:attribute name="type" type="EnumOption" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="InputMap">
+        <xs:complexContent>
+            <xs:extension base="InputBase">
+                <xs:sequence>
+                    <xs:element name="entry" maxOccurs="unbounded">
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="InputBase"/>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+                <xs:attribute name="type" type="MapType" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:simpleType name="MapType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="RateTime"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="EnumOption">
+        <xs:restriction base="xs:string">
+            <!-- This list must contain exactly one of each of the simple type names from
+                 deviceConfigurationEnum.xsd and the name must match exactly -->
+            <xs:enumeration value="DstInput"/>
+            <xs:enumeration value="DisplayItem"/>
+            <xs:enumeration value="Interval"/>
+            <xs:enumeration value="Rate"/>
+            <xs:enumeration value="Schedule"/>
+            <xs:enumeration value="Mct470MeterType"/>
+            <xs:enumeration value="Mct430MeterType"/>
+            <xs:enumeration value="PhysicalChannel"/>
+            <xs:enumeration value="LoadProfileResolution"/>
+            <xs:enumeration value="DemandResolution"/>
+            <xs:enumeration value="LastIntervalDemandResolution"/>
+            <xs:enumeration value="ElectronicMeter"/>
+            <xs:enumeration value="RelayTiming"/>
+            <xs:enumeration value="TableReadInterval"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:complexType name="Category">
+        <xs:choice minOccurs="1" maxOccurs="unbounded">
+            <xs:element name="integer" type="InputInteger"/>
+            <xs:element name="float" type="InputFloat"/>
+            <xs:element name="boolean" type="InputBoolean"/>
+            <xs:element name="enum" type="InputEnum"/>
+            <xs:element name="map" type="InputMap"/>
+        </xs:choice>
+        <xs:attribute name="type" type="CategoryType"/>
+    </xs:complexType>
+    
+    <xs:element name="deviceConfigurationCategories">
+        <xs:complexType>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element name="category" type="Category"/>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

@@ -188,12 +188,6 @@
         </tags>
     </pao>
     
-    <pao id="SUPPORTS_DNP_CONFIGURATION" abstract="true">
-        <tags>
-            <tag name="DEVICE_CONFIGURATION_DNP"/>
-        </tags>
-    </pao>
-
     <pao id="REVERSE_POWER_ALARM" abstract="true">
         <points>
             <point type="Status" offset="47">
@@ -231,6 +225,70 @@
             </attribute>
         </attributes>
     </pao>
+    
+    <!-- DEVICE CONFIGURATION CATEGORY ASSIGNMENTS -->
+    <pao id="SUPPORTS_DEVICE_CONFIGURATION" abstract="true">
+        <tags>
+            <tag name="DEVICE_CONFIGURATION"/>
+        </tags>
+    </pao>
+    
+    <pao id="MCT_420_CONFIGURATION" abstract="true" inherits="SUPPORTS_DEVICE_CONFIGURATION">
+        <configuration>
+            <category type="meterParameters"/>
+            <category type="displayItems"/>
+        </configuration>
+    </pao>
+    
+    <pao id="DST_CONFIGURATION_CATEGORY" abstract="true" inherits="SUPPORTS_DEVICE_CONFIGURATION">
+        <configuration>
+            <category type="dst"/>
+        </configuration>
+    </pao>
+    
+    <pao id="ADDRESSING_CONFIGURATION_CATEGORY" abstract="true" inherits="SUPPORTS_DEVICE_CONFIGURATION">
+        <configuration>
+            <category type="addressing"/>
+        </configuration>
+    </pao>
+
+    <pao id="MCT_430_CONFIGURATION" abstract="true" 
+        inherits="SUPPORTS_DEVICE_CONFIGURATION, DST_CONFIGURATION_CATEGORY, ADDRESSING_CONFIGURATION_CATEGORY">
+        <configuration>
+            <category type="mct430DemandLoadProfile"/>
+            <category type="mct430LoadProfileChannels"/>
+            <category type="mct430ConfigurationByte"/>
+            <category type="mct430PrecannedTable"/>
+        </configuration>
+    </pao>
+    
+    <pao id="MCT_440_CONFIGURATION" abstract="true" inherits="SUPPORTS_DEVICE_CONFIGURATION, DST_CONFIGURATION_CATEGORY">
+        <configuration>
+            <category type="mct440DemandLoadProfile"/>
+            <category type="mct440Configuration"/>
+            <category type="mct440PhaseLoss"/>
+            <category type="mct440Addressing"/>
+            <category type="mct440Tou"/>
+        </configuration>
+    </pao>
+    
+    <pao id="MCT_470_CONFIGURATION" abstract="true" 
+        inherits="SUPPORTS_DEVICE_CONFIGURATION, DST_CONFIGURATION_CATEGORY, ADDRESSING_CONFIGURATION_CATEGORY">
+        <configuration>
+            <category type="mct470DemandLoadProfile"/>
+            <category type="mct470LoadProfileChannels"/>
+            <category type="mct470ConfigurationByte"/>
+            <category type="mct470PrecannedTable"/>
+            <category type="relays"/>
+            <category type="tou"/>
+        </configuration>
+    </pao>
+    
+    <pao id="DNP_CONFIGURATION" abstract="true" inherits="SUPPORTS_DEVICE_CONFIGURATION">
+        <configuration>
+            <category type="dnp"/>
+        </configuration>
+    </pao>
 
     <!-- MCT BASE -->
     <pao id="MCT_BASE" abstract="true" inherits="OUTAGE_STATUS_BASE">
@@ -253,7 +311,7 @@
     
     <!-- MCT 470 -->
     <!-- MCT_430_VOLTAGE valid for all 470 EXCEPT Elster (Alpha) Power Plus -->
-    <pao id="MCT470" inherits="MCT_BASE, MCT_4XX_POLYPHASE_BASE, MCT_430_VOLTAGE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_LOAD_PROFILE_TAG, SUPPORTS_PLC_DEMAND_RESET_TAG">
+    <pao id="MCT470" inherits="MCT_BASE, MCT_4XX_POLYPHASE_BASE, MCT_430_VOLTAGE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_LOAD_PROFILE_TAG, SUPPORTS_PLC_DEMAND_RESET_TAG, MCT_470_CONFIGURATION">
         <displayName>MCT-470</displayName>
         <points>
             <point type="PulseAccumulator" offset="1">
@@ -930,7 +988,6 @@
             </attribute>
         </attributes>
         <tags>
-            <tag name="DEVICE_CONFIGURATION_470"/>
             <tag name="DLC_ADDRESS_RANGE">
             	<value>510001-560000</value>
             </tag>
@@ -996,7 +1053,7 @@
    </pao>
    
     <!-- MCT 430 BASE -->
-    <pao id="MCT_430_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_LOAD_PROFILE_TAG, SUPPORTS_PLC_DEMAND_RESET_TAG">
+    <pao id="MCT_430_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_LOAD_PROFILE_TAG, SUPPORTS_PLC_DEMAND_RESET_TAG, MCT_430_CONFIGURATION">
 		<points>
             <point type="Analog" offset="1">
             	<init>true</init>
@@ -1348,7 +1405,6 @@
         	</attribute>
         </attributes>
         <tags>
-            <tag name="DEVICE_CONFIGURATION_430"/>
             <tag name="DLC_ADDRESS_RANGE">
             	<value>620000-620199, 
             			620200-700000,
@@ -1417,11 +1473,7 @@
     </pao>
 	
 	<!-- MCT 420 BASE -->
-	<pao id="MCT_420_BASE" abstract="true" inherits="MCT_410_BASE, REVERSE_POWER_EVENT">
-        <tags>
-            <tag name="DEVICE_CONFIGURATION_420"/>
-        </tags>
-	</pao>
+	<pao id="MCT_420_BASE" abstract="true" inherits="MCT_410_BASE, REVERSE_POWER_EVENT, MCT_420_CONFIGURATION" />
     
 	<!-- MCT 420s -->
 	<pao id="MCT420FL" inherits="MCT_420_BASE, SUPPORTS_MCT_DISCONNECT">
@@ -1444,7 +1496,7 @@
     </pao>
 
     <!-- MCT 440 BASE -->
-    <pao id="MCT_440_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_MOVE_TAG, SUPPORTS_INTEGRATED_DISCONNECT">
+    <pao id="MCT_440_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_MOVE_TAG, SUPPORTS_INTEGRATED_DISCONNECT, MCT_440_CONFIGURATION">
         <points>
             <point type="Analog" offset="100">
                 <init>true</init>
@@ -1870,10 +1922,6 @@
                 <basicLookup point="Tamper Flag Set" />
             </attribute>
         </attributes>
-
-        <tags>
-            <tag name="DEVICE_CONFIGURATION_440"/>
-        </tags>
     </pao>
 
     <!-- MCT 440-2131b -->
@@ -8040,7 +8088,7 @@
     <pao id="DAVISWEATHER" inherits="RTU_BASE" creatable="false">
         <displayName>DAVIS WEATHER</displayName>
     </pao>
-    <pao id="RTU_DART" inherits="RTU_BASE, SUPPORTS_DNP_CONFIGURATION" creatable="false">
+    <pao id="RTU_DART" inherits="RTU_BASE, DNP_CONFIGURATION" creatable="false">
         <displayName>RTU-DART</displayName>
         <points>
             <point type="Status" offset="2001">
@@ -8054,7 +8102,7 @@
             </point>
         </points>
     </pao>
-    <pao id="RTU_DNP" inherits="RTU_BASE, SUPPORTS_DNP_CONFIGURATION">
+    <pao id="RTU_DNP" inherits="RTU_BASE, DNP_CONFIGURATION">
         <displayName>RTU-DNP</displayName>
         <points>
             <point type="Status" offset="2001">
@@ -8545,7 +8593,7 @@
         </tags>
     </pao>
     
-    <pao id="CBC_2WAY_BASE" inherits="CBC_BASE, SUPPORTS_DNP_CONFIGURATION" abstract="true">
+    <pao id="CBC_2WAY_BASE" inherits="CBC_BASE, DNP_CONFIGURATION" abstract="true">
         <changeGroup>cap2</changeGroup>
         <points>
             <!-- PULSE ACCUMULATOR POINTS -->
@@ -8620,12 +8668,12 @@
         <changeGroup>cap</changeGroup>
     </pao>
     
-    <pao id="DNP_CBC_6510" inherits="CBC_DNP_BASE, SUPPORTS_DNP_CONFIGURATION">
+    <pao id="DNP_CBC_6510" inherits="CBC_DNP_BASE, DNP_CONFIGURATION">
         <displayName>CBC 6510</displayName>
         <changeGroup>cap</changeGroup>
     </pao>    
     
-    <pao id="CBC_DNP" inherits="CBC_DNP_BASE, SUPPORTS_DNP_CONFIGURATION">
+    <pao id="CBC_DNP" inherits="CBC_DNP_BASE, DNP_CONFIGURATION">
         <displayName>CBC DNP</displayName>
         <changeGroup>cap</changeGroup>
     </pao>

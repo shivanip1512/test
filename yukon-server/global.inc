@@ -36,7 +36,6 @@ PIL             = $(COMPILEBASE)\pil
 PORTER          = $(COMPILEBASE)\porter
 SCANNER         = $(COMPILEBASE)\scanner
 SERVER          = $(COMPILEBASE)\server
-CPARMS          = $(COMPILEBASE)\cparms
 MACS            = $(COMPILEBASE)\macs
 MSG             = $(COMPILEBASE)\message
 PROT            = $(COMPILEBASE)\protocol
@@ -44,6 +43,7 @@ SERVICE         = $(COMPILEBASE)\service
 SIGNAL          = $(COMPILEBASE)\dbsignal
 RTDB            = $(COMPILEBASE)\rtdb
 DEVICECONFIGURATION = $(COMPILEBASE)\deviceconfiguration
+RESOURCE        = $(COMPILEBASE)\resource
 
 CPP_LIBRARIES   = $(DEV_ENVIRONMENT)\libraries
 
