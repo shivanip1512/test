@@ -81,7 +81,9 @@ public enum PaoClass implements DatabaseRepresentationSource {
      * @param dbString - type name to lookup
      * @return
      * @throws IllegalArgumentException - if no match
+     * @deprecated It is suggest to use YukonJdbcConnection or YukonResultSet.getEnum instead.
      */
+    @Deprecated
     public static PaoClass getForDbString(String dbString) throws IllegalArgumentException {
         PaoClass paoClass = lookupByDbString.get(dbString.toUpperCase().trim());
         Validate.notNull(paoClass, dbString);

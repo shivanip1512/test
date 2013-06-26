@@ -448,7 +448,9 @@ public enum PaoType implements DatabaseRepresentationSource {
      * @param dbString - type name to lookup, case insensitive
      * @return
      * @throws IllegalArgumentException - if no match
+     * @deprecated It is suggest to use YukonJdbcConnection or YukonResultSet.getEnum instead.
      */
+    @Deprecated
     public static PaoType getForDbString(String dbString) throws IllegalArgumentException {
         PaoType deviceType = lookupByDbString.get(dbString.toUpperCase().trim());
         Validate.notNull(deviceType, dbString);
