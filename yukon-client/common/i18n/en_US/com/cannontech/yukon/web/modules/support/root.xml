@@ -519,11 +519,11 @@
     <!-- deviceDefinition/deviceDefinitionViewer.jsp -->
     <entry key="yukon.web.modules.support.deviceDef.pageName">Device Definitions</entry>
     <entry key="yukon.web.modules.support.deviceDef.filters.title">Filters</entry>
-    <entry key="yukon.web.modules.support.deviceDef.filters.column.deviceType">Device Type</entry>
-    <entry key="yukon.web.modules.support.deviceDef.filters.column.displayGroup">Display Group</entry>
-    <entry key="yukon.web.modules.support.deviceDef.filters.column.changeGroup">Change Group</entry>
-    <entry key="yukon.web.modules.support.deviceDef.filters.column.attribute">Attribute</entry>
-    <entry key="yukon.web.modules.support.deviceDef.filters.column.tag">Tag</entry>
+    <entry key="yukon.web.modules.support.deviceDef.filters.deviceType">Device Type</entry>
+    <entry key="yukon.web.modules.support.deviceDef.filters.displayGroup">Display Group</entry>
+    <entry key="yukon.web.modules.support.deviceDef.filters.changeGroup">Change Group</entry>
+    <entry key="yukon.web.modules.support.deviceDef.filters.attribute">Attribute</entry>
+    <entry key="yukon.web.modules.support.deviceDef.filters.tag">Tag</entry>
     <entry key="yukon.web.modules.support.deviceDef.filters.allDefinitions">All Definitions</entry>
     <entry key="yukon.web.modules.support.deviceDef.filters.anyDisplayGroup">Any Display Group</entry>
     <entry key="yukon.web.modules.support.deviceDef.filters.anyChangeGroup">Any Change Group</entry>

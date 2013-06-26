@@ -3,10 +3,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage title="Event Log" module="support" page="eventViewer.byCategory">
     <cti:standardMenu menuSelection="events|byCategory" />
@@ -52,8 +51,8 @@
 	                <cti:button nameKey="csvExport" href="${csvLink}" icon="icon-page-excel"/>
 	            </c:when>
 	            <c:otherwise>
-	                <cti:button nameKey="csvExport" id="csvExportButton" icon="icon-page-excel"/>
-	                <tags:confirmDialog nameKey=".confirmExport" on="#csvExportButton" href="${csvLink}" styleClass="f_closePopupOnSubmit" submitName="export"/>
+	                <cti:button nameKey="csvExport" id="csvExportButton" icon="icon-page-excel" href="${csvLink}"/>
+	                <d:confirm on="#csvExportButton" nameKey="confirmExport"/>
 	            </c:otherwise>
 	        </c:choose>
         </form:form>
@@ -76,7 +75,7 @@
             </tr>
             <c:forEach items="${searchResult.resultList}" var="event">
                 <tr>
-                    <td nowrap="nowrap"><spring:escapeBody htmlEscape="true">${event.eventType}</spring:escapeBody></td>
+                    <td nowrap="nowrap">${fn:escapeXml(event.eventType)}</td>
                     <td nowrap="nowrap"><cti:formatDate type="BOTH" value="${event.dateTime}" /></td>
                     <td><cti:msg key="${event.messageSourceResolvable}" /></td>
                 </tr>

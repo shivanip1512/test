@@ -27,7 +27,7 @@
               </c:forEach>
               
               <%-- SUBMIT --%>
-              <cti:button nameKey="sumbit" busy="true" type="submit"/>
+              <cti:button nameKey="submit" busy="true" type="submit"/>
           </spring:nestedPath>
         </form>
     

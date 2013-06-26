@@ -2,13 +2,12 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 <%@ taglib prefix="filterValue" tagdir="/WEB-INF/tags/filterValue" %>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage title="Event Log" module="support" page="eventViewer.byType">
     <cti:standardMenu menuSelection="events|byType" />
@@ -104,8 +103,8 @@
 	            <cti:button nameKey="csvExport" href="${csvLink}" icon="icon-page-excel"/>
 	        </c:when>
 	        <c:otherwise>
-	            <cti:button nameKey="csvExport" id="csvExportButton" icon="icon-page-excel"/>
-	            <tags:confirmDialog nameKey=".confirmExport" on="#csvExportButton" href="${csvLink}" styleClass="f_closePopupOnSubmit" submitName="export"/>
+	            <cti:button nameKey="csvExport" href="${csvLink}" id="csvExportButton" icon="icon-page-excel"/>
+                <d:confirm on="#csvExportButton" nameKey="confirmExport"/>
 	        </c:otherwise>
 	    </c:choose>
     </div>
@@ -131,7 +130,7 @@
                         <td title="<cti:msg2 htmlEscape="true" key="${row.eventLog.messageSourceResolvable}"/>"><cti:formatDate type="FULL" value="${row.eventLog.dateTime}"/></td>
                             <c:forEach items="${row.parameters}" var="parameter">
                                 <td>
-                                    <spring:escapeBody htmlEscape="true">${parameter}</spring:escapeBody>
+                                    ${fn:escapeXml(parameter)}
                                 </td>
                             </c:forEach>
                         </tr>

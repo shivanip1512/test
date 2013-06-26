@@ -133,11 +133,19 @@ if (typeof(Yukon.Dialog.ConfirmationManager) === 'undefined') {
                 
                 //is the intent to redirect on ok?
                 if (element.attr("href")) {
-                    buttons[0].click = function(){window.location = element.attr("href");};
+                    buttons[0].click = function(){
+                        _self._close_dialog();
+                        window.location = element.attr("href");
+                    };
                 } else if(element.attr("data-href")) {
-                    buttons[0].click = function(){window.location = element.attr("data-href");};
+                    buttons[0].click = function(){
+                        _self._close_dialog();
+                        window.location = element.attr("data-href");
+                    };
                 } else if(element.data("href")) {
-                    buttons[0].click = function(){window.location = element.data("href");};
+                    buttons[0].click = function(){
+                        _self._close_dialog();
+                        window.location = element.data("href");};
                 }
                 //is the intent to submit a form on ok?
                 else if (element.attr("type") != undefined && element.attr("type").toLowerCase() == "submit") {
@@ -181,23 +189,29 @@ if (typeof(Yukon.Dialog.ConfirmationManager) === 'undefined') {
                 }
             },
             
+            _close_dialog: function() {
+                var _self = Yukon.Dialog.ConfirmationManager;
+                if(_self._current_dialog){
+                    _self._current_dialog.dialog('destroy');
+                    _self._current_dialog = null;
+                }
+            },
+            
             _default: {
                 _ok_action: function(event){
                     var _self = Yukon.Dialog.ConfirmationManager;
                     if(_self._current_dialog){
                         _self._current_dialog.trigger("yukonDialogConfirmOk");
-                        _self._current_dialog.dialog('destroy');
-                        _self._current_dialog = null;
                     }
+                    _self._close_dialog();
                 },
                 
                 _cancel_action: function(event){
                     var _self = Yukon.Dialog.ConfirmationManager;
                     if(_self._current_dialog){
                         _self._current_dialog.trigger("yukonDialogConfirmCancel");
-                        _self._current_dialog.dialog('destroy');
-                        _self._current_dialog = null;
                     }
+                    _self._close_dialog();
                 }
             }
     };

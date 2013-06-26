@@ -6,10 +6,12 @@
 
 <cti:standardPage module="support" page="deviceDef">
 	<c:url var="url" value="/common/deviceDefinition.xml"/>
+	<c:url var="url" value="/common/deviceDefinition.xml"/>
 	
 	<style type="text/css">
 		ul {margin:0 0 0 1em;padding: 0;}
 		li {margin:0;padding:0;list-style-type:circle;}
+        .filterOption {margin-right: 15px; margin-bottom: 15px;}
 	</style>
 
 	<script language="JavaScript">
@@ -22,124 +24,111 @@
 			window.location = '${url}?' + filterType + '=' + filterValue;
 		}
 	</script>
-
-	
+    	
 	<%-- WRITE SELECT --%>
     <cti:msgScope paths=".filters">
-    <cti:msg2 var="filtersTitle" key=".title"/>
-	<tags:sectionContainer title="${filtersTitle}">
-	<table class="resultsTable" style="width:75%">
-        <thead>
-    		<tr>
-            <cti:msgScope paths=".column">
-			<th><i:inline key=".deviceType"/></th>
-			<th><i:inline key=".displayGroup"/></th>
-			<th><i:inline key=".changeGroup"/></th>
-			<th><i:inline key=".attribute"/></th>
-			<th><i:inline key=".tag"/></th>
-            </cti:msgScope>
-    		</tr>
-        </thead>
-        <tfoot></tfoot>
-        <tbody>
-    		<tr>
-    			<%-- device type select --%>
-    			<td>
-    				<select onchange="doDefinitionFilter(this, 'deviceType');">
-					<option value="" ><cti:msg2 key=".allDefinitions"/></option>
-    					<c:forEach var="group" items="${allDeviceTypes}" >
-    						<optgroup label="${group.key}">
-    							<c:forEach var="definition" items="${group.value}">
-    								<c:choose>
-    									<c:when test="${deviceTypeParam == definition.type}">
-    										<option value="${definition.type}" selected>${definition.displayName}</option>
-    									</c:when>
-    									<c:otherwise>
-    										<option value="${definition.type}">${definition.displayName}</option>
-    									</c:otherwise>
-    								</c:choose>
-    								
-    							</c:forEach>
-    						</optgroup>
-    					</c:forEach>
-    				</select>
-    			</td>
-    			
-    			<%-- display group select --%>
-    			<td>
-    				<select onchange="doDefinitionFilter(this, 'displayGroup');">
-					<option value="" ><cti:msg2 key=".anyDisplayGroup"/></option>
-    					<c:forEach var="group" items="${allDisplayGroups}" >
-    						<c:choose>
-    							<c:when test="${displayGroupParam == group}">
-    								<option value="${group}" selected>${group}</option>
-    							</c:when>
-    							<c:otherwise>
-    								<option value="${group}">${group}</option>
-    							</c:otherwise>
-    						</c:choose>
-    					</c:forEach>
-    				</select>
-    			</td>
-    			
-    			<%-- change group select --%>
-    			<td>
-    				<select onchange="doDefinitionFilter(this, 'changeGroup');">
-					<option value="" ><cti:msg2 key=".anyChangeGroup"/></option>
-    					<c:forEach var="changeGroup" items="${allChangeGroups}" >
-    						<c:choose>
-    							<c:when test="${changeGroupParam == changeGroup}">
-    								<option value="${changeGroup}" selected>${changeGroup}</option>
-    							</c:when>
-    							<c:otherwise>
-    								<option value="${changeGroup}">${changeGroup}</option>
-    							</c:otherwise>
-    						</c:choose>
-    					</c:forEach>
-    				</select>
-    			</td>
-    			
-    			<%-- attribute select --%>
-    			<td>
-    				<select onchange="doDefinitionFilter(this, 'attribute');">
-					<option value="" ><cti:msg2 key=".anyAttribute"/></option>
-    					<c:forEach var="attribute" items="${allAttributes}" >
-    						<c:choose>
-    							<c:when test="${attributeParam == attribute.key}">
-    								<option value="${attribute.key}" selected><cti:msg2 key="${attribute}"/></option>
-    							</c:when>
-    							<c:otherwise>
-    								<option value="${attribute.key}"><cti:msg2 key="${attribute}"/></option>
-    							</c:otherwise>
-    						</c:choose>
-    					</c:forEach>
-    				</select>
-    			</td>
-    			
-    			<%-- tag select --%>
-    			<td>
-    				<select onchange="doDefinitionFilter(this, 'tag');">
-					<option value="" ><cti:msg2 key=".anyTag"/></option>
-    					<c:forEach var="tag" items="${allTags}" >
-    						<c:choose>
-    							<c:when test="${tagParam == tag.name}">
-    								<option value="${tag.name}" selected>${tag.description}</option>
-    							</c:when>
-    							<c:otherwise>
-    								<option value="${tag.name}">${tag.description}</option>
-    							</c:otherwise>
-    						</c:choose>
-    					</c:forEach>
-    				</select>
-    			</td>
-    		</tr>
-        </tbody>
-	</table>
-	</tags:sectionContainer>
+	<tags:sectionContainer2 nameKey="title">
+    <div>
+        <div class="dib filterOption">
+            <div>
+                <strong><i:inline key=".deviceType"/></strong>
+            </div>
+            <select onchange="doDefinitionFilter(this, 'deviceType');">
+                <option value="" ><cti:msg2 key=".allDefinitions"/></option>
+                <c:forEach var="group" items="${allDeviceTypes}" >
+                    <optgroup label="${group.key}">
+                        <c:forEach var="definition" items="${group.value}">
+                            <c:choose>
+                                <c:when test="${deviceTypeParam == definition.type}">
+                                    <option value="${definition.type}" selected>${definition.displayName}</option>
+                                </c:when>
+                                <c:otherwise>
+                                    <option value="${definition.type}">${definition.displayName}</option>
+                                </c:otherwise>
+                            </c:choose>
+                            
+                        </c:forEach>
+                    </optgroup>
+                </c:forEach>
+            </select>
+        </div>
+        <div class="dib filterOption">
+            <div>
+                <strong><i:inline key=".displayGroup"/></strong>
+            </div>
+            <select onchange="doDefinitionFilter(this, 'displayGroup');">
+                <option value="" ><cti:msg2 key=".anyDisplayGroup"/></option>
+                <c:forEach var="group" items="${allDisplayGroups}" >
+                    <c:choose>
+                        <c:when test="${displayGroupParam == group}">
+                            <option value="${group}" selected>${group}</option>
+                        </c:when>
+                        <c:otherwise>
+                            <option value="${group}">${group}</option>
+                        </c:otherwise>
+                    </c:choose>
+                </c:forEach>
+            </select>
+        </div>
+        <div class="dib filterOption">
+            <div>
+                <strong><i:inline key=".changeGroup"/></strong>
+            </div>
+            <select onchange="doDefinitionFilter(this, 'changeGroup');">
+                <option value="" ><cti:msg2 key=".anyChangeGroup"/></option>
+                <c:forEach var="changeGroup" items="${allChangeGroups}" >
+                    <c:choose>
+                        <c:when test="${changeGroupParam == changeGroup}">
+                            <option value="${changeGroup}" selected>${changeGroup}</option>
+                        </c:when>
+                        <c:otherwise>
+                            <option value="${changeGroup}">${changeGroup}</option>
+                        </c:otherwise>
+                    </c:choose>
+                </c:forEach>
+            </select>
+        </div>
+        
+        <div class="dib filterOption">
+            <div>
+                <strong><i:inline key=".attribute"/></strong>
+            </div>
+            <select onchange="doDefinitionFilter(this, 'attribute');">
+                <option value="" ><cti:msg2 key=".anyAttribute"/></option>
+                <c:forEach var="attribute" items="${allAttributes}" >
+                    <c:choose>
+                        <c:when test="${attributeParam == attribute.key}">
+                            <option value="${attribute.key}" selected><cti:msg2 key="${attribute}"/></option>
+                        </c:when>
+                        <c:otherwise>
+                            <option value="${attribute.key}"><cti:msg2 key="${attribute}"/></option>
+                        </c:otherwise>
+                    </c:choose>
+                </c:forEach>
+            </select>
+        </div>
+        
+        <div class="dib filterOption">
+            <div>
+                <strong><i:inline key=".tag"/></strong>
+            </div>
+            <select onchange="doDefinitionFilter(this, 'tag');">
+                <option value="" ><cti:msg2 key=".anyTag"/></option>
+                <c:forEach var="tag" items="${allTags}" >
+                    <c:choose>
+                        <c:when test="${tagParam == tag.name}">
+                            <option value="${tag.name}" selected>${tag.description}</option>
+                        </c:when>
+                        <c:otherwise>
+                            <option value="${tag.name}">${tag.description}</option>
+                        </c:otherwise>
+                    </c:choose>
+                </c:forEach>
+            </select>
+        </div>
+    </div>
+	</tags:sectionContainer2>
     </cti:msgScope>
-	<br>
-	
-	
 	
 	<%-- WRITE DEFINITIONS --%>
     <cti:msgScope paths=".info">
@@ -317,16 +306,8 @@
 					</div>
 
 				</tags:boxContainer>
-				<br>
-				
-			
-			
 			</c:forEach>
-			
 		</tags:sectionContainer>
-		
-
 	</c:forEach>
 	</cti:msgScope>
-
 </cti:standardPage>

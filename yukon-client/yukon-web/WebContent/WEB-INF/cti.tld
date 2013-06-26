@@ -1553,7 +1553,7 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-                Button type (sumbit, button, reset), defaults to button if not supplied.
+                Button type (submit, button, reset), defaults to button if not supplied.
             </description>
         </attribute>
         <attribute>

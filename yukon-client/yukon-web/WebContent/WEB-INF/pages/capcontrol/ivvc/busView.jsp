@@ -5,6 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="capcontrol" page="ivvc.busView">
 	
@@ -112,8 +113,8 @@
                                 <c:choose>
                                     <c:when  test="${hasEditingRole}">
                                         <cti:button nameKey="edit" icon="icon-pencil" renderMode="image" onclick="javascript:showZoneEditorWizard('${zoneEditorUrl}');"/>
-                                        <cti:button id="delete_${zone.zoneId}" nameKey="remove" renderMode="image" icon="icon-cross"/>
-                                        <tags:confirmDialog nameKey=".deleteConfirmation" argument="${zone.name}" submitName="delete" href="${zoneDeleteUrl}" on="#delete_${zone.zoneId}"/>
+                                        <cti:button id="delete_${zone.zoneId}" nameKey="remove" renderMode="image" icon="icon-cross" href="${zoneDeleteUrl}"/>
+                                        <d:confirm on="#delete_${zone.zoneId}" nameKey="deleteConfirmation" argument="${zone.name}"/>
                                     </c:when>
                                     <c:otherwise>
                                         <cti:button nameKey="disabledEdit" renderMode="image" disabled="true" icon="icon-pencil"/>

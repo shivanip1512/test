@@ -128,7 +128,7 @@ function taskFinished() {
                                 <c:set var="buttonClass" value="dn"/>
                                 <c:set var="linkClass" value="db"/>
                             </c:if>
-                            <cti:button nameKey="cancel" type="sumbit" name="cancel" id="cancelTaskBtn" classes="${buttonClass}"/>
+                            <cti:button nameKey="cancel" type="submit" name="cancel" id="cancelTaskBtn" classes="${buttonClass}"/>
                             <a id="homeLink" href="/stars/operator/inventory/home" class="${linkClass}"><i:inline key=".inventoryHome"/></a>
                         </div>
                         <cti:dataUpdaterEventCallback function="taskFinished" id="INVENTORY_TASK/${task.taskId}/IS_COMPLETE" />
