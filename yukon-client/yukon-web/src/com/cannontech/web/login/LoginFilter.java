@@ -80,10 +80,7 @@ public class LoginFilter implements Filter {
                          "/favicon.ico");
 
     private final static ImmutableList<String> excludedRedirectedPaths =
-        ImmutableList.of("/capcontrol/**",
-                         "/operator/**",
-                         "/editor/**",
-                         "/servlet/SOAPClient/**",
+        ImmutableList.of("/servlet/SOAPClient/**",
                          "/jws/*");
     
     @Override

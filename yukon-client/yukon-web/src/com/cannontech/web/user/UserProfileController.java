@@ -291,13 +291,13 @@ public class UserProfileController {
                                                    HttpServletRequest req,
                                                    HttpServletResponse resp) {
 
-        MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(context);
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
 
         JSONObject result = new JSONObject();
         if (user.getUserID() != changePassword.getUserId().intValue()) {
             bindingResult.reject(MSGKEY_MISMATCHED_USERS);
             result.put("secondsToWait", DEFAULT_RETRY_PASSWORD_IN_SECONDS); // Not currently using this value...
-            return jsonHelper.failToJSON(result, bindingResult, messageSourceAccessor);
+            return jsonHelper.failToJSON(result, bindingResult, accessor);
         }
 
         // Validate: skip the no-match message since that's already done within the UI.
@@ -309,7 +309,7 @@ public class UserProfileController {
         if (!bindingResult.hasErrors()) {
             try {
                 authenticationService.setPassword(user, changePassword.getNewPassword()); // This cannot fail?
-                JSONObject json = jsonHelper.succeed(messageSourceAccessor.getMessage(MSGKEY_PASSWORD_CHANGE_SUCCESS));
+                JSONObject json = jsonHelper.succeed(MSGKEY_PASSWORD_CHANGE_SUCCESS, accessor);
                 json.put("new_date", dateFormattingService.format(new Date(), DateFormatEnum.DATE, context));
                 return json;
             } catch (NoSuchMessageException|UnsupportedOperationException e) {
@@ -318,7 +318,7 @@ public class UserProfileController {
             }
         }
 
-        return jsonHelper.failToJSON(result, bindingResult, messageSourceAccessor);
+        return jsonHelper.failToJSON(result, bindingResult, accessor);
     }
 
 }

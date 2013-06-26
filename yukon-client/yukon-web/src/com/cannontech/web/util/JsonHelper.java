@@ -3,6 +3,7 @@ package com.cannontech.web.util;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
@@ -12,6 +13,17 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 
 /**
  * @Autowire this into your controller to go from BindingResults/Errors to a JSON structure your AJAX can use.
+ * 
+ * 
+ * EXAMPLE USAGE @ CONTROLLER
+ *   @ RequestBody JSONObject myMethod(..., YukonUserContext context) {
+            MessageSourceAccessor messenger = resolver.getMessageSourceAccessor(context);
+ *   	...
+ * 		if (mySpecialCase) {
+ * 			return failToJSON("password", "this.is.a.message.key", accessor);
+ * 		}
+ * 		return succeed(); // or succeed("success.message.key", accessor)
+ *  }
  * 
  * After calling this on the server you can do something like this in your Javascript:
  *      // NOTE: This doesn't do the full Spring error reporting - it just displays the errors in a single list.
@@ -60,6 +72,14 @@ public class JsonHelper {
      * 
      * @param message Plaintext message (not key!) to be returned to the browser.
      */
+    public JSONObject succeed(MessageSourceResolvable messageObj, MessageSourceAccessor accessor) {
+    	String message = accessor.getMessage(messageObj);
+    	return succeed(message);
+    }
+    public JSONObject succeed(String messageKey, MessageSourceAccessor accessor) {
+    	String message = accessor.getMessage(messageKey);
+    	return succeed(message);
+    }
     public JSONObject succeed(String message) {
         JSONObject json = succeed();
         json.put("message", message);
@@ -106,18 +126,11 @@ public class JsonHelper {
      * @param fieldName         Likely a simple name (eg. "firstName") used in JS to mark the input field.
      * @param key       String defined within i18n files.
      * @param accessor     MessageSourceAccessor to interpret message keys.
-     * @return
+     * @return JSONObject
      */
     public JSONObject failToJSON(String fieldName, String key, MessageSourceAccessor accessor) {
 
-        final String errorMsgString = accessor.getMessage(key);
-
-        JSONObject json = new JSONObject();
-        json.put("success", false);
-        JSONArray errorList = new JSONArray();
-        errorList.add(makeJSONError(fieldName, errorMsgString));
-        json.put("errors", errorList);
-        return json;
+        return failOnField(new JSONObject(), fieldName, key, accessor);
     }
 
     /**
@@ -134,4 +147,27 @@ public class JsonHelper {
         return json;
     }
 
+    /**
+     * The short form which include creating a new JSONObject is: failToJSON(...)
+     * 
+     * @return             Same object as passed in, but with the given error set per the fieldName and key/accessor
+     * 
+     * EXAMPLE USAGE:
+     * 		JSONObject json = failToJSON(bindingResult, accessor);
+     * 		if (mySpecialCase) {
+     * 			failOnField(json, "password", "this.is.a.message.key", accessor);
+     * 		}
+     */
+    public JSONObject failOnField(JSONObject json, String fieldName, String key, MessageSourceAccessor accessor) {
+
+        final String errorMsgString = accessor.getMessage(key);
+        json.put("success", false);
+        JSONArray errorList = new JSONArray();
+        if (json.containsKey("errors")) {
+              errorList = (JSONArray) json.get("errors");
+        }
+        errorList.add(makeJSONError(fieldName, errorMsgString));
+        json.put("errors", errorList);
+        return json;
+    }
 }

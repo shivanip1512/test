@@ -150,8 +150,7 @@ public class ScheduledBillingFileExportController {
             msgObj = new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.jobUpdated", exportData.getScheduleName());
 		}
 
-        String msg = accessor.getMessage(msgObj);
-        return jsonHelper.succeed(msg);
+        return jsonHelper.succeed(msgObj, accessor);
 	}
 	
 	@RequestMapping
@@ -171,8 +170,7 @@ public class ScheduledBillingFileExportController {
 
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         MessageSourceResolvable msgObj = new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.deletedSuccess", jobName);
-        String msg = accessor.getMessage(msgObj);
-		return jsonHelper.succeed(msg);
+		return jsonHelper.succeed(msgObj, accessor);
 	}
 
 	public static String getGroupNamesString(Set<? extends DeviceGroup> deviceGroups, YukonUserContext userContext) {
