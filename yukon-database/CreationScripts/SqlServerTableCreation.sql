@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/20/2013 9:48:57 AM                         */
+/* Created on:     6/26/2013 5:42:37 PM                         */
 /*==============================================================*/
 
 
@@ -2103,47 +2103,6 @@ ADDRESS ASC
 go
 
 /*==============================================================*/
-/* Table: DEVICECONFIGURATION                                   */
-/*==============================================================*/
-create table DEVICECONFIGURATION (
-   DeviceConfigurationID numeric              not null,
-   Name                 varchar(60)          not null,
-   Type                 varchar(30)          not null,
-   constraint PK_DEVICECONFIGURATION primary key (DeviceConfigurationID)
-)
-go
-
-INSERT INTO DEVICECONFIGURATION VALUES (-1, 'Default DNP Configuration', 'DNP');
-
-/*==============================================================*/
-/* Table: DEVICECONFIGURATIONDEVICEMAP                          */
-/*==============================================================*/
-create table DEVICECONFIGURATIONDEVICEMAP (
-   DeviceID             numeric              not null,
-   DeviceConfigurationId numeric              not null,
-   constraint PK_DEVICECONFIGURATIONDEVICEMA primary key (DeviceID)
-)
-go
-
-/*==============================================================*/
-/* Table: DEVICECONFIGURATIONITEM                               */
-/*==============================================================*/
-create table DEVICECONFIGURATIONITEM (
-   DeviceConfigurationItemId numeric              not null,
-   DeviceConfigurationId numeric              not null,
-   FieldName            varchar(60)          not null,
-   Value                varchar(60)          not null,
-   constraint PK_DEVICECONFIGURATIONITEM primary key (DeviceConfigurationItemId)
-)
-go
-
-INSERT INTO DEVICECONFIGURATIONITEM VALUES (0, -1, 'Internal Retries', 2);
-INSERT INTO DEVICECONFIGURATIONITEM VALUES (1, -1, 'Omit Time Request', 'false');
-INSERT INTO DEVICECONFIGURATIONITEM VALUES (2, -1, 'Enable DNP Timesyncs', 'false');
-INSERT INTO DEVICECONFIGURATIONITEM VALUES (3, -1, 'Local Time', 'false');
-INSERT INTO DEVICECONFIGURATIONITEM VALUES (4, -1, 'Enable Unsolicited Messages', 'true');
-
-/*==============================================================*/
 /* Table: DEVICEDIALUPSETTINGS                                  */
 /*==============================================================*/
 create table DEVICEDIALUPSETTINGS (
@@ -2889,6 +2848,101 @@ create table DeviceCBC (
    SERIALNUMBER         numeric              not null,
    ROUTEID              numeric              not null,
    constraint PK_DEVICECBC primary key (DEVICEID)
+)
+go
+
+/*==============================================================*/
+/* Table: DeviceConfigCategory                                  */
+/*==============================================================*/
+create table DeviceConfigCategory (
+   DeviceConfigCategoryId numeric              not null,
+   CategoryType         varchar(60)          not null,
+   Name                 varchar(60)          not null,
+   constraint PK_DeviceConfigCategory primary key (DeviceConfigCategoryId)
+)
+go
+
+INSERT INTO DeviceConfigCategory VALUES (0, 'dnp', 'Default DNP Category');
+
+/*==============================================================*/
+/* Table: DeviceConfigCategoryItem                              */
+/*==============================================================*/
+create table DeviceConfigCategoryItem (
+   DeviceConfigurationItemId numeric              not null,
+   DeviceConfigCategoryId numeric              null,
+   ItemName             varchar(60)          not null,
+   ItemValue            varchar(60)          not null,
+   constraint PK_DeviceConfigCategoryItem primary key (DeviceConfigurationItemId)
+)
+go
+
+INSERT INTO DeviceConfigCategoryItem VALUES (0, 0, 'internalRetries', 2);
+INSERT INTO DeviceConfigCategoryItem VALUES (1, 0, 'omitTimeRequest', 'false');
+INSERT INTO DeviceConfigCategoryItem VALUES (2, 0, 'enableDnpTimesyncs', 'false');
+INSERT INTO DeviceConfigCategoryItem VALUES (3, 0, 'localTime', 'false');
+INSERT INTO DeviceConfigCategoryItem VALUES (4, 0, 'enableUnsolicitedMessages', 'true');
+
+alter table DeviceConfigCategoryItem
+   add constraint AK_DevConCatItem_CatIdItemName unique (DeviceConfigCategoryId, ItemName)
+go
+
+/*==============================================================*/
+/* Table: DeviceConfigCategoryMap                               */
+/*==============================================================*/
+create table DeviceConfigCategoryMap (
+   DeviceConfigurationId numeric              not null,
+   DeviceConfigCategoryId numeric              not null,
+   constraint PK_DEVICECONFIGCATEGORYMAP primary key (DeviceConfigurationId)
+)
+go
+
+INSERT INTO DeviceConfigCategoryMap VALUES(-1, 0);
+
+/*==============================================================*/
+/* Table: DeviceConfigDeviceTypes                               */
+/*==============================================================*/
+create table DeviceConfigDeviceTypes (
+   DeviceConfigDeviceTypeId numeric              not null,
+   DeviceConfigurationId numeric              null,
+   PaoType              varchar(30)          not null,
+   constraint PK_DeviceConfigDeviceTypes primary key (DeviceConfigDeviceTypeId)
+)
+go
+
+INSERT INTO DeviceConfigDeviceTypes VALUES (0, -1, 'CBC 6510');
+INSERT INTO DeviceConfigDeviceTypes VALUES (1, -1, 'CBC 7020');
+INSERT INTO DeviceConfigDeviceTypes VALUES (2, -1, 'CBC 7022');
+INSERT INTO DeviceConfigDeviceTypes VALUES (3, -1, 'CBC 7023');
+INSERT INTO DeviceConfigDeviceTypes VALUES (4, -1, 'CBC 7024');
+INSERT INTO DeviceConfigDeviceTypes VALUES (5, -1, 'CBC 8020');
+INSERT INTO DeviceConfigDeviceTypes VALUES (6, -1, 'CBC 8024');
+INSERT INTO DeviceConfigDeviceTypes VALUES (7, -1, 'CBC DNP');
+INSERT INTO DeviceConfigDeviceTypes VALUES (8, -1, 'RTU-DART');
+INSERT INTO DeviceConfigDeviceTypes VALUES (9, -1, 'RTU-DNP');
+
+alter table DeviceConfigDeviceTypes
+   add constraint AK_DevConDevTypes_CatIdDevType unique (DeviceConfigurationId, PaoType)
+go
+
+/*==============================================================*/
+/* Table: DeviceConfiguration                                   */
+/*==============================================================*/
+create table DeviceConfiguration (
+   DeviceConfigurationID numeric              not null,
+   Name                 varchar(60)          not null,
+   constraint PK_DeviceConfiguration primary key (DeviceConfigurationID)
+)
+go
+
+INSERT INTO DeviceConfiguration VALUES (-1, 'Default DNP Configuration');
+
+/*==============================================================*/
+/* Table: DeviceConfigurationDeviceMap                          */
+/*==============================================================*/
+create table DeviceConfigurationDeviceMap (
+   DeviceID             numeric              not null,
+   DeviceConfigurationId numeric              not null,
+   constraint PK_DeviceConfigDeviceMap primary key (DeviceID)
 )
 go
 
@@ -11239,24 +11293,6 @@ alter table DEVICECARRIERSETTINGS
       references DEVICE (DEVICEID)
 go
 
-alter table DEVICECONFIGURATIONDEVICEMAP
-   add constraint FK_DEVICECO_REFERENCE_DEVICECO foreign key (DeviceConfigurationId)
-      references DEVICECONFIGURATION (DeviceConfigurationID)
-         on delete cascade
-go
-
-alter table DEVICECONFIGURATIONDEVICEMAP
-   add constraint FK_DEVICECO_REFERENCE_YUKONPAO foreign key (DeviceID)
-      references YukonPAObject (PAObjectID)
-         on delete cascade
-go
-
-alter table DEVICECONFIGURATIONITEM
-   add constraint FK_DevConfItem_DevConf foreign key (DeviceConfigurationId)
-      references DEVICECONFIGURATION (DeviceConfigurationID)
-         on delete cascade
-go
-
 alter table DEVICEDIALUPSETTINGS
    add constraint SYS_C0013193 foreign key (DEVICEID)
       references DEVICE (DEVICEID)
@@ -11431,6 +11467,42 @@ go
 alter table DeviceCBC
    add constraint SYS_C0013460 foreign key (ROUTEID)
       references Route (RouteID)
+go
+
+alter table DeviceConfigCategoryItem
+   add constraint FK_DevConfCatItem_DevConfCat foreign key (DeviceConfigCategoryId)
+      references DeviceConfigCategory (DeviceConfigCategoryId)
+         on delete cascade
+go
+
+alter table DeviceConfigCategoryMap
+   add constraint FK_DevConCatMap_DevCon foreign key (DeviceConfigurationId)
+      references DeviceConfiguration (DeviceConfigurationID)
+         on delete cascade
+go
+
+alter table DeviceConfigCategoryMap
+   add constraint FK_DevConfCatMap_DevConfCat foreign key (DeviceConfigCategoryId)
+      references DeviceConfigCategory (DeviceConfigCategoryId)
+         on delete cascade
+go
+
+alter table DeviceConfigDeviceTypes
+   add constraint FK_DevConfDevTypes_DevConfig foreign key (DeviceConfigurationId)
+      references DeviceConfiguration (DeviceConfigurationID)
+         on delete cascade
+go
+
+alter table DeviceConfigurationDeviceMap
+   add constraint FK_DevConfigDevMap_DevConfig foreign key (DeviceConfigurationId)
+      references DeviceConfiguration (DeviceConfigurationID)
+         on delete cascade
+go
+
+alter table DeviceConfigurationDeviceMap
+   add constraint FK_DevConfigDevMap_YukonPao foreign key (DeviceID)
+      references YukonPAObject (PAObjectID)
+         on delete cascade
 go
 
 alter table DeviceCustomerList
