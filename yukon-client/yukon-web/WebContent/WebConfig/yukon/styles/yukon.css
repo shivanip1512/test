@@ -269,6 +269,7 @@ ul.pipes li.first {padding-left:0;}
 /* COLOR CODING */
 .error, .errorMessage {color: #D14836 !important}
 .error[type=checkbox] {outline: 2px solid red;}
+ol.error{list-style-type: none;}
 .success, .successMessage {color: #093;}
 .warn, .warning, .warningMessage {color:#ff8c00 !important}
 .disabled, .disabled a {color:#888; cursor:default;}

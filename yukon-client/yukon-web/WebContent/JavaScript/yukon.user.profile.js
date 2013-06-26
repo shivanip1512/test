@@ -106,7 +106,7 @@ if(typeof(UserPreferences) === 'undefined') {
                     jQuery("#password_row td.value").removeClass('warning').text(results.new_date);
                 } else {
                     // manually create a list of error messages to display
-                    var err_string = '<ol class="errors">';
+                    var err_string = '<ol class="error">';
                     for(var ii=0; ii < results.errors.length; ii++) {
                         var err=results.errors[ii];
                         err_string += '<li><i class="icon icon-cross"></i>'+ err.message +'</li>';

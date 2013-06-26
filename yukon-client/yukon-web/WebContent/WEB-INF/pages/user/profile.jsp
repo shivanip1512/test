@@ -83,13 +83,16 @@
             <cti:displayForPageEditModes modes="VIEW">
                 <div class="actionArea">
                     <cti:button nameKey="edit" icon="icon-pencil" name="edit" href="/user/profile/edit"/>
-                    <cti:button id="btnChangePassword" icon="icon-key" nameKey="changePassword.button"/>
+                    <c:if test="${canResetPassword}">
+                        <cti:button id="btnChangePassword" icon="icon-key" nameKey="changePassword.button"/>
+                    </c:if>
                 </div>
             </cti:displayForPageEditModes>
 <!--  END: PURE COPY -->
         </form:form>
 
 <cti:displayForPageEditModes modes="VIEW">
+<c:if test="${canResetPassword}">
     <dialog:inline on="#btnChangePassword" id="dlg_change_password" okEvent="evt_ajaxsubmit_confirm_password" nameKey="profile.changePassword" options="{width: 750}">
         <div class="column_12_12">
             <div class="column one">
@@ -125,6 +128,7 @@
             </div>
         </div>
     </dialog:inline>
+</c:if>
 
     <%-- PREFERENCES SECTION currently at the bottom of the first column --%>
     <tags:sectionContainer2 nameKey="preferences">

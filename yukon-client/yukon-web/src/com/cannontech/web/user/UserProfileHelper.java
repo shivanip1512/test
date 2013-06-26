@@ -14,6 +14,7 @@ import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.common.util.Pair;
+import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.model.PasswordPolicy;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authentication.service.PasswordPolicyService;
@@ -77,7 +78,10 @@ public class UserProfileHelper {
         model.addAttribute("changePwdKey", passwordResetService.getPasswordKey(user));
     
         UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
+
         model.addAttribute("passwordLastChangeTimestamp", userAuthenticationInfo.getLastChangedDate());
+        AuthenticationCategory authCat = userAuthenticationInfo.getAuthenticationCategory();
+        model.addAttribute("canResetPassword", authenticationService.supportsPasswordSet(authCat));
     }
 
 

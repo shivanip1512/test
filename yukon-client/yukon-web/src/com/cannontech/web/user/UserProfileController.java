@@ -30,7 +30,9 @@ import com.cannontech.common.events.service.EventLogService;
 import com.cannontech.common.events.service.EventLogUIService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.ContactNotificationType;
+import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authentication.service.PasswordPolicyService;
 import com.cannontech.core.authorization.service.PaoPermissionService;
@@ -73,7 +75,8 @@ public class UserProfileController {
     private static final int DEFAULT_RETRY_PASSWORD_IN_SECONDS = 10;
     private static final String MSGKEY_BASE_PROFILE = "yukon.web.modules.user.profile.";
     private static final String MSGKEY_PASSWORD_CHANGE_SUCCESS = MSGKEY_BASE_PROFILE +"changePassword.success";
-    private static final String MSGKEY_MISMATCHED_USERS = MSGKEY_BASE_PROFILE +"changePassword.user.mismatch";
+    private static final String MSGKEY_NOT_ALLOWED = MSGKEY_BASE_PROFILE +"changePassword.error.user.notAllowed";
+    private static final String MSGKEY_MISMATCHED_USERS = MSGKEY_BASE_PROFILE +"changePassword.error.user.mismatch";
     private static final String MSGKEY_CHANGE_PASSWORD_SYSTEMERR = MSGKEY_BASE_PROFILE +"changePassword.error.system_save";
     private static final String MSGKEY_PREF_BAD_URL = "yukon.web.modules.user.preferences.url.bad_format";
 
@@ -296,6 +299,14 @@ public class UserProfileController {
         JSONObject result = new JSONObject();
         if (user.getUserID() != changePassword.getUserId().intValue()) {
             bindingResult.reject(MSGKEY_MISMATCHED_USERS);
+        } else {
+            UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
+            AuthenticationCategory authCat = userAuthenticationInfo.getAuthenticationCategory();
+            if (!authenticationService.supportsPasswordSet(authCat)) {
+                bindingResult.reject(MSGKEY_NOT_ALLOWED);
+            }
+        }
+        if (bindingResult.hasErrors()) {
             result.put("secondsToWait", DEFAULT_RETRY_PASSWORD_IN_SECONDS); // Not currently using this value...
             return jsonHelper.failToJSON(result, bindingResult, accessor);
         }
