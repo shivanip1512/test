@@ -69,98 +69,71 @@
 </div>
 <!-- END Sliders -->
 
-<table width="760" border="0" cellspacing="0" cellpadding="0">
-  <tr>
-    <td>
-        
-    
-    <form id="scheduleForm" name="scheduleForm" method="POST" action="/adminSetup/energyCompany/schedules/saveDefaultThermostatSchedule">
-    </form>
-    
-    <div class="schedule small vh <c:if test="${schedule.accountThermostatScheduleId eq currentScheduleId }">current titledContainer boxContainer</c:if>" id="scheduleId_${schedule.accountThermostatScheduleId}">
-        <c:if test="${schedule.accountThermostatScheduleId eq currentScheduleId }">
-            <div class="titleBar boxContainer_titleBar">
-                <h3 class="title boxContainer_title">
-                    <cti:msg2 key=".lastSent"/>
-                </h3>
-            </div>
-        </c:if>
-        <div class="boxContainer_content">
-        <tags:thermostatScheduleWidget schedule="${schedule}"
-                                    thermostatId=""
-                                    thermostatIds=""
-                                    accountId=""
-                                    temperatureUnit="${temperatureUnit}"
-                                    actionPath="/adminSetup/energyCompany/schedules/saveDefaultThermostatSchedule"
-                                    thermostatType="${schedule.thermostatType}"
-                                    styleClass="vh"
-                                    customActions="true"
-                                    omitEditor="true">
-                                    
-            <div class="actions">
-                <cti:button nameKey="edit" icon="icon-pencil" renderMode="labeledImage" classes="editDefaultSchedule edit_${schedule.accountThermostatScheduleId}" />
-            </div>
-        </tags:thermostatScheduleWidget>
-                
-        </div>
-        
-        <i:simplePopup titleKey=".editSchedule.title" id="createSchedule" on=".edit_${schedule.accountThermostatScheduleId}" >
-            <div class="f_wizard">
-                <div class="f_page page_0">
-                    <div class="box">
-                        <div class="helper box">
-                            <i:inline key=".modeHint" />
-                        </div>
-                        <div class="box pad">
-                            <c:forEach var="mode" items="${allowedModes}">
-                                <label><input type="radio" name="defaultScheduleMode" value="${mode}" <c:if test="${status.first}">checked</c:if>> <cti:msg key="yukon.web.modules.operator.thermostatMode.${mode}" /> </label>
-                                <br>
-                            </c:forEach>
-                        </div>
-                    </div>
-                
-                    <div class="actionArea">
-                        <div class="fr">
-                            <cti:button nameKey="next" classes="f_next"/>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="f_page page_1">
-                    <div class="createSchedule box small">
-                        <c:forEach var="schedule" items="${defaultSchedules}">
-                            <tags:thermostatScheduleEditor schedule="${schedule}"
-                                            thermostatId="${thermostatId}"
-                                            thermostatIds="${thermostatIds}"
-                                            accountId="${accountId}"
-                                            temperatureUnit="${temperatureUnit}"
-                                            actionPath="/adminSetup/energyCompany/schedules/saveDefaultThermostatSchedule?ecId=${ecId}"
-                                            thermostatType="${thermostatType}"/>
-                        </c:forEach>
-                    </div>
-                
-                    <div class="actions">
-                        <div class="fr">
-                            <cti:button nameKey="chooseMode" classes="f_prev"/>
-                            <cti:button nameKey="save" classes="save f_blocker" />
-                            <cti:button nameKey="cancel" classes="cancel" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </i:simplePopup>
+    <div class="stacked tempControlsNoUpdate">
+        <label><input name="units" type="radio" value="C" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celsius"/></label>
+        <label><input name="units" type="radio" value="F" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
     </div>
     
-
-    </td>
-    <td class="vat">
-        <div class="tempControlsNoUpdate">
-            <label><input name="units" type="radio" value="C" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celsius"/></label>
-            <label><input name="units" type="radio" value="F" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
+    <tags:thermostatScheduleWidget schedule="${schedule}"
+                                thermostatId=""
+                                thermostatIds=""
+                                accountId=""
+                                temperatureUnit="${temperatureUnit}"
+                                actionPath="/adminSetup/energyCompany/schedules"
+                                thermostatType="${schedule.thermostatType}"
+                                styleClass="vh"
+                                customActions="true"
+                                omitEditor="true">
+                                
+        <div class="actions pageActionArea">
+            <cti:button nameKey="edit" icon="icon-pencil" renderMode="labeledImage" classes="editDefaultSchedule edit_${schedule.accountThermostatScheduleId}" />
         </div>
-    </td>
-  </tr>
-</table>
+    </tags:thermostatScheduleWidget>
     
-    
+    <i:simplePopup titleKey=".editSchedule.title" id="createSchedule" on=".edit_${schedule.accountThermostatScheduleId}" >
+        <div class="f_wizard">
+            <div class="f_page page_0">
+                <div class="box">
+                    <div class="helper box">
+                        <i:inline key=".modeHint" />
+                    </div>
+                    <div class="box pad">
+                        <c:forEach var="mode" items="${allowedModes}">
+                            <label><input type="radio" name="defaultScheduleMode" value="${mode}" <c:if test="${status.first}">checked</c:if>> <cti:msg key="yukon.web.modules.operator.thermostatMode.${mode}" /> </label>
+                            <br>
+                        </c:forEach>
+                    </div>
+                </div>
+            
+                <div class="actionArea">
+                    <div class="fr">
+                        <cti:button nameKey="next" classes="f_next"/>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="f_page page_1">
+                <div class="createSchedule box">
+                    <c:forEach var="schedule" items="${defaultSchedules}">
+                        <tags:thermostatScheduleEditor schedule="${schedule}"
+                                        thermostatId="${thermostatId}"
+                                        thermostatIds="${thermostatIds}"
+                                        accountId="${accountId}"
+                                        temperatureUnit="${temperatureUnit}"
+                                        actionPath="/adminSetup/energyCompany/schedules/save?ecId=${ecId}"
+                                        thermostatType="${thermostatType}"/>
+                    </c:forEach>
+                </div>
+            
+                <div class="actions">
+                    <div class="fr">
+                        <cti:button nameKey="cancel" classes="f-cancel" />
+                        <cti:button nameKey="chooseMode" classes="f_prev"/>
+                        <cti:button nameKey="save" classes="f-save f_blocker primary action" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </i:simplePopup>
+
 </cti:standardPage>

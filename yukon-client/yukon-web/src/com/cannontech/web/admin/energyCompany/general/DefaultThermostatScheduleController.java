@@ -26,6 +26,7 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -121,7 +122,8 @@ public class DefaultThermostatScheduleController {
         
         // temperatureUnit
         String temperatureUnit = energyCompanySettingDao.getString(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT, energyCompany.getEnergyCompanyId());
-        modelMap.addAttribute("temperatureUnit", temperatureUnit);
+        TemperatureUnit temp = TemperatureUnit.valueOf(temperatureUnit);
+        modelMap.addAttribute("temperatureUnit", temp.getLetter());
 
         modelMap.addAttribute("thermostatType", schedulableThermostatType);
         modelMap.addAttribute("type", type);
@@ -174,7 +176,7 @@ public class DefaultThermostatScheduleController {
         return "energyCompany/defaultThermostatScheduleEdit.jsp";
     }
 
-    @RequestMapping(value = "saveDefaultThermostatSchedule", method = RequestMethod.POST)
+    @RequestMapping(value="save", method = RequestMethod.POST)
     public String save(@ModelAttribute("temperatureUnit") String temperatureUnit,
                        @RequestParam(value="schedules", required=true) String scheduleString,
                        EnergyCompanyInfoFragment energyCompanyInfoFragment,
