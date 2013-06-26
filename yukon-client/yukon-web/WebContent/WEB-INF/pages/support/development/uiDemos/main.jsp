@@ -21,6 +21,7 @@ jQuery(function() {
         <li><a href="#i18nTab">I18N</a></li>
         <li><a href="#i18nScopesTab">I18N Scopes</a></li>
         <li><a href="#dialogsTab">Dialogs</a></li>
+        <li><a href="#jsTestingTab">JS Testing</a></li>
         <li><a href="#moreTab">More</a></li>
     </ul>
 
@@ -28,23 +29,27 @@ jQuery(function() {
         <%@ include file="buttons.jspf" %>
     </div>
 
-    <div id="pickersTab">
+    <div id="pickersTab" class="clearfix">
         <%@ include file="pickers.jspf" %>
     </div>
 
-    <div id="i18nTab">
+    <div id="i18nTab" class="clearfix">
         <%@ include file="i18n.jspf" %>
     </div>
 
-    <div id="i18nScopesTab">
+    <div id="i18nScopesTab" class="clearfix">
         <%@ include file="i18n_scopes.jspf" %>
     </div>
 
-    <div id="dialogsTab">
+    <div id="dialogsTab" class="clearfix">
         <%@ include file="dialogs.jspf" %>
     </div>
 
-    <div id="moreTab">
+    <div id="jsTestingTab" class="clearfix">
+        <%@ include file="jsTesting.jspf" %>
+    </div>
+
+    <div id="moreTab" class="clearfix">
         <%@ include file="more.jspf" %>
     </div>
 </div>
