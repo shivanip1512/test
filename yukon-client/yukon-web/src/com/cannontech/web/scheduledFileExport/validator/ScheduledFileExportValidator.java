@@ -1,5 +1,6 @@
 package com.cannontech.web.scheduledFileExport.validator;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 
 import javax.mail.internet.AddressException;
@@ -32,25 +33,44 @@ public class ScheduledFileExportValidator extends SimpleValidator<ScheduledFileE
         if(!isValidFileName) {
             errors.rejectValue("exportFileName", "yukon.web.modules.amr.billing.schedule.validation.badCharacters");
         }
-        // Next, validate the combined Export File Name + Timestamp (if checked)
+        // Next, validate the Timestamp (if checked)
         if (target.isAppendDateToFileName()) {
+            // If they are appending a timestamp, it cannot be blank.
+            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "timestampPatternField", "yukon.web.modules.amr.billing.schedule.validation.emptyTimestampPattern");
+            YukonValidationUtils.checkExceedsMaxLength(errors, "timestampPatternField", target.getTimestampPatternField(), 100);
             // Validate to make sure the pattern is actually a valid date format pattern
-            String tsPattern = target.getTimestampPatternField();
-            try {
-                new SimpleDateFormat(tsPattern);
-            } catch (IllegalArgumentException e) {
-                errors.rejectValue("timestampPatternField", "yukon.web.modules.amr.billing.schedule.validation.invalidPattern");
+            String tsPattern = target.getTimestampPatternField().trim();
+            if (tsPattern.length() > 0) {
+                try {
+                    new SimpleDateFormat(tsPattern);
+                } catch (IllegalArgumentException e) {
+                    errors.rejectValue("timestampPatternField", "yukon.web.modules.amr.billing.schedule.validation.invalidPattern");
+                }
+                // Now make sure it doesn't contain characters invalid for a filename, such as : or /
+                isValidFileName = WebFileUtils.isValidWindowsFilename(fileName + tsPattern);
+                if (!isValidFileName) {
+                    errors.rejectValue("timestampPatternField", "yukon.web.modules.amr.billing.schedule.validation.badCharacters");
+                }
             }
-            // Now make sure it doesn't contain characters invalid for a filename, such as : or /
-            fileName = fileName + tsPattern;
-            isValidFileName = WebFileUtils.isValidWindowsFilename(fileName);
+        }
+
+        if (target.isOverrideFileExtension()) {
+            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "exportFileExtension", "yukon.web.modules.amr.billing.schedule.validation.emptyFileExtension");
+            // make sure the file extension doesn't contain characters invalid for a windows filename.
+            isValidFileName = WebFileUtils.isValidWindowsFilename(target.getExportFileExtension());
             if (!isValidFileName) {
-                errors.rejectValue("timestampPatternField", "yukon.web.modules.amr.billing.schedule.validation.badCharacters");
+                errors.rejectValue("exportFileExtension", "yukon.web.modules.amr.billing.schedule.validation.badCharacters");
             }
         }
 
         if (target.isIncludeExportCopy()) {
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "exportPath", "yukon.web.modules.amr.billing.schedule.validation.invalidExportPath");
+            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "exportPath", "yukon.web.modules.amr.billing.schedule.validation.emptyExportPath");
+            // make sure the path exists
+            String expPath = target.getExportPath();
+            if (!new File(expPath).isDirectory()) {
+                errors.rejectValue("exportPath", "yukon.web.modules.amr.billing.schedule.validation.invalidExportPath");
+            }
+            
         }
         
 		for(String email : target.getNotificationEmailAddressesAsList()) {

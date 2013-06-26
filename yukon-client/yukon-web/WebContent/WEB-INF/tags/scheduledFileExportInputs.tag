@@ -9,30 +9,26 @@
 <script type="text/javascript">
 jQuery(function() {
     
-    toggleTimestampPatternField = function() {
-        if (jQuery("#appendDateToFileName").is(":checked")) {
-            jQuery("#timestampPatternField").removeAttr("disabled").closest("tr").show(250);
+    function toggleField(checkBoxId, changeItemId) {
+        if (jQuery(checkBoxId).is(":checked")) {
+            jQuery(changeItemId).removeAttr("disabled").closest("tr").show(250);
         } else {
-            jQuery("#timestampPatternField").attr("disabled","disabled").closest("tr").hide(250);
+            jQuery(changeItemId).attr("disabled","disabled").closest("tr").hide(250);
         }
+    }
+
+    toggleTimestampPatternField = function() {
+        toggleField("#appendDateToFileName", "#timestampPatternField");
     }
 
     toggleFileExtensionField = function() {
-        if (jQuery("#overrideFileExtension").is(":checked")) {
-            jQuery("#exportFileExtension").removeAttr("disabled").closest("tr").show(250);
-        } else {
-            jQuery("#exportFileExtension").attr("disabled","disabled").closest("tr").hide(250);
-        }
+        toggleField("#overrideFileExtension", "#exportFileExtension");
     }
 
     toggleExportPathField = function() {
-        if (jQuery("#includeExportCopy").is(":checked")) {
-            jQuery("#exportPath").removeAttr("disabled").closest("tr").show(250);
-        } else {
-            jQuery("#exportPath").attr("disabled","disabled").closest("tr").hide(250);
-        }
+        toggleField("#includeExportCopy", "#exportPath");
     }
-    
+
     var lastDisplayName = false;
     sameAsNameClicked = function() {
         if (jQuery("#sameAsSchedName").is(":checked")) {
@@ -101,7 +97,9 @@ jQuery(function() {
         </label>
     </tags:nameValue2>
     <tags:nameValue2 nameKey=".exportFileExtension">
-        <form:select path="exportFileExtension" items="${fileExtensionChoices}" />
+        <tags:bind path="exportFileExtension">
+            <form:select path="exportFileExtension" items="${fileExtensionChoices}" />
+        </tags:bind>
         <img src="${infoImg}" title="<cti:msg2 key=".exportFileExtensionInfo"/>"/>
     </tags:nameValue2>
 
@@ -113,7 +111,9 @@ jQuery(function() {
         </label>
     </tags:nameValue2>
     <tags:nameValue2 nameKey=".exportPath">
-        <form:select path="exportPath" items="${exportPathChoices}" />
+        <tags:bind  path="exportPath">
+            <form:select path="exportPath" items="${exportPathChoices}" />
+        </tags:bind>
         <img src="${infoImg}" title="<cti:msg2 key=".exportPathInfo"/>"/>
     </tags:nameValue2>
 
