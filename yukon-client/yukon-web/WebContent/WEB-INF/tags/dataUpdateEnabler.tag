@@ -9,6 +9,6 @@
 initiateCannonDataUpdate("${updateUrl}", <cti:getProperty property="DATA_UPDATER_DELAY_MS"/>);
 </script>
 
-<div id="cannonUpdaterErrorDiv" style="display: none">
-    <span class="meta">Connection to server has been lost (<span id="cannonUpdaterErrorDivCount"></span>)</span>
+<div id="dataUpdaterErrorDiv" style="display: none">
+    <span class="meta">Connection to server has been lost (<span id="dataUpdaterErrorDivCount"></span>)</span>
 </div>

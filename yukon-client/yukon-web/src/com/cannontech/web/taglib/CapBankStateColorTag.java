@@ -39,15 +39,15 @@ public class CapBankStateColorTag extends YukonTagSupport {
         final String color = value.getValue();
         
         final StringBuilder beforeBodyBuilder = new StringBuilder();
-        beforeBodyBuilder.append("<span id=\"cannonColorUpdater_" + paoId + "\" style=\"color: ");
+        beforeBodyBuilder.append("<span id=\"data-color-updater_" + paoId + "\" style=\"color: ");
         beforeBodyBuilder.append(color + " !important");
-        beforeBodyBuilder.append(";\" cannonColorUpdater=\"" + StringEscapeUtils.escapeHtml(value.getFullIdentifier()) + "\">");
+        beforeBodyBuilder.append(";\" data-color-updater=\"" + StringEscapeUtils.escapeHtml(value.getFullIdentifier()) + "\">");
         String before = beforeBodyBuilder.toString(); 
         
         final StringBuilder afterBodyBuilder = new StringBuilder();
         afterBodyBuilder.append("</span>\n");
         afterBodyBuilder.append("<script type=\"text/javascript\" language=\"JavaScript\">\n");
-        afterBodyBuilder.append("   $('cannonColorUpdater_" + paoId + "').childElements().each(function(child) {\n");
+        afterBodyBuilder.append("   $('data-color-updater_" + paoId + "').childElements().each(function(child) {\n");
         afterBodyBuilder.append("       child.style.color = '" + color + "';\n");
         afterBodyBuilder.append("   });\n");
         afterBodyBuilder.append("</script>\n");

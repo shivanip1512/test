@@ -41,7 +41,7 @@ public class CapControlValueTag extends YukonTagSupport {
         UpdateValue value = updaterService.getFirstValue(id, getUserContext());
 
         JspWriter out = getJspContext().getOut();
-        out.print("<span cannonUpdater=\"" + StringEscapeUtils.escapeHtml(value.getFullIdentifier()) + "\" " + "class=\"" + styleClass + "\"" + ">");
+        out.print("<span data-updater=\"" + StringEscapeUtils.escapeHtml(value.getFullIdentifier()) + "\" " + "class=\"" + styleClass + "\"" + ">");
         out.print(value.getValue());
         out.print("</span>");
     }

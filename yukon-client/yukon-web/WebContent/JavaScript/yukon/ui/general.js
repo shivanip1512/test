@@ -52,7 +52,6 @@ Yukon.doBind = function(func, context) {
     };
 };
 
-
 Yukon.ui = {
     _initialized : false,
 

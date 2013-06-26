@@ -68,7 +68,7 @@ public class DurationPointValueTag extends YukonTagSupport {
         
         JspWriter out = getJspContext().getOut();
         
-        out.print("<span title=\"pointId:" + lp.getPointID() + "\" cannonUpdater=\"" + value.getFullIdentifier() + "\" class=\"pointValueTagSpan " + cssClass +"\" >");
+        out.print("<span title=\"pointId:" + lp.getPointID() + "\" data-updater=\"" + value.getFullIdentifier() + "\" class=\"pointValueTagSpan " + cssClass +"\" >");
         out.print(outputText);
         out.print("</span>");
     }

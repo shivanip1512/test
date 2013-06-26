@@ -15,14 +15,14 @@ function initiateCannonDataUpdate(url, delayMs) {
             updateColorElems;
         
         // looks like stuff is working, hide error div
-        jQuery('#cannonUpdaterErrorDiv').hide();
+        jQuery('#dataUpdaterErrorDiv').hide();
         failureCount = 0;
         
         // find all of the updateable elements
-        updateElems = jQuery('[cannonUpdater]');
+        updateElems = jQuery('[data-updater]');
         jQuery.each(updateElems, function(key, val) {
             var newData,
-                attVal = jQuery(val).attr('cannonUpdater');
+                attVal = jQuery(val).attr('data-updater');
             if ('undefined' === typeof attVal) {
                 return;
             }
@@ -43,9 +43,9 @@ function initiateCannonDataUpdate(url, delayMs) {
         });
 
         // update the classes
-        updateClassElems = jQuery('[cannonClassUpdater]');
+        updateClassElems = jQuery('[data-class-updater]');
         jQuery.each(updateClassElems, function(key, val) {
-            var id = jQuery(val).attr('cannonClassUpdater'),
+            var id = jQuery(val).attr('data-class-updater'),
                 newData,
                 className;
             if ('undefined' === typeof id) {
@@ -59,9 +59,9 @@ function initiateCannonDataUpdate(url, delayMs) {
         });
 
         // update the colors
-        updateColorElems = jQuery('[cannonColorUpdater]');
+        updateColorElems = jQuery('[data-color-updater]');
         jQuery.each(updateColorElems, function(key, val) {
-            var id = jQuery(val).attr('cannonColorUpdater'),
+            var id = jQuery(val).attr('data-color-updater'),
                 newData,
                 format, // what are typical/legal values for this?
                 backgroundColor,
@@ -140,9 +140,9 @@ function initiateCannonDataUpdate(url, delayMs) {
     var failureCallback = function() {
         // something bad happened, show user that updates are off
         failureCount += 1;
-        jQuery('#cannonUpdaterErrorDivCount').innerHTML = failureCount;
+        jQuery('#dataUpdaterErrorDivCount').innerHTML = failureCount;
         if (failureCount > 1) {
-            jQuery('#cannonUpdaterErrorDiv').show();
+            jQuery('#dataUpdaterErrorDiv').show();
         }
         // schedule another update in case the server comes back, but slow it down a bit
         if (_updaterTimeout) {

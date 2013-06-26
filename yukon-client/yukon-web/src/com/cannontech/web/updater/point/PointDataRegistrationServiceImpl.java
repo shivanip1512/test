@@ -19,7 +19,7 @@ public class PointDataRegistrationServiceImpl implements PointDataRegistrationSe
     public String getRawPointDataUpdaterSpan(int pointId, String format, YukonUserContext userContext) {
 	    UpdateValue updateValue = getLatestValue(pointId, format, userContext);
 	
-	    String spanStr = "<span title=\"pointId:" + pointId + "\" cannonUpdater=\"" + 
+	    String spanStr = "<span title=\"pointId:" + pointId + "\" data-updater=\"" + 
 	    updateValue.getFullIdentifier() + "\" class=\"pointValueTagSpan\" >";
 	    
 	    spanStr += (updateValue.isUnavailable() ? "..." : updateValue.getValue());
