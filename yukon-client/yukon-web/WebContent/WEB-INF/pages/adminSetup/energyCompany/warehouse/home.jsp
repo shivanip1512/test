@@ -9,7 +9,7 @@
 <cti:standardPage module="adminSetup" page="warehouse.home">
     <tags:boxContainer2 nameKey="pageName" styleClass="fixedMediumWidth">
         <c:if test="${empty warehouses}">
-            <i:inline key=".none"/>
+            <span class="empty-list"><i:inline key=".none"/></span>
         </c:if>
         <c:if test="${!empty warehouses}">
             <table class="compactResultsTable rowHighlighting">

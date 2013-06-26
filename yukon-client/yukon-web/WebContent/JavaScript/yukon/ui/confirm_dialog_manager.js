@@ -166,7 +166,7 @@ if (typeof(Yukon.Dialog.ConfirmationManager) === 'undefined') {
                 //dialog default options
                 var defaults = {
                     'position': 'center',
-                    'width': 'auto',
+                    'width': '500px',
                     'height': 'auto',
                     'buttons': buttons,
                     'title': args.strings.title,
@@ -174,7 +174,7 @@ if (typeof(Yukon.Dialog.ConfirmationManager) === 'undefined') {
                 };
 
                 //inject the message into the dialog
-                jQuery("#yukon_dialog_confirm .message").text(args.strings.message);
+                jQuery("#yukon_dialog_confirm .message").html(args.strings.message);
                 //show the dialog
                 _self._current_dialog = jQuery('#yukon_dialog_confirm').dialog(jQuery.extend(defaults, args));
                 

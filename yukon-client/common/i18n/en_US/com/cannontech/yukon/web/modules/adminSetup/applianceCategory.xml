@@ -58,8 +58,6 @@
 <entry key="yukon.web.modules.adminSetup.applianceCategory.delete.hoverText">Delete this appliance category.</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.delete.label">Delete</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.delete.title">Delete Appliance Category</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.deleteConfirmation.title">Confirmation</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.deleteConfirmation.message">Are you sure you want to delete {0}?</entry>
 
 <entry key="yukon.web.modules.adminSetup.applianceCategory.description">Description</entry>
 <entry key="yukon.web.modules.adminSetup.applianceCategory.noDescription">N/A</entry>

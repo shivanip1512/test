@@ -2,10 +2,10 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="adminSetup" page="applianceCategory.${mode}">
 
@@ -180,7 +180,7 @@ function assignPrograms(devices) {
         </cti:displayForPageEditModes>
 
         <cti:displayForPageEditModes modes="VIEW">
-            <spring:escapeBody>${applianceCategory.description}</spring:escapeBody>
+            ${fn:escapeXml(applianceCategory.description)}
             <c:if test="${empty applianceCategory.description}">
                 <cti:msg2 key=".noDescription"/>
             </c:if>
@@ -325,7 +325,7 @@ function assignPrograms(devices) {
     </cti:displayForPageEditModes>
 
     <cti:displayForPageEditModes modes="CREATE,EDIT">
-        <cti:button nameKey="save" name="save" type="submit"/>
+        <cti:button nameKey="save" name="save" type="submit" class="primary action"/>
         <c:set var="isCreate" value="${empty applianceCategoryId || applianceCategoryId == 0}"/>
         <c:if test="${isCreate}">
             <cti:url var="backUrl" value="list">
@@ -333,9 +333,8 @@ function assignPrograms(devices) {
             </cti:url>
         </c:if>
         <c:if test="${!isCreate}">
-            <cti:button id="deleteButton" nameKey="delete"/>
-            <tags:confirmDialog nameKey=".deleteConfirmation" argument="${applianceCategory.name}"
-                on="#deleteButton" submitName="delete"/>
+            <cti:button id="deleteButton" nameKey="delete" name="delete" type="submit"/>
+            <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${applianceCategory.name}"/>
             <cti:url var="backUrl" value="view">
                 <cti:param name="ecId" value="${ecId}"/>
                 <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>

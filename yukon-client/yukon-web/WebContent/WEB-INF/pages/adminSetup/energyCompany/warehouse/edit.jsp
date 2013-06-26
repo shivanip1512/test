@@ -5,6 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="adminSetup" page="warehouse.${mode}">
     
@@ -37,15 +38,15 @@
         <div class="pageActionArea">
             <!-- Save/Update -->
             <cti:displayForPageEditModes modes="CREATE">
-                <cti:button nameKey="save" name="create" type="submit"/>
+                <cti:button nameKey="save" name="create" type="submit" classes="action primary"/>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT">
-                <cti:button nameKey="save" name="update" type="submit"/>
+                <cti:button nameKey="save" name="update" type="submit" classes="action primary"/>
             </cti:displayForPageEditModes>
 
             <cti:displayForPageEditModes modes="EDIT">
-                <cti:button nameKey="delete" classes="delete"/>
-                <tags:confirmDialog nameKey="confirmDelete" id="delete" submitName="delete" on="button.delete" />
+                <cti:button nameKey="delete" name="delete" type="submit" classes="delete"/>
+                <d:confirm on="button.delete" nameKey="confirmDelete"/>
             </cti:displayForPageEditModes>
 
             <!-- Cancel -->

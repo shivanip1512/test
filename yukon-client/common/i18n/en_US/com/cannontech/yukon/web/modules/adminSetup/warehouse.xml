@@ -42,5 +42,5 @@
     <entry key="yukon.web.modules.adminSetup.warehouse.VIEW.pageName">Warehouse</entry>
     <entry key="yukon.web.modules.adminSetup.warehouse.VIEW.pageDescription">{0}</entry>
     
-    <entry key="yukon.web.modules.adminSetup.warehouse.message">Are you sure you want to delete this warehouse?</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.confirmDelete.message">Are you sure you want to delete this warehouse?</entry>
 </properties>

@@ -8,6 +8,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="adminSetup" page="roles">
 <cti:includeScript link="/JavaScript/yukon/ui/fieldHelper.js"/>
@@ -36,10 +37,10 @@
         </table>
         <br>
 
-          <cti:button nameKey="save" name="save" type="submit"/>
+          <cti:button nameKey="save" name="save" type="submit" classes="primary action"/>
           <c:if test="${showDelete}">
-              <cti:button nameKey="delete" id="deleteButton" type="button"/>
-              <tags:confirmDialog nameKey=".confirmDelete" on="#deleteButton" argument="${roleGroupName}" submitName="delete"/>
+              <cti:button nameKey="delete" id="deleteButton" name="delete" type="submit"/>
+              <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${roleGroupName}"/>
           </c:if>
           <cti:button nameKey="cancel" name="cancel" type="submit"/>
 

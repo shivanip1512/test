@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -88,11 +89,10 @@ jQuery(document).ready(function() {
 </tags:boxContainer2>
 
 <div class="pageActionArea">
-    <cti:button nameKey="save" name="save" type="submit"/>
-    <cti:button id="restoreDefaultBtn" nameKey="restoreDefault"/>
+    <cti:button nameKey="save" name="save" type="submit" classes="primary action"/>
+    <cti:button id="restoreDefaultBtn" nameKey="restoreDefault" name="restoreDefault" type="submit"/>
     <cti:msg2 var="listType" key="${list.type}"/>
-    <tags:confirmDialog nameKey=".confirmRestoreDefault" argument="${listType}"
-        on="#restoreDefaultBtn" submitName="restoreDefault"/>
+    <d:confirm on="#restoreDefaultBtn" nameKey="confirmRestoreDefault" argument="${listType}"/>
     <cti:url var="viewUrl" value="view">
         <cti:param name="ecId" value="${list.energyCompanyId}"/>
         <cti:param name="listId" value="${list.listId}"/>

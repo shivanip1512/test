@@ -34,10 +34,11 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
-@RequestMapping("/energyCompany/warehouse/*")
-@Controller
 @CheckRoleProperty(YukonRoleProperty.ADMIN_MULTI_WAREHOUSE)
+@Controller
+@RequestMapping("/energyCompany/warehouse/*")
 public class WarehouseController {
+    
     public StarsDatabaseCache starsDatabaseCache;
     
     @Autowired private EnergyCompanyService energyCompanyService;

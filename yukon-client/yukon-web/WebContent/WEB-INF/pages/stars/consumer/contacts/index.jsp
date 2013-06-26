@@ -5,6 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="consumer" page="contacts">
 <cti:standardMenu/>
@@ -60,8 +61,10 @@
 						</cti:url>
 			    		<form action="${deleteUrl}" method="POST">
 							<input type="hidden" name="contactID" value="${contact.contactID}"/>
-				    		<a id="contact_${contact.contactID}" href="javascript:void();" class="fr button naked"><i class="icon icon-cross"></i><span class="label"><i:inline key=".removeContact"/></span></a>
-							<tags:confirmDialog nameKey=".removeContact" on="#contact_${contact.contactID}" argument="${contact.contFirstName} ${contact.contLastName}" />
+				    		<a id="contact_${contact.contactID}" class="fr button naked" type="submit">
+                                <i class="icon icon-cross"></i><span class="label"><i:inline key=".removeContact"/></span>
+                            </a>
+                            <d:confirm on="#contact_${contact.contactID}" nameKey="removeContact" argument="${contact.contFirstName} ${contact.contLastName}"/>
 						</form>
 						
 				    	<cti:url var="editUrl" value="/stars/consumer/contacts/edit">

@@ -4,6 +4,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="amr" page="porterResponseMonitor.${mode}">
 
@@ -204,9 +205,8 @@ YEvent.observeSelectorClick('.addRuleTableRow', function(event) {
 			</c:if>
 
             <cti:button nameKey="${monitoringKey}" type="submit" name="toggleEnabled"/>
-			<cti:button id="deleteButton" nameKey="delete"/>
-			<tags:confirmDialog nameKey=".deleteConfirmation" argument="${monitorDto.name}" submitName="delete" on="#deleteButton"/>
-
+			<cti:button id="deleteButton" nameKey="delete" name="delete" type="submit"/>
+            <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${monitorDto.name}"/>
             <cti:button nameKey="cancel" type="submit" name="cancelToView"/>
 		</div>
 	</form:form>

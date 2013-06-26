@@ -3,6 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="adminSetup" page="operatorLogin.${mode}">
 
@@ -99,11 +100,15 @@
         <div class="pageActionArea">
             <!-- Save/Update -->
             <cti:displayForPageEditModes modes="CREATE">
-                <cti:button nameKey="save" name="save" type="submit"/>
+                <cti:button nameKey="save" name="save" type="submit" classes="primary action"/>
             </cti:displayForPageEditModes>
             
             <cti:displayForPageEditModes modes="EDIT">
-                <cti:button nameKey="save" name="update" type="submit"/>
+                <cti:button nameKey="save" name="update" type="submit" classes="primary action"/>
+                <c:if test="${!isPrimaryOperator}">
+                    <cti:button id="deleteButton" nameKey="delete" name="delete" type="submit" classes="delete"/>
+                    <d:confirm on="#deleteButton" nameKey="confirmDelete"/>
+                </c:if>
             </cti:displayForPageEditModes>
             
             <cti:displayForPageEditModes modes="VIEW">
@@ -112,13 +117,6 @@
                     <cti:param name="operatorLoginId" value="${operatorLogin.userId}"/>
                 </cti:url>
                 <cti:button nameKey="edit" icon="icon-pencil" href="${operatorLoginEditUrl}"/>
-            </cti:displayForPageEditModes>
-
-            <cti:displayForPageEditModes modes="EDIT">
-                <c:if test="${!isPrimaryOperator}">
-                    <cti:button nameKey="delete" name="delete" classes="delete"/>
-                    <tags:confirmDialog nameKey="confirmDelete" id="delete" submitName="delete" on="button.delete" />
-                </c:if>
             </cti:displayForPageEditModes>
 
             <!-- Cancel -->

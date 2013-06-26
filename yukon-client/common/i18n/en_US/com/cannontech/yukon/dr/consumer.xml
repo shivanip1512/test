@@ -81,8 +81,9 @@
     <entry key="yukon.web.modules.consumer.contacts.CREATE.title">Create New Contact</entry>
     <entry key="yukon.web.modules.consumer.contacts.noNotifications">This contact has no notifications</entry>
     <entry key="yukon.web.modules.consumer.contacts.removeContact">Remove Contact</entry>
-    <entry key="yukon.web.modules.consumer.contacts.removeContact.title">Remove Contact?</entry>
+    <entry key="yukon.web.modules.consumer.contacts.removeContact.title">Remove Contact</entry>
     <entry key="yukon.web.modules.consumer.contacts.removeContact.message"><![CDATA[Are you sure you want to remove <strong>{0}</strong> as a contact from this account?]]></entry>
+    <entry key="yukon.web.modules.consumer.contacts.removeContact.ok">Remove</entry>
     <entry key="yukon.web.modules.consumer.contacts.additionalContacts.title">Additional Contacts</entry>
     <entry key="yukon.web.modules.consumer.contacts.primaryContact.title">Primary Contact</entry>
     <entry key="yukon.web.modules.consumer.contacts.notifications">Notifications</entry>

@@ -5,6 +5,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="operator" page="deviceReconfigStatus">
     <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
@@ -82,12 +83,14 @@
             
             <br>
             
-            <cti:button nameKey="delete" classes="f_open_delete_confirm_dialog"/>
-            <cti:url value="/stars/operator/inventory/home" var="inventory_home_url"></cti:url>
-            <cti:button nameKey="cancel" href="${inventory_home_url}"/>
             <form action="/stars/operator/inventory/inventoryActions/deviceReconfig/delete" method="post">
                 <input type="hidden" value="${task.inventoryConfigTaskId}" name="taskId">
-                <tags:confirmDialog on=".f_open_delete_confirm_dialog" nameKey=".confirmDelete" argument="${task.taskName}"/>
+                
+                <cti:button id="deleteButton" nameKey="delete" type="submit"/>
+                <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${task.taskName}"/>
+
+                <cti:url value="/stars/operator/inventory/home" var="inventory_home_url" />
+                <cti:button nameKey="cancel" href="${inventory_home_url}"/>
             </form>
             
         </tags:boxContainer2>

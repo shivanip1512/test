@@ -3,7 +3,7 @@
 <properties>
     
     <entry key="yukon.web.modules.adminSetup.operatorLogin.title">Operator Users</entry>
-    <entry key="yukon.web.modules.adminSetup.operatorLogin.message">Are you sure you want to delete this Operator User?</entry>
+    <entry key="yukon.web.modules.adminSetup.operatorLogin.confirmDelete.message">Are you sure you want to delete this Operator User?</entry>
     
     <!-- Login Model -->
     <entry key="yukon.web.modules.adminSetup.operatorLogin.password">Password</entry>

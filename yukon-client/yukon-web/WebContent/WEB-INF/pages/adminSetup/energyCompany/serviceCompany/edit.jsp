@@ -5,6 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="adminSetup" page="serviceCompany.${mode}">
     <cti:url var="userInfoUrl" value="${baseUrl}/userInfo"/>
@@ -246,17 +247,12 @@
             
             <!-- Save/Update -->
             <cti:displayForPageEditModes modes="CREATE">
-                <cti:button nameKey="save" name="create" type="submit"/>
+                <cti:button nameKey="save" name="create" type="submit" classes="primary action"/>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT">
                 <cti:button nameKey="save" name="update" type="submit"/>
-            </cti:displayForPageEditModes>
-
-            <cti:displayForPageEditModes modes="EDIT">
-            
-                <cti:button nameKey="delete" id="deleteButton"/>
-                <tags:confirmDialog nameKey=".confirmDelete" on="#deleteButton" submitName="delete" argument="${numberOfInventoryInServiceCompany}"/>
-
+                <cti:button id="deleteButton" nameKey="delete" name="delete" type="submit" />
+                <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${numberOfInventoryInServiceCompany}"/>
             </cti:displayForPageEditModes>
 
             <!-- Cancel -->

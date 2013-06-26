@@ -5,6 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="adminSetup" page="roleGroupEditor.${mode}">
     
@@ -37,15 +38,17 @@
                 <div class="pageActionArea">
                     <cti:displayForPageEditModes modes="EDIT">
                         <cti:button nameKey="save" name="update" type="submit"/>
-                        <%-- TODO implement this later <cti:button nameKey="delete" id="deleteButton" type="button"/>
-                        <tags:confirmDialog nameKey=".confirmDelete" argument="${groupName}" on="#deleteButton" submitName="delete"/>--%>
+                        <%-- TODO implement this later 
+                        <cti:button nameKey="delete" id="deleteButton" name="delete" type="submit"/>
+                        <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${groupName}"/>
+                        --%>
                         <cti:button nameKey="cancel" name="cancel" type="submit"/>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
                         <cti:button nameKey="edit" icon="icon-pencil" name="edit" type="submit"/>
                     </cti:displayForPageEditModes>
-                    <cti:button nameKey="expireAllPasswords" id="expireAllPasswordsButton" name="expireAllPasswords"/>
-                    <tags:confirmDialog nameKey=".confirmExpireAllPasswords" on="#expireAllPasswordsButton"  argument="${group.groupName}" submitName="expireAllPasswords" />
+                    <cti:button nameKey="expireAllPasswords" id="expireAllPasswordsButton" name="expireAllPasswords" type="submit"/>
+                    <d:confirm on="#expireAllPasswordsButton" nameKey="confirmExpireAllPasswords" argument="${group.groupName}"/>
                     
                 </div>
             </form:form>

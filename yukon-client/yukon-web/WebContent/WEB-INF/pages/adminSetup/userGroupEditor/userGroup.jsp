@@ -25,8 +25,9 @@
                         <cti:button nameKey="save" name="update" type="submit"/>
                         <c:if test="${isUserGroupDeletable}">
                              <%-- TODO Uncomment this when we implement the role group and user delete functionality.
-                             <cti:button nameKey="delete" id="deleteButton" name="delete" type="button"/>
-                            <tags:confirmDialog nameKey=".confirmDelete" argument="${userGroupName}" on="#deleteButton" submitName="delete"/> --%>
+                             <cti:button nameKey="delete" id="deleteButton" name="delete" name="delete" type="submit"/>
+                             <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${userGroupName}"/>
+                            --%>
                         </c:if>
                         <cti:url var="cancelUrl" value="view">
                             <cti:param name="userGroupId" value="${userGroupId}"/>
