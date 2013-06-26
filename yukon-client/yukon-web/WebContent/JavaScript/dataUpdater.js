@@ -1,6 +1,6 @@
 /* see the dataUpdateEnabler.tag to see where this is referenced */
 var disableHighlight = false;
-var jqcannonDataUpdateRegistrations = [];
+var cannonDataUpdateRegistrations = [];
 var _updaterTimeout = null;
 
 function initiateCannonDataUpdate(url, delayMs) {
@@ -23,16 +23,16 @@ function initiateCannonDataUpdate(url, delayMs) {
         jQuery.each(updateElems, function(key, val) {
             var newData,
                 attVal = jQuery(val).attr('cannonUpdater');
-            if ("undefined" === typeof attVal) {
+            if ('undefined' === typeof attVal) {
                 return;
             }
             newData = jqresponseStruc.data[attVal];
-            if ("undefined" !== typeof newData) {
+            if ('undefined' !== typeof newData) {
                 if (jQuery(val).html() !== newData) {
                     // escape html: creates a div in isolation, sets its text
                     // to whatever's in newData, then effectively escapes it 
                     // via the html function
-                    newData = jQuery("<div>").text(newData).html();
+                    newData = jQuery('<div>').text(newData).html();
                     jQuery(val).html(newData);
                     someValueHasUpdated = true;
                     if (!disableHighlight) {
@@ -48,12 +48,12 @@ function initiateCannonDataUpdate(url, delayMs) {
             var id = jQuery(val).attr('cannonClassUpdater'),
                 newData,
                 className;
-            if ("undefined" === typeof id) {
+            if ('undefined' === typeof id) {
                 return;
             }
             newData = jqresponseStruc.data[id];
             className = jQuery(val).attr('class');
-            if ("undefined" !== typeof newData && className !== newData) {
+            if ('undefined' !== typeof newData && className !== newData) {
                 jQuery(val).attr('class', newData);
             }
         });
@@ -67,28 +67,27 @@ function initiateCannonDataUpdate(url, delayMs) {
                 backgroundColor,
                 color,
                 current_value,
-                // TODO: stick this in yukon general or someplace
                 rgb2hex = function(rgb) {
                     var compositeRgb,
                         hex = function(x) {
-                            return ("0" + parseInt(x, 10).toString(16)).slice(-2);
+                            return ('0' + parseInt(x, 10).toString(16)).slice(-2);
                         };
-                    if ("undefined" === typeof rgb || "" === rgb || null === rgb) {
+                    if ('undefined' === typeof rgb || '' === rgb || null === rgb) {
                         return '#000000';
                     }
                     rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+))?\)$/);
                     compositeRgb = hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
                     compositeRgb = compositeRgb.toLowerCase();
-                    return "#" + compositeRgb;
+                    return '#' + compositeRgb;
                 };
-            if ("undefined" === typeof id) {
+            if ('undefined' === typeof id) {
                 return;
             }
             newData = jqresponseStruc.data[id];
-            newData = "undefined" === typeof newData ? newData : newData.toLowerCase();
+            newData = 'undefined' === typeof newData ? newData : newData.toLowerCase();
             format = jQuery(val).attr('data-format');
-            backgroundColor = jQuery(val).css("background-color");
-            color = jQuery(val).css("color");
+            backgroundColor = jQuery(val).css('background-color');
+            color = jQuery(val).css('color');
             current_value = format == 'background' ? backgroundColor : color;
             // OK, jquery (and plain old javascript) returns color values in rgb format:
             // rgb(0, 153, 51)
@@ -97,7 +96,7 @@ function initiateCannonDataUpdate(url, delayMs) {
             // S-O to the rescue again:
             // http://stackoverflow.com/questions/1740700/how-to-get-hex-color-value-rather-than-rgb-value?lq=1
             // modified the solution proposed by Zach Katz
-            if ("undefined" !== typeof newData && newData !== rgb2hex(current_value)) {
+            if ('undefined' !== typeof newData && newData !== rgb2hex(current_value)) {
                 // data was sent and is different than current
                 if (format === 'background') {
                     jQuery(val).css({'background-color': newData});
@@ -109,17 +108,17 @@ function initiateCannonDataUpdate(url, delayMs) {
             }
         });
 
-        jqcannonDataUpdateRegistrations.forEach(function(it, index, ar) {
+        cannonDataUpdateRegistrations.forEach(function(it, index, ar) {
             var idMap = it.identifierMap,
                 allIdentifierValues = {},
                 gotNewData = false;
-            if ("undefined" === typeof idMap && someValueHasUpdated) {
+            if ('undefined' === typeof idMap && someValueHasUpdated) {
                 (it.callback)();
                 return;
             }
             jQuery.each(idMap, function(key, val) {
                 var newData = jqresponseStruc.data[idMap[key]];
-                if ("undefined" !== typeof newData) {
+                if ('undefined' !== typeof newData) {
                     gotNewData = true;
                     allIdentifierValues[key] = newData;
                 }
@@ -153,7 +152,7 @@ function initiateCannonDataUpdate(url, delayMs) {
     };
     
     var warnStaleData = function() {
-        jQuery("#updatedWarning").dialog("open");
+        jQuery('#updatedWarning').dialog('open');
     };
     
     function doUpdate() {
@@ -182,7 +181,7 @@ function initiateCannonDataUpdate(url, delayMs) {
             var addedData = getUpdater(updateStr);
             reqData.data = reqData.data.concat(addedData);
         });
-        jqcannonDataUpdateRegistrations.forEach(function(it, index, ar) {
+        cannonDataUpdateRegistrations.forEach(function(it, index, ar) {
             var idMap = it.identifierMap;
             jQuery.each(idMap, function(key, val) {
                 reqData.data = reqData.data.concat(val);
@@ -223,12 +222,12 @@ function initiateCannonDataUpdate(url, delayMs) {
 
 /**
  * @param    callback        {function}
- * @param    identifierMap    {Object} cloned as a new Prototype Hash object
+ * @param    identifierMap    {Object} JSON
  */
 function cannonDataUpdateRegistration(callback, identifierMap) {
     // callback will include the formatted string as its one argument
 
-    jqcannonDataUpdateRegistrations.push({
+    cannonDataUpdateRegistrations.push({
         'identifierMap': identifierMap,
         'callback': callback
     });
@@ -240,13 +239,15 @@ function cannonDataUpdateRegistration(callback, identifierMap) {
  * @param identifier    {DOM id}
  */
 function cannonDataUpdateEventRegistration(callback, identifier) {
-    var didIt = false;
-    var callbackWrapper = function(data) {
-        if (!didIt && data.boolean === true) {
-            didIt = true;
-            callback();
-        }
-    };
+    var didIt = false,
+        callbackWrapper = function(data) {
+            // previously, the comparison was data.boolean == true, which
+            // worked because of type coercion. With ===, we have to be explicit
+            if (!didIt && (data.boolean === true || 'true' === data.boolean)) {
+                didIt = true;
+                callback();
+            }
+        };
     cannonDataUpdateRegistration(callbackWrapper, {'boolean': identifier});  
 }
 

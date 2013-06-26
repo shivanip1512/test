@@ -43,9 +43,8 @@
 		}
 		
 		function ivvcAnalysisMessageRecieved(msgDivId) {
-		    //assumes data is of type Hash
             return function(data) {
-                var msg = data.get('value');
+                var msg = data.value;
                 
                 if (msg != null && msg != '' && msg != jQuery(msgDivId + " span:last").html()) {
                     jQuery(msgDivId + " span:last").html(msg);

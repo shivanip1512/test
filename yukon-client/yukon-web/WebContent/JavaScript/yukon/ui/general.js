@@ -12,25 +12,46 @@
 *     
 */
 
-if(typeof(Yukon) == 'undefined') {
+
+if (typeof Yukon === 'undefined') {
     Yukon = {};
 }
 
-jQuery.fn.flashColor = function(args) {
-	return this.each(function() {
-		var _self = jQuery(this);
-		var prevColor = _self.data('previous_color') ? _self.data('previous_color') : _self.css('background-color');
-		_self.data('previous_color', prevColor);
-
-		if (typeof(args) === 'string') {
-			_self.stop(true);
-			_self.css({backgroundColor: args}).animate({backgroundColor: prevColor, duration: 1000});
-		} else if(typeof(args) === 'object' && typeof(args.color) === 'string'){
-			_self.stop(true);
-			_self.css({backgroundColor: args.color}).animate({backgroundColor: prevColor}, args);
-		}
-	});
+// replacement for prototype.js bind call
+// Note: All "modern" browsers support Function.prototype.bind, IE9+, Safari 5.1.4+ (but not ipad1!).
+// However, until prototype.js is purged entirely, its own version of bind will be invoked.
+// I verified this by setting a breakpoint just before a call to bind.
+// prototype bind: func.bind(context[, arg1, arg2, ...])
+// Function.prototype.bind: same as prototype ECMAScript 5th edition
+Yukon.doBind = function(func, context) {
+    var nargs = arguments.length,
+        args = Array.prototype.slice.call(arguments),
+        extraArgs = args.slice(2, args.length);
+    return function() {
+        var addIndex,
+            argLength;
+        if (nargs > 2) {
+            // tack on addition arguments
+            argLength = arguments.length;
+            // to emulate the way prototype adds extra arguments, we must prepend
+            // additional arguments to whatever arguments this function is called with
+            for (addIndex = extraArgs.length - 1; addIndex >= 0; addIndex -= 1, argLength += 1) {
+                // the following allows us to "steal" an Array method and
+                // apply it to the passed in arguments object, which is, as they say,
+                // "array-like" but not an array proper
+                // passed to this function:
+                // func(a, b, ...)
+                // passed to doBind:
+                // doBind(func, context, arg1, arg2, ...)
+                // we want the following arguments passed to func, the callback, in the following order
+                // func(arg1, arg2, ..., a, b, ...)
+                [].unshift.call(arguments, extraArgs[addIndex]);
+            }
+        }
+        func.apply(context, arguments);
+    };
 };
+
 
 Yukon.ui = {
     _initialized : false,
@@ -86,9 +107,9 @@ Yukon.ui = {
             jQuery(this.getAttribute("data-selector")).load(this.getAttribute("href"));
             return false;
         });
-    	
-    	//html5 placeholder support for IE
-		jQuery.placeholder();
+        
+        //html5 placeholder support for IE
+        jQuery.placeholder();
         
         //buttons that redirect the page on click
         jQuery(document).on('click', 'button[data-href]', function(event){window.location = jQuery(this).attr("data-href");});
@@ -102,7 +123,7 @@ Yukon.ui = {
         
         // Disable a form element after clicked
         jQuery(document).on('click', '.f_disableAfterClick', function() {
-        	var button = jQuery(this);
+            var button = jQuery(this);
             if (button.is(":input")) {
                 this.disabled = true;
                 var group = button.attr('data-disable-group');
@@ -131,12 +152,12 @@ Yukon.ui = {
                 
                 //if this is a submit button, trigger the submit event on the form
                 if (button.is(":submit")) {
-                	var form = jQuery(this.form);
-                	
-                	//insert the name and or value of the button into the form action
-                	if (typeof button.attr("name") != "undefined" && button.attr("name").length != 0) {
-                		form.prepend('<input name="'+ button.attr("name") + '" value="' + button.attr("value") + '" type="hidden"/>');
-                	}
+                    var form = jQuery(this.form);
+                    
+                    //insert the name and or value of the button into the form action
+                    if (typeof button.attr("name") != "undefined" && button.attr("name").length != 0) {
+                        form.prepend('<input name="'+ button.attr("name") + '" value="' + button.attr("value") + '" type="hidden"/>');
+                    }
                     form.trigger("submit");
                 }
             }
@@ -145,13 +166,13 @@ Yukon.ui = {
         
         //prevent forms from submitting via enter key
         jQuery(document).on('keydown', 'form.f_preventSubmitViaEnterKey', function(e){
-        	//allow override submission elements
-        	if(jQuery(e.target).hasClass("f_allowSubmitViaEnterKey")){
-        		return true;
-        	}
-        	if(e.keyCode == 13){
-        		return false;
-        	}
+            //allow override submission elements
+            if(jQuery(e.target).hasClass("f_allowSubmitViaEnterKey")){
+                return true;
+            }
+            if(e.keyCode == 13){
+                return false;
+            }
         });
         
         // close popup on submit event
@@ -458,7 +479,7 @@ Yukon.ui = {
         },
         
         nextPage: function(page) {
-        	page = jQuery(page);
+            page = jQuery(page);
             if(typeof(page) != 'undefined') {
                 var nextPage = page.next(".f_page");
                 if(typeof(nextPage) != 'undefined') {
@@ -488,13 +509,13 @@ Yukon.ui = {
          * 
          */
         reset: function(wizard) {
-        	wizard = jQuery(wizard);
+            wizard = jQuery(wizard);
             if(wizard.hasClass("f_wizard")){
                 jQuery(".f_page", wizard).hide();
                 jQuery(".f_page:first", wizard).show();
             }else{
-            	jQuery(".f_wizard .f_page").hide();
-            	jQuery(".f_wizard .f_page:first").show();
+                jQuery(".f_wizard .f_page").hide();
+                jQuery(".f_wizard .f_page:first").show();
             }
         }
     }
@@ -584,19 +605,35 @@ jQuery.fn.selectText = function() {
 
 jQuery.fn.toggleDisabled = function() {
     return this.each(function() {
-    	if (jQuery(this).is(":input")) {
-    		this.disabled = !this.disabled;
-    	}
+        if (jQuery(this).is(":input")) {
+            this.disabled = !this.disabled;
+        }
+    });
+};
+
+jQuery.fn.flashColor = function(args) {
+    return this.each(function() {
+        var _self = jQuery(this);
+        var prevColor = _self.data('previous_color') ? _self.data('previous_color') : _self.css('background-color');
+        _self.data('previous_color', prevColor);
+
+        if (typeof(args) === 'string') {
+            _self.stop(true);
+            _self.css({backgroundColor: args}).animate({backgroundColor: prevColor, duration: 1000});
+        } else if(typeof(args) === 'object' && typeof(args.color) === 'string'){
+            _self.stop(true);
+            _self.css({backgroundColor: args.color}).animate({backgroundColor: prevColor}, args);
+        }
     });
 };
 
 jQuery.fn.flashYellow = function (duration) {
-	return this.each(function(){
-		if(typeof(duration) != 'number'){
-			duration = 0.8;
-		}
-		jQuery(this).flashColor({color: "#FF0", duration: duration*1000});
-	});
+    return this.each(function(){
+        if(typeof(duration) != 'number'){
+            duration = 0.8;
+        }
+        jQuery(this).flashColor({color: "#FF0", duration: duration*1000});
+    });
 };
 
 // initialize the lib
@@ -606,3 +643,4 @@ jQuery(document).ready(function(){
     //turn off ajax caching application-wide by default
     jQuery.ajaxSetup({cache: false});
 });
+

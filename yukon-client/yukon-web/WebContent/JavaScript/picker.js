@@ -47,7 +47,7 @@ Picker.prototype = {
             pairs = extraDestinationFields.split(/;/);
             for (index = 0; index < pairs.length; index++) {
                 pair = pairs[index].split(/:/);
-                if (pair.length == 2) {
+                if (pair.length === 2) {
                     extraDestinationField = {
                         'property': pair[0],
                         'fieldId': pair[1]
@@ -64,10 +64,7 @@ Picker.prototype = {
         this.primed = false;
         this.useInitialIdsIfEmpty = false;
         this.containerDiv = containerDiv;
-        this.inline = containerDiv !== null;
-        
-        this.useNewBind = true; // TODO: debug, remove
-        this.usejquery = true; // TODO: debug, remove
+        this.inline = (containerDiv === null || typeof containerDiv === 'undefined') ? false : true;
     },
 
     /**
@@ -89,23 +86,22 @@ Picker.prototype = {
      * Attached to the onkeyup event of the search text input field.
      */
     doKeyUp: function() {
-        var pickerThis = this,
+        var quietDelay = 300,
+            ss,
+            pickerThis = this,
             timerFunction = function() {
                 var ss = pickerThis.ssInput.value;
-                console.log("timerFunction: ss=" + ss);
                 // Don't do the search if it hasn't changed.  This could be
                 // because they type a character and deleted it.
-                if (!pickerThis.inSearch && pickerThis.currentSearch != ss) {
+                if (!pickerThis.inSearch && pickerThis.currentSearch !== ss) {
                     pickerThis.doSearch();
                 }
-            },
-            quietDelay = 300,
-            ss;
-        jQuery(this.nothingSelectedDiv).hide();
+            };
+        this.nothingSelectedDiv.hide();
         // Don't do the search if it hasn't changed.  This can happen if
         // the use the cursor key or alt-tab to another window and back.
         ss = this.ssInput.value;
-        if (this.currentSearch != ss) {
+        if (this.currentSearch !== ss) {
             this.block();
             setTimeout(timerFunction, quietDelay);
         }
@@ -125,9 +121,9 @@ Picker.prototype = {
         this.block();
         ss = this.ssInput.value;
         if (ss) {
-            jQuery(this.showAllLink).show();
+            this.showAllLink.show();
         } else {
-            jQuery(this.showAllLink).hide();
+            this.showAllLink.hide();
         }
         this.currentSearch = ss;
         if (this.memoryGroup) {
@@ -150,33 +146,32 @@ Picker.prototype = {
         }
 
         if (!onComplete) {
-            if(this.useNewBind)
-                onComplete = myBind(this.updateSearchResults, this);
-            else
-                onComplete = this.updateSearchResults.bind(this);
+            onComplete = Yukon.doBind(this.updateSearchResults, this);
         }
 
         function doOnComplete(transport) {
             try {
                 onComplete(transport);
-            } catch(callbackEx) { console.log("callback exception: " + callbackEx); }
+            } catch(callbackEx) {
+            }
             if (endCallback) {
                 endCallback();
             }
         }
 
         if (null === onFailure) {
-            if (this.useNewBind)
-                onFailure = myBind(this.ajaxError, this);
-            else
-                onFailure = this.ajaxError.bind(this);
-        } 
-        new Ajax.Request('/picker/v2/search', { // TODO: jQuerify
-            'method': 'get',
-            'parameters': parameters,
-            'onComplete': doOnComplete,
-            'onFailure': onFailure
-            });
+            onFailure = Yukon.doBind(this.ajaxError, this);
+        }
+        jQuery.ajax({
+            dataType: "json",
+            url: '/picker/v2/search',
+            data: parameters
+        }).done(function(data, status, xhrobj) {
+            doOnComplete(xhrobj);
+        }).fail(function(xhrobj, textStatus, errorThrown) {
+            onFailure(xhrobj, textStatus, errorThrown);
+        });
+
     },
 
     /**
@@ -186,60 +181,35 @@ Picker.prototype = {
      * the picker should be a read-only view.
      */
     init : function(viewMode) {
-        //this.inputAreaDiv = $('picker_' + this.pickerId + '_inputArea');
+        var showSelectedImg,
+            initialIds = [],
+            destFieldSelector;
         this.inputAreaDiv = jQuery('#picker_' + this.pickerId + '_inputArea')[0];
         if (!viewMode) {
             if (this.selectionProperty) {
-                //this.selectedItemsPopup = $('picker_' + this.pickerId + '_selectedItemsPopup'); // TODO: jQuerify
-                //this.selectedItemsDisplayArea = $('picker_' + this.pickerId + '_selectedItemsDisplayArea'); // TODO: jQuerify
-                //var showSelectedImg = $('picker_' + this.pickerId + '_showSelectedImg'); // TODO: jQuerify
-                this.selectedItemsPopup = jQuery('#picker_' + this.pickerId + '_selectedItemsPopup')[0]; // TODO: jQuerify
-                this.selectedItemsDisplayArea = jQuery('#picker_' + this.pickerId + '_selectedItemsDisplayArea')[0]; // TODO: jQuerify
-                var showSelectedImg = jQuery('#picker_' + this.pickerId + '_showSelectedImg')[0]; // TODO: jQuerify
-                console.log("showSelectedImg is " + (showSelectedImg ? " " : "NOT ") + "truthy");
+                this.selectedItemsPopup = jQuery('#picker_' + this.pickerId + '_selectedItemsPopup')[0];
+                this.selectedItemsDisplayArea = jQuery('#picker_' + this.pickerId + '_selectedItemsDisplayArea')[0];
+                showSelectedImg = jQuery('#picker_' + this.pickerId + '_showSelectedImg')[0];
                 if (showSelectedImg) {
-                    //this.showSelectedLink = $(showSelectedImg.parentNode);
-                    this.showSelectedLink = showSelectedImg.parentNode; // TODO: jQuerify
-                    //this.showSelectedLink.hide(); // TODO: jQuerify
-                    jQuery(this.showSelectedLink).hide(); // TODO: jQuerify
+                    this.showSelectedLink = showSelectedImg.parentNode;
+                    this.showSelectedLink.hide();
                 }
             }
         }
         if (this.selectionProperty) {
-            this.selectionLabel = $('picker_' + this.pickerId + '_label').getElementsBySelector('span')[0]; // TODO: jQuerify
-            //this.originalSelectionLabel = this.selectionLabel.innerHTML; // TODO: jQuerify
-            jqLabel = jQuery('#picker_' + this.pickerId + '_label');
-            jqSpan = jQuery('span', jQuery('#picker_' + this.pickerId + '_label'))[0]; // TODO: jQuerify
-            console.log("proto label span");
-            console.dir(this.selectionLabel);
-            console.log("jquery label span");
-            console.dir(jqSpan);
-            console.log("proto span html=" + this.selectionLabel.innerHTML);
-            console.log("jquery span html=" + jQuery(jqSpan).html());
-            this.originalSelectionLabel = jQuery(jqSpan).html(); //this.selectionLabel.innerHTML; // TODO: jQuerify
+            this.selectionLabel = jQuery('span', jQuery('#picker_' + this.pickerId + '_label'))[0];
+            this.originalSelectionLabel = this.selectionLabel.innerHTML;
         }
 
-        var initialIds = []; // TODO: move var up
         if (this.destinationFieldId) {
-            console.log("I knew it. destinationFieldId always tests true: this.destinationFieldId=" +
-                this.destinationFieldId + " $F(this.destinationFieldId)=");
-            console.dir($F(this.destinationFieldId));
-            if ($F(this.destinationFieldId)) { // TODO: jQuerify
-                console.log("$F(this.destinationFieldId) was also true");
-                initialIds = $F(this.destinationFieldId).split(','); // TODO: jQuerify
+            destFieldSelector = '#' + this.destinationFieldId;
+            if (jQuery(destFieldSelector).val()) {
+                initialIds = jQuery(destFieldSelector).val().split(',');
             }
         } else {
-            console.log("destinationFieldId tested false! proceeding with pluck");
-            initialIds = this.inputAreaDiv.getElementsBySelector('input').pluck('value'); // TODO: jQuerify
-            console.log("proto pluck");
-            console.dir(initialIds);
-            console.log("jQuery fake pluck");
-            console.dir(jQuery.map(jQuery(':input',this.inputAreaDiv), function(val, index) {
+            initialIds = jQuery.map(jQuery(':input',this.inputAreaDiv), function(val, index) {
                 return val.value;
-            }));
-            if(0 < initialIds.length) {
-                console.log("got populated pluck! length=" + initialIds.length);
-            }
+            });
         }
 
         if (viewMode) {
@@ -284,22 +254,8 @@ Picker.prototype = {
             parameters.mode = 'inline';
         }
 
-        if(this.useNewBind) {
-            console.log("calling myBind for onPrimeComplete");
-            onCompleteBind = myBind(this.onPrimeComplete, this, showPicker, initialIds, skipFocus);
-        } else {
-            console.log("calling prototype.js bind for onPrimeComplete");
-            onCompleteBind = this.onPrimeComplete.bind(this, showPicker, initialIds, skipFocus);
-        }
-        //new Ajax.Updater(pickerDialogDivContainer, '/picker/v2/build', { // TODO: jQuerify
-        //    'parameters': parameters,
-        //    'evalScripts': true,
-        //    'onComplete': onCompleteBind // this.onPrimeComplete.bind(this, showPicker, initialIds, skipFocus) // TODO: jQuerify
-        //});
-        jQuery(pickerDialogDivContainer).load('/picker/v2/build', parameters,
-            onCompleteBind);
-            //myBind(this.onPrimeComplete, this, showPicker, initialIds, skipFocus));
-            //this.onPrimeComplete.bind(this, showPicker, initialIds, skipFocus));
+        onCompleteBind = Yukon.doBind(this.onPrimeComplete, this, showPicker, initialIds, skipFocus);
+        jQuery(pickerDialogDivContainer).load('/picker/v2/build', parameters, onCompleteBind);
     },
 
     /**
@@ -315,7 +271,7 @@ Picker.prototype = {
 
         // forget jQuery here. We know selectedItems is an Array, so just
         // make a shallow copy
-        this.lastSelectedItems = this.selectedItems.slice(0); //this.selectedItems.clone(); // TODO: jQuerify
+        this.lastSelectedItems = this.selectedItems.slice(0);
         this.resetSearchFields();
         this.clearSearchResults();
         if (!this.primed) {
@@ -326,20 +282,20 @@ Picker.prototype = {
     },
 
     doShow : function(skipFocus) {
+        var that;
         if (this.memoryGroup && Picker.rememberedSearches[this.memoryGroup]) {
             this.ssInput.value = Picker.rememberedSearches[this.memoryGroup];
         }
-        //this.nothingSelectedDiv.hide(); // TODO: jQuerify
-        jQuery(this.nothingSelectedDiv).hide(); // TODO: jQuerify
+        this.nothingSelectedDiv.hide();
         if (!skipFocus) {
-            //this.ssInput.focus(); // TODO: jQuerify
-            jQuery(this.ssInput).focus(); // TODO: jQuerify
+            this.ssInput.focus();
         }
-        var that = this;
+        that = this;
         this.doSearch(false, false, null, function() {
+            var buttons;
             if (!this.containerDiv) {
-                var buttons = [{'text' : that.cancelText, 'click' : function() {that.cancel();}},
-                               {'text' : that.okText, 'click' : function() {that.okPressed();}, 'class': 'primary action'}];
+                buttons = [{'text' : that.cancelText, 'click' : function() {that.cancel();}},
+                           {'text' : that.okText, 'click' : function() {that.okPressed();}, 'class': 'primary action'}];
                 if (!that.inline) {
                     jQuery('#' + that.pickerId).dialog({buttons : buttons, width : 600, height : 'auto'});
                 }
@@ -347,37 +303,28 @@ Picker.prototype = {
         });
     },
 
-    //onPrimeComplete : function(showPicker, initialIds, skipFocus, transport, json) {
     onPrimeComplete : function(showPicker, initialIds, skipFocus, xhr, unused, req) {
-        var json = getHeaderJSON(req);
-        var ai;
-        console.log("onPrimeComplete : dumping " + arguments.length + " arguments");
-        for(ai = 0; ai < arguments.length; ai += 1) {
-            console.dir(arguments[ai]);
+        var json = JSON.parse(req.getResponseHeader('X-JSON')), errString = '';
+        // handles gross errors from the server and assumes the string 'error'
+        // is the 4th argument. Better than silently failing.
+        if (arguments.length > 4 && 'undefined' !== typeof arguments[4] && "error" === arguments[4]) {
+            errString = "Server error";
+            if ('undefined' !== typeof arguments[3]) {
+                errString += ": '" + arguments[3] + "'";
+            }
+            alert(errString);
+            return;
         }
-        if (this.usejquery) {
-            this.ssInput = jQuery('#picker_' + this.pickerId + '_ss')[0]; // TODO: jQuerify
-            this.showAllLink = jQuery('#picker_' + this.pickerId + '_showAllLink')[0]; // TODO: jQuerify
-            this.resultsDiv = jQuery('#picker_' + this.pickerId + '_results')[0]; // TODO: jQuerify
-            this.noResultsDiv = jQuery('#picker_' + this.pickerId + '_noResults')[0]; // TODO: jQuerify
-            this.nothingSelectedDiv = jQuery('#picker_' + this.pickerId + '_nothingSelected')[0]; // TODO: jQuerify
-            this.selectAllCheckBox = jQuery('#picker_' + this.pickerId + '_selectAll')[0]; // TODO: jQuerify
-            this.selectAllPagesLink = jQuery('#picker_' + this.pickerId + '_selectAllPages')[0]; // TODO: jQuerify
-            this.allPagesSelected = jQuery('#picker_' + this.pickerId + '_allPagesSelected')[0]; // TODO: jQuerify
-            this.clearEntireSelectionLink = jQuery('#picker_' + this.pickerId + '_clearEntireSelection')[0]; // TODO: jQuerify
-            this.entireSelectionCleared = jQuery('#picker_' + this.pickerId + '_entireSelectionCleared')[0]; // TODO: jQuerify
-        } else {
-            this.ssInput = $('picker_' + this.pickerId + '_ss'); // TODO: jQuerify
-            this.showAllLink = $('picker_' + this.pickerId + '_showAllLink'); // TODO: jQuerify
-            this.resultsDiv = $('picker_' + this.pickerId + '_results'); // TODO: jQuerify
-            this.noResultsDiv = $('picker_' + this.pickerId + '_noResults'); // TODO: jQuerify
-            this.nothingSelectedDiv = $('picker_' + this.pickerId + '_nothingSelected'); // TODO: jQuerify
-            this.selectAllCheckBox = $('picker_' + this.pickerId + '_selectAll'); // TODO: jQuerify
-            this.selectAllPagesLink = $('picker_' + this.pickerId + '_selectAllPages'); // TODO: jQuerify
-            this.allPagesSelected = $('picker_' + this.pickerId + '_allPagesSelected'); // TODO: jQuerify
-            this.clearEntireSelectionLink = $('picker_' + this.pickerId + '_clearEntireSelection'); // TODO: jQuerify
-            this.entireSelectionCleared = $('picker_' + this.pickerId + '_entireSelectionCleared'); // TODO: jQuerify
-        }
+        this.ssInput = jQuery('#picker_' + this.pickerId + '_ss')[0];
+        this.showAllLink = jQuery('#picker_' + this.pickerId + '_showAllLink')[0];
+        this.resultsDiv = jQuery('#picker_' + this.pickerId + '_results')[0];
+        this.noResultsDiv = jQuery('#picker_' + this.pickerId + '_noResults')[0];
+        this.nothingSelectedDiv = jQuery('#picker_' + this.pickerId + '_nothingSelected')[0];
+        this.selectAllCheckBox = jQuery('#picker_' + this.pickerId + '_selectAll')[0];
+        this.selectAllPagesLink = jQuery('#picker_' + this.pickerId + '_selectAllPages')[0];
+        this.allPagesSelected = jQuery('#picker_' + this.pickerId + '_allPagesSelected')[0];
+        this.clearEntireSelectionLink = jQuery('#picker_' + this.pickerId + '_clearEntireSelection')[0];
+        this.entireSelectionCleared = jQuery('#picker_' + this.pickerId + '_entireSelectionCleared')[0];
         if (json !== null) {
             this.outputColumns = json.outputColumns;
             this.idFieldName = json.idFieldName;
@@ -393,28 +340,53 @@ Picker.prototype = {
 
     doIdSearch : function(selectedIds) {
         if (selectedIds && selectedIds.length > 0) {
-            var parameters = {
+            var idx,
+                initialIdsObj = '',
+                parameters,
+                onIdSearchComplete = null,
+                onFailure = null;
+
+            // build initialIdsObj from array values
+            for (idx = 0; idx < selectedIds.length; idx += 1) {
+                initialIdsObj += selectedIds[idx];
+                if ((selectedIds.length - 1) > idx) {
+                    initialIdsObj += ',';
+                }
+            }
+            parameters = {
                     'type' : this.pickerType,
                     'id' : this.pickerId,
-                    'initialIds' : selectedIds
-                };
+                    'initialIds' : initialIdsObj
+            };
             if (this.extraArgs) {
                 parameters.extraArgs = this.extraArgs;
             }
 
-            new Ajax.Request('/picker/v2/idSearch', {
-                'method' : 'post',
-                'parameters': parameters,
-                'onComplete': myBind(this.onIdSearchComplete, this) // this.onIdSearchComplete.bind(this) // TODO: jQuerify
+            if (null === onIdSearchComplete) {
+                onIdSearchComplete = Yukon.doBind(this.onIdSearchComplete, this);
+            }
+            if (null === onFailure) {
+                onFailure = Yukon.doBind(this.ajaxError, this);
+            }
+            jQuery.ajax({
+                type: 'POST',
+                dataType: "json",
+                url: '/picker/v2/idSearch',
+                data: parameters
+            }).done(function(data, status, xhrobj) {
+                onIdSearchComplete(xhrobj);
+            }).fail(function(xhrobj, textStatus, errorThrown) {
+                onFailure(xhrobj, textStatus, errorThrown);
             });
+
         }
     },
 
     onIdSearchComplete : function(transport) {
-        var json = JSON.parse(transport.responseText); //transport.responseText.evalJSON(); // TODO: use JSON.parse
+        var json = JSON.parse(transport.responseText);
         if (json && json.hits && json.hits.resultList) {
             this.selectedItems = json.hits.resultList;
-            if (this.showSelectedLink) jQuery(this.showSelectedLink).show(); //this.showSelectedLink.show(); // TODO: jQuerify
+            if (this.showSelectedLink) this.showSelectedLink.show();
         }
         this.updateOutsideFields(true);
     },
@@ -436,27 +408,20 @@ Picker.prototype = {
         var fieldName,
             pickerThis;
 
-        console.dir(this.selectedItems);
-        if (!this.allowEmptySelection && this.selectedItems.size() === 0) { // TODO: what is size()?
-            //this.nothingSelectedDiv.show(); // TODO: jQuerify
-            console.log("showing nothing selected div"); // have not been able to trigger this codepath
-            jQuery(this.nothingSelectedDiv).show();
+        if (!this.allowEmptySelection && this.selectedItems.length === 0) {
+            this.nothingSelectedDiv.show();
         } else {
-            if (this.destinationFieldId) { // TODO: true if "": is this intended?
-                console.log("this.destinationFieldId set! : " + this.destinationFieldId);
+            if (this.destinationFieldId) {
                 fieldName = this.idFieldName;
-                //$(this.destinationFieldId).value =
                 jQuery('#' + this.destinationFieldId).val(
                     jQuery.map(this.selectedItems, function(val, index) {
                         return val[fieldName];
                     }).join(',')
                 );
-                console.log("awesome call to jQuery.map, result=" + // TODO: remove
-                        jQuery('#' + this.destinationFieldId).val());
             } else {
                 pickerThis = this;
                 this.inputAreaDiv.innerHTML = '';
-                this.selectedItems.each(function(selectedItem) { // TODO: jQuerify
+                jQuery.each(this.selectedItems, function(key, selectedItem) {
                     var inputElement = document.createElement('input');
                     inputElement.type = 'hidden';
                     inputElement.value = selectedItem[pickerThis.idFieldName];
@@ -477,7 +442,9 @@ Picker.prototype = {
         var hit,
             labelMsg,
             index,
-            value;
+            value,
+            extraDestinationField,
+            extraDestSelector;
         // protect from calling endAction for empty lists on first run.
         if (this.selectedItems.length === 0 && isInitial) {
             return;
@@ -486,39 +453,37 @@ Picker.prototype = {
         hit = null;
         if (this.selectedItems.length > 0) {
             hit = this.selectedItems[0];
-            if (this.showSelectedLink) jQuery(this.showSelectedLink).show(); // TODO: jQuerify
+            if (this.showSelectedLink) this.showSelectedLink.show();
         } else {
-            if (this.showSelectedLink) jQuery(this.showSelectedLink).hide(); // TODO: jQuerify
+            if (this.showSelectedLink) this.showSelectedLink.hide();
         }
 
         if (this.selectionProperty) {
             if (hit === null) {
                 this.selectionLabel.innerHTML = this.originalSelectionLabel;
-                jQuery(this.selectionLabel).addClass('noSelectionPickerLabel'); // TODO: jQuerify, or not
+                jQuery(this.selectionLabel).addClass('noSelectionPickerLabel');
             } else {
-                var jqlabel = jQuery("<div>").text(hit[this.selectionProperty].toString()).html();
-                labelMsg = hit[this.selectionProperty].toString().escapeHTML(); // TODO: jQuerify
-                console.log("updateOutsideFields: labelMsg=" + labelMsg + " jqlabel=" + jqlabel);
+                labelMsg = jQuery('<div>').text(hit[this.selectionProperty].toString()).html();
                 if (this.selectedItems.length > 1) {
-                     labelMsg +=  ' ' + this.selectedAndMsg + ' ' +
-                         (this.selectedItems.length - 1) + ' ' +
-                         this.selectedMoreMsg;
+                    labelMsg +=  ' ' + this.selectedAndMsg + ' ' +
+                        (this.selectedItems.length - 1) + ' ' +
+                        this.selectedMoreMsg;
                 }
                 this.selectionLabel.innerHTML = labelMsg;
-                this.selectionLabel.removeClassName('noSelectionPickerLabel'); // TODO: jQuerify, or not
+                jQuery(this.selectionLabel).removeClass('noSelectionPickerLabel');
             }
         }
 
-        for (index = 0; index < this.extraDestinationFields.length; index++) {
+        for (index = 0; index < this.extraDestinationFields.length; index += 1) {
             extraDestinationField = this.extraDestinationFields[index];
             value = hit === null ? '' : hit[extraDestinationField.property];
-            
             // support for both innerHTML and value setting
-            if ($(extraDestinationField.fieldId).tagName === 'INPUT') { // TODO: jQuerify
-                $(extraDestinationField.fieldId).value = value; // TODO: jQuerify
+            extraDestSelector = '#' + extraDestinationField.fieldId;
+            if (jQuery(extraDestSelector)[0].tagName === 'INPUT') {
+                jQuery(extraDestSelector).val(value);
             }
             else {
-                $(extraDestinationField.fieldId).innerHTML = value; // TODO: jQuerify
+                jQuery(extraDestSelector).html(value);
             }
         }
         if (this.endAction) {
@@ -529,13 +494,13 @@ Picker.prototype = {
 
     clearSelected: function() {
         if (this.destinationFieldId) {
-            $(this.destinationFieldId).value = ''; // TODO: jQuerify
+            jQuery('#' + this.destinationFieldId).val('');
         } else {
-            this.inputAreaDiv.innerHTML = ''; // TODO: jQuerify
+            this.inputAreaDiv.innerHTML = '';
         }
         if (this.selectionProperty) {
-            this.selectionLabel.innerHTML = this.originalSelectionLabel; // TODO: jQuerify
-            this.selectionLabel.addClassName('noSelectionPickerLabel'); // TODO: jQuerify, or not
+            this.selectionLabel.innerHTML = this.originalSelectionLabel;
+            jQuery(this.selectionLabel).addClass('noSelectionPickerLabel');
         }
     },
 
@@ -544,26 +509,28 @@ Picker.prototype = {
      * If this is a multi-select picker, an array will be returned, 
      * but in single select mode a single selected item will be returned.
      */
-    getSelected: function() {
+    getSelected: function() { // called from zoneWizardDetails.js
         var retVal = this.destinationFieldId
-            ? $F(this.destinationFieldId).split(',') // TODO: jQuerify
-            : this.inputAreaDiv.getElementsBySelector('input').pluck('value'); // TODO: jQuerify
+            ? jQuery('#' + this.destinationFieldId).val().split(',')
+            : jQuery.map(jQuery(':input', this.inputAreaDiv), function(val, index) {
+                return val.value;
+            });
         return this.multiSelectMode ? retVal : retVal[0];
     },
 
     previous: function() {
-        if (this.previousIndex == -1) {
+        if (this.previousIndex === -1) {
             return;
         }
-        this.ssInput.focus(); // TODO: jQuerify, or not
+        this.ssInput.focus();
         this.doSearch(this.previousIndex);
     },
 
     next: function() {
-        if (this.nextIndex == -1) {
+        if (this.nextIndex === -1) {
             return;
         }
-        this.ssInput.focus(); // TODO: jQuerify, or not
+        this.ssInput.focus();
         this.doSearch(this.nextIndex);
     },
 
@@ -572,7 +539,7 @@ Picker.prototype = {
             Picker.rememberedSearches[this.memoryGroup] = '';
         }
         this.resetSearchFields();
-        this.ssInput.focus(); // TODO: jQuerify, or not
+        this.ssInput.focus();
         this.doSearch();
     },
 
@@ -587,7 +554,7 @@ Picker.prototype = {
             return;
         }
         this.updatePagingArea();
-        oldResultArea = $(this.resultAreaId); // TODO: jQuerify
+        oldResultArea = jQuery('#' + this.resultAreaId)[0];
         resultHolder = this.resultsDiv;
         if (oldResultArea) {
             resultHolder.removeChild(oldResultArea);
@@ -599,27 +566,31 @@ Picker.prototype = {
      * renderTalbeResults to update the table itself and then updates the
      * previous and next buttons appropriately.
      */
-    updateSearchResults: function(transport) { // TODO: move vars to top of function
-        var json = transport.responseText.evalJSON(); // TODO: use JSON.parse
-        var newResultArea = this.renderTableResults(json);
+    updateSearchResults: function(transport) {
+        var json = JSON.parse(transport.responseText),
+            newResultArea = this.renderTableResults(json),
+            oldResultArea,
+            resultHolder,
+            oldError,
+            ss;
         this.updatePagingArea(json);
         this.selectAllPagesMsg = json.selectAllPages;
         this.allPagesSelectedMsg = json.allPagesSelected;
-        var oldResultArea = $(this.resultAreaId); // TODO: jQuerify
-        var resultHolder = this.resultsDiv;
+        oldResultArea = jQuery('#' + this.resultAreaId)[0];
+        resultHolder = this.resultsDiv;
         if (oldResultArea) {
             resultHolder.removeChild(oldResultArea);
         }
-        var oldError = $(this.errorHolderId); // TODO: jQuerify
+        oldError = jQuery('#' + this.errorHolderId)[0];
         if (oldError) {
             resultHolder.removeChild(oldError);
         }
         resultHolder.appendChild(newResultArea);
         this.updateSelectAllCheckbox();
 
-        var ss = this.ssInput.value;
+        ss = this.ssInput.value;
         this.unblock();
-        if (this.currentSearch != ss) {
+        if (this.currentSearch !== ss) {
             // do another search
             this.doSearch();
         } else {
@@ -627,14 +598,14 @@ Picker.prototype = {
         }
     },
 
-    ajaxError: function(transport) { // TODO: jQuerify
+    ajaxError: function(transport, textStatus, errorThrown) {
         this.inSearch = false;
         this.unblock();
-        this.resultsDiv.innerHTML = ''; // TODO: jQuerify
+        this.resultsDiv.innerHTML = '';
         errorHolder = document.createElement('div');
         errorHolder.id = this.errorHolderId;
-        errorHolder.innerHTML = 'There was a problem searching the index: ' + // TODO: jQuerify
-        transport.responseText;
+        errorHolder.innerHTML = 'There was a problem searching the index: ' +
+            transport.responseText;
         this.resultsDiv.appendChild(errorHolder);
     },
 
@@ -642,19 +613,11 @@ Picker.prototype = {
      * Render the table portion of the search results.
      */
     renderTableResults: function(json) {
-        var hitList = json.hits.resultList;
-        var resultArea = document.createElement('div');
-        resultArea.id = this.resultAreaId;
-        var resultAreaFixed = document.createElement('div');
-        resultAreaFixed.id = this.resultAreaFixedId;
-        resultArea.appendChild(resultAreaFixed);
-
-        this.allLinks = [];
-        if (hitList && hitList.length && hitList.length > 0) {
-            this.noResultsDiv.hide(); // TODO: jQuerify
-            this.resultsDiv.show(); // TODO: jQuerify
-            var pickerThis = this;
-            var createItemLink = function(hit, link) {
+        var hitList = json.hits.resultList,
+            resultArea = document.createElement('div'),
+            resultAreaFixed = document.createElement('div'),
+            pickerThis = this,
+            createItemLink = function(hit, link) {
                 if (pickerThis.excludeIds.indexOf(hit[pickerThis.idFieldName]) !== -1) {
                     return null;
                 } else {
@@ -663,10 +626,30 @@ Picker.prototype = {
                         pickerThis.selectThisItem(hit, link);
                     };
                 }
-            };
+            },
+            outputColumns = [],
+            processRowForRender = function (rowElement, rowObject) {
+                if (pickerThis.excludeIds.indexOf(rowObject[pickerThis.idFieldName]) !== -1) {
+                    jQuery(rowElement).addClass('disabled');
+                    jQuery(rowElement).attr('title', Picker.alreadySelectedHoverMessage);
+                } else {
+                    pickerThis.selectedItems.forEach(function(item, index, arr){
+                        if (rowObject[pickerThis.idFieldName] === item[pickerThis.idFieldName]) {
+                            jQuery(rowElement).addClass('highlighted"');
+                        }
+                    });
+                }
+            },
+            resultTable;
 
-            var outputColumns = [];
-            this.outputColumns.each(function(outputColumn) {
+        resultArea.id = this.resultAreaId;
+        resultAreaFixed.id = this.resultAreaFixedId;
+        resultArea.appendChild(resultAreaFixed);
+        this.allLinks = [];
+        if (hitList && hitList.length && hitList.length > 0) {
+            this.noResultsDiv.hide();
+            this.resultsDiv.show();
+            this.outputColumns.forEach(function(outputColumn, index, arr) {
                 var translatedColumn = {
                      'title': outputColumn.title,
                      'field': outputColumn.field,
@@ -679,39 +662,23 @@ Picker.prototype = {
                  // only the first column is a link
                  createItemLink = null;
              });
-             var alternateRow = false;
-             var processRowForRender = function (rowElement, rowObject) {
-                 if (pickerThis.excludeIds.indexOf(rowObject[pickerThis.idFieldName]) != -1) {
-                     $(rowElement).addClassName("disabled"); // TODO: jQuerify
-                     $(rowElement).setAttribute('title', Picker.alreadySelectedHoverMessage); // TODO: jQuerify
-                 } else {
-                     pickerThis.selectedItems.each(function(item){
-                         if (rowObject[pickerThis.idFieldName] == item[pickerThis.idFieldName]) {
-                             $(rowElement).addClassName("highlighted"); // TODO: jQuerify
-                         }
-                     });
-                 }
-                 if (alternateRow) {
-                     $(rowElement).addClassName("altRow"); // TODO: jQuerify
-                 }
-                 alternateRow = !alternateRow;
-             };
 
-            var resultTable = createHtmlTableFromJson(hitList, outputColumns,
-                    processRowForRender);
+            resultTable = createHtmlTableFromJson(hitList, outputColumns,
+                processRowForRender);
             resultTable.className = 'compactResultsTable pickerResultTable';
             resultAreaFixed.appendChild(resultTable);
         } else {
-            this.noResultsDiv.show(); // TODO: jQuerify
-            this.resultsDiv.hide(); // TODO: jQuerify
+            this.noResultsDiv.show();
+            this.resultsDiv.hide();
         }
 
         return resultArea;
     },
 
     showSelected: function() {
-        var outputColumns = [];
-        this.outputColumns.each(function(outputColumn) {
+        var outputColumns = [],
+            resultTable;
+        this.outputColumns.forEach(function(outputColumn, index, arr) {
             var translatedColumn = {
                  'title': outputColumn.title,
                  'field': outputColumn.field,
@@ -722,23 +689,13 @@ Picker.prototype = {
              }
              outputColumns.push(translatedColumn);
          });
-         var alternateRow = false;
-         var processRowForRender = function (rowElement, rowObject) {
-             if (alternateRow) {
-                 $(rowElement).addClassName("altRow"); // TODO: jQuerify
-             }
-             alternateRow = !alternateRow;
-         };
 
-         var tmptable = 
-             createHtmlTableFromJson(this.selectedItems, outputColumns, processRowForRender);
-         console.log("typeof tmptable=" + (typeof tmptable));
-        var resultTable = $(createHtmlTableFromJson(this.selectedItems, // TODO: jQuerify
-                outputColumns, processRowForRender));
-        resultTable.addClassName('compactResultsTable');
-        resultTable.addClassName('pickerResultTable');
-        resultTable.addClassName('rowHighlighting');
-        this.selectedItemsDisplayArea.innerHTML = ''; // TODO: jQuerify
+        resultTable = createHtmlTableFromJson(this.selectedItems,
+            outputColumns);
+        jQuery(resultTable).addClass('compactResultsTable');
+        jQuery(resultTable).addClass('pickerResultTable');
+        jQuery(resultTable).addClass('rowHighlighting');
+        this.selectedItemsDisplayArea.innerHTML = '';
         this.selectedItemsDisplayArea.appendChild(resultTable);
         jQuery(this.selectedItemsPopup).dialog({minWidth: 400});
     },
@@ -747,7 +704,7 @@ Picker.prototype = {
      * Update the paging area of the form for the current search results.
      */
     updatePagingArea: function(json) {
-        var pickerDiv = $(this.pickerId); // TODO: jQuerify
+        var pickerDiv = jQuery('#' + this.pickerId);
         this.previousIndex = -1;
         this.nextIndex = -1;
 
@@ -756,77 +713,79 @@ Picker.prototype = {
         }
         if (json && json.hits.startIndex > 0) {
             this.previousIndex = json.hits.previousStartIndex;
-            pickerDiv.getElementsBySelector('.previousLink.enabledAction')[0].show();
-            pickerDiv.getElementsBySelector('.previousLink.disabledAction')[0].hide();
+            jQuery('.previousLink.enabledAction', jQuery(pickerDiv)).show();
+            jQuery('.previousLink.disabledAction', jQuery(pickerDiv)).hide();
         } else {
-            pickerDiv.getElementsBySelector('.previousLink.enabledAction')[0].hide();
-            pickerDiv.getElementsBySelector('.previousLink.disabledAction')[0].show();
+            jQuery('.previousLink.enabledAction', jQuery(pickerDiv)).hide();
+            jQuery('.previousLink.disabledAction', jQuery(pickerDiv)).show();
         }
         if (json && json.hits.endIndex < json.hits.hitCount) {
             this.nextIndex = json.hits.endIndex;
-            pickerDiv.getElementsBySelector('.nextLink.enabledAction')[0].show();
-            pickerDiv.getElementsBySelector('.nextLink.disabledAction')[0].hide();
+            jQuery('.nextLink.enabledAction', jQuery(pickerDiv)).show();
+            jQuery('.nextLink.disabledAction', jQuery(pickerDiv)).hide();
         } else {
-            pickerDiv.getElementsBySelector('.nextLink.enabledAction')[0].hide();
-            pickerDiv.getElementsBySelector('.nextLink.disabledAction')[0].show();
+            jQuery('.nextLink.enabledAction', jQuery(pickerDiv)).hide();
+            jQuery('.nextLink.disabledAction', jQuery(pickerDiv)).show();
         }
-
-        pickerDiv.getElementsBySelector('.pageNumText')[0].innerHTML = json ? json.pages : ''; // TODO: jQuerify
+        jQuery('.pageNumText', jQuery(pickerDiv))[0].innerHTML = json ? json.pages : '';
     },
 
     removeFromSelectedItems : function(hit) {
-        var oldSelectedItems = this.selectedItems;
+        var oldSelectedItems = this.selectedItems,
+            index;
         this.selectedItems = [];
-        for (var index = 0; index < oldSelectedItems.length; index++) {
-            if (oldSelectedItems[index][this.idFieldName] != hit[this.idFieldName]) {
+        for (index = 0; index < oldSelectedItems.length; index++) {
+            if (oldSelectedItems[index][this.idFieldName] !== hit[this.idFieldName]) {
                 this.selectedItems.push(oldSelectedItems[index]);
             }
         }
     },
 
     selectAll: function() {
-        var pickerThis = this;
-        var numSelectedBefore = this.selectedItems.length;
-        this.allLinks.each(function(hitRow) {
-            var parentRow = $($(hitRow.link).parentNode.parentNode); // TODO: jQuerify
+        var pickerThis = this,
+            numSelectedBefore = this.selectedItems.length;
+        this.allLinks.forEach(function(hitRow, index, arr) {
+            // hitRow IS an element, so we don't need any jQuery sugar around it
+            var parentRow = hitRow.link.parentNode.parentNode;
             if (pickerThis.selectAllCheckBox.checked) {
-                parentRow.addClassName('highlighted');
+                jQuery(parentRow).addClass('highlighted');
                 pickerThis.selectedItems.push(hitRow.hit);
             } else {
-                parentRow.removeClassName('highlighted');
+                jQuery(parentRow).removeClass('highlighted');
                 pickerThis.removeFromSelectedItems(hitRow.hit);
             }
         });
 
-        $(this.clearEntireSelectionLink.parentNode).hide(); // TODO: jQuerify
+        this.clearEntireSelectionLink.parentNode.hide();
         this.entireSelectionCleared.hide();
-        $(this.allPagesSelected.parentNode).hide();
+        this.allPagesSelected.parentNode.hide();
         // Cap "select all on every page" at 5000.
-        if (this.selectAllCheckBox.checked && this.nextIndex != -1 && this.hitCount <= 5000) {
-            this.selectAllPagesLink.innerHTML = this.selectAllPagesMsg; // TODO: jQuerify
-            $(this.selectAllPagesLink.parentNode).show(); // TODO: jQuerify
+        if (this.selectAllCheckBox.checked && this.nextIndex !== -1 && this.hitCount <= 5000) {
+            this.selectAllPagesLink.innerHTML = this.selectAllPagesMsg;
+            this.selectAllPagesLink.parentNode.show();
         } else {
-            $(this.selectAllPagesLink.parentNode).hide(); // TODO: jQuerify
+            this.selectAllPagesLink.parentNode.hide();
             if (numSelectedBefore > this.selectedItems.length && this.selectedItems.length > 0) {
-                $(this.clearEntireSelectionLink.parentNode).show(); // TODO: jQuerify
+                this.clearEntireSelectionLink.parentNode.show(); 
             }
         }
 
-        this.ssInput.focus(); // TODO: jQuerify
+        this.ssInput.focus();
     },
 
     selectAllPages: function() {
-        this.doSearch(0, -1, this.selectAllOnComplete.bind(this)); // TODO: jQuerify
+        this.doSearch(0, -1, Yukon.doBind(this.selectAllOnComplete, this));
     },
 
     selectAllOnComplete: function(transport) {
-        var json = transport.responseText.evalJSON(); // TODO: use JSON.parse
-        var hitList = json.hits.resultList;
+        var json =  JSON.parse(transport.responseText),
+            hitList = json.hits.resultList,
+            pickerThis;
         // remove "exclude items"
         if (this.excludeIds && this.excludeIds.length > 0) {
             this.selectedItems = [];
-            var pickerThis = this;
-            hitList.each(function(hit) {
+            pickerThis = this;
+            hitList.forEach(function(hit, index, arr) {
                 if (pickerThis.excludeIds.indexOf(hit[pickerThis.idFieldName]) === -1) {
                     pickerThis.selectedItems.push(hit);
                 }
@@ -836,19 +795,19 @@ Picker.prototype = {
         }
         this.inSearch = false;
         this.ssInput.focus();
-        $(this.selectAllPagesLink.parentNode).hide(); // TODO: jQuerify
+        this.selectAllPagesLink.parentNode.hide();
         this.allPagesSelected.innerHTML = this.allPagesSelectedMsg;
-        $(this.allPagesSelected.parentNode).show(); // TODO: jQuerify
+        this.allPagesSelected.parentNode.show();
         this.unblock();
     },
 
     clearEntireSelection : function() {
         this.selectedItems = [];
-        $(this.allPagesSelected.parentNode).hide(); // TODO: jQuerify
-        $(this.clearEntireSelectionLink.parentNode).hide(); // TODO: jQuerify
-        this.entireSelectionCleared.show(); // TODO: jQuerify
-        this.allLinks.each(function(hitRow) {
-            $($(hitRow.link).parentNode.parentNode).removeClassName('highlighted'); // TODO: jQuerify
+        this.allPagesSelected.parentNode.hide();
+        this.clearEntireSelectionLink.parentNode.hide();
+        this.entireSelectionCleared.show();
+        this.allLinks.forEach(function(hitRow, index, arr) {
+            jQuery(hitRow.link.parentNode.parentNode).removeClass('highlighted');
         });
         this.selectAllCheckBox.checked = false;
     },
@@ -858,15 +817,15 @@ Picker.prototype = {
             return;
         }
         var allSelected = this.allLinks.length > 0;
-        this.allLinks.each(function(hitRow) {
-            if (!$($(hitRow.link).parentNode.parentNode).hasClassName('highlighted')) { // TODO: jQuerify
+        this.allLinks.forEach(function(hitRow, index, arr) {
+            if (! jQuery(hitRow.link.parentNode.parentNode).hasClass('highlighted')) {
                 allSelected = false;
             }
         });
         this.selectAllCheckBox.checked = allSelected;
-        $(this.selectAllPagesLink.parentNode).hide(); // TODO: jQuerify
-        $(this.allPagesSelected.parentNode).hide(); // TODO: jQuerify
-        $(this.clearEntireSelectionLink.parentNode).hide(); // TODO: jQuerify
+        this.selectAllPagesLink.parentNode.hide();
+        this.allPagesSelected.parentNode.hide();
+        this.clearEntireSelectionLink.parentNode.hide();
         this.entireSelectionCleared.hide();
     },
 
@@ -874,33 +833,36 @@ Picker.prototype = {
      * This method called when the user clicks on a row for selection. 
      */
     selectThisItem: function(hit, link) {
+        var parentRow,
+            rows,
+            index;
         this.nothingSelectedDiv.hide();
 
         if (this.immediateSelectMode) {
-             this.selectedItems = [hit];
-             this.okPressed();
+            this.selectedItems = [hit];
+            this.okPressed();
             return;
         }
 
-        var parentRow = $($(link).parentNode.parentNode); // TODO: jQuerify
-        if (parentRow.hasClassName('highlighted')) {
+        parentRow = link.parentNode.parentNode;
+        if (jQuery(parentRow).hasClass('highlighted')) {
             // unselect
-            parentRow.removeClassName('highlighted');
+            jQuery(parentRow).removeClass('highlighted');
             this.removeFromSelectedItems(hit);
             this.selectAllCheckBox.checked = false;
         } else {
             // select
             if (!this.multiSelectMode) {
                 // not multi-select mode; unselect all others
-                var rows = parentRow.parentNode.childNodes;
-                for (var index = 0; index < rows.length; index++) {
-                    $(rows[index]).removeClassName('highlighted'); // TODO: jQuerify // TODO: jQuerify
+                rows = parentRow.parentNode.childNodes;
+                for (index = 0; index < rows.length; index++) {
+                    jQuery(rows[index]).removeClass('highlighted');
                 }
                 this.selectedItems = [hit];
-                parentRow.addClassName('highlighted');
+                jQuery(parentRow).addClass('highlighted');
             } else {
                 this.selectedItems.push(hit);
-                parentRow.addClassName('highlighted');
+                jQuery(parentRow).addClass('highlighted');
                 this.updateSelectAllCheckbox();
             }
         }
@@ -913,44 +875,6 @@ Picker.prototype = {
     unblock : function() {
         Yukon.uiUtils.elementGlass.hide(jQuery('#' + this.pickerId + ' .f_block_this'));
     }
+
 };
-
-// replacement for prototype.js bind call
-function myBind(func, context) {
-    console.log("myBind: applying context to func");
-    var nargs = arguments.length,
-        args = Array.prototype.slice.call(arguments),
-        extraArgs = args.slice(2, args.length);
-    console.log("myBind: nargs=" + nargs + " extraArgs.length=" + extraArgs.length);
-    return function() {
-        var addIndex,
-            argLength;
-        if(nargs > 2) {
-            // tack on addition arguments
-            console.log("we have " + (nargs - 2) + " additional args to add");
-            console.log("arguments.length=" + arguments.length + " extraArgs.length=" +
-                extraArgs.length);
-            argLength = arguments.length;
-            // to emulate the way prototype adds extra arguments, we must prepend
-            // additional arguments to whatever arguments this function is called with
-            for(addIndex = extraArgs.length - 1; addIndex >= 0; addIndex -= 1, argLength += 1) {
-                // the following allows us to "steal" an Array method and
-                // apply it to the passed in arguments object, which is, as they say,
-                // "array-like" but not an array proper
-                // passed to this function:
-                // func(a, b, ...)
-                // passed to myBind:
-                // myBind(func, context, arg1, arg2, ...)
-                // we want the following arguments passed to func, the callback
-                // func(arg1, arg2, ..., a, b, ...)
-                [].unshift.call(arguments, extraArgs[addIndex]);
-            }
-            console.log("added " + extraArgs.length + " arguments arguments.length=" + arguments.length);
-        } else {
-            console.log("we have " + nargs + " arguments");
-        }
-        func.apply(context, arguments);
-    };
-}
-
 

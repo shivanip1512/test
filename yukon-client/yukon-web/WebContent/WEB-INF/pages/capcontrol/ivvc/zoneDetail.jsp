@@ -24,10 +24,9 @@
     <script type="text/javascript">
 
         function setRedBulletForPoint(pointId) {
-            //assumes data is of type Hash
             return function(data) {
                 var redBulletSpans = $$('.redBullet_' + pointId);
-                var quality = data.get('quality');
+                var quality = data.quality;
 
                 redBulletSpans.each(function(redBulletSpan) {
                     if (quality != 'Normal') {
