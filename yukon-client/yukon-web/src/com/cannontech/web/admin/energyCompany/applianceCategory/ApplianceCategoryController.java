@@ -550,7 +550,7 @@ public class ApplianceCategoryController {
     @RequestMapping
     public @ResponseBody JSONObject moveProgram(int applianceCategoryId,
                                                 int assignedProgramId, 
-                                                Direction direction, 
+                                                @RequestParam(required=true) Direction direction, 
                                                 YukonUserContext context) {
         
         verifyAssignedProgramAC(assignedProgramId, applianceCategoryId);
@@ -563,8 +563,6 @@ public class ApplianceCategoryController {
             applianceCategoryService.moveAssignedProgramUp(applianceCategoryId, assignedProgramId, context);
         } else if (direction == Direction.down) {
             applianceCategoryService.moveAssignedProgramDown(applianceCategoryId, assignedProgramId, context);
-        } else {
-            throw new IllegalArgumentException("invalid direction [" + direction + "]");
         }
         
         json.put("action", "reload");

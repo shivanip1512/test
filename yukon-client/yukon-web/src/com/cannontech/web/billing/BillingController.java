@@ -99,18 +99,13 @@ public class BillingController {
                 scheduledFileExportService.getJobsByType(ScheduledExportType.BILLING);
         List<ScheduledFileExportJobData> jobDataObjects = Lists.newArrayListWithCapacity(billingExportJobs.size());
 
-        int startIndex = (pageIndex -1) * rowsPerPage;
-
         for(ScheduledRepeatingJob job : billingExportJobs) {
             jobDataObjects.add(scheduledFileExportService.getExportJobData(job));
         }
         Collections.sort(jobDataObjects);
-        int endIndex = startIndex + rowsPerPage > billingExportJobs.size() ? billingExportJobs.size() : startIndex + rowsPerPage;
-        jobDataObjects = jobDataObjects.subList(startIndex, endIndex);
 
-        SearchResult<ScheduledFileExportJobData> filterResult = new SearchResult<ScheduledFileExportJobData>();
-        filterResult.setBounds(startIndex, rowsPerPage, billingExportJobs.size());
-        filterResult.setResultList(jobDataObjects);
+        SearchResult<ScheduledFileExportJobData> filterResult =
+                SearchResult.pageBasedForWholeList(pageIndex, rowsPerPage, jobDataObjects);
         model.addAttribute("filterResult", filterResult);
         model.addAttribute("jobType", FileExportType.BILLING);
     }

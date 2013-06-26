@@ -22,14 +22,14 @@ import com.google.common.collect.Lists;
 
 public class PasswordPolicyServiceImplTest {
     
-    private static final Instant EIGHTEN_HOURS_AGO = Instant.now().minus(Duration.standardHours(18));
+    private static final Instant EIGHTEEN_HOURS_AGO = Instant.now().minus(Duration.standardHours(18));
     private static final Instant TWO_DAYS_AGO = Instant.now().minus(Duration.standardDays(2));
     private static final Instant FIFTY_DAYS_AGO = Instant.now().minus(Duration.standardDays(50));
     private static final Instant ONE_HUNDRED_DAYS_AGO = Instant.now().minus(Duration.standardDays(80));
     
     private static final LiteYukonUser USER_ONE = new LiteYukonUser(1, "userOne");
     private static final UserAuthenticationInfo USER_ONE_AUTH_INFO =
-            new UserAuthenticationInfo(1, AuthType.HASH_SHA_V2, EIGHTEN_HOURS_AGO);
+            new UserAuthenticationInfo(1, AuthType.HASH_SHA_V2, EIGHTEEN_HOURS_AGO);
 
     private static final LiteYukonUser USER_TWO = new LiteYukonUser(2, "userTwo");
     private static final UserAuthenticationInfo USER_TWO_AUTH_INFO =
@@ -118,7 +118,7 @@ public class PasswordPolicyServiceImplTest {
         Assert.assertEquals(3, passwordPolicy.getPasswordHistory());
         Assert.assertEquals(2, passwordPolicy.getPasswordQualityCheck());
 
-        Assert.assertTrue(UnitTestUtil.withinOneSecond(new Duration(EIGHTEN_HOURS_AGO, Instant.now()),
+        Assert.assertTrue(UnitTestUtil.withinOneSecond(new Duration(EIGHTEEN_HOURS_AGO, Instant.now()),
                                                        passwordPolicy.getPasswordAge(USER_ONE_AUTH_INFO)));
         Assert.assertEquals(expectedPolicyRules, passwordPolicy.getPolicyRules());
 

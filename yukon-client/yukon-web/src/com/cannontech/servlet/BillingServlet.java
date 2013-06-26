@@ -7,6 +7,7 @@ package com.cannontech.servlet;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Enumeration;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,10 +21,9 @@ import com.cannontech.util.ServletUtil;
 
 public class BillingServlet extends HttpServlet
 {
-    final static String BASE_URL_PATH = "/operator/metering/billing";
-    final static int DEFAULT_DEMAND_DAYS = 30;
-    final static int DEFAULT_ENERGY_DAYS = 7;
-    static java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
+    private final static String BASE_URL_PATH = "/operator/metering/billing";
+    private final static int DEFAULT_DEMAND_DAYS = 30;
+    private final static int DEFAULT_ENERGY_DAYS = 7;
 
     String []exportArray = null;
 
@@ -42,17 +42,13 @@ public class BillingServlet extends HttpServlet
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         javax.servlet.http.HttpSession session = req.getSession(false);
-        if (session == null) { // This does not seem to be triggered: observed URL is http://localhost:8080/login.jsp?REDIRECTED_FROM=%2Fservlet%2FBillingServlet
-            resp.sendRedirect(req.getContextPath() + "/login.jsp");
-            return;
+
+        Enumeration enum1 = req.getParameterNames();
+        while (enum1.hasMoreElements()) {
+            String ele = enum1.nextElement().toString();
+            CTILogger.info(" --" + ele + "  " + req.getParameter(ele));
         }
 
-        java.util.Enumeration enum1 = req.getParameterNames();
-          while (enum1.hasMoreElements()) {
-            String ele = enum1.nextElement().toString();
-             CTILogger.info(" --" + ele + "  " + req.getParameter(ele));
-        }   
-            
 //      resp.setHeader("Cache-Control", "no-store"); //HTTP 1.1
 //      resp.setHeader("Pragma", "no-cache"); //HTTP 1.0
         resp.setDateHeader("Expires", 0); //prevents caching at the proxy server

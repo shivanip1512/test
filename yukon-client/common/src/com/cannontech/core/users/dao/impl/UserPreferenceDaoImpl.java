@@ -137,7 +137,7 @@ public class UserPreferenceDaoImpl implements UserPreferenceDao {
     @Override
     public List<UserPreference> findAllSavedPreferencesForUser(LiteYukonUser user) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT *");
+        sql.append("SELECT PreferenceId, UserId, Name, Value");
         sql.append("FROM " + TABLE_NAME);
         sql.append("WHERE " + FIELD_USER_ID).eq(user.getUserID());
 
@@ -165,7 +165,7 @@ public class UserPreferenceDaoImpl implements UserPreferenceDao {
         @Override
         public UserPreference mapRow(YukonResultSet rs) throws SQLException {
             UserPreference pref = new UserPreference();
-            UserPreferenceName pp = UserPreferenceName.valueOf(rs.getString(FIELD_NAME));
+            UserPreferenceName pp = rs.getEnum(FIELD_NAME, UserPreferenceName.class);
 
             pref.setId(rs.getInt(FIELD_PRIMARY_KEY));
             pref.setUserId(rs.getInt(FIELD_USER_ID));

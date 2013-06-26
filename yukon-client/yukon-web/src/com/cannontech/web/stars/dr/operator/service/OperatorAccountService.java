@@ -26,7 +26,7 @@ public interface OperatorAccountService {
     public ContactDto getBlankContactDto(int additionalBlankNotifications);
 
     /**
-     * Load the Contact and set values within the ContactDTO, but all the caller to
+     * Load the Contact and set values within the ContactDTO, but allow the caller to
      * be selective about which ContactNotifications are removed from the collection
      * and set on the DTO.
      * 
