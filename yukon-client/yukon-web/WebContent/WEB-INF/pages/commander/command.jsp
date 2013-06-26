@@ -9,7 +9,6 @@
 .secondary-menu {
     margin: -15px auto 15px auto;
     width: 98%;
-    background-color: #EEEEFF;
     padding: 2px 5px;
 }
 </style>

@@ -9,7 +9,6 @@
 .secondary-menu {
     margin: -15px auto 15px auto;
     width: 98%;
-    background-color: #EEEEFF;
     padding: 2px 5px;
 }
 </style>
@@ -106,16 +105,21 @@
             <input type="hidden" name="orderBy" value="${orderBy}">
             <input type="hidden" name="category" value="${category}">
 
-            <div class="filters clearfix">
+            <div class="column_8_8_8 tiles clearfix">
+                <c:set var="count" value="1"/>
                 <c:forEach var="filter" items="${filters}">
+                    <c:if test="${count == 1}"><c:set var="clazz" value="one"/></c:if>
+                    <c:if test="${count == 2}"><c:set var="clazz" value="two"/></c:if>
+                    <c:if test="${count == 3}"><c:set var="clazz" value="three nogutter"/><c:set var="count" value="0"/></c:if>
                     <c:if test="${filter.searchField.visible}">
-                        <div class="gridBox-thirds" style="margin-bottom: 5px;text-align: right;">
-                            <label style="margin-right: 20px;">
-                                <i:inline key="${filter}"/>
-                                <input type="text" id="${filter.name}" name="${filter.name}" value="${filter.filterValue}">
+                        <div class="stacked column ${clazz}">
+                            <label class="dib">
+                                <i:inline key="${filter}"/>:
+                                <input type="text" id="${filter.name}" name="${filter.name}" value="${filter.filterValue}" style="margin-left: 5px;">
                             </label> 
                         </div>
                     </c:if>
+                    <c:set var="count" value="${count + 1}"/>
                 </c:forEach>
             </div>
 

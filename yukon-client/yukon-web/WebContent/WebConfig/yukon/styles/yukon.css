@@ -109,7 +109,6 @@ input[type=radio]:focus {outline:none;}
 .vertical_menu li.selected {border-left:solid 5px #ccc;}
 .vertical_menu a {color:inherit; display:block; word-wrap:break-word;text-shadow: 1px 1px 0 white;}
 
-
 /* TABLES */
 table {width: auto; border-collapse:collapse;}
 table td, table th {padding:3px 5px;vertical-align: top;}
