@@ -56,85 +56,80 @@ jQuery(function(){
         <div class="tempHolder fl"></div><span class="C"><i:inline key="yukon.web.defaults.celsius"/></span><span class="F"><i:inline key="yukon.web.defaults.fahrenheit"/></span>
     </div>
 </div>
-
-<table class="thermostatPageContent">
-    <tr>
-        <td> 
-            <c:choose>
-                <c:when test="${empty schedules and empty currentSchedule}">
-                    <%-- THERMOSTAT NAMES --%>
-                    <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/selectedThermostatsFragment.jsp" />
-                    
-                    <div class="helper">
-                        <i:inline key=".noSchedulesHelper" />
-                    </div>
-                    <br>
-                    <br>
-                    <cti:button nameKey="help" icon="icon-help" classes="f-help fl"/>
-                    <cti:button nameKey="create" icon="icon-plus-green" classes="f-create fl"/>
-                    <cti:url var="historyUrl" value="/stars/operator/thermostat/history/view">
-                        <cti:param name="accountId" value="${accountId}" />
-                        <cti:param name="thermostatIds" value="${thermostatIds}"/>
-                    </cti:url>
-                    <cti:button nameKey="history" icon="icon-time" href="${historyUrl}" />
-                </c:when>
-                <c:otherwise>
-                    <div class="schedules fl">
-                        <%-- THERMOSTAT NAMES --%>
-                        <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/selectedThermostatsFragment.jsp" />
-                        <c:if test="${not empty currentSchedule}">
-                            <tags:sectionContainer2 nameKey="lastSent">
-                                <div>
-                                    <tags:thermostatScheduleWidget schedule="${currentSchedule}"
-                                        thermostatId="${thermostatId}"
-                                        thermostatIds="${thermostatIds}"
-                                        accountId="${accountId}"
-                                        temperatureUnit="${temperatureUnit}"
-                                        actionPath="/stars/operator/thermostatSchedule"
-                                        thermostatType="${thermostatType}"
-                                        styleClass="vh"/>
-                                </div>
-                            </tags:sectionContainer2>
-                        </c:if>
-                        <div class="box clear">
-                            <div class="fr button-container">
-                                <cti:button nameKey="create" icon="icon-plus-green" classes="f-create fl"/>
-                                <cti:button nameKey="help" icon="icon-help" classes="f-help fl"/>
-                                <cti:url var="historyUrl" value="/stars/operator/thermostat/history/view">
-                                    <cti:param name="accountId" value="${accountId}" />
-                                    <cti:param name="thermostatIds" value="${thermostatIds}"/>
-                                </cti:url>
-                                <cti:button nameKey="history" icon="icon-time" href="${historyUrl}" />
-                            </div>
-                            <div class="tempControls fl">
-                                <form method="post" action="/stars/operator/thermostatSchedule/updateTemperaturePreference">
-                                    <input type="hidden" name="accountId" value="${accountId}"/>
-                                    <label><input name="units" type="radio" value="C" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celsius"/></label>
-                                    <label><input name="units" type="radio" value="F" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
-                                </form>
-                            </div>
+<div class="stacked">
+    <c:choose>
+        <c:when test="${empty schedules and empty currentSchedule}">
+            <%-- THERMOSTAT NAMES --%>
+            <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/selectedThermostatsFragment.jsp" />
+            
+            <div class="helper">
+                <i:inline key=".noSchedulesHelper" />
+            </div>
+            <br>
+            <br>
+            <cti:button nameKey="help" icon="icon-help" classes="f-help fl"/>
+            <cti:button nameKey="create" icon="icon-plus-green" classes="f-create fl"/>
+            <cti:url var="historyUrl" value="/stars/operator/thermostat/history/view">
+                <cti:param name="accountId" value="${accountId}" />
+                <cti:param name="thermostatIds" value="${thermostatIds}"/>
+            </cti:url>
+            <cti:button nameKey="history" icon="icon-time" href="${historyUrl}" />
+        </c:when>
+        <c:otherwise>
+            <div class="schedules fl">
+                <%-- THERMOSTAT NAMES --%>
+                <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/selectedThermostatsFragment.jsp" />
+                <c:if test="${not empty currentSchedule}">
+                    <tags:sectionContainer2 nameKey="lastSent">
+                        <div>
+                            <tags:thermostatScheduleWidget schedule="${currentSchedule}"
+                                thermostatId="${thermostatId}"
+                                thermostatIds="${thermostatIds}"
+                                accountId="${accountId}"
+                                temperatureUnit="${temperatureUnit}"
+                                actionPath="/stars/operator/thermostatSchedule"
+                                thermostatType="${thermostatType}"
+                                styleClass="vh"/>
                         </div>
-                        <br>
-                        <c:if test="${not empty schedules}">
-                            <tags:sectionContainer2 nameKey="otherSchedules">
-                                <c:forEach var="schedule" items="${schedules}" >
-                                    <tags:thermostatScheduleWidget schedule="${schedule}"
-                                        thermostatId="${thermostatId}"
-                                        thermostatIds="${thermostatIds}"
-                                        accountId="${accountId}"
-                                        temperatureUnit="${temperatureUnit}"
-                                        actionPath="/stars/operator/thermostatSchedule"
-                                        thermostatType="${thermostatType}"
-                                        styleClass="vh"/>
-                                </c:forEach>    
-                            </tags:sectionContainer2>
-                        </c:if>
+                    </tags:sectionContainer2>
+                </c:if>
+                <div class="box clear">
+                    <div class="fr button-container">
+                        <cti:button nameKey="create" icon="icon-plus-green" classes="f-create fl"/>
+                        <cti:button nameKey="help" icon="icon-help" classes="f-help fl"/>
+                        <cti:url var="historyUrl" value="/stars/operator/thermostat/history/view">
+                            <cti:param name="accountId" value="${accountId}" />
+                            <cti:param name="thermostatIds" value="${thermostatIds}"/>
+                        </cti:url>
+                        <cti:button nameKey="history" icon="icon-time" href="${historyUrl}" />
                     </div>
-                </c:otherwise>
-            </c:choose>
-        </td>
-    </tr>
-</table>
+                    <div class="tempControls fl">
+                        <form method="post" action="/stars/operator/thermostatSchedule/updateTemperaturePreference">
+                            <input type="hidden" name="accountId" value="${accountId}"/>
+                            <label><input name="units" type="radio" value="C" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celsius"/></label>
+                            <label><input name="units" type="radio" value="F" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
+                        </form>
+                    </div>
+                </div>
+                <br>
+                <c:if test="${not empty schedules}">
+                    <tags:sectionContainer2 nameKey="otherSchedules">
+                        <c:forEach var="schedule" items="${schedules}" >
+                            <tags:thermostatScheduleWidget schedule="${schedule}"
+                                thermostatId="${thermostatId}"
+                                thermostatIds="${thermostatIds}"
+                                accountId="${accountId}"
+                                temperatureUnit="${temperatureUnit}"
+                                actionPath="/stars/operator/thermostatSchedule"
+                                thermostatType="${thermostatType}"
+                                styleClass="vh"/>
+                        </c:forEach>    
+                    </tags:sectionContainer2>
+                </c:if>
+            </div>
+        </c:otherwise>
+    </c:choose>
+</div>
 
 <!-- Create Schedule Wizard -->
 <div class="schedule">

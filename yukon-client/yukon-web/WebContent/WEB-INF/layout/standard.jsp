@@ -128,7 +128,7 @@
 
 <c:set var="layout" value="${showContextualNavigation ? 'column_4_20' : 'column_24'}"/>
 <c:set var="columnNum" value="${showContextualNavigation ? 'two nogutter' : 'one nogutter'}"/>
-<div class="${layout} clear ">
+<div class="${layout} clearfix" style="margin-bottom: 10px;">
 
 <!-- Start Contextual Nav -->
 <c:if test="${showContextualNavigation}">

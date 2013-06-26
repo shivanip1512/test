@@ -4,9 +4,7 @@ public enum PageTypeEnum {
     BLANK(true),
     BASIC(true),
     DETAIL(false),
-    DETAIL_WITH_INFO(false),
     DETAIL_CHILD(false),
-    DETAIL_CHILD_WITH_INFO(false),
     LANDING(true),
     NONE(true),
     ;

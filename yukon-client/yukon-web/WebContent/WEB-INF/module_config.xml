@@ -719,7 +719,7 @@
                         <requireRoleProperty value="ADMIN_SUPER_USER" />
                         <link>/adminSetup/userEditor/home</link>
                         <pages>
-                            <page name="roleGroupEditor.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
+                            <page name="roleGroupEditor.VIEW" type="DETAIL" navigationMenuRoot="true" contributeToMenu="true">
                                 <link>/adminSetup/roleGroup/view?roleGroupId=${roleGroupId}</link>
                                 <labelArgument>${roleGroupName}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/roleGroupInfoFragment.jsp</infoInclude>
@@ -728,7 +728,7 @@
                                         <link>/adminSetup/roleGroup/edit?roleGroupId=${roleGroupId}</link>
                                         <labelArgument>${roleGroupName}</labelArgument>
                                     </page>
-                                    <page name="userGroups" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                    <page name="userGroups" type="DETAIL_CHILD" contributeToMenu="true">
                                         <link>/adminSetup/roleGroup/userGroups?roleGroupId=${roleGroupId}</link>
                                         <labelArgument>${roleGroupName}</labelArgument>
                                     </page>
@@ -738,7 +738,7 @@
                                     </page>
                                 </pages>
                             </page>
-                            <page name="userEditor.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
+                            <page name="userEditor.VIEW" type="DETAIL" navigationMenuRoot="true" contributeToMenu="true">
                                 <link>/adminSetup/user/view?userId=${userId}</link>
                                 <labelArgument>${editingUsername}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/userInfoFragment.jsp</infoInclude>
@@ -754,7 +754,7 @@
                                     </page>
                                 </pages>
                             </page>
-                            <page name="userGroupEditor.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
+                            <page name="userGroupEditor.VIEW" type="DETAIL" navigationMenuRoot="true" contributeToMenu="true">
                                 <link>/adminSetup/userGroup/view?userGroupId=${userGroupId}</link>
                                 <labelArgument>${userGroupName}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/userGroupInfoFragment.jsp</infoInclude>
@@ -767,15 +767,15 @@
                                         <link>/adminSetup/userGroup/association</link>
                                         <labelArgument>${userGroupName}</labelArgument>
                                     </page>
-                                    <page name="users" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                    <page name="users" type="DETAIL_CHILD" contributeToMenu="true">
                                         <link>/adminSetup/userGroup/users?userGroupId=${userGroupId}</link>
                                         <labelArgument>${userGroupName}</labelArgument>
                                     </page>
-                                    <page name="roleGroups" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                    <page name="roleGroups" type="DETAIL_CHILD" contributeToMenu="true">
                                         <link>/adminSetup/userGroup/roleGroups?userGroupId=${userGroupId}</link>
                                         <labelArgument>${userGroupName}</labelArgument>
                                     </page>
-                                    <page name="groupPermissions" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                    <page name="groupPermissions" type="DETAIL_CHILD" contributeToMenu="true">
                                         <requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
                                         <link>/adminSetup/userGroup/permissions?userGroupId=${userGroupId}</link>
                                         <labelArgument>${userGroupName}</labelArgument>
@@ -788,7 +788,7 @@
                         <requireRoleProperty value="ADMIN_SUPER_USER" />
                         <link>/adminSetup/maintenance/view</link>
                         <pages>
-                            <page name="maintenance.EDIT" type="DETAIL_WITH_INFO">
+                            <page name="maintenance.EDIT" type="DETAIL">
                                 <link>/adminSetup/maintenance/edit</link>
                                 <labelArgument>${jobNameMsg}</labelArgument>
                             </page>
@@ -800,16 +800,16 @@
                             <page name="createEnergyCompany" type="BASIC">
                                 <link>/adminSetup/energyCompany/new</link>
                             </page>
-                            <page name="generalInfo.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
+                            <page name="generalInfo.VIEW" type="DETAIL" navigationMenuRoot="true" contributeToMenu="true">
                                 <link>/adminSetup/energyCompany/general/view?ecId=${ecId}</link>
                                 <labelArgument>${energyCompanyName}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/adminSetup/energyCompany/ecInfoFragment.jsp</infoInclude>
                                 <pages>
-                                    <page name="generalInfo.EDIT" type="DETAIL_CHILD_WITH_INFO">
+                                    <page name="generalInfo.EDIT" type="DETAIL_CHILD">
                                         <link>/adminSetup/energyCompany/generalInfo?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                     </page>
-                                    <page name="deleteEnergyCompanyConfirm" type="DETAIL_CHILD_WITH_INFO">
+                                    <page name="deleteEnergyCompanyConfirm" type="DETAIL_CHILD">
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                     </page>
                                     <page name="energyCompanySettings" type="BASIC" contributeToMenu="true">
@@ -817,7 +817,7 @@
                                         <link>/adminSetup/energyCompany/settings/view?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                     </page>
-                                    <page name="operatorLogin.home" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                    <page name="operatorLogin.home" type="DETAIL_CHILD" contributeToMenu="true">
                                         <link>/adminSetup/energyCompany/operatorLogin/home?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                         <pages>
@@ -834,7 +834,7 @@
                                             </page>
                                         </pages>
                                     </page>
-                                    <page name="applianceCategory.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                    <page name="applianceCategory.list" type="DETAIL_CHILD" contributeToMenu="true">
                                         <link>/adminSetup/energyCompany/applianceCategory/list?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                         <pages>
@@ -853,11 +853,11 @@
                                             </page>
                                         </pages>
                                     </page>
-                                    <page name="applianceCategory.PROGRAMS" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                    <page name="applianceCategory.PROGRAMS" type="DETAIL_CHILD" contributeToMenu="true">
                                         <link>/adminSetup/energyCompany/applianceCategory/programs?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                     </page>
-                                    <page name="serviceCompany.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                    <page name="serviceCompany.list" type="DETAIL_CHILD" contributeToMenu="true">
                                         <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES, OPERATOR_CONSUMER_INFO_WORK_ORDERS"/>
                                         <link>/adminSetup/energyCompany/serviceCompany/list?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
@@ -866,18 +866,18 @@
                                                 <link>/adminSetup/energyCompany/serviceCompany/view?serviceCompanyId=${serviceCompany.companyId}&amp;ecId=${ecId}</link>
                                                 <labelArgument>${serviceCompany.companyName}</labelArgument>
                                                 <pages>
-                                                    <page name="serviceCompany.EDIT" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
+                                                    <page name="serviceCompany.EDIT" type="DETAIL_CHILD" contributeToMenu="false">
                                                         <link>/adminSetup/energyCompany/serviceCompany/edit?serviceCompany=${serviceCompanyId}</link>
                                                         <labelArgument>${serviceCompany.companyName}</labelArgument>
                                                     </page>
                                                 </pages>
                                             </page>
-                                            <page name="serviceCompany.CREATE" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="false">
+                                            <page name="serviceCompany.CREATE" type="DETAIL_CHILD" contributeToMenu="false">
                                                 <link>/adminSetup/energyCompany/serviceCompany/create?ecId=${ecId}</link>
                                             </page>
                                         </pages>
                                     </page>
-                                    <page name="warehouse.home" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                    <page name="warehouse.home" type="DETAIL_CHILD" contributeToMenu="true">
                                         <requireRoleProperty value="ADMIN_MULTI_WAREHOUSE"/>
                                         <link>/adminSetup/energyCompany/warehouse/home?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
@@ -897,17 +897,17 @@
                                             </page>
                                         </pages>
                                     </page>
-                                    <page name="routesAndSubstations.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                    <page name="routesAndSubstations.VIEW" type="DETAIL_CHILD" contributeToMenu="true">
                                         <link>/adminSetup/energyCompany/routesAndSubstations/view?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                         <pages>
-                                            <page name="routesAndSubstations.EDIT" type="DETAIL_CHILD_WITH_INFO">
+                                            <page name="routesAndSubstations.EDIT" type="DETAIL_CHILD">
                                                 <link>/adminSetup/energyCompany/routesAndSubstations/edit?ecId=${ecId}</link>
                                                 <labelArgument>${energyCompanyName}</labelArgument>
                                             </page>
                                         </pages>
                                     </page>
-                                    <page name="list.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                    <page name="list.list" type="DETAIL_CHILD" contributeToMenu="true">
                                         <link>/adminSetup/energyCompany/list/list?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
                                         <pages>
@@ -923,7 +923,7 @@
                                             </page>
                                         </pages>
                                     </page>
-                                    <page name="schedules.VIEW" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                    <page name="schedules.VIEW" type="DETAIL_CHILD" contributeToMenu="true">
                                         <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT"/>
                                         <link>/adminSetup/energyCompany/schedules/view?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
@@ -934,7 +934,7 @@
                                             </page>
                                         </pages>
                                     </page>
-                                    <page name="settlements.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                    <page name="settlements.list" type="DETAIL_CHILD" contributeToMenu="true">
                                         <requireRoleProperty value="ENABLE_SETTLEMENTS"/>
                                         <link>/adminSetup/energyCompany/settlement/list?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
@@ -980,17 +980,17 @@
                     <page name="account.CREATE" type="BASIC" hideSearch="true">
                         <link>/stars/operator/account/accountCreate</link>
                     </page>
-                    <page name="account.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
+                    <page name="account.VIEW" type="DETAIL" navigationMenuRoot="true" contributeToMenu="true">
                         <link>/stars/operator/account/view?accountId=${accountId}</link>
                         <labelArgument>${accountNumber}</labelArgument>
                         <infoInclude>/WEB-INF/pages/stars/operator/accountInfoFragment.jsp</infoInclude>
                         <pages>
-                            <page name="account.EDIT" type="DETAIL_CHILD_WITH_INFO">
+                            <page name="account.EDIT" type="DETAIL_CHILD">
                                 <link>/stars/operator/account/edit?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/stars/operator/accountInfoFragment.jsp</infoInclude>
                             </page>
-                            <page name="contactList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                            <page name="contactList" type="DETAIL_CHILD" contributeToMenu="true">
                                 <link>/stars/operator/contacts/contactList?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                                 <pages>
@@ -1013,12 +1013,12 @@
                                     </page>
                                 </pages>
                             </page>
-                            <page name="residence" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                            <page name="residence" type="DETAIL_CHILD" contributeToMenu="true">
                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_RESIDENCE" />
                                 <link>/stars/operator/residence/view?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                             </page>
-                            <page name="callList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                            <page name="callList" type="DETAIL_CHILD" contributeToMenu="true">
                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
                                 <link>/stars/operator/callTracking/callList?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
@@ -1042,18 +1042,18 @@
                                     </page>
                                 </pages>
                             </page>
-                            <page name="metering" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                            <page name="metering" type="DETAIL_CHILD" contributeToMenu="true">
                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA, OPERATOR_CONSUMER_INFO_METERING_CREATE" />
                                 <link>/stars/operator/metering/viewTrend?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                                 <pages>
-                                    <page name="selectTrends" type="DETAIL_CHILD_WITH_INFO">
+                                    <page name="selectTrends" type="DETAIL_CHILD">
                                         <link>/stars/operator/metering/selectTrends?accountId=${accountId}&amp;trendId={trendId}</link>
                                         <labelArgument>${accountNumber}</labelArgument>
                                     </page>
                                 </pages>
                             </page>
-                            <page name="controlHistory" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                            <page name="controlHistory" type="DETAIL_CHILD" contributeToMenu="true">
                                 <link>/stars/operator/program/controlHistory?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                                 <pages>
@@ -1063,35 +1063,35 @@
                                     </page>
                                 </pages>
                             </page>
-                            <page name="enrollmentList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                            <page name="enrollmentList" type="DETAIL_CHILD" contributeToMenu="true">
                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_PROGRAMS_ENROLLMENT" />
                                 <link>/stars/operator/enrollment/list?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                                 <pages>
-                                    <page name="enrollmentHistory" type="DETAIL_CHILD_WITH_INFO">
+                                    <page name="enrollmentHistory" type="DETAIL_CHILD">
                                         <link>/stars/operator/enrollment/history?accountId=${accountId}</link>
                                     </page>
                                 </pages>
                             </page>
-                            <page name="alternateEnrollment" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                            <page name="alternateEnrollment" type="DETAIL_CHILD" contributeToMenu="true">
                                    <requireRoleProperty value="ALTERNATE_PROGRAM_ENROLLMENT"/>
                                    <link>/stars/operator/ae/view?accountId=${accountId}</link>
                                    <labelArgument>${accountNumber}</labelArgument>
                                </page>
-                            <page name="optOut.main" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                            <page name="optOut.main" type="DETAIL_CHILD" contributeToMenu="true">
                                 <link>/stars/operator/program/optOut/view?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                                 <pages>
-                                    <page name="optOut.inventoryList" type="DETAIL_CHILD_WITH_INFO">
+                                    <page name="optOut.inventoryList" type="DETAIL_CHILD">
                                         <labelArgument>${optOutBackingBean.startDate}</labelArgument>
                                     </page>
-                                    <page name="optOut.confirm" type="DETAIL_CHILD_WITH_INFO">
+                                    <page name="optOut.confirm" type="DETAIL_CHILD">
                                     </page>
-                                    <page name="optOut.history" type="DETAIL_CHILD_WITH_INFO">
+                                    <page name="optOut.history" type="DETAIL_CHILD">
                                     </page>
                                 </pages>
                             </page>
-                            <page name="appliance.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                            <page name="appliance.list" type="DETAIL_CHILD" contributeToMenu="true">
                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_APPLIANCES" />
                                 <link>/stars/operator/appliances/applianceList?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
@@ -1103,7 +1103,7 @@
                                     </page>
                                 </pages>
                             </page>
-                            <page name="hardware.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                            <page name="hardware.list" type="DETAIL_CHILD" contributeToMenu="true">
                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES" />
                                 <link>/stars/operator/hardware/list?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
@@ -1118,10 +1118,10 @@
                                             <page name="hardware.EDIT" type="DETAIL_CHILD">
                                                 <labelArgument>${displayName}</labelArgument>
                                             </page>
-                                            <page name="thermostatManual.single" type="DETAIL_CHILD_WITH_INFO">
+                                            <page name="thermostatManual.single" type="DETAIL_CHILD">
                                                 <labelArgument>${displayName}</labelArgument>
                                             </page>
-                                            <page name="thermostatHistory.single" type="DETAIL_CHILD_WITH_INFO">
+                                            <page name="thermostatHistory.single" type="DETAIL_CHILD">
                                                 <labelArgument>${displayName}</labelArgument>
                                             </page>
                                             <page name="thermostat.schedules.single" type="BASIC">
@@ -1153,17 +1153,17 @@
                                             <page name="thermostat.schedules.multiple" type="BASIC">
                                                 <labelArgument>${displayName}</labelArgument>
                                             </page>
-                                            <page name="thermostatHistory.multiple" type="DETAIL_CHILD_WITH_INFO">
+                                            <page name="thermostatHistory.multiple" type="DETAIL_CHILD">
                                                 <labelArgument>${displayName}</labelArgument>
                                             </page>
-                                            <page name="thermostatManual.multiple" type="DETAIL_CHILD_WITH_INFO">
+                                            <page name="thermostatManual.multiple" type="DETAIL_CHILD">
                                                 <labelArgument>${displayName}</labelArgument>
                                             </page>
                                         </pages>
                                     </page>
                                 </pages>
                             </page>
-                            <page name="workOrder.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                            <page name="workOrder.list" type="DETAIL_CHILD" contributeToMenu="true">
                                 <requireRoleProperty value="OPERATOR_CONSUMER_INFO_WORK_ORDERS" />
                                 <link>/stars/operator/workOrder/workOrderList?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
@@ -1181,7 +1181,7 @@
                                     </page>
                                 </pages>
                             </page>
-                            <page name="accountLog" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                            <page name="accountLog" type="DETAIL_CHILD" contributeToMenu="true">
                                 <link>/stars/operator/account/accountLog?accountId=${accountId}</link>
                                 <labelArgument>${accountNumber}</labelArgument>
                             </page>
