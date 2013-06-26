@@ -229,7 +229,7 @@
 			<cti:button nameKey="back" href="${viewMonitorUrl}" />
 		</cti:displayForPageEditModes>
 		<cti:displayForPageEditModes modes="CREATE">
-			<cti:button nameKey="create" styleClass="f_update_monitor" />
+			<cti:button nameKey="create" classes="f_update_monitor" />
 			<cti:url var="startMonitorUrl" value="/meter/start" />
 			<cti:button nameKey="cancel" href="${startMonitorUrl}" />
 		</cti:displayForPageEditModes>
