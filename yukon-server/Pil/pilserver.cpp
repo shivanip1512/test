@@ -6,6 +6,7 @@
 #include "dev_grp_versacom.h"
 #include "dev_grp_point.h"
 #include "dev_mct.h"
+#include "dev_rfn.h"
 #include "dsm2.h"
 #include "ctinexus.h"
 #include "CtiLocalConnect.h"
@@ -1118,18 +1119,28 @@ int CtiPILServer::executeRequest(const CtiRequestMsg *pReq)
                     pExecReq->setSOE( SystemLogIdGen() );  // Get us a new number to deal with
                 }
 
-                std::list<OUTMESS *> temp_outList;
-                std::list<CtiMessage *> temp_retList, temp_vgList;
+                struct PilExecuter :
+                    CtiDeviceBase::OutMessageExecuter,
+                    Cti::Devices::RfnDevice::RfnRequestExecuter
+                {
+                    PilExecuter(CtiRequestMsg *pReq_, CtiCommandParser &parse_) :
+                        RequestExecuter(pReq_, parse_),
+                        OutMessageExecuter(pReq_, parse_),
+                        RfnRequestExecuter(pReq_, parse_)
+                    {}
+                }
+                pilExecuter(pExecReq, _currentParse);
 
                 if(Dev->isGroup())                          // We must indicate any group which is protocol/heirarchy controlled!
                 {
-                    indicateControlOnSubGroups(Dev, _currentParse, temp_vgList, temp_retList);
+                    indicateControlOnSubGroups(Dev, _currentParse, pilExecuter.vgList, pilExecuter.retList);
                 }
 
                 try
                 {
-                    status = Dev->beginExecuteRequest(pExecReq, _currentParse, temp_vgList, temp_retList, temp_outList);
-                    reportClientRequests(Dev, _currentParse, pReq->getUser(), temp_vgList, temp_retList);
+                    status = Dev->runExecuter(pilExecuter);
+
+                    reportClientRequests(Dev, _currentParse, pReq->getUser(), pilExecuter.vgList, pilExecuter.retList);
                 }
                 catch(...)
                 {
@@ -1142,9 +1153,9 @@ int CtiPILServer::executeRequest(const CtiRequestMsg *pReq)
                     }
                 }
 
-                outList.splice(outList.end(), temp_outList);
+                outList.splice(outList.end(), pilExecuter.outList);
 
-                for each( CtiMessage *msg in temp_retList )
+                for each( CtiMessage *msg in pilExecuter.retList )
                 {
                     //  smuggle any request messages back out to the scheduler queue
                     if( msg && msg->isA() == MSG_PCREQUEST )
@@ -1156,9 +1167,9 @@ int CtiPILServer::executeRequest(const CtiRequestMsg *pReq)
                         retList.push_back(msg);
                     }
                 }
-                temp_retList.clear();
+                pilExecuter.retList.clear();
 
-                vgList.splice(vgList.end(), temp_vgList);
+                vgList.splice(vgList.end(), pilExecuter.vgList);
 
                 if(status != NORMAL &&
                    status != DEVICEINHIBITED)

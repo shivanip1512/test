@@ -29,6 +29,9 @@ class DeviceQueueInterface;
 namespace Protocol  {
 class Interface;
 }
+namespace Devices {
+class RfnDevice;
+}
 }
 
 
@@ -175,6 +178,42 @@ public:
     virtual INT  ProcessResult(INMESS*, CtiTime&, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
     bool executeBackgroundRequest(const std::string &commandString, const OUTMESS &OutMessageTemplate, OutMessageList &outList);
+
+    struct RequestExecuter
+    {
+        CtiRequestMsg *pReq;
+        CtiCommandParser &parse;
+
+        CtiMessageList vgList;
+        CtiMessageList retList;
+
+        RequestExecuter(CtiRequestMsg *pReq_, CtiCommandParser &parse_) :
+            pReq (pReq_),
+            parse(parse_)
+        {}
+
+        virtual int execute(CtiDeviceBase &dev) = 0;
+        virtual int execute(Cti::Devices::RfnDevice &dev) = 0;  //  defined in dev_rfn.h
+    };
+
+    struct OutMessageExecuter : virtual RequestExecuter
+    {
+        OutMessageList outList;
+
+        OutMessageExecuter(CtiRequestMsg *pReq_, CtiCommandParser &parse_) :
+            RequestExecuter(pReq_, parse_)
+        {}
+
+        virtual int execute(CtiDeviceBase &dev)
+        {
+            return dev.beginExecuteRequest(pReq, parse, vgList, retList, outList);
+        }
+    };
+
+    virtual int runExecuter(RequestExecuter &executer)
+    {
+        return executer.execute(*this);
+    }
 
     // This is a preprocessing method which calls ExecuteRequest.
     INT beginExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
