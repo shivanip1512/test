@@ -81,8 +81,9 @@
 		    menuSelection = "reports";
 		    break;
 	}*/
-	
-	final ReportGroup reportGroup = REPORT_BEAN.getReportGroup();
+
+	Object groupType = request.getParameter("groupType");
+	final ReportGroup reportGroup = groupType == null ? ReportGroup.METERING : REPORT_BEAN.getReportGroup();
 	if( reportGroup == ReportGroup.ADMINISTRATIVE)
 	    menuSelection = "reports|administrator";
 	else if (reportGroup == ReportGroup.METERING)
@@ -108,8 +109,7 @@
 
 <cti:standardPage module="reporting" title="Reports">
 <cti:standardMenu menuSelection="<%= menuSelection %>"/>
-
-<c:set var="reportGroup" value="${REPORT_BEAN.getReportGroup()}" />
+<c:set var="reportGroup" value="<%= reportGroup %>" />
 <cti:linkTabbedContainer mode="section">
     <cti:checkRolesAndProperties value="AMR_REPORTS_GROUP">
         <cti:msg var="tab_name" key="yukon.web.menu.config.reporting.reports.metering.tab.title" />
