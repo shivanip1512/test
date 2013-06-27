@@ -230,8 +230,6 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
     /**
      *  Copies from the archive file to the export file if selected. 
      *  Returns exportFile or null if user has selected to not include export file copy. 
-     * @param archiveFile
-     * @return exportFile
      */
     protected File copyExportFile(File archiveFile) {
         if (includeExportCopy) {
@@ -257,9 +255,6 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
     
     /**
      * Create the (empty) File object in the archive path...
-     * @param timestamp
-     * @param defaultTimeExtension
-     * @return archiveFile
      */
     protected File createArchiveFile(DateTime now, String defaultFileExtension) {
         String finalName = this.getExportFileName();
@@ -277,19 +272,11 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
         }
         fileExtension += "_" + CtiUtilities.getUuidString();
         File archiveFile = new File(filePath, finalName + fileExtension);
-        for (int i = 1; archiveFile.exists(); i++) {
-            // if an identically named file exists, add incrementing numbers to the end...
-            archiveFile = new File(filePath, finalName + "(" + i + ")" + fileExtension);
-        }
         return archiveFile;
     }
 	
     /**
      * Creates the History entry based on the Archive and Export file(s).
-     * @param type
-     * @param archiveFile
-     * @param exportFile
-     * @return historyEntry
      */
     protected ExportHistoryEntry createExportHistoryEntry(FileExportType type, File archiveFile, File exportFile) {
         ExportHistoryEntry historyEntry = null;
@@ -307,8 +294,6 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
     
     /**
      * Convenience method to get the filename without the uuid appendage.
-     * @param archiveFile
-     * @return
      */
     protected String getExportFileName(File archiveFile) {
         String archiveName = archiveFile.getName();

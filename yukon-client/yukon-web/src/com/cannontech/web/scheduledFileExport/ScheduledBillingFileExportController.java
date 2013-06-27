@@ -62,6 +62,7 @@ public class ScheduledBillingFileExportController {
 	@Autowired private ScheduledFileExportValidator scheduledFileExportValidator;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
+    @Autowired private ScheduledFileExportHelper exportHelper;
 
 	private static final int MAX_GROUPS_DISPLAYED = 2;
 
@@ -106,8 +107,8 @@ public class ScheduledBillingFileExportController {
 		model.addAttribute("energyDays", energyDays);
 		model.addAttribute("removeMultiplier", removeMultiplier);
 		model.addAttribute("cronExpressionTagState", cronExpressionTagState);
-        model.addAttribute("fileExtensionChoices", setupFileExtChoices(exportData));
-        model.addAttribute("exportPathChoices", setupExportPathChoices(exportData));
+        model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
+        model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
 		Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(Arrays.asList(billGroup));
 		String groupNames = getGroupNamesString(deviceGroups, userContext);
 		model.addAttribute("groupNames", groupNames);
@@ -192,29 +193,5 @@ public class ScheduledBillingFileExportController {
 		
 		return groupNames;
 	}
-
-    private List<String> setupFileExtChoices(ScheduledFileExportData exportData) {
-        List<String> fileExtChoices = null;
-        String globalFileExtensions = globalSettingDao.getString(GlobalSettingType.SCHEDULE_PARAMETERS_AVAILABLE_FILE_EXTENSIONS);
-        fileExtChoices = com.cannontech.common.util.StringUtils.parseStringsForList(globalFileExtensions, ",");
-        if (null == exportData.getExportFileExtension()) {
-            // set the default value, initial selection
-            exportData.setExportFileExtension(fileExtChoices.get(0));
-        }
-        return fileExtChoices;
-    }
-    
-    private List<String> setupExportPathChoices(ScheduledFileExportData exportData) {
-        List<String> exportPathChoices = null;
-        String curExportPath = exportData.getExportPath(); 
-        String globalExportPaths = globalSettingDao.getString(GlobalSettingType.SCHEDULE_PARAMETERS_EXPORT_PATH);
-        exportPathChoices = com.cannontech.common.util.StringUtils.parseStringsForList(globalExportPaths, ",");
-        if (null == curExportPath) {
-            exportData.setExportPath(exportPathChoices.get(0));
-        } else {
-            exportData.setExportPath(curExportPath);
-        }
-        return exportPathChoices;
-    }
 
 }

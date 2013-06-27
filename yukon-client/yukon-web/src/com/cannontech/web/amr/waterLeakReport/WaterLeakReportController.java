@@ -80,6 +80,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
+import com.cannontech.web.scheduledFileExport.ScheduledFileExportHelper;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportJobsTagService;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledFileExportTask;
@@ -119,6 +120,7 @@ public class WaterLeakReportController {
     @Autowired private ScheduledFileExportService scheduledFileExportService;
     @Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
     @Autowired private JobManager jobManager;
+    @Autowired private ScheduledFileExportHelper exportHelper;
     
     private final static String baseKey = "yukon.web.modules.amr.waterLeakReport.report";
     private final static Hours water_node_reporting_interval = Hours.hours(24);
@@ -228,8 +230,8 @@ public class WaterLeakReportController {
         
         model.addAttribute("cronExpressionTagState", cronTagState);
     	model.addAttribute("fileExportData", exportData);
-        model.addAttribute("fileExtensionChoices", setupFileExtChoices(exportData));
-        model.addAttribute("exportPathChoices", setupExportPathChoices(exportData));
+        model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
+        model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
         
         setupWaterLeakReportFromFilter(request, backingBean, userContext, model);
         return "waterLeakReport/report.jsp";
@@ -263,8 +265,8 @@ public class WaterLeakReportController {
             model.addAttribute("includeDisabledPaos", includeDisabledPaos);
             model.addAttribute("fileExportData", scheduledFileExportData);
             model.addAttribute("cronExpressionTagState", cronExpressionTagService.parse(scheduleCronString, userContext));
-            model.addAttribute("fileExtensionChoices", setupFileExtChoices(scheduledFileExportData));
-            model.addAttribute("exportPathChoices", setupExportPathChoices(scheduledFileExportData));
+            model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(scheduledFileExportData));
+            model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(scheduledFileExportData));
             WaterLeakReportFilterBackingBean backingBean = new WaterLeakReportFilterBackingBean();
             backingBean.setThreshold(threshold);
             backingBean.setIncludeDisabledPaos(includeDisabledPaos);
@@ -670,30 +672,6 @@ public class WaterLeakReportController {
     @InitBinder
     public void initBinder(WebDataBinder binder, final YukonUserContext userContext) {
         datePropertyEditorFactory.setupInstantPropertyEditor(binder, userContext, BlankMode.CURRENT);
-    }
-
-    private List<String> setupFileExtChoices(ScheduledFileExportData exportData) {
-        List<String> fileExtChoices = null;
-        String globalFileExtensions = globalSettingDao.getString(GlobalSettingType.SCHEDULE_PARAMETERS_AVAILABLE_FILE_EXTENSIONS);
-        fileExtChoices = com.cannontech.common.util.StringUtils.parseStringsForList(globalFileExtensions, ",");
-        if (null == exportData.getExportFileExtension()) {
-            // set the default value, initial selection
-            exportData.setExportFileExtension(fileExtChoices.get(0));
-        }
-        return fileExtChoices;
-    }
-    
-    private List<String> setupExportPathChoices(ScheduledFileExportData exportData) {
-        List<String> exportPathChoices = null;
-        String curExportPath = exportData.getExportPath(); 
-        String globalExportPaths = globalSettingDao.getString(GlobalSettingType.SCHEDULE_PARAMETERS_EXPORT_PATH);
-        exportPathChoices = com.cannontech.common.util.StringUtils.parseStringsForList(globalExportPaths, ",");
-        if (null == curExportPath) {
-            exportData.setExportPath(exportPathChoices.get(0));
-        } else {
-            exportData.setExportPath(curExportPath);
-        }
-        return exportPathChoices;
     }
 
 }

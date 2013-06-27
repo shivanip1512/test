@@ -34,7 +34,7 @@ public class FileExportHistoryServiceImpl implements FileExportHistoryService {
 	        throw new FileNotFoundException("Unable to locate archive file: " + archiveFile.getPath());
 	    }
 	    String filePathWithoutFileName = null;
-	    if (null != exportFile) {
+	    if (exportFile != null) {
 	        String fullFilePath = exportFile.getCanonicalPath();
 	        filePathWithoutFileName = fullFilePath.substring(0, fullFilePath.lastIndexOf(File.separator));
 	    }

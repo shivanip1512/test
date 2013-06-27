@@ -47,6 +47,5 @@
     <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.delete.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
     <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.delete.hoverText">Delete this schedule</entry>
     <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.noJobs">No scheduled exports.</entry>
-    <entry key="yukon.web.modules.amr.scheduledFileExport.jobs.title">FIXME - jobs.title.</entry>
     
 </properties>

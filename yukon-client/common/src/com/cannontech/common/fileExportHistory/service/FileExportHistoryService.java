@@ -17,14 +17,11 @@ public interface FileExportHistoryService {
 
     /**
      * Creates an ExportHistoryEntry for the Archive and Export file(s).
-     * @param archiveFile
-     * @param exportFile
-     * @param fileName
-     * @param type
-     * @param initiator
-     * @return entryId
-     * @throws FileNotFoundException
-     * @throws IOException
+     * @param exportFile -- may be null when no export file was created
+     * @param fileName -- the name of the file
+     * @return entryId -- the id of the history entry created
+     * @throws FileNotFoundException -- if the archive file cannot be accessed
+     * @throws IOException -- if a problem occurs getting the path of the export file.
      */
 	public ExportHistoryEntry addHistoryEntry(File archiveFile, File exportFile, String fileName,
                                        FileExportType type, String initiator) 
