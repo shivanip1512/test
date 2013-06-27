@@ -182,7 +182,6 @@
                     <li><a href="javascript:void(0);" id=appsLauncher><cti:msg2 key=".applications"/></a></li>
                     <dialog:inline id="yukonApplicationDialog" okEvent="none" nameKey="applications" on="#appsLauncher"
                         options="{width: 400, 'buttons': [], 'position' : 'relative'}">
-                        <!--  AJAX ME IN BETCH -->
                         <c:import url="/jws/applications"/>
                     </dialog:inline>
                 </cti:checkRolesAndProperties>
