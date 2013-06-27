@@ -197,33 +197,19 @@
                 <div class="legal">
                     <p class="copyright"><cti:msg2 key=".copyright"/></p>
                     <ul>
-                        <li>
-                            <cti:msg2 key=".yukonVersion" arguments="${yukonVersion}"/>
-                        </li>
-                        <li>
-                            <cti:msg2 key=".generatedAt" /><cti:formatDate type="FULL" value="${currentTime}"/>
-                        </li>
-                        
+                        <li><cti:msg2 key=".yukonVersion" arguments="${yukonVersion}"/></li>
+                        <li><cti:msg2 key=".generatedAt" /><cti:formatDate type="FULL" value="${currentTime}"/></li>
                         <c:if test="${not empty energyCompanyName}">
-                            <li>
-                                <cti:msg2 key=".energyCompany" arguments="${energyCompanyName}"/>
-                            </li>
+                            <li><cti:msg2 key=".energyCompany" arguments="${energyCompanyName}"/></li>
                         </c:if>
-                           
-                           <li>
-                            <cti:msg2 key=".username" arguments="${username}"/>
-                        </li>
+                        <li><cti:msg2 key=".username" arguments="${username}"/></li>
                         <cti:checkGlobalRolesAndProperties value="I18N_DESIGN_MODE">
-                            <li>
-                                <cti:msg2 key=".moduleName" arguments="${info.moduleName}" />, <cti:msg2 key=".pageName" arguments="${info.pageName}" />
-                            </li>
+                            <li><cti:msg2 key=".moduleName" arguments="${info.moduleName}" />, <cti:msg2 key=".pageName" arguments="${info.pageName}" /></li>
                         </cti:checkGlobalRolesAndProperties>
                     </ul>
                     <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
                         <ul>
-                            <li>
-                                <cti:msg2 key=".buildInfo" arguments="${buildInfo}"/>
-                            </li>
+                            <li><cti:msg2 key=".buildInfo" arguments="${buildInfo}"/></li>
                             <li>${servletPath}</li>
                         </ul>
                     </cti:checkGlobalRolesAndProperties>
