@@ -95,7 +95,7 @@ input[type=radio]:focus {outline:none;}
 
 /* hack to achieve webkit only css */
 @media screen and (-webkit-min-device-pixel-ratio:0) {
-    select:not([multiple]) {background: url(/WebConfig/yukon/Icons/silk/bullet_arrow_down.png) right no-repeat;padding-right: 16px;}
+    select:not([multiple]) {background: white url(/WebConfig/yukon/Icons/silk/bullet_arrow_down.png) right no-repeat;padding-right: 16px;}
 }
 
 /* VERTICAL MENUS */

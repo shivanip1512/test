@@ -106,13 +106,6 @@
 		<input type="hidden" name="resetReport" value="true"/>
 	</form:form>
 
-	<form:form id="csvLeakForm" action="csvWaterLeak" method="get"
-		commandName="backingBean" cssClass="dib" title="${exportTitle}">
-		<cti:deviceCollection deviceCollection="${backingBean.deviceCollection}"/>
-		<tags:sortFields backingBean="${backingBean}"/>
-		<%@ include file="reportFilterFormValues.jspf"%>
-	</form:form>
-
 	<div id="accountInfoAjaxDialog" class="dn"></div>
 
     <!-- Help messages at the top of the page -->
@@ -317,4 +310,10 @@
             </c:choose>
 		</table>
 	</tags:pagedBox2>
+	<form:form id="csvLeakForm" action="csvWaterLeak" method="get"
+        commandName="backingBean" cssClass="dib" title="${exportTitle}">
+        <cti:deviceCollection deviceCollection="${backingBean.deviceCollection}"/>
+        <tags:sortFields backingBean="${backingBean}"/>
+        <%@ include file="reportFilterFormValues.jspf"%>
+    </form:form>
 </cti:standardPage>
