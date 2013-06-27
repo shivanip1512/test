@@ -45,7 +45,7 @@ a:link,a:visited {color: #06C;text-decoration: none;}
 a.described {margin-right: 10px;}
 
 /* COLORS */
-a, .primary_color, .vertical_menu li.selected a, .vertical_menu a:hover, .ui-widget-content a, h3.toggle-title, #subMenu a:visited, .perPageArea a:visited {color:#06C;}
+a, .primary_color, .vertical_menu li.selected a, .vertical_menu a:hover, .ui-widget-content a, #subMenu a:visited, .perPageArea a:visited {color:#06C;}
 .primary_background {background-color:#06c; color:white;}
 ::-moz-selection, ::selection {background-color:#06c; color:white;} /* IE 9 does not support pseudo element selector '::selection' and will ignore the entire rule, therefore it must be in it's own rule */
 .primary_background a, .primary_background a:visited {color:white}
@@ -128,7 +128,7 @@ table.nowrap th, table.nowrap td {white-space: nowrap;}
 .compactResultsPaging .pagingArea {float: right; margin: -1px 50px 0 0; border: 1px solid #ccc; border-style: none solid solid solid; padding: 5px 10px;background-color: white;}
 .compactResultsPaging span {line-height: 16px;}
 .compactResultsPaging .pageNumText {margin: 0 10px;}
-.nameValueTable .name {color: #666;}
+.nameValueTable .name {color: #666;vertical-align: middle;}
 .nameValueTable .value {color: #333;}
 
 .rowHighlighting tr:hover, .highlighted {background-color:#dedede !important;}
@@ -137,6 +137,7 @@ table.nowrap th, table.nowrap td {white-space: nowrap;}
 
 .two-column-split {width:100%;}
 .two-column-split th, .two-column-split td {width:50%;}
+.removeColumn button, .removeColumn .button {float:right;}
 
 /* PROGRESS BARS */
 div.progressBar .box {margin-right: 5px;}
@@ -162,15 +163,15 @@ div.progressBarInnerFailure {
 .buttonStack {padding: 0; list-style-type: none; margin: 0;}
 .buttonStack li {margin-bottom: 5px;}
 .buttonStack li:after {clear: both;content: ".";display: block;height: 0;line-height: 0;visibility: hidden;}
-.labeledImageStack li {padding-bottom: 23px;}
 ul.disc li {list-style-type: disc; margin-left: 25px;}
 .groupedList {padding-left: 0;}
 .groupedList > li {list-style: none;}
 .groupedList .group {font-weight: bold;}
 .groupedList .groupedItem {list-style: none;}
-.simple-list, .resultList {padding: 0;margin:0;list-style: none;}
+.simple-list, .resultList, .labeledImageStack {padding: 0;margin:0;list-style: none;}
 .tree-list li li {margin-left: 15px;}
 .tree-list li li li {margin-left: 30px;}
+.labeledImageStack li {display:block; padding-bottom: 10px;}
 
 /* CONTAINERS */
 .toggle-title {cursor: pointer; background: white url(../Icons/icon_blockexpanded.png) no-repeat scroll 0 8px; padding-left: 14px; display: inline;}

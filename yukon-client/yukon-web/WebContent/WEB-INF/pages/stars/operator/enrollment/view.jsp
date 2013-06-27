@@ -60,7 +60,6 @@
         </c:otherwise>
     </c:choose>
 </tags:boxContainer2>
-<br><br>
 <tags:boxContainer2 nameKey="active">
     <c:choose>
         <c:when test="${empty active}">

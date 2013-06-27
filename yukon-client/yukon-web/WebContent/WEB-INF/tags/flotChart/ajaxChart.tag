@@ -15,9 +15,6 @@
     <%@ include file="defaultElements.jspf" %>
 </div>
 
-<div class="flotchart_container">
-    <div id="${chartId}" class="flotchart"></div>
-</div>
 <script>
 jQuery(function() {
     var chartId = '${chartId}';

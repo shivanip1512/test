@@ -8,18 +8,23 @@
 
     <tags:boxContainer2 nameKey="accountActionLog">
         <table class="compactResultsTable">
-            <tr>
-                <th><i:inline key=".event" /></th>
-                <th><i:inline key=".username" /></th>
-                <th><i:inline key=".timeOfEvent" /></th>
-            </tr>
-            <c:forEach var="accountEvent" items="${accountEvents}">
-                <tr>
-                    <td><spring:escapeBody htmlEscape="true">${accountEvent.actionText}</spring:escapeBody></td>
-                    <td><spring:escapeBody htmlEscape="true">${accountEvent.userName}</spring:escapeBody></td>
-                    <td><cti:formatDate value="${accountEvent.eventBase.eventTimestamp}" type="BOTH"/></td>
-                </tr>
-            </c:forEach>
+            <thead>
+	            <tr>
+	                <th><i:inline key=".event" /></th>
+	                <th><i:inline key=".username" /></th>
+	                <th><i:inline key=".timeOfEvent" /></th>
+	            </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+	            <c:forEach var="accountEvent" items="${accountEvents}">
+	                <tr>
+	                    <td><spring:escapeBody htmlEscape="true">${accountEvent.actionText}</spring:escapeBody></td>
+	                    <td><spring:escapeBody htmlEscape="true">${accountEvent.userName}</spring:escapeBody></td>
+	                    <td><cti:formatDate value="${accountEvent.eventBase.eventTimestamp}" type="BOTH"/></td>
+	                </tr>
+	            </c:forEach>
+            </tbody>
         </table>
     </tags:boxContainer2>
     

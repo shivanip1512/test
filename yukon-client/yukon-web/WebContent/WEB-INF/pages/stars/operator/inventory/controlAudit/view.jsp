@@ -76,14 +76,14 @@ jQuery(function() {
                         <tags:nameValue2 nameKey=".deviceCount">${fn:length(audit.controlledRows)} (<fmt:formatNumber value="${percent}" type="percent" maxFractionDigits="1"/>)</tags:nameValue2>
                     </tags:nameValueContainer2>
                     <ul class="labeledImageStack">
-                        <li>
+                        <li class="clearfix">
                             <cti:url var="newOperationControlled" value="newOperation">
                                 <cti:param name="auditId" value="${audit.auditId}"/>
                                 <cti:param name="type" value="CONTROLLED"/>
                             </cti:url>
                             <a href="${newOperationControlled}" class="button naked"><i class="icon icon-cog-go"></i><span class="label"><i:inline key=".newOperation"/></span></a>
                         </li>
-                        <li>
+                        <li class="clearfix">
                             <cti:url var="download" value="download">
                                 <cti:param name="auditId" value="${audit.auditId}"/>
                                 <cti:param name="type" value="CONTROLLED"/>
@@ -108,14 +108,14 @@ jQuery(function() {
                         <tags:nameValue2 nameKey=".deviceCount">${fn:length(audit.uncontrolledRows)} (<fmt:formatNumber value="${percent}" type="percent" maxFractionDigits="1"/>)</tags:nameValue2>
                     </tags:nameValueContainer2>
                     <ul class="labeledImageStack">
-                        <li>
+                        <li class="clearfix">
                             <cti:url var="newOperationUncontrolled" value="newOperation">
                                 <cti:param name="auditId" value="${audit.auditId}"/>
                                 <cti:param name="type" value="UNCONTROLLED"/>
                             </cti:url>
                             <a href="${newOperationUncontrolled}" class="button naked"><i class="icon icon-cog-go"></i><span class="label"><i:inline key=".newOperation"/></span></a>
                         </li>
-                        <li>
+                        <li class="clearfix">
                             <cti:url var="download" value="download">
                                 <cti:param name="auditId" value="${audit.auditId}"/>
                                 <cti:param name="type" value="UNCONTROLLED"/>
@@ -140,14 +140,14 @@ jQuery(function() {
                         <tags:nameValue2 nameKey=".deviceCount">${fn:length(audit.unknownRows)} (<fmt:formatNumber value="${percent}" type="percent" maxFractionDigits="1"/>)</tags:nameValue2>
                     </tags:nameValueContainer2>
                     <ul class="labeledImageStack">
-                        <li>
+                        <li class="clearfix">
                             <cti:url var="newOperationUnknown" value="newOperation">
                                 <cti:param name="auditId" value="${audit.auditId}"/>
                                 <cti:param name="type" value="UNKNOWN"/>
                             </cti:url>
                             <a href="${newOperationUnknown}" class="button naked"><i class="icon icon-cog-go"></i><span class="label"><i:inline key=".newOperation"/></span></a>
                         </li>
-                        <li>
+                        <li class="clearfix">
                             <cti:url var="download" value="download">
                                 <cti:param name="auditId" value="${audit.auditId}"/>
                                 <cti:param name="type" value="UNKNOWN"/>
@@ -172,14 +172,14 @@ jQuery(function() {
                         <tags:nameValue2 nameKey=".deviceCount">${fn:length(audit.unsupportedRows)} (<fmt:formatNumber value="${percent}" type="percent" maxFractionDigits="1"/>)</tags:nameValue2>
                     </tags:nameValueContainer2>
                     <ul class="labeledImageStack">
-                        <li>
+                        <li class="clearfix">
                             <cti:url var="newOperationControlled" value="newOperation">
                                 <cti:param name="auditId" value="${audit.auditId}"/>
                                 <cti:param name="type" value="UNSUPPORTED"/>
                             </cti:url>
                             <a href="${newOperationControlled}" class="button naked"><i class="icon icon-cog-go"></i><span class="label"><i:inline key=".newOperation"/></span></a>
                         </li>
-                        <li>
+                        <li class="clearfix">
                             <cti:url var="download" value="download">
                                 <cti:param name="auditId" value="${audit.auditId}"/>
                                 <cti:param name="type" value="UNSUPPORTED"/>

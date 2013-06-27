@@ -42,15 +42,18 @@
         <table class="compactResultsTable">
             <c:choose>
                 <c:when test="${fn:length(displayableApplianceListEntries) > 0}">
-                     <tr>
-                         <th><i:inline key=".applianceName" /></th>
-                         <th><i:inline key=".deviceName" /></th>
-                         <th><i:inline key=".programName" /></th>
-                         <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING" >
-                             <th class="removeColumn"><i:inline key=".delete" /></th>
-                         </cti:checkRolesAndProperties>
-                     </tr>
-
+                    <thead>
+                        <tr>
+                            <th><i:inline key=".applianceName" /></th>
+                            <th><i:inline key=".deviceName" /></th>
+                            <th><i:inline key=".programName" /></th>
+                            <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING" >
+                                <th class="removeColumn"><i:inline key=".delete" /></th>
+                            </cti:checkRolesAndProperties>
+                        </tr>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
                      <c:forEach var="displayableApplianceListEntry" items="${displayableApplianceListEntries}">
                          <tr>
                              <td>
@@ -101,6 +104,7 @@
                              </cti:checkRolesAndProperties>
                          </tr>
                      </c:forEach>
+                     
                  </c:when>
                  <c:otherwise>
                      <span class="empty-list"><i:inline key=".noAppliances"/></span>
