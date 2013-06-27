@@ -557,6 +557,7 @@
     <entry key="yukon.web.modules.support.deviceDef.info.tags.valueSupport.yes">Yes</entry>
     <entry key="yukon.web.modules.support.deviceDef.info.tags.valueSupport.no">No</entry>
     <entry key="yukon.web.modules.support.deviceDef.info.tags.values">Values</entry>
+    <entry key="yukon.web.modules.support.indexes.pageName">Manage Indexes</entry>
     
     <!-- siteMap.jsp -->
     <entry key="yukon.web.modules.support.siteMap.pageName">Site Map</entry>

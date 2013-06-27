@@ -556,100 +556,82 @@
 
   <module name="support">
     <skin name="STANDARD" />
-    <css file="/WebConfig/yukon/styles/supportStyles.css"/>
+    <css file="/WebConfig/yukon/styles/supportStyles.css" />
     <pages>
-        <page name="support" type="BASIC">
-            <link>/support</link>
+      <page name="support" type="BASIC">
+        <link>/support</link>
+        <pages>
+          <page name="logLanding" type="BASIC">
+            <requireRoleProperty value="ADMIN_EVENT_LOGS" />
+            <link>/support/logging/menu</link>
             <pages>
-                <page name="logLanding" type="BASIC">
-                    <requireRoleProperty value="ADMIN_EVENT_LOGS" />
-                    <link>/support/logging/menu</link>
-                    <pages>
-                        <page name="logMenu" type="BASIC">
-                            <link>/support/logging/menu?file=${rootlessDirFileString}</link>
-                            <labelArgument>${rootlessDirFileString}</labelArgument>
-                            <pages>
-                                <page name="logTail" type="DETAIL">
-                                    <link>/support/logging/view?file=${file}</link>
-                                    <labelArgument>${logFile.identifier}</labelArgument>
-                                </page>
-                            </pages>
-                        </page>
-                    </pages>
-                </page>
-                <page name="databaseInfo" type="BASIC">
-                </page>
-                <page name="siteMap" type="BASIC">
-                </page>
-                <page name="databaseValidate" type="BASIC">
-                </page>
-                <page name="databaseMigration" type="BASIC">
-                    <requireRoleProperty value="ADMIN_DATABASE_MIGRATION"/>
-                </page>
-                <page name="webServices.eimTest" type="BASIC">
-                </page>
-                <page name="webServices.loadControl" type="BASIC">
-                </page>
-                <page name="webServices.account" type="BASIC">
-                </page>
-                <page name="pointInjection" type="BASIC">
-                     <requireRoleProperty value="DEVELOPMENT_MODE" />
-                </page>
-                <page name="bulkPointInjection" type="BASIC">
-                     <requireRoleProperty value="DEVELOPMENT_MODE" />
-                </page>
-                <page name="uiToolkitDemo" type="BASIC">
-                     <requireRoleProperty value="DEVELOPMENT_MODE" />
-                </page>
-                <page name="setup" type="BASIC">
-                    <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
-                </page>
-                <page name="system" type="BASIC">
-                </page>
-                <page name="deviceDef" type="BASIC">
-                </page>
-                <page name="errorCodes" type="BASIC">
-                </page>
-                <page name="supportBundle" type = "BASIC">
-                </page>
-                <page name="localization" type = "BASIC">
-                </page>
-                <page name="uiDemos" type="BASIC">
-                     <requireRoleProperty value="DEVELOPMENT_MODE" />
-                </page>
-                <page name="setupDatabase" type="BASIC">
-                     <requireRoleProperty value="DEVELOPMENT_MODE" />
-                </page>
-                <page name="miscellaneousMethod" type="BASIC">
-                     <requireRoleProperty value="DEVELOPMENT_MODE" />
-                </page>
-                <page name="rfnTest" type="BASIC">
-                     <requireRoleProperty value="DEVELOPMENT_MODE" />
-                    <pages>
-                        <page name="rfnTest.viewMeterReadArchive" type="DETAIL">
-                        </page>
-                        <page name="rfnTest.viewEventArchive" type="DETAIL">
-                        </page>
-                        <page name="rfnTest.viewAlarmArchive" type="DETAIL">
-                        </page>
-                    </pages>
-                </page>
-                <page name="fileExportHistory" type="BASIC">
-                </page>
-                <page name="threadDump" type="BASIC">
-                </page>
-                <page name="routeUsage" type="BASIC">
-                </page>
-                <page name="eventViewer" type="BASIC">
+              <page name="logMenu" type="BASIC">
+                <link>/support/logging/menu?file=${rootlessDirFileString}</link>
+                <labelArgument>${rootlessDirFileString}</labelArgument>
                 <pages>
-                    <page name="eventViewer.byType" type="BASIC">
-                    </page>
-                    <page name="eventViewer.byCategory" type="BASIC">
-                    </page>
+                  <page name="logTail" type="DETAIL">
+                    <link>/support/logging/view?file=${file}</link>
+                    <labelArgument>${logFile.identifier}</labelArgument>
+                  </page>
                 </pages>
-            </page>
+              </page>
             </pages>
-        </page>
+          </page>
+          <page name="databaseInfo" type="BASIC" />
+          <page name="siteMap" type="BASIC" />
+          <page name="databaseValidate" type="BASIC" />
+          <page name="databaseMigration" type="BASIC">
+            <requireRoleProperty value="ADMIN_DATABASE_MIGRATION" />
+          </page>
+          <page name="webServices.eimTest" type="BASIC" />
+          <page name="webServices.loadControl" type="BASIC" />
+          <page name="webServices.account" type="BASIC" />
+          <page name="pointInjection" type="BASIC">
+            <requireRoleProperty value="DEVELOPMENT_MODE" />
+          </page>
+          <page name="bulkPointInjection" type="BASIC">
+            <requireRoleProperty value="DEVELOPMENT_MODE" />
+          </page>
+          <page name="uiToolkitDemo" type="BASIC">
+            <requireRoleProperty value="DEVELOPMENT_MODE" />
+          </page>
+          <page name="setup" type="BASIC">
+            <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
+          </page>
+          <page name="system" type="BASIC" />
+          <page name="deviceDef" type="BASIC" />
+          <page name="errorCodes" type="BASIC" />
+          <page name="supportBundle" type="BASIC" />
+          <page name="localization" type="BASIC" />
+          <page name="uiDemos" type="BASIC">
+            <requireRoleProperty value="DEVELOPMENT_MODE" />
+          </page>
+          <page name="setupDatabase" type="BASIC">
+            <requireRoleProperty value="DEVELOPMENT_MODE" />
+          </page>
+          <page name="miscellaneousMethod" type="BASIC">
+            <requireRoleProperty value="DEVELOPMENT_MODE" />
+          </page>
+          <page name="rfnTest" type="BASIC">
+            <requireRoleProperty value="DEVELOPMENT_MODE" />
+            <pages>
+              <page name="rfnTest.viewMeterReadArchive" type="DETAIL" />
+              <page name="rfnTest.viewEventArchive" type="DETAIL" />
+              <page name="rfnTest.viewAlarmArchive" type="DETAIL" />
+            </pages>
+          </page>
+          <page name="fileExportHistory" type="BASIC" />
+          <page name="threadDump" type="BASIC" />
+          <page name="routeUsage" type="BASIC" />
+          <page name="eventViewer" type="BASIC">
+            <pages>
+              <page name="eventViewer.byType" type="BASIC" />
+              <page name="eventViewer.byCategory" type="BASIC" />
+            </pages>
+          </page>
+          <page name="indexes" type="BASIC"/>
+        </pages>
+      </page>
     </pages>
   </module>
 

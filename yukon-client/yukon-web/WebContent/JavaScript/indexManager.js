@@ -50,6 +50,6 @@ function indexManager_updateIndexProgressBar(indexName, percent) {
     if (percent > 20) {
         progressText.innerHTML = parseInt(percent) + "%";
     }
-    progressInner.style.width = (percent * 2) + "px";
+    progressInner.style.width = percent + "%";
 }
 

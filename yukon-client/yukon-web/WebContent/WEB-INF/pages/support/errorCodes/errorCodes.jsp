@@ -6,23 +6,27 @@
 <cti:standardPage module="support" page="errorCodes">
 
     <table id="errorCodes" class="resultsTable">
-        <tr>
-            <th><i:inline key=".header.code"/></th>
-            <th><i:inline key=".header.category"/></th>
-            <th><i:inline key=".header.description"/></th>
-            <th><i:inline key=".header.porter"/></th>
-            <th><i:inline key=".header.troubleshoot"/></th>
-        </tr>
-
-        <c:forEach items="${allErrors}" var="error">
-            <tr>
-                <td nowrap="nowrap">${error.errorCode}</td>
-                <td nowrap="nowrap">${error.category}</td>
-                <td>${error.description}</td>
-                <td>${error.porter}</td>
-                <td>${error.troubleshooting}</td>
-            </tr>
-        </c:forEach>
+        <thead>
+	        <tr>
+	            <th><i:inline key=".header.code"/></th>
+	            <th><i:inline key=".header.category"/></th>
+	            <th><i:inline key=".header.description"/></th>
+	            <th><i:inline key=".header.porter"/></th>
+	            <th><i:inline key=".header.troubleshoot"/></th>
+	        </tr>
+        </thead>
+        <tfoot></tfoot>
+        <tbody>
+	        <c:forEach items="${allErrors}" var="error">
+	            <tr>
+	                <td nowrap="nowrap">${error.errorCode}</td>
+	                <td nowrap="nowrap">${error.category}</td>
+	                <td>${error.description}</td>
+	                <td>${error.porter}</td>
+	                <td>${error.troubleshooting}</td>
+	            </tr>
+	        </c:forEach>
+        </tbody>
     </table>
 
 </cti:standardPage>
