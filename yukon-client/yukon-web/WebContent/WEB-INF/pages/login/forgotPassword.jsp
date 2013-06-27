@@ -1,139 +1,65 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<%@ page import="com.cannontech.common.version.VersionTools" %>
-<cti:verifyGlobalRolesAndProperties value="ENABLE_PASSWORD_RECOVERY"/>
+<cti:verifyGlobalRolesAndProperties value="ENABLE_PASSWORD_RECOVERY" />
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-    <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
-        <title><cti:msg key="yukon.web.forgotPassword.pageTitle"/></title>           
-
-        <link rel="stylesheet"
-            href="/WebConfig/yukon/styles/shared/loginStyles.css"
-            type="text/css">
-        
-       
-        <cti:includeScript link="PROTOTYPE" force="true"/>
-        <script type="text/javascript" src="/JavaScript/CtiMenu.js"></script>
-
-    </head>
-    
-	<script type='text/javascript' language=''>
-		<!--
-		var ctiMenu = new CtiMenu('subMenu');
-		// -->
-	</script>
-	
-	<script LANGUAGE="JavaScript">
-		function popUp(url) {
-			sealWin=window.open(url,"win",'toolbar=0,location=0,directories=0,status=1,menubar=1,scrollbars=1,resizable=1,width=500,height=450');
-			self.name = "mainWin";
-		}
-	</script>
-
-	<body class="blank_module" onLoad="document.forms.form1.USERNAME.focus()">
-		
-		<div id="Header">
-		    <div class="stdhdr_left"><div id="TopLeftLogo"></div><div id="TopLeftLogo2"></div></div>
-		    <div class="stdhdr_right"><div id="TopRightLogo"></div></div>
-		    <div class="stdhdr_clear"></div>
-		</div>
-		<div id='Menu'>
-	
-			<div id='topMenu'>
-				<div>
-					<div class='stdhdr_leftSide'></div>
-					<div class='stdhdr_rightSide'></div>
-					<div style='clear: both'></div>
-				</div>
-			</div>
-			<div id='bottomBar'>
-				<div>
-					<div class='stdhdr_leftSide'></div>
-					<div style='clear: both'></div>
-				</div>
-			</div>
-		</div>
-	
-		<div class="loginMain">
-		
-			<div class="loginTopSection">
-				<div class="loginTitleText"><cti:msg key="yukon.web.forgotPassword.pageTitle"/></div>
-			</div>
-	
-			<div class="loginMainSection">
-                <cti:msg var="boxTitle" key="yukon.web.forgotPassword.boxTitle"/>
-				<cti:titledContainer title="${boxTitle}">		
-					<c:if test="${!empty param.failedMsg}">
-						<div class="loginErrorMsg"><cti:msg key="yukon.web.forgotPassword.${param.failedMsg}"/></div>
-					</c:if>
-					<c:if test="${!empty param.success}">
-						<div class="loginSuccessMsg"><cti:msg key="yukon.web.forgotPassword.success"/></div>
-					</c:if>
-					
-					<div class="loginIntroText">
-                        <cti:msg key="yukon.web.forgotPassword.intro"/>
-					</div>
-					
-					<form name="form1" method="post" action="<cti:url value="/servlet/StarsPWordRequest"/>">
-	              		<table width="290" border="0" cellspacing="0" cellpadding="3" align="center">
-	                		<tr> 
-	                  			<td align="right"><cti:msg key="yukon.web.forgotPassword.username"/></td>
-	                  			<td align="left" valign="bottom"> 
-	                    			<input type="text" autocomplete="off" id="USERNAME" name="USERNAME" size="26">
-	                  			</td>
-	                		</tr>
-	                		<tr> 
-				                <td align="right"><cti:msg key="yukon.web.forgotPassword.email"/></td>
-				                <td align="left" valign="bottom"> 
-	                    			<input type="text" name="EMAIL" size="26">
-	                  		</td>
-	                		</tr>
-	                		<tr> 
-	                  			<td align="right"><cti:msg key="yukon.web.forgotPassword.firstName"/></td>
-	                  			<td align="left" valign="bottom"> 
-	                    			<input type="text" name="FIRST_NAME" size="26">
-	                  			</td>
-	                		</tr>
-	                		<tr> 
-	                  			<td align="right"><cti:msg key="yukon.web.forgotPassword.lastName"/></td>
-	                  			<td align="left" valign="bottom"> 
-	                    			<input type="text" name="LAST_NAME" size="26">
-	                  			</td>
-	                		</tr>
-
-	                		<tr> 
-	                  			<td align="right"><cti:msg key="yukon.web.forgotPassword.account"/></td>
-	                  			<td align="left" valign="bottom"> 
-	                    			<input type="text" name="ACCOUNT_NUM" size="26">
-	                  			</td>
-	                		</tr>
-	
-							<tr> 
-	                  			<td align="right"><cti:msg key="yukon.web.forgotPassword.provider"/></td>
-	                  			<td align="left" valign="middle"> 
-				                    <input type="text" name="ENERGY_COMPANY" size="26">
-	            		      	</td>
-	                		</tr>
-	                		<tr> 
-	                  			<td align="right"><cti:msg key="yukon.web.forgotPassword.notes"/></td>
-	                  			<td align="left" valign="bottom">
-	                    			<textarea name="NOTES" cols="20" rows="5"></textarea>
-	                  			</td>
-	                		</tr>
-	                		<tr> 
-	                  			<td colspan="2" align="center"> 
-                                    <cti:msg var="submitText" key="yukon.web.forgotPassword.submit"/>
-	                      			<input type="submit" name="Submit2" value="${submitText}">
-	                  			</td>
-	                		</tr>
-	              		</table>
-					</form>
-				</cti:titledContainer>
-	        </div>
+<tags:noAuthPage module="login" page="forgotPassword">
+    <section id="content" style="min-height: 420px;">
+    <div class="column_24 clear">
+        <div class="one column nogutter">
+            <div class="page-title-bar">
+                <h1><i:inline key=".pageName"/></h1>
+            </div>
+            <cti:msg2 var="boxTitle" key=".boxTitle" />
+            <cti:titledContainer title="${boxTitle}">
+                <div class="loginIntroText stacked">
+                    <i:inline key=".intro" />
+                </div>
+                <c:if test="${!empty param.failedMsg}">
+                    <div class="stacked error">
+                        <i:inline key=".${param.failedMsg}" />
+                    </div>
+                </c:if>
+                <form name="form1" method="post" action="<cti:url value="/servlet/StarsPWordRequest"/>">
+                    <tags:nameValueContainer2>
+                        <tags:nameValue2 nameKey=".username">
+                            <input autocomplete="off" id="USERNAME" name="USERNAME">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".email">
+                            <input name="EMAIL">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".firstName">
+                            <input name="FIRST_NAME">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".lastName">
+                            <input name="LAST_NAME">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".account">
+                            <input name="ACCOUNT_NUM">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".provider">
+                            <input name="ENERGY_COMPANY">
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".notes">
+                            <textarea name="NOTES" cols="30" rows="3"></textarea>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                    <div class="stacked pageActionArea">
+                        <cti:button nameKey="submit" type="submit" classes="primary action"/>
+                        <cti:url value="/login.jsp" var="loginPage"/>
+                        <cti:button href="${loginPage}" nameKey="cancel"/>
+                    </div>
+                    
+                    <c:if test="${!empty param.success}">
+                        <div class="success">
+                            <i:inline key=".success" />
+                        </div>
+                    </c:if>
+                </form>
+            </cti:titledContainer>
         </div>
-        
-	</body>
-</html>
+    </div>
+    </section>
+</tags:noAuthPage>

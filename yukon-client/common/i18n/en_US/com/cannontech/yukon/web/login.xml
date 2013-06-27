@@ -3,7 +3,7 @@
 <properties>
 
     <!-- login.jsp -->
-    <entry key="yukon.web.login.pageTitle">Energy Services Operations Center</entry>
+    <entry key="yukon.web.modules.login.login.pageTitle">Energy Services Operations Center</entry>
     <entry key="yukon.web.login.formTopLogo"></entry>
     <entry key="yukon.web.login.formBottomLogo">/WebConfig/yukon/CooperTransparent.gif</entry>
     <entry key="yukon.web.login.titleText"></entry>
@@ -15,6 +15,7 @@
     <entry key="yukon.web.login.username">username</entry>
     <entry key="yukon.web.login.password">password</entry>
     <entry key="yukon.web.login.forgot">forgot?</entry>
+    <entry key="yukon.web.login.forgot.label">forgot?</entry>
     <entry key="yukon.web.login.rememberMe">Remember me</entry>
     
     <entry key="yukon.web.login.error.NONE">Success</entry>
@@ -26,33 +27,32 @@
     <entry key="yukon.web.login.error.PASSWORD_CHANGE_NOT_SUPPORTED">Password changes are not supported</entry>
     
     <!-- forgotPassword.jsp -->
-    <entry key="yukon.web.forgotPassword.pageTitle">Energy Services Operations Center</entry>
-    <entry key="yukon.web.forgotPassword.title">Energy Welcome to Customer Help Center</entry>
-    <entry key="yukon.web.forgotPassword.boxTitle">Account Information</entry>
-    <entry key="yukon.web.forgotPassword.success">Password request has been sent successfully</entry>
-    <entry key="yukon.web.forgotPassword.intro">Please enter any or all known information about your account.</entry>
-    <entry key="yukon.web.forgotPassword.username">Username:</entry>
-    <entry key="yukon.web.forgotPassword.email">Email:</entry>
-    <entry key="yukon.web.forgotPassword.firstName">First Name:</entry>
-    <entry key="yukon.web.forgotPassword.lastName">Last Name:</entry>
-    <entry key="yukon.web.forgotPassword.account">Account #:</entry>
-    <entry key="yukon.web.forgotPassword.provider">Energy Provider:</entry>
-    <entry key="yukon.web.forgotPassword.notes">Your Notes:</entry>
-    <entry key="yukon.web.forgotPassword.submit">Submit</entry>
-
-    <entry key="yukon.web.forgotPassword.NO_ACCOUNT">Account Number not found, try again</entry>
-    <entry key="yukon.web.forgotPassword.MULTIPLE_ACCOUNTS">More than one account number found, forwarding request onto the WebMaster</entry>
-    <entry key="yukon.web.forgotPassword.DOES_NOT_MATCH">The information you supplied does not match a known user.  Please verify that the information you have entered is correct.</entry>
-    <entry key="yukon.web.forgotPassword.MORE_INFO">More information needs to be entered</entry>
-    <entry key="yukon.web.forgotPassword.USER_NOT_FOUND">Username not found, try again</entry>
-    <entry key="yukon.web.forgotPassword.EMAIL_NOT_FOUND">Contact for Email not found, try again</entry>
-    <entry key="yukon.web.forgotPassword.CONTACT_NOT_FOUND">Contact for Username not found, try again</entry>
-    <entry key="yukon.web.forgotPassword.COMPANY_NOT_FOUND">No energy company OR customer found for the entered data</entry>
-    <entry key="yukon.web.forgotPassword.MULTIPLE_COMPANIES">More than one energy company found, forwarding request onto the WebMaster</entry>
+    <entry key="yukon.web.modules.login.forgotPassword.pageTitle">Energy Services Operations Center</entry>
+    <entry key="yukon.web.modules.login.forgotPassword.pageName">Password Reset</entry>
+    <entry key="yukon.web.modules.login.forgotPassword.boxTitle">Account Information</entry>
+    <entry key="yukon.web.modules.login.forgotPassword.success">Password request has been sent successfully</entry>
+    <entry key="yukon.web.modules.login.forgotPassword.intro">Please enter any or all known information about your account.</entry>
+    <entry key="yukon.web.modules.login.forgotPassword.username">Username</entry>
+    <entry key="yukon.web.modules.login.forgotPassword.email">Email</entry>
+    <entry key="yukon.web.modules.login.forgotPassword.firstName">First Name</entry>
+    <entry key="yukon.web.modules.login.forgotPassword.lastName">Last Name</entry>
+    <entry key="yukon.web.modules.login.forgotPassword.account">Account #</entry>
+    <entry key="yukon.web.modules.login.forgotPassword.provider">Energy Provider</entry>
+    <entry key="yukon.web.modules.login.forgotPassword.notes">Your Notes</entry>
+    <entry key="yukon.web.modules.login.forgotPassword.NO_ACCOUNT">Account Number not found, try again</entry>
+    <entry key="yukon.web.modules.login.forgotPassword.MULTIPLE_ACCOUNTS">More than one account number found, forwarding request onto the WebMaster</entry>
+    <entry key="yukon.web.modules.login.forgotPassword.DOES_NOT_MATCH">The information you supplied does not match a known user.  Please verify that the information you have entered is correct.</entry>
+    <entry key="yukon.web.modules.login.forgotPassword.MORE_INFO">More information needs to be entered</entry>
+    <entry key="yukon.web.modules.login.forgotPassword.USER_NOT_FOUND">Username not found, try again</entry>
+    <entry key="yukon.web.modules.login.forgotPassword.EMAIL_NOT_FOUND">Contact for Email not found, try again</entry>
+    <entry key="yukon.web.modules.login.forgotPassword.CONTACT_NOT_FOUND">Contact for Username not found, try again</entry>
+    <entry key="yukon.web.modules.login.forgotPassword.COMPANY_NOT_FOUND">No energy company OR customer found for the entered data</entry>
+    <entry key="yukon.web.modules.login.forgotPassword.MULTIPLE_COMPANIES">More than one energy company found, forwarding request onto the WebMaster</entry>
     
     
     <!-- forgottenPassword.jsp -->
     <entry key="yukon.web.modules.login.forgottenPassword.pageTitle">Energy Services Operations Center</entry>
+    <entry key="yukon.web.modules.login.forgottenPassword.pageName">Password Reset</entry>
     <entry key="yukon.web.modules.login.forgottenPassword.passwordReset">Password Reset</entry>
     
     <entry key="yukon.web.modules.login.forgottenPassword.forgottenPasswordMessage">Please provide the following information to help us reset your password.</entry>
@@ -79,6 +79,7 @@ When you go to this location you will be allowed to set a new password for your 
     <entry key="yukon.web.modules.login.passwordChange.passwordChangeNotSupported">Password changes are not supported for your login.</entry>
     
     <entry key="yukon.web.modules.login.changePassword.pageTitle">Energy Services Operations Center</entry>
+    <entry key="yukon.web.modules.login.changePassword.pageName">Password Reset</entry>
     <entry key="yukon.web.modules.login.changePassword.passwordReset">Password Reset</entry>
     <entry key="yukon.web.modules.login.changePassword.username">Username</entry>
     <entry key="yukon.web.modules.login.changePassword.newPassword">New Password</entry>
