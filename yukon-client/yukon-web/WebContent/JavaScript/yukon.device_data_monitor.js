@@ -88,7 +88,7 @@ if(typeof(DeviceDataMonitor) === 'undefined'){
             jQuery(this._processor_add_btn_selector).on("click", this._processor_add);
             jQuery(this._monitor_update_btn).on("click", this._show_update_dialog);
             jQuery(this._monitor_toggle_btn).on("click", this._monitor_toggle_enabled);
-            jQuery(this._monitor_delete_btn).on("click", this._monitor_delete);
+            jQuery(document).on("yukonDialogConfirmOk", this._monitor_delete);
             jQuery(document).on(this._update_or_create_event, this._monitor_update_or_create);
             jQuery(document).on("click", "." + this._supported_details_trigger_class, this._supported_details_toggle);
             jQuery(document).on("click", this._undo_row_links, this._get_supported_counts);

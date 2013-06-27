@@ -8,7 +8,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <%@ attribute name="on" required="true" description="registers click event on the element with this CSS selector"%>
-<%@ attribute name="nameKey" required="true" description="The base i18n key.  This tag requires dialogTitle and confirmationMsg keys."%>
+<%@ attribute name="nameKey" required="true" description="The base i18n key.  This tag requires title and message keys."%>
 <%@ attribute name="argument" type="java.lang.Object"%>
 <%@ attribute name="disableGroup" description="Creates a 'data-disable-group' attribute on buttons at time of show to allow disabling all dialog buttons on click."%>
 

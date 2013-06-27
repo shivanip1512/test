@@ -216,13 +216,13 @@
 		<cti:displayForPageEditModes modes="EDIT">
             <cti:button nameKey="update" classes="f_update_monitor"/>
 			<c:if test="${monitor.enabled}">
-    			<cti:button class="f_toggle_enabled" nameKey="disable"/>
+    			<cti:button classes="f_toggle_enabled" nameKey="disable"/>
 			</c:if>
 			<c:if test="${!monitor.enabled}">
-    			<cti:button class="f_toggle_enabled" nameKey="enable"/>
+    			<cti:button classes="f_toggle_enabled" nameKey="enable"/>
 			</c:if>
 			<cti:button id="deleteButton" nameKey="delete"/>
-	        <tags:confirmDialog nameKey=".deleteConfirmation" argument="${monitor.name}" on="#deleteButton" styleClass="f_delete_btn"/>
+            <dialog:confirm nameKey="deleteConfirmation" argument="${monitor.name}" on="#deleteButton"  />
 			<cti:url var="viewMonitorUrl" value="/amr/deviceDataMonitor/view">
 				<cti:param name="monitorId" value="${monitor.id}" />
 			</cti:url>
