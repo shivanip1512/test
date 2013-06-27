@@ -214,7 +214,7 @@
 	<%-- update / enable_disable / delete / cancel --%>
 	<div class="pageActionArea">
 		<cti:displayForPageEditModes modes="EDIT">
-            <cti:button nameKey="update" classes="f_update_monitor"/>
+            <cti:button nameKey="update" classes="f_update_monitor primary action"/>
 			<c:if test="${monitor.enabled}">
     			<cti:button classes="f_toggle_enabled" nameKey="disable"/>
 			</c:if>

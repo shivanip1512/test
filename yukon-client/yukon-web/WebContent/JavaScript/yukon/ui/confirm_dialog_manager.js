@@ -128,8 +128,8 @@ if (typeof(Yukon.Dialog.ConfirmationManager) === 'undefined') {
                 
                 //determine the 'ok' and 'cancel' events
                 var buttons = [];
-                buttons.push({text: args.strings.ok, click: _self._default._ok_action, class:'primary action'});
                 buttons.push({text: args.strings.cancel, click: _self._default._cancel_action});
+                buttons.push({text: args.strings.ok, click: _self._default._ok_action, class:'primary action'});
                 
                 //is the intent to redirect on ok?
                 if (element.attr("href")) {
