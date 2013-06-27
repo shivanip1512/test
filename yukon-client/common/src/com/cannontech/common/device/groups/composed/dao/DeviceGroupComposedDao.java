@@ -7,5 +7,10 @@ public interface DeviceGroupComposedDao {
     public void saveOrUpdate(DeviceGroupComposed deviceGroupComposed);
     
     public DeviceGroupComposed findForDeviceGroupId(int deviceGroupId);
+
+    /**
+     * Method to get DeviceGroupComposed by composedId
+     */
+    public DeviceGroupComposed getByComposedId(int composedId);
     
 }

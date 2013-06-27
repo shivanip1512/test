@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.common.device.groups.composed.dao.DeviceGroupComposedGroupDao;
 import com.cannontech.common.device.groups.model.DeviceGroupComposedGroup;
@@ -24,8 +25,7 @@ public class DeviceGroupComposedGroupDaoImpl implements DeviceGroupComposedGroup
     public void saveOrUpdate(DeviceGroupComposedGroup deviceGroupComposedGroup) {
         template.save(deviceGroupComposedGroup);
     }
-    
-    
+        
     @Override
     public List<DeviceGroupComposedGroup> getComposedGroupsForId(int deviceGroupComposedId) {
 
@@ -46,6 +46,18 @@ public class DeviceGroupComposedGroupDaoImpl implements DeviceGroupComposedGroup
         yukonJdbcTemplate.update(sql.getSql(), sql.getArguments());
     }
 
+    @Override
+    public List<DeviceGroupComposedGroup> findByGroupNames(List<String> groupNames) {
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT DGCG.* FROM DeviceGroupComposedGroup DGCG");
+            sql.append("WHERE groupName").in(groupNames);
+            return yukonJdbcTemplate.query(sql, rowAndFieldMapper);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
+    }
+    
     @PostConstruct
     public void init() throws Exception {
         template = new SimpleTableAccessTemplate<DeviceGroupComposedGroup>(yukonJdbcTemplate, nextValueHelper);

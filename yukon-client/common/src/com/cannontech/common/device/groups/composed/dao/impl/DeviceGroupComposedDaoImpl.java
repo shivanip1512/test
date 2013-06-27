@@ -42,7 +42,15 @@ public class DeviceGroupComposedDaoImpl implements DeviceGroupComposedDao {
             return null;
         }
     }
-
+    
+    @Override
+    public DeviceGroupComposed getByComposedId(int composedId) {
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+	    sql.append("SELECT DGC.* FROM DeviceGroupComposed DGC");
+		sql.append("WHERE DGC.deviceGroupComposedId").eq(composedId);
+		return yukonJdbcTemplate.queryForObject(sql, rowAndFieldMapper);
+    }
+    
     @PostConstruct
     public void init() throws Exception {
         template = new SimpleTableAccessTemplate<DeviceGroupComposed>(yukonJdbcTemplate, nextValueHelper);

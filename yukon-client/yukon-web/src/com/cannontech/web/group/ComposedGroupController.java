@@ -133,7 +133,52 @@ public class ComposedGroupController {
         // tree json
         List<Predicate<DeviceGroup>> predicates = new ArrayList<Predicate<DeviceGroup>>();
         predicates.add(new NonHiddenDeviceGroupPredicate());
-        predicates.add(new NotEqualToOrDecendantOfGroupsPredicate(group));
+        
+		/*
+		 * Creating predicates to remove some of the groups from the picker,
+		 * which should not be added to this composed device group.
+		 *  
+		 * Example:
+		 * 
+		 * Alternate/Alternate Composed Group-> Contains Billing
+		 * Billing/Billing Composed Group-> Adding Alternate to this group will result in stack overflow.
+		 * 
+		 * Creating predicate to remove the group "Alternate" from the the picker when adding groups to "Billing/Billing Composed Group".
+		 */ 
+        DeviceGroup parent = group;
+        
+        //This list contains the current group and its parents. Example:[/Billing/Billing Composed Group, /Billing]
+        List<String> parentGroupNames = new ArrayList<>();
+        while (!parent.getFullName().equals(DeviceGroupService.ROOT)){
+        	if(parent.getParent().getFullName().equals(DeviceGroupService.ROOT)){
+				/*
+				 * This predicate will remove top level parent of the current group from the picker.
+				 * Example: 
+				 * Composed device group setup for "Booted
+				 * Meters/Meters/Meters Composed", top parent "Booted Meters"
+				 * will be removed from the picker
+				 */
+        		predicates.add(new NotEqualToOrDecendantOfGroupsPredicate(parent));
+        	}
+			parentGroupNames.add(parent.getFullName());
+			parent = parent.getParent();
+		} 
+        //Find composed groups the current group or one of its parents are part of
+        List<DeviceGroupComposedGroup> composedGroups = deviceGroupComposedGroupDao.findByGroupNames(parentGroupNames);
+        if(composedGroups != null){
+			for (DeviceGroupComposedGroup deviceGroup : composedGroups) {
+				DeviceGroupComposed deviceGroupComposed = deviceGroupComposedDao.getByComposedId(deviceGroup.getDeviceGroupComposedId());
+				//Find the group the current group is part of
+				DeviceGroup groupToExclude = deviceGroupEditorDao.getGroupById(deviceGroupComposed.getDeviceGroupId());
+				//Find the top parent of that group. Example: /Alternate/Alternate Composed Group, "/Alternate" is a top level parent.
+				while (!groupToExclude.getParent().getFullName().equals(DeviceGroupService.ROOT)) {
+					groupToExclude = groupToExclude.getParent();
+				} 
+				//Create a predicate to exclude the top level parent
+				predicates.add(new NotEqualToOrDecendantOfGroupsPredicate(groupToExclude));
+			}
+        }
+        
         AggregateAndPredicate<DeviceGroup> aggregatePredicate = new AggregateAndPredicate<DeviceGroup>(predicates);
         
         DeviceGroup rootGroup = deviceGroupService.getRootGroup();
@@ -222,11 +267,6 @@ public class ComposedGroupController {
                     if (group != null) {
                         
                         DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(groupFullName);
-                        if (deviceGroup.equals(parentGroup)) {
-                            saveError = "Cannot include parent group in composed group: " + groupFullName;
-                            status.setRollbackOnly();
-                        }
-                        
                         DeviceGroupComposedGroup compositionGroup = new DeviceGroupComposedGroup();
                         compositionGroup.setDeviceGroupComposedId(composedGroup.getDeviceGroupComposedId());
                         compositionGroup.setDeviceGroup(deviceGroup);

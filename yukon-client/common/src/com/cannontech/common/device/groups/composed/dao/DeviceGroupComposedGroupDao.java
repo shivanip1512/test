@@ -11,4 +11,10 @@ public interface DeviceGroupComposedGroupDao {
     public List<DeviceGroupComposedGroup> getComposedGroupsForId(int deviceGroupComposedId);
     
     public void removeAllGroups(int deviceGroupComposedId);
+
+    /**
+     *  Method to get DeviceGroupComposedGroup by group names.
+     */
+   
+    public List<DeviceGroupComposedGroup> findByGroupNames(List<String> groupNames);
 }
