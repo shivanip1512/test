@@ -56,7 +56,7 @@ td {display:table-cell;vertical-align:top}
 .wsn{white-space: normal}
 .wsp{white-space:pre;}
 
-.vat {vertical-align:top;}
+.vat {vertical-align:top !important;}
 .vam {vertical-align:middle;}
 .vab {vertical-align:bottom;}
 

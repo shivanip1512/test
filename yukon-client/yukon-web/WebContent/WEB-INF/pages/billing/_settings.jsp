@@ -59,7 +59,7 @@ div#internalTreeContainer_billingTree.error > div.tree_container > div.treeCanva
                     <input type="checkbox" name="removeMultiplier" ${(BILLING_BEAN.removeMult)? 'checked':''} >
                 </tags:nameValue>
                 <cti:msg key="yukon.web.billing.billingGroup" var="billingGroup" />
-                <tags:nameValue name="${billingGroup}" id="row_billing_group">
+                <tags:nameValue name="${billingGroup}" id="row_billing_group" nameClass="vat">
 
                     <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="dataJson" />
                     <jsTree:nodeValueSelectingInlineTree fieldId="billGroup"

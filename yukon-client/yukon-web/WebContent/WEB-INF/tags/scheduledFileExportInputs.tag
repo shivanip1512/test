@@ -118,7 +118,7 @@ jQuery(function() {
     </tags:nameValue2>
 
 
-	<tags:nameValue2 nameKey=".scheduleCronString">
+	<tags:nameValue2 nameKey=".scheduleCronString" nameClass="vat">
 		<tags:cronExpressionData id="scheduleCronString" state="${cronExpressionTagState}" allowTypeChange="false" />
 	</tags:nameValue2>
 

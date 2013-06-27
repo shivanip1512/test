@@ -8,6 +8,7 @@
 <%@ attribute name="labelForId" required="false" %>
 <%@ attribute name="excludeColon" required="false" %>
 <%@ attribute name="rowId" %>
+<%@ attribute name="nameClass" %>
 <%@ attribute name="rowClass" %>
 <%@ attribute name="valueClass" %>
 
@@ -15,7 +16,7 @@
 	<c:when test="${nameValueContainter2}">
         <tr <c:if test="${!empty rowId}"> id="${rowId}"</c:if>
             <c:if test="${!empty rowClass}"> class="${rowClass}"</c:if>>
-			<td class="name" style="white-space:nowrap;">
+			<td class="name <c:if test="${!empty nameClass}"> ${nameClass}</c:if>" style="white-space:nowrap;">
 			
 				<c:set var="colonSuffix" value=":"/>
 				<c:if test="${excludeColon == true}">

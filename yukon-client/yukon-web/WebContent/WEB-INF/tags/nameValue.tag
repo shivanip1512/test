@@ -2,6 +2,8 @@
 <%@ attribute name="rowHighlight" required="false" %>
 <%@ attribute name="nameColumnWidth" required="false" %>
 <%@ attribute name="id" required="false" %>
+<%@ attribute name="nameClass" required="false" %>
+<%@ attribute name="valueClass" required="false" %>
 <%@ attribute name="isSection" required="false" type="java.lang.Boolean" %>
 
 
@@ -45,8 +47,8 @@
 		</c:choose>
         <tr class="${trClass}" id="${trId}">
             <c:set var="altRow" value="${!altRow}" scope="request"/>
-			<td class="name" <c:if test="${not empty pageScope.nameColumnWidth}">style="width:${pageScope.nameColumnWidth};"</c:if>>${name}${(not empty name)? ':':'&nbsp;'}</td>
-			<td class="value"><jsp:doBody/></td>
+			<td class="name <c:if test="${!empty nameClass}"> ${nameClass}</c:if>" <c:if test="${not empty pageScope.nameColumnWidth}">style="width:${pageScope.nameColumnWidth};"</c:if>>${name}${(not empty name)? ':':'&nbsp;'}</td>
+			<td class="value <c:if test="${!empty valueClass}"> ${valueClass}</c:if>"><jsp:doBody/></td>
 		</tr>
 	</c:when>
 	<c:otherwise>
