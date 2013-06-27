@@ -1,11 +1,5 @@
-var jwsCurrentUrl = "";
-
-function jwsLaunch(url) {
-    jQuery('#javaWebStartPopup').dialog("open");
-    jwsCurrentUrl = url;
-}
-
-function jwsRelaunchCurrent() {
-    jQuery('#javaWebStartPopup').dialog("close");
-    window.location.replace(jwsCurrentUrl);
-}
+jQuery(function () {
+    jQuery(".f_closeYukonApplicationDialog").click(function() {
+        jQuery("#yukonApplicationDialog").dialog("close")
+    });
+});

@@ -18,7 +18,6 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.user.checker.UserChecker;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -29,7 +28,6 @@ public class JnlpController extends JnlpControllerBase {
     private String appMainClass;
     private String appMainClassJar;
     private String appIcon;
-    private UserChecker userChecker;
 
     public JnlpController() {
         setCacheSeconds(0);
@@ -53,7 +51,7 @@ public class JnlpController extends JnlpControllerBase {
         
         Element infoElem = new Element("information");
         jnlpElem.addContent(infoElem);
-        infoElem.addContent(new Element("title").setText("Yukon® " + title));
+        infoElem.addContent(new Element("title").setText("Yukonï¿½ " + title));
         infoElem.addContent(new Element("vendor").setText("Cooper Industries plc."));
         infoElem.addContent(new Element("homepage").setAttribute("href", "http://www.cannontech.com/"));
         infoElem.addContent(new Element("description").setText(description));
@@ -144,14 +142,5 @@ public class JnlpController extends JnlpControllerBase {
 
     public void setAppIcon(String appIcon) {
         this.appIcon = appIcon;
-    }
-
-    public UserChecker getUserChecker() {
-        return userChecker;
-    }
-
-    @Required
-    public void setUserChecker(UserChecker userChecker) {
-        this.userChecker = userChecker;
     }
 }

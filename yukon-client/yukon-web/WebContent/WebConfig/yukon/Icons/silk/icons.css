@@ -1113,6 +1113,13 @@ License: http://creativecommons.org/licenses/by/3.0/
 .icon-32-window {background-image: url(/WebConfig/yukon/Icons/32/window.png);}
 .icon-32-world {background-image: url(/WebConfig/yukon/Icons/32/world.png);}
 
+/* Yukon Application Icons */
+.icon-32-database-editor {background-image: url(/WebConfig/yukon/Icons/32/DatabaseEditor32.gif);}
+.icon-32-tdc {background-image: url(/WebConfig/yukon/Icons/32/TDC32.gif);}
+.icon-32-commander {background-image: url(/WebConfig/yukon/Icons/32/Commander32.gif);}
+.icon-32-esub {background-image: url(/WebConfig/yukon/Icons/32/Esubstation32.png);}
+.icon-32-trending {background-image: url(/WebConfig/yukon/Icons/32/GraphTrending32.gif);}
+
 /* non-sprite icons */
 .icon-arrow-down-green-animated {background-image: url(/WebConfig/yukon/Icons/arrow_down_green_anim.gif);}
 .icon-arrow-down-orange-animated {background-image: url(/WebConfig/yukon/Icons/arrow_down_orange_anim.gif);}

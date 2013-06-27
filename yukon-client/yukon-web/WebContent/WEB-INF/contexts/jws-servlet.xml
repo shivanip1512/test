@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+    <context:component-scan base-package="com.cannontech.web.jws"/>
+
     <!--  This is a custom HandlerMapping that uses the path property from the 
           JnlpController classes to determine if the controller matches. -->
+    <bean id="annotationMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <property name="order" value="0"/>
+    </bean>
+
     <bean class="com.cannontech.web.jws.JnlpHandlerMapping">
       <property name="order" value="1"/>
     </bean>
@@ -12,10 +23,6 @@
         <property name="mappings">
             <value>
               /*.jar=jarJnlpController
-              /java=javaInstall
-              /auto=ieAutoController
-              /=jwsMenuController
-              /opspage=jwsOpsController
             </value>
         </property>
         <property name="order" value="2"/>
@@ -25,24 +32,8 @@
       class="org.springframework.web.servlet.view.UrlBasedViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
         <property name="prefix" value="/WEB-INF/pages/jws/"/>
-        <property name="suffix" value=".jsp"/>
     </bean>
-    
-    <bean id="javaInstall" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-      <property name="viewName" value="javaInstall"/>
-    </bean>
-    
-    <bean id="ieAutoController" class="com.cannontech.web.jws.AutoDownloadController">
-    </bean>
-    
-    <bean id="jwsMenuController" class="com.cannontech.web.jws.JwsMenuController">
-      <property name="view" value="startpage"/>
-    </bean>
-    
-    <bean id="jwsOpsController" class="com.cannontech.web.jws.JwsMenuController">
-      <property name="view" value="opspage"/>
-    </bean>
-    
+
     <!--  Any instance of JnlpController will be automatically found by the menu
           controller and the mapping handler. Defining a new JWS Client only
           requires adding a bean in this section. -->
@@ -160,11 +151,6 @@
         <property name="appMainClass" value="com.cannontech.dbeditor.DatabaseEditor"/>
         <property name="appMainClassJar" value="dbeditor.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/DatabaseEditor64.gif" />
-        <property name="userChecker">
-          <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createRoleChecker">
-            <constructor-arg value="DATABASE_EDITOR"/>
-          </bean>
-        </property>
     </bean>
     
     <bean class="com.cannontech.web.jws.JnlpController">
@@ -174,11 +160,6 @@
         <property name="appMainClass" value="com.cannontech.tdc.TDCMainFrame"/>
         <property name="appMainClassJar" value="tdc.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/TDC64.gif" />
-        <property name="userChecker">
-          <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createRoleChecker">
-            <constructor-arg value="TABULAR_DISPLAY_CONSOLE"/>
-          </bean>
-        </property>
         <property name="jars">
             <set>
                 <value>graph.jar</value>
@@ -195,11 +176,6 @@
         <property name="appMainClass" value="com.cannontech.graph.GraphClient"/>
         <property name="appMainClassJar" value="graph.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/GraphTrending64.gif" />
-        <property name="userChecker">
-          <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createRoleChecker">
-            <constructor-arg value="TRENDING"/>
-          </bean>
-        </property>
     </bean>
     
     <bean class="com.cannontech.web.jws.JnlpController">
@@ -209,11 +185,6 @@
         <property name="appMainClass" value="com.cannontech.esub.editor.Editor"/>
         <property name="appMainClassJar" value="esub-editor.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/Esubstation64.gif" />
-        <property name="userChecker">
-          <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createRoleChecker">
-            <constructor-arg value="APPLICATION_ESUBSTATION_EDITOR"/>
-          </bean>
-        </property>
         <property name="jars">
             <set>
                 <value>esub.jar</value>
@@ -229,11 +200,6 @@
         <property name="appMainClass" value="com.cannontech.clientutils.commander.YukonCommander"/>
         <property name="appMainClassJar" value="yc.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/Commander64.gif" />
-        <property name="userChecker">
-          <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createPropertyChecker">
-            <constructor-arg value="ENABLE_CLIENT_COMMANDER"/>
-          </bean>
-        </property>
     </bean>
     
     <!--  This controller handles piping the JARs back to the JWS client. -->

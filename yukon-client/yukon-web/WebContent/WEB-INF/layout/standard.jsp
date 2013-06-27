@@ -1,11 +1,11 @@
 <%@ page errorPage="/internalError.jsp" %>
-<%@ page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
 
 <!DOCTYPE html>
 <html>
@@ -55,6 +55,7 @@
         </c:forEach>
     </head>
 <body class="<c:out value="${module.moduleName}"/>_module">
+<cti:msgScope paths="layout.standard">
 
 <div id="modal_glass" style="display:none;">
     <div class="tint"></div>
@@ -175,9 +176,16 @@
     <div class="utility">
         <div class="footerNav">
             <ul>
-                <li><a href="/support">Support</a></li>
-                <li><a href="/support/sitemap">Site Map</a></li>
-                <li><a href="javascript:void(0);" class="f_apps_launcher">Apps</a></li>
+                <li><a href="/support"><cti:msg2 key=".support"/></a></li>
+                <li><a href="/support/sitemap"><cti:msg2 key=".siteMap"/></a></li>
+                <cti:checkRolesAndProperties value="JAVA_WEB_START_LAUNCHER_ENABLED">
+                    <li><a href="javascript:void(0);" id=appsLauncher><cti:msg2 key=".applications"/></a></li>
+                    <dialog:inline id="yukonApplicationDialog" okEvent="none" nameKey="applications" on="#appsLauncher"
+                        options="{width: 400, 'buttons': [], 'position' : 'relative'}">
+                        <!--  AJAX ME IN BETCH -->
+                        <c:import url="/jws/applications"/>
+                    </dialog:inline>
+                </cti:checkRolesAndProperties>
                 <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
                     <li><a href="/support/development/uiDemos/main">Development</a></li>
                 </cti:checkGlobalRolesAndProperties>
@@ -188,34 +196,34 @@
         <div class="footerNav clearfix">
             <div class="wrapper">
                 <div class="legal">
-                    <p class="copyright"><cti:msg key="yukon.web.layout.standard.copyright"></cti:msg></p>
+                    <p class="copyright"><cti:msg2 key=".copyright"/></p>
                     <ul>
                         <li>
-                            <cti:msg key="yukon.web.layout.standard.yukonVersion" arguments="${yukonVersion}"/>
+                            <cti:msg2 key=".yukonVersion" arguments="${yukonVersion}"/>
                         </li>
                         <li>
-                            <cti:msg key="yukon.web.layout.standard.generatedAt" /><cti:formatDate type="FULL" value="${currentTime}"/>
+                            <cti:msg2 key=".generatedAt" /><cti:formatDate type="FULL" value="${currentTime}"/>
                         </li>
                         
                         <c:if test="${not empty energyCompanyName}">
                             <li>
-                                <cti:msg key="yukon.web.layout.standard.energyCompany" arguments="${energyCompanyName}"/>
+                                <cti:msg2 key=".energyCompany" arguments="${energyCompanyName}"/>
                             </li>
                         </c:if>
                            
                            <li>
-                            <cti:msg key="yukon.web.layout.standard.username" arguments="${username}"/>
+                            <cti:msg2 key=".username" arguments="${username}"/>
                         </li>
                         <cti:checkGlobalRolesAndProperties value="I18N_DESIGN_MODE">
                             <li>
-                                <cti:msg key="yukon.web.layout.standard.moduleName" arguments="${info.moduleName}" />, <cti:msg key="yukon.web.layout.standard.pageName" arguments="${info.pageName}" />
+                                <cti:msg2 key=".moduleName" arguments="${info.moduleName}" />, <cti:msg2 key=".pageName" arguments="${info.pageName}" />
                             </li>
                         </cti:checkGlobalRolesAndProperties>
                     </ul>
                     <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
                         <ul>
                             <li>
-                                <cti:msg key="yukon.web.layout.standard.buildInfo" arguments="${buildInfo}"/>
+                                <cti:msg2 key=".buildInfo" arguments="${buildInfo}"/>
                             </li>
                             <li>${servletPath}</li>
                         </ul>
@@ -227,5 +235,6 @@
 </footer>
    
 </div>
+</cti:msgScope>
 </body>
 </html>
