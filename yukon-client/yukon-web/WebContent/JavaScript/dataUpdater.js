@@ -8,12 +8,12 @@ function initiateCannonDataUpdate(url, delayMs) {
         failureCount = 0;
     function processResponseCallback(transport) {
         var someValueHasUpdated = false,
-            content = transport.responseText,
-            jqresponseStruc = JSON.parse(content),
+            responseStruc,
             updateElems,
             updateClassElems,
             updateColorElems;
-        
+
+        responseStruc = transport;
         // looks like stuff is working, hide error div
         jQuery('#dataUpdaterErrorDiv').hide();
         failureCount = 0;
@@ -26,7 +26,7 @@ function initiateCannonDataUpdate(url, delayMs) {
             if ('undefined' === typeof attVal) {
                 return;
             }
-            newData = jqresponseStruc.data[attVal];
+            newData = responseStruc.data[attVal];
             if ('undefined' !== typeof newData) {
                 if (jQuery(val).html() !== newData) {
                     // escape html: creates a div in isolation, sets its text
@@ -51,7 +51,7 @@ function initiateCannonDataUpdate(url, delayMs) {
             if ('undefined' === typeof id) {
                 return;
             }
-            newData = jqresponseStruc.data[id];
+            newData = responseStruc.data[id];
             className = jQuery(val).attr('class');
             if ('undefined' !== typeof newData && className !== newData) {
                 jQuery(val).attr('class', newData);
@@ -83,7 +83,7 @@ function initiateCannonDataUpdate(url, delayMs) {
             if ('undefined' === typeof id) {
                 return;
             }
-            newData = jqresponseStruc.data[id];
+            newData = responseStruc.data[id];
             newData = 'undefined' === typeof newData ? newData : newData.toLowerCase();
             format = jQuery(val).attr('data-format');
             backgroundColor = jQuery(val).css('background-color');
@@ -117,7 +117,7 @@ function initiateCannonDataUpdate(url, delayMs) {
                 return;
             }
             jQuery.each(idMap, function(key, val) {
-                var newData = jqresponseStruc.data[idMap[key]];
+                var newData = responseStruc.data[idMap[key]];
                 if ('undefined' !== typeof newData) {
                     gotNewData = true;
                     allIdentifierValues[key] = newData;
@@ -129,7 +129,7 @@ function initiateCannonDataUpdate(url, delayMs) {
         });
 
         // save latest date
-        lastUpdate = jqresponseStruc.toDate;
+        lastUpdate = responseStruc.toDate;
         // schedule next update
         if (_updaterTimeout) {
             clearTimeout(_updaterTimeout);
@@ -152,6 +152,7 @@ function initiateCannonDataUpdate(url, delayMs) {
     };
     
     var warnStaleData = function() {
+        console.log("warnStaleData");
         jQuery('#updatedWarning').dialog('open');
     };
     
@@ -197,19 +198,21 @@ function initiateCannonDataUpdate(url, delayMs) {
             return;
         }
         json_reqData = JSON.stringify(reqData);
-
-        new Ajax.Request(url, {
-            method: 'post',
-            postBody: json_reqData,
-            contentType: 'application/json',
-            on200: processResponseCallback, // this odd combination seems to be the only
-                                            // way to detect that the server is shutdown
-                                            // note: the onSuccess will not be called when
-                                            // the on200 is called
-            on409: warnStaleData, // Bad data on webpage, ask user if they want to reload
-            onSuccess: failureCallback,     
-            onFailure: failureCallback,      
-            onException: failureCallback    
+        jQuery.ajax({
+            url: url,
+            type: 'POST',
+            data: json_reqData,
+            contentType: 'application/json; charset=utf-8',
+            dataType: "json",
+            statusCode: {
+                200: processResponseCallback, // this odd combination seems to be the only
+                                              // way to detect that the server is shutdown
+                                              // note: the success will not be called when
+                                              // the 200 is called
+                409: warnStaleData // Bad data on webpage, ask user if they want to reload
+            },
+            success : failureCallback,
+            error : failureCallback
         });
         reqData.data = [];
         

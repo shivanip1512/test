@@ -145,7 +145,7 @@ if(typeof(Yukon.Flot) === 'undefined'){
 
             //assumes data is of type Hash
             return function(data) {
-                var newLargestTime = data.get('largestTime');
+                var newLargestTime = data.largestTime;
                 if (typeof Yukon.Flot.charts[chartId].mostRecentPointTime === 'undefined') {
                     Yukon.Flot.charts[chartId].mostRecentPointTime = newLargestTime;
                 }

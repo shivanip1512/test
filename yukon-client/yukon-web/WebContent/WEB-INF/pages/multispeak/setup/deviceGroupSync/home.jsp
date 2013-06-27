@@ -32,7 +32,7 @@
 		function toggleSyncNowControls() {
 		  //assumes data is of type Hash
 			return function(data) {
-		        if (data.get('value') == 'true') {
+		        if (data.value === 'true') {
 		            $('deviceGroupSyncTypeSelect').disable();
 		            $('startButton').disabled = true;
 		        } else {

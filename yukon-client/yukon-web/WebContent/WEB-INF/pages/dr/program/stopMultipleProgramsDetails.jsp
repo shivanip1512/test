@@ -95,6 +95,7 @@ jQuery(function(){
     }
     
     allStopProgramChecked = function() {
+        var index;
         allChecked = jQuery("#allProgramsCheckbox").is(":checked");
         for (index = 0; index < ${fn:length(programs)}; index++) {
             if (allChecked && !jQuery("#stopProgramCheckbox"+index).is(":disabled")) {
@@ -107,6 +108,7 @@ jQuery(function(){
     }
     
     allUseStopGearChecked = function() {
+        var index;
         allChecked = jQuery("#allProgramsUseStopGearsCheckbox").is(":checked");
         for (index = 0; index < ${fn:length(programs)}; index++) {
             if (allChecked) {
@@ -123,7 +125,8 @@ jQuery(function(){
     }
     
     updateComponents = function() {
-        var stopNow = jQuery("#stopNowCheckbox").is(':checked');
+        var stopNow = jQuery("#stopNowCheckbox").is(':checked'),
+            index;
         setDateTimeInputEnabled('stopDate', !stopNow);
         
         for (index = 0; index < ${fn:length(programs)}; index++) {
@@ -184,9 +187,8 @@ jQuery(function(){
     
 
     updateProgramState = function(index) {
-        //assumes data is of type Hash
         return function(data) {
-            if (data.get('state').startsWith('running') || data.get('state').startsWith('scheduled')) {
+            if (0 === data.state.indexOf('running') || 0 === data.state.indexOf('scheduled')) {
                 jQuery('#stopProgramCheckbox' + index).removeAttr("disabled");
             } else {
                 jQuery('#stopProgramCheckbox' + index).attr("disabled", "disabled");
