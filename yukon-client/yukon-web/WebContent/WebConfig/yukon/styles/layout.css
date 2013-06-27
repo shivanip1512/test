@@ -36,6 +36,7 @@ nav, header, footer, section, aside, hgroup, section {display:block;}
 .yukon-header .nav ul li {background-position: 0 0;position:relative;margin:0 -7px 0 0; padding:0 0 0 1px; float:left;}
 
 .yukon-header .nav ul .logo {padding: 0 22px 0 0;width: 163px;}
+.yukon-header .nav ul .logo, .yukon-header .nav ul .logo:hover {background: none;}
 .yukon-header .nav ul .logo a, .yukon-header .nav ul .logo:hover a, .yukon-header .nav ul .logo:focus a {margin-left: 0;padding: 0;display: block;background: 0;}
 .yukon-header .nav ul .logo a img {margin: 20px 0 0 0;display: block;}
 
