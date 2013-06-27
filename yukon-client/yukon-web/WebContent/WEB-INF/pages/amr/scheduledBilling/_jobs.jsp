@@ -7,5 +7,5 @@
 <cti:verifyRolesAndProperties value="APPLICATION_BILLING" />
 
 <cti:msgScope paths="modules.amr.billing.jobs">
-    <tags:scheduledFileExportJobs searchResult="${filterResult}" jobType="${jobType}" baseUrl="jobs" editUrl="showForm" deleteUrl="delete" />
+    <tags:scheduledFileExportJobs searchResult="${filterResult}" jobType="${jobType}" baseUrl="jobs" editUrl="showForm" deleteUrl="delete" ajaxEnableUrls="true" />
 </cti:msgScope>

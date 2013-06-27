@@ -181,6 +181,9 @@ if(typeof(MeteringBilling) === 'undefined') {
         do_schedules_job_list_button : function(event) {
             var btn = jQuery(event.currentTarget);
             var href = btn.attr('data-url');
+            if (href == null) { // history: navigate to the list
+                return true;
+            }
             var action = href.substr(0, href.indexOf("?"));
             var params = href.substr(href.indexOf("?")+1);
             if (action == "delete") {
@@ -192,7 +195,7 @@ if(typeof(MeteringBilling) === 'undefined') {
                 MeteringBilling._show_edit_schedule_job(btn, params);
                 return false;
             }
-            return true; // Navigate to show the list for the job.
+            return true; // This should never be hit.
         },
         
         /**

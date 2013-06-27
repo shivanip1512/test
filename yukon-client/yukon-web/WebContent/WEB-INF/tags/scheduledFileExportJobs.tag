@@ -10,6 +10,7 @@
 <%@ attribute name="baseUrl" %>
 <%@ attribute name="editUrl" required="true" %>
 <%@ attribute name="deleteUrl" required="true" %>
+<%@ attribute name="ajaxEnableUrls"  type="java.lang.Boolean" %>
 
 <cti:msgScope paths="yukon.web.modules.amr.scheduledFileExport.jobs">
 
@@ -38,7 +39,7 @@
 						<cti:url var="finalEditUrl" value="${editUrl}">
 							<cti:param name="jobId" value="${job.id}"/>
 						</cti:url>
-						<cti:button nameKey="edit" renderMode="image" href="${finalEditUrl}" icon="icon-pencil"/>
+						<cti:button nameKey="edit" renderMode="image" href='${ajaxEnableUrls ? "javascript:void(0);" : finalEditUrl}' data-url='${ajaxEnableUrls ? finalEditUrl : ""}' icon="icon-pencil"/>
 						
                         <cti:msg2 var="initiator" key="yukon.web.modules.support.fileExportHistory.types.${jobType}"/>
                         <cti:msg2 var="scheduleAppender" key="yukon.web.modules.support.fileExportHistory.types.scheduleAppender"/>
@@ -46,11 +47,11 @@
 							<cti:param name="initiator" value="${initiator} ${scheduleAppender} ${job.name}"/>
 						</cti:url>
 						<cti:button nameKey="history" renderMode="image" href="${historyUrl}" icon="icon-script"/>
-						
+
 						<cti:url var="finalDeleteUrl" value="${deleteUrl}">
 							<cti:param name="jobId" value="${job.id}"/>
 						</cti:url>
-						<cti:button id="deleteItem_${job.id}" nameKey="delete" renderMode="image" href="${finalDeleteUrl}" icon="icon-cross"/>
+						<cti:button id="deleteItem_${job.id}" nameKey="delete" renderMode="image" href='${ajaxEnableUrls ? "javascript:void(0);" : finalDeleteUrl}' data-url='${ajaxEnableUrls ? finalDeleteUrl : ""}' icon="icon-cross"/>
                         <dialog:confirm on="#deleteItem_${job.id}" nameKey="confirmDelete" argument="${job.name}"/>
 					</td>
 				</tr>
