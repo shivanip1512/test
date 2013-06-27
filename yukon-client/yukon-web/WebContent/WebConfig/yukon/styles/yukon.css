@@ -140,17 +140,17 @@ table.nowrap th, table.nowrap td {white-space: nowrap;}
 .removeColumn button, .removeColumn .button {float:right;}
 
 /* PROGRESS BARS */
-div.progressBar .box {margin-right: 5px;}
-div.progressBarBorder {height: 12px;width: 102px;border: 1px solid black;background-color: #ECECEC;}
-div.progressBarInnerSuccess,div.progressBarInnerFailure {position: absolute;}
-div.progressBarInner, div.progressBarInnerSuccess, div.progressBarInnerFailure {height: 12px;width: 0px;}
-div.progressBarInner, div.progressBarInnerSuccess {
+.progressBar .box {margin-right: 5px;}
+.progressBarBorder {height: 12px;width: 102px;border: 1px solid black;background-color: #ECECEC;}
+.progressBarInnerSuccess,div.progressBarInnerFailure {position: absolute;}
+.progressBarInner, div.progressBarInnerSuccess, div.progressBarInnerFailure {height: 12px;width: 0px;}
+.progressBarInner, div.progressBarInnerSuccess {
     background: #3A7448; /* in case the browser specific one below fails */
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#529252', endColorstr='#3A7448'); /*for IE */
     background: -webkit-gradient(linear, left top, left bottom, from(#3A7448), color-stop(0.1, #529252), color-stop(0.50, #3A7448), color-stop(0.90, #529252), to(#3A7448)); /* for webkit browsers */
     background: -moz-linear-gradient(top, #3A7448, #3A7448 10%, #529252, #3A7448 50%, #529252 90%, #3A7448); /* for firefox 3.6+ */
 }
-div.progressBarInnerFailure {
+.progressBarInnerFailure {
     background: #8C0C10; /* in case the browser specific one below fails */
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#BF0F12', endColorstr='#8C0C10'); /*for IE*/
     background: -webkit-gradient(linear, left top, left bottom, from(#8C0C10), color-stop(0.1, #BF0F12), color-stop(0.50, #8C0C10), color-stop(0.90, #BF0F12), to(#8C0C10)); /* for webkit browsers */
@@ -158,6 +158,12 @@ div.progressBarInnerFailure {
 }
 .progressBarPercentComplete, .progressBarCompletedCount {font-size: 11px;}
 .progressBar .scheduledRequestProgressBarBorder {width: 55px;}
+
+.resultBar {height: 14px;border: 1px solid grey;overflow: hidden;box-sizing: content-box;-moz-box-sizing: content-box;}
+.resultBar > div {display: inline-block;position: relative;float: left;height: 100%;}
+.resultBar .DATA_PRESENT {background-color: #228855;}
+.resultBar .DATA_MISSING {background: white;}
+
 
 /* LISTS */
 .buttonStack {padding: 0; list-style-type: none; margin: 0;}

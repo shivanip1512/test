@@ -72,7 +72,7 @@
         </table>
     </c:when>
     <c:otherwise>
-    	<i:inline key=".noMonitors"/>
+    	<span class="empty-list"><i:inline key=".noMonitors"/></span>
     </c:otherwise>
 </c:choose>
 

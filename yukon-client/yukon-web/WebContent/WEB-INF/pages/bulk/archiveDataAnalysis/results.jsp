@@ -109,22 +109,25 @@
     <tags:pagedBox2 nameKey="resultsTable" searchResult="${result.searchResult}" baseUrl="results" >
         
         <table class="compactResultsTable">
-        
-            <tr>
-                <th><i:inline key=".deviceName"/></th>
-                <th><i:inline key=".deviceType"/></th>
-                <th><i:inline key=".holes"/></th>
-                <th><i:inline key=".timeline" arguments="${intervals}"/></th>
-            </tr>
-        
-            <c:forEach items="${result.searchResult.resultList}" var="row">
-                <tr>
-                    <td><cti:deviceName deviceId="${row.id.paoId}"/></td>
-                    <td><cti:formatObject value="${row.id.paoType}"/></td>
-                    <td>${row.holeCount}</td>
-                    <td><amr:analysisResult data="${row}" width="${barWidth}"/></td>
-                </tr>
-            </c:forEach>
+            <thead>
+	            <tr>
+	                <th><i:inline key=".deviceName"/></th>
+	                <th><i:inline key=".deviceType"/></th>
+	                <th><i:inline key=".holes"/></th>
+	                <th><i:inline key=".timeline" arguments="${intervals}"/></th>
+	            </tr>
+	        </thead>
+	        <tfoot></tfoot>
+	        <tbody>
+	            <c:forEach items="${result.searchResult.resultList}" var="row">
+	                <tr>
+	                    <td><cti:deviceName deviceId="${row.id.paoId}"/></td>
+	                    <td><cti:formatObject value="${row.id.paoType}"/></td>
+	                    <td>${row.holeCount}</td>
+	                    <td><amr:analysisResult data="${row}" width="${barWidth}"/></td>
+	                </tr>
+	            </c:forEach>
+            </tbody>
         </table>
         
     </tags:pagedBox2>

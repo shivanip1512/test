@@ -13,11 +13,11 @@
         <cti:dataGridCell>
         <tags:boxContainer2 nameKey="setupContainer" hideEnabled="false">
             <form:form id="saveForm" commandName="deviceReconfigOptions" action="/stars/operator/inventory/deviceReconfig/save" method="post">
-                <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
-            
-                <tags:selectedInventory inventoryCollection="${inventoryCollection}" id="inventoryCollection"/>
                 
-                <br><br>
+                <div class="stacked">
+	                <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
+	                <tags:selectedInventory inventoryCollection="${inventoryCollection}" id="inventoryCollection"/>
+                </div>
                 
                 <tags:formElementContainer nameKey="configurationOptions">
                     <tags:nameValueContainer2>
@@ -27,7 +27,7 @@
                 </tags:formElementContainer>
                 
                 <div class="pageActionArea">
-                    <cti:button nameKey="save" type="submit"/>
+                    <cti:button nameKey="save" type="submit" classes="primary action"/>
                     <cti:button nameKey="cancel" name="cancelButton" type="submit"/>
                 </div>
             </form:form>
@@ -47,45 +47,34 @@
                     <c:otherwise>
                     
                         <table class="compactResultsTable">
-                    
-                            <tr>
-                                <th><i:inline key="yukon.web.widgets.commandScheduleWidget.start"/></th>
-                                <th><i:inline key="yukon.web.widgets.commandScheduleWidget.runPeriod"/></th>
-                                <th><i:inline key="yukon.web.widgets.commandScheduleWidget.delayPeriod"/></th>
-                                <th style="text-align:right;"><i:inline key="yukon.web.widgets.commandScheduleWidget.enabled"/></th>
-                            </tr>
-                        
-                            <c:forEach var="schedule" items="${schedules}">
-                            
-                                <tr>
-                                    
-                                    <td>
-                                        <span><cti:formatCron value="${schedule.startTimeCronString}"/></span>
-                                    </td>
-                                    
-                                    <td>
-                                        <span><cti:formatPeriod type="HM_SHORT" value="${schedule.runPeriod}"/></span>
-                                    </td>
-                                    
-                                    <td>
-                                        <span><cti:formatPeriod type="S" value="${schedule.delayPeriod}"/></span>
-                                    </td>
-                                    
-                                    <td style="text-align:right;">
-                                        <c:choose>
-                                            <c:when test="${schedule.enabled}">
-                                                <span class="successMessage"><i:inline key=".scheduleEnabled"/></span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span class="errorMessage"><i:inline key=".scheduleDisabled"/></span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                    
-                                </tr>
-                            
-                            </c:forEach>
-                        
+                            <thead>
+	                            <tr>
+	                                <th><i:inline key="yukon.web.widgets.commandScheduleWidget.start"/></th>
+	                                <th><i:inline key="yukon.web.widgets.commandScheduleWidget.runPeriod"/></th>
+	                                <th><i:inline key="yukon.web.widgets.commandScheduleWidget.delayPeriod"/></th>
+	                                <th style="text-align:right;"><i:inline key="yukon.web.widgets.commandScheduleWidget.enabled"/></th>
+	                            </tr>
+	                        </thead>
+	                        <tfoot></tfoot>
+	                        <tbody>
+	                            <c:forEach var="schedule" items="${schedules}">
+	                                <tr>
+	                                    <td><span><cti:formatCron value="${schedule.startTimeCronString}"/></span></td>
+	                                    <td><span><cti:formatPeriod type="HM_SHORT" value="${schedule.runPeriod}"/></span></td>
+	                                    <td><span><cti:formatPeriod type="S" value="${schedule.delayPeriod}"/></span></td>
+	                                    <td>
+	                                        <c:choose>
+	                                            <c:when test="${schedule.enabled}">
+	                                                <span class="successMessage"><i:inline key=".scheduleEnabled"/></span>
+	                                            </c:when>
+	                                            <c:otherwise>
+	                                                <span class="errorMessage"><i:inline key=".scheduleDisabled"/></span>
+	                                            </c:otherwise>
+	                                        </c:choose>
+	                                    </td>
+	                                </tr>
+	                            </c:forEach>
+                            </tbody>
                         </table>
                     </c:otherwise>
                 </c:choose>

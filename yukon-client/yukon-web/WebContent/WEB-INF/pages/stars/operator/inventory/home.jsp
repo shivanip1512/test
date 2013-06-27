@@ -28,8 +28,8 @@ function addMeter() {
 }
 
 function showFileUpload() {
-	var buttons = [{text: '${uploadText}', click: function() {jQuery('#fileUploadPopup form').submit();}}
-                  ,{text: '${cancelText}', click: function() {jQuery('#fileUploadPopup input[type=file]').val('');jQuery(this).dialog("close");}}];
+	var buttons = [{text: '${cancelText}', click: function() {jQuery('#fileUploadPopup input[type=file]').val('');jQuery(this).dialog("close");}},
+	               {text: '${uploadText}', click: function() {jQuery('#fileUploadPopup form').submit();}, class: 'primary action'}];
     jQuery('#fileUploadPopup').dialog({width:500, 'buttons': buttons});
 }
 </script>
