@@ -72,7 +72,7 @@ input[type=email], input[type=number], input[type=password], input[type=tel], in
     -o-transition: border .1s ease-in-out,background-color .1s ease-in-out;
     transition: border .1s ease-in-out,background-color .1s ease-in-out;
 }
-input[type=email], input[type=number], input[type=password], input[type=tel], input[type=text], input[type=url], select:not([multiple]) {height: 26px;}
+input[type=email], input[type=number], input[type=password], input[type=tel], input[type=text], input[type=url], select:not([multiple]):not([size]) {height: 26px;}
 input[type=email]:hover, input[type=number]:hover, input[type=password]:hover, input[type=tel]:hover, input[type=text]:hover, input[type=url]:hover, select:not([multiple]):hover {
 	border: 1px solid #b9b9b9;
 	border-top: 1px solid #a0a0a0;
@@ -113,7 +113,7 @@ input[type=radio]:focus {outline:none;}
 
 /* hack to achieve webkit only css */
 @media screen and (-webkit-min-device-pixel-ratio:0) {
-    select:not([multiple]) {background: white url(/WebConfig/yukon/Icons/silk/bullet_arrow_down.png) right no-repeat;padding-right: 16px;}
+    select:not([multiple]):not([size]) {background: white url(/WebConfig/yukon/Icons/silk/bullet_arrow_down.png) right no-repeat;padding-right: 16px;}
 }
 
 /* VERTICAL MENUS */

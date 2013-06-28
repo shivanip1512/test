@@ -9,7 +9,7 @@
     <h3><cti:msg2 key=".availableFormats"/></h3>
     <div>
         <div>
-            <select style="width:275px;" id="availableFormat" 
+            <select style="width:275px;" id="availableFormat" size="10" 
              name="availableFormat">
         
                 <c:forEach var="elem" items="${allRows}">
