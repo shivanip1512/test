@@ -178,6 +178,8 @@
     <entry key="yukon.web.components.button.down.hoverText">Move Down</entry>
 
     <entry key="yukon.web.components.button.search.label">Search</entry>
+    <entry key="yukon.web.components.button.searchResults.label">Back to Search Results</entry>
+    <entry key="yukon.web.components.button.searchResults.hoverText">Back to Search Results</entry>
     <entry key="yukon.web.components.button.download.label">Download</entry>
     <entry key="yukon.web.components.button.upload.label">Upload</entry>
     <entry key="yukon.web.components.button.showAll.label">Show All</entry>

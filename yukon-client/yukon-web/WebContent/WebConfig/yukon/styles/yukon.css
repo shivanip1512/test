@@ -73,7 +73,6 @@ input[type=email], input[type=number], input[type=password], input[type=tel], in
     transition: border .1s ease-in-out,background-color .1s ease-in-out;
 }
 input[type=email], input[type=number], input[type=password], input[type=tel], input[type=text], input[type=url], select:not([multiple]) {height: 26px;}
-
 input[type=email]:hover, input[type=number]:hover, input[type=password]:hover, input[type=tel]:hover, input[type=text]:hover, input[type=url]:hover, select:not([multiple]):hover {
 	border: 1px solid #b9b9b9;
 	border-top: 1px solid #a0a0a0;
@@ -81,13 +80,32 @@ input[type=email]:hover, input[type=number]:hover, input[type=password]:hover, i
 	-moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
 	box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
 }
-
 input[type=email]:focus, input[type=number]:focus, input[type=password]:focus, input[type=tel]:focus, input[type=text]:focus, input[type=url]:focus, select:not([multiple]):focus {
 	outline: none;
 	border: 1px solid #06c;
 	-webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
 	-moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
     box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+}
+input[type=email].left, input[type=number].left, input[type=password].left, input[type=tel].left, input[type=text].left, input[type=url].left, select.left,
+input[type=email].middle, input[type=number].middle, input[type=password].middle, input[type=tel].middle, input[type=text].middle, input[type=url].middle, select.middle {
+    border-top-right-radius: 0;
+    -moz-border-top-right-radius: 0;
+    -webkit-border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    -moz-border-bottom-right-radius: 0;
+    -webkit-border-bottom-right-radius: 0;
+}
+input[type=email].right, input[type=number].right, input[type=password].right, input[type=tel].right, input[type=text].right, input[type=url].right, select.right,
+input[type=email].middle, input[type=number].middle, input[type=password].middle, input[type=tel].middle, input[type=text].middle, input[type=url].middle, select.middle {
+    border-left: 0;
+    
+    border-top-left-radius: 0;
+    -moz-border-top-left-radius: 0;
+    -webkit-border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    -moz-border-bottom-left-radius: 0;
+    -webkit-border-bottom-left-radius: 0;
 }
 
 input[type=checkbox], input[type=radio] {margin: 3px;}

@@ -154,6 +154,7 @@
 <script type="text/javascript">
   jQuery('#b-search-results').attr("data-href", "${searchResults}");
   jQuery('#b-search-results').attr("title", "<cti:msg2 key='yukon.web.backToSearchResults'/>");
+  jQuery('.yukon-search-form .search-field').addClass('right');
   jQuery('#b-search-results').show();
 </script>
 </c:if>
