@@ -75,7 +75,7 @@ jQuery(function() {
         <c:if test="${scheduleName == exportFileName}">
             <c:set var="checked" value=" checked=\"true\""/>
         </c:if>
-        <input id="sameAsSchedName" type="checkbox" ${checked} }/>
+        <input id="sameAsSchedName" type="checkbox" ${checked}/>
         <label for="sameAsSchedName"><cti:msg2 key=".sameAsScheduleName"/></label>
     </tags:nameValue2>
 

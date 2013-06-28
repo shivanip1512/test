@@ -27,15 +27,15 @@ import com.cannontech.web.user.model.ChangePassword;
  */
 @Component
 public class ChangePasswordValidator implements Validator {
-    
-    public String FIELDNAME_ORIGINAL_PASSWORD = "oldPassword";
-    public String FIELDNAME_NEW_PASSWORD = "password1";
-    public String FIELDNAME_CONFIRM_PASSWORD = "password2";
 
-    public String MSGKEY_BASE = "yukon.web.modules.user.profile.changePassword.error.";
-    public final String MSGKEY_CANNOT_VALIDATE_OBJECT_GIVEN = "yukon.common.validator.error.wrong_object";
+    private String FIELDNAME_ORIGINAL_PASSWORD = "oldPassword";
+    private String FIELDNAME_NEW_PASSWORD = "password1";
+    private String FIELDNAME_CONFIRM_PASSWORD = "password2";
 
-    public final static int PASSWORD_MAX_LENGTH = LoginPasswordValidator.PASSWORD_MAXIMUM_CHAR_LENGTH;
+    private String MSGKEY_BASE = "yukon.web.modules.user.profile.changePassword.error.";
+    private final String MSGKEY_CANNOT_VALIDATE_OBJECT_GIVEN = "yukon.common.validator.error.wrong_object";
+
+    private final static int PASSWORD_MAX_LENGTH = LoginPasswordValidator.PASSWORD_MAXIMUM_CHAR_LENGTH;
 
     private boolean addMessageConfirmPasswordDoesntMatch;
 

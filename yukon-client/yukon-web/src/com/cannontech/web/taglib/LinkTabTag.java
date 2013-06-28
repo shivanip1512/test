@@ -1,18 +1,23 @@
 package com.cannontech.web.taglib;
 
 import java.io.IOException;
+import java.io.StringWriter;
 
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.JspTag;
+import javax.servlet.jsp.tagext.SimpleTagSupport;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.cannontech.common.i18n.MessageSourceAccessor;
+
 
 /**
- * TODO FIXME: Needs to extend a new version of YukonTagSupport which extends from BodyTagSupport
- *              so that we can use the tag content as the URL so appropriate URL tags can be used.
- *              AND??? so we can insert SelectorKey instead of having to pre-interpret i18n keys outside the tags... 
- *
- *             IE. THIS IS THE MOST INCONVENIENT CONVENIENCE TAG POSSIBLE.
+ * @param selectorName Human-readable text
+ * @param selectorKey  i18n key: used to make human-readable text and overwrite selectorName.
+ *                     ONE OF THE TWO OF THEM are required inputs.
+ * @param tabHref Set directly OR pass in as body of the tag
  */
 public class LinkTabTag extends YukonTagSupport {
 
@@ -23,16 +28,43 @@ public class LinkTabTag extends YukonTagSupport {
 
     @Override
     public void doTag() throws JspException, IOException {
-        tabId = ! StringUtils.isEmpty(tabId) ? tabId : UniqueIdentifierTag.generateIdentifier(getJspContext(), "fauxTabbedContentSelectorContent_");
 
+        if (StringUtils.isBlank(selectorName)) {
+            throw new IllegalArgumentException("You must define either 'selectorName' or 'selectorKey' in every LinkTabTag.");
+        }
+
+        tabId = ! StringUtils.isEmpty(tabId) ? tabId : UniqueIdentifierTag.generateIdentifier(getJspContext(), "linkTabContentSelectorContent_");
+
+        JspTag parent = findAncestorWithClass(this, LinkTabbedTag.class);
+        if (parent == null) {
+            throw new JspTagException("LinkTabTag must be used within a LinkTabbedTag");
+        }
         // tell container tag about ourself
-        LinkTabbedTag parent = getParent(LinkTabbedTag.class);
-        parent.addTab(this);
+        LinkTabbedTag parentListTag = (LinkTabbedTag) parent;
+        parentListTag.addTab(this);
 
-        if (StringUtils.isBlank(tabHref)) {
+        String theUrl = tabHref;
+        if (theUrl == null) {
+            StringWriter bodyWriter = new StringWriter();
+            if (getJspBody() != null) {
+                getJspBody().invoke(bodyWriter);
+                theUrl = bodyWriter.toString().trim();
+            }
+        }
+
+        tabHref = theUrl;
+        if (StringUtils.isBlank(theUrl)) {
             tabHref = "";
         }
     }
+
+    public void setSelectorKey(String newKey) {
+        if (!StringUtils.isBlank(newKey)) {
+            MessageSourceAccessor accessor = getMessageSource();
+            selectorName = accessor.getMessage(newKey);
+        }
+    }
+
 
     public String getSelectorName() {
         return selectorName;

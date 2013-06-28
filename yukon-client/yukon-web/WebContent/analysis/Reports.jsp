@@ -82,66 +82,66 @@
 <c:set var="reportGroup" value="<%= reportGroup %>" />
 <cti:linkTabbedContainer mode="section">
     <cti:checkRolesAndProperties value="AMR_REPORTS_GROUP">
-        <cti:msg var="tab_name" key="yukon.web.menu.config.reporting.reports.metering.tab.title" />
-        <c:url var="tab_url" value="/analysis/Reports.jsp?groupType=METERING" />
-        <c:set var="on_tab" value='${reportGroup == "METERING"}'/>
-        <cti:linkTab selectorName="${tab_name}" tabHref="${tab_url}" initiallySelected="${on_tab}"/>
+        <cti:linkTab selectorKey="yukon.web.menu.config.reporting.reports.metering.tab.title"
+                     initiallySelected='${reportGroup == "METERING"}'>
+            <c:url value="/analysis/Reports.jsp?groupType=METERING" />
+        </cti:linkTab>
     </cti:checkRolesAndProperties>
 
     <cti:checkRolesAndProperties value="LOAD_MANAGEMENT_REPORTS_GROUP">
-        <cti:msg var="tab_name" key="yukon.web.menu.config.reporting.reports.management.tab.title" />
-        <c:url var="tab_url" value="/analysis/Reports.jsp?groupType=LOAD_MANAGEMENT" />
-        <c:set var="on_tab" value='${reportGroup == "LOAD_MANAGEMENT"}'/>
-        <cti:linkTab selectorName="${tab_name}" tabHref="${tab_url}" initiallySelected="${on_tab}"/>
+        <cti:linkTab selectorKey="yukon.web.menu.config.reporting.reports.management.tab.title"
+                     initiallySelected='${reportGroup == "LOAD_MANAGEMENT"}'>
+            <c:url value="/analysis/Reports.jsp?groupType=LOAD_MANAGEMENT" />
+        </cti:linkTab>
     </cti:checkRolesAndProperties>
 
     <cti:checkRolesAndProperties value="CAP_CONTROL_REPORTS_GROUP">
-        <cti:msg var="tab_name" key="yukon.web.menu.config.reporting.reports.capcontrol.tab.title" />
-        <c:url var="tab_url" value="/analysis/Reports.jsp?groupType=CAP_CONTROL" />
-        <c:set var="on_tab" value='${reportGroup == "CAP_CONTROL"}'/>
-        <cti:linkTab selectorName="${tab_name}" tabHref="${tab_url}" initiallySelected="${on_tab}"/>
+        <cti:linkTab selectorKey="yukon.web.menu.config.reporting.reports.capcontrol.tab.title"
+                     initiallySelected='${reportGroup == "CAP_CONTROL"}'>
+            <c:url value="/analysis/Reports.jsp?groupType=CAP_CONTROL" />
+        </cti:linkTab>
     </cti:checkRolesAndProperties>
 
     <cti:checkRolesAndProperties value="STARS_REPORTS_GROUP">
-        <cti:msg var="tab_name" key="yukon.web.menu.config.reporting.reports.stars.tab.title" />
-        <c:url var="tab_url" value="/analysis/Reports.jsp?groupType=STARS" />
-        <c:set var="on_tab" value='${reportGroup == "STARS"}'/>
-        <cti:linkTab selectorName="${tab_name}" tabHref="${tab_url}" initiallySelected="${on_tab}"/>
+        <cti:linkTab selectorKey="yukon.web.menu.config.reporting.reports.stars.tab.title"
+                     initiallySelected='${reportGroup == "STARS"}'>
+            <c:url value="/analysis/Reports.jsp?groupType=STARS" />
+        </cti:linkTab>
     </cti:checkRolesAndProperties>
 
     <cti:checkRolesAndProperties value="ADMIN_REPORTS_GROUP">
-        <cti:msg var="tab_name" key="yukon.web.menu.config.reporting.reports.administrator.tab.title" />
-        <c:url var="tab_url" value="/analysis/Reports.jsp?groupType=ADMINISTRATIVE" />
-        <c:set var="on_tab" value='${reportGroup == "ADMINISTRATIVE"}'/>
-        <cti:linkTab selectorName="${tab_name}" tabHref="${tab_url}" initiallySelected="${on_tab}"/>
+        <cti:linkTab selectorKey="yukon.web.menu.config.reporting.reports.administrator.tab.title"
+                     initiallySelected='${reportGroup == "ADMINISTRATIVE"}'>
+            <c:url value="/analysis/Reports.jsp?groupType=ADMINISTRATIVE" />
+        </cti:linkTab>
     </cti:checkRolesAndProperties>
 
     <cti:checkRolesAndProperties value="CI_CURTAILMENT_REPORTS_GROUP">
-        <cti:msg var="tab_name" key="yukon.web.menu.config.reporting.reports.cni.tab.title" />
-        <c:url var="tab_url" value="/analysis/Reports.jsp?groupType=CCURT" />
-        <c:set var="on_tab" value='${reportGroup == "CCURT"}'/>
-        <cti:linkTab selectorName="${tab_name}" tabHref="${tab_url}" initiallySelected="${on_tab}"/>
+        <cti:linkTab selectorKey="yukon.web.menu.config.reporting.reports.cni.tab.title"
+                     initiallySelected='${reportGroup == "CCURT"}'>
+            <c:url value="/analysis/Reports.jsp?groupType=CCURT" />
+        </cti:linkTab>
     </cti:checkRolesAndProperties>
 
     <cti:checkRolesAndProperties value="DATABASE_REPORTS_GROUP">
-        <cti:msg var="tab_name" key="yukon.web.menu.config.reporting.reports.database.tab.title" />
-        <c:url var="tab_url" value="/analysis/Reports.jsp?groupType=DATABASE" />
-        <c:set var="on_tab" value='${reportGroup == "DATABASE"}'/>
-        <cti:linkTab selectorName="${tab_name}" tabHref="${tab_url}" initiallySelected="${on_tab}"/>
+        <cti:linkTab selectorKey="yukon.web.menu.config.reporting.reports.database.tab.title"
+                     initiallySelected='${reportGroup == "DATABASE"}'>
+            <c:url value="/analysis/Reports.jsp?groupType=DATABASE" />
+        </cti:linkTab>
     </cti:checkRolesAndProperties>
 
     <cti:checkRolesAndProperties value="SETTLEMENT_REPORTS_GROUP">
-        <cti:msg var="tab_name" key="yukon.web.menu.config.reporting.reports.settlement.tab.title" />
-        <c:url var="tab_url" value="/analysis/Reports.jsp?groupType=SETTLEMENT" />
-        <c:set var="on_tab" value='${reportGroup == "SETTLEMENT"}'/>
-        <cti:linkTab selectorName="${tab_name}" tabHref="${tab_url}" initiallySelected="${on_tab}"/>
+        <cti:linkTab selectorKey="yukon.web.menu.config.reporting.reports.settlement.tab.title"
+                     initiallySelected='${reportGroup == "SETTLEMENT"}'>
+            <c:url value="/analysis/Reports.jsp?groupType=SETTLEMENT" />
+        </cti:linkTab>
     </cti:checkRolesAndProperties>
 
     <cti:checkRolesAndProperties value="STATISTICAL_REPORTS_GROUP">
-        <cti:msg var="tab_name" key="yukon.web.menu.config.reporting.reports.statistical.tab.title" />
-        <c:url var="tab_url" value="/analysis/Reports.jsp?groupType=STATISTICAL" />
-        <c:set var="on_tab" value='${reportGroup == "STATISTICAL"}'/>
-        <cti:linkTab selectorName="${tab_name}" tabHref="${tab_url}" initiallySelected="${on_tab}"/>
+        <cti:linkTab selectorKey="yukon.web.menu.config.reporting.reports.statistical.tab.title"
+                     initiallySelected='${reportGroup == "STATISTICAL"}'>
+            <c:url value="/analysis/Reports.jsp?groupType=STATISTICAL" />
+        </cti:linkTab>
     </cti:checkRolesAndProperties>
 
 </cti:linkTabbedContainer>
@@ -299,7 +299,7 @@ function makeFirstSelectedFilterValueVisible() {
                 <td class="columnHeader">&nbsp;</td>
                 <td class="columnHeader"><cti:msg key="yukon.web.format"/></td>
 			  </tr>
-			  <tr bgcolor="EEEEEE">
+			  <tr>
                 <td class="main">&nbsp;</td>
                 <td class="main">&nbsp;</td>
                 <td class="main">
@@ -341,7 +341,7 @@ function makeFirstSelectedFilterValueVisible() {
 					  <%}%>
 				  </table>
 				</td>
-                <td bgcolor="EEEEEE" class="main">&nbsp;</td>
+                <td class="main">&nbsp;</td>
 				<td valign="top" style="padding-left:5; padding-top:5">
 				  <table width="100%" border="0" cellspacing="0" cellpadding="0">				
 				    <tr>
@@ -379,7 +379,7 @@ function makeFirstSelectedFilterValueVisible() {
 			    	</tr>
 			      </table>
 			    </td>
-                <td bgcolor="EEEEEE" class="main">&nbsp;</td>
+                <td class="main">&nbsp;</td>
 				<td valign="top" style="padding-left:5; padding-top:5">
 				  <table width="100%" border="0" cellspacing="0" cellpadding="0">				
 				    <tr>
@@ -418,7 +418,7 @@ function makeFirstSelectedFilterValueVisible() {
 			    	</tr>
 			      </table>
 			    </td>
-				<td bgcolor="EEEEEE" class="main">&nbsp;</td>
+				<td class="main">&nbsp;</td>
 				<td valign="top" class="main" style="padding-left:5; padding-top:5">
 	              <table width="100%" border="0" cellspacing="0" cellpadding="0">
 				    <tr>

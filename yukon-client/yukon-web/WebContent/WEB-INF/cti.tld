@@ -2143,9 +2143,15 @@
     <body-content>scriptless</body-content>
      <attribute>
         <name>selectorName</name>
-        <required>true</required>
+        <required>false</required>
         <rtexprvalue>true</rtexprvalue>
         <description>Printable text used within the tab</description>
+    </attribute>
+     <attribute>
+        <name>selectorKey</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>i18n key of string to display in the tab.</description>
     </attribute>
     <attribute>
         <name>initiallySelected</name>
