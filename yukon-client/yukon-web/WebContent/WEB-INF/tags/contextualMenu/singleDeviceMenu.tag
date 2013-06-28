@@ -10,6 +10,6 @@
 
 <cti:default var="menuBeanId" value="meterMenuSingleDevice"/>
 
-<cm::ajaxDropdown menuBeanId="${menuBeanId}" key="${pageScope.key}" containerCssClass="${pageScope.containerCssClass}">
+<cm:ajaxDropdown menuBeanId="${menuBeanId}" key="${pageScope.key}" containerCssClass="${pageScope.containerCssClass}">
 	<input type="hidden" name="deviceId" value="${deviceId}"/>
-</cm::ajaxDropdown>
+</cm:ajaxDropdown>
