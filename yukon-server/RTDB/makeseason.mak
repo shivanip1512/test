@@ -2432,15 +2432,16 @@ memtest.obj:	precompiled.h dllbase.h dsm2.h cticonnect.h yukon.h \
 mgr_config.obj:	precompiled.h mgr_config.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
-		os2_2w32.h numstr.h dsm2err.h words.h optional.h mgr_device.h \
-		rtdb.h hashkey.h hash_functions.h string_utility.h dev_base.h \
-		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
-		boostutil.h tbl_paoexclusion.h row_reader.h rwutil.h \
-		database_connection.h dbaccess.h database_reader.h \
-		boost_time.h rte_base.h dbmemobject.h ctibase.h ctinexus.h \
-		message.h collectable.h tbl_pao_lite.h tbl_rtcomm.h \
-		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
-		logger.h thread.h CtiPCPtrQueue.h msg_signal.h \
+		os2_2w32.h numstr.h dsm2err.h words.h optional.h dbaccess.h \
+		database_connection.h database_reader.h row_reader.h \
+		DeviceConfigLookup.h devicetypes.h pointtypes.h \
+		PointAttribute.h mgr_device.h rtdb.h hashkey.h \
+		hash_functions.h string_utility.h dev_base.h cmdparse.h \
+		ctitokenizer.h parsevalue.h dev_exclusion.h boostutil.h \
+		tbl_paoexclusion.h rwutil.h boost_time.h rte_base.h \
+		dbmemobject.h ctibase.h ctinexus.h message.h collectable.h \
+		tbl_pao_lite.h tbl_rtcomm.h resolvers.h db_entry_defines.h \
+		desolvers.h logger.h thread.h CtiPCPtrQueue.h msg_signal.h \
 		tbl_static_paoinfo.h pointdefs.h encryption.h tbl_base.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
 		slctdev.h smartmap.h readers_writer_lock.h critical_section.h

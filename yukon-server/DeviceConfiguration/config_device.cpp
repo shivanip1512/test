@@ -1,150 +1,193 @@
 #include "precompiled.h"
-
 #include "config_device.h"
-#include <string>
 
-using std::string;
 
 namespace Cti       {
 namespace Config    {
 
-const string TrueString = "true";
 
-DeviceConfig::DeviceConfig(long ID, string& name, string& type) :
-_id(ID), _name(name), _type(type)
+DeviceConfig::DeviceConfig( const long ID, const std::string & name, const std::string & type )
+    :   _id(ID),
+        _name(name),
+        _type(type)
 {
+
 }
 
-DeviceConfig::~DeviceConfig()
-{
-}
 
 // Inserts a value into the mapping, this is a protected function and is
 // not meant to be called by devices
-bool DeviceConfig::insertValue(string identifier, const string& value)
+bool DeviceConfig::insertValue( std::string identifier, const std::string & value )
 {
     CtiToLower(identifier);
-    CtiHashKey insertKey = CtiHashKey(identifier);
+    CtiHashKey insertKey(identifier);
 
     std::pair<ConfigValueMap::iterator, bool> retVal = _configurationValues.insert(ConfigValueMap::value_type(insertKey, value));
 
     return retVal.second;
 }
 
-// getValue will look for the key and set value to the value of that key.
-// returns true if successful.
-bool DeviceConfig::getValue(std::string key, string& value)
+
+boost::optional<std::string> DeviceConfig::lookup( std::string key ) const
 {
-    bool retVal = false;
     CtiToLower(key);
-    CtiHashKey findKey = CtiHashKey(key);
-    value = string();
+    CtiHashKey findKey(key);
 
-    ConfigValueMap::iterator iter = _configurationValues.find(key);
+    ConfigValueMap::const_iterator searchResult = _configurationValues.find( findKey );
 
-    if( iter != _configurationValues.end() )
+    if ( searchResult != _configurationValues.end() )
     {
-        value = iter->second;
-        retVal = true;
+        return searchResult->second;
     }
 
-    return retVal;
+    return boost::none;
 }
 
-// getLongValue will look for the key and set value to the long value of that key.
-// returns true if successful.
-bool DeviceConfig::getLongValue(std::string key, long& value)
+
+bool DeviceConfig::getLongValue( const std::string & key, long & value ) const
 {
-    bool retVal = false;
-    CtiToLower(key);
-    CtiHashKey findKey = CtiHashKey(key);
-    value = std::numeric_limits<long>::min();
+    boost::optional<std::string>    result = lookup( key );
 
-    ConfigValueMap::iterator iter = _configurationValues.find(findKey);
-
-    if( iter != _configurationValues.end() )
+    if ( ! result || result->length() == 0 )
     {
-        string tempStr = iter->second;
-
-        if(!tempStr.empty())
-        {
-            value = strtol(tempStr.data(),NULL,0);
-            retVal = true;
-        }
-
-    }
-    return retVal;
-}
-
-string DeviceConfig::getValueFromKey(std::string key)
-{
-    string retVal;
-    CtiToLower(key);
-    CtiHashKey findKey = CtiHashKey(key);
-
-    ConfigValueMap::iterator iter = _configurationValues.find(key);
-
-    if( iter != _configurationValues.end() )
-    {
-        retVal = iter->second;
+        value = std::numeric_limits<long>::min();
+        return false;
     }
 
-    return retVal;
+    value = std::strtol( result->c_str(), NULL, 0 );
+    return true;
 }
 
-long DeviceConfig::getLongValueFromKey(std::string key)
+
+std::string DeviceConfig::getValueFromKey( const std::string & key ) const
 {
-    long retVal = std::numeric_limits<long>::min();
-    CtiToLower(key);
-    CtiHashKey findKey = CtiHashKey(key);
+    boost::optional<std::string>    result = lookup( key );
 
-    ConfigValueMap::iterator iter = _configurationValues.find(findKey);
-
-    if( iter != _configurationValues.end() )
+    if ( ! result )
     {
-        string tempStr = iter->second;
-
-        if(!tempStr.empty())
-        {
-            retVal = strtol(tempStr.data(),NULL,0);
-        }
+        return std::string();
     }
-    return retVal;
+
+    return *result;
 }
 
-double DeviceConfig::getFloatValueFromKey(std::string key)
+
+long DeviceConfig::getLongValueFromKey( const std::string & key ) const
 {
-    double retVal = std::numeric_limits<double>::min();
-    CtiToLower(key);
-    CtiHashKey findKey = CtiHashKey(key);
+    long value;
+    
+    getLongValue( key, value );
 
-    ConfigValueMap::iterator iter = _configurationValues.find(findKey);
+    return value;
+}
 
-    if( iter != _configurationValues.end() )
+
+double DeviceConfig::getFloatValueFromKey( const std::string & key ) const
+{
+    boost::optional<std::string>    result = lookup( key );
+
+    if ( ! result || result->length() == 0 )
     {
-        string tempStr = iter->second;
-
-        if(!tempStr.empty())
-        {
-            retVal = atof(tempStr.data());
-        }
+        return std::numeric_limits<double>::min();
     }
-    return retVal;
+
+
+    return std::atof( result->c_str() );
 }
 
-bool DeviceConfig::getBoolValue(std::string key, bool &value)
-{
-    string strValue;
 
-    if ( !getValue(key, strValue) )
+bool DeviceConfig::getBoolValue( const std::string & key , bool & value ) const
+{
+    boost::optional<std::string>    result = lookup( key );
+
+    if ( ! result )
     {
         return false;
     }
 
-    value = ciStringEqual(strValue, TrueString);
-
+    value = ciStringEqual( *result, "true" );
     return true;
 }
+
+///////////////////
+
+ConfigurationCategory::ConfigurationCategory( const long ID, const std::string & name, const std::string & type )
+    :   _ID( ID ),
+        _name( name ),
+        _type( type )
+{
+
+}
+
+
+void ConfigurationCategory::addItem( const std::string & fieldName, const std::string & value )
+{
+    _items[ fieldName ] = value;
+}
+
+
+long ConfigurationCategory::getID() const
+{
+    return _ID;
+}
+
+
+std::string ConfigurationCategory::getName() const
+{
+    return _name;
+}
+
+
+ConfigurationCategory::const_iterator ConfigurationCategory::begin() const
+{
+    return _items.begin();
+}
+
+
+ConfigurationCategory::const_iterator ConfigurationCategory::end() const
+{
+    return _items.end();
+}
+
+///////////////////
+
+Configuration::Configuration( const long ID, const std::string & name )
+    :   _ID( ID ),
+        _name( name )
+{
+
+}
+
+
+void Configuration::addCategory( const long category )
+{
+    _categoryIDs.insert( category );
+}
+
+
+long Configuration::getID() const
+{
+    return _ID;
+}
+
+
+std::string Configuration::getName() const
+{
+    return _name;
+}
+
+
+Configuration::const_iterator Configuration::begin() const
+{
+    return _categoryIDs.begin();
+}
+
+
+Configuration::const_iterator Configuration::end() const
+{
+    return _categoryIDs.end();
+}
+
 
 }
 }

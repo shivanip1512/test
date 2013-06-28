@@ -3,6 +3,7 @@
 #include "logger.h"
 #include "xml.h"
 #include "DeviceAttributeLookup.h"
+#include "DeviceConfigLookup.h"
 #include "resolvers.h"
 
 #include <shlwapi.h>

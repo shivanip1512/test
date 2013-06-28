@@ -2,382 +2,488 @@
 
 #include "mgr_config.h"
 #include "dbaccess.h"
-#include "config_device.h"
 #include "database_connection.h"
 #include "database_reader.h"
+#include "DeviceConfigLookup.h"
+#include "mgr_device.h"
 
-using std::string;
-using std::endl;
 
-using namespace Cti;
-using namespace Config;
 
-CtiConfigManager::CtiConfigManager() :
-    isInitialized(false),
-    _devMgr(0)
+CtiConfigManager::CtiConfigManager()
+    :   isInitialized( false ),
+        _devMgr( 0 )
 {
+
 }
+
 
 CtiConfigManager::~CtiConfigManager()
 {
     _devMgr = 0;
 }
 
-void CtiConfigManager::refreshConfigurations()
+
+void CtiConfigManager::setDeviceManager( CtiDeviceManager & mgr )
 {
-    CtiTime start, stop;
-
-    _deviceConfig.removeAll(NULL,0);
-
-    loadAllConfigs();
-    loadAllConfigurationItems();
-
-    //ok, so in theory right now my 2 maps are built up.. although I should only need one of them
-    //Now I want to give the device configs to the devices themselves
-
-    updateDeviceConfigs(NoConfigIdSpecified, NoDeviceIdSpecified);
+    _devMgr = &mgr;
 }
+
 
 //This function was created so the initialization only happens once. I dont like it and
 //will have it replaced as soon as I think of something better.
 void CtiConfigManager::initialize(CtiDeviceManager &mgr)
 {
-    if( !isInitialized )
+    if ( ! isInitialized )
     {
-        setDeviceManager(mgr);
-        refreshConfigurations();
+        setDeviceManager( mgr );
+
+        loadAllConfigs();
+        loadAllConfigurationItems();
+
+        updateAllDeviceConfigs();
+
         isInitialized = true;
     }
 }
 
-bool CtiConfigManager::insertValueIntoConfig(DeviceConfigSPtr config, const string &value, const string &valueid)
-{
-    if(!config)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << "*** CHECKPOINT *** " << " No config loaded " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-    else
-    {
-        return config->insertValue(valueid, value);
-    }
-    return false;
 
+void CtiConfigManager::refreshConfigForDeviceId( const long deviceid )
+{
+    updateConfigForDevice( deviceid );
 }
 
-void CtiConfigManager::setDeviceManager(CtiDeviceManager &mgr)
-{
-    _devMgr = &mgr;
-}
-
-//Config ID that is.
-DeviceConfigSPtr CtiConfigManager::getDeviceConfigFromID(long configID)
-{
-    return _deviceConfig.find(configID);
-}
-
-void CtiConfigManager::processDBUpdate(LONG identifier, string category, string objectType, int updateType)
-{
-    CtiToLower(category);
-    CtiToLower(objectType);
-    if( category == "device config" && identifier != NoConfigIdSpecified )
-    {
-        if( objectType == "config" )
-        {
-            switch(updateType)
-            {
-            case ChangeTypeUpdate:
-            case ChangeTypeAdd:
-                {
-                    removeFromMaps(identifier);
-                    loadConfig(identifier);
-                    loadConfigurationItems(identifier);
-                    updateDeviceConfigs(identifier, NoDeviceIdSpecified);
-                    break;
-                }
-            case ChangeTypeDelete:
-                {
-                    removeFromMaps(identifier);
-                    _deviceConfig.remove(identifier);
-                    break;
-                }
-            default:
-                {
-                    break;
-                }
-            }
-        }
-        else if( objectType == "device" )
-        {
-            switch(updateType)
-            {
-            case ChangeTypeUpdate:
-            case ChangeTypeAdd:
-                {
-                    updateDeviceConfigs(NoConfigIdSpecified, identifier);
-                    break;
-                }
-            case ChangeTypeDelete:
-                {
-                    CtiDeviceSPtr pDev = _devMgr->getDeviceByID(identifier);
-                    if( pDev )
-                    {
-                        pDev->changeDeviceConfig(DeviceConfigSPtr());//set to null
-                    }
-                    break;
-                }
-            default:
-                {
-                    break;
-                }
-            }
-        }
-    }
-    else if( category == "config" && identifier == NoConfigIdSpecified )
-    {
-        refreshConfigurations();
-    }
-}
-
-
-void CtiConfigManager::refreshConfigForDeviceId(long deviceid)
-{
-    updateDeviceConfigs(NoConfigIdSpecified, deviceid);
-}
-
-void CtiConfigManager::loadConfigurationItems(long configID)
-{
-    const string sql =  "SELECT DCI.deviceconfigurationid, DCI.fieldname, DCI.value "
-                        "FROM DeviceConfigurationItem DCI "
-                        "WHERE DCI.deviceconfigurationid = " + CtiNumStr(configID) +
-                        "ORDER BY DCI.deviceconfigurationid ASC";
-
-    executeLoadItems(sql);
-}
-
-void CtiConfigManager::loadAllConfigurationItems()
-{
-    static const string sql = "SELECT DCI.deviceconfigurationid, DCI.fieldname, DCI.value "
-                              "FROM DeviceConfigurationItem DCI "
-                              "ORDER BY DCI.deviceconfigurationid ASC";
-
-    executeLoadItems(sql);
-}
-
-void CtiConfigManager::executeLoadItems(const string &sql)
-{
-    CtiTime start, stop;
-
-    start = start.now();
-    {
-        static const string sqlNoID = "SELECT DCI.deviceconfigurationid, DCI.fieldname, DCI.value "
-                                      "FROM DeviceConfigurationItem DCI "
-                                      "ORDER BY DCI.deviceconfigurationid ASC";
-
-        Cti::Database::DatabaseConnection connection;
-        Cti::Database::DatabaseReader rdr(connection, sql);
-
-        rdr.execute();
-
-        long deviceConfigID, oldDeviceConfigID = 0;
-        DeviceConfigSPtr config;
-        string value,valueName;
-
-        while( rdr() )
-        {
-            rdr["deviceconfigurationid"] >> deviceConfigID;
-            rdr["fieldname"] >> valueName;
-            rdr["value"] >> value;
-
-            if(!valueName.empty() && !value.empty())
-            {
-                try
-                {
-                    if( oldDeviceConfigID != deviceConfigID )
-                    {
-                        config = _deviceConfig.find(deviceConfigID);
-                        oldDeviceConfigID = deviceConfigID;
-                    }
-                    insertValueIntoConfig(config, value, valueName);
-                }
-                catch(...)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << "*** CHECKPOINT *** " << " Exception Thrown " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << CtiTime() << "*** CHECKPOINT *** " << " Configs will NOT be properly loaded " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
-        }
-    }
-    stop = stop.now();
-    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load config values " << endl;
-    }
-}
-
-void CtiConfigManager::executeLoadConfig(const string &sql) 
-{
-    CtiTime start, stop;
-
-    start = start.now();
-    {
-        Cti::Database::DatabaseConnection connection;
-        Cti::Database::DatabaseReader rdr(connection, sql);
-
-        rdr.execute();
-
-        while( rdr() )
-        {
-            long cfgID;
-            string name, type;
-
-            rdr["deviceconfigurationid"] >> cfgID;
-            rdr["name"] >> name;
-            rdr["type"] >> type;
-
-            DeviceConfigSPtr configDevSPtr = _deviceConfig.find(cfgID);
-
-            if( !configDevSPtr )//This key is not in the map yet
-            {
-                DeviceConfigSPtr devPtr(CTIDBG_new DeviceConfig(cfgID, name, type));
-                ConfigDeviceMap::insert_pair tempPair = _deviceConfig.insert(cfgID,devPtr);
-                configDevSPtr = tempPair.first->second;
-            }
-        }
-    }
-    stop = stop.now();
-    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load device configurations." << endl;
-    }
-}
 
 void CtiConfigManager::loadAllConfigs()
 {
-    static const string sql =  "SELECT DCF.deviceconfigurationid, DCF.name, DCF.type "
-                               "FROM DeviceConfiguration DCF";
+    static const std::string sql = 
+        "SELECT "
+            "DC.DeviceConfigurationID, "
+            "DCCM.DeviceConfigCategoryID, "
+            "DC.Name "
+        "FROM "
+            "DeviceConfiguration DC "
+            "JOIN DeviceConfigCategoryMap DCCM "
+            "ON DC.DeviceConfigurationID = DCCM.DeviceConfigurationID";
 
-    _deviceConfig.clear();
+    _configurations.clear();
 
-    executeLoadConfig(sql);
+    executeLoadConfig( sql );
 }
 
-void CtiConfigManager::loadConfig(long configID)
+
+void CtiConfigManager::loadConfig( const long configID )
 {
-    string sql =  "SELECT DCF.deviceconfigurationid, DCF.name, DCF.type "
-                  "FROM DeviceConfiguration DCF ";
-                  "WHERE DCF.deviceconfigurationid = " + CtiNumStr(configID);
+    const std::string sql = 
+        "SELECT "
+            "DC.DeviceConfigurationID, "
+            "DCCM.DeviceConfigCategoryID, "
+            "DC.Name "
+        "FROM "
+            "DeviceConfiguration DC "
+            "JOIN DeviceConfigCategoryMap DCCM "
+            "ON DC.DeviceConfigurationID = DCCM.DeviceConfigurationID "
+        "WHERE "
+            "DC.DeviceConfigurationID = " + CtiNumStr( configID );
 
+    _configurations.erase( configID );
 
-    //Give us a fresh start
-    _deviceConfig.remove(configID);
-
-    executeLoadConfig(sql);
+    executeLoadConfig( sql );
 }
 
-//Send configs to devices
-void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
-{
-    CtiTime start, stop;
 
-    start = start.now();
+void CtiConfigManager::executeLoadConfig( const std::string & sql ) 
+{
+    CtiTime start;
+
     {
-        static const string sql = "SELECT DCD.deviceid, DCD.deviceconfigurationid "
-                                  "FROM DeviceConfigurationDeviceMap DCD";
-
-        static const string sqlConfig = "SELECT DCD.deviceid, DCD.deviceconfigurationid "
-                                        "FROM DeviceConfigurationDeviceMap DCD "
-                                        "WHERE DCD.deviceconfigurationid = ?";
-
-        static const string sqlDevice = "SELECT DCD.deviceid, DCD.deviceconfigurationid "
-                                        "FROM DeviceConfigurationDeviceMap DCD "
-                                        "WHERE DCD.deviceid = ?";
-
-        Cti::Database::DatabaseConnection connection;
-        Cti::Database::DatabaseReader rdr(connection);
-
-        if( configID != NoConfigIdSpecified )
-        {
-            rdr.setCommandText(sqlConfig);
-            rdr << configID;
-        }
-        else if( deviceID != NoDeviceIdSpecified )
-        {
-            rdr.setCommandText(sqlDevice);
-            rdr << deviceID;
-        }
-        else
-        {
-            // There is no where clause to be added.
-            rdr.setCommandText(sql);
-        }
+        Cti::Database::DatabaseConnection   connection;
+        Cti::Database::DatabaseReader       rdr(connection, sql);
 
         rdr.execute();
 
-        // If we specify a device, this may be the equivalent of a "delete"
-        // If we also specified a config, we cant risk the "delete" operation,
-        // As it would be too specific and could result in a delete that was not desired
-        if( deviceID != NoDeviceIdSpecified && configID == NoConfigIdSpecified )
+        while( rdr() )
         {
-            if( rdr() )
-            {
-                long devID, cfgID;
+            long        configID,
+                        categoryID;
+            std::string name;
 
-                rdr["deviceconfigurationid"] >>cfgID;
-                rdr["deviceid"]>>devID;
+            rdr["DeviceConfigurationID"]  >> configID;
+            rdr["DeviceConfigCategoryID"] >> categoryID;
+            rdr["Name"]                   >> name;
 
-                CtiDeviceSPtr pDev = _devMgr->getDeviceByID(devID);
+            std::pair<ConfigurationMap::iterator, bool> lookup =
+                _configurations.insert( configID, new Cti::Config::Configuration( configID, name ) );
 
-                DeviceConfigSPtr tempSPtr;
-
-                if( (tempSPtr = _deviceConfig.find(cfgID)) && pDev )
-                {
-                    pDev->changeDeviceConfig(tempSPtr);
-                }
-            }
-            else
-            {
-                //This is a delete!
-                CtiDeviceSPtr pDev = _devMgr->getDeviceByID(deviceID);
-                if( pDev )
-                {
-                    pDev->changeDeviceConfig(DeviceConfigSPtr());
-                }
-            }
-
-        }
-        else
-        {
-            while( rdr() )
-            {
-                long devID, cfgID;
-
-                rdr["deviceconfigurationid"] >>cfgID;
-                rdr["deviceid"]>>devID;
-
-                CtiDeviceSPtr pDev = _devMgr->getDeviceByID(devID);
-
-                DeviceConfigSPtr tempSPtr;
-
-                if( (tempSPtr = _deviceConfig.find(cfgID)) && pDev )
-                {
-                    pDev->changeDeviceConfig(tempSPtr);
-                }
-            }
+            lookup.first->second->addCategory( categoryID );
         }
     }
-    stop = stop.now();
-    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+
+    CtiTime stop;
+
+    if ( DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5 )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to assign pointers to devices " << endl;
+        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load device configurations." << std::endl;
     }
 }
 
-void CtiConfigManager::removeFromMaps(long configID)
+
+void CtiConfigManager::loadAllConfigurationItems()
 {
-    _deviceConfig.remove(configID);
+    static const std::string sql = 
+        "SELECT "
+            "C.DeviceConfigCategoryID, "
+            "C.CategoryType, "
+            "I.ItemName, "
+            "I.ItemValue, "
+            "C.Name "
+        "FROM "
+            "DeviceConfigCategory C "
+            "JOIN DeviceConfigCategoryItem I "
+            "ON C.DeviceConfigCategoryID = I.DeviceConfigCategoryID";
+
+    _categories.clear();
+
+    executeLoadItems( sql );
 }
+
+
+void CtiConfigManager::loadConfigurationItems( const long configID )
+{
+    const std::string sql =
+        "SELECT "
+            "C.DeviceConfigCategoryID, "
+            "C.CategoryType, "
+            "I.ItemName, "
+            "I.ItemValue, "
+            "C.Name "
+        "FROM "
+            "DeviceConfigCategory C "
+            "JOIN DeviceConfigCategoryItem I "
+            "ON C.DeviceConfigCategoryID = I.DeviceConfigCategoryID "
+        "WHERE "
+            "C.DeviceConfigCategoryID = " + CtiNumStr( configID );
+
+    _categories.erase( configID );
+
+    executeLoadItems( sql );
+}
+
+
+void CtiConfigManager::executeLoadItems( const std::string & sql )
+{
+    CtiTime start;
+
+    {
+        Cti::Database::DatabaseConnection   connection;
+        Cti::Database::DatabaseReader       rdr(connection, sql);
+
+        rdr.execute();
+
+        while( rdr() )
+        {
+            long        categoryID;
+            std::string categoryType,
+                        itemName,
+                        value,
+                        name;
+
+            rdr["DeviceConfigCategoryID"] >> categoryID;
+            rdr["CategoryType"]           >> categoryType;
+            rdr["ItemName"]               >> itemName;
+            rdr["ItemValue"]              >> value;
+            rdr["Name"]                   >> name;
+
+            std::pair<CategoryMap::iterator, bool> lookup =
+                _categories.insert( categoryID, new Cti::Config::ConfigurationCategory( categoryID, name, categoryType ) );
+
+            lookup.first->second->addItem( itemName, value );
+        }
+    }
+
+    CtiTime stop;
+
+    if ( DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5 )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load device configurations." << std::endl;
+    }
+}
+
+
+void CtiConfigManager::processDBUpdate( const long          ID,
+                                        const std::string & category,
+                                        const std::string & objectType,
+                                        const int           updateType )
+{
+    if ( category == "Device Config" )
+    {
+        if ( objectType == "config" )
+        {
+            switch ( updateType )
+            {
+                case ChangeTypeUpdate:
+                case ChangeTypeAdd:
+                {
+                    loadConfig( ID );
+                    updateDeviceConfig( ID );
+                    break;
+                }
+                case ChangeTypeDelete:
+                {
+                    _configurations.erase( ID );
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
+            }
+        }
+        else if ( objectType == "category" )
+        {
+            switch ( updateType )
+            {
+                case ChangeTypeUpdate:
+                case ChangeTypeAdd:
+                {
+                    loadConfigurationItems( ID );
+                    updateDeviceCategory( ID );
+                    break;
+                }
+                case ChangeTypeDelete:
+                {
+                    _categories.erase( ID );
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
+            }
+        }
+        else if ( objectType == "device" )
+        {
+            switch ( updateType )
+            {
+                case ChangeTypeUpdate:
+                case ChangeTypeAdd:
+                {
+                    updateConfigForDevice( ID );
+                    break;
+                }
+                case ChangeTypeDelete:
+                {
+                    if ( CtiDeviceSPtr pDev = _devMgr->getDeviceByID( ID ) )
+                    {
+                        pDev->changeDeviceConfig( Cti::Config::DeviceConfigSPtr() );//set to null
+                    }
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
+            }
+        }
+    }
+}
+
+
+void CtiConfigManager::updateAllDeviceConfigs()
+{
+    static const std::string sql =
+        "SELECT "
+            "D.DeviceID, "
+            "D.DeviceConfigurationID "
+        "FROM "
+            "DeviceConfigurationDeviceMap D";
+
+    CtiTime start;
+
+    {
+        Cti::Database::DatabaseConnection   connection;
+        Cti::Database::DatabaseReader       rdr(connection, sql);
+
+        rdr.execute();
+
+        while ( rdr() )
+        {
+            long    deviceID,
+                    configID;
+
+            rdr["DeviceID"]              >> deviceID;
+            rdr["DeviceConfigurationID"] >> configID;
+
+            executeUpdateDeviceConfig( configID, deviceID );
+        }
+    }
+
+    CtiTime stop;
+
+    if ( DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5 )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to assign configurations to devices." << std::endl;
+    }
+}
+
+
+
+// update all devices that have the given config assigned...
+void CtiConfigManager::updateDeviceConfig( const long configID )
+{
+    const std::string sql =
+        "SELECT "
+            "D.DeviceID "
+        "FROM "
+            "DeviceConfigurationDeviceMap D "
+        "WHERE "
+            "D.DeviceConfigurationID = " + CtiNumStr( configID );
+
+    CtiTime start;
+
+    {
+        Cti::Database::DatabaseConnection   connection;
+        Cti::Database::DatabaseReader       rdr(connection, sql);
+
+        rdr.execute();
+
+        while ( rdr() )
+        {
+            long    deviceID;
+
+            rdr["DeviceID"] >> deviceID;
+
+            executeUpdateDeviceConfig( configID, deviceID );
+        }
+    }
+
+    CtiTime stop;
+
+    if ( DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5 )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to assign configurations to devices." << std::endl;
+    }
+}
+
+
+void CtiConfigManager::updateDeviceCategory( const long categoryID )
+{
+    const std::string sql =
+        "SELECT "
+            "D.DeviceConfigurationID "
+        "FROM "
+            "DeviceConfigCategoryMap D "
+        "WHERE "
+            "D.DeviceConfigCategoryID = " + CtiNumStr( categoryID );
+
+    std::set<long>  configIDs;
+
+    {
+        Cti::Database::DatabaseConnection   connection;
+        Cti::Database::DatabaseReader       rdr(connection, sql);
+
+        rdr.execute();
+
+        while ( rdr() )
+        {
+            long    configID;
+
+            rdr["DeviceConfigurationID"] >> configID;
+
+            configIDs.insert( configID );
+        }
+    }
+
+    for each ( const long ID in configIDs )
+    {
+        updateDeviceConfig( ID );
+    }
+}
+
+
+void CtiConfigManager::updateConfigForDevice( const long deviceID )
+{
+    const std::string sql =
+        "SELECT "
+            "D.DeviceConfigurationID "
+        "FROM "
+            "DeviceConfigurationDeviceMap D "
+        "WHERE "
+            "D.DeviceID = " + CtiNumStr( deviceID );
+
+    CtiTime start;
+
+    {
+        Cti::Database::DatabaseConnection   connection;
+        Cti::Database::DatabaseReader       rdr(connection, sql);
+
+        rdr.execute();
+
+        while ( rdr() )
+        {
+            long    configID;
+
+            rdr["DeviceConfigurationID"] >> configID;
+
+            executeUpdateDeviceConfig( configID, deviceID );
+        }
+    }
+
+    CtiTime stop;
+
+    if ( DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5 )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to assign configurations to devices." << std::endl;
+    }
+}
+
+
+void CtiConfigManager::executeUpdateDeviceConfig( const long configID, const long deviceID )
+{
+    if ( CtiDeviceSPtr pDev = _devMgr->getDeviceByID( deviceID ) )
+    {
+        // grab device type categories
+        Cti::DeviceConfigLookup::CategoryNames deviceCategories =
+            Cti::DeviceConfigLookup::Lookup( static_cast<DeviceTypes>( pDev->getType() ) );
+
+        // grab the config
+        ConfigurationMap::const_iterator configSearch = _configurations.find( configID );
+
+        if ( configSearch != _configurations.end() )
+        {
+            const Cti::Config::Configuration & config = *configSearch->second;
+
+            // this is the guy we'll assign to the device...
+            Cti::Config::DeviceConfigSPtr    deviceConfiguration( new Cti::Config::DeviceConfig( config.getID(), config.getName(), std::string() ) );
+
+            // iterate the configs categories
+            for each ( const long categoryID in config )
+            {
+                // grab the category
+                CategoryMap::const_iterator categorySearch = _categories.find( categoryID );
+
+                if ( categorySearch != _categories.end() )
+                {
+                    const Cti::Config::ConfigurationCategory & category = *categorySearch->second;
+
+                    // is it one of our actual physical devices categories?
+                    if ( deviceCategories.find( category.getName() ) != deviceCategories.end() )
+                    {
+                        // yes.. merge his items into the actual device config
+                        for each ( Cti::Config::ConfigurationCategory::value_type item in category )
+                        {
+                            deviceConfiguration->insertValue( item.first, item.second );
+                        }
+                    }
+                }
+            }
+
+            pDev->changeDeviceConfig( deviceConfiguration );
+        }
+    }
+}
+

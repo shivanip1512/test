@@ -1,50 +1,56 @@
 #pragma once
 
 #include "dllbase.h"
-
-#include "mgr_device.h"
 #include "config_device.h"
+
+#include <boost/ptr_container/ptr_map.hpp>
+
+
+class CtiDeviceManager;
+
+
 
 class IM_EX_DEVDB CtiConfigManager
 {
 private:
 
-    typedef CtiSmartMap< Cti::Config::DeviceConfig > ConfigDeviceMap;
+    typedef boost::ptr_map<long, Cti::Config::Configuration>            ConfigurationMap;
+    typedef boost::ptr_map<long, Cti::Config::ConfigurationCategory>    CategoryMap;
 
-    CtiDeviceManager*     _devMgr;
-    ConfigDeviceMap       _deviceConfig;
+    bool                isInitialized;
+    CtiDeviceManager  * _devMgr;
 
-    bool insertValueIntoConfig(Cti::Config::DeviceConfigSPtr config, const std::string &value, const std::string &valueid);
+    ConfigurationMap    _configurations;
+    CategoryMap         _categories;
 
-    enum ConfigValue
-    {
-        NoConfigIdSpecified = -1000,
-        NoDeviceIdSpecified =     0
-    };
+    void setDeviceManager( CtiDeviceManager & mgr );
 
-    void loadConfigurationItems(long configID);
-    void loadAllConfigurationItems();
-    void loadConfig(long configID);
     void loadAllConfigs();
-    void updateDeviceConfigs(long configID, long deviceID);
-    void removeFromMaps(long configID);
+    void loadConfig( const long configID );
+    void executeLoadConfig( const std::string & sql );
 
-    void executeLoadConfig(const std::string &sql);
-    void executeLoadItems (const std::string &sql);
+    void loadAllConfigurationItems();
+    void loadConfigurationItems( const long configID );
+    void executeLoadItems ( const std::string & sql );
 
-    void refreshConfigurations();
-    void setDeviceManager(CtiDeviceManager &mgr);
-
-    bool isInitialized;
+    void updateAllDeviceConfigs();
+    void updateDeviceConfig( const long configID );
+    void updateDeviceCategory( const long categoryID );
+    void updateConfigForDevice( const long deviceID );
+    void executeUpdateDeviceConfig( const long configID, const long deviceID );
 
 public:
 
     CtiConfigManager();
     ~CtiConfigManager();
 
-    void initialize(CtiDeviceManager &mgr);
-    void processDBUpdate(LONG identifer, std::string category, std::string objectType, int updateType);
-    void refreshConfigForDeviceId(long deviceid);
+    void initialize( CtiDeviceManager & mgr );
 
-    Cti::Config::DeviceConfigSPtr getDeviceConfigFromID(long configID);
+    void processDBUpdate( const long            ID,
+                          const std::string &   category,
+                          const std::string &   objectType,
+                          const int             updateType);
+
+    void refreshConfigForDeviceId( const long deviceid );
 };
+

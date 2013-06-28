@@ -10,7 +10,7 @@
 namespace Cti
 {
 
-class DeviceAttributeLookup
+class IM_EX_CTIBASE DeviceAttributeLookup
 {
 public:
 
@@ -58,26 +58,6 @@ private:
     typedef std::map<DeviceAttribute, PointTypeOffset>  DeviceAttributeToPointTypeOffsetMap;
 
     static DeviceAttributeToPointTypeOffsetMap  _lookup;
-};
-
-
-// this guy should go into the yukon-server\DeviceConfiguration directory -- for now here he is...
-class DeviceConfigLookup
-{
-public:
-
-    typedef std::set<std::string>   CategoryNames;
-
-    static void AddRelation( const DeviceTypes      deviceType,
-                             const CategoryNames &  categories );
-
-    static CategoryNames & Lookup( const DeviceTypes deviceType );
-
-private:
-
-    typedef std::map<DeviceTypes, CategoryNames>    CategoryLookup;
-
-    static CategoryLookup   _lookup;
 };
 
 }

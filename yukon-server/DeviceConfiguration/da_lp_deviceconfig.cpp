@@ -2,7 +2,7 @@
 
 #include "da_lp_deviceconfig.h"
 #include "config_data_mct.h"
-
+#include "logger.h"
 #include "boostutil.h"
 
 using namespace Cti;

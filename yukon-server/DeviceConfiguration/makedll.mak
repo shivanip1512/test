@@ -112,10 +112,10 @@ id_dcdll.obj:    id_dcdll.cpp include\id_dcdll.h
 
 #UPDATE#
 config_device.obj:	precompiled.h config_device.h yukon.h types.h \
-		ctidbgmem.h logger.h dlldefs.h thread.h mutex.h guard.h \
-		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
-		CtiPCPtrQueue.h dllbase.h dsm2.h cticonnect.h netports.h \
-		dsm2err.h words.h optional.h hashkey.h hash_functions.h
+		ctidbgmem.h dllbase.h dsm2.h cticonnect.h dlldefs.h \
+		netports.h mutex.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
+		hashkey.h hash_functions.h
 config_strings.obj:	precompiled.h config_data_cbc.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
@@ -123,11 +123,11 @@ config_strings.obj:	precompiled.h config_data_cbc.h dllbase.h dsm2.h \
 		config_data_mct.h config_data_dnp.h
 da_lp_deviceconfig.obj:	precompiled.h da_lp_deviceconfig.h yukon.h \
 		types.h ctidbgmem.h da_load_profile.h config_device.h \
-		logger.h dlldefs.h thread.h mutex.h guard.h utility.h \
-		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
-		CtiPCPtrQueue.h dllbase.h dsm2.h cticonnect.h netports.h \
-		dsm2err.h words.h optional.h hashkey.h hash_functions.h \
-		config_data_mct.h boostutil.h
+		dllbase.h dsm2.h cticonnect.h dlldefs.h netports.h mutex.h \
+		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
+		numstr.h dsm2err.h words.h optional.h hashkey.h \
+		hash_functions.h config_data_mct.h logger.h thread.h \
+		CtiPCPtrQueue.h boostutil.h
 id_dcdll.obj:	precompiled.h id_dcdll.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h os2_2w32.h types.h numstr.h
 #ENDUPDATE#
