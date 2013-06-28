@@ -173,6 +173,7 @@
         </pages>
       </page>
       <page name="deviceGroupUpload" type="BASIC"/>
+      <page name="billing" type="BASIC"/>
     </pages>
   </module>
 

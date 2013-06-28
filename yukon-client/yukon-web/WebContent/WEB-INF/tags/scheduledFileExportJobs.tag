@@ -51,7 +51,8 @@
 						<cti:url var="finalDeleteUrl" value="${deleteUrl}">
 							<cti:param name="jobId" value="${job.id}"/>
 						</cti:url>
-						<cti:button id="deleteItem_${job.id}" nameKey="delete" renderMode="image" href='${ajaxEnableUrls ? "javascript:void(0);" : finalDeleteUrl}' data-url='${ajaxEnableUrls ? finalDeleteUrl : ""}' icon="icon-cross"/>
+						<c:set var="ajaxDeleteUrl" value="javascript:MeteringBilling.delete_schedule_job(${job.id});" />
+						<cti:button id="deleteItem_${job.id}" nameKey="delete" renderMode="image" href='${ajaxEnableUrls ? ajaxDeleteUrl : finalDeleteUrl}' icon="icon-cross"/>
                         <dialog:confirm on="#deleteItem_${job.id}" nameKey="confirmDelete" argument="${job.name}"/>
 					</td>
 				</tr>

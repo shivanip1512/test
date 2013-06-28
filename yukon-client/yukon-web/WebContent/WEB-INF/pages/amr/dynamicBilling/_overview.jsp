@@ -9,7 +9,7 @@
     <h3><cti:msg2 key=".availableFormats"/></h3>
     <div>
         <div>
-            <select style="width:275px;" size="10" id="availableFormat" 
+            <select style="width:275px;" id="availableFormat" 
              name="availableFormat">
         
                 <c:forEach var="elem" items="${allRows}">
@@ -20,7 +20,7 @@
         
              </select>
         </div>
-        <div class="actionArea">
+        <div class="pageActionArea">
             <cti:button id="btnCreateFormat" nameKey="create"/>
             <cti:button id="btnEditFormat" nameKey="edit" disabled="true"/>
             <cti:button id="btnCopyFormat" nameKey="copy" disabled="true"/>

@@ -24,6 +24,7 @@ if (typeof(Yukon.Dialog.ConfirmationManager) === 'undefined') {
             _initialized: false,
             _dialogs: [],
             _current_dialog: null,
+            _INDEX_OF_ACTION_BUTTON: 1, // Action button is the right of 2 buttons = [1]
             
             /*---------------------*/
             /* 'PUBLIC' functions */
@@ -132,24 +133,25 @@ if (typeof(Yukon.Dialog.ConfirmationManager) === 'undefined') {
                 buttons.push({text: args.strings.ok, click: _self._default._ok_action, class:'primary action'});
                 
                 //is the intent to redirect on ok?
+                var actionButton = buttons[Yukon.Dialog.ConfirmationManager._INDEX_OF_ACTION_BUTTON];
                 if (element.attr("href")) {
-                    buttons[0].click = function(){
+                    actionButton.click = function(){
                         _self._close_dialog();
                         window.location = element.attr("href");
                     };
                 } else if(element.attr("data-href")) {
-                    buttons[0].click = function(){
+                    actionButton.click = function(){
                         _self._close_dialog();
                         window.location = element.attr("data-href");
                     };
                 } else if(element.data("href")) {
-                    buttons[0].click = function(){
+                    actionButton.click = function(){
                         _self._close_dialog();
                         window.location = element.data("href");};
                 }
                 //is the intent to submit a form on ok?
                 else if (element.attr("type") != undefined && element.attr("type").toLowerCase() == "submit") {
-                    buttons[0].click = function() {
+                    actionButton.click = function() {
                     	var form = element.closest("form")[0];
                     	if(!(typeof(element.attr("value")) == "undefined") 
                     		&& !(typeof(element.attr("name")) == "undefined")){
@@ -160,7 +162,7 @@ if (typeof(Yukon.Dialog.ConfirmationManager) === 'undefined') {
                 }
                 //is the intent to submit a specific form on ok?
                 else if(element.attr("data-form")){
-                    buttons[0].click = function(){jQuery(element.attr("data-form"))[0].submit();};
+                    actionButton.click = function(){jQuery(element.attr("data-form"))[0].submit();};
                 }
                 
                 //dialog default options

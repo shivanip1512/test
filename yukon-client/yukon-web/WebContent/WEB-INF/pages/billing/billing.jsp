@@ -11,24 +11,14 @@
 
 <cti:verifyRolesAndProperties value="APPLICATION_BILLING"/>
 
-<cti:msg key="yukon.common.role.APPLICATION_BILLING" var="billingTitle"/>
+<cti:standardPage module="amr" page="billing">
 
-<cti:standardPage module="amr" title="${billingTitle}">
 <cti:includeScript link="/JavaScript/cronExpressionData.js" />
 <cti:includeScript link="/JavaScript/yukonGeneral.js"/>
 <cti:includeScript link="/JavaScript/dynamicBillingFileGenerator.js"/>
-    <cti:standardMenu menuSelection="billing|generation"/>
-    <cti:breadCrumbs>
+<cti:includeScript link="/JavaScript/calendarControl.js"/>
+<cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
 
-        <cti:msg key="yukon.web.components.button.home.label" var="homeLabel"/>
-        <cti:crumbLink url="/dashboard" title="${homeLabel}" />
-        &gt; ${billingTitle}
-    </cti:breadCrumbs>
-
-    <cti:includeScript link="/JavaScript/calendarControl.js"/>
-    <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
-
-    <h2>${billingTitle}</h2>
 
 <cti:tabbedContentSelector id="billing_tab_container" mode="section">
 

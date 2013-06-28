@@ -58,6 +58,11 @@ if(typeof(MeteringBilling) === 'undefined') {
             this._initialized = true;
         },
 
+        // Used by _jobs.jsp, ASSUMED TO EXIST BY scheduledFileExportJobs.tag
+        delete_schedule_job : function(jobId) {
+            MeteringBilling._delete_schedule_job(null, {'jobId': jobId});
+        },
+
         show_setup_home: function(event) {
             return MeteringBilling._get_format_ajax_page(event, MeteringBilling._url_format_setup);
         },
@@ -178,6 +183,7 @@ if(typeof(MeteringBilling) === 'undefined') {
             MeteringBilling._do_refresh_schedules_jobs_list(href.substr(at), null);
         },
 
+        // no-op for Remove button: SEE scheduledFileExportJob.tag
         do_schedules_job_list_button : function(event) {
             var btn = jQuery(event.currentTarget);
             var href = btn.attr('data-url');
@@ -188,7 +194,7 @@ if(typeof(MeteringBilling) === 'undefined') {
             var params = href.substr(href.indexOf("?")+1);
             if (action == "delete") {
                 MeteringBilling._STOP_EVENT(event);
-                MeteringBilling._delete_schedule_job(btn, params);
+//                MeteringBilling._delete_schedule_job(btn, params);
                 return false;
             } else if (action == "showForm") {
                 MeteringBilling._STOP_EVENT(event);
@@ -197,7 +203,7 @@ if(typeof(MeteringBilling) === 'undefined') {
             }
             return true; // This should never be hit.
         },
-        
+
         /**
          * Moved unfreeze() from _overview.jsp + Prototype > jQuery
          */
@@ -350,7 +356,7 @@ if(typeof(MeteringBilling) === 'undefined') {
                 if (results.success) {
                     MeteringBilling._do_refresh_schedules_jobs_list(
                         MeteringBilling._get_pagination_state(jQuery("#billing_schedules_jobs")), function() {
-                        alert(results.message);
+//                        alert(results.message);
                     });
                 } else { // ?
                     alert("An error prevented deleting this job: \n\t"+ results.error);

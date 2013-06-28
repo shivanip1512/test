@@ -3,6 +3,7 @@
 <properties>
 
 <!-- schedule.jsp (scheduled billing) -->
+	<entry key="yukon.web.modules.amr.billing.pageName">Billing</entry>
 	<entry key="yukon.web.modules.amr.billing.schedule.pageName">Scheduled Billing Export</entry>
 	<entry key="yukon.web.modules.amr.billing.schedule.pageTitle">Scheduled Billing File Export Editor</entry>
 	<entry key="yukon.web.modules.amr.billing.schedule.billingParameters.title">Billing Parameters</entry>
