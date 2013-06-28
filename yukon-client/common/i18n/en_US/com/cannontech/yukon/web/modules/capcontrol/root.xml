@@ -5,6 +5,13 @@
     <entry key="yukon.web.modules.capcontrol.moduleName">Volt Var Management</entry>
     
     <!-- common capcontrol words -->
+    
+    <entry key="yukon.web.modules.capcontrol.create.title">Create Volt/Var Object</entry>
+    <entry key="yukon.web.modules.capcontrol.resetOpCount.label">Reset All Op Counters</entry>
+    <entry key="yukon.web.modules.capcontrol.disableSystem.hoverText">Disable everything system wide.</entry>
+    <entry key="yukon.web.modules.capcontrol.disableSystem.label">Disable System</entry>
+    <entry key="yukon.web.modules.capcontrol.enableSystem.hoverText">Enable everything system wide.</entry>
+    <entry key="yukon.web.modules.capcontrol.enableSystem.label">Enable System</entry>
     <entry key="yukon.web.modules.capcontrol.actions">Actions</entry>
     <entry key="yukon.web.modules.capcontrol.actionsContainer.title">Actions</entry>
     <entry key="yukon.web.modules.capcontrol.lastOperation">Last Operation</entry>
@@ -256,13 +263,6 @@
     <entry key="yukon.web.modules.capcontrol.areas.feeders">{0} {0,choice,0#Feeders|1#Feeder|1&lt;Feeders}</entry>
     <entry key="yukon.web.modules.capcontrol.areas.banks">{0} {0,choice,0#Banks|1#Bank|1&lt;Banks}</entry>
     <entry key="yukon.web.modules.capcontrol.areas.stationCount">{0} {0,choice,0#Substations|1#Substation|1&lt;Substations}</entry>
-    
-    <entry key="yukon.web.modules.capcontrol.areas.resetOpCount.hoverText"></entry>
-    <entry key="yukon.web.modules.capcontrol.areas.resetOpCount.label">Reset All Op Counters</entry>
-    <entry key="yukon.web.modules.capcontrol.areas.disableSystem.hoverText">Disable everything system wide.</entry>
-    <entry key="yukon.web.modules.capcontrol.areas.disableSystem.label">Disable System</entry>
-    <entry key="yukon.web.modules.capcontrol.areas.enableSystem.hoverText">Enable everything system wide.</entry>
-    <entry key="yukon.web.modules.capcontrol.areas.enableSystem.label">Enable System</entry>
     
     <!-- substationTier.jsp -->
     <entry key="yukon.web.modules.capcontrol.area.pageName">Area</entry>
