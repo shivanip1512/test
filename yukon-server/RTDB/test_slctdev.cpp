@@ -98,22 +98,22 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class Cti::Devices::Cbc7020Device")
         ("class Cti::Devices::DnpDevice")
         ("class Cti::Devices::Cbc8020Device")
-        ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
-        ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
-        ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
-        ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
-        ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
-        ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
-        ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
-        ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
-        ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
-        ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
-        ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
-        ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
-        ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
-        ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
-        ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
-        ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
+        ("class Cti::Devices::RfnDevice")
+        ("class Cti::Devices::RfnDevice")
+        ("class Cti::Devices::RfnDevice")
+        ("class Cti::Devices::RfnDevice")
+        ("class Cti::Devices::RfnDevice")
+        ("class Cti::Devices::RfnDevice")
+        ("class Cti::Devices::RfnDevice")
+        ("class Cti::Devices::RfnDevice")
+        ("class Cti::Devices::RfnDevice")
+        ("class Cti::Devices::RfnDevice")
+        ("class Cti::Devices::RfnDevice")
+        ("class Cti::Devices::RfnDevice")
+        ("class Cti::Devices::RfnDevice")
+        ("class Cti::Devices::RfnDevice")
+        ("class Cti::Devices::RfnDevice")
+        ("class Cti::Devices::RfnDevice")
         ("class CtiDeviceCCU710")
         ("class CtiDeviceCCU710")
         ("class CtiDeviceCCU")
@@ -208,297 +208,178 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
 
     DeviceTypeRow columnNames    = {"type"};
 
-    DeviceTypeRow dtValues[] = {
-        {"capacitor bank neutral monitor"},
-        {"faulted circuit indicator"},
-        {"cap bank"},
-        {"cbc 6510"},
-        {"cbc 7010"},
-        {"cbc 7011"},
-        {"cbc 7012"},
-        {"cbc 7020"},
-        {"cbc 7022"},
-        {"cbc 7023"},
-        {"cbc 7024"},
-        {"cbc 7030"},
-        {"cbc 8020"},
-        {"cbc 8024"},
-        {"cbc dnp"},
-        {"cbc expresscom"},
-        {"cbc fp-2800"},
-        {"cbc versacom"},
-        {"load tap changer"},
-        {"ccu-700"},
-        {"ccu-710a"},
-        {"ccu-711"},
-        {"ccu-721"},
-        {"lcr-3102"},
-        {"lmt-2"},
-        {"mct broadcast"},
-        {"mct-210"},
-        {"mct-212"},
-        {"mct-213"},
-        {"mct-224"},
-        {"mct-226"},
-        {"mct-240"},
-        {"mct-242"},
-        {"mct-248"},
-        {"mct-250"},
-        {"mct-310"},
-        {"mct-310ct"},
-        {"mct-310id"},
-        {"mct-310idl"},
-        {"mct-310il"},
-        {"mct-318"},
-        {"mct-318l"},
-        {"mct-360"},
-        {"mct-370"},
-        {"mct-410cl"},
-        {"mct-410fl"},
-        {"mct-410gl"},
-        {"mct-410il"},
-        {"mct-420cl"},
-        {"mct-420cd"},
-        {"mct-420fl"},
-        {"mct-420fd"},
-        {"mct-430a"},
-        {"mct-430a3"},
-        {"mct-430s4"},
-        {"mct-430sl"},
-        {"mct-470"},
-        {"mct-440-2131b"},
-        {"mct-440-2132b"},
-        {"mct-440-2133b"},
-        {"repeater 800"},
-        {"repeater 801"},
-        {"repeater 850"},
-        {"repeater 902"},
-        {"repeater 921"},
-        {"repeater"},
-        {"fmu"},
-        {"page receiver"},
-        {"rtu-dart"},
-        {"rtu-dnp"},
-        {"rtu-ilex"},
-        {"rtu-lmi"},
-        {"rtu-modbus"},
-        {"rtu-ses92"},
-        {"rtu-welco"},
-        {"rtc"},
-        {"rtm"},
-        {"golay group"},
-        {"sa-105 group"},
-        {"sa-205 group"},
-        {"sa-305 group"},
-        {"sa-digital group"},
-        {"ci customer"},
-        {"lm control area"},
-        {"lm curtail program"},
-        {"lm direct program"},
-        {"lm energy exchange"},
-        {"lm sep program"},
-        {"digi sep group"},
-        {"emetcon group"},
-        {"expresscom group"},
-        {"rfn expresscom group"},
-        {"mct group"},
-        {"point group"},
-        {"ripple group"},
-        {"versacom group"},
-        {"macro group"},
-        {"script"},
-        {"simple"},
-        {"system"},
-        {"virtual system"},
-        {"lcu-415"},
-        {"lcu-eastriver"},
-        {"lcu-lg"},
-        {"lcu-t3026"},
-        {"rds terminal"},
-        {"snpp terminal"},
-        {"tap terminal"},
-        {"tcu-5000"},
-        {"tcu-5500"},
-        {"tnpp terminal"},
-        {"wctp terminal"},
-        {"alpha a1"},
-        {"alpha a3"},
-        {"alpha power plus"},
-        {"davis weather"},
-        {"dct-501"},
-        {"dr-87"},
-        {"focus"},
-        {"ipc-410fl"},
-        {"ipc-420fd"},
-        {"ipc-430s4e"},
-        {"ipc-430sl"},
-        {"fulcrum"},
-        {"ion-7330"},
-        {"ion-7700"},
-        {"ion-8300"},
-        {"kv"},
-        {"kv2"},
-        {"landis-gyr s4"},
-        {"quantum"},
-        {"sentinel"},
-        {"sixnet"},
-        {"transdata mark-v"},
-        {"vectron"},
-        {"unknown"},
-        {"invalid"},
-        {""},
-        {"snuffleupagus"},
-        {"giraffe"},
-    };
+    std::vector<std::pair<std::string, std::string>> dbTypesToTypenames = boost::assign::list_of
+        (std::make_pair("capacitor bank neutral monitor", "class CtiDeviceGridAdvisor"))
+        (std::make_pair("faulted circuit indicator",      "class CtiDeviceGridAdvisor"))
+        (std::make_pair("cap bank",                       "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
+        (std::make_pair("cbc 6510",                       "class Cti::Devices::Cbc6510Device"))
+        (std::make_pair("cbc 7010",                       "class CtiDeviceCBC"))
+        (std::make_pair("cbc 7011",                       "class CtiDeviceCBC"))
+        (std::make_pair("cbc 7012",                       "class CtiDeviceCBC"))
+        (std::make_pair("cbc 7020",                       "class Cti::Devices::Cbc7020Device"))
+        (std::make_pair("cbc 7022",                       "class Cti::Devices::Cbc7020Device"))
+        (std::make_pair("cbc 7023",                       "class Cti::Devices::Cbc7020Device"))
+        (std::make_pair("cbc 7024",                       "class Cti::Devices::Cbc7020Device"))
+        (std::make_pair("cbc 7030",                       "class Cti::Devices::Cbc7020Device"))
+        (std::make_pair("cbc 8020",                       "class Cti::Devices::Cbc8020Device"))
+        (std::make_pair("cbc 8024",                       "class Cti::Devices::Cbc8020Device"))
+        (std::make_pair("cbc dnp",                        "class Cti::Devices::DnpDevice"))
+        (std::make_pair("cbc expresscom",                 "class CtiDeviceCBC"))
+        (std::make_pair("cbc fp-2800",                    "class CtiDeviceCBC"))
+        (std::make_pair("cbc versacom",                   "class CtiDeviceCBC"))
+        (std::make_pair("load tap changer",               "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
+        (std::make_pair("ccu-700",                        "class CtiDeviceCCU710"))
+        (std::make_pair("ccu-710a",                       "class CtiDeviceCCU710"))
+        (std::make_pair("ccu-711",                        "class CtiDeviceCCU"))
+        (std::make_pair("ccu-721",                        "class Cti::Devices::Ccu721Device"))
+        (std::make_pair("lcr-3102",                       "class Cti::Devices::Lcr3102Device"))
+        (std::make_pair("lmt-2",                          "class Cti::Devices::Lmt2Device"))
+        (std::make_pair("mct broadcast",                  "class Cti::Devices::MctBroadcastDevice"))
+        (std::make_pair("mct-210",                        "class Cti::Devices::Mct210Device"))
+        (std::make_pair("mct-212",                        "class Cti::Devices::Mct22xDevice"))
+        (std::make_pair("mct-213",                        "class Cti::Devices::Mct210Device"))
+        (std::make_pair("mct-224",                        "class Cti::Devices::Mct22xDevice"))
+        (std::make_pair("mct-226",                        "class Cti::Devices::Mct22xDevice"))
+        (std::make_pair("mct-240",                        "class Cti::Devices::Mct24xDevice"))
+        (std::make_pair("mct-242",                        "class Cti::Devices::Mct24xDevice"))
+        (std::make_pair("mct-248",                        "class Cti::Devices::Mct24xDevice"))
+        (std::make_pair("mct-250",                        "class Cti::Devices::Mct24xDevice"))
+        (std::make_pair("mct-310",                        "class Cti::Devices::Mct310Device"))
+        (std::make_pair("mct-310ct",                      "class Cti::Devices::Mct310Device"))
+        (std::make_pair("mct-310id",                      "class Cti::Devices::Mct310Device"))
+        (std::make_pair("mct-310idl",                     "class Cti::Devices::Mct310Device"))
+        (std::make_pair("mct-310il",                      "class Cti::Devices::Mct310Device"))
+        (std::make_pair("mct-318",                        "class Cti::Devices::Mct31xDevice"))
+        (std::make_pair("mct-318l",                       "class Cti::Devices::Mct31xDevice"))
+        (std::make_pair("mct-360",                        "class Cti::Devices::Mct31xDevice"))
+        (std::make_pair("mct-370",                        "class Cti::Devices::Mct31xDevice"))
+        (std::make_pair("mct-410cl",                      "class Cti::Devices::Mct410Device"))
+        (std::make_pair("mct-410fl",                      "class Cti::Devices::Mct410Device"))
+        (std::make_pair("mct-410gl",                      "class Cti::Devices::Mct410Device"))
+        (std::make_pair("mct-410il",                      "class Cti::Devices::Mct410Device"))
+        (std::make_pair("mct-420cl",                      "class Cti::Devices::Mct420Device"))
+        (std::make_pair("mct-420cd",                      "class Cti::Devices::Mct420Device"))
+        (std::make_pair("mct-420fl",                      "class Cti::Devices::Mct420Device"))
+        (std::make_pair("mct-420fd",                      "class Cti::Devices::Mct420Device"))
+        (std::make_pair("mct-430a",                       "class Cti::Devices::Mct470Device"))
+        (std::make_pair("mct-430a3",                      "class Cti::Devices::Mct470Device"))
+        (std::make_pair("mct-430s4",                      "class Cti::Devices::Mct470Device"))
+        (std::make_pair("mct-430sl",                      "class Cti::Devices::Mct470Device"))
+        (std::make_pair("mct-470",                        "class Cti::Devices::Mct470Device"))
+        (std::make_pair("mct-440-2131b",                  "class Cti::Devices::Mct440_2131BDevice"))
+        (std::make_pair("mct-440-2132b",                  "class Cti::Devices::Mct440_2132BDevice"))
+        (std::make_pair("mct-440-2133b",                  "class Cti::Devices::Mct440_2133BDevice"))
+        (std::make_pair("repeater 800",                   "class Cti::Devices::Repeater800Device"))
+        (std::make_pair("repeater 801",                   "class Cti::Devices::Repeater800Device"))
+        (std::make_pair("repeater 850",                   "class Cti::Devices::Repeater850Device"))
+        (std::make_pair("repeater 902",                   "class Cti::Devices::Repeater900Device"))
+        (std::make_pair("repeater 921",                   "class Cti::Devices::Repeater900Device"))
+        (std::make_pair("repeater",                       "class Cti::Devices::Repeater900Device"))
+        (std::make_pair("fmu",                            "class CtiDeviceFMU"))
+        (std::make_pair("page receiver",                  "class CtiDevicePagingReceiver"))
+        (std::make_pair("rfn-410fl",                      "class Cti::Devices::RfnDevice"))
+        (std::make_pair("rfn-410fx",                      "class Cti::Devices::RfnDevice"))
+        (std::make_pair("rfn-410fd",                      "class Cti::Devices::RfnDevice"))
+        (std::make_pair("rfn-420fl",                      "class Cti::Devices::RfnDevice"))
+        (std::make_pair("rfn-420fx",                      "class Cti::Devices::RfnDevice"))
+        (std::make_pair("rfn-420fd",                      "class Cti::Devices::RfnDevice"))
+        (std::make_pair("rfn-420frx",                     "class Cti::Devices::RfnDevice"))
+        (std::make_pair("rfn-420frd",                     "class Cti::Devices::RfnDevice"))
+        (std::make_pair("rfn-410cl",                      "class Cti::Devices::RfnDevice"))
+        (std::make_pair("rfn-420cl",                      "class Cti::Devices::RfnDevice"))
+        (std::make_pair("rfn-420cd",                      "class Cti::Devices::RfnDevice"))
+        (std::make_pair("rfn-430a3d",                     "class Cti::Devices::RfnDevice"))
+        (std::make_pair("rfn-430a3t",                     "class Cti::Devices::RfnDevice"))
+        (std::make_pair("rfn-430a3k",                     "class Cti::Devices::RfnDevice"))
+        (std::make_pair("rfn-430a3r",                     "class Cti::Devices::RfnDevice"))
+        (std::make_pair("rfn-430kv",                      "class Cti::Devices::RfnDevice"))
+        (std::make_pair("rtu-dart",                       "class Cti::Devices::DnpDevice"))
+        (std::make_pair("rtu-dnp",                        "class Cti::Devices::DnpDevice"))
+        (std::make_pair("rtu-ilex",                       "class CtiDeviceILEX"))
+        (std::make_pair("rtu-lmi",                        "class CtiDeviceLMI"))
+        (std::make_pair("rtu-modbus",                     "class Cti::Devices::ModbusDevice"))
+        (std::make_pair("rtu-ses92",                      "class CtiDeviceRemote"))
+        (std::make_pair("rtu-welco",                      "class CtiDeviceWelco"))
+        (std::make_pair("rtc",                            "class CtiDeviceRTC"))
+        (std::make_pair("rtm",                            "class CtiDeviceRTM"))
+        (std::make_pair("golay group",                    "class CtiDeviceGroupGolay"))
+        (std::make_pair("sa-105 group",                   "class CtiDeviceGroupSA105"))
+        (std::make_pair("sa-205 group",                   "class CtiDeviceGroupSA205"))
+        (std::make_pair("sa-305 group",                   "class CtiDeviceGroupSA305"))
+        (std::make_pair("sa-digital group",               "class CtiDeviceGroupSADigital"))
+        (std::make_pair("ci customer",                    "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
+        (std::make_pair("lm control area",                "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
+        (std::make_pair("lm curtail program",             "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
+        (std::make_pair("lm direct program",              "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
+        (std::make_pair("lm energy exchange",             "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
+        (std::make_pair("lm sep program",                 "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
+        (std::make_pair("digi sep group",                 "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
+        (std::make_pair("emetcon group",                  "class CtiDeviceGroupEmetcon"))
+        (std::make_pair("expresscom group",               "class CtiDeviceGroupExpresscom"))
+        (std::make_pair("rfn expresscom group",           "class CtiDeviceGroupRfnExpresscom"))
+        (std::make_pair("mct group",                      "class CtiDeviceGroupMCT"))
+        (std::make_pair("point group",                    "class CtiDeviceGroupPoint"))
+        (std::make_pair("ripple group",                   "class CtiDeviceGroupRipple"))
+        (std::make_pair("versacom group",                 "class CtiDeviceGroupVersacom"))
+        (std::make_pair("macro group",                    "class CtiDeviceMacro"))
+        (std::make_pair("script",                         "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
+        (std::make_pair("simple",                         "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
+        (std::make_pair("system",                         "class CtiDeviceSystem"))
+        (std::make_pair("virtual system",                 "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
+        (std::make_pair("lcu-415",                        "class CtiDeviceLCU"))
+        (std::make_pair("lcu-eastriver",                  "class CtiDeviceLCU"))
+        (std::make_pair("lcu-lg",                         "class CtiDeviceLCU"))
+        (std::make_pair("lcu-t3026",                      "class CtiDeviceLCU"))
+        (std::make_pair("rds terminal",                   "class Cti::Devices::RDSTransmitter"))
+        (std::make_pair("snpp terminal",                  "class CtiDeviceSnppPagingTerminal"))
+        (std::make_pair("tap terminal",                   "class CtiDeviceTapPagingTerminal"))
+        (std::make_pair("tcu-5000",                       "class CtiDeviceTCU"))
+        (std::make_pair("tcu-5500",                       "class CtiDeviceTCU"))
+        (std::make_pair("tnpp terminal",                  "class CtiDeviceTnppPagingTerminal"))
+        (std::make_pair("wctp terminal",                  "class CtiDeviceWctpTerminal"))
+        (std::make_pair("alpha a1",                       "class CtiDeviceAlphaA1"))
+        (std::make_pair("alpha a3",                       "class CtiDeviceKV2"))
+        (std::make_pair("alpha power plus",               "class CtiDeviceAlphaPPlus"))
+        (std::make_pair("davis weather",                  "class CtiDeviceDavis"))
+        (std::make_pair("dct-501",                        "class Cti::Devices::Dct501Device"))
+        (std::make_pair("dr-87",                          "class CtiDeviceDR87"))
+        (std::make_pair("focus",                          "class Cti::Devices::CtiDeviceFocus"))
+        (std::make_pair("ipc-410fl",                      "class Cti::Devices::Ipc410ALDevice"))
+        (std::make_pair("ipc-420fd",                      "class Cti::Devices::Ipc420ADDevice"))
+        (std::make_pair("ipc-430s4e",                     "class CtiDeviceLandisGyrS4"))
+        (std::make_pair("ipc-430sl",                      "class Cti::Devices::CtiDeviceSentinel"))
+        (std::make_pair("fulcrum",                        "class CtiDeviceFulcrum"))
+        (std::make_pair("ion-7330",                       "class CtiDeviceION"))
+        (std::make_pair("ion-7700",                       "class CtiDeviceION"))
+        (std::make_pair("ion-8300",                       "class CtiDeviceION"))
+        (std::make_pair("kv",                             "class CtiDeviceKV2"))
+        (std::make_pair("kv2",                            "class CtiDeviceKV2"))
+        (std::make_pair("landis-gyr s4",                  "class CtiDeviceLandisGyrS4"))
+        (std::make_pair("quantum",                        "class CtiDeviceQuantum"))
+        (std::make_pair("sentinel",                       "class Cti::Devices::CtiDeviceSentinel"))
+        (std::make_pair("sixnet",                         "class CtiDeviceSixnet"))
+        (std::make_pair("transdata mark-v",               "class CtiDeviceMarkV"))
+        (std::make_pair("vectron",                        "class CtiDeviceVectron"))
+        (std::make_pair("unknown",                        "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
+        (std::make_pair("invalid",                        "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
+        (std::make_pair("",                               "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
+        (std::make_pair("snuffleupagus",                  "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
+        (std::make_pair("giraffe",                        "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}"))
+            ;
 
-    const unsigned rowCount = sizeof(dtValues) / sizeof(*dtValues);
+    std::vector<DeviceTypeRow> rowVec;
+    std::vector<std::string> expected;
 
-    std::vector<DeviceTypeRow> rowVec(dtValues, dtValues + rowCount);
+    for each( const std::pair<std::string, std::string> &dbTypeToTypename in dbTypesToTypenames )
+    {
+        DeviceTypeRow r = { dbTypeToTypename.first };
+
+        rowVec.push_back(r);
+
+        expected.push_back(dbTypeToTypename.second);
+    }
 
     DeviceTypeReader reader(columnNames, rowVec);
-
-    std::vector<std::string> expected = boost::assign::list_of
-        ("class CtiDeviceGridAdvisor")
-        ("class CtiDeviceGridAdvisor")
-        ("null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}")
-        ("class Cti::Devices::Cbc6510Device")
-        ("class CtiDeviceCBC")
-        ("class CtiDeviceCBC")
-        ("class CtiDeviceCBC")
-        ("class Cti::Devices::Cbc7020Device")
-        ("class Cti::Devices::Cbc7020Device")
-        ("class Cti::Devices::Cbc7020Device")
-        ("class Cti::Devices::Cbc7020Device")
-        ("class Cti::Devices::Cbc7020Device")
-        ("class Cti::Devices::Cbc8020Device")
-        ("class Cti::Devices::Cbc8020Device")
-        ("class Cti::Devices::DnpDevice")
-        ("class CtiDeviceCBC")
-        ("class CtiDeviceCBC")
-        ("class CtiDeviceCBC")
-        ("null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}")
-        ("class CtiDeviceCCU710")
-        ("class CtiDeviceCCU710")
-        ("class CtiDeviceCCU")
-        ("class Cti::Devices::Ccu721Device")
-        ("class Cti::Devices::Lcr3102Device")
-        ("class Cti::Devices::Lmt2Device")
-        ("class Cti::Devices::MctBroadcastDevice")
-        ("class Cti::Devices::Mct210Device")
-        ("class Cti::Devices::Mct22xDevice")
-        ("class Cti::Devices::Mct210Device")
-        ("class Cti::Devices::Mct22xDevice")
-        ("class Cti::Devices::Mct22xDevice")
-        ("class Cti::Devices::Mct24xDevice")
-        ("class Cti::Devices::Mct24xDevice")
-        ("class Cti::Devices::Mct24xDevice")
-        ("class Cti::Devices::Mct24xDevice")
-        ("class Cti::Devices::Mct310Device")
-        ("class Cti::Devices::Mct310Device")
-        ("class Cti::Devices::Mct310Device")
-        ("class Cti::Devices::Mct310Device")
-        ("class Cti::Devices::Mct310Device")
-        ("class Cti::Devices::Mct31xDevice")
-        ("class Cti::Devices::Mct31xDevice")
-        ("class Cti::Devices::Mct31xDevice")
-        ("class Cti::Devices::Mct31xDevice")
-        ("class Cti::Devices::Mct410Device")
-        ("class Cti::Devices::Mct410Device")
-        ("class Cti::Devices::Mct410Device")
-        ("class Cti::Devices::Mct410Device")
-        ("class Cti::Devices::Mct420Device")
-        ("class Cti::Devices::Mct420Device")
-        ("class Cti::Devices::Mct420Device")
-        ("class Cti::Devices::Mct420Device")
-        ("class Cti::Devices::Mct470Device")
-        ("class Cti::Devices::Mct470Device")
-        ("class Cti::Devices::Mct470Device")
-        ("class Cti::Devices::Mct470Device")
-        ("class Cti::Devices::Mct470Device")
-        ("class Cti::Devices::Mct440_2131BDevice")
-        ("class Cti::Devices::Mct440_2132BDevice")
-        ("class Cti::Devices::Mct440_2133BDevice")
-        ("class Cti::Devices::Repeater800Device")
-        ("class Cti::Devices::Repeater800Device")
-        ("class Cti::Devices::Repeater850Device")
-        ("class Cti::Devices::Repeater900Device")
-        ("class Cti::Devices::Repeater900Device")
-        ("class Cti::Devices::Repeater900Device")
-        ("class CtiDeviceFMU")
-        ("class CtiDevicePagingReceiver")
-        ("class Cti::Devices::DnpDevice")
-        ("class Cti::Devices::DnpDevice")
-        ("class CtiDeviceILEX")
-        ("class CtiDeviceLMI")
-        ("class Cti::Devices::ModbusDevice")
-        ("class CtiDeviceRemote")
-        ("class CtiDeviceWelco")
-        ("class CtiDeviceRTC")
-        ("class CtiDeviceRTM")
-        ("class CtiDeviceGroupGolay")
-        ("class CtiDeviceGroupSA105")
-        ("class CtiDeviceGroupSA205")
-        ("class CtiDeviceGroupSA305")
-        ("class CtiDeviceGroupSADigital")
-        ("null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}")
-        ("null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}")
-        ("null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}")
-        ("null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}")
-        ("null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}")
-        ("null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}")
-        ("null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}")
-        ("class CtiDeviceGroupEmetcon")
-        ("class CtiDeviceGroupExpresscom")
-        ("class CtiDeviceGroupRfnExpresscom")
-        ("class CtiDeviceGroupMCT")
-        ("class CtiDeviceGroupPoint")
-        ("class CtiDeviceGroupRipple")
-        ("class CtiDeviceGroupVersacom")
-        ("class CtiDeviceMacro")
-        ("null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}")
-        ("null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}")
-        ("class CtiDeviceSystem")
-        ("null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}")
-        ("class CtiDeviceLCU")
-        ("class CtiDeviceLCU")
-        ("class CtiDeviceLCU")
-        ("class CtiDeviceLCU")
-        ("class Cti::Devices::RDSTransmitter")
-        ("class CtiDeviceSnppPagingTerminal")
-        ("class CtiDeviceTapPagingTerminal")
-        ("class CtiDeviceTCU")
-        ("class CtiDeviceTCU")
-        ("class CtiDeviceTnppPagingTerminal")
-        ("class CtiDeviceWctpTerminal")
-        ("class CtiDeviceAlphaA1")
-        ("class CtiDeviceKV2")
-        ("class CtiDeviceAlphaPPlus")
-        ("class CtiDeviceDavis")
-        ("class Cti::Devices::Dct501Device")
-        ("class CtiDeviceDR87")
-        ("class Cti::Devices::CtiDeviceFocus")
-        ("class Cti::Devices::Ipc410ALDevice")
-        ("class Cti::Devices::Ipc420ADDevice")
-        ("class CtiDeviceLandisGyrS4")
-        ("class Cti::Devices::CtiDeviceSentinel")
-        ("class CtiDeviceFulcrum")
-        ("class CtiDeviceION")
-        ("class CtiDeviceION")
-        ("class CtiDeviceION")
-        ("class CtiDeviceKV2")
-        ("class CtiDeviceKV2")
-        ("class CtiDeviceLandisGyrS4")
-        ("class CtiDeviceQuantum")
-        ("class Cti::Devices::CtiDeviceSentinel")
-        ("class CtiDeviceSixnet")
-        ("class CtiDeviceMarkV")
-        ("class CtiDeviceVectron")
-        ("null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}")
-        ("null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}")
-        ("null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}")
-        ("null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}")
-        ("null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}")
-            ;
 
     std::vector<std::string> results;
 

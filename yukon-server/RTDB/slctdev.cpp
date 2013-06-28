@@ -75,6 +75,7 @@
 #include "dev_repeater800.h"
 #include "dev_repeater.h"
 #include "dev_repeater850.h"
+#include "dev_rfn.h"
 #include "dev_rtc.h"
 #include "dev_sixnet.h"
 #include "rte_macro.h"
@@ -212,6 +213,28 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
         case TYPEMCT440_2131B:  NewDevice = CTIDBG_new Mct440_2131BDevice; break;
         case TYPEMCT440_2132B:  NewDevice = CTIDBG_new Mct440_2132BDevice; break;
         case TYPEMCT440_2133B:  NewDevice = CTIDBG_new Mct440_2133BDevice; break;
+
+        case TYPE_RFN410FL:
+        case TYPE_RFN410FX:
+        case TYPE_RFN410FD:
+            //
+        case TYPE_RFN420FL:
+        case TYPE_RFN420FX:
+        case TYPE_RFN420FD:
+            //
+        case TYPE_RFN420FRX:
+        case TYPE_RFN420FRD:
+            //
+        case TYPE_RFN410CL:
+        case TYPE_RFN420CL:
+        case TYPE_RFN420CD:
+            //
+        case TYPE_RFN430A3D:
+        case TYPE_RFN430A3T:
+        case TYPE_RFN430A3K:
+        case TYPE_RFN430A3R:
+            //
+        case TYPE_RFN430KV:     NewDevice = new RfnDevice;  break;
 
         case TYPE_MODBUS:       NewDevice = CTIDBG_new ModbusDevice;      break;
 
