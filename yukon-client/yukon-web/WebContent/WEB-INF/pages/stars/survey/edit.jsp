@@ -103,11 +103,11 @@ moveDownDisabledIcon = templateIcons[4];
                         <c:if test="${!hasBeenTaken}">
 	                        <li>
                                 <cti:button id="editDetailsBtn" nameKey="edit" icon="icon-pencil"
-                                    renderMode="labeledImage" classes="f_blocker"/>
+                                    renderMode="labeledImage" classes="f-blocker"/>
                             </li>
 	                        <li>
                                 <cti:button id="addQuestionBtn" nameKey="addQuestion"
-                                    renderMode="labeledImage" classes="f_blocker" icon="icon-add"/>
+                                    renderMode="labeledImage" classes="f-blocker" icon="icon-add"/>
 	                        </li>
                         </c:if>
                         <cti:url var="sampleXmlUrl" value="sampleXml">
@@ -168,7 +168,7 @@ moveDownDisabledIcon = templateIcons[4];
 					                </td>
 					                <td>
                                         <cti:button nameKey="editQuestion" renderMode="image"
-                                            classes="editQuestionBtn f_blocker" icon="icon-pencil"/>
+                                            classes="editQuestionBtn f-blocker" icon="icon-pencil"/>
                                         <c:if test="${!hasBeenTaken}">
 						                    <c:if test="${status.first}">
 						                        <cti:button renderMode="image"

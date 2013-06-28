@@ -79,7 +79,7 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
    			
    			// Date
    			var outer_self = this;
-   			jQuery("input.f_datePicker").each(function(){
+   			jQuery("input.f-datePicker").each(function(){
    			    var self = jQuery(this);
    				self.datetimeEntry({
    					datetimeFormat: self.attr('data-date-time-format'),
@@ -88,30 +88,30 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
 					minDatetime: self.attr('data-min-date')
    				});
    				
-				if(self.hasClass('f_dateStart')){
+				if(self.hasClass('f-dateStart')){
 					self.change(function(){
-						jQuery(this).closest('.f_dateRange').find('.f_dateEnd').datetimeEntry('change', 'minDatetime', jQuery(this).datetimeEntry('getDatetime'));
+						jQuery(this).closest('.f-dateRange').find('.f-dateEnd').datetimeEntry('change', 'minDatetime', jQuery(this).datetimeEntry('getDatetime'));
 					});
 				}
-				if(self.hasClass('f_dateEnd')){
+				if(self.hasClass('f-dateEnd')){
 					self.change(function(){
-						jQuery(this).closest('.f_dateRange').find('.f_dateStart').datetimeEntry('change', 'maxDatetime', jQuery(this).datetimeEntry('getDatetime'));
+						jQuery(this).closest('.f-dateRange').find('.f-dateStart').datetimeEntry('change', 'maxDatetime', jQuery(this).datetimeEntry('getDatetime'));
 					});
 				}
 				
-   			}).removeClass('f_datePicker').closest('.datetimeEntry_wrap').addClass('date'); //this class is used to set a fixed width based on the type of input we are creating
-			jQuery("input.f_datePickerUI").each(function(){
+   			}).removeClass('f-datePicker').closest('.datetimeEntry_wrap').addClass('date'); //this class is used to set a fixed width based on the type of input we are creating
+			jQuery("input.f-datePickerUI").each(function(){
 				var self = jQuery(this);
 				var args = outer_self._getPickerArgs(self);
 				
-				if(self.hasClass('f_dateStart')){
+				if(self.hasClass('f-dateStart')){
 					args.onSelect = function(selectedDate) {
-						jQuery(this).closest('.f_dateRange').find('.f_dateEnd').datepicker( "option", "minDate", selectedDate );
+						jQuery(this).closest('.f-dateRange').find('.f-dateEnd').datepicker( "option", "minDate", selectedDate );
 					};
 				}
-				if(self.hasClass('f_dateEnd')){
+				if(self.hasClass('f-dateEnd')){
 					args.onSelect = function(selectedDate) {
-						jQuery(this).closest('.f_dateRange').find('.f_dateStart').datepicker( "option", "maxDate", selectedDate );
+						jQuery(this).closest('.f-dateRange').find('.f-dateStart').datepicker( "option", "maxDate", selectedDate );
 					};
 				}
 				
@@ -120,11 +120,11 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
 				jQuery.extend(defaultArgs, datetimepickerArgs);
 				self.datepicker(jQuery.extend(defaultArgs, args));
 				outer_self._insertTimezone(self);
-			}).removeClass('f_datePickerUI');
+			}).removeClass('f-datePickerUI');
 			
    			
    			// Date + Time
-			jQuery("input.f_dateTimePicker").each(function(){
+			jQuery("input.f-dateTimePicker").each(function(){
 			    var self = jQuery(this);
 				self.datetimeEntry({
 					datetimeFormat: self.attr('data-date-time-format'),
@@ -133,26 +133,26 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
    					timeSteps: outer_self._getTimeSteps(self),
 					spinnerImage: ''
 				});
-			}).removeClass('f_dateTimePicker').closest('.datetimeEntry_wrap').addClass('dateTime'); //this class is used to set a fixed width based on the type of input we are creating
-			jQuery("input.f_dateTimePickerUI").each(function(){
+			}).removeClass('f-dateTimePicker').closest('.datetimeEntry_wrap').addClass('dateTime'); //this class is used to set a fixed width based on the type of input we are creating
+			jQuery("input.f-dateTimePickerUI").each(function(){
 				var self = jQuery(this);
 				//copy the defaults
 				var defaultArgs = {};
 				jQuery.extend(defaultArgs, datetimepickerArgs);
 				self.datetimepicker(jQuery.extend(defaultArgs, outer_self._getPickerArgs(self)));
 				outer_self._insertTimezone(self);
-			}).removeClass('f_dateTimePickerUI');
+			}).removeClass('f-dateTimePickerUI');
 			
 			// Time
-			jQuery("input.f_timePicker").each(function(){
+			jQuery("input.f-timePicker").each(function(){
 			    var self = jQuery(this);
 				self.datetimeEntry({
 					datetimeFormat: self.attr('data-date-time-format'),
 					timeSteps: outer_self._getTimeSteps(self),
 					spinnerImage: ''
 				});
-			}).removeClass('f_timePicker').closest('.datetimeEntry_wrap').addClass('time'); //this class is used to set a fixed width based on the type of input we are creating
-			jQuery("input.f_timePickerUI").each(function(){
+			}).removeClass('f-timePicker').closest('.datetimeEntry_wrap').addClass('time'); //this class is used to set a fixed width based on the type of input we are creating
+			jQuery("input.f-timePickerUI").each(function(){
 				var self = jQuery(this);
 				//copy the defaults
 				var defaultArgs = {};
@@ -160,7 +160,7 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
 				jQuery.extend(defaultArgs, timepickerArgs);
 				self.timepicker(jQuery.extend(defaultArgs, outer_self._getPickerArgs(self)));
 				outer_self._insertTimezone(self);
-			}).removeClass('f_timePickerUI');
+			}).removeClass('f-timePickerUI');
     	},
     	
     	_insertTimezone: function(self){

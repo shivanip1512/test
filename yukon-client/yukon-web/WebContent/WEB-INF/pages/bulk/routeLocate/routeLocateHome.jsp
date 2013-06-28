@@ -38,7 +38,7 @@ function submitForm(id) {
             <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
             <cti:checkRolesAndProperties value="LOCATE_ROUTE">
                 <div class="pageActionArea">
-                    <cti:button nameKey="locateRoute" type="submit" classes="f_disableAfterClick primary action" busy="true"/>
+                    <cti:button nameKey="locateRoute" type="submit" classes="f-disableAfterClick primary action" busy="true"/>
                 </div>
             </cti:checkRolesAndProperties>
             </cti:checkRolesAndProperties>

@@ -84,11 +84,11 @@
                                                 value="${period.startTime}"
                                                 initialValue="${period.startTime}"
                                                 defaultValue="${period.startTime}">
-                                            <input type="text" class="f_selectAll" maxlength="8">
+                                            <input type="text" class="f-selectAll" maxlength="8">
                                         </div>
 
                                         <div class="temp heat ${pageScope.temperatureUnit}" title="${heatLabel}">
-                                            <input type="text" class="heat_F f_selectAll"
+                                            <input type="text" class="heat_F f-selectAll"
                                                    maxlength="4" data-temperatureMode="HEAT"><i:inline key="yukon.web.defaults.degree"/>
                                             <input type="hidden"
                                                    value="${period.heatTemp.value}"
@@ -97,7 +97,7 @@
                                                    defaultValue="${period.heatTemp.value}">
                                         </div>
                                         <div class="temp cool ${pageScope.temperatureUnit}" title="${coolLabel}">
-                                            <input type="text" class="cool_F f_selectAll"
+                                            <input type="text" class="cool_F f-selectAll"
                                                    maxlength="4" data-temperatureMode="COOL"><i:inline key="yukon.web.defaults.degree"/>
                                             <input type="hidden"
                                                    value="${period.coolTemp.value}" 

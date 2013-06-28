@@ -10,7 +10,7 @@
         <form id="verifyConfigForm" method="get" action="/bulk/config/doVerifyConfigs">
             <%-- DEVICE COLLECTION --%>
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
-            <cti:button nameKey="verify" type="submit" classes="f_disableAfterClick primary action" busy="true"/>
+            <cti:button nameKey="verify" type="submit" classes="f-disableAfterClick primary action" busy="true"/>
         </form>
     </tags:bulkActionContainer>
 </cti:standardPage>

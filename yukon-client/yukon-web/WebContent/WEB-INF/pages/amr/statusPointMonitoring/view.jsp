@@ -46,7 +46,7 @@
                     <div class="pageActionArea">        
                         <form action="/amr/statusPointMonitoring/editPage" method="get">
                             <input type="hidden" name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}">
-                            <cti:button nameKey="edit" icon="icon-pencil" type="submit" classes="f_blocker"/>
+                            <cti:button nameKey="edit" icon="icon-pencil" type="submit" classes="f-blocker"/>
                         </form>
                     </div>
                 

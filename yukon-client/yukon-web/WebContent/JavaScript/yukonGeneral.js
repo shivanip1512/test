@@ -435,7 +435,7 @@ jQuery(document).bind('click', function (e) {
 
 /** Popup for swing client launcher */
 jQuery(function() {
-    jQuery(document).on('click', 'f_apps_launcher', function (event) {
+    jQuery(document).on('click', 'f-apps_launcher', function (event) {
         //TODO client launcher popup
     });
 });

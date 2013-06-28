@@ -10,7 +10,7 @@
             <span class="fl previousLink">
                 <c:choose>
                     <c:when test="${result.previousNeeded}">
-                        <button class="naked f_ajaxPaging" data-url="${prevUrl}">
+                        <button class="naked f-ajaxPaging" data-url="${prevUrl}">
                             <i class="icon icon-resultset-previous"></i>
                             <span class="label"><i:inline key="yukon.common.paging.previous"/></span>
                         </button>
@@ -27,7 +27,7 @@
             <span class="fl nextLink">
                 <c:choose>
                     <c:when test="${result.nextNeeded}">
-                        <button class="naked f_ajaxPaging" data-url="${nextUrl}">
+                        <button class="naked f-ajaxPaging" data-url="${nextUrl}">
                             <span class="label"><i:inline key="yukon.common.paging.next"/></span>
                             <i class="icon icon-resultset-next"></i>
                         </button>

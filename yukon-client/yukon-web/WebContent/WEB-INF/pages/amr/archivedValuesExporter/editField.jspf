@@ -53,7 +53,7 @@
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
-        <tags:sectionContainer2 nameKey="defineLayout" styleClass="f_renderFields">
+        <tags:sectionContainer2 nameKey="defineLayout" styleClass="f-renderFields">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".roundingMode" rowClass="ATTRIBUTE_VALUE POINT_VALUE">
                     <form:select path="exportField.roundingMode">
@@ -136,7 +136,7 @@
                 <tags:inputNameValue nameKey=".plainTextInput" rowClass="PLAIN_TEXT" path="plainText" size="25" maxlength="50" />
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
-        <tags:sectionContainer2 nameKey="otherOptions" styleClass="f_renderFields">
+        <tags:sectionContainer2 nameKey="otherOptions" styleClass="f-renderFields">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".unsupportedField"
                     rowClass="METER_NUMBER ROUTE DEVICE_NAME ADDRESS RF_MANUFACTURER RF_MODEL RF_SERIAL_NUMBER ATTRIBUTE ATTRIBUTE_NAME ATTRIBUTE_TIMESTAMP ATTRIBUTE_VALUE ATTRIBUTE_UNIT_OF_MEASURE ATTRIBUTE_QUALITY POINT_QUALITY POINT_NAME POINT_TIMESTAMP POINT_VALUE UNIT_OF_MEASURE">

@@ -57,8 +57,8 @@ jQuery(function(){
 
 <script>
 jQuery(function() {
-    jQuery(".f_addCommentBtn").click(function() {
-        jQuery(this).hide().siblings(".f_commentsShowHide").show(200).focus();
+    jQuery(".f-addCommentBtn").click(function() {
+        jQuery(this).hide().siblings(".f-commentsShowHide").show(200).focus();
     });
 });
 </script>
@@ -126,14 +126,14 @@ jQuery(function() {
                         <c:set var="inputClass" value="${status.error ? 'error' : ''}"/>
                         <c:set var="style" value="${empty setting.extra.comments ? 'display:none' : ''}"/>
                         <c:if test="${empty setting.extra.comments}">
-                            <cti:button classes="f_addCommentBtn" nameKey="energyCompanySettings.addComment" type="button" name="add" value="${setting.extra}" renderMode="labeledImage" icon="icon-pencil"/>
+                            <cti:button classes="f-addCommentBtn" nameKey="energyCompanySettings.addComment" type="button" name="add" value="${setting.extra}" renderMode="labeledImage" icon="icon-pencil"/>
                         </c:if>
                         <form:textarea rows="3" cols="27" 
                                 placeholder="comments"
                                 id="${setting.extra.type}_comments"
                                 path="comments[${setting.extra.type}]"
                                 style="${style}"
-                                class="f_commentsShowHide ${inputClass}"/>
+                                class="f-commentsShowHide ${inputClass}"/>
                         <form:errors path="comments[${setting.extra.type}]" cssClass="errorMessage" element="div"/>
                     </div>
                 </div>

@@ -869,11 +869,11 @@ Picker.prototype = {
     },
 
     block : function() {
-        Yukon.uiUtils.elementGlass.show(jQuery('#' + this.pickerId + ' .f_block_this'));
+        Yukon.uiUtils.elementGlass.show(jQuery('#' + this.pickerId + ' .f-block_this'));
     },
 
     unblock : function() {
-        Yukon.uiUtils.elementGlass.hide(jQuery('#' + this.pickerId + ' .f_block_this'));
+        Yukon.uiUtils.elementGlass.hide(jQuery('#' + this.pickerId + ' .f-block_this'));
     }
 
 };

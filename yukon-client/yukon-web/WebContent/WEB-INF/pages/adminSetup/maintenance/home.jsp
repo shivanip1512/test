@@ -18,7 +18,7 @@ jQuery(function(){
 		jQuery(val).attr('title', jQuery(val).attr('data-falsejobNameMsg'));
 	});
 	
-	jQuery("a.f_toggleJobEnabled").click(function(e){
+	jQuery("a.f-toggleJobEnabled").click(function(e){
 		jQuery.ajax({
 			url: '${toggleJobAjaxUrl}?jobId=' + jQuery(e.currentTarget).attr('data-jobid'),
 			success: function(data) {
@@ -64,7 +64,7 @@ jQuery(function(){
 							<td class="fr">
                                 <c:if test="${job.disabled}"><c:set var="iconClass" value="icon-disabled"/></c:if>
                                 <c:if test="${not job.disabled}"><c:set var="iconClass" value="icon-enabled"/></c:if>
-								<a href="javascript:void(0);" class="icon ${iconClass} f_toggleJobEnabled" data-truejobNameMsg="${enableMsg}" data-falsejobNameMsg="${disableMsg}" data-jobid="${job.id}">Toggle Job</a>
+								<a href="javascript:void(0);" class="icon ${iconClass} f-toggleJobEnabled" data-truejobNameMsg="${enableMsg}" data-falsejobNameMsg="${disableMsg}" data-jobid="${job.id}">Toggle Job</a>
 							</td>
 		
 						</tr>

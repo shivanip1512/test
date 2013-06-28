@@ -29,7 +29,7 @@
 	<cti:msg2 var="cancelButton" key="yukon.web.components.button.cancel.label"/>
 	<cti:msg2 var="cancelButtonTitle" key=".filterShortcutClose"/>
 	
-	<dialog:inline id="leakFilterDialog" okEvent="none" nameKey="leakFilterDialog" on=".f_open_filter_dialog"
+	<dialog:inline id="leakFilterDialog" okEvent="none" nameKey="leakFilterDialog" on=".f-open_filter_dialog"
 		options="{width: 550, 'buttons': [{text: '${cancelButton}', click: function() { jQuery(this).dialog('close'); }, title: '${cancelButtonTitle}', 'class': 'leakFilterCancelButton' },
                                           {text: '${resetButton}', click: function() { WaterLeakReport.reset_filter_submit(); }, title: '${resetButtonTitle}' },
                                           {text: '${filterButton}', click: function() { WaterLeakReport.filter_submit(); }, title: '${filterButtonTitle}', 'class': 'leakFilterSubmitButton primary action'}]}">
@@ -41,16 +41,16 @@
 			<div class="under_tabs">
 				<tags:nameValueContainer2>
 					<tags:nameValue2 nameKey=".filter.fromDate">
-						<dt:dateTime path="fromInstant" value="${backingBean.fromInstant}" cssClass="f_from_datetime f_focus"
+						<dt:dateTime path="fromInstant" value="${backingBean.fromInstant}" cssClass="f-from_datetime f-focus"
 							stepMinute="60" stepHour="1" cssDialogClass="hide_minutes" />
 					</tags:nameValue2>
 					<tags:nameValue2 nameKey=".filter.toDate">
-						<dt:dateTime path="toInstant" value="${backingBean.toInstant}" cssClass="f_to_datetime"
+						<dt:dateTime path="toInstant" value="${backingBean.toInstant}" cssClass="f-to_datetime"
 							stepMinute="60" stepHour="1" cssDialogClass="hide_minutes" />
 					</tags:nameValue2>
 
                     <tags:nameValue2 nameKey=".filter.threshold">
-                        <tags:input path="threshold" size="3" inputClass="threshold_input f_threshold"/>
+                        <tags:input path="threshold" size="3" inputClass="threshold_input f-threshold"/>
 						<span class="focusableFieldHolder">
                             <a title="<i:inline key=".filter.helpText"/>"><i class="icon icon-help"></i></a>
 						</span>
@@ -59,7 +59,7 @@
 
 					<tags:nameValue2 nameKey=".filter.includeDisabledDevices">
 						<form:checkbox path="includeDisabledPaos"
-							cssClass="f_include_disabled_paos"/>
+							cssClass="f-include_disabled_paos"/>
 					</tags:nameValue2>
 				</tags:nameValueContainer2>
 			</div>
@@ -72,7 +72,7 @@
 	<c:if test="${not empty exportData.scheduleName}">
 		<c:set var="popupTitleArgs" value="\"${fn:escapeXml(fileExportData.scheduleName)}\""/>
 	</c:if>
-	<dialog:inline id="leakScheduleDialog" okEvent="none" nameKey="leakScheduleDialog" arguments="${popupTitleArgs}" on=".f_open_schedule_dialog"
+	<dialog:inline id="leakScheduleDialog" okEvent="none" nameKey="leakScheduleDialog" arguments="${popupTitleArgs}" on=".f-open_schedule_dialog"
 		options="{width: 650, 'buttons': [{text: '${empty jobId ? scheduleButton : updateButton}', click: function() {WaterLeakReport.schedule_submit();}, title: '${empty jobId ? scheduleButtonTitle : updateButtonTitle}', 'class': 'leakScheduleSubmitButton'},
 										  {text: '${cancelButton}', click: function() {jQuery(this).dialog('close');}, title: '${cancelButtonTitle}', 'class': 'leakScheduleCancelButton'}]}">
 		
@@ -118,15 +118,15 @@
 	    </c:otherwise>
     </c:choose>
 	<c:set var="current_filter">
-		<a href="javascript:void(0);" class="f_open_filter_dialog">${current_filter_text}</a>
+		<a href="javascript:void(0);" class="f-open_filter_dialog">${current_filter_text}</a>
 	</c:set>
 	<c:set var="detection_algorithm">
-		<a href="javascript:void(0);" class="f_open_detection_algorithm"><i:inline key=".leakDetectionAlgorithm"/></a>
+		<a href="javascript:void(0);" class="f-open_detection_algorithm"><i:inline key=".leakDetectionAlgorithm"/></a>
 	</c:set>
 	<c:choose>
 		<c:when test="${first_visit}">
 			<c:set var="click_here">
-				<a href="javascript:void(0);" class="f_open_filter_dialog"><i:inline key=".clickHere"/></a>
+				<a href="javascript:void(0);" class="f-open_filter_dialog"><i:inline key=".clickHere"/></a>
 			</c:set>
 			<div class="page_help">
 			    <cti:list var="arguments">
@@ -195,12 +195,12 @@
                 <li class="divider"></li>
             </c:if>
             <li>
-                <a href="javascript:void(0);" class="f_open_filter_dialog">
+                <a href="javascript:void(0);" class="f-open_filter_dialog">
                     <i:inline key=".filter"/>
                 </a>
             </li>
             <li>
-            	<a href="javascript:void(0);" class="f_open_schedule_dialog">
+            	<a href="javascript:void(0);" class="f-open_schedule_dialog">
             		<i:inline key=".schedule"/>
             	</a>
             </li>
@@ -222,7 +222,7 @@
             <c:set var="devices_filter" value="${isDeviceGroup ? backingBean.deviceCollection.collectionParameters['group.name'] :
              individual_value} (${backingBean.deviceCollection.deviceCount})"/>
 			<tags:filteredBy labelKey="yukon.common.filteredBy.devices.label" value="${devices_filter}"
-				cssClass="${isDeviceGroup ? 'f_filter_group_clicked' : 'f_filter_individual_clicked' }" isClearable="false" />
+				cssClass="${isDeviceGroup ? 'f-filter_group_clicked' : 'f-filter_individual_clicked' }" isClearable="false" />
 
             <!-- Dates -->
 			<c:set var="dates_filter">
@@ -230,35 +230,35 @@
 				    <cti:formatDate type="DATEHM" value="${backingBean.fromInstant}" />
 			    </span>
 			    -
-			    <span class="date f_filter_to_date_clicked">
+			    <span class="date f-filter_to_date_clicked">
 					<cti:formatDate type="DATEHM" value="${backingBean.toInstant}" />
 				</span>
 			</c:set>
-			<tags:filteredBy labelKey="yukon.common.filteredBy.dates.label" value="${dates_filter}" cssClass="range f_filter_date_range" isClearable="false"/>
+			<tags:filteredBy labelKey="yukon.common.filteredBy.dates.label" value="${dates_filter}" cssClass="range f-filter_date_range" isClearable="false"/>
 
             <!-- Threshold -->
             <cti:msg2 key="yukon.common.filteredBy.threshold.value.galPerHour" argument="${backingBean.threshold}" var="threshold_value" />
-			<tags:filteredBy labelKey="yukon.common.filteredBy.threshold.label" value="${threshold_value}" cssClass="f_filter_threshold_clicked" isClearable="false"/>
+			<tags:filteredBy labelKey="yukon.common.filteredBy.threshold.label" value="${threshold_value}" cssClass="f-filter_threshold_clicked" isClearable="false"/>
 
             <!-- Disabled Devices -->
             <c:if test="${backingBean.includeDisabledPaos}">
 				<cti:msg2 key="yukon.common.filteredBy.disabledDevices.value" var="disabled_value"/>
-				<tags:filteredBy labelKey="yukon.common.filteredBy.disabledDevices.label" value="${disabled_value}" cssClass="f_disabled_devices" clearClass="f_filter_reset_disabled_devices_clicked"/>
+				<tags:filteredBy labelKey="yukon.common.filteredBy.disabledDevices.label" value="${disabled_value}" cssClass="f-disabled_devices" clearClass="f-filter_reset_disabled_devices_clicked"/>
 			</c:if>
 
             <!-- Reset link if not using defaults -->
 			<c:if test="${!usingDefaultFilter}">
                 <cti:msg2 key="yukon.common.filteredBy.reset.value" var="reset_value"/>
-                <tags:filteredBy labelKey="yukon.common.filteredBy.reset.label" value="${reset_value}" isClearable="false" isReset="true" cssClass="f_reset_filter_submit"/>
+                <tags:filteredBy labelKey="yukon.common.filteredBy.reset.label" value="${reset_value}" isClearable="false" isReset="true" cssClass="f-reset_filter_submit"/>
 			</c:if>
         </tags:filteredByContainer>
-		<table id="leaksTable" class="compactResultsTable f_traversable contextual-menu-list">
+		<table id="leaksTable" class="compactResultsTable f-traversable contextual-menu-list">
             <c:choose>
                 <c:when test="${fn:length(filterResult.resultList) > 0}">
 					<thead>
 						<tr>
 							<c:if test="${filterResult.hitCount > 0}">
-								<th class="small_width"><input id="f_check_all" type="checkbox"></th>
+								<th class="small_width"><input id="f-check_all" type="checkbox"></th>
 							</c:if>
 							<th><tags:sortLink nameKey="tableHeader.deviceName" baseUrl="report" fieldName="DEVICE_NAME" isDefault="false"/></th>
 							<th><tags:sortLink nameKey="tableHeader.meterNumber" baseUrl="report" fieldName="METER_NUMBER"/></th>
@@ -277,7 +277,7 @@
 								</cti:url>
 								<input type="hidden" value="${accountInfoUrl}" class="account_info_url"/>
 								<input type="hidden" value="${row.meter.paoIdentifier.paoId}" class="the_pao_id"/>
-								<td class="small_width"><input type="checkbox" class="f_check_single"></td>
+								<td class="small_width"><input type="checkbox" class="f-check_single"></td>
 								<td>
 		                            <cti:paoDetailUrl yukonPao="${row.meter}">
 		                                ${fn:escapeXml(row.meter.name)}
@@ -288,7 +288,7 @@
 								<td><i:inline key=".leakRateLabel" arguments="${row.leakRate}"/></td>
 		                        <c:if test="${hasVendorId}">
 									<td>
-										<a href="javascript:void(0);" class="f_cis_details">
+										<a href="javascript:void(0);" class="f-cis_details">
 		                                    <i:inline key=".viewCISDetails"/>
 										</a>
 			                        </td>

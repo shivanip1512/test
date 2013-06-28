@@ -50,7 +50,7 @@
                     <strong><i:inline key="yukon.common.device.bulk.updateUpload.updateFileLabel"/></strong>
                     <input type="file" name="dataFile" size="30px">
                     <div class="actionArea">
-                        <cti:button nameKey="load" type="submit" classes="f_disableAfterClick primary action" busy="true"/>
+                        <cti:button nameKey="load" type="submit" classes="f-disableAfterClick primary action" busy="true"/>
                     </div> 
                 </div>
             </div>

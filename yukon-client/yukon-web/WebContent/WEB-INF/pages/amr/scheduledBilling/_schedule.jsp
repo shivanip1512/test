@@ -12,8 +12,8 @@
 
 <cti:msgScope paths="modules.amr.billing.schedule">
 
-<div class="error dn f_errors"></div>
-<div class="success dn f_success"></div>
+<div class="error dn f-errors"></div>
+<div class="success dn f-success"></div>
 
 	<form:form id="scheduleForm" commandName="exportData" action="/scheduledBilling/scheduleExport">
 		<tags:boxContainer2 nameKey="billingParameters">
@@ -62,7 +62,7 @@
 			<cti:url var="cancelUrl" value="/operator/metering/billing"/>
 		</c:if>
 
-		<cti:button classes="f_cancel" nameKey="cancelButton"/>
+		<cti:button classes="f-cancel" nameKey="cancelButton"/>
 		<input type="submit" value="${submitText}" />
 	</form:form>
 </cti:msgScope>

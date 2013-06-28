@@ -29,7 +29,7 @@ function fieldToModifyChanged() {
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
             
             <%-- OPTIONS --%>
-            <tags:sectionContainer2 nameKey="options" styleClass="half_width">
+            <tags:sectionContainer2 nameKey="options" styleClass="half-width">
                 <tags:nameValueContainer>
                     <cti:msg var="sharedPointsOptionLabel" key="yukon.common.device.bulk.updatePointsHome.sharedPointsOptionLabel"/>
                     <cti:msg var="sharedPointsTrueOptionText" key="yukon.common.device.bulk.updatePointsHome.sharedPointsTrueOptionText"/>

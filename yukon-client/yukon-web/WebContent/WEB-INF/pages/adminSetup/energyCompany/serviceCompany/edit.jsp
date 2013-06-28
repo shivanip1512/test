@@ -30,7 +30,7 @@
                 var str = [];
                 str.push('<li>');
                     str.push('<span class="remove fr">');
-                        str.push("<a class='f_remove' href='javascript:removeDesignationCode()'><span class='icon icon-cross'></span></a>");
+                        str.push("<a class='f-remove' href='javascript:removeDesignationCode()'><span class='icon icon-cross'></span></a>");
                     str.push('</span>');
                     str.push(designationCode);
                     str.push('<input type="hidden" value="0" name="designationCodes['+ ++DC_INDEX +'].id"/>');
@@ -137,7 +137,7 @@
                 
                 Event.observe('findDesignationCode', 'keydown', preventSubmit);
                 
-                YEvent.observeSelectorClick('a.f_remove', removeDesignationCode);
+                YEvent.observeSelectorClick('a.f-remove', removeDesignationCode);
             });
         </script>
 
@@ -158,8 +158,8 @@
                 <tags:formElementContainer nameKey="generalInfoSection">
                     <tags:nameValueContainer2 id="generalInfoTable">
                         <tags:inputNameValue nameKey=".name" path="companyName" inputClass="string" size="45" maxlength="60"/>
-                        <tags:inputPhone nameKey=".mainPhone" path="mainPhoneNumber" inputClass="f_formatPhone" maxlength="16"/>
-                        <tags:inputPhone nameKey=".mainFax" path="mainFaxNumber" inputClass="f_formatPhone"  maxlength="16"/>
+                        <tags:inputPhone nameKey=".mainPhone" path="mainPhoneNumber" inputClass="f-formatPhone" maxlength="16"/>
+                        <tags:inputPhone nameKey=".mainFax" path="mainFaxNumber" inputClass="f-formatPhone"  maxlength="16"/>
                         <tags:inputNameValue nameKey=".email" path="emailContactNotification" inputClass="String" maxlength="130"/>
                         <tags:inputNameValue nameKey=".HIType" path="hiType" size="35" maxlength="40"/>
                     </tags:nameValueContainer2>

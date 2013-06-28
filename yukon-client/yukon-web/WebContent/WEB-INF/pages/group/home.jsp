@@ -21,10 +21,10 @@
     
 <script type="text/javascript">
 jQuery(function() {
-    jQuery(".f_edit-grp-name").click(function(event) {
+    jQuery(".f-edit-grp-name").click(function(event) {
         jQuery("#editGroupNamePopup").dialog();
     });
-    jQuery(".f_add-sub-grp").click(function(event) {
+    jQuery(".f-add-sub-grp").click(function(event) {
         jQuery("#addSubGroupPopup").dialog();
     });
 });
@@ -168,7 +168,7 @@ function confirmRemoveAllDevices(confirmText) {
 		                            <cti:msg2 var="editGroupNameText" key="yukon.web.deviceGroups.editor.operationsContainer.editGroupNameText" />
 		                            <cti:msg2 var="newGroupNameText" key="yukon.web.deviceGroups.editor.operationsContainer.newGroupNameText" />
 		                            <cti:msg2 var="changeNameButtonText" key="yukon.web.deviceGroups.editor.operationsContainer.newGroupNameSaveText" />
-		                            <a title="Click to edit group name" href="javascript:void(0);" class="f_edit-grp-name">${editGroupNameText}</a>
+		                            <a title="Click to edit group name" href="javascript:void(0);" class="f-edit-grp-name">${editGroupNameText}</a>
 		                            <div id="editGroupNamePopup" title="${editGroupNameText}" class="groupEditorPopup dn">
 		                                <form id="editGroupNameForm" method="post" action="/group/editor/updateGroupName" >
 		                                    <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
@@ -256,7 +256,7 @@ function confirmRemoveAllDevices(confirmText) {
 		                                <cti:msg2 var="subgroupComposedGroupTitle" key="yukon.web.deviceGroups.editor.operationsContainer.subgroup.composedGroupTitle" />
 		                                <cti:msg2 var="subgroupNameSaveText" key="yukon.web.deviceGroups.editor.operationsContainer.subgroupNameSaveText" />
 		                                
-		                                <a title="${addSubgroupLinkTitle}" class="f_add-sub-grp" href="javascript:void(0);">${addSubgroupText}</a>
+		                                <a title="${addSubgroupLinkTitle}" class="f-add-sub-grp" href="javascript:void(0);">${addSubgroupText}</a>
 		                                <div id="addSubGroupPopup" title="${addSubgroupText}" class="groupEditorPopup dn">
 		                                    <form id="addSubGroupForm" method="post" action="/group/editor/addChild">
 		                                        <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">

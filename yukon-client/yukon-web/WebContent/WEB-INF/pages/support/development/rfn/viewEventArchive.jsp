@@ -8,7 +8,7 @@
 
 	<script>
 		jQuery(document).ready(function() {
-			jQuery('.f_sendEventArchive').click(function() {
+			jQuery('.f-sendEventArchive').click(function() {
 			    combineDateAndTimeFields('timestamp');
 			    jQuery('#eventForm').submit();
 			});
@@ -92,7 +92,7 @@
 			</ul>
 
 			<div class="pageActionArea">
-                <cti:button nameKey="send" classes="f_blocker f_sendEventArchive"/>
+                <cti:button nameKey="send" classes="f-blocker f-sendEventArchive"/>
             </div>
         </form:form>
     </tags:sectionContainer2>

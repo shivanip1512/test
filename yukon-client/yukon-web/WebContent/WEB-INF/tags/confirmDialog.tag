@@ -69,7 +69,7 @@
                 </c:when>
                 <c:when test="${pageScope.endAction == 'block'}">
                     <c:if test="${empty pageScope.submitName}">
-                        <cti:button classes="primary action ${pageScope.styleClass} f_blocker" nameKey="ok"
+                        <cti:button classes="primary action ${pageScope.styleClass} f-blocker" nameKey="ok"
                             type="submit" />
                     </c:if>
                     <c:if test="${!empty pageScope.submitName}">
@@ -78,7 +78,7 @@
                                 name="${pageScope.submitName}" type="submit"/>
                         </c:if>
                         <c:if test="${!empty pageScope.href}">
-                            <cti:button classes="primary action ${pageScope.styleClass} f_blocker" nameKey="ok"
+                            <cti:button classes="primary action ${pageScope.styleClass} f-blocker" nameKey="ok"
                                 name="${pageScope.submitName}" href="${pageScope.href}"/>
                         </c:if>
                     </c:if>

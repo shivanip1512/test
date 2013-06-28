@@ -9,7 +9,7 @@ Yukon.ui.passwordManager = {
 	
 	init: function(args){
 		jQuery.extend(this, args);
-		jQuery(".f_check_password").keyup(function(event){
+		jQuery(".f-check_password").keyup(function(event){
 
 			jQuery("button.unlock").attr("disabled", "true");
 			jQuery("#loginBackingBean").ajaxSubmit({
@@ -28,7 +28,7 @@ Yukon.ui.passwordManager = {
 			return false;
 		});
 		
-		jQuery("input:password:not(.f_current)").keyup(function(e){
+		jQuery("input:password:not(.f-current)").keyup(function(e){
 			var confirm = jQuery("input.confirm[type=password]").val();
 			var password = jQuery("input.new[type=password]").val();
 			var meetsRequirements = jQuery(".description ul:first > li > .icon-cross");

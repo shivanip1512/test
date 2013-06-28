@@ -1,5 +1,5 @@
 jQuery(function () {
-    jQuery(".f_closeYukonApplicationDialog").click(function() {
+    jQuery(".f-closeYukonApplicationDialog").click(function() {
         jQuery("#yukonApplicationDialog").dialog("close")
     });
 });

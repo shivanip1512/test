@@ -19,7 +19,7 @@
                         <option value="Force"><cti:msg2 key=".force"/></option>
                     </select>
                 </label>
-                <cti:button nameKey="send" name="sendButton" type="submit" classes="f_disableAfterClick primary action" busy="true"/>
+                <cti:button nameKey="send" name="sendButton" type="submit" classes="f-disableAfterClick primary action" busy="true"/>
             </form>
         </div>
     </tags:bulkActionContainer>

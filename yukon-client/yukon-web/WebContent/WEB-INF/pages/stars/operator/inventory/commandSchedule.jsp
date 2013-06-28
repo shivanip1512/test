@@ -69,7 +69,7 @@
         <br>
         
         <div>
-            <cti:button nameKey="save" type="submit" classes="f_blocker"/>
+            <cti:button nameKey="save" type="submit" classes="f-blocker"/>
             <cti:displayForPageEditModes modes="EDIT">
                 <cti:button nameKey="delete" name="delete" type="submit" id="delete_confirm"/>
                 <d:confirm on="#delete_confirm" nameKey="confirmDelete"/>

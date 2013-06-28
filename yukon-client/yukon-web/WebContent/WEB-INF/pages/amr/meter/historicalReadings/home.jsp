@@ -35,7 +35,7 @@
                                 baseUrl="${viewUrl}" 
                                 fieldName="TIMESTAMP"
                                 isDefault="${points.size() > 0}" 
-                                styleClass="f_ajaxPage" 
+                                styleClass="f-ajaxPage" 
                                 descendingByDefault="true"
                                 moreAttributes="data-selector=\"#${dialogId}\""/>
                         </th>
@@ -44,7 +44,7 @@
                                 baseUrl="${viewUrl}" 
                                 fieldName="VALUE"
                                 isDefault="false" 
-                                styleClass="f_ajaxPage" 
+                                styleClass="f-ajaxPage" 
                                 moreAttributes="data-selector=\"#${dialogId}\""/>
                         </th>
                     </tr>

@@ -39,7 +39,7 @@
             <cti:url var="submitUrl" value="/amr/statusPointMonitoring/delete"/>
             <form action="${submitUrl}" method="post">
                 <input type="hidden" name="statusPointMonitorId" value="${statusPointMonitorId}">
-                <cti:button nameKey="ok" type="submit" classes="f_blocker"/>
+                <cti:button nameKey="ok" type="submit" classes="f-blocker"/>
                 <cti:button nameKey="cancel" onclick="$('deleteConfirmDialog').hide()"/>
             </form>
         </div>
@@ -127,15 +127,15 @@
 		
 		<%-- create / update / delete --%>
 		<div class="pageActionArea">
-            <cti:button nameKey="update" type="submit" classes="f_blocker"/>
+            <cti:button nameKey="update" type="submit" classes="f-blocker"/>
             <c:set var="enableDisableKey" value="statusPointMonitoringDisable"/>
             <c:if test="${statusPointMonitor.evaluatorStatus eq 'DISABLED'}">
                 <c:set var="enableDisableKey" value="statusPointMonitoringEnable"/>
             </c:if>
-            <cti:button nameKey="${enableDisableKey}" classes="f_blocker"
+            <cti:button nameKey="${enableDisableKey}" classes="f-blocker"
                 onclick="$('toggleEnabledForm').submit()"/>
             <cti:button nameKey="delete" onclick="$('deleteConfirmDialog').show()"/>
-            <cti:button nameKey="cancel" type="submit" name="cancel" classes="f_blocker"/>
+            <cti:button nameKey="cancel" type="submit" name="cancel" classes="f-blocker"/>
         </div>
 	</form:form>
     

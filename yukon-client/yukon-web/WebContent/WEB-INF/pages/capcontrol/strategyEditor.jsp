@@ -285,9 +285,9 @@
                 </x:htmlTag>
 
                 <x:panelGrid columns="2">
-					<x:outputLabel for="pf_bandwidth" value="Bandwidth: " title="Power Factor Correction Bandwidth" />
+					<x:outputLabel for="pf-bandwidth" value="Bandwidth: " title="Power Factor Correction Bandwidth" />
 					<x:panelGroup>
-						<x:inputText id="pf_bandwidth"
+						<x:inputText id="pf-bandwidth"
 							disabled="#{!capControlForm.hasEditingRole || !capControlForm.editingCBCStrategy}"
 							required="true" value="#{capControlForm.strategy.powerFactorCorrectionSetting.bandwidth}">
 							<f:validateDoubleRange minimum="0"/>
@@ -296,9 +296,9 @@
 						<x:outputText value="bandwidth units" styleClass="padUnitsLabel" />
 					</x:panelGroup>
 	
-					<x:outputLabel for="pf_cost" value="Cost: " title="Power Factor Correction Cost" />
+					<x:outputLabel for="pf-cost" value="Cost: " title="Power Factor Correction Cost" />
 					<x:panelGroup>
-						<x:inputText id="pf_cost"
+						<x:inputText id="pf-cost"
 							disabled="#{!capControlForm.hasEditingRole || !capControlForm.editingCBCStrategy}"
 							required="true" value="#{capControlForm.strategy.powerFactorCorrectionSetting.cost}">
 							<f:validateDoubleRange minimum="0"/>
@@ -306,9 +306,9 @@
 						<x:outputText value="cost units" styleClass="padUnitsLabel" />
 					</x:panelGroup>
 	
-					<x:outputLabel for="pf_max_cost" value="Max Cost: " title="Power Factor Correction Max Cost" />
+					<x:outputLabel for="pf-max_cost" value="Max Cost: " title="Power Factor Correction Max Cost" />
 					<x:panelGroup>
-						<x:inputText id="pf_max_cost"
+						<x:inputText id="pf-max_cost"
 							disabled="#{!capControlForm.hasEditingRole || !capControlForm.editingCBCStrategy}"
 							required="true" value="#{capControlForm.strategy.powerFactorCorrectionSetting.maxCost}">
 							<f:validateDoubleRange minimum="0" />

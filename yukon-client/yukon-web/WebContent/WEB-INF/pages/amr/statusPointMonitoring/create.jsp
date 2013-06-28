@@ -37,7 +37,7 @@
             
         <%-- create / cancel --%>
         <div class="pageActionArea">
-            <cti:button nameKey="create" icon="icon-plus-green" type="submit" classes="f_blocker"/>
+            <cti:button nameKey="create" icon="icon-plus-green" type="submit" classes="f-blocker"/>
             <input type="submit" name="cancel" class="formSubmit" value="<cti:msg2 key=".cancel"/>">
         </div>
         

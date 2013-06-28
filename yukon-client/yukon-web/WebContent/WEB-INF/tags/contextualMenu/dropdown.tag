@@ -22,7 +22,7 @@
 <cti:default var="showIcon" value="true"/>
 <cti:default var="type" value="icon"/>
 
-<div class="f_dropdown_outer_container ${pageScope.containerCssClass}" <c:if test="${not empty id}">id="${id}"</c:if>>
+<div class="f-dropdown_outer_container ${pageScope.containerCssClass}" <c:if test="${not empty id}">id="${id}"</c:if>>
   <div class="clearfix">
     <div class="dropdown-container usn fr">
       <c:choose>

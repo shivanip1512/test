@@ -38,7 +38,7 @@
     </dialog:inline>
     
     <dialog:inline nameKey="viewPublicKeyDialog" okEvent="none" 
-        on="#viewPublicKeyBtn" options="{width: 600, 'buttons': [{text: 'Generate New Key', class: 'f_blocker2', click: function() { loadPublicKey(true);}},
+        on="#viewPublicKeyBtn" options="{width: 600, 'buttons': [{text: 'Generate New Key', class: 'f-blocker2', click: function() { loadPublicKey(true);}},
                                         {text: 'Cancel', click: function() { jQuery(this).dialog('close'); } }]}">
         <div id="publicKeyStatus"></div>
         <div id="publicKeyExpiration"></div>
@@ -178,7 +178,7 @@
                 <div class="pageActionArea">
 	                <cti:button id="addNewKeyBtn" nameKey="addKeyBtn" disabled="${blockingError}" />
 	                <cti:button id="importKeyFileBtn" nameKey="importKeyFileBtn" disabled="${blockingError}" />
-	                <cti:button id="viewPublicKeyBtn" nameKey="viewPublicKeyBtn"  classes="f_blocker2" />
+	                <cti:button id="viewPublicKeyBtn" nameKey="viewPublicKeyBtn"  classes="f-blocker2" />
                 </div>
             </tags:boxContainer2>
         </cti:dataGridCell>

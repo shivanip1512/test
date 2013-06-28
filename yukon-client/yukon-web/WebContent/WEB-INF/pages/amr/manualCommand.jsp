@@ -40,7 +40,7 @@
                             <tags:nameValueContainer2> <!--  altRowOn="true"> -->
                                 <tags:nameValue2 nameKey=".commonCommands">
                                     <tags:commanderPrompter/>
-                                    <select name="commonCommand" class="f_loadCommanderCommand" data-cmdfield="command">
+                                    <select name="commonCommand" class="f-loadCommanderCommand" data-cmdfield="command">
                                         <option value=""><i:inline key=".selectCommand"/></option>                
                                         
                                         <c:forEach var="command" items="${commandList}">

@@ -5,10 +5,10 @@
 <cti:includeScript link="/JavaScript/dynamicTable.js"/>
 <cti:includeScript link="/JavaScript/yukon.device_data_monitor.js" />
 
-<c:set var="settings_section_class" value="f_settings_section"/>
-<c:set var="processors_section_class" value="f_processors_section"/>
+<c:set var="settings_section_class" value="f-settings_section"/>
+<c:set var="processors_section_class" value="f-processors_section"/>
 
-<dialog:inline okEvent="none" nameKey="settings.helpDialog" on=".f_open_settings_help" options="{width: 550}">
+<dialog:inline okEvent="none" nameKey="settings.helpDialog" on=".f-open_settings_help" options="{width: 550}">
 	<tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".deviceGroup"><i:inline key=".deviceGroup.help"/></tags:nameValue2>
         <tags:nameValue2 nameKey=".deviceGroupCount"><i:inline key=".deviceGroupCount.help"/></tags:nameValue2>
@@ -19,7 +19,7 @@
 	</tags:nameValueContainer2>
 </dialog:inline>
 
-<dialog:inline okEvent="none" nameKey="processors.helpDialog" on=".f_open_processors_help" options="{width: 550}">
+<dialog:inline okEvent="none" nameKey="processors.helpDialog" on=".f-open_processors_help" options="{width: 550}">
 	<h3><i:inline key=".processors.helpDialog.findingViolations.title"/></h3>
 	<p class="stacked"><i:inline key=".processors.helpDialog.findingViolations.body"/></p>
 	<h3><i:inline key=".processors.helpDialog.addingRemoving.title"/></h3>
@@ -31,19 +31,19 @@
 <cti:msg2 var="areMissingPoints_i18n_text" key=".areMissingPoints"/>
 <cti:msg2 var="addPoints_i18n_text" key=".addPoints.label"/>
 <cti:msg2 var="viewDetails_i18n_text" key=".viewDetails"/>
-<input type="hidden" class="f_missing_or_no_stategroup_text" value="${missing_i18n_text}"/>
-<input type="hidden" class="f_are_missing_points_text" value="${areMissingPoints_i18n_text}"/>
-<input type="hidden" class="f_view_details_text" value="${viewDetails_i18n_text}"/>
-<input type="hidden" class="f_add_points_text" value="${addPoints_i18n_text}"/>
+<input type="hidden" class="f-missing_or_no_stategroup_text" value="${missing_i18n_text}"/>
+<input type="hidden" class="f-are_missing_points_text" value="${areMissingPoints_i18n_text}"/>
+<input type="hidden" class="f-view_details_text" value="${viewDetails_i18n_text}"/>
+<input type="hidden" class="f-add_points_text" value="${addPoints_i18n_text}"/>
 
 <c:if test="${areViolationsBeingCalculated}">
-    <input type="hidden" class="f_violations_loading"/>
+    <input type="hidden" class="f-violations_loading"/>
 </c:if>
 <c:set var="supportedDevicesInner">
-    <span class="f_loading"><cti:icon icon="icon-loading"/><i:inline key=".calculating"/></span>
-    <span class="f_supported_counts"></span>
-    <div class="f_details dn" title="${missing_i18n_text}">
-        <div class="f_missing_list"></div>
+    <span class="f-loading"><cti:icon icon="icon-loading"/><i:inline key=".calculating"/></span>
+    <span class="f-supported_counts"></span>
+    <div class="f-details dn" title="${missing_i18n_text}">
+        <div class="f-missing_list"></div>
         <cti:checkRolesAndProperties value="ADD_REMOVE_POINTS">
             <c:if test="${deviceCollection != null}">
                 <cti:url value="/bulk/addPoints/home" var="addPointsLink">
@@ -56,7 +56,7 @@
                     <p><i:inline key=".missingPoints.helpDialog.addPointsBody"/></p>
                 </tags:sectionContainer2>
                 <div class="actionArea">
-                    <a class="button naked f_add_points_btn" href="${addPointsLink}" style="margin-right: 20px;">
+                    <a class="button naked f-add_points_btn" href="${addPointsLink}" style="margin-right: 20px;">
                         <i class="icon icon-add"></i><span class="label"><i:inline key=".addPoints.label"/></span>
                     </a>
                 </div>
@@ -65,12 +65,12 @@
     </div>
 </c:set>
 <c:set var="supportedDevices">
-	<span class="f_supported_devices_count">
+	<span class="f-supported_devices_count">
         ${supportedDevicesInner}
 	</span>
 </c:set>
 <c:set var="supportedDevicesAreYouSure">
-    <span class="f_supported_devices_count_check">
+    <span class="f-supported_devices_count_check">
         ${supportedDevicesInner}
     </span>
 </c:set>
@@ -104,13 +104,13 @@
 	</cti:simpleReportLinkFromNameTag>)
 </c:set>
 
-<span class="f_violation_report_links dn">&nbsp;${violationReportLinks}</span>
+<span class="f-violation_report_links dn">&nbsp;${violationReportLinks}</span>
 
 <c:set var="violationsCount">
 	<c:choose>
 		<c:when test="${areViolationsBeingCalculated}">
 			<span>
-                <i class="icon icon-loading f_violations_loading">&nbsp;</i><i:inline key=".calculating"/>
+                <i class="icon icon-loading f-violations_loading">&nbsp;</i><i:inline key=".calculating"/>
 			</span>
 		</c:when>
 		<c:when test="${not empty violationsCount && violationsCount > 0}">

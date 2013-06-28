@@ -39,7 +39,7 @@
 	</c:if>
 
     <c:set var="detection_algorithm">
-        <a href="javascript:void(0);" class="f_open_detection_algorithm"><i:inline key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithm"/></a>
+        <a href="javascript:void(0);" class="f-open_detection_algorithm"><i:inline key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithm"/></a>
     </c:set>
 	<div class="page_help">
 		<cti:msg2 key=".leakIndicationDescription" arguments="${detection_algorithm}" htmlEscapeArguments="false"/>
@@ -47,7 +47,7 @@
 
 	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}"
 		baseUrl="intervalData" titleLinkHtml="${actionsMenu}">
-		<table class="compactResultsTable f_traversable contextual-menu-list">
+		<table class="compactResultsTable f-traversable contextual-menu-list">
 			<tr>
 				<th>
                     <tags:sortLink nameKey="tableHeader.deviceName" baseUrl="intervalData" fieldName="DEVICE_NAME" isDefault="false" />

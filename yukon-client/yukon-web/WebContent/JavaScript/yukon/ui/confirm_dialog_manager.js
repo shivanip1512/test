@@ -184,7 +184,7 @@ if (typeof(Yukon.Dialog.ConfirmationManager) === 'undefined') {
                 if (args.disable_group) {
                     jQuery('#yukon_dialog_confirm').closest('.ui-dialog').find('.ui-dialog-buttonset button').each(function(idx, button) {
                         var b = jQuery(button);
-                        b.addClass('f_disableAfterClick');
+                        b.addClass('f-disableAfterClick');
                         b.attr('data-disable-group', args.disable_group);
                         
                     });

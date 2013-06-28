@@ -36,7 +36,7 @@
 	        });
 	        
 	        jQuery(".selectedDevicesLink").click(function() {
-	        	jQuery(".f_showSelectedDevices").trigger("click");
+	        	jQuery(".f-showSelectedDevices").trigger("click");
 	        });
 	        
 	        jQuery("#scheduleButton").click(openSchedulePopup);
@@ -391,7 +391,7 @@
 	</c:if>
 
 	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}" baseUrl="report" titleLinkHtml="${linkHeaderHtml}">
-		<table id="eventsTable" class="compactResultsTable f_traversable contextual-menu-list">
+		<table id="eventsTable" class="compactResultsTable f-traversable contextual-menu-list">
             <thead>
     			<tr>
     				<th><tags:sortLink nameKey="tableHeader.deviceName" baseUrl="report" fieldName="NAME" isDefault="false" /></th>

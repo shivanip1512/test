@@ -88,7 +88,7 @@
 
     <script language="JavaScript">
         jQuery(function() {
-            jQuery('.f_refresh').click(function() {
+            jQuery('.f-refresh').click(function() {
                 window.location.reload();
             });
         });
@@ -128,7 +128,7 @@
                     <c:if test="${not empty availableCommands}">
                         <tags:nameValue2 nameKey=".availableCommands">
                             <tags:commanderPrompter/>
-                            <select name="commonCommand" class="f_loadCommanderCommand" data-cmdfield="command" style="max-width: 300px;">
+                            <select name="commonCommand" class="f-loadCommanderCommand" data-cmdfield="command" style="max-width: 300px;">
                                 <option value=""><cti:msg2 key=".availableCommands.select"/></option>
                                 <c:forEach var="command" items="${availableCommands}">
                                     <option value="${command.key}">${command.value}</option>
@@ -143,7 +143,7 @@
                 <div class="actionArea stacked">
                     <cti:button nameKey="execute" type="submit" name="execute" classes="fl primary"/>
                     <cti:button nameKey="clear" type="submit" name="clearText" classes="fl"/>
-                    <cti:button nameKey="refresh" name="refresh" classes="f_refresh fl"/>
+                    <cti:button nameKey="refresh" name="refresh" classes="f-refresh fl"/>
                 </div>
                 <div id="command_results" class="liteContainer stacked code scrollingContainer_large" style="min-height: 200px;">
                     <div class="console"><h4><i:inline key="yukon.common.console"/></h4></div>

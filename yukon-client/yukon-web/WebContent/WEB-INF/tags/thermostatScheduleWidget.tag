@@ -128,7 +128,7 @@
                                         styleClass="${pageScope.styleClass}"/>
             </div>
             <div class="actionArea">
-                <cti:button nameKey="save" classes="f_blocker primary action f-save"/>
+                <cti:button nameKey="save" classes="f-blocker primary action f-save"/>
                 <form action="${actionPath}/delete" method="POST">
                     <input type="hidden" name="scheduleId" value="${schedule.accountThermostatScheduleId}">
                     <input type="hidden" name="thermostatId" value="${thermostatId}">

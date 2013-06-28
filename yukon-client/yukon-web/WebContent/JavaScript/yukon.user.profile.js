@@ -10,7 +10,7 @@ if(typeof(UserPreferences) === 'undefined') {
         _initialized: false,
 
         _control_name_prefix: "contact.otherNotifications",
-        _default_button_class: "f_pref_default",
+        _default_button_class: "f-pref-default",
         _evt_do_change_password: "evt_ajaxsubmit_confirm_password",
 
         _url_change_preference: "/user/updatePreference.json",
@@ -24,11 +24,11 @@ if(typeof(UserPreferences) === 'undefined') {
 
             this.disable_password_user_input();
 
-            jQuery(document).on("click", "#tbl_preferences .selection_group button:not(.on):not(.f_pref_default)", this.set_enum_preference);
-            jQuery(document).on("click", "#tbl_preferences .selection_group .f_pref_default", this.set_enum_preference_default);
-            jQuery(document).on("click", "#tbl_preferences form.f_pref_form .save-preference", this.set_string_preference_from_btn_save);
-            jQuery(document).on("keypress", "#tbl_preferences form.f_pref_form input", this.set_string_preference_on_return);
-            jQuery(document).on("click", "#tbl_preferences form.f_pref_form .f_pref_default", this.set_string_preference_from_default);
+            jQuery(document).on("click", "#tbl_preferences .selection_group button:not(.on):not(.f-pref-default)", this.set_enum_preference);
+            jQuery(document).on("click", "#tbl_preferences .selection_group .f-pref-default", this.set_enum_preference_default);
+            jQuery(document).on("click", "#tbl_preferences form.f-pref-form .save-preference", this.set_string_preference_from_btn_save);
+            jQuery(document).on("keypress", "#tbl_preferences form.f-pref-form input", this.set_string_preference_on_return);
+            jQuery(document).on("click", "#tbl_preferences form.f-pref-form .f-pref-default", this.set_string_preference_from_default);
             jQuery(document).on("keyup", '#tbl_preferences input[type="text"]', this.toggle_preference_save_button);
             jQuery(document).on("change", '#tbl_preferences input[type="text"]', this.toggle_preference_save_button);
             jQuery(document).on("type", "#tbl_preferences input", this.set_string_preference);
@@ -37,14 +37,14 @@ if(typeof(UserPreferences) === 'undefined') {
             jQuery(document).on("dialogclose", "#dlg_change_password", this.blankout_password_form);
 
             jQuery(document).on("keyup", 'input[type="text"]', this.update_input_title);
-            jQuery(document).on("click", "#btn_addContactInfo", this.add_contact_notif_row);
-            jQuery(document).on("change", ".f_has_selectOne", this.select_remove_selectOne);
+            jQuery(document).on("click", "#btn_addContactInfo", this.add_contact_notif-row);
+            jQuery(document).on("change", ".f-has_selectOne", this.select_remove_selectOne);
 
-            jQuery(document).on("click", "#contactNotifs td a.removeBtn", this.remove_contact_notif_row);
-            jQuery(document).on("change", "select.f_contactNotif_type", this.update_contact_notif_input_formatting);
+            jQuery(document).on("click", "#contactNotifs td a.removeBtn", this.remove_contact_notif-row);
+            jQuery(document).on("change", "select.f-contactNotif-type", this.update_contact_notif-input_formatting);
 
             // NEW PAGINATION
-            jQuery(document).on('click', '.f_ajaxPaging', this.paginate_activity_stream);
+            jQuery(document).on('click', '.f-ajaxPaging', this.paginate_activity_stream);
 
             jQuery(document).on('yukonDialogConfirmOk', '#yukon_dialog_confirm', this.reset_all_preferences);
 
@@ -144,15 +144,15 @@ if(typeof(UserPreferences) === 'undefined') {
             }
         },
 
-        update_contact_notif_input_formatting: function(event) {
+        update_contact_notif-input_formatting: function(event) {
             var ctrl_select = jQuery(event.currentTarget);
             var selected_option_val = ctrl_select.find(":selected").val();
-            var input = ctrl_select.closest("tr").find("input.f_contactNotif_val");
+            var input = ctrl_select.closest("tr").find("input.f-contactNotif-val");
 
             var is_phone = selected_option_val == "CALL_BACK_PHONE" || selected_option_val == "CELL_PHONE" || selected_option_val == "FAX" || selected_option_val == "HOME_PHONE" || selected_option_val == "PHONE" || selected_option_val == "WORK_PHONE";
-            input.removeClass("f_formatPhone");
+            input.removeClass("f-formatPhone");
             if (is_phone) {
-                input.addClass("f_formatPhone");
+                input.addClass("f-formatPhone");
                 for (var ii=0; ii < input.length; ii++) {
                     Yukon.ui.formatPhone(input[ii]);
                 }
@@ -177,7 +177,7 @@ if(typeof(UserPreferences) === 'undefined') {
                     var row = table.find('tr[data-type='+ name +']');
                     if ('EnumType' === map.prefType) {
                         row.find("button").removeClass("on");
-                        row.find('button[data-value='+ val +']:not(.f_pref_default)').addClass("on");
+                        row.find('button[data-value='+ val +']:not(.f-pref-default)').addClass("on");
                     } else {
                         row.find('input[type="text"]').attr('value', val).attr('title', val).attr('prev-value', val);
                     }
@@ -190,7 +190,7 @@ if(typeof(UserPreferences) === 'undefined') {
         },
 
         set_enum_preference_default: function(event) {
-            var btn_sameOption = UserPreferences._get_pref_button_with_same_option(jQuery(event.currentTarget), event);
+            var btn_sameOption = UserPreferences._get_pref-button_with_same_option(jQuery(event.currentTarget), event);
             UserPreferences._set_enum_preference(event, btn_sameOption);
         },
 
@@ -226,7 +226,7 @@ if(typeof(UserPreferences) === 'undefined') {
             }
         },
 
-        add_contact_notif_row: function(event) {
+        add_contact_notif-row: function(event) {
             var new_row =jQuery("tr#template_contactNotif").clone();
             if(new_row.length < 1) {
                 alert("INTERNAL ERROR #1: missing contact info template row");
@@ -234,32 +234,32 @@ if(typeof(UserPreferences) === 'undefined') {
             }
             new_row.removeAttr("id");
             var ctrlType = new_row.find("select");
-            ctrlType.addClass("f_has_selectOne");
+            ctrlType.addClass("f-has_selectOne");
 
             // calculate the next_index so we can set the controls names.
             var last_existing_row = jQuery("#contactNotifs").find("tr:not(#template_contactNotif):last");
             var next_index = 0;
             if(last_existing_row.length > 0) {
-                next_index = 1+ UserPreferences._calc_contact_notif_row_index(last_existing_row.find("select"));
+                next_index = 1+ UserPreferences._calc_contact_notif-row_index(last_existing_row.find("select"));
             }
-            UserPreferences._renumber_contact_notif_controls(new_row, next_index);
+            UserPreferences._renumber_contact_notif-controls(new_row, next_index);
 
             jQuery("#contactNotifs tbody").append(new_row);
             new_row.show();
-            jQuery("#contactNotifs").siblings(".f_display_empty").hide();
+            jQuery("#contactNotifs").siblings(".f-display_empty").hide();
             ctrlType.focus();
         },
 
-        remove_contact_notif_row: function(event) {
+        remove_contact_notif-row: function(event) {
             var row = jQuery(event.currentTarget).closest('tr');
             var prev_row = row.prev("tr:not(#template_contactNotif)");
             var index = 0;
             if (prev_row.length != 0) {
-                index = 1+ UserPreferences._calc_contact_notif_row_index(prev_row.find("select"));
+                index = 1+ UserPreferences._calc_contact_notif-row_index(prev_row.find("select"));
             }
             var sibs = row.next();
             while(sibs.length > 0) {
-                UserPreferences._renumber_contact_notif_controls(sibs, index);
+                UserPreferences._renumber_contact_notif-controls(sibs, index);
                 index++;
                 sibs = sibs.next();
             }
@@ -271,15 +271,15 @@ if(typeof(UserPreferences) === 'undefined') {
             var selected_option_val = ctrl_select.find(":selected").val();
             if(selected_option_val != '-1') {
                 ctrl_select.find('option[value="-1"]').remove();
-                ctrl_select.removeClass("f_has_selectOne");
+                ctrl_select.removeClass("f-has_selectOne");
             }
         },
 
 
         /* PRIVATE METHODS */
 
-        _get_pref_button_with_same_option: function(jqueryElement, event) {
-            var btn_sameOption = jqueryElement.closest("td").find("button:not(.f_pref_default)[data-value="+ jQuery(event.currentTarget).attr('data-value') +"]");
+        _get_pref-button_with_same_option: function(jqueryElement, event) {
+            var btn_sameOption = jqueryElement.closest("td").find("button:not(.f-pref-default)[data-value="+ jQuery(event.currentTarget).attr('data-value') +"]");
             return btn_sameOption;
         },
 
@@ -338,7 +338,7 @@ if(typeof(UserPreferences) === 'undefined') {
          * @param jQueryElement     A control with the extended name, including index as: "[nn]"
          * @returns                 int the index
          */
-        _calc_contact_notif_row_index: function(jQueryElement) {
+        _calc_contact_notif-row_index: function(jQueryElement) {
             var name = jQueryElement.attr("name");
             var iStart = name.indexOf("[")+1;
             var iEnd = name.indexOf("]");
@@ -346,7 +346,7 @@ if(typeof(UserPreferences) === 'undefined') {
             return parseInt(str_id, 10);
         },
 
-        _renumber_contact_notif_controls: function(jQueryRow, newIndex) {
+        _renumber_contact_notif-controls: function(jQueryRow, newIndex) {
             var ctrlType = jQueryRow.find("select");
             var nameType = UserPreferences._control_name_prefix +"["+ newIndex +"].contactNotificationType";
             var ctrlVal = jQueryRow.find("input");

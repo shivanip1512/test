@@ -286,7 +286,7 @@
             <input type="hidden" name="hardwareTypeId" value="${checkingAdd.hardwareTypeId}">
             
             <div class="actionArea">
-                <cti:button nameKey="ok" type="submit" classes="f_blocker"/>
+                <cti:button nameKey="ok" type="submit" classes="f-blocker"/>
                 <cti:button nameKey="cancel" onclick="window.location='${hardwareListUrl}';"/>
             </div>
             
@@ -304,7 +304,7 @@
         <div class="hardwarePopup"><i:inline key=".error.notFound.serialNumber" arguments="${notFoundSerial}"/></div>
         
         <div class="actionArea">
-            <cti:button nameKey="ok" type="submit" classes="f_blocker"/>
+            <cti:button nameKey="ok" type="submit" classes="f-blocker"/>
             <cti:button nameKey="cancel" onclick="window.location='${hardwareListUrl}';"/>
         </div>
         

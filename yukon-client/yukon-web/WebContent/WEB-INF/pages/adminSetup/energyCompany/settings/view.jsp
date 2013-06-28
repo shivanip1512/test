@@ -10,8 +10,8 @@
 
 <script>
 jQuery(function() {
-    jQuery(".f_addCommentBtn").click(function() {
-        jQuery(this).hide().siblings(".f_commentsShowHide").show(200).focus();
+    jQuery(".f-addCommentBtn").click(function() {
+        jQuery(this).hide().siblings(".f-commentsShowHide").show(200).focus();
     });
 });
 </script>
@@ -38,7 +38,7 @@ jQuery(function() {
                             <div class="setting_details box detail fl">
                                 <div>
                                     <c:if test="${setting.extra.usesEnabledField}">
-                                        <form:select cssClass="f_setUnsetSelect" path="settings['${setting.extra}'].enabled">
+                                        <form:select cssClass="f-setUnsetSelect" path="settings['${setting.extra}'].enabled">
                                             <form:option value="true"><cti:msg2 key="yukon.common.enabled"/></form:option>
                                             <form:option value="false"><cti:msg2 key="yukon.common.disabled"/></form:option>
                                         </form:select>
@@ -68,14 +68,14 @@ jQuery(function() {
                                     <c:set var="inputClass" value="${status.error ? 'error' : ''}"/>
                                     <c:set var="style" value="${empty settingsBean.settings[setting.extra].comments ? 'display:none' : ''}"/>
                                     <c:if test="${empty settingsBean.settings[setting.extra].comments}">
-                                        <cti:button classes="f_addCommentBtn" nameKey="energyCompanySettings.addComment" type="button" name="add" value="${setting.extra}" renderMode="labeledImage" icon="icon-pencil"/>
+                                        <cti:button classes="f-addCommentBtn" nameKey="energyCompanySettings.addComment" type="button" name="add" value="${setting.extra}" renderMode="labeledImage" icon="icon-pencil"/>
                                     </c:if>
                                     <form:textarea rows="3" cols="27" 
                                          placeholder="comments" 
                                          id="${setting.extra}_comments" 
                                          path="settings[${setting.extra}].comments"
                                          style="${style};"
-                                         class="f_commentsShowHide ${inputClass}"/> 
+                                         class="f-commentsShowHide ${inputClass}"/> 
                                    <form:errors path="settings[${setting.extra}].comments" cssClass="errorMessage" element="div"/>
                             </div>
                         </div>

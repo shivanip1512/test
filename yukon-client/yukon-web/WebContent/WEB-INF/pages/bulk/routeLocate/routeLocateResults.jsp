@@ -46,10 +46,10 @@
                   </div>
                   <c:choose>
                       <c:when test="${result.autoUpdateRoute}">
-                          <cti:button nameKey="viewRoutesButton" type="submit" classes="f_disableAfterClick" disabled="${not result.complete}"/>
+                          <cti:button nameKey="viewRoutesButton" type="submit" classes="f-disableAfterClick" disabled="${not result.complete}"/>
                       </c:when>
                       <c:otherwise>
-                          <cti:button nameKey="setRoutesButton" type="submit" classes="f_disableAfterClick" disabled="${not result.complete}"/>
+                          <cti:button nameKey="setRoutesButton" type="submit" classes="f-disableAfterClick" disabled="${not result.complete}"/>
                       </c:otherwise>
                   </c:choose>
               </form>

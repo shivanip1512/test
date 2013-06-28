@@ -50,7 +50,7 @@ jQuery(function() {
         </c:if>
     </c:forEach>
     <c:if test="${hardware.hardwareType.rf}">
-        <div  class="f_block_this">
+        <div  class="f-block_this">
             <div id="rfCommandStatus" class="dn errorMessage rfCommandMsg"></div>
             <div class="actionArea">
                 <cti:button id="rfReadNow" nameKey="readNow"/>

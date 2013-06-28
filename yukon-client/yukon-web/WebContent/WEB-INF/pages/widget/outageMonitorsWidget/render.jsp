@@ -85,6 +85,6 @@
 
 <div class="actionArea">
     <form action="/amr/outageProcessing/monitorEditor/edit" method="get">
-        <cti:button nameKey="create" icon="icon-plus-green" type="submit" classes="f_blocker fr"/>
+        <cti:button nameKey="create" icon="icon-plus-green" type="submit" classes="f-blocker fr"/>
     </form>
 </div>

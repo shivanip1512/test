@@ -25,14 +25,14 @@
             <h4>Types</h4>
             <ul>
                 <li><label> 
-                        <input id="f_check_all_meters" type="checkbox" />
+                        <input id="f-check_all_meters" type="checkbox" />
                         Check All
                     </label>
                 </li>
                 <c:forEach items="${devAMR.meterTypes}" var="meterType" varStatus="status">
                     <li class="subItemCheckbox">
                         <label> 
-                            <tags:checkbox path="meterTypes[${status.index}].create" styleClass="f_check_single_meter" />${devAMR.meterTypes[status.index].paoType}
+                            <tags:checkbox path="meterTypes[${status.index}].create" styleClass="f-check_single_meter" />${devAMR.meterTypes[status.index].paoType}
                         </label>
                     </li>
                 </c:forEach>
@@ -45,7 +45,7 @@
 
     <script type="text/javascript">
     jQuery(function() {
-        jQuery("input#f_check_all_meters:checkbox").checkAll("input.f_check_single_meter:checkbox");
+        jQuery("input#f-check_all_meters:checkbox").checkAll("input.f-check_single_meter:checkbox");
     });
     </script>
 </div>

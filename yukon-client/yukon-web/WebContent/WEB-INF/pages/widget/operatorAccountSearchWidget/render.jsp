@@ -16,7 +16,7 @@
     				</option>
     			</c:forEach>
     		</select>
-            <cti:button nameKey="search" type="submit" classes="f_blocker fr"/>
+            <cti:button nameKey="search" type="submit" classes="f-blocker fr"/>
     	</div>
     	
     </form>

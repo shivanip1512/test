@@ -26,7 +26,7 @@
             jQuery('#removeRule').val(row);
             jQuery('#selectionForm').submit();
         }
-        jQuery(document).on('click', 'a.f_show-calendar', function(event) {
+        jQuery(document).on('click', 'a.f-show-calendar', function(event) {
             var inputId = jQuery(event.target).prev('input').attr('id');
             showCalendarControl(inputId, '${months}', '${days}', '${clear}', '${close}');
         });
@@ -34,7 +34,7 @@
     
     <tags:simpleDialog id="addRuleDialog"/>
     
-    <form:form id="selectionForm" cssClass="f_preventSubmitViaEnterKey" commandName="filterModel" action="/stars/operator/inventory/applyFilter" method="post">
+    <form:form id="selectionForm" cssClass="f-preventSubmitViaEnterKey" commandName="filterModel" action="/stars/operator/inventory/applyFilter" method="post">
         <input type="hidden" name="removeRule" id="removeRule">
         <div class="stacked">
             <i:inline key=".filterModePrefix"/>
@@ -92,12 +92,12 @@
     
                                             <c:when test="${rule.ruleType eq 'DEVICE_STATUS_DATE_RANGE'}">
                                                 <form:input path="filterRules[${row.index}].deviceStateDateFrom" id="deviceStateDateFrom_${row.index}" size="10" maxlength="10" cssClass="fl"/>
-                                                <a href="javascript:void(0);" class="icon icon-calendar-view-day f_show-calendar"></a>
+                                                <a href="javascript:void(0);" class="icon icon-calendar-view-day f-show-calendar"></a>
                                                                                             
                                                 <div class="fl"><i:inline key=".deviceStateDateRangeSeperator"/>&nbsp;</div>
                                                                                             
                                                 <form:input path="filterRules[${row.index}].deviceStateDateTo" id="deviceStateDateTo_${row.index}" size="10" maxlength="10" cssClass="fl"/>
-                                                <a href="javascript:void(0);" class="icon icon-calendar-view-day f_show-calendar"></a>
+                                                <a href="javascript:void(0);" class="icon icon-calendar-view-day f-show-calendar"></a>
                                                                                             
                                                 <div><form:errors path="filterRules[${row.index}].deviceStateDateFrom" cssClass="errorMessage"/></div>
                                                 <div><form:errors path="filterRules[${row.index}].deviceStateDateTo" cssClass="errorMessage"/></div>
@@ -212,8 +212,8 @@
                 </c:otherwise>
             </c:choose>
             <div class="actionArea">
-                <cti:button nameKey="add" type="submit" name="addButton" classes="f_allowSubmitViaEnterKey" icon="icon-add"/>
-                <select name="ruleType" class="f_allowSubmitViaEnterKey fr">
+                <cti:button nameKey="add" type="submit" name="addButton" classes="f-allowSubmitViaEnterKey" icon="icon-add"/>
+                <select name="ruleType" class="f-allowSubmitViaEnterKey fr">
                     <c:forEach items="${ruleTypes}" var="ruleType">
                         <option value="${ruleType}"><cti:formatObject value="${ruleType}"/></option>
                     </c:forEach>

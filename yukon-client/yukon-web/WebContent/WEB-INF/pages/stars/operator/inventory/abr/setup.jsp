@@ -42,7 +42,7 @@ function taskFinished() {
                                     <c:set var="inputClass" value="error"/>
                                 </c:if>
                                 <cti:displayForPageEditModes modes="CREATE">
-                                    <form:input path="from" cssClass="${inputClass} f_focus"/>
+                                    <form:input path="from" cssClass="${inputClass} f-focus"/>
                                 </cti:displayForPageEditModes>
                                 <cti:displayForPageEditModes modes="VIEW">${abr.from}</cti:displayForPageEditModes>
                             </spring:bind>

@@ -91,8 +91,8 @@
     </tags:thermostatScheduleWidget>
     
     <i:simplePopup titleKey=".editSchedule.title" id="createSchedule" on=".edit_${schedule.accountThermostatScheduleId}" >
-        <div class="f_wizard">
-            <div class="f_page page_0">
+        <div class="f-wizard">
+            <div class="f-page page_0">
                 <div class="box">
                     <div class="helper box">
                         <i:inline key=".modeHint" />
@@ -107,12 +107,12 @@
             
                 <div class="actionArea">
                     <div class="fr">
-                        <cti:button nameKey="next" classes="f_next"/>
+                        <cti:button nameKey="next" classes="f-next"/>
                     </div>
                 </div>
             </div>
             
-            <div class="f_page page_1">
+            <div class="f-page page_1">
                 <div class="createSchedule box">
                     <c:forEach var="schedule" items="${defaultSchedules}">
                         <tags:thermostatScheduleEditor schedule="${schedule}"
@@ -128,8 +128,8 @@
                 <div class="actions">
                     <div class="fr">
                         <cti:button nameKey="cancel" classes="f-cancel" />
-                        <cti:button nameKey="chooseMode" classes="f_prev"/>
-                        <cti:button nameKey="save" classes="f-save f_blocker primary action" />
+                        <cti:button nameKey="chooseMode" classes="f-prev"/>
+                        <cti:button nameKey="save" classes="f-save f-blocker primary action" />
                     </div>
                 </div>
             </div>

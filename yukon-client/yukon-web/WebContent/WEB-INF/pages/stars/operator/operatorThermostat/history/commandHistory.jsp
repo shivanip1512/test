@@ -114,7 +114,7 @@ jQuery(function(){
                                             <cti:param name="scheduleId" value="${historyItem.scheduleId}"/>
                                             <cti:param name="accountNumber" value="${accountNumber}"/>
                                         </cti:url>
-                                        <a href="${viewArchivedScheduleUrl}" class="f_ajaxPage" data-selector="#ajaxDialog"> ${fn:escapeXml(historyItem.scheduleName)} [<i:inline key="yukon.web.modules.operator.thermostatManual.scheduleDetailsMode"/> <i:inline key="yukon.web.modules.operator.thermostatManual.${historyItem.scheduleMode}"/>]</a>
+                                        <a href="${viewArchivedScheduleUrl}" class="f-ajaxPage" data-selector="#ajaxDialog"> ${fn:escapeXml(historyItem.scheduleName)} [<i:inline key="yukon.web.modules.operator.thermostatManual.scheduleDetailsMode"/> <i:inline key="yukon.web.modules.operator.thermostatManual.${historyItem.scheduleMode}"/>]</a>
                                     </c:otherwise>
                                 </c:choose> 
                             </c:if>

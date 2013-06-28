@@ -109,7 +109,7 @@ jQuery(function() {
                                                     <cti:param name="thermostatIds" value="${thermostatIds}"/>
                                                     <cti:param name="scheduleId" value="${historyItem.scheduleId}"/>
                                                 </cti:url>
-                                                <a href="${viewArchivedScheduleUrl}" class="f_ajaxPage" data-selector="#ajaxDialog"> ${fn:escapeXml(historyItem.scheduleName)} [<i:inline key="yukon.web.modules.operator.thermostatManual.scheduleDetailsMode"/> <i:inline key="yukon.web.modules.operator.thermostatManual.${historyItem.scheduleMode}"/>]</a>
+                                                <a href="${viewArchivedScheduleUrl}" class="f-ajaxPage" data-selector="#ajaxDialog"> ${fn:escapeXml(historyItem.scheduleName)} [<i:inline key="yukon.web.modules.operator.thermostatManual.scheduleDetailsMode"/> <i:inline key="yukon.web.modules.operator.thermostatManual.${historyItem.scheduleMode}"/>]</a>
                                             </c:otherwise>
                                         </c:choose> 
                                     </c:if>

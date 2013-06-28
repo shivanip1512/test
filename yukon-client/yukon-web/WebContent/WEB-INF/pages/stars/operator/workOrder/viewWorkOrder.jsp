@@ -175,7 +175,7 @@
         
         <%-- buttons --%>
         <cti:displayForPageEditModes modes="CREATE,EDIT">
-            <cti:button nameKey="save" type="submit" classes="f_blocker"/>
+            <cti:button nameKey="save" type="submit" classes="f-blocker"/>
             <cti:displayForPageEditModes modes="CREATE">
                 <cti:url value="/stars/operator/workOrder/workOrderList" var="cancelUrl">
                     <cti:param name="accountId" value="${accountId}"/>

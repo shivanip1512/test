@@ -24,7 +24,7 @@
     <c:set var="addButtonClass" value="addItem"/>
 </c:if>
 <c:if test="${empty pageScope.noBlockOnAdd || !pageScope.noBlockOnAdd}">
-    <c:set var="blockOnAdd" value="f_blocker"/>
+    <c:set var="blockOnAdd" value="f-blocker"/>
 </c:if>
 <cti:default var="disableAddButton" value="false" />
 

@@ -12,7 +12,7 @@
         <div class="widgetContent">
            <tags:nameValueContainer2>
                <tags:nameValue2 nameKey=".setupDevDatabase.option.stars.parentEnergyCompany">
-                   <form:select path="energyCompany" cssClass="f_ec_select">
+                   <form:select path="energyCompany" cssClass="f-ec_select">
                        <c:forEach items="${allEnergyCompanies}" var="energyCompany">
                            <form:option value="${energyCompany.energyCompanyId}">${energyCompany.name}</form:option>
                        </c:forEach>
@@ -61,14 +61,14 @@
            <ul>
                <li>
                    <label> 
-                       <input id="f_check_all_hardware" type="checkbox" />
+                       <input id="f-check_all_hardware" type="checkbox" />
                        Check All
                    </label>
                </li>
                <c:forEach items="${devStars.devStarsHardware.hardwareTypes}" var="hardwareType" varStatus="status">
                    <li class="subItemCheckbox">
                        <label> <tags:checkbox path="devStarsHardware.hardwareTypes[${status.index}].create"
-                               styleClass="f_check_single_hardware" />
+                               styleClass="f-check_single_hardware" />
                            <span><i:inline key="${devStars.devStarsHardware.hardwareTypes[status.index].hardwareType}" /></span>
                        </label>
                    </li>
@@ -82,8 +82,8 @@
 
     <script>
     jQuery(function() {
-        jQuery("input#f_check_all_hardware:checkbox").checkAll("input.f_check_single_hardware:checkbox");
-        jQuery('.f_ec_select').on('change', function() {
+        jQuery("input#f-check_all_hardware:checkbox").checkAll("input.f-check_single_hardware:checkbox");
+        jQuery('.f-ec_select').on('change', function() {
             if (jQuery('#createNewEnergyCompanyOpt').is(':selected')) {
                 jQuery('.newEnergyCompanyRow').show(800, function() {
                     jQuery('.newEnergyCompanyInput').focus();

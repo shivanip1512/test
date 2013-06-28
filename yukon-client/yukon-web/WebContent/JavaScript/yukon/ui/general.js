@@ -96,12 +96,12 @@ Yukon.ui = {
         });
                 
         /* initialize our keyboard table traversal (j/k keys) */
-        jQuery(".compactResultsTable.f_traversable").traverse('tr', {
+        jQuery(".compactResultsTable.f-traversable").traverse('tr', {
             table_row_helper: true
         });
         
         //ajaxPage
-        jQuery(document).on('click', '.f_ajaxPage', function(e){
+        jQuery(document).on('click', '.f-ajaxPage', function(e){
             e.stopPropagation();
             jQuery(this.getAttribute("data-selector")).load(this.getAttribute("href"));
             return false;
@@ -114,14 +114,14 @@ Yukon.ui = {
         jQuery(document).on('click', 'button[data-href]', function(event){window.location = jQuery(this).attr("data-href");});
         
         // page blockers
-        jQuery(document).on('click', 'a.f_blocker, button.f_blocker', Yukon.ui.block);
+        jQuery(document).on('click', 'a.f-blocker, button.f-blocker', Yukon.ui.block);
         jQuery(document).on('resize', '#modal_glass', Yukon.ui.blockPage);
         
         // clear page blocker
-        jQuery(document).on('click', '.f_clearBlocker', Yukon.ui.unblockPage);
+        jQuery(document).on('click', '.f-clearBlocker', Yukon.ui.unblockPage);
         
         // Disable a form element after clicked
-        jQuery(document).on('click', '.f_disableAfterClick', function() {
+        jQuery(document).on('click', '.f-disableAfterClick', function() {
             var button = jQuery(this);
             if (button.is(":input")) {
                 this.disabled = true;
@@ -164,9 +164,9 @@ Yukon.ui = {
         });
         
         //prevent forms from submitting via enter key
-        jQuery(document).on('keydown', 'form.f_preventSubmitViaEnterKey', function(e){
+        jQuery(document).on('keydown', 'form.f-preventSubmitViaEnterKey', function(e){
             //allow override submission elements
-            if(jQuery(e.target).hasClass("f_allowSubmitViaEnterKey")){
+            if(jQuery(e.target).hasClass("f-allowSubmitViaEnterKey")){
                 return true;
             }
             if(e.keyCode == 13){
@@ -175,11 +175,11 @@ Yukon.ui = {
         });
         
         // close popup on submit event
-        jQuery(document).on('click', 'button.f_closePopupOnSubmit', function(event){
+        jQuery(document).on('click', 'button.f-closePopupOnSubmit', function(event){
             jQuery(event).closest('.popUpDiv').dialog('close');
         });
 
-        jQuery(document).on('click', '.f_setHomePage', function(event) {
+        jQuery(document).on('click', '.f-setHomePage', function(event) {
             event.preventDefault ? event.preventDefault() : event.returnValue = false;  // IE8 requires returnValue
             event.stopPropagation();
 
@@ -206,18 +206,18 @@ Yukon.ui = {
         
         // resize blocked elements w/ page resize
         
-        $$("input.f_formatPhone").each(function(elem){
+        $$("input.f-formatPhone").each(function(elem){
             elem.observe('blur', function(event){
                 Yukon.ui.formatPhone(event.element());
             });
             
             Yukon.ui.formatPhone(elem);
         });
-        jQuery(document).on('blur', 'input.f_formatPhone', function(event){
+        jQuery(document).on('blur', 'input.f-formatPhone', function(event){
             Yukon.ui.formatPhone(event.target);
         });
         
-        $$("input.f_toggle:checkbox").each(function(elem){
+        $$("input.f-toggle:checkbox").each(function(elem){
             elem.observe('change', function(event){
                 Yukon.ui.toggleInputs(event.element());
             });
@@ -229,19 +229,19 @@ Yukon.ui = {
             Yukon.ui.toggleInputs(elem);
         });
         
-        $$(".f_toggleSwitch").each(function(container){
+        $$(".f-toggleSwitch").each(function(container){
             
             container.select("input:radio").each(function(input, index){
                 input.hide();
-                var elem = input.up('.f_toggleSwitch').down('.f_switchInterface');
+                var elem = input.up('.f-toggleSwitch').down('.f-switchInterface');
                 if(!elem){
-                    input.up('.f_toggleSwitch').appendChild('<div class="f_switchInterface"></div>');
-                    elem = input.up('.f_toggleSwitch').down('.f_switchInterface');
+                    input.up('.f-toggleSwitch').appendChild('<div class="f-switchInterface"></div>');
+                    elem = input.up('.f-toggleSwitch').down('.f-switchInterface');
                 }
             });
         });
         
-        $$("input.f_selectAll").each(function(input){
+        $$("input.f-selectAll").each(function(input){
             input.observe('focus', function(elem){
                 elem.target.select();
             });
@@ -256,7 +256,7 @@ Yukon.ui = {
     
     _AUTOFOCUS_TRIES: 0,
     _autofocus: function(){
-        var focusElement = jQuery("[autofocus], .f_focus:first")[0];
+        var focusElement = jQuery("[autofocus], .f-focus:first")[0];
         
         if(focusElement) {
             try{ //Play nice with IE
@@ -280,18 +280,18 @@ Yukon.ui = {
     },
     
     /*
-     * Applies the "f_focus" class to the first input/textarea element having a class of "error"
+     * Applies the "f-focus" class to the first input/textarea element having a class of "error"
      */
     _setFocusFirstError: function(){
         var error_field = jQuery("input.error, textarea.error").first();
         if (error_field.length === 1) {
-            jQuery(".f_focus").removeClass("f_focus");
-            error_field.addClass("f_focus");
+            jQuery(".f-focus").removeClass("f-focus");
+            error_field.addClass("f-focus");
         }
     },
     
     block: function(event){
-       var blockElement = jQuery(event.target).closest(".f_block_this")[0];
+       var blockElement = jQuery(event.target).closest(".f-block_this")[0];
        if(blockElement){
            Yukon.uiUtils.elementGlass.show(blockElement);
        }else{
@@ -300,7 +300,7 @@ Yukon.ui = {
     },
     
     unblock: function(element){
-        var blockElement = jQuery(event.target).closest(".f_block_this")[0];
+        var blockElement = jQuery(event.target).closest(".f-block_this")[0];
         if(blockElement){
             Yukon.uiUtils.elementGlass.hide(blockElement);
         }else{
@@ -359,7 +359,7 @@ Yukon.ui = {
 
     toggleInputs: function(input){
         // find matching inputs
-        var container = input.next("div.f_toggle");
+        var container = input.next("div.f-toggle");
         var enable = input.checked;
         
         if(enable) {
@@ -452,20 +452,20 @@ Yukon.ui = {
         _initialized: false,
         
         init: function() {
-            $$(".f_wizard").each(function(elem){
-                elem.select(".f_next").each(function(nextButton){
+            $$(".f-wizard").each(function(elem){
+                elem.select(".f-next").each(function(nextButton){
                     nextButton.observe('click', function(event){
-                        Yukon.ui.wizard.nextPage(event.element().up(".f_page"));
+                        Yukon.ui.wizard.nextPage(event.element().up(".f-page"));
                     });
                 });
                 
-                elem.select(".f_prev").each(function(prevButton){
+                elem.select(".f-prev").each(function(prevButton){
                     prevButton.observe('click', function(event){
-                        Yukon.ui.wizard.prevPage(event.element().up(".f_page"));
+                        Yukon.ui.wizard.prevPage(event.element().up(".f-page"));
                     });
                 });
                 
-                elem.select(".f_page").each(function(elem, idx){
+                elem.select(".f-page").each(function(elem, idx){
                     if(idx > 0){
                         elem.hide();
                     }else{
@@ -480,7 +480,7 @@ Yukon.ui = {
         nextPage: function(page) {
             page = jQuery(page);
             if(typeof(page) != 'undefined') {
-                var nextPage = page.next(".f_page");
+                var nextPage = page.next(".f-page");
                 if(typeof(nextPage) != 'undefined') {
                     page.hide();
                     nextPage.show();
@@ -490,7 +490,7 @@ Yukon.ui = {
         
         prevPage: function(page) {
             if(typeof(page) != 'undefined') {
-                var prevPage = page.previous(".f_page");
+                var prevPage = page.previous(".f-page");
                 if(typeof(prevPage) != 'undefined') {
                     page.hide();
                     prevPage.show();
@@ -502,19 +502,19 @@ Yukon.ui = {
          * Resets the page of the wizard to the first/initial page. Does NOT do
          * anything with the contents
          * 
-         * wizard: can be any element in the DOM. * If it is the f_wizard
+         * wizard: can be any element in the DOM. * If it is the f-wizard
          * container itself, it will reset the page * If it is an arbitrary
-         * node, it will search for and reset ALL f_wizard containers within
+         * node, it will search for and reset ALL f-wizard containers within
          * 
          */
         reset: function(wizard) {
             wizard = jQuery(wizard);
-            if(wizard.hasClass("f_wizard")){
-                jQuery(".f_page", wizard).hide();
-                jQuery(".f_page:first", wizard).show();
+            if(wizard.hasClass("f-wizard")){
+                jQuery(".f-page", wizard).hide();
+                jQuery(".f-page:first", wizard).show();
             }else{
-                jQuery(".f_wizard .f_page").hide();
-                jQuery(".f_wizard .f_page:first").show();
+                jQuery(".f-wizard .f-page").hide();
+                jQuery(".f-wizard .f-page:first").show();
             }
         }
     }
@@ -542,7 +542,7 @@ Yukon.uiUtils = {
         },
         
         redraw: function(glass) {
-            var container = glass.closest(".f_block_this");
+            var container = glass.closest(".f-block_this");
             // resize the glass
             glass.css('width', container.outerWidth()).css('height', container.outerHeight()).fadeIn(200);
         },

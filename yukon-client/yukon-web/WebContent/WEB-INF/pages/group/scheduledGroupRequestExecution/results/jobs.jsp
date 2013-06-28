@@ -72,8 +72,8 @@
             </tags:nameValueContainer2>
 
             <div class="actionArea">
-                <cti:button nameKey="filter" type="submit" classes="f_blocker" />
-                <cti:button nameKey="clear" href="clear" classes="f_blocker" />
+                <cti:button nameKey="filter" type="submit" classes="f-blocker" />
+                <cti:button nameKey="clear" href="clear" classes="f-blocker" />
             </div>
         </form:form>
     </i:simplePopup>

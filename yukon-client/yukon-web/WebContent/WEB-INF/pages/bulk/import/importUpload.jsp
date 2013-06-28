@@ -72,7 +72,7 @@ function updateImportTypeSelection() {
                     <strong><i:inline key="yukon.common.device.bulk.importUpload.importFileLabel"/></strong>
                     <input type="file" name="dataFile">
                 </div>
-                <div class="actionArea"><cti:button nameKey="load" classes="f_disableAfterClick primary action" busy="true" type="submit"/></div>
+                <div class="actionArea"><cti:button nameKey="load" classes="f-disableAfterClick primary action" busy="true" type="submit"/></div>
             </div>
             <div class="column two nogutter">
                 <%-- INSTRUCTIONS --%>

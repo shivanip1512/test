@@ -57,9 +57,9 @@
                 }
                 
                 jQuery(document).on('e_updatePassword', '#passwordDialog', updatePassword);
-                jQuery(document).on('click', 'a.f_resetPasswordDialog', resetPasswordDialog);
-                jQuery(document).on('click', '.f_prepPasswordFields', prepPasswordFields);
-                jQuery(document).on('click', '.f_generatePassword', generatePassword);
+                jQuery(document).on('click', 'a.f-resetPasswordDialog', resetPasswordDialog);
+                jQuery(document).on('click', '.f-prepPasswordFields', prepPasswordFields);
+                jQuery(document).on('click', '.f-generatePassword', generatePassword);
             });
     
             function toggleCommercialInputs(isCommercial) {
@@ -343,7 +343,7 @@
                                     <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
                                         <c:if test="${supportsPasswordSet and not empty passwordBean}">
                                             <tags:nameValue2 nameKey=".password">
-                                                <small><a href="javascript:void(0);" class="f_editPassword f_resetPasswordDialog"><i:inline key=".changePassword" /></a></small>
+                                                <small><a href="javascript:void(0);" class="f-editPassword f-resetPasswordDialog"><i:inline key=".changePassword" /></a></small>
                                             </tags:nameValue2>
                                         </c:if>
                                     </cti:checkRolesAndProperties>
@@ -365,7 +365,7 @@
                                                 <tags:password path="loginBackingBean.password2" cssClass="password_editor_field" autocomplete="false"/>
                                             </tags:nameValue2>
                                             <tags:nameValue2 nameKey="defaults.blank" excludeColon="true">
-                                                <button type="button" class="f_generatePassword"><i:inline key=".generatePassword"/></button>
+                                                <button type="button" class="f-generatePassword"><i:inline key=".generatePassword"/></button>
                                                 <br>
                                                 <label>
                                                     <input id="showPasswordCheckbox" type="checkbox" onclick="showPassword()"/>
@@ -398,7 +398,7 @@
             <cti:displayForPageEditModes modes="CREATE,EDIT">
                 <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                     <cti:displayForPageEditModes modes="EDIT">
-                        <cti:button nameKey="save" type="submit" classes="f_blocker f_prepPasswordFields primary action"/>
+                        <cti:button nameKey="save" type="submit" classes="f-blocker f-prepPasswordFields primary action"/>
                         
                         <cti:button nameKey="delete" classes="f-delete" data-form="#deleteAccountForm"/>
                         
@@ -409,7 +409,7 @@
                     </cti:displayForPageEditModes>
                 </cti:checkRolesAndProperties>
                 <cti:displayForPageEditModes modes="CREATE">
-                    <cti:button nameKey="create" type="submit" classes="f_blocker f_prepPasswordFields primary action"/>
+                    <cti:button nameKey="create" type="submit" classes="f-blocker f-prepPasswordFields primary action"/>
                     <input name="cancelCreation" type="submit" class="formSubmit" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>">
                 </cti:displayForPageEditModes>
             </cti:displayForPageEditModes>
@@ -428,7 +428,7 @@
         <cti:displayForPageEditModes modes="EDIT">
             <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
                 <c:if test="${supportsPasswordSet and not empty passwordBean}">
-                    <d:inline id="passwordDialog" okEvent="e_updatePassword" on="a.f_editPassword" nameKey="passwordDialog">
+                    <d:inline id="passwordDialog" okEvent="e_updatePassword" on="a.f-editPassword" nameKey="passwordDialog">
                         <form:form id="updatePasswordForm" commandName="passwordBean" action="/stars/operator/account/updatePassword">
                             <input type="hidden" name="accountId" value="${accountId}">
                             <input type="hidden" name="loginMode" value="${loginMode}">
@@ -448,7 +448,7 @@
                                     <tags:password path="password2" cssClass="password_editor_field" autocomplete="false" maxlength="64" />
                                 </tags:nameValue2>
                                 <tags:nameValue2 nameKey="defaults.blank" excludeColon="true">
-                                    <button type="button" class="f_generatePassword">
+                                    <button type="button" class="f-generatePassword">
                                         <i:inline key=".generatePassword" />
                                     </button>
                                     <br>

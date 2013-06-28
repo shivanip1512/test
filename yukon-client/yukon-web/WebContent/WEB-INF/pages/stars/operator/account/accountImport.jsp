@@ -29,7 +29,7 @@
                         </tags:nameValueContainer2>
                         
                         <div class="actionArea box stacked">
-                            <div class="fl"><cti:button nameKey="prescan" type="submit" classes="f_blocker"/></div>
+                            <div class="fl"><cti:button nameKey="prescan" type="submit" classes="f-blocker"/></div>
                         </div>
                     </form:form>
                     

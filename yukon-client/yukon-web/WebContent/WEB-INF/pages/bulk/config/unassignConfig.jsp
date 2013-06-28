@@ -12,7 +12,7 @@
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
             
             <%-- UNASSIGN BUTTON --%>
-            <cti:button nameKey="unassign" type="submit" name="unassignButton" value="${unassign}" classes="f_disableAfterClick primary action" busy="true"/>
+            <cti:button nameKey="unassign" type="submit" name="unassignButton" value="${unassign}" classes="f-disableAfterClick primary action" busy="true"/>
         </form>
             
     </tags:bulkActionContainer>

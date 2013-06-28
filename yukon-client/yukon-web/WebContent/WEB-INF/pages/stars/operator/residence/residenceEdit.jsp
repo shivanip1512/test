@@ -56,7 +56,7 @@
 		<%-- BUTTONS --%>
         <div class="pageActionArea">
 		<cti:displayForPageEditModes modes="EDIT">
-            <cti:button nameKey="save" type="submit" classes="f_blocker"/>
+            <cti:button nameKey="save" type="submit" classes="f-blocker"/>
             <cti:url value="/stars/operator/residence/view" var="viewUrl">
                 <cti:param name="accountId" value="${accountId}"/>
             </cti:url>

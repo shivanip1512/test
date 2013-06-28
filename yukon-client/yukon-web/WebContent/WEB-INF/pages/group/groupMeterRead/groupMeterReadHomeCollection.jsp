@@ -24,7 +24,7 @@
                 multipleSize="8" 
                 groupItems="true"/>
             <div class="pageActionArea">
-                <cti:button nameKey="read" type="submit" classes="f_disableAfterClick primary action"/>
+                <cti:button nameKey="read" type="submit" classes="f-disableAfterClick primary action"/>
             </div>
    		</form>
    	

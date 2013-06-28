@@ -37,7 +37,7 @@
             </tags:sectionContainer2>
 
             <tags:sectionContainer2 nameKey="additionContactInfo">
-                <div class="f_display_empty<c:if test="${not empty userProfile.contact.otherNotifications}"> dn</c:if>"><i:inline key="yukon.web.defaults.na"/></div>
+                <div class="f-display_empty<c:if test="${not empty userProfile.contact.otherNotifications}"> dn</c:if>"><i:inline key="yukon.web.defaults.na"/></div>
                 <tags:nameValueContainer2 id="contactNotifs">
                     <c:forEach var="contactNotif" items="${userProfile.contact.otherNotifications}" varStatus="row">
                         <c:set var="notifType" value="${contactNotif.contactNotificationType.contactNotificationMethodType.toString()}" />
@@ -45,10 +45,10 @@
             <cti:displayForPageEditModes modes="EDIT">
                     <tr class="contactNotif">
                         <td class="name">
-                            <tags:selectWithItems items="${notificationTypes}" path="contact.otherNotifications[${row.index}].contactNotificationType" inputClass="f_contactNotif_type"/>
+                            <tags:selectWithItems items="${notificationTypes}" path="contact.otherNotifications[${row.index}].contactNotificationType" inputClass="f-contactNotif-type"/>
                         </td>
                         <td class="value">
-                            <tags:input path="contact.otherNotifications[${row.index}].notificationValue" inputClass='f_contactNotif_val${isPhone ? " f_formatPhone" : ""}'></tags:input>
+                            <tags:input path="contact.otherNotifications[${row.index}].notificationValue" inputClass='f-contactNotif-val${isPhone ? " f-formatPhone" : ""}'></tags:input>
                         </td>
                         <td class="actions">
                             <a title="Remove" href="javascript:void(0);" class="removeBtn icon icon-cross"> </a>
@@ -103,11 +103,11 @@
                     <input type="hidden" name="userGroupName" value="${userGroupName}">
                     <tags:nameValueContainer2>
                         <tr><td class="name"><i:inline key="yukon.web.changelogin.oldPassword"/></td>
-                            <td class="value"><input maxlength="64" autocomplete="false" type="password" name="oldPassword" value="" class="f_current" placeholder="<cti:msg2 key='yukon.web.changelogin.oldPassword'/>"></input></td>
+                            <td class="value"><input maxlength="64" autocomplete="false" type="password" name="oldPassword" value="" class="f-current" placeholder="<cti:msg2 key='yukon.web.changelogin.oldPassword'/>"></input></td>
                         </tr>
                         <tr>
                             <td class="name"><i:inline key="yukon.web.changelogin.newPassword"/></td>
-                            <td class="value"><input maxlength="64" autocomplete="false" type="password" name="password1" value="" class="password_editor_field new f_check_password" placeholder="<cti:msg2 key='yukon.web.changelogin.newPassword'/>"></input></td>
+                            <td class="value"><input maxlength="64" autocomplete="false" type="password" name="password1" value="" class="password_editor_field new f-check_password" placeholder="<cti:msg2 key='yukon.web.changelogin.newPassword'/>"></input></td>
                         </tr>
                         <tr>
                             <td class="name"><i:inline key="yukon.web.changelogin.confirm"/></td>
@@ -137,7 +137,7 @@
                 <td class="name"><i:inline key=".preferences.default.all"/></td>
                 </td>
                 <td class="value">
-                    <cti:button classes="f_pref_default" id="reset_all_preferences" icon="icon-arrow-swap" nameKey="preferences.default.all.button" />
+                    <cti:button classes="f-pref-default" id="reset_all_preferences" icon="icon-arrow-swap" nameKey="preferences.default.all.button" />
                 </td>
             </tr>
 
@@ -152,7 +152,7 @@
                             <td class="value selection_group">
                                 <c:set var="prefValue" value="${userPreferenceMap.get(prefName) != null ? userPreferenceMap.get(prefName).value : objPrefName.defaultValue}" />
                                 <c:set var="defaultVal" value="${objPrefName.defaultValue}" />
-                                <button class="f_pref_default" data-value="${defaultVal}"><i class="icon icon-arrow-swap"></i></button>
+                                <button class="f-pref-default" data-value="${defaultVal}"><i class="icon icon-arrow-swap"></i></button>
                                 <c:set var="prefOptions" value="${objPrefName.valueType.optionList}" />
                                 <c:set var="prefDisplayOptMap" value="${userPreferencesNameToDisplayOptions.get(prefName)}" />
                                 <c:forEach var="prefOption" items="${prefOptions}" varStatus="stat">
@@ -174,8 +174,8 @@
                             <td class="value">
                                 <c:set var="defaultVal" value="${objPrefName.defaultValue}" />
                                 <c:set var="prefValue" value="${userPreferenceMap.get(prefName) != null ? userPreferenceMap.get(prefName).value : defaultVal}" />
-                                <form class="f_pref_form" action="/this/is/never/called" method="PUT">
-                                    <button type="button" class="f_pref_default" data-value="${defaultVal}"><i class="icon icon-arrow-swap"></i></button>
+                                <form class="f-pref-form" action="/this/is/never/called" method="PUT">
+                                    <button type="button" class="f-pref-default" data-value="${defaultVal}"><i class="icon icon-arrow-swap"></i></button>
                                     <input type="text" name="${prefName}" value="${prefValue}" prev-value="${prefValue}" title="${prefValue}" style="float:left" maxlength="255">
                                     <button type="button" class="save-preference dn" title="<cti:msg2 var="strSave" key="yukon.common.save" />"><i class="icon icon-disk"></i></button>
                                 </form>
@@ -235,10 +235,10 @@
     <tr id="template_contactNotif" class="contactNotif">
         <td class="name">
             <cti:msg2 key="yukon.web.defaults.selector.selectOne" var="txt_selectOne"/>
-            <tags:simpleSelect name="contact.otherNotifications" items="${notificationTypes}" itemLabelKey="formatKey" defaultItemValue="-1" defaultItemLabel="${txt_selectOne}" cssClass="f_contactNotif_type"/>
+            <tags:simpleSelect name="contact.otherNotifications" items="${notificationTypes}" itemLabelKey="formatKey" defaultItemValue="-1" defaultItemLabel="${txt_selectOne}" cssClass="f-contactNotif-type"/>
         </td>
         <td class="value">
-            <input name="contact.otherNotifications" class="f_contactNotif_val">
+            <input name="contact.otherNotifications" class="f-contactNotif-val">
         </td>
         <td class="actions">
             <a title="Remove" href="javascript:void(0);" class="removeBtn icon icon-cross"> </a>

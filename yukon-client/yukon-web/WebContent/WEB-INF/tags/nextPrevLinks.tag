@@ -34,7 +34,7 @@ If it's "javascript", nextUrl and previousUrl are required.
         <c:set var="nextEnabled" value="false"/>
     </c:if>
 </c:if>
-<input type="hidden" class="f_current_page_index_from_1" value="${currentPage}" />
+<input type="hidden" class="f-current_page_index_from_1" value="${currentPage}" />
 <span class="pagingArea clearfix">
     <c:if test="${pageScope.mode == 'javascript' || !previousEnabled}">
         <tags:pageNumberLink direction="previous" enabled="false" classes="dn"/>

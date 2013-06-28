@@ -76,14 +76,14 @@ jQuery(function() {
         if (e.which == 27) { // esc
             Yukon.ui.unblockPage();
         
-            jQuery(".f_block_this").each(function() {
+            jQuery(".f-block_this").each(function() {
                 Yukon.uiUtils.elementGlass.hide(jQuery(this));
             });
         }
     });
     
     jQuery("button.blockElement").click(function(e){
-		var elem = jQuery(e.target).closest(".f_block_this");
+		var elem = jQuery(e.target).closest(".f-block_this");
 		if(elem) {
 		    Yukon.uiUtils.elementGlass.show(elem);
 		}
@@ -101,9 +101,9 @@ jQuery(function() {
                 </tr>
                 <tr>
                     <td><label>Something Important:</label><input type="text" name="important"
-                        class="f_focus" /></td>
-                    <td>Add the <b>f_focus</b> class to the input. <br /> <br /> <pre class="code">
-&lt;input type="text" name="something" class="f_focus"/&gt;
+                        class="f-focus" /></td>
+                    <td>Add the <b>f-focus</b> class to the input. <br /> <br /> <pre class="code">
+&lt;input type="text" name="something" class="f-focus"/&gt;
             </pre></td>
                 </tr>
                 <tr>
@@ -112,8 +112,8 @@ jQuery(function() {
                 </tr>
                 <tr>
                     <td><label for="enabled">Enabled?</label><input type="checkbox"
-                        name="enabled" class="f_toggle" /> <br /> <br />
-                        <div class="f_toggle box">
+                        name="enabled" class="f-toggle" /> <br /> <br />
+                        <div class="f-toggle box">
                             <label for="name">Name:</label><input type="text" name="name" /> <br />
                             <br /> <label for="group">Group:</label><select name="group">
                                 <option>Select One</option>
@@ -126,20 +126,20 @@ jQuery(function() {
                             <br /> <br />
                             <button name="save">Save</button>
                         </div> <br /> <br /> <label for="enabled2">Edit</label><input type="checkbox"
-                        name="enabled2" class="f_toggle" checked="checked" /> <br /> <br />
-                        <div class="f_toggle box">
+                        name="enabled2" class="f-toggle" checked="checked" /> <br /> <br />
+                        <div class="f-toggle box">
                             <label for="address">Address:</label><input type="text" name="address" />
                             <br /> <br /> <label for="City">City:</label><input type="text"
                                 name="City" /> <br /> <br />
                             <button name="save" >Save</button>
                             <button name="save">Delete</button>
                         </div></td>
-                    <td>Works on page load and clicking a checkbox. <br /> Add the <b>f_toggle</b>
+                    <td>Works on page load and clicking a checkbox. <br /> Add the <b>f-toggle</b>
                         class to the checkbox input.<br />Then wrap the inputs you want to be
-                        toggled in a div with a <b>f_toggle</b> class. <br /> <br /> <pre class="code">
-&lt;input type="checkbox" name="enabled" class="f_toggle"/&gt;
+                        toggled in a div with a <b>f-toggle</b> class. <br /> <br /> <pre class="code">
+&lt;input type="checkbox" name="enabled" class="f-toggle"/&gt;
 
-&lt;div class="f_toggle"&gt;
+&lt;div class="f-toggle"&gt;
     ...INPUTS HERE...
 &lt;/div&gt;
         </pre> <br /> <br /> Will disable the following: <pre class="code">
@@ -157,36 +157,36 @@ button
                 <tr>
                     <td>
                         Disable a button after clicking on it.<br/>
-                        <button class="f_disableAfterClick">Button Tag</button>
+                        <button class="f-disableAfterClick">Button Tag</button>
                     </td>
                     <td>
-                        Add the <strong>'f_disableAfterClick'</strong> class to any input element - though this is of little use on text, password, select and textarea elements.
+                        Add the <strong>'f-disableAfterClick'</strong> class to any input element - though this is of little use on text, password, select and textarea elements.
                         <pre class="code">
-&lt;button class="f_disableAfterClick"&gt;Button Tag&lt;/button&gt;
+&lt;button class="f-disableAfterClick"&gt;Button Tag&lt;/button&gt;
                         </pre>
                     </td>
                 </tr>
                 <tr>
                     <td>
                         Disable an input after clicking on it.<br/>
-                        <input type="button" class="f_disableAfterClick" value="Input Tag" />
+                        <input type="button" class="f-disableAfterClick" value="Input Tag" />
                     </td>
                     <td>
                         Also works on <strong>inputs</strong> of type <strong>button</strong>.
                         <pre class="code">
-&lt;input type="button" class="f_disableAfterClick"&gt;Input Tag&lt;/button&gt;
+&lt;input type="button" class="f-disableAfterClick"&gt;Input Tag&lt;/button&gt;
                         </pre>
                     </td>
                 </tr>
                 <tr>
                     <td>
                         Disable a checkbox after clicking on it.<br/>
-                        <input type="checkbox" class="f_disableAfterClick" />
+                        <input type="checkbox" class="f-disableAfterClick" />
                     </td>
                     <td>
                         Sort of pointless here, but it you can see it does work.
                         <pre class="code">
-&lt;input type="checkbox" class="f_disableAfterClick" /&gt;
+&lt;input type="checkbox" class="f-disableAfterClick" /&gt;
                         </pre>
                     </td>
                 </tr>
@@ -353,12 +353,12 @@ button
                 </tr>
                 <tr>
                     <td>
-                        <button name="button1" value="A" class="f_blocker">Block Page</button> <br />
+                        <button name="button1" value="A" class="f-blocker">Block Page</button> <br />
                         <br /> <small>In this example, hit the 'ESC' key to unblock the
                             page.</small>
                     </td>
-                    <td>Add the <b>f_blocker</b> class to the tag/button. <br /> <br /> <pre class="code">
-&lt;button type="submit" name="button1" value="who cares?" class="f_blocker"&gt;standard&lt;/button&gt;
+                    <td>Add the <b>f-blocker</b> class to the tag/button. <br /> <br /> <pre class="code">
+&lt;button type="submit" name="button1" value="who cares?" class="f-blocker"&gt;standard&lt;/button&gt;
         </pre> <br /> <br /> To clear this blocked page you must create your own event handler as such:
                         <br /> <br /> <pre class="code">
 $("myCloseButton").observe('click', function(){
@@ -368,7 +368,7 @@ $("myCloseButton").observe('click', function(){
                 </tr>
                 <tr>
                     <td>
-                        <div class="f_block_this box"
+                        <div class="f-block_this box"
                             style="border: solid 1px #ccc; background: white; padding: 10px 20px;" />
                         <span class="info">In this example, clicking the block button will
                             block only this white box (hit esc key to unblock).</span> Dynamic content is so cool. <br /> <br />
@@ -382,13 +382,13 @@ $("myCloseButton").observe('click', function(){
                         the handler looks like this: <br /> <br /> <pre class="code">
 jQuery("button.blockElement").click( function() {
     ...
-    var elem = jQuery(this).closest('.f_block_this');
+    var elem = jQuery(this).closest('.f-block_this');
     Yukon.uiUtils.elementGlass.show(elem);
     ...
 });
         </pre> <br /> Similarly, we need to tell the library to unblock the element: <pre class="code">
 ...
-    var elem = jQuery('.f_block_this');
+    var elem = jQuery('.f-block_this');
     Yukon.uiUtils.elementGlass.hide(elem);
 ...
         </pre>
@@ -406,9 +406,9 @@ jQuery("button.blockElement").click( function() {
                 </tr>
                 <tr>
                     <td><label>Phone 1:</label><input type="text" name="phone1"
-                        class="f_formatPhone" /></td>
-                    <td>Add the <b>f_formatPhone</b> class to the tag/button. <br /> <br /> <pre class="code">
-&lt;input type="text" name="phone1" class="f_formatPhone"/&gt;
+                        class="f-formatPhone" /></td>
+                    <td>Add the <b>f-formatPhone</b> class to the tag/button. <br /> <br /> <pre class="code">
+&lt;input type="text" name="phone1" class="f-formatPhone"/&gt;
             </pre>
                     </td>
                 </tr>

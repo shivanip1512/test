@@ -11,7 +11,7 @@
     <form:form commandName="inventorySearch" action="search" method="post">
         <tags:nameValueContainer2 id="inventorySearch" tableClass="nonwrapping">
             <tags:nameValue2 nameKey=".serialNumber">
-                <form:input path="serialNumber" size="40" class="f_focus"/>
+                <form:input path="serialNumber" size="40" class="f-focus"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".meterNumber">
                 <form:input path="meterNumber" size="40"/>

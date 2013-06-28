@@ -71,7 +71,7 @@
 
     <script>
         jQuery(function() {
-            jQuery('.f_show_all').click(function () {
+            jQuery('.f-show_all').click(function () {
                 <c:forEach var="filter" items="${filters}">
                   jQuery('#${filter.name}').val('');
                 </c:forEach>
@@ -125,7 +125,7 @@
 
             <div class="actionArea">
                 <cti:button nameKey="search" type="submit" />
-                <cti:button nameKey="showAll" classes="f_show_all" />
+                <cti:button nameKey="showAll" classes="f-show_all" />
             </div>
         </form>
     </tags:boxContainer2>

@@ -67,7 +67,7 @@
         <div class="actionArea">
             <cti:url var="sampleXmlUrl" value="sampleXml"/>
             <cti:button nameKey="sampleXml" href="${sampleXmlUrl}" icon="icon-page-code"/>
-            <cti:button id="addSurveyBtn" nameKey="add" classes="f_blocker" icon="icon-add"/>
+            <cti:button id="addSurveyBtn" nameKey="add" classes="f-blocker" icon="icon-add"/>
         </div>
     </tags:pagedBox2>
 </cti:standardPage>

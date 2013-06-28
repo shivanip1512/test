@@ -110,7 +110,7 @@
             
             function setWidgetAvailability(widget, isAvailable, progress) {
                 if (isAvailable) {
-                    widget.find(":input").not(".f_disabled").removeAttr("disabled");
+                    widget.find(":input").not(".f-disabled").removeAttr("disabled");
                     widget.find(".widgetMessage").html("").removeClass("resultMessage");
                     jQuery('a[href$="#'+widget.attr("id")+'Tab"]').removeAttr("style");
                 } else {

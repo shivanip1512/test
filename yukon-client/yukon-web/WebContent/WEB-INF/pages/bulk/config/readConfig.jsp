@@ -10,7 +10,7 @@
         <form id="readConfigForm" method="post" action="/bulk/config/doReadConfig">
             <%-- DEVICE COLLECTION --%>
             <cti:deviceCollection deviceCollection="${deviceCollection}"/>
-            <cti:button nameKey="read" type="submit" classes="f_disableAfterClick primary action" busy="true"/>
+            <cti:button nameKey="read" type="submit" classes="f-disableAfterClick primary action" busy="true"/>
         </form>
     </tags:bulkActionContainer>
 </cti:standardPage>

@@ -112,10 +112,10 @@
     function renderFields(query , element){
         jQuery(".sectionContainer", element).show();
         
-        jQuery(".f_renderFields tr").hide();
-        jQuery(".f_renderFields tr").find("input,select,textarea").attr('disabled', 'disabled');
-        jQuery(".f_renderFields " + query).show();
-        jQuery(".f_renderFields " + query).find("input,select,textarea").removeAttr('disabled');
+        jQuery(".f-renderFields tr").hide();
+        jQuery(".f-renderFields tr").find("input,select,textarea").attr('disabled', 'disabled');
+        jQuery(".f-renderFields " + query).show();
+        jQuery(".f-renderFields " + query).find("input,select,textarea").removeAttr('disabled');
         
         jQuery(".sectionContainer", element).each(function(index, sectionContainer){
             var container = jQuery(sectionContainer);
@@ -256,7 +256,7 @@
             Yukon.Dialog.ConfirmationManager.cancel();
             submitForm(-1, 'deleteFormat');
         });
-        jQuery('.f_initialFocus').focus();
+        jQuery('.f-initialFocus').focus();
     });
 </script>
 
@@ -308,7 +308,7 @@
 
         <tags:boxContainer2 nameKey="formatSettings" styleClass="stacked">
             <tags:nameValueContainer2>
-                <tags:inputNameValue inputClass="f_initialFocus" nameKey=".nameOfFormat" path="format.formatName" size="50" maxlength="100" />
+                <tags:inputNameValue inputClass="f-initialFocus" nameKey=".nameOfFormat" path="format.formatName" size="50" maxlength="100" />
                 <tags:nameValue2 nameKey=".delimiter">
                     <select name="delimiterSelect" id="delimiterSelect" data-selection="#delimiterSelect" data-field-to-display="#delimiter" data-skip-disable="true">
                         <option value="," <c:if test="${backingBean.format.delimiter == ','}"> selected="selected" </c:if>>
@@ -376,15 +376,15 @@
                                 </td>
                                 <td>${fn:escapeXml(attribute.daysPrevious)}</td>
                                 <td>
-                                    <cti:button nameKey="edit" icon="icon-pencil" classes="editAttributeBtn f_blocker" renderMode="image" />
-                                    <cti:button nameKey="remove" icon="icon-cross" classes="removeAttributeBtn f_blocker" renderMode="image" />
+                                    <cti:button nameKey="edit" icon="icon-pencil" classes="editAttributeBtn f-blocker" renderMode="image" />
+                                    <cti:button nameKey="remove" icon="icon-cross" classes="removeAttributeBtn f-blocker" renderMode="image" />
                                 </td>
                             </tr>
                         </c:forEach>
                     </tbody>
                 </table>
                 <div class="actionArea">
-                    <cti:button id="addAttributeBtn" nameKey="add" classes="f_blocker" icon="icon-add"/>
+                    <cti:button id="addAttributeBtn" nameKey="add" classes="f-blocker" icon="icon-add"/>
                 </div>
             </tags:boxContainer2>
         </c:if>
@@ -432,7 +432,7 @@
                                         <cti:button nameKey="up.disabled" renderMode="image" disabled="true" icon="icon-bullet-go-up"/>
                                     </c:when>
                                     <c:otherwise>
-                                        <cti:button nameKey="up" classes="upFieldBtn f_blocker" renderMode="image" icon="icon-bullet-go-up"/>
+                                        <cti:button nameKey="up" classes="upFieldBtn f-blocker" renderMode="image" icon="icon-bullet-go-up"/>
                                     </c:otherwise>
                                 </c:choose> 
                                 <c:choose>
@@ -440,11 +440,11 @@
                                         <cti:button nameKey="down.disabled" renderMode="image" disabled="true" icon="icon-bullet-go-down"/>
                                     </c:when>
                                     <c:otherwise>
-                                        <cti:button nameKey="down" classes="downFieldBtn f_blocker" renderMode="image" icon="icon-bullet-go-down"/>
+                                        <cti:button nameKey="down" classes="downFieldBtn f-blocker" renderMode="image" icon="icon-bullet-go-down"/>
                                     </c:otherwise>
                                 </c:choose>
-                                <cti:button nameKey="edit" icon="icon-pencil" classes="editFieldBtn f_blocker" renderMode="image" />
-                                <cti:button nameKey="remove" classes="removeFieldBtn f_blocker" renderMode="image"  icon="icon-cross"/>
+                                <cti:button nameKey="edit" icon="icon-pencil" classes="editFieldBtn f-blocker" renderMode="image" />
+                                <cti:button nameKey="remove" classes="removeFieldBtn f-blocker" renderMode="image"  icon="icon-cross"/>
                             </td>
                             <tags:hidden path="format.fields[${row.index}].fieldId" />
                             <tags:hidden path="format.fields[${row.index}].attribute.attributeId" />
@@ -466,7 +466,7 @@
                 </tbody>
             </table>
             <div class="actionArea">
-                <cti:button id="addFieldBtn" nameKey="add" classes="f_blocker" icon="icon-add"/>
+                <cti:button id="addFieldBtn" nameKey="add" classes="f-blocker" icon="icon-add"/>
             </div>
         </tags:boxContainer2>
         
@@ -480,7 +480,7 @@
             </tags:boxContainer2>
         </c:if>
         <div class="pageActionArea">
-            <cti:button id="saveBtn" nameKey="save" classes="f_blocker f_disableAfterClick primary action"/>
+            <cti:button id="saveBtn" nameKey="save" classes="f-blocker f-disableAfterClick primary action"/>
             <dialog:confirm on="#deleteBtn" nameKey="confirmDelete" argument="${backingBean.format.formatName}" />
             <c:if test="${backingBean.format.formatId != 0}">
                 <cti:button id="deleteBtn" nameKey="delete" />

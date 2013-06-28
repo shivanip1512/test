@@ -91,7 +91,7 @@
                                triggerElement="showPopupButton"
                                dataJson="${allEventCategoriesDataJson}" highlightNodePath="${extSelectedNodePath}"
                                title="${selectEventLog}"
-                               treeParameters="{onActivate: TreeHelper.redirect_node_data_href_onActivate}"
+                               treeParameters="{onActivate: TreeHelper.redirect_node_data_href-onActivate}"
                                includeControlBar="true" styleClass="contained"/>
             </td>
         </tr>

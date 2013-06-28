@@ -130,7 +130,7 @@
         <br>
         <cti:displayForPageEditModes modes="EDIT,CREATE">
         
-            <cti:button nameKey="save" type="submit" classes="f_blocker"/>
+            <cti:button nameKey="save" type="submit" classes="f-blocker"/>
             
             <cti:displayForPageEditModes modes="EDIT">
                 <cti:url value="/stars/operator/contacts/view" var="cancelUrl">

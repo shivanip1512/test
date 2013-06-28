@@ -16,13 +16,13 @@ jQuery(function() {
     
     singleProgramChecked = function(event) {
         if (jQuery(event.target).is(':checked')) {
-            jQuery(event.target).parent().next().find(".f_useStopGearCheckedTarget").removeAttr("disabled");
+            jQuery(event.target).parent().next().find(".f-useStopGearCheckedTarget").removeAttr("disabled");
         } else {
-            jQuery(event.target).parent().next().find(".f_useStopGearCheckedTarget").attr("disabled","disabled");
+            jQuery(event.target).parent().next().find(".f-useStopGearCheckedTarget").attr("disabled","disabled");
         }
     }
     
-    jQuery(".f_singleProgramChecked").click(singleProgramChecked); 
+    jQuery(".f-singleProgramChecked").click(singleProgramChecked); 
 
 });
 </script>
@@ -64,7 +64,7 @@ jQuery(function() {
 	                    <c:if test="${fn:length(gears) > 1}">
 	                        <td>
 	                            <form:hidden path="programGearChangeInfo[${status.index}].programId" />
-	                            <form:checkbox path="programGearChangeInfo[${status.index}].changeGear" id="changeGearCheckbox${status.index}" cssClass="f_singleProgramChecked"/>
+	                            <form:checkbox path="programGearChangeInfo[${status.index}].changeGear" id="changeGearCheckbox${status.index}" cssClass="f-singleProgramChecked"/>
 	                            <c:if test="${fn:length(gears) < 2}">
 	                                <form:hidden path="programGearChangeInfo[${status.index}].changeGear"/>
 	                                <input type="checkbox" disabled="disabled"/>
@@ -72,7 +72,7 @@ jQuery(function() {
 	                            <label for="changeGearCheckbox${status.index}"><spring:escapeBody htmlEscape="true">${program.name}</spring:escapeBody></label>
 	                        </td>
 	                        <td>
-	                            <form:select path="programGearChangeInfo[${status.index}].gearNumber" id="programGear${status.index}" cssClass="f_useStopGearCheckedTarget">
+	                            <form:select path="programGearChangeInfo[${status.index}].gearNumber" id="programGear${status.index}" cssClass="f-useStopGearCheckedTarget">
 	                                <c:forEach var="gear" varStatus="gearStatus" items="${gears}">
 	                                    <c:if test="${currentGear.gearNumber != gear.gearNumber}">
 	                                        <form:option value="${gearStatus.index + 1}"><spring:escapeBody htmlEscape="true">${gear.gearName}</spring:escapeBody></form:option>

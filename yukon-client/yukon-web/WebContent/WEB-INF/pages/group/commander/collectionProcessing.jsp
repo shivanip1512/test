@@ -32,7 +32,7 @@
             <input type="text" name="emailAddress" value="" size="40">
             <br><br>
 
-			<cti:button nameKey="execute" type="submit" classes="f_disableAfterClick primary action" busy="true"/>
+			<cti:button nameKey="execute" type="submit" classes="f-disableAfterClick primary action" busy="true"/>
 		</form>
 	</div>
   

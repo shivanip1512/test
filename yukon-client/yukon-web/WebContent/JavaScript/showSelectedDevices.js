@@ -1,5 +1,5 @@
 jQuery(document).ready(function() {
-	jQuery(".f_showSelectedDevices, .f_showSelectedInventory").click(function(event) {
+	jQuery(".f-showSelectedDevices, .f-showSelectedInventory").click(function(event) {
 		var args = jQuery(event.currentTarget).attr("data-function-arguments");
 		eval('args = ' + args);
 		showSelectedDevices(this, args.id, args.url);

@@ -134,8 +134,8 @@ jQuery(function(){
 <!-- Create Schedule Wizard -->
 <div class="schedule">
     <i:simplePopup titleKey=".createSchedule.title" id="createSchedule" on=".f-create" >
-        <div class="f_wizard">
-            <div class="f_page page_0">
+        <div class="f-wizard">
+            <div class="f-page page_0">
                 <div class="box">
                     <div class="helper box">
                         <i:inline key=".modeHint" />
@@ -150,12 +150,12 @@ jQuery(function(){
             
                 <div class="actionArea">
                     <div class="fr">
-                        <cti:button nameKey="next" classes="f_next"/>
+                        <cti:button nameKey="next" classes="f-next"/>
                     </div>
                 </div>
             </div>
             
-            <div class="f_page page_1">
+            <div class="f-page page_1">
                 <div class="createSchedule box small">
                     <c:forEach var="schedule" items="${defaultSchedules}">
                         <tags:thermostatScheduleEditor schedule="${schedule}"
@@ -171,8 +171,8 @@ jQuery(function(){
                 <div class="actions">
                     <div class="fr">
                         <cti:button nameKey="cancel" classes="f-cancel" />
-                        <cti:button nameKey="previous" classes="f_prev"/>
-                        <cti:button nameKey="save" classes="f-save f_blocker primary action" />
+                        <cti:button nameKey="previous" classes="f-prev"/>
+                        <cti:button nameKey="save" classes="f-save f-blocker primary action" />
                     </div>
                     <div class="fl">
                         <cti:button nameKey="recommendedSettings" renderMode="labeledImage" classes="f-createDefault" icon="icon-wrench"/>

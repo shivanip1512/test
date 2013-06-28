@@ -38,7 +38,7 @@ if(typeof(MeteringBilling) === 'undefined') {
             doc.on("click", "#MForm [name=schedule]", this.show_scheduled_billing_form);
 
             doc.on("submit", "#scheduleForm", this.do_schedule_billing_file_export);
-            doc.on("click", "#billing_generation_schedule .f_cancel", this.reset_generation_tab);
+            doc.on("click", "#billing_generation_schedule .f-cancel", this.reset_generation_tab);
 
             doc.on("click", "#tab_schedules a", this.update_schedules_job_list);
             doc.on("click", "#billing_schedules_jobs #jobsTable button", this.do_schedules_job_list_button);
@@ -342,7 +342,7 @@ if(typeof(MeteringBilling) === 'undefined') {
 
         _get_pagination_state : function(jQueryContainer) {
             var countPerPage = jQueryContainer.find(".perPageArea .selectedItem").text();
-            var currPage = jQueryContainer.find(".pagingArea .f_current_page_index_from_1").val();
+            var currPage = jQueryContainer.find(".pagingArea .f-current_page_index_from_1").val();
 //            return "page="+ currPage +"&itemsPerPage="+ countPerPage;
             return {"page": currPage, "itemsPerPage": countPerPage};
         },

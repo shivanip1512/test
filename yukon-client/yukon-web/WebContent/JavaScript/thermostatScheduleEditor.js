@@ -132,7 +132,7 @@ Yukon.ThermostatScheduleEditor = {
             var mode = jQuery("input[name=thermostatScheduleMode]", form).val();
             var page = jQuery(".page_0:first"); 
             jQuery("input[value="+ mode +"]", page).attr('checked', 'checked');
-            jQuery("button.f_next", page).removeAttr('disabled');
+            jQuery("button.f-next", page).removeAttr('disabled');
             
             //select the second page page.
             jQuery(".schedule.editor", page.parent()).hide();
@@ -190,7 +190,7 @@ Yukon.ThermostatScheduleEditor = {
         });
         
         jQuery(".page_0 input:radio").click(function(e){
-                jQuery(this).closest('.f_page').find('.f_next').removeAttr('disabled');
+                jQuery(this).closest('.f-page').find('.f-next').removeAttr('disabled');
         });
         
         jQuery(document).on('click', '.f-create', function(e){
@@ -200,7 +200,7 @@ Yukon.ThermostatScheduleEditor = {
             return false;
         });
         
-        jQuery(".page_0 .f_next").click(function(e){
+        jQuery(".page_0 .f-next").click(function(e){
             var input = jQuery("#createSchedule input[name=defaultScheduleMode]:checked");
             jQuery("#createSchedule .schedule.editor").each(function(index, elem){
                 elem = jQuery(elem);

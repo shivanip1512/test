@@ -80,7 +80,7 @@
 												</c:choose>
 												<c:if test="${not consumer}">
 													<td><cti:uniqueIdentifier prefix="history_dialog_" var="historyDialogId" /> <dialog:inline
-															okEvent="none" nameKey="detailDialog" id="${historyDialogId}" on=".f_show_${historyDialogId}">
+															okEvent="none" nameKey="detailDialog" id="${historyDialogId}" on=".f-show_${historyDialogId}">
 															<table class="compactResultsTable">
 																<c:set var="detailDuration" value="${0}" />
 																<tr>
@@ -116,7 +116,7 @@
 																	</tr>
 																</c:if>
 															</table>
-														</dialog:inline> <a href="javascript:void(0);" class="f_show_${historyDialogId}"><cti:msg2 key=".history" /></a></td>
+														</dialog:inline> <a href="javascript:void(0);" class="f-show_${historyDialogId}"><cti:msg2 key=".history" /></a></td>
 												</c:if>
 												<td><cti:formatDuration type="HM" startDate="${groupedEvent.startDate}"
 														endDate="${groupedEvent.endDate}" /></td>

@@ -24,7 +24,7 @@
 			<span class="label">${pageScope.value}</span>
 		</button>
 		<c:if test="${pageScope.showClear}">
-            <button class="f_clear-filter-option right ${pageScope.clearClass}">
+            <button class="f-clear-filter-option right ${pageScope.clearClass}">
                 <i class="icon icon-cross"></i>
             </button>
         </c:if>

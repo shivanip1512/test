@@ -37,7 +37,7 @@
                                 </tags:nameValue2>
                             </tags:nameValueContainer2>
                             <div class="actionArea">
-                                <cti:button type="submit" nameKey="importSubmitButton" classes="primary action f_disableAfterClick" busy="true"/>
+                                <cti:button type="submit" nameKey="importSubmitButton" classes="primary action f-disableAfterClick" busy="true"/>
                             </div>
                         </form>
                         </tags:sectionContainer>

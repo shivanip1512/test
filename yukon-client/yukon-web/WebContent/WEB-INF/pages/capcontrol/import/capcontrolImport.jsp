@@ -45,7 +45,7 @@
                     <input type="file" name="dataFile">
                 </div>
                 <div>
-                    <cti:button type="submit" nameKey="importSubmitButton" id="importSubmitButton" classes="f_blocker" />
+                    <cti:button type="submit" nameKey="importSubmitButton" id="importSubmitButton" classes="f-blocker" />
                 </div>
             </form>
         </div>

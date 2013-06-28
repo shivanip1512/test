@@ -20,7 +20,7 @@ jQuery(function() {
         }
 
         jQuery("ul.dropdown-menu").hide();
-        if (target.closest(".f_dropdown_outer_container").hasClass("ajax-menu")) {
+        if (target.closest(".f-dropdown_outer_container").hasClass("ajax-menu")) {
             ajaxMenuOpen(target, e);
             return false;
         }
@@ -61,7 +61,7 @@ jQuery(function() {
         } else {
             target.find(".icon-cog").removeClass("icon-cog").addClass("icon-loading");
             var params = {};
-            target.closest(".f_dropdown_outer_container").prev(".params").find("input").each(function() {
+            target.closest(".f-dropdown_outer_container").prev(".params").find("input").each(function() {
                 params[jQuery(this).attr("name")] = jQuery(this).val();
             });
             jQuery.ajax({

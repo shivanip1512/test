@@ -93,6 +93,6 @@
 <div class="actionArea">
     <cti:url var="reviewUrl" value="/common/veeReview/home"/>
     <a href="${reviewUrl}"><i:inline key=".review"/></a>
-    <cti:button nameKey="create" icon="icon-plus-green" type="submit" classes="f_blocker fr"/>
+    <cti:button nameKey="create" icon="icon-plus-green" type="submit" classes="f-blocker fr"/>
 </div>
 </form>

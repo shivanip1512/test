@@ -39,7 +39,7 @@
                 
                 <tags:captcha captchaPublicKey="${captchaPublicKey}" captchaTheme="clean" captchaEnabled="${captchaEnabled}" locale="${locale}"/>
                 <div class="pageActionArea">
-                    <cti:button type="submit" nameKey="resetPassword" name="resetPassword" classes="f_disableAfterClick primary action"/>
+                    <cti:button type="submit" nameKey="resetPassword" name="resetPassword" classes="f-disableAfterClick primary action"/>
                     <cti:url value="/login.jsp" var="loginPage"/>
                     <cti:button href="${loginPage}" nameKey="cancel"/>
                 </div>

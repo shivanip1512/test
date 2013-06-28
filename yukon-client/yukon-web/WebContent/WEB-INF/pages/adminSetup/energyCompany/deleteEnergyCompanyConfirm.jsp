@@ -23,7 +23,7 @@
             <input type="hidden" name="ecId" value="${ecId}" />
             
 <%--            <tags:csrfTokenRequest> --%>
-                <cti:button nameKey="delete" name="delete" type="submit" classes="f_blocker"/>
+                <cti:button nameKey="delete" name="delete" type="submit" classes="f-blocker"/>
                 <cti:button nameKey="cancel" name="cancel" type="submit"/>
 <%--            </tags:csrfTokenRequest> --%>
         </form:form>

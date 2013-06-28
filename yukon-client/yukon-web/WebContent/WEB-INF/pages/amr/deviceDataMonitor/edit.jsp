@@ -12,10 +12,10 @@
 
     <%@ include file="shared.jspf"%>
 
-    <form action="toggleEnabled" method="post" class="f_toggle_enabled_form">
+    <form action="toggleEnabled" method="post" class="f-toggle_enabled_form">
         <input type="hidden" name="monitorId" value="${monitor.id}"/>
     </form>
-    <form action="delete" method="post" class="f_delete_form">
+    <form action="delete" method="post" class="f-delete_form">
         <input type="hidden" name="monitorId" value="${monitor.id}"/>
     </form>
 
@@ -27,7 +27,7 @@
     <cti:displayForPageEditModes modes="CREATE">
         <cti:url value="/amr/deviceDataMonitor/create" var="action"/>
     </cti:displayForPageEditModes>
-	<form:form commandName="monitor" action="${action}" method="post" cssClass="f_monitor_form">
+	<form:form commandName="monitor" action="${action}" method="post" cssClass="f-monitor_form">
 
         <cti:displayForPageEditModes modes="EDIT">
 			<form:hidden path="id" id="monitorId" /> <!-- Giving this an id so we can easily grab it in js -->
@@ -52,7 +52,7 @@
 
 						<tags:nameValue2 nameKey=".deviceGroupCount">
                             <span id="canonicalCalculatingSpan" class="dn"><cti:icon icon="icon-loading"/><span class="label"><i:inline key=".calculating"/></span></span>
-                            <span class="f_device_group_count"><fmt:formatNumber type="number" value="${monitoringCount}" /></span>
+                            <span class="f-device_group_count"><fmt:formatNumber type="number" value="${monitoringCount}" /></span>
 						</tags:nameValue2>
 						<tags:nameValue2 nameKey=".supportedDevices">
                             ${supportedDevices}
@@ -84,11 +84,11 @@
 		            <tags:dynamicTable items="${monitor.processors}" 
                         nameKey="dynamicTable"
                         id="processorsTable" 
-                        addButtonClass="f_add_processor" 
+                        addButtonClass="f-add_processor" 
                         noBlockOnAdd="true" 
                         disableAddButton="${disableAddProcessAtStart}">
                     <div>
-					<table class="inputTable f_processors_table device_data_processors full_width">
+					<table class="inputTable f-processors_table device_data_processors full_width">
 						<thead>
 							<tr>
 								<th><i:inline key=".processors.attribute" /></th>
@@ -98,12 +98,12 @@
 							</tr>
 						</thead>
 						<tbody>
-		                    <tr class="f_new_row_model" style="display: none;">
+		                    <tr class="f-new_row_model" style="display: none;">
 		                        <input type="hidden" data-name="processors[0].processorId"/>
 		                        <input type="hidden" data-name="processors[0].monitorId"/>
 		                        <input type="hidden" data-name="processors[0].deletion" value="false" class="isDeletionField"/>
 		                        <td>
-				                    <select class="f_attribute" data-name="processors[0].attribute">
+				                    <select class="f-attribute" data-name="processors[0].attribute">
                                         <option value="-1"><i:inline key="yukon.web.defaults.selector.selectOne" /></option>
 				                        <c:forEach items="${allGroupedReadableAttributes}" var="group">
 				                            <optgroup label="<cti:msg2 key="${group.key}"/>">
@@ -117,10 +117,10 @@
 				                    </select>
 			                    </td>
 			                    <td>
-                                    <div class="f_state_group"><input type="hidden" name="" value="" data-name="processors[0].stateGroup"></div>
+                                    <div class="f-state_group"><input type="hidden" name="" value="" data-name="processors[0].stateGroup"></div>
 			                    </td>
 			                    <td>
-                                    <div class="f_states"><input type="hidden" name="" value="" data-name="processors[0].state"></div>
+                                    <div class="f-states"><input type="hidden" name="" value="" data-name="processors[0].state"></div>
 			                    </td>
 		                        <td class="actions">
 									<a title="Remove" href="javascript:void(0);"class="removeBtn">
@@ -135,7 +135,7 @@
 									<form:hidden path="processors[${status.index}].monitorId" />
 									<form:hidden path="processors[${status.index}].deletion" class="isDeletionField"/>
 									<td>
-		                                <form:select path="processors[${status.index}].attribute" cssClass="f_attribute">
+		                                <form:select path="processors[${status.index}].attribute" cssClass="f-attribute">
 			                                <c:forEach items="${allGroupedReadableAttributes}" var="group">
 			                                    <optgroup label="<cti:msg2 key="${group.key}"/>">
 			                                        <c:forEach items="${group.value}" var="item">
@@ -157,7 +157,7 @@
                                     <c:set var="ctrlName" value="processors[${status.index}].stateGroup"/>
                                     <c:choose>
                                     	<c:when test="${stateGroups.size() > 1}">
-                                        <form:select path="${ctrlName}" cssClass="f_state_group">
+                                        <form:select path="${ctrlName}" cssClass="f-state_group">
 			                                <c:forEach items="${stateGroups}" var="stateGroup">
 		                                        <c:set var="selected" value=""/>
 		                                        <c:if test="${processor.stateGroup == stateGroup}">
@@ -167,12 +167,12 @@
 			                                </c:forEach>
 			                            </form:select>
                                     	</c:when><c:otherwise>
-                                        	<div class="f_state_group"><input type="hidden" name="${ctrlName}" value="${processor.stateGroup.liteID}">${processor.stateGroup.stateGroupName}</div>
+                                        	<div class="f-state_group"><input type="hidden" name="${ctrlName}" value="${processor.stateGroup.liteID}">${processor.stateGroup.stateGroupName}</div>
                                     	</c:otherwise>
                                     </c:choose>
 									</td>
 									<td>
-			                            <form:select path="processors[${status.index}].state" cssClass="f_states">
+			                            <form:select path="processors[${status.index}].state" cssClass="f-states">
 			                                <c:forEach items="${processor.stateGroup.statesList}" var="state">
 			                                    <c:set var="selected" value=""/>
 		                                        <c:if test="${processor.state.stateRawState == state.liteID}">
@@ -214,12 +214,12 @@
 	<%-- update / enable_disable / delete / cancel --%>
 	<div class="pageActionArea">
 		<cti:displayForPageEditModes modes="EDIT">
-            <cti:button nameKey="update" classes="f_update_monitor primary action"/>
+            <cti:button nameKey="update" classes="f-update_monitor primary action"/>
 			<c:if test="${monitor.enabled}">
-    			<cti:button classes="f_toggle_enabled" nameKey="disable"/>
+    			<cti:button classes="f-toggle_enabled" nameKey="disable"/>
 			</c:if>
 			<c:if test="${!monitor.enabled}">
-    			<cti:button classes="f_toggle_enabled" nameKey="enable"/>
+    			<cti:button classes="f-toggle_enabled" nameKey="enable"/>
 			</c:if>
 			<cti:button id="deleteButton" nameKey="delete"/>
             <dialog:confirm nameKey="deleteConfirmation" argument="${monitor.name}" on="#deleteButton"  />
@@ -229,7 +229,7 @@
 			<cti:button nameKey="back" href="${viewMonitorUrl}" />
 		</cti:displayForPageEditModes>
 		<cti:displayForPageEditModes modes="CREATE">
-			<cti:button nameKey="create" classes="f_update_monitor" />
+			<cti:button nameKey="create" classes="f-update_monitor" />
 			<cti:url var="startMonitorUrl" value="/meter/start" />
 			<cti:button nameKey="cancel" href="${startMonitorUrl}" />
 		</cti:displayForPageEditModes>

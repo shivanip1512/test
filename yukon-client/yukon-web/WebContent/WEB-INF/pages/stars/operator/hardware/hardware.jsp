@@ -198,7 +198,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                 <tr>
                     <td>
                         <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                            <cti:button nameKey="delete" type="submit" name="delete" classes="f_blocker" />
+                            <cti:button nameKey="delete" type="submit" name="delete" classes="f-blocker" />
                         </cti:checkRolesAndProperties>
                         <cti:button nameKey="cancel" onclick="hideDeletePopup()"/>
                     </td>
@@ -356,7 +356,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                 
                 <c:if test="${showZigbeeState}">
                     <cti:displayForPageEditModes modes="VIEW">
-                        <tags:boxContainer2 nameKey="zigbeeStatus" styleClass="statusContainer f_block_this" id="zigbeeStatus">
+                        <tags:boxContainer2 nameKey="zigbeeStatus" styleClass="statusContainer f-block_this" id="zigbeeStatus">
                             <table class="compactResultsTable">
                                 <thead>
                                 <tr>
@@ -429,7 +429,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                 </c:if>
                 
                 <c:if test="${showAssignedDevices}">
-                    <tags:boxContainer2 nameKey="assignedDevices" id="assignedDevices" styleClass="f_block_this">
+                    <tags:boxContainer2 nameKey="assignedDevices" id="assignedDevices" styleClass="f-block_this">
                         <div class="scrollingContainer_small">
                             <c:choose>
                                 <c:when test="${not empty assignedDevices}">
@@ -482,7 +482,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                                         <cti:param name="gatewayId" value="${hardware.deviceId}"/>
                                                         <cti:param name="deviceId" value="${device.deviceId}"/>
                                                     </cti:url>
-                                                    <cti:button nameKey="remove" href="${removeUrl}" renderMode="image" classes="f_blocker" icon="icon-cross"/>
+                                                    <cti:button nameKey="remove" href="${removeUrl}" renderMode="image" classes="f-blocker" icon="icon-cross"/>
                                                 </td>
                                             </tr>
                                         </c:forEach>
@@ -507,7 +507,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                             <option value="${device.deviceId}">${device.serialNumber}</option>
                                         </c:forEach>
                                     </select>
-                                    <cti:button nameKey="add" type="submit" classes="f_blocker"/>
+                                    <cti:button nameKey="add" type="submit" classes="f-blocker"/>
                                 </form>
                             </div>
                         </c:if>

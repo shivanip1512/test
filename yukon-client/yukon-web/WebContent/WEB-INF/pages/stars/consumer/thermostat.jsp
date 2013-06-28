@@ -101,7 +101,7 @@
                 <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
                 <cti:msg var="runProgramText" key="yukon.web.modules.consumer.thermostat.runProgram" />
                 <input id="temperatureUnitRun" type="hidden" name="temperatureUnit" value="F">
-                <input name="runProgram" type="submit" value="${runProgramText}" class="f_blocker" />
+                <input name="runProgram" type="submit" value="${runProgramText}" class="f-blocker" />
             </form>
         </div>
     </cti:msgScope>

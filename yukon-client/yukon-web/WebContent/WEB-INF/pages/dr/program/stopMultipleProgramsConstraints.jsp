@@ -52,7 +52,7 @@ jQuery(function () {
     }
     
     jQuery("#overrideAllConstraints").click(overideAllChecked);
-    jQuery(".f_singleOverrideChecked").click(singleOverrideChecked);
+    jQuery(".f-singleOverrideChecked").click(singleOverrideChecked);
     updateAllOverridesChecked();
 });
 </script>
@@ -107,7 +107,7 @@ jQuery(function () {
 	                                <form:checkbox
 	                                   id="programStopInfoOverride${index}"
 	                                   path="programStopInfo[${status.index}].overrideConstraints"
-	                                   cssClass="f_singleOverrideChecked" />
+	                                   cssClass="f-singleOverrideChecked" />
 	                            </c:if>
 	                            <label for="programStopInfoOverride${index}">
 	                                <spring:escapeBody htmlEscape="true">${program.name}</spring:escapeBody>

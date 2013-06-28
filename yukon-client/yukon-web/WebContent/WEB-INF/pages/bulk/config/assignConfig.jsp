@@ -22,7 +22,7 @@
                                 </c:forEach>
                             </select>
                         </label>
-                        <cti:button nameKey="assign" type="submit" name="assignButton" classes="f_disableAfterClick primary action" busy="true"/>
+                        <cti:button nameKey="assign" type="submit" name="assignButton" classes="f-disableAfterClick primary action" busy="true"/>
                     </form>
                 </div>
             </c:when>

@@ -91,6 +91,6 @@
 
 
 <div class="actionArea">
-    <cti:button nameKey="create" icon="icon-plus-green" type="submit" classes="f_blocker fr"/>
+    <cti:button nameKey="create" icon="icon-plus-green" type="submit" classes="f-blocker fr"/>
 </div>
 </form>

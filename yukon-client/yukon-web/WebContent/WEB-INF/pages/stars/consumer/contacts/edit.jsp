@@ -37,18 +37,18 @@
 			<div class="fl">
 				<input type="text" name="liteContactNotifications[0].notification" maxlength="120"/>
 			</div>
-			<span class="f_removeNotification"><i class="icon icon-cross"></i></span>
+			<span class="f-removeNotification"><i class="icon icon-cross"></i></span>
 		</div>
 	</div>
 	
 	<script>
 	jQuery(function(){
-		jQuery(document).on('click', '.f_removeNotification', function(event){
+		jQuery(document).on('click', '.f-removeNotification', function(event){
 			jQuery(this).closest(".notification").remove();
 			updateIndicies();
 		});
 		
-		jQuery(document).on('click', '.f_addNotification', function(event){
+		jQuery(document).on('click', '.f-addNotification', function(event){
 			jQuery("#notifications").append(jQuery("#notification_template > div").clone());
 			updateIndicies();
 		});
@@ -86,7 +86,7 @@
 									<div class="fl">
 										<p>
 											<form:input path="liteContactNotifications[${row.index}].notification" maxlength="120" cssClass="fl" cssErrorClass="error fl" />
-											<a href="javascript:void(0);" class="f_removeNotification"><i class="icon icon-cross"></i></a>
+											<a href="javascript:void(0);" class="f-removeNotification"><i class="icon icon-cross"></i></a>
 										</p>
 										<p>
 											<form:errors path="liteContactNotifications[${row.index}].notification" cssClass="errorMessage fl" />
@@ -96,7 +96,7 @@
 							</c:forEach>
 						</div>
 						
-						<cti:button nameKey="addNotification" classes="f_addNotification" icon="icon-add"/>
+						<cti:button nameKey="addNotification" classes="f-addNotification" icon="icon-add"/>
 					</tags:nameValue2>
 				</tags:nameValueContainer2>
 			</tags:sectionContainer2>
