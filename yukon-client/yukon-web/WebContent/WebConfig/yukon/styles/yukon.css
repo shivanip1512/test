@@ -22,7 +22,7 @@
     CATEGORIES AND SETTINGS
     MISC
     DATE/TIME PICKER
-    DROPDOWN COG MENU
+    DROPDOWN MENU
     MODAL/BLOCKING GLASS
     TILES
     CONNECTION WARNING
@@ -401,11 +401,8 @@ input.datePicker {width: 114px;}
 input.timePicker {width: 74px;}
 input.dateTimePicker {margin: 0;}
 .ui-datepicker-trigger:hover {cursor: pointer;}
-.icon_datePicker {width: 20px; background: transparent url(../Icons/StartCalendar.png) top left no-repeat;}
-.icon_datePicker:hover {background: transparent url(../Icons/StartCalendar_over.png) top left no-repeat;}
-.icon_datePicker_disabled {width: 20px; background: transparent url(../Icons/StartCalendar_disabled_gray.png) top left no-repeat; cursor: not-allowed;}
 
-/* DROPDOWN COG MENU */
+/* DROPDOWN MENU */
 .dropdown-container {display: inline-block;}
 .dropdown-container > a > .icon:first-child {margin-right: 0;}
 .dropdown-container > a > .icon:nth-child(2) {margin-left: 0;}

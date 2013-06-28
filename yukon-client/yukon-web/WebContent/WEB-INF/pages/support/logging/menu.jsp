@@ -50,7 +50,7 @@
 						</c:if>
 					</li>
 					<c:forEach var="directory" items="${directories}">
-						<li><a class="labeled_icon icon_folder fn" href="<tags:logPageLink fileParam="${file}${directory}/"/>">${directory}</a></li>
+						<li><a class="fn" href="<tags:logPageLink fileParam="${file}${directory}/"/>"><cti:icon icon="icon-folder"/>${directory}</a></li>
 					</c:forEach>
 				</ul>
 			</tags:sectionContainer2>

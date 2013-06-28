@@ -39,10 +39,6 @@
 	        	jQuery(".f_showSelectedDevices").trigger("click");
 	        });
 	        
-	        jQuery("#eventTypesCogFilter, #eventTypesCogSchedule").click(function() {
-	        	showSimplePopup('filterPopupEventTypes');
-	        });
-	        
 	        jQuery("#scheduleButton").click(openSchedulePopup);
 	        
 	        submitSchedule = function() {
@@ -96,7 +92,7 @@
 	    		}
 	    	});
 	    	jQuery('.numEventTypes').html(numSelected);
-	    	jQuery('#filterPopupEventTypes').hide();
+	    	jQuery('#filterPopupEventTypes').dialog('close');
 	    }
 	    
 	    var initialized = false;
@@ -189,11 +185,13 @@
         options="{'modal': false, 
                   'buttons': 
                     [{
-                         text: '${empty jobId ? scheduleButton : updateButton}', 
-                         click: function() {submitSchedule();}
-                    },{
                          text: '${cancelButton}', 
                          click: function() {jQuery(this).dialog('close')}
+                    },
+                    {
+                         text: '${empty jobId ? scheduleButton : updateButton}', 
+                         click: function() {submitSchedule();},
+                         class: 'primary action'
                     }]
                  }">
         <form:form id="scheduleForm" action="schedule" method="post" commandName="exportData">
@@ -239,12 +237,13 @@
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".filter.eventTypesRow">
                     <cti:msg2 key=".filter.cog.title" var="cogTitle"/>
-                    <span id="eventTypesCogSchedule" title="${cogTitle}" class="cog anchorUnderlineHover labeled_icon_right">
+                    <a href="javascript:void(0);" id="eventTypesCogSchedule" title="${cogTitle}">
+                        <i class="icon icon-filter"></i>
                         <span class="numEventTypes">
-                            ${backingBean.numSelectedEventTypes}
+                            <span id="numEventTypes">${backingBean.numSelectedEventTypes}</span>
+                            <i:inline key=".filter.selected"/>
                         </span>
-                        <i:inline key=".filter.selected"/>
-                    </span>
+                    </a>
                 </tags:nameValue2>
                 <tags:scheduledFileExportInputs cronExpressionTagState="${cronExpressionTagState}"/>
             </tags:nameValueContainer2>
@@ -255,10 +254,10 @@
     </dialog:inline>
     
 	<form:form id="eventsFilterForm" action="report" method="get" commandName="backingBean" cssClass="eventForm">
-        <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
-
+        <div class="column_12_12 clearfix">
+            
             <%-- LEFT SIDE COLUMN --%>
-            <cti:dataGridCell>
+            <div class="column one">
 				<tags:formElementContainer nameKey="filterSectionHeader">
 					<tags:nameValueContainer2>
 						<tags:nameValue2 nameKey=".filter.dateFrom">
@@ -272,7 +271,7 @@
 						<tags:nameValue2 nameKey=".filter.onlyLatestEvent">
 							<form:checkbox path="onlyLatestEvent" cssClass="fl" id="filter_onlyLatestEvent"/>
 							<span class="focusableFieldHolder">
-								<a id="latestEventsHelp" class="icon icon_help"><i:inline key=".filter.helpText"/></a>
+                                <a id="latestEventsHelp" title="<i:inline key=".filter.helpText"/>"><i class="icon icon-help"></i></a>
 							</span>
 							<span class="focusedFieldDescription"><i:inline key=".filter.onlyLatestEvents.help.text"/></span>
 						</tags:nameValue2>
@@ -280,7 +279,7 @@
 						<tags:nameValue2 nameKey=".filter.onlyAbnormalEvents">
 							<form:checkbox path="onlyAbnormalEvents" cssClass="fl" id="filter_onlyAbnormalEvents"/>
 							<span class="focusableFieldHolder">
-								<a id="activeEventsHelp" class="icon icon_help"><i:inline key=".filter.helpText"/></a>
+                                <a id="activeEventsHelp" title="<i:inline key=".filter.helpText"/>"><i class="icon icon-help"></i></a>
 							</span>
 				            <span class="focusedFieldDescription"><i:inline key=".filter.onlyAbnormalEvents.help.text"/></span>
 						</tags:nameValue2>
@@ -291,39 +290,38 @@
 			
 						<tags:nameValue2 nameKey=".filter.eventTypesRow">
 							<cti:msg2 key=".filter.cog.title" var="cogTitle"/>
-							<span id="eventTypesCogFilter" title="${cogTitle}" class="cog anchorUnderlineHover labeled_icon_right">
-								<span class="numEventTypes">
-									${backingBean.numSelectedEventTypes}
-								</span>
-								<i:inline key=".filter.selected"/>
-							</span>
+                            <a href="javascript:void(0);" id="eventTypesCogFilter" title="${cogTitle}">
+                                <i class="icon icon-filter"></i>
+                                <span class="numEventTypes">
+                                    <span id="numEventTypes">${backingBean.numSelectedEventTypes}</span>
+                                    <i:inline key=".filter.selected"/>
+                                </span>
+                            </a>
 						</tags:nameValue2>
 					</tags:nameValueContainer2>
 				</tags:formElementContainer>
 				
-				<i:simplePopup titleKey=".filter.eventTypes"
-					id="filterPopupEventTypes" styleClass="front"
-					onClose="updateEventTypesNum()">
+				<i:simplePopup titleKey=".filter.eventTypes" id="filterPopupEventTypes" onClose="updateEventTypesNum()" on="#eventTypesCogFilter, #eventTypesCogSchedule">
 		
 					<jsTree:inlineTree id="eventTree"
 						treeCss="/WebConfig/yukon/styles/lib/dynatree/deviceGroup.css"
 						treeParameters="{checkbox: true, selectMode: 3, onPostInit: treeInit()}"
-						maxHeight="300" includeControlBar="true" />
+						includeControlBar="true" />
 		
 					<div class="actionArea">
-						<cti:button nameKey="ok" onclick="updateEventTypesNum()" />
+						<cti:button nameKey="ok" onclick="updateEventTypesNum()" classes="primary action"/>
 					</div>
 				</i:simplePopup>
 				
 				<div class="pageActionArea">
-					<cti:button nameKey="update" type="submit"/>
+					<cti:button nameKey="update" type="submit" classes="primary action"/>
 					<cti:button nameKey="reset" id="resetButton"/>
-					<cti:button nameKey="schedule" id="scheduleButton"/>
+					<cti:button nameKey="schedule" id="scheduleButton" icon="icon-calendar-view-day"/>
 				</div>
-			</cti:dataGridCell>
+			</div>
 
 			<%-- RIGHT SIDE COLUMN --%>
-            <cti:dataGridCell>
+            <div class="column two nogutter">
 				<tags:sortFields backingBean="${backingBean}" />
 				<cti:deviceCollection deviceCollection="${backingBean.deviceCollection}" />
 			    <tags:formElementContainer nameKey="deviceSectionHeader">
@@ -360,8 +358,8 @@
 						</tags:nameValue2>
 					</tags:nameValueContainer2>
 				</tags:formElementContainer>
-			</cti:dataGridCell>
-		</cti:dataGrid>
+            </div>
+        </div>
 	</form:form>
 	<br>
 	
@@ -378,7 +376,7 @@
 			<form:hidden path="onlyAbnormalEvents" id="onlyAbnormalEvents_csv"/>
 			<form:hidden path="onlyLatestEvent" id="onlyLatestEvent_csv"/>
 			<form:hidden path="includeDisabledPaos" id="includeDisabledPaos_csv"/>
-			<cti:button nameKey="csv" renderMode="labeledImage" type="submit" />
+			<cti:button nameKey="csv" renderMode="labeledImage" type="submit" icon="icon-csv"/>
 		</form:form>
 		<div class="cr"></div>
 	</c:if>
