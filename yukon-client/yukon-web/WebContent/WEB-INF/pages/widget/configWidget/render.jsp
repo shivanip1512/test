@@ -20,7 +20,7 @@
                 </td>
                 <td>
                     <c:if test="${not empty currentConfigId}">
-						<cm:dropdownActions type="button">
+						<cm:dropdown type="button">
 							<cti:checkRolesAndProperties value="ASSIGN_CONFIG">
 								<li>
                                     <ct:widgetActionRefresh method="unassignConfig"
@@ -47,7 +47,7 @@
 									container="${widgetParameters.widgetId}_config_results"
 									type="link"/>
                             </li>
-						</cm:dropdownActions>
+						</cm:dropdown>
                     </c:if>
                 </td>
             </tr>

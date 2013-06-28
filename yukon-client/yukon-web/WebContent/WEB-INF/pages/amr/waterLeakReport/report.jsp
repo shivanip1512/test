@@ -179,7 +179,7 @@
 	</c:choose>
 
     <c:set var="actionsMenu">
-        <cm:dropdownActions containerCssClass="fr">
+        <cm:dropdown containerCssClass="fr">
             <c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
                 <li>
                     <cti:link href="/bulk/collectionActions"
@@ -204,7 +204,7 @@
             		<i:inline key=".schedule"/>
             	</a>
             </li>
-        </cm:dropdownActions>
+        </cm:dropdown>
         
         <c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
             <form:form id="intervalDataForm" action="intervalData" method="get" commandName="backingBean" cssClass="dib">

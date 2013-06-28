@@ -202,24 +202,24 @@ button
                 </tr>
                 <tr>
                     <td>
-				        <cm:dropdownActions>
+				        <cm:dropdown>
 				            <li><a>Some Item 1</a></li>
 				            <li><a>Some Item 2</a></li>
 				            <li><a>Some Item 3</a></li>
 			                <li class="divider"></li>
 				            <li><a>Last Item</a></li>
-				        </cm:dropdownActions>
+				        </cm:dropdown>
                     </td>
                     <td>
                     The default behavior of the menu is to first try to display to the left, but will switch to displaying to the right if the initial positioning places it off the left of the screen. 
 <pre class="code">
-&lt;cm:dropdownActions&gt;
+&lt;cm:dropdown&gt;
     &lt;li&gt;&lt;a&gt;Some Item 1&lt;/a&gt;&lt;/li&gt;
     &lt;li&gt;&lt;a&gt;Some Item 2&lt;/a&gt;&lt;/li&gt;
     &lt;li&gt;&lt;a&gt;Some Item 3&lt;/a&gt;&lt;/li&gt;
     &lt;li class="divider"&gt;&lt;/li&gt;
     &lt;li&gt;&lt;a&gt;Last Item&lt;/a&gt;&lt;/li&gt;
-&lt;/cm:dropdownActions&gt;
+&lt;/cm:dropdown&gt;
 </pre>
 					</td>
                 </tr>
@@ -229,24 +229,24 @@ button
                 </tr>
                 <tr>
                     <td>
-				        <cm:dropdownActions type="link" key="yukon.web.defaults.actions">
+				        <cm:dropdown type="link" key="yukon.web.defaults.actions">
 				            <li><a>Some Item 1</a></li>
 				            <li><a>Some Item 2</a></li>
 				            <li><a>Some Item 3</a></li>
 			                <li class="divider"></li>
 				            <li><a>Last Item</a></li>
-				        </cm:dropdownActions>
+				        </cm:dropdown>
                     </td>
                     <td>
                     Again, this one first tries opening to the left, but switches to the right so it doesn't go off the screen. 
 <pre class="code">
-&lt;cm:dropdownActions type="link" key="yukon.web.defaults.actions"&gt;
+&lt;cm:dropdown type="link" key="yukon.web.defaults.actions"&gt;
     &lt;li&gt;&lt;a&gt;Some Item 1&lt;/a&gt;&lt;/li&gt;
     &lt;li&gt;&lt;a&gt;Some Item 2&lt;/a&gt;&lt;/li&gt;
     &lt;li&gt;&lt;a&gt;Some Item 3&lt;/a&gt;&lt;/li&gt;
     &lt;li class="divider"&gt;&lt;/li&gt;
     &lt;li&gt;&lt;a&gt;Last Item&lt;/a&gt;&lt;/li&gt;
-&lt;/cm:dropdownActions&gt;
+&lt;/cm:dropdown&gt;
 </pre>
 					</td>
                 </tr>
@@ -256,24 +256,24 @@ button
                 </tr>
                 <tr>
                     <td style="width: 175px;">
-				        <cm:dropdownActions type="button" key="yukon.web.defaults.actions" containerCssClass="fr">
+				        <cm:dropdown type="button" key="yukon.web.defaults.actions" containerCssClass="fr">
 				            <li><a>Some Item 1</a></li>
 				            <li><a>Some Item 2</a></li>
 				            <li><a>Some Item 3</a></li>
 			                <li class="divider"></li>
 				            <li><a>Last Item</a></li>
-				        </cm:dropdownActions>
+				        </cm:dropdown>
                     </td>
                     <td>
                     Floating this one right so it can open in the "default" manner, which is to the left.
 <pre class="code">
-&lt;cm:dropdownActions type="button" key="yukon.web.defaults.actions" containerCssClass="fr"&gt;
+&lt;cm:dropdown type="button" key="yukon.web.defaults.actions" containerCssClass="fr"&gt;
     &lt;li&gt;&lt;a&gt;Some Item 1&lt;/a&gt;&lt;/li&gt;
     &lt;li&gt;&lt;a&gt;Some Item 2&lt;/a&gt;&lt;/li&gt;
     &lt;li&gt;&lt;a&gt;Some Item 3&lt;/a&gt;&lt;/li&gt;
     &lt;li class="divider"&gt;&lt;/li&gt;
     &lt;li&gt;&lt;a&gt;Last Item&lt;/a&gt;&lt;/li&gt;
-&lt;/cm:dropdownActions&gt;
+&lt;/cm:dropdown&gt;
 </pre>
 					</td>
                 </tr>
@@ -295,13 +295,13 @@ button
 	                                    <td>Some Data ${status.index+1}</td>
 	                                    <td>Some Data ${status.index+2}</td>
 	                                    <td class="contextual-menu">
-	                                        <cm:dropdownActions containerCssClass="fr">
+	                                        <cm:dropdown containerCssClass="fr">
 	                                            <li><a>Some Item 1</a></li>
 	                                            <li><a>Some Item 2</a></li>
 	                                            <li><a>Some Item 3</a></li>
 	                                            <li class="divider"></li>
 	                                            <li><a>Last Item</a></li>
-	                                        </cm:dropdownActions>
+	                                        </cm:dropdown>
 	                                    </td>
 	                                </tr>
                                    </c:forEach>
@@ -313,7 +313,7 @@ button
 							The only real "required" markup for this to work correctly is to
 							have a class of <strong>contextual-menu-list</strong> on the table, a class of
 							<strong>contextual-menu</strong> on the td that will contain the menu, and the
-							<strong>&lt;cm:dropdownActions</strong> tag within that td
+							<strong>&lt;cm:dropdown</strong> tag within that td
 							<pre class="code">
 &lt;table class="compactResultsTable rowHighlighting contextual-menu-list"&gt;
     &lt;thead&gt;
@@ -328,13 +328,13 @@ button
             &lt;td&gt;Some Data ${status.index+1}&lt;/td&gt;
             &lt;td&gt;Some Data ${status.index+2}&lt;/td&gt;
             &lt;td class="contextual-menu"&gt;
-                &lt;cm:dropdownActions containerCssClass="fr"&gt;
+                &lt;cm:dropdown containerCssClass="fr"&gt;
                     &lt;li&gt;&lt;a&gt;Some Item 1&lt;/a&gt;&lt;/li&gt;
                     &lt;li&gt;&lt;a&gt;Some Item 2&lt;/a&gt;&lt;/li&gt;
                     &lt;li&gt;&lt;a&gt;Some Item 3&lt;/a&gt;&lt;/li&gt;
                     &lt;li class="divider"&gt;&lt;/li&gt;
                     &lt;li&gt;&lt;a&gt;Last Item&lt;/a&gt;&lt;/li&gt;
-                &lt;/cm:dropdownActions&gt;
+                &lt;/cm:dropdown&gt;
             &lt;/td&gt;
         &lt;/tr&gt;
     &lt;/c:forEach&gt;

@@ -22,7 +22,7 @@
 
 	<c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
 		<c:set var="actionsMenu">
-			<cm:dropdownActions containerCssClass="fr">
+			<cm:dropdown containerCssClass="fr">
 				<li>
                     <cti:link href="/bulk/collectionActions"
                         key="yukon.web.modules.amr.waterLeakReport.report.performCollectionAction">
@@ -34,7 +34,7 @@
                         <i:inline key=".exportCSV" />
                     </a>
                 </li>
-			</cm:dropdownActions>
+			</cm:dropdown>
 		</c:set>
 	</c:if>
 

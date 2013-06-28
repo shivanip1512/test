@@ -1,4 +1,4 @@
-//JavaScript for the dropdownActions.tag && deviceDropdownActionsAjax.tag
+//JavaScript for the dropdown.tag && ajaxDropdown.tag
 jQuery(function() {
     jQuery(document).on("click", ".dropdown-container", function(e) {
         jQuery(".dropdown-container").removeClass("menu-open");

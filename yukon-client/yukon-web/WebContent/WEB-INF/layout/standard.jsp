@@ -1,11 +1,13 @@
 <%@ page errorPage="/internalError.jsp" %>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <!DOCTYPE html>
 <html>
@@ -117,7 +119,7 @@
 			    </h1>
 			</c:if>
             <div class="page-actions">
-                <button id="b-page-actions" class="fr dn"><i class="icon icon-cog"></i><i class="icon icon-bullet-arrow-down"></i></button>
+                <cm:dropdown id="b-page-actions" type="button" containerCssClass="fr dn"/>
                 <cti:outputContent writable="${searchRenderer}" />
                 <button id="b-search-results" class="fr dn"><i class="disabled icon icon-resultset-first"></i></button>
             </div>
