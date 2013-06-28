@@ -32,7 +32,7 @@ import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.collect.Lists;
 
 /**
- * CURRENT URL = /operator/metering/billing
+ * CURRENT URL = /billing/*
  */
 @Controller
 @CheckRole(YukonRole.APPLICATION_BILLING)
@@ -46,10 +46,10 @@ public class BillingController {
 
     private static final Logger log = YukonLogManager.getLogger(BillingController.class);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/metering/billing")
-    public String billing(ModelMap modelMap, YukonUserContext userContext, HttpServletRequest request) throws ServletRequestBindingException {
+    @RequestMapping(method = RequestMethod.GET, value = "home")
+    public String home(ModelMap modelMap, YukonUserContext userContext, HttpServletRequest request) throws ServletRequestBindingException {
 
-        log.debug("START BillingController.billing(..)");
+        log.debug("START BillingController.home(..)");
 
         // 1st tab: Generation
         modelMap.addAttribute("billingBean", new BillingBean());
@@ -66,20 +66,28 @@ public class BillingController {
         return "billing.jsp";
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/metering/billing/_jobs.html")
-    public String showJobs(ModelMap model, HttpServletRequest request) {
-        
-        int itemsPerPage = DEFAULT_COUNT_ITEMS_PER_PAGE;
-        int pageNumber = DEFAULT_PAGE_INDEX_ONE_BASED;
-        String perPage = request.getParameter("itemsPerPage");
-        if (! StringUtils.isEmpty(perPage)) {
-            itemsPerPage = Integer.parseInt(perPage);
+    @RequestMapping(method = RequestMethod.GET, value = "_jobs.html")
+    public String showJobs(ModelMap model, Integer itemsPerPage, Integer page) {
+//    public String showJobs(ModelMap model, HttpServletRequest request) {
+
+//        int itemsPerPage = DEFAULT_COUNT_ITEMS_PER_PAGE;
+//        int pageNumber = DEFAULT_PAGE_INDEX_ONE_BASED;
+//        String perPage = request.getParameter("itemsPerPage");
+//        if (! StringUtils.isEmpty(perPage)) {
+//            itemsPerPage = Integer.parseInt(perPage);
+//        }
+//        String page = request.getParameter("page");
+//        if (! StringUtils.isEmpty(page)) {
+//            pageNumber = Integer.parseInt(page);
+//        }
+//        setupJobs(model, pageNumber, itemsPerPage);
+        if (itemsPerPage == null) {
+            itemsPerPage = DEFAULT_COUNT_ITEMS_PER_PAGE;
         }
-        String page = request.getParameter("page");
-        if (! StringUtils.isEmpty(page)) {
-            pageNumber = Integer.parseInt(page);
+        if (page == null){
+            page = DEFAULT_PAGE_INDEX_ONE_BASED;
         }
-        setupJobs(model, pageNumber, itemsPerPage);
+        setupJobs(model, page, itemsPerPage);
         return "../amr/scheduledBilling/_jobs.jsp";
     }
 

@@ -21,8 +21,8 @@ import com.cannontech.web.stars.dr.operator.model.ContactNotificationDto;
  *         errors.pushNestedPath("contact");    // if ContactDto is called "contact" within the container.
  */
 public class ContactDtoValidator extends SimpleValidator<ContactDto> {
-    public final static int FIRST_NAME_MAX_LENGTH = 120;
-    public final static int LAST_NAME_MAX_LENGTH = 120;
+    private final static int FIRST_NAME_MAX_LENGTH = 120;
+    private final static int LAST_NAME_MAX_LENGTH = 120;
     private EmailValidator emailValidator = EmailValidator.getInstance();
 
     @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;

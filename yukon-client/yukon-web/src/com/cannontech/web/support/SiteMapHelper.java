@@ -208,7 +208,7 @@ public class SiteMapHelper {
     public enum SiteMapPage implements DisplayableEnum {
         METERING(SiteMapCategory.AMI, "yukon.web.modules.amr.meteringStart.pageName", "/meter/start", 
                 MatchStyle.any, YukonRole.METERING, YukonRole.APPLICATION_BILLING, YukonRole.SCHEDULER, YukonRole.DEVICE_ACTIONS),
-        BILLING(SiteMapCategory.AMI, "yukon.web.menu.config.amr.billing", "/operator/metering/billing", 
+        BILLING(SiteMapCategory.AMI, "yukon.web.menu.config.amr.billing", "/billing/home", 
                 MatchStyle.all, YukonRole.APPLICATION_BILLING),
         TRENDS(SiteMapCategory.AMI, "yukon.web.modules.operator.metering.trends.title", "/operator/Metering/Metering.jsp", 
                 MatchStyle.all, YukonRole.TRENDING),

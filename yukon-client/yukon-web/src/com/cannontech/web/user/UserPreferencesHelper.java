@@ -34,7 +34,7 @@ public class UserPreferencesHelper {
         List<UserPreference> prefs = prefService.findAllSavedPreferencesForUser(user);
         Map<String,UserPreference> prefMap = new HashMap<>();
         for(UserPreference pp : prefs) {
-            prefMap.put(pp.getName().toString(), pp);
+            prefMap.put(pp.getName().name(), pp);
         }
         model.addAttribute("userPreferenceMap", prefMap);
         model.addAttribute("allPreferenceNames", UserPreferenceName.values());

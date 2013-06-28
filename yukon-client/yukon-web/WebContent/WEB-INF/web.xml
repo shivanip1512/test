@@ -1154,7 +1154,7 @@
 
     <servlet-mapping>
         <servlet-name>billing</servlet-name>
-        <url-pattern>/operator/*</url-pattern> <!-- retain consistency with legacy URLs -->
+        <url-pattern>/billing/*</url-pattern> <!-- retain consistency with legacy URLs -->
     </servlet-mapping>
     
 	<session-config>

@@ -25,7 +25,7 @@
         <permissions>
           <role name="APPLICATION_BILLING" />
         </permissions>
-        <link>/operator/metering/billing</link>
+        <link>/billing/home</link>
       </option>
       <option name="trends">
         <permissions>
@@ -156,7 +156,7 @@
         <permissions>
           <role name="WORK_ORDER" />
         </permissions>
-        <link>WorkOrder/WorkOrder.jsp</link>
+        <link>/operator/WorkOrder/WorkOrder.jsp</link>
       </option>
       <option name="surveys">
         <permissions>

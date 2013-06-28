@@ -59,7 +59,7 @@
 		</c:if>
 		<c:if test="${empty jobId}">
 			<cti:msg2 key=".submitButton" var="submitText"/>
-			<cti:url var="cancelUrl" value="/operator/metering/billing"/>
+			<cti:url var="cancelUrl" value="/billing/home"/>
 		</c:if>
 
 		<cti:button classes="f-cancel" nameKey="cancelButton"/>

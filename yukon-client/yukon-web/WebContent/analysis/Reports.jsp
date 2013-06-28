@@ -48,42 +48,12 @@
 <% 
     REPORT_BEAN.setUserID(lYukonUser.getUserID());
 	String menuSelection = null;
-	/*
-	switch(REPORT_BEAN.getReportGroup().ordinal()){
-		case 0:
-		    menuSelection = "reports|administrator";
-		    break;
-		case 1:
-		    menuSelection = "reports|metering";
-		    break;
-		case 2:
-		    menuSelection = "reports|statistical";
-		    break;
-		case 3:
-		    menuSelection = "reports|management";
-		    break;
-		case 4:
-		    menuSelection = "reports|capcontrol";
-		    break;
-		case 5:
-		    menuSelection = "reports|database";
-		    break;
-		case 6:
-		    menuSelection = "reports|stars";
-		    break;
-		case 8:
-		    menuSelection = "reports|cni";
-		    break;
-		case 100:
-		    menuSelection = "reports|settlement";
-		    break;
-		default:
-		    menuSelection = "reports";
-		    break;
-	}*/
 
 	Object groupType = request.getParameter("groupType");
-	final ReportGroup reportGroup = groupType == null ? ReportGroup.METERING : REPORT_BEAN.getReportGroup();
+	if (groupType == null) {
+	    REPORT_BEAN.setGroupType(ReportGroup.METERING.name());
+	}
+    final ReportGroup reportGroup = REPORT_BEAN.getReportGroup();
 	if( reportGroup == ReportGroup.ADMINISTRATIVE)
 	    menuSelection = "reports|administrator";
 	else if (reportGroup == ReportGroup.METERING)

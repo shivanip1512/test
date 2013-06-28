@@ -21,7 +21,7 @@ import com.cannontech.util.ServletUtil;
 
 public class BillingServlet extends HttpServlet
 {
-    private final static String BASE_URL_PATH = "/operator/metering/billing";
+    private final static String BASE_URL_PATH = "/billing/home";
     private final static int DEFAULT_DEMAND_DAYS = 30;
     private final static int DEFAULT_ENERGY_DAYS = 7;
 

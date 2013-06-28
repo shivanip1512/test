@@ -71,7 +71,7 @@ public class UserProfileController {
 
     private static final boolean ENABLE_CHANGE_USERNAME = false;
     private static final int PAGE_EVENT_ROW_COUNT = 10;
-    static final int PASSWORD_EXPIRE_DAYS_TO_WARN = 30;
+    /* package */ static final int PASSWORD_EXPIRE_DAYS_TO_WARN = 30; // Also used by the Helper in the same package
     private static final int DEFAULT_RETRY_PASSWORD_IN_SECONDS = 10;
     private static final String MSGKEY_BASE_PROFILE = "yukon.web.modules.user.profile.";
     private static final String MSGKEY_PASSWORD_CHANGE_SUCCESS = MSGKEY_BASE_PROFILE +"changePassword.success";
