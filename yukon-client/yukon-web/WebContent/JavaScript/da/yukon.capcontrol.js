@@ -74,13 +74,6 @@ function showMenuPopup(params) {
     });
 }
 
-jQuery(document).on('click', 'div.dynamicTableWrapper .pointAddItem', function(event) {
-    pointPicker.show();
-});
-jQuery(document).on('click', 'div.dynamicTableWrapper .bankAddItem', function(event) {
-    bankPicker.show();
-});
-
 function hideMenu() {
     jQuery('#menuPopup').dialog("close");
 }
@@ -154,8 +147,16 @@ function hideAlertMessage() {
     jQuery('#alertMessageContainer').hide("fade", {}, 3000);
 }
 
-//BANK MOVE JS
 jQuery(function() {
+    
+    jQuery(document).on('click', 'div.dynamicTableWrapper .pointAddItem', function(event) {
+        pointPicker.show();
+    });
+    jQuery(document).on('click', 'div.dynamicTableWrapper .bankAddItem', function(event) {
+        bankPicker.show();
+    });
+
+    /* bank move */
     jQuery(document).on('click', 'li.toggle', function(e) {
         if (e.target == e.currentTarget) {
             var li = jQuery(this);
@@ -168,4 +169,14 @@ jQuery(function() {
         }
         return true;
     });
+    
+    /* creation menu popup */
+    jQuery('.f-cc-create').click(function() {
+        var content = jQuery('#contentPopup');
+        content.load('/capcontrol/menu/create', function() {
+            var title = content.find('input.title').html();
+            content.dialog({title: title});
+        });
+    });
+
 });

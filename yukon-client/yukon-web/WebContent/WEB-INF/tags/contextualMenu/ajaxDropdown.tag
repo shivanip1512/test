@@ -7,8 +7,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:includeScript link="/JavaScript/dropdown_actions.js"/>
-
 <%@ attribute name="containerCssClass" %>
 <%@ attribute name="icon" description="The css class name of the icon to use. Default: 'icon-cog'" %>
 <%@ attribute name="id" %>

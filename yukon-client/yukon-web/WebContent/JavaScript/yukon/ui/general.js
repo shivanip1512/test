@@ -241,29 +241,35 @@ Yukon.ui = {
             });
         });
         
-        $$("input.f-selectAll").each(function(input){
-            input.observe('focus', function(elem){
+        $$("input.f-selectAll").each(function(input) {
+            input.observe('focus', function(elem) {
                 elem.target.select();
             });
         });
         
-        /*
-         * Focus the designated input element
-         */
+        /* Focus the designated input element */
         Yukon.ui._autofocus();
+        
+        var html = jQuery('#f-page-actions')[0].innerHTML;
+        jQuery('#f-page-actions').remove();
+        
+        if (typeof html !== 'undefined') {
+            jQuery('#b-page-actions .dropdown-menu').html(html);
+            jQuery('#b-page-actions').show();
+        }
     },
     
     
     _AUTOFOCUS_TRIES: 0,
-    _autofocus: function(){
+    _autofocus: function() {
         var focusElement = jQuery("[autofocus], .f-focus:first")[0];
         
-        if(focusElement) {
-            try{ //Play nice with IE
+        if (focusElement) {
+            try { //Play nice with IE
                 focusElement.focus();
-            }catch(err){
+            } catch(err) {
                 //give the autofocus element 3 seconds to show itself
-                if(Yukon.ui._AUTOFOCUS_TRIES < 30){
+                if (Yukon.ui._AUTOFOCUS_TRIES < 30) {
                     //certain browsers will error if the element to be focused is not yet visible
                     setTimeout('Yukon.ui._autofocus()', 100);
                 }

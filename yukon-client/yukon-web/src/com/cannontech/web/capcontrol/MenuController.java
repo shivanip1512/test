@@ -44,19 +44,17 @@ import com.google.common.collect.Lists;
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class MenuController {
     
-    private CapControlCache cache;
-    private PaoDao paoDao;
-    private RolePropertyDao rolePropertyDao;
-    private CapControlCommentService capControlCommentService;
-    private VoltageRegulatorService voltageRegulatorService;
+    @Autowired private CapControlCache cache;
+    @Autowired private PaoDao paoDao;
+    @Autowired private RolePropertyDao rpDao;
+    @Autowired private CapControlCommentService ccCommentService;
+    @Autowired private VoltageRegulatorService voltageRegulatorService;
+    @Autowired private YukonUserContextMessageSourceResolver resolver;
+    
     private static final BankOpState[] allowedOperationStates;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     static {
-        allowedOperationStates  = new BankOpState[] {
-                                                                 BankOpState.FIXED,
-                                                                 BankOpState.STANDALONE,
-                                                                 BankOpState.SWITCHED};
+        allowedOperationStates  = new BankOpState[] {BankOpState.FIXED,BankOpState.STANDALONE,BankOpState.SWITCHED};
     }
     
     @RequestMapping
@@ -69,7 +67,7 @@ public class MenuController {
         model.addAttribute("showChangeOpState", false);
         model.addAttribute("showComments", true);
         model.addAttribute("showRecentCommands", true);
-        model.addAttribute("showLocalControl", rolePropertyDao.checkProperty(YukonRoleProperty.CBC_ALLOW_OVUV, user));
+        model.addAttribute("showLocalControl", rpDao.checkProperty(YukonRoleProperty.CBC_ALLOW_OVUV, user));
         
         if (object instanceof Area || object instanceof SpecialArea) {
             setupAreaMenuModel(model, object);
@@ -180,8 +178,8 @@ public class MenuController {
         boolean isTwoWay = CapControlUtils.isTwoWay(cbcPaoObject);
         boolean is702xDevice = CapControlUtils.is702xDevice(cbcPaoObject.getPaoType().getDeviceTypeId());
         boolean is701xDevice = CapControlUtils.is701xDevice(cbcPaoObject);
-        boolean allowFlip = rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_FLIP_COMMAND, user);
-        boolean allowLocalControl = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_ALLOW_OVUV, user);
+        boolean allowFlip = rpDao.checkProperty(YukonRoleProperty.SHOW_FLIP_COMMAND, user);
+        boolean allowLocalControl = rpDao.checkProperty(YukonRoleProperty.CBC_ALLOW_OVUV, user);
         
         List<CommandType> commands = Lists.newArrayList();
         if (isClosed) {
@@ -296,14 +294,14 @@ public class MenuController {
     @RequestMapping
     public String opStateChange(ModelMap model, int bankId, LiteYukonUser user) {
         CapBankDevice capBank = cache.getCapBankDevice(bankId);
-        String reason = capControlCommentService.getReason(bankId, CommentAction.STANDALONE_REASON, CapControlType.CAPBANK);
+        String reason = ccCommentService.getReason(bankId, CommentAction.STANDALONE_REASON, CapControlType.CAPBANK);
         BankOpState currentState = BankOpState.getStateByName(capBank.getOperationalState());
         model.addAttribute("bankId", bankId);
         
         String paoName = capBank.getCcName();
         model.addAttribute("title", paoName);
         
-        List<String> comments = capControlCommentService.getLastTenCommentsForActionAndType(bankId, CommandType.CHANGE_OP_STATE.getCommandId());
+        List<String> comments = ccCommentService.getLastTenCommentsForActionAndType(bankId, CommandType.CHANGE_OP_STATE.getCommandId());
         model.addAttribute("comments", comments);
         
         model.addAttribute("changeOpStateCmdHolder", CommandType.CHANGE_OP_STATE);
@@ -318,7 +316,7 @@ public class MenuController {
 
     @RequestMapping
     public String movedBankMenu(HttpServletRequest request, ModelMap model, int id, YukonUserContext context) {
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         CapBankDevice capBank = cache.getCapBankDevice(id);
         
         model.addAttribute("paoId", id);
@@ -330,35 +328,14 @@ public class MenuController {
         
         return "tier/popupmenu/movedBankMenu.jsp";
     }
+    
+    @RequestMapping
+    public String create(ModelMap model, YukonUserContext context) {
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+        String title = accessor.getMessage("yukon.web.modules.capcontrol.create.title");
+        model.addAttribute("title", title);
+        
+        return "tier/popupmenu/create.jsp";
+    }
 
-    @Autowired
-    public void setCapControlCache(CapControlCache capControlCache) {
-        this.cache = capControlCache;
-    }
-
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-    
-    @Autowired
-    public void setVoltageRegulatorService(VoltageRegulatorService voltageRegulatorService) {
-        this.voltageRegulatorService = voltageRegulatorService;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setCapControlCommentService(CapControlCommentService capControlCommentService) {
-        this.capControlCommentService = capControlCommentService;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
 }

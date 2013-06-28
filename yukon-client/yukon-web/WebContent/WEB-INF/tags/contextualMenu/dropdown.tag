@@ -15,7 +15,6 @@
 <%@ attribute name="showArrow" description="Show the down arrow? Default: 'true'" %>
 <%@ attribute name="showIcon" description="Ignored when type = 'icon'. Default: 'true'" %>
 
-<cti:includeScript link="/JavaScript/dropdown_actions.js"/>
 <cti:default var="icon" value="icon-cog"/>
 <cti:default var="showArrow" value="true"/>
 <cti:default var="showIcon" value="true"/>
@@ -45,6 +44,7 @@
         </c:otherwise>
       </c:choose>
       <ul class="dropdown-menu dn ${pageScope.menuCssClass}">
+        <li>hi</li>
         <jsp:doBody/>
       </ul>
     </div>

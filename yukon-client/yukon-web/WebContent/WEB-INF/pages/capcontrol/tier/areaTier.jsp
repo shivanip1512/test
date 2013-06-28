@@ -14,24 +14,6 @@
         </script>
     </c:if>
      
-	<c:if test="${!isSpecialArea}">
-        <cti:checkRolesAndProperties value="SYSTEM_WIDE_CONTROLS">
-			<cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                <div class="fr clearfix stacked">
-                    <tags:dynamicChoose updaterString="CAPCONTROL/SYSTEM_ENABLE_COMMAND" suffix="">
-                        <tags:dynamicChooseOption optionId="enabled">
-                            <cti:button nameKey="disableSystem" onclick="doSystemCommand(${systemStatusCommandId})" id="systemOn" icon="icon-delete" classes="left"/>
-                        </tags:dynamicChooseOption>
-                        <tags:dynamicChooseOption optionId="disabled">
-                            <cti:button nameKey="enableSystem" onclick="doSystemCommand(${systemStatusCommandId})" id="systemOff" icon="icon-accept" classes="left"/>
-                        </tags:dynamicChooseOption>
-                    </tags:dynamicChoose>
-                    <cti:button nameKey="resetOpCount" onclick="doSystemCommand(${resetOpCountCommandId})" id="systemResetOpCountsLink" icon="icon-arrow-undo" classes="right"/>
-                </div>
-			</cti:checkRolesAndProperties>
-		</cti:checkRolesAndProperties>
-	</c:if>
-	
 	<c:choose>
         <c:when test="${hasEditingRole}">
             <c:set var="editKey" value="edit"/>

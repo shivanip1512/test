@@ -13,7 +13,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,7 +26,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.contextualMenu.model.menu.DeviceMenu;
+import com.cannontech.web.contextualMenu.model.menu.ContextualMenu;
 import com.cannontech.web.contextualMenu.model.menu.Menu;
 import com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction;
 import com.cannontech.web.contextualMenu.model.menuEntry.DeviceMenuAction;
@@ -49,15 +48,15 @@ public class ContextualMenuController {
     private Map<String, Menu> menuBeanMap;
     
     @RequestMapping(method = RequestMethod.GET)
-    public @ResponseBody JSONArray list(YukonUserContext userContext, HttpServletRequest request)
-            throws ServletRequestBindingException {
-        String menuBeanId = request.getParameter("menuId"); // not including the word "Bean" as a security measure, i.e. menuBeanId
+    public @ResponseBody JSONArray list(YukonUserContext context, HttpServletRequest req) {
+        
+        String menuBeanId = req.getParameter("menuId"); // not including the word "Bean" as a security measure, i.e. menuBeanId
         Menu menu = menuBeanMap.get(menuBeanId);
-        Map<String, String> inputParams = ServletUtil.getParameterMap(request);
+        Map<String, String> inputParams = ServletUtil.getParameterMap(req);
         JSONArray array = null;
 
-        if (menu instanceof DeviceMenu) {
-            array = getDeviceMenu((DeviceMenu) menu, inputParams, request, userContext);
+        if (menu instanceof ContextualMenu) {
+            array = getMenu((ContextualMenu) menu, inputParams, req, context);
         } else {
             throw new RuntimeException("Couldn't find menu with beanId " + menuBeanId);
         }
@@ -65,11 +64,11 @@ public class ContextualMenuController {
         return array;
     }
     
-    private JSONArray getDeviceMenu(DeviceMenu deviceMenu, Map<String, String> inputParams,
-                                    HttpServletRequest request, YukonUserContext userContext) {
-        LiteYukonUser yukonUser = userContext.getYukonUser();
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        List<MenuEntry> menuEntries = deviceMenu.getMenuEntries();
+    private JSONArray getMenu(ContextualMenu menu, Map<String, String> inputParams, HttpServletRequest req, YukonUserContext context) {
+        
+        LiteYukonUser yukonUser = context.getYukonUser();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+        List<MenuEntry> menuEntries = menu.getMenuEntries();
         JSONArray array = new JSONArray();
         
         for (MenuEntry menuEntry : menuEntries) {
@@ -79,20 +78,20 @@ public class ContextualMenuController {
                 continue;
             } else if (menuEntry instanceof SingleDeviceMenuAction) {
                 SingleDeviceMenuAction singleDeviceMenuEntry = (SingleDeviceMenuAction) menuEntry;
-                url = singleDeviceMenuEntry.getUrl(deviceMenu.getCollectionCategory(), inputParams);
+                url = singleDeviceMenuEntry.getUrl(menu.getCollectionCategory(), inputParams);
             } else if (menuEntry instanceof DeviceCollectionMenuAction) {
                 DeviceCollectionMenuAction deviceCollectionMenuEntry = (DeviceCollectionMenuAction) menuEntry;
-                url = deviceCollectionMenuEntry.getUrl(deviceMenu.getCollectionCategory(), inputParams);
+                url = deviceCollectionMenuEntry.getUrl(menu.getCollectionCategory(), inputParams);
             } else {
                 throw new RuntimeException("DeviceMenu can only contain MenuEntry elements of type MenuSeperator, SingleDeviceMenuAction, and DeviceCollectionMenuAction");
             }
             
             DeviceMenuAction deviceMenuEntry = (DeviceMenuAction) menuEntry;
-            checkMenuEntrySupports(deviceMenu, deviceMenuEntry, inputParams);
+            checkMenuEntrySupports(menu, deviceMenuEntry, inputParams);
             if (!canViewMenuEntry(deviceMenuEntry, yukonUser)) continue;
             
             String text = accessor.getMessage(deviceMenuEntry.getFormatKey());
-            url = ServletUtil.createSafeUrl(request, url);
+            url = ServletUtil.createSafeUrl(req, url);
             url = StringEscapeUtils.escapeHtml(url);
             
             addMenuEntry(array, url, text);

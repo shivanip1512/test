@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.cannontech.web.contextualMenu.model.menuEntry.MenuEntry;
 
-public abstract class DeviceMenu extends SimpleMenu {
+public abstract class ContextualMenu extends SimpleMenu {
 
     protected List<MenuEntry> menuEntries;
 

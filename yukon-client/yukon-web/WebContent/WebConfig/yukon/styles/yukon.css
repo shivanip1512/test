@@ -420,8 +420,9 @@ input.dateTimePicker {margin: 0;}
 .ui-datepicker::before {left:3.5em;right:auto;border-bottom-color: #999;}
 .dropdown-menu {display: none; position: absolute; left: auto; top: 100%; text-align: left; z-index: 1000; float: left; min-width: 160px; padding: 4px 0; margin: 1px 0 0; color: #999; list-style: none; background-color: #ffffff; border: 1px solid #ccc; border: 1px solid rgba(0, 0, 0, 0.2); *border-right-width: 2px; *border-bottom-width: 2px; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); -webkit-background-clip: padding-box; -moz-background-clip: padding; background-clip: padding-box; font-size: 13px; -webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px;}
 .dropdown-menu.long-menu-list {font-size: 11px;}
-.dropdown-menu a {display: block; padding: 0 15px; clear: both; font-weight: normal; line-height: 18px; color: #555; white-space: nowrap; text-decoration: none; cursor: pointer;}
-.dropdown-menu li a:hover, .dropdown-menu .active a, .dropdown-menu .active a:hover {color: #06C; text-decoration: none; background-color: whiteSmoke;}
+.dropdown-menu li {margin-top: 3px;}
+.dropdown-menu a, .dropdown-menu .button.naked {display: block; padding: 0 15px; clear: both; font-weight: normal; line-height: 18px; color: #555; white-space: nowrap; text-decoration: none; cursor: pointer;}
+.dropdown-menu li a:hover, .dropdown-menu li .button.naked:hover, .dropdown-menu .active a, .dropdown-menu .active .button.naked, .dropdown-menu .active a:hover, .dropdown-menu .active .button.naked:hover {color: #06C; text-decoration: none; background-color: whiteSmoke;}
 .dropdown-menu .divider {height: 1px; margin: 3px 1px; overflow: hidden; background-color: #E5E5E5; border-bottom: 1px solid white;}
 .dropdown-container a {cursor: pointer;}
 
