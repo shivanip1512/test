@@ -12,11 +12,10 @@
 <%@ attribute name="key" %>
 <%@ attribute name="menuCssClass" %>
 <%@ attribute name="type" description="The type of this element. Either 'button', 'link', or 'icon'. Default: 'icon'. 'link' and 'button' require a 'key'" %>
-<%@ attribute name="showArrow" type="java.lang.Boolean" description="Show the down arrow? Default: 'true'" %>
-<%@ attribute name="showIcon" type="java.lang.Boolean" description="Ignored when type = 'icon'. Default: 'true'" %>
+<%@ attribute name="showArrow" description="Show the down arrow? Default: 'true'" %>
+<%@ attribute name="showIcon" description="Ignored when type = 'icon'. Default: 'true'" %>
 
 <cti:includeScript link="/JavaScript/dropdown_actions.js"/>
-
 <cti:default var="icon" value="icon-cog"/>
 <cti:default var="showArrow" value="true"/>
 <cti:default var="showIcon" value="true"/>

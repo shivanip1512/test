@@ -23,11 +23,11 @@
     <input type="hidden" name="menuId" value="${pageScope.menuBeanId}"/>
     <jsp:doBody/>
 </div>
-<cm:dropdown containerCssClass="ajax-menu ${containerCssClass}"
-    icon="${icon}"
-    id="${id}"
+<cm:dropdown containerCssClass="ajax-menu ${pageScope.containerCssClass}"
+    icon="${pageScope.icon}"
+    id="${pageScope.id}"
     key="${pageScope.key}"
     menuCssClass="long-menu-list"
-    showArrow="${showArrow}"
-    showIcon="${showIcon}"
-    type="${type}"/>
+    showArrow="${pageScope.showArrow}"
+    showIcon="${pageScope.showIcon}"
+    type="${pageScope.type}"/>
