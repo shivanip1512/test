@@ -6,15 +6,14 @@ function checkPageExpire() {
     
     jQuery.ajax({
         url: "/capcontrol/pageExpire",
-        data: {"paoIds": paoIds},
-        success: function(data) {
-            var expired = eval(data);
-            if (expired) {
-            jQuery("#updatedWarning").dialog("open");
-                return;    
-            }
-            setTimeout(checkPageExpire, 15000);
+        data: {"paoIds": paoIds}
+    }).success(function(data) {
+        var expired = eval(data);
+        if (expired) {
+        jQuery("#updatedWarning").dialog("open");
+            return;    
         }
+        setTimeout(checkPageExpire, 15000);
     });
 }
 
@@ -174,7 +173,7 @@ jQuery(function() {
     jQuery('.f-cc-create').click(function() {
         var content = jQuery('#contentPopup');
         content.load('/capcontrol/menu/create', function() {
-            var title = content.find('input.title').html();
+            var title = content.find('input.title').val();
             content.dialog({title: title});
         });
     });

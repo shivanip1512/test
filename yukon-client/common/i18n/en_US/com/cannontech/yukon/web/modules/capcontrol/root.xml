@@ -59,6 +59,7 @@
     <entry key="yukon.web.modules.capcontrol.attributes.tapPosition">Tap Position</entry>
     <entry key="yukon.web.modules.capcontrol.attributes.controlMode">Local/Remote Mode</entry>
     
+    <entry key="yukon.web.modules.capcontrol.regulator">Regulator</entry>
     <entry key="yukon.web.modules.capcontrol.area">Area</entry>
     <entry key="yukon.web.modules.capcontrol.specialArea">Special Area</entry>
     <entry key="yukon.web.modules.capcontrol.substations">Substations</entry>

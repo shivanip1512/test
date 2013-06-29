@@ -250,11 +250,11 @@ Yukon.ui = {
         /* Focus the designated input element */
         Yukon.ui._autofocus();
         
-        var html = jQuery('#f-page-actions')[0].innerHTML;
-        jQuery('#f-page-actions').remove();
+        var html = jQuery('#f-page-actions')[0];
         
         if (typeof html !== 'undefined') {
-            jQuery('#b-page-actions .dropdown-menu').html(html);
+        	jQuery('#f-page-actions').remove();
+            jQuery('#b-page-actions .dropdown-menu').html(html.innerHTML);
             jQuery('#b-page-actions').show();
         }
     },

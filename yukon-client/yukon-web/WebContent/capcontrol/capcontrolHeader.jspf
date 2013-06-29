@@ -55,12 +55,13 @@
             <span class="fl dib"><cti:msg2 key="yukon.web.components.button.create.label"/></span>
         </a>
     </li>
+    <li class="divider"></li>
     <cti:checkRolesAndProperties value="SYSTEM_WIDE_CONTROLS">
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
             <tags:dynamicChoose updaterString="CAPCONTROL/SYSTEM_ENABLE_COMMAND" suffix="">
                 <tags:dynamicChooseOption optionId="enabled">
                     <li>
-                        <a href="javascript:doSystemCommand(${systemStatusCommandId})" id="systemOn" class="clearfix">
+                        <a href="javascript:doSystemCommand('28')" id="systemOn" class="clearfix">
                             <i class="icon icon-delete"></i>
                             <span class="fl dib"><cti:msg2 key=".disableSystem.label"/></span>
                         </a>
@@ -68,7 +69,7 @@
                 </tags:dynamicChooseOption>
                 <tags:dynamicChooseOption optionId="disabled">
                     <li>
-                        <a href="javascript:doSystemCommand(${systemStatusCommandId})" id="systemOff" class="clearfix">
+                        <a href="javascript:doSystemCommand('28')" id="systemOff" class="clearfix">
                             <i class="icon icon-accept"></i>
                             <span class="fl dib"><cti:msg2 key=".enableSystem.label"/></span>
                         </a>
@@ -76,7 +77,7 @@
                 </tags:dynamicChooseOption>
             </tags:dynamicChoose>
             <li>
-                <a href="javascript:doSystemCommand(${resetOpCountCommandId})" id="systemResetOpCountsLink" class="clearfix">
+                <a href="javascript:doSystemCommand('16')" id="systemResetOpCountsLink" class="clearfix">
                     <i class="icon icon-arrow-undo"></i>
                     <span class="fl dib"><cti:msg2 key=".resetOpCount.label"/></span>
                 </a>
