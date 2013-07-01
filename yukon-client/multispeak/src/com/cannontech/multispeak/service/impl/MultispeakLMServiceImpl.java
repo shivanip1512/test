@@ -63,7 +63,6 @@ import com.cannontech.multispeak.deploy.service.ObjectRef;
 import com.cannontech.multispeak.deploy.service.QualityDescription;
 import com.cannontech.multispeak.deploy.service.ScadaAnalog;
 import com.cannontech.multispeak.deploy.service.SubstationLoadControlStatus;
-import com.cannontech.multispeak.deploy.service.SubstationLoadControlStatusControlledItemsControlItem;
 import com.cannontech.multispeak.service.MultispeakLMService;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 
@@ -288,7 +287,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 	@Override
 	public SubstationLoadControlStatus[] getActiveLoadControlStatus() throws ConnectionException, NotFoundException{
         List<SubstationLoadControlStatus> substationLoadControlStatusList = new ArrayList<SubstationLoadControlStatus>();
-        List<SubstationLoadControlStatusControlledItemsControlItem> controlledItemsList = new ArrayList<SubstationLoadControlStatusControlledItemsControlItem>();
+        List<ControlItem> controlledItemsList = new ArrayList<ControlItem>();
         
         Map<Integer, Integer> programCounts = enrollmentDao.getActiveEnrollmentExcludeOptOutCount(new Date(), new Date());
         List<MspLMInterfaceMapping> mspLmInterfaceMappingList = mspLMInterfaceMappingDao.getAllMappings();
@@ -339,7 +338,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 	        		lmProgramBases = loadControlClientConnection.getProgramsForProgramIds(programIds);
 	        	}
 	        	
-				SubstationLoadControlStatusControlledItemsControlItem controlledItem = 
+				ControlItem controlledItem = 
 					buildSubstationLoadControlStatusControlledItemsControlItem(
 							mspLMInterfaceMapping.getStrategyName(), 
 							lmProgramBases, 
@@ -422,11 +421,10 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 	 * @param programCounts
 	 * @return
 	 */
-	private SubstationLoadControlStatusControlledItemsControlItem buildSubstationLoadControlStatusControlledItemsControlItem( 
+	private ControlItem buildSubstationLoadControlStatusControlledItemsControlItem( 
 			String strategyName, List<LMProgramBase> lmProgramBases, Map<Integer, Integer> programCounts){
 		
-		SubstationLoadControlStatusControlledItemsControlItem controlledItem = 
-			new SubstationLoadControlStatusControlledItemsControlItem();
+		ControlItem controlledItem = new ControlItem();
 		controlledItem.setDescription(strategyName);
 	
 		//Set the total devices active count
@@ -446,7 +444,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 	 * @return
 	 */
 	private SubstationLoadControlStatus buildSubstationLoadControlStatus(String substationName, 
-			List<SubstationLoadControlStatusControlledItemsControlItem> controlledItemsList) {
+			List<ControlItem> controlledItemsList) {
 		
 		SubstationLoadControlStatus substationLoadControlStatus = new SubstationLoadControlStatus();
 		substationLoadControlStatus.setObjectID(substationName);
