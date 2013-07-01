@@ -5,6 +5,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <%@ attribute name="cronExpressionTagState" required="true" rtexprvalue="true" type="com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState" %>
+<%@ attribute name="exportData" required="true" type="java.lang.Object" %>
 
 <script type="text/javascript">
 jQuery(function() {
@@ -72,7 +73,7 @@ jQuery(function() {
     <tags:nameValue2 nameKey=".exportFileName">
         <tags:input path="exportFileName" id="exportFileName" maxlength="100"/>
         <img src="${infoImg}" title="<cti:msg2 key=".exportFileNameInfo"/>"/>
-        <c:if test="${scheduleName == exportFileName}">
+        <c:if test="${exportData.scheduleName == exportData.exportFileName}">
             <c:set var="checked" value=" checked=\"true\""/>
         </c:if>
         <input id="sameAsSchedName" type="checkbox" ${checked}/>

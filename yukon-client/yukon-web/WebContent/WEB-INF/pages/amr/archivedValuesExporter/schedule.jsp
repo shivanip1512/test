@@ -44,7 +44,7 @@
 		
 		<tags:boxContainer2 nameKey="exportParameters">
 			<tags:nameValueContainer2 id="exportParametersContainer">
-                <tags:scheduledFileExportInputs cronExpressionTagState="${cronExpressionTagState}" />
+                <tags:scheduledFileExportInputs cronExpressionTagState="${cronExpressionTagState}" exportData="${exportData}" />
 			</tags:nameValueContainer2>
 		</tags:boxContainer2>
 		

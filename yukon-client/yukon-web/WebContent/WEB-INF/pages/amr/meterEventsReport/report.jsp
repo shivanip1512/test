@@ -245,7 +245,7 @@
                         </span>
                     </a>
                 </tags:nameValue2>
-                <tags:scheduledFileExportInputs cronExpressionTagState="${cronExpressionTagState}"/>
+                <tags:scheduledFileExportInputs cronExpressionTagState="${cronExpressionTagState}" exportData="${exportData}" />
             </tags:nameValueContainer2>
             <c:if test="${not empty jobId}">
                 <input type="hidden" name="jobId" value="${jobId}">

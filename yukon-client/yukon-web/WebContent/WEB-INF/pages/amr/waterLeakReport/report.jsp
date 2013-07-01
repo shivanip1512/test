@@ -95,7 +95,7 @@
 						<input type="checkbox" name="includeDisabledPaos" ${backingBean.includeDisabledPaos ? "checked" : ""}>
 					</tags:nameValue2>
 					<input type="hidden" name="collectionType" value="${backingBean.deviceCollection.collectionParameters['collectionType']}">
-					<tags:scheduledFileExportInputs cronExpressionTagState="${cronExpressionTagState}"/>
+					<tags:scheduledFileExportInputs cronExpressionTagState="${cronExpressionTagState}" exportData="${fileExportData}" />
 				</tags:nameValueContainer2>
 			</div>
 		</form:form>

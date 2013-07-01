@@ -20,8 +20,8 @@ if(typeof(WaterLeakReport) === 'undefined'){
         _all_selector: "input#f-check_all:checkbox",
         _single_selector: "tbody tr input.f-check_single:checkbox",
         _initialized: false,
-        _f-cis_details_store: [],
-        _f-filter_values: [],
+        '_f-cis_details_store': [],
+        '_f-filter_values': [],
 
         /* -------------- */
         /* public methods */
@@ -143,7 +143,7 @@ if(typeof(WaterLeakReport) === 'undefined'){
         },
         
         _filter_dialog_open: function(e) {
-            if (WaterLeakReport._f-filter_values.length > 0) {
+            if (WaterLeakReport['_f-filter_values'].length > 0) {
                 WaterLeakReport._restore_filter_values();
             }
             //remove the stupid <br> tag that screws up styling for threshold errors
@@ -160,22 +160,22 @@ if(typeof(WaterLeakReport) === 'undefined'){
         
         _store_filter_values: function() {
             var the_filter = jQuery(WaterLeakReport._filter_form_selector);
-            WaterLeakReport._f-filter_values.from_datetime  = the_filter.find("input.f-from_datetime").val();
-            WaterLeakReport._f-filter_values.from_hour        = the_filter.find("input.f-from_hour").val();
-            WaterLeakReport._f-filter_values.to_datetime    = the_filter.find("input.f-to_datetime").val();
-            WaterLeakReport._f-filter_values.to_hour          = the_filter.find("input.f-to_hour").val();
-            WaterLeakReport._f-filter_values.threshold        = the_filter.find("input.f-threshold").val();
-            WaterLeakReport._f-filter_values.include_disabled = the_filter.find("input.f-include_disabled_paos").is(":checked");
+            WaterLeakReport['_f-filter_values'].from_datetime = the_filter.find("input.f-from_datetime").val();
+            WaterLeakReport['_f-filter_values'].from_hour = the_filter.find("input.f-from_hour").val();
+            WaterLeakReport['_f-filter_values'].to_datetime = the_filter.find("input.f-to_datetime").val();
+            WaterLeakReport['_f-filter_values'].to_hour = the_filter.find("input.f-to_hour").val();
+            WaterLeakReport['_f-filter_values'].threshold = the_filter.find("input.f-threshold").val();
+            WaterLeakReport['_f-filter_values'].include_disabled = the_filter.find("input.f-include_disabled_paos").is(":checked");
         },
         
         _restore_filter_values: function() {
             var the_filter = jQuery(WaterLeakReport._filter_form_selector);
-            the_filter.find("input.f-from_datetime").val(WaterLeakReport._f-filter_values.from_datetime);
-            the_filter.find("input.f-from_hour").val(WaterLeakReport._f-filter_values.from_hour);
-            the_filter.find("input.f-to_datetime").val(WaterLeakReport._f-filter_values.to_datetime);
-            the_filter.find("input.f-to_hour").val(WaterLeakReport._f-filter_values.to_hour);
-            the_filter.find("input.f-threshold").val(WaterLeakReport._f-filter_values.threshold);
-            the_filter.find("input.f-include_disabled_paos").attr("checked", WaterLeakReport._f-filter_values.include_disabled);
+            the_filter.find("input.f-from_datetime").val(WaterLeakReport['_f-filter_values'].from_datetime);
+            the_filter.find("input.f-from_hour").val(WaterLeakReport['_f-filter_values'].from_hour);
+            the_filter.find("input.f-to_datetime").val(WaterLeakReport['_f-filter_values'].to_datetime);
+            the_filter.find("input.f-to_hour").val(WaterLeakReport['_f-filter_values'].to_hour);
+            the_filter.find("input.f-threshold").val(WaterLeakReport['_f-filter_values'].threshold);
+            the_filter.find("input.f-include_disabled_paos").attr("checked", WaterLeakReport['_f-filter_values'].include_disabled);
         },
         
         _filter_group_clicked: function() {
@@ -257,9 +257,9 @@ if(typeof(WaterLeakReport) === 'undefined'){
         
         _view_cis_details: function(){
             var paoId = WaterLeakReport._get_row_pao_id(this);
-            var in_array = jQuery.inArray(paoId, WaterLeakReport._f-cis_details_store);
+            var in_array = jQuery.inArray(paoId, WaterLeakReport['_f-cis_details_store']);
             if (in_array === -1) {
-                WaterLeakReport._f-cis_details_store.push(paoId);
+                WaterLeakReport['_f-cis_details_store'].push(paoId);
                 // only block the page if we haven't requested this before (will take longer)
                 Yukon.ui.blockPage();
             }
