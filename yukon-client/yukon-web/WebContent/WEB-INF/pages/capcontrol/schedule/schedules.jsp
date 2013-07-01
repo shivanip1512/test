@@ -6,6 +6,16 @@
 
 <cti:standardPage module="capcontrol"  page="schedules">
 
+<cti:linkTabbedContainer mode="section">
+    <cti:linkTab selectorKey="yukon.web.modules.capcontrol.schedules.tab.title"
+                 initiallySelected='${true}'>
+        <c:url value="/capcontrol/schedule/schedules" />
+    </cti:linkTab>
+    <cti:linkTab selectorKey="yukon.web.modules.capcontrol.scheduleAssignments.tab.title">
+        <c:url value="/capcontrol/schedule/scheduleAssignments" />
+    </cti:linkTab>
+</cti:linkTabbedContainer>
+
 <script type="text/javascript">
 
 jQuery(function () {

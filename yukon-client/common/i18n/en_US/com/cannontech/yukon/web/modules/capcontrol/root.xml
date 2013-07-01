@@ -419,6 +419,7 @@
     
     <!-- schedules.jsp -->
     <entry key="yukon.web.modules.capcontrol.schedules.pageName">Schedules</entry>
+    <entry key="yukon.web.modules.capcontrol.schedules.tab.title">Schedules</entry>
     <entry key="yukon.web.modules.capcontrol.schedules.scheduleContainer.title">Schedules</entry>
     <entry key="yukon.web.modules.capcontrol.schedules.interval">Interval</entry>
     <entry key="yukon.web.modules.capcontrol.schedules.disabled">Disabled</entry>
@@ -429,6 +430,7 @@
     
     <!-- scheduleAssignment.jsp -->
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.pageName">Schedule Assignments</entry>
+    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.tab.title">Assignments</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.assignmentsContainer.title">Schedule Assignments</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.schedules">Schedules</entry>
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.allSchedules">All Schedules</entry>

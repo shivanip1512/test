@@ -7,6 +7,16 @@
 
 <cti:standardPage module="capcontrol" page="scheduleAssignments">
 
+<cti:linkTabbedContainer mode="section">
+    <cti:linkTab selectorKey="yukon.web.modules.capcontrol.schedules.tab.title">
+        <c:url value="/capcontrol/schedule/schedules" />
+    </cti:linkTab>
+    <cti:linkTab selectorKey="yukon.web.modules.capcontrol.scheduleAssignments.tab.title"
+                 initiallySelected='${true}'>
+        <c:url value="/capcontrol/schedule/scheduleAssignments" />
+    </cti:linkTab>
+</cti:linkTabbedContainer>
+
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
 <%@include file="/capcontrol/capcontrolHeader.jspf" %>
 <%@include file="scheduleAssignmentFilterPopup.jsp" %>
