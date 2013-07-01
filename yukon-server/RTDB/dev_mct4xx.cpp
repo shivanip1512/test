@@ -2572,9 +2572,13 @@ int Mct4xxDevice::executePutConfigConfigurationByte(CtiRequestMsg *pReq, CtiComm
     {
         if( ! readsOnly )
         {
-            long configuration = deviceConfig->getLongValueFromKey(MCTStrings::Configuration);
+            long dstEnabled          = deviceConfig->getLongValueFromKey(MCTStrings::EnableDst);
+            long electronicMeterType = deviceConfig->getLongValueFromKey(MCTStrings::ElectronicMeter);
 
-            if (configuration == std::numeric_limits<long>::min())
+            long configuration = ( ( electronicMeterType & 0x0f ) << 4 ) | ( dstEnabled & 0x01 );
+
+            if (   dstEnabled          == std::numeric_limits<long>::min()
+                || electronicMeterType == std::numeric_limits<long>::min() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

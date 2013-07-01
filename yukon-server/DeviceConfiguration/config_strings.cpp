@@ -150,7 +150,9 @@ const string MCTStrings::AlarmMaskEvent1 = "alarm mask event 1";
 const string MCTStrings::AlarmMaskEvent2 = "alarm mask event 2";
 const string MCTStrings::AlarmMaskMeter = "alarm mask meter";
 
-const string MCTStrings::Configuration = "configuration";
+const string MCTStrings::EnableDst = "enable dst";
+const string MCTStrings::ElectronicMeter = "electronic meter";
+
 const string MCTStrings::Options = "options";
 const string MCTStrings::OutageCycles = "outage cycles";
 
@@ -167,10 +169,17 @@ const string MCTStrings::Channel1Length = "channel 1 length";
 const string MCTStrings::Channel2Length = "channel 2 length";
 const string MCTStrings::Channel3Length = "channel 3 length";
 const string MCTStrings::Channel4Length = "channel 4 length";
-const string MCTStrings::ChannelConfig1 = "channel config 1";
-const string MCTStrings::ChannelConfig2 = "channel config 2";
-const string MCTStrings::ChannelConfig3 = "channel config 3";
-const string MCTStrings::ChannelConfig4 = "channel config 4";
+
+const string MCTStrings::Channel1Type = "channel 1 type";
+const string MCTStrings::Channel2Type = "channel 2 type";
+const string MCTStrings::Channel3Type = "channel 3 type";
+const string MCTStrings::Channel4Type = "channel 4 type";
+
+const string MCTStrings::Channel1PhysicalChannel = "channel 1 physical channel";
+const string MCTStrings::Channel2PhysicalChannel = "channel 2 physical channel";
+const string MCTStrings::Channel3PhysicalChannel = "channel 3 physical channel";
+const string MCTStrings::Channel4PhysicalChannel = "channel 4 physical channel";
+
 const string MCTStrings::ChannelMultiplier1 = "channel 1 multiplier";
 const string MCTStrings::ChannelMultiplier2 = "channel 2 multiplier";
 const string MCTStrings::ChannelMultiplier3 = "channel 3 multiplier";

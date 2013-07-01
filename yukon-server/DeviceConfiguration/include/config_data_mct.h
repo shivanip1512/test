@@ -148,7 +148,9 @@ public:
     static const std::string AlarmMaskEvent2;
     static const std::string AlarmMaskMeter;
 
-    static const std::string Configuration;
+    static const std::string EnableDst;
+    static const std::string ElectronicMeter;
+
     static const std::string Options;
     static const std::string OutageCycles;
 
@@ -165,10 +167,17 @@ public:
     static const std::string Channel2Length;
     static const std::string Channel3Length;
     static const std::string Channel4Length;
-    static const std::string ChannelConfig1;
-    static const std::string ChannelConfig2;
-    static const std::string ChannelConfig3;
-    static const std::string ChannelConfig4;
+
+    static const std::string Channel1Type;
+    static const std::string Channel2Type;
+    static const std::string Channel3Type;
+    static const std::string Channel4Type;
+
+    static const std::string Channel1PhysicalChannel;
+    static const std::string Channel2PhysicalChannel;
+    static const std::string Channel3PhysicalChannel;
+    static const std::string Channel4PhysicalChannel;
+
     static const std::string ChannelMultiplier1;
     static const std::string ChannelMultiplier2;
     static const std::string ChannelMultiplier3;

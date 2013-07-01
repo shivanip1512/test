@@ -2582,7 +2582,7 @@ boost::optional<int> Mct470Device::tryDetermineIedTypeFromDeviceConfiguration()
     }
     else if( DeviceConfigSPtr deviceConfig = getDeviceConfig() )
     {
-        return deviceConfig->getLongValueFromKey(MCTStrings::Configuration) >> 4;
+        return deviceConfig->getLongValueFromKey(MCTStrings::ElectronicMeter);
     }
 
     return boost::none;
@@ -3113,14 +3113,20 @@ int Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiComm
     {
         unsigned ratio1, kRatio1, ratio2, kRatio2;
 
+        long channel1physical = deviceConfig->getLongValueFromKey(MCTStrings::Channel1PhysicalChannel);
+        long channel1type     = deviceConfig->getLongValueFromKey(MCTStrings::Channel1Type);
+        long channel1         = ( ( channel1physical & 0x0f ) << 2 ) | ( channel1type & 0x03 );
+
         double multiplier1 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier1);
-        long channel1 = deviceConfig->getLongValueFromKey(MCTStrings::ChannelConfig1);
         double peakKwResolution1 = deviceConfig->getFloatValueFromKey(MCTStrings::PeakKwResolution1);
         double lastIntervalDemandResolution1 = deviceConfig->getFloatValueFromKey(MCTStrings::LastIntervalDemandResolution1);
         double lpResolution1 = deviceConfig->getFloatValueFromKey(MCTStrings::LoadProfileResolution1);
 
+        long channel2physical = deviceConfig->getLongValueFromKey(MCTStrings::Channel2PhysicalChannel);
+        long channel2type     = deviceConfig->getLongValueFromKey(MCTStrings::Channel2Type);
+        long channel2         = ( ( channel2physical & 0x0f ) << 2 ) | ( channel2type & 0x03 );
+
         double multiplier2 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier2);
-        long channel2 = deviceConfig->getLongValueFromKey(MCTStrings::ChannelConfig2);
         double peakKwResolution2 = deviceConfig->getFloatValueFromKey(MCTStrings::PeakKwResolution2);
         double lastIntervalDemandResolution2 = deviceConfig->getFloatValueFromKey(MCTStrings::LastIntervalDemandResolution2);
         double lpResolution2 = deviceConfig->getFloatValueFromKey(MCTStrings::LoadProfileResolution2);
@@ -3142,8 +3148,10 @@ int Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiComm
                 }
             }
 
-            if (   channel1 == std::numeric_limits<long>::min()
-                || channel2 == std::numeric_limits<long>::min()
+            if (   channel1physical == std::numeric_limits<long>::min()
+                || channel1type == std::numeric_limits<long>::min()
+                || channel2physical == std::numeric_limits<long>::min()
+                || channel2type == std::numeric_limits<long>::min()
                 || peakKwResolution1 == std::numeric_limits<double>::min()
                 || lastIntervalDemandResolution1 == std::numeric_limits<double>::min()
                 || lpResolution1 == std::numeric_limits<double>::min()
@@ -3217,20 +3225,28 @@ int Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiComm
 
         if( ! readsOnly )
         {
+            channel1physical = deviceConfig->getLongValueFromKey(MCTStrings::Channel3PhysicalChannel);
+            channel1type     = deviceConfig->getLongValueFromKey(MCTStrings::Channel3Type);
+            channel1         = ( ( channel1physical & 0x0f ) << 2 ) | ( channel1type & 0x03 );
+
             multiplier1 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier3);
-            channel1 = deviceConfig->getLongValueFromKey(MCTStrings::ChannelConfig3);
             peakKwResolution1 = deviceConfig->getFloatValueFromKey(MCTStrings::PeakKwResolution3);
             lastIntervalDemandResolution1 = deviceConfig->getFloatValueFromKey(MCTStrings::LastIntervalDemandResolution3);
             lpResolution1 = deviceConfig->getFloatValueFromKey(MCTStrings::LoadProfileResolution3);
 
+            channel2physical = deviceConfig->getLongValueFromKey(MCTStrings::Channel4PhysicalChannel);
+            channel2type     = deviceConfig->getLongValueFromKey(MCTStrings::Channel4Type);
+            channel2         = ( ( channel2physical & 0x0f ) << 2 ) | ( channel2type & 0x03 );
+
             multiplier2 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier4);
-            channel2 = deviceConfig->getLongValueFromKey(MCTStrings::ChannelConfig4);
             peakKwResolution2 = deviceConfig->getFloatValueFromKey(MCTStrings::PeakKwResolution4);
             lastIntervalDemandResolution2 = deviceConfig->getFloatValueFromKey(MCTStrings::LastIntervalDemandResolution4);
             lpResolution2 = deviceConfig->getFloatValueFromKey(MCTStrings::LoadProfileResolution4);
 
-            if (   channel1 == std::numeric_limits<long>::min()
-                || channel2 == std::numeric_limits<long>::min()
+            if (   channel1physical == std::numeric_limits<long>::min()
+                || channel1type == std::numeric_limits<long>::min()
+                || channel2physical == std::numeric_limits<long>::min()
+                || channel2type == std::numeric_limits<long>::min()
                 || peakKwResolution1 == std::numeric_limits<double>::min()
                 || lastIntervalDemandResolution1 == std::numeric_limits<double>::min()
                 || lpResolution1 == std::numeric_limits<double>::min()
@@ -4745,7 +4761,7 @@ INT Mct470Device::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, CtiMes
             {
                 long configuration;
 
-                if( deviceConfig->getLongValue(MCTStrings::Configuration, configuration) )
+                if( deviceConfig->getLongValue(MCTStrings::EnableDST, configuration) )
                 {
                     dstEnabled = configuration & 0x01;
                 }
