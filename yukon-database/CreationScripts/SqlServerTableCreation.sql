@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/26/2013 5:42:37 PM                         */
+/* Created on:     7/1/2013 4:49:10 PM                          */
 /*==============================================================*/
 
 
@@ -13255,8 +13255,9 @@ alter table UserPaoPermission
 go
 
 alter table UserPreference
-   add constraint FK_UserPref_YukonUser_UserId foreign key (UserId)
+   add constraint FK_UserPreference_YukonUser foreign key (UserId)
       references YukonUser (UserID)
+         on delete cascade
 go
 
 alter table VersacomRoute

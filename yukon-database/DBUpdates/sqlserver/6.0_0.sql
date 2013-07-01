@@ -229,8 +229,9 @@ UserId ASC,
 Name ASC);
 
 ALTER TABLE UserPreference
-   ADD CONSTRAINT FK_UserPref_YukonUser_UserId FOREIGN KEY (UserId)
-      REFERENCES YukonUser (UserID);
+    ADD CONSTRAINT FK_UserPreference_YukonUser FOREIGN KEY (UserId)
+        REFERENCES YukonUser (UserID)
+            ON DELETE CASCADE;
 GO
 /* End YUK-12160 */
 

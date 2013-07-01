@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/26/2013 5:56:00 PM                         */
+/* Created on:     7/1/2013 4:53:13 PM                          */
 /*==============================================================*/
 
 
@@ -12151,8 +12151,9 @@ alter table UserPaoPermission
       references YukonPAObject (PAObjectID);
 
 alter table UserPreference
-   add constraint FK_UserPref_YukonUser_UserId foreign key (UserId)
-      references YukonUser (UserID);
+   add constraint FK_UserPreference_YukonUser foreign key (UserId)
+      references YukonUser (UserID)
+      on delete cascade;
 
 alter table VersacomRoute
    add constraint FK_VERSACOM_ROUTE_VER_ROUTE foreign key (ROUTEID)
