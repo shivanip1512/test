@@ -5,32 +5,39 @@
 <cti:standardPage module="tools" page="bulk.collectionActions">
 
     <tags:bulkActionContainer   key="yukon.common.device.bulk.collectionActions" deviceCollection="${deviceCollection}">
-        
+
         <%-- LABELS AND DESCRIPTIONS --%>
+        <cti:msg var="headerGroupMgt" key="yukon.common.device.bulk.collectionActions.header.groupManagement"/>
         <cti:msg var="addToGroupLabel" key="yukon.common.device.bulk.collectionActions.addToGroupLabel"/>
         <cti:msg var="addToGroupDescription" key="yukon.common.device.bulk.collectionActions.addToGroupDescription"/>
         <cti:msg var="removeFromGroupLabel" key="yukon.common.device.bulk.collectionActions.removeFromGroupLabel"/>
         <cti:msg var="removeFromGroupDescription" key="yukon.common.device.bulk.collectionActions.removeFromGroupDescription"/>
+
+        <cti:msg var="headerCommands" key="yukon.common.device.bulk.collectionActions.header.commands"/>
         <cti:msg var="sendCommandLabel" key="yukon.common.device.bulk.collectionActions.sendCommandLabel"/>
         <cti:msg var="sendCommandDescription" key="yukon.common.device.bulk.collectionActions.sendCommandDescription"/>
         <cti:msg var="readAttributeLabel" key="yukon.common.device.bulk.collectionActions.readAttributeLabel"/>
         <cti:msg var="readAttributeDescription" key="yukon.common.device.bulk.collectionActions.readAttributeDescription"/>
+        <cti:msg var="routeLocateLabel" key="yukon.common.device.bulk.collectionActions.routeLocateLabel"/>
+        <cti:msg var="routeLocateDescription" key="yukon.common.device.bulk.collectionActions.routeLocateDescription"/>
+
+        <cti:msg var="headerReporting" key="yukon.common.device.bulk.collectionActions.header.reporting"/>
+        <cti:msg var="deviceCollectionReportLabel" key="yukon.common.device.bulk.collectionActions.deviceCollectionReportLabel"/>
+        <cti:msg var="deviceCollectionReportDescription" key="yukon.common.device.bulk.collectionActions.deviceCollectionReportDescription"/>
+        <cti:msg var="dataAnalysisLabel" key="yukon.common.device.bulk.collectionActions.dataAnalysisLabel"/>
+        <cti:msg var="dataAnalysisDiscription" key="yukon.common.device.bulk.collectionActions.dataAnalysisDiscription"/>
+        <cti:msg var="archivedValueDataExporterLabel" key="yukon.common.device.bulk.collectionActions.archivedValueDataExporterLabel"/>
+        <cti:msg var="archivedValueDataExporterDescription" key="yukon.common.device.bulk.collectionActions.archivedValueDataExporterDescription"/>
+
+        <cti:msg var="headerEditing" key="yukon.common.device.bulk.collectionActions.header.editing"/>
         <cti:msg var="massChangeLabel" key="yukon.common.device.bulk.collectionActions.massChangeLabel"/>
         <cti:msg var="massChangeDescription" key="yukon.common.device.bulk.collectionActions.massChangeDescription"/>
         <cti:msg var="changeDeviceTypeLabel" key="yukon.common.device.bulk.collectionActions.changeDeviceTypeLabel"/>
         <cti:msg var="changeDeviceTypeDescription" key="yukon.common.device.bulk.collectionActions.changeDeviceTypeDescription"/>
-        <cti:msg var="routeLocateLabel" key="yukon.common.device.bulk.collectionActions.routeLocateLabel"/>
-        <cti:msg var="routeLocateDescription" key="yukon.common.device.bulk.collectionActions.routeLocateDescription"/>
-        <cti:msg var="addPointsLabel" key="yukon.common.device.bulk.collectionActions.addPointsLabel"/>
-        <cti:msg var="addPointsDescription" key="yukon.common.device.bulk.collectionActions.addPointsDescription"/>
-        <cti:msg var="removePointsLabel" key="yukon.common.device.bulk.collectionActions.removePointsLabel"/>
-        <cti:msg var="removePointsDescription" key="yukon.common.device.bulk.collectionActions.removePointsDescription"/>
-        <cti:msg var="updatePointsLabel" key="yukon.common.device.bulk.collectionActions.updatePointsLabel"/>
-        <cti:msg var="updatePointsDescription" key="yukon.common.device.bulk.collectionActions.updatePointsDescription"/>
         <cti:msg var="massDeleteLabel" key="yukon.common.device.bulk.collectionActions.massDeleteLabel"/>
         <cti:msg var="massDeleteDescription" key="yukon.common.device.bulk.collectionActions.massDeleteDescription"/>
-        <cti:msg var="deviceCollectionReportLabel" key="yukon.common.device.bulk.collectionActions.deviceCollectionReportLabel"/>
-        <cti:msg var="deviceCollectionReportDescription" key="yukon.common.device.bulk.collectionActions.deviceCollectionReportDescription"/>
+
+        <cti:msg var="headerConfigActions" key="yukon.common.device.bulk.collectionActions.header.configActions"/>
         <cti:msg var="assignConfigLabel" key="yukon.common.device.bulk.collectionActions.assignConfigLabel"/>
         <cti:msg var="assignConfigDescription" key="yukon.common.device.bulk.collectionActions.assignConfigDescription"/>
         <cti:msg var="unassignConfigLabel" key="yukon.common.device.bulk.collectionActions.unassignConfigLabel"/>
@@ -41,11 +48,15 @@
         <cti:msg var="readConfigDescription" key="yukon.common.device.bulk.collectionActions.readConfigDescription"/>
         <cti:msg var="verifyConfigLabel" key="yukon.common.device.bulk.collectionActions.verifyConfigLabel"/>
         <cti:msg var="verifyConfigDescription" key="yukon.common.device.bulk.collectionActions.verifyConfigDescription"/>
-        <cti:msg var="dataAnalysisLabel" key="yukon.common.device.bulk.collectionActions.dataAnalysisLabel"/>
-        <cti:msg var="dataAnalysisDiscription" key="yukon.common.device.bulk.collectionActions.dataAnalysisDiscription"/>
-        <cti:msg var="archivedValueDataExporterLabel" key="yukon.common.device.bulk.collectionActions.archivedValueDataExporterLabel"/>
-        <cti:msg var="archivedValueDataExporterDescription" key="yukon.common.device.bulk.collectionActions.archivedValueDataExporterDescription"/>
-        
+
+        <cti:msg var="headerPointActions" key="yukon.common.device.bulk.collectionActions.header.pointActions"/>
+        <cti:msg var="addPointsLabel" key="yukon.common.device.bulk.collectionActions.addPointsLabel"/>
+        <cti:msg var="addPointsDescription" key="yukon.common.device.bulk.collectionActions.addPointsDescription"/>
+        <cti:msg var="updatePointsLabel" key="yukon.common.device.bulk.collectionActions.updatePointsLabel"/>
+        <cti:msg var="updatePointsDescription" key="yukon.common.device.bulk.collectionActions.updatePointsDescription"/>
+        <cti:msg var="removePointsLabel" key="yukon.common.device.bulk.collectionActions.removePointsLabel"/>
+        <cti:msg var="removePointsDescription" key="yukon.common.device.bulk.collectionActions.removePointsDescription"/>
+
         <%-- URLS --%>
         <cti:url var="selectGroupUrl" value="/bulk/group/selectGroup"/>
         
@@ -76,7 +87,7 @@
             <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
                 <c:if test="${showGroupManagement}" >
                     <cti:dataGridCell>
-                        <tags:sectionContainer title="Group Management">
+                        <tags:sectionContainer title="${headerGroupMgt}">
                             <table>
                                 <%-- ADD TO GROUP --%>
                                 <cti:checkRolesAndProperties value="DEVICE_GROUP_MODIFY">
@@ -96,7 +107,7 @@
                 
                 <c:if test="${showEditing}">
                     <cti:dataGridCell>
-                        <tags:sectionContainer title="Editing">
+                        <tags:sectionContainer title="${headerEditing}">
                             <table>
                                 <cti:checkRolesAndProperties value="MASS_CHANGE">
                                     <%-- MASS CHANGE --%>
@@ -119,7 +130,7 @@
                 </c:if>
                 
                 <cti:dataGridCell>
-                    <tags:sectionContainer title="Commands">
+                    <tags:sectionContainer title="${headerCommands}">
                         <table>
                             <cti:checkRolesAndProperties value="GROUP_COMMANDER">
                                 <%-- GROUP COMMANDER --%>
@@ -141,7 +152,7 @@
                 </cti:dataGridCell>
                 
                 <cti:dataGridCell>
-                    <tags:sectionContainer title="Config Actions">
+                    <tags:sectionContainer title="${headerConfigActions}">
                         <table>
                             <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
                                 <%-- ASSIGN CONFIG --%>
@@ -173,7 +184,7 @@
                 </cti:dataGridCell>
             </cti:checkRolesAndProperties>
             <cti:dataGridCell>
-                <tags:sectionContainer title="Reporting">
+                <tags:sectionContainer title="${headerReporting}">
                     <table>
                         <%-- DEVICE REPORT --%>
                         <tags:collectionActionTr buttonValue="${deviceCollectionReportLabel}" description="${deviceCollectionReportDescription}"
@@ -196,7 +207,7 @@
             
             <c:if test="${showAddRemovePoints}">
                 <cti:dataGridCell>
-                    <tags:sectionContainer title="Add/Remove/Update Points">
+                    <tags:sectionContainer title="${headerPointActions}">
                         <table>
                             <%-- ADD POINTS --%>
                             <tags:collectionActionTr buttonValue="${addPointsLabel}" description="${addPointsDescription}"

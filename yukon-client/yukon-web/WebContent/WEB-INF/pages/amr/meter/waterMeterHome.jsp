@@ -6,10 +6,6 @@
 
 <cti:standardPage module="amr" page="meterDetail.water">
 
-	<div style="float: right;">
-		<amr:searchResultsLink></amr:searchResultsLink>
-	</div>
-
 	<ct:widgetContainer deviceId="${deviceId}" identify="false">
 
         <div class="column_12_12">
@@ -51,4 +47,12 @@
             </div>
         </div>
     </ct:widgetContainer>
+<c:if test="${searchResults != null}">
+<script type="text/javascript">
+  jQuery('#b-search-results').attr("data-href", "${searchResults}");
+  jQuery('#b-search-results').attr("title", "<cti:msg2 key='yukon.web.backToSearchResults'/>");
+  jQuery('.yukon-search-form .search-field').addClass('right');
+  jQuery('#b-search-results').show();
+</script>
+</c:if>
 </cti:standardPage>

@@ -5,7 +5,14 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="operator" page="inventoryActions">
-
+<style type="text/css">
+td.left {
+vertical-align: top;padding-right: 10px;padding-bottom: 10px;
+}
+td.right {
+vertical-align: top;padding-right: 1px;padding-bottom: 10px;
+}
+</style>
     <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
 
     <div class="containerHeader stacked clearfix">
@@ -21,99 +28,123 @@
     <tags:sectionContainer2 nameKey="actionsContainer">
         <div class="column_12_12 clear">
             <div class="column one stacked">
+                <table>
                 <cti:checkRolesAndProperties value="DEVICE_RECONFIG">
-                    <cti:url value="inventoryConfiguration" var="url">
-                        <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
-                            <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
-                        </c:forEach>
-                    </cti:url>
-                    <a href="${url}" class="described"><cti:msg2 key=".deviceReconfig.label"/></a>
-			        <i:inline key=".deviceReconfigDescription"/>
+                    <tr>
+                        <td class="left">
+                            <cti:url value="inventoryConfiguration" var="url">
+                                <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                                    <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                                </c:forEach>
+                            </cti:url>
+                            <a href="${url}" class="described"><cti:msg2 key=".deviceReconfig.label"/></a>
+                        </td>
+                        <td class="right">
+                            <i:inline key=".deviceReconfigDescription"/>
+                        </td>
+                    </tr>
                 </cti:checkRolesAndProperties>
+                    <tr>
+                        <td class="left">
+                            <cti:url value="changeType/view" var="url">
+                                <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                                    <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                                </c:forEach>
+                            </cti:url>
+                            <a href="${url}" class="described"><cti:msg2 key=".changeType.label"/></a>
+                        </td>
+                        <td class="right">
+                            <i:inline key=".changeTypeDescription"/></td>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                            <cti:url value="changeServiceCompany/view" var="url">
+                                <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                                    <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                                </c:forEach>
+                            </cti:url>
+                            <a href="${url}" class="described"><cti:msg2 key=".changeServiceCompany.label"/></a>
+                        </td>
+                        <td class="right">
+                            <i:inline key=".changeServiceCompanyDescription"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                            <cti:url value="controlAudit/view" var="url">
+                                <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                                    <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                                </c:forEach>
+                            </cti:url>
+                            <a href="${url}" class="described"><cti:msg2 key=".controlAudit.label"/></a>
+                        </td>
+                        <td class="right">
+                            <i:inline key=".controlAuditDescription"/>
+                        </td>
+                    </tr>
+                </table>
             </div>
-            
-            <cti:checkRolesAndProperties value="SN_DELETE_RANGE">
-                <div class="column two nogutter stacked">
-                     <cti:url value="deleteInventory/view" var="url">
-                        <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
-                            <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
-                        </c:forEach>
-                    </cti:url>
-                    <a href="${url}" class="described"><cti:msg2 key=".deleteInventory.label"/></a>
-                     <i:inline key=".deleteInventoryDescription"/>
-                </div>
-            </cti:checkRolesAndProperties>
-            
-        </div>
-        
-        <div  class="column_12_12 clear">
-            <div class="column one stacked">
-                <cti:url value="changeType/view" var="url">
-                    <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
-                        <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
-                    </c:forEach>
-                </cti:url>
-                <a href="${url}" class="described"><cti:msg2 key=".changeType.label"/></a>
-                <i:inline key=".changeTypeDescription"/></td>
-            </div>
-            
+
             <div class="column two nogutter stacked">
-	            <cti:url value="changeStatus/view" var="url">
-                    <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
-                        <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
-                    </c:forEach>
-                </cti:url>
-                <a href="${url}" class="described"><cti:msg2 key=".changeStatus.label"/></a>
-	            <i:inline key=".changeStatusDescription"/>
+                <table>
+                    <tr>
+                        <td class="left">
+                             <cti:url value="deleteInventory/view" var="url">
+                                <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                                    <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                                </c:forEach>
+                            </cti:url>
+                            <a href="${url}" class="described"><cti:msg2 key=".deleteInventory.label"/></a>
+                        </td>
+                        <td class="right">
+                            <i:inline key=".deleteInventoryDescription"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                            <cti:url value="changeStatus/view" var="url">
+                                <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                                    <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                                </c:forEach>
+                            </cti:url>
+                            <a href="${url}" class="described"><cti:msg2 key=".changeStatus.label"/></a>
+                        </td>
+                        <td class="right">
+                            <i:inline key=".changeStatusDescription"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="left">
+                            <cti:url value="changeWarehouse/view" var="url">
+                                <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                                    <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                                </c:forEach>
+                            </cti:url>
+                            <a href="${url}" class="described"><cti:msg2 key=".changeWarehouse.label"/></a>
+                        </td>
+                        <td class="right">
+                            <i:inline key=".changeWarehouseDescription"/>
+                        </td>
+                    </tr>
+                <c:if test="${showSaveToFile}">
+                    <tr>
+                        <td class="left">
+                            <cti:url value="saveToBatch/setup" var="url">
+                                <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
+                                    <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                                </c:forEach>
+                            </cti:url>
+                            <a href="${url}" class="described"><cti:msg2 key=".saveToFile.label"/></a>
+                        </td>
+                        <td class="right">
+                            <i:inline key=".saveToFile"/>
+                        </td>
+                    </tr>
+                </c:if>
+                </table>
             </div>
         </div>
-            
-        <div  class="column_12_12 clear">
-            <div class="column one stacked">
-	            <cti:url value="changeServiceCompany/view" var="url">
-                    <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
-                        <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
-                    </c:forEach>
-                </cti:url>
-                <a href="${url}" class="described"><cti:msg2 key=".changeServiceCompany.label"/></a>
-	            <i:inline key=".changeServiceCompanyDescription"/>
-            </div>
-            
-            <div class="column two nogutter stacked">
-	            <cti:url value="changeWarehouse/view" var="url">
-                    <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
-                        <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
-                    </c:forEach>
-                </cti:url>
-                <a href="${url}" class="described"><cti:msg2 key=".changeWarehouse.label"/></a>
-                <i:inline key=".changeWarehouseDescription"/>
-            </div>
-        </div>
-        
-        <div  class="column_12_12 clear">
-            <div class="column one stacked">
-	            <cti:url value="controlAudit/view" var="url">
-                    <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
-                        <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
-                    </c:forEach>
-                </cti:url>
-                <a href="${url}" class="described"><cti:msg2 key=".controlAudit.label"/></a>
-	            <i:inline key=".controlAuditDescription"/>
-            </div>
-            
-            <c:if test="${showSaveToFile}">
-                <div class="column two nogutter stacked">
-	                <cti:url value="saveToBatch/setup" var="url">
-	                    <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
-	                        <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
-	                    </c:forEach>
-	                </cti:url>
-	                <a href="${url}" class="described"><cti:msg2 key=".saveToFile.label"/></a>
-	                <i:inline key=".saveToFile"/>
-                </div>
-            </c:if>
-        </div>
-     
-     </tags:sectionContainer2>
+    </tags:sectionContainer2>
 
 </cti:standardPage>

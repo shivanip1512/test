@@ -113,33 +113,38 @@
     <entry key="yukon.common.device.bulk.collectionActions.noteText"><![CDATA[
         Selecting any of these options will not immediately make any changes.<br>You will be directed to a page with additional options and/or opportunity to confirm your action.
     ]]></entry>
-    
+
+    <entry key="yukon.common.device.bulk.collectionActions.header.groupManagement">Group Management</entry>
     <entry key="yukon.common.device.bulk.collectionActions.addToGroupLabel">Add To Group</entry>
     <entry key="yukon.common.device.bulk.collectionActions.addToGroupDescription">Add devices to a Device Group.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.removeFromGroupLabel">Remove From Group</entry>
     <entry key="yukon.common.device.bulk.collectionActions.removeFromGroupDescription">Remove devices from a Device Group.</entry>
+
+    <entry key="yukon.common.device.bulk.collectionActions.header.commands">Commands</entry>
     <entry key="yukon.common.device.bulk.collectionActions.sendCommandLabel">Send Command</entry>
     <entry key="yukon.common.device.bulk.collectionActions.sendCommandDescription">Issue a command to multiple devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.readAttributeLabel">Read Attribute</entry>
     <entry key="yukon.common.device.bulk.collectionActions.readAttributeDescription">Read an attribute of multiple devices.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.massChangeLabel">Mass Change</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.massChangeDescription">Change same value on multiple devices.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.changeDeviceTypeLabel">Change Type</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.changeDeviceTypeDescription">Change the device type of devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.routeLocateLabel">Locate Route</entry>
     <entry key="yukon.common.device.bulk.collectionActions.routeLocateDescription">Find route that devices respond on.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.addPointsLabel">Add Points</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.addPointsDescription">Add points to multiple devices.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.updatePointsLabel">Update Points</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.updatePointsDescription">Update points on multiple devices.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.removePointsLabel">Remove Points</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.removePointsDescription">Remove points from multiple devices.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.massDeleteLabel">Mass Delete</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.massDeleteDescription">Delete multiple devices.</entry>
+
+    <entry key="yukon.common.device.bulk.collectionActions.header.reporting">Reporting</entry>
     <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionReportLabel">Device Report</entry>
     <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionReportDescription">View a report detailing devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.dataAnalysisLabel">Data Analysis</entry>
     <entry key="yukon.common.device.bulk.collectionActions.dataAnalysisDiscription">View a report detailing archived reads.</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.archivedValueDataExporterLabel">Archived Data Export</entry> 
+    <entry key="yukon.common.device.bulk.collectionActions.archivedValueDataExporterDescription">Export archived point data.</entry>
+
+    <entry key="yukon.common.device.bulk.collectionActions.header.editing">Editing</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.massChangeLabel">Mass Change</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.massChangeDescription">Change same value on multiple devices.</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.changeDeviceTypeLabel">Change Type</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.changeDeviceTypeDescription">Change the device type of devices.</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.massDeleteLabel">Mass Delete</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.massDeleteDescription">Delete multiple devices.</entry>
+
+    <entry key="yukon.common.device.bulk.collectionActions.header.configActions">Config Actions</entry>
     <entry key="yukon.common.device.bulk.collectionActions.assignConfigLabel">Assign Config</entry>
     <entry key="yukon.common.device.bulk.collectionActions.assignConfigDescription">Assign a config to a collection of devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.unassignConfigLabel">Unassign Config</entry>
@@ -150,8 +155,15 @@
     <entry key="yukon.common.device.bulk.collectionActions.readConfigDescription">Reads device configuration settings from the devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.verifyConfigLabel">Verify Config</entry>
     <entry key="yukon.common.device.bulk.collectionActions.verifyConfigDescription">Verify settings between the device and the assigned configuration.</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.archivedValueDataExporterLabel">Archived Data Export</entry> 
-    <entry key="yukon.common.device.bulk.collectionActions.archivedValueDataExporterDescription">Export archived point data.</entry>
+
+    <entry key="yukon.common.device.bulk.collectionActions.header.pointActions">Add/Remove/Update Points</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.addPointsLabel">Add Points</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.addPointsDescription">Add points to multiple devices.</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.updatePointsLabel">Update Points</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.updatePointsDescription">Update points on multiple devices.</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.removePointsLabel">Remove Points</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.removePointsDescription">Remove points from multiple devices.</entry>
+
      
     <!-- DEVICE COLLECTION REPORT -->
     <!-- ******************************************************************************************************************** -->
