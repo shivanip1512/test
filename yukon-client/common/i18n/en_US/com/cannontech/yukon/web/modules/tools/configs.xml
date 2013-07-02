@@ -46,12 +46,12 @@
     <entry key="yukon.web.modules.tools.configs.enum.schedules.schedule3">Schedule 3</entry>
     <entry key="yukon.web.modules.tools.configs.enum.schedules.schedule4">Schedule 4</entry>
 
-    <entry key="yukon.web.modules.tools.configs.enum.dst.est">EST</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.dst.cst">CST</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.dst.mst">MST</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.dst.pst">PST</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.dst.alaska">Alaska</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.dst.hawaii">Hawaii</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.timeZone.est">EST</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.timeZone.cst">CST</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.timeZone.mst">MST</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.timeZone.pst">PST</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.timeZone.alaska">Alaska</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.timeZone.hawaii">Hawaii</entry>
 
     <entry key="yukon.web.modules.tools.configs.enum.displayItem.slotDisabled">Slot Disabled</entry>
     <entry key="yukon.web.modules.tools.configs.enum.displayItem.noSegments">No Segments</entry>
@@ -91,9 +91,9 @@
     <entry key="yukon.web.modules.tools.configs.enum.displayItem.touRateDTimeOfPeakKw">TOU Rate D Time of Peak kW</entry>
 
     <!-- Configuration Category Messages -->
-    <entry key="yukon.web.modules.tools.configs.category.dst.title">MCT Daylight Savings Time</entry>
-    <entry key="yukon.web.modules.tools.configs.category.dst.timeZoneOffset">Time Zone Offset</entry>
-    <entry key="yukon.web.modules.tools.configs.category.dst.timeZoneOffset.description">Signed offset from UTC.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.timeZone.title">MCT Time Zone</entry>
+    <entry key="yukon.web.modules.tools.configs.category.timeZone.timeZoneOffset">Time Zone Offset</entry>
+    <entry key="yukon.web.modules.tools.configs.category.timeZone.timeZoneOffset.description">Signed offset from UTC.</entry>
     
     <entry key="yukon.web.modules.tools.configs.category.meterParameters.title">MCT-420 Meter Parameters</entry>
     <entry key="yukon.web.modules.tools.configs.category.meterParameters.lcdCycleTime">LCD Cycle Time</entry>
@@ -390,12 +390,12 @@
     <!-- general entries -->
     <entry key="yukon.web.modules.tools.configs.errorsExist">Errors exist in the submitted form. Please correct the problem(s) and submit again.</entry>
     <entry key="yukon.web.modules.tools.configs.noSelectedTypes">At least one device type must be selected.</entry>
-    <entry key="yukon.web.modules.tools.configs.noneSelected">None selected</entry>
 
     <!-- category entries -->
     <entry key="yukon.web.modules.tools.configs.category.VIEW.pageName">Category</entry>
     <entry key="yukon.web.modules.tools.configs.category.VIEW.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.tools.configs.category.VIEW.contextualPageName">View</entry>
+    
     <entry key="yukon.web.modules.tools.configs.category.EDIT.pageName">Edit Category</entry>
     <entry key="yukon.web.modules.tools.configs.category.EDIT.contextualPageName">Edit</entry>
     
@@ -404,7 +404,10 @@
     
     <entry key="yukon.web.modules.tools.configs.category.categoryFields">Category Fields</entry>
     <entry key="yukon.web.modules.tools.configs.category.confirmRemove.message">Are you sure you want to delete this category?</entry>
-    <entry key="yukon.web.modules.tools.configs.category.confirmSave.message">Modifying this category will affect all configurations it belongs to, and as a result, all devices those configurations are assigned to. Are you sure you want to modify this category?</entry>
+    <entry key="yukon.web.modules.tools.configs.category.confirmSave.message">
+    		Modifying this category will affect all configurations it belongs to. However, this won't affect any
+    		devices until the affected configurations are sent. Are you sure you want to modify this category?
+ 	</entry>
     <entry key="yukon.web.modules.tools.configs.category.saveSuccess">Device configuration category was successfully written to the database.</entry>
     <entry key="yukon.web.modules.tools.configs.category.deleteSuccess">Device configuration category was successfully removed from the database.</entry>
     <entry key="yukon.web.modules.tools.configs.category.emptyName">Category name must not be empty.</entry>
@@ -417,7 +420,11 @@
     <entry key="yukon.web.modules.tools.configs.config.VIEW.contextualPageName">View</entry>
     
     <entry key="yukon.web.modules.tools.configs.config.EDIT.pageName">Edit Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.config.EDIT.contextualPageName">Edit</entry>
+    
     <entry key="yukon.web.modules.tools.configs.config.CREATE.pageName">Create Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.config.CREATE.contextualPageName">Create</entry>
+    
     <entry key="yukon.web.modules.tools.configs.config.saveSuccess">Device configuration category was successfully written to the database.</entry>
     <entry key="yukon.web.modules.tools.configs.config.deleteSuccess">Device configuration was successfully removed from the database.</entry>
     <entry key="yukon.web.modules.tools.configs.config.emptyName">Configuration name must not be empty.</entry>
@@ -428,5 +435,6 @@
     <entry key="yukon.web.modules.tools.configs.config.confirmSave.message">Modifying this configuration will affect all devices it is assigned to. Are you sure you want to modify this configuration?</entry>
     <entry key="yukon.web.modules.tools.configs.config.configCategories.description">Choose an existing instance of each of the categories below or create new categories to use for this configuration.</entry>
     <entry key="yukon.web.modules.tools.configs.config.missingCategories">This device configuration is missing selections for the following category types: {0}. Please select a category for each of these types.</entry>
+    <entry key="yukon.web.modules.tools.configs.config.noneSelected">None selected</entry>
     
 </properties>

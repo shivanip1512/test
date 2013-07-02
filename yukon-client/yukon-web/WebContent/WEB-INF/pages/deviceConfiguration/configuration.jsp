@@ -10,7 +10,7 @@
 <cti:standardPage module="tools" page="configs.config.${mode}">
     <tags:setFormEditMode mode="${mode}"/>
     
-    <form:form commandName="deviceConfigurationBackingBean" action="saveConfiguration" id="configForm">
+    <form:form commandName="deviceConfigurationBackingBean" action="save">
         <form:hidden path="configId"/>
         <c:forEach var="item" items="${deviceConfigurationBackingBean.supportedTypes}">
             <form:hidden path="supportedTypes[${item.key}]"/>
@@ -53,12 +53,12 @@
         <div class="pageActionArea clear">
             <cti:displayForPageEditModes modes="VIEW">
                 <cti:checkRolesAndProperties value="${editingRoleProperty}">
-                    <cti:url value="editConfiguration" var="editUrl">
+                    <cti:url value="edit" var="editUrl">
                         <cti:param name="configId" value="${deviceConfigurationBackingBean.configId}"/>
                     </cti:url>
                     <cti:button nameKey="edit" href="${editUrl}" icon="icon-pencil"/>
                 </cti:checkRolesAndProperties>
-                <cti:button nameKey="back" name="back" href="home"/>
+                <cti:button nameKey="back" name="back" href="/deviceConfiguration/home"/>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT">
                 <cti:checkRolesAndProperties value="${editingRoleProperty}">
@@ -66,12 +66,12 @@
                     <cti:button nameKey="save" id="save" type="submit" classes="primary action"/>
                     <c:if test="${isDeletable}">
                         <dialog:confirm on="#remove" nameKey="confirmRemove"/>
-                        <cti:url var="deleteUrl" value="deleteConfiguration">
-                            <cti:param name="configurationId" value="${deviceConfigurationBackingBean.configId}"/>
+                        <cti:url var="deleteUrl" value="delete">
+                            <cti:param name="configId" value="${deviceConfigurationBackingBean.configId}"/>
                         </cti:url>
                         <cti:button nameKey="remove" id="remove" href="${deleteUrl}"/>
                     </c:if>
-                    <cti:url var="viewUrl" value="viewConfiguration">
+                    <cti:url var="viewUrl" value="view">
                         <cti:param name="configId" value="${deviceConfigurationBackingBean.configId}"/>
                     </cti:url>
                     <cti:button nameKey="cancel" href="${viewUrl}"/>
@@ -80,7 +80,7 @@
             <cti:displayForPageEditModes modes="CREATE">
                 <cti:checkRolesAndProperties value="${editingRoleProperty}">
                     <cti:button nameKey="create" type="submit" classes="primary action"/>
-                    <cti:button nameKey="cancel" href="home"/>
+                    <cti:button nameKey="cancel" href="/deviceConfiguration/home"/>
                 </cti:checkRolesAndProperties>
             </cti:displayForPageEditModes>
         </div>

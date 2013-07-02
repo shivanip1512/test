@@ -50,7 +50,7 @@ public class Field<T> {
         return inputType;
     }
     
-    public boolean getIsEnum() {
+    public boolean isEnum() {
         return isEnum;
     }
     

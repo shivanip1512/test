@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
-import com.cannontech.common.device.config.model.DeviceConfigurationCategory;
+import com.cannontech.common.device.config.model.DeviceConfigCategory;
 import com.cannontech.common.device.config.model.DisplayableConfigurationCategory;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.jaxb.Category;
@@ -25,17 +25,17 @@ public interface DeviceConfigurationDao {
      */
     public Category getCategoryByType(CategoryType categoryType);
     
-    public void saveConfiguration(DeviceConfiguration configuration);
+    public int saveConfiguration(DeviceConfiguration configuration);
 
     public void deleteConfiguration(int deviceConfigurationId);
     
     public boolean isConfigurationDeletable(int configId);
     
-    public void saveCategory(DeviceConfigurationCategory category);
+    public int saveCategory(DeviceConfigCategory category);
     
     public void deleteCategory(int categoryId);
     
-    public DeviceConfigurationCategory getDeviceConfigurationCategory(int categoryId);
+    public DeviceConfigCategory getDeviceConfigCategory(int categoryId);
     
     /**
      * Get all device configurations in the system.

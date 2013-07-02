@@ -5,14 +5,14 @@ import java.util.List;
 
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
-import com.cannontech.common.device.config.dao.LightConfigurationCategoryFilter;
-import com.cannontech.common.device.config.dao.LightConfigurationCategoryRowMapper;
-import com.cannontech.common.device.config.model.LightConfigurationCategory;
+import com.cannontech.common.device.config.dao.UltraLightConfigurationCategoryFilter;
+import com.cannontech.common.device.config.dao.UltraLightConfigurationCategoryRowMapper;
+import com.cannontech.common.device.config.model.UltraLightConfigurationCategory;
 import com.cannontech.common.device.config.model.jaxb.CategoryType;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
-public class ConfigurationCategoryPicker extends DatabasePicker<LightConfigurationCategory> {
+public class ConfigurationCategoryPicker extends DatabasePicker<UltraLightConfigurationCategory> {
 
     private final static String[] searchColumnNames = new String[] {
         "DCC.Name"
@@ -31,16 +31,16 @@ public class ConfigurationCategoryPicker extends DatabasePicker<LightConfigurati
     }
 
     public ConfigurationCategoryPicker() {
-        super(new LightConfigurationCategoryRowMapper(), searchColumnNames);
+        super(new UltraLightConfigurationCategoryRowMapper(), searchColumnNames);
     }
 
     @Override
     protected void updateFilters(
             List<SqlFilter> sqlFilters,
-            List<PostProcessingFilter<LightConfigurationCategory>> postProcessingFilters,
+            List<PostProcessingFilter<UltraLightConfigurationCategory>> postProcessingFilters,
             String extraArgs, YukonUserContext userContext) {
         CategoryType categoryType = CategoryType.fromValue(extraArgs);
-        sqlFilters.add(new LightConfigurationCategoryFilter(categoryType));
+        sqlFilters.add(new UltraLightConfigurationCategoryFilter(categoryType));
     }
 
     @Override
@@ -55,6 +55,6 @@ public class ConfigurationCategoryPicker extends DatabasePicker<LightConfigurati
 
     @Override
     protected String getDatabaseIdFieldName() {
-        return "DCC.DeviceConfigurationCategoryId";
+        return "DCC.DeviceConfigCategoryId";
     }
 }

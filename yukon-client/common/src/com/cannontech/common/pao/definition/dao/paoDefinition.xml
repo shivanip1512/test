@@ -240,9 +240,9 @@
         </configuration>
     </pao>
     
-    <pao id="DST_CONFIGURATION_CATEGORY" abstract="true" inherits="SUPPORTS_DEVICE_CONFIGURATION">
+    <pao id="TIMEZONE_CONFIGURATION_CATEGORY" abstract="true" inherits="SUPPORTS_DEVICE_CONFIGURATION">
         <configuration>
-            <category type="dst"/>
+            <category type="timeZone"/>
         </configuration>
     </pao>
     
@@ -253,7 +253,7 @@
     </pao>
 
     <pao id="MCT_430_CONFIGURATION" abstract="true" 
-        inherits="SUPPORTS_DEVICE_CONFIGURATION, DST_CONFIGURATION_CATEGORY, ADDRESSING_CONFIGURATION_CATEGORY">
+        inherits="SUPPORTS_DEVICE_CONFIGURATION, TIMEZONE_CONFIGURATION_CATEGORY, ADDRESSING_CONFIGURATION_CATEGORY">
         <configuration>
             <category type="mct430DemandLoadProfile"/>
             <category type="mct430LoadProfileChannels"/>
@@ -262,9 +262,8 @@
         </configuration>
     </pao>
     
-    <pao id="MCT_440_CONFIGURATION" abstract="true" inherits="SUPPORTS_DEVICE_CONFIGURATION, DST_CONFIGURATION_CATEGORY">
+    <pao id="MCT_440_CONFIGURATION" abstract="true" inherits="SUPPORTS_DEVICE_CONFIGURATION, TIMEZONE_CONFIGURATION_CATEGORY">
         <configuration>
-            <category type="mct440DemandLoadProfile"/>
             <category type="mct440Configuration"/>
             <category type="mct440PhaseLoss"/>
             <category type="mct440Addressing"/>
@@ -273,7 +272,7 @@
     </pao>
     
     <pao id="MCT_470_CONFIGURATION" abstract="true" 
-        inherits="SUPPORTS_DEVICE_CONFIGURATION, DST_CONFIGURATION_CATEGORY, ADDRESSING_CONFIGURATION_CATEGORY">
+        inherits="SUPPORTS_DEVICE_CONFIGURATION, TIMEZONE_CONFIGURATION_CATEGORY, ADDRESSING_CONFIGURATION_CATEGORY">
         <configuration>
             <category type="mct470DemandLoadProfile"/>
             <category type="mct470LoadProfileChannels"/>

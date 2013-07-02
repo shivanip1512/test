@@ -5,10 +5,10 @@ import com.cannontech.common.device.config.model.jaxb.CategoryType;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 
-public class LightConfigurationCategoryFilter implements SqlFilter {
+public class UltraLightConfigurationCategoryFilter implements SqlFilter {
     private CategoryType categoryType;
 
-    public LightConfigurationCategoryFilter(CategoryType categoryType) {
+    public UltraLightConfigurationCategoryFilter(CategoryType categoryType) {
         this.categoryType = categoryType;
     }
 

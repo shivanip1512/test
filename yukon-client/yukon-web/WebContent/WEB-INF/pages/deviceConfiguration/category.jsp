@@ -9,7 +9,7 @@
 <cti:standardPage module="tools" page="configs.category.${mode}">
     <tags:setFormEditMode mode="${mode}"/>
     
-    <form:form commandName="categoryEditBean" id="categoryForm" action="saveCategory">
+    <form:form commandName="categoryEditBean" id="categoryForm" action="save">
         <form:hidden path="categoryType"/>
         <form:hidden path="categoryId"/>
     
@@ -72,7 +72,7 @@
                         <c:otherwise>
                             <cti:displayForPageEditModes modes="VIEW">
                                 <c:choose>
-                                    <c:when test="${field.isEnum}">
+                                    <c:when test="${field['enum']}">
                                         <c:forEach var="option" items="${field.inputType.optionList}">
                                             <c:if test="${option.value == categoryEditBean.categoryInputs[(field.fieldName)]}">
                                                 <cti:msg2 key="${option}"/>
@@ -106,12 +106,12 @@
         <cti:displayForPageEditModes modes="VIEW">
             <div class="pageActionArea">
                 <cti:checkRolesAndProperties value="${editingRoleProperty}">
-                    <cti:url value="editCategory" var="editUrl">
+                    <cti:url var="editUrl" value="edit">
                         <cti:param name="categoryId" value="${categoryEditBean.categoryId}"/>
                     </cti:url>
                     <cti:button nameKey="edit" href="${editUrl}" icon="icon-pencil"/>
                 </cti:checkRolesAndProperties>
-                <cti:button nameKey="back" href="home"/>
+                <cti:button nameKey="back" href="/deviceConfiguration/home"/>
             </div>
         </cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="EDIT">
@@ -121,12 +121,12 @@
                     <cti:button nameKey="save" id="save" type="submit" classes="primary action"/>
                     <c:if test="${isDeletable}">
                         <dialog:confirm on="#remove" nameKey="confirmRemove"/>
-                        <cti:url var="deleteUrl" value="deleteCategory">
+                        <cti:url var="deleteUrl" value="delete">
                             <cti:param name="categoryId" value="${categoryEditBean.categoryId}"/>
                         </cti:url>
                         <cti:button nameKey="remove" id="remove" href="${deleteUrl}"/>
                     </c:if>
-                    <cti:url var="viewUrl" value="viewCategory">
+                    <cti:url var="viewUrl" value="view">
                         <cti:param name="categoryId" value="${categoryEditBean.categoryId}"/>
                     </cti:url>
                     <cti:button nameKey="cancel" href="${viewUrl}"/>
@@ -137,7 +137,7 @@
             <cti:checkRolesAndProperties value="${editingRoleProperty}">
                 <div class="pageActionArea">
                     <cti:button nameKey="create" type="submit" classes="primary action"/>
-                    <cti:button nameKey="cancel" href="home"/>
+                    <cti:button nameKey="cancel" href="/deviceConfiguration/home"/>
                 </div>
             </cti:checkRolesAndProperties>
         </cti:displayForPageEditModes>

@@ -5,13 +5,16 @@ import java.util.List;
 /**
  * Represents a device configuration category in the database.
  */
-public final class DeviceConfigurationCategory {
+public final class DeviceConfigCategory {
     private final Integer categoryId;
     private final String categoryType;
     private final String categoryName;
-    private final List<DeviceConfigurationCategoryItem> deviceConfigurationItems;
+    private final List<DeviceConfigCategoryItem> deviceConfigurationItems;
     
-    public DeviceConfigurationCategory(Integer categoryId, String categoryType, String categoryName, List<DeviceConfigurationCategoryItem> deviceConfigurationItems) {
+    public DeviceConfigCategory(Integer categoryId, 
+                                String categoryType, 
+                                String categoryName, 
+                                List<DeviceConfigCategoryItem> deviceConfigurationItems) {
         this.categoryId = categoryId;
         this.categoryType = categoryType;
         this.categoryName = categoryName;
@@ -30,7 +33,7 @@ public final class DeviceConfigurationCategory {
         return categoryName;
     }
     
-    public List<DeviceConfigurationCategoryItem> getDeviceConfigurationItems() {
+    public List<DeviceConfigCategoryItem> getDeviceConfigurationItems() {
         return deviceConfigurationItems;
     }
 }

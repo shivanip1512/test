@@ -114,14 +114,14 @@
       <sequence name="DeviceConfiguration">
         <table name="DeviceConfiguration" identitycolumn="DeviceConfigurationId" initsequence="true"/>
       </sequence>
-      <sequence name="DeviceConfigurationCategory">
-        <table name="DeviceConfigurationCategory" identitycolumn="DeviceConfigurationCategoryId" initsequence="true"/>
+      <sequence name="DeviceConfigCategory">
+        <table name="DeviceConfigCategory" identitycolumn="DeviceConfigCategoryId" initsequence="true"/>
       </sequence>
       <sequence name="DeviceConfigDeviceTypes">
-        <table name="DeviceConfigurationDeviceTypes" identitycolumn="DeviceConfigurationDeviceTypeId" initsequence="true"/>
+        <table name="DeviceConfigDeviceTypes" identitycolumn="DeviceConfigDeviceTypeId" initsequence="true"/>
       </sequence>
       <sequence name="DeviceConfigItem">
-        <table name="DeviceConfigurationItem" identitycolumn="DeviceConfigurationItemId" initsequence="true"/>
+        <table name="DeviceConfigCategoryItem" identitycolumn="DeviceConfigurationItemId" initsequence="true"/>
       </sequence>
       <sequence name="LMControlInfo">
         <table name="LMHardwareControlGroup" identitycolumn="ControlEntryId" initsequence="true"/>

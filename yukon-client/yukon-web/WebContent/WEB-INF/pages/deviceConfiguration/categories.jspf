@@ -30,7 +30,7 @@
                             initialId="${deviceConfigurationBackingBean.categorySelections[(loopStatus.index)].categoryId}"/>&nbsp;
                     </div>
                 </spring:bind>
-                <cti:button nameKey="create" href="createCategory?categoryType=${category.categoryDisplay.categoryType}" classes="fn"/>
+                <cti:button nameKey="create" href="/deviceConfiguration/category/create?categoryType=${category.categoryDisplay.categoryType}" classes="fn"/>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="VIEW">
                 ${deviceConfigurationBackingBean.categorySelections[(loopStatus.index)].categoryName}

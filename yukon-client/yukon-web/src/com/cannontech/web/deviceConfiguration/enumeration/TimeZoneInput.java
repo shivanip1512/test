@@ -10,7 +10,7 @@ import com.google.common.collect.ImmutableList.Builder;
 @Component
 public final class TimeZoneInput implements DeviceConfigurationInputEnumeration {
 
-    private static final String baseKey = "yukon.web.modules.tools.configs.enum.dst";
+    private static final String baseKey = "yukon.web.modules.tools.configs.enum.timeZone";
     
     private static final List<DisplayableValue> inputs;
     
@@ -46,7 +46,7 @@ public final class TimeZoneInput implements DeviceConfigurationInputEnumeration 
     
     @Override
     public String getEnumOptionName() {
-        return "DstInput";
+        return "TimeZoneInput";
     }
 
     @Override

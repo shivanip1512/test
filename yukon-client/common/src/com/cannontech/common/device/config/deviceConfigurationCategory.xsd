@@ -5,7 +5,7 @@
     
     <xs:simpleType name="CategoryType">
         <xs:restriction base="xs:string">
-            <xs:enumeration value="dst"/>
+            <xs:enumeration value="timeZone"/>
             <xs:enumeration value="meterParameters"/>
             <xs:enumeration value="displayItems"/>
             <xs:enumeration value="mct440DemandLoadProfile"/>

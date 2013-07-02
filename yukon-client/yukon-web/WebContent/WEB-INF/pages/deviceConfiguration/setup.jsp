@@ -8,7 +8,7 @@
 <cti:standardPage module="tools" page="configs.setup">
     <cti:standardMenu/>
     
-    <form:form commandName="configurationDeviceTypesBackingBean" action="createConfiguration">
+    <form:form commandName="configurationDeviceTypesBackingBean" action="create">
         <div class="stacked">
             <i:inline key=".directions"/>
         </div>
@@ -100,8 +100,8 @@
         
         <div class="pageActionArea clear">
             <div>
-                <cti:button nameKey="cancel" name="cancel" href="home"/>
-                <cti:button nameKey="next" name="next" type="submit" classes="primary action"/>
+                <cti:button nameKey="cancel" href="/deviceConfiguration/home"/>
+                <cti:button nameKey="next" type="submit" classes="primary action"/>
             </div>
         </div>
     </form:form>

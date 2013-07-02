@@ -27,7 +27,7 @@
                                 <c:forEach var="config" items="${configurations}">
                                     <tr>
                                         <td>
-                                            <cti:url value="viewConfiguration" var="viewUrl">
+                                            <cti:url value="config/view" var="viewUrl">
                                                 <cti:param name="configId" value="${config.configurationId}"/>
                                             </cti:url>
                                             <a href="${viewUrl}">${config.name}</a>
@@ -43,7 +43,7 @@
                 </c:choose>
                 <cti:checkRolesAndProperties value="${editingRoleProperty}">
                     <div class="actionArea">
-                        <cti:url var="setupUrl" value="selectTypes"/>
+                        <cti:url var="setupUrl" value="config/selectTypes"/>
                         <cti:button nameKey="create" href="${setupUrl}" icon="icon-plus-green"/>
                     </div>
                 </cti:checkRolesAndProperties>
@@ -74,7 +74,7 @@
                                     <tr>
                                         <td>
                                             <spring:escapeBody htmlEscape="true">
-                                                <cti:url value="viewCategory" var="viewUrl">
+                                                <cti:url value="category/view" var="viewUrl">
                                                     <cti:param name="categoryId" value="${category.categoryId}"/>
                                                 </cti:url>
                                                 <a href="${viewUrl}">${category.categoryName}</a>
@@ -96,7 +96,7 @@
                 </c:choose>
                 <cti:checkRolesAndProperties value="${editingRoleProperty}">
                     <div class="actionArea">
-                        <form action="createCategory">
+                        <form action="category/create">
                             <cti:button nameKey="create" type="submit" icon="icon-plus-green"/>
                             <select name="categoryType" id="categoryTypesSelect">
                                 <c:forEach var="option" items="${categoryTypes}">

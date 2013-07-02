@@ -9,8 +9,8 @@ import java.util.Map.Entry;
 import org.apache.commons.collections.FactoryUtils;
 import org.apache.commons.collections.map.LazyMap;
 
-import com.cannontech.common.device.config.model.DeviceConfigurationCategory;
-import com.cannontech.common.device.config.model.DeviceConfigurationCategoryItem;
+import com.cannontech.common.device.config.model.DeviceConfigCategory;
+import com.cannontech.common.device.config.model.DeviceConfigCategoryItem;
 import com.google.common.collect.Maps;
 
 public class CategoryEditBean {
@@ -77,14 +77,14 @@ public class CategoryEditBean {
         this.categoryType = categoryType;
     }
     
-    public DeviceConfigurationCategory getModelObject() {
+    public DeviceConfigCategory getModelObject() {
         if (categoryName == null || categoryType == null || categoryInputs.isEmpty()) {
             throw new RuntimeException();
         }
         
-        List<DeviceConfigurationCategoryItem> items = new ArrayList<>();
+        List<DeviceConfigCategoryItem> items = new ArrayList<>();
         for (Entry<String, String> entry : categoryInputs.entrySet()) {
-            items.add(new DeviceConfigurationCategoryItem(categoryId, entry.getKey(), entry.getValue()));
+            items.add(new DeviceConfigCategoryItem(categoryId, entry.getKey(), entry.getValue()));
         }
         
         // This is bad and for TOU only. Should be fixed.
@@ -96,11 +96,11 @@ public class CategoryEditBean {
                 String timeField = entry.getKey() + rateEntry.getKey();
                 String rateField = entry.getKey() + rateEntry.getKey().replace("time", "rate"); // sigh.
                 
-                items.add(new DeviceConfigurationCategoryItem(categoryId, timeField, rateEntry.getValue().getTime()));
-                items.add(new DeviceConfigurationCategoryItem(categoryId, rateField, rateEntry.getValue().getRate()));
+                items.add(new DeviceConfigCategoryItem(categoryId, timeField, rateEntry.getValue().getTime()));
+                items.add(new DeviceConfigCategoryItem(categoryId, rateField, rateEntry.getValue().getRate()));
             }
         }
         
-        return new DeviceConfigurationCategory(categoryId, categoryType, categoryName, items);
+        return new DeviceConfigCategory(categoryId, categoryType, categoryName, items);
     }
 }

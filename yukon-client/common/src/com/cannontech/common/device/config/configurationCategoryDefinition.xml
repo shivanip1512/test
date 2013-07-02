@@ -4,8 +4,8 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="configurationCategoryDefinition.xsd">
     
-    <category type="dst">
-        <enum field="timeZoneOffset" type="DstInput"/>
+    <category type="timeZone">
+        <enum field="timeZoneOffset" type="TimeZoneInput"/>
     </category>
     
     <category type="meterParameters">
@@ -41,12 +41,6 @@
         <enum field="displayItem24" type="DisplayItem" default="0"/>
         <enum field="displayItem25" type="DisplayItem" default="0"/>
         <enum field="displayItem26" type="DisplayItem" default="0"/>
-    </category>
-    
-    <category type="mct440DemandLoadProfile">
-        <enum field="kwProfileInterval" type="Interval" default="60"/>
-        <enum field="voltageProfileInterval" type="Interval" default="60"/>
-        <enum field="demandInterval" type="Interval" default="5"/>
     </category>
     
     <category type="mct440Configuration">

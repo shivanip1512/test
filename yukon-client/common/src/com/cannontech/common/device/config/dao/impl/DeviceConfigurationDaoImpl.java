@@ -38,8 +38,8 @@ import com.cannontech.common.device.config.dao.InvalidConfigurationRemovalExcept
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
-import com.cannontech.common.device.config.model.DeviceConfigurationCategory;
-import com.cannontech.common.device.config.model.DeviceConfigurationCategoryItem;
+import com.cannontech.common.device.config.model.DeviceConfigCategory;
+import com.cannontech.common.device.config.model.DeviceConfigCategoryItem;
 import com.cannontech.common.device.config.model.DisplayableConfigurationCategory;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.jaxb.Category;
@@ -48,7 +48,6 @@ import com.cannontech.common.device.config.model.jaxb.DeviceConfigurationCategor
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
-import com.cannontech.common.pao.definition.model.jaxb.DeviceCategories;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
@@ -165,38 +164,38 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     }
     
     private static class ItemByCategoryRowMapper implements YukonRowCallbackHandler {
-        private final ListMultimap<Integer, DeviceConfigurationCategoryItem> itemsByCategoryId = ArrayListMultimap.create();
+        private final ListMultimap<Integer, DeviceConfigCategoryItem> itemsByCategoryId = ArrayListMultimap.create();
         
         @Override
         public void processRow(YukonResultSet rs) throws SQLException {
-            int categoryId = rs.getInt("DeviceConfigurationCategoryId");
+            int categoryId = rs.getInt("DeviceConfigCategoryId");
             String itemName = rs.getString("ItemName");
             String itemValue = rs.getString("ItemValue");
             
-            DeviceConfigurationCategoryItem item = new DeviceConfigurationCategoryItem(categoryId, itemName, itemValue);
+            DeviceConfigCategoryItem item = new DeviceConfigCategoryItem(categoryId, itemName, itemValue);
             
             itemsByCategoryId.put(item.getCategoryId(), item);
         }
     }
     
     private static class CategoryRowMapper implements YukonRowCallbackHandler {
-        private final ListMultimap<Integer, DeviceConfigurationCategoryItem> itemsByCategoryId;
-        private final Map<Integer, DeviceConfigurationCategory> categoriesById = new TreeMap<>();
+        private final ListMultimap<Integer, DeviceConfigCategoryItem> itemsByCategoryId;
+        private final Map<Integer, DeviceConfigCategory> categoriesById = new TreeMap<>();
         
         @Override
         public void processRow(YukonResultSet rs) throws SQLException {
-            int categoryId = rs.getInt("DeviceConfigurationCategoryId");
+            int categoryId = rs.getInt("DeviceConfigCategoryId");
             String categoryType = rs.getString("CategoryType");
             String categoryName = rs.getString("Name");
-            List<DeviceConfigurationCategoryItem> categoryItems = itemsByCategoryId.get(categoryId);
+            List<DeviceConfigCategoryItem> categoryItems = itemsByCategoryId.get(categoryId);
             
-            DeviceConfigurationCategory category = 
-                new DeviceConfigurationCategory(categoryId, categoryType, categoryName, categoryItems);
+            DeviceConfigCategory category = 
+                new DeviceConfigCategory(categoryId, categoryType, categoryName, categoryItems);
             
             categoriesById.put(categoryId, category);
         }
         
-        public CategoryRowMapper(ListMultimap<Integer, DeviceConfigurationCategoryItem> itemsByCategoryId) {
+        public CategoryRowMapper(ListMultimap<Integer, DeviceConfigCategoryItem> itemsByCategoryId) {
             this.itemsByCategoryId = itemsByCategoryId;
         }
     }
@@ -207,7 +206,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         @Override
         public void processRow(YukonResultSet rs) throws SQLException {
             int configurationId = rs.getInt("DeviceConfigurationId");
-            int categoryId = rs.getInt("DeviceConfigurationCategoryId");
+            int categoryId = rs.getInt("DeviceConfigCategoryId");
             
             configurationToCategoryMap.put(configurationId, categoryId);
         }
@@ -228,11 +227,11 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     private static class ConfigurationRowMapper implements YukonRowMapper<DeviceConfiguration> {
         private final ListMultimap<Integer, Integer> configToCategoryMap;
         private final SetMultimap<Integer, PaoType> configToDeviceTypesMap;
-        private final Map<Integer, DeviceConfigurationCategory> categoriesById;
+        private final Map<Integer, DeviceConfigCategory> categoriesById;
         
         public ConfigurationRowMapper(ListMultimap<Integer, Integer> configToCategoryMap,
                                       SetMultimap<Integer, PaoType> configToDeviceTypesMap,
-                                      Map<Integer, DeviceConfigurationCategory> categoriesById) {
+                                      Map<Integer, DeviceConfigCategory> categoriesById) {
             this.configToCategoryMap = configToCategoryMap;
             this.configToDeviceTypesMap = configToDeviceTypesMap;
             this.categoriesById = categoriesById;
@@ -245,7 +244,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
             
             List<Integer> categoryIds = configToCategoryMap.get(configurationId);
             
-            List<DeviceConfigurationCategory> categories = new ArrayList<>();
+            List<DeviceConfigCategory> categories = new ArrayList<>();
             for (Integer categoryId : categoryIds) {
                 categories.add(categoriesById.get(categoryId));
             }
@@ -311,17 +310,17 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     @Override
     public List<DisplayableConfigurationCategory> getAllDeviceConfigurationCategories() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DCC.Name, DCC.CategoryType, DCC.DeviceConfigurationCategoryId,");
+        sql.append("SELECT DCC.Name, DCC.CategoryType, DCC.DeviceConfigCategoryId,");
         sql.append("    (SELECT COUNT(*)");
-        sql.append("     FROM DeviceConfigurationCategoryMap DCCM");
-        sql.append("     WHERE DCCM.DeviceConfigurationCategoryId = DCC.DeviceConfigurationCategoryId) AS NumConfigs");
-        sql.append("FROM DeviceConfigurationCategory DCC");
+        sql.append("     FROM DeviceConfigCategoryMap DCCM");
+        sql.append("     WHERE DCCM.DeviceConfigCategoryId = DCC.DeviceConfigCategoryId) AS NumConfigs");
+        sql.append("FROM DeviceConfigCategory DCC");
         
         List<DisplayableConfigurationCategory> displayables = 
             jdbcTemplate.query(sql, new YukonRowMapper<DisplayableConfigurationCategory>() {
                 @Override
                 public DisplayableConfigurationCategory mapRow(YukonResultSet rs) throws SQLException {
-                    int categoryId = rs.getInt("DeviceConfigurationCategoryId");
+                    int categoryId = rs.getInt("DeviceConfigCategoryId");
                     String name = rs.getString("Name");
                     String type = rs.getString("CategoryType");
                     int numConfigs = rs.getInt("NumConfigs");
@@ -334,22 +333,22 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     }
     
     @Override
-    public DeviceConfigurationCategory getDeviceConfigurationCategory(int categoryId) {
+    public DeviceConfigCategory getDeviceConfigCategory(int categoryId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DCI.DeviceConfigurationCategoryId, DCI.ItemName, DCI.ItemValue");
-        sql.append("FROM DeviceConfigurationCategoryItem DCI");
-        sql.append("   JOIN DeviceConfigurationCategory DCC");
-        sql.append("      ON DCI.DeviceConfigurationCategoryId = DCC.DeviceConfigurationCategoryId");
-        sql.append("WHERE DCC.DeviceConfigurationCategoryId").eq(categoryId);
+        sql.append("SELECT DCI.DeviceConfigCategoryId, DCI.ItemName, DCI.ItemValue");
+        sql.append("FROM DeviceConfigCategoryItem DCI");
+        sql.append("   JOIN DeviceConfigCategory DCC");
+        sql.append("      ON DCI.DeviceConfigCategoryId = DCC.DeviceConfigCategoryId");
+        sql.append("WHERE DCC.DeviceConfigCategoryId").eq(categoryId);
         sql.append("ORDER BY DCI.ItemName ASC");
         
         ItemByCategoryRowMapper itemByCategoryRowMapper = new ItemByCategoryRowMapper();
         jdbcTemplate.query(sql, itemByCategoryRowMapper);
         
         SqlStatementBuilder categorySql = new SqlStatementBuilder();
-        categorySql.append("SELECT DCC.DeviceConfigurationCategoryId, DCC.CategoryType, DCC.Name");
-        categorySql.append("FROM DeviceConfigurationCategory DCC");
-        categorySql.append("WHERE DCC.DeviceConfigurationCategoryId").eq(categoryId);
+        categorySql.append("SELECT DCC.DeviceConfigCategoryId, DCC.CategoryType, DCC.Name");
+        categorySql.append("FROM DeviceConfigCategory DCC");
+        categorySql.append("WHERE DCC.DeviceConfigCategoryId").eq(categoryId);
         
         CategoryRowMapper categoryRowMapper = new CategoryRowMapper(itemByCategoryRowMapper.itemsByCategoryId);
         jdbcTemplate.query(categorySql, categoryRowMapper);
@@ -413,12 +412,12 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     
     private ItemByCategoryRowMapper getItemsForConfiguration(Integer configId) {
         SqlStatementBuilder itemSql = new SqlStatementBuilder();
-        itemSql.append("SELECT DCI.DeviceConfigurationCategoryId, DCI.ItemName, DCI.ItemValue");
-        itemSql.append("FROM DeviceConfigurationCategoryItem DCI");
-        itemSql.append("   JOIN DeviceConfigurationCategory DCC");
-        itemSql.append("      ON DCI.DeviceConfigurationCategoryId = DCC.DeviceConfigurationCategoryId");
-        itemSql.append("   JOIN DeviceConfigurationCategoryMap DCCM");
-        itemSql.append("      ON DCC.DeviceConfigurationCategoryId = DCCM.DeviceConfigurationCategoryId");
+        itemSql.append("SELECT DCI.DeviceConfigCategoryId, DCI.ItemName, DCI.ItemValue");
+        itemSql.append("FROM DeviceConfigCategoryItem DCI");
+        itemSql.append("   JOIN DeviceConfigCategory DCC");
+        itemSql.append("      ON DCI.DeviceConfigCategoryId = DCC.DeviceConfigCategoryId");
+        itemSql.append("   JOIN DeviceConfigCategoryMap DCCM");
+        itemSql.append("      ON DCC.DeviceConfigCategoryId = DCCM.DeviceConfigCategoryId");
         itemSql.append("   JOIN DeviceConfiguration DC ON DCCM.DeviceConfigurationId = DC.DeviceConfigurationId");
         
         if (configId != null) {
@@ -433,10 +432,10 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     
     private CategoryRowMapper getCategories(ItemByCategoryRowMapper itemByCategoryRowMapper, Integer configId) {
         SqlStatementBuilder categorySql = new SqlStatementBuilder();
-        categorySql.append("SELECT DCC.DeviceConfigurationCategoryId, DCC.CategoryType, DCC.Name");
-        categorySql.append("FROM DeviceConfigurationCategory DCC");
-        categorySql.append("   JOIN DeviceConfigurationCategoryMap DCCM");
-        categorySql.append("      ON DCC.DeviceConfigurationCategoryId = DCCM.DeviceConfigurationCategoryId");
+        categorySql.append("SELECT DCC.DeviceConfigCategoryId, DCC.CategoryType, DCC.Name");
+        categorySql.append("FROM DeviceConfigCategory DCC");
+        categorySql.append("   JOIN DeviceConfigCategoryMap DCCM");
+        categorySql.append("      ON DCC.DeviceConfigCategoryId = DCCM.DeviceConfigCategoryId");
         categorySql.append("   JOIN DeviceConfiguration DC ON DCCM.DeviceConfigurationId = DC.DeviceConfigurationId");
         
         if (configId != null) {
@@ -452,7 +451,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     private ConfigurationToDeviceTypesRowMapper getDeviceTypesForConfig(Integer configId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DeviceConfigurationId, PaoType");
-        sql.append("FROM DeviceConfigurationDeviceTypes");
+        sql.append("FROM DeviceConfigDeviceTypes");
         
         if (configId != null) {
             sql.append("WHERE DeviceConfigurationId").eq(configId);
@@ -467,8 +466,8 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     
     private ConfigurationToCategoryRowMapper getCategoriesForConfig(Integer configId) {
         SqlStatementBuilder mapSql = new SqlStatementBuilder();
-        mapSql.append("SELECT DeviceConfigurationId, DeviceConfigurationCategoryId");
-        mapSql.append("FROM DeviceConfigurationCategoryMap");
+        mapSql.append("SELECT DeviceConfigurationId, DeviceConfigCategoryId");
+        mapSql.append("FROM DeviceConfigCategoryMap");
         
         if (configId != null) {
             mapSql.append("WHERE DeviceConfigurationId").eq(configId);
@@ -484,7 +483,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     public boolean categoriesExistForType(String categoryType) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*)");
-        sql.append("FROM DeviceConfigurationCategory");
+        sql.append("FROM DeviceConfigCategory");
         sql.append("WHERE CategoryType").eq(categoryType);
         
         int numCategories = jdbcTemplate.queryForInt(sql);
@@ -506,15 +505,15 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     public int getNumberOfConfigurationsForCategory(int categoryId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*)");
-        sql.append("FROM DeviceConfigurationCategoryMap");
-        sql.append("WHERE DeviceConfigurationCategoryId").eq(categoryId);
+        sql.append("FROM DeviceConfigCategoryMap");
+        sql.append("WHERE DeviceConfigCategoryId").eq(categoryId);
         
         return jdbcTemplate.queryForInt(sql);
     }
     
     @Override
     @Transactional
-    public void saveConfiguration(DeviceConfiguration configuration) {
+    public int saveConfiguration(DeviceConfiguration configuration) {
         Integer configurationId = configuration.getConfigurationId();
         
         DbChangeType dbChangeType = DbChangeType.ADD;
@@ -531,14 +530,14 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         } else {
             // Clear out any previous supported pao types.
             SqlStatementBuilder deviceTypeSql = new SqlStatementBuilder();
-            deviceTypeSql.append("DELETE FROM DeviceConfigurationDeviceTypes");
+            deviceTypeSql.append("DELETE FROM DeviceConfigDeviceTypes");
             deviceTypeSql.append("WHERE DeviceConfigurationId").eq(configurationId);
             
             jdbcTemplate.update(deviceTypeSql);
             
             // Clear out any previous category assignments.
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("DELETE FROM DeviceConfigurationCategoryMap");
+            sql.append("DELETE FROM DeviceConfigCategoryMap");
             sql.append("WHERE DeviceConfigurationId").eq(configurationId);
             
             jdbcTemplate.update(sql);
@@ -562,17 +561,19 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
                                         DBChangeMsg.CAT_DEVICE_CONFIG, 
                                         CONFIG_OBJECT_TYPE, 
                                         dbChangeType);
+        
+        return configurationId;
     }
     
     private void writeCategoriesAndDeviceTypes(DeviceConfiguration configuration, int configurationId) {
         List<Integer> categoryIds = new ArrayList<>();
-        for (DeviceConfigurationCategory category : configuration.getCategories()) {
+        for (DeviceConfigCategory category : configuration.getCategories()) {
             categoryIds.add(category.getCategoryId());
         }
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("INSERT INTO DeviceConfigurationCategoryMap");
-        sql.append("(DeviceConfigurationId, DeviceConfigurationCategoryId)");
+        sql.append("INSERT INTO DeviceConfigCategoryMap");
+        sql.append("(DeviceConfigurationId, DeviceConfigCategoryId)");
         sql.append("VALUES (?, ?)");
         
         List<Object[]> batchArgs = new ArrayList<>();
@@ -583,13 +584,13 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         jdbcTemplate.batchUpdate(sql.getSql(), batchArgs);
         
         SqlStatementBuilder deviceTypeSql = new SqlStatementBuilder();
-        deviceTypeSql.append("INSERT INTO DeviceConfigurationDeviceTypes");
-        deviceTypeSql.append("(DeviceConfigurationDeviceTypeId, DeviceConfigurationId, PaoType)");
+        deviceTypeSql.append("INSERT INTO DeviceConfigDeviceTypes");
+        deviceTypeSql.append("(DeviceConfigDeviceTypeId, DeviceConfigurationId, PaoType)");
         deviceTypeSql.append("VALUES (?, ?, ?)");
         
         List<Object[]> deviceTypeArgs = new ArrayList<>();
         for (PaoType paoType : configuration.getSupportedDeviceTypes()) {
-            int mappingId = nextValueHelper.getNextValue("DeviceConfigurationDeviceTypes");
+            int mappingId = nextValueHelper.getNextValue("DeviceConfigDeviceTypes");
             deviceTypeArgs.add(new Object[] {mappingId, configurationId, paoType.getDatabaseRepresentation()});
         }
         
@@ -604,7 +605,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         
         // Delete the category associations first.
         SqlStatementBuilder categorySql = new SqlStatementBuilder();
-        categorySql.append("DELETE FROM DeviceConfigurationCategoryMap");
+        categorySql.append("DELETE FROM DeviceConfigCategoryMap");
         categorySql.append("WHERE DeviceConfigurationId").eq(deviceConfigurationId);
     
         jdbcTemplate.update(categorySql);
@@ -628,15 +629,15 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     public void deleteCategory(int categoryId) {
         // Delete the items first.
         SqlStatementBuilder itemSql = new SqlStatementBuilder();
-        itemSql.append("DELETE FROM DeviceConfigurationCategoryItem");
-        itemSql.append("WHERE DeviceConfigurationCategoryId").eq(categoryId);
+        itemSql.append("DELETE FROM DeviceConfigCategoryItem");
+        itemSql.append("WHERE DeviceConfigCategoryId").eq(categoryId);
         
         jdbcTemplate.update(itemSql);
         
         // Delete the category
         SqlStatementBuilder categorySql = new SqlStatementBuilder();
-        categorySql.append("DELETE FROM DeviceConfigurationCategory");
-        categorySql.append("WHERE DeviceConfigurationCategoryId").eq(categoryId);
+        categorySql.append("DELETE FROM DeviceConfigCategory");
+        categorySql.append("WHERE DeviceConfigCategoryId").eq(categoryId);
         
         jdbcTemplate.update(categorySql);
 
@@ -649,31 +650,31 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     
     @Override
     @Transactional
-    public void saveCategory(DeviceConfigurationCategory category) {
+    public int saveCategory(DeviceConfigCategory category) {
         Integer categoryId = category.getCategoryId();
         
         DbChangeType dbChangeType = DbChangeType.ADD;
         if (categoryId == null) {
             // We need to create the category before inserting the items.
-            categoryId = nextValueHelper.getNextValue("DeviceConfigurationCategory");
+            categoryId = nextValueHelper.getNextValue("DeviceConfigCategory");
             
             createCategory(categoryId, category);
             
             // Add the items.
-            for (DeviceConfigurationCategoryItem item : category.getDeviceConfigurationItems()) {
+            for (DeviceConfigCategoryItem item : category.getDeviceConfigurationItems()) {
                 insertCategoryItem(item, categoryId);
             }
         } else {
             // Update the name.
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            SqlParameterSink params = sql.update("DeviceConfigurationCategory");
+            SqlParameterSink params = sql.update("DeviceConfigCategory");
             params.addValue("Name", category.getCategoryName());
-            sql.append("WHERE DeviceConfigurationCategoryId").eq(category.getCategoryId());
+            sql.append("WHERE DeviceConfigCategoryId").eq(category.getCategoryId());
             
             jdbcTemplate.update(sql);
             
             // Update the item values.
-            for (DeviceConfigurationCategoryItem item : category.getDeviceConfigurationItems()) {
+            for (DeviceConfigCategoryItem item : category.getDeviceConfigurationItems()) {
                 updateCategoryItem(item);
             }
             
@@ -685,36 +686,38 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
                                         DBChangeMsg.CAT_DEVICE_CONFIG, 
                                         CATEGORY_OBJECT_TYPE, 
                                         dbChangeType);
+        
+        return categoryId;
     }
     
-    private void insertCategoryItem(DeviceConfigurationCategoryItem item, int categoryId) {
-        int deviceConfigurationItemId = nextValueHelper.getNextValue("DeviceConfigurationCategoryItem");
+    private void insertCategoryItem(DeviceConfigCategoryItem item, int categoryId) {
+        int deviceConfigurationItemId = nextValueHelper.getNextValue("DeviceConfigCategoryItem");
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        SqlParameterSink params = sql.insertInto("DeviceConfigurationCategoryItem");
+        SqlParameterSink params = sql.insertInto("DeviceConfigCategoryItem");
         params.addValue("DeviceConfigurationItemId", deviceConfigurationItemId);
-        params.addValue("DeviceConfigurationCategoryId", categoryId);
+        params.addValue("DeviceConfigCategoryId", categoryId);
         params.addValue("ItemName", item.getFieldName());
         params.addValue("ItemValue", item.getValue());
         
         jdbcTemplate.update(sql);
     }
     
-    private void updateCategoryItem(DeviceConfigurationCategoryItem item) {
+    private void updateCategoryItem(DeviceConfigCategoryItem item) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        SqlParameterSink params = sql.update("DeviceConfigurationCategoryItem");
+        SqlParameterSink params = sql.update("DeviceConfigCategoryItem");
         params.addValue("ItemValue", item.getValue());
         
         sql.append("WHERE ItemName").eq(item.getFieldName());
-        sql.append("AND DeviceConfigurationCategoryId").eq(item.getCategoryId());
+        sql.append("AND DeviceConfigCategoryId").eq(item.getCategoryId());
         
         jdbcTemplate.update(sql);
     }
     
-    private void createCategory(int categoryId, DeviceConfigurationCategory category) {
+    private void createCategory(int categoryId, DeviceConfigCategory category) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        SqlParameterSink params = sql.insertInto("DeviceConfigurationCategory");
-        params.addValue("DeviceConfigurationCategoryId", categoryId);
+        SqlParameterSink params = sql.insertInto("DeviceConfigCategory");
+        params.addValue("DeviceConfigCategoryId", categoryId);
         params.addValue("CategoryType", category.getCategoryType());
         params.addValue("Name", category.getCategoryName());
         
@@ -731,7 +734,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DC.DeviceConfigurationId, DC.Name");
         sql.append("FROM DeviceConfiguration DC");
-        sql.append("   JOIN DeviceConfigurationDeviceTypes DCDT");
+        sql.append("   JOIN DeviceConfigDeviceTypes DCDT");
         sql.append("      ON DC.DeviceConfigurationId = DCDT.DeviceConfigurationId");
         sql.append("WHERE DCDT.PaoType").eq(paoType);
         
@@ -760,7 +763,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     public boolean isTypeSupportedByConfiguration(LightDeviceConfiguration configuration, PaoType paoType) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*)");
-        sql.append("FROM DeviceConfigurationDeviceTypes");
+        sql.append("FROM DeviceConfigDeviceTypes");
         sql.append("WHERE DeviceConfigurationId").eq(configuration.getConfigurationId());
         sql.append("   AND PaoType").eq(paoType);
         
@@ -778,10 +781,10 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
             return null;
         }
         
-        List<DeviceConfigurationCategory> categories = configuration.getCategories();
+        List<DeviceConfigCategory> categories = configuration.getCategories();
         
-        DeviceConfigurationCategory dnpCategory = null;
-        for (DeviceConfigurationCategory category : categories) {
+        DeviceConfigCategory dnpCategory = null;
+        for (DeviceConfigCategory category : categories) {
             if (CategoryType.DNP.value().compareTo(category.getCategoryType()) == 0) {
                 dnpCategory = category;
                 break;
@@ -795,7 +798,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         DNPConfiguration dnpConfiguration = 
             new DNPConfiguration(configuration.getConfigurationId(), configuration.getName());
         
-        for (DeviceConfigurationCategoryItem item : dnpCategory.getDeviceConfigurationItems()) {
+        for (DeviceConfigCategoryItem item : dnpCategory.getDeviceConfigurationItems()) {
             switch (item.getFieldName()) {
             case "internalRetries":
                 dnpConfiguration.setInternalRetries(Integer.valueOf(item.getValue()));
@@ -882,7 +885,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     public String getValueForItemName(int configId, String itemName) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ItemValue");
-        sql.append("FROM DeviceConfigurationCategoryItem");
+        sql.append("FROM DeviceConfigCategoryItem");
         sql.append("WHERE DeviceConfigurationID").eq(configId).append("AND ItemName").eq(itemName);
         
         return jdbcTemplate.queryForString(sql);
