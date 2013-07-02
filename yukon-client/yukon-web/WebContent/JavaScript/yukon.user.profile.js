@@ -37,11 +37,11 @@ if(typeof(UserPreferences) === 'undefined') {
             jQuery(document).on("dialogclose", "#dlg_change_password", this.blankout_password_form);
 
             jQuery(document).on("keyup", 'input[type="text"]', this.update_input_title);
-            jQuery(document).on("click", "#btn_addContactInfo", this.add_contact_notif-row);
+            jQuery(document).on("click", "#btn_addContactInfo", this.add_contact_notif_row);
             jQuery(document).on("change", ".f-has_selectOne", this.select_remove_selectOne);
 
-            jQuery(document).on("click", "#contactNotifs td a.removeBtn", this.remove_contact_notif-row);
-            jQuery(document).on("change", "select.f-contactNotif-type", this.update_contact_notif-input_formatting);
+            jQuery(document).on("click", "#contactNotifs td a.removeBtn", this.remove_contact_notif_row);
+            jQuery(document).on("change", "select.f-contactNotif-type", this.update_contact_notif_input_formatting);
 
             // NEW PAGINATION
             jQuery(document).on('click', '.f-ajaxPaging', this.paginate_activity_stream);
@@ -144,7 +144,7 @@ if(typeof(UserPreferences) === 'undefined') {
             }
         },
 
-        update_contact_notif-input_formatting: function(event) {
+        update_contact_notif_input_formatting: function(event) {
             var ctrl_select = jQuery(event.currentTarget);
             var selected_option_val = ctrl_select.find(":selected").val();
             var input = ctrl_select.closest("tr").find("input.f-contactNotif-val");
@@ -190,7 +190,7 @@ if(typeof(UserPreferences) === 'undefined') {
         },
 
         set_enum_preference_default: function(event) {
-            var btn_sameOption = UserPreferences._get_pref-button_with_same_option(jQuery(event.currentTarget), event);
+            var btn_sameOption = UserPreferences._get_pref_button_with_same_option(jQuery(event.currentTarget), event);
             UserPreferences._set_enum_preference(event, btn_sameOption);
         },
 
@@ -226,7 +226,7 @@ if(typeof(UserPreferences) === 'undefined') {
             }
         },
 
-        add_contact_notif-row: function(event) {
+        add_contact_notif_row: function(event) {
             var new_row =jQuery("tr#template_contactNotif").clone();
             if(new_row.length < 1) {
                 alert("INTERNAL ERROR #1: missing contact info template row");
@@ -240,9 +240,9 @@ if(typeof(UserPreferences) === 'undefined') {
             var last_existing_row = jQuery("#contactNotifs").find("tr:not(#template_contactNotif):last");
             var next_index = 0;
             if(last_existing_row.length > 0) {
-                next_index = 1+ UserPreferences._calc_contact_notif-row_index(last_existing_row.find("select"));
+                next_index = 1+ UserPreferences._calc_contact_notif_row_index(last_existing_row.find("select"));
             }
-            UserPreferences._renumber_contact_notif-controls(new_row, next_index);
+            UserPreferences._renumber_contact_notif_controls(new_row, next_index);
 
             jQuery("#contactNotifs tbody").append(new_row);
             new_row.show();
@@ -250,16 +250,16 @@ if(typeof(UserPreferences) === 'undefined') {
             ctrlType.focus();
         },
 
-        remove_contact_notif-row: function(event) {
+        remove_contact_notif_row: function(event) {
             var row = jQuery(event.currentTarget).closest('tr');
             var prev_row = row.prev("tr:not(#template_contactNotif)");
             var index = 0;
             if (prev_row.length != 0) {
-                index = 1+ UserPreferences._calc_contact_notif-row_index(prev_row.find("select"));
+                index = 1+ UserPreferences._calc_contact_notif_row_index(prev_row.find("select"));
             }
             var sibs = row.next();
             while(sibs.length > 0) {
-                UserPreferences._renumber_contact_notif-controls(sibs, index);
+                UserPreferences._renumber_contact_notif_controls(sibs, index);
                 index++;
                 sibs = sibs.next();
             }
@@ -278,7 +278,7 @@ if(typeof(UserPreferences) === 'undefined') {
 
         /* PRIVATE METHODS */
 
-        _get_pref-button_with_same_option: function(jqueryElement, event) {
+        _get_pref_button_with_same_option: function(jqueryElement, event) {
             var btn_sameOption = jqueryElement.closest("td").find("button:not(.f-pref-default)[data-value="+ jQuery(event.currentTarget).attr('data-value') +"]");
             return btn_sameOption;
         },
@@ -338,7 +338,7 @@ if(typeof(UserPreferences) === 'undefined') {
          * @param jQueryElement     A control with the extended name, including index as: "[nn]"
          * @returns                 int the index
          */
-        _calc_contact_notif-row_index: function(jQueryElement) {
+        _calc_contact_notif_row_index: function(jQueryElement) {
             var name = jQueryElement.attr("name");
             var iStart = name.indexOf("[")+1;
             var iEnd = name.indexOf("]");
@@ -346,7 +346,7 @@ if(typeof(UserPreferences) === 'undefined') {
             return parseInt(str_id, 10);
         },
 
-        _renumber_contact_notif-controls: function(jQueryRow, newIndex) {
+        _renumber_contact_notif_controls: function(jQueryRow, newIndex) {
             var ctrlType = jQueryRow.find("select");
             var nameType = UserPreferences._control_name_prefix +"["+ newIndex +"].contactNotificationType";
             var ctrlVal = jQueryRow.find("input");

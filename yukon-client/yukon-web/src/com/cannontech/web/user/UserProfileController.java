@@ -61,7 +61,8 @@ import com.cannontech.web.stars.service.PasswordResetService;
 import com.cannontech.web.user.model.ChangePassword;
 import com.cannontech.web.user.model.UserProfile;
 import com.cannontech.web.user.service.UserPreferenceService;
-import com.cannontech.web.user.validator.ChangePasswordValidator;
+import com.cannontech.web.user.validator.ChangePasswordValidatorFactory;
+import com.cannontech.web.user.validator.ChangePasswordValidatorFactory.ChangePasswordValidator;
 import com.cannontech.web.user.validator.UserProfileValidator;
 import com.cannontech.web.util.JsonHelper;
 
@@ -106,7 +107,7 @@ public class UserProfileController {
     @Autowired private UserPreferenceService prefService;
 
     @Autowired private UserProfileValidator userValidator;
-    @Autowired private ChangePasswordValidator passwordValidator;
+    @Autowired private ChangePasswordValidatorFactory passwordValidatorFactory;
 
     /**
      * Existing change password functionality requires: "k", "userGroupName", and more {@link PasswordResetController}
@@ -312,8 +313,9 @@ public class UserProfileController {
         }
 
         // Validate: skip the no-match message since that's already done within the UI.
-        passwordValidator.setAddMessageConfirmPasswordDoesntMatch(false);
-        passwordValidator.validate(changePassword, bindingResult);
+        ChangePasswordValidator validator = passwordValidatorFactory.getValidator();
+        validator.setAddMessageConfirmPasswordDoesntMatch(false);
+        validator.validate(changePassword, bindingResult);
         result.put("secondsToWait", changePassword.getRetrySeconds() == null
                 ? DEFAULT_RETRY_PASSWORD_IN_SECONDS : changePassword.getRetrySeconds());
 
