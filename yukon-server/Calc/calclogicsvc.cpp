@@ -1170,11 +1170,15 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *thread )
         }
 
         long uomid;
-        //Read from PointUnit Table, insert into pointStore
 
-        static const string sqlPoint =  "SELECT DISTINCT PU.POINTID, PU.UOMID "
-                                        "FROM POINTUNIT PU, CALCBASE CB, CALCCOMPONENT CC "
-                                        "WHERE PU.POINTID = CC.COMPONENTPOINTID OR PU.POINTID = CB.POINTID";
+        //Read from PointUnit Table, insert into pointStore
+        static const string sqlPoint = "SELECT DISTINCT PU.POINTID, PU.UOMID "
+                                       "FROM POINTUNIT PU, CALCBASE CB, CALCCOMPONENT CC "
+                                       "WHERE PU.POINTID = CC.COMPONENTPOINTID "
+                                       "   UNION "
+                                       "SELECT DISTINCT PU.POINTID, PU.UOMID "
+                                       "FROM POINTUNIT PU, CALCBASE CB, CALCCOMPONENT CC "
+                                       "WHERE PU.POINTID = CB.POINTID";
 
         Cti::Database::DatabaseReader unitRdr(connection);
 
