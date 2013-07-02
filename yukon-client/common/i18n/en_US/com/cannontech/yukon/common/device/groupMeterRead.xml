@@ -5,6 +5,7 @@
 	<!-- GroupMeterReadController groupMeterReadHomeGroup/Collection.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
+    <entry key="yukon.web.modules.tools.groupMeterReadHome.pageName">Device Groups</entry>
     <entry key="yukon.common.device.groupMeterRead.home.pageTitle">Group Attribute Read</entry>
     <entry key="yukon.common.device.groupMeterRead.home.tab.title">Attribute Read</entry>
     <entry key="yukon.common.device.groupMeterRead.home.selectAttributeLabel">Select Attribute(s)</entry>

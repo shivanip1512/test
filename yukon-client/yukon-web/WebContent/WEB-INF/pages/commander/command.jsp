@@ -46,17 +46,15 @@
 <c:set var="isDevicesPage" value='${category == "MCT" || category == "IED" || category == "RTU" || category == "TRANSMITTER"}'/>
 <c:set var="isLoadMngtPage" value='${not isDevicesPage}'/>
 <cti:linkTabbedContainer mode="section" id="page_header_tab_container">
-    <cti:msg var="tab_name" key="yukon.web.menu.config.commanderSelect.devices" />
-    <c:set var="on_tab" value='${isDevicesPage}'/>
-    <cti:linkTab tabId="deviceTab" selectorName="${tab_name}" tabHref="javascript:void(0);" initiallySelected="${on_tab}"/>
+    <cti:linkTab tabId="deviceTab" selectorKey="yukon.web.menu.config.commanderSelect.devices" 
+                                   initiallySelected="${isDevicesPage}">javascript:void(0);</cti:linkTab>
 
-    <cti:msg var="tab_name" key="yukon.web.menu.config.commanderSelect.lm" />
-    <c:set var="on_tab" value='${isLoadMngtPage}'/>
-    <cti:linkTab tabId="loadMgtTab" selectorName="${tab_name}" tabHref="javascript:void(0);" initiallySelected="${on_tab}"/>
+    <cti:linkTab tabId="loadMgtTab" selectorKey="yukon.web.menu.config.commanderSelect.lm" 
+                                    initiallySelected="${isLoadMngtPage}">javascript:void(0);</cti:linkTab>
 
-    <c:url var="tab_url" value="/commander/select?category=CAP" />
-    <cti:msg var="tab_name" key="yukon.web.menu.config.commanderSelect.capcontrol" />
-    <cti:linkTab tabId="capControlTab" selectorName="${tab_name}" tabHref="${tab_url}"/>
+    <cti:linkTab tabId="capControlTab" selectorKey="yukon.web.menu.config.commanderSelect.capcontrol">
+        <c:url value="/commander/select?category=CAP" />
+    </cti:linkTab>
 </cti:linkTabbedContainer>
 
 <%-- START Secondary Menu --%>

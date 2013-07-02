@@ -19,37 +19,37 @@
     <entry key="yukon.web.modules.amr.meteringStart.contextualPageName">AMI</entry>
     <entry key="yukon.web.modules.amr.meteringStart.pageTitle">Metering</entry>
 
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.pageName">Device Group Upload</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.pageName">Device Group</entry>
     <entry key="yukon.web.modules.amr.deviceGroupUpload.tab.title">Upload</entry>
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.autoCreate">Auto Create Groups</entry>
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.success">Successfully updated {0} device groups.</entry>
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.createGroups">Create Groups</entry>
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.file1">File 1</entry>
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.file2">File 2</entry>
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.file3">File 3</entry>
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.colHeader">Column Header</entry>
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.description">Description</entry>
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.identifier">Identifier</entry>
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.address">ADDRESS</entry>
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.address.description">Address of the device.</entry>
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.meterNumber">METER_NUMBER</entry>
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.meterNumber.description">Meter number of the device.</entry>
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.name">NAME</entry>
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.name.description">Name of the device.</entry>
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.deviceId">DEVICE_ID</entry>
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.deviceId.description">Device ID of the device.</entry>
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.deviceGroupSet">DEVICE_GROUP_SET</entry>
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.deviceGroupSet.description"><![CDATA[
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.autoCreate">Auto Create Groups</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.success">Successfully updated {0} device groups.</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.createGroups">Create Groups</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.file1">File 1</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.file2">File 2</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.file3">File 3</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.colHeader">Column Header</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.description">Description</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.identifier">Identifier</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.address">ADDRESS</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.address.description">Address of the device.</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.meterNumber">METER_NUMBER</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.meterNumber.description">Meter number of the device.</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.name">NAME</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.name.description">Name of the device.</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.deviceId">DEVICE_ID</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.deviceId.description">Device ID of the device.</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.deviceGroupSet">DEVICE_GROUP_SET</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.deviceGroupSet.description"><![CDATA[
     The full path of a group to either add or remove the device from.<br><br>
     Example: If the header is <b>DEVICE_GROUP_SET:group=/Meters/Extra</b>, and the value in the row is <b>true</b>, then the device will be added to the group. If the value is <b>false</b>, it will be removed from the group.<br><br>
     ]]></entry>
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.deviceGroupPrefix">DEVICE_GROUP_PREFIX</entry>
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.deviceGroupPrefix.description"><![CDATA[
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.deviceGroupPrefix">DEVICE_GROUP_PREFIX</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.deviceGroupPrefix.description"><![CDATA[
     The full path of the group to be prefixed to the group name value in each row.<br><br>
     Example: If the header is <b>DEVICE_GROUP_PREFIX:prefix=/Meters/Collection</b>, and the value in the row is <b>A</b>, then the device will be added to <b>/Meters/Collection/A</b>.<br><br>
     In addition, the device will be removed from all other groups under <b>/Meters/Collection<b>.<br><br>
     ]]></entry>
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.rules"><![CDATA[
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.rules"><![CDATA[
     <li>Files must contain a header row with valid column identifiers as listed in the table below.</li>
     <li>The first column is always the Identifier Column.  It will be used to determine which device is to be updated.</li>
     <li>One of the following column identifiers must be used in the Identifier Column:<br>
@@ -61,7 +61,7 @@
     </li>
     <li>Rows are processed top to bottom, columns are processed left to right.</li>
     ]]></entry>
-    <entry key="yukon.web.modules.amr.deviceGroupUpload.infoPopup"><![CDATA[This option is not checked by default, an error will be displayed if any of the groups do not yet exist.
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.infoPopup"><![CDATA[This option is not checked by default, an error will be displayed if any of the groups do not yet exist.
     <br><br>
     Do not use the Create Groups option if you expect the groups to already exists, this will prevent any misspellings from causing unwanted groups to be created.
     <br><br>

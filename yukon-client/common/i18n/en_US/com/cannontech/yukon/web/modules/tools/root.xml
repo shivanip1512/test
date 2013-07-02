@@ -6,4 +6,5 @@
     
     <!-- module wide key -->
     <entry key="yukon.web.modules.tools.options.title">Options</entry>
+    <entry key="yukon.web.modules.tools.instructions.title">Instructions</entry>
 </properties>

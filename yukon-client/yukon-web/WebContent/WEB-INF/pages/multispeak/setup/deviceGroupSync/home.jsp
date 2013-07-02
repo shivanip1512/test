@@ -7,21 +7,19 @@
 <cti:standardPage module="adminSetup" page="deviceGroupSyncHome">
 
 <cti:linkTabbedContainer mode="section" id="page_header_tab_container">
-    <c:url var="tab_url" value="/multispeak/setup/home" />
-    <cti:msg var="tab_name" key="yukon.web.modules.adminSetup.interfaces.home.tab.title" />
-    <c:set var="on_tab" value='${isDevicesPage}'/>
-    <cti:linkTab tabId="deviceTab" selectorName="${tab_name}" tabHref="${tab_url}"/>
+    <cti:linkTab tabId="deviceTab" selectorKey="yukon.web.modules.adminSetup.interfaces.home.tab.title">
+        <c:url value="/multispeak/setup/home" />
+    </cti:linkTab>
 
     <cti:checkGlobalSetting setting="MSP_LM_MAPPING_SETUP">
-        <c:url var="tab_url" value="/multispeak/setup/lmMappings/home" />
-        <cti:msg var="tab_name" key="yukon.web.modules.adminSetup.lmMappings.tab.title" />
-        <c:set var="on_tab" value='${isLoadMngtPage}'/>
-        <cti:linkTab tabId="loadMgtTab" selectorName="${tab_name}" tabHref="${tab_url}"/>
+        <cti:linkTab tabId="loadMgtTab" selectorKey="yukon.web.modules.adminSetup.lmMappings.tab.title">
+            <c:url value="/multispeak/setup/lmMappings/home" />
+        </cti:linkTab>
     </cti:checkGlobalSetting>
 
-    <c:url var="tab_url" value="/multispeak/setup/deviceGroupSync/home" />
-    <cti:msg var="tab_name" key="yukon.web.modules.adminSetup.deviceGroupSyncHome.tab.title" />
-    <cti:linkTab tabId="deviceGroupTab" selectorName="${tab_name}" tabHref="${tab_url}" initiallySelected="${true}"/>
+    <cti:linkTab tabId="deviceGroupTab" selectorKey="yukon.web.modules.adminSetup.deviceGroupSyncHome.tab.title" initiallySelected="${true}">
+        <c:url value="/multispeak/setup/deviceGroupSync/home" />
+    </cti:linkTab>
 </cti:linkTabbedContainer>
 
 	<cti:includeCss link="/WebConfig/yukon/styles/multispeak/deviceGroupSync.css"/>

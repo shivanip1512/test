@@ -3,8 +3,8 @@
 <properties>
 
     <!-- msp_setup.jsp -->
-    <entry key="yukon.web.modules.adminSetup.interfaces.pageName">MultiSpeak Interfaces</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.contextualPageName">Interfaces</entry>
+    <entry key="yukon.web.modules.adminSetup.interfaces.pageName">MultiSpeak</entry>
+    <entry key="yukon.web.modules.adminSetup.interfaces.contextualPageName">MultiSpeak</entry><!-- Interfaces -->
     <entry key="yukon.web.modules.adminSetup.interfaces.invalidCompanyName">Invalid Company Name.  Length must be greater than zero.</entry>
     <entry key="yukon.web.modules.adminSetup.interfaces.invalidMaxInitiateRequestObjects">Invalid MaxInitiateRequestObjects.  Must be a numeric value.</entry>
     <entry key="yukon.web.modules.adminSetup.interfaces.invalidRequestMessageTimeout">Invalid RequestMessageTimeout.  Must be a numeric value.</entry>
@@ -38,7 +38,7 @@
     <entry key="yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.FINISHED">Complete</entry>
     
     <!-- sync home.jsp -->
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncHome.pageName">Device Group Sync</entry>
+    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncHome.pageName">MultiSpeak</entry>
     <entry key="yukon.web.modules.adminSetup.deviceGroupSyncHome.tab.title">Synchronization</entry>
     
     <entry key="yukon.web.modules.adminSetup.deviceGroupSyncHome.startContainer.title">Synchronize Device Groups</entry>
@@ -131,7 +131,7 @@
     <entry key="yukon.web.modules.adminSetup.deviceGroupSyncProgress.infoValue.noChange">no change</entry>
     
     <!-- lmMappings home.jsp -->
-    <entry key="yukon.web.modules.adminSetup.lmMappings.pageName">LM Mappings</entry>
+    <entry key="yukon.web.modules.adminSetup.lmMappings.pageName">MultiSpeak</entry>
     <entry key="yukon.web.modules.adminSetup.lmMappings.tab.title">LM Mappings</entry>
     <entry key="yukon.web.modules.adminSetup.lmMappings.mappingsContainer.title">LM Mappings</entry>
     <entry key="yukon.web.menu.config.adminSetup.multispeak.lmMappings">LM Mappings</entry>

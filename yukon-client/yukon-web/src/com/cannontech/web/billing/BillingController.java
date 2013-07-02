@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -68,19 +67,7 @@ public class BillingController {
 
     @RequestMapping(method = RequestMethod.GET, value = "_jobs.html")
     public String showJobs(ModelMap model, Integer itemsPerPage, Integer page) {
-//    public String showJobs(ModelMap model, HttpServletRequest request) {
 
-//        int itemsPerPage = DEFAULT_COUNT_ITEMS_PER_PAGE;
-//        int pageNumber = DEFAULT_PAGE_INDEX_ONE_BASED;
-//        String perPage = request.getParameter("itemsPerPage");
-//        if (! StringUtils.isEmpty(perPage)) {
-//            itemsPerPage = Integer.parseInt(perPage);
-//        }
-//        String page = request.getParameter("page");
-//        if (! StringUtils.isEmpty(page)) {
-//            pageNumber = Integer.parseInt(page);
-//        }
-//        setupJobs(model, pageNumber, itemsPerPage);
         if (itemsPerPage == null) {
             itemsPerPage = DEFAULT_COUNT_ITEMS_PER_PAGE;
         }

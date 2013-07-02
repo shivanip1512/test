@@ -3,24 +3,24 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:standardPage page="deviceGroupUpload" module="amr">
+<cti:standardPage module="tools" page="deviceGroupUpload">
 
 <cti:linkTabbedContainer mode="section">
-    <cti:msg var="name_home" key="yukon.web.deviceGroups.editor.tab.title" />
-    <c:url var="url_home" value="/group/editor/home" />
-    <cti:linkTab selectorName="${name_home}" tabHref="${url_home}" />
+    <cti:linkTab selectorKey="yukon.web.deviceGroups.editor.tab.title">
+        <c:url value="/group/editor/home" />
+    </cti:linkTab>
 
-    <cti:msg var="name_command" key="yukon.web.deviceGroups.commander.tab.title" />
-    <c:url var="url_command" value="/group/commander/groupProcessing" />
-    <cti:linkTab selectorName="${name_command}" tabHref="${url_command}" />
+    <cti:linkTab selectorKey="yukon.web.deviceGroups.commander.tab.title">
+        <c:url value="/group/commander/groupProcessing" />
+    </cti:linkTab>
 
-    <cti:msg var="name_gattread" key="yukon.common.device.groupMeterRead.home.tab.title"/>
-    <c:url var="url_gattread" value="/group/groupMeterRead/homeGroup" />
-    <cti:linkTab selectorName="${name_gattread}" tabHref="${url_gattread}" />
+    <cti:linkTab selectorKey="yukon.common.device.groupMeterRead.home.tab.title">
+        <c:url value="/group/groupMeterRead/homeGroup" />
+    </cti:linkTab>
 
-    <cti:msg var="name_upload" key="yukon.web.modules.amr.deviceGroupUpload.tab.title" />
-    <c:url var="url_upload" value="/group/updater/upload" />
-    <cti:linkTab selectorName="${name_upload}" tabHref="${url_upload}" initiallySelected="true" />
+    <cti:linkTab selectorKey="yukon.web.modules.amr.deviceGroupUpload.tab.title" initiallySelected="true">
+        <c:url value="/group/updater/upload" />
+    </cti:linkTab>
 </cti:linkTabbedContainer>
 
 <c:choose>

@@ -5,40 +5,40 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<c:set var="showTabs" value='${pageName.equals("orphanedSubs") || pageName.equals("orphanedBuses") || pageName.equals("orphanedFeeders") || pageName.equals("orphanedBanks") || pageName.equals("orphanedCbcs") || pageName.equals("orphanedRegulators")}' />
+<c:set var="showTabs" value='${pageName == "orphanedSubs" || pageName == "orphanedBuses" || pageName == "orphanedFeeders" || pageName == "orphanedBanks" || pageName == "orphanedCbcs" || pageName == "orphanedRegulators"}' />
 
 <cti:standardPage module="capcontrol" page="search.${pageName}">
 <c:if test="${showTabs}">
 <cti:linkTabbedContainer mode="section">
-    <cti:msg var="name_sub" key="yukon.web.modules.capcontrol.search.orphanedSubs.tab.title" />
-    <c:url var="url_sub" value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubstations__" />
-    <c:set var="tab_on" value='${pageName.equals("orphanedSubs")}' />
-    <cti:linkTab selectorName="${name_sub}" tabHref="${url_sub}" initiallySelected="${tab_on}"/>
- 
-    <cti:msg var="name_bus" key="yukon.web.modules.capcontrol.search.orphanedBuses.tab.title" />
-    <c:url var="url_bus" value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubBuses__" />
-    <c:set var="tab_on" value='${pageName.equals("orphanedBuses")}' />
-    <cti:linkTab selectorName="${name_bus}" tabHref="${url_bus}" initiallySelected="${tab_on}"/>
- 
-    <cti:msg var="name_feed" key="yukon.web.modules.capcontrol.search.orphanedFeeders.tab.title" />
-    <c:url var="url_feed" value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oFeeders__" />
-    <c:set var="tab_on" value='${pageName.equals("orphanedFeeders")}' />
-    <cti:linkTab selectorName="${name_feed}" tabHref="${url_feed}" initiallySelected="${tab_on}"/>
- 
-    <cti:msg var="name_bank" key="yukon.web.modules.capcontrol.search.orphanedBanks.tab.title" />
-    <c:url var="url_bank" value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oBanks__" />
-    <c:set var="tab_on" value='${pageName.equals("orphanedBanks")}' />
-    <cti:linkTab selectorName="${name_bank}" tabHref="${url_bank}" initiallySelected="${tab_on}"/>
- 
-    <cti:msg var="name_cbc" key="yukon.web.modules.capcontrol.search.orphanedCbcs.tab.title" />
-    <c:url var="url_cbc" value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oCBCs__" />
-    <c:set var="tab_on" value='${pageName.equals("orphanedCbcs")}' />
-    <cti:linkTab selectorName="${name_cbc}" tabHref="${url_cbc}" initiallySelected="${tab_on}"/>
- 
-    <cti:msg var="name_reg" key="yukon.web.modules.capcontrol.search.orphanedRegulators.tab.title" />
-    <c:url var="url_reg" value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oRegulators__" />
-    <c:set var="tab_on" value='${pageName.equals("orphanedRegulators")}' />
-    <cti:linkTab selectorName="${name_reg}" tabHref="${url_reg}" initiallySelected="${tab_on}"/>
+    <cti:linkTab selectorKey="yukon.web.modules.capcontrol.search.orphanedSubs.tab.title"
+                 initiallySelected='${pageName == "orphanedSubs"}'>
+        <c:url value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubstations__" />
+    </cti:linkTab>
+
+    <cti:linkTab selectorKey="yukon.web.modules.capcontrol.search.orphanedBuses.tab.title"
+                 initiallySelected='${pageName == "orphanedBuses"}'>
+        <c:url value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubBuses__" />
+    </cti:linkTab>
+
+    <cti:linkTab selectorKey="yukon.web.modules.capcontrol.search.orphanedFeeders.tab.title"
+                 initiallySelected='${pageName == "orphanedFeeders"}'>
+        <c:url value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oFeeders__" />
+    </cti:linkTab>
+
+    <cti:linkTab selectorKey="yukon.web.modules.capcontrol.search.orphanedBanks.tab.title"
+                 initiallySelected='${pageName == "orphanedBanks"}'>
+        <c:url value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oBanks__" />
+    </cti:linkTab>
+
+    <cti:linkTab selectorKey="yukon.web.modules.capcontrol.search.orphanedCbcs.tab.title"
+                 initiallySelected='${pageName == "orphanedCbcs"}'>
+        <c:url value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oCBCs__" />
+    </cti:linkTab>
+
+    <cti:linkTab selectorKey="yukon.web.modules.capcontrol.search.orphanedRegulators.tab.title"
+                 initiallySelected='${pageName == "orphanedRegulators"}'>
+        <c:url value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oRegulators__" />
+    </cti:linkTab>
 </cti:linkTabbedContainer>
 </c:if>
 

@@ -5,16 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 
-<cti:msg2 key="yukon.web.deviceGroups.editor.pageName" var="pageName"/>
-<cti:standardPage title="${pageName}" module="amr">
-<cti:standardMenu menuSelection="devicegroups|home"/>
-
-<cti:breadCrumbs>
-    <cti:msg2 key="yukon.web.components.button.home.label" var="homeLabel"/>
-    <cti:crumbLink url="/dashboard" title="${homeLabel}" />
-    <cti:msg2 key="yukon.web.deviceGroups.editor.title" var="deviceGroupsLabel"/>
-    <cti:crumbLink title="${deviceGroupsLabel}" />
-</cti:breadCrumbs>
+<cti:standardPage module="tools" page="deviceGroups">
 
 <cti:msg2 var="removeGroupAreYouSure" key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup.areYouSure" javaScriptEscape="true"/>
 <cti:msg2 var="invalidGroupNameError" key="yukon.web.deviceGroups.editor.operationsContainer.invalidGroupNameError" javaScriptEscape="true"/>
@@ -93,24 +84,18 @@ function confirmRemoveAllDevices(confirmText) {
 }
 </script>
 
-    <h2 class="page-heading"><cti:msg2 key="yukon.web.deviceGroups.editor.pageName"/></h2>
-    <p>&nbsp;</p>
 <cti:linkTabbedContainer mode="section">
-    <cti:msg var="name_home" key="yukon.web.deviceGroups.editor.tab.title" />
     <c:url var="url_home" value="/group/editor/home" />
-    <cti:linkTab selectorName="${name_home}" tabHref="${url_home}" initiallySelected="true" />
+    <cti:linkTab selectorKey="yukon.web.deviceGroups.editor.tab.title" tabHref="${url_home}" initiallySelected="true" />
 
-    <cti:msg var="name_command" key="yukon.web.deviceGroups.commander.tab.title" />
     <c:url var="url_command" value="/group/commander/groupProcessing" />
-    <cti:linkTab selectorName="${name_command}" tabHref="${url_command}" />
+    <cti:linkTab selectorKey="yukon.web.deviceGroups.commander.tab.title" tabHref="${url_command}" />
 
-    <cti:msg var="name_gattread" key="yukon.common.device.groupMeterRead.home.tab.title"/>
     <c:url var="url_gattread" value="/group/groupMeterRead/homeGroup" />
-    <cti:linkTab selectorName="${name_gattread}" tabHref="${url_gattread}" />
+    <cti:linkTab selectorKey="yukon.common.device.groupMeterRead.home.tab.title" tabHref="${url_gattread}" />
 
-    <cti:msg var="name_upload" key="yukon.web.modules.amr.deviceGroupUpload.tab.title" />
     <c:url var="url_upload" value="/group/updater/upload" />
-    <cti:linkTab selectorName="${name_upload}" tabHref="${url_upload}" />
+    <cti:linkTab selectorKey="yukon.web.modules.amr.deviceGroupUpload.tab.title" tabHref="${url_upload}" />
 </cti:linkTabbedContainer>
 
     <c:if test="${not empty param.errorMessage}">

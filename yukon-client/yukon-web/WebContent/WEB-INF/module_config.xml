@@ -170,16 +170,19 @@
           </pages>
 		  </page>
           <page name="waterLeakReport.jobs" type="BASIC"/>
+	      <page name="billing" type="BASIC"/>
         </pages>
       </page>
-      <page name="deviceGroupUpload" type="BASIC"/>
-      <page name="billing" type="BASIC"/>
     </pages>
   </module>
 
   <module name="tools">
     <skin name="STANDARD"/>
     <pages>
+      <page name="deviceGroups" type="BASIC" />
+      <page name="deviceGroupsCommander" type="BASIC"/>
+      <page name="groupMeterReadHome" type="BASIC"/>
+      <page name="deviceGroupUpload" type="BASIC"/>
       <page name="configs" type="BASIC">
         <link>/deviceConfiguration/home</link>
         <pages>
@@ -355,7 +358,7 @@
         </pages>
       </page>
     </pages>
-  </module>
+  </module><!--  ENDS MODULE "tools" -->
 
   <module name="monitors"><!-- had some vee menus before -->
     <skin name="STANDARD" />
@@ -678,23 +681,21 @@
                     <page name="multispeak" type="BASIC">
                         <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
                         <link>/multispeak/setup/home</link>
+                    </page>
+                    <page name="interfaces" type="BASIC">
+                        <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
+                        <link>/multispeak/setup/home</link>
+                    </page>
+                    <page name="lmMappings" type="BASIC">
+                        <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
+                        <link>/multispeak/setup/lmMappings/home</link>
+                    </page>
+                    <page name="deviceGroupSyncHome" type="BASIC">
+                        <link>/multispeak/setup/deviceGroupSync/home</link>
                         <pages>
-                            <page name="interfaces" type="BASIC">
-                                <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
-                                <link>/multispeak/setup/home</link>
-                            </page>
-                            <page name="lmMappings" type="BASIC">
-                                <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
-                                <link>/multispeak/setup/lmMappings/home</link>
-                            </page>
-                            <page name="deviceGroupSyncHome" type="BASIC">
-                                <link>/multispeak/setup/deviceGroupSync/home</link>
-                                <pages>
-                                    <page name="deviceGroupSyncProgress" type="BASIC">
-                                        <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
-                                        <link>/multispeak/setup/deviceGroupSync/progress</link>
-                                    </page>
-                                </pages>
+                            <page name="deviceGroupSyncProgress" type="BASIC">
+                                <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
+                                <link>/multispeak/setup/deviceGroupSync/progress</link>
                             </page>
                         </pages>
                     </page>

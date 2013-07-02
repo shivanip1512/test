@@ -8,9 +8,9 @@
         <cti:msg2 key=".jobsscheduler.all.contextualPageName" var="allName"/>
         <cti:msg2 key=".jobsscheduler.status.contextualPageName" var="statusName"/>
         <cti:msg2 key=".jobsscheduler.active.contextualPageName" var="activeName"/>
-        <cti:linkTab selectorName="${allName}" tabHref="all" initiallySelected="true" />
-        <cti:linkTab selectorName="${activeName}" tabHref="active" />
-        <cti:linkTab selectorName="${statusName}" tabHref="status" />
+        <cti:linkTab selectorName="${allName}" initiallySelected="true"><c:url value="all" /></cti:linkTab>
+        <cti:linkTab selectorName="${activeName}" ><c:url value="active" /></cti:linkTab>
+        <cti:linkTab selectorName="${statusName}" ><c:url value="status" /></cti:linkTab>
     </cti:linkTabbedContainer>
 <h4><i:inline key=".repeatingJobs"/></h2>
   <table class="resultsTable">
