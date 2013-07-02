@@ -1,11 +1,8 @@
 package com.cannontech.web.amr.deviceDataMonitor;
 
-import static com.cannontech.web.amr.deviceDataMonitor.DeviceViolationEnum.ATTRIBUTE;
-import static com.cannontech.web.amr.deviceDataMonitor.DeviceViolationEnum.POINT;
-import static com.cannontech.web.amr.deviceDataMonitor.DeviceViolationEnum.STATE_GROUP;
+import static com.cannontech.web.amr.deviceDataMonitor.DeviceViolationEnum.*;
 
 import java.beans.PropertyEditorSupport;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,9 +11,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -32,7 +26,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -97,19 +90,19 @@ public class DeviceDataMonitorController {
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorController.class);
 
     @Autowired private AttributeService attributeService;
-	@Autowired private DeviceDataMonitorDao deviceDataMonitorDao;
-	@Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-	@Autowired private DeviceDataMonitorService deviceDataMonitorService;
-	@Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
-	@Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private DeviceDataMonitorDao deviceDataMonitorDao;
+    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    @Autowired private DeviceDataMonitorService deviceDataMonitorService;
+    @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
+    @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DeviceMemoryCollectionProducer memoryCollectionProducer;
     @Autowired private PaoPopupHelper popupHelper;
-	@Autowired private PointService pointService;
+    @Autowired private PointService pointService;
     @Autowired private StateIdPairingPropertyEditor stateIdPairingPropertyEditor;
-	@Autowired private StateDao stateDao;
-	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private StateDao stateDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
-	private Validator nameValidator = new SimpleValidator<DeviceDataMonitor>(DeviceDataMonitor.class) {
+    private Validator nameValidator = new SimpleValidator<DeviceDataMonitor>(DeviceDataMonitor.class) {
         @Override
         public void doValidation(DeviceDataMonitor monitor, Errors errors) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", baseKey + ".empty");
@@ -118,38 +111,33 @@ public class DeviceDataMonitorController {
     };
 
     @RequestMapping(method = RequestMethod.GET, value = "/view")
-    public String view(int monitorId, 
-                       ModelMap model, 
-                       YukonUserContext userContext,
-                       FlashScope flashScope) throws ServletRequestBindingException {
+    public String view(int monitorId, ModelMap model) {
         DeviceDataMonitor monitor = deviceDataMonitorDao.getMonitorById(monitorId);
-        setupCommonEditViewModelMap(monitor, model, userContext, flashScope);
+        setupCommonEditViewModelMap(monitor, model);
         model.addAttribute("mode", PageEditMode.VIEW);
         return "deviceDataMonitor/view.jsp";
     }
-    
+
     @RequestMapping(method = RequestMethod.GET, value = "/createPage")
-    public String createPage(ModelMap modelMap, YukonUserContext userContext)
-            throws ServletRequestBindingException {
+    public String createPage(ModelMap modelMap, YukonUserContext userContext) {
         setupCreateModelMap(new DeviceDataMonitor(), modelMap, userContext);
         return "deviceDataMonitor/edit.jsp";
     }
-    
+
     @RequestMapping(method = RequestMethod.GET, value = "/editPage")
-    public String editPage(int monitorId, ModelMap modelMap, YukonUserContext userContext,
-                           FlashScope flashScope) throws ServletRequestBindingException {
+    public String editPage(int monitorId, ModelMap modelMap, YukonUserContext userContext) {
         DeviceDataMonitor monitor = deviceDataMonitorDao.getMonitorById(monitorId);
-        setupEditModelMap(monitor, modelMap, flashScope, userContext);
+        setupEditModelMap(monitor, modelMap, userContext);
         return "deviceDataMonitor/edit.jsp";
     }
-    
+
     @RequestMapping(method = RequestMethod.POST, value = "/create")
     public String create(@ModelAttribute("monitor") DeviceDataMonitor monitor,
                                      BindingResult bindingResult,
                                      ModelMap modelMap, 
                                      YukonUserContext userContext,
-                                     FlashScope flashScope, HttpServletRequest request) {
-        
+                                     FlashScope flashScope) {
+
         nameValidator.validate(monitor, bindingResult);
 
         List<DeviceDataMonitorProcessor> remainingProcessors = getRemainingProcessors(monitor.getProcessors());
@@ -161,15 +149,20 @@ public class DeviceDataMonitorController {
             setupCreateModelMap(monitor, modelMap, userContext);
             return "deviceDataMonitor/edit.jsp";
         }
-        
+
         try {
             monitor = deviceDataMonitorService.saveAndProcess(monitor);
         } catch (DuplicateException e) {
             setupDuplicateMonitorError(monitor, bindingResult, flashScope);
             setupCreateModelMap(monitor, modelMap, userContext);
             return "deviceDataMonitor/edit.jsp";
+        } catch (RemoteAccessException e) {
+            logErrorOrDebug("Cannot create monitor. Yukon Service Manager is down or we are not configured properly to talk to it.", e);
+            flashScope.setMessage(new YukonMessageSourceResolvable( baseKey + ".unableToUpdate.yukonServiceManager"), FlashScopeMessageType.ERROR);
+            setupEditModelMap(monitor, modelMap, userContext);
+            return "deviceDataMonitor/edit.jsp";
         }
-        
+
         MessageSourceResolvable createMessage = new YukonMessageSourceResolvable("yukon.web.modules.amr.deviceDataMonitor.created");
         flashScope.setConfirm(Collections.singletonList(createMessage));
 
@@ -184,27 +177,27 @@ public class DeviceDataMonitorController {
                                                   YukonUserContext userContext,
                                                   FlashScope flashScope) {
         nameValidator.validate(monitor, bindingResult);
-          
+
         if (bindingResult.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            setupEditModelMap(monitor, modelMap, flashScope, userContext);
+            setupEditModelMap(monitor, modelMap, userContext);
             return "deviceDataMonitor/edit.jsp";
         }
-        
+
         List<DeviceDataMonitorProcessor> remainingProcessors = getRemainingProcessors(monitor.getProcessors());
         monitor.setProcessors(remainingProcessors);
-        
+
         try {
             deviceDataMonitorService.saveAndProcess(monitor);
         } catch (DuplicateException e) {
             setupDuplicateMonitorError(monitor, bindingResult, flashScope);
-            setupEditModelMap(monitor, modelMap, flashScope, userContext);
+            setupEditModelMap(monitor, modelMap, userContext);
             return "deviceDataMonitor/edit.jsp";
         } catch (RemoteAccessException e) {
-            log.error("Cannot update monitor. Yukon Service Manager is down or we are not configured properly to talk to it.", e);
+            logErrorOrDebug("Cannot update monitor. Yukon Service Manager is down or we are not configured properly to talk to it.", e);
             flashScope.setMessage(new YukonMessageSourceResolvable( baseKey + ".unableToUpdate.yukonServiceManager"), FlashScopeMessageType.ERROR);
-            setupEditModelMap(monitor, modelMap, flashScope, userContext);
+            setupEditModelMap(monitor, modelMap, userContext);
             return "deviceDataMonitor/edit.jsp";
         }
         
@@ -216,53 +209,47 @@ public class DeviceDataMonitorController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/delete")
-	public String delete(int monitorId,
-                         ModelMap modelMap,
-                         FlashScope flashScope,
-                         YukonUserContext userContext) throws ServletRequestBindingException {
+    public String delete(int monitorId, FlashScope flashScope) {
 
-	    DeviceDataMonitor monitor = deviceDataMonitorDao.getMonitorById(monitorId);
-	    deviceDataMonitorDao.deleteMonitor(monitorId);
-        
+        DeviceDataMonitor monitor = deviceDataMonitorDao.getMonitorById(monitorId);
+        deviceDataMonitorDao.deleteMonitor(monitorId);
+
         MessageSourceResolvable deleteMessage = new YukonMessageSourceResolvable("yukon.web.modules.amr.deviceDataMonitor.deleted", monitor.getName());
         flashScope.setConfirm(deleteMessage);
         return "redirect:/meter/start";
-	}
-	
-	@RequestMapping(method = RequestMethod.POST, value = "/toggleEnabled")
-	public String toggleEnabled(int monitorId,
-	                            ModelMap modelMap,
-	                            FlashScope flashScope,
-	                            YukonUserContext userContext) throws ServletRequestBindingException {
-	    boolean enabled;
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/toggleEnabled")
+    public String toggleEnabled(int monitorId, ModelMap modelMap, FlashScope flashScope) {
+        boolean enabled;
         try {
             enabled = deviceDataMonitorService.toggleEnabled(monitorId);
-	        modelMap.addAttribute("monitorId", monitorId);
+            modelMap.addAttribute("monitorId", monitorId);
         } catch (NotFoundException e) {
             return "redirect:/meter/start";
         }
-        
+
         MessageSourceResolvable updateMessage = new YukonMessageSourceResolvable("yukon.web.modules.amr.deviceDataMonitor.updatedEnabled" + enabled);
         flashScope.setConfirm(Collections.singletonList(updateMessage));
-        
+
         return "redirect:editPage";
-	}
-	
-	@RequestMapping(method = RequestMethod.GET, value = "/getStatesForGroup")
-	public @ResponseBody JSONObject getStatesForGroup(int stateGroupId) {
-	    LiteStateGroup stateGroup = stateDao.getLiteStateGroup(stateGroupId);
-	    JSONObject statesContainer = new JSONObject();
-	    JSONArray states = new JSONArray();
-	    for (LiteState state : stateGroup.getStatesList()) {
-	        JSONObject stateObj = new JSONObject();
-	        stateObj.put("id", state.getLiteID());
-	        stateObj.put("text", state.getStateText());
-	        stateObj.put("raw_text", state.getStateRawState());
-	        states.add(stateObj);
-	    }
-	    statesContainer.put("states", states);
-	    return statesContainer;
-	}
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/getStatesForGroup")
+    public @ResponseBody JSONObject getStatesForGroup(int stateGroupId) {
+        LiteStateGroup stateGroup = stateDao.getLiteStateGroup(stateGroupId);
+        JSONObject statesContainer = new JSONObject();
+        JSONArray states = new JSONArray();
+        for (LiteState state : stateGroup.getStatesList()) {
+            JSONObject stateObj = new JSONObject();
+            stateObj.put("id", state.getLiteID());
+            stateObj.put("text", state.getStateText());
+            stateObj.put("raw_text", state.getStateRawState());
+            states.add(stateObj);
+        }
+        statesContainer.put("states", states);
+        return statesContainer;
+    }
 
     @RequestMapping(method = RequestMethod.GET, value = "/getStateGroupsForAttribute")
     public @ResponseBody JSONObject getStateGroupsForAttribute(String groupName, String attributeKey) {
@@ -280,8 +267,8 @@ public class DeviceDataMonitorController {
         return sgContainer;
     }
 
-	private void setupDuplicateMonitorError(DeviceDataMonitor monitor, BindingResult bindingResult,
-	                                        FlashScope flashScope) {
+    private void setupDuplicateMonitorError(DeviceDataMonitor monitor, BindingResult bindingResult,
+                                            FlashScope flashScope) {
         log.info("caught error when trying to save device data monitor with duplicate name: " + monitor.getName());
         bindingResult.rejectValue("name", baseKey + ".alreadyExists");
         List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
@@ -297,7 +284,7 @@ public class DeviceDataMonitorController {
         }
         return remainingProcessors;
     }
-    
+
     private void setupCreateModelMap(DeviceDataMonitor monitor, ModelMap model, YukonUserContext userContext) {
         model.addAttribute("monitor", monitor);
 
@@ -312,7 +299,7 @@ public class DeviceDataMonitorController {
         model.addAttribute("mode", PageEditMode.CREATE);
         setupAttributes(model, userContext);
     }
-    
+
     private void setupAttributes(ModelMap model, YukonUserContext userContext) {
         // attributes
         Set<BuiltInAttribute> allReadableAttributes = BuiltInAttribute.getStandardGroupedAttributes().get(AttributeGroup.STATUS);
@@ -325,7 +312,7 @@ public class DeviceDataMonitorController {
         model.addAttribute("allGroupedReadableAttributes", allGroupedReadableAttributes);
     }
 
-    private void setupCommonEditViewModelMap(DeviceDataMonitor monitor, ModelMap model, YukonUserContext userContext, FlashScope flashScope) {
+    private void setupCommonEditViewModelMap(DeviceDataMonitor monitor, ModelMap model) {
         model.addAttribute("monitor", monitor);
 
         int monitoringCount = 0;
@@ -345,7 +332,7 @@ public class DeviceDataMonitorController {
         try {
             areViolationsBeingCalculated = deviceDataMonitorService.areViolationsBeingCalculatedForMonitor(monitor.getId());
         } catch (RemoteAccessException e) {
-            log.error("Yukon Service Manager is down or we are not configured properly to talk to it.", e);
+            logErrorOrDebug("Yukon Service Manager is down or we are not configured properly to talk to it.", e);
         }
         model.addAttribute("areViolationsBeingCalculated", areViolationsBeingCalculated);
 
@@ -355,9 +342,17 @@ public class DeviceDataMonitorController {
         }
     }
 
-    private void setupEditModelMap(DeviceDataMonitor monitor, ModelMap model, FlashScope flashScope, YukonUserContext userContext) {
+    private void logErrorOrDebug(String logMsg, Exception e) {
+        if (log.isDebugEnabled()) {
+            log.debug(logMsg, e);
+        } else {
+            log.error(logMsg);
+        }
+    }
+
+    private void setupEditModelMap(DeviceDataMonitor monitor, ModelMap model, YukonUserContext userContext) {
         model.addAttribute("mode", PageEditMode.EDIT);
-        setupCommonEditViewModelMap(monitor, model, userContext, flashScope);
+        setupCommonEditViewModelMap(monitor, model);
         setupAttributes(model, userContext);
         Map<String, List<LiteStateGroup>> lookups = new HashMap<>();
         for (AttributeStateGroup asg : monitor.getAttributeStateGroups()) {
@@ -370,9 +365,9 @@ public class DeviceDataMonitorController {
     }
 
     /* AJAX methods */
-    
+
     @RequestMapping(method = RequestMethod.GET, value = "/getDeviceGroupCount")
-    public @ResponseBody JSONObject getDeviceGroupCount(String groupName, YukonUserContext userContext) {
+    public @ResponseBody JSONObject getDeviceGroupCount(String groupName) {
         int monitoringCount = 0;
         DeviceGroup monitoringGroup = deviceGroupService.findGroupName(groupName);
         if (monitoringGroup != null) {
@@ -384,8 +379,7 @@ public class DeviceDataMonitorController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/getViolationsCount")
-    public @ResponseBody JSONObject getViolationsCount(HttpServletRequest request, HttpServletResponse response,
-                                                       int monitorId, YukonUserContext userContext) {
+    public @ResponseBody JSONObject getViolationsCount(int monitorId) {
         String status;
         JSONObject obj = new JSONObject();
         if (deviceDataMonitorService.areViolationsBeingCalculatedForMonitor(monitorId)) {
@@ -398,16 +392,16 @@ public class DeviceDataMonitorController {
         obj.put("status", status);
         return obj;
     }
-    
+
     @RequestMapping(method = RequestMethod.GET, value = "/getSupportedCountsByMonitor")
-    public @ResponseBody JSONObject getSupportedCountsByMonitor(@ModelAttribute DeviceDataMonitor monitor, YukonUserContext userContext) throws IOException {
+    public @ResponseBody JSONObject getSupportedCountsByMonitor(@ModelAttribute DeviceDataMonitor monitor, YukonUserContext userContext) {
         List<DeviceDataMonitorProcessor> remainingProcessors = getRemainingProcessors(monitor.getProcessors());
         monitor.setProcessors(remainingProcessors);
         return getSupportedCountsForMonitor(monitor, userContext);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/getSupportedCountsById")
-    public @ResponseBody JSONObject getSupportedCountsById(int monitorId, YukonUserContext userContext) throws IOException {
+    public @ResponseBody JSONObject getSupportedCountsById(int monitorId, YukonUserContext userContext) {
         DeviceDataMonitor monitor = deviceDataMonitorDao.getMonitorById(monitorId);
         return getSupportedCountsForMonitor(monitor, userContext);
     }
@@ -436,7 +430,7 @@ public class DeviceDataMonitorController {
 
         if (monitoringGroup != null) {
             Set<SimpleDevice> allDevices = deviceGroupService.getDevices(Collections.singleton(monitoringGroup));
-            Set<SimpleDevice> fullySupportedDevices = new HashSet<SimpleDevice>(allDevices);
+            Set<SimpleDevice> fullySupportedDevices = new HashSet<>(allDevices);
             totalDeviceCount = allDevices.size();
 
             int rowId = 0;
@@ -685,7 +679,7 @@ public class DeviceDataMonitorController {
                 .getDevicesInGroupThatSupportAttribute(monitoringGroup, attribute);
 
         // Will not allow casting, so must create a new collection.
-        List<YukonPao> listMissingAttribute = new ArrayList<YukonPao>();
+        List<YukonPao> listMissingAttribute = new ArrayList<>();
         listMissingAttribute.addAll(allDevices);
         listMissingAttribute.removeAll(attrSupportedDevices);
 
@@ -694,13 +688,13 @@ public class DeviceDataMonitorController {
         }
 
         // Will not allow casting, so must create a new collection.
-        List<YukonPao> hasPoint = new ArrayList<YukonPao>();
-        List<YukonPao> listMissingPoint = new ArrayList<YukonPao>();
+        List<YukonPao> hasPoint = new ArrayList<>();
+        List<YukonPao> listMissingPoint = new ArrayList<>();
         hasPoint.addAll(attrSupportedDevices);
         List<Integer> deviceIdsSupportingAttributePoint = pointService
                 .findDeviceIdsInGroupWithAttributePoint(monitoringGroup, attribute);
         for (YukonPao sd : hasPoint) {
-        	boolean doesDeviceSupportAttrAndPt = deviceIdsSupportingAttributePoint.contains(sd.getPaoIdentifier().getPaoId()); 
+            boolean doesDeviceSupportAttrAndPt = deviceIdsSupportingAttributePoint.contains(sd.getPaoIdentifier().getPaoId()); 
             if (!doesDeviceSupportAttrAndPt) {
                 listMissingPoint.add(sd);
             }
@@ -774,10 +768,10 @@ public class DeviceDataMonitorController {
         }
         return points;
     }
-	
-	@InitBinder
-	public void setupBinder(WebDataBinder binder) {
-	    binder.registerCustomEditor(Attribute.class, new PropertyEditorSupport() {
+    
+    @InitBinder
+    public void setupBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(Attribute.class, new PropertyEditorSupport() {
             @Override
             public void setAsText(String attr) throws IllegalArgumentException {
                 Attribute attribute = null;
