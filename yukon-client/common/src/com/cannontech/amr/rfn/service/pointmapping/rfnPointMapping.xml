@@ -1110,7 +1110,6 @@
 
     <pointGroup>
         <paoType value="RFN430A3R"/>
-        <paoType value="RFN430A3K"/>
         <paoType value="RFN430KV"/>
 <!-- existed for ALL + requested ONLY for A3R + BUT found on device...? -->
         <point name="Delivered kVArh"> 
