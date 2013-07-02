@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.message.dispatch.message.Multi;
+import com.cannontech.message.server.ServerRequestMsg;
 import com.cannontech.message.util.*;
 import com.cannontech.notif.handler.MessageHandler;
 import com.google.common.collect.ImmutableMap;
@@ -33,6 +34,10 @@ public class NotificationMessageHandler implements MessageListener
             } else {
                 MessageHandler<?> handler = messageHandlerMap.get(message.getClass());
                 
+                if (handler == null && (message instanceof ServerRequestMsg)) {
+                    handler = messageHandlerMap.get(((ServerRequestMsg) message).getPayload().getClass());
+                }
+
                 if (handler != null) {
                     handler.handleMessage(connection, message);
                 } //Else unhandled message type. Skip it.
