@@ -85,17 +85,21 @@ function confirmRemoveAllDevices(confirmText) {
 </script>
 
 <cti:linkTabbedContainer mode="section">
-    <c:url var="url_home" value="/group/editor/home" />
-    <cti:linkTab selectorKey="yukon.web.deviceGroups.editor.tab.title" tabHref="${url_home}" initiallySelected="true" />
+    <cti:linkTab selectorKey="yukon.web.deviceGroups.editor.tab.title" initiallySelected="true">
+        <c:url value="/group/editor/home" />
+    </cti:linkTab>
 
-    <c:url var="url_command" value="/group/commander/groupProcessing" />
-    <cti:linkTab selectorKey="yukon.web.deviceGroups.commander.tab.title" tabHref="${url_command}" />
+    <cti:linkTab selectorKey="yukon.web.deviceGroups.commander.tab.title">
+        <c:url value="/group/commander/groupProcessing" />
+    </cti:linkTab>
 
-    <c:url var="url_gattread" value="/group/groupMeterRead/homeGroup" />
-    <cti:linkTab selectorKey="yukon.common.device.groupMeterRead.home.tab.title" tabHref="${url_gattread}" />
+    <cti:linkTab selectorKey="yukon.common.device.groupMeterRead.home.tab.title">
+        <c:url value="/group/groupMeterRead/homeGroup" />
+    </cti:linkTab>
 
-    <c:url var="url_upload" value="/group/updater/upload" />
-    <cti:linkTab selectorKey="yukon.web.modules.amr.deviceGroupUpload.tab.title" tabHref="${url_upload}" />
+    <cti:linkTab selectorKey="yukon.web.modules.amr.deviceGroupUpload.tab.title">
+        <c:url value="/group/updater/upload" />
+    </cti:linkTab>
 </cti:linkTabbedContainer>
 
     <c:if test="${not empty param.errorMessage}">

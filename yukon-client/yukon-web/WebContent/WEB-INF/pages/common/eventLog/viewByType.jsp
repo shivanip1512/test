@@ -16,8 +16,12 @@
     <cti:linkTabbedContainer>
         <cti:msg2 key=".byCategory.contextualPageName" var="byCategoryTab"/>
         <cti:msg2 key=".byType.contextualPageName" var="byTypeTab"/>
-        <cti:linkTab selectorName="${byCategoryTab}" tabHref="viewByCategory"></cti:linkTab>
-        <cti:linkTab selectorName="${byTypeTab}" tabHref="viewByType" initiallySelected="true"></cti:linkTab>
+        <cti:linkTab selectorName="${byCategoryTab}">
+            <c:url value="viewByCategory" />
+        </cti:linkTab>
+        <cti:linkTab selectorName="${byTypeTab}" initiallySelected="true">
+            <c:url value="viewByType" />
+        </cti:linkTab>
     </cti:linkTabbedContainer>
     
     <%-- Filtering popup --%>

@@ -10,14 +10,18 @@
 <cti:standardPage title="Event Log" module="support" page="eventViewer.byCategory">
     <cti:standardMenu menuSelection="events|byCategory" />
     <c:set var="baseUrl" value="/common/eventLog/viewByCategory"/>
-    
+
     <cti:linkTabbedContainer>
         <cti:msg2 key=".byCategory.contextualPageName" var="byCategoryTab"/>
         <cti:msg2 key=".byType.contextualPageName" var="byTypeTab"/>
-        <cti:linkTab selectorName="${byCategoryTab}" tabHref="viewByCategory" initiallySelected="true"></cti:linkTab>
-        <cti:linkTab selectorName="${byTypeTab}" tabHref="viewByType" ></cti:linkTab>
+        <cti:linkTab selectorName="${byCategoryTab}" initiallySelected="true">
+            <c:url value="viewByCategory" />
+        </cti:linkTab>
+        <cti:linkTab selectorName="${byTypeTab}">
+            <c:url value="viewByType" />
+        </cti:linkTab>
     </cti:linkTabbedContainer>
-    
+
     <%-- Filter Options --%>
     <cti:msg2 var="filterOptionsLabel" key=".filterOptions"/>
     <tags:sectionContainer title="${filterOptionsLabel}">
