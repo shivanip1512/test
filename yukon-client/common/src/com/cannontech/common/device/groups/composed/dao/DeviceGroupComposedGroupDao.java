@@ -16,5 +16,5 @@ public interface DeviceGroupComposedGroupDao {
      *  Method to get DeviceGroupComposedGroup by group names.
      */
    
-    public List<DeviceGroupComposedGroup> findByGroupNames(List<String> groupNames);
+    public List<DeviceGroupComposedGroup> getByGroupNames(List<String> groupNames);
 }

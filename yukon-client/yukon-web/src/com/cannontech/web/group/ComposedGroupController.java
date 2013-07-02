@@ -164,20 +164,18 @@ public class ComposedGroupController {
 			parent = parent.getParent();
 		} 
         //Find composed groups the current group or one of its parents are part of
-        List<DeviceGroupComposedGroup> composedGroups = deviceGroupComposedGroupDao.findByGroupNames(parentGroupNames);
-        if(composedGroups != null){
-			for (DeviceGroupComposedGroup deviceGroup : composedGroups) {
-				DeviceGroupComposed deviceGroupComposed = deviceGroupComposedDao.getByComposedId(deviceGroup.getDeviceGroupComposedId());
-				//Find the group the current group is part of
-				DeviceGroup groupToExclude = deviceGroupEditorDao.getGroupById(deviceGroupComposed.getDeviceGroupId());
-				//Find the top parent of that group. Example: /Alternate/Alternate Composed Group, "/Alternate" is a top level parent.
-				while (!groupToExclude.getParent().getFullName().equals(DeviceGroupService.ROOT)) {
-					groupToExclude = groupToExclude.getParent();
-				} 
-				//Create a predicate to exclude the top level parent
-				predicates.add(new NotEqualToOrDecendantOfGroupsPredicate(groupToExclude));
-			}
-        }
+        List<DeviceGroupComposedGroup> composedGroups = deviceGroupComposedGroupDao.getByGroupNames(parentGroupNames);
+		for (DeviceGroupComposedGroup deviceGroup : composedGroups) {
+			DeviceGroupComposed deviceGroupComposed = deviceGroupComposedDao.getByComposedId(deviceGroup.getDeviceGroupComposedId());
+			//Find the group the current group is part of
+			DeviceGroup groupToExclude = deviceGroupEditorDao.getGroupById(deviceGroupComposed.getDeviceGroupId());
+			//Find the top parent of that group. Example: /Alternate/Alternate Composed Group, "/Alternate" is a top level parent.
+			while (!groupToExclude.getParent().getFullName().equals(DeviceGroupService.ROOT)) {
+				groupToExclude = groupToExclude.getParent();
+			} 
+			//Create a predicate to exclude the top level parent
+			predicates.add(new NotEqualToOrDecendantOfGroupsPredicate(groupToExclude));
+		}
         
         AggregateAndPredicate<DeviceGroup> aggregatePredicate = new AggregateAndPredicate<DeviceGroup>(predicates);
         

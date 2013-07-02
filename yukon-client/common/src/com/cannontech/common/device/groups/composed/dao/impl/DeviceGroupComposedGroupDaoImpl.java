@@ -1,5 +1,6 @@
 package com.cannontech.common.device.groups.composed.dao.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -47,15 +48,11 @@ public class DeviceGroupComposedGroupDaoImpl implements DeviceGroupComposedGroup
     }
 
     @Override
-    public List<DeviceGroupComposedGroup> findByGroupNames(List<String> groupNames) {
-        try {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT DGCG.* FROM DeviceGroupComposedGroup DGCG");
-            sql.append("WHERE groupName").in(groupNames);
-            return yukonJdbcTemplate.query(sql, rowAndFieldMapper);
-        } catch (EmptyResultDataAccessException ex) {
-            return null;
-        }
+    public List<DeviceGroupComposedGroup> getByGroupNames(List<String> groupNames) {
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT DGCG.* FROM DeviceGroupComposedGroup DGCG");
+		sql.append("WHERE groupName").in(groupNames);
+		return yukonJdbcTemplate.query(sql, rowAndFieldMapper);
     }
     
     @PostConstruct
