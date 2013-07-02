@@ -224,11 +224,6 @@
         <enum field="sunday" type="Schedule"/>
     </category>
     
-    <category type="mct430DemandLoadProfile">
-        <enum field="demandInterval" type="Interval" default="5"/>
-        <enum field="loadProfileInterval1" type="Interval" default="60"/>
-    </category>
-    
     <category type="mct430LoadProfileChannels">
         <!-- Channel 1 Inputs -->
         <enum field="channel1Type" type="Mct430MeterType" default="0"/>

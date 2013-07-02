@@ -255,7 +255,6 @@
     <pao id="MCT_430_CONFIGURATION" abstract="true" 
         inherits="SUPPORTS_DEVICE_CONFIGURATION, TIMEZONE_CONFIGURATION_CATEGORY, ADDRESSING_CONFIGURATION_CATEGORY">
         <configuration>
-            <category type="mct430DemandLoadProfile"/>
             <category type="mct430LoadProfileChannels"/>
             <category type="mct430ConfigurationByte"/>
             <category type="mct430PrecannedTable"/>

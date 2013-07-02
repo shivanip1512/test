@@ -21,7 +21,6 @@
             <xs:enumeration value="relays"/>
             <xs:enumeration value="mct470PrecannedTable"/>
             <xs:enumeration value="tou"/>
-            <xs:enumeration value="mct430DemandLoadProfile"/>
             <xs:enumeration value="mct430LoadProfileChannels"/>
             <xs:enumeration value="mct430ConfigurationByte"/>
             <xs:enumeration value="mct430PrecannedTable"/>
