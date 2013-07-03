@@ -19,9 +19,11 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.model.ArchiveAnalysisResult;
 import com.cannontech.web.bulk.service.AdaResultsHelper;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @CheckRoleProperty(YukonRoleProperty.ARCHIVED_DATA_ANALYSIS)
@@ -37,13 +39,15 @@ public class AdaResultsController {
     @Autowired private RolePropertyDao rolePropertyDao;
     
     @RequestMapping
-    public String view(ModelMap model, 
-            int analysisId,
+    public String view(ModelMap model, int analysisId,
             @RequestParam(defaultValue="25") int itemsPerPage, 
             @RequestParam(defaultValue="1") int currentPage, 
-            YukonUserContext userContext) throws ServletRequestBindingException, DeviceCollectionCreationException {
+            YukonUserContext userContext, FlashScope flashScope) throws ServletRequestBindingException, DeviceCollectionCreationException {
         Analysis analysis = archiveDataAnalysisDao.getAnalysisById(analysisId);
         ArchiveAnalysisResult result = new ArchiveAnalysisResult(analysis);
+        
+        // Warn the user if the analysis was interrupted
+        flashScope.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.analysis.analysisInterruptedWarning"));
         
         // Build device collection
         DeviceCollection collection = adaCollectionProducer.buildDeviceCollection(analysisId);

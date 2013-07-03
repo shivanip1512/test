@@ -12,8 +12,10 @@
     <entry key="yukon.web.modules.tools.bulk.analysis.allQualities">Include All Qualities</entry>
     <entry key="yukon.web.modules.tools.bulk.analysis.status.RUNNING">Running</entry>
     <entry key="yukon.web.modules.tools.bulk.analysis.status.COMPLETE">Complete</entry>
+    <entry key="yukon.web.modules.tools.bulk.analysis.status.INTERRUPTED">Interrupted</entry>
     <entry key="yukon.web.modules.tools.bulk.analysis.status.READING">Reading</entry>
     <entry key="yukon.web.modules.tools.bulk.analysis.status.DELETED">Deleted</entry>
+    <entry key="yukon.web.modules.tools.bulk.analysis.analysisInterruptedWarning">This analysis was interrupted before it could finish. Data may be incomplete. Consider re-running the analysis.</entry>
     
     <!-- ANALYSIS HOME -->
     <entry key="yukon.web.modules.tools.bulk.analysis.home.pageName">Archive Data Analysis</entry>

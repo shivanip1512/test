@@ -1,12 +1,9 @@
 package com.cannontech.common.bulk.model;
 
-import java.util.List;
-
 import org.joda.time.Instant;
 import org.joda.time.Interval;
 import org.joda.time.Period;
 
-import com.cannontech.common.bulk.service.ArchiveDataAnalysisHelper;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 
 public class Analysis {

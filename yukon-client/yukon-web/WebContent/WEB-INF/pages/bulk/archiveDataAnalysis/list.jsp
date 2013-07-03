@@ -88,7 +88,7 @@
 	                            </c:when>
 	                            <%-- if complete with some devices successfully analyzed, enable view, enable delete, status doesn't link--%>
 	                            <%-- if complete with 0 devices successfully analyzed, disable view, enable delete, status doesn't link--%>
-	                            <c:when test="${analysisEntry.key.status == 'COMPLETE'}">
+	                            <c:when test="${analysisEntry.key.status == 'COMPLETE' || analysisEntry.key.status == 'INTERRUPTED'}">
 	                                <td>
 	                                    <i:inline key="${analysisEntry.key.status}"/>
 	                                </td>
