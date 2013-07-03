@@ -53573,7 +53573,7 @@
         <i__foreignKeys/>
         <i__indexes>
           <entry>
-            <string>PK_DEVICECONFIGCATEGORYMAP</string>
+            <string>PK_DeviceConfigCategoryMap</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
@@ -53582,8 +53582,14 @@
                   <i__columnName>DeviceConfigurationId</i__columnName>
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>DeviceConfigCategoryMap</i__tableName>
+                  <i__ordinalPosition>2</i__ordinalPosition>
+                  <i__columnName>DeviceConfigCategoryId</i__columnName>
+                  <i__nonNonUnique>false</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>PK_DEVICECONFIGCATEGORYMAP</indexName>
+              <indexName>PK_DeviceConfigCategoryMap</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
