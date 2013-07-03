@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/1/2013 4:53:13 PM                          */
+/* Created on:     7/2/2013 8:33:34 AM                          */
 /*==============================================================*/
 
 
@@ -2718,7 +2718,7 @@ alter table DeviceConfigCategoryItem
 create table DeviceConfigCategoryMap  (
    DeviceConfigurationId NUMBER                          not null,
    DeviceConfigCategoryId NUMBER                          not null,
-   constraint PK_DEVICECONFIGCATEGORYMAP primary key (DeviceConfigurationId)
+   constraint PK_DeviceConfigCategoryMap primary key (DeviceConfigurationId, DeviceConfigCategoryId)
 );
 
 INSERT INTO DeviceConfigCategoryMap VALUES(-1, 0);
