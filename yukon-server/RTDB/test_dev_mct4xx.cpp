@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_isProfileTablePointerCurrent)
 {
     test_Mct4xxDevice dev;
 
-    // The math for the Mct4xx devices is (seconds_from_utc_midnight / interval) % 96.
+    // The math for the Mct4xx devices is (seconds_from_utc_midnight / interval) % 96 + 1.
 
     {
         CtiTime t(CtiDate(1, 1, 2011), 19, 16, 0);  //  76 minutes past UTC midnight
@@ -152,30 +152,30 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_isProfileTablePointerCurrent)
         _get_timezone(&tz);
         t.addSeconds(21600 - tz);
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(95, t, 3600));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent( 0, t, 3600));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent( 5, t, 3600));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent( 6, t, 3600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(96, t, 3600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent( 1, t, 3600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent( 6, t, 3600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent( 7, t, 3600));
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(95, t, 1800));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent( 0, t, 1800));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent( 5, t, 1800));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent( 6, t, 1800));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(96, t, 1800));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent( 1, t, 1800));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent( 6, t, 1800));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent( 7, t, 1800));
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(95, t,  900));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent( 0, t,  900));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent( 5, t,  900));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent( 6, t,  900));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(96, t,  900));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent( 1, t,  900));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent( 6, t,  900));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent( 7, t,  900));
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent( 5, t,  600));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent( 6, t,  600));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(11, t,  600));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(12, t,  600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent( 6, t,  600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent( 7, t,  600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(12, t,  600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(13, t,  600));
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(11, t,  300));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(12, t,  300));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(17, t,  300));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(18, t,  300));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(12, t,  300));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(13, t,  300));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(18, t,  300));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(19, t,  300));
     }
 
     {
@@ -185,30 +185,30 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_isProfileTablePointerCurrent)
         _get_timezone(&tz);
         t.addSeconds(21600 - tz);
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(77, t, 3600));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(78, t, 3600));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(83, t, 3600));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(84, t, 3600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(78, t, 3600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(79, t, 3600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(84, t, 3600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(85, t, 3600));
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(59, t, 1800));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(60, t, 1800));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(65, t, 1800));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(66, t, 1800));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(60, t, 1800));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(61, t, 1800));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(66, t, 1800));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(67, t, 1800));
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(23, t,  900));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(24, t,  900));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(29, t,  900));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(30, t,  900));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(24, t,  900));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(25, t,  900));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(30, t,  900));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(31, t,  900));
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(89, t,  600));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(90, t,  600));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(95, t,  600));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(96, t,  600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(90, t,  600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(91, t,  600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(96, t,  600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(97, t,  600));
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(83, t,  300));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(84, t,  300));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(89, t,  300));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(90, t,  300));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(84, t,  300));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(85, t,  300));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(90, t,  300));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(91, t,  300));
     }
 
     {
@@ -218,30 +218,30 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_isProfileTablePointerCurrent)
         _get_timezone(&tz);
         t.addSeconds(21600 - tz);
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(83, t, 3600));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(84, t, 3600));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(89, t, 3600));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(90, t, 3600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(84, t, 3600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(85, t, 3600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(90, t, 3600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(91, t, 3600));
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(77, t, 1800));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(78, t, 1800));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(83, t, 1800));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(84, t, 1800));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(78, t, 1800));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(79, t, 1800));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(84, t, 1800));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(85, t, 1800));
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(59, t,  900));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(60, t,  900));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(65, t,  900));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(66, t,  900));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(60, t,  900));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(61, t,  900));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(66, t,  900));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(67, t,  900));
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(41, t,  600));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(42, t,  600));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(47, t,  600));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(48, t,  600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(42, t,  600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(43, t,  600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(48, t,  600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(49, t,  600));
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(83, t,  300));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(84, t,  300));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(89, t,  300));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(90, t,  300));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(84, t,  300));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(85, t,  300));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(90, t,  300));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(91, t,  300));
     }
 
     {
@@ -251,30 +251,30 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_isProfileTablePointerCurrent)
         _get_timezone(&tz);
         t.addSeconds(21600 - tz);
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(89, t, 3600));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(90, t, 3600));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(95, t, 3600));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(96, t, 3600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(90, t, 3600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(91, t, 3600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(96, t, 3600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(97, t, 3600));
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(83, t, 1800));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(84, t, 1800));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(89, t, 1800));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(90, t, 1800));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(84, t, 1800));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(85, t, 1800));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(90, t, 1800));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(91, t, 1800));
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(71, t,  900));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(72, t,  900));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(77, t,  900));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(78, t,  900));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(72, t,  900));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(73, t,  900));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(78, t,  900));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(79, t,  900));
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(59, t,  600));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(60, t,  600));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(65, t,  600));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(66, t,  600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(60, t,  600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(61, t,  600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(66, t,  600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(67, t,  600));
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(23, t,  300));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(24, t,  300));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(29, t,  300));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(30, t,  300));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(24, t,  300));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(25, t,  300));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(30, t,  300));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(31, t,  300));
     }
 
     {
@@ -284,30 +284,30 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_isProfileTablePointerCurrent)
         _get_timezone(&tz);
         t.addSeconds(21600 - tz);
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(17, t, 3600));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(18, t, 3600));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(23, t, 3600));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(24, t, 3600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(18, t, 3600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(19, t, 3600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(24, t, 3600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(25, t, 3600));
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(35, t, 1800));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(36, t, 1800));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(41, t, 1800));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(42, t, 1800));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(36, t, 1800));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(37, t, 1800));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(42, t, 1800));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(43, t, 1800));
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(71, t,  900));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(72, t,  900));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(77, t,  900));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(78, t,  900));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(72, t,  900));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(73, t,  900));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(78, t,  900));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(79, t,  900));
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(11, t,  600));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(12, t,  600));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(17, t,  600));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(18, t,  600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(12, t,  600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(13, t,  600));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(18, t,  600));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(19, t,  600));
 
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(23, t,  300));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(24, t,  300));
-        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(29, t,  300));
-        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(30, t,  300));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(24, t,  300));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(25, t,  300));
+        BOOST_CHECK_EQUAL(true,  dev.isProfileTablePointerCurrent(30, t,  300));
+        BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(31, t,  300));
     }
 }
 

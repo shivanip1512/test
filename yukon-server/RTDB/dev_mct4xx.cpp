@@ -3144,10 +3144,10 @@ INT Mct4xxDevice::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, CtiMes
 
 bool Mct4xxDevice::isProfileTablePointerCurrent(const unsigned char table_pointer, const CtiTime TimeNow, const unsigned interval_len) const
 {
-    const unsigned long expected_table_pointer = (TimeNow.seconds() / interval_len) % 96;
+    const unsigned long expected_table_pointer = ((TimeNow.seconds() / interval_len) % 96) + 1;
 
     //  the table pointer needs to indicate it was within the same block of 6 intervals as we expect
-    return (table_pointer / 6) == (expected_table_pointer / 6);
+    return ((table_pointer + 5) / 6) == ((expected_table_pointer + 5) / 6);
 }
 
 
