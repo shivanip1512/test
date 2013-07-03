@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/2/2013 8:33:34 AM                          */
+/* Created on:     7/3/2013 3:40:25 PM                          */
 /*==============================================================*/
 
 
@@ -2691,6 +2691,9 @@ create table DeviceConfigCategory  (
 );
 
 INSERT INTO DeviceConfigCategory VALUES (0, 'dnp', 'Default DNP Category');
+
+alter table DeviceConfigCategory
+   add constraint AK_DeviceConfigCategory_Name unique (Name);
 
 /*==============================================================*/
 /* Table: DeviceConfigCategoryItem                              */

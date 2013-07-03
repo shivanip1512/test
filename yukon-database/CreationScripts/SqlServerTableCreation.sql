@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/3/2013 2:26:20 PM                          */
+/* Created on:     7/3/2013 3:38:52 PM                          */
 /*==============================================================*/
 
 
@@ -2863,6 +2863,10 @@ create table DeviceConfigCategory (
 go
 
 INSERT INTO DeviceConfigCategory VALUES (0, 'dnp', 'Default DNP Category');
+
+alter table DeviceConfigCategory
+   add constraint AK_DeviceConfigCategory_Name unique (Name)
+go
 
 /*==============================================================*/
 /* Table: DeviceConfigCategoryItem                              */
