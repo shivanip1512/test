@@ -2080,6 +2080,7 @@ dev_repeater850.obj:	precompiled.h devicetypes.h dev_repeater850.h \
 		tbl_route.h tbl_carrier.h prot_emetcon.h cmd_dlc.h \
 		cmd_device.h pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h \
 		porter.h
+dev_rfn.obj:	precompiled.h dev_rfn.h msg_rfnrequest.h
 dev_rtc.obj:	precompiled.h cparms.h dlldefs.h rwutil.h yukon.h types.h \
 		ctidbgmem.h database_connection.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h netports.h mutex.h guard.h utility.h ctitime.h \
@@ -3048,12 +3049,12 @@ slctdev.obj:	precompiled.h dev_710.h dev_idlc.h types.h os2_2w32.h \
 		dev_mark_v.h prot_transdata.h transdata_application.h \
 		transdata_tracker.h transdata_datalink.h prot_ymodem.h \
 		transdata_data.h msg_cmd.h dev_rds.h dev_repeater800.h \
-		dev_repeater.h dev_repeater850.h dev_rtc.h tbl_dv_rtc.h \
-		dev_sixnet.h prot_sixnet.h rte_macro.h tbl_rtmacro.h \
-		rte_ccu.h rte_xcu.h smartmap.h readers_writer_lock.h \
-		tbl_rtcarrier.h tbl_rtrepeater.h rte_versacom.h \
-		tbl_rtversacom.h master.h rte_expresscom.h dev_fmu.h rtdb.h \
-		hashkey.h hash_functions.h slctdev.h
+		dev_repeater.h dev_repeater850.h dev_rfn.h msg_rfnrequest.h \
+		dev_rtc.h tbl_dv_rtc.h dev_sixnet.h prot_sixnet.h rte_macro.h \
+		tbl_rtmacro.h rte_ccu.h rte_xcu.h smartmap.h \
+		readers_writer_lock.h tbl_rtcarrier.h tbl_rtrepeater.h \
+		rte_versacom.h tbl_rtversacom.h master.h rte_expresscom.h \
+		dev_fmu.h rtdb.h hashkey.h hash_functions.h slctdev.h
 test_cmd_device.obj:	cmd_device.h dev_single.h dsm2.h cticonnect.h \
 		yukon.h types.h ctidbgmem.h dlldefs.h netports.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
@@ -3875,7 +3876,7 @@ test_slctdev.obj:	slctdev.h dev_base.h dsm2.h cticonnect.h yukon.h \
 		CtiPCPtrQueue.h msg_signal.h string_utility.h \
 		tbl_static_paoinfo.h pointdefs.h encryption.h tbl_base.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
-		devicetypes.h
+		devicetypes.h test_reader.h
 #ENDUPDATE#
 
 include $(COMPILEBASE)\versioninfo.inc

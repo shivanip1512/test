@@ -26,6 +26,8 @@ public:
     static const std::string WeekdaysSchedule;
     static const std::string DefaultTOURate;
 
+    static const std::string Schedule1Time0;
+    static const std::string Schedule1Rate0;
     static const std::string Schedule1Time1;
     static const std::string Schedule1Rate1;
     static const std::string Schedule1Time2;
@@ -44,11 +46,9 @@ public:
     static const std::string Schedule1Rate8;
     static const std::string Schedule1Time9;
     static const std::string Schedule1Rate9;
-    static const std::string Schedule1Time10;
-    static const std::string Schedule1Rate10;
-    static const std::string Schedule1Time0;
-    static const std::string Schedule1Rate0;
 
+    static const std::string Schedule2Time0;
+    static const std::string Schedule2Rate0;
     static const std::string Schedule2Time1;
     static const std::string Schedule2Rate1;
     static const std::string Schedule2Time2;
@@ -67,11 +67,9 @@ public:
     static const std::string Schedule2Rate8;
     static const std::string Schedule2Time9;
     static const std::string Schedule2Rate9;
-    static const std::string Schedule2Time10;
-    static const std::string Schedule2Rate10;
-    static const std::string Schedule2Time0;
-    static const std::string Schedule2Rate0;
 
+    static const std::string Schedule3Time0;
+    static const std::string Schedule3Rate0;
     static const std::string Schedule3Time1;
     static const std::string Schedule3Rate1;
     static const std::string Schedule3Time2;
@@ -90,11 +88,9 @@ public:
     static const std::string Schedule3Rate8;
     static const std::string Schedule3Time9;
     static const std::string Schedule3Rate9;
-    static const std::string Schedule3Time10;
-    static const std::string Schedule3Rate10;
-    static const std::string Schedule3Time0;
-    static const std::string Schedule3Rate0;
 
+    static const std::string Schedule4Time0;
+    static const std::string Schedule4Rate0;
     static const std::string Schedule4Time1;
     static const std::string Schedule4Rate1;
     static const std::string Schedule4Time2;
@@ -113,17 +109,8 @@ public:
     static const std::string Schedule4Rate8;
     static const std::string Schedule4Time9;
     static const std::string Schedule4Rate9;
-    static const std::string Schedule4Time10;
-    static const std::string Schedule4Rate10;
-    static const std::string Schedule4Time0;
-    static const std::string Schedule4Rate0;
 
-    static const std::string DstBegin;
-    static const std::string DstEnd;
     static const std::string TimeZoneOffset;
-
-    static const std::string UnderVoltageThreshold;
-    static const std::string OverVoltageThreshold;
 
     static const std::string LoadProfileResolution1;
     static const std::string PeakKwResolution1;
@@ -139,34 +126,10 @@ public:
     static const std::string LastIntervalDemandResolution4;
     static const std::string DemandInterval;
     static const std::string LoadProfileInterval;
-    static const std::string VoltageLPInterval;
-    static const std::string VoltageDemandInterval;
-    static const std::string LoadProfileInterval2;
 
     static const std::string TimeAdjustTolerance;
-    static const std::string AlarmMaskEvent1;
-    static const std::string AlarmMaskEvent2;
-    static const std::string AlarmMaskMeter;
 
-    static const std::string EnableDst;
     static const std::string ElectronicMeter;
-
-    static const std::string Options;
-    static const std::string OutageCycles;
-
-    static const std::string DemandThreshold;
-    static const std::string ConnectDelay;
-    static const std::string CyclingDisconnectMinutes;
-    static const std::string CyclingConnectMinutes;
-
-    static const std::string HolidayDate1;
-    static const std::string HolidayDate2;
-    static const std::string HolidayDate3;
-
-    static const std::string Channel1Length;
-    static const std::string Channel2Length;
-    static const std::string Channel3Length;
-    static const std::string Channel4Length;
 
     static const std::string Channel1Type;
     static const std::string Channel2Type;
@@ -188,38 +151,6 @@ public:
     static const std::string TableReadInterval;
     static const std::string MeterNumber;
     static const std::string TableType;
-    static const std::string DemandMetersToScan;
-    static const std::string DisplayParameters;
-    static const std::string TransformerRatio;
-
-    static const std::string DNPCollection1BinaryA;
-    static const std::string DNPCollection1BinaryB;
-    static const std::string DNPCollection2BinaryA;
-    static const std::string DNPCollection2BinaryB;
-    static const std::string DNPCollection1Analog;
-    static const std::string DNPCollection2Analog;
-    static const std::string DNPCollection1Accumulator;
-    static const std::string DNPCollection2Accumulator;
-    static const std::string DNPAnalog1;
-    static const std::string DNPAnalog2;
-    static const std::string DNPAnalog3;
-    static const std::string DNPAnalog4;
-    static const std::string DNPAnalog5;
-    static const std::string DNPAnalog6;
-    static const std::string DNPAnalog7;
-    static const std::string DNPAnalog8;
-    static const std::string DNPAnalog9;
-    static const std::string DNPAnalog10;
-    static const std::string DNPAccumulator1;
-    static const std::string DNPAccumulator2;
-    static const std::string DNPAccumulator3;
-    static const std::string DNPAccumulator4;
-    static const std::string DNPAccumulator5;
-    static const std::string DNPAccumulator6;
-    static const std::string DNPAccumulator7;
-    static const std::string DNPAccumulator8;
-    static const std::string DNPBinaryByte1A;
-    static const std::string DNPBinaryByte1B;
 
     static const std::string PhaseLossThreshold;
     static const std::string PhaseLossDuration;

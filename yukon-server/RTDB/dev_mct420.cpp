@@ -401,7 +401,7 @@ int Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiCommandParser &
 
         for each( const PaoInfoKeys pao_key in lcd_metric_keys )
         {
-            string config_key = "Display Item " + CtiNumStr(++i);
+            string config_key = "displayItem" + CtiNumStr(++i);
 
             long config_value;
 

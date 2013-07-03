@@ -971,20 +971,19 @@ cctwowaycbcpoints.obj:	precompiled.h cctwowaycbcpoints.h msg_cmd.h \
 		PointValueHolder.h msg_pdata.h pointdefs.h ccid.h \
 		dev_cbc7020.h dev_dnp.h dev_remote.h dev_single.h dev_base.h \
 		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
-		tbl_paoexclusion.h config_device.h logger.h thread.h \
-		CtiPCPtrQueue.h hashkey.h hash_functions.h rte_base.h \
-		dbmemobject.h ctibase.h ctinexus.h tbl_pao_lite.h \
+		tbl_paoexclusion.h config_device.h hashkey.h hash_functions.h \
+		rte_base.h dbmemobject.h ctibase.h ctinexus.h tbl_pao_lite.h \
 		tbl_rtcomm.h resolvers.h db_entry_defines.h desolvers.h \
-		msg_signal.h string_utility.h tbl_static_paoinfo.h \
-		encryption.h tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h \
-		pt_base.h tbl_pt_base.h msg_pcrequest.h msg_pcreturn.h \
-		msg_multi.h tbl_dv_scandata.h tbl_dv_wnd.h connection.h \
-		exchange.h msg_reg.h queue.h cparms.h configkey.h configval.h \
-		prot_base.h xfer.h tbl_dialup.h tbl_direct.h prot_dnp.h \
-		packet_finder.h dnp_application.h dnp_objects.h \
-		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
-		dnp_configuration.h dnp_object_binaryoutput.h \
-		tbl_dv_address.h config_data_cbc.h dev_cbc8020.h \
+		logger.h thread.h CtiPCPtrQueue.h msg_signal.h \
+		string_utility.h tbl_static_paoinfo.h encryption.h tbl_base.h \
+		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
+		msg_pcrequest.h msg_pcreturn.h msg_multi.h tbl_dv_scandata.h \
+		tbl_dv_wnd.h connection.h exchange.h msg_reg.h queue.h \
+		cparms.h configkey.h configval.h prot_base.h xfer.h \
+		tbl_dialup.h tbl_direct.h prot_dnp.h packet_finder.h \
+		dnp_application.h dnp_objects.h dnp_transport.h \
+		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
+		dnp_object_binaryoutput.h tbl_dv_address.h dev_cbc8020.h \
 		database_writer.h row_writer.h ccutil.h devicetypes.h \
 		mgr_paosched.h pao_schedule.h pao_event.h amq_connection.h \
 		critical_section.h CapControlOperationMessage.h \

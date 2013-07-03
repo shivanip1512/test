@@ -666,8 +666,7 @@ dev_cbc7020.obj:	precompiled.h dev_cbc7020.h dev_dnp.h dev_remote.h \
 		tbl_dialup.h tbl_direct.h prot_dnp.h packet_finder.h \
 		dnp_application.h dnp_objects.h dnp_transport.h \
 		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
-		dnp_object_binaryoutput.h tbl_dv_address.h config_data_cbc.h \
-		pointAttribute.h
+		dnp_object_binaryoutput.h tbl_dv_address.h pointAttribute.h
 dev_cbc8020.obj:	precompiled.h dev_cbc8020.h dev_cbc7020.h dev_dnp.h \
 		dev_remote.h dev_single.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h mutex.h guard.h utility.h \
@@ -689,9 +688,9 @@ dev_cbc8020.obj:	precompiled.h dev_cbc8020.h dev_cbc7020.h dev_dnp.h \
 		tbl_dialup.h tbl_direct.h prot_dnp.h packet_finder.h \
 		dnp_application.h dnp_objects.h dnp_transport.h \
 		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
-		dnp_object_binaryoutput.h tbl_dv_address.h config_data_cbc.h \
-		pointAttribute.h pt_status.h tbl_pt_status.h \
-		tbl_pt_status_control.h tbl_pt_control.h
+		dnp_object_binaryoutput.h tbl_dv_address.h pointAttribute.h \
+		pt_status.h tbl_pt_status.h tbl_pt_status_control.h \
+		tbl_pt_control.h
 dev_ccu.obj:	precompiled.h cmdparse.h ctitokenizer.h dlldefs.h \
 		parsevalue.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \
 		netports.h mutex.h guard.h utility.h ctitime.h queues.h \
@@ -2169,6 +2168,7 @@ dev_repeater850.obj:	precompiled.h devicetypes.h dev_repeater850.h \
 		tbl_route.h tbl_carrier.h prot_emetcon.h cmd_dlc.h \
 		cmd_device.h pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h \
 		porter.h
+dev_rfn.obj:	precompiled.h dev_rfn.h msg_rfnrequest.h
 dev_rtc.obj:	precompiled.h cparms.h dlldefs.h rwutil.h yukon.h types.h \
 		ctidbgmem.h database_connection.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h netports.h mutex.h guard.h utility.h ctitime.h \
@@ -3109,7 +3109,7 @@ slctdev.obj:	precompiled.h dev_710.h dev_idlc.h types.h os2_2w32.h \
 		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
 		dnp_configuration.h dnp_object_binaryoutput.h \
 		tbl_dv_address.h dev_cbc.h tbl_dv_cbc.h dev_cbc7020.h \
-		config_data_cbc.h pointAttribute.h dev_cbc8020.h dev_ccu.h \
+		pointAttribute.h dev_cbc8020.h dev_ccu.h \
 		dev_ccu_queue_interface.h device_queue_interface.h \
 		dev_ccu721.h prot_klondike.h prot_wrap.h prot_idlc.h \
 		dev_welco.h prot_welco.h dev_ilex.h dev_seriesv.h dev_ied.h \
@@ -3171,11 +3171,12 @@ slctdev.obj:	precompiled.h dev_710.h dev_idlc.h types.h os2_2w32.h \
 		transdata_application.h transdata_tracker.h \
 		transdata_datalink.h prot_ymodem.h transdata_data.h msg_cmd.h \
 		dev_rds.h dev_repeater800.h dev_repeater.h dev_repeater850.h \
-		dev_rtc.h tbl_dv_rtc.h dev_sixnet.h prot_sixnet.h rte_macro.h \
-		tbl_rtmacro.h rte_ccu.h rte_xcu.h smartmap.h \
-		readers_writer_lock.h tbl_rtcarrier.h tbl_rtrepeater.h \
-		rte_versacom.h tbl_rtversacom.h master.h rte_expresscom.h \
-		dev_fmu.h rtdb.h slctdev.h
+		dev_rfn.h msg_rfnrequest.h dev_rtc.h tbl_dv_rtc.h \
+		dev_sixnet.h prot_sixnet.h rte_macro.h tbl_rtmacro.h \
+		rte_ccu.h rte_xcu.h smartmap.h readers_writer_lock.h \
+		tbl_rtcarrier.h tbl_rtrepeater.h rte_versacom.h \
+		tbl_rtversacom.h master.h rte_expresscom.h dev_fmu.h rtdb.h \
+		slctdev.h
 test_cmd_device.obj:	cmd_device.h dev_single.h dsm2.h cticonnect.h \
 		yukon.h types.h ctidbgmem.h dlldefs.h netports.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
@@ -3352,8 +3353,7 @@ test_dev_cbc7020.obj:	dev_cbc7020.h dev_dnp.h dev_remote.h \
 		tbl_dialup.h tbl_direct.h prot_dnp.h packet_finder.h \
 		dnp_application.h dnp_objects.h dnp_transport.h \
 		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
-		dnp_object_binaryoutput.h tbl_dv_address.h config_data_cbc.h \
-		pointAttribute.h
+		dnp_object_binaryoutput.h tbl_dv_address.h pointAttribute.h
 test_dev_cbc8020.obj:	dev_cbc8020.h dev_cbc7020.h dev_dnp.h \
 		dev_remote.h dev_single.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h mutex.h guard.h utility.h \
@@ -3375,8 +3375,8 @@ test_dev_cbc8020.obj:	dev_cbc8020.h dev_cbc7020.h dev_dnp.h \
 		tbl_dialup.h tbl_direct.h prot_dnp.h packet_finder.h \
 		dnp_application.h dnp_objects.h dnp_transport.h \
 		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
-		dnp_object_binaryoutput.h tbl_dv_address.h config_data_cbc.h \
-		pointAttribute.h ctidate.h
+		dnp_object_binaryoutput.h tbl_dv_address.h pointAttribute.h \
+		ctidate.h
 test_dev_ccu721.obj:	dev_ccu721.h dev_remote.h dev_single.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
@@ -4027,7 +4027,7 @@ test_slctdev.obj:	slctdev.h dev_base.h dsm2.h cticonnect.h yukon.h \
 		desolvers.h logger.h thread.h CtiPCPtrQueue.h msg_signal.h \
 		string_utility.h tbl_static_paoinfo.h pointdefs.h \
 		encryption.h tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h \
-		pt_base.h tbl_pt_base.h devicetypes.h
+		pt_base.h tbl_pt_base.h devicetypes.h test_reader.h
 #ENDUPDATE#
 
 include $(COMPILEBASE)\versioninfo.inc

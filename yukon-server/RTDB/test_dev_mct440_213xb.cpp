@@ -4067,7 +4067,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
         test_DeviceConfig   test_cfg;
 
         test_cfg.insertValue("sunday",   "schedule 1");
-        test_cfg.insertValue("weekdays", "schedule 2");
+        test_cfg.insertValue("weekday", "schedule 2");
         test_cfg.insertValue("saturday", "schedule 3");
         test_cfg.insertValue("holiday",  "schedule 4");
 
@@ -4103,7 +4103,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             }
         }
 
-        test_cfg.insertValue("default rate", "A");
+        test_cfg.insertValue("defaultRate", "A");
 
         test_Mct440_213xB test_dev;
 

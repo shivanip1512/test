@@ -674,8 +674,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         test_DeviceConfig config;
 
-        config.insertValue("enable dst", "0");
-        config.insertValue("electronic meter", "3");
+        config.insertValue("enableDst", "0");
+        config.insertValue("electronicMeter", "3");
 
         mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
 
@@ -788,8 +788,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         test_DeviceConfig config;
 
-        config.insertValue("enable dst", "0");
-        config.insertValue("electronic meter", "1");
+        config.insertValue("enableDst", "0");
+        config.insertValue("electronicMeter", "1");
 
         mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
 
@@ -902,8 +902,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         test_DeviceConfig config;
 
-        config.insertValue("enable dst", "0");
-        config.insertValue("electronic meter", "2");
+        config.insertValue("enableDst", "0");
+        config.insertValue("electronicMeter", "2");
 
         mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
 
@@ -1016,8 +1016,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         test_DeviceConfig config;
 
-        config.insertValue("enable dst", "0");
-        config.insertValue("electronic meter", "8");
+        config.insertValue("enableDst", "0");
+        config.insertValue("electronicMeter", "8");
 
         mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
 
@@ -1104,8 +1104,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         test_DeviceConfig config;
 
-        config.insertValue("enable dst", "0");
-        config.insertValue("electronic meter", "5");
+        config.insertValue("enableDst", "0");
+        config.insertValue("electronicMeter", "5");
 
         mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
 
@@ -1192,8 +1192,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         test_DeviceConfig config;
 
-        config.insertValue("enable dst", "0");
-        config.insertValue("electronic meter", "4");
+        config.insertValue("enableDst", "0");
+        config.insertValue("electronicMeter", "4");
 
         mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
 
@@ -1280,8 +1280,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         test_DeviceConfig config;
 
-        config.insertValue("enable dst", "0");
-        config.insertValue("electronic meter", "6");
+        config.insertValue("enableDst", "0");
+        config.insertValue("electronicMeter", "6");
 
         mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
 
