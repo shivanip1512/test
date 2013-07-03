@@ -92,7 +92,7 @@ public class ScheduledWaterLeakFileExportTask extends ScheduledFileExportTask {
         File exportFile = copyExportFile(archiveFile);
         
         // Create a new Export History entry
-        ExportHistoryEntry historyEntry = createExportHistoryEntry(FileExportType.METER_EVENTS, archiveFile, exportFile);
+        ExportHistoryEntry historyEntry = createExportHistoryEntry(FileExportType.WATER_LEAK, archiveFile, exportFile);
         
         //Send notification emails
         prepareAndSendNotificationEmails(historyEntry);

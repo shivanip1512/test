@@ -11,6 +11,11 @@ import com.cannontech.system.dao.GlobalSettingDao;
 public class ScheduledFileExportHelper {
     @Autowired private GlobalSettingDao globalSettingDao;
 
+    /**
+     * Used to create the File Extension choice list in the Schedule Parameters section of the schedule export 
+     * for Archive Data Export, Billing, Meter Events, and Water Leak reports. 
+     * @return A list of strings used to create the File Extension drop-down list.
+     */
     public List<String> setupFileExtChoices(ScheduledFileExportData exportData) {
         List<String> fileExtChoices = null;
         String globalFileExtensions = globalSettingDao.getString(GlobalSettingType.SCHEDULE_PARAMETERS_AVAILABLE_FILE_EXTENSIONS);
@@ -22,6 +27,11 @@ public class ScheduledFileExportHelper {
         return fileExtChoices;
     }
     
+    /**
+     * Used to create the Export Path choice list in the Schedule Parameters section of the schedule export 
+     * for Archive Data Export, Billing, Meter Events, and Water Leak reports. 
+     * @return A list of strings used to create the Export Path drop-down list.
+     */
     public List<String> setupExportPathChoices(ScheduledFileExportData exportData) {
         List<String> exportPathChoices = null;
         String curExportPath = exportData.getExportPath(); 

@@ -374,7 +374,8 @@ public final class CtiUtilities {
     }
 
     public final static String getExportDirPath() {
-        return getYukonBase() + "/Client/export/";
+        final String sep = System.getProperty("file.separator");
+        return getYukonBase() + sep + "Client" + sep + "Export" + sep;
     }
 
     public final static String getArchiveDirPath() {

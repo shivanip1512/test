@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
@@ -117,7 +118,8 @@ public enum GlobalSettingType implements DisplayableEnum {
     COOP_ID_CADP_ONLY(GlobalSettingSubCategory.DATA_EXPORT, stringType(), null), 
     DEFAULT_ROUNDING_MODE(GlobalSettingSubCategory.DATA_EXPORT, InputTypeFactory.enumType(RoundingMode.class), RoundingMode.HALF_EVEN),
     SCHEDULE_PARAMETERS_AVAILABLE_FILE_EXTENSIONS(GlobalSettingSubCategory.DATA_EXPORT, stringType(), ".csv,.dat,.txt"),
-    SCHEDULE_PARAMETERS_EXPORT_PATH(GlobalSettingSubCategory.DATA_EXPORT, stringType(), "c:\\yukon\\client,c:\\Windows\\Temp"),
+    // Defaulting to directory specified by CTIUtilities.getExportDirPath(), typically C:\Yukon\Client\Export.
+    SCHEDULE_PARAMETERS_EXPORT_PATH(GlobalSettingSubCategory.DATA_EXPORT, stringType(), CtiUtilities.getExportDirPath()),
     
     // AMI  (may fit better for future under Misc.?)
     DEVICE_DISPLAY_TEMPLATE(GlobalSettingSubCategory.AMI, InputTypeFactory.enumType(MeterDisplayFieldEnum.class), MeterDisplayFieldEnum.DEVICE_NAME),
