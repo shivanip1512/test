@@ -30,20 +30,14 @@
     <entry key="yukon.web.modules.tools.deviceGroupUpload.colHeader">Column Header</entry>
     <entry key="yukon.web.modules.tools.deviceGroupUpload.description">Description</entry>
     <entry key="yukon.web.modules.tools.deviceGroupUpload.identifier">Identifier</entry>
-    <entry key="yukon.web.modules.tools.deviceGroupUpload.address">ADDRESS</entry>
     <entry key="yukon.web.modules.tools.deviceGroupUpload.address.description">Address of the device.</entry>
-    <entry key="yukon.web.modules.tools.deviceGroupUpload.meterNumber">METER_NUMBER</entry>
     <entry key="yukon.web.modules.tools.deviceGroupUpload.meterNumber.description">Meter number of the device.</entry>
-    <entry key="yukon.web.modules.tools.deviceGroupUpload.name">NAME</entry>
     <entry key="yukon.web.modules.tools.deviceGroupUpload.name.description">Name of the device.</entry>
-    <entry key="yukon.web.modules.tools.deviceGroupUpload.deviceId">DEVICE_ID</entry>
     <entry key="yukon.web.modules.tools.deviceGroupUpload.deviceId.description">Device ID of the device.</entry>
-    <entry key="yukon.web.modules.tools.deviceGroupUpload.deviceGroupSet">DEVICE_GROUP_SET</entry>
     <entry key="yukon.web.modules.tools.deviceGroupUpload.deviceGroupSet.description"><![CDATA[
     The full path of a group to either add or remove the device from.<br><br>
     Example: If the header is <b>DEVICE_GROUP_SET:group=/Meters/Extra</b>, and the value in the row is <b>true</b>, then the device will be added to the group. If the value is <b>false</b>, it will be removed from the group.<br><br>
     ]]></entry>
-    <entry key="yukon.web.modules.tools.deviceGroupUpload.deviceGroupPrefix">DEVICE_GROUP_PREFIX</entry>
     <entry key="yukon.web.modules.tools.deviceGroupUpload.deviceGroupPrefix.description"><![CDATA[
     The full path of the group to be prefixed to the group name value in each row.<br><br>
     Example: If the header is <b>DEVICE_GROUP_PREFIX:prefix=/Meters/Collection</b>, and the value in the row is <b>A</b>, then the device will be added to <b>/Meters/Collection/A</b>.<br><br>

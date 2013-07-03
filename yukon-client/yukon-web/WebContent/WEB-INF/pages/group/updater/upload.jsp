@@ -84,34 +84,34 @@
            <tfoot></tfoot>
            <tbody>
                <tr>
-                   <td class="fwb"><i:inline key=".address"/></td>
+                   <td class="fwb">ADDRESS</td>
                    <td><i:inline key=".address.description"/></td>
                    <td class="tac"><cti:icon icon="icon-check" classes="fn"/></td>
                </tr>
                <tr>
-                   <td class="fwb"><i:inline key=".meterNumber"/></td>
+                   <td class="fwb">METER_NUMBER</td>
                    <td><i:inline key=".meterNumber.description"/></td>
                    <td style="text-align:center;"><cti:icon icon="icon-check" classes="fn"/></td>
                </tr>
                <tr>
-                   <td class="fwb"><i:inline key=".name"/></td>
+                   <td class="fwb">NAME</td>
                    <td><i:inline key=".name.description"/></td>
                    <td style="text-align:center;"><cti:icon icon="icon-check" classes="fn"/></td>
                </tr>
                <tr>
-                   <td class="fwb"><i:inline key=".deviceId"/></td>
+                   <td class="fwb">DEVICE_ID</td>
                    <td><i:inline key=".deviceId.description"/></td>
                    <td style="text-align:center;"><cti:icon icon="icon-check" classes="fn"/></td>
                </tr>
                
                <tr>
-                   <td class="fwb"><i:inline key=".deviceGroupPrefix"/></td>
+                   <td class="fwb">DEVICE_GROUP_PREFIX</td>
                    <td><i:inline key=".deviceGroupPrefix.description"/></td>
                    <td></td>
                </tr>
                
                <tr>
-                   <td class="fwb"><i:inline key=".deviceGroupSet"/></td>
+                   <td class="fwb">DEVICE_GROUP_SET</td>
                    <td><i:inline key=".deviceGroupSet.description"/></td>
                    <td></td>
                </tr>
