@@ -287,8 +287,7 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
         
         updateContactFromContactDto(contact, contactDto);
     }
-    
-    @Transactional
+
     protected void updateContactFromContactDto(LiteContact contact, ContactDto contactDto) {
         // By using a null for loginId in the updateContact method the login id will not be updated.  
         // It does NOT mean we are removing the login from the contact. 
