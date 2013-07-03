@@ -15,7 +15,7 @@ public class ScheduledFileExportHelper {
         List<String> fileExtChoices = null;
         String globalFileExtensions = globalSettingDao.getString(GlobalSettingType.SCHEDULE_PARAMETERS_AVAILABLE_FILE_EXTENSIONS);
         fileExtChoices = com.cannontech.common.util.StringUtils.parseStringsForList(globalFileExtensions, ",");
-        if (null == exportData.getExportFileExtension()) {
+        if (exportData.getExportFileExtension() == null) {
             // set the default value, initial selection
             exportData.setExportFileExtension(fileExtChoices.get(0));
         }
@@ -27,7 +27,7 @@ public class ScheduledFileExportHelper {
         String curExportPath = exportData.getExportPath(); 
         String globalExportPaths = globalSettingDao.getString(GlobalSettingType.SCHEDULE_PARAMETERS_EXPORT_PATH);
         exportPathChoices = com.cannontech.common.util.StringUtils.parseStringsForList(globalExportPaths, ",");
-        if (null == curExportPath) {
+        if (curExportPath == null) {
             exportData.setExportPath(exportPathChoices.get(0));
         } else {
             exportData.setExportPath(curExportPath);

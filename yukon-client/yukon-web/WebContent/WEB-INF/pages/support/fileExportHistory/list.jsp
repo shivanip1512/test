@@ -62,7 +62,7 @@
 						<!-- EXPORT PATH -->
                         <td>
                         <c:choose>
-                            <c:when test="${null == exportHistoryEntry.exportPath}">
+                            <c:when test="${exportHistoryEntry.exportPath == null}">
                                 <cti:msg2 key="yukon.web.defaults.dashes"/>
                             </c:when>
                             <c:otherwise>

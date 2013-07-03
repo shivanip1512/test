@@ -112,7 +112,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 	}
 	
 	public String getExportFileName() {
-        return (null == exportFileName) ? name : exportFileName;
+        return (exportFileName == null) ? name : exportFileName;
 	}
 	
 	public void setExportFileName(String exportFileName) {
