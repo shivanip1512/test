@@ -20,7 +20,7 @@ function initiateCannonDataUpdate(url, delayMs) {
         
         // find all of the updateable elements
         updateElems = jQuery('[data-updater]');
-        jQuery.each(updateElems, function(key, val) {
+        jQuery.each (updateElems, function(key, val) {
             var newData,
                 attVal = jQuery(val).attr('data-updater');
             if ('undefined' === typeof attVal) {
@@ -44,7 +44,7 @@ function initiateCannonDataUpdate(url, delayMs) {
 
         // update the classes
         updateClassElems = jQuery('[data-class-updater]');
-        jQuery.each(updateClassElems, function(key, val) {
+        jQuery.each (updateClassElems, function(key, val) {
             var id = jQuery(val).attr('data-class-updater'),
                 newData,
                 className;
@@ -60,13 +60,17 @@ function initiateCannonDataUpdate(url, delayMs) {
 
         // update the colors
         updateColorElems = jQuery('[data-color-updater]');
-        jQuery.each(updateColorElems, function(key, val) {
+        jQuery.each (updateColorElems, function(key, val) {
             var id = jQuery(val).attr('data-color-updater'),
                 newData,
                 format, // what are typical/legal values for this?
                 backgroundColor,
                 color,
                 current_value,
+                // jquery (and plain old javascript) returns color values in rgb format:
+                //   rgb(0, 153, 51)
+                // but we need:
+                //   #009933
                 rgb2hex = function(rgb) {
                     var compositeRgb,
                         hex = function(x) {
@@ -89,13 +93,6 @@ function initiateCannonDataUpdate(url, delayMs) {
             backgroundColor = jQuery(val).css('background-color');
             color = jQuery(val).css('color');
             current_value = format == 'background' ? backgroundColor : color;
-            // OK, jquery (and plain old javascript) returns color values in rgb format:
-            // rgb(0, 153, 51)
-            // but we need:
-            // #009933
-            // S-O to the rescue again:
-            // http://stackoverflow.com/questions/1740700/how-to-get-hex-color-value-rather-than-rgb-value?lq=1
-            // modified the solution proposed by Zach Katz
             if ('undefined' !== typeof newData && newData !== rgb2hex(current_value)) {
                 // data was sent and is different than current
                 if (format === 'background') {
@@ -116,7 +113,7 @@ function initiateCannonDataUpdate(url, delayMs) {
                 (it.callback)();
                 return;
             }
-            jQuery.each(idMap, function(key, val) {
+            jQuery.each (idMap, function(key, val) {
                 var newData = responseStruc.data[idMap[key]];
                 if ('undefined' !== typeof newData) {
                     gotNewData = true;
@@ -152,7 +149,6 @@ function initiateCannonDataUpdate(url, delayMs) {
     };
     
     var warnStaleData = function() {
-        console.log("warnStaleData");
         jQuery('#updatedWarning').dialog('open');
     };
     
@@ -164,12 +160,12 @@ function initiateCannonDataUpdate(url, delayMs) {
                 'data' : []
             },
             updaters = [
-                '',
-                'Class',
-                'Color'
+                '-',
+                '-class-',
+                '-color-'
             ],
             getUpdater = function(updateName) {
-                var fullName = 'cannon' + updateName + 'Updater',
+                var fullName = 'data' + updateName + 'updater',
                     updateElems = jQuery('[' + fullName + ']'),
                     updateData = jQuery.makeArray(updateElems).map(function(al) {
                         return jQuery(al).attr(fullName);
@@ -178,13 +174,13 @@ function initiateCannonDataUpdate(url, delayMs) {
             },
             json_reqData;
 
-        jQuery.each(updaters, function(index, updateStr) {
+        jQuery.each (updaters, function(index, updateStr) {
             var addedData = getUpdater(updateStr);
             reqData.data = reqData.data.concat(addedData);
         });
         cannonDataUpdateRegistrations.forEach(function(it, index, ar) {
             var idMap = it.identifierMap;
-            jQuery.each(idMap, function(key, val) {
+            jQuery.each (idMap, function(key, val) {
                 reqData.data = reqData.data.concat(val);
             });
         });
