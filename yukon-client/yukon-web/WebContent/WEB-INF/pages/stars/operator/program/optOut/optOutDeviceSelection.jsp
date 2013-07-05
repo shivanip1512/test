@@ -8,6 +8,36 @@
 
 <cti:standardPage module="operator" page="optOut.inventoryList">
 
+<script type="text/javascript">
+function createJSON() {
+    var array = new Array();
+    var index = 0;
+
+    $$('INPUT').each(function(input) {
+        if (input) {
+            var name = input.name;
+            if (name == 'inventoryId') {
+                var inventoryId = input.value;
+                var checked = $('check_' + inventoryId).checked;
+                if (checked) {
+                    array[index++] = input.value;
+                }    
+            }
+        }
+    });
+
+
+    // error message here
+    
+    var inputElement = document.createElement('input');
+    inputElement.type = 'hidden';
+    inputElement.name = 'jsonInventoryIds';
+    inputElement.value = Object.toJSON(array);
+    
+    $('form').appendChild(inputElement);
+}
+</script>    
+
 <c:set var="showNextButton" value="false" />
 
 <form:form id="form" commandName="optOutBackingBean" action="/stars/operator/program/optOut/optOutQuestions" 
