@@ -53,7 +53,7 @@ switchPointPicker.destinationFieldId = 'switch_point';
                             <x:outputText id="switchPointName" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlSubstationBus.switchPointID]}" /> 
                             
                             <x:htmlTag value="br"/>
-		                    <h:outputLink  value="javascript:switchPointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
+		                    <h:outputLink  value="javascript:switchPointPicker.show.call(switchPointPicker)" rendered="#{capControlForm.editingAuthorized}">
                                 <h:outputText value="Select point..."/>
 		                    </h:outputLink>
 		                </x:div>

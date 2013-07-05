@@ -117,11 +117,11 @@
 							var filterType = document.getElementById('filterType[' + rowNumber + ']').value;
 			                picker[rowNumber].extraArgs = filterType;
 			                picker[rowNumber].immediateSelectMode = true;
-			                picker[rowNumber].init();
+			                picker[rowNumber].init.call(picker[rowNumber]);
 
 			                function createPickerShower(rowNumberIn) {
 				                return function() {
-	                            	picker[rowNumberIn].show();
+	                            	picker[rowNumberIn].show.call(picker[rowNumberIn]);
 				                }
 			                }
 			                Event.observe('pickerLink[' + rowNumber + ']','click', createPickerShower(rowNumber));

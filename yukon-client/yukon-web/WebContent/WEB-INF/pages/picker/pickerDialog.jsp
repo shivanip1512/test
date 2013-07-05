@@ -15,12 +15,12 @@ Picker.alreadySelectedHoverMessage = '<cti:msg2 key=".alreadySelectedHover"/>';
     <div class="clearfix">
 	    <div class="fl">
 	        <div class="stacked">
-	            <label class="wsnw"><i:inline key=".query"/><input type="text" id="picker_${id}_ss" name="ss" onkeyup="${id}.doKeyUp();false;"/></label>
-	            <a id="picker_${id}_showAllLink" href="javascript:${id}.showAll()" style="margin-left: 3px;"><i:inline key=".showAll"/></a>
+	            <label class="wsnw"><i:inline key=".query"/><input type="text" id="picker_${id}_ss" name="ss" onkeyup="${id}.doKeyUp.call(${id});false;"/></label>
+	            <a id="picker_${id}_showAllLink" href="javascript:${id}.showAll.call(${id})" style="margin-left: 3px;"><i:inline key=".showAll"/></a>
 	        </div>
 	    </div>
 	    <div class="fr pagingArea">
-	        <tags:nextPrevLinks previousUrl="javascript:${id}.previous()" nextUrl="javascript:${id}.next()" mode="javascript"/>
+	        <tags:nextPrevLinks previousUrl="javascript:${id}.previous.call(${id})" nextUrl="javascript:${id}.next.call(${id})" mode="javascript"/>
 	    </div>
     </div>
     
@@ -32,21 +32,21 @@ Picker.alreadySelectedHoverMessage = '<cti:msg2 key=".alreadySelectedHover"/>';
 
     <c:if test="${multiSelectMode}">
 	    <div class="actionArea">
-            <input type="checkbox" id="picker_${id}_selectAll" onclick="javascript:${id}.selectAll()">
+            <input type="checkbox" id="picker_${id}_selectAll" onclick="javascript:${id}.selectAll.call(${id})">
             <label for="picker_${id}_selectAll" class="simpleLink pointer"><i:inline key=".selectAll"/></label>
             &nbsp;&nbsp;
             <span style="display: none">
                 <i:inline key=".pageSelected"/>&nbsp;&nbsp;
-                <a id="picker_${id}_selectAllPages" href="javascript:${id}.selectAllPages()">place holder</a>
+                <a id="picker_${id}_selectAllPages" href="javascript:${id}.selectAllPages.call(${id})">place holder</a>
             </span>
             <span style="display: none">
                 <i:inline key=".selectionCleared"/>&nbsp;&nbsp;
                 <a id="picker_${id}_clearEntireSelection"
-                    href="javascript:${id}.clearEntireSelection()"><i:inline key=".clearEntireSelection"/></a>
+                    href="javascript:${id}.clearEntireSelection.call(${id})"><i:inline key=".clearEntireSelection"/></a>
             </span>
             <span style="display: none">
                 <span id="picker_${id}_allPagesSelected">place holder</span>&nbsp;&nbsp;
-                <a href="javascript:${id}.clearEntireSelection()"><i:inline key=".clearEntireSelection"/></a>
+                <a href="javascript:${id}.clearEntireSelection.call(${id})"><i:inline key=".clearEntireSelection"/></a>
             </span>
             <span id="picker_${id}_entireSelectionCleared" style="display: none">
                 <i:inline key=".entireSelectionCleared"/>

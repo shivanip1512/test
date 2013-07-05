@@ -78,7 +78,7 @@
 	    
                         <x:htmlTag value="br"/>
 	    
-                        <h:outputLink  value="javascript:substationBusVoltReductionPointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
+                        <h:outputLink  value="javascript:substationBusVoltReductionPointPicker.show.call(substationBusVoltReductionPointPicker)" rendered="#{capControlForm.editingAuthorized}">
                             <h:outputText value="Select point"/>
                         </h:outputLink>
 	
@@ -110,7 +110,7 @@
 	    
                         <x:htmlTag value="br"/>
 	    
-                        <h:outputLink  value="javascript:substationBusDisableBusPointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
+                        <h:outputLink  value="javascript:substationBusDisableBusPointPicker.show.call(substationBusDisableBusPointPicker)" rendered="#{capControlForm.editingAuthorized}">
                             <h:outputText value="Select point"/>
                         </h:outputLink>
 	
@@ -232,7 +232,7 @@
     
                         <x:htmlTag value="br"/> 
     
-                        <h:outputLink  value="javascript:sub_Var_PointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
+                        <h:outputLink  value="javascript:sub_Var_PointPicker.show.call(sub_Var_PointPicker)" rendered="#{capControlForm.editingAuthorized}">
                             <h:outputText value="Select point" rendered="#{!capControlForm.PAOBase.capControlSubstationBus.usePhaseDataBoolean}"/>
                             <h:outputText value="Select point for Phase A" rendered="#{capControlForm.PAOBase.capControlSubstationBus.usePhaseDataBoolean}"/>
                         </h:outputLink>
@@ -251,7 +251,7 @@
 	
                             <x:htmlTag value="br"/> 
 	
-                            <h:outputLink  value="javascript:sub_Var_PhaseB_PointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
+                            <h:outputLink  value="javascript:sub_Var_PhaseB_PointPicker.show.call(sub_Var_PhaseB_PointPicker)" rendered="#{capControlForm.editingAuthorized}">
                                 <h:outputText value="Select point for Phase B"/>
                             </h:outputLink>
 	
@@ -267,7 +267,7 @@
                  
                             <x:htmlTag value="br"/> 
     
-                            <h:outputLink  value="javascript:sub_Var_PhaseC_PointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
+                            <h:outputLink  value="javascript:sub_Var_PhaseC_PointPicker.show.call(sub_Var_PhaseC_PointPicker)" rendered="#{capControlForm.editingAuthorized}">
                                 <h:outputText value="Select point for Phase C"/>
                             </h:outputLink>
     
@@ -305,7 +305,7 @@
 	    
                         <x:htmlTag value="br"/> 
 	    
-                        <h:outputLink  value="javascript:subWattPointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
+                        <h:outputLink  value="javascript:subWattPointPicker.show.call(subWattPointPicker)" rendered="#{capControlForm.editingAuthorized}">
                             <h:outputText value="Select point..."/>
                         </h:outputLink>
                     </x:div>
@@ -337,7 +337,7 @@
 	    
                         <x:htmlTag value="br"/> 
 	                
-                        <h:outputLink  value="javascript:subVoltPointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
+                        <h:outputLink  value="javascript:subVoltPointPicker.show.call(subVoltPointPicker)" rendered="#{capControlForm.editingAuthorized}">
                             <h:outputText value="Select point..."/>
                         </h:outputLink>
                     </x:div>

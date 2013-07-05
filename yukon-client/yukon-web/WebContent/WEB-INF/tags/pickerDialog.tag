@@ -124,15 +124,15 @@
     <c:if test="${pageScope.linkType != 'none'}">
         <span <c:if test="${not empty pageScope.styleClass}">class="${pageScope.styleClass}"</c:if>>
             <c:choose>
-        	    <c:when test="${pageScope.linkType == 'button'}">
+                <c:when test="${pageScope.linkType == 'button'}">
                     <c:set var="renderMode" value="button"/>
                     <c:if test="${not empty pageScope.buttonRenderMode}">
                         <c:set var="renderMode" value="${pageScope.buttonRenderMode}"/>
                     </c:if>
                     <cti:button nameKey="${pageScope.nameKey}" onclick="${id}.show()" renderMode="${pageScope.renderMode}" 
                         classes="${pageScope.buttonStyleClass}" icon="${pageScope.icon}" />
-        	    </c:when>
-        	    <c:when test="${pageScope.linkType == 'selection'}">
+                </c:when>
+                <c:when test="${pageScope.linkType == 'selection'}">
                     <c:if test="${empty pageScope.selectionProperty}">
                         <span class="errorMessage">The "selectionProperty" attribute is
                             required when using "selection" linkType on tags:pickerDialog.</span>
@@ -145,14 +145,14 @@
                     <c:if test="${pageScope.multiSelectMode}">
                         <cti:icon id="picker_${id}_showSelectedImg" href="javascript:${id}.showSelected()" nameKey="zoom" icon="icon-magnifier"/>
                     </c:if>
-        	    </c:when>
-        	    <c:otherwise>
+                </c:when>
+                <c:otherwise>
                     <c:set var="anchorAttributes" value=""/>
                     <c:if test="${!empty pageScope.anchorStyleClass}">
                         <c:set var="anchorAttributes" value=" class=\"${pageScope.anchorStyleClass}\""/>
                     </c:if>
                     <a href="javascript:${id}.show()"${anchorAttributes}><jsp:doBody/></a>
-        	    </c:otherwise>
+                </c:otherwise>
             </c:choose>
         </span>
     </c:if>

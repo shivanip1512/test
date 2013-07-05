@@ -158,7 +158,7 @@
 	
 						<x:htmlTag value="br"/>
 	
-						<h:outputLink value="javascript:feederVarPointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
+						<h:outputLink value="javascript:feederVarPointPicker.show.call(feederVarPointPicker)" rendered="#{capControlForm.editingAuthorized}">
 							<h:outputText value="Select point for Phase A"
 								rendered="#{capControlForm.PAOBase.capControlFeeder.usePhaseDataBoolean}" />
 							<h:outputText value="Select point"
@@ -188,7 +188,7 @@
 	
 							<h:outputLink
                                 rendered="#{capControlForm.editingAuthorized}"
-								value="javascript:feederVarPhaseBPointPicker.show()">
+								value="javascript:feederVarPhaseBPointPicker.show.call(feederVarPhaseBPointPicker)">
 								<h:outputText value="Select point for Phase B" />
 							</h:outputLink>
 	
@@ -212,7 +212,7 @@
 	
 							<h:outputLink
                                 rendered="#{capControlForm.editingAuthorized}"
-								value="javascript:feederVarPhaseCPointPicker.show()">
+								value="javascript:feederVarPhaseCPointPicker.show.call(feederVarPhaseCPointPicker)">
 								<h:outputText value="Select point for Phase C" />
 							</h:outputLink>
 	
@@ -250,7 +250,7 @@
 						
 	                    <x:htmlTag value="br"/>
 	
-						<h:outputLink value="javascript:feederWattPointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
+						<h:outputLink value="javascript:feederWattPointPicker.show.call(feederWattPointPicker)" rendered="#{capControlForm.editingAuthorized}">
 							<h:outputText value="Select point..." />
 						</h:outputLink>
 					</x:div>
@@ -285,7 +285,7 @@
 						
 						<x:htmlTag value="br"/>
 						
-						<h:outputLink value="javascript:feederVoltPointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
+						<h:outputLink value="javascript:feederVoltPointPicker.show.call(feederVoltPointPicker)" rendered="#{capControlForm.editingAuthorized}">
 							<h:outputText value="Select point..." />
 						</h:outputLink>
 					</x:div>

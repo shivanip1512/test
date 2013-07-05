@@ -48,7 +48,11 @@ Yukon.doBind = function(func, context) {
                 [].unshift.call(arguments, extraArgs[addIndex]);
             }
         }
-        func.apply(context, arguments);
+        if ('undefined' === typeof func) {
+            throw "Yukon.doBind: func undefined";
+        } else {
+            func.apply(context, arguments);
+        }
     };
 };
 
@@ -253,7 +257,7 @@ Yukon.ui = {
         var html = jQuery('#f-page-actions')[0];
         
         if (typeof html !== 'undefined') {
-        	jQuery('#f-page-actions').remove();
+            jQuery('#f-page-actions').remove();
             jQuery('#b-page-actions .dropdown-menu').html(html.innerHTML);
             jQuery('#b-page-actions').show();
         }
