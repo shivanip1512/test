@@ -3,3 +3,143 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <h1>I am the king of the wastelands</h1>
+
+<script type="text/javascript">
+jQuery(function() {
+/* prototype for picker object creation. do not enable this until the names have been changed,
+or it will interfere with the real picker
+try {
+    console.log("javascript object creation test begin");
+    Yukon = Yukon ? Yukon : {};
+    // one of these
+    Yukon.createObject = function (o) {
+        function F(){};
+        F.prototype = o;
+        return new F();
+    };
+
+    // one of these
+    Yukon.inheritPrototype = function (subType, superType) {
+        var prototype = Yukon.createObject(superType.prototype);
+        prototype.constructor = subType;
+        subType.prototype = prototype;
+    };
+    // one of these: prototype for Picker, from which all Picker instances are derived
+    Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldName, pickerId, extraDestinationFields, containerDiv) {
+        // functions declared here are private
+        // Reset things that need to be reset when first popping up the picker
+        // or when clearing it.
+        //
+        var resetSearchFields = function() {
+            this.currentSearch = '';
+            this.inSearch = false;
+            this.previousIndex = -1;
+            this.nextIndex = -1;
+            this.hitCount = 0;
+            if (this.ssInput) {
+                this.ssInput.value = '';
+            }
+        };
+        this.okText = okText;
+        this.cancelText = cancelText;
+        this.pickerType = pickerType;
+        this.destinationFieldName = destinationFieldName;
+        this.pickerId = pickerId;
+        this.extraDestinationFields = extraDestinationFields;
+        this.containerDiv = containerDiv;
+        this.resultAreaId = 'picker_' + this.pickerId + '_resultArea';
+        this.resultAreaFixedId = 'picker_' + this.pickerId + '_resultAreaFixed';
+        this.errorHolderId = 'picker_' + this.pickerId + '_errorHolder';
+        this.primed = false;
+        this.useInitialIdsIfEmpty = false;
+        this.inline = (containerDiv === null || typeof containerDiv === 'undefined') ? false : true;
+        this.selectedItems = [];
+        this.extraDestinationFields = [];
+        resetSearchFields.call(this);
+    };
+    // globally-accessible functions
+    Yukon.protoPicker.prototype.init = function (viewMode) {
+        console.log("Yukon.protoPicker.init: viewMode=" + viewMode + " pickerType=" + this.pickerType);
+    };
+    // global function hung off the prototype
+    Yukon.protoPicker.prototype.show = function (skipFocus) {
+        console.log("Yukon.protoPicker.show: skipfocus=" + skipFocus);
+    };
+    Yukon.protoPicker.prototype.showSelected = function () {
+        //
+    };
+    Yukon.protoPicker.prototype.dumpVars = function () {
+        console.log("pickerType=" + this.pickerType + " pickerId=" + this.pickerId);
+    };
+
+    Yukon.protoPicker.prototype.getInSearch = function () {
+        //console.log("Yukon.protoPicker.prototype.getInSearch: inSearch=" + this.inSearch);
+        return this.inSearch;
+    };
+    Yukon.protoPicker.prototype.setInSearch = function (val) {
+        //console.log("Yukon.protoPicker.prototype.setInSearch: BEFORE: inSearch=" + this.inSearch);
+        this.inSearch = val;
+        //console.log("Yukon.protoPicker.prototype.setInSearch: AFTER: inSearch=" + this.inSearch);
+    };
+    // the following data members must be globally accessible due to existing
+    // code that depends on them. see pickerDialog.tag
+    //
+    Yukon.protoPicker.prototype.multiSelectMode = true;
+    Yukon.protoPicker.prototype.immediateSelectMode = true;
+    Yukon.protoPicker.prototype.endAction = null;
+    Yukon.protoPicker.prototype.cancelAction = null;
+    Yukon.protoPicker.prototype.destinationFieldId = null;
+    Yukon.protoPicker.prototype.memoryGroup = false;
+    Yukon.protoPicker.prototype.extraArgs = null;
+    Yukon.protoPicker.prototype.selectionProperty = null;
+    Yukon.protoPicker.prototype.allowEmptySelection = false;
+    Yukon.protoPicker.prototype.selectedAndMsg = '';
+    Yukon.protoPicker.prototype.selectedMoreMsg = '';
+    Yukon.protoPicker.prototype.useInitialIdsIfEmpty = false;
+    Yukon.protoPicker.prototype.excludeIds = [];
+
+    // one of these: constructor for Picker
+    // could add functions and variables to this
+    function Picker (okText, cancelText, pickerType, destinationFieldName, pickerId, extraDestinationFields, containerDiv) {
+        Yukon.protoPicker.call(this, okText, cancelText, pickerType, destinationFieldName, pickerId, extraDestinationFields, containerDiv);
+    };
+    // called once to assign methods and properties accessible to all
+    // instances of Picker
+    Yukon.inheritPrototype(Picker, Yukon.protoPicker);
+
+    // some uses of the above mechanisms
+    var stock = new Picker('Okey-Doke', 'Forget it', 'userStockPicker', 'yomama', 'stock', '', null);
+    var horse = new Picker('Alright', 'No way', 'userHorsePicker', 'bite me', 'horse', '', null);
+    console.log("stock picker: stock instanceof Picker: " + (stock instanceof Picker));
+    console.dir(stock);
+    console.log("horse picker: horse instanceof Picker: " + (horse instanceof Picker));
+    console.dir(horse);
+    stock.show(true);
+    stock.dumpVars();
+    horse.dumpVars();
+    stock.multiSelectMode = false;
+    console.log("stock.multiSelectMode=" + stock.multiSelectMode
+        + " horse.multiSelectMode=" + horse.multiSelectMode);
+    // This method, init, does secondary initialization which needs to happen after
+    // the HTML elements in the tag file have been fully created.
+    callAfterMainWindowLoad(stock.init.bind(stock, true));
+    callAfterMainWindowLoad(horse.init.bind(horse, true));
+    //console.log("calling stock.resetSearchFields...");
+    // should, and does, cause an exception, because the method
+    // is not available to Picker, but private to protoPicker
+    // stock.resetSearchFields();
+    console.log("stock.getInSearch()=" + stock.getInSearch());
+    console.log("horse.getInSearch()=" + horse.getInSearch());
+    stock.setInSearch(true);
+    console.log("stock.getInSearch()=" + stock.getInSearch());
+    console.log("horse.getInSearch()=" + horse.getInSearch());
+    horse.setInSearch(true);
+    stock.setInSearch(false);
+    console.log("stock.getInSearch()=" + stock.getInSearch());
+    console.log("horse.getInSearch()=" + horse.getInSearch());
+} catch(testingex) {
+    console.log("testing exception: '" + testingex + "'");
+}
+});
+*/
+</script>
