@@ -55,7 +55,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
     private SearchProducerFactory searchProducerFactory;
     private final Resource moduleConfigFile;
     private final String menuKeyModPrefix = "yukon.web.menu.config.";
-    private final static Namespace NS = Namespace.getNamespace("http://yukon.cannontech.com/modules");
+    private final static Namespace ns = Namespace.getNamespace("http://yukon.cannontech.com/modules");
     
     public CommonModuleBuilder(Resource moduleConfigFile) throws ModuleConfigException {
         this.moduleConfigFile = moduleConfigFile;
@@ -74,7 +74,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
 
     private void processModules(Document configDoc) throws Exception {
         Element rootElem = configDoc.getRootElement();
-        List<?> moduleList = rootElem.getChildren("module", NS);
+        List<?> moduleList = rootElem.getChildren("module", ns);
         for (Iterator<?> iter = moduleList.iterator(); iter.hasNext();) {
             Element moduleElement = (Element) iter.next();
             buildModule(moduleElement);
@@ -86,10 +86,10 @@ public class CommonModuleBuilder implements ModuleBuilder {
         ModuleBase moduleBase = new ModuleBase(moduleName);
         
         // TODO: REMOVE when able: Only consumer pages uses "menu" now and hopefully not for long
-        Element topMenu = moduleElement.getChild("menu", NS);
+        Element topMenu = moduleElement.getChild("menu", ns);
         List<MenuOptionProducer> topLevelOptions;
         if (topMenu != null) {
-            Element topOptions = topMenu.getChild("options", NS);
+            Element topOptions = topMenu.getChild("options", ns);
             topLevelOptions = processOptionsElement(topOptions, menuKeyModPrefix + moduleName);
         } else {
             topLevelOptions = Collections.emptyList();
@@ -97,33 +97,33 @@ public class CommonModuleBuilder implements ModuleBuilder {
         MenuBase menuBase = new MenuBase(topLevelOptions);
         moduleBase.setMenuBase(menuBase);
         
-        Element searchElement = moduleElement.getChild("search", NS);
+        Element searchElement = moduleElement.getChild("search", ns);
         if (searchElement != null) {
         	String beanName = searchElement.getAttributeValue("bean");
         	SearchProducer searchProducer = searchProducerFactory.getSearchProducer(beanName);
         	moduleBase.setSearchProducer(searchProducer);
         }
         
-        Element skinElement = moduleElement.getChild("skin", NS);
+        Element skinElement = moduleElement.getChild("skin", ns);
         if (skinElement != null) {
             String skinName = skinElement.getAttributeValue("name");
             LayoutSkinEnum skin = LayoutSkinEnum.valueOf(skinName);
             moduleBase.setSkin(skin);
         }
         
-        List<?> cssElements = moduleElement.getChildren("css", NS);
+        List<?> cssElements = moduleElement.getChildren("css", ns);
         for (Iterator<?> iter = cssElements.iterator(); iter.hasNext();) {
             Element cssElement = (Element) iter.next();
             moduleBase.addCssFiles(cssElement.getAttributeValue("file"));
         }
         
-        List<?> scriptElements = moduleElement.getChildren("script", NS);
+        List<?> scriptElements = moduleElement.getChildren("script", ns);
         for (Iterator<?> iter = scriptElements.iterator(); iter.hasNext();) {
             Element scriptElement = (Element) iter.next();
             moduleBase.addScriptFiles(scriptElement.getAttributeValue("file"));
         }
         
-        Element crumbs = moduleElement.getChild("pages", NS);
+        Element crumbs = moduleElement.getChild("pages", ns);
         Iterable<PageInfo> pageInfos = processPages(crumbs, moduleName, null);
         for (PageInfo pageInfo : pageInfos) {
             moduleBase.addPageInfo(pageInfo);
@@ -134,7 +134,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
 
     private List<PageInfo> processPages(Element parentOfPages, String moduleName, PageInfo parent) {
         if (parentOfPages == null) return Collections.emptyList();
-        List<?> children = parentOfPages.getChildren("page", NS);
+        List<?> children = parentOfPages.getChildren("page", ns);
         List<PageInfo> result = Lists.newArrayList();
         List<PageInfo> directChildren = Lists.newArrayList();
         for (Iterator<?> iterator = children.iterator(); iterator.hasNext();) {
@@ -165,14 +165,14 @@ public class CommonModuleBuilder implements ModuleBuilder {
             pageInfo.setPageType(pageType);
             
             // TODO: REMOVE when able: Only consumer pages uses "menu" now and hopefully not for long
-            String menuSelection = pageElement.getChildTextTrim("menu", NS);
+            String menuSelection = pageElement.getChildTextTrim("menu", ns);
             pageInfo.setRenderMenu(menuSelection != null);
             pageInfo.setMenuSelection(menuSelection);
             
-            String linkText = pageElement.getChildTextTrim("link", NS);
+            String linkText = pageElement.getChildTextTrim("link", ns);
             pageInfo.setLinkExpression(linkText);
             
-            List<?> argumentElements = pageElement.getChildren("labelArgument", NS);
+            List<?> argumentElements = pageElement.getChildren("labelArgument", ns);
             for (Iterator<?> argumentIterator = argumentElements.iterator(); argumentIterator.hasNext();) {
                 Element argumentElement = (Element) argumentIterator.next();
                 String argumentText = argumentElement.getTextTrim();
@@ -181,7 +181,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
             result.add(pageInfo);
             directChildren.add(pageInfo);
             
-            String infoInclude = pageElement.getChildTextTrim("infoInclude", NS);
+            String infoInclude = pageElement.getChildTextTrim("infoInclude", ns);
             pageInfo.setDetailInfoIncludePath(infoInclude);
             
             UserChecker userChecker = getCheckerForElement(pageElement);
@@ -192,7 +192,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
             }
             
             // now add the children of the element
-            Element subPagesElement = pageElement.getChild("pages", NS);
+            Element subPagesElement = pageElement.getChild("pages", ns);
             List<PageInfo> childPages = processPages(subPagesElement, moduleName, pageInfo);
             result.addAll(childPages);
             
@@ -247,9 +247,9 @@ public class CommonModuleBuilder implements ModuleBuilder {
         String optionId = optionElement.getAttributeValue("name");
         String key = prefix + "." + optionId;
         
-        Element topAction = optionElement.getChild("script", NS);
-        Element topLink = optionElement.getChild("link", NS);
-        Element subOptions = optionElement.getChild("options", NS);
+        Element topAction = optionElement.getChild("script", ns);
+        Element topLink = optionElement.getChild("link", ns);
+        Element subOptions = optionElement.getChild("options", ns);
         
         if (topAction != null) {
             SimpleMenuOptionAction actionMenuOption = new SimpleMenuOptionAction(optionId, key);
