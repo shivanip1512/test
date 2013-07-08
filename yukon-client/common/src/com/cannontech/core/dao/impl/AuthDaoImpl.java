@@ -47,106 +47,8 @@ public class AuthDaoImpl implements AuthDao {
 	
     private YukonUserDao yukonUserDao;
     private ContactDao contactDao;
-    private IDatabaseCache databaseCache;
-    private AuthenticationService authenticationService;
     private SystemDateFormattingService systemDateFormattingService;
     private RolePropertyDao rolePropertyDao;
-    
-	public LiteYukonUser login(String username, String password) throws PasswordExpiredException {
-        try {
-            return authenticationService.login(username, password);
-        } catch (PasswordExpiredException e) {
-            throw e;
-        } catch (Exception e) {
-            CTILogger.info(e);
-            return null;
-        }
-	}
-	
-	/*This was changed to bypass the huge memory overhead in caching several
-	 * complex map within map structures for every single user when all we really
-	 * need is one.
-	 */
-	public LiteYukonRole getRole(LiteYukonUser user, int roleID) 
-	{
-		synchronized(databaseCache) 
-		{
-			return databaseCache.getARole(user, roleID);
-		}
-	}
-	
-	public boolean checkRoleProperty(LiteYukonUser user, int rolePropertyID) {
-	    YukonRoleProperty property = YukonRoleProperty.getForId(rolePropertyID);
-	    if (rolePropertyDao.isCheckPropertyCompatible(property)) {
-	        return rolePropertyDao.checkProperty(property, user);
-	    } else {
-	        // uh oh, the property must not be Boolean
-	        // print a complaint in the log and try the old code
-	        CTILogger.warn("Property " + property + " improperly accessed with a check method");
-	        return !CtiUtilities.isFalse(getRolePropertyValue(user, rolePropertyID));
-	    }
-	}
-    
-    public boolean checkRoleProperty(int userID, int rolePropertyID) {
-        LiteYukonUser user = yukonUserDao.getLiteYukonUser(userID);
-        return checkRoleProperty(user, rolePropertyID);
-    }   
-    
-    public String getRolePropertyValueEx(LiteYukonUser user, int rolePropertyID) throws UnknownRolePropertyException {
-        String value = getRolePropertyValue(user,rolePropertyID);
-        if (value == null) {
-            throw new UnknownRolePropertyException(user, rolePropertyID);
-        }
-        return value;
-    }
-    
-	/*This was changed to bypass the huge memory overhead in caching several
-	 * complex map within map structures for every single user when all we really
-	 * need is one return value straight from the db.
-	 */
-	public String getRolePropertyValue(LiteYukonUser user, int rolePropertyID) 
-	{
-		return rolePropertyDao.getPropertyStringValue(YukonRoleProperty.getForId(rolePropertyID), user);
-	}
-	
-    public String getRolePropertyValue(LiteYukonUser user, YukonRoleProperty property) {
-        return rolePropertyDao.getPropertyStringValue(property, user);
-    }
-    
-    public String getRolePropertyValue(int userID, int rolePropertyID) {
-        LiteYukonUser liteYukonUser = yukonUserDao.getLiteYukonUser(userID);
-        Validate.notNull(liteYukonUser, "Could not find a valid LiteYukonUser for userID=" + userID);
-        return getRolePropertyValue(liteYukonUser, rolePropertyID);
-    }
-	
-	public List<LiteYukonRole> getRoles(String category) {
-		List<LiteYukonRole> retList = new ArrayList<LiteYukonRole>(100);
-				
-		synchronized(databaseCache) {
-			Iterator<LiteYukonRole> i = databaseCache.getAllYukonRoles().iterator();
-			while(i.hasNext()) {
-				LiteYukonRole r = i.next();
-				if(r.getCategory().equalsIgnoreCase(category)) {
-					retList.add(r);
-				}
-			}
-		}		
-		return retList;
-	}
-	
-	public LiteYukonRole getRole(int roleid) {		
-				
-		synchronized(databaseCache) {
-			Iterator<LiteYukonRole> i = databaseCache.getAllYukonRoles().iterator();
-			while(i.hasNext()) {
-				LiteYukonRole r = i.next();
-				if(r.getRoleID() == roleid) {
-					return r;
-				}
-			}
-		}		
-		return null;
-	}
 	
 	public boolean isAdminUser(String username_)
 	{
@@ -254,33 +156,7 @@ public class AuthDaoImpl implements AuthDao {
             
         return permittedPaos != null && ! permittedPaos.isEmpty(); 
 	}
-    
-	public void verifyFalseProperty(LiteYukonUser user, int rolePropertyId)
-	throws NotAuthorizedException {
-	    rolePropertyDao.verifyFalseProperty(YukonRoleProperty.getForId(rolePropertyId), user);
-	}
-
-	public void verifyRole(LiteYukonUser user, int roleId)
-	throws NotAuthorizedException {
-	    rolePropertyDao.verifyRole(YukonRole.getForId(roleId), user);
-	}
-
-	public void verifyTrueProperty(LiteYukonUser user, int ... rolePropertyIds)
-	throws NotAuthorizedException {
-	    
-	    for (int rolePropertyId : rolePropertyIds) {
-            boolean b = checkRoleProperty(user, rolePropertyId);
-            if (b) {
-                return;
-            }
-        }
-	    if (rolePropertyIds.length == 1) {
-	        throw NotAuthorizedException.trueProperty(user, YukonRoleProperty.getForId(rolePropertyIds[0]));
-	    } else {
-	        throw NotAuthorizedException.trueProperty(user, rolePropertyIds);
-	    }
-	}  
-	
+    	
     public void verifyAdmin(LiteYukonUser user) throws NotAuthorizedException {
         boolean b = isAdminUser(user);
         if (!b) {
@@ -294,8 +170,7 @@ public class AuthDaoImpl implements AuthDao {
             throw new IllegalArgumentException("User cannot be null.");
 
         TimeZone timeZone;
-        YukonRoleProperty defaultTimezone = YukonRoleProperty.DEFAULT_TIMEZONE;
-        String timeZoneStr = getRolePropertyValue( user, defaultTimezone);
+        String timeZoneStr = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DEFAULT_TIMEZONE, user);
         
         if (StringUtils.isNotBlank(timeZoneStr)) {
             try {
@@ -309,10 +184,6 @@ public class AuthDaoImpl implements AuthDao {
         }
         return timeZone;
     }
-
-    public <E extends Enum<E>> E getRolePropertyValue(Class<E> class1, LiteYukonUser user, int rolePropertyID) {
-        return rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.getForId(rolePropertyID), class1, user);
-    }
     
     @Required
     public void setContactDao(ContactDao contactDao) {
@@ -321,7 +192,6 @@ public class AuthDaoImpl implements AuthDao {
 
     @Required
     public void setDatabaseCache(IDatabaseCache databaseCache) {
-        this.databaseCache = databaseCache;
     }
 
     @Required
@@ -330,7 +200,6 @@ public class AuthDaoImpl implements AuthDao {
     }
 
     public void setAuthenticationService(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
     }
     
     @Required

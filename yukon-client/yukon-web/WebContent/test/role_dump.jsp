@@ -26,7 +26,7 @@
 	for(Iterator i = allRoles.iterator(); i.hasNext();) {
 		LiteYukonRole r = (LiteYukonRole) i.next();
 		System.out.println("h1");
-		r = YukonSpringHook.getBean(AuthDao.class).getRole(user, r.getRoleID());
+		r = YukonSpringHook.getBean(RoleDao.class).getLiteRole(user, r.getRoleID());
 		if(r != null) {
 			out.println("roleid: " + r.getRoleID() + "&nbsp&nbsp&nbspname: " + r.getRoleName() + "<br>");
 			LiteYukonRoleProperty[] roleProps = YukonSpringHook.getBean(RoleDao.class).getRoleProperties(r.getRoleID());

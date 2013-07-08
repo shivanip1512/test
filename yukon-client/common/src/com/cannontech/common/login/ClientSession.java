@@ -19,10 +19,12 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigHelper;
+import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.PoolManager;
@@ -67,7 +69,8 @@ public class ClientSession {
 	 * @return
 	 */
 	public boolean checkRole(int roleid) {
-		return YukonSpringHook.getBean(AuthDao.class).getRole(getUser(), roleid) != null;
+	    RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
+        return rolePropertyDao.checkRole(YukonRole.getForId(roleid), getUser());
 	}
 		
 	/**
@@ -89,7 +92,7 @@ public class ClientSession {
 	public static synchronized ClientSession getInstance() {
 		if(instance == null) {
 			instance = new ClientSession();
-		}
+			}
 		return instance;
 	}
 	
@@ -176,9 +179,8 @@ public class ClientSession {
             LoginPanel lp = makeLocalLoginPanel();
             while(collectInfo(p, lp)) {
                 try {
-                    
-                	LiteYukonUser loggingInUser = YukonSpringHook.getBean(AuthDao.class).login(lp.getUsername(), lp.getPassword());
-    
+                	LiteYukonUser loggingInUser = YukonSpringHook.getBean(AuthenticationService.class).login(lp.getUsername(), lp.getPassword());
+                	
                 	if(loggingInUser != null) {
                 		//score! we found them
                 		setSessionInfo(loggingInUser);
@@ -202,6 +204,9 @@ public class ClientSession {
                 } catch (PasswordExpiredException e) {
                     CTILogger.debug("The password for "+lp.getUsername()+" is expired.", e);
                     displayMessage(p, "The password for "+lp.getUsername()+" is expired.  Please login to the web to reset it.", "Error");
+                } catch (BadAuthenticationException e) {
+                    CTILogger.debug("Authentication failed for "+lp.getUsername()+" .", e);
+                    displayMessage(p, "Authentication failed for "+lp.getUsername()+". Check that CAPS LOCK is off, and try again. If the problem persists, contact your system administrator.", "Error");
                 }
             }
         } catch (RuntimeException e) {
@@ -225,9 +230,7 @@ public class ClientSession {
         LoginPrefs prefs = LoginPrefs.getInstance();
         while(collectInfo(p, lp)) {
             try {
-                // test host
-                URL url = new URL(lp.getYukonHost());
-                
+                // test host                
                 MasterConfigHelper.setRemoteHostAndPort(lp.getYukonHost(), lp.getUsername(), lp.getPassword());
                 System.setProperty("yukon.jws.pass", lp.getPassword());
                 
@@ -267,11 +270,6 @@ public class ClientSession {
                     displayMessage(p, msg, "Error");
                     YukonSpringHook.shutdownContext();
                 }
-            } catch (MalformedURLException e) {
-                CTILogger.warn("Invalid host: " + e.getMessage());
-                Throwable cause = CtiUtilities.getRootCause(e);
-                String msg = "Invalid host. (Example entry: http://yukon-app:8080) \n" + cause.getMessage();
-                displayMessage(p, msg, "Error");
             } catch (RemoteConnectFailureException e) {
                 CTILogger.warn("Got an exception during login", e);
                 Throwable cause = CtiUtilities.getRootCause(e);

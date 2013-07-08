@@ -18,12 +18,4 @@ public class MockAuthDao extends AuthDaoAdapter {
 	public static final LiteYukonUser getUnAuthorizedUser() {
 		return MockAuthDao.user;
 	}
-	
-	@Override
-	public void verifyTrueProperty(LiteYukonUser user, int... rolePropertyIds)
-			throws NotAuthorizedException {
-		if (user == MockAuthDao.user) {
-			throw new NotAuthorizedException("Mock auth dao not authorized");
-		}
-	}
 }

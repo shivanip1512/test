@@ -136,10 +136,10 @@ public class CommandPanel extends javax.swing.JPanel
 				executeCommandComboBoxTextField = (javax.swing.JTextField) getExecuteCommandComboBox().getEditor().getEditorComponent();
 				RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
 
-                String val = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.EXECUTE_MANUAL_COMMAND, 
+                boolean val = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.EXECUTE_MANUAL_COMMAND, 
                                                                                 ClientSession.getInstance().getUser());
                 
-                executeCommandComboBoxTextField.setEditable(Boolean.valueOf(val));
+                executeCommandComboBoxTextField.setEditable(val);
 			}
 			catch (java.lang.Throwable t)
 			{

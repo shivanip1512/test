@@ -15,7 +15,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
-import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -82,10 +82,11 @@ public class SVGGenerator extends HttpServlet {
 
 			DrawingMetaElement metaElem = d.getMetaElement();
 			RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
+			YukonRole metaElemRole = YukonRole.getForId(metaElem.getRoleID());
 			
 			// User requires the role specific to access this drawing
 			// and also the Esub VIEW role to see it, which should we be using?
-			if( YukonSpringHook.getBean(AuthDao.class).getRole(user, metaElem.getRoleID()) != null &&	
+            if( rolePropertyDao.checkRole(metaElemRole, user) &&   
 				    rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ESUBSTATION_DRAWINGS_VIEW, user)) {				
 							
 				boolean canEdit = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ESUBSTATION_DRAWINGS_EDIT, user);

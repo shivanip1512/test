@@ -2185,9 +2185,6 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
 			LiteYukonUser user = session.getUser();
 			
-			rolePropertyDao.getPropertyStringValue(YukonRoleProperty.COMMAND_MSG_PRIORITY, user);
-						
-			
 			if( rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.DCU_SA305_SERIAL_MODEL, user))
 			{
 				tempModel.add( TreeModelEnum.EDITABLE_SA305_SERIAL);

@@ -82,7 +82,6 @@ public class ControllableDevicesRequestEndPointTest {
 
         impl = new ControllableDevicesRequestEndPoint();
         impl.setStarsControllableDeviceHandler(mockHelper);
-        impl.setAuthDao(new MockAuthDao());
     }
 
     private class MockControllableDeviceHelper implements

@@ -16,8 +16,8 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.exception.StarsAccountNotFoundException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyAssignedException;
@@ -37,7 +37,7 @@ public class ControllableDevicesRequestEndPoint {
 
     private HardwareEventLogService hardwareEventLogService;
     private StarsControllableDeviceHelper starsControllableDeviceHelper;
-    private AuthDao authDao;    
+    @Autowired private RolePropertyDao rolePropertyDao;    
 
     private Namespace ns = YukonXml.getYukonNamespace();
 
@@ -95,7 +95,7 @@ public class ControllableDevicesRequestEndPoint {
         }
         
         // check authorization
-        authDao.verifyTrueProperty(user, YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_CREATE.getPropertyId());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_CREATE, user);
         
         // run service
         for (LmDeviceDto device : devices) {
@@ -125,8 +125,8 @@ public class ControllableDevicesRequestEndPoint {
         List<LmDeviceDto> devices = template.evaluate(updateDeviceElementStr, deviceElementMapper);        
 
         // check authorization
-        authDao.verifyTrueProperty(user,
-                                   YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES.getPropertyId());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES, user);
+
         
         // run service
         for (LmDeviceDto device : devices) {
@@ -162,8 +162,8 @@ public class ControllableDevicesRequestEndPoint {
         List<LmDeviceDto> devices = template.evaluate(removeDeviceElementStr, deviceElementMapper);        
 
         // check authorization
-        authDao.verifyTrueProperty(user,
-                                   YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES.getPropertyId());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES, user);
+
 
         // run service
         for (LmDeviceDto device : devices) {
@@ -293,11 +293,6 @@ public class ControllableDevicesRequestEndPoint {
     public void setStarsControllableDeviceHandler(
             StarsControllableDeviceHelper starsControllableDeviceHandler) {
         this.starsControllableDeviceHelper = starsControllableDeviceHandler;
-    }
-
-    @Autowired
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
     }
     
     @Autowired

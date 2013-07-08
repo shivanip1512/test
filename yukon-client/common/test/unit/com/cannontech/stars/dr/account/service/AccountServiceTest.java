@@ -303,7 +303,6 @@ public class AccountServiceTest extends EasyMockSupport {
                                                                  updatableAccount.getAccountDto().getEmailAddress())).andReturn(null);
         expectLastCall().times(3);
         expect(authDaoMock.getUserTimeZone(user)).andReturn(TimeZone.getDefault());
-        expect(authDaoMock.getRolePropertyValue(-9999, -1110)).andReturn(null);
         expect(energyCompanySettingDaoMock.getEnum(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT, TemperatureUnit.class, YukonEnergyCompanyMockFactory.getYukonEC1().getEnergyCompanyId())).andReturn(TemperatureUnit.FAHRENHEIT);
         customerDaoMock.addCustomer(liteCustomer);
         dbChangeManager.processDbChange(1,

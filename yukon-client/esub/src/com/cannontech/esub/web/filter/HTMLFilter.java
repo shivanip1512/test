@@ -14,7 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
-import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.util.HTMLGenerator;
@@ -80,11 +81,15 @@ public class HTMLFilter implements Filter {
 			d.setUserContext(userContext);
 			
             LiteYukonUser user = (LiteYukonUser) hreq.getSession(false).getAttribute(LoginController.YUKON_USER);
+            YukonRole yukonRole = YukonRole.getForId(d.getMetaElement().getRoleID());
+
 			d.load(jlxPath);
 		 
-			//Check if this user has access to this drawing!	
-
-			if( YukonSpringHook.getBean(AuthDao.class).getRole(user, d.getMetaElement().getRoleID()) != null) {
+			//Check if this user has access to this drawing!
+			
+			RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
+			
+            if(rolePropertyDao.checkRole(yukonRole, user)) {
 				htmlGenerator.generate(hres.getWriter(), d);
 			}
 		}

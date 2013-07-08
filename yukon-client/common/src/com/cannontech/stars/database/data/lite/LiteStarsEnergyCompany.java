@@ -852,20 +852,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             }
         }
         
-        try {
-            String value = YukonSpringHook.getBean(RolePropertyDao.class).getPropertyStringValue(
-                                                                              YukonRoleProperty.OPERATOR_ORDER_NUMBER_AUTO_GEN,
-                                                                              user);
-            if (value != null && value.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
-                value = "";
-            }
-            if (value != null) {
-                long initOrderNo = Long.parseLong(value);
-                if (nextOrderNo < initOrderNo) nextOrderNo = initOrderNo;
-            }
-        }
-        catch (NumberFormatException e) {}
-        
         return String.valueOf( nextOrderNo++ );
     }
     
