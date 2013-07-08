@@ -235,6 +235,59 @@ ALTER TABLE UserPreference
 GO
 /* End YUK-12160 */
 
+/* Start YUK-12291 */
+ALTER TABLE FileExportHistory ALTER COLUMN ExportPath VARCHAR(300) NULL;
+GO
+
+INSERT INTO JobProperty (JobPropertyId, JobId, Name, Value)
+   (SELECT MAX(JP2.JobPropertyId) + ROW_NUMBER() OVER(ORDER BY J.JobId) As JobPropertyId, J.JobId, 'timestampPatternField', '-yyyyMMdd'
+    FROM Job J
+    JOIN JobProperty JP ON J.JobId = JP.JobId
+    JOIN JobProperty JP2 ON 1 = 1
+    WHERE J.Disabled IN ('Y', 'N')
+      AND J.BeanName IN ('scheduledArchivedDataFileExportJobDefinition',
+                         'scheduledBillingFileExportJobDefinition',
+                         'scheduledMeterEventsFileExportJobDefinition',
+                         'scheduledWaterLeakFileExportJobDefinition')
+      AND NOT EXISTS (
+        SELECT JobId FROM JobProperty JP
+        WHERE Name = 'timestampPatternField'
+          AND J.JobId = JP.JobId)
+    GROUP By J.JobId);
+
+INSERT INTO JobProperty (JobPropertyId, JobId, Name, Value)
+   (SELECT MAX(JP2.JobPropertyId) + ROW_NUMBER() OVER(ORDER BY J.JobId) As JobPropertyId, J.JobId, 'includeExportCopy', 'true'
+    FROM Job J
+    JOIN JobProperty JP ON J.JobId = JP.JobId
+    JOIN JobProperty JP2 ON 1 = 1
+    WHERE J.Disabled IN ('Y', 'N')
+      AND J.BeanName IN ('scheduledArchivedDataFileExportJobDefinition',
+                         'scheduledBillingFileExportJobDefinition',
+                         'scheduledMeterEventsFileExportJobDefinition',
+                         'scheduledWaterLeakFileExportJobDefinition')
+      AND NOT EXISTS (
+        SELECT JobId FROM JobProperty JP
+        WHERE Name = 'includeExportCopy'
+          AND J.JobId = JP.JobId)
+    GROUP By J.JobId);
+
+INSERT INTO JobProperty (JobPropertyId, JobId, Name, Value)
+   (SELECT MAX(JP2.JobPropertyId) + ROW_NUMBER() OVER(ORDER BY J.JobId) As JobPropertyId, J.JobId, 'overrideFileExtension', 'false'
+    FROM Job J
+    JOIN JobProperty JP ON J.JobId = JP.JobId
+    JOIN JobProperty JP2 ON 1 = 1
+    WHERE J.Disabled IN ('Y', 'N')
+      AND J.BeanName IN ('scheduledArchivedDataFileExportJobDefinition',
+                         'scheduledBillingFileExportJobDefinition',
+                         'scheduledMeterEventsFileExportJobDefinition',
+                         'scheduledWaterLeakFileExportJobDefinition')
+      AND NOT EXISTS (
+        SELECT JobId FROM JobProperty JP
+        WHERE Name = 'overrideFileExtension'
+          AND J.JobId = JP.JobId)
+    GROUP By J.JobId);
+/* End YUK-12291 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
