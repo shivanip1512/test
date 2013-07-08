@@ -36,6 +36,7 @@ struct test_Mct470Device : Cti::Devices::Mct470Device
 
 namespace std {
     //  defined in rtdb/test_main.cpp
+    std::ostream& operator<<(std::ostream& out, const unsigned char &uc);
     std::ostream& operator<<(std::ostream& out, const test_Mct470Device::ReadDescriptor &rd);
     std::ostream& operator<<(std::ostream& out, const std::vector<boost::tuples::tuple<unsigned, unsigned, int>> &rd);
     bool operator==(const test_Mct470Device::value_locator &lhs, const boost::tuples::tuple<unsigned, unsigned, int> &rhs);
@@ -642,6 +643,184 @@ struct test_DeviceConfig : public Cti::Config::DeviceConfig
 
 BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 //{  Brace matching for BOOST_FIXTURE_TEST_SUITE
+    BOOST_AUTO_TEST_CASE(test_putconfig_install_precanned_table_mct470_no_meterNumber)
+    {
+        mct._type = TYPEMCT470;
+
+        test_DeviceConfig config;
+
+        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        config.insertValue("tableReadInterval", "7");
+        config.insertValue("tableType", "9");
+        config.insertValue("serviceProviderId", "17");
+
+        CtiCommandParser parse("putconfig install precannedtable");
+
+        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( outList.empty() );
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+
+        CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE( retMsg );
+
+        BOOST_CHECK_EQUAL( retMsg->ResultString(), "ERROR: Invalid config data. Config name:precannedtable" );
+        BOOST_CHECK_EQUAL( retMsg->Status(), NoConfigData );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_putconfig_install_precanned_table_mct470_with_meterNumber)
+    {
+        mct._type = TYPEMCT470;
+
+        test_DeviceConfig config;
+
+        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        config.insertValue("tableReadInterval", "7");
+        config.insertValue("tableType", "9");
+        config.insertValue("serviceProviderId", "17");
+        config.insertValue("meterNumber", "3");
+
+        CtiCommandParser parse("putconfig install precannedtable");
+
+        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( retList.empty() );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 3 );
+
+        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 211 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   4 );
+
+            const unsigned char expected_message[] = { 17, 7, 3, 9 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+                expected_message,
+                expected_message + sizeof(expected_message) );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 35 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   11 );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       1 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 18 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1 );
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_putconfig_install_precanned_table_mct430_no_meterNumber)
+    {
+        mct._type = TYPEMCT430S4;
+
+        test_DeviceConfig config;
+
+        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        config.insertValue("tableReadInterval", "7");
+        config.insertValue("tableType", "9");
+        config.insertValue("serviceProviderId", "17");
+
+        CtiCommandParser parse("putconfig install precannedtable");
+
+        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( outList.empty() );
+        BOOST_CHECK( vgList.empty() );
+
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+
+        CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE( retMsg );
+
+        BOOST_CHECK_EQUAL( retMsg->ResultString(), "ERROR: Invalid config data. Config name:precannedtable" );
+
+        BOOST_CHECK_EQUAL( retMsg->Status(), NoConfigData );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_putconfig_install_precanned_table_mct430_with_meterNumber)
+    {
+        mct._type = TYPEMCT430S4;
+
+        test_DeviceConfig config;
+
+        mct.changeDeviceConfig(Cti::Config::DeviceConfigSPtr(&config, null_deleter()));  //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        config.insertValue("tableReadInterval", "7");
+        config.insertValue("tableType", "9");
+        config.insertValue("serviceProviderId", "17");
+        config.insertValue("meterNumber", "3");
+
+        CtiCommandParser parse("putconfig install precannedtable");
+
+        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( retList.empty() );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 3 );
+
+        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 211 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   4 );
+
+            const unsigned char expected_message[] = { 17, 7, 3, 9 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+                expected_message,
+                expected_message + sizeof(expected_message) );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 35 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   11 );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       1 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 18 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1 );
+        }
+    }
     BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_alpha)
     {
         mct._type = TYPEMCT470;
