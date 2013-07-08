@@ -9,7 +9,6 @@
 #include "ctistring.h"
 
 #include "boost/regex.hpp"
-#include <boost/optional.hpp>
 
 using namespace std;
 
