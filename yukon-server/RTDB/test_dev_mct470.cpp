@@ -633,7 +633,7 @@ struct beginExecuteRequest_helper
 struct test_DeviceConfig : public Cti::Config::DeviceConfig
 {
     test_DeviceConfig() :
-        DeviceConfig(-1, string(), string())
+        DeviceConfig(-1, string())
     {
     }
 

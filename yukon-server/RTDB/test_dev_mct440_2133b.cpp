@@ -98,7 +98,7 @@ struct test_Mct440_2133B : test_Mct440_2133BDevice
 
 struct test_DeviceConfig : public Cti::Config::DeviceConfig
 {
-    test_DeviceConfig() : DeviceConfig(-1, string(), string()) {}
+    test_DeviceConfig() : DeviceConfig(-1, string()) {}
 
     using DeviceConfig::insertValue;
 };

@@ -6,6 +6,9 @@
 #include "database_reader.h"
 #include "DeviceConfigLookup.h"
 #include "mgr_device.h"
+#include "debug_timer.h"
+
+#include <boost/tuple/tuple.hpp>
 
 
 
@@ -38,9 +41,9 @@ void CtiConfigManager::initialize(CtiDeviceManager &mgr)
         setDeviceManager( mgr );
 
         loadAllConfigs();
-        loadAllConfigurationItems();
+        loadAllCategoryItems();
 
-        updateAllDeviceConfigs();
+        assignAllConfigsToDevices();
 
         isInitialized = true;
     }
@@ -93,42 +96,34 @@ void CtiConfigManager::loadConfig( const long configID )
 
 void CtiConfigManager::executeLoadConfig( const std::string & sql ) 
 {
-    CtiTime start;
+    Cti::Timing::DebugTimer timer( "loading device configurations", DebugLevel & 0x80000000, 5.0 );
 
+    Cti::Database::DatabaseConnection   connection;
+    Cti::Database::DatabaseReader       rdr(connection, sql);
+
+    rdr.execute();
+
+    while( rdr() )
     {
-        Cti::Database::DatabaseConnection   connection;
-        Cti::Database::DatabaseReader       rdr(connection, sql);
+        long        configID,
+                    categoryID;
+        std::string name;
 
-        rdr.execute();
+        rdr["DeviceConfigurationID"]  >> configID;
+        rdr["DeviceConfigCategoryID"] >> categoryID;
+        rdr["Name"]                   >> name;
 
-        while( rdr() )
-        {
-            long        configID,
-                        categoryID;
-            std::string name;
+        ConfigurationMap::iterator  configIter;
 
-            rdr["DeviceConfigurationID"]  >> configID;
-            rdr["DeviceConfigCategoryID"] >> categoryID;
-            rdr["Name"]                   >> name;
+        boost::tie( configIter, boost::tuples::ignore ) =
+            _configurations.insert( configID, new Cti::Config::Configuration( configID, name ) );
 
-            std::pair<ConfigurationMap::iterator, bool> lookup =
-                _configurations.insert( configID, new Cti::Config::Configuration( configID, name ) );
-
-            lookup.first->second->addCategory( categoryID );
-        }
-    }
-
-    CtiTime stop;
-
-    if ( DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5 )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load device configurations." << std::endl;
+        configIter->second->addCategory( categoryID );
     }
 }
 
 
-void CtiConfigManager::loadAllConfigurationItems()
+void CtiConfigManager::loadAllCategoryItems()
 {
     static const std::string sql = 
         "SELECT "
@@ -148,7 +143,7 @@ void CtiConfigManager::loadAllConfigurationItems()
 }
 
 
-void CtiConfigManager::loadConfigurationItems( const long configID )
+void CtiConfigManager::loadCategoryItems( const long categoryID )
 {
     const std::string sql =
         "SELECT "
@@ -162,9 +157,9 @@ void CtiConfigManager::loadConfigurationItems( const long configID )
             "JOIN DeviceConfigCategoryItem I "
             "ON C.DeviceConfigCategoryID = I.DeviceConfigCategoryID "
         "WHERE "
-            "C.DeviceConfigCategoryID = " + CtiNumStr( configID );
+            "C.DeviceConfigCategoryID = " + CtiNumStr( categoryID );
 
-    _categories.erase( configID );
+    _categories.erase( categoryID );
 
     executeLoadItems( sql );
 }
@@ -172,41 +167,33 @@ void CtiConfigManager::loadConfigurationItems( const long configID )
 
 void CtiConfigManager::executeLoadItems( const std::string & sql )
 {
-    CtiTime start;
+    Cti::Timing::DebugTimer timer( "loading device configuration category items", DebugLevel & 0x80000000, 5.0 );
 
+    Cti::Database::DatabaseConnection   connection;
+    Cti::Database::DatabaseReader       rdr(connection, sql);
+
+    rdr.execute();
+
+    while( rdr() )
     {
-        Cti::Database::DatabaseConnection   connection;
-        Cti::Database::DatabaseReader       rdr(connection, sql);
+        long        categoryID;
+        std::string categoryType,
+                    itemName,
+                    value,
+                    name;
 
-        rdr.execute();
+        rdr["DeviceConfigCategoryID"] >> categoryID;
+        rdr["CategoryType"]           >> categoryType;
+        rdr["ItemName"]               >> itemName;
+        rdr["ItemValue"]              >> value;
+        rdr["Name"]                   >> name;
 
-        while( rdr() )
-        {
-            long        categoryID;
-            std::string categoryType,
-                        itemName,
-                        value,
-                        name;
+        CategoryMap::iterator   categoryIter;
 
-            rdr["DeviceConfigCategoryID"] >> categoryID;
-            rdr["CategoryType"]           >> categoryType;
-            rdr["ItemName"]               >> itemName;
-            rdr["ItemValue"]              >> value;
-            rdr["Name"]                   >> name;
+        boost::tie( categoryIter, boost::tuples::ignore ) =
+            _categories.insert( categoryID, new Cti::Config::ConfigurationCategory( categoryID, name, categoryType ) );
 
-            std::pair<CategoryMap::iterator, bool> lookup =
-                _categories.insert( categoryID, new Cti::Config::ConfigurationCategory( categoryID, name, categoryType ) );
-
-            lookup.first->second->addItem( itemName, value );
-        }
-    }
-
-    CtiTime stop;
-
-    if ( DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5 )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load device configurations." << std::endl;
+        categoryIter->second->addItem( itemName, value );
     }
 }
 
@@ -226,7 +213,7 @@ void CtiConfigManager::processDBUpdate( const long          ID,
                 case ChangeTypeAdd:
                 {
                     loadConfig( ID );
-                    updateDeviceConfig( ID );
+                    updateDevicesAssignedToConfig( ID );
                     break;
                 }
                 case ChangeTypeDelete:
@@ -247,8 +234,8 @@ void CtiConfigManager::processDBUpdate( const long          ID,
                 case ChangeTypeUpdate:
                 case ChangeTypeAdd:
                 {
-                    loadConfigurationItems( ID );
-                    updateDeviceCategory( ID );
+                    loadCategoryItems( ID );
+                    updateConfigsContainingCategory( ID );
                     break;
                 }
                 case ChangeTypeDelete:
@@ -290,7 +277,7 @@ void CtiConfigManager::processDBUpdate( const long          ID,
 }
 
 
-void CtiConfigManager::updateAllDeviceConfigs()
+void CtiConfigManager::assignAllConfigsToDevices()
 {
     static const std::string sql =
         "SELECT "
@@ -299,39 +286,27 @@ void CtiConfigManager::updateAllDeviceConfigs()
         "FROM "
             "DeviceConfigurationDeviceMap D";
 
-    CtiTime start;
+    Cti::Timing::DebugTimer timer( "assigning configurations to devices", DebugLevel & 0x80000000, 5.0 );
 
+    Cti::Database::DatabaseConnection   connection;
+    Cti::Database::DatabaseReader       rdr(connection, sql);
+
+    rdr.execute();
+
+    while ( rdr() )
     {
-        Cti::Database::DatabaseConnection   connection;
-        Cti::Database::DatabaseReader       rdr(connection, sql);
+        long    deviceID,
+                configID;
 
-        rdr.execute();
+        rdr["DeviceID"]              >> deviceID;
+        rdr["DeviceConfigurationID"] >> configID;
 
-        while ( rdr() )
-        {
-            long    deviceID,
-                    configID;
-
-            rdr["DeviceID"]              >> deviceID;
-            rdr["DeviceConfigurationID"] >> configID;
-
-            executeUpdateDeviceConfig( configID, deviceID );
-        }
-    }
-
-    CtiTime stop;
-
-    if ( DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5 )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to assign configurations to devices." << std::endl;
+        updateDeviceConfigurationAssignment( configID, deviceID );
     }
 }
 
 
-
-// update all devices that have the given config assigned...
-void CtiConfigManager::updateDeviceConfig( const long configID )
+void CtiConfigManager::updateDevicesAssignedToConfig( const long configID )
 {
     const std::string sql =
         "SELECT "
@@ -341,35 +316,25 @@ void CtiConfigManager::updateDeviceConfig( const long configID )
         "WHERE "
             "D.DeviceConfigurationID = " + CtiNumStr( configID );
 
-    CtiTime start;
+    Cti::Timing::DebugTimer timer( "assigning configuration to devices", DebugLevel & 0x80000000, 5.0 );
 
+    Cti::Database::DatabaseConnection   connection;
+    Cti::Database::DatabaseReader       rdr(connection, sql);
+
+    rdr.execute();
+
+    while ( rdr() )
     {
-        Cti::Database::DatabaseConnection   connection;
-        Cti::Database::DatabaseReader       rdr(connection, sql);
+        long    deviceID;
 
-        rdr.execute();
+        rdr["DeviceID"] >> deviceID;
 
-        while ( rdr() )
-        {
-            long    deviceID;
-
-            rdr["DeviceID"] >> deviceID;
-
-            executeUpdateDeviceConfig( configID, deviceID );
-        }
-    }
-
-    CtiTime stop;
-
-    if ( DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5 )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to assign configurations to devices." << std::endl;
+        updateDeviceConfigurationAssignment( configID, deviceID );
     }
 }
 
 
-void CtiConfigManager::updateDeviceCategory( const long categoryID )
+void CtiConfigManager::updateConfigsContainingCategory( const long categoryID )
 {
     const std::string sql =
         "SELECT "
@@ -399,7 +364,7 @@ void CtiConfigManager::updateDeviceCategory( const long categoryID )
 
     for each ( const long ID in configIDs )
     {
-        updateDeviceConfig( ID );
+        updateDevicesAssignedToConfig( ID );
     }
 }
 
@@ -414,35 +379,25 @@ void CtiConfigManager::updateConfigForDevice( const long deviceID )
         "WHERE "
             "D.DeviceID = " + CtiNumStr( deviceID );
 
-    CtiTime start;
+    Cti::Timing::DebugTimer timer( "assigning configuration to device", DebugLevel & 0x80000000, 5.0 );
 
+    Cti::Database::DatabaseConnection   connection;
+    Cti::Database::DatabaseReader       rdr(connection, sql);
+
+    rdr.execute();
+
+    while ( rdr() )
     {
-        Cti::Database::DatabaseConnection   connection;
-        Cti::Database::DatabaseReader       rdr(connection, sql);
+        long    configID;
 
-        rdr.execute();
+        rdr["DeviceConfigurationID"] >> configID;
 
-        while ( rdr() )
-        {
-            long    configID;
-
-            rdr["DeviceConfigurationID"] >> configID;
-
-            executeUpdateDeviceConfig( configID, deviceID );
-        }
-    }
-
-    CtiTime stop;
-
-    if ( DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5 )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to assign configurations to devices." << std::endl;
+        updateDeviceConfigurationAssignment( configID, deviceID );
     }
 }
 
 
-void CtiConfigManager::executeUpdateDeviceConfig( const long configID, const long deviceID )
+void CtiConfigManager::updateDeviceConfigurationAssignment( const long configID, const long deviceID )
 {
     if ( CtiDeviceSPtr pDev = _devMgr->getDeviceByID( deviceID ) )
     {
@@ -458,7 +413,7 @@ void CtiConfigManager::executeUpdateDeviceConfig( const long configID, const lon
             const Cti::Config::Configuration & config = *configSearch->second;
 
             // this is the guy we'll assign to the device...
-            Cti::Config::DeviceConfigSPtr    deviceConfiguration( new Cti::Config::DeviceConfig( config.getID(), config.getName(), std::string() ) );
+            Cti::Config::DeviceConfigSPtr    deviceConfiguration( new Cti::Config::DeviceConfig( config.getId(), config.getName() ) );
 
             // iterate the configs categories
             for each ( const long categoryID in config )
@@ -483,6 +438,12 @@ void CtiConfigManager::executeUpdateDeviceConfig( const long configID, const lon
             }
 
             pDev->changeDeviceConfig( deviceConfiguration );
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> guard( dout );
+
+            dout << CtiTime() << " - *** ERROR *** Invalid Configuration ID - configuration unchanged." << std::endl;
         }
     }
 }

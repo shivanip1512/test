@@ -35,7 +35,7 @@ private:
 
 public:
 
-    DeviceConfig( const long ID, const std::string & name, const std::string & type );
+    DeviceConfig( const long ID, const std::string & name );
 
     boost::optional<long> findLongValueForKey( const std::string & key ) const;
 
@@ -54,7 +54,7 @@ class IM_EX_CONFIG ConfigurationCategory
 {
     typedef std::map<std::string, std::string>  ConfigItemMap;  // FieldName --> Value
 
-    long            _ID;
+    long            _id;
     std::string     _name,
                     _type;
     ConfigItemMap   _items;
@@ -68,7 +68,7 @@ public:
 
     void addItem( const std::string & fieldName, const std::string & value );
 
-    long        getID() const;
+    long        getId() const;
     std::string getName() const;
 
     const_iterator begin() const;
@@ -79,7 +79,7 @@ public:
 
 class IM_EX_CONFIG Configuration
 {
-    long            _ID;
+    long            _id;
     std::string     _name;
     std::set<long>  _categoryIDs;
 
@@ -91,7 +91,7 @@ public:
 
     void addCategory( const long category );
 
-    long        getID() const;
+    long        getId() const;
     std::string getName() const;
 
     const_iterator begin() const;

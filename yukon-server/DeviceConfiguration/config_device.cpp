@@ -6,10 +6,9 @@ namespace Cti       {
 namespace Config    {
 
 
-DeviceConfig::DeviceConfig( const long ID, const std::string & name, const std::string & type )
+DeviceConfig::DeviceConfig( const long ID, const std::string & name )
     :   _id(ID),
-        _name(name),
-        _type(type)
+        _name(name)
 {
 
 }
@@ -105,7 +104,6 @@ double DeviceConfig::getFloatValueFromKey( const std::string & key ) const
         return std::numeric_limits<double>::min();
     }
 
-
     return std::atof( result->c_str() );
 }
 
@@ -126,7 +124,7 @@ bool DeviceConfig::getBoolValue( const std::string & key , bool & value ) const
 ///////////////////
 
 ConfigurationCategory::ConfigurationCategory( const long ID, const std::string & name, const std::string & type )
-    :   _ID( ID ),
+    :   _id( ID ),
         _name( name ),
         _type( type )
 {
@@ -140,9 +138,9 @@ void ConfigurationCategory::addItem( const std::string & fieldName, const std::s
 }
 
 
-long ConfigurationCategory::getID() const
+long ConfigurationCategory::getId() const
 {
-    return _ID;
+    return _id;
 }
 
 
@@ -166,7 +164,7 @@ ConfigurationCategory::const_iterator ConfigurationCategory::end() const
 ///////////////////
 
 Configuration::Configuration( const long ID, const std::string & name )
-    :   _ID( ID ),
+    :   _id( ID ),
         _name( name )
 {
 
@@ -179,9 +177,9 @@ void Configuration::addCategory( const long category )
 }
 
 
-long Configuration::getID() const
+long Configuration::getId() const
 {
-    return _ID;
+    return _id;
 }
 
 

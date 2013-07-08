@@ -29,15 +29,15 @@ private:
     void loadConfig( const long configID );
     void executeLoadConfig( const std::string & sql );
 
-    void loadAllConfigurationItems();
-    void loadConfigurationItems( const long configID );
+    void loadAllCategoryItems();
+    void loadCategoryItems( const long categoryID );
     void executeLoadItems ( const std::string & sql );
 
-    void updateAllDeviceConfigs();
-    void updateDeviceConfig( const long configID );
-    void updateDeviceCategory( const long categoryID );
+    void assignAllConfigsToDevices();
+    void updateDevicesAssignedToConfig( const long configID );
+    void updateConfigsContainingCategory( const long categoryID );
     void updateConfigForDevice( const long deviceID );
-    void executeUpdateDeviceConfig( const long configID, const long deviceID );
+    void updateDeviceConfigurationAssignment( const long configID, const long deviceID );
 
 public:
 

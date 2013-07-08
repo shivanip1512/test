@@ -1,10 +1,11 @@
 #include <boost/test/unit_test.hpp>
 
+#include "boostutil.h"
 #include "config_device.h"
 
 struct test_DeviceConfig : public Cti::Config::DeviceConfig
 {
-    test_DeviceConfig() : DeviceConfig(-1, "", "") {}
+    test_DeviceConfig() : DeviceConfig(-1, "") {}
 
     using DeviceConfig::insertValue;
 };
