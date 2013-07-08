@@ -271,7 +271,7 @@
         <!-- Common Directories Component -->
 		<copy todir="${install.bag}/Common Directories/Config/Example" preservelastmodified="true">
 			<fileset file="${basedir}/yukon-install/resources/master.cfg"/>
-			<fileset dir="${basedir}/exampleXml"/>
+			<fileset dir="${client.bag}/exampleXml"/>
 		</copy>
 		
         <!-- JRE Component -->
