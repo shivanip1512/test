@@ -24,7 +24,7 @@ jQuery(function(){
 			success: function(data) {
 				var icon = 'icon-disabled';
 				if (data == true) icon = 'icon-enabled';
-				jQuery(e.currentTarget).removeClass("icon-enabled, icon-disabled").addClass(icon).attr('title', jQuery(e.currentTarget).attr('data-'+ !data +'jobNameMsg'));
+				jQuery(e.currentTarget).removeClass("icon-enabled icon-disabled").addClass(icon).attr('title', jQuery(e.currentTarget).attr('data-'+ !data +'jobNameMsg'));
 			}
 		});
 	});
