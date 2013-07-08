@@ -9,6 +9,7 @@
 #include "ctistring.h"
 
 #include "boost/regex.hpp"
+#include <boost/optional.hpp>
 
 using namespace std;
 
@@ -2271,6 +2272,18 @@ string CtiCommandParser::getsValue(const string &key) const
         pv = (*itr).second;
     }
     return pv.getString();
+}
+
+boost::optional<std::string> CtiCommandParser::findStringForKey(const string &key) const
+{
+    map_itr_type itr = _cmd.find(key.c_str());
+
+    if(itr == _cmd.end())
+    {
+        return boost::none;
+    }
+
+    return itr->second.getString();
 }
 
 void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)

@@ -286,4 +286,35 @@ BOOST_AUTO_TEST_CASE(test_putconfig_channel_2_netmetering_water_meter_none)
                                   expectedResults + (sizeof(expectedResults) / sizeof(*expectedResults)));
 }
 
+
+BOOST_AUTO_TEST_CASE(test_findStringValueForKey)
+{
+    {
+        CtiCommandParser p("getvalue noqueue");
+
+        boost::optional<std::string> nq = p.findStringForKey("noqueue");
+
+        BOOST_REQUIRE( nq );
+
+        BOOST_CHECK_EQUAL( *nq, "true" );
+    }
+
+    {
+        CtiCommandParser p("getvalue");
+
+        boost::optional<std::string> nq = p.findStringForKey("noqueue");
+
+        BOOST_CHECK( ! nq );
+    }
+
+    {
+        CtiCommandParser p("getvalue select deviceid 42");
+
+        boost::optional<std::string> nq = p.findStringForKey("deviceid");
+
+        BOOST_CHECK( ! nq );
+    }
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()

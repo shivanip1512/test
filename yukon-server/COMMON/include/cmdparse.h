@@ -8,6 +8,8 @@
 #include "dlldefs.h"
 #include "parsevalue.h"
 
+#include <boost/optional.hpp>
+
 struct simple_hash
 {
    unsigned long operator()(const std::string& x) const { return x.length() * (long)x[0]; }
@@ -102,6 +104,8 @@ public:
    INT    getiValue (const std::string &key, INT valifnotfound = INT_MIN) const;
    double getdValue (const std::string &key, double valifnotfound = 0.0) const;
    std::string getsValue (const std::string &key) const;
+   boost::optional<std::string> findStringForKey(const std::string &key) const;
+
    // Should only be called externally, sets externally changed flag
    CtiCommandParser& setValue(const std::string &key, INT val);
    // Should only be called externally, sets externally changed flag
