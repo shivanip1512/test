@@ -215,12 +215,6 @@ public class PorterResponseMonitorController {
         return "redirect:/meter/start";
     }
 
-	@RequestMapping(params = "cancelToView")
-	public String cancelToView(int monitorId, ModelMap modelMap, HttpServletRequest request) {
-        modelMap.addAttribute("monitorId", monitorId);
-        return "redirect:viewPage";
-	}
-
 	@RequestMapping
 	public String update(@ModelAttribute("monitorDto") PorterResponseMonitorDto monitorDto,
 					BindingResult bindingResult, Integer[] rulesToRemove,

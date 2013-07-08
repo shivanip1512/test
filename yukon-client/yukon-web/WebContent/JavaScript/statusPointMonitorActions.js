@@ -1,68 +1,77 @@
 // This Javascript file works with edit.jsp (and is only used by it).
 
 function deleteAction(rowIdNum) {
-	var row = $('actionRow' + rowIdNum);
+	var row = jQuery('#actionRow' + rowIdNum).remove();
 	
-	row.parentNode.removeChild(row);
 
-    var inputElement = $$('#actionsTable td input.statusPointMonitorProcessorId');
+    var inputElement = jQuery('#actionsTable td input.statusPointMonitorProcessorId');
     for (var index = 0; index < inputElement.length; index++) {
     	inputElement[index].name = 'processors[' + index + '].statusPointMonitorProcessorId';
     }
     
-    inputElement = $$('#actionsTable td select.prevStateSelect');
+    inputElement = jQuery('#actionsTable td select.prevStateSelect');
     for (var index = 0; index < inputElement.length; index++) {
     	inputElement[index].name = 'processors[' + index + '].prevState';
     }
     
-    inputElement = $$('#actionsTable td select.nextStateSelect');
+    inputElement = jQuery('#actionsTable td select.nextStateSelect');
     for (var index = 0; index < inputElement.length; index++) {
     	inputElement[index].name = 'processors[' + index + '].nextState';
     }
     
-    inputElement = $$('#actionsTable td select.actionTypeSelect');
+    inputElement = jQuery('#actionsTable td select.actionTypeSelect');
     for (var index = 0; index < inputElement.length; index++) {
     	inputElement[index].name = 'processors[' + index + '].actionType';
     }
 }
 
 function addAction(processor) {
-	var templateHtml = $$('#templateHtml > a');
+	var templateHtml = jQuery('#templateHtml > a');
     var deleteActionIcon = templateHtml[0];
     
-    var templateHtml = $$('#templateHtml > select');
+    var templateHtml = jQuery('#templateHtml > select');
     var states = templateHtml[0];
     var eventTypes = templateHtml[1];
     
-	var actionsTable = $('actionsTable');
-	var rowNum = actionsTable.rows.length;
-	var newRow = actionsTable.insertRow(rowNum);
+	var actionsTable = jQuery('#actionsTable > tbody:last');
+	var rowJoe = actionsTable.prop('rows');
+	var rowNum = rowJoe.length;
+	
+	
+	
+	actionsTable.append("<tr></tr>");
+	var newRow = actionsTable.find("tr:last");
 	var newRowIdNum = addAction.nextRowIdNum++;
-	newRow.id = 'actionRow' + newRowIdNum;
+	newRow.attr('id', 'actionRow' + newRowIdNum);
 	
-	var cellPrevState = newRow.insertCell(0);
-	var cellNextState = newRow.insertCell(1);
-	var cellActionType = newRow.insertCell(2);
-	var cellDelete = newRow.insertCell(3);
+	newRow.append('<td></td>');
+	var cellPrevState = newRow.find('td:last');
+	newRow.append('<td></td>');
+	var cellNextState = newRow.find('td:last');
+	newRow.append('<td></td>');
+	var cellActionType = newRow.find('td:last');
+	newRow.append('<td></td>');
+	var cellDelete = newRow.find('td:last');;
 	
-	var prevSelectNode = states.cloneNode(true);
+	
+	var prevSelectNode = states.clone(true);
 	prevSelectNode.name = 'processors[' + (rowNum-1) + '].prevState';
 	prevSelectNode.className = 'prevStateSelect';
-	cellPrevState.appendChild(prevSelectNode);
+	cellPrevState.append(prevSelectNode);
 	
-	var nextSelectNode = states.cloneNode(true);
+	var nextSelectNode = states.clone(true);
 	nextSelectNode.name = 'processors[' + (rowNum-1) + '].nextState';
 	nextSelectNode.className = 'nextStateSelect';
-	cellNextState.appendChild(nextSelectNode);
+	cellNextState.append(nextSelectNode);
 	
-	var actionTypeSelectNode = eventTypes.cloneNode(true);
+	var actionTypeSelectNode = eventTypes.clone(true);
 	actionTypeSelectNode.name = 'processors[' + (rowNum-1) + '].actionType';
 	actionTypeSelectNode.className = 'actionTypeSelect';
-	cellActionType.appendChild(actionTypeSelectNode);
+	cellActionType.append(actionTypeSelectNode);
 	
-	var deleteIconNode = deleteActionIcon.cloneNode(true);
+	var deleteIconNode = deleteActionIcon.clone(true);
 	deleteIconNode.href = "javascript:deleteAction(" + newRowIdNum + ")";
-	cellDelete.appendChild(deleteIconNode);
+	cellDelete.append(deleteIconNode);
 	
 	if(processor) {
 		var processorIdNode = document.createElement("input");
@@ -70,7 +79,7 @@ function addAction(processor) {
 		processorIdNode.type = 'hidden';
 		processorIdNode.className = 'statusPointMonitorProcessorId';
 		processorIdNode.value = processor.statusPointMonitorProcessorId;
-		cellPrevState.appendChild(processorIdNode);
+		cellPrevState.append(processorIdNode);
 		
 		prevSelectNode.value = processor.prevState;
 		nextSelectNode.value = processor.nextState;

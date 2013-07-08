@@ -98,8 +98,10 @@
     <entry key="yukon.web.components.button.load.label">Load</entry>
     
     <entry key="yukon.web.components.button.save.label">Save</entry>
+    <entry key="yukon.web.components.button.save.labelBusy">Saving</entry>
     
     <entry key="yukon.web.components.button.update.label">Update</entry>
+    <entry key="yukon.web.components.button.update.labelBusy">Updating</entry>
     
     <entry key="yukon.web.components.button.send.label">Send</entry>
     
@@ -109,7 +111,10 @@
     <entry key="yukon.web.components.button.import.label">Import</entry>
     
     <entry key="yukon.web.components.button.disable.label">Disable</entry>
+    <entry key="yukon.web.components.button.disable.labelBusy">Disabling</entry>
+    
     <entry key="yukon.web.components.button.enable.label">Enable</entry>
+    <entry key="yukon.web.components.button.enable.labelBusy">Enabling</entry>
 
     <entry key="yukon.web.components.button.refresh.label">Refresh</entry>
     <entry key="yukon.web.components.button.ignore.label">Ignore</entry>
@@ -129,6 +134,7 @@
     <entry key="yukon.web.components.button.clear.label">Clear</entry>
     
     <entry key="yukon.web.components.button.delete.label">Delete</entry>
+    <entry key="yukon.web.components.button.delete.labelBusy">Deleting</entry>
     
     <entry key="yukon.web.components.button.execute.label">Execute</entry>
     

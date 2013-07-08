@@ -5,6 +5,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="amr" page="statusPointMonitorEditor">
 
@@ -25,29 +26,17 @@
                 <option value="${eventType}"/>${eventType}</option>
             </c:forEach>
         </select>
-        <cti:icon nameKey="deleteAction" icon="icon-cross"/>
+        <cti:icon nameKey="deleteAction" icon="icon-cross" href="#"/>
     </span>
     
-    <c:set var="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}"/>
-
-    <i:simplePopup titleKey=".delete.title" id="deleteConfirmDialog">
-        <h1 class="dialogQuestion">
-            <i:inline key=".deleteConfirm" arguments="${statusPointMonitor.statusPointMonitorName}"/>
-        </h1>
-
-        <div class="actionArea">
-            <cti:url var="submitUrl" value="/amr/statusPointMonitoring/delete"/>
-            <form action="${submitUrl}" method="post">
-                <input type="hidden" name="statusPointMonitorId" value="${statusPointMonitorId}">
-                <cti:button nameKey="ok" type="submit" classes="f-blocker"/>
-                <cti:button nameKey="cancel" onclick="$('deleteConfirmDialog').hide()"/>
-            </form>
-        </div>
-    </i:simplePopup>
+    <cti:url var="submitUrl" value="/amr/statusPointMonitoring/delete"/>
+    <form id="deleteStatusPointMonitor" action="${submitUrl}" method="post">
+        <input type="hidden" name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}">
+    </form>
 
 	<%-- MISC FORMS --%>
 	<form id="toggleEnabledForm" action="/amr/statusPointMonitoring/toggleEnabled" method="post">
-		<input type="hidden" name="statusPointMonitorId" value="${statusPointMonitorId}">
+		<input type="hidden" name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}">
 	</form>
 	
 	<%-- UPDATE FORM --%>
@@ -109,14 +98,18 @@
 		</tags:formElementContainer>
         
         <tags:boxContainer2 id="actionsBox" nameKey="stateActionsTable" styleClass="mediumContainer">
-            <div class="dialogScrollArea">
+            <div class="dialogScrollArea stacked">
                 <table id="actionsTable" class="compactResultsTable">
+                    <thead>
                     <tr>
                         <th><i:inline key=".stateActionsTable.prevState"/></th>
                         <th><i:inline key=".stateActionsTable.nextState"/></th>
                         <th><i:inline key=".stateActionsTable.action"/></th>
                         <th><i:inline key=".stateActionsTable.delete"/></th>
                     </tr>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody></tbody>
                 </table>
             </div>
             <br>
@@ -127,15 +120,19 @@
 		
 		<%-- create / update / delete --%>
 		<div class="pageActionArea">
-            <cti:button nameKey="update" type="submit" classes="f-blocker"/>
-            <c:set var="enableDisableKey" value="statusPointMonitoringDisable"/>
+            <cti:button nameKey="update" type="submit" busy="true" classes="primary action f-disableAfterClick" data-disable-group="actionButtons"/>
+            <c:set var="enableDisableKey" value="disable"/>
             <c:if test="${statusPointMonitor.evaluatorStatus eq 'DISABLED'}">
-                <c:set var="enableDisableKey" value="statusPointMonitoringEnable"/>
+                <c:set var="enableDisableKey" value="enable"/>
             </c:if>
-            <cti:button nameKey="${enableDisableKey}" classes="f-blocker"
-                onclick="$('toggleEnabledForm').submit()"/>
-            <cti:button nameKey="delete" onclick="$('deleteConfirmDialog').show()"/>
-            <cti:button nameKey="cancel" type="submit" name="cancel" classes="f-blocker"/>
+            <cti:button nameKey="${enableDisableKey}" busy="true" classes="f-disableAfterClick" data-disable-group="actionButtons"
+                onclick="jQuery('#toggleEnabledForm').submit()"/>
+            <cti:button id="deleteButton" nameKey="delete" busy="true" onclick="jQuery('#deleteStatusPointMonitor').submit();" data-disable-group="actionButtons"/>
+            <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${statusPointMonitor.statusPointMonitorName}"/>
+            <cti:url var="backUrl" value="/amr/statusPointMonitoring/viewPage">
+                <cti:param name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}" />
+            </cti:url>
+            <cti:button nameKey="cancel" type="button" href="${backUrl }"  busy="true" classes="f-disableAfterClick" data-disable-group="actionButtons"/>
         </div>
 	</form:form>
     

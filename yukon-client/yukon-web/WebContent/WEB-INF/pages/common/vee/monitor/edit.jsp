@@ -2,78 +2,21 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage page="validationEditor.${mode}" module="amr">
-
-<cti:msg var="pageTitle" key="yukon.web.modules.common.vee.monitor.editor.pageTitle" />
-<cti:msg var="setupSectiontext" key="yukon.web.modules.common.vee.monitor.editor.section.setup" />
-<cti:msg var="editSetupSectionText" key="yukon.web.modules.common.vee.monitor.editor.section.editSetup" />
-
-<cti:msg var="nameText" key="yukon.web.modules.common.vee.monitor.editor.label.name"/>
-
-<cti:msg var="deviceGroupText" key="yukon.web.modules.common.vee.monitor.editor.label.deviceGroup"/>
-<cti:msg var="deviceGroupPopupInfoText" key="yukon.web.modules.common.vee.monitor.editor.popupInfo.deviceGroup"/>
-
-<cti:msg var="thresholdText" key="yukon.web.modules.common.vee.monitor.editor.label.thresholdText"/>
-<cti:msg var="thresholdUnits" key="yukon.web.modules.common.vee.monitor.editor.label.thresholdUnits"/>
-<cti:msg var="thresholdPopupInfoText" key="yukon.web.modules.common.vee.monitor.editor.popupInfo.thresholdPopupInfoText"/>
-
-<cti:msg var="rereadThresholdText" key="yukon.web.modules.common.vee.monitor.editor.label.rereadThresholdText"/>
-<cti:msg var="rereadThresholdPopupInfoText" key="yukon.web.modules.common.vee.monitor.editor.popupInfo.rereadThresholdPopupInfoText"/>
-
-<cti:msg var="slopeErrorText" key="yukon.web.modules.common.vee.monitor.editor.label.slopeErrorText"/>
-<cti:msg var="slopeErrorUnits" key="yukon.web.modules.common.vee.monitor.editor.label.slopeErrorUnits"/>
-<cti:msg var="slopeErrorPopupInfoText" key="yukon.web.modules.common.vee.monitor.editor.popupInfo.slopeErrorPopupInfoText"/>
-
-<cti:msg var="readingErrorText" key="yukon.web.modules.common.vee.monitor.editor.label.readingErrorText"/>
-<cti:msg var="readingErrorUnits" key="yukon.web.modules.common.vee.monitor.editor.label.readingErrorUnits"/>
-<cti:msg var="readingErrorPopupInfoText" key="yukon.web.modules.common.vee.monitor.editor.popupInfo.readingErrorPopupInfoText"/>
-
-<cti:msg var="peakHeightMinimumText" key="yukon.web.modules.common.vee.monitor.editor.label.peakHeightMinimumText"/>
-<cti:msg var="peakHeightMinimumUnits" key="yukon.web.modules.common.vee.monitor.editor.label.peakHeightMinimumUnits"/>
-<cti:msg var="peakHeightMinimumPopupInfoText" key="yukon.web.modules.common.vee.monitor.editor.popupInfo.peakHeightMinimumPopupInfoText"/>
-
-<cti:msg var="setQuestionableText" key="yukon.web.modules.common.vee.monitor.editor.label.setQuestionableText"/>
-<cti:msg var="setQuestionablePopupInfoText" key="yukon.web.modules.common.vee.monitor.editor.popupInfo.setQuestionablePopupInfoText"/>
-
-<cti:msg var="updateBusyText" key="yukon.web.modules.common.vee.monitor.editor.label.update.updateBusyText"/>
-<cti:msg var="updateText" key="yukon.web.modules.common.vee.monitor.editor.label.update.updateText"/>
-
-<cti:msg var="deleteText" key="yukon.web.modules.common.vee.monitor.editor.label.delete.deleteText"/>
-<cti:msg var="deleteConfirmText" key="yukon.web.modules.common.vee.monitor.editor.label.delete.deleteConfirmText"/>
-
-<cti:msg var="createBusyText" key="yukon.web.modules.common.vee.monitor.editor.label.create.createBusyText"/>
-<cti:msg var="createText" key="yukon.web.modules.common.vee.monitor.editor.label.create.createText"/>
-
-<cti:msg var="cancelText" key="yukon.web.modules.common.vee.monitor.editor.label.cancel.cancelText"/>
-
-<cti:msg var="validationMonitoringText" key="yukon.web.modules.common.vee.monitor.editor.label.validationMonitoring"/>
-<cti:msg var="validationMonitoringEnableText" key="yukon.web.modules.common.vee.monitor.editor.label.validationMonitoringEnable"/>
-<cti:msg var="validationMonitoringDisableText" key="yukon.web.modules.common.vee.monitor.editor.label.validationMonitoringDisable"/>
-<cti:msg var="validationMonitoringDisableText" key="yukon.web.modules.common.vee.monitor.editor.label.validationMonitoringDisable"/>
-<cti:msg var="validationMonitoringEnablePopupInfo" key="yukon.web.modules.common.vee.monitor.editor.popupInfo.validationMonitoringEnable"/>
-<cti:msg var="validationMonitoringDisablePopupInfo" key="yukon.web.modules.common.vee.monitor.editor.popupInfo.validationMonitoringDisable"/>
-
-<cti:msg var="saveOkText" key="yukon.web.modules.common.vee.monitor.editor.saveOk"/>
+<cti:standardPage module="amr" page="validationEditor.${mode}" >
 
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
 <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
-
     
     <script type="text/javascript">
-        function validationMonitorEditor_deleteValidationMonitor(id) {
-    
-            var deleteOk = confirm('${deleteConfirmText}');
-    
-            if (deleteOk) {
-                $('deleteValidationMonitorId').value = id;
-                $('configDeleteForm').submit();
-
-                $$('input[type=button]').each(function(el) {
-					el.disable();
-				});
-            }
-        }
+        function deleteValidationMonitor() {
+            jQuery("button[data-disable-group=actionButtons]").each( function(){
+                this.disabled = true;
+            });
+            jQuery('#configDeleteForm').submit();
+        };
     </script>
 
     <c:if test="${not empty editError}">
@@ -81,12 +24,13 @@
     </c:if>
     
     <c:if test="${saveOk}">
-        <div class="fwb">${saveOkText}</div>
+        <div class="fwb"><i:inline key=".saveOk"/></div>
+        
     </c:if>
     
     <%-- MISC FORMS --%>
     <form id="configDeleteForm" action="/common/vee/monitor/delete" method="post">
-        <input type="hidden" id="deleteValidationMonitorId" name="deleteValidationMonitorId" value="">
+        <input type="hidden" name="deleteValidationMonitorId" value="${validationMonitorId}">
     </form>
     
     <form id="toggleEnabledForm" action="/common/vee/monitor/toggleEnabled" method="post">
@@ -101,86 +45,87 @@
     
         <input type="hidden" name="validationMonitorId" value="${validationMonitorId}">
         
-        <c:set var="setupSectionTitle" value="${setupSectiontext}"/>
-        <c:if test="${validationMonitorId > 0}">
-            <c:set var="setupSectionTitle" value="${editSetupSectionText}"/>
-        </c:if>
-        <div style="max-width:50%;">
-        
-            <tags:sectionContainer title="${setupSectionTitle}">
-            
-                <tags:nameValueContainer>
-                    
-                    <%-- name --%>
-                    <tags:nameValue name="${nameText}">
-                        <input type="text" name="name" size="50" value="${name}">
-                    </tags:nameValue>
-                    
-                    <%-- device group --%>
-                    <tags:nameValue name="${deviceGroupText}">
-                        <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
-                        <tags:deviceGroupNameSelector fieldName="deviceGroupName" fieldValue="${deviceGroupName}" dataJson="${groupDataJson}" linkGroupName="true"/>
-                        <tags:helpInfoPopup title="${deviceGroupText}">${deviceGroupPopupInfoText}</tags:helpInfoPopup>
-                    </tags:nameValue>
-                    
-                    <%-- threshold --%>
-                    <tags:nameValue name="${thresholdText}">
-                        <div>
-                            <input type="text" name="threshold" style="text-align: right;" value="${threshold}"><span>${thresholdUnits}</span> 
-                            <tags:helpInfoPopup title="${thresholdText}">${thresholdPopupInfoText}</tags:helpInfoPopup>
-                        </div>
-                        <div>
-                            <input type="checkbox" name="reread" style="text-align: right;" <c:if test="${reread}">checked</c:if>><span>${rereadThresholdText}</span> 
-                            <tags:helpInfoPopup title="${rereadThresholdText}">${rereadThresholdPopupInfoText}</tags:helpInfoPopup>
-                        </div>
-                    </tags:nameValue>
-                    
-                    <%-- slope error --%>
-                    <tags:nameValue name="${slopeErrorText}">
-                        <input type="text" name="slopeError" style="text-align:right;" value="${slopeError}"><span>${slopeErrorUnits}</span>
-                        <tags:helpInfoPopup title="${slopeErrorText}">${slopeErrorPopupInfoText}</tags:helpInfoPopup>
-                    </tags:nameValue>
-                    
-                    <%-- peak height minimum --%>
-                    <tags:nameValue name="${peakHeightMinimumText}">
-                        <div>
-                            <input type="text" name="peakHeightMinimum" style="text-align: right;" value="${peakHeightMinimum}"><span>${peakHeightMinimumUnits}</span>
-                            <tags:helpInfoPopup title="${peakHeightMinimumText}">${peakHeightMinimumPopupInfoText}</tags:helpInfoPopup>
-                        </div>
-                        <div>
-                            <input type="checkbox" name="setQuestionable" style="text-align: right;" <c:if test="${setQuestionable}">checked</c:if>><span>${setQuestionableText}</span>
-                            <tags:helpInfoPopup title="${setQuestionableText}">${setQuestionablePopupInfoText}</tags:helpInfoPopup>
-                        </div>        
-                    </tags:nameValue>
-                    
-                    <%-- enable/disable monitoring --%>
-                    <c:if test="${validationMonitorId > 0}">
-                        <tags:nameValue name="${validationMonitoringText}">${validationMonitor.evaluatorStatus.description}</tags:nameValue>
-                    </c:if>
-                    
-                </tags:nameValueContainer>
+       <tags:sectionContainer2 nameKey="setup">
+            <tags:nameValueContainer2>
                 
-            </tags:sectionContainer>
-        </div>
+                <%-- name --%>
+                <tags:nameValue2 nameKey=".name">
+                    <input type="text" name="name" size="50" value="${name}">
+                </tags:nameValue2>
+                
+                <%-- device group --%>
+                <tags:nameValue2 nameKey=".deviceGroup">
+                    <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
+                    <tags:deviceGroupNameSelector fieldName="deviceGroupName" fieldValue="${deviceGroupName}" dataJson="${groupDataJson}" linkGroupName="true"/>
+                    <cti:msg2 key=".deviceGroup" var="popupTitle"/>
+                    <tags:helpInfoPopup title="${popupTitle}" ><i:inline key=".deviceGroup.helpText"/></tags:helpInfoPopup>
+                </tags:nameValue2>
+                
+                <%-- threshold --%>
+                <tags:nameValue2 nameKey=".threshold">
+                    <div>
+                        <input type="text" name="threshold" style="text-align: right;" value="${threshold}"><span><i:inline key=".thresholdUnits"/></span> 
+                        <cti:msg2 key=".threshold" var="popupTitle"/>
+                        <tags:helpInfoPopup title="${popupTitle}" ><i:inline key=".threshold.helpText"/></tags:helpInfoPopup>
+                    </div>
+                    <div>
+                        <input type="checkbox" name="reread" style="text-align: right;" <c:if test="${reread}">checked</c:if>><span>${rereadThresholdText}</span> 
+                        <cti:msg2 key=".rereadThreshold" var="popupTitle"/>
+                        <tags:helpInfoPopup title="${popupTitle}" ><i:inline key=".rereadThreshold.helpText"/></tags:helpInfoPopup>
+                    </div>
+                </tags:nameValue2>
+                
+                <%-- slope error --%>
+                <tags:nameValue2 nameKey=".slopeError">
+                    <input type="text" name="slopeError" style="text-align:right;" value="${slopeError}"><span><i:inline key=".slopeErrorUnits"/></span>
+                    <cti:msg2 key=".slopeError" var="popupTitle"/>
+                    <tags:helpInfoPopup title="${popupTitle}" ><i:inline key=".slopeError.helpText"/></tags:helpInfoPopup>
+                </tags:nameValue2>
+                
+                <%-- peak height minimum --%>
+                <tags:nameValue2 nameKey=".peakHeightMinimum">
+                    <div>
+                        <input type="text" name="peakHeightMinimum" style="text-align: right;" value="${peakHeightMinimum}"><span><i:inline key=".peakHeightMinimumUnits"/></span>
+                        <cti:msg2 key=".peakHeightMinimum" var="popupTitle"/>
+                        <tags:helpInfoPopup title="${popupTitle}" ><i:inline key=".peakHeightMinimum.helpText"/></tags:helpInfoPopup>
+                    </div>
+                    <div>
+                        <input type="checkbox" name="setQuestionable" style="text-align: right;" <c:if test="${setQuestionable}">checked</c:if>><span><i:inline key=".setQuestionable"/></span>
+                        <cti:msg2 key=".setQuestionable" var="popupTitle"/>
+                        <tags:helpInfoPopup title="${popupTitle}" ><i:inline key=".setQuestionable.helpText"/></tags:helpInfoPopup>
+                    </div>        
+                </tags:nameValue2>
+                
+                <%-- enable/disable monitoring --%>
+                <c:if test="${validationMonitorId > 0}">
+                    <tags:nameValue2 nameKey=".validationMonitoring">
+                        ${validationMonitor.evaluatorStatus.description}
+                    </tags:nameValue2>
+                </c:if>
+                
+            </tags:nameValueContainer2>
+            
+       </tags:sectionContainer2>
+
         <div class="pageActionArea">
             <c:choose>
                 <c:when test="${validationMonitorId >= 0}">
-                    <tags:slowInput myFormId="updateForm" labelBusy="${updateBusyText}" label="${updateText}" disableOtherButtons="true"/>
-                    <c:choose>
-    				    <c:when test="${validationMonitor.evaluatorStatus eq 'ENABLED'}">
-    				        <tags:slowInput myFormId="toggleEnabledForm" labelBusy="${validationMonitoringDisableText}" label="${validationMonitoringDisableText}" disableOtherButtons="true"/>
-    				    </c:when>
-    				    <c:when test="${validationMonitor.evaluatorStatus eq 'DISABLED'}">
-    				        <tags:slowInput myFormId="toggleEnabledForm" labelBusy="${validationMonitoringEnableText}" label="${validationMonitoringEnableText}" disableOtherButtons="true"/>
-    				    </c:when>
-    				</c:choose>
-    				<input type="button" onclick="validationMonitorEditor_deleteValidationMonitor(${validationMonitorId});" value="${deleteText}" class="formSubmit"/>
+                    <cti:button nameKey="update" busy="true" type="submit" classes="primary action f-disableAfterClick" data-disable-group="actionButtons" />
+                    <c:set var="toggleText" value="enable"/>
+                    <c:if test="${validationMonitor.evaluatorStatus eq 'ENABLED'}">
+                        <c:set var="toggleText" value="disable"/>
+                    </c:if>
+                     <cti:button nameKey="${toggleText}" onclick="jQuery('#toggleEnabledForm').submit();" busy="true" classes="f-disableAfterClick" data-disable-group="actionButtons"/>
+                   
+                    <cti:button id="deleteButton" nameKey="delete" type="button" onclick="deleteValidationMonitor();" busy="true" data-disable-group="actionButtons"/>
+                    <d:confirm on="#deleteButton" nameKey="confirmDelete"/>
                 </c:when>
                 <c:otherwise>
-                    <tags:slowInput myFormId="updateForm" labelBusy="${createBusyText}" label="${createText}" disableOtherButtons="true"/>
+                    <cti:button nameKey="save" type="submit" busy="true" classes="f-disableAfterClick" data-disable-group="actionButtons" />
                 </c:otherwise>
             </c:choose>
-            <tags:slowInput myFormId="cancelForm" label="${cancelText}" disableOtherButtons="true"/>
+            <cti:url var="backUrl" value="/meter/start"/>
+            <cti:button nameKey="cancel" type="button" href="${backUrl}" busy="true" classes="f-disableAfterClick" data-disable-group="actionButtons" />
         </div>
     </form>
         

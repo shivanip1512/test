@@ -10,25 +10,28 @@
 
     <cti:url var="fullErrorCodesURL" value="/support/errorCodes/view"/>
 
-    <i:simplePopup titleKey=".errorCodesPopup" id="errorCodesHelpPopup" on="#errorHelp">
-        <div class="scrollingContainer_large">
-        <table id="errorCodes" class="resultsTable">
+    <i:simplePopup titleKey=".errorCodesPopup" id="errorCodesHelpPopup" on="#errorHelp" options="{'height': 600}">
+        <table id="errorCodes" class="resultsTable stacked">
+            <thead>
             <tr>
                 <th><i:inline key=".errorCodesPopup.header.code" /></th>
                 <th><i:inline key=".errorCodesPopup.header.porter" /></th>
             </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
             <c:forEach items="${allErrors}" var="error">
                 <tr>
                     <td nowrap="nowrap">${error.errorCode}</td>
                     <td>${error.description}</td>
                 </tr>
             </c:forEach>
-        </table><br>
+            </tbody>
+        </table>
         <span class="footerLink">
             <i:inline key=".errorCodesVerboseMsg"/>
             <a href="${fullErrorCodesURL}"><i:inline key=".errorCodesSupportLink"/></a>
         </span>
-        </div>
     </i:simplePopup>
 
 <script type="text/javascript">
@@ -40,21 +43,21 @@ YEvent.observeSelectorClick('.removeRow', function(event) {
     rowToDelete.name = 'rulesToRemove';
     rowToDelete.value = theRow.id.substring(5); //omit "rule_"
     rowToDelete.id =  'deleteInput_' + theRow.id;
-    $('updateForm').appendChild(rowToDelete);
+    jQuery('#updateForm').append(rowToDelete);
     theRow.hide();
     theRow.next().show();
 });
 
 YEvent.observeSelectorClick('.undoRemoveBtn', function(event) {
     var theUndoRow = event.findElement('tr');
-    $('deleteInput_' + theUndoRow.previous().id).remove();
+    jQuery('deleteInput_' + theUndoRow.previous().id).remove();
     theUndoRow.hide();
     theUndoRow.previous().show();
 });
 
 YEvent.observeSelectorClick('.addRuleTableRow', function(event) {
 	var maxOrder = 0;
-    var numRows = $$('.ruleTableRow').length
+    var numRows = jQuery('.ruleTableRow').length;
     for (var i = 0; i < numRows; i++) {
         var order = $('rulesTableBody').down('.ruleOrder', i).value;
 	    if (maxOrder < order) {
@@ -197,17 +200,20 @@ YEvent.observeSelectorClick('.addRuleTableRow', function(event) {
 
 		<%-- update / enable_disable / delete / cancel --%>
 		<div class="pageActionArea">
-            <cti:button nameKey="update" type="submit"/>
+            <cti:button nameKey="update" type="submit" busy="true"  classes="primary action f-disableAfterClick" data-disable-group="actionButtons"/>
 
-            <c:set var="monitoringKey" value="monitoringEnable"/>
-			<c:if test="${monitorDto.evaluatorStatus eq 'ENABLED'}">
-                <c:set var="monitoringKey" value="monitoringDisable"/>
-			</c:if>
+            <c:set var="monitoringKey" value="enable"/>
+            <c:if test="${monitorDto.evaluatorStatus eq 'ENABLED'}">
+                <c:set var="monitoringKey" value="disable"/>
+            </c:if>
+            <cti:button nameKey="${monitoringKey}" type="submit" name="toggleEnabled" busy="true" classes="f-disableAfterClick" data-disable-group="actionButtons"/>
 
-            <cti:button nameKey="${monitoringKey}" type="submit" name="toggleEnabled"/>
-			<cti:button id="deleteButton" nameKey="delete" name="delete" type="submit"/>
+            <cti:button id="deleteButton" nameKey="delete" name="delete" type="submit" busy="true" data-disable-group="actionButtons"/>
             <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${monitorDto.name}"/>
-            <cti:button nameKey="cancel" type="submit" name="cancelToView"/>
+            <cti:url value="/amr/porterResponseMonitor/viewPage" var="viewUrl">
+                <cti:param name="monitorId" value="${monitorDto.monitorId}"/>
+            </cti:url>
+            <cti:button nameKey="cancel" type="button" href="${viewUrl}" busy="true" classes="f-disableAfterClick" data-disable-group="actionButtons" />
 		</div>
 	</form:form>
 

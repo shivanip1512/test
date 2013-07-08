@@ -49,14 +49,7 @@
 	     Devices will not be checked for tamper flags and will no longer be added to the Tamper Flag Group.
 	     <br><br>
     ]]></entry>
-    <entry key="yukon.web.modules.amr.tamperFlagEditor.label.update">Update</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagEditor.label.update.busy">Updating</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagEditor.label.create">Save</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagEditor.label.create.busy">Saving</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagEditor.label.delete">Delete</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagEditor.label.delete.busy">Deleting</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagEditor.label.cancel">Cancel</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagEditor.deleteConfirm">Are you sure you want to delete this Tamper Flag Monitor?</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagEditor.confirmDelete.message">Are you sure you want to delete this Tamper Flag Monitor?</entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.popupInfo.deviceGroup"><![CDATA[
     	 <br>
 	     The group of devices that will be checked for tamper flags.

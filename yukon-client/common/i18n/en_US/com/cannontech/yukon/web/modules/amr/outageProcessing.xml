@@ -44,7 +44,6 @@
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.scheduleName">Schedule Name</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.readFrequency">Time/Frequency</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.label.outageMonitoring">Outage Monitoring</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.outageMonitoringEnable">Enable</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.popupInfo.outageMonitoringEnable"><![CDATA[
     	 <br>
 	     Enable outage monitoring.
@@ -52,7 +51,6 @@
 	     Devices found to have excessive outages will be added to the Outages Group.
 	     <br><br>
     ]]></entry>
-    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.outageMonitoringDisable">Disable</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.popupInfo.outageMonitoringDisable"><![CDATA[
     	 <br>
 	     Disable outage monitoring.
@@ -60,14 +58,7 @@
 	     Devices will not be monitored for outage count violations and will no longer be added to the Outages Device Group for this monitor.
 	     <br><br>
     ]]></entry>
-    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.update">Update</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.update.busy">Updating</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.create">Save</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.create.busy">Saving</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.delete">Delete</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.delete.busy">Deleting</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorConfig.label.cancel">Cancel</entry>
-    <entry key="yukon.web.modules.amr.outageMonitorConfig.deleteConfirm">Are you sure you want to delete this Outage Monitor?</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.confirmDelete.message">Are you sure you want to delete this Outage Monitor?</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.popupInfo.deviceGroup"><![CDATA[
     	 <br>
 	     The group of devices that will be monitored for outage count violations.

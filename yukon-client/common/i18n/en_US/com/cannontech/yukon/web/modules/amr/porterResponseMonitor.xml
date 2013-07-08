@@ -26,9 +26,6 @@
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.rulesTable.add.label">Add Rule</entry>
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.rulesTable.add.hoverText">Click to add rule</entry>
 	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.rulesTable.delete.hoverText">Click to remove</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.update.label">Update</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.monitoringEnable.label">Enable</entry>
-	<entry key="yukon.web.modules.amr.porterResponseMonitor.EDIT.monitoringDisable.label">Disable</entry>
     
     <!-- PorterResponseMonitorController shared keys -->
     <entry key="yukon.web.modules.amr.porterResponseMonitor.title">Porter Response Monitoring</entry>

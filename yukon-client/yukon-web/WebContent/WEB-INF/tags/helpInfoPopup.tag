@@ -6,4 +6,4 @@
 
 <cti:uniqueIdentifier var="uniqueId" prefix="helpInfoPopup_"/>
 <cti:icon icon="icon-help" id="icon_${uniqueId}" classes="cp"/>
-<tags:simplePopup id="${uniqueId}" title="${title}" on="#icon_${uniqueId}"><jsp:doBody/></tags:simplePopup>
+<tags:simplePopup id="${uniqueId}" title="${title}" on="#icon_${uniqueId}" options="{'width': 600}"><jsp:doBody/></tags:simplePopup>

@@ -36,17 +36,7 @@
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.attribute">Attribute</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.stateGroup">State Group</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.statusPointMonitoring">Status Point Monitoring</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.statusPointMonitoringEnable.label">Enable</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.statusPointMonitoringEnable.labelBusy">Enabling</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.statusPointMonitoringDisable.label">Disable</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.statusPointMonitoringDisable.labelBusy">Disabling</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.update.label">Update</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.update.labelBusy">Updating</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.delete">Delete</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.delete.title">Delete Status Point Monitor</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.cancel">Cancel</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.cancel.busy">Canceling</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.deleteConfirm">Are you sure you want to delete {0}?</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.stateActionsTable.title">Message Processing Actions</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.stateActionsTable.prevState">Previous State</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.stateActionsTable.nextState">Next State</entry>

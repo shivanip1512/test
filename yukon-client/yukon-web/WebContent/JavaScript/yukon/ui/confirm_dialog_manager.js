@@ -74,6 +74,10 @@ if (typeof(Yukon.Dialog.ConfirmationManager) === 'undefined') {
                             elem.data("href", elem.attr("data-href"));
                             elem.removeAttr("data-href");
                         }
+                        if(elem.attr("onclick") != ""){
+                            elem.data("data-onclick", elem.attr("onclick"));
+                            elem.removeAttr("onclick");
+                        }
                     });
                     
                     //register the event handler
@@ -143,6 +147,12 @@ if (typeof(Yukon.Dialog.ConfirmationManager) === 'undefined') {
                     actionButton.click = function(){
                         _self._close_dialog();
                         window.location = element.attr("data-href");
+                    };
+                } else if(element.data("data-onclick")) {
+                    actionButton.click = function(){
+                        _self._close_dialog();
+                        var scripts =  element.data("data-onclick");
+                        eval(scripts);
                     };
                 } else if(element.data("href")) {
                     actionButton.click = function(){
