@@ -205,7 +205,11 @@ Yukon.ui = {
             return false;
         });
 
-        
+        jQuery(".f-closeYukonApplicationDialog").click(function() {
+            jQuery("#yukonApplicationDialog").dialog("close");
+        });
+
+
         // resize it with the window
         
         // resize blocked elements w/ page resize

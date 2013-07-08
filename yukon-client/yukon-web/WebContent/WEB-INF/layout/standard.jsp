@@ -178,10 +178,10 @@
     <div class="utility">
         <div class="footerNav">
             <ul>
-                <li><a href="/support"><cti:msg2 key=".support"/></a></li>
-                <li><a href="/support/sitemap"><cti:msg2 key=".siteMap"/></a></li>
+                <li><a href="/support"><i:inline key=".support"/></a></li>
+                <li><a href="/support/sitemap"><i:inline key=".siteMap"/></a></li>
                 <cti:checkRolesAndProperties value="JAVA_WEB_START_LAUNCHER_ENABLED">
-                    <li><a href="javascript:void(0);" id=appsLauncher><cti:msg2 key=".applications"/></a></li>
+                    <li><a href="javascript:void(0);" id="appsLauncher"><i:inline key=".applications"/></a></li>
                     <dialog:inline id="yukonApplicationDialog" okEvent="none" nameKey="applications" on="#appsLauncher"
                         options="{width: 400, 'buttons': [], 'position' : 'relative'}">
                         <c:import url="/jws/applications"/>

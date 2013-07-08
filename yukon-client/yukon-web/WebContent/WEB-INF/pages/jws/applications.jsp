@@ -2,13 +2,14 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:url var="jreUrl" value="${jreInstaller != null ? '/static/JRE/'.concat(jreInstaller) : 'http://www.java.com/getjava/'}"/>
 
 <div class="stacked f-closeYukonApplicationDialog">
     <c:set var="installJreLink">
         <a class="f-closeYukonApplicationDialog" href="<cti:url value="${jreUrl}"/>" target="_blank">
-            <cti:msg2 key=".applications.installJava"/>
+            <i:inline key=".applications.installJava"/>
         </a>
     </c:set>
     <cti:msg2 key=".applications.description" argument="${installJreLink}" htmlEscapeArguments="false"/>
