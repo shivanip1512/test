@@ -354,8 +354,8 @@
             <cti:button nameKey="cancel" onclick="cancelZoneWizard()"/>
         </cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="CREATE">
-            <cti:button nameKey="back" onclick="backToTypeSelect()"/>
             <cti:button nameKey="create" onclick="zoneSubmit()" classes="primary action"/>
+            <cti:button nameKey="back" onclick="backToTypeSelect()"/>
         </cti:displayForPageEditModes>
     </div>
     

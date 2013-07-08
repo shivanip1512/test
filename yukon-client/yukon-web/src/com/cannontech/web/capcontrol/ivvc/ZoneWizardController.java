@@ -6,6 +6,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONObject;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -39,7 +41,6 @@ import com.cannontech.enums.Phase;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.capcontrol.streamable.SubBus;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.capcontrol.ivvc.validators.ZoneDtoValidator;
@@ -176,10 +177,16 @@ public class ZoneWizardController {
         }
 
         if (noErrors) {
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneWizard.success.saved"));
+            
             //Close normally
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneWizard.success.saved"));
-            ServletUtils.closePopup(resp, "zoneWizardPopup");
-            return null;                
+            JSONObject json = new JSONObject();
+            json.put("action", "reload");
+            resp.setContentType("application/json");
+            resp.getWriter().print(json.toString());
+            resp.getWriter().close();
+            return null; 
         } else {
             setupZoneCreation(model, userContext, zoneDto);
             
@@ -285,7 +292,11 @@ public class ZoneWizardController {
         if (noErrors) {
             //Close normally
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneWizard.success.saved"));
-            ServletUtils.closePopup(resp, "zoneWizardPopup");
+            JSONObject json = new JSONObject();
+            json.put("action", "reload");
+            resp.setContentType("application/json");
+            resp.getWriter().print(json.toString());
+            resp.getWriter().close();
             return null; 
         } else {
             bindingResult.reject("yukon.web.modules.capcontrol.ivvc.zoneWizard.error.problemSavingZone");
