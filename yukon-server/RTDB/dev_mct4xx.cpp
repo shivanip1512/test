@@ -2572,7 +2572,7 @@ int Mct4xxDevice::executePutConfigConfigurationByte(CtiRequestMsg *pReq, CtiComm
     {
         if( ! readsOnly )
         {
-            long dstEnabled          = deviceConfig->getLongValueFromKey(MCTStrings::EnableDST);
+            long dstEnabled          = deviceConfig->getLongValueFromKey(MCTStrings::EnableDst);
             long electronicMeterType = deviceConfig->getLongValueFromKey(MCTStrings::ElectronicMeter);
 
             long configuration = ( ( electronicMeterType & 0x0f ) << 4 ) | ( dstEnabled & 0x01 );

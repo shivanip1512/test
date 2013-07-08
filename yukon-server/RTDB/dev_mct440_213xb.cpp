@@ -4204,7 +4204,7 @@ int Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *pReq,
 
     if( !readsOnly )
     {
-        string enable_dst_str = deviceConfig->getValueFromKey(MCTStrings::EnableDST);
+        string enable_dst_str = deviceConfig->getValueFromKey(MCTStrings::EnableDst);
         std::transform(enable_dst_str.begin(), enable_dst_str.end(), enable_dst_str.begin(), tolower);
 
         const bool enable_dst = (enable_dst_str.compare("true") == 0);

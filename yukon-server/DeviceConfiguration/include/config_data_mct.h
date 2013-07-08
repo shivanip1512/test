@@ -155,7 +155,7 @@ public:
     static const std::string PhaseLossThreshold;
     static const std::string PhaseLossDuration;
 
-    static const std::string EnableDST;
+    static const std::string EnableDst;
 
     static const std::string LcdCycleTime;
     static const std::string DisconnectDisplayDisabled;

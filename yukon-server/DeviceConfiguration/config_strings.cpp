@@ -129,7 +129,7 @@ const string MCTStrings::DemandInterval = "demandInterval";
 const string MCTStrings::LoadProfileInterval = "loadProfileInterval1";
 
 const string MCTStrings::TimeAdjustTolerance = "timeAdjustTolerance";
-const string MCTStrings::EnableDST = "enableDst";
+const string MCTStrings::EnableDst = "enableDst";
 const string MCTStrings::ElectronicMeter = "electronicMeter";
 
 const string MCTStrings::Channel1Type = "channel1Type";

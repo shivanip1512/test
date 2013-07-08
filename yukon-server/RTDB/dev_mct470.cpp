@@ -4761,7 +4761,7 @@ INT Mct470Device::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, CtiMes
             {
                 long configuration;
 
-                if( deviceConfig->getLongValue(MCTStrings::EnableDST, configuration) )
+                if( deviceConfig->getLongValue(MCTStrings::EnableDst, configuration) )
                 {
                     dstEnabled = configuration & 0x01;
                 }
