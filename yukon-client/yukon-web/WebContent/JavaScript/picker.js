@@ -894,6 +894,15 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
     Yukon.protoPicker.prototype.selectedMoreMsg = '';
     Yukon.protoPicker.prototype.useInitialIdsIfEmpty = false;
     Yukon.protoPicker.prototype.excludeIds = [];
+    
+    /** 
+     * If "memoryGroup" is set to something other than false, a picker will
+     * check here for the last search using memoryGroup as the key.  This allows
+     * multiple pickers on the same page to share the last search text.
+     */
+    if ('undefined' === typeof Yukon.protoPicker.rememberedSearches) {
+        Yukon.protoPicker.rememberedSearches = {};
+    }
 
     initialize.call(this, okText, cancelText, pickerType, destinationFieldName, pickerId, extraDestinationFields, containerDiv);
 };
@@ -907,15 +916,4 @@ function Picker (okText, cancelText, pickerType, destinationFieldName, pickerId,
 // called once to assign methods and properties accessible to all
 // instances of Picker
 Yukon.inheritPrototype(Picker, Yukon.protoPicker);
-
-/** 
- * If "memoryGroup" is set to something other than false, a picker will
- * check here for the last search using memoryGroup as the key.  This allows
- * multiple pickers on the same page to share the last search text.
- */
-// must defer addition of rememberedSearches
-setTimeout(function () {
-    Yukon.protoPicker.rememberedSearches = {};
-}, 1000);
-
 
