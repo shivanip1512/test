@@ -18,6 +18,7 @@
 <cti:msg var="executionsStartTimeText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.startTime" />
 <cti:msg var="executionsStopTimeText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.stopTime" />
 <cti:msg var="successCountText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.successCount" />
+<cti:msg var="unsupportedCountText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.unsupportedCount" />
 <cti:msg var="failCountText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.failCount" />
 <cti:msg var="totalCountText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.totalCount" />
 <cti:msg var="executionsUserText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.user" />
@@ -132,6 +133,7 @@
                 <th>${executionsStopTimeText}</th>
                 <th>${successCountText}</th>
                 <th>${failCountText}</th>
+                <th>${unsupportedCountText}</th>
                 <th>${totalCountText}</th>
                 <th>${executionsStatusText}</th>
                 <th>${executionsUserText}</th>
@@ -164,6 +166,7 @@
                     <td style="white-space:nowrap;"><cti:formatDate type="DATEHM" value="${creWrapper.cre.stopTime}" nullText="N/A"/></td>
                     <td>${creWrapper.successCount}</td>
                     <td>${creWrapper.failCount}</td>
+                    <td>${creWrapper.unsupportedCount}</td>
                     <td>${creWrapper.totalCount}</td>
                     <td style="white-space:nowrap;">
                         <c:choose>

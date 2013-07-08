@@ -34,6 +34,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
+import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifierWithUnsupported;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointTemplate;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
@@ -41,7 +42,6 @@ import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.common.pao.service.PointService;
-import com.cannontech.common.util.IterableUtils;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -50,6 +50,7 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.dao.impl.RawPointHistoryDaoImpl;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -67,7 +68,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
@@ -154,57 +154,60 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public List<PaoMultiPointIdentifier> findPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) {
-        return getPaoMultiPointIdentifiersForAttributesHelper(devices,attributes,false);
+    public PaoMultiPointIdentifierWithUnsupported findPaoMultiPointIdentifiersForAttributes(
+            Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) {
+
+        return getPaoMultiPointIdentifiersForAttributesHelper(devices, attributes, false);
     }
 
     @Override
-    public List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) {
-        return  getPaoMultiPointIdentifiersForAttributesHelper(devices,attributes,true);
+    public PaoMultiPointIdentifierWithUnsupported getPaoMultiPointIdentifiersForAttributes(
+            Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) {
+
+        return getPaoMultiPointIdentifiersForAttributesHelper(devices, attributes, true);
     }
     
-    private  List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForAttributesHelper(Iterable<? extends YukonPao> devices,
-                                                               Set<? extends Attribute> attributes, boolean throwException){
-        List<PaoMultiPointIdentifier> devicesAndPoints = 
-                Lists.newArrayListWithCapacity(IterableUtils.guessSize(devices));
-            for (YukonPao pao : devices) {
-                List<PaoPointIdentifier> points = Lists.newArrayListWithCapacity(attributes.size());
-                for (Attribute attribute : attributes) {
-                    try {
-                        PaoPointIdentifier paoPointIdentifier = getPaoPointIdentifierForAttribute(pao, attribute);
-                        points.add(paoPointIdentifier);
-                    } catch (IllegalUseOfAttribute e) {
-                        if(throwException){
-                            log.error("unable to look up values for " + attribute + " on " + pao);
-                            throw e;
-                        }else{
-                            LogHelper.debug(log, "unable to look up values for %s on %s: %s", attribute, pao, e.toString());
-                            continue; // This device does not support the selected attribute.
-                        }
+    private  PaoMultiPointIdentifierWithUnsupported getPaoMultiPointIdentifiersForAttributesHelper(
+            Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes, boolean throwException) {
+
+        PaoMultiPointIdentifierWithUnsupported devicesAndPoints = new PaoMultiPointIdentifierWithUnsupported();
+        
+        for (YukonPao pao : devices) {
+            List<PaoPointIdentifier> points = new ArrayList<>(attributes.size());
+            for (Attribute attribute : attributes) {
+                try {
+                    points.add(getPaoPointIdentifierForAttribute(pao, attribute));
+                } catch (IllegalUseOfAttribute e) {
+                    devicesAndPoints.addUnsupportedDevice(pao, attribute);
+                    if (throwException) {
+                        log.error("Unable to look up values for " + attribute + " on " + pao);
+                        throw e;
                     }
-                }
-                if (!points.isEmpty()) {
-                    devicesAndPoints.add(new PaoMultiPointIdentifier(points));
+                    LogHelper.debug(log, "unable to look up values for %s on %s: %s", attribute, pao, e.toString());
                 }
             }
-            return devicesAndPoints;
+            if (!points.isEmpty()) {
+                devicesAndPoints.add(new PaoMultiPointIdentifier(points));
+            }
+        }
+        return devicesAndPoints;
     }
-    
+
     @Override
     public Set<Attribute> getAvailableAttributes(YukonPao pao) {
         return getAvailableAttributes(pao.getPaoIdentifier().getPaoType());
     }
-    
+
     @Override
     public Set<Attribute> getAvailableAttributes(PaoType paoType) {
         Set<Attribute> result = Sets.newHashSet();
-        
+
         // first add type-based attributes
         Set<AttributeDefinition> definedAttributes = paoDefinitionDao.getDefinedAttributes(paoType);
         for (AttributeDefinition attributeDefinition : definedAttributes) {
             result.add(attributeDefinition.getAttribute());
         }
-        
+
         return result;
     }
 
@@ -600,7 +603,7 @@ public class AttributeServiceImpl implements AttributeService {
             }
         }
         BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
-        List<PointIdentifier> pis = new ArrayList<PointIdentifier>();
+        List<PointIdentifier> pis = new ArrayList<>();
         for (PaoType type : typeToDevice.keySet()) {
             AttributeDefinition attrDef = paoDefinitionDao.getAttributeLookup(type, builtInAttribute);
             YukonPao device = typeToDevice.get(type);

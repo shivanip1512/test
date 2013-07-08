@@ -93,7 +93,7 @@
 		                    </tr>
 		                </c:when>
 		                <c:otherwise>
-		                    <tr class="lightRedBackground">
+		                    <tr class="error">
 		                        <td onclick="forwardToMeterHome(${device.deviceId});" nowrap="nowrap">${resultsMap[device].meter.name}</td>
 		                        <td nowrap="nowrap">${resultsMap[device].config.name}</td>
 		                        <td nowrap="nowrap">${resultsMap[device].config.type}</td>

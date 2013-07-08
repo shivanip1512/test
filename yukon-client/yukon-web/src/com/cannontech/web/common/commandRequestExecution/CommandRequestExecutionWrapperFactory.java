@@ -36,6 +36,10 @@ public class CommandRequestExecutionWrapperFactory {
 		public int getTotalCount() {
 			return commandRequestExecutionResultDao.getCountByExecutionId(cre.getId());
 		}
+
+        public int getUnsupportedCount() {
+            return commandRequestExecutionResultDao.getUnsupportedCountByExecutionId(cre.getId());
+        }
 	}
 	
 	@Autowired

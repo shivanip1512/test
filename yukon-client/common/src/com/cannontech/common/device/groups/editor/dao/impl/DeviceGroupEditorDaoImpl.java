@@ -141,15 +141,14 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         if (yukonPao == null) {
             return false;
         }
-        return isPaoIdentifierValid(yukonPao.getPaoIdentifier());
-    }
-    
-    private boolean isPaoIdentifierValid(PaoIdentifier paoIdentifier) {
-        if (paoIdentifier == null ||
-                paoIdentifier.getPaoId() == Device.SYSTEM_DEVICE_ID ||
-                paoIdentifier.getPaoType().getPaoCategory() != PaoCategory.DEVICE) {
+
+        PaoIdentifier paoId = yukonPao.getPaoIdentifier();
+        if (paoId == null || 
+                paoId.getPaoId() == Device.SYSTEM_DEVICE_ID ||
+                paoId.getPaoType().getPaoCategory() != PaoCategory.DEVICE) {
             return false;
         }
+
         return true;
     }
 

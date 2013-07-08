@@ -94,7 +94,7 @@
     </bean>
     
     <bean class="com.cannontech.web.menu.renderer.SearchRenderer"/>
-    
+
     <!-- Search Producers -->
     <bean id="operatorAccountSearchProducer" class="com.cannontech.web.menu.option.producer.OperatorAccountSearchProducer"/>
     <bean id="amrSearchProducer" class="com.cannontech.web.menu.option.producer.MeteringSearchProducer"/>
@@ -886,6 +886,7 @@
     <bean id="commandRequestExecutionBackingService" class="com.cannontech.web.updater.commandRequestExecution.CommandRequestExecutionBackingService"/>
     <bean id="requestCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.RequestCountCommandExecutionUpdaterHandler"/>
     <bean id="resultsCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.ResultsCountCommandExecutionUpdaterHandler"/>
+    <bean id="unsupportedCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.UnsupportedCountCommandExecutionUpdaterHandler"/>
     <bean id="successResultsCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.SuccessResultsCountCommandExecutionUpdaterHandler"/>
     <bean id="failureResultsCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.FailureResultsCountCommandExecutionUpdaterHandler"/>
     <bean id="stopTimeCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.StopTimeCommandExecutionUpdaterHandler"/>
@@ -1902,7 +1903,7 @@
     </bean>
 
 	<bean name="lmHardwareBasePicker" class="com.cannontech.web.picker.v2.LmHardwareBasePicker"/>
-    
+
     <bean name="categoryPicker" class="com.cannontech.web.picker.v2.ConfigurationCategoryPicker"/>
 
     <bean class="com.cannontech.web.layout.impl.HttpExpressionLanguageResolverImpl"/>

@@ -22,6 +22,7 @@
 <cti:msg var="resultsViewReportText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.results.viewReport" />
 <cti:msg var="resultsHideReportText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.results.hideReport" />
 <cti:msg var="resultsFailStatsReportText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.results.failStatsReport" />
+<cti:msg var="resultsUnsupportedText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.results.unsupported" />
     
     <cti:breadCrumbs>
     
@@ -182,6 +183,10 @@
                 <amr:commandRequestExecutionResultsCountLink commandRequestExecutionId="${commandRequestExecutionId}" commandRequestExecutionUpdaterType="FAILURE_RESULTS_COUNT" linkedInitially="${failCount > 0}"/>
             </tags:nameValue>
             
+            <tags:nameValue name="${resultsUnsupportedText}">
+                <amr:commandRequestExecutionResultsCountLink commandRequestExecutionId="${commandRequestExecutionId}" commandRequestExecutionUpdaterType="UNSUPPORTED_COUNT" linkedInitially="${unsupportedCount > 0}"/>
+            </tags:nameValue>
+
             <tags:nameValue name="${resultsViewReportText}">
             
                 <a href="javascript:void(0);" onclick="switchResultsFilterType('FAIL_STATS');">${resultsFailStatsReportText}</a>

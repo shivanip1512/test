@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.user.YukonUserContext;
@@ -34,11 +35,10 @@ public class CommandRequestExecutionBackingService implements UpdateBackingServi
     public boolean isValueAvailableImmediately(String fullIdentifier, long afterDate, YukonUserContext userContext) {
     	return true;
     }
-    
+
     @PostConstruct
     public void init() throws Exception {
-    	
-    	this.handlersMap = new HashMap<CommandRequestExecutionUpdaterTypeEnum, CommandRequestExecutionUpdaterHandler>();
+    	this.handlersMap = new HashMap<>();
     	for (CommandRequestExecutionUpdaterHandler handler : this.handlers) {
     		this.handlersMap.put(handler.getUpdaterType(), handler);
     	}

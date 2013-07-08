@@ -15,10 +15,11 @@ public class DefaultDataUpdaterService implements DataUpdaterService {
     
     private Pattern idSplitter = Pattern.compile("^([^/]+)/(.+)$");
     
+    @Override
     public UpdateResponse getUpdates(Set<String> requests, long afterDate, YukonUserContext userContext) {
         UpdateResponse response = new UpdateResponse();
         response.asOfTime = timeSource.getCurrentMillis();
-        Set<UpdateValue> result = new HashSet<UpdateValue>();
+        Set<UpdateValue> result = new HashSet<>();
         for (String request : requests) {
 
             UpdateValue updateValue = getValue(request, afterDate, userContext, true);
@@ -57,6 +58,7 @@ public class DefaultDataUpdaterService implements DataUpdaterService {
         return null;
     }
     
+    @Override
     public UpdateValue getFirstValue(String identifier, YukonUserContext userContext) {
         return getValue(identifier, 0 , userContext, false);
     }

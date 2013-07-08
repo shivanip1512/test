@@ -14,7 +14,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
+import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifierWithUnsupported;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointTemplate;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
@@ -61,7 +61,7 @@ public interface AttributeService {
      * @param attributes
      * @return list of PaoMultiPointIdentifiers
      */
-    public List<PaoMultiPointIdentifier> findPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes);
+    public PaoMultiPointIdentifierWithUnsupported findPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes);
     
     /**
      * This method returns a list of PaoMultiPointIdentifier objects for of the passed in PAO that has a point
@@ -72,7 +72,7 @@ public interface AttributeService {
      * @return list of PaoMultiPointIdentifiers
      * @throws IllegalUseOfAttribute if nothing is mapped for a mappable attribute
      */
-    public List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) throws IllegalUseOfAttribute;
+    public PaoMultiPointIdentifierWithUnsupported getPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) throws IllegalUseOfAttribute;
     
     public List<PointIdentifier> findPointsForDevicesAndAttribute(
             Iterable<? extends YukonPao> devices, Attribute attributes);

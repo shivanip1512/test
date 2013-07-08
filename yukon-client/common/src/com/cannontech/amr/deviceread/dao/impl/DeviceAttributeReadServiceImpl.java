@@ -24,6 +24,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
+import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifierWithUnsupported;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -36,13 +37,13 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadService {
-    
+
     private static final LogHelper log = LogHelper.getInstance(YukonLogManager.getLogger(DeviceAttributeReadServiceImpl.class));
-    
-    private AttributeService attributeService;
-    
+
+    @Autowired private AttributeService attributeService;
+
     private ImmutableMap<StrategyType, DeviceAttributeReadStrategy> strategies = ImmutableMap.of();
-    
+
     @Override
     public boolean isReadable(Iterable<? extends YukonPao> devices, Set<Attribute> attributes,
                               LiteYukonUser user) {
@@ -57,8 +58,8 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
                 DeviceAttributeReadStrategy impl = strategies.get(strategy);
                 if (impl.canRead(paoType)) {
                     ImmutableCollection<? extends YukonPao> immutableCollection = paoTypes.get(paoType);
-                    List<PaoMultiPointIdentifier> devicesAndPoints = attributeService.findPaoMultiPointIdentifiersForAttributes(immutableCollection, attributes);
-                    boolean readable = impl.isReadable(devicesAndPoints, user);
+                    PaoMultiPointIdentifierWithUnsupported devicesWithUnsupported = attributeService.findPaoMultiPointIdentifiersForAttributes(immutableCollection, attributes);
+                    boolean readable = impl.isReadable(devicesWithUnsupported.getDevicesAndPoints(), user);
                     if (readable) {
                         return true;
                     }
@@ -82,7 +83,8 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
             Maps.newEnumMap(StrategyType.class);
         
         // we need to resolve the attributes first to figure out which physical devices we'll be reading
-        final List<PaoMultiPointIdentifier> devicesAndPoints = attributeService.findPaoMultiPointIdentifiersForAttributes(devices, attributes);
+        final List<PaoMultiPointIdentifier> devicesAndPoints =
+                attributeService.findPaoMultiPointIdentifiersForAttributes(devices, attributes).getDevicesAndPoints();
 
         Multimap<PaoType, PaoMultiPointIdentifier> byPhysicalPaoType = ArrayListMultimap.create(1, devicesAndPoints.size());
         for (PaoMultiPointIdentifier multiPoints : devicesAndPoints) {
@@ -170,10 +172,4 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
         strategies = builder.build();
         log.debug("supported strategies: %s", strategies.keySet());
     }
-    
-    @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-
 }

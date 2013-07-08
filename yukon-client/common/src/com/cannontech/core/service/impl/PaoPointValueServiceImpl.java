@@ -95,7 +95,7 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
         } else {
             // get the PaoPointIdentifiers for the devices & attributes
             List<PaoMultiPointIdentifier> paoMultiPointIdentifiersForAttributes =
-                attributeService.findPaoMultiPointIdentifiersForAttributes(devices, attributeSet);
+                attributeService.findPaoMultiPointIdentifiersForAttributes(devices, attributeSet).getDevicesAndPoints();
             Set<PaoPointIdentifier> paoPointIdentifiers = Sets.newHashSet();
             for (PaoMultiPointIdentifier paoMultiPointIdentifier : paoMultiPointIdentifiersForAttributes) {
                 paoPointIdentifiers.addAll(paoMultiPointIdentifier.getPaoPointIdentifiers());

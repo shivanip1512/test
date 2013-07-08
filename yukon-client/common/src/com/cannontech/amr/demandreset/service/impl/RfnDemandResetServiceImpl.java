@@ -199,7 +199,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
 
         List<PaoMultiPointIdentifier> paoMultipointIds =
             attributeService.findPaoMultiPointIdentifiersForAttributes(devices,
-                    ImmutableSet.of(BuiltInAttribute.RF_DEMAND_RESET_STATUS));
+                    ImmutableSet.of(BuiltInAttribute.RF_DEMAND_RESET_STATUS)).getDevicesAndPoints();
 
         // Add devices to list of ones we need to send out notifications for.
         Instant now = new Instant();

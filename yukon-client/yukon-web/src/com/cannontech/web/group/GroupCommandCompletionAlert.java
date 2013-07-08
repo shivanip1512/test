@@ -11,21 +11,19 @@ public class GroupCommandCompletionAlert extends SimpleAlert {
 
     public GroupCommandCompletionAlert(Date date, GroupCommandResult result) {
         
-        super(AlertType.GROUP_COMMAND_COMPLETION, date, makeMessage(date, result));
+        super(AlertType.GROUP_COMMAND_COMPLETION, date, makeMessage(result));
     }
     
-    private static ResolvableTemplate makeMessage(Date date, GroupCommandResult result) {
+    private static ResolvableTemplate makeMessage(GroupCommandResult result) {
 
         int deviceCount = (int) result.getDeviceCollection().getDeviceCount();
         int successCount = result.getResultHolder().getResultStrings().size();
         int failureCount = result.getResultHolder().getErrors().size();
         int completedCount = failureCount + successCount;
         int notCompletedCount = deviceCount - completedCount;
-        
-        System.err.println("completed: " + completedCount + "\tfailed: " + failureCount + "\tsucceded: " + successCount);
-        
+
         ResolvableTemplate resolvableTemplate;
-        
+
         if (result.isAborted() && !result.isCanceled()) {
             if (completedCount == 0) {
                 resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.commandCompletion.failed.noneSucceeded");

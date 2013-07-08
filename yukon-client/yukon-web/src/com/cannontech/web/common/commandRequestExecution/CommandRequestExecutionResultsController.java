@@ -135,10 +135,12 @@ public class CommandRequestExecutionResultsController {
         int requestCount = commandRequestExecutionDao.getRequestCountByCreId(commandRequestExecutionId);
         int successCount = commandRequestExecutionResultDao.getSucessCountByExecutionId(commandRequestExecutionId);
         int failCount = commandRequestExecutionResultDao.getFailCountByExecutionId(commandRequestExecutionId);
+        int unsupported = commandRequestExecutionResultDao.getUnsupportedCountByExecutionId(commandRequestExecutionId);
         boolean isComplete = commandRequestExecutionDao.isComplete(commandRequestExecutionId);
         model.addAttribute("requestCount", requestCount);
         model.addAttribute("successCount", successCount);
         model.addAttribute("failCount", failCount);
+        model.addAttribute("unsupportedCount", unsupported);
         model.addAttribute("isComplete", isComplete);
 
         model.addAttribute("resultsFilterTypes", CommandRequestExecutionResultsFilterType.values());
@@ -183,6 +185,9 @@ public class CommandRequestExecutionResultsController {
 			case FAILURE_RESULTS_COUNT:
 				paoIdentifiers = commandRequestExecutionResultDao.getFailDeviceIdsByExecutionId(commandRequestExecutionId);
 				break;
+            case UNSUPPORTED_COUNT:
+                paoIdentifiers = commandRequestExecutionResultDao.getUnsupportedDeviceIdsByExecutionId(commandRequestExecutionId);
+                break;
 			default:
 				throw new IllegalArgumentException("Invalid commandRequestExecutionUpdaterType: " + commandRequestExecutionUpdaterType);
 		}
