@@ -205,7 +205,7 @@ public class StandardMenuRenderer {
     /**
      * Returns true if any of the permissions are met. 
      */
-    private boolean checkAny(List permissions, LiteYukonUser user) {
+    private boolean checkAny(List<?> permissions, LiteYukonUser user) {
     	for (Object obj : permissions) {
     		Element permission = (Element) obj;
     		if (checkPermission(permission, user)) return true;
@@ -216,7 +216,7 @@ public class StandardMenuRenderer {
     /**
      * Returns true if all of the permissions are met. 
      */
-	private boolean checkAll(List permissions, LiteYukonUser user) {
+	private boolean checkAll(List<?> permissions, LiteYukonUser user) {
 		for (Object obj : permissions) {
 			Element permission = (Element) obj;
 			if (!checkPermission(permission, user)) return false;
