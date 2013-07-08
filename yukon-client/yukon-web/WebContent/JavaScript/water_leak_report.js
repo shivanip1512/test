@@ -20,8 +20,8 @@ if(typeof(WaterLeakReport) === 'undefined'){
         _all_selector: "input#f-check_all:checkbox",
         _single_selector: "tbody tr input.f-check_single:checkbox",
         _initialized: false,
-        '_f-cis_details_store': [],
-        '_f-filter_values': [],
+        _f_cis_details_store: [],
+        _f_filter_values: [],
 
         /* -------------- */
         /* public methods */
@@ -60,7 +60,7 @@ if(typeof(WaterLeakReport) === 'undefined'){
                 this._initialized = true;
             }
             if(jQuery("input#jobId").length) {
-            	open_leakScheduleDialog();
+                open_leakScheduleDialog();
             }
             this._init_schedule();
         },
@@ -87,8 +87,8 @@ if(typeof(WaterLeakReport) === 'undefined'){
         },
         
         schedule_submit: function(){
-        	WaterLeakReport._disable_filter_buttons();
-        	jQuery(WaterLeakReport._schedule_form_selector).submit();
+            WaterLeakReport._disable_filter_buttons();
+            jQuery(WaterLeakReport._schedule_form_selector).submit();
         },
         
         reset_filter_submit: function(){
@@ -107,9 +107,9 @@ if(typeof(WaterLeakReport) === 'undefined'){
         },
         
         _init_schedule: function() {
-        	if(jQuery("input#hasScheduleError").val() === "true") {
-        		open_leakScheduleDialog();
-        	}
+            if(jQuery("input#hasScheduleError").val() === "true") {
+                open_leakScheduleDialog();
+            }
         },
         
         _init_filter_key_bindings: function(e) {
@@ -127,11 +127,11 @@ if(typeof(WaterLeakReport) === 'undefined'){
                 open_leakFilterDialog();
             }
             if (e.keyCode == 83 /* s (for "schedule") */ &&
-		            !jQuery(e.target).is("input") && /* don't open the dialog if the user is typing in an input field */
-		            filter_dialog.length === 1 &&
-		            !filter_dialog.is(":visible")) {
-		        open_leakScheduleDialog();
-		    }
+                    !jQuery(e.target).is("input") && /* don't open the dialog if the user is typing in an input field */
+                    filter_dialog.length === 1 &&
+                    !filter_dialog.is(":visible")) {
+                open_leakScheduleDialog();
+            }
         },
         
         _init_interval_data_form: function(){
@@ -143,7 +143,7 @@ if(typeof(WaterLeakReport) === 'undefined'){
         },
         
         _filter_dialog_open: function(e) {
-            if (WaterLeakReport['_f-filter_values'].length > 0) {
+            if (WaterLeakReport._f_filter_values.length > 0) {
                 WaterLeakReport._restore_filter_values();
             }
             //remove the stupid <br> tag that screws up styling for threshold errors
@@ -154,28 +154,28 @@ if(typeof(WaterLeakReport) === 'undefined'){
         },
         
         _schedule_dialog_open: function(e) {
-        	var schedule_text = jQuery("#schedule_shortcut_text").val();
+            var schedule_text = jQuery("#schedule_shortcut_text").val();
             jQuery("button.leakScheduleSubmitButton").before('<span class="filter_shortcut">'+schedule_text+'</span>');
         },
         
         _store_filter_values: function() {
             var the_filter = jQuery(WaterLeakReport._filter_form_selector);
-            WaterLeakReport['_f-filter_values'].from_datetime = the_filter.find("input.f-from_datetime").val();
-            WaterLeakReport['_f-filter_values'].from_hour = the_filter.find("input.f-from_hour").val();
-            WaterLeakReport['_f-filter_values'].to_datetime = the_filter.find("input.f-to_datetime").val();
-            WaterLeakReport['_f-filter_values'].to_hour = the_filter.find("input.f-to_hour").val();
-            WaterLeakReport['_f-filter_values'].threshold = the_filter.find("input.f-threshold").val();
-            WaterLeakReport['_f-filter_values'].include_disabled = the_filter.find("input.f-include_disabled_paos").is(":checked");
+            WaterLeakReport._f_filter_values.from_datetime  = the_filter.find("input.f-from_datetime").val();
+            WaterLeakReport._f_filter_values.from_hour        = the_filter.find("input.f-from_hour").val();
+            WaterLeakReport._f_filter_values.to_datetime    = the_filter.find("input.f-to_datetime").val();
+            WaterLeakReport._f_filter_values.to_hour          = the_filter.find("input.f-to_hour").val();
+            WaterLeakReport._f_filter_values.threshold        = the_filter.find("input.f-threshold").val();
+            WaterLeakReport._f_filter_values.include_disabled = the_filter.find("input.f-include_disabled_paos").is(":checked");
         },
         
         _restore_filter_values: function() {
             var the_filter = jQuery(WaterLeakReport._filter_form_selector);
-            the_filter.find("input.f-from_datetime").val(WaterLeakReport['_f-filter_values'].from_datetime);
-            the_filter.find("input.f-from_hour").val(WaterLeakReport['_f-filter_values'].from_hour);
-            the_filter.find("input.f-to_datetime").val(WaterLeakReport['_f-filter_values'].to_datetime);
-            the_filter.find("input.f-to_hour").val(WaterLeakReport['_f-filter_values'].to_hour);
-            the_filter.find("input.f-threshold").val(WaterLeakReport['_f-filter_values'].threshold);
-            the_filter.find("input.f-include_disabled_paos").attr("checked", WaterLeakReport['_f-filter_values'].include_disabled);
+            the_filter.find("input.f-from_datetime").val(WaterLeakReport._f_filter_values.from_datetime);
+            the_filter.find("input.f-from_hour").val(WaterLeakReport._f_filter_values.from_hour);
+            the_filter.find("input.f-to_datetime").val(WaterLeakReport._f_filter_values.to_datetime);
+            the_filter.find("input.f-to_hour").val(WaterLeakReport._f_filter_values.to_hour);
+            the_filter.find("input.f-threshold").val(WaterLeakReport._f_filter_values.threshold);
+            the_filter.find("input.f-include_disabled_paos").attr("checked", WaterLeakReport._f_filter_values.include_disabled);
         },
         
         _filter_group_clicked: function() {
@@ -215,7 +215,7 @@ if(typeof(WaterLeakReport) === 'undefined'){
         },
         
         _set_schedule_form_hidden_input: function(name, value) {
-        	jQuery(WaterLeakReport._schedule_form_selector + ' input[name="'+name+'"]').remove();
+            jQuery(WaterLeakReport._schedule_form_selector + ' input[name="'+name+'"]').remove();
             jQuery(WaterLeakReport._schedule_form_selector).append('<input type="hidden" name="'+name+'" value="'+value+'"/>');
         },
         
@@ -257,9 +257,9 @@ if(typeof(WaterLeakReport) === 'undefined'){
         
         _view_cis_details: function(){
             var paoId = WaterLeakReport._get_row_pao_id(this);
-            var in_array = jQuery.inArray(paoId, WaterLeakReport['_f-cis_details_store']);
+            var in_array = jQuery.inArray(paoId, WaterLeakReport._f_cis_details_store);
             if (in_array === -1) {
-                WaterLeakReport['_f-cis_details_store'].push(paoId);
+                WaterLeakReport._f_cis_details_store.push(paoId);
                 // only block the page if we haven't requested this before (will take longer)
                 Yukon.ui.blockPage();
             }
@@ -289,7 +289,7 @@ if(typeof(WaterLeakReport) === 'undefined'){
         _remove_from_interval_data_form: function(paoId) {
             jQuery(WaterLeakReport._interval_data_form_selector + " input[value='"+paoId+"']").remove();
         }
-	};
+    };
 }
 jQuery(function() {
     WaterLeakReport.init();
