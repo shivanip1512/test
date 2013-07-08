@@ -64,7 +64,7 @@ function inlinePickerSelectionMade(selectedItems) {
 }
 
 jQuery(document).ready(function() {
-    inlinePicker.show(true);
+    inlinePicker.show.call(this, true);
 });
 </script>
 

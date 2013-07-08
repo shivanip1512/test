@@ -149,10 +149,10 @@ function hideAlertMessage() {
 jQuery(function() {
     
     jQuery(document).on('click', 'div.dynamicTableWrapper .pointAddItem', function(event) {
-        pointPicker.show();
+        pointPicker.show.call(pointPicker);
     });
     jQuery(document).on('click', 'div.dynamicTableWrapper .bankAddItem', function(event) {
-        bankPicker.show();
+        bankPicker.show.call(bankPicker);
     });
 
     /* bank move */

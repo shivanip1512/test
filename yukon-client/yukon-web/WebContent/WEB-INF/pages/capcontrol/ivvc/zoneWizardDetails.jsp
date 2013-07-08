@@ -25,7 +25,7 @@
             args.requests[i] = request;
         }
         bankTable.addItems(args);
-        picker.clearEntireSelection();
+        picker.clearEntireSelection.call(picker);
     };
     
     addPointHandler = function(selectedPointInfo, picker) {
@@ -40,23 +40,23 @@
             args.requests[i] = request;
         }
         pointTable.addItems(args);
-        picker.clearEntireSelection();
+        picker.clearEntireSelection.call(picker);
     };
     
     updateRegPickerExcludes = function(selectedItems, picker) {
         if (picker != voltageThreePhaseRegulatorPicker${zoneDto.zoneId}A) {
-            if (voltageThreePhaseRegulatorPicker${zoneDto.zoneId}A.getSelected() == selectedItems[0].paoId) {
-                voltageThreePhaseRegulatorPicker${zoneDto.zoneId}A.clearSelected();
+            if (voltageThreePhaseRegulatorPicker${zoneDto.zoneId}A.getSelected.call(voltageThreePhaseRegulatorPicker${zoneDto.zoneId}A) == selectedItems[0].paoId) {
+                voltageThreePhaseRegulatorPicker${zoneDto.zoneId}A.clearSelected.call(voltageThreePhaseRegulatorPicker${zoneDto.zoneId}A);
             }
         }
         if (picker != voltageThreePhaseRegulatorPicker${zoneDto.zoneId}B) {
-            if (voltageThreePhaseRegulatorPicker${zoneDto.zoneId}B.getSelected() == selectedItems[0].paoId) {
-                voltageThreePhaseRegulatorPicker${zoneDto.zoneId}B.clearSelected();
+            if (voltageThreePhaseRegulatorPicker${zoneDto.zoneId}B.getSelected.call(voltageThreePhaseRegulatorPicker${zoneDto.zoneId}B) == selectedItems[0].paoId) {
+                voltageThreePhaseRegulatorPicker${zoneDto.zoneId}B.clearSelected.call(voltageThreePhaseRegulatorPicker${zoneDto.zoneId}B);
             }
         }
         if (picker != voltageThreePhaseRegulatorPicker${zoneDto.zoneId}C) {
-            if (voltageThreePhaseRegulatorPicker${zoneDto.zoneId}C.getSelected() == selectedItems[0].paoId) {
-                voltageThreePhaseRegulatorPicker${zoneDto.zoneId}C.clearSelected();
+            if (voltageThreePhaseRegulatorPicker${zoneDto.zoneId}C.getSelected.call(voltageThreePhaseRegulatorPicker${zoneDto.zoneId}C) == selectedItems[0].paoId) {
+                voltageThreePhaseRegulatorPicker${zoneDto.zoneId}C.clearSelected.call(voltageThreePhaseRegulatorPicker${zoneDto.zoneId}C);
             }
         }
     };

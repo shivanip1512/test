@@ -14,14 +14,14 @@ Picker.alreadySelectedHoverMessage = '<cti:msg2 key=".alreadySelectedHover"/>';
     <div class="column_12_12">
         <div class="column one">
                     <label>
-                        <i:inline key=".query"/> <input type="text" id="picker_${id}_ss" name="ss" onkeyup="${id}.doKeyUp();false;"/>
+                        <i:inline key=".query"/> <input type="text" id="picker_${id}_ss" name="ss" onkeyup="${id}.doKeyUp.call(${id});false;"/>
                     </label>
-                    <a id="picker_${id}_showAllLink" href="javascript:${id}.showAll()">
+                    <a id="picker_${id}_showAllLink" href="javascript:${id}.showAll.call(${id})">
                         <i:inline key=".showAll"/>
                     </a>
         </div>
         <div class="column two nogutter pagingArea">
-                    <tags:nextPrevLinks previousUrl="javascript:${id}.previous()" nextUrl="javascript:${id}.next()" mode="javascript"/>
+                    <tags:nextPrevLinks previousUrl="javascript:${id}.previous.call(${id})" nextUrl="javascript:${id}.next.call(${id})" mode="javascript"/>
         </div>
     </div>
 

@@ -129,7 +129,7 @@
                     <c:if test="${not empty pageScope.buttonRenderMode}">
                         <c:set var="renderMode" value="${pageScope.buttonRenderMode}"/>
                     </c:if>
-                    <cti:button nameKey="${pageScope.nameKey}" onclick="${id}.show()" renderMode="${pageScope.renderMode}" 
+                    <cti:button nameKey="${pageScope.nameKey}" onclick="${id}.show.call(${id})" renderMode="${pageScope.renderMode}" 
                         classes="${pageScope.buttonStyleClass}" icon="${pageScope.icon}" />
                 </c:when>
                 <c:when test="${pageScope.linkType == 'selection'}">
@@ -141,9 +141,9 @@
                         <c:set var="nameKey" value="selectionPicker"/>
                     </c:if>
                     <cti:button id="picker_${id}_label"  nameKey="${pageScope.nameKey}" classes="noSelectionPickerLabel" renderMode="labeledImage" icon="icon-database-add"
-                        onclick="${id}.show()" imageOnRight="true"/>
+                        onclick="${id}.show.call(${id})" imageOnRight="true"/>
                     <c:if test="${pageScope.multiSelectMode}">
-                        <cti:icon id="picker_${id}_showSelectedImg" href="javascript:${id}.showSelected()" nameKey="zoom" icon="icon-magnifier"/>
+                        <cti:icon id="picker_${id}_showSelectedImg" href="javascript:${id}.showSelected.call(${id})" nameKey="zoom" icon="icon-magnifier"/>
                     </c:if>
                 </c:when>
                 <c:otherwise>
@@ -151,7 +151,7 @@
                     <c:if test="${!empty pageScope.anchorStyleClass}">
                         <c:set var="anchorAttributes" value=" class=\"${pageScope.anchorStyleClass}\""/>
                     </c:if>
-                    <a href="javascript:${id}.show()"${anchorAttributes}><jsp:doBody/></a>
+                    <a href="javascript:${id}.show.call(${id})"${anchorAttributes}><jsp:doBody/></a>
                 </c:otherwise>
             </c:choose>
         </span>

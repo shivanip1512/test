@@ -14,7 +14,7 @@
 
 <script type="text/javascript">
 jQuery(function(){
-    jQuery("#selectDevicesButton").click(function(e) {selectDevicesPicker.show();});
+    jQuery("#selectDevicesButton").click(function(e) {selectDevicesPicker.show.call(selectDevicesPicker);});
 
     jQuery("#addByAddressForm button").click(function(e) {
         jQuery(e.currentTarget).attr("disabled","disabled");

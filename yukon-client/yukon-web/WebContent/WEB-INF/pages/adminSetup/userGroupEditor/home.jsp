@@ -17,9 +17,9 @@
     <script type="text/javascript">
         jQuery(function() {
             jQuery('#tabs').tabs({'cookie' : {},
-            	'show' : function(event, ui) {
-            		window[ui.panel.id + "Picker"].show();
-        		}});
+                 'show' : function(event, ui) {
+                      window[ui.panel.id + "Picker"].show.call(window[ui.panel.id + "Picker"]);
+                  }});
         });
         function editUser() { window.location.href = '${userUrl}?userId=' + $F('userId'); }
         function editUserGroup() { window.location.href = '${userGroupUrl}?userGroupId=' + $F('userGroupId'); }

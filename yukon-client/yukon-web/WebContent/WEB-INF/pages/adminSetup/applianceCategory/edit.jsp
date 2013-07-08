@@ -297,7 +297,7 @@ function assignPrograms(devices) {
         </c:if>
         <c:if test="${isEditable}">
             <div class="actionArea">
-                <cti:button nameKey="assignPrograms" onclick="programPicker.show()" icon="icon-add"/>
+                <cti:button nameKey="assignPrograms" onclick="programPicker.show.call(programPicker)" icon="icon-add"/>
 
                 <c:if test="${canAddVirtual}">
                     <cti:url var="createVirtualProgramUrl" value="createVirtualProgram">
