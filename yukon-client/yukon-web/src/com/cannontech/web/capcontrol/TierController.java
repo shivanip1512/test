@@ -106,11 +106,26 @@ public class TierController {
 		if (isSpecialArea == null) {
 			isSpecialArea = false;
 		}
+
+		boolean hasAreaControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_AREA_CONTROLS, user);
+        model.addAttribute("hasAreaControl", hasAreaControl);
 		
 		boolean hasSubstationControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_SUBSTATION_CONTROLS, user);
 		model.addAttribute("hasSubstationControl", hasSubstationControl);
 	    
 		StreamableCapObject area = cache.getArea(areaId);
+		
+		String description = "";
+		if(area instanceof Area){
+		    Area normalArea = (Area) area;
+		    description = normalArea.getPaoDescription();
+		    
+		} else if(area instanceof SpecialArea){
+		    SpecialArea specialArea = (SpecialArea) area;
+            description = specialArea.getPaoDescription();
+		}
+		
+		model.addAttribute("description", description);
 		
 	    List<SubStation> subStations = null;
 	    if (isSpecialArea) {
@@ -118,6 +133,23 @@ public class TierController {
 	    } else {
 	    	subStations = cache.getSubstationsByArea(areaId);
 	    }
+	    
+	    List<SubBus> subBusList = cache.getSubBusesByArea(areaId);
+        Collections.sort(subBusList, CapControlUtils.SUB_DISPLAY_COMPARATOR);
+        List<ViewableSubBus> viewableSubBusList = capControlWebUtilsService.createViewableSubBus(subBusList);
+        model.addAttribute("subBusList", viewableSubBusList);
+        
+        List<Feeder> feederList = cache.getFeedersByArea(areaId);
+        List<ViewableFeeder> viewableFeederList = capControlWebUtilsService.createViewableFeeder(feederList,cache);
+        model.addAttribute("feederList", viewableFeederList);
+
+        List<CapBankDevice> capBankList = cache.getCapBanksByArea(areaId);
+        List<ViewableCapBank> viewableCapBankList = capControlWebUtilsService.createViewableCapBank(capBankList);
+        model.addAttribute("capBankList", viewableCapBankList);
+        
+        boolean hideReports = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.HIDE_REPORTS, user);
+        boolean hideGraphs = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.HIDE_GRAPHS, user);
+        model.addAttribute("showAnalysis", !hideReports && !hideGraphs);
 	    
 	    model.addAttribute("bc_areaId", areaId);
 	    model.addAttribute("bc_areaName", area.getCcName());

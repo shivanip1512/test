@@ -34,9 +34,6 @@
 <script type="text/javascript">
 jQuery(function() {
     checkPageExpire();
-    jQuery('#analysisTrendsButton').click(function(event) {
-        jQuery('#analysisTrendsOptions').dialog({width: "auto", minWidth: 500});
-    });
 });
 
 // Filters
@@ -118,35 +115,6 @@ function applyCapBankFilter(feederIds) {
 }
 </script>
 
-<i:simplePopup titleKey=".recentEvents" id="recentEventsOptions" on="#recentEventsButton">
-    <%@ include file="recentEventsOptions.jspf" %>
-</i:simplePopup>
-
-<c:if test="${showAnalysis}">
-    <div title="<cti:msg2 key=".analysisTrends"/>" id="analysisTrendsOptions" class="dn">
-        <%@ include file="analysisTrendsOptions.jspf" %>
-    </div>
-    <div id="trend-popup" class="dn dialog-no-buttons"></div>
-    
-<script type="text/javascript">
-function loadPointChartGreyBox(title, url) {
-    jQuery('#analysisTrendsOptions').dialog('close');
-    
-    var selectedItems = jQuery('table.analysisCheckboxes input:checkbox:checked');
-    var targets = new Array();
-    jQuery.each(selectedItems, function (i, item) {
-        targets.push(jQuery(item).val());
-    });
-    
-    url += '&targets=' + encodeURIComponent(targets.join(','));
-    
-    jQuery("#trend-popup").load(url, function() {
-        jQuery("#trend-popup").dialog({'title': title, width: 600, height: 580});
-    });
-}
-</script>
-</c:if>
-    
     <input type="hidden" id="paoId_${substationId}" value="${substationId}">
     
     <c:choose>
@@ -162,8 +130,8 @@ function loadPointChartGreyBox(title, url) {
         <div class="column one">
         
             <tags:boxContainer2 nameKey="infoContainer" styleClass="padBottom" hideEnabled="true" showInitially="true">
-            	<div class="clearfix">
-	                <div style="float:left;width:50%;">
+            	<div class="column_12_12 clearfix">
+	                <div class="column one">
 	                    <tags:nameValueContainer2 tableClass="infoContainer">
 	                        <tags:nameValue2 nameKey=".name">
 	                            <span><spring:escapeBody>${substation.name}</spring:escapeBody></span>
@@ -184,7 +152,7 @@ function loadPointChartGreyBox(title, url) {
 	                    </tags:nameValueContainer2>
 	                    
 	                </div>
-	                <div style="float:right;width:50%;">
+	                <div class="column two nogutter">
 	                    <tags:nameValueContainer2 tableClass="infoContainer">
 	                        <tags:nameValue2 nameKey=".state" rowClass="wsnw">
 	                            <capTags:warningImg paoId="${substationId}" type="SUBSTATION"/>
@@ -262,8 +230,17 @@ function loadPointChartGreyBox(title, url) {
                 </div>
                 <div class="clear actionArea">
                     <c:if test="${showAnalysis}">
+                        <i:simplePopup titleKey=".analysisTrends" id="analysisTrendsOptions" on="#analysisTrendsButton">
+                            <%@ include file="analysisTrendsOptions.jspf" %>
+                        </i:simplePopup>
+                    
                         <cti:button nameKey="analysis" id="analysisTrendsButton" icon="icon-chart-curve"/>
                     </c:if>
+                    
+                    <i:simplePopup titleKey=".recentEvents" id="recentEventsOptions" on="#recentEventsButton">
+                        <%@ include file="recentEventsOptions.jspf" %>
+                    </i:simplePopup>
+                    
                     <cti:button nameKey="recentEvents" id="recentEventsButton" icon="icon-application-view-columns"/>
                 </div>
             </tags:boxContainer2>

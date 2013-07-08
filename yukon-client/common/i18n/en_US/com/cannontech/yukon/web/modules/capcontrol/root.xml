@@ -260,7 +260,7 @@
     <entry key="yukon.web.modules.capcontrol.areas.special.pageName">Special Areas</entry>
     <entry key="yukon.web.modules.capcontrol.areas.systemActions.title">System Actions</entry>
     <entry key="yukon.web.modules.capcontrol.areas.areasContainer.title">Substation Areas</entry>
-    <entry key="yukon.web.modules.capcontrol.areas.substations">Substations</entry>
+    <entry key="yukon.web.modules.capcontrol.substations">Substations</entry>
     <entry key="yukon.web.modules.capcontrol.areas.feeders">{0} {0,choice,0#Feeders|1#Feeder|1&lt;Feeders}</entry>
     <entry key="yukon.web.modules.capcontrol.areas.banks">{0} {0,choice,0#Banks|1#Bank|1&lt;Banks}</entry>
     <entry key="yukon.web.modules.capcontrol.areas.stationCount">{0} {0,choice,0#Substations|1#Substation|1&lt;Substations}</entry>
@@ -268,6 +268,8 @@
     <!-- substationTier.jsp -->
     <entry key="yukon.web.modules.capcontrol.area.pageName">Area</entry>
     <entry key="yukon.web.modules.capcontrol.area.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.area.infoContainer.title">Area Info</entry>
+    <entry key="yukon.web.modules.capcontrol.area.statsContainer.title">Area Statistics</entry>
     <entry key="yukon.web.modules.capcontrol.area.substationsContainer.title">Substations In Area: {0}</entry>
     
     <!-- substation.jsp -->
@@ -275,10 +277,10 @@
     <entry key="yukon.web.modules.capcontrol.substation.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.capcontrol.substation.infoContainer.title">Substation Info</entry>
     <entry key="yukon.web.modules.capcontrol.substation.statsContainer.title">Substation Statistics</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.busContainer.title">Substation Buses</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.feedersContainer.title">Feeders</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.banksContainer.title">Capacitor Banks</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.geoName">Geo Name</entry>
+    <entry key="yukon.web.modules.capcontrol.busContainer.title">Substation Buses</entry>
+    <entry key="yukon.web.modules.capcontrol.feedersContainer.title">Feeders</entry>
+    <entry key="yukon.web.modules.capcontrol.banksContainer.title">Capacitor Banks</entry>
+    <entry key="yukon.web.modules.capcontrol.geoName">Geo Name</entry>
     <entry key="yukon.web.modules.capcontrol.substation.mapLocationId">Map Location</entry>
     <entry key="yukon.web.modules.capcontrol.substation.load">kVAR Load / Est.</entry>
     <entry key="yukon.web.modules.capcontrol.substation.timestamp">Date/Time</entry>
@@ -291,20 +293,20 @@
     <entry key="yukon.web.modules.capcontrol.substation.substationInfo">Substation Info</entry>
     <entry key="yukon.web.modules.capcontrol.substation.remove.label">Delete</entry>
     <entry key="yukon.web.modules.capcontrol.substation.location.label">Bank Locations</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.recentEvents">Recent Events</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.recentEvents.label">Events</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.recentEvents.hoverText">View recent events for selected items.</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.recentEvents.view.label">View</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.selectAllBuses">Select All Buses</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.selectAllFeeders">Select All Feeders</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.selectAllBanks">Select All Banks</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.analysisTrends">Analysis Trends</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.analysis.label">Trends</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.analysis.hoverText">View graphs for kVAR/Watt or Power Factor for selected items.</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.todayKvarWatt.label">Today kVAR/Watt</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.thirtyDayKvarWatt.label">30 Day kVAR/Watt</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.todayPf.label">Today PF</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.thirtyDayPf.label">30 Day PF</entry>
+    <entry key="yukon.web.modules.capcontrol.recentEvents">Recent Events</entry>
+    <entry key="yukon.web.modules.capcontrol.recentEvents.label">Events</entry>
+    <entry key="yukon.web.modules.capcontrol.recentEvents.hoverText">View recent events for selected items.</entry>
+    <entry key="yukon.web.modules.capcontrol.recentEvents.view.label">View</entry>
+    <entry key="yukon.web.modules.capcontrol.selectAllBuses">Select All Buses</entry>
+    <entry key="yukon.web.modules.capcontrol.selectAllFeeders">Select All Feeders</entry>
+    <entry key="yukon.web.modules.capcontrol.selectAllBanks">Select All Banks</entry>
+    <entry key="yukon.web.modules.capcontrol.analysisTrends">Analysis Trends</entry>
+    <entry key="yukon.web.modules.capcontrol.analysis.label">Trends</entry>
+    <entry key="yukon.web.modules.capcontrol.analysis.hoverText">View graphs for kVAR/Watt or Power Factor for selected items.</entry>
+    <entry key="yukon.web.modules.capcontrol.todayKvarWatt.label">Today kVAR/Watt</entry>
+    <entry key="yukon.web.modules.capcontrol.thirtyDayKvarWatt.label">30 Day kVAR/Watt</entry>
+    <entry key="yukon.web.modules.capcontrol.todayPf.label">Today PF</entry>
+    <entry key="yukon.web.modules.capcontrol.thirtyDayPf.label">30 Day PF</entry>
     <entry key="yukon.web.modules.capcontrol.substation.substationArea">Area: </entry>
     <entry key="yukon.web.modules.capcontrol.substation.controlMethod">Control Method</entry>
     <entry key="yukon.web.modules.capcontrol.substation.varPoint">Var Point</entry>
