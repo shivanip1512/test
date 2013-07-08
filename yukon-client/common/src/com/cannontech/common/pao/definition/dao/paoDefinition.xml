@@ -1738,6 +1738,11 @@
                 <name>Internal Error</name>
                 <stategroup value="TrueFalse"/>
             </point>
+            <point type="Status" offset="52">
+                <init>true</init>
+                <name>Terminal Block Cover Removal</name>
+                <stategroup value="TrueFalse"/>
+            </point>
             <point type="Status" offset="53">
                 <init>true</init>
                 <name>Reverse Energy</name>

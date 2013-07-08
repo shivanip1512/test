@@ -113,6 +113,7 @@ public enum BuiltInAttribute implements Attribute {
     WATT_HOUR_PULSE_FAILURE("Watt-Hour Pulse Failure"),
     ZERO_USAGE_FLAG("Zero Usage Flag"),
     ZIGBEE_LINK_STATUS("ZigBee Link Status"),
+    TERMINAL_BLOCK_COVER_REMOVAL_FLAG("Terminal Block Cover Removal"),
 
     DELIVERED_KWH("Delivered kWh"),
     RECEIVED_KWH("Received kWh"),
@@ -374,7 +375,8 @@ public enum BuiltInAttribute implements Attribute {
                 TAMPER_FLAG,
                 VOLTAGE_OUT_OF_LIMITS_FLAG,
                 ZERO_USAGE_FLAG,
-                ZIGBEE_LINK_STATUS);
+                ZIGBEE_LINK_STATUS,
+                TERMINAL_BLOCK_COVER_REMOVAL_FLAG);
         
         relayAttributes = ImmutableSet.of(
                 RELAY_1_LOAD_SIZE,
