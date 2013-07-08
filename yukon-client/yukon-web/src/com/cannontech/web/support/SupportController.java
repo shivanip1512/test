@@ -18,7 +18,6 @@ import org.joda.time.LocalDate;
 import org.jsoup.helper.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
@@ -60,7 +59,6 @@ import com.cannontech.web.support.SiteMapHelper.SiteMapWrapper;
 import com.cannontech.web.support.SupportBundle.BundleRangeSelection;
 import com.cannontech.web.support.logging.LogExplorerController;
 import com.cannontech.web.support.logging.LogExplorerController.LogFile;
-import com.cannontech.web.util.JsonHelper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -73,11 +71,9 @@ public class SupportController {
     @Autowired private SupportBundleService supportBundleService;
     @Autowired private List<SupportBundleWriter> writerList;
     @Autowired private DateFormattingService dateFormattingService;
-    @Autowired private JsonHelper jsonHelper;
     @Autowired private SupportBundleService bundleService;
     @Autowired private PoolManager poolManager;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
-    @Autowired private JdbcTemplate jdbcTemplate;
     @Autowired private SiteMapHelper siteMapHelper;
     @Autowired private ObjectFormattingService objectFormattingService;
 
@@ -128,7 +124,6 @@ public class SupportController {
         model.addAttribute("dbUser", poolManager.getPrimaryUser());
     }
     
-    //TODO
     private void setUpLinks(ModelMap model, YukonUserContext context) {
         Map<SiteMapCategory, List<SiteMapWrapper>> siteMap = siteMapHelper.getSiteMap(context);
         List<SiteMapWrapper> fullCategory = siteMap.get(SiteMapCategory.SUPPORT);
