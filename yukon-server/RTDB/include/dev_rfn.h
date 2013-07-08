@@ -36,6 +36,10 @@ public:
 protected:
 
     virtual int executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests);
+    int executePutConfigFreezeDay               (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests);
+    int executePutConfigVoltageAveragingInterval(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests);
+    int executePutConfigTou                     (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests);
+
     virtual int executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests);
     virtual int executeGetValue (CtiRequestMsg *pReq, CtiCommandParser &parse, CtiMessageList &vgList, CtiMessageList &retList, RfnRequestMessages &rfnRequests);
 };
