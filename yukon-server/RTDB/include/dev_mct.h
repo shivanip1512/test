@@ -231,6 +231,7 @@ public:
     static bool isMct420( int type );
     static bool isMct430( int type );
     static bool isMct440( int type );
+    static bool isMct470( int type );
 
     //  scanner-side functions
     //  to be overridden by the 24x, 310, and 318

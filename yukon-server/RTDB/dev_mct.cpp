@@ -3723,6 +3723,11 @@ bool MctDevice::isMct440(int type)
     return false;
 }
 
+bool MctDevice::isMct470(int type)
+{
+    return type == TYPEMCT470;
+}
+
 bool MctDevice::hasVariableDemandRate( int type, int sspec )
 {
     bool retVal = true;

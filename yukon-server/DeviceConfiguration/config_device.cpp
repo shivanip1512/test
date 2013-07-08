@@ -72,10 +72,24 @@ std::string DeviceConfig::getValueFromKey( const std::string & key ) const
 }
 
 
+boost::optional<long> DeviceConfig::findLongValueForKey( const std::string & key ) const
+{
+    long value;
+
+    if( ! getLongValue( key, value ) )
+    {
+        return boost::none;
+    }
+
+    return value;
+}
+
+
+
 long DeviceConfig::getLongValueFromKey( const std::string & key ) const
 {
     long value;
-    
+
     getLongValue( key, value );
 
     return value;

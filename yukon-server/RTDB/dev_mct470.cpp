@@ -3475,15 +3475,13 @@ int Mct470Device::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiCommandP
     {
         if( ! readsOnly )
         {
-            long tableReadInterval = deviceConfig->getLongValueFromKey(MCTStrings::TableReadInterval);
-            long meterNumber = deviceConfig->getLongValueFromKey(MCTStrings::MeterNumber);
-            long tableType = deviceConfig->getLongValueFromKey(MCTStrings::TableType);
-            long spid = deviceConfig->getLongValueFromKey(MCTStrings::ServiceProviderID);
+            const boost::optional<long> tableReadInterval = deviceConfig->findLongValueForKey(MCTStrings::TableReadInterval);
+            const boost::optional<long> meterNumber       = deviceConfig->findLongValueForKey(MCTStrings::MeterNumber);
+            const boost::optional<long> tableType         = deviceConfig->findLongValueForKey(MCTStrings::TableType);
+            const boost::optional<long> spid              = deviceConfig->findLongValueForKey(MCTStrings::ServiceProviderID);
 
-            if (tableReadInterval == std::numeric_limits<long>::min() ||
-                meterNumber == std::numeric_limits<long>::min() ||
-                tableType == std::numeric_limits<long>::min() ||
-                spid == std::numeric_limits<long>::min())
+            if( ! tableReadInterval || ! tableType || ! spid  //  if we don't have TableReadInterval, TableType, or SPID...
+                || (isMct470(getType()) && ! meterNumber) )   //  or we're an MCT-470 and we don't have MeterNumber
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -3491,21 +3489,33 @@ int Mct470Device::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiCommandP
             }
             else
             {
-                if( parse.isKeyValid("force")
-                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableReadInterval) != tableReadInterval
-                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedMeterNumber) != meterNumber
-                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) != tableType
-                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID) != spid )
+                bool stale = false;
+
+                stale |= getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableReadInterval) != *tableReadInterval;
+                stale |= getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType)         != *tableType;
+                stale |= getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID)   != *spid;
+
+                if( isMct470(getType()) )
+                {
+                    stale |= getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedMeterNumber)   != *meterNumber;
+                }
+
+                if( parse.isKeyValid("force") || stale )
                 {
                     if( !parse.isKeyValid("verify") )
                     {
                         OutMessage->Buffer.BSt.Function   = FuncWrite_PrecannedTablePos;
                         OutMessage->Buffer.BSt.Length     = FuncWrite_PrecannedTableLen;
                         OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Write;
-                        OutMessage->Buffer.BSt.Message[0] = (char)spid;
-                        OutMessage->Buffer.BSt.Message[1] = (char)tableReadInterval;
-                        OutMessage->Buffer.BSt.Message[2] = (char)meterNumber;
-                        OutMessage->Buffer.BSt.Message[3] = (char)tableType;
+                        OutMessage->Buffer.BSt.Message[0] = *spid;
+                        OutMessage->Buffer.BSt.Message[1] = *tableReadInterval;
+
+                        if( isMct470(getType()) )
+                        {
+                            OutMessage->Buffer.BSt.Message[2] = *meterNumber;  //  otherwise leave it 0
+                        }
+
+                        OutMessage->Buffer.BSt.Message[3] = *tableType;
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     }

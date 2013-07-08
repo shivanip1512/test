@@ -747,18 +747,48 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
-        BOOST_CHECK( outList.empty() );
         BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( retList.empty() );
 
-        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 3 );
 
-        CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
 
-        BOOST_REQUIRE( retMsg );
+        {
+            const OUTMESS *om = *om_itr++;
 
-        BOOST_CHECK_EQUAL( retMsg->ResultString(), "ERROR: Invalid config data. Config name:precannedtable" );
+            BOOST_REQUIRE(om);
 
-        BOOST_CHECK_EQUAL( retMsg->Status(), NoConfigData );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 211 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   4 );
+
+            const unsigned char expected_message[] = { 17, 7, 0, 9 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+                expected_message,
+                expected_message + sizeof(expected_message) );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 35 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   11 );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       1 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 18 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1 );
+        }
     }
 
     BOOST_AUTO_TEST_CASE(test_putconfig_install_precanned_table_mct430_with_meterNumber)
@@ -794,7 +824,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 211 );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   4 );
 
-            const unsigned char expected_message[] = { 17, 7, 3, 9 };
+            const unsigned char expected_message[] = { 17, 7, 0, 9 };
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
                 om->Buffer.BSt.Message,
