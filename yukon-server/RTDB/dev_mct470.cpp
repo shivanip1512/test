@@ -76,7 +76,6 @@ Mct470Device::ConfigPartsList Mct470Device::initConfigParts430()
     tempList.push_back(Mct4xxDevice::PutConfigPart_timezone);
     tempList.push_back(Mct4xxDevice::PutConfigPart_time_adjust_tolerance);
     tempList.push_back(Mct4xxDevice::PutConfidPart_spid);//Before Precanned Table
-    tempList.push_back(Mct4xxDevice::PutConfigPart_demand_lp);
     tempList.push_back(Mct4xxDevice::PutConfigPart_lpchannel);
     tempList.push_back(Mct4xxDevice::PutConfigPart_precanned_table);
     tempList.push_back(Mct4xxDevice::PutConfigPart_configbyte);
