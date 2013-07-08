@@ -44,7 +44,6 @@
         </c:otherwise>
       </c:choose>
       <ul class="dropdown-menu dn ${pageScope.menuCssClass}">
-        <li>hi</li>
         <jsp:doBody/>
       </ul>
     </div>
