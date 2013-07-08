@@ -258,7 +258,7 @@
         <mkdir dir="${server.dir}/Export"/>
         <mkdir dir="${server.dir}/Import"/>
         <mkdir dir="${server.dir}/Log"/>
-        
+		
         <!-- Initial Server Config Component -->
         <copy todir="${install.bag}/Initial Server Config/Config" file="${basedir}/yukon-install/resources/master.cfg" preservelastmodified="true"/>
 
@@ -269,8 +269,11 @@
         </copy>
         
         <!-- Common Directories Component -->
-        <copy todir="${install.bag}/Common Directories/Config/Example" file="${basedir}/yukon-install/resources/master.cfg" preservelastmodified="true"/>
-        
+		<copy todir="${install.bag}/Common Directories/Config/Example" preservelastmodified="true">
+			<fileset file="${basedir}/yukon-install/resources/master.cfg"/>
+			<fileset dir="${basedir}/exampleXml"/>
+		</copy>
+		
         <!-- JRE Component -->
         <copy todir="${install.bag}/JRE" preservelastmodified="true">
             <fileset dir="${basedir}/yukon-install/JRE" />
