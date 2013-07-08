@@ -2565,78 +2565,72 @@ int Mct4xxDevice::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandParser &pa
 
 int Mct4xxDevice::executePutConfigConfigurationByte(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
 {
-    int nRet = NORMAL;
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
-    if (deviceConfig)
+    if( ! deviceConfig )
     {
-        if( ! readsOnly )
-        {
-            long dstEnabled          = deviceConfig->getLongValueFromKey(MCTStrings::EnableDst);
-            long electronicMeterType = deviceConfig->getLongValueFromKey(MCTStrings::ElectronicMeter);
-
-            long configuration = ( ( electronicMeterType & 0x0f ) << 4 ) | ( dstEnabled & 0x01 );
-
-            if (   dstEnabled          == std::numeric_limits<long>::min()
-                || electronicMeterType == std::numeric_limits<long>::min() )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NoConfigData;
-            }
-            else
-            {
-
-                long dynamicPaoConfigByte = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
-                if (getType() == TYPEMCT470)
-                {
-                    dynamicPaoConfigByte = dynamicPaoConfigByte & 0xFF;
-                }
-                else
-                {
-                    dynamicPaoConfigByte = dynamicPaoConfigByte & 0x0F;
-                }
-
-                if (parse.isKeyValid("force") ||
-                    dynamicPaoConfigByte != configuration )
-                {
-                    if( !parse.isKeyValid("verify") )
-                    {
-                        OutMessage->Buffer.BSt.Message[0] = configuration;
-                        OutMessage->Buffer.BSt.Function = FuncWrite_ConfigAlarmMaskPos;
-                        OutMessage->Buffer.BSt.Length = 1; //We are only writing a single byte, the command supports more.
-                        OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Write;
-                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-
-                        nRet = NORMAL;
-                    }
-                    else
-                    {
-                        nRet = ConfigNotCurrent;
-                    }
-                }
-                else
-                {
-                    nRet = ConfigCurrent;
-                }
-            }
-        }
-        //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == NORMAL)
-        {
-            OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
-            OutMessage->Buffer.BSt.Function   = Memory_ConfigurationPos;
-            OutMessage->Buffer.BSt.Length     = Memory_ConfigurationLen;
-
-            insertConfigReadOutMessage("getconfig install configbyte", *OutMessage, outList);
-        }
-    }
-    else
-    {
-        nRet = NoConfigData;
+        return NoConfigData;
     }
 
-    return nRet;
+    if( ! readsOnly )
+    {
+        const boost::optional<long> dstEnabled          = deviceConfig->findLongValueForKey(MCTStrings::EnableDst);
+        const boost::optional<long> electronicMeterType = deviceConfig->findLongValueForKey(MCTStrings::ElectronicMeter);
+
+        long dynamicPaoConfigByte = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
+        boost::optional<long> configuration;
+
+        if( dstEnabled )
+        {
+            if( isMct430(getType()) )
+            {
+                //  ignore the electronic meter type when comparing with the expected device config value
+                dynamicPaoConfigByte &= 0x0F;
+
+                configuration   =  *dstEnabled & 0x01;
+            }
+            else if( electronicMeterType )
+            {
+                configuration   =  *dstEnabled & 0x01;
+                *configuration |= (*electronicMeterType & 0x0f) << 4;
+            }
+        }
+
+        if( ! configuration )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+            return NoConfigData;
+        }
+
+        if( dynamicPaoConfigByte == *configuration )
+        {
+            if( ! parse.isKeyValid("force") )
+            {
+                return ConfigCurrent;
+            }
+        }
+
+        if( parse.isKeyValid("verify") )
+        {
+            return ConfigNotCurrent;
+        }
+
+        OutMessage->Buffer.BSt.Message[0] = *configuration;
+        OutMessage->Buffer.BSt.Function = FuncWrite_ConfigAlarmMaskPos;
+        OutMessage->Buffer.BSt.Length = 1; //We are only writing a single byte, the command supports more.
+        OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Write;
+        outList.push_back( new OUTMESS(*OutMessage) );
+    }
+
+    OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
+    OutMessage->Buffer.BSt.Function   = Memory_ConfigurationPos;
+    OutMessage->Buffer.BSt.Length     = Memory_ConfigurationLen;
+
+    insertConfigReadOutMessage("getconfig install configbyte", *OutMessage, outList);
+
+    return NoError;
 }
 
 int Mct4xxDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
@@ -3548,17 +3542,17 @@ INT Mct4xxDevice::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, 
                               ReturnMsg, pi_kw, peak_demand_str, kw_time);
     }
 
-    if( !status ) 
+    if( !status )
     {
         // Only send the point report if we don't have an error after processing.
         insertPointDataReport(
-           PulseAccumulatorPointType, 
+           PulseAccumulatorPointType,
            pointoffset,
-           ReturnMsg, 
-           pi_kwh, 
-           meter_reading_str, 
-           kwh_time, 
-           0.1, 
+           ReturnMsg,
+           pi_kwh,
+           meter_reading_str,
+           kwh_time,
+           0.1,
            TAG_POINT_MUST_ARCHIVE);
     }
     else
