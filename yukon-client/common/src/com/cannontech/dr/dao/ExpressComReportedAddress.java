@@ -78,6 +78,20 @@ public class ExpressComReportedAddress extends LmReportedAddress implements Seri
         this.relays = relays;
     }
 
+    /**
+     * Searches for relays by number. If not found null is returned.
+     * 
+     * @return null if no relay found
+     */
+    public ExpressComReportedAddressRelay getRelayByNumber(int relayNumber) {
+        for (ExpressComReportedAddressRelay relay : relays) {
+            if (relay.getRelayNumber() == relayNumber) {
+                return relay;
+            }
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
         return String.format("ExpressComReportedAddress [changeId=%s, deviceId=%s, " 

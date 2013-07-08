@@ -23,14 +23,18 @@
     </tags:nameValueContainer2>
 </div>
 <div class="reportedConfig relay">
-    <c:forEach begin="1" end="${fn:length(reportedConfig.relays)}"  varStatus="status">
-        <tags:nameValueContainer2 tableClass="sectionContainerNameValue">
-            <tags:nameValue2 nameKey=".relayProgram" argument="${status.index}" rowClass="first">
-                <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/RELAY_${status.index}_PROGRAM"/>
-            </tags:nameValue2>
-            <tags:nameValue2 nameKey=".relaySplinter" argument="${status.index}"  rowClass="last">
-                <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/RELAY_${status.index}_SPLINTER"/>
-            </tags:nameValue2>
-        </tags:nameValueContainer2>
-    </c:forEach>
+    <table class="resultsTable">
+		<tr>
+		  <th><i:inline key=".relay"/></th>
+		  <th><i:inline key=".program"/></th>
+		  <th><i:inline key=".splinter"/></th>
+		</tr>
+		<tbody>
+			<c:forEach begin="1" end="${fn:length(reportedConfig.relays)}"  varStatus="status">
+			    <tr><td>${status.index}</td>
+			    <td><cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/RELAY_PROGRAM/${status.index-1}"/></td>
+			    <td><cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/RELAY_SPLINTER/${status.index-1}"/></td></tr>
+	        </c:forEach>
+        </tbody>
+    </table>
 </div>
