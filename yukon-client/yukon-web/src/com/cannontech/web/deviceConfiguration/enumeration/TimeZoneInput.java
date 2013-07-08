@@ -15,12 +15,12 @@ public final class TimeZoneInput implements DeviceConfigurationInputEnumeration 
     private static final List<DisplayableValue> inputs;
     
     public enum Zone {
-        EST("-5", ".est"),
-        CST("-6", ".cst"),
-        MST("-7", ".mst"),
-        PST("-8", ".pst"),
-        ALASKA("-9", ".alaska"),
-        HAWAII("-10", ".hawaii"),
+        EST("-5", ".newYork"),
+        CST("-6", ".chicago"),
+        MST("-7", ".denver"),
+        PST("-8", ".losAngeles"),
+        ALASKA("-9", ".anchorage"),
+        HAWAII("-10", ".honolulu"),
         ;
         
         private final String dbValue;

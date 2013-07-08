@@ -62,8 +62,10 @@
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT">
                 <cti:checkRolesAndProperties value="${editingRoleProperty}">
-                    <dialog:confirm on="#save" nameKey="confirmSave"/>
-                    <cti:button nameKey="save" id="save" type="submit" classes="primary action"/>
+                    <cti:url var="viewUrl" value="view">
+                        <cti:param name="configId" value="${deviceConfigurationBackingBean.configId}"/>
+                    </cti:url>
+                    <cti:button nameKey="cancel" href="${viewUrl}"/>
                     <c:if test="${isDeletable}">
                         <dialog:confirm on="#remove" nameKey="confirmRemove"/>
                         <cti:url var="deleteUrl" value="delete">
@@ -71,16 +73,14 @@
                         </cti:url>
                         <cti:button nameKey="remove" id="remove" href="${deleteUrl}"/>
                     </c:if>
-                    <cti:url var="viewUrl" value="view">
-                        <cti:param name="configId" value="${deviceConfigurationBackingBean.configId}"/>
-                    </cti:url>
-                    <cti:button nameKey="cancel" href="${viewUrl}"/>
+                    <dialog:confirm on="#save" nameKey="confirmSave"/>
+                    <cti:button nameKey="save" id="save" type="submit" classes="primary action"/>
                 </cti:checkRolesAndProperties>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="CREATE">
                 <cti:checkRolesAndProperties value="${editingRoleProperty}">
-                    <cti:button nameKey="create" type="submit" classes="primary action"/>
                     <cti:button nameKey="cancel" href="/deviceConfiguration/home"/>
+                    <cti:button nameKey="create" type="submit" classes="primary action"/>
                 </cti:checkRolesAndProperties>
             </cti:displayForPageEditModes>
         </div>

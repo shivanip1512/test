@@ -37,16 +37,16 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @RequestMapping("/category/*")
 @CheckRoleProperty(YukonRoleProperty.ADMIN_VIEW_CONFIG)
 public class DeviceConfigurationCategoryController {
-	
-	@Autowired DeviceConfigurationDao deviceConfigurationDao;
-	@Autowired DeviceConfigurationHelper deviceConfigurationHelper;
-	
-	private final static String baseKey = "yukon.web.modules.tools.configs";
-	
+    
+    @Autowired DeviceConfigurationDao deviceConfigurationDao;
+    @Autowired DeviceConfigurationHelper deviceConfigurationHelper;
+    
+    private final static String baseKey = "yukon.web.modules.tools.configs";
+    
     // This will need to be updated if the schedules or rates/times can get to double digit values.
     private static final Pattern touPattern = Pattern.compile("^schedule[0-9](rate|time)[0-9]$");
-	
-	@RequestMapping
+    
+    @RequestMapping
     public String create(ModelMap model, String categoryType, YukonUserContext context) {
         Category category = deviceConfigurationDao.getCategoryByType(CategoryType.fromValue(categoryType));
         
@@ -187,7 +187,21 @@ public class DeviceConfigurationCategoryController {
             RateBackingBean backingBean = new RateBackingBean();
             
             Map<String, RateInput> rateInputs = new TreeMap<>();
-            for (int field = 0; field <= (scheduleItems.size() / (4 * 2)); field++) {
+            
+            /*
+             * There are four schedules, and each entry for each schedule has a rate and a time in the map. 
+             * As a result, if we divide the map size by eight we'll have the number of fields present.
+             * i.e. if the size of the map is 8, there is only one entry for each schedule:
+             *      
+             *      schedule1time0, schedule1rate0
+             *      schedule2time0, schedule2rate0
+             *      schedule3time0, schedule3rate0
+             *      schedule4time0, schedule4rate0
+             */
+            
+            int numFields = scheduleItems.size() / 8;
+            
+            for (int field = 0; field <= numFields; field++) {
                 RateInput rateInput = new RateInput();
                 
                 String timeField = "schedule" + Integer.toString(schedule) + "time" + Integer.toString(field);

@@ -1,6 +1,8 @@
 package com.cannontech.web.deviceConfiguration;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.jaxb.CategoryType;
+import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -23,12 +27,13 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 public class DeviceConfigurationController {
     
 	@Autowired private DeviceConfigurationDao deviceConfigurationDao;
-    
+    @Autowired private ObjectFormattingService objectFormattingService;
+	
     /**
      * A small class that wraps a JAXB category type to provide us the getValue() method
      * since JAXB only gives us value(), which can't be accessed in JSP-EL world.
      */
-    public final static class DisplayableCategoryType {
+    public final static class DisplayableCategoryType implements DisplayableEnum {
         CategoryType categoryType;
         
         public DisplayableCategoryType(CategoryType categoryType) {
@@ -37,6 +42,11 @@ public class DeviceConfigurationController {
 
         public String getValue() {
             return categoryType.value();
+        }
+        
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.tools.configs.category." + categoryType.value() + ".title";
         }
     }
     
@@ -60,8 +70,11 @@ public class DeviceConfigurationController {
         for (CategoryType type : CategoryType.values()) {
             categoryTypes.add(new DisplayableCategoryType(type));
         }
-
-        model.addAttribute("categoryTypes", categoryTypes);
+        
+        List<DisplayableCategoryType> sortedTypes = 
+            objectFormattingService.sortDisplayableValues(categoryTypes, null, null, context);
+        
+        model.addAttribute("categoryTypes", sortedTypes);
         
         model.addAttribute("mode", PageEditMode.VIEW);
         

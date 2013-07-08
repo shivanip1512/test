@@ -100,7 +100,7 @@
                             <cti:button nameKey="create" type="submit" icon="icon-plus-green"/>
                             <select name="categoryType" id="categoryTypesSelect">
                                 <c:forEach var="option" items="${categoryTypes}">
-                                    <option value="${option.value}"><cti:msg2 key=".category.${option.value}.title"/></option>
+                                    <option value="${option.value}"><cti:msg2 key="${option.formatKey}"/></option>
                                 </c:forEach>
                             </select>
                         </form>

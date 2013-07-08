@@ -46,12 +46,12 @@
     <entry key="yukon.web.modules.tools.configs.enum.schedules.schedule3">Schedule 3</entry>
     <entry key="yukon.web.modules.tools.configs.enum.schedules.schedule4">Schedule 4</entry>
 
-    <entry key="yukon.web.modules.tools.configs.enum.timeZone.est">EST</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.timeZone.cst">CST</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.timeZone.mst">MST</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.timeZone.pst">PST</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.timeZone.alaska">Alaska</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.timeZone.hawaii">Hawaii</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.timeZone.newYork">America/New_York</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.timeZone.chicago">America/Chicago</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.timeZone.denver">America/Denver</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.timeZone.losAngeles">America/Los_Angeles</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.timeZone.anchorage">America/Anchorage</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.timeZone.honolulu">Pacific/Honolulu</entry>
 
     <entry key="yukon.web.modules.tools.configs.enum.displayItem.slotDisabled">Slot Disabled</entry>
     <entry key="yukon.web.modules.tools.configs.enum.displayItem.noSegments">No Segments</entry>
@@ -405,7 +405,7 @@
     <entry key="yukon.web.modules.tools.configs.category.categoryFields">Category Fields</entry>
     <entry key="yukon.web.modules.tools.configs.category.confirmRemove.message">Are you sure you want to delete this category?</entry>
     <entry key="yukon.web.modules.tools.configs.category.confirmSave.message">
-    		Modifying this category will affect all configurations it belongs to. However, this won't affect any
+    		Modifying this category will affect all configurations it belongs to. However, this will not affect any
     		devices until the affected configurations are sent. Are you sure you want to modify this category?
  	</entry>
     <entry key="yukon.web.modules.tools.configs.category.saveSuccess">Device configuration category was successfully written to the database.</entry>
@@ -432,7 +432,11 @@
     <entry key="yukon.web.modules.tools.configs.config.configName">Configuration Name</entry>
     <entry key="yukon.web.modules.tools.configs.config.configCategories">Device Configuration Categories</entry>
     <entry key="yukon.web.modules.tools.configs.config.confirmRemove.message">Are you sure you want to delete this configuration?</entry>
-    <entry key="yukon.web.modules.tools.configs.config.confirmSave.message">Modifying this configuration will affect all devices it is assigned to. Are you sure you want to modify this configuration?</entry>
+    <entry key="yukon.web.modules.tools.configs.config.confirmSave.message">
+        Modifying this configuration will affect all devices it is assigned to. However, changes to the devices
+        themselves as a result of the configuration modification will not occur until the configuration is sent. 
+        Are you sure you want to modify this configuration?
+    </entry>
     <entry key="yukon.web.modules.tools.configs.config.configCategories.description">Choose an existing instance of each of the categories below or create new categories to use for this configuration.</entry>
     <entry key="yukon.web.modules.tools.configs.config.missingCategories">This device configuration is missing selections for the following category types: {0}. Please select a category for each of these types.</entry>
     <entry key="yukon.web.modules.tools.configs.config.noneSelected">None selected</entry>

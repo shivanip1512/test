@@ -10,7 +10,6 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Component;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.jaxb.Category;
 import com.cannontech.common.device.config.model.jaxb.EnumOption;
 import com.cannontech.common.device.config.model.jaxb.InputBase;
@@ -21,7 +20,6 @@ import com.cannontech.common.device.config.model.jaxb.InputInteger;
 import com.cannontech.common.device.config.model.jaxb.InputMap;
 import com.cannontech.common.device.config.model.jaxb.MapType;
 import com.cannontech.common.i18n.ObjectFormattingService;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
@@ -55,8 +53,6 @@ public class DeviceConfigurationHelper {
     
     @Autowired private ObjectFormattingService formattingService;
     @Autowired private List<DeviceConfigurationInputEnumeration> configurationInputEnumerations;
-    @Autowired private DeviceConfigurationDao deviceConfigurationDao;
-    @Autowired private PaoDefinitionDao paoDefinitionDao;
     
     @Autowired
     public DeviceConfigurationHelper(List<DeviceConfigurationInputEnumeration> deviceConfigurationInputEnumerations) {
