@@ -19,9 +19,9 @@ if(typeof(MeteringBilling) === 'undefined') {
         _url_format_setup: "/dynamicBilling/_overview.html",
         _url_format_copy: "/dynamicBilling/_copy.html",
         _url_format_create: "/dynamicBilling/_create.html",
-        _url_format_delete: "/dynamicBilling/_delete.json",
+        _url_format_delete: "/dynamicBilling/delete.json",
         _url_format_edit: "/dynamicBilling/_edit.html",
-        _url_format_save: "/dynamicBilling/_save.json",
+        _url_format_save: "/dynamicBilling/save.json",
         _url_base_setup: "/dynamicBilling/",
 
 

@@ -93,13 +93,13 @@ public class DynamicBillingController {
         return "formatDetail.jsp";
     }
 
-    @RequestMapping(value = "_delete.json")
+    @RequestMapping(value = "delete.json")
     public @ResponseBody JSONObject delete(int availableFormat, ModelMap model) {
         // delete the selected format
         dynamicBillingFileDao.delete(availableFormat);
         //delete jobs using this format
         scheduledFileExportService.deleteBillingJobsByFormatId(availableFormat);
-        
+
         // retrieve the new list of format names after deletion
         List<DynamicFormat> allRows = dynamicBillingFileDao.retrieveAll();
         model.addAttribute("allRows", allRows);
@@ -205,13 +205,13 @@ public class DynamicBillingController {
 
         return "formatDetail.jsp";
     }
-    
-    @RequestMapping(value = "_save.json")
+
+    @RequestMapping(value = "save.json")
     public @ResponseBody JSONObject save(int formatId, String formatName, String footer, String header, String delimiter, String fieldArray, ModelMap model) {
         // retrieve all information from the page and save it to db
         DynamicFormat savedFormat = parseIntoDynamicFormat(formatId, formatName, footer, header, delimiter, fieldArray);
         dynamicBillingFileDao.save(savedFormat);
-        
+
         // retrieve new list of formats after saving
         List<DynamicFormat> allRows = dynamicBillingFileDao.retrieveAll();
 
