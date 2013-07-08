@@ -233,7 +233,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
      */
     protected File copyExportFile(File archiveFile) {
         if (includeExportCopy) {
-            String fileName = getExportFileName(archiveFile);
+            String fileName = convertArchiveToExportFilename(archiveFile);
             // need to get the base and file extension...
             String baseName = fileName.substring(0, fileName.lastIndexOf("."));
             String fileExt = fileName.substring(fileName.lastIndexOf("."));
@@ -282,8 +282,8 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
         ExportHistoryEntry historyEntry = null;
         try {
             String initiator = getMessage(type.getFormatKey()) + " Schedule: " + name;
-            String fileName = getExportFileName(archiveFile);
-            historyEntry = fileExportHistoryService.addHistoryEntry(archiveFile, exportFile, fileName, type, initiator);
+            String expFileName = (exportFile == null) ? convertArchiveToExportFilename(archiveFile) : exportFile.getName();
+            historyEntry = fileExportHistoryService.addHistoryEntry(archiveFile, exportFile, expFileName, type, initiator);
         } catch(IOException e) {
             log.error("Unable to create " + type + " export file history archive.", e);
         }
@@ -295,7 +295,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
     /**
      * Convenience method to get the filename without the uuid appendage.
      */
-    protected String getExportFileName(File archiveFile) {
+    protected String convertArchiveToExportFilename(File archiveFile) {
         String archiveName = archiveFile.getName();
         return archiveName.substring(0, archiveName.lastIndexOf("_"));
     }
