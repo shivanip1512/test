@@ -426,7 +426,7 @@ void CtiConfigManager::updateDeviceConfigurationAssignment( const long configID,
                     const Cti::Config::ConfigurationCategory & category = *categorySearch->second;
 
                     // is it one of our actual physical devices categories?
-                    if ( deviceCategories.find( category.getName() ) != deviceCategories.end() )
+                    if ( deviceCategories.find( category.getType() ) != deviceCategories.end() )
                     {
                         // yes.. merge his items into the actual device config
                         for each ( Cti::Config::ConfigurationCategory::value_type item in category )

@@ -70,6 +70,7 @@ public:
 
     long        getId() const;
     std::string getName() const;
+    std::string getType() const;
 
     const_iterator begin() const;
     const_iterator end() const;

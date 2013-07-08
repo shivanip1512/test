@@ -150,6 +150,12 @@ std::string ConfigurationCategory::getName() const
 }
 
 
+std::string ConfigurationCategory::getType() const
+{
+    return _type;
+}
+
+
 ConfigurationCategory::const_iterator ConfigurationCategory::begin() const
 {
     return _items.begin();
