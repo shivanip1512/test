@@ -111,6 +111,7 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
             if (canAddRole(group, YukonRole.TRENDING)) {
                 setRoleProperty(group, YukonRoleProperty.GRAPH_EDIT_GRAPHDEFINITION,true);
                 setRoleProperty(group, YukonRoleProperty.VIEW_ALARMS_AS_ALERTS,true);
+                setRoleProperty(group, YukonRoleProperty.SUPPRESS_ERROR_PAGE_DETAILS,false);
                 results.put(YukonRole.TRENDING, true);
             } else {
                 results.put(YukonRole.TRENDING, false);
