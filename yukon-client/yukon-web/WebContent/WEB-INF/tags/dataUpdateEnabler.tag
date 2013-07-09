@@ -1,5 +1,6 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ tag import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 
 <cti:includeScript link="/JavaScript/dataUpdater.js"/>
@@ -10,5 +11,5 @@ initiateCannonDataUpdate("${updateUrl}", <cti:getProperty property="DATA_UPDATER
 </script>
 
 <div id="dataUpdaterErrorDiv" style="display: none">
-    <span class="meta">Connection to server has been lost (<span id="dataUpdaterErrorDivCount"></span>)</span>
+    <span class="meta"><i:inline key="yukon.web.tags.dataUpdateEnabler.lostConnection" /> (<span id="dataUpdaterErrorDivCount"></span>)</span>
 </div>
