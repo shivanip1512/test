@@ -247,7 +247,7 @@ greater than one.
     <entry key="yukon.web.billing.formatNameCopy">{0} (copy)</entry>
     <entry key="yukon.web.billing.nonUniqueFormatName">The format name is not unique.  Please supply a unique format name.</entry>
 
-	<!-- Billing.jsp -->
+	<!-- _schedule.jsp, _settings.jsp -->
 	<entry key="yukon.web.billing.fileFormat">File Format</entry>
 	<entry key="yukon.web.billing.billingEndDate">Billing End Date</entry>
 	<entry key="yukon.web.billing.demandDaysPrevious">Demand Days Previous</entry>
