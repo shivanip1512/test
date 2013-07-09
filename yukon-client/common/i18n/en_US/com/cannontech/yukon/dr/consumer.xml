@@ -525,7 +525,7 @@
     <!-- result messages -->
     <entry key="yukon.dr.consumer.optoutresult.success"><![CDATA[<i>Your programs have been opted out.</i>]]></entry>
     <entry key="yukon.dr.consumer.optoutresult.failure"><![CDATA[<i>Failed to opt out the programs.</i>]]></entry>
-    <entry key="yukon.dr.consumer.optoutresult.checkRule"><![CDATA[Wrong format in the opt out rules &apos;{0}&apos;]]></entry>
+    <entry key="yukon.dr.consumer.optoutresult.checkRule"><![CDATA[Wrong format in the opt out rules &#39;{0}&#39;]]></entry>
     <entry key="yukon.dr.consumer.optoutresult.timesConstraintViolated"><![CDATA[<i>Opt out constraint violated!  You can only opt out the programs {0} {0,choice,0#times|1#time|1<times} each {2} but you have already opted out {1} {1,choice,0#times|1#time|1<times} this {2}.</i>]]></entry>
     <entry key="yukon.dr.consumer.optoutresult.hoursConstraintViolated"><![CDATA[<i>Opt out constraint violated!  You can only opt out the programs {0} {0,choice,0#hours|1#hour|1<hours} each {2} but you have already opted out {1} {1,choice,0#hours|1#hour|1<hours} this {2}.</i>]]></entry>
     <entry key="yukon.dr.consumer.optoutresult.dueDateConstraintViolated"><![CDATA[Opt out constraint violated!  You must submit your request by {0} the day before.]]></entry>
