@@ -36,6 +36,7 @@ public enum PaoTag {
 	LM_PROGRAM("LM Program"),
     LM_CONTROL_AREA("LM Control Area"),
     LM_SCENARIO("LM Scenario"),
+    LM_SCHEDULE("LM Schedule"), //used to identify script/schedule that LM permissions can be given to
     DIRECT_PROGRAM_ENROLLMENT("Direct Program Enrollment"),
     SEP_PROGRAM_ENROLLMENT("SEP Program Enrollment"),
     DLC_ADDRESS_RANGE_ENFORCE("DLC Address Range Enforced", stringType()),  // range used for validation, may be mfg address or other(field length, for example).

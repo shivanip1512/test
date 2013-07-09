@@ -16,6 +16,7 @@ public class LMDeviceCriteria extends YukonPaoTagCriteriaHelper {
 		return ImmutableSet.of(PaoTag.LM_GROUP, 
 								PaoTag.LM_PROGRAM, 
 								PaoTag.LM_CONTROL_AREA, 
-								PaoTag.LM_SCENARIO);
+								PaoTag.LM_SCENARIO,
+								PaoTag.LM_SCHEDULE);
 	}
 }

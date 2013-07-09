@@ -9503,6 +9503,17 @@
     <pao id="PHASE_OPERATED" inherits="PHASE_AND_GANG_BASE">
         <displayName>Phase Operated</displayName>
     </pao>
+
+    <pao id="SCRIPT" creatable="false">	<!-- creatable is false as these are created in TDC, not DBEditor -->
+        <tags>
+        	<tag name="LM_SCHEDULE"/>
+        </tags>
+    </pao>
+    <pao id="SIMPLE_SCHEDULE" creatable="false">	<!-- creatable is false as these are created in TDC, not DBEditor -->
+        <tags>
+        	<tag name="LM_SCHEDULE"/>
+        </tags>
+    </pao>
     
     <pao id="ZIGBEE_ENDPOINT">
         <displayName>ZigBee Endpoint</displayName>
