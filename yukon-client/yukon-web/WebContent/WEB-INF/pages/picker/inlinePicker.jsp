@@ -11,7 +11,7 @@ Picker.alreadySelectedHoverMessage = '<cti:msg2 key=".alreadySelectedHover"/>';
 </script>
 
 <div id="${id}">
-    <div class="column_12_12">
+    <div class="column_12_12 clear">
         <div class="column one">
                     <label>
                         <i:inline key=".query"/> <input type="text" id="picker_${id}_ss" name="ss" onkeyup="${id}.doKeyUp.call(${id});false;"/>
