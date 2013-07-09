@@ -43,7 +43,7 @@ public class BillingServlet extends HttpServlet
 
         javax.servlet.http.HttpSession session = req.getSession(false);
 
-        Enumeration enum1 = req.getParameterNames();
+        Enumeration<?> enum1 = req.getParameterNames();
         while (enum1.hasMoreElements()) {
             String ele = enum1.nextElement().toString();
             CTILogger.info(" --" + ele + "  " + req.getParameter(ele));
