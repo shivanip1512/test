@@ -29,7 +29,7 @@ import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
 import com.cannontech.common.device.commands.WaitableCommandCompletionCallbackFactory;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
-import com.cannontech.common.device.commands.dao.model.CommandRequestExecUnsupported;
+import com.cannontech.common.device.commands.dao.model.CommandRequestUnsupported;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.device.commands.impl.CommandRequestRetryExecutor;
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
@@ -207,7 +207,7 @@ public class PlcDeviceAttributeReadServiceImpl implements PlcDeviceAttributeRead
         // Calc and store unsupported
         int commandExeId = commandRequestExecutionIdentifier.getCommandRequestExecutionId();
         for (YukonPao pao : unsupportedDevices.keySet()) {
-            CommandRequestExecUnsupported unsupportedCmd = new CommandRequestExecUnsupported();
+            CommandRequestUnsupported unsupportedCmd = new CommandRequestUnsupported();
             unsupportedCmd.setCommandRequestExecId(commandExeId);
             if (pao.getPaoIdentifier().getPaoType().getPaoCategory() == PaoCategory.ROUTE) {
                 unsupportedCmd.setRouteId(pao.getPaoIdentifier().getPaoId());

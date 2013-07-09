@@ -2,7 +2,7 @@ package com.cannontech.common.device.commands.dao;
 
 import java.util.List;
 
-import com.cannontech.common.device.commands.dao.model.CommandRequestExecUnsupported;
+import com.cannontech.common.device.commands.dao.model.CommandRequestUnsupported;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 import com.cannontech.common.pao.PaoIdentifier;
 
@@ -23,5 +23,5 @@ public interface CommandRequestExecutionResultDao {
     public List<PaoIdentifier> getUnsupportedDeviceIdsByExecutionId(int commandRequestExecutionId);
 	
 	public List<CommandRequestExecutionResult> getResultsByExecutionId(int commandRequestExecutionId, CommandRequestExecutionResultsFilterType reportFilterType);
-    public void saveUnsupported(CommandRequestExecUnsupported unsupportedCmd);
+    public void saveUnsupported(CommandRequestUnsupported unsupportedCmd);
 }

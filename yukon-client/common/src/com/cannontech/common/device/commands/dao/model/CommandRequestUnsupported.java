@@ -1,6 +1,6 @@
 package com.cannontech.common.device.commands.dao.model;
 
-public class CommandRequestExecUnsupported {
+public class CommandRequestUnsupported {
     private Integer id;
     private Integer deviceId;
     private Integer routeId;
