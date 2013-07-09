@@ -39,7 +39,7 @@ public class ViolationsCountUpdaterHandler implements DeviceDataUpdaterHandler {
             try {
                 areViolationsBeingCalculated = deviceDataMonitorService.areViolationsBeingCalculatedForMonitor(monitorId);
             } catch (RemoteAccessException e) {
-                log.error("Yukon Service Manager is probably down or we are not configured properly to talk to it.", e);
+                logErrorOrDebug("Yukon Service Manager is probably down or we are not configured properly to talk to it.", e);
                 return messageSourceAccessor.getMessage(NA_MSG_KEY);
             }
 	        if (!areViolationsBeingCalculated) {
@@ -60,4 +60,12 @@ public class ViolationsCountUpdaterHandler implements DeviceDataUpdaterHandler {
 	public DeviceDataMonitorUpdaterTypeEnum getUpdaterType() {
 		return DeviceDataMonitorUpdaterTypeEnum.VIOLATIONS_COUNT;
 	}
+	
+    private void logErrorOrDebug(String logMsg, Exception e) {
+        if (log.isDebugEnabled()) {
+            log.debug(logMsg, e);
+        } else {
+            log.error(logMsg);
+        }
+    }
 }
