@@ -288,6 +288,687 @@ INSERT INTO JobProperty (JobPropertyId, JobId, Name, Value)
     GROUP By J.JobId);
 /* End YUK-12291 */
 
+/* Start YUK-12240 */
+/* @start-block */
+DECLARE @channel INT,
+        @itemId INT,
+        @newItemId INT;
+
+SELECT @channel = 1;
+
+SELECT @newItemId = (SELECT MAX(DeviceConfigurationItemId) + 1 FROM DeviceConfigurationItem);
+
+WHILE (@channel < 5)
+BEGIN
+    SELECT @itemId = MIN(DCI.DeviceConfigurationItemId)
+    FROM DeviceConfigurationItem DCI 
+    JOIN DeviceConfiguration DC ON DCI.DeviceConfigurationId = DC.DeviceConfigurationId
+    WHERE DCI.FieldName = 'channel config ' + CAST(@channel AS VARCHAR)
+      AND DC.Type = 'MCT470';
+
+    WHILE (@itemId IS NOT NULL)
+    BEGIN
+        INSERT INTO DeviceConfigurationItem VALUES (@newItemId,
+                                                    (SELECT DeviceConfigurationId 
+                                                     FROM DeviceConfigurationItem 
+                                                     WHERE DeviceConfigurationItemId = @itemId),
+                                                    'channel ' + CAST(@channel AS VARCHAR) + ' type',
+                                                    (SELECT CAST(Value AS INT) 
+                                                     FROM DeviceConfigurationItem 
+                                                     WHERE DeviceConfigurationItemId = @itemId) & 3);
+
+        INSERT INTO DeviceConfigurationItem VALUES (@newItemId+1,
+                                                    (SELECT DeviceConfigurationId 
+                                                     FROM DeviceConfigurationItem 
+                                                     WHERE DeviceConfigurationItemId = @itemId),
+                                                    'channel ' + CAST(@channel AS VARCHAR) + ' physical channel',
+                                                    (SELECT CAST(Value/4 AS INT) 
+                                                     FROM DeviceConfigurationItem 
+                                                     WHERE DeviceConfigurationItemId = @itemId) & 15);
+
+        DELETE FROM DeviceConfigurationItem WHERE DeviceConfigurationItemid = @itemId;
+
+        SELECT @itemId = MIN(DCI.DeviceConfigurationItemId) 
+        FROM DeviceConfigurationItem DCI 
+        JOIN DeviceConfiguration DC ON DCI.DeviceConfigurationId = DC.DeviceConfigurationId
+        WHERE DCI.FieldName = 'channel config ' + CAST(@channel AS VARCHAR)
+          AND DC.Type = 'MCT470';
+
+        SELECT @newItemId = MAX(DeviceConfigurationItemId) + 1 FROM DeviceConfigurationItem;
+    END
+
+    SELECT @channel = @channel + 1;
+END
+
+SELECT @itemId = MIN(DCI.DeviceConfigurationItemId)
+FROM DeviceConfigurationItem DCI 
+JOIN DeviceConfiguration DC ON DC.DeviceConfigurationId = DCI.DeviceConfigurationId
+WHERE DCI.FieldName = 'configuration'
+  AND DC.Type = 'MCT470';
+
+WHILE (@itemId IS NOT NULL)
+BEGIN
+    INSERT INTO DeviceConfigurationItem VALUES (@newItemId,
+                                                (SELECT DeviceConfigurationId 
+                                                 FROM DeviceConfigurationItem 
+                                                 WHERE DeviceConfigurationItemId = @itemId),
+                                                'enable dst',
+                                                (SELECT CAST(Value AS INT) 
+                                                 FROM DeviceConfigurationItem 
+                                                 WHERE DeviceConfigurationItemId = @itemId) & 1);
+
+    INSERT INTO DeviceConfigurationItem VALUES (@newItemId+1,
+                                                (SELECT DeviceConfigurationId 
+                                                 FROM DeviceConfigurationItem 
+                                                 WHERE DeviceConfigurationItemId = @itemId),
+                                                'electronic meter',
+                                                (SELECT CAST(Value/16 AS INT) 
+                                                 FROM DeviceConfigurationItem 
+                                                 WHERE DeviceConfigurationItemId = @itemId) & 15);
+
+    DELETE FROM DeviceConfigurationItem WHERE DeviceConfigurationItemId = @itemId;
+
+    SELECT @itemId = MIN(DCI.DeviceConfigurationItemId) 
+    FROM DeviceConfigurationItem DCI
+    JOIN DeviceConfiguration DC ON DC.DeviceConfigurationId = DCI.DeviceConfigurationId
+    WHERE DCI.FieldName = 'configuration'
+      AND DC.Type = 'MCT470';
+
+    SELECT @newItemId = MAX(DeviceConfigurationItemId) + 1 FROM DeviceConfigurationItem;
+END
+
+SELECT @channel = 1;
+
+WHILE (@channel < 5)
+BEGIN
+    SELECT @itemId = MIN(DCI.DeviceConfigurationItemId) 
+    FROM DeviceConfigurationItem DCI
+    JOIN DeviceConfiguration DC ON DCI.DeviceConfigurationId = DC.DeviceConfigurationId 
+    WHERE FieldName = 'channel config ' + CAST(@channel AS VARCHAR)
+      AND DC.Type = 'MCT430';
+
+    WHILE (@itemId IS NOT NULL)
+    BEGIN
+        INSERT INTO DeviceConfigurationItem VALUES (@newItemId,
+                                                    (SELECT DeviceConfigurationId 
+                                                     FROM deviceconfigurationitem 
+                                                     WHERE DeviceConfigurationItemId = @itemId),
+                                                    'channel ' + CAST(@channel AS VARCHAR) + ' type',
+                                                    (SELECT CAST(Value AS INT) 
+                                                     FROM DeviceConfigurationItem 
+                                                     WHERE DeviceConfigurationItemId = @itemId) & 3);
+
+        INSERT INTO DeviceConfigurationItem VALUES (@newItemId+1,
+                                                    (SELECT DeviceConfigurationId 
+                                                     FROM DeviceConfigurationItem 
+                                                     WHERE DeviceConfigurationItemId = @itemId),
+                                                    'channel ' + CAST(@channel AS VARCHAR) + ' physical channel',
+                                                    (SELECT CAST(Value/4 AS INT) 
+                                                     FROM DeviceConfigurationItem 
+                                                     WHERE DeviceConfigurationItemId = @itemId) & 15);
+
+        DELETE FROM DeviceConfigurationItem WHERE DeviceConfigurationItemId = @itemId;
+
+        SELECT @itemId = MIN(DCI.DeviceConfigurationItemId) 
+        FROM DeviceConfigurationItem DCI JOIN DeviceConfiguration DC 
+            ON DCI.DeviceConfigurationId = DC.DeviceConfigurationId 
+        WHERE FieldName = 'channel config ' + CAST(@channel AS VARCHAR)
+            AND DC.Type = 'MCT430';
+
+        SELECT @newItemId = MAX(DeviceConfigurationItemId) + 1 FROM DeviceConfigurationItem;
+    END
+
+    SELECT @channel = @channel + 1
+
+END
+
+SELECT @itemId = MIN(DCI.DeviceConfigurationItemId) 
+FROM DeviceConfigurationItem DCI 
+JOIN DeviceConfiguration DC ON DC.DeviceConfigurationId = DCI.DeviceConfigurationId
+WHERE DCI.FieldName = 'configuration'
+  AND DC.Type = 'MCT430';
+
+SELECT @newItemId = MAX(DeviceConfigurationItemId) + 1 FROM DeviceConfigurationItem;
+
+WHILE (@itemId IS NOT NULL)
+BEGIN
+    INSERT INTO DeviceConfigurationItem VALUES (@newItemId,
+                                                (SELECT DeviceConfigurationId 
+                                                 FROM DeviceConfigurationItem 
+                                                 WHERE DeviceConfigurationItemId = @itemId),
+                                                'enable dst',
+                                                (SELECT CAST(Value AS INT) 
+                                                 FROM DeviceConfigurationItem 
+                                                 WHERE DeviceConfigurationItemId = @itemId) & 1);
+
+    DELETE FROM DeviceConfigurationItem WHERE DeviceConfigurationItemId = @itemId;
+
+    SELECT @itemId = MIN(DCI.DeviceConfigurationItemId) 
+    FROM DeviceConfigurationItem DCI
+    JOIN DeviceConfiguration DC ON DC.DeviceConfigurationId = DCI.DeviceConfigurationId
+    WHERE DCI.FieldName = 'configuration'
+      AND DC.Type = 'MCT430';
+
+    SELECT @newItemId = MAX(DeviceConfigurationItemId) + 1 FROM DeviceConfigurationItem;
+
+END
+/* @end-block */
+
+CREATE TABLE DeviceConfigConverter_temp (
+    CategoryType VARCHAR(60) NOT NULL,
+    NewFieldName VARCHAR(60) NOT NULL,
+    OldFieldName VARCHAR(60) NOT NULL,
+    CONSTRAINT PK_DeviceConfigConverter PRIMARY KEY (CategoryType, NewFieldName)
+);
+GO
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('timeZone', 'timeZoneOffset', 'time zone offset');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('meterParameters', 'lcdCycleTime', 'lcd cycle time');
+INSERT INTO DeviceConfigConverter_temp VALUES ('meterParameters', 'displayDigits', 'display digits');
+INSERT INTO DeviceConfigConverter_temp VALUES ('meterParameters', 'disconnectDisplayDisabled', 'disconnect display disabled');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem1', 'Display Item 1');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem2', 'Display Item 2');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem3', 'Display Item 3');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem4', 'Display Item 4');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem5', 'Display Item 5');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem6', 'Display Item 6');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem7', 'Display Item 7');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem8', 'Display Item 8');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem9', 'Display Item 9');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem10', 'Display Item 10');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem11', 'Display Item 11');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem12', 'Display Item 12');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem13', 'Display Item 13');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem14', 'Display Item 14');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem15', 'Display Item 15');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem16', 'Display Item 16');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem17', 'Display Item 17');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem18', 'Display Item 18');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem19', 'Display Item 19');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem20', 'Display Item 20');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem21', 'Display Item 21');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem22', 'Display Item 22');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem23', 'Display Item 23');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem24', 'Display Item 24');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem25', 'Display Item 25');
+INSERT INTO DeviceConfigConverter_temp VALUES ('displayItems', 'displayItem26', 'Display Item 26');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Configuration', 'enableDst', 'enable dst');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Configuration', 'timeAdjustTolerance', 'time adjust tolerance');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Addressing', 'bronzeAddress', 'bronze address');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Addressing', 'leadAddress', 'lead address');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Addressing', 'collectionAddress', 'collection address');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Addressing', 'serviceProviderId', 'service provider id');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440PhaseLoss', 'phaseLossThreshold', 'phase loss threshold');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440PhaseLoss', 'phaseLossDuration', 'phase loss duration');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule1rate0', 'schedule1rate0');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule1rate1', 'schedule1rate1');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule1rate2', 'schedule1rate2');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule1rate3', 'schedule1rate3');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule1rate4', 'schedule1rate4');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule1rate5', 'schedule1rate5');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule1rate6', 'schedule1rate6');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule1rate7', 'schedule1rate7');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule1rate8', 'schedule1rate8');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule1rate9', 'schedule1rate9');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule1time0', 'schedule1time0');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule1time1', 'schedule1time1');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule1time2', 'schedule1time2');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule1time3', 'schedule1time3');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule1time4', 'schedule1time4');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule1time5', 'schedule1time5');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule1time6', 'schedule1time6');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule1time7', 'schedule1time7');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule1time8', 'schedule1time8');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule1time9', 'schedule1time9');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule2rate0', 'schedule2rate0');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule2rate1', 'schedule2rate1');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule2rate2', 'schedule2rate2');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule2rate3', 'schedule2rate3');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule2rate4', 'schedule2rate4');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule2rate5', 'schedule2rate5');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule2rate6', 'schedule2rate6');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule2rate7', 'schedule2rate7');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule2rate8', 'schedule2rate8');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule2rate9', 'schedule2rate9');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule2time0', 'schedule2time0');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule2time1', 'schedule2time1');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule2time2', 'schedule2time2');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule2time3', 'schedule2time3');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule2time4', 'schedule2time4');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule2time5', 'schedule2time5');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule2time6', 'schedule2time6');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule2time7', 'schedule2time7');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule2time8', 'schedule2time8');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule2time9', 'schedule2time9');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule3rate0', 'schedule3rate0');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule3rate1', 'schedule3rate1');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule3rate2', 'schedule3rate2');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule3rate3', 'schedule3rate3');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule3rate4', 'schedule3rate4');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule3rate5', 'schedule3rate5');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule3rate6', 'schedule3rate6');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule3rate7', 'schedule3rate7');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule3rate8', 'schedule3rate8');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule3rate9', 'schedule3rate9');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule3time0', 'schedule3time0');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule3time1', 'schedule3time1');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule3time2', 'schedule3time2');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule3time3', 'schedule3time3');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule3time4', 'schedule3time4');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule3time5', 'schedule3time5');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule3time6', 'schedule3time6');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule3time7', 'schedule3time7');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule3time8', 'schedule3time8');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule3time9', 'schedule3time9');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule4rate0', 'schedule4rate0');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule4rate1', 'schedule4rate1');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule4rate2', 'schedule4rate2');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule4rate3', 'schedule4rate3');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule4rate4', 'schedule4rate4');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule4rate5', 'schedule4rate5');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule4rate6', 'schedule4rate6');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule4rate7', 'schedule4rate7');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule4rate8', 'schedule4rate8');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule4rate9', 'schedule4rate9');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule4time0', 'schedule4time0');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule4time1', 'schedule4time1');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule4time2', 'schedule4time2');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule4time3', 'schedule4time3');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule4time4', 'schedule4time4');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule4time5', 'schedule4time5');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule4time6', 'schedule4time6');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule4time7', 'schedule4time7');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule4time8', 'schedule4time8');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'schedule4time9', 'schedule4time9');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'holiday', 'holiday');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'weekday', 'weekdays');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'saturday', 'saturday');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct440Tou', 'sunday', 'sunday');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('dnp', 'internalRetries', 'Internal Retries');
+INSERT INTO DeviceConfigConverter_temp VALUES ('dnp', 'localTime', 'Local Time');
+INSERT INTO DeviceConfigConverter_temp VALUES ('dnp', 'enableDnpTimesyncs', 'Enable DNP Timesyncs');
+INSERT INTO DeviceConfigConverter_temp VALUES ('dnp', 'omitTimeRequest', 'Omit Time Request');
+INSERT INTO DeviceConfigConverter_temp VALUES ('dnp', 'enableUnsolicitedMessages', 'Enable Unsolicited Messages');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470DemandLoadProfile', 'demandInterval', 'demand interval');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470DemandLoadProfile', 'loadProfileInterval1', 'load profile interval 1');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel1Type', 'channel 1 type');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel1PhysicalChannel', 'channel 1 physical channel');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel1LoadProfileResolution', 'channel 1 load profile resolution');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel1PeakKWResolution', 'channel 1 peak kw resolution');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel1LastIntervalDemandResolution', 'channel 1 last interval demand resolution');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel1Multiplier', 'channel 1 multiplier');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel2Type', 'channel 2 type');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel2PhysicalChannel', 'channel 2 physical channel');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel2LoadProfileResolution', 'channel 2 load profile resolution');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel2PeakKWResolution', 'channel 2 peak kw resolution');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel2LastIntervalDemandResolution', 'channel 2 last interval demand resolution');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel2Multiplier', 'channel 2 multiplier');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel3Type', 'channel 3 type');                        
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel3PhysicalChannel', 'channel 3 physical channel'); 
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel3LoadProfileResolution', 'channel 3 load profile resolution');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel3PeakKWResolution', 'channel 3 peak kw resolution');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel3LastIntervalDemandResolution', 'channel 3 last interval demand resolution');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel3Multiplier', 'channel 3 multiplier');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel4Type', 'channel 4 type');                         
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel4PhysicalChannel', 'channel 4 physical channel');  
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel4LoadProfileResolution', 'channel 4 load profile resolution');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel4PeakKWResolution', 'channel 4 peak kw resolution');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel4LastIntervalDemandResolution', 'channel 4 last interval demand resolution');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470LoadProfileChannels', 'channel4Multiplier', 'channel 4 multiplier');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470ConfigurationByte', 'enableDst', 'enable dst');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470ConfigurationByte', 'electronicMeter', 'electronic meter');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470ConfigurationByte', 'timeAdjustTolerance', 'time adjust tolerance');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('addressing', 'serviceProviderId', 'service provider id');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('relays', 'relayATimer', 'relay a timer');
+INSERT INTO DeviceConfigConverter_temp VALUES ('relays', 'relayBTimer', 'relay b timer');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470PrecannedTable', 'tableReadInterval', 'table read interval');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470PrecannedTable', 'meterNumber', 'meter number');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct470PrecannedTable', 'tableType', 'table type');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule1rate0', 'schedule1rate0');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule1rate1', 'schedule1rate1');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule1rate2', 'schedule1rate2');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule1rate3', 'schedule1rate3');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule1rate4', 'schedule1rate4');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule1rate5', 'schedule1rate5');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule1time0', 'schedule1time0');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule1time1', 'schedule1time1');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule1time2', 'schedule1time2');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule1time3', 'schedule1time3');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule1time4', 'schedule1time4');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule1time5', 'schedule1time5');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule2rate0', 'schedule2rate0');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule2rate1', 'schedule2rate1');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule2rate2', 'schedule2rate2');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule2rate3', 'schedule2rate3');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule2rate4', 'schedule2rate4');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule2rate5', 'schedule2rate5');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule2time0', 'schedule2time0');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule2time1', 'schedule2time1');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule2time2', 'schedule2time2');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule2time3', 'schedule2time3');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule2time4', 'schedule2time4');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule2time5', 'schedule2time5');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule3rate0', 'schedule3rate0');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule3rate1', 'schedule3rate1');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule3rate2', 'schedule3rate2');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule3rate3', 'schedule3rate3');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule3rate4', 'schedule3rate4');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule3rate5', 'schedule3rate5');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule3time0', 'schedule3time0');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule3time1', 'schedule3time1');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule3time2', 'schedule3time2');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule3time3', 'schedule3time3');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule3time4', 'schedule3time4');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule3time5', 'schedule3time5');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule4rate0', 'schedule4rate0');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule4rate1', 'schedule4rate1');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule4rate2', 'schedule4rate2');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule4rate3', 'schedule4rate3');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule4rate4', 'schedule4rate4');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule4rate5', 'schedule4rate5');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule4time0', 'schedule4time0');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule4time1', 'schedule4time1');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule4time2', 'schedule4time2');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule4time3', 'schedule4time3');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule4time4', 'schedule4time4');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'schedule4time5', 'schedule4time5');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'defaultRate', 'default rate');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'holiday', 'holiday');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'monday', 'monday');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'tuesday', 'tuesday');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'wednesday', 'wednesday');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'thursday', 'thursday');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'friday', 'friday');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'saturday', 'saturday');
+INSERT INTO DeviceConfigConverter_temp VALUES ('tou', 'sunday', 'sunday');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430DemandLoadProfile', 'demandInterval', 'demand interval');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430DemandLoadProfile', 'loadProfileInterval1', 'load profile interval 1');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430LoadProfileChannels', 'channel1Type', 'channel 1 type');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430LoadProfileChannels', 'channel1PhysicalChannel', 'channel 1 physical channel');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430LoadProfileChannels', 'channel1LoadProfileResolution', 'channel 1 load profile resolution');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430LoadProfileChannels', 'channel1PeakKWResolution', 'channel 1 peak kw resolution');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430LoadProfileChannels', 'channel1LastIntervalDemandResolution', 'channel 1 last interval demand resolution');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430LoadProfileChannels', 'channel2Type', 'channel 2 type');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430LoadProfileChannels', 'channel2PhysicalChannel', 'channel 2 physical channel');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430LoadProfileChannels', 'channel2LoadProfileResolution', 'channel 2 load profile resolution');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430LoadProfileChannels', 'channel2PeakKWResolution', 'channel 2 peak kw resolution');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430LoadProfileChannels', 'channel2LastIntervalDemandResolution', 'channel 2 last interval demand resolution');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430LoadProfileChannels', 'channel3Type', 'channel 3 type');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430LoadProfileChannels', 'channel3PhysicalChannel', 'channel 3 physical channel');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430LoadProfileChannels', 'channel3LoadProfileResolution', 'channel 3 load profile resolution');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430LoadProfileChannels', 'channel3PeakKWResolution', 'channel 3 peak kw resolution');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430LoadProfileChannels', 'channel3LastIntervalDemandResolution', 'channel 3 last interval demand resolution');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430LoadProfileChannels', 'channel4Type', 'channel 4 type');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430LoadProfileChannels', 'channel4PhysicalChannel', 'channel 4 physical channel');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430LoadProfileChannels', 'channel4LoadProfileResolution', 'channel 4 load profile resolution');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430LoadProfileChannels', 'channel4PeakKWResolution', 'channel 4 peak kw resolution');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430LoadProfileChannels', 'channel4LastIntervalDemandResolution', 'channel 4 last interval demand resolution');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430ConfigurationByte', 'enableDst', 'enable dst');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430ConfigurationByte', 'timeAdjustTolerance', 'time adjust tolerance');
+
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430PrecannedTable', 'tableReadInterval', 'table read interval');
+INSERT INTO DeviceConfigConverter_temp VALUES ('mct430PrecannedTable', 'tableType', 'table type');
+
+-- Mappings have been entered. Create Device Type-to-Category Type mappings
+CREATE TABLE TypeToCategoryConverter_temp (
+    ConfigType VARCHAR(60),
+    CategoryType VARCHAR(60),
+    CONSTRAINT PK_TypeToCategoryConverter PRIMARY KEY (ConfigType, CategoryType)
+);
+GO
+
+-- DNP
+INSERT INTO TypeToCategoryConverter_temp VALUES ('DNP', 'dnp');
+
+-- MCT420
+INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT420', 'meterParameters');
+INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT420', 'displayItems');
+
+-- MCT430
+INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT430', 'timeZone');
+INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT430', 'addressing');
+INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT430', 'mct430DemandLoadProfile');
+INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT430', 'mct430LoadProfileChannels');
+INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT430', 'mct430ConfigurationByte');
+INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT430', 'mct430PrecannedTable');
+
+-- MCT440
+INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT440', 'timeZone');
+INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT440', 'mct440Configuration');
+INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT440', 'mct440PhaseLoss');
+INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT440', 'mct440Addressing');
+INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT440', 'mct440Tou');
+
+-- MCT470
+INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT470', 'timeZone');
+INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT470', 'addressing');
+INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT470', 'mct470DemandLoadProfile');
+INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT470', 'mct470LoadProfileChannels');
+INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT470', 'mct470ConfigurationByte');
+INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT470', 'mct470PrecannedTable');
+INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT470', 'relays');
+INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT470', 'tou');
+
+-- Map the category types to their PAO types.
+CREATE TABLE ConfigTypeToDeviceType_temp (
+    ConfigType VARCHAR(60),
+    PaoType    VARCHAR(60),
+    CONSTRAINT PK_ConfigTypeToDeviceTypeTemp PRIMARY KEY (ConfigType, PaoType)
+);
+GO
+
+-- DNP
+INSERT INTO ConfigTypeToDeviceType_temp VALUES ('DNP', 'RTU-DNP');
+INSERT INTO ConfigTypeToDeviceType_temp VALUES ('DNP', 'RTU-DART');
+INSERT INTO ConfigTypeToDeviceType_temp VALUES ('DNP', 'CBC DNP');
+INSERT INTO ConfigTypeToDeviceType_temp VALUES ('DNP', 'CBC 6510');
+INSERT INTO ConfigTypeToDeviceType_temp VALUES ('DNP', 'CBC 7020');
+INSERT INTO ConfigTypeToDeviceType_temp VALUES ('DNP', 'CBC 7022');
+INSERT INTO ConfigTypeToDeviceType_temp VALUES ('DNP', 'CBC 7023');
+INSERT INTO ConfigTypeToDeviceType_temp VALUES ('DNP', 'CBC 7024');
+INSERT INTO ConfigTypeToDeviceType_temp VALUES ('DNP', 'CBC 8020');
+INSERT INTO ConfigTypeToDeviceType_temp VALUES ('DNP', 'CBC 8024');
+
+-- MCT420
+INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT420', 'MCT-420cL');
+INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT420', 'MCT-420cD');
+INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT420', 'MCT-420fL');
+INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT420', 'MCT-420fD');
+
+-- MCT430
+INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT430', 'MCT-430A');
+INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT430', 'MCT-430A3');
+INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT430', 'MCT-430S4');
+INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT430', 'MCT-430SL');
+
+-- MCT440
+INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT440', 'MCT-440-2131B');
+INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT440', 'MCT-440-2132B');
+INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT440', 'MCT-440-2133B');
+
+-- MCT470
+INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT470', 'MCT-470');
+
+-- Create the DeviceConfigurationDeviceTypes table
+CREATE TABLE DeviceConfigDeviceTypes (
+   DeviceConfigDeviceTypeId NUMERIC              NOT NULL,
+   DeviceConfigurationId NUMERIC              NULL,
+   PaoType              VARCHAR(30)          NOT NULL,
+   CONSTRAINT PK_DeviceConfigDeviceTypes PRIMARY KEY (DeviceConfigDeviceTypeId)
+);
+GO
+
+ALTER TABLE DeviceConfigDeviceTypes
+   ADD CONSTRAINT AK_DevConDevTypes_CatIdDevType UNIQUE (DeviceConfigurationId, PaoType);
+GO
+
+ALTER TABLE DeviceConfigDeviceTypes
+   ADD CONSTRAINT FK_DevConfDevTypes_DevConfig FOREIGN KEY (DeviceConfigurationId)
+      REFERENCES DeviceConfiguration (DeviceConfigurationId)
+         ON DELETE CASCADE;
+GO
+
+-- Populate the DeviceConfigDeviceTypes table.
+INSERT INTO DeviceConfigDeviceTypes (DeviceConfigDeviceTypeId, DeviceConfigurationId, PaoType)
+    SELECT ROW_NUMBER() OVER (ORDER BY DC.DeviceConfigurationId),
+        DC.DeviceConfigurationId,
+        T.PaoType
+    FROM DeviceConfiguration DC 
+    JOIN ConfigTypeToDeviceType_temp T ON DC.Type = T.ConfigType;
+
+-- Create the new category table.
+CREATE TABLE DeviceConfigCategory (
+   DeviceConfigCategoryId NUMERIC              NOT NULL,
+   CategoryType         VARCHAR(60)          NOT NULL,
+   Name                 VARCHAR(100)          NOT NULL,
+   CONSTRAINT PK_DeviceConfigCategory PRIMARY KEY (DeviceConfigCategoryId)
+);
+GO
+
+-- Create the new DeviceConfigCategoryItem table.
+CREATE TABLE DeviceConfigCategoryItem (
+   DeviceConfigurationItemId NUMERIC              NOT NULL,
+   DeviceConfigCategoryId NUMERIC              NULL,
+   ItemName             VARCHAR(60)          NOT NULL,
+   ItemValue            VARCHAR(60)          NOT NULL,
+   CONSTRAINT PK_DeviceConfigCategoryItem PRIMARY KEY (DeviceConfigurationItemId)
+);
+GO
+
+ALTER TABLE DeviceConfigCategoryItem
+   ADD CONSTRAINT AK_DevConCatItem_CatIdItemName UNIQUE (DeviceConfigCategoryId, ItemName);
+GO
+
+ALTER TABLE DeviceConfigCategoryItem
+   ADD CONSTRAINT FK_DevConfCatItem_DevConfCat FOREIGN KEY (DeviceConfigCategoryId)
+      REFERENCES DeviceConfigCategory (DeviceConfigCategoryId)
+         ON DELETE CASCADE;
+GO
+
+-- Create the new DeviceConfigCategoryMap table.
+CREATE TABLE DeviceConfigCategoryMap (
+   DeviceConfigurationId NUMERIC              NOT NULL,
+   DeviceConfigCategoryId NUMERIC              NOT NULL,
+   CONSTRAINT PK_DeviceConfigCategoryMap PRIMARY KEY (DeviceConfigurationId, DeviceConfigCategoryId)
+);
+GO
+
+ALTER TABLE DeviceConfigCategoryMap
+   ADD CONSTRAINT FK_DevConCatMap_DevCon FOREIGN KEY (DeviceConfigurationId)
+      REFERENCES DeviceConfiguration (DeviceConfigurationId)
+         ON DELETE CASCADE;
+GO
+
+ALTER TABLE DeviceConfigCategoryMap
+   ADD CONSTRAINT FK_DevConfCatMap_DevConfCat FOREIGN KEY (DeviceConfigCategoryId)
+      REFERENCES DeviceConfigCategory (DeviceConfigCategoryId)
+         ON DELETE CASCADE;
+GO
+
+-- Create a temporary table to hold the config-to-category data.
+CREATE TABLE ConfigToCategory_temp (
+    DeviceConfigCategoryId NUMERIC NOT NULL,
+    DeviceConfigurationId NUMERIC NOT NULL,
+    CategoryType VARCHAR(60) NOT NULL,
+    CategoryName VARCHAR(100) NOT NULL
+);
+
+INSERT INTO ConfigToCategory_temp (DeviceConfigCategoryId, DeviceConfigurationId, CategoryType, CategoryName)
+    SELECT ROW_NUMBER() OVER (ORDER BY DC.DeviceConfigurationId),
+        DC.DeviceConfigurationId,
+        T.CategoryType,
+        DC.Name + ' ' + T.CategoryType + ' Category'
+    FROM DeviceConfiguration DC 
+    JOIN TypeToCategoryConverter_temp T ON DC.Type = T.ConfigType;
+
+INSERT INTO DeviceConfigCategory (DeviceConfigCategoryId, CategoryType, Name)
+    SELECT DeviceConfigCategoryId, CategoryType, CategoryName
+    FROM ConfigToCategory_temp;
+    
+
+INSERT INTO DeviceConfigCategoryMap (DeviceConfigurationId, DeviceConfigCategoryId)
+    SELECT DeviceConfigurationId, DeviceConfigCategoryId
+    FROM ConfigToCategory_temp;
+    
+DELETE FROM DeviceConfigurationItem
+WHERE FieldName IN ('Voltage Profile Interval', 'Demand Interval', 'kW/kVar Profile Interval')
+  AND DeviceConfigurationId IN (SELECT DeviceConfigurationId 
+                                FROM DeviceConfiguration 
+                                WHERE Type = 'MCT440');
+
+DELETE FROM DeviceConfigurationItem
+WHERE FieldName = 'Meter Number' 
+  AND DeviceConfigurationId IN (SELECT DeviceConfigurationId 
+                                FROM DeviceConfiguration 
+                                WHERE Type = 'MCT430');
+
+UPDATE DeviceConfigurationItem SET Value = 
+    CASE
+        WHEN FieldName = 'Enable DST' AND Value = '1' THEN 'true'
+        WHEN FieldName = 'Enable DST' AND Value = '0' THEN 'false'
+        ELSE Value
+    END;
+
+INSERT INTO DeviceConfigCategoryItem (DeviceConfigurationItemId, DeviceConfigCategoryId, ItemName, ItemValue)
+    SELECT ROW_NUMBER() OVER (ORDER BY CT.DeviceConfigCategoryId, D.NewFieldName),
+        CT.DeviceConfigCategoryId,
+        D.NewFieldName,
+        DCI.Value
+    FROM DeviceConfiguration DC 
+        JOIN DeviceConfigurationItem DCI ON DCI.DeviceConfigurationId = DC.DeviceConfigurationId
+        JOIN TypeToCategoryConverter_temp T ON DC.Type = T.ConfigType
+        JOIN ConfigToCategory_temp CT ON CT.DeviceConfigurationId = DC.DeviceConfigurationId
+        JOIN DeviceConfigConverter_temp D ON D.OldFieldName = DCI.FieldName
+    WHERE T.CategoryType = D.CategoryType AND CT.CategoryType = T.CategoryType;
+        
+DROP TABLE DeviceConfigConverter_temp;
+DROP TABLE TypeToCategoryConverter_temp;
+DROP TABLE ConfigToCategory_temp;
+DROP TABLE ConfigTypeToDeviceType_temp;
+
+ALTER TABLE DeviceConfiguration DROP COLUMN Type;
+
+DROP TABLE DeviceConfigurationItem;
+
+EXEC sp_rename 'DEVICECONFIGURATION', 'DeviceConfiguration', OBJECT;
+EXEC sp_rename 'PK_DEVICECONFIGURATION', 'PK_DeviceConfiguration', OBJECT;
+EXEC sp_rename 'DEVICECONFIGURATIONDEVICEMAP', 'DeviceConfigurationDeviceMap', OBJECT;
+EXEC sp_rename 'PK_DEVICECONFIGURATIONDEVICEMA', 'PK_DeviceConfigDeviceMap', OBJECT;
+EXEC sp_rename 'FK_DEVICECO_REFERENCE_DEVICECO', 'FK_DevConfigDevMap_DevConfig', OBJECT;
+EXEC sp_rename 'FK_DEVICECO_REFERENCE_YUKONPAO', 'FK_DevConfigDevMap_YukonPao', OBJECT;
+/* End YUK-12240 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
