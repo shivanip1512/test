@@ -384,9 +384,8 @@ function selectPadCharSelectOption(jQuerySelect, value) {
     jQuerySelect.selectedIndex = 2;
 }
 
-// TODO FIXME VERIFY THIS WORKS
 function selectFormatOption(jQuerySelect, value) { 
-    
+
     if(value == '') {
         value = 'No Format';
     }
@@ -402,7 +401,7 @@ function selectFormatOption(jQuerySelect, value) {
 
 function updateFormatName(){
     var theDiv = jQuery('#preview');
-    
+
     //save everything first so that everything that can be submitted is up to date 
     save();
     var URL = "/dynamicBilling/updateFormatName";
@@ -412,7 +411,7 @@ function updateFormatName(){
         URL, //encodeURIComponent(URL), 
         {
             method: "post",
-            
+
             //if successful, display the string to the page
             onSuccess: function(transport){
                 var errorText = transport.responseText;
@@ -424,7 +423,7 @@ function updateFormatName(){
                     formatInfoCanBeSaved = true;
                 }
             },
-            
+
             //any exception raised on the java side is displayed on the page
             onFailure: function(transport){
                 theDiv.html("<label style='color: red;'>" + transport.responseText + "</label>");
@@ -441,7 +440,7 @@ function updateFormatName(){
 }
 
 function updatePreview(){
-    
+
     var theDiv = jQuery('#preview');
 
     //save everything first so that everything that can be submitted is up to date 
@@ -456,21 +455,19 @@ function updatePreview(){
         flashYellow(theDiv);
         prevHighlight = new Date();
     }
-//    if (jQuery("formatName").val() == undefined) {
-//        return;
-//    }
+
     //the ajax request to the server
     new Ajax.Request(
         URL, //encodeURIComponent(URL), 
         {
             method: "post",
-            
+
             //if successful, display the string to the page
             onSuccess: function(transport){
                 theDiv.html(transport.responseText);
                 patternCanBeSaved = true;
             },
-            
+
             //any exception raised on the java side is displayed on the page
             onFailure: function(transport){
                 theDiv.html("<label style='color: red;'>" + transport.responseText + "</label>");
@@ -478,13 +475,13 @@ function updatePreview(){
             },
 
             parameters: { 
-            
+
                 //send these to the server: delimiter, header, footer, field array, format id, name of format
                 delimiter : jQuery("#delimiter").val() ,
                 header : jQuery("#headerField").val() , 
                 footer : jQuery("#footerField").val() , 
                 fieldArray : jQuery("#fieldArray").val(), 
-                
+
                 //this is format id, -1 if new format creation
                 formatId: jQuery("#formatId").val(), 
                 formatName: jQuery("#formatName").val()
