@@ -10,7 +10,7 @@ import org.springframework.validation.Errors;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.service.PhoneNumberFormattingService;
-import com.cannontech.web.stars.dr.operator.model.ContactDto;
+import com.cannontech.web.common.ContactDto;
 import com.cannontech.web.stars.dr.operator.model.ContactNotificationDto;
 
 

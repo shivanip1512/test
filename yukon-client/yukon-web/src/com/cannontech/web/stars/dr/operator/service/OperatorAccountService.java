@@ -5,8 +5,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.ContactDto;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
-import com.cannontech.web.stars.dr.operator.model.ContactDto;
 import com.cannontech.web.stars.dr.operator.model.OperatorGeneralUiExtras;
 
 public interface OperatorAccountService {

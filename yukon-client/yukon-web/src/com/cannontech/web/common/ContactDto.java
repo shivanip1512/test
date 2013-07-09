@@ -1,9 +1,11 @@
-package com.cannontech.web.stars.dr.operator.model;
+package com.cannontech.web.common;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.common.util.LazyList;
+import com.cannontech.web.stars.dr.operator.model.ContactNotificationDto;
+import com.cannontech.web.stars.dr.operator.model.ContactNotificationDtoSupplier;
 
 public class ContactDto {
 	

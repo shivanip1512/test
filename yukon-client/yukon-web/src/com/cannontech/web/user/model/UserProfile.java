@@ -7,14 +7,14 @@ import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.web.stars.dr.operator.model.ContactDto;
+import com.cannontech.web.common.ContactDto;
 import com.cannontech.web.stars.dr.operator.model.ContactNotificationDto;
 
 /**
  * TODO FIXME:  MOVE ContactDto into a more common package, eg. com.cannontech.web.common >>> SEE ROSS
  * 
  * 
- * @see com.cannontech.web.stars.dr.operator.model.ContactDto
+ * @see com.cannontech.web.common.ContactDto
  */
 public class UserProfile {
 

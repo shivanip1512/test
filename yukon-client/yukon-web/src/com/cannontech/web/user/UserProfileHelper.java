@@ -32,7 +32,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.user.UserGroup;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.admin.userGroupEditor.RoleListHelper;
-import com.cannontech.web.stars.dr.operator.model.ContactDto;
+import com.cannontech.web.common.ContactDto;
 import com.cannontech.web.stars.dr.operator.service.OperatorAccountService;
 import com.cannontech.web.stars.service.PasswordResetService;
 import com.cannontech.web.user.model.UserProfile;
