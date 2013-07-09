@@ -348,7 +348,7 @@ public class EventLogDaoImpl implements EventLogDao {
 
         SearchResult<EventLog> results = new SearchResult<EventLog>();
         if (StringUtils.isEmpty(searchString)) {
-            Log.warn("getPagedSearchResultByUsername(..): Attempted query with blank searchString.  Returning no results.");
+            Log.info("findEventsByStringAndPaginate(..): Attempted query with blank searchString.  Returning no results.");
             return results;
         }
 
