@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -63,6 +64,14 @@ public class BillingController {
         setupJobs(modelMap);
 
         return "billing.jsp";
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "schedules")
+    public String schedules(ModelMap modelMap, YukonUserContext userContext, HttpServletRequest request) throws ServletRequestBindingException {
+        String to = home(modelMap, userContext, request);
+        modelMap.addAttribute("showTabGeneration", false);
+        modelMap.addAttribute("showTabSchedule", true);
+        return to;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "_jobs.html")
