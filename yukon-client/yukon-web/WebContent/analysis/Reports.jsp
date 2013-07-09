@@ -279,12 +279,14 @@ function makeFirstSelectedFilterValueVisible() {
 	final ReportModelBase<?> model = REPORT_BEAN.getModel();
     final ReportController controller = REPORT_BEAN.getReportController();
     boolean supportPdf = controller == null ? true : controller.supportsPdf();
+
+    String fromURI = request.getRequestURI() + (groupType == null ? "" : "?groupType="+ groupType);
 %>
 
 	  <form name="reportForm" method="post" action="<%=request.getContextPath()%>/servlet/ReportGenerator?" onSubmit="return checkDates()">
 	  <!-- THE EXTRA INPUT TYPES ARE MAKING THE DOWNLOAD DIALOG APPEAR TWO TIMES -->
-	  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
-	  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
+	  <input type="hidden" name="REDIRECT" value="<%= fromURI %>">
+	  <input type="hidden" name="REFERRER" value="<%= fromURI %>">
 	  <input type="hidden" name="ecID" value="<%=REPORT_BEAN.getEnergyCompanyID() %>">
 	  <input type="hidden" name="ACTION" value="DownloadReport">
 	  <cti:msg key="yukon.web.reportSelection" var="reportSelectionTitle"/>
