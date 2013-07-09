@@ -28,14 +28,17 @@
             <jsp:include page="_settings.jsp"></jsp:include>
         </div>
     </cti:tabbedContentSelectorContent>
-
-    <cti:msg key="yukon.web.billing.tab.setup.title" var="tab_setup" />
-    <cti:tabbedContentSelectorContent selectorName="${tab_setup}" initiallySelected="${showTabSetup}">
-        <div id="billing_setup_overview">
-            <jsp:include page="../amr/dynamicBilling/_overview.jsp"></jsp:include>
-        </div>
-    </cti:tabbedContentSelectorContent>
-
+    
+    
+    <cti:checkRolesAndProperties value="DYNAMIC_BILLING_FILE_SETUP">
+        <cti:msg key="yukon.web.billing.tab.setup.title" var="tab_setup" />
+        <cti:tabbedContentSelectorContent selectorName="${tab_setup}" initiallySelected="${showTabSetup}">
+            <div id="billing_setup_overview">
+                <jsp:include page="../amr/dynamicBilling/_overview.jsp"></jsp:include>
+            </div>
+        </cti:tabbedContentSelectorContent>
+    </cti:checkRolesAndProperties>
+    
     <cti:msg key="yukon.web.billing.tab.schedules.title" var="tab_sched"/>
     <cti:tabbedContentSelectorContent selectorName="${tab_sched}" tabId="tab_schedules" initiallySelected="${showTabSchedule}">
         <div id="billing_schedules_jobs">
