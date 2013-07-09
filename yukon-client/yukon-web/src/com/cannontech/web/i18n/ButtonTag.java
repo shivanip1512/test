@@ -116,7 +116,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
     @Override
     public void doTag() throws JspException, IOException, NoSuchMessageException {
     	
-    	RenderMode mode = renderMode == null ? RenderMode.BUTTON : getModeForAttribute(renderMode);
+    	RenderMode mode = renderMode == null ? RenderMode.BUTTON : RenderMode.getByValue(renderMode);
     	
         MessageScope scope = MessageScopeHelper.forRequest(getRequest());
         try {
@@ -252,30 +252,30 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
         }
         return retVal;
     }
-    
+
     /* renderMode is to describe how the button should look:
      * Possible values for renderMode are 'image', 'labeledImage' and 'button' (default) */
     private enum RenderMode {
-    	IMAGE("image"),
-    	LABELED_IMAGE("labeledImage"),
-    	BUTTON_IMAGE("buttonImage"),
-    	BUTTON("button");
-    	
-    	private String attributeName;
-    	
-    	private RenderMode(String attributeName) {
-    		this.attributeName = attributeName;
-    	}
+        IMAGE("image"),
+        LABELED_IMAGE("labeledImage"),
+        BUTTON_IMAGE("buttonImage"),
+        BUTTON("button");
+
+        private String attributeValue;
+
+        private RenderMode(String attributeValue) {
+            this.attributeValue = attributeValue;
+        }
+
+        private static RenderMode getByValue(String attribute) {
+            for (RenderMode mode : RenderMode.values()) {
+                if (mode.attributeValue.equalsIgnoreCase(attribute)) {
+                    return mode;
+                }
+            }
+            throw new IllegalArgumentException("Invalid render mode [" + attribute + "], possible values are image, labeledImage, buttonImage, and button (default)");
+        }
     }
-    
-    private RenderMode getModeForAttribute(String attribute) {
-		for (RenderMode mode : RenderMode.values()) {
-			if (mode.attributeName.equalsIgnoreCase(attribute)) {
-				return mode;
-			}
-		}
-		throw new IllegalArgumentException("Invalid render mode [" + attribute + "], possible values are image, labeledImage, buttonImage, and button (default)");
-	}
 
     @Override
     public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
