@@ -255,6 +255,8 @@ public class SiteMapHelper {
                 MatchStyle.all, YukonRoleProperty.DEMAND_RESPONSE),
         ACTIVE_LOAD_GROUPS(SiteMapCategory.DR, "yukon.web.modules.dr.home.activeLoadGroupsQuickSearch", "/dr/loadGroup/list?state=active", 
                 MatchStyle.all, YukonRoleProperty.DEMAND_RESPONSE),
+        DIRECT_CONTROL(SiteMapCategory.DR, "yukon.web.direct", "/operator/LoadControl/oper_direct.jsp",
+                MatchStyle.all, YukonRoleProperty.DIRECT_CONTROL),
 
         AREAS(SiteMapCategory.VV, "yukon.web.modules.capcontrol.areas.normal.pageName", "/capcontrol/tier/areas", 
                 MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS),
