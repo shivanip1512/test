@@ -49,17 +49,17 @@ import com.cannontech.web.widget.support.impl.CachingWidgetParameterGrabber;
  */
 public class TrendWidget extends WidgetControllerBase {
 
-    // injected dependencies
-    private DeviceDao deviceDao = null;
-    private AttributeService attributeService = null;
-    private Map<String, AttributeGraphType> supportedAttributeGraphMap = null;
-    private DateFormattingService dateFormattingService = null;
     @Autowired private UserPreferenceService prefService;
-    private CachingWidgetParameterGrabber cachingWidgetParameterGrabber = null;
-    private BuiltInAttribute defaultAttribute = null;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ChartService chartService;
     @Autowired private FlotChartService flotChartService;
+    @Autowired private DeviceDao deviceDao;
+    @Autowired private AttributeService attributeService;
+    @Autowired private DateFormattingService dateFormattingService;
+
+    private Map<String, AttributeGraphType> supportedAttributeGraphMap = null;
+    private CachingWidgetParameterGrabber cachingWidgetParameterGrabber = null;
+    private BuiltInAttribute defaultAttribute = null;
 
     @Override
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -79,7 +79,7 @@ public class TrendWidget extends WidgetControllerBase {
         String attributeStr = cachingWidgetParameterGrabber.getCachedStringParameter(request, "attribute", defaultAttribute);
         BuiltInAttribute attribute = BuiltInAttribute.valueOf(attributeStr);
         
-        List<AttributeGraphType> availableAttributeGraphs = new ArrayList<AttributeGraphType>();
+        List<AttributeGraphType> availableAttributeGraphs = new ArrayList<>();
         Set<Attribute> existingAttributes = attributeService.getAllExistingAttributes(device);
         
         AttributeGraphType attributeGraphType = null;
@@ -113,21 +113,21 @@ public class TrendWidget extends WidgetControllerBase {
         PreferenceGraphTimeDurationOption prefPeriod = prefService.updatePreferenceOrGetDefaultChartPeriod(requestedChartPeriod, user);
         ChartPeriod chartPeriod = prefPeriod == null ? ChartPeriod.NOPERIOD : prefPeriod.getChartPeriod();
         String period = chartPeriod.name();
-
+        
         if (chartPeriod == ChartPeriod.NOPERIOD) {
 
             String startDateParam = cachingWidgetParameterGrabber.getCachedStringParameter(request, "startDateParam", null);
             String stopDateParam = cachingWidgetParameterGrabber.getCachedStringParameter(request, "stopDateParam", null);
 
             if (startDateParam != null) {
-            	try{
+            	try {
             		startDate = dateFormattingService.flexibleDateParser(startDateParam, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
-            	}catch(ParseException e){}
+            	} catch(ParseException e) {}
             }
             if (stopDateParam != null) {
-                try{
+                try {
                     stopDate = dateFormattingService.flexibleDateParser(stopDateParam, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
-                }catch(ParseException e){}
+                } catch(ParseException e) {}
             }
 
         } else {
@@ -203,28 +203,13 @@ public class TrendWidget extends WidgetControllerBase {
     }
 
     @Required
-    public void setDeviceDao(DeviceDao paoDao) {
-        this.deviceDao = paoDao;
-    }
-
-    @Required
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-
-    @Required
     public void setSupportedAttributeGraphSet(List<AttributeGraphType> supportedAttributeGraphSet) {
-        supportedAttributeGraphMap = new LinkedHashMap<String, AttributeGraphType>();
+        supportedAttributeGraphMap = new LinkedHashMap<>();
         for (AttributeGraphType agt : supportedAttributeGraphSet) {
             supportedAttributeGraphMap.put(agt.getLabel(), agt);
         }
     }
 
-    @Required
-    public void setDateFormattingService(
-            DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
-    }
     @Required
     public void setCachingWidgetParameterGrabber(
             CachingWidgetParameterGrabber cachingWidgetParameterGrabber) {

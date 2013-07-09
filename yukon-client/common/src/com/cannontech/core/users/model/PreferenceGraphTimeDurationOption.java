@@ -9,15 +9,18 @@ import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.common.i18n.DisplayableEnum;
 
 public enum PreferenceGraphTimeDurationOption implements DisplayableEnum {
-    DAY_1(ChartPeriod.DAY),
-    WEEK_1(ChartPeriod.WEEK),
-    MONTH_1(ChartPeriod.MONTH),
-    MONTH_3(ChartPeriod.THREEMONTH),
-    YEAR_1(ChartPeriod.YEAR);
+    DAY_1(ChartPeriod.DAY, Duration.standardDays(1)),
+    WEEK_1(ChartPeriod.WEEK, Duration.standardDays(7)),
+    MONTH_1(ChartPeriod.MONTH, Duration.standardDays(30)),
+    MONTH_3(ChartPeriod.THREEMONTH, Duration.standardDays(90)),
+    YEAR_1(ChartPeriod.YEAR, Duration.standardDays(365));
 
     final private ChartPeriod chartPeriod;
-    private PreferenceGraphTimeDurationOption(ChartPeriod period) {
+    final private Duration duration;
+
+    private PreferenceGraphTimeDurationOption(ChartPeriod period, Duration duration) {
         this.chartPeriod = period;
+        this.duration = duration;
     }
 
     @Override
@@ -39,25 +42,7 @@ public enum PreferenceGraphTimeDurationOption implements DisplayableEnum {
     }
 
     public Date backdate(Date date) {
-        Instant instant = new Instant(date);
-        switch (this) {
-            case YEAR_1: 
-                instant.minus(Duration.standardDays(365));
-                break;
-            case MONTH_3:
-                instant.minus(Duration.standardDays(90));
-                break;
-            case MONTH_1:
-                instant.minus(Duration.standardDays(30));
-                break;
-            case WEEK_1:
-                instant.minus(Duration.standardDays(7));
-                break;
-            case DAY_1:
-                instant.minus(Duration.standardDays(1));
-                break;
-        }
-        return instant.toDate();
+        return new Instant(date).minus(duration).toDate();
     }
 
     /**
@@ -78,8 +63,8 @@ public enum PreferenceGraphTimeDurationOption implements DisplayableEnum {
             case DAY:
                 return DAY_1;
             case NOPERIOD:
+            default:
                 return null;
         }
-        return null;
     }
 }

@@ -1137,9 +1137,6 @@
               <ref local="widgetInput.deviceId"/>
            </set>
         </property>
-        <property name="deviceDao" ref="deviceDao" />
-        <property name="attributeService" ref="attributeService" />
-        <property name="dateFormattingService" ref="dateFormattingService" />
         <property name="defaultAttribute">
           <value>USAGE</value>
         </property>
@@ -1214,9 +1211,6 @@
               <ref local="widgetInput.deviceId"/>
            </set>
         </property>
-        <property name="deviceDao" ref="deviceDao" />
-        <property name="attributeService" ref="attributeService" />
-        <property name="dateFormattingService" ref="dateFormattingService" />
         <property name="supportedAttributeGraphSet">
             <list>
                 <bean class="com.cannontech.common.chart.model.AttributeGraphType">

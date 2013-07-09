@@ -7,8 +7,13 @@
 
 <script type="text/javascript"> 
 jQuery(function () {
+  if (jQuery.cookie('trendingSettingsShown') === 'true') {
+      jQuery(".trend-settings").show();
+  }
+
   jQuery(".trend-settings-anchor").click(function(e) {
-    jQuery(".trend-settings").toggle();
+      var settingsToggle = jQuery(".trend-settings").toggle();
+      jQuery.cookie('trendingSettingsShown', settingsToggle.is(":visible"));
       e.stopPropagation();
       return true;
   });
@@ -107,10 +112,12 @@ jQuery(function () {
         				</td>
         			</tr>
         		</c:when>
-            
+
         		<c:otherwise>
-        			<input type="hidden" name="startDateParam" value="${startDate}">
-        			<input type="hidden" name="stopDateParam" value="${stopDate}"> 
+        		    <span class="dn">
+	        		    <dt:date name="startDateParam" value="${startDate}"/>
+	        		    <dt:date name="stopDateParam" value="${stopDate}"/>
+        		    </span>
         		</c:otherwise>
                 
     		</c:choose>
