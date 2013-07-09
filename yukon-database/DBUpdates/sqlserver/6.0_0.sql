@@ -240,7 +240,7 @@ ALTER TABLE FileExportHistory ALTER COLUMN ExportPath VARCHAR(300) NULL;
 GO
 
 INSERT INTO JobProperty (JobPropertyId, JobId, Name, Value)
-   (SELECT MAX(JP2.JobPropertyId) + ROW_NUMBER() OVER(ORDER BY J.JobId) As JobPropertyId, J.JobId, 'timestampPatternField', '-yyyyMMdd'
+   (SELECT MAX(JP2.JobPropertyId) + ROW_NUMBER() OVER(ORDER BY J.JobId) As JobPropertyId, J.JobId, 'timestampPatternField', 'yyyyMMddHHmmss'
     FROM Job J
     JOIN JobProperty JP ON J.JobId = JP.JobId
     JOIN JobProperty JP2 ON 1 = 1
@@ -296,18 +296,18 @@ DECLARE @channel INT,
 
 SELECT @channel = 1;
 
-SELECT @newItemId = (SELECT MAX(DeviceConfigurationItemId) + 1 FROM DeviceConfigurationItem);
-
 WHILE (@channel < 5)
 BEGIN
     SELECT @itemId = MIN(DCI.DeviceConfigurationItemId)
     FROM DeviceConfigurationItem DCI 
     JOIN DeviceConfiguration DC ON DCI.DeviceConfigurationId = DC.DeviceConfigurationId
     WHERE DCI.FieldName = 'channel config ' + CAST(@channel AS VARCHAR)
-      AND DC.Type = 'MCT470';
+      AND DC.Type IN ('MCT470', 'MCT430');
 
     WHILE (@itemId IS NOT NULL)
     BEGIN
+        SELECT @newItemId = (SELECT MAX(DeviceConfigurationItemId) + 1 FROM DeviceConfigurationItem);
+
         INSERT INTO DeviceConfigurationItem VALUES (@newItemId,
                                                     (SELECT DeviceConfigurationId 
                                                      FROM DeviceConfigurationItem 
@@ -317,7 +317,7 @@ BEGIN
                                                      FROM DeviceConfigurationItem 
                                                      WHERE DeviceConfigurationItemId = @itemId) & 3);
 
-        INSERT INTO DeviceConfigurationItem VALUES (@newItemId+1,
+        INSERT INTO DeviceConfigurationItem VALUES (@newItemId + 1,
                                                     (SELECT DeviceConfigurationId 
                                                      FROM DeviceConfigurationItem 
                                                      WHERE DeviceConfigurationItemId = @itemId),
@@ -332,9 +332,7 @@ BEGIN
         FROM DeviceConfigurationItem DCI 
         JOIN DeviceConfiguration DC ON DCI.DeviceConfigurationId = DC.DeviceConfigurationId
         WHERE DCI.FieldName = 'channel config ' + CAST(@channel AS VARCHAR)
-          AND DC.Type = 'MCT470';
-
-        SELECT @newItemId = MAX(DeviceConfigurationItemId) + 1 FROM DeviceConfigurationItem;
+          AND DC.Type IN ('MCT470', 'MCT430');
     END
 
     SELECT @channel = @channel + 1;
@@ -357,7 +355,7 @@ BEGIN
                                                  FROM DeviceConfigurationItem 
                                                  WHERE DeviceConfigurationItemId = @itemId) & 1);
 
-    INSERT INTO DeviceConfigurationItem VALUES (@newItemId+1,
+    INSERT INTO DeviceConfigurationItem VALUES (@newItemId + 1,
                                                 (SELECT DeviceConfigurationId 
                                                  FROM DeviceConfigurationItem 
                                                  WHERE DeviceConfigurationItemId = @itemId),
@@ -375,51 +373,6 @@ BEGIN
       AND DC.Type = 'MCT470';
 
     SELECT @newItemId = MAX(DeviceConfigurationItemId) + 1 FROM DeviceConfigurationItem;
-END
-
-SELECT @channel = 1;
-
-WHILE (@channel < 5)
-BEGIN
-    SELECT @itemId = MIN(DCI.DeviceConfigurationItemId) 
-    FROM DeviceConfigurationItem DCI
-    JOIN DeviceConfiguration DC ON DCI.DeviceConfigurationId = DC.DeviceConfigurationId 
-    WHERE FieldName = 'channel config ' + CAST(@channel AS VARCHAR)
-      AND DC.Type = 'MCT430';
-
-    WHILE (@itemId IS NOT NULL)
-    BEGIN
-        INSERT INTO DeviceConfigurationItem VALUES (@newItemId,
-                                                    (SELECT DeviceConfigurationId 
-                                                     FROM deviceconfigurationitem 
-                                                     WHERE DeviceConfigurationItemId = @itemId),
-                                                    'channel ' + CAST(@channel AS VARCHAR) + ' type',
-                                                    (SELECT CAST(Value AS INT) 
-                                                     FROM DeviceConfigurationItem 
-                                                     WHERE DeviceConfigurationItemId = @itemId) & 3);
-
-        INSERT INTO DeviceConfigurationItem VALUES (@newItemId+1,
-                                                    (SELECT DeviceConfigurationId 
-                                                     FROM DeviceConfigurationItem 
-                                                     WHERE DeviceConfigurationItemId = @itemId),
-                                                    'channel ' + CAST(@channel AS VARCHAR) + ' physical channel',
-                                                    (SELECT CAST(Value/4 AS INT) 
-                                                     FROM DeviceConfigurationItem 
-                                                     WHERE DeviceConfigurationItemId = @itemId) & 15);
-
-        DELETE FROM DeviceConfigurationItem WHERE DeviceConfigurationItemId = @itemId;
-
-        SELECT @itemId = MIN(DCI.DeviceConfigurationItemId) 
-        FROM DeviceConfigurationItem DCI JOIN DeviceConfiguration DC 
-            ON DCI.DeviceConfigurationId = DC.DeviceConfigurationId 
-        WHERE FieldName = 'channel config ' + CAST(@channel AS VARCHAR)
-            AND DC.Type = 'MCT430';
-
-        SELECT @newItemId = MAX(DeviceConfigurationItemId) + 1 FROM DeviceConfigurationItem;
-    END
-
-    SELECT @channel = @channel + 1
-
 END
 
 SELECT @itemId = MIN(DCI.DeviceConfigurationItemId) 
@@ -740,7 +693,6 @@ INSERT INTO DeviceConfigConverter_temp VALUES ('mct430ConfigurationByte', 'timeA
 INSERT INTO DeviceConfigConverter_temp VALUES ('mct430PrecannedTable', 'tableReadInterval', 'table read interval');
 INSERT INTO DeviceConfigConverter_temp VALUES ('mct430PrecannedTable', 'tableType', 'table type');
 
--- Mappings have been entered. Create Device Type-to-Category Type mappings
 CREATE TABLE TypeToCategoryConverter_temp (
     ConfigType VARCHAR(60),
     CategoryType VARCHAR(60),
@@ -748,14 +700,11 @@ CREATE TABLE TypeToCategoryConverter_temp (
 );
 GO
 
--- DNP
 INSERT INTO TypeToCategoryConverter_temp VALUES ('DNP', 'dnp');
 
--- MCT420
 INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT420', 'meterParameters');
 INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT420', 'displayItems');
 
--- MCT430
 INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT430', 'timeZone');
 INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT430', 'addressing');
 INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT430', 'mct430DemandLoadProfile');
@@ -763,14 +712,12 @@ INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT430', 'mct430LoadProfileCha
 INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT430', 'mct430ConfigurationByte');
 INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT430', 'mct430PrecannedTable');
 
--- MCT440
 INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT440', 'timeZone');
 INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT440', 'mct440Configuration');
 INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT440', 'mct440PhaseLoss');
 INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT440', 'mct440Addressing');
 INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT440', 'mct440Tou');
 
--- MCT470
 INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT470', 'timeZone');
 INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT470', 'addressing');
 INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT470', 'mct470DemandLoadProfile');
@@ -780,7 +727,6 @@ INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT470', 'mct470PrecannedTable
 INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT470', 'relays');
 INSERT INTO TypeToCategoryConverter_temp VALUES ('MCT470', 'tou');
 
--- Map the category types to their PAO types.
 CREATE TABLE ConfigTypeToDeviceType_temp (
     ConfigType VARCHAR(60),
     PaoType    VARCHAR(60),
@@ -788,7 +734,6 @@ CREATE TABLE ConfigTypeToDeviceType_temp (
 );
 GO
 
--- DNP
 INSERT INTO ConfigTypeToDeviceType_temp VALUES ('DNP', 'RTU-DNP');
 INSERT INTO ConfigTypeToDeviceType_temp VALUES ('DNP', 'RTU-DART');
 INSERT INTO ConfigTypeToDeviceType_temp VALUES ('DNP', 'CBC DNP');
@@ -800,27 +745,22 @@ INSERT INTO ConfigTypeToDeviceType_temp VALUES ('DNP', 'CBC 7024');
 INSERT INTO ConfigTypeToDeviceType_temp VALUES ('DNP', 'CBC 8020');
 INSERT INTO ConfigTypeToDeviceType_temp VALUES ('DNP', 'CBC 8024');
 
--- MCT420
 INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT420', 'MCT-420cL');
 INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT420', 'MCT-420cD');
 INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT420', 'MCT-420fL');
 INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT420', 'MCT-420fD');
 
--- MCT430
 INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT430', 'MCT-430A');
 INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT430', 'MCT-430A3');
 INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT430', 'MCT-430S4');
 INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT430', 'MCT-430SL');
 
--- MCT440
 INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT440', 'MCT-440-2131B');
 INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT440', 'MCT-440-2132B');
 INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT440', 'MCT-440-2133B');
 
--- MCT470
 INSERT INTO ConfigTypeToDeviceType_temp VALUES ('MCT470', 'MCT-470');
 
--- Create the DeviceConfigurationDeviceTypes table
 CREATE TABLE DeviceConfigDeviceTypes (
    DeviceConfigDeviceTypeId NUMERIC              NOT NULL,
    DeviceConfigurationId NUMERIC              NULL,
@@ -839,7 +779,6 @@ ALTER TABLE DeviceConfigDeviceTypes
          ON DELETE CASCADE;
 GO
 
--- Populate the DeviceConfigDeviceTypes table.
 INSERT INTO DeviceConfigDeviceTypes (DeviceConfigDeviceTypeId, DeviceConfigurationId, PaoType)
     SELECT ROW_NUMBER() OVER (ORDER BY DC.DeviceConfigurationId),
         DC.DeviceConfigurationId,
@@ -847,7 +786,6 @@ INSERT INTO DeviceConfigDeviceTypes (DeviceConfigDeviceTypeId, DeviceConfigurati
     FROM DeviceConfiguration DC 
     JOIN ConfigTypeToDeviceType_temp T ON DC.Type = T.ConfigType;
 
--- Create the new category table.
 CREATE TABLE DeviceConfigCategory (
    DeviceConfigCategoryId NUMERIC              NOT NULL,
    CategoryType         VARCHAR(60)          NOT NULL,
@@ -856,7 +794,6 @@ CREATE TABLE DeviceConfigCategory (
 );
 GO
 
--- Create the new DeviceConfigCategoryItem table.
 CREATE TABLE DeviceConfigCategoryItem (
    DeviceConfigurationItemId NUMERIC              NOT NULL,
    DeviceConfigCategoryId NUMERIC              NULL,
@@ -876,7 +813,6 @@ ALTER TABLE DeviceConfigCategoryItem
          ON DELETE CASCADE;
 GO
 
--- Create the new DeviceConfigCategoryMap table.
 CREATE TABLE DeviceConfigCategoryMap (
    DeviceConfigurationId NUMERIC              NOT NULL,
    DeviceConfigCategoryId NUMERIC              NOT NULL,
@@ -896,7 +832,6 @@ ALTER TABLE DeviceConfigCategoryMap
          ON DELETE CASCADE;
 GO
 
--- Create a temporary table to hold the config-to-category data.
 CREATE TABLE ConfigToCategory_temp (
     DeviceConfigCategoryId NUMERIC NOT NULL,
     DeviceConfigurationId NUMERIC NOT NULL,
@@ -935,8 +870,8 @@ WHERE FieldName = 'Meter Number'
 
 UPDATE DeviceConfigurationItem SET Value = 
     CASE
-        WHEN FieldName = 'Enable DST' AND Value = '1' THEN 'true'
-        WHEN FieldName = 'Enable DST' AND Value = '0' THEN 'false'
+        WHEN FieldName = 'enable dst' AND Value = '1' THEN 'true'
+        WHEN FieldName = 'enable dst' AND Value = '0' THEN 'false'
         ELSE Value
     END;
 
@@ -967,6 +902,7 @@ EXEC sp_rename 'DEVICECONFIGURATIONDEVICEMAP', 'DeviceConfigurationDeviceMap', O
 EXEC sp_rename 'PK_DEVICECONFIGURATIONDEVICEMA', 'PK_DeviceConfigDeviceMap', OBJECT;
 EXEC sp_rename 'FK_DEVICECO_REFERENCE_DEVICECO', 'FK_DevConfigDevMap_DevConfig', OBJECT;
 EXEC sp_rename 'FK_DEVICECO_REFERENCE_YUKONPAO', 'FK_DevConfigDevMap_YukonPao', OBJECT;
+/* End YUK-12240 */
 
 /* Start YUK-12310 */
 DELETE FROM DeviceConfigCategory 
