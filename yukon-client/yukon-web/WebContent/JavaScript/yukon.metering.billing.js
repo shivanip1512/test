@@ -226,11 +226,12 @@ if(typeof(MeteringBilling) === 'undefined') {
             }
         },
 
+        // @ #billing_setup_overview
         show_billing_setup_form : function(event) {
             MeteringBilling._STOP_EVENT(event);
             var btn = jQuery(event.currentTarget);
             var action = btn.attr('name');
-            var formatId = jQuery('#billing_setup_overview form#formatForm availableFormat :selected').val();
+            var formatId = jQuery('#formatForm availableFormat :selected').val();
 
             jQuery.ajax({
                 url: MeteringBilling._url_base_setup+"_"+ action +".html",
@@ -242,9 +243,10 @@ if(typeof(MeteringBilling) === 'undefined') {
             return false;
         },
 
+        // @ #billing_setup_overview
         delete_billing_format : function(event) {
             MeteringBilling._STOP_EVENT(event);
-            var formatId = jQuery('#billing_setup_overview form#formatForm availableFormat :selected').val();
+            var formatId = jQuery('#formatForm availableFormat :selected').val();
             if (formatId == null || formatId == undefined) { // skip it
                 MeteringBilling._do_refresh_billing_setup_list(null, null);
                 return false;
