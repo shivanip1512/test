@@ -161,7 +161,7 @@ if(typeof(UserPreferences) === 'undefined') {
 
         // The <dialog:confirm> gets hit, then it comes here:
         reset_all_preferences: function(event) {
-            var table = jQuery("table#tbl_preferences");
+            var table = jQuery("#tbl_preferences");
             var userId = jQuery("input[name='userId']").val();
 
             jQuery.ajax({
@@ -227,7 +227,7 @@ if(typeof(UserPreferences) === 'undefined') {
         },
 
         add_contact_notif_row: function(event) {
-            var new_row =jQuery("tr#template_contactNotif").clone();
+            var new_row =jQuery("#template_contactNotif").clone();
             if(new_row.length < 1) {
                 alert("INTERNAL ERROR #1: missing contact info template row");
                 return;
