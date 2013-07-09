@@ -967,7 +967,11 @@ EXEC sp_rename 'DEVICECONFIGURATIONDEVICEMAP', 'DeviceConfigurationDeviceMap', O
 EXEC sp_rename 'PK_DEVICECONFIGURATIONDEVICEMA', 'PK_DeviceConfigDeviceMap', OBJECT;
 EXEC sp_rename 'FK_DEVICECO_REFERENCE_DEVICECO', 'FK_DevConfigDevMap_DevConfig', OBJECT;
 EXEC sp_rename 'FK_DEVICECO_REFERENCE_YUKONPAO', 'FK_DevConfigDevMap_YukonPao', OBJECT;
-/* End YUK-12240 */
+
+/* Start YUK-12310 */
+DELETE FROM DeviceConfigCategory 
+WHERE CategoryType = 'mct430demandLoadProfile';
+/* End YUK-12310 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
