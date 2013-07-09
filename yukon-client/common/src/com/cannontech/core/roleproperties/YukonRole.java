@@ -1,6 +1,12 @@
 package com.cannontech.core.roleproperties;
 
-import static com.cannontech.core.roleproperties.YukonRoleCategory.*;
+import static com.cannontech.core.roleproperties.YukonRoleCategory.Application;
+import static com.cannontech.core.roleproperties.YukonRoleCategory.CapControl;
+import static com.cannontech.core.roleproperties.YukonRoleCategory.Cbc_Oneline;
+import static com.cannontech.core.roleproperties.YukonRoleCategory.Consumer;
+import static com.cannontech.core.roleproperties.YukonRoleCategory.LoadControl;
+import static com.cannontech.core.roleproperties.YukonRoleCategory.Notifications;
+import static com.cannontech.core.roleproperties.YukonRoleCategory.Operator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +36,10 @@ public enum YukonRole implements DisplayableEnum, DatabaseRepresentationSource {
     WEB_CLIENT(Application, Application.baseRoleId - 8, Application.basePropertyId - 800),
     
     CBC_SETTINGS(CapControl, CapControl.baseRoleId, CapControl.basePropertyId),
-    CBC_ONELINE_SUB_SETTINGS(Cbc_Oneline, Cbc_Oneline.baseRoleId, Cbc_Oneline.basePropertyId),
-    CBC_ONELINE_FEEDER_SETTINGS(Cbc_Oneline, Cbc_Oneline.baseRoleId - 1, Cbc_Oneline.basePropertyId - 100),
-    CBC_ONELINE_CAP_SETTINGS(Cbc_Oneline, Cbc_Oneline.baseRoleId - 2, Cbc_Oneline.basePropertyId - 200),
+    // The below are a little off. We've merged the Cbc_Oneline "category" into the CapControl category...however, we need to retain the original roleIds.
+    CBC_ONELINE_SUB_SETTINGS(CapControl, Cbc_Oneline.baseRoleId, Cbc_Oneline.basePropertyId),
+    CBC_ONELINE_FEEDER_SETTINGS(CapControl, Cbc_Oneline.baseRoleId - 1, Cbc_Oneline.basePropertyId - 100),
+    CBC_ONELINE_CAP_SETTINGS(CapControl, Cbc_Oneline.baseRoleId - 2, Cbc_Oneline.basePropertyId - 200),
 
     
     RESIDENTIAL_CUSTOMER(Consumer, Consumer.baseRoleId, Consumer.basePropertyId),

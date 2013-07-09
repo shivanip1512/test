@@ -8,8 +8,7 @@ import com.google.common.collect.Ordering;
 public enum YukonRoleCategory implements DisplayableEnum {
     Application(-100,-10000),
     CapControl(-700,-70000), 
-    Cbc_Oneline(-1000,-100000),
-    CiCustomer(), //TODO appears unused? No roles in the category.
+    @Deprecated Cbc_Oneline(-1000,-100000),
     Consumer(-400,-40000), 
     LoadControl(-900,-90000), 
     Notifications(-800,-80000), 

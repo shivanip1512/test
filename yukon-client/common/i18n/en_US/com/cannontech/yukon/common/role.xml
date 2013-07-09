@@ -4,11 +4,9 @@
 
     <!-- Categories -->
     <entry key="yukon.common.role.category.Application">Application</entry>
-    <entry key="yukon.common.role.category.CapControl">CapControl</entry>
-    <entry key="yukon.common.role.category.Cbc_Oneline">Cbc_Oneline</entry>
-    <entry key="yukon.common.role.category.CiCustomer">CiCustomer</entry>
+    <entry key="yukon.common.role.category.CapControl">Cap Control</entry>
     <entry key="yukon.common.role.category.Consumer">Consumer</entry>
-    <entry key="yukon.common.role.category.LoadControl">LoadControl</entry>
+    <entry key="yukon.common.role.category.LoadControl">Demand Response</entry>
     <entry key="yukon.common.role.category.Notifications">Notifications</entry>
     <entry key="yukon.common.role.category.Operator">Operator</entry>
 
