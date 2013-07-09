@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.cannontech.common.bulk.collection.device.ArchiveDataAnalysisCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
+import com.cannontech.common.bulk.model.AdaStatus;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -47,8 +48,10 @@ public class AdaResultsController {
         ArchiveAnalysisResult result = new ArchiveAnalysisResult(analysis);
         
         // Warn the user if the analysis was interrupted
-        flashScope.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.analysis.analysisInterruptedWarning"));
-        
+        if(analysis.getStatus() == AdaStatus.INTERRUPTED) {
+            flashScope.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.analysis.analysisInterruptedWarning"));
+        }
+            
         // Build device collection
         DeviceCollection collection = adaCollectionProducer.buildDeviceCollection(analysisId);
         model.addAttribute("deviceCollection", collection);
