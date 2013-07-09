@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<cttp-Operation cttpVersion="CTTP-V0R1">
-<cttp-UserLogin userID="AuthorizedUser" userPassword="ValidPassword"/>
-<cttp-CommandStatusRequest commandTrackingCode="6F9619FF-8B86-D011-B42D-00C04FC964FF"/>
-</cttp-Operation>

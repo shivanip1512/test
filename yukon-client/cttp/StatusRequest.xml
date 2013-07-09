@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?> 
-<cttp-Operation cttpVersion="CTTP-V0R1">
-<cttp-UserLogin userID="AuthorizedUser" userPassword="ValidPassword" utilityID="SCE"/>
-<cttp-ServerStatusRequest/>
-</cttp-Operation>
