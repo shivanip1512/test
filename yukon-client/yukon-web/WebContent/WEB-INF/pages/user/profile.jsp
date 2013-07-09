@@ -12,11 +12,6 @@
 
 <tags:setFormEditMode mode="${mode}"/>
 
-<style type="text/css">
-#tbl_preferences tr input[type="text"] {margin: 0 0 0 5px;width: 200px;}
-#divActivityStream {max-height: 430px;}
-</style>
-
 <div class="column_12_12">
     <div class="column one">
     
