@@ -29,15 +29,15 @@ Yukon.ui.passwordManager = {
 		});
 		
 		jQuery("input:password:not(.f-current)").keyup(function(e){
-			var confirm = jQuery("input.confirm[type=password]").val();
-			var password = jQuery("input.new[type=password]").val();
-			var meetsRequirements = jQuery(".description ul:first > li > .icon-cross");
+			var confirm = jQuery("input.confirm[type=password]").val(),
+			    password = jQuery("input.new[type=password]").val(),
+			    meetsRequirements = jQuery(".description ul:first > li > .icon-cross");
 			jQuery(".no_match").toggleClass("vh", confirm === password);
-			if(meetsRequirements.length == 0 && 
+			if (meetsRequirements.length == 0 && 
 				confirm === password && 
-				password.length >= Yukon.ui.passwordManager.minLength){
+				password.length >= Yukon.ui.passwordManager.minLength) {
 				jQuery("button.unlock").removeAttr("disabled");
-			}else{
+			} else {
 				jQuery("button.unlock").attr("disabled", "true");
 			}
 		});
@@ -45,22 +45,24 @@ Yukon.ui.passwordManager = {
 	
 	indicatePassFail: function(data){
         jQuery(".password_manager .icon-accept, .password_manager .icon-cross, .password_manager .icon-blank").removeClass("icon-accept").removeClass("icon-cross").removeClass("icon-blank");
-		var errors = ['policy_errors', 'rule_errors'];
-		var validations = ['policy_validations', 'rule_validations'];
-		for(var i=0; i<validations.length; i++){
-			if(data[validations[i]]){
-				for(var j=0; j<data[validations[i]].length; j++){
+		var errors = ['policy_errors', 'rule_errors'],
+		    validations = ['policy_validations', 'rule_validations'],
+		    i,
+		    j;
+		for (i=0; i < validations.length; i++) {
+			if (data[validations[i]]) {
+				for (j=0; j <data[validations[i]].length; j++) {
 					jQuery("." + data[validations[i]][j] + " .icon").removeClass("icon-cross").addClass("icon-accept");
 				}
 			}
 		}
 		
-		for(var i=0; i<errors.length; i++){
-            if(data[errors[i]]){
-                for(var j=0; j<data[errors[i]].length; j++){
-                    jQuery("." + data[errors[i]][j] + " .icon").removeClass("icon-accept").addClass("icon-cross");
+		for (i=0; i<errors.length; i++) {
+                    if (data[errors[i]]) {
+                        for (j=0; j < data[errors[i]].length; j++) {
+                            jQuery("." + data[errors[i]][j] + " .icon").removeClass("icon-accept").addClass("icon-cross");
+                        }
+                    }
                 }
-            }
-        }
 	}
 };

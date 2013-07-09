@@ -6,43 +6,44 @@ var errorHighlight = new Date(); //this is to indicate when is the last error hi
 // Method to add fields to the selected fields select input
 function addToSelected(roundingMode){
     
-    var field = jQuery('#availableFields').val();
-    var selectedFields = jQuery('#selectedFields');
+    var field = jQuery('#availableFields').val(),
+        selectedFields = jQuery('#selectedFields'),
+        newOpt = document.createElement('option'),
+        options;
     
-    var newOpt = document.createElement('option');
     newOpt.setAttribute('value', field);
     
-    newOpt.setAttribute("format","");
-    if(field.include('timestamp')) {
-        newOpt.setAttribute("format","MM/dd/yyyy");
+    newOpt.setAttribute('format','');
+    if (field.include('timestamp')) {
+        newOpt.setAttribute('format','MM/dd/yyyy');
     } else if (field.include('reading')) {
         if (field.include('Demand')) {
-            newOpt.setAttribute("format","##0.00");
+            newOpt.setAttribute('format','##0.00');
         } else if (field.include('Consumption')) {
-            newOpt.setAttribute("format","#####");
+            newOpt.setAttribute('format','#####');
         }
     }
 
     if (field.include('reading') ||
             field.include('timestamp')) {
-        newOpt.setAttribute("readingType", "ELECTRIC");
+        newOpt.setAttribute('readingType', 'ELECTRIC');
     } else {
-        newOpt.setAttribute("readingType", "DEVICE_DATA");
+        newOpt.setAttribute('readingType', 'DEVICE_DATA');
     }
     
-    newOpt.setAttribute("readingChannel", "ONE");
-    newOpt.setAttribute("roundingMode", roundingMode);
-    newOpt.setAttribute("maxLength","0");
-    newOpt.setAttribute("padChar"," ");
-    newOpt.setAttribute("padSide","none");
-    newOpt.setAttribute("selected","selected");
+    newOpt.setAttribute('readingChannel', 'ONE');
+    newOpt.setAttribute('roundingMode', roundingMode);
+    newOpt.setAttribute('maxLength','0');
+    newOpt.setAttribute('padChar',' ');
+    newOpt.setAttribute('padSide','none');
+    newOpt.setAttribute('selected','selected');
     newOpt.appendChild(document.createTextNode(field));
     selectedFields.append(newOpt);
     
     jQuery('#upArrowButton').removeAttr('disabled');
     
     // move down to newly added item, just makes IE sad though =~(
-    var options = selectedFields.children("option");
+    options = selectedFields.children('option');
     selectedFields.selectedIndex = options.length - 1;
     
     selectedFieldsChanged();
@@ -51,11 +52,12 @@ function addToSelected(roundingMode){
 // Method to remove fields from the selected fields select input
 function removeFromSelected(){
     
-    var selectedFields = jQuery('#selectedFields');
-    var options = selectedFields.children("option");
+    var selectedFields = jQuery('#selectedFields'),
+        options = selectedFields.children('option'),
+        i;
     
-    for(var i = options.length - 1;i>=0; i--){
-        if(options[i].selected){
+    for (i = options.length - 1; i>=0; i--) {
+        if (options[i].selected) {
             selectedFields.remove(i);
         }
     }
@@ -65,69 +67,76 @@ function removeFromSelected(){
 
 function selectedFieldsChanged(){
 
-    var selectedFields = jQuery('#selectedFields');
+    var selectedFields = jQuery('#selectedFields'),
+        options,
+        option,
+        valueDiv,
+        selectedSelectedFields,
+        timestampDiv,
+        plainTextDiv,
+        genericFormatDiv;
 
     // Enable/Disable left arrow
-    var selectedSelectedFields = (selectedFields).val();
+    selectedSelectedFields = (selectedFields).val();
     
-    if(selectedSelectedFields && selectedSelectedFields.length > 0) {
+    if (selectedSelectedFields && selectedSelectedFields.length > 0) {
         jQuery('#removeButton').removeAttr('disabled');
         
         // Enable/Disable up arrow
-        if(selectedFields.selectedIndex == 0) {
+        if (selectedFields.selectedIndex == 0) {
             jQuery('#upArrowButton').attr('disabled', 'disabled');
         } else {
             jQuery('#upArrowButton').removeAttr('disabled');
         }
 
-        var options = selectedFields.find("option");
+        options = selectedFields.find('option');
         
         // Enable/Disable down arrow
-        if(options[options.length - 1].selected) {
+        if (options[options.length - 1].selected) {
             jQuery('#downArrowButton').attr('disabled', 'disabled');
         } else {
             jQuery('#downArrowButton').removeAttr('disabled');
         }
         
         // Show format ui
-        var option = selectedFields.children("option:selected");
+        option = selectedFields.children('option:selected');
         
         // Checks to see if the format is reading
-        var valueDiv = jQuery("#valueFormatDiv");
-        if(option.text().include('reading')) {
-            valueDiv.css('display',"block");
+        valueDiv = jQuery('#valueFormatDiv');
+        if (option.text().include('reading')) {
+            valueDiv.css('display','block');
             updateReadingFormatFields(option);
         } else {
-            valueDiv.css('display',"none");
+            valueDiv.css('display','none');
         }
 
         // Checks to see if the format is timestamp
-        var timestampDiv = jQuery("#timestampFormatDiv");
-        if(option.text().include('timestamp')) {
-            timestampDiv.css('display',"block");
+        timestampDiv = jQuery('#timestampFormatDiv');
+        if (option.text().include('timestamp')) {
+            timestampDiv.css('display','block');
             updateTimestampFormatFields(timestampDiv, option);
         } else {
-            timestampDiv.css('display',"none");
+            timestampDiv.css('display','none');
         }
 
         // Checks to see if the format is plain text
-        var plainTextDiv = jQuery("#plainTextDiv");
+        plainTextDiv = jQuery('#plainTextDiv');
         if(option.text() == 'Plain Text') {
-            plainTextDiv.css('display',"block");
+            plainTextDiv.css('display','block');
             updatePlainTextFormatFields(plainTextDiv, option);
         } else {
-            plainTextDiv.css('display',"none");
+            plainTextDiv.css('display','none');
         }
 
         // Checks to see if it is non of the above cases
-        var genericFormatDiv = jQuery("#genericFormatDiv");
-        if(option.text().include('reading') || 
+        genericFormatDiv = jQuery('#genericFormatDiv');
+        if (option.text().include('reading') || 
            option.text().include('timestamp') ||
            option.text() == 'Plain Text'){
            
-            genericFormatDiv.css('display',"none");
+            genericFormatDiv.css('display','none');
         } else {
-            genericFormatDiv.css('display',"block");
+            genericFormatDiv.css('display','block');
             updateGenericFormatFields(genericFormatDiv, option);
         }
         
@@ -144,7 +153,7 @@ function addFieldButton() {
     var sel = jQuery('#addFieldsDropDown');
     sel.toggle();
 
-    if (sel.find(":visible").length > 0) {
+    if (sel.find(':visible').length > 0) {
     
         jQuery('#addButton').attr('disabled', 'disabled');
     
@@ -157,14 +166,18 @@ function addFieldButton() {
 }
 
 function saveButton(){
-    var form = jQuery("#billingFormatForm");
-    form.attr("action", "save");
+    var form = jQuery('#billingFormatForm'),
+        errorMsg = [],
+        name,
+        err,
+        currTime;
+
+    form.attr('action', 'save');
     save();
-    var errorMsg = [];
     
-    var name = jQuery("#formatName").val();
-    var err = jQuery('#errorMsg');
-    err.html("&nbsp;");
+    name = jQuery('#formatName').val();
+    err = jQuery('#errorMsg');
+    err.html('&nbsp;');
     
     //name and fields cannot be empty;
     if (jQuery(selectedFields).val().length == 0){
@@ -172,7 +185,7 @@ function saveButton(){
     }
     if (name.blank()){
         errorMsg.push(BILLING_ERRORS['nameNotEmpty']);
-        jQuery("#formatName").val("");
+        jQuery('#formatName').val('');
     }
     if (name.length > 100){
         errorMsg.push(BILLING_ERRORS['nameMaxLength']);
@@ -188,8 +201,8 @@ function saveButton(){
         // TODO FIXME: This needs to highlight appropriate field(s)
     }
     if (errorMsg.length > 0){
-        err.html(BILLING_ERRORS['errorSaving'] +"<br />" + errorMsg.join("<br/>") + "<br/>");
-        var currTime = new Date();
+        err.html(BILLING_ERRORS['errorSaving'] +'<br />' + errorMsg.join('<br/>') + '<br/>');
+        currTime = new Date();
         //check if it's less than 2 sec = 2000 ms
         if ( currTime - errorHighlight >= 2000){
             //do highlighting and set new date 
@@ -229,7 +242,7 @@ function getAttributeValue(option, attribute){
     
     var value = option.attr(attribute);
     if(value == null){
-        return "";
+        return '';
     }
     
     return value;
@@ -239,12 +252,12 @@ function getAttributeValue(option, attribute){
 //to disable or enable delimiter input textbox
 function updateDelimiter(){
 
-    var selection = jQuery("#delimiterChoice").val();
-    var delimiter = jQuery("#delimiter");
+    var selection = jQuery('#delimiterChoice').val(),
+        delimiter = jQuery('#delimiter');
     
     if (selection == 'Custom'){
         delimiter.readOnly = false;
-        delimiter.val("");
+        delimiter.val('');
         delimiter.focus();
     } else {
         delimiter.readOnly = 'readOnly';
@@ -253,82 +266,87 @@ function updateDelimiter(){
     updatePreview();
 }
 
-function updateFormat(headerText, method){ 
+function updateFormat(headerText, method) { 
 
-//    var selectedFields = jQuery("#selectedFields");
-//    var options = selectedFields.children("option");
-    var selectedFields = document.getElementById('selectedFields');
-    var options = selectedFields.options;
-    var index = selectedFields.selectedIndex;
+//    var selectedFields = jQuery('#selectedFields');
+//    var options = selectedFields.children('option');
+    var selectedFields = document.getElementById('selectedFields'),
+        options = selectedFields.options,
+        index = selectedFields.selectedIndex,
+        option,
+        attributeValue,
+        selectDiv,
+        patternSelected,
+        inputValue;
     
-    if (index != -1 && method != 'noUpdate'){
-        var option = options[index];
+    if (index != -1 && method != 'noUpdate') {
+        option = options[index];
 
-        switch (method){
-            case "maxLength":
-                var attributeValue = jQuery("#"+ headerText+'MaxLength').val();
+        switch (method) {
+            case 'maxLength':
+                attributeValue = jQuery('#'+ headerText+'MaxLength').val();
                 option.setAttribute('maxLength', attributeValue);
                 break;
-            case "padChar":
-                var attributeValue = jQuery("#"+ headerText+'PadChar').val();
-                selectPadCharSelectOption(jQuery("#"+ headerText+'PadCharSelect'), attributeValue);
+            case 'padChar':
+                attributeValue = jQuery('#'+ headerText+'PadChar').val();
+                selectPadCharSelectOption(jQuery('#'+ headerText+'PadCharSelect'), attributeValue);
                 option.setAttribute('padChar', attributeValue);
                 break;
-            case "padSide":
-                var attributeValue = jQuery("#"+ headerText+'PadSide').val();
+            case 'padSide':
+                attributeValue = jQuery('#'+ headerText+'PadSide').val();
                 option.setAttribute('padSide', attributeValue);
                 updatePadSideSelect(selectedFields, attributeValue);
                 checkPaddingSide(headerText, attributeValue);
                 break;
-            case "padCharSelect":
-                var attributeValue = getAttributeValue(option, 'padChar');
-                var selectDiv = jQuery("#"+ headerText+'PadCharSelect');
-                var patternSelected = selectDiv.find("option:selected");
+            case 'padCharSelect':
+                attributeValue = getAttributeValue(option, 'padChar');
+                selectDiv = jQuery('#'+ headerText+'PadCharSelect');
+                patternSelected = selectDiv.find('option:selected');
                 if (patternSelected.length > 0) {
-                    var inputValue = patternSelected.val();
+                    inputValue = patternSelected.val();
                     switch(inputValue) {
-                        case "Space":
-                            attributeValue = " ";
+                        case 'Space':
+                            attributeValue = ' ';
                             break;
-                        case "Zero":
-                            attributeValue = "0";
+                        case 'Zero':
+                            attributeValue = '0';
                             break;
-                        case "Custom":
-                            attributeValue = "";
-                            jQuery("#"+ headerText+'PadChar').focus();
+                        case 'Custom':
+                            attributeValue = '';
+                            jQuery('#'+ headerText+'PadChar').focus();
                             break;
                         default:
                             break;
                     }
                 }
                 option.setAttribute('padChar', attributeValue);
-                jQuery("#"+ headerText+'PadChar').val(attributeValue);
+                jQuery('#'+ headerText+'PadChar').val(attributeValue);
                 break;
-            case "readingType":
-                var attributeValue = jQuery("#"+ headerText+'ReadingType').val();
+            case 'readingType':
+                attributeValue = jQuery('#'+ headerText+'ReadingType').val();
                 option.setAttribute('readingType', attributeValue);
                 break;
-            case "readingChannel":
-                var attributeValue = jQuery("#"+ headerText+'ReadingChannel').val();
+            case 'readingChannel':
+                attributeValue = jQuery('#'+ headerText+'ReadingChannel').val();
                 option.setAttribute('readingChannel', attributeValue);
                 break;
-            case "roundingMode":
-                var attributeValue = jQuery("#"+ headerText+'RoundingMode').val();
+            case 'roundingMode':
+                attributeValue = jQuery('#'+ headerText+'RoundingMode').val();
                 option.setAttribute('roundingMode', attributeValue);
                 break;
-            case "formatWithSelect":
-                var attributeValue = getAttributeValue(option, 'format');
+            case 'formatWithSelect':
+                attributeValue = getAttributeValue(option, 'format');
                 
-                var selectDiv = jQuery("#"+ headerText+'FormatSelect');
-                var patternSelected = selectDiv.find("option:selected");
-                if (patternSelected.length > 0){
-                    var inputValue = patternSelected.val();
+                selectDiv = jQuery('#'+ headerText+'FormatSelect');
+                patternSelected = selectDiv.find('option:selected');
+                if (patternSelected.length > 0) {
+                    inputValue = patternSelected.val();
                     switch(inputValue) {
-                        case "No Format":
-                            attributeValue = "";
+                        case 'No Format':
+                            attributeValue = '';
                             break;
-                        case "Custom":
-                            jQuery("#"+ headerText+'Format').focus();
+                        case 'Custom':
+                            jQuery('#'+ headerText+'Format').focus();
                             break;
                         default:
                             attributeValue = inputValue;
@@ -336,15 +354,15 @@ function updateFormat(headerText, method){
                     }
                 }
                 options[index].setAttribute('format', attributeValue);
-                jQuery("#"+ headerText+'Format').val(attributeValue);
+                jQuery('#'+ headerText+'Format').val(attributeValue);
                 break;
-            case "formatWithSelectText":
-                var attributeValue = jQuery("#"+ headerText+'Format').val();
+            case 'formatWithSelectText':
+                attributeValue = jQuery('#'+ headerText+'Format').val();
                 options[index].setAttribute('format', attributeValue);
-                selectFormatOption(jQuery("#"+ headerText+'FormatSelect'), attributeValue);
+                selectFormatOption(jQuery('#'+ headerText+'FormatSelect'), attributeValue);
                 break;
-            case "formatWithoutSelect":
-                var attributeValue = jQuery("#"+ headerText+'Format').val();
+            case 'formatWithoutSelect':
+                attributeValue = jQuery('#'+ headerText+'Format').val();
                 options[index].setAttribute('format', attributeValue);
                 break;
             default:
@@ -358,25 +376,28 @@ function updateFormat(headerText, method){
 }
 
 function checkPaddingSide(headerText, padSideValue){
-    if (padSideValue == "none") {
-        jQuery("#"+ headerText+'PadChar').attr('disabled','disabled');
-        jQuery("#"+ headerText+'PadCharSelect').attr('disabled','disabled');
+    if (padSideValue == 'none') {
+        jQuery('#'+ headerText+'PadChar').attr('disabled','disabled');
+        jQuery('#'+ headerText+'PadCharSelect').attr('disabled','disabled');
     } else {
-        jQuery("#"+ headerText+'PadChar').removeAttr('disabled');
-        jQuery("#"+ headerText+'PadCharSelect').removeAttr('disabled');
+        jQuery('#'+ headerText+'PadChar').removeAttr('disabled');
+        jQuery('#'+ headerText+'PadCharSelect').removeAttr('disabled');
     }
 }
 
-function selectPadCharSelectOption(jQuerySelect, value) { 
+function selectPadCharSelectOption(jQuerySelect, value) {
+    var options,
+        i;
+
     if (value == '0') {
         value = 'Zero';
     }
     if (value == ' ') {
         value = 'Space';
     }
-    var options = jQuerySelect.children("option");
-    for (var i = 0; i < options.length; i++){
-        if (options[i].text == value){
+    options = jQuerySelect.children('option');
+    for (i = 0; i < options.length; i++) {
+        if (options[i].text == value) {
             jQuerySelect.selectedIndex = i;
             return;
         }
@@ -385,12 +406,14 @@ function selectPadCharSelectOption(jQuerySelect, value) {
 }
 
 function selectFormatOption(jQuerySelect, value) { 
+    var options,
+        i;
 
-    if(value == '') {
+    if (value == '') {
         value = 'No Format';
     }
-    var options = jQuerySelect.children("option");
-    for (var i = 0; i < options.length; i++){
+    options = jQuerySelect.children('option');
+    for (i = 0; i < options.length; i++){
         if (options[i].text == value){
             jQuerySelect.selectedIndex = i;
             return;
@@ -400,40 +423,41 @@ function selectFormatOption(jQuerySelect, value) {
 }
 
 function updateFormatName(){
-    var theDiv = jQuery('#preview');
+    var theDiv = jQuery('#preview'),
+        URL;
 
     //save everything first so that everything that can be submitted is up to date 
     save();
-    var URL = "/dynamicBilling/updateFormatName";
+    URL = '/dynamicBilling/updateFormatName';
 
     //the ajax request to the server
     new Ajax.Request(
         URL, //encodeURIComponent(URL), 
         {
-            method: "post",
+            method: 'post',
 
             //if successful, display the string to the page
             onSuccess: function(transport){
                 var errorText = transport.responseText;
-                if(errorText.length > 0) {
+                if (errorText.length > 0) {
                     jQuery('#errorMsg').html(errorText);
                     formatInfoCanBeSaved = false;
                 } else {
-                    jQuery('#errorMsg').html("&nbsp;");
+                    jQuery('#errorMsg').html('&nbsp;');
                     formatInfoCanBeSaved = true;
                 }
             },
 
             //any exception raised on the java side is displayed on the page
             onFailure: function(transport){
-                theDiv.html("<label style='color: red;'>" + transport.responseText + "</label>");
+                theDiv.html("<label style='color: red;'>" + transport.responseText + '</label>');
                 patternCanBeSaved = false;
             },
 
             parameters: { 
                 //this is format id, -1 if new format creation
-                formatId: jQuery("#formatId").val(), 
-                formatName: jQuery("#formatName").val()
+                formatId: jQuery('#formatId').val(), 
+                formatName: jQuery('#formatName').val()
             }
         }
     );
@@ -441,14 +465,16 @@ function updateFormatName(){
 
 function updatePreview(){
 
-    var theDiv = jQuery('#preview');
+    var theDiv = jQuery('#preview'),
+        URL,
+        currTime;
 
     //save everything first so that everything that can be submitted is up to date 
     save();
-    var URL = "/dynamicBilling/updatePreview";
+    URL = '/dynamicBilling/updatePreview';
 
-    var currTime = new Date();
-    if ( currTime - prevHighlight < 1000){
+    currTime = new Date();
+    if (currTime - prevHighlight < 1000){
         //do nothing
     } else {
         //do highlighting and set new date 
@@ -460,31 +486,31 @@ function updatePreview(){
     new Ajax.Request(
         URL, //encodeURIComponent(URL), 
         {
-            method: "post",
+            method: 'post',
 
             //if successful, display the string to the page
-            onSuccess: function(transport){
+            onSuccess: function(transport) {
                 theDiv.html(transport.responseText);
                 patternCanBeSaved = true;
             },
 
             //any exception raised on the java side is displayed on the page
-            onFailure: function(transport){
-                theDiv.html("<label style='color: red;'>" + transport.responseText + "</label>");
+            onFailure: function(transport) {
+                theDiv.html("<label style='color: red;'>" + transport.responseText + '</label>');
                 patternCanBeSaved = false;
             },
 
             parameters: { 
 
                 //send these to the server: delimiter, header, footer, field array, format id, name of format
-                delimiter : jQuery("#delimiter").val() ,
-                header : jQuery("#headerField").val() , 
-                footer : jQuery("#footerField").val() , 
-                fieldArray : jQuery("#fieldArray").val(), 
+                delimiter : jQuery('#delimiter').val() ,
+                header : jQuery('#headerField').val() , 
+                footer : jQuery('#footerField').val() , 
+                fieldArray : jQuery('#fieldArray').val(), 
 
                 //this is format id, -1 if new format creation
-                formatId: jQuery("#formatId").val(), 
-                formatName: jQuery("#formatName").val()
+                formatId: jQuery('#formatId').val(), 
+                formatName: jQuery('#formatName').val()
             }
         }
     );
@@ -497,8 +523,9 @@ function displayHelper(elem){
 
 //Helps with setting the padding side
 function updatePadSideSelect(padSideSelect, padSide){
-    var options = padSideSelect.children("option");
-    for ( var i = 0; i < options.length; i++) {
+    var options = padSideSelect.children('option'),
+        i;
+    for (i = 0; i < options.length; i++) {
         if (options[i].value == padSide){
             padSideSelect.selectedIndex = i;
         }
@@ -507,37 +534,44 @@ function updatePadSideSelect(padSideSelect, padSide){
 
 // gets all the initial values for the current selected field
 function updateReadingFormatFields(option){
+    var readingTypeValue,
+        readingChannelValue,
+        roundingModeValue,
+        format,
+        maxLength,
+        padChar,
+        padSide;
 
     // gets the initial readingType value
-    var readingTypeValue = getAttributeValue(option, 'readingType');
+    readingTypeValue = getAttributeValue(option, 'readingType');
     jQuery('#readingReadingType').val(readingTypeValue);
 
     // gets the initial readingChannel value
-    var readingChannelValue = getAttributeValue(option, 'readingChannel');
+    readingChannelValue = getAttributeValue(option, 'readingChannel');
     jQuery('#readingReadingChannel').val(readingChannelValue);
 
     // gets the initial roundingMode value
-    var roundingModeValue = getAttributeValue(option, 'roundingMode');
+    roundingModeValue = getAttributeValue(option, 'roundingMode');
     jQuery('#readingRoundingMode').val(roundingModeValue);
     
     // gets the initial format value
-    var format = getAttributeValue(option, 'format');
+    format = getAttributeValue(option, 'format');
     jQuery('#readingFormat').val(format);
     selectFormatOption(jQuery('#readingFormatSelect'), format);
     
     // get the initial maxLength value
-    var maxLength = getAttributeValue(option, 'maxLength');
+    maxLength = getAttributeValue(option, 'maxLength');
     jQuery('#readingMaxLength').val(maxLength);
 
     // get the initial padChar value
-    var padChar = getAttributeValue(option, 'padChar');
+    padChar = getAttributeValue(option, 'padChar');
     jQuery('#readingPadChar').val(padChar);
     selectPadCharSelectOption(jQuery('#readingPadCharSelect'), padChar);
 
     // get the initial padChar value
-    var padSide = getAttributeValue(option, 'padSide');
+    padSide = getAttributeValue(option, 'padSide');
     updatePadSideSelect(jQuery('#readingPadSide'), padSide);
-    if (padSide == "none") {
+    if (padSide == 'none') {
         jQuery('#readingPadChar').attr('disabled', 'disabled');
         jQuery('#readingPadCharSelect').attr('disabled', 'disabled');
     } else {
@@ -574,7 +608,7 @@ function updateTimestampFormatFields(timestampDiv, option){
     // get the initial padChar value
     var padSide = getAttributeValue(option, 'padSide');
     updatePadSideSelect(jQuery('#timestampPadSide'), padSide);
-    if (padSide == "none") {
+    if (padSide == 'none') {
         jQuery('#timestampPadChar').attr('disabled', 'disabled');
         jQuery('#timestampPadCharSelect').attr('disabled', 'disabled');
     } else {
@@ -594,24 +628,28 @@ function updatePlainTextFormatFields(plainTextDiv, option){
 
 // gets all the initial values for the current selected field
 function updateGenericFormatFields(genericFormatDiv, option){
+    var readingTypeValue,
+        maxLength,
+        padChar,
+        padSide;
 
     // gets the initial readingType value
-    var readingTypeValue = getAttributeValue(option, 'readingType');
+    readingTypeValue = getAttributeValue(option, 'readingType');
     jQuery('#genericReadingType').val(readingTypeValue);
     
     // get the initial maxLength value
-    var maxLength = getAttributeValue(option, 'maxLength');
+    maxLength = getAttributeValue(option, 'maxLength');
     jQuery('#genericMaxLength').val(maxLength);
 
     // get the initial padChar value
-    var padChar = getAttributeValue(option, 'padChar');
+    padChar = getAttributeValue(option, 'padChar');
     jQuery('#genericPadChar').val(padChar);
     selectPadCharSelectOption(jQuery('#genericPadCharSelect'), padChar);
 
     // get the initial padChar value
-    var padSide = getAttributeValue(option, 'padSide');
+    padSide = getAttributeValue(option, 'padSide');
     updatePadSideSelect(jQuery('#genericPadSide'), padSide);
-    if (padSide == "none") {
+    if (padSide == 'none') {
         jQuery('#genericPadChar').attr('disabled', 'disabled');
         jQuery('#genericPadCharSelect').attr('disabled', 'disabled');
     } else {

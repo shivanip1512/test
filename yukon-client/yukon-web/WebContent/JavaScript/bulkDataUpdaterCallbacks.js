@@ -5,39 +5,44 @@
 
 function updateProgressBar(pbarId, totalCount, completionCallback) {
     return function(data) {
-        var progressContainer = getProgressBarContainer(pbarId);
+        var progressContainer = getProgressBarContainer(pbarId),
+        completedCount;
         if (progressContainer == null) {
             return;
         }
 
-        var completedCount = data.completedCount;
+        completedCount = data.completedCount;
         setupProgressBar(pbarId, completedCount, totalCount, completionCallback);
     };
 }
 
 function updateProgressBarWithDynamicTotal(pbarId, completionCallback) {
     return function(data) {
-        var progressContainer = getProgressBarContainer(pbarId);
+        var progressContainer = getProgressBarContainer(pbarId),
+            completedCount,
+            totalCount;
         if (progressContainer == null) {
             return;
         }
 
-        var completedCount = data.completedCount;
-        var totalCount = data.totalCount;
+        completedCount = data.completedCount;
+        totalCount = data.totalCount;
         updateTotalCount(pbarId, totalCount);
         setupProgressBar(pbarId, completedCount, totalCount, completionCallback);
     };
 }
     
 function setupProgressBar(pbarId, completedCount, totalCount, completionCallback) {
-    var percentDone = 100;
+    var percentDone = 100,
+        innerWidth,
+        progressContainer;
     if (totalCount > 0) {
         percentDone = Math.floor((completedCount / totalCount) * 100);
     }
     
     try {
-        var innerWidth = getBarWidth(pbarId, completedCount, totalCount);
-        var progressContainer = getProgressBarContainer(pbarId);
+        innerWidth = getBarWidth(pbarId, completedCount, totalCount);
+        progressContainer = getProgressBarContainer(pbarId);
         progressContainer.down('.progressBarInner').style.width = innerWidth + 'px';
         progressContainer.down('.progressBarPercentComplete').innerHTML = percentDone + '%';
         progressContainer.down('.progressBarCompletedCount span').innerHTML = completedCount;
@@ -50,37 +55,41 @@ function setupProgressBar(pbarId, completedCount, totalCount, completionCallback
 
 function updateSuccessFailureProgressBar(pbarId, totalCount, completionCallback) {
     return function(data) {
-        var successCompletedCount = data.successCompletedCount;
-        var failureCompletedCount = data.failureCompletedCount;
+        var successCompletedCount = data.successCompletedCount,
+            failureCompletedCount = data.failureCompletedCount;
         setupSuccessFailureProgressBar(pbarId, totalCount, successCompletedCount, failureCompletedCount, completionCallback);
     };
 }
 
 function updateSuccessFailureProgressBarWithDynamicTotal(pbarId, completionCallback) {
     return function(data) {
-        var successCompletedCount = data.successCompletedCount;
-        var failureCompletedCount = data.failureCompletedCount;
-        var totalCount = data.totalCount;
+        var successCompletedCount = data.successCompletedCount,
+            failureCompletedCount = data.failureCompletedCount,
+            totalCount = data.totalCount;
         updateTotalCount(pbarId, totalCount);
         setupSuccessFailureProgressBar(pbarId, totalCount, successCompletedCount, failureCompletedCount, completionCallback);
     };
 }
 
 function setupSuccessFailureProgressBar(pbarId, totalCount, successCompletedCount, failureCompletedCount, completionCallback) {
-    var progressContainer = getProgressBarContainer(pbarId);
+    var progressContainer = getProgressBarContainer(pbarId),
+        totalCompletedCount,
+        percentDone,
+        successWidth,
+        failureWidth;
     if (progressContainer == null) {
         return;
     }
-    var totalCompletedCount = parseInt(successCompletedCount) + parseInt(failureCompletedCount);
+    totalCompletedCount = parseInt(successCompletedCount) + parseInt(failureCompletedCount);
 
-    var percentDone = 100;
+    percentDone = 100;
     if (totalCount > 0) {
         percentDone = Math.floor((totalCompletedCount / totalCount) * 100);
     }
 
     try {
-        var successWidth = getBarWidth(pbarId, successCompletedCount, totalCount);
-        var failureWidth = getBarWidth(pbarId, totalCompletedCount, totalCount);
+        successWidth = getBarWidth(pbarId, successCompletedCount, totalCount);
+        failureWidth = getBarWidth(pbarId, totalCompletedCount, totalCount);
         
         progressContainer.down('.progressBarInnerSuccess').style.width = successWidth + 'px';
         progressContainer.down('.progressBarInnerFailure').style.width = failureWidth + 'px';
@@ -103,14 +112,19 @@ function updateTotalCount(pbarId, totalCount) {
 }
 
 function getBarWidth(pbarId, completed, total) {
+    var progressContainer,
+        progressBorder,
+        width,
+        percentDecimal,
+        length;
     if (completed == 0 || total == 0) {
         return 0;
     }
-    var progressContainer = getProgressBarContainer(pbarId);
-    var progressBorder = progressContainer.down('.progressBarBorder');
-    var width = Math.ceil(progressBorder.measure('width'));
-    var percentDecimal = parseFloat(completed / total);
-    var length = Math.ceil(percentDecimal * width)
+    progressContainer = getProgressBarContainer(pbarId);
+    progressBorder = progressContainer.down('.progressBarBorder');
+    width = Math.ceil(progressBorder.measure('width'));
+    percentDecimal = parseFloat(completed / total);
+    length = Math.ceil(percentDecimal * width);
     return length;
 }
 
@@ -120,8 +134,9 @@ function getProgressBarContainer(pbarId) {
 
 function abortProgressBar(pbarId) {
     return function(data) {
+	var progressContainer;
         if (data.isAborted === 'true') {
-            var progressContainer = getProgressBarContainer(pbarId);
+            progressContainer = getProgressBarContainer(pbarId);
 
             // Check if we are a normal progress bar or success / fail progress bar
             if (progressContainer.down('.progressBarInner') != null) {

@@ -75,6 +75,7 @@ Yukon.ui = {
     },
     
     autoWire: function() {
+	var html;
         // register listeners
         
         /* Setup jquery ui tooltips, all elements with a 'title' attribute
@@ -84,16 +85,18 @@ Yukon.ui = {
         jQuery(document).tooltip({
             items: "*",
             content: function() {
-                var element = jQuery(this);
+                var element = jQuery(this),
+                    tip,
+                    toolTipped;
                 
-                var toolTipped = element.closest(".f-has-tooltip");
+                toolTipped = element.closest(".f-has-tooltip");
                 
                 if ( toolTipped.length ) {
-                    var tip = toolTipped.nextAll(".f-tooltip").first();
+                    tip = toolTipped.nextAll(".f-tooltip").first();
                     return tip.html();
                 }
                 else {
-                    var tip = element.attr('title');
+                    tip = element.attr('title');
                     return tip;
                 }
             }
@@ -126,10 +129,15 @@ Yukon.ui = {
         
         // Disable a form element after clicked
         jQuery(document).on('click', '.f-disableAfterClick', function() {
-            var button = jQuery(this);
+            var button = jQuery(this),
+                group,
+                label,
+                busyText,
+                originalText,
+                form;
             if (button.is(":input")) {
                 this.disabled = true;
-                var group = button.attr('data-disable-group');
+                group = button.attr('data-disable-group');
                 if (group != '') {
                     jQuery("[data-disable-group='" + group + "']").each(function(idx){
                         this.disabled = true;
@@ -144,10 +152,10 @@ Yukon.ui = {
                     button.children(".icon-action-spinner").show();
                     button.children(".icon-loading").show();
                     
-                    var label = button.children(".label");
-                    var busyText = button.attr("data-busy");
+                    label = button.children(".label");
+                    busyText = button.attr("data-busy");
                     if (label.length > 0 && busyText.length > 0) {
-                        var originalText = label.html(); 
+                        originalText = label.html(); 
                         label.html(busyText);
                         button.attr("data-busy", originalText); // just incase we need to put it back
                     }
@@ -155,7 +163,7 @@ Yukon.ui = {
                 
                 //if this is a submit button, trigger the submit event on the form
                 if (button.is(":submit")) {
-                    var form = jQuery(this.form);
+                    form = jQuery(this.form);
                     
                     //insert the name and or value of the button into the form action
                     if (typeof button.attr("name") != "undefined" && button.attr("name").length != 0) {
@@ -184,11 +192,11 @@ Yukon.ui = {
         });
 
         jQuery(document).on('click', '.f-setHomePage', function(event) {
+            var userId = jQuery("#changeHomepage_userId").val(),
+                send = document.location.href;
             event.preventDefault ? event.preventDefault() : event.returnValue = false;  // IE8 requires returnValue
             event.stopPropagation();
 
-            var userId = jQuery("#changeHomepage_userId").val();
-            var send = document.location.href;
             jQuery.ajax({
                 type: "POST",
                 url: "/user/updatePreference.json",
@@ -240,8 +248,9 @@ Yukon.ui = {
         $$(".f-toggleSwitch").each(function(container){
             
             container.select("input:radio").each(function(input, index){
+                var elem;
                 input.hide();
-                var elem = input.up('.f-toggleSwitch').down('.f-switchInterface');
+                elem = input.up('.f-toggleSwitch').down('.f-switchInterface');
                 if(!elem){
                     input.up('.f-toggleSwitch').appendChild('<div class="f-switchInterface"></div>');
                     elem = input.up('.f-toggleSwitch').down('.f-switchInterface');
@@ -258,7 +267,7 @@ Yukon.ui = {
         /* Focus the designated input element */
         Yukon.ui._autofocus();
         
-        var html = jQuery('#f-page-actions')[0];
+        html = jQuery('#f-page-actions')[0];
         
         if (typeof html !== 'undefined') {
             jQuery('#f-page-actions').remove();
@@ -306,18 +315,18 @@ Yukon.ui = {
     
     block: function(event){
        var blockElement = jQuery(event.target).closest(".f-block_this")[0];
-       if(blockElement){
+       if (blockElement) {
            Yukon.uiUtils.elementGlass.show(blockElement);
-       }else{
+       } else {
            Yukon.uiUtils.pageGlass.show();
        }
     },
     
     unblock: function(element){
         var blockElement = jQuery(event.target).closest(".f-block_this")[0];
-        if(blockElement){
+        if (blockElement) {
             Yukon.uiUtils.elementGlass.hide(blockElement);
-        }else{
+        } else {
             Yukon.uiUtils.pageGlass.hide();
         }
     },
@@ -340,12 +349,15 @@ Yukon.ui = {
     
     formatPhone: function(input){
         // strip the input down to just numbers, then format
-        var stripped = input.value.replace(/[^\d]/g, "");
-        if(stripped.length > 0) {
-            for(var i=0; i<YG.PHONE.FORMATS.length; i++){
-                var regex = YG.PHONE.FORMATS[i].regex;
-                var format = YG.PHONE.FORMATS[i].format;
-                if(regex.test(stripped)){
+        var stripped = input.value.replace(/[^\d]/g, ""),
+            i,
+            regex,
+            format;
+        if (stripped.length > 0) {
+            for (i=0; i<YG.PHONE.FORMATS.length; i++) {
+                regex = YG.PHONE.FORMATS[i].regex;
+                format = YG.PHONE.FORMATS[i].format;
+                if (regex.test(stripped)) {
                     input.value = stripped.replace(regex, format);
                     break;
                 }
@@ -360,30 +372,31 @@ Yukon.ui = {
      * string of class names to toggle on targeted elements }
      */
     toggleClass: function(args){
-        var classNames = args.classes;
+        var classNames = args.classes,
+            i;
         
-        if(typeof(args.classes) == "string"){
+        if (typeof(args.classes) == "string") {
             classNames = classNames.split(",");
         }
         
-        for(var i=0; i<classNames.length; i++){
+        for (i=0; i<classNames.length; i++) {
             $$(args.selector).invoke('toggleClassName', classNames);
         }
     },
 
     toggleInputs: function(input){
         // find matching inputs
-        var container = input.next("div.f-toggle");
-        var enable = input.checked;
+        var container = input.next("div.f-toggle"),
+            enable = input.checked;
         
-        if(enable) {
+        if (enable) {
             container.removeClassName('disabled');
         } else {
             container.addClassName('disabled');
         }
         
         container.select("input").each(function(elem){
-            if(enable) {
+            if (enable) {
                 elem.enable();
             } else {
                 elem.disable();
@@ -391,7 +404,7 @@ Yukon.ui = {
         });
         
         container.select("select").each(function(elem){
-            if(enable) {
+            if (enable) {
                 elem.enable();
             } else {
                 elem.disable();
@@ -399,7 +412,7 @@ Yukon.ui = {
         });
         
         container.select("textarea").each(function(elem){
-            if(enable) {
+            if (enable) {
                 elem.enable();
             } else {
                 elem.disable();
@@ -407,7 +420,7 @@ Yukon.ui = {
         });
         
         container.select("button").each(function(elem){
-            if(enable) {
+            if (enable) {
                 elem.enable();
             } else {
                 elem.disable();
@@ -425,26 +438,26 @@ Yukon.ui = {
     },
     
     formatTime: function(time, opts) {
+        var timeStr = ''; 
         if(!opts){
             opts = {};
         }
-        var timeStr = ''; 
-        if(opts['24']){
-            if(opts.pad){
+        if (opts['24']) {
+            if (opts.pad) {
                 timeStr = this.pad(time.getHours(), 2) + ':' + this.pad(time.getMinutes(),2);
-            }else{
+            } else {
                 timeStr = time.getHours() + ':' + this.pad(time.getMinutes(),2);
             }
-        }else{
-            var hours = time.getHours()%12 == 0 ? 12 : time.getHours()%12;
-            var meridian = '';
-            if(opts.meridian){
+        } else {
+            var hours = time.getHours()%12 == 0 ? 12 : time.getHours()%12,
+                meridian = '';
+            if (opts.meridian) {
                 meridian = time.getHours() >= 11 ? 'pm' : 'am';
             }
             
-            if(opts.pad){
+            if (opts.pad) {
                 timeStr = pad(hours, 2) + ':' + this.pad(time.getMinutes(),2) + meridian;
-            }else{
+            } else {
                 timeStr = hours + ':' + this.pad(time.getMinutes(),2) + meridian;
             }
         }
@@ -452,14 +465,18 @@ Yukon.ui = {
     },
     
     getParameterByName: function( name ) {
+        var regexS,
+            regex,
+            results;
       name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-      var regexS = "[\\?&]"+name+"=([^&#]*)";
-      var regex = new RegExp( regexS );
-      var results = regex.exec( window.location.href );
-      if( results == null )
-        return null;
-      else
-        return decodeURIComponent(results[1].replace(/\+/g, " "));
+      regexS = "[\\?&]"+name+"=([^&#]*)";
+      regex = new RegExp( regexS );
+      results = regex.exec( window.location.href );
+      if ( results == null ) {
+          return null;
+      } else {
+          return decodeURIComponent(results[1].replace(/\+/g, " "));
+      }
     },
     
     wizard: {
@@ -480,9 +497,9 @@ Yukon.ui = {
                 });
                 
                 elem.select(".f-page").each(function(elem, idx){
-                    if(idx > 0){
+                    if (idx > 0) {
                         elem.hide();
-                    }else{
+                    } else {
                         elem.show();
                     }
                 });
@@ -492,9 +509,10 @@ Yukon.ui = {
         },
         
         nextPage: function(page) {
+            var nextPage;
             page = jQuery(page);
-            if(typeof(page) != 'undefined') {
-                var nextPage = page.next(".f-page");
+            if (typeof page !== 'undefined') {
+                nextPage = page.next(".f-page");
                 if(typeof(nextPage) != 'undefined') {
                     page.hide();
                     nextPage.show();
@@ -503,9 +521,10 @@ Yukon.ui = {
         },
         
         prevPage: function(page) {
-            if(typeof(page) != 'undefined') {
-                var prevPage = page.previous(".f-page");
-                if(typeof(prevPage) != 'undefined') {
+            var prevPage;
+            if (typeof(page) != 'undefined') {
+                prevPage = page.previous(".f-page");
+                if (typeof(prevPage) != 'undefined') {
                     page.hide();
                     prevPage.show();
                 }
@@ -523,10 +542,10 @@ Yukon.ui = {
          */
         reset: function(wizard) {
             wizard = jQuery(wizard);
-            if(wizard.hasClass("f-wizard")){
+            if (wizard.hasClass("f-wizard")) {
                 jQuery(".f-page", wizard).hide();
                 jQuery(".f-page:first", wizard).show();
-            }else{
+            } else {
                 jQuery(".f-wizard .f-page").hide();
                 jQuery(".f-wizard .f-page:first").show();
             }
@@ -538,9 +557,10 @@ Yukon.ui = {
 Yukon.uiUtils = {
     elementGlass: {
         show: function(element) {
-            var element = jQuery(element);
+            var element = jQuery(element),
+                glass;
             if(element[0]){
-                var glass = element.find(".glass");
+                glass = element.find(".glass");
                 if(!glass[0]){
                     element.prepend(jQuery("<div>").addClass("glass"));
                     glass = element.find(".glass");
@@ -568,8 +588,8 @@ Yukon.uiUtils = {
         
     pageGlass : {
         show : function(args) {
-            var defaults = jQuery.extend({color:'#000', alpha: 0.25}, args);
-            var glass = jQuery("#modal_glass");
+            var defaults = jQuery.extend({color:'#000', alpha: 0.25}, args),
+                glass = jQuery("#modal_glass");
             
             if (glass == null) {
                 glass = jQuery('<div>').attr("id", "modal_glass").append(
@@ -602,14 +622,16 @@ Element.prototype.trigger = function(eventName)
 };
 
 jQuery.fn.selectText = function() {
-    var text = this[0];
+    var text = this[0],
+        range,
+        selection;
     if (document.body.createTextRange) {
-        var range = document.body.createTextRange();
+        range = document.body.createTextRange();
         range.moveToElementText(text);
         range.select();
     } else if (window.getSelection) {
-        var selection = window.getSelection();        
-        var range = document.createRange();
+        selection = window.getSelection();        
+        range = document.createRange();
         range.selectNodeContents(text);
         selection.removeAllRanges();
         selection.addRange(range);
@@ -626,8 +648,8 @@ jQuery.fn.toggleDisabled = function() {
 
 jQuery.fn.flashColor = function(args) {
     return this.each(function() {
-        var _self = jQuery(this);
-        var prevColor = _self.data('previous_color') ? _self.data('previous_color') : _self.css('background-color');
+        var _self = jQuery(this),
+            prevColor = _self.data('previous_color') ? _self.data('previous_color') : _self.css('background-color');
         _self.data('previous_color', prevColor);
 
         if (typeof(args) === 'string') {

@@ -1,9 +1,11 @@
 //JavaScript for the dropdown.tag && ajaxDropdown.tag
 jQuery(function() {
     jQuery(document).on("click", ".dropdown-container", function(e) {
+        var target,
+            menu;
         jQuery(".dropdown-container").removeClass("menu-open");
-        var target = jQuery(this);
-        var menu = target.find("ul.dropdown-menu");
+        target = jQuery(this);
+        menu = target.find("ul.dropdown-menu");
         
         //register menu
         if (menu[0]) {
@@ -30,9 +32,13 @@ jQuery(function() {
     });
     
     function positionDropdownMenu(menu, dropdown_container) {
+        var container_offset,
+            left,
+            menu_offset,
+            width;
         dropdown_container.addClass("menu-open");
 
-        var container_offset = dropdown_container.offset();
+        container_offset = dropdown_container.offset();
         //reposition when showing to ensure the menu follows the element even
         //if the page changed since the last time it was shown
         menu.removeAttr("style");
@@ -40,9 +46,9 @@ jQuery(function() {
 
         menu.toggle();
 
-        var left = jQuery(window).scrollLeft();
-        var menu_offset = menu.offset();
-        var width = menu.width();
+        left = jQuery(window).scrollLeft();
+        menu_offset = menu.offset();
+        width = menu.width();
         if (left >= menu_offset.left) {
             // our menu is spilling off the left side of the screen. Lets fix this by switching it to instead be positioned to the right
             menu.css({top: container_offset.top + dropdown_container.height() + 4, left: container_offset.left});
@@ -55,12 +61,13 @@ jQuery(function() {
     }
     
     function ajaxMenuOpen(target, e) {
-        var menu = target.data('menu');
+        var menu = target.data('menu'),
+            params;
         if (typeof(target.data('menu_items')) !== 'undefined') {
             menu.toggle();
         } else {
             target.find(".icon-cog").removeClass("icon-cog").addClass("icon-loading");
-            var params = {};
+            params = {};
             target.closest(".f-dropdown_outer_container").prev(".params").find("input").each(function() {
                 params[jQuery(this).attr("name")] = jQuery(this).val();
             });
@@ -69,9 +76,10 @@ jQuery(function() {
                 type: 'GET',
                 data: params,
                 success: function(data) {
-                    var items = [];
-                    for (var i=0; i<data.length; i++) {
-                        var list_item;
+                    var items = [],
+                        i,
+                        list_item;
+                    for (i=0; i<data.length; i++) {
                         if (data[i].divider === true) {
                             list_item = '<li class="divider"></li>';
                         } else {
