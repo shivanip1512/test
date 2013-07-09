@@ -973,6 +973,16 @@ DELETE FROM DeviceConfigCategory
 WHERE CategoryType = 'mct430demandLoadProfile';
 /* End YUK-12310 */
 
+/* Start YUK-12281 */
+CREATE TABLE CommandRequestUnsupported (
+   CommandRequestUnsupportedId NUMERIC              NOT NULL,
+   CommandRequestExecId        NUMERIC              NOT NULL,
+   DeviceId                    NUMERIC              NULL,
+   RouteId                     NUMERIC              NULL,
+   CONSTRAINT PK_CommandRequestUnsupported PRIMARY KEY nonclustered (CommandRequestUnsupportedId)
+);
+/* End YUK-12281 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

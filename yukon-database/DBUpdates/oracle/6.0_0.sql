@@ -278,6 +278,16 @@ INSERT INTO JobProperty (JobPropertyId, JobId, Name, Value)
     GROUP By J.JobId);
 /* End YUK-12291 */
 
+/* Start YUK-12281 */
+CREATE TABLE CommandRequestUnsupported  (
+   CommandRequestUnsupportedId NUMBER                          NOT NULL,
+   CommandRequestExecId        NUMBER                          NOT NULL,
+   DeviceId                    NUMBER,
+   RouteId                     NUMBER,
+   CONSTRAINT PK_CommandRequestUnsupported PRIMARY KEY (CommandRequestUnsupportedId)
+);
+/* End YUK-12281 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

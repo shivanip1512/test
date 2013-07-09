@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/8/2013 6:21:19 PM                          */
+/* Created on:     7/9/2013 8:43:50 AM                          */
 /*==============================================================*/
 
 
@@ -1702,6 +1702,17 @@ create table CommandRequestExecResult  (
 create index Indx_CmdReqExecRes_ExecId_ErrC on CommandRequestExecResult (
    CommandRequestExecId ASC,
    ErrorCode ASC
+);
+
+/*==============================================================*/
+/* Table: CommandRequestUnsupported                             */
+/*==============================================================*/
+create table CommandRequestUnsupported  (
+   CommandRequestUnsupportedId NUMBER                          not null,
+   CommandRequestExecId NUMBER                          not null,
+   DeviceId             NUMBER,
+   RouteId              NUMBER,
+   constraint PK_CommandRequestUnsupported primary key (CommandRequestUnsupportedId)
 );
 
 /*==============================================================*/

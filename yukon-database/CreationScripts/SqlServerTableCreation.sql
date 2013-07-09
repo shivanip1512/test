@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/8/2013 6:22:19 PM                          */
+/* Created on:     7/9/2013 8:45:36 AM                          */
 /*==============================================================*/
 
 
@@ -1814,6 +1814,18 @@ go
 create index Indx_CmdReqExecRes_ExecId_ErrC on CommandRequestExecResult (
 CommandRequestExecId ASC,
 ErrorCode ASC
+)
+go
+
+/*==============================================================*/
+/* Table: CommandRequestUnsupported                             */
+/*==============================================================*/
+create table CommandRequestUnsupported (
+   CommandRequestUnsupportedId numeric              not null,
+   CommandRequestExecId numeric              not null,
+   DeviceId             numeric              null,
+   RouteId              numeric              null,
+   constraint PK_CommandRequestUnsupported primary key nonclustered (CommandRequestUnsupportedId)
 )
 go
 
