@@ -14,7 +14,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
 import com.cannontech.message.capcontrol.streamable.Area;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.spring.YukonSpringHook;
@@ -30,6 +29,7 @@ public abstract class FilterObjectsReportModelBase<E> extends ReportModelBase<E>
         super(start, stop);
     }
     
+    @Override
     public LinkedHashMap<ReportFilter,List<? extends Object>> getFilterObjectsMap(int userId) {
         LinkedHashMap<ReportFilter, List<? extends Object>> result = new LinkedHashMap<ReportFilter, List<? extends Object>>();
         ReportFilter[] filterModelTypes = getFilterModelTypes();
@@ -75,19 +75,18 @@ public abstract class FilterObjectsReportModelBase<E> extends ReportModelBase<E>
                 for ( Object obj : objectsByModelType ) {
                     int objId = 0;
                     if ( filter.equals(ReportFilter.STRATEGY) ) {
-                        objId = ((LiteCapControlStrategy)obj).getStrategyId();
+                        //Strategies are not "paos", permissions do not apply to them. (obj is LiteCapControlStrategy)
                     } else {
                         objId = ((LiteYukonPAObject)obj).getPaoIdentifier().getPaoId();
+                        try {
+                            objId = capControlCache.getParentAreaID( objId );
+                            if ( areasToHide.contains( objId ) ) {
+                                objectsToRemove.add((LiteYukonPAObject)obj);
+                            }
+                        } catch (NotFoundException ignore) {} //orphan objects are shown by default
                     }
-                    
-                    try {
-                        objId = capControlCache.getParentAreaID( objId );
-                        if ( areasToHide.contains( objId ) ) {
-                            objectsToRemove.add((LiteYukonPAObject)obj);
-                        }
-                    } catch (NotFoundException ignore) {} //orphan objects are shown by default
                 }
-                
+
                 objectsByModelType.removeAll(objectsToRemove);
                 result.put(filter, objectsByModelType);
             }
