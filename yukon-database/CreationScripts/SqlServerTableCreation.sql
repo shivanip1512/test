@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/10/2013 2:21:05 PM                         */
+/* Created on:     7/10/2013 4:36:49 PM                         */
 /*==============================================================*/
 
 
@@ -11137,7 +11137,7 @@ alter table CommandRequestExecResult
          on delete cascade
 go
 
-alter table CommandRequestExecResult
+alter table CommandRequestUnsupported
    add constraint FK_ComReqUnsupp_ComReqExec foreign key (CommandRequestExecId)
       references CommandRequestExec (CommandRequestExecId)
          on delete cascade

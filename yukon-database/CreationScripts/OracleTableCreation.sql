@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/10/2013 2:27:55 PM                         */
+/* Created on:     7/10/2013 4:38:08 PM                         */
 /*==============================================================*/
 
 
@@ -10436,7 +10436,7 @@ alter table CommandRequestExecResult
       references CommandRequestExec (CommandRequestExecId)
       on delete cascade;
 
-alter table CommandRequestExecResult
+alter table CommandRequestUnsupported
    add constraint FK_ComReqUnsupp_ComReqExec foreign key (CommandRequestExecId)
       references CommandRequestExec (CommandRequestExecId)
       on delete cascade;

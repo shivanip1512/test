@@ -955,7 +955,7 @@ CREATE TABLE CommandRequestUnsupported  (
    CONSTRAINT PK_CommandRequestUnsupported PRIMARY KEY (CommandRequestUnsupportedId)
 );
 
-ALTER TABLE CommandRequestExecResult
+ALTER TABLE CommandRequestUnsupported
    ADD CONSTRAINT FK_ComReqUnsupp_ComReqExec FOREIGN KEY (CommandRequestExecId)
       REFERENCES CommandRequestExec (CommandRequestExecId)
          ON DELETE CASCADE;
