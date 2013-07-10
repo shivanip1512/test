@@ -22,6 +22,7 @@
 <cti:msg2 var="coolLabel"  key="yukon.common.thermostat.mode.COOL"/>
 <cti:msg2 var="heatLabel"  key="yukon.common.thermostat.mode.HEAT"/>
 
+<cti:msgScope paths="modules.operator.thermostat.schedules">
 <div class="schedule ${pageScope.styleClass}" id="scheduleId_${schedule.accountThermostatScheduleId}">
 
     <form method="POST" action="${actionPath}/save">
@@ -109,14 +110,14 @@
         <d:confirm on=".f-send" nameKey="sendConfirm" argument="${fn:escapeXml(schedule.scheduleName)}"/>
     </form>
     <c:if test="${empty pageScope.omitEditor or not pageScope.omitEditor}">
-        <i:simplePopup titleKey="yukon.web.modules.operator.thermostat.schedules.editSchedule.title" 
+        <i:simplePopup titleKey=".editSchedule.title" 
                        arguments="${fn:escapeXml(schedule.scheduleName)}" 
                        id="editSchedule_${schedule.accountThermostatScheduleId}" 
                        on=".edit_${schedule.accountThermostatScheduleId}, .copy_${schedule.accountThermostatScheduleId}">
                         <cti:msg2 var="copyPrefix" key="yukon.web.defaults.copy.prefix"/>
                         <input type="hidden" name="copyName" value="${copyPrefix} ${fn:escapeXml(schedule.scheduleName)}"/>
-                        <input type="hidden" name="copyTitle" value="<i:inline key="yukon.web.modules.operator.thermostat.schedules.createSchedule.title"/>"/>
-                        <input type="hidden" name="editTitle" value="<i:inline key="yukon.web.modules.operator.thermostat.schedules.editSchedule.title" arguments="${fn:escapeXml(schedule.scheduleName)}"/>"/>
+                        <input type="hidden" name="copyTitle" value="<i:inline key=".createSchedule.title"/>"/>
+                        <input type="hidden" name="editTitle" value="<i:inline key=".editSchedule.title" arguments="${fn:escapeXml(schedule.scheduleName)}"/>"/>
             <div class="container clearfix">
                  <tags:thermostatScheduleEditor schedule="${schedule}"
                                         thermostatId="${thermostatId}"
@@ -143,3 +144,4 @@
         </i:simplePopup>
     </c:if>
 </div>
+</cti:msgScope>
