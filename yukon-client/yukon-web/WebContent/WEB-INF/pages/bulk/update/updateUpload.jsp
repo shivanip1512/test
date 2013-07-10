@@ -56,8 +56,8 @@
             </div>
             <div class="column two nogutter">
                 <%-- INSTRUCTIONS --%>
-                <h3>Instructions:</h3>
-                <ul><cti:msg key="yukon.common.device.bulk.updateUpload.instructions"/></ul>
+                <h3><i:inline key="yukon.common.device.bulk.updateUpload.instructions.title"/></h3>
+                <ul><i:inline key="yukon.common.device.bulk.updateUpload.instructions.description"/></ul>
             </div>
         </div>
         <div class="column_24">
