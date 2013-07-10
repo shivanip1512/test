@@ -22,7 +22,7 @@
         </x:commandButton>
     </x:panelGroup>
     
-    <x:panelGrid forceId="true" id="body" columns="2" styleClass="gridLayout" columnClasses="gridCell,gridCell" >
+    <x:panelGrid forceId="true" id="body" columns="2" styleClass="gridLayout clear" columnClasses="gridCell,gridCell" >
         <h:column>
         
             <x:htmlTag value="fieldset" styleClass="fieldSet">
