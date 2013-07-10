@@ -7,13 +7,8 @@
 
 <script type="text/javascript"> 
 jQuery(function () {
-  if (jQuery.cookie('trendingSettingsShown') === 'true') {
-      jQuery(".trend-settings").show();
-  }
-
   jQuery(".trend-settings-anchor").click(function(e) {
-      var settingsToggle = jQuery(".trend-settings").toggle();
-      jQuery.cookie('trendingSettingsShown', settingsToggle.is(":visible"));
+      jQuery(".trend-settings").toggle();
       e.stopPropagation();
       return true;
   });
