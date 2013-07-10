@@ -26,7 +26,7 @@ public class ScheduledFileExportData {
     private boolean includeExportCopy;
     private String exportPath;
 
-    private static final String DEFAULT_TIMESTAMP_PATTERN  = "yyyyMMddHHmmss";
+    private static final String DEFAULT_TIMESTAMP_PATTERN  = "_yyyyMMddHHmmss";
 
     public ScheduledFileExportData() {
         this.setTimestampPatternField(DEFAULT_TIMESTAMP_PATTERN);
