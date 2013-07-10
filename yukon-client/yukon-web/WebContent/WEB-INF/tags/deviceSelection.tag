@@ -12,6 +12,17 @@
 
 <cti:msgScope paths="yukon.common.device.bulk.deviceSelection">
 
+<c:set var="tree_id" value="bulkDeviceSelectionByGroupTree" />
+<c:set var="byAddrPopupId" value="byAddrPopup" />
+
+<cti:msg2 var="noGroupSelectedAlertText" key=".selectDevicesByGroupTree.noGroupSelectedAlertText" />
+<cti:msg2 var="dataFileNoteAddress" key=".dataFileNote.address"/>
+<cti:msg2 var="dataFileNotePaoName" key=".dataFileNote.paoName"/>
+<cti:msg2 var="dataFileNoteDeviceId" key=".dataFileNote.deviceId"/>
+<cti:msg2 var="dataFileNoteMeterNumber" key=".dataFileNote.meterNumber"/>
+<cti:msg2 var="dataFileNoteBulk" key=".dataFileNote.bulk"/>
+<cti:msg2 key=".cancel" var="cancel" />
+
 <script type="text/javascript">
 jQuery(function(){
     jQuery("#selectDevicesButton").click(function(e) {selectDevicesPicker.show.call(selectDevicesPicker);});
@@ -161,17 +172,6 @@ function validateAddressRange() {
 };
 </script>
 
-<c:set var="tree_id" value="bulkDeviceSelectionByGroupTree" />
-<c:set var="byAddrPopupId" value="byAddrPopup" />
-
-<cti:msg2 var="noGroupSelectedAlertText" key=".selectDevicesByGroupTree.noGroupSelectedAlertText" />
-<cti:msg2 var="dataFileNoteAddress" key=".dataFileNote.address"/>
-<cti:msg2 var="dataFileNotePaoName" key=".dataFileNote.paoName"/>
-<cti:msg2 var="dataFileNoteDeviceId" key=".dataFileNote.deviceId"/>
-<cti:msg2 var="dataFileNoteMeterNumber" key=".dataFileNote.meterNumber"/>
-<cti:msg2 var="dataFileNoteBulk" key=".dataFileNote.bulk"/>
-<cti:msg2 key=".cancel" var="cancel" />
-    
 <div class="column_12_12">
     <div class="column one">
     
@@ -327,5 +327,5 @@ function validateAddressRange() {
         </div>
     </div>
 </div>
-    
+
 </cti:msgScope>
