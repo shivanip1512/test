@@ -4,7 +4,10 @@
     </script>
 </c:if>
 
-<tags:boxContainer2 nameKey="feedersContainer" hideEnabled="true" showInitially="true" styleClass="with_footer">
+<c:if test="${fn:length(feederList) > 1}">
+    <c:set var="styleClass" value="with_footer"/>
+</c:if>
+<tags:boxContainer2 nameKey="feedersContainer" hideEnabled="true" showInitially="true" styleClass="${styleClass}">
 
     <table id="fdrTable" class="compactResultsTable rowHighlighting">
         
