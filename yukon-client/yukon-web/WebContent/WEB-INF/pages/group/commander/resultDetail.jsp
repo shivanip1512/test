@@ -39,7 +39,7 @@
         function refreshResults(kind, theDiv) {
             if (theDiv.visible()) {
                 var url = '/group/commander/' + kind;
-                try {jQuery('#' + theDiv).load(url, {'resultKey': '${result.key}'});} catch(refex){alert('refreshResults exception: "' + refex + '"');}
+                jQuery(theDiv).load(url, {'resultKey': '${result.key}'});
             }
         }
     </script>

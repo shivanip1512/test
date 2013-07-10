@@ -43,7 +43,7 @@
         function refreshResults(kind, theDiv) {
             if (theDiv.visible()) {
                 var url = '/group/groupMeterRead/' + kind;
-                jQuery('#' + theDiv).load(url, 'resultKey': '${resultWrapper.result.key}');
+                jQuery(theDiv).load(url, {'resultKey': '${resultWrapper.result.key}'});
             }
         }
     </script>
