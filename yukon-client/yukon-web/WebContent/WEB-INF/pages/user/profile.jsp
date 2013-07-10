@@ -94,8 +94,8 @@
                 <form id="loginBackingBean">
                     <input type="hidden" name="k" value="${changePwdKey}">
                     <input type="hidden" name="userId" value="${userProfile.userId}">
-                    <input type="hidden" name="username" value="${userProfile.username}">
-                    <input type="hidden" name="userGroupName" value="${userGroupName}">
+                    <input type="hidden" name="username" value="${fn:escapeXml(userProfile.username)}">
+                    <input type="hidden" name="userGroupName" value="${fn:escapeXml(userGroupName)}">
                     <tags:nameValueContainer2>
                         <tr><td class="name"><i:inline key="yukon.web.changelogin.oldPassword"/></td>
                             <td class="value"><input maxlength="64" autocomplete="false" type="password" name="oldPassword" value="" class="f-current" placeholder="<cti:msg2 key='yukon.web.changelogin.oldPassword'/>"></input></td>
@@ -152,7 +152,7 @@
                                 <c:set var="prefDisplayOptMap" value="${userPreferencesNameToDisplayOptions.get(prefName)}" />
                                 <c:forEach var="prefOption" items="${prefOptions}" varStatus="stat">
                                     <cti:msg2 key="${prefOption.message}" var="prefText"/>
-                                    <c:set var="baseCss" value='${stat.index == 0 ? "left" : stat.index == prefOptions.size()-1 ? "right" : "middle"}'/>
+                                    <c:set var="baseCss" value='${stat.first ? "left" : stat.last ? "right" : "middle"}'/>
                                     <c:set var="iconOnly" value='${prefDisplayOptMap != null && (prefDisplayOptMap.containsKey("iconONLY"))}' />
                                     <button type="button" class="${baseCss}<c:if test="${prefOption.value.equals(prefValue)}"> on</c:if>" data-value="${prefOption.value}"<c:if test="${iconOnly}"> title="${prefText}"</c:if>>
                                         <c:choose>
@@ -171,8 +171,8 @@
                                 <c:set var="prefValue" value="${userPreferenceMap.get(prefName) != null ? userPreferenceMap.get(prefName).value : defaultVal}" />
                                 <form class="f-pref-form" action="/this/is/never/called" method="PUT">
                                     <button type="button" class="f-pref-default" data-value="${defaultVal}"><i class="icon icon-arrow-swap"></i></button>
-                                    <input type="text" name="${prefName}" value="${prefValue}" prev-value="${prefValue}" title="${prefValue}" style="float:left" maxlength="255">
-                                    <button type="button" class="save-preference dn" title="<cti:msg2 var="strSave" key="yukon.common.save" />"><i class="icon icon-disk"></i></button>
+                                    <input type="text" name="${prefName}" value="${fn:escapeXml(prefValue)}" prev-value="${fn:escapeXml(prefValue)}" title="${fn:escapeXml(prefValue)}" style="float:left" maxlength="255">
+                                    <button type="button" class="save-preference dn" title="<cti:msg2 key="yukon.common.save" />"><i class="icon icon-disk"></i></button>
                                 </form>
                             </td>
                         </c:otherwise>
@@ -192,7 +192,7 @@
 <cti:tabbedContentSelector mode="section">
     <cti:msg2 key=".groups.title" var="groupTitle"/>
     <cti:tabbedContentSelectorContent selectorName="${groupTitle}">
-        <h3>${userGroupName}</h3>
+        <h3>${fn:escapeXml(userGroupName)}</h3>
         <c:choose>
             <c:when test="${empty categoryRoleMap}">
                 <i:inline key="yukon.web.defaults.na"/>
