@@ -80,7 +80,7 @@ jQuery(function() {
     </div>
     <div class="column three nogutter">
         <tags:sectionContainer2 nameKey="contact">
-            <div class="stacked"><label><strong><i:inline key=".email.header"/></strong>&nbsp;<a href="mailto:<cti:msg2 key=".email.value"/>"><cti:msg2 key=".email.value"/></a></label></div>
+            <div class="stacked"><label><strong><i:inline key=".email.header"/></strong>&nbsp;<a href="mailto:<cti:msg2 key=".email.value"/>"><i:inline key=".email.value"/></a></label></div>
             <div><label><strong><i:inline key=".phone.header"/></strong>&nbsp;<i:inline key=".phone.value"/></label></div>
             <div><label><strong><i:inline key=".hours.header"/></strong>&nbsp;<i:inline key=".hours.value"/></label></div>
             <div class="stacked"></div>
