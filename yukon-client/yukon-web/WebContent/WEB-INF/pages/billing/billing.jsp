@@ -17,6 +17,9 @@
 <cti:includeScript link="/JavaScript/yukonGeneral.js"/>
 <cti:includeScript link="/JavaScript/dynamicBillingFileGenerator.js"/>
 <cti:includeScript link="/JavaScript/calendarControl.js"/>
+<cti:includeScript link="/JavaScript/yukon.metering.billing.js"/>
+<cti:includeScript link="/JavaScript/yukon/ui/confirm_dialog_manager.js"/>
+
 <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
 
 
@@ -46,9 +49,5 @@
         </div>
     </cti:tabbedContentSelectorContent>
 </cti:tabbedContentSelector>
-
-
-
-<cti:includeScript link="/JavaScript/yukon.metering.billing.js" />
 
 </cti:standardPage>
