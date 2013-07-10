@@ -21,7 +21,7 @@
     <entry key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.successCount">Success</entry>
     <entry key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.failCount">Fail</entry>
     <entry key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.unsupportedCount">Unsupported</entry>
-    <entry key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.totalCount">Total</entry>
+    <entry key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.totalCount">Total Requests</entry>
     <entry key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.user">User</entry>
     <entry key="yukon.web.modules.amr.commandRequestExecution.results.list.noExecutions">No Executions</entry>
     

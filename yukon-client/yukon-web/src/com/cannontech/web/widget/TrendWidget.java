@@ -162,6 +162,7 @@ public class TrendWidget extends WidgetControllerBase {
 
 
         // SET MAV
+        mav.addObject("keepSettingsOpen", chartPeriod == ChartPeriod.NOPERIOD);
         mav.addObject("attributeGraphType", attributeGraphType);
         mav.addObject("availableAttributeGraphs", availableAttributeGraphs);
         mav.addObject("period", period);
