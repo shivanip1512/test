@@ -60,7 +60,7 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
             prefType = PreferenceGraphVisualTypeOption.valueOf(graphTypeString);
         } else {
             prefType = PreferenceGraphVisualTypeOption.fromGraphType(requestedValueOrNull);
-            this.savePreference(user, UserPreferenceName.GRAPH_DISPLAY_VISUAL_TYPE, prefType.toString());
+            this.savePreference(user, UserPreferenceName.GRAPH_DISPLAY_VISUAL_TYPE, prefType.name());
         }
         return prefType;
     }
@@ -75,7 +75,7 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
         } else {
             prefType = PreferenceGraphTimeDurationOption.fromChartPeriod(requestedValueOrNull);
             if (prefType != null) {
-            	this.savePreference(user, UserPreferenceName.GRAPH_DISPLAY_TIME_DURATION, prefType.toString());
+            	this.savePreference(user, UserPreferenceName.GRAPH_DISPLAY_TIME_DURATION, prefType.name());
             }
         }
         return prefType;

@@ -155,6 +155,7 @@ public class PageDetailProducer {
         } catch (Exception e) {
             // Sometimes we can't resolve a link for a crumb, ie collection actions link
             // for a collection that was just deleted.
+            log.debug("renderCrumbs(..) failed getting/using pageInfo's link expression.", e);
         }
             
         String thisCrumb;
