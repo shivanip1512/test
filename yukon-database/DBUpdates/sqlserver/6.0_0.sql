@@ -240,7 +240,7 @@ ALTER TABLE FileExportHistory ALTER COLUMN ExportPath VARCHAR(300) NULL;
 GO
 
 INSERT INTO JobProperty (JobPropertyId, JobId, Name, Value)
-   (SELECT MAX(JP2.JobPropertyId) + ROW_NUMBER() OVER(ORDER BY J.JobId) As JobPropertyId, J.JobId, 'timestampPatternField', 'yyyyMMddHHmmss'
+   (SELECT MAX(JP2.JobPropertyId) + ROW_NUMBER() OVER(ORDER BY J.JobId) As JobPropertyId, J.JobId, 'timestampPatternField', '_yyyyMMddHHmmss'
     FROM Job J
     JOIN JobProperty JP ON J.JobId = JP.JobId
     JOIN JobProperty JP2 ON 1 = 1

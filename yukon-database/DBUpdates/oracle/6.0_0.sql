@@ -227,10 +227,10 @@ ALTER TABLE UserPreference
 /* End YUK-12160 */
             
 /* Start YUK-12291 */
-ALTER TABLE FileExportHistory MODIFY ExportPath VARCHAR(300) NULL;
+ALTER TABLE FileExportHistory MODIFY ExportPath VARCHAR2(300) NULL;
 
 INSERT INTO JobProperty (JobPropertyId, JobId, Name, Value)
-   (SELECT MAX(JP2.JobPropertyId) + ROW_NUMBER() OVER(ORDER BY J.JobId) As JobPropertyId, J.JobId, 'timestampPatternField', '-yyyyMMdd'
+   (SELECT MAX(JP2.JobPropertyId) + ROW_NUMBER() OVER(ORDER BY J.JobId) As JobPropertyId, J.JobId, 'timestampPatternField', '_yyyyMMddHHmmss'
     FROM Job J
     JOIN JobProperty JP ON J.JobId = JP.JobId
     JOIN JobProperty JP2 ON 1 = 1
