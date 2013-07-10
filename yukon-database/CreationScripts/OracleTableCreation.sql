@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/9/2013 8:43:50 AM                          */
+/* Created on:     7/10/2013 2:27:55 PM                         */
 /*==============================================================*/
 
 
@@ -1710,8 +1710,7 @@ create index Indx_CmdReqExecRes_ExecId_ErrC on CommandRequestExecResult (
 create table CommandRequestUnsupported  (
    CommandRequestUnsupportedId NUMBER                          not null,
    CommandRequestExecId NUMBER                          not null,
-   DeviceId             NUMBER,
-   RouteId              NUMBER,
+   DeviceId             NUMBER                          not null,
    constraint PK_CommandRequestUnsupported primary key (CommandRequestUnsupportedId)
 );
 
@@ -10434,6 +10433,11 @@ alter table CommPort
 
 alter table CommandRequestExecResult
    add constraint FK_ComReqExecResult_ComReqExec foreign key (CommandRequestExecId)
+      references CommandRequestExec (CommandRequestExecId)
+      on delete cascade;
+
+alter table CommandRequestExecResult
+   add constraint FK_ComReqUnsupp_ComReqExec foreign key (CommandRequestExecId)
       references CommandRequestExec (CommandRequestExecId)
       on delete cascade;
 

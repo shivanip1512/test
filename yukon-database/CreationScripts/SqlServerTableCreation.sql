@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/9/2013 8:45:36 AM                          */
+/* Created on:     7/10/2013 2:21:05 PM                         */
 /*==============================================================*/
 
 
@@ -1823,8 +1823,7 @@ go
 create table CommandRequestUnsupported (
    CommandRequestUnsupportedId numeric              not null,
    CommandRequestExecId numeric              not null,
-   DeviceId             numeric              null,
-   RouteId              numeric              null,
+   DeviceId             numeric              not null,
    constraint PK_CommandRequestUnsupported primary key nonclustered (CommandRequestUnsupportedId)
 )
 go
@@ -11134,6 +11133,12 @@ go
 
 alter table CommandRequestExecResult
    add constraint FK_ComReqExecResult_ComReqExec foreign key (CommandRequestExecId)
+      references CommandRequestExec (CommandRequestExecId)
+         on delete cascade
+go
+
+alter table CommandRequestExecResult
+   add constraint FK_ComReqUnsupp_ComReqExec foreign key (CommandRequestExecId)
       references CommandRequestExec (CommandRequestExecId)
          on delete cascade
 go

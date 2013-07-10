@@ -913,10 +913,15 @@ WHERE CategoryType = 'mct430demandLoadProfile';
 CREATE TABLE CommandRequestUnsupported (
    CommandRequestUnsupportedId NUMERIC              NOT NULL,
    CommandRequestExecId        NUMERIC              NOT NULL,
-   DeviceId                    NUMERIC              NULL,
-   RouteId                     NUMERIC              NULL,
+   DeviceId                    NUMERIC              NOT NULL,
    CONSTRAINT PK_CommandRequestUnsupported PRIMARY KEY nonclustered (CommandRequestUnsupportedId)
 );
+
+ALTER TABLE CommandRequestExecResult
+   ADD CONSTRAINT FK_ComReqUnsupp_ComReqExec FOREIGN KEY (CommandRequestExecId)
+      REFERENCES CommandRequestExec (CommandRequestExecId)
+         ON DELETE CASCADE;
+GO
 /* End YUK-12281 */
 
 /**************************************************************/
