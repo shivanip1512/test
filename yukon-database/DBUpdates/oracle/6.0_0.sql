@@ -941,7 +941,12 @@ ALTER TABLE DEVICECONFIGURATIONDEVICEMAP
 RENAME CONSTRAINT FK_DEVICECO_REFERENCE_YUKONPAO 
 TO FK_DEVCONFIGDEVMAP_YUKONPAO;
 /* End YUK-12240 */
-    
+
+/* Start YUK-12310 */
+DELETE FROM DeviceConfigCategory 
+WHERE CategoryType = 'mct430demandLoadProfile';
+/* End YUK-12310 */
+
 /* Start YUK-12281 */
 CREATE TABLE CommandRequestUnsupported  (
    CommandRequestUnsupportedId NUMBER                          NOT NULL,
