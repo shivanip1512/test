@@ -110,10 +110,12 @@ jQuery(function() {
                                 </form:select>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".supportBundle.includeLbl">
+                                <c:set var="writerCheckbox" value="${0}"/>
                                 <c:forEach var="writer" items="${writerList}">
                                     <c:if test="${writer.optional}">
                                         <form:checkbox path="optionalWritersToInclude" value="${writer.name}"/> 
-                                        <i:inline key=".supportBundle.writerName.${writer.name}"/><br>
+                                        <c:set var="writerCheckbox" value="${writerCheckbox + 1}"/>
+                                        <label for="optionalWritersToInclude${writerCheckbox}"><i:inline key=".supportBundle.writerName.${writer.name}"/></label><br>
                                     </c:if>
                                 </c:forEach>
                             </tags:nameValue2>
