@@ -42,7 +42,7 @@ public class AdaResultsController {
     @RequestMapping
     public String view(ModelMap model, int analysisId,
             @RequestParam(defaultValue="25") int itemsPerPage, 
-            @RequestParam(defaultValue="1") int currentPage, 
+            @RequestParam(defaultValue="1") int page, 
             YukonUserContext userContext, FlashScope flashScope) throws ServletRequestBindingException, DeviceCollectionCreationException {
         Analysis analysis = archiveDataAnalysisDao.getAnalysisById(analysisId);
         ArchiveAnalysisResult result = new ArchiveAnalysisResult(analysis);
@@ -59,7 +59,7 @@ public class AdaResultsController {
         
         // Page the result
         List<PaoIdentifier> deviceIds = archiveDataAnalysisDao.getRelevantDeviceIds(analysisId);
-        int startIndex = (currentPage - 1) * itemsPerPage;
+        int startIndex = (page - 1) * itemsPerPage;
         int toIndex = startIndex + itemsPerPage;
         int numberOfResults = deviceIds.size();
         if (numberOfResults < toIndex) toIndex = numberOfResults;

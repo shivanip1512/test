@@ -106,7 +106,7 @@
     
     <%-- Results Data --%>
     <div class="clear">
-    <tags:pagedBox2 nameKey="resultsTable" searchResult="${result.searchResult}" baseUrl="results" >
+    <tags:pagedBox2 nameKey="resultsTable" searchResult="${result.searchResult}" baseUrl="view" >
         
         <table class="compactResultsTable">
             <thead>
