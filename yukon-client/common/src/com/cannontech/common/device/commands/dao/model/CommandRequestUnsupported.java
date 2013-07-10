@@ -3,7 +3,6 @@ package com.cannontech.common.device.commands.dao.model;
 public class CommandRequestUnsupported {
     private Integer id;
     private Integer deviceId;
-    private Integer routeId;
     private long CommandRequestExecId;
 
     public Integer getId() {
@@ -17,12 +16,6 @@ public class CommandRequestUnsupported {
     }
     public void setDeviceId(Integer deviceId) {
         this.deviceId = deviceId;
-    }
-    public Integer getRouteId() {
-        return routeId;
-    }
-    public void setRouteId(Integer routeId) {
-        this.routeId = routeId;
     }
     public long getCommandRequestExecId() {
         return CommandRequestExecId;

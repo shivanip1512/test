@@ -29,8 +29,8 @@ import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
 import com.cannontech.common.device.commands.WaitableCommandCompletionCallbackFactory;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
-import com.cannontech.common.device.commands.dao.model.CommandRequestUnsupported;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
+import com.cannontech.common.device.commands.dao.model.CommandRequestUnsupported;
 import com.cannontech.common.device.commands.impl.CommandRequestRetryExecutor;
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -38,7 +38,6 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.exception.MeterReadRequestException;
-import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -209,11 +208,7 @@ public class PlcDeviceAttributeReadServiceImpl implements PlcDeviceAttributeRead
         for (YukonPao pao : unsupportedDevices.keySet()) {
             CommandRequestUnsupported unsupportedCmd = new CommandRequestUnsupported();
             unsupportedCmd.setCommandRequestExecId(commandExeId);
-            if (pao.getPaoIdentifier().getPaoType().getPaoCategory() == PaoCategory.ROUTE) {
-                unsupportedCmd.setRouteId(pao.getPaoIdentifier().getPaoId());
-            } else {
-                unsupportedCmd.setDeviceId(pao.getPaoIdentifier().getPaoId());
-            }
+            unsupportedCmd.setDeviceId(pao.getPaoIdentifier().getPaoId());
 
             commandRequestExecutionResultDao.saveUnsupported(unsupportedCmd);
         }

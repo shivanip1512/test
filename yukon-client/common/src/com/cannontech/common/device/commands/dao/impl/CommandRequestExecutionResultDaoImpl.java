@@ -65,7 +65,6 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
             public void extractValues(MapSqlParameterSource parameterHolder, CommandRequestUnsupported commandUnsupported) {
                 parameterHolder.addValue("CommandRequestExecId", commandUnsupported.getCommandRequestExecId());
                 parameterHolder.addValue("DeviceId", commandUnsupported.getDeviceId());
-                parameterHolder.addValue("RouteId", commandUnsupported.getRouteId());
             }
         };
     }
