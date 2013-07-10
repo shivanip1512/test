@@ -163,11 +163,16 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
                 throw new RuntimeException("'icon' is required when renderMode is 'image' or 'labeledImage'");
             }
 
-            /* Hover Text */
-            MessageSourceResolvable hoverTextResolvable = scope.generateResolvable(".hoverText", arguments);
-            String hoverText = getLocalMessage(hoverTextResolvable, false);
-            if (StringUtils.isNotBlank(hoverText)) {
-                hoverText = StringEscapeUtils.escapeHtml(hoverText);
+            /* Title */
+            String hoverText = null;
+            if (StringUtils.isNotBlank(title)) {
+                hoverText = title;
+            } else {
+                MessageSourceResolvable hoverTextResolvable = scope.generateResolvable(".hoverText", arguments);
+                hoverText = getLocalMessage(hoverTextResolvable, false);
+                if (StringUtils.isNotBlank(hoverText)) {
+                    hoverText = StringEscapeUtils.escapeHtml(hoverText);
+                }
             }
 
             /* Class */
@@ -189,7 +194,6 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
             }
             
             if (StringUtils.isNotBlank(labelText)) out.write(" aria-label=\"" + labelText + "\"");
-            if (StringUtils.isNotBlank(title)) out.write(" title=\"" + title + "\"");
             if (StringUtils.isNotBlank(name)) out.write(" name=\"" + name + "\"");
             if (StringUtils.isNotBlank(value)) out.write(" value=\"" + value + "\"");
             if (StringUtils.isNotBlank(hoverText)) out.write(" title=\"" + hoverText + "\"");

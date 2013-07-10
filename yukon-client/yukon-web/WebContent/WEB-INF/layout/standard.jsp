@@ -121,7 +121,7 @@
             <div class="page-actions">
                 <cm:dropdown id="b-page-actions" type="button" containerCssClass="fr dn"/>
                 <cti:outputContent writable="${searchRenderer}" />
-                <cti:button id="b-search-results" classes="fr dn left" nameKey="searchResults" renderMode="buttonImage" icon="cp disabled icon-resultset-first"/>
+                <cti:button id="b-search-results" classes="fr dn left" nameKey="searchResults" renderMode="buttonImage" icon="icon-resultset-first-grey"/>
             </div>
 		</div>
     </div>

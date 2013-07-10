@@ -204,12 +204,12 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 .controls .icon {margin:1px 0 0 0;}
 
 .boxContainer, .boxContainerFooter, .pagedBox, .tabbedContainer {margin-bottom: 20px;}
-.pagedBox, .sectionContainer, .boxContainer, .inlineTree, .resultsTable, .liteContainer {border:solid 1px #ccc; border-radius:2px;} /* .titledContainer, */
-.pagedBox > .title, .inlineTree > .tree_helper_controls, .resultsTable th {border-radius:2px 2px 0 0;} /* .titledContainer > .titleBar, */
+.pagedBox, .sectionContainer, .boxContainer, .inlineTree, .resultsTable, .liteContainer {border:solid 1px #ccc; border-radius:2px;}
+.pagedBox > .title, .inlineTree > .tree_helper_controls, .resultsTable th {border-radius:2px 2px 0 0;}
 .resultsTable th {border-bottom: solid 1px #ccc;}
 .content, .titledContainer > .titleBar, .pagedBox > .title, .pagedBox > .content, .pagedBox > .footer, .boxContainerFooter {padding: 5px 10px; overflow:hidden;}
 .content, .pagedBox > .content {padding-bottom: 10px;}
-.pagedBox > .title, .pagedBox > .footer, .boxContainer_titleBar, .resultsTable th, .boxContainerFooter {background-color:whiteSmoke;} /* .titledContainer > .titleBar, */
+.pagedBox > .title, .pagedBox > .footer, .boxContainer_titleBar, .resultsTable th, .boxContainerFooter {background-color:whiteSmoke;}
 .titledContainer > .content, .pagedBox > .content, .pagedBox > .footer, .sectionContainer > .content, .sectionContainer > .footer {border-top: solid 1px #ccc;}
 .titledContainer > .titleBar, .pagedBox > .title, .pagedBox > .footer, .ui-dialog .ui-dialog-title {text-shadow:1px 1px 0 white;}
 .titledContainer > .titleBar, .pagedBox > .title, .ui-dialog .ui-dialog-title {border-radius: 2px 2px 0 0;}
@@ -241,7 +241,7 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 .sectionContainer > .titleBar {background:transparent;font-weight:bold;}
 .liteContainer {border-style:solid none;}
 
-.pagedBox .contextArea {margin: 0 20px 0 0; font-weight: normal;} /* TODO: change title span to h3 to avoid this 'undo' font css rule, move bottom-margin on h's to new rule .page-title */
+.pagedBox .contextArea {margin: 0 20px 0 0; font-weight: normal;} /* TODO: change title span to h3 to avoid this 'undo' font css rule */
 .pagedBox .contextArea .navLink {position: relative;}
 .pagingArea {min-width: 250px; white-space: nowrap; display: inline-block; float: right;}
 .pagingArea .pageNumText, .pagingArea .nextLink, .pagingArea .previousLink {padding-left: 10px; line-height: 16px;display: inline-block;float: left;}
