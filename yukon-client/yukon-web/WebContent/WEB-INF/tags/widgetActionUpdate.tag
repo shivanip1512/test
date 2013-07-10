@@ -22,7 +22,7 @@
 		${widgetParameters.jsWidget}.setupLink('${uniqueId}', ${cti:jsonString(pageScope.linkParameters)});
 	</script>
 
-    <span id="${thisId}" class="fr">
+    <span id="${thisId}">
         <c:if test="${showConfirm}">
             <cti:msg2 var="confirmText" key=".${nameKey}.confirmText"/>
         </c:if>

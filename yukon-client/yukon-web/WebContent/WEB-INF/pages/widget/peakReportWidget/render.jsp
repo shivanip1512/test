@@ -8,41 +8,29 @@
 	<c:when test="${readable}">
 		
 		<%--REQUEST--%>
-		<table width="95%">
-			<tr>
-				<td><i:inline key=".channel"/></td>
-				<td>
-					<select name="channel" style="width:145px;">
-						<c:forEach var="channelInfo" items="${availableChannels}">
-			   				<option value="${channelInfo.channelNumber}" ${channelInfo.selected}>${channelInfo.channelDescription}</option>
-			   			</c:forEach>
-			   		</select>
-			   	</td>
-			   	<td colspan="2" align="right">
-			   		<tags:widgetActionUpdate method="requestReport" nameKey="getReport" container="${widgetParameters.widgetId}_results"/>
-			   	</td>
-			</tr>
-			
-			<tr>
-				<td><i:inline key=".reportType"/></td>
-				<td colspan="3">
-					<select name="peakType" style="height:20px;width:145px;">
-						<c:forEach var="peakTypeInfo" items="${availablePeakTypes}">
-			   				<option value="${peakTypeInfo.peakType}" ${peakTypeInfo.selected}>${peakTypeInfo.peakTypeDisplayName}</option>
-			   			</c:forEach>
-			   		</select>
-			   	</td>
-			</tr>
-			<tr>
-				<td>
-				<i:inline key="yukon.web.defaults.dateRange"/>:
-				</td>
-				<td>
-					<dt:dateRange startName="startDateStr" startValue="${startDate}"
-								  endName="stopDateStr" endValue="${stopDate}" />
-				</td>
-			</tr>
-		</table> 
+        <tags:nameValueContainer2>
+            <tags:nameValue2 nameKey=".channel">
+                <select name="channel">
+                    <c:forEach var="channelInfo" items="${availableChannels}">
+                        <option value="${channelInfo.channelNumber}" ${channelInfo.selected}>${channelInfo.channelDescription}</option>
+                    </c:forEach>
+                </select>
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".reportType">
+                <select name="peakType">
+                    <c:forEach var="peakTypeInfo" items="${availablePeakTypes}">
+                        <option value="${peakTypeInfo.peakType}" ${peakTypeInfo.selected}>${peakTypeInfo.peakTypeDisplayName}</option>
+                    </c:forEach>
+                </select>
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey="yukon.web.defaults.dateRange">
+                <dt:dateRange startName="startDateStr" startValue="${startDate}"
+                              endName="stopDateStr" endValue="${stopDate}" />
+            </tags:nameValue2 >
+        </tags:nameValueContainer2>
+        <div class="actionArea">
+            <tags:widgetActionUpdate method="requestReport" nameKey="getReport" container="${widgetParameters.widgetId}_results"/>  
+        </div>
 		
 		<%--RESULTS--%>
 		<div id="${widgetParameters.widgetId}_results">

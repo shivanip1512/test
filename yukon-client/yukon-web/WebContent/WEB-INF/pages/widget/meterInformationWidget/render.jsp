@@ -31,9 +31,8 @@
 </tags:nameValueContainer2>
 
 <c:if test="${supportsPing}">
-    <br>
-    <div id="${widgetParameters.widgetId}_results"></div>
-    <div style="text-align: right">
-    	<tags:widgetActionUpdate method="ping" nameKey="ping" container="${widgetParameters.widgetId}_results" />
+    <div class="actionArea">
+        <div id="${widgetParameters.widgetId}_results"></div>
+        <tags:widgetActionUpdate method="ping" nameKey="ping" container="${widgetParameters.widgetId}_results" />
     </div>
 </c:if>

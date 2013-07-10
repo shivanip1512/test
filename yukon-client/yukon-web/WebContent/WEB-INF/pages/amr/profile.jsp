@@ -10,9 +10,7 @@
                     <tags:widget bean="profileWidget" />
                 </c:if>
 
-                <c:if test="${peakReportSupported}">
                     <tags:widget bean="peakReportWidget" />
-                </c:if>
             </div>
             <div class="column two nogutter">
                 <tags:widget bean="meterInformationWidget" />
