@@ -154,7 +154,7 @@ public class OperatorContactsController {
         
         // retrieve version of original contact name before save for logging
         ContactDto oldContactDto = operatorAccountService.getContactDto(contactDto.getContactId(), userContext);
-        String oldContactName = StarsUtils.formatName(oldContactDto.getFirstName(), oldContactDto.getLastName());
+        String oldContactName = (oldContactDto == null) ? "" : StarsUtils.formatName(oldContactDto.getFirstName(), oldContactDto.getLastName());
         
         if (!bindingResult.hasErrors()) {
             operatorAccountService.saveContactDto(contactDto, customer);
