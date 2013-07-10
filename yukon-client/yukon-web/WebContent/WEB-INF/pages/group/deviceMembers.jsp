@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:msgScope paths="yukon.web.deviceGroups.editor">
+<cti:msgScope paths="deviceGroups.editor">
 <%-- User must have DEVICE_GROUP_MODIFY to remove devices from group. Set once for use in loop. --%>
 <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
 <cti:checkRolesAndProperties value="DEVICE_GROUP_MODIFY">
@@ -52,9 +52,9 @@
             </table>
         </div>
         <c:if test="${hasModifyRoleProperty && group.modifiable}">
-            <cti:msg var="removeAllDevicesFromGroupLabel" key="yukon.web.deviceGroups.editor.membersContainer.removeAllDevicesFromGroupLabel"/>
-            <cti:msg var="removeAllDevicesFromGroupDescription" key="yukon.web.deviceGroups.editor.membersContainer.removeAllDevicesFromGroupDescription"/>
-            <cti:msg var="confirmRemoveText" key="yukon.web.deviceGroups.editor.membersContainer.confirmRemoveText" javaScriptEscape="true"/>
+            <cti:msg2 var="removeAllDevicesFromGroupLabel" key=".membersContainer.removeAllDevicesFromGroupLabel"/>
+            <cti:msg2 var="removeAllDevicesFromGroupDescription" key=".membersContainer.removeAllDevicesFromGroupDescription"/>
+            <cti:msg2 var="confirmRemoveText" key=".membersContainer.confirmRemoveText" javaScriptEscape="true"/>
             <div class="actionArea stacked">
                 <button id="removeAllDevicesButton" onclick="removeAllDevices('${confirmRemoveText}')" value="${removeAllDevicesFromGroupLabel}" title="${removeAllDevicesFromGroupDescription}">
                     <i class="icon icon-cross"></i><span class="label">${removeAllDevicesFromGroupLabel}</span>

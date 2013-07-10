@@ -48,9 +48,9 @@ jQuery(function() {
             <table class="compactResultsTable">
                 <thead>
 	                <tr>
-	                    <th><cti:msg2 key=".sendDisableProgramsConfirm.programName"/></th>
-	                    <th><cti:msg2 key=".sendDisableProgramsConfirm.gears"/></th>
-	                    <th><cti:msg2 key=".sendDisableProgramsConfirm.currentState"/></th>
+	                    <th><i:inline key=".sendDisableProgramsConfirm.programName"/></th>
+	                    <th><i:inline key=".sendDisableProgramsConfirm.gears"/></th>
+	                    <th><i:inline key=".sendDisableProgramsConfirm.currentState"/></th>
 	                </tr>
                 </thead>
                 <tfoot></tfoot>

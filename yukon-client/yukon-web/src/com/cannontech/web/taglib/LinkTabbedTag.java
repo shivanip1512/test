@@ -13,19 +13,18 @@ import org.apache.commons.lang.StringUtils;
 
 
 /**
- * USAGE EXAMPLE:
+ * USAGE EXAMPLE - top verion is easiest/currently used most often:
 
 <cti:linkTabbedContainer mode="section">
-    <cti:msg var="name_gen" key="yukon.web.billing.tab.generation.title" />
-    <cti:linkTab selectorName="${name_gen}" initiallySelected="true" />
+    <cti:linkTab selectorKey="yukon.web.billing.tab.schedules.title">
+        <c:url value="/user/profile" />
+    </cti:linkTab>
 
-    <cti:msg var="name_setup" key="yukon.web.billing.tab.setup.title" />
     <c:url var="url_setup" value="/servlet/BillingServlet" />
-    <cti:linkTab selectorName="${name_setup}" tabHref="${url_setup}" />
+    <cti:linkTab selectorKey="yukon.web.billing.tab.setup.title" tabHref="${url_setup}" />
 
-    <cti:msg var="name_sched" key="yukon.web.billing.tab.schedules.title"/>
-    <c:url var="url_sched" value="/user/profile" />
-    <cti:linkTab selectorName="${name_sched}" tabHref="${url_sched}" />
+    <cti:msg2 var="name_gen" key="yukon.web.billing.tab.generation.title" />
+    <cti:linkTab selectorName="${name_gen}" initiallySelected="true" />
 </cti:linkTabbedContainer>
 
  */
