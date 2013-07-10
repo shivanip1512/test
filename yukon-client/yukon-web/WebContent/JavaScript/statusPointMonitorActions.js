@@ -34,8 +34,7 @@ function addAction(processor) {
     var eventTypes = templateHtml[1];
     
 	var actionsTable = jQuery('#actionsTable > tbody:last');
-	var rowJoe = actionsTable.prop('rows');
-	var rowNum = rowJoe.length;
+	var rowNum = actionsTable.prop('rows').length;
 	
 	
 	
