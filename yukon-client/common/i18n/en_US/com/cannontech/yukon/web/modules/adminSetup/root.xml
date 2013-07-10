@@ -37,6 +37,9 @@
     <entry key="yukon.web.modules.adminSetup.security.keyBox.title">Encryption Keys</entry>
     <entry key="yukon.web.modules.adminSetup.security.routesBox.title">Encrypted Routes</entry>
     
+    <entry key="yukon.web.modules.adminSetup.security.addEncryptionBtn.label">Add</entry>
+    <entry key="yukon.web.modules.adminSetup.security.removeEncryptionBtn.label">Remove</entry>
+
     <entry key="yukon.web.modules.adminSetup.security.deleteKeyBtnTitle">Delete Key</entry>
     <entry key="yukon.web.modules.adminSetup.security.deleteKeyBtnDisabledTitle">Cannot delete key while key is in use</entry>
     
