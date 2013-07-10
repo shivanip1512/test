@@ -377,9 +377,6 @@ public class OperatorAccountController {
 	    YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
 	    final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
 	    
-	    /* This role property forces the creation of a login with the creation of an account. */
-	    final boolean createLogin = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_CREATE_LOGIN_FOR_ACCOUNT, user);
-
 	    AccountDto accountDto = accountGeneral.getAccountDto();
 	    if(accountGeneral.getOperatorGeneralUiExtras().isUsePrimaryAddressForBilling()) {
 	        accountDto.setBillingAddress(accountDto.getStreetAddress());
@@ -391,15 +388,20 @@ public class OperatorAccountController {
 	    updatableAccount.setAccountNumber(accountDto.getAccountNumber());
 	    /* Validate and Create */
 	    try {
-            
+	    	
             accountGeneralValidator.validate(accountGeneral, bindingResult);
-            if (createLogin) {
-                bindingResult.pushNestedPath("loginBackingBean");
-                usernameValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
-                passwordValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
-                bindingResult.popNestedPath();
-            }
-            
+    	    /* This role property forces the creation of a login with the creation of an account. */
+    	    final boolean createLogin = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_CREATE_LOGIN_FOR_ACCOUNT, user)
+    	    		&& (StringUtils.isNotEmpty(accountGeneral.getLoginBackingBean().getPassword1()) 
+    						|| StringUtils.isNotEmpty(accountGeneral.getLoginBackingBean().getPassword2())
+    						|| StringUtils.isNotEmpty(accountGeneral.getLoginBackingBean().getUsername()));
+			if (createLogin) {
+					bindingResult.pushNestedPath("loginBackingBean");
+					usernameValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
+					passwordValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
+					bindingResult.popNestedPath();
+			}
+
             if (!bindingResult.hasErrors()) {
                 
                 if (createLogin) {
@@ -647,7 +649,8 @@ public class OperatorAccountController {
          * OR if there is no login AND the user has not specified a user name
          * OR if there is a login AND the login fields were not changed.  
          */
-        final boolean ignoreLogin = !hasEditLoginPrivileges(userContext.getYukonUser()) 
+        boolean hasEditLoginPrivileges = hasEditLoginPrivileges(userContext.getYukonUser());
+        final boolean ignoreLogin = !hasEditLoginPrivileges
             || (residentialUser.getUserID() == UserUtils.USER_NONE_ID && StringUtils.isBlank(accountGeneral.getLoginBackingBean().getUsername()))
             || (residentialUser.getUserID() != UserUtils.USER_NONE_ID && originalUserGroup != null &&
                 !didLoginChange(residentialUser, accountGeneral.getLoginBackingBean(), originalUserGroup.getUserGroupName()));
@@ -667,9 +670,20 @@ public class OperatorAccountController {
 		
 		/* Validate and Update */
 		try {
-			
 			accountGeneralValidator.validate(accountGeneral, bindingResult);
-			if(!ignoreLogin) {
+			// create new login validation - validate if one of the fields (password fields or username) is entered
+			if (hasEditLoginPrivileges && residentialUser.getUserID() == UserUtils.USER_NONE_ID 
+					&& (StringUtils.isNotEmpty(accountGeneral.getLoginBackingBean().getPassword1()) 
+					|| StringUtils.isNotEmpty(accountGeneral.getLoginBackingBean().getPassword2())
+					|| StringUtils.isNotEmpty(accountGeneral.getLoginBackingBean().getUsername()))) {
+				bindingResult.pushNestedPath("loginBackingBean");
+				usernameValidator.validate(accountGeneral.getLoginBackingBean(),bindingResult);
+				passwordValidator.validate(accountGeneral.getLoginBackingBean(),
+								bindingResult);
+				bindingResult.popNestedPath();
+			}
+			// edit login validation
+			else if(!ignoreLogin) {
 			    
 			    bindingResult.pushNestedPath("loginBackingBean");
 
