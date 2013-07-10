@@ -22,7 +22,7 @@
         <div class="stacked">
             <cti:url value="deviceReconfig/setup" var="url">
                 <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
-                    <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                    <cti:param name="${parm.key}" value="${parm.value}"/>
                 </c:forEach>
             </cti:url>
             <span class="dib" style="min-width: 80px;"><a href="${url}"><cti:msg2 key=".deviceReconfig.label"/></a></span>
@@ -31,7 +31,7 @@
         <div class="stacked">
             <cti:url value="resendConfig/view" var="url">
                 <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
-                    <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                    <cti:param name="${parm.key}" value="${parm.value}"/>
                 </c:forEach>
             </cti:url>
             <span class="dib" style="min-width: 80px;"><a href="${url}"><cti:msg2 key=".resendConfig.label"/></a></span>

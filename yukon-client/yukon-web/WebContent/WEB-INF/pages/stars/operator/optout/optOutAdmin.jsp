@@ -324,10 +324,10 @@
                                 <table class="compactResultsTable">
                                     <thead>
                                     <tr>
-                                        <th><cti:msg key="yukon.web.modules.dr.scheduledEvents.startDateTime" /></th>
-                                        <th><cti:msg key="yukon.web.modules.dr.scheduledEvents.duration" /></th>
-                                        <th><cti:msg key="yukon.web.modules.dr.scheduledEvents.accountNumber" /></th>
-                                        <th><cti:msg key="yukon.web.modules.dr.scheduledEvents.serialNumber" /></th>
+                                        <th><i:inline key="yukon.web.modules.dr.scheduledEvents.startDateTime" /></th>
+                                        <th><i:inline key="yukon.web.modules.dr.scheduledEvents.duration" /></th>
+                                        <th><i:inline key="yukon.web.modules.dr.scheduledEvents.accountNumber" /></th>
+                                        <th><i:inline key="yukon.web.modules.dr.scheduledEvents.serialNumber" /></th>
                                     </tr>
                                     </thead>
                                     <tfoot></tfoot>
