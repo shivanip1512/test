@@ -211,7 +211,7 @@
                     </ul>
                     <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
                         <ul>
-                            <li><cti:msg2 key=".buildInfo" arguments="${buildInfo}"/></li>
+                            <li><cti:msg2 key=".buildInfo" arguments="${buildInfo}" htmlEscapeArguments="false"/></li>
                             <li>${servletPath}</li>
                         </ul>
                     </cti:checkGlobalRolesAndProperties>

@@ -79,7 +79,7 @@ nav, header, footer, section, aside, hgroup, section {display:block;}
 .yukon-footer .footer .footerNav .copyright {float: left;clear: both;margin: 0 0 10px 0;padding: 0 10px 0 0;}
 .yukon-footer .footer .legal {overflow: auto;margin-top: 30px;padding-bottom: 32px;clear: both;}
 .yukon-footer .footer .footerNav .legal ul {float: left;margin: 0 0 10px 0;width: auto;}
-.yukon-footer .footer .footerNav .legal ul a {color: white;line-height: 1em;}
+.yukon-footer .footer .footerNav .legal ul a {color: white;line-height: 1em; text-decoration: underline;}
 .yukon-footer .footer .footerNav .legal ul li {padding-left: 9px;margin: 0 0 0 9px;}
 .yukon-footer .footer .footerNav .legal ul li:first-child {border-left: 0;margin: 0;padding: 0;}
 
