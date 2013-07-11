@@ -34,7 +34,7 @@ public enum JsLibrary {
     JQUERY_UI_CHECK_ALL("/JavaScript/lib/jQuery/plugins/checkAll/jquery.checkall.js"), //https://github.com/mjball/jQuery-CheckAll
     JQUERY_UI_ACTION_WHEN("/JavaScript/lib/jQuery/plugins/actionWhen/jquery.actionwhen.js"), //in-house
     JQUERY_TRAVERSABLE("/JavaScript/lib/jQuery/plugins/traversable/jquery.traversable.js"), //https://github.com/adelegard/jquery-traverse
-    JQUERY_TIP_TIP("/WebConfig/yukon/buttons/jquery.tiptip.js"), //http://code.brucegalpin.com/google-plus-ui-buttons/
+    JQUERY_TIP_TIP("/WebConfig/yukon/Buttons/jquery.tiptip.js"), //http://code.brucegalpin.com/google-plus-ui-buttons/
 
     YUKON_FLOTCHARTS("/JavaScript/yukon.flot.js"), //in-house
     JQUERY_FLOTCHARTS("/JavaScript/lib/jQuery/plugins/flotcharts/jquery.flot.js"), //http://www.flotcharts.org/
