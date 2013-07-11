@@ -357,11 +357,11 @@
                                                  hence, what you see below in regards to the duplicate password fields -->
                                             <div class="password_editor">
                                             <tags:nameValue2 nameKey=".newPassword">
-                                                <input type="text" class="dn password_editor_field" id="password1-plain" autocomplete="false" maxlength="64"/>
+                                                <input type="text" class="password_editor_field" id="password1-plain" autocomplete="false" maxlength="64" style="display:none;"/>
                                                 <tags:password path="loginBackingBean.password1" cssClass="password_editor_field" autocomplete="false"/>
                                             </tags:nameValue2>
                                             <tags:nameValue2 nameKey=".confirmPassword">
-                                                <input type="text" class="dn password_editor_field" id="password2-plain" autocomplete="false" maxlength="64"/>
+                                                <input type="text" class="password_editor_field" id="password2-plain" autocomplete="false" maxlength="64" style="display:none;"/>
                                                 <tags:password path="loginBackingBean.password2" cssClass="password_editor_field" autocomplete="false"/>
                                             </tags:nameValue2>
                                             <tags:nameValue2 nameKey="defaults.blank" excludeColon="true">
@@ -440,23 +440,20 @@
     
                             <tags:nameValueContainer2 id="passwordFields">
                                 <tags:nameValue2 nameKey=".newPassword">
-                                    <input type="text" class="dn password_editor_field" id="password1-plain" autocomplete="false" maxlength="64"/>
+                                    <input type="text" class="password_editor_field" id="password1-plain" autocomplete="false" maxlength="64" style="display:none;"/>
                                     <tags:password path="password1" cssClass="password_editor_field" autocomplete="false" maxlength="64" />
                                 </tags:nameValue2>
                                 <tags:nameValue2 nameKey=".confirmPassword">
-                                    <input type="text" class="dn password_editor_field" id="password2-plain" autocomplete="false" maxlength="64"/>
+                                    <input type="text" class="password_editor_field" id="password2-plain" autocomplete="false" maxlength="64" style="display:none;"/>
                                     <tags:password path="password2" cssClass="password_editor_field" autocomplete="false" maxlength="64" />
                                 </tags:nameValue2>
-                                <tags:nameValue2 nameKey="defaults.blank" excludeColon="true">
-                                    <button type="button" class="f-generatePassword">
-                                        <i:inline key=".generatePassword" />
-                                    </button>
-                                    <br>
-                                    <label><input id="showPasswordCheckbox" type="checkbox"
-                                        onclick="showPassword()"/>
-                                    <i:inline key=".showPassword"/></label>
-                                </tags:nameValue2>
                             </tags:nameValueContainer2>
+                            <div class="actionArea">
+                                <label><input id="showPasswordCheckbox" type="checkbox" onclick="showPassword()"/><i:inline key=".showPassword"/></label>
+                                <button type="button" class="f-generatePassword">
+                                    <i:inline key=".generatePassword" />
+                                </button>
+                            </div>
                         </form:form>
                     </d:inline>
                 </c:if>

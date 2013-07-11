@@ -24,7 +24,6 @@
     DATE/TIME PICKER
     DROPDOWN MENU
     MODAL/BLOCKING GLASS
-    TILES
     CONNECTION WARNING
     JUNK TO FIX
 */
@@ -279,6 +278,8 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 
 .ui-tabs-active > .ui-tabs-anchor {font-weight: bold !important;}
 
+.tiles .column.one {clear:left;}
+
 /* FLASH SCOPES */
 .page_help,.page_warning,.page_error {line-height: 1.3em; font-size: 12px; padding: 5px 10px 5px 25px; border-radius: 2px; border-width: 1px; border-style: solid; margin-bottom: 10px;}
 .page_help ul,.page_warning ul,.page_error ul {list-style: disc inside none;}
@@ -433,9 +434,6 @@ input.dateTimePicker {margin: 0;}
 .glass {background: #000 url(../Icons/busy_rotation.gif) center no-repeat; opacity: 0.1; filter: alpha(opacity=10); position: absolute;}
 .message {padding: 5px 20px;}
 .loading .message {padding: 0 0 0 20px; border: none;}
-
-/* TILES */
-.tiles .column.one {clear:left;}
 
 /* CONNECTION WARNING */
 #dataUpdaterErrorDiv {position: fixed;bottom: 0;left: 0;right: 0;background: #D14836;color: white;font-weight: bold;text-align: center;padding: 3px;}

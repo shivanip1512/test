@@ -130,8 +130,8 @@ function applyCapBankFilter(feederIds) {
         <div class="column one">
         
             <tags:boxContainer2 nameKey="infoContainer" styleClass="padBottom" hideEnabled="true" showInitially="true">
-            	<div class="column_12_12 clearfix">
-	                <div class="column one">
+            	<div class="clearfix">
+	                <div class="dib fl" style="margin-right:5px;">
 	                    <tags:nameValueContainer2 tableClass="infoContainer">
 	                        <tags:nameValue2 nameKey=".name">
 	                            <span><spring:escapeBody>${substation.name}</spring:escapeBody></span>
@@ -152,7 +152,7 @@ function applyCapBankFilter(feederIds) {
 	                    </tags:nameValueContainer2>
 	                    
 	                </div>
-	                <div class="column two nogutter">
+	                <div class="dib fl">
 	                    <tags:nameValueContainer2 tableClass="infoContainer">
 	                        <tags:nameValue2 nameKey=".state" rowClass="wsnw">
 	                            <capTags:warningImg paoId="${substationId}" type="SUBSTATION"/>
