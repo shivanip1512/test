@@ -88,7 +88,7 @@
 		                    <tr>
 		                        <td onclick="forwardToMeterHome(${device.deviceId});" nowrap="nowrap">${resultsMap[device].meter.name}</td>
 		                        <td nowrap="nowrap">${resultsMap[device].config.name}</td>
-		                        <td nowrap="nowrap">${resultsMap[device].config.type}</td>
+		                        <td nowrap="nowrap">${device.deviceType}</td>
 		                        <td>${successResult}</td>
 		                    </tr>
 		                </c:when>
@@ -96,7 +96,7 @@
 		                    <tr class="error">
 		                        <td onclick="forwardToMeterHome(${device.deviceId});" nowrap="nowrap">${resultsMap[device].meter.name}</td>
 		                        <td nowrap="nowrap">${resultsMap[device].config.name}</td>
-		                        <td nowrap="nowrap">${resultsMap[device].config.type}</td>
+		                        <td nowrap="nowrap">${device.deviceType}</td>
 		                        <td>${failureResult} ${resultsMap[device].discrepancies}</td>
 		                    </tr>
 		             </c:otherwise>
