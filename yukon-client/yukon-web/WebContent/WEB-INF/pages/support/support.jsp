@@ -75,16 +75,23 @@ jQuery(function() {
                 <li><a href="<cti:msg2 key=".manuals.daAdmin.link"/>"><i:inline key=".manuals.daAdmin.title"/></a></li>
                 <li><a href="<cti:msg2 key=".manuals.daUser.link"/>"><i:inline key=".manuals.daUser.title"/></a></li>
             </ul>
-            <a href="<cti:msg2 key=".manuals.additional.link"/>"><i:inline key=".manuals.additional.title"/></a>
         </tags:sectionContainer2>
     </div>
     <div class="column three nogutter">
         <tags:sectionContainer2 nameKey="contact">
-            <div class="stacked"><label><strong><i:inline key=".email.header"/></strong>&nbsp;<a href="mailto:<cti:msg2 key=".email.value"/>"><i:inline key=".email.value"/></a></label></div>
-            <div><label><strong><i:inline key=".phone.header"/></strong>&nbsp;<i:inline key=".phone.value"/></label></div>
-            <div><label><strong><i:inline key=".hours.header"/></strong>&nbsp;<i:inline key=".hours.value"/></label></div>
-            <div class="stacked"></div>
-            <div><a href="<cti:msg2 key=".rma.link"/>" target="_blank"><i:inline key=".rma"/></a></div>
+            <div class="stacked">
+                <label><strong><i:inline key=".email.header"/></strong>&nbsp;<a href="mailto:<cti:msg2 key=".email.value"/>"><i:inline key=".email.value"/></a></label>
+            </div>
+            <div class="stacked">
+                <div><label><strong><i:inline key=".phone.header"/></strong>&nbsp;<i:inline key=".phone.value"/></label></div>
+                <div><label><strong><i:inline key=".hours.header"/></strong>&nbsp;<i:inline key=".hours.value"/></label></div>
+            </div>
+            <div class="stacked">
+                <label><a href="<cti:msg2 key=".supportSite.link"/>"><i:inline key=".supportSite.title"/></a>&nbsp;<i:inline key=".supportSite.label"/></label>
+            </div>
+            <div class="stacked">
+                <a href="<cti:msg2 key=".rma.link"/>" target="_blank"><i:inline key=".rma"/></a>
+            </div>
         </tags:sectionContainer2>
     </div>
 </div>
