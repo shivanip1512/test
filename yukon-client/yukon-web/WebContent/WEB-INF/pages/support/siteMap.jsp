@@ -8,21 +8,21 @@
     <div class="column_8_8_8 tiles">
         <c:forEach items="${pageMap}" var="category" varStatus="index">
             
-            <c:if test="${index.index %3 +1 == 1}"><c:set var="column" value="column one" /></c:if>
-            <c:if test="${index.index %3 +1 == 2}"><c:set var="column" value="column two" /></c:if>
-            <c:if test="${index.index %3 +1 == 3}"><c:set var="column" value="column three nogutter" /></c:if>
+            <c:if test="${index.index %3 == 0}"><c:set var="column" value="column one" /></c:if>
+            <c:if test="${index.index %3 == 1}"><c:set var="column" value="column two" /></c:if>
+            <c:if test="${index.index %3 == 2}"><c:set var="column" value="column three nogutter" /></c:if>
     
-            <cti:msg2 key="${category.key.formatKey}" var="title"/>
+            <cti:msg2 key="${category.key}" var="title"/>
             <tags:sectionContainer title="${title}" styleClass="${column}">
                 <ul class="simple-list">
                 <c:forEach var="wrapper" items="${category.value}">
                     <li>
                     <c:if test="${wrapper.enabled}">
-                        <a href="${wrapper.page.link}"><i:inline key="${wrapper.page.formatKey}"/></a>
+                        <a href="${wrapper.page.link}"><i:inline key="${wrapper.page}"/></a>
                     </c:if>
                     <c:if test="${not wrapper.enabled}">
                         <cti:msg2 key=".noPermissions" argument="${wrapper.requiredPermissions}" var="perms"/>
-                        <span title="${perms}" class="disabled"><i:inline key="${wrapper.page.formatKey}"/></span>
+                        <span title="${perms}" class="disabled"><i:inline key="${wrapper.page}"/></span>
                     </c:if>
                     </li>
                 </c:forEach>
