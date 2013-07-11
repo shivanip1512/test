@@ -56,9 +56,9 @@
             <%-- sample files --%>
             <div>
                <h4 class="dib"><cti:msg key="yukon.common.device.bulk.importUpload.sampleFilesLabel"/>:</h4>
-               <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_DeviceGroup_Update_File1.csv"/>"><i:inline key=".file1"/></a>, 
-               <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_DeviceGroup_Update_File2.csv"/>"><i:inline key=".file2"/></a>, 
-               <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_DeviceGroup_Update_File3.csv"/>"><i:inline key=".file3"/></a>
+               <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_DeviceGroup_Update_File1.csv"/>"><i:inline key="yukon.common.file1"/></a>, 
+               <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_DeviceGroup_Update_File2.csv"/>"><i:inline key="yukon.common.file2"/></a>, 
+               <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_DeviceGroup_Update_File3.csv"/>"><i:inline key="yukon.common.file3"/></a>
            </div>
         </tags:sectionContainer2>
         

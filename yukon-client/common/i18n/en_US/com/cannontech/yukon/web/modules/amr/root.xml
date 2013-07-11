@@ -24,9 +24,6 @@
     <entry key="yukon.web.modules.tools.deviceGroupUpload.autoCreate">Auto Create Groups</entry>
     <entry key="yukon.web.modules.tools.deviceGroupUpload.success">Successfully updated {0} device groups.</entry>
     <entry key="yukon.web.modules.tools.deviceGroupUpload.createGroups">Create Groups</entry>
-    <entry key="yukon.web.modules.tools.deviceGroupUpload.file1">File 1</entry>
-    <entry key="yukon.web.modules.tools.deviceGroupUpload.file2">File 2</entry>
-    <entry key="yukon.web.modules.tools.deviceGroupUpload.file3">File 3</entry>
     <entry key="yukon.web.modules.tools.deviceGroupUpload.colHeader">Column Header</entry>
     <entry key="yukon.web.modules.tools.deviceGroupUpload.description">Description</entry>
     <entry key="yukon.web.modules.tools.deviceGroupUpload.identifier">Identifier</entry>

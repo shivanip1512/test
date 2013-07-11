@@ -134,4 +134,9 @@
 <entry key="yukon.common.file">File</entry>
 
 <entry key="yukon.common.search.noResultsFound">No results found.</entry>
+
+<entry key="yukon.common.file1">File 1</entry>
+<entry key="yukon.common.file2">File 2</entry>
+<entry key="yukon.common.file3">File 3</entry>
+<entry key="yukon.common.file4">File 4</entry>
 </properties>

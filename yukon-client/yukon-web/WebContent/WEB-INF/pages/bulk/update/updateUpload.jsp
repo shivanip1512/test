@@ -40,10 +40,10 @@
                 <div class="stacked">
                     <%-- sample files --%>
                     <strong><i:inline key="yukon.common.device.bulk.updateUpload.sampleFilesLabel"/>:</strong>
-                    <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File1.csv"/>">File 1</a>, 
-                    <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File2.csv"/>">File 2</a>, 
-                    <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File3.csv"/>">File 3</a>, 
-                    <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File4.csv"/>">File 4</a>
+                    <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File1.csv"/>"><i:inline key="yukon.common.file1"/></a>, 
+                    <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File2.csv"/>"><i:inline key="yukon.common.file2"/></a>, 
+                    <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File3.csv"/>"><i:inline key="yukon.common.file3"/></a>, 
+                    <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File4.csv"/>"><i:inline key="yukon.common.file4"/></a>
                 </div>
                 <div>
                     <%-- file select --%>
