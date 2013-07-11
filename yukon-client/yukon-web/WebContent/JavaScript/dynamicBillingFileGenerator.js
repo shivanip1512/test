@@ -56,9 +56,10 @@ function removeFromSelected(){
         options = selectedFields.children('option'),
         i;
     
-    for (i = options.length - 1; i>=0; i--) {
+    for (i = options.length - 1; i >= 0; i -= 1) {
+        // this code supports multi-select, but the select element is currently not configured for it
         if (options[i].selected) {
-            selectedFields.remove(i);
+            selectedFields[0].remove(i);
         }
     }
     
@@ -180,7 +181,7 @@ function saveButton(){
     err.html('&nbsp;');
     
     //name and fields cannot be empty;
-    if (jQuery(selectedFields).val().length == 0){
+    if (jQuery('#selectedFields option').length === 0){
         errorMsg.push(BILLING_ERRORS['fieldsNotEmpty']);
     }
     if (name.blank()){
