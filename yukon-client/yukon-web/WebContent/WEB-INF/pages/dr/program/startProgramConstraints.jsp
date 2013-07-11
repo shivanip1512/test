@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
-<cti:msgScope paths="yukon.web.modules.dr.program.startProgram">
+<cti:msgScope paths="modules.dr.program.startProgram">
 
 <cti:url var="submitUrl" value="/dr/program/start/start"/>
 <form:form id="startProgramForm" commandName="backingBean" action="${submitUrl}"

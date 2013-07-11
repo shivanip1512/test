@@ -3,7 +3,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:msgScope paths="yukon.web.modules.dr.loadGroup.sendShedConfirm">
+<cti:msgScope paths="modules.dr.loadGroup.sendShedConfirm">
     <h3 class="dialogQuestion stacked"><i:inline key=".confirmQuestion" arguments="${fn:escapeXml(loadGroup.name)}"/></h3>
 
     <cti:url var="submitUrl" value="/dr/loadGroup/sendShed"/>

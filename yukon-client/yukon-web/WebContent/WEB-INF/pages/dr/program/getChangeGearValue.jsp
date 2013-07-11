@@ -3,7 +3,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 
-<cti:msgScope paths="yukon.web.modules.dr.program.getChangeGearValue">
+<cti:msgScope paths="modules.dr.program.getChangeGearValue">
 
 <c:if test="${fn:length(gears) > 1}">
     <h4 class="dialogQuestion"><cti:msg2 key=".instructions" argument="${program.name}"/></h4>

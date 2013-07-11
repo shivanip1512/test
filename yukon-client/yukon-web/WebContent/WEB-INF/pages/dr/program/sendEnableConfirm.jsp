@@ -1,7 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-<cti:msgScope paths="yukon.web.modules.dr.program.sendEnableConfirm">
+<cti:msgScope paths="modules.dr.program.sendEnableConfirm">
     <h4 class="dialogQuestion stacked">
         <c:choose>
             <c:when test="${isEnabled}">

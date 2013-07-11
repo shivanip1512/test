@@ -4,7 +4,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:msgScope paths="yukon.web.modules.dr.program">
+<cti:msgScope paths="modules.dr.program">
 
 <script>
 jQuery(function() {

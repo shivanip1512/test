@@ -1,7 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-<cti:msgScope paths="yukon.web.modules.dr.controlArea.sendResetPeakConfirm">
+<cti:msgScope paths="modules.dr.controlArea.sendResetPeakConfirm">
     <p class="dialogQuestion">
         <cti:msg2 key=".confirmQuestion" htmlEscape="true" argument="${controlArea.name}" />
     </p>

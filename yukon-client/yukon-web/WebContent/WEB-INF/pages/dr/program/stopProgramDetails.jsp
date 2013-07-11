@@ -4,7 +4,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msgScope paths="yukon.web.modules.dr.program.stopProgram">
+<cti:msgScope paths="modules.dr.program.stopProgram">
 
 <script type="text/javascript">
 submitForm = function() {

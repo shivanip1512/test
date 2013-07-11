@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:msgScope paths="yukon.web.modules.dr.program.stopProgram">
+<cti:msgScope paths="modules.dr.program.stopProgram">
 
 <script type="text/javascript">
 overrideConstraintsChecked = function() {

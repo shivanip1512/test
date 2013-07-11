@@ -6,7 +6,7 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<cti:msgScope paths="yukon.web.modules.dr.program.stopMultiplePrograms">
+<cti:msgScope paths="modules.dr.program.stopMultiplePrograms">
 
 <script type="text/javascript">
 

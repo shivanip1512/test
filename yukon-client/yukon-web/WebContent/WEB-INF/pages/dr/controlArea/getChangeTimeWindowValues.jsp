@@ -3,7 +3,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msgScope paths="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues">
+<cti:msgScope paths="modules.dr.controlArea.getChangeTimeWindowValues">
 	<cti:flashScopeMessages/>
    
     <p class="dialogQuestion stacked">

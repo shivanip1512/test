@@ -4,7 +4,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msgScope paths="yukon.web.modules.dr.program.changeMultipleGears">
+<cti:msgScope paths="modules.dr.program.changeMultipleGears">
 
 <script type="text/javascript">
 

@@ -7,7 +7,7 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<cti:msgScope paths="yukon.web.modules.dr.program.startMultiplePrograms">
+<cti:msgScope paths="modules.dr.program.startMultiplePrograms">
 
 <script type="text/javascript">
 overrideAllChecked = function() {
