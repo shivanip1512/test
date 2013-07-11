@@ -8,29 +8,6 @@
 <cti:standardPage module="operator" page="accountList">
 
     <cti:checkEnergyCompanyOperator showError="true" >
-        <%-- SEACRH WIDGET --%>
-        <cti:checkRolesAndProperties value="OPERATOR_ACCOUNT_SEARCH">
-            <form id="searchForm" action="/stars/operator/account/search" method="get">
-                
-                <div style="padding-top:8px;padding-bottom:8px;">
-                    
-                    <select name="searchBy" onchange="jQuery('#accountSearchValue').val('')">
-                        <c:forEach var="operatorAccountSearchBy" items="${operatorAccountSearchBys}" >
-                            <option value="${operatorAccountSearchBy}" <c:if test="${operatorAccountSearchBy == accountSearchResultHolder.searchBy}">selected</c:if>>
-                                <cti:msg2 key="${operatorAccountSearchBy.formatKey}"/>
-                            </option>
-                        </c:forEach>
-                    </select>
-                    
-                    <input type="text" name="searchValue" id="accountSearchValue" value="${accountSearchResultHolder.searchValue}">
-                    
-                    <cti:button nameKey="search" type="submit" />
-                
-                </div>
-                
-            </form>
-            <br>
-        </cti:checkRolesAndProperties>
     
         <%-- RESULTS --%>
         <c:if test="${accountSearchResultHolder.accountSearchResults.hitCount > 0}">
