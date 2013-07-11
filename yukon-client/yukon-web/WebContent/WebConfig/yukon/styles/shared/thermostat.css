@@ -8,15 +8,17 @@ ul.schedules > li {position: relative; float: left; display: block; clear: both;
 .row {clear: both; display: block; overflow:hidden;margin:3px 0;}
 
 .periods, .labels {overflow:hidden; float: left;}
-.labels {margin: 5px 0  0 25px;}
-.row-label {font-style: italic;padding: 0;text-align:right;width: 33px;background-color: #fff;padding-right: 5px;}
-.time-label, .temp-label {float:left; text-align: center;}
-.time-label {font-weight:bold;width:70px;}
+.labels {margin: 5px 0  0 40px;}
+.row-label {font-style: italic;padding: 0;text-align:right;width: 35px;background-color: #fff;padding-right: 5px;}
+.time-label, .temp-label, .info.time {float:left; text-align: center;}
+.time-label {font-weight:bold;}
+.time-label, .info.time {width:85px;}
 .temp-label {width:45px;}
 
-.period {width: 165px;}
+.period {width: 175px;}
 .period, .info {float: left;height: 24px;}
-.info .time, .row-label {line-height: 24px;margin-right: 5px;}
+.info .time, .row-label {line-height: 24px;}
+.row-label {margin-right: 5px;}
 
 .temp {float: left; padding: 2px; border: solid 1px #CCC; color: #fff; text-align: center; width: 45px;}
 .temp.heat {border-radius: 5px 0 0 5px;-moz-border-radius: 5px 0 0 5px;-webkit-border-radius: 5px 0 0 5px;}
