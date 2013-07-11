@@ -111,9 +111,6 @@ function confirmRemoveAllDevices(confirmText) {
             <%-- GROUPS HIERARCHY BOX --%>
 	        <cti:msg2 key="yukon.web.deviceGroups.editor.groupsContainer.title" var="groupsTitle"/>
 	        <tags:boxContainer title="${groupsTitle}" hideEnabled="false">
-	            <c:set var="selectedGroupParam">
-	                <jsp:attribute name="value">"${fn:escapeXml(groupFullName)}"</jsp:attribute>
-	            </c:set>
 	            <jsTree:nodeValueRedirectingInlineTree  name="groupName"
                                                         hrefBase="/group/editor/home"
                                                         otherHrefParameters=""
