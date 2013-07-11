@@ -63,7 +63,7 @@
                   </select>
                   </span>
 			              </div>
-			              <input type="image" src="/WebConfig/yukon/Buttons/GoButton.gif" name="image" border="0" class="fl">
+			              <cti:button nameKey="update"/>
 			          </td>
 			      </tr>
 			    </table>
