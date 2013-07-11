@@ -53,7 +53,7 @@
                     <td align="center" colspan="2">
                         <br>
                         <input type="submit" value="<cti:msg key="yukon.web.changelogin.save"/>">
-                        <input type="reset" value="<cti:msg key="yukon.web.changelogin.cancel"/>"></input>
+                        <input type="reset" class="button" value="<cti:msg key="yukon.web.changelogin.cancel"/>"></input>
                     </td>
                 </tr>
             </table>
@@ -98,7 +98,7 @@
                     <td align="center" colspan="2">
                         <br>
                         <input type="submit" value="<cti:msg key="yukon.web.changelogin.save"/>">
-                        <input type="reset" value="<cti:msg key="yukon.web.changelogin.cancel"/>"></input>
+                        <input type="reset" class="button" value="<cti:msg key="yukon.web.changelogin.cancel"/>"></input>
                     </td>
                 </tr>
             </table>
