@@ -34,7 +34,7 @@ vertical-align: top;padding-right: 1px;padding-bottom: 10px;
                         <td class="left">
                             <cti:url value="inventoryConfiguration" var="url">
                                 <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
-                                    <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                                    <cti:param name="${parm.key}" value="${parm.value}"/>
                                 </c:forEach>
                             </cti:url>
                             <a href="${url}" class="described"><cti:msg2 key=".deviceReconfig.label"/></a>
@@ -48,7 +48,7 @@ vertical-align: top;padding-right: 1px;padding-bottom: 10px;
                         <td class="left">
                             <cti:url value="changeType/view" var="url">
                                 <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
-                                    <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                                    <cti:param name="${parm.key}" value="${parm.value}"/>
                                 </c:forEach>
                             </cti:url>
                             <a href="${url}" class="described"><cti:msg2 key=".changeType.label"/></a>
@@ -61,7 +61,7 @@ vertical-align: top;padding-right: 1px;padding-bottom: 10px;
                         <td class="left">
                             <cti:url value="changeServiceCompany/view" var="url">
                                 <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
-                                    <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                                    <cti:param name="${parm.key}" value="${parm.value}"/>
                                 </c:forEach>
                             </cti:url>
                             <a href="${url}" class="described"><cti:msg2 key=".changeServiceCompany.label"/></a>
@@ -74,7 +74,7 @@ vertical-align: top;padding-right: 1px;padding-bottom: 10px;
                         <td class="left">
                             <cti:url value="controlAudit/view" var="url">
                                 <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
-                                    <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                                    <cti:param name="${parm.key}" value="${parm.value}"/>
                                 </c:forEach>
                             </cti:url>
                             <a href="${url}" class="described"><cti:msg2 key=".controlAudit.label"/></a>
@@ -92,7 +92,7 @@ vertical-align: top;padding-right: 1px;padding-bottom: 10px;
                         <td class="left">
                              <cti:url value="deleteInventory/view" var="url">
                                 <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
-                                    <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                                    <cti:param name="${parm.key}" value="${parm.value}"/>
                                 </c:forEach>
                             </cti:url>
                             <a href="${url}" class="described"><cti:msg2 key=".deleteInventory.label"/></a>
@@ -105,7 +105,7 @@ vertical-align: top;padding-right: 1px;padding-bottom: 10px;
                         <td class="left">
                             <cti:url value="changeStatus/view" var="url">
                                 <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
-                                    <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                                    <cti:param name="${parm.key}" value="${parm.value}"/>
                                 </c:forEach>
                             </cti:url>
                             <a href="${url}" class="described"><cti:msg2 key=".changeStatus.label"/></a>
@@ -118,7 +118,7 @@ vertical-align: top;padding-right: 1px;padding-bottom: 10px;
                         <td class="left">
                             <cti:url value="changeWarehouse/view" var="url">
                                 <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
-                                    <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                                    <cti:param name="${parm.key}" value="${parm.value}"/>
                                 </c:forEach>
                             </cti:url>
                             <a href="${url}" class="described"><cti:msg2 key=".changeWarehouse.label"/></a>
@@ -132,7 +132,7 @@ vertical-align: top;padding-right: 1px;padding-bottom: 10px;
                         <td class="left">
                             <cti:url value="saveToBatch/setup" var="url">
                                 <c:forEach items="${inventoryCollection.collectionParameters}" var="parm">
-                                    <cti:param name="${parm.key}" value="${fn:escapeXml(parm.value)}"/>
+                                    <cti:param name="${parm.key}" value="${parm.value}"/>
                                 </c:forEach>
                             </cti:url>
                             <a href="${url}" class="described"><cti:msg2 key=".saveToFile.label"/></a>
