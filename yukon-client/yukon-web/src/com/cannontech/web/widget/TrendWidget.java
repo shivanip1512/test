@@ -30,6 +30,7 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.users.model.PreferenceGraphTimeDurationOption;
 import com.cannontech.core.users.model.PreferenceGraphVisualTypeOption;
+import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -107,10 +108,16 @@ public class TrendWidget extends WidgetControllerBase {
         Date startDate = new Date();
         Date stopDate = new Date();
 
-        // GET PERIOD
+        // GET PERIOD from parameter and save it, or get the default period.
         String strRequestedChartPeriod = request.getParameter("period");
         ChartPeriod requestedChartPeriod = StringUtils.isBlank(strRequestedChartPeriod) ? null : ChartPeriod.valueOf(strRequestedChartPeriod);
-        PreferenceGraphTimeDurationOption prefPeriod = prefService.updatePreferenceOrGetDefaultChartPeriod(requestedChartPeriod, user);
+//        PreferenceGraphTimeDurationOption prefPeriod = prefService.updatePreferenceOrGetDefaultChartPeriod(requestedChartPeriod, user);
+        PreferenceGraphTimeDurationOption prefPeriod = null;
+        if (requestedChartPeriod == null) {
+            prefPeriod = prefService.getDefaultChartPeriod(user);
+        } else {
+            prefPeriod = prefService.updatePreferenceChartPeriod(requestedChartPeriod, user);
+        }
         ChartPeriod chartPeriod = prefPeriod == null ? ChartPeriod.NOPERIOD : prefPeriod.getChartPeriod();
         String period = chartPeriod.name();
         
@@ -145,7 +152,12 @@ public class TrendWidget extends WidgetControllerBase {
         // CHART STYLE (LINE/COLUMN)
         String strRequestedGraphType = request.getParameter("graphType");
         GraphType requestedGraphType = StringUtils.isBlank(strRequestedGraphType) ? null : GraphType.valueOf(strRequestedGraphType);
-        PreferenceGraphVisualTypeOption prefGraph = prefService.updatePreferenceOrGetDefaultGraphType(requestedGraphType, user);
+        PreferenceGraphVisualTypeOption prefGraph = null;
+        if (requestedGraphType == null) {
+            prefGraph = prefService.getDefaultGraphType(user);
+        } else {
+            prefGraph = prefService.updatePreferenceGraphType(requestedGraphType, user);
+        }
         GraphType graphType = prefGraph.getGraphType();
 
         // TABULAR DATA LINK REQUIREMENTS 

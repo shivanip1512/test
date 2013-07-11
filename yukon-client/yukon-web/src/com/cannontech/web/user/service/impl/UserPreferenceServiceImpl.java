@@ -52,32 +52,42 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
     }
 
     @Override
-    public PreferenceGraphVisualTypeOption updatePreferenceOrGetDefaultGraphType(GraphType requestedValueOrNull, 
-                                                                                 LiteYukonUser user) {
-        PreferenceGraphVisualTypeOption prefType = null;
-        if (requestedValueOrNull == null) {
-            String graphTypeString = this.getPreference(user, UserPreferenceName.GRAPH_DISPLAY_VISUAL_TYPE);
-            prefType = PreferenceGraphVisualTypeOption.valueOf(graphTypeString);
-        } else {
-            prefType = PreferenceGraphVisualTypeOption.fromGraphType(requestedValueOrNull);
-            this.savePreference(user, UserPreferenceName.GRAPH_DISPLAY_VISUAL_TYPE, prefType.name());
-        }
+    public PreferenceGraphVisualTypeOption getDefaultGraphType(LiteYukonUser user) {
+        String graphTypeString = this.getPreference(user, UserPreferenceName.GRAPH_DISPLAY_VISUAL_TYPE);
+        PreferenceGraphVisualTypeOption prefType = PreferenceGraphVisualTypeOption.valueOf(graphTypeString);
         return prefType;
     }
 
     @Override
-    public PreferenceGraphTimeDurationOption updatePreferenceOrGetDefaultChartPeriod(ChartPeriod requestedValueOrNull, 
-                                                                                     LiteYukonUser user) {
-        PreferenceGraphTimeDurationOption prefType = null;
-        if (requestedValueOrNull == null) {
-            String chartPeriodString = this.getPreference(user, UserPreferenceName.GRAPH_DISPLAY_TIME_DURATION);
-            prefType = PreferenceGraphTimeDurationOption.valueOf(chartPeriodString);
-        } else {
-            prefType = PreferenceGraphTimeDurationOption.fromChartPeriod(requestedValueOrNull);
-            if (prefType != null) {
-            	this.savePreference(user, UserPreferenceName.GRAPH_DISPLAY_TIME_DURATION, prefType.name());
-            }
+    public PreferenceGraphTimeDurationOption getDefaultChartPeriod(LiteYukonUser user) {
+        String chartPeriodString = this.getPreference(user, UserPreferenceName.GRAPH_DISPLAY_TIME_DURATION);
+        PreferenceGraphTimeDurationOption prefType = PreferenceGraphTimeDurationOption.valueOf(chartPeriodString);
+        return prefType;
+    }
+
+    @Override
+    public PreferenceGraphVisualTypeOption updatePreferenceGraphType(GraphType newValue, LiteYukonUser user) {
+        if (newValue == null) {
+            throw new IllegalArgumentException("Cannot set preference to NULL");
         }
+        PreferenceGraphVisualTypeOption prefType = PreferenceGraphVisualTypeOption.fromGraphType(newValue);
+        if (prefType == null) {
+            throw new IllegalArgumentException("Unknown GraphType ["+ newValue +"]");
+        }
+        this.savePreference(user, UserPreferenceName.GRAPH_DISPLAY_VISUAL_TYPE, prefType.name());
+        return prefType;
+    }
+
+    @Override
+    public PreferenceGraphTimeDurationOption updatePreferenceChartPeriod(ChartPeriod newValue, LiteYukonUser user) {
+        if (newValue == null) {
+            throw new IllegalArgumentException("Cannot set preference to NULL");
+        }
+        PreferenceGraphTimeDurationOption prefType = PreferenceGraphTimeDurationOption.fromChartPeriod(newValue);
+        if (prefType == null) {
+            throw new IllegalArgumentException("Unknown ChartPeriod ["+ newValue +"]");
+        }
+        this.savePreference(user, UserPreferenceName.GRAPH_DISPLAY_TIME_DURATION, prefType.name());
         return prefType;
     }
 }

@@ -34,9 +34,13 @@ public interface UserPreferenceService {
      */
     public List<UserPreference> findAllSavedPreferencesForUser(LiteYukonUser user);
 
-    public PreferenceGraphVisualTypeOption updatePreferenceOrGetDefaultGraphType(GraphType requestedValueOrNull,
-        LiteYukonUser user);
+    public PreferenceGraphVisualTypeOption getDefaultGraphType(LiteYukonUser user);
 
-    public PreferenceGraphTimeDurationOption updatePreferenceOrGetDefaultChartPeriod(ChartPeriod requestedValueOrNull,
-        LiteYukonUser user);
+    public PreferenceGraphTimeDurationOption getDefaultChartPeriod(LiteYukonUser user);
+
+    public PreferenceGraphVisualTypeOption updatePreferenceGraphType(GraphType requestedValueOrNull, LiteYukonUser user)
+            throws IllegalArgumentException;
+
+    public PreferenceGraphTimeDurationOption updatePreferenceChartPeriod(ChartPeriod requestedValueOrNull, LiteYukonUser user)
+            throws IllegalArgumentException;
 }

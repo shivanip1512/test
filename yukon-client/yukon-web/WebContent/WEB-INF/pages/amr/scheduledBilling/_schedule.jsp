@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
@@ -19,7 +20,7 @@
 		<tags:boxContainer2 nameKey="billingParameters">
 			<tags:nameValueContainer2 id="billingParametersContainer">
 				<c:forEach var="group" items="${deviceGroups}">
-					<input type="hidden" name="deviceGroups" value="${group}">
+					<input type="hidden" name="deviceGroups" value="${fn:escapeXml(group)}">
 				</c:forEach>
 				<input type="hidden" name="fileFormat" value="${fileFormat}">
 				<input type="hidden" name="demandDays" value="${demandDays}">
@@ -30,7 +31,7 @@
 				</c:if>
 				
 				<tags:nameValue2 nameKey=".deviceGroups">
-					${groupNames}
+					${fn:escapeXml(groupNames)}
 				</tags:nameValue2>
 				<tags:nameValue2 nameKey="yukon.web.billing.fileFormat">
 					${formatName}
