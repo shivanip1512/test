@@ -318,7 +318,7 @@ public class SiteMapHelper {
                 MatchStyle.all),
         JOB_STATUS(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.jobsscheduler.status.pageName", "/adminSetup/jobsscheduler/status", 
                 MatchStyle.all),
-        ALL_JOBS(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.jobsscheduler.all.pageName", "/adminSetup/jobsscheduler/jobs", 
+        ALL_JOBS(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.jobsscheduler.all.pageName", "/adminSetup/jobsscheduler/all", 
                 MatchStyle.all),
         MAINTENANCE(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.systemAdministration.maintenance", "/adminSetup/maintenance/view", 
                 MatchStyle.all, YukonRoleProperty.ADMIN_SUPER_USER),

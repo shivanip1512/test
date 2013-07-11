@@ -1,6 +1,7 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="adminSetup" page="jobsscheduler.active">
@@ -21,7 +22,7 @@
     </tr>
     <c:forEach items="${activeJobs}" var="job">
       <tr>
-        <td title="${job.id}">${job.jobDefinition.title}</td>
+        <td title="${job.id}">${fn:escapeXml(job.jobDefinition.title)}</td>
         <td>
             <form action="abortJob" method="post">
             <input type="hidden" name="jobId" value="${job.id}"> 

@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="adminSetup" page="jobsscheduler.all">
@@ -23,9 +24,9 @@
     </tr>
     <c:forEach items="${allRepeating}" var="job">
       <tr>
-        <td title="${job.id}">${job.jobDefinition.title}</td>
+        <td title="${job.id}">${fn:escapeXml(job.jobDefinition.title)}</td>
         <td>${job.beanName}</td>
-        <td>${job.userContext.yukonUser.username}</td>
+        <td>${fn:escapeXml(job.userContext.yukonUser.username)}</td>
         <td>${job.cronString}</td>
         <td>
         <c:if test="${job.disabled}">
