@@ -371,8 +371,9 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
 
         try {
             //NodeType of 1 is router. All Upros are routers. This might pull in other things that are not YUKON related.
-            //4171 is Cooper. This might limit us too much if we want to talk with other companies devices. 
-            pingResponses = refreshEndPoints(digiEndPointReadUrl + "?condition=xpNodeType=1 and xpMfgId = 4171",allEndPoints);
+            //4171 is Cooper. This might limit us too much if we want to talk with other companies devices.
+            //4126 is a new mfgId. We are no longer filtering based on mfgId.
+            pingResponses = refreshEndPoints(digiEndPointReadUrl + "?condition=xpNodeType=1",allEndPoints);
         } catch (DigiEmptyDeviceCoreResultException e) {
             //eat the Error.. It could be the case there is no endpoints.
         }
