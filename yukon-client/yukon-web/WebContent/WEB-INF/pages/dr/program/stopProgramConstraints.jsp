@@ -23,7 +23,7 @@ overrideConstraintsChecked = function() {
     <form:hidden path="gearNumber"/>
 
     <h4 class="dialogQuestion stacked">
-        <cti:msg2 key=".confirmQuestion" htmlEscape="true" argument="${program.name}"/>
+        <cti:msg2 key=".confirmQuestion" argument="${program.name}"/>
     </h4>
 
     <p>
