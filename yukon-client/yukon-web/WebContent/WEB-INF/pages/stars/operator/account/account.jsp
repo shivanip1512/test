@@ -364,18 +364,23 @@
                                                 <input type="text" class="password_editor_field" id="password2-plain" autocomplete="false" maxlength="64" style="display:none;"/>
                                                 <tags:password path="loginBackingBean.password2" cssClass="password_editor_field" autocomplete="false"/>
                                             </tags:nameValue2>
-                                            <tags:nameValue2 nameKey="defaults.blank" excludeColon="true">
-                                                <button type="button" class="f-generatePassword"><i:inline key=".generatePassword"/></button>
-                                                <br>
-                                                <label>
-                                                    <input id="showPasswordCheckbox" type="checkbox" onclick="showPassword()"/>
-                                                    <i:inline key=".showPassword"/>
-                                                </label>
-                                            </tags:nameValue2>
                                         </c:if>
                                     </cti:checkRolesAndProperties>
                                 </cti:displayForPageEditModes>
                             </tags:nameValueContainer2>
+                            
+                            <cti:displayForPageEditModes modes="CREATE,EDIT">
+                                <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
+                                    <c:if test="${supportsPasswordSet and empty passwordBean}">
+                                        <div class="actionArea">
+                                            <label><input id="showPasswordCheckbox" type="checkbox" onclick="showPassword()"/><i:inline key=".showPassword"/></label>
+                                            <button type="button" class="f-generatePassword">
+                                                <i:inline key=".generatePassword" />
+                                            </button>
+                                        </div>
+                                    </c:if>
+                                </cti:checkRolesAndProperties>
+                            </cti:displayForPageEditModes>
                             
                             <cti:displayForPageEditModes modes="EDIT">
                                 <c:if test="${loginMode eq 'EDIT'}">
