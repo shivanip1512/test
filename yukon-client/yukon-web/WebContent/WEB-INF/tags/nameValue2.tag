@@ -48,7 +48,7 @@
 				
 			</td>
 			
-			<td class="value<c:if test="${!empty valueClass}"> ${valueClass}</c:if>"><jsp:doBody/></td>
+			<td class="value<c:if test="${!empty pageScope.valueClass}"> ${pageScope.valueClass}</c:if>"><jsp:doBody/></td>
 		</tr>
 	</c:when>
 	<c:otherwise>
