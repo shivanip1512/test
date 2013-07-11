@@ -52,7 +52,7 @@ public interface DeviceGroupMemberEditorDao {
     
     /**
      * Remove child devices under group that are contained in the devices collection.
-     * Devices that exist in the collection put are not a member of the group are
+     * Devices that exist in the collection but are not a member of the group are
      * silently ignored.
      * @param group
      * @param device
@@ -61,7 +61,7 @@ public interface DeviceGroupMemberEditorDao {
     
     /**
      * Remove child devices from the given group by device id (yukon pao id). Devices that 
-     * exist in the collection put are not a member of the group are silently ignored.
+     * exist in the collection but are not a member of the group are silently ignored.
      * @param group
      * @param deviceIds
      */
@@ -69,7 +69,7 @@ public interface DeviceGroupMemberEditorDao {
     
     /**
      * Remove child devices under group that are contained in the devices collection.
-     * Devices that exist in the collection put are not a member of the group are
+     * Devices that exist in the collection but are not a member of the group are
      * silently ignored.
      * @param group
      * @param devices

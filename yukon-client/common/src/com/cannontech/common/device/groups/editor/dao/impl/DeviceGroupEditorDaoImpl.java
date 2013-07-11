@@ -120,6 +120,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     public void addDevices(StoredDeviceGroup group, Iterator<? extends YukonPao> yukonPaos) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(deviceGroupMemberInsertSql);
+        int rowsAffected = 0;
         while (yukonPaos.hasNext()) {
             YukonPao device = yukonPaos.next();
             if (!isDeviceValid(device)) {
@@ -127,14 +128,16 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
                 continue;
             }
             try {
-                jdbcTemplate.update(sql.toString(), group.getId(), device.getPaoIdentifier().getPaoId());
+                rowsAffected += jdbcTemplate.update(sql.toString(), group.getId(), device.getPaoIdentifier().getPaoId());
             } catch (DataIntegrityViolationException e) {
                 // ignore - tried to insert duplicate
             }
         }
-        dbChangeManager.processDbChange(DbChangeType.ADD, 
+        if (rowsAffected > 0) {
+            dbChangeManager.processDbChange(DbChangeType.ADD, 
                                         DbChangeCategory.DEVICE_GROUP_MEMBER, 
                                         group.getId());
+        }
     }
 
     private boolean isDeviceValid(YukonPao yukonPao) {
@@ -483,21 +486,25 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         sql.append("where DeviceGroupId = ?");
         sql.append("and YukonPaoId in (", deviceIds, ")");
         
-        jdbcTemplate.update(sql.toString(), group.getId());
+        int rowsAffected = jdbcTemplate.update(sql.toString(), group.getId());
 
-        dbChangeManager.processDbChange(DbChangeType.DELETE, 
+        if (rowsAffected > 0) {
+            dbChangeManager.processDbChange(DbChangeType.DELETE, 
                                         DbChangeCategory.DEVICE_GROUP_MEMBER, 
                                         group.getId());
+        }
     }
 
     @Override
     public void removeAllChildDevices(StoredDeviceGroup group) {
         String sql = "DELETE FROM DeviceGroupMember where DeviceGroupId = ?";
-        jdbcTemplate.update(sql, group.getId());
+        int rowsAffected = jdbcTemplate.update(sql, group.getId());
         
-        dbChangeManager.processDbChange(DbChangeType.DELETE, 
+        if (rowsAffected > 0) {
+            dbChangeManager.processDbChange(DbChangeType.DELETE, 
                                         DbChangeCategory.DEVICE_GROUP_MEMBER, 
                                         group.getId());
+        }
     }
 
     /**
