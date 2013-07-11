@@ -2,12 +2,15 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
 <cti:msgScope paths="modules.dr.controlArea.sendChangeTimeWindowConfirm">
-	<p class="dialogQuestion stacked">
-	    <cti:msg2 key=".confirmQuestion"
-	        htmlEscape="true" 
-	        arguments="${controlAreaTimeWindowDto.startTime},${controlAreaTimeWindowDto.stopTime},${controlArea.name}" />
-	</p>
-	
+    <p class="dialogQuestion stacked">
+        <cti:list var="msgArgs">
+            <cti:item value="${controlAreaTimeWindowDto.startTime}"/>
+            <cti:item value="${controlAreaTimeWindowDto.stopTime}"/>
+            <cti:item value="${controlArea.name}"/>
+        </cti:list>
+        <cti:msg2 key=".confirmQuestion" arguments="${msgArgs}"/>
+    </p>
+
 	<cti:url var="submitUrl" value="/dr/controlArea/changeTimeWindow"/>
 	<form id="sendChangeTimeWindowForm" action="${submitUrl}"
 	    onsubmit="return submitFormViaAjax('drDialog', 'sendChangeTimeWindowForm');">
