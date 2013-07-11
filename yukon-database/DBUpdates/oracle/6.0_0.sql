@@ -917,7 +917,7 @@ INSERT INTO DeviceConfigCategoryItem (DeviceConfigurationItemId, DeviceConfigCat
         JOIN DeviceConfigurationItem DCI ON DCI.DeviceConfigurationId = DC.DeviceConfigurationId
         JOIN TypeToCategoryConverter_temp T ON DC.Type = T.ConfigType
         JOIN ConfigToCategory_temp CT ON CT.DeviceConfigurationId = DC.DeviceConfigurationId
-        JOIN DeviceConfigConverter_temp D ON D.OldFieldName = DCI.FieldName
+        JOIN DeviceConfigConverter_temp D ON LOWER(D.OldFieldName) = LOWER(DCI.FieldName)
     WHERE T.CategoryType = D.CategoryType AND CT.CategoryType = T.CategoryType;
         
 DROP TABLE DeviceConfigConverter_temp;
@@ -931,7 +931,7 @@ DROP TABLE DeviceConfigurationItem;
 
 ALTER TABLE DEVICECONFIGURATIONDEVICEMAP 
 RENAME CONSTRAINT PK_DEVICECONFIGURATIONDEVICEMA 
-TO PK_DEVICECONFIGDEVICEMAP
+TO PK_DEVICECONFIGDEVICEMAP;
 
 ALTER TABLE DEVICECONFIGURATIONDEVICEMAP
 RENAME CONSTRAINT FK_DEVICECO_REFERENCE_DEVICECO 
@@ -944,7 +944,7 @@ TO FK_DEVCONFIGDEVMAP_YUKONPAO;
 
 /* Start YUK-12310 */
 DELETE FROM DeviceConfigCategory 
-WHERE CategoryType = 'mct430demandLoadProfile';
+WHERE CategoryType = 'mct430DemandLoadProfile';
 /* End YUK-12310 */
 
 /* Start YUK-12281 */
