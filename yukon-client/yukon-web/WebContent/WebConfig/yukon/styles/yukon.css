@@ -319,7 +319,7 @@ input.error {background: pink;border-color:#D14836;}
 /* FIELD HELPER (fieldHelper.js) */
 .pointingPopup_container {height: 100px; position: absolute; right: 168px; top: 188px; width: 300px; z-index: 1007; }
 .pointingPopup_content {background: none repeat scroll 0 0 white; border: 3px solid #CCCCCC;    -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);     -moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3); box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3); float: right; min-height: 2em; padding: 5px; width: 290px; font-size: 12px; }
-.pointingPopup_chevron {border-top: 10px solid transparent; border-bottom: 10px solid transparent;  border-right: 10px solid #CCCCCC; float: left; font-size: 0; line-height: 0; margin-top: 20px; width: 0; }
+.pointingPopup_chevron {border-top: 10px solid transparent; border-bottom: 10px solid transparent;  border-right: 10px solid #CCCCCC; float: left; font-size: 0; line-height: 0; margin-top: 5px; width: 0; }
 
 /* SCROLLING */
 .scrollingContainer_350, .scrollingContainer_large, .largeDialogScrollArea, .inlineTree.scroll-large .treeCanvas {overflow: auto; overflow-x: hidden; max-height:350px;}

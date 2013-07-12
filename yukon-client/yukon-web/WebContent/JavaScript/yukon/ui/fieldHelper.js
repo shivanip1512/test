@@ -111,7 +111,7 @@ if(typeof(Yukon.FieldHelper) === "undefined"){
              var target = jQuery(event.target);
              var popupLeft = target.offset().left + target.width() + 12;
              var left = popupLeft + 'px';
-             var top = (target.offset().top -20) + 'px';
+             var top = (target.offset().top -2) + 'px';
              
              jQuery('#descriptionPopup').css({left:left, top:top});
              
