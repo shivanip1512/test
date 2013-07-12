@@ -55,8 +55,6 @@ public enum CategoryType {
     METER_PARAMETERS("meterParameters"),
     @XmlEnumValue("displayItems")
     DISPLAY_ITEMS("displayItems"),
-    @XmlEnumValue("mct440DemandLoadProfile")
-    MCT_440_DEMAND_LOAD_PROFILE("mct440DemandLoadProfile"),
     @XmlEnumValue("mct440Configuration")
     MCT_440_CONFIGURATION("mct440Configuration"),
     @XmlEnumValue("mct440Addressing")
