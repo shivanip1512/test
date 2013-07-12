@@ -111,6 +111,7 @@
     <entry key="yukon.web.modules.operator.account.loginInfoError.usernameRequired">The username cannot be blank.</entry>
     <entry key="yukon.web.modules.operator.account.loginInfoError.usernameAlreadyExists">The username already exists for another account.</entry>
     <entry key="yukon.web.modules.operator.account.loginInfoError.usernameTooLong">Usernames can only be 64 characters or less.</entry>
+    <entry key="yukon.web.modules.operator.account.loginInfoError.invalidUsername">Username contains invalid characters.</entry>
 
     <entry key="yukon.web.modules.operator.account.loginInfoError.invalidPasswordChange">User does not have access/permission to change password.</entry>
     <entry key="yukon.web.modules.operator.account.loginInfoError.passwordNoMatch">The passwords supplied do not match.</entry>
