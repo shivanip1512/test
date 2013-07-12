@@ -20,4 +20,4 @@ MODIFY Delimiter VARCHAR2(20) NULL;
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('5.6', '30-JUN-2013', 'Latest Update', 5, SYSDATE);*/
+INSERT INTO CTIDatabase VALUES ('5.6', '25-JUL-2013', 'Latest Update', 5, SYSDATE);
