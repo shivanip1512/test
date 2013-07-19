@@ -1,6 +1,6 @@
 html {overflow-y:auto;display:block;background-color:#6e6d71;}
 head {display:none;}
-body {margin: 0;padding:0;color: #555;font: 14px/1.3 Arial,Helvetica,sans-serif;color:#555;-webkit-font-smoothing:antialiased;font-smoothing:antialiased;display:block;}
+body {margin: 0;padding:0;color: #555;font: 14px/1.3 Helvetica,sans-serif;color:#555;-webkit-font-smoothing:antialiased;font-smoothing:antialiased;display:block;}
 
 * {box-sizing: border-box;-moz-box-sizing:border-box;}
 
