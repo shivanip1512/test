@@ -21,7 +21,6 @@
 <cti:default var="type" value="icon"/>
 
 <div class="f-dropdown_outer_container ${pageScope.containerCssClass}" <c:if test="${not empty id}">id="${id}"</c:if>>
-  <div class="clearfix">
     <div class="dropdown-container usn fr">
       <c:choose>
         <c:when test="${type == 'link' && not empty pageScope.key}">
@@ -47,5 +46,4 @@
         <jsp:doBody/>
       </ul>
     </div>
-  </div>
 </div>

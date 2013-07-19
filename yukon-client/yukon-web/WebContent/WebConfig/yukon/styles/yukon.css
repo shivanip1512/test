@@ -450,6 +450,14 @@ input.dateTimePicker {margin: 0;}
 .dropdown-menu .divider {height: 1px; margin: 3px 1px; overflow: hidden; background-color: #E5E5E5; border-bottom: 1px solid white;}
 .dropdown-container a {cursor: pointer;}
 
+.criteria-button {text-align: left;position: relative;}
+.criteria-button > .criteria-wrap {display: inline-block;float: left;max-width: 200px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
+.criteria-button .criteria-label {color: #777;}
+.criteria-button .criteria-value {display: inline;}
+.criteria-menu a {padding: 3px 15px;}
+.criteria-menu .criteria-option {display: block;margin: 0;max-width: 230px;overflow: hidden;padding: 0;text-overflow: ellipsis;white-space: nowrap;width: auto;}
+.criteria-menu .criteria-option input {margin-right: 10px;}
+
 /* MODAL/BLOCKING GLASS */
 #modal_glass {padding-bottom: 100px; text-align:center;}
 #modal_glass, #modal_glass .tint {position: fixed; top:0; left:0; z-index:100000; height: 100%; width: 100%;}

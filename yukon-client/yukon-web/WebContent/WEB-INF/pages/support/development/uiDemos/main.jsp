@@ -10,7 +10,7 @@
 
 <script type="text/javascript">
 jQuery(function() {
-    jQuery('#tabs').tabs({'cookie' : {}});
+    jQuery('#tabs').tabs({'class': 'section', 'cookie' : {}});
 });
 </script>
 

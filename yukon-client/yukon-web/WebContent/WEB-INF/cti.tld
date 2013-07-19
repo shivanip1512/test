@@ -2130,7 +2130,7 @@
         <name>mode</name>
         <required>false</required>
         <rtexprvalue>true</rtexprvalue>
-        <description>the new mode is 'box', 'header' is like box but only has a line across the top.</description>
+        <description>the default mode is 'box', 'section' is like box but only has a line across the top.</description>
     </attribute>
     <description>
         Uses jQuery tabs...
