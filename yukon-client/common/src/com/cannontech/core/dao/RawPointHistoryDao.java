@@ -358,4 +358,7 @@ public interface RawPointHistoryDao {
     */
    public PointValueQualityHolder getSpecificValue(int pointId, long timestamp) throws NotFoundException;
 
+   public Instant getLastDataDateInRange(PaoIdentifier paoIdentifier, ReadableRange<Instant> dateRange);
+   
+   public PointValueQualityHolder getLastNonZeroAttributeData(YukonPao pao, Attribute attribute);
 }

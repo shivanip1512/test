@@ -161,20 +161,20 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
     }
     
     @Override
-    public LMHardwareConfiguration getForInventoryId(int inventoryId) {
+    public List<LMHardwareConfiguration> getForInventoryId(int inventoryId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT InventoryId, ApplianceId, AdderssingGroupId, LoadNumber");
+        sql.append("SELECT InventoryId, ApplianceId, AddressingGroupId, LoadNumber");
         sql.append("FROM LMHardwareConfiguration");
         sql.append("WHERE InventoryID").eq(inventoryId);
         
         try {
-            return yukonJdbcTemplate.queryForObject(sql, new YukonRowMapper<LMHardwareConfiguration>() {
+            return yukonJdbcTemplate.query(sql, new YukonRowMapper<LMHardwareConfiguration>() {
                 @Override
                 public LMHardwareConfiguration mapRow(YukonResultSet rs) throws SQLException {
                     LMHardwareConfiguration config = new LMHardwareConfiguration();
                     config.setInventoryId(rs.getInt("inventoryId"));
                     config.setApplianceId(rs.getInt("ApplianceId"));
-                    config.setAddressingGroupId(rs.getInt("AdderssingGroupId"));
+                    config.setAddressingGroupId(rs.getInt("AddressingGroupId"));
                     config.setLoadNumber(rs.getInt("LoadNumber"));
                     return config;
                 }

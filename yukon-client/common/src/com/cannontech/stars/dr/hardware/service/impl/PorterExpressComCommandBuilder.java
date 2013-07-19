@@ -601,7 +601,7 @@ public class PorterExpressComCommandBuilder {
                 log.error(e.getMessage(), e);
             }
         } else {
-            optGroupId = configDao.getForInventoryId(liteHw.getInventoryID()).getAddressingGroupId();
+            optGroupId = configDao.getForInventoryId(liteHw.getInventoryID()).get(0).getAddressingGroupId();
             if (optGroupId > 0) {
                 loadGroupName = paoDao.getYukonPAOName(optGroupId);
             }

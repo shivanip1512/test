@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.clientutils.LogHelper;
@@ -46,6 +47,7 @@ import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -965,6 +967,61 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     	sql.append("WHERE ChangeId").eq(changeId);
     	
     	yukonTemplate.update(sql);
+    }
+    
+    @Override
+    public PointValueQualityHolder getLastNonZeroAttributeData(YukonPao pao, Attribute attribute) {
+        PointIdentifier identifier = attributeService.getPaoPointIdentifierForAttribute(pao, attribute).getPointIdentifier();
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT rph.PointId, rph.TimeStamp, rph.Quality, rph.Value, p.PointType");
+        sql.append("FROM RawPointHistory rph");
+        sql.append("JOIN Point p ON rph.PointId = p.PointId");
+        sql.append("WHERE p.PointOffset").eq_k(identifier.getOffset());
+        sql.append("AND p.PointType").eq_k(identifier.getPointType());
+        sql.append("AND rph.Value").gt(0);
+        
+        final LiteRPHQualityRowMapper liteRPHQualityRowMapper = new LiteRPHQualityRowMapper();
+        List<PointValueQualityHolder> results = yukonTemplate.queryForLimitedResults(sql, liteRPHQualityRowMapper, 1);
+        if(results.isEmpty()) {
+            return null;
+        } else {
+            return results.get(0);
+        }
+    }
+    
+    @Override
+    public Instant getLastDataDateInRange(PaoIdentifier paoIdentifier, ReadableRange<Instant> dateRange) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT MAX(Timestamp) FROM RawPointHistory rph");
+        sql.append("JOIN Point ON rph.PointId = point.PointId");
+        sql.append("JOIN YukonPAObject ypo ON point.PAObjectId = ypo.PAObjectId");
+        sql.append("WHERE ypo.PAObjectId").eq(paoIdentifier.getPaoId());
+        
+        if(dateRange.getMin() == null) {
+            //no minimum clause
+        } else if(dateRange.isIncludesMinValue()) {
+            sql.append("AND rph.Timestamp").gte(dateRange.getMin());
+        } else {
+            sql.append("AND rph.Timestamp").gt(dateRange.getMin());
+        }
+
+        if(dateRange.getMax() == null) {
+            //no maximum clause
+        } else if(dateRange.isIncludesMaxValue()) {
+            sql.append("AND rph.Timestamp").lte(dateRange.getMax());
+        } else {
+            sql.append("AND rph.Timestamp").lt(dateRange.getMax());
+        }
+        
+        Instant lastCommunicationDate = null;
+        try {
+            lastCommunicationDate = yukonTemplate.queryForObject(sql, RowMapper.INSTANT_NULLABLE);
+        } catch(IncorrectResultSizeDataAccessException e) {
+            //do nothing, return null
+        }
+        
+        return lastCommunicationDate;
     }
 }
 

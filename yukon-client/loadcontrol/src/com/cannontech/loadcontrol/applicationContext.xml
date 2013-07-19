@@ -81,4 +81,6 @@
     <bean id="drLoadGroupEnabledField" class="com.cannontech.dr.loadgroup.model.LoadGroupEnabledField"/>
     <bean id="drLoadGroupEnabledClassnameField" class="com.cannontech.dr.loadgroup.model.LoadGroupEnabledClassnameField"/>
     <bean id="drLoadGroupShowAction" class="com.cannontech.dr.loadgroup.model.LoadGroupShowActionField"/>
+
+    <bean class="com.cannontech.dr.assetavailability.service.impl.AssetAvailabilityServiceImpl"/>
 </beans>

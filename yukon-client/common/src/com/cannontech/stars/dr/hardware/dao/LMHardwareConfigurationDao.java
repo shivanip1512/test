@@ -1,6 +1,7 @@
 package com.cannontech.stars.dr.hardware.dao;
 
 import java.util.Collection;
+import java.util.List;
 
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
@@ -27,6 +28,6 @@ public interface LMHardwareConfigurationDao {
             LiteAccountInfo liteAcct, LiteLmHardwareBase lmHw,
             LiteStarsEnergyCompany energyCompany);
 
-    public LMHardwareConfiguration getForInventoryId(int inventoryId);    
+    public List<LMHardwareConfiguration> getForInventoryId(int inventoryId);    
 
 }

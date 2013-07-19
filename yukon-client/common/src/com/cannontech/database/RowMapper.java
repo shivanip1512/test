@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import org.joda.time.Instant;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -63,6 +64,7 @@ public interface RowMapper {
         @Override
         public Instant mapRow(YukonResultSet rs) throws SQLException {
             Timestamp timestamp = rs.getResultSet().getTimestamp(1);
+            if(timestamp == null) throw new EmptyResultDataAccessException("Null timestamp", 1);
             return new Instant(timestamp);
         }
     };
