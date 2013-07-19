@@ -4,6 +4,9 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * Used for cti:constantValue() func
+ */
 public class ReflectivePropertySearcher {
 
     private static Map<String, Object> valueLookupCache = new TreeMap<>();

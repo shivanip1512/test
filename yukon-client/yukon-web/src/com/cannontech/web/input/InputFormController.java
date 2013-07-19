@@ -97,26 +97,6 @@ public abstract class InputFormController extends SimpleFormController {
             }
         }
 
-        // Validate each of the input groups
-        for (Input input : inputList) {
-
-            if (input instanceof InputGroup) {
-
-                List<? extends InputValidator<?>> validatorList = input.getValidatorList();
-                for (InputValidator validator : validatorList) {
-                    
-                    if(input.getField() != null){
-                        value = beanWrapper.getPropertyValue(input.getField());
-                    } else {
-                        value = command;
-                    }
-                    
-                    // Validate the group
-                    validator.validate(null, input.getDisplayName(), value, errors);
-                }
-            }
-        }
-        
         for (InputValidator validator : getGlobalValidators()) {
             validator.validate(null, "", command, errors);
         }
