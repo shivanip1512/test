@@ -174,13 +174,6 @@ form#intervalDataForm {
 div.attributeSetupContainer {
     min-width: 500px;
 }
-.stateBox {
-    width: 14px;
-    height: 14px;
-    border: 1px solid #888;
-    display: inline-block !important;
-    margin: 1px 0 0 0;
-}
 
 .device_data_processors select {
 	width: 140px;
