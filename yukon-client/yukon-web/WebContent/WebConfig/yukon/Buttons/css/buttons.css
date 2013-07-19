@@ -77,7 +77,9 @@ button[disabled] .icon, .button[disabled] .icon {background-image: url(/WebConfi
 button.action[disabled], .button.action[disabled] {filter: alpha(opacity=50);opacity: .5;}
 
 button.left, 
-.button.left {
+.button.left,
+input.left,
+select.left {
 	margin: 0 0 0 5px;
 	
 	border-top-right-radius: 0;
@@ -89,7 +91,9 @@ button.left,
 	-moz-border-radius-bottomright: 0;
 }
 button.middle, 
-.button.middle {
+.button.middle,
+input.middle,
+select.middle {
 	margin: 0;
 	
 	border-left: 0;
@@ -99,7 +103,9 @@ button.middle,
 	-moz-border-radius: 0;
 }
 button.right, 
-.button.right {
+.button.right,
+input.right,
+select.right {
 	margin: 0 5px 0 0;
 	border-left: 0;
 	border-top-left-radius: 0;

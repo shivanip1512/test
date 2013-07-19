@@ -183,18 +183,28 @@ table.nowrap th, table.nowrap td {white-space: nowrap;}
 
 
 /* LISTS */
+ul.disc li {list-style-type: disc; margin-left: 25px;}
+
 .buttonStack {padding: 0; list-style-type: none; margin: 0;}
 .buttonStack li {margin-bottom: 5px;}
 .buttonStack li:after {clear: both;content: ".";display: block;height: 0;line-height: 0;visibility: hidden;}
-ul.disc li {list-style-type: disc; margin-left: 25px;}
+
 .groupedList {padding-left: 0;}
 .groupedList > li {list-style: none;}
 .groupedList .group {font-weight: bold;}
 .groupedList .groupedItem {list-style: none;}
-.simple-list, .resultList, .labeledImageStack {padding: 0;margin:0;list-style: none;}
+
+.simple-list, .resultList, .labeledImageStack, .editable-list {padding: 0;margin:0;list-style: none;}
+
 .tree-list li li {margin-left: 15px;}
 .tree-list li li li {margin-left: 30px;}
+
 .labeledImageStack li {display:block; padding-bottom: 10px;}
+
+.editable-list li {padding:4px;}
+.editable-list li:hover {background-color: #efefef;}
+.editable-list li .remove-item {visibility: hidden;}
+.editable-list li:hover .remove-item {visibility: visible;}
 
 /* CONTAINERS */
 .toggle-title {cursor: pointer; background: white url(../Icons/icon_blockexpanded.png) no-repeat scroll 0 8px; padding-left: 14px; display: inline;}
@@ -280,6 +290,9 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 
 .tiles .column.one {clear:left;}
 
+.separated-sections .section {border-bottom: 1px dotted #bbb; padding-bottom:10px;}
+.separated-sections .section:last-child {border-bottom: none; padding-bottom:10px;}
+
 /* FLASH SCOPES */
 .page_help,.page_warning,.page_error {line-height: 1.3em; font-size: 12px; padding: 5px 10px 5px 25px; border-radius: 2px; border-width: 1px; border-style: solid; margin-bottom: 10px;}
 .page_help ul,.page_warning ul,.page_error ul {list-style: disc inside none;}
@@ -291,6 +304,15 @@ ul.disc li {list-style-type: disc; margin-left: 25px;}
 ul.pipes {overflow:hidden; display:inline-block;}
 ul.pipes li {display:inline; border-left:solid 1px #ccc; margin:0 0 0 -1px; padding:2px 7px 2px 5px;}
 ul.pipes li.first {padding-left:0;}
+
+/* used to diplay a pipe next to something when that thing is selected */
+.pipe-selector {position: relative;}
+.pipe-selector .pipe {position: absolute; width:2px; background-color: #06C;height: 100%;visibility: hidden;}
+.pipe-selector.selected .pipe {position: absolute; width:2px; background-color: #06C;height: 100%;visibility: visible;}
+a.pipe-selector {color: #555;}
+a.pipe-selector:not(.selected):hover {color: #06C;}
+a.pipe-selector.selected {color: #555; cursor: default;}
+.pipe-selector .pipe + * {margin-left: 5px;}
 
 /* COLOR CODING */
 .error, .errorMessage {color: #D14836 !important}
@@ -387,7 +409,7 @@ hr, .divider {border-top: 1px solid #ccc;border-style: solid none none none;clea
 
  /* DATE/TIME PICKERS */
 .datetimeEntry_wrap {display: inline-block; overflow: hidden; background: #ccc; -webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px; float: left; margin-right: 5px;border: 1px solid #aaa;height: 22px;}
-.datetimeEntry_wrap.date {width: 142px;}
+.datetimeEntry_wrap.date {width: 144px;}
 .datetimeEntry_wrap.dateTime {min-width: 171px;}
 .datetimeEntry_wrap.time {width: 102px;}
 .datetimeEntry_wrap input { padding: 2px; float: left; height: 20px; border: solid 1px white;}
