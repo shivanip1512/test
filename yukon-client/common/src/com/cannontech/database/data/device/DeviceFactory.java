@@ -154,11 +154,11 @@ public final class DeviceFactory {
         case RFN430A3K:
         case RFN430A3R:
         case RFN430KV:
-        case RFN440_2131T:
+//        case RFN440_2131T:
         case RFN440_2131TD:
-        case RFN440_2132T:
+//        case RFN440_2132T:
         case RFN440_2132TD:
-        case RFN440_2133T:
+//        case RFN440_2133T:
         case RFN440_2133TD:
         case RFWMETER:
             returnDevice = new RfnMeterBase();

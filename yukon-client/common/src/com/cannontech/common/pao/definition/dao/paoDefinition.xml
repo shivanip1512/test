@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="paoDefinition.xsl"?>
-<!--  RF Devices: highest Analog OFFSET=225 @ 2014-05-01W -->
+<!--  RF Devices: highest Analog OFFSET=228 @ 2014-07-17W -->
 <!--  RF Devices: highest Status OFFSET=62  @ 2014-04-30T -->
 <!--
     This file contains default pao and point information for all of the pao's in Yukon.
@@ -6846,9 +6846,11 @@
 
     <pao id="RFN_L3_CENTRON" abstract="true" inherits="RFN_L2_CENTRON_AND_FOCUS, RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE"/>
 
-    <pao id="RFN_L3_FOCUS_420FL" abstract="true" inherits="RFN_L2_CENTRON_AND_FOCUS, RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE"/>
+    <pao id="RFN_L3_FOCUS_420FL" abstract="true" inherits="RFN_L2_CENTRON_AND_FOCUS, RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE, RFN_L3_FOCUS_4x0FL_2VOLTAGES"/>
     
-    <pao id="RFN_L3_FOCUS_410FL" abstract="true" inherits="RFN_L2_CENTRON_AND_FOCUS">
+    <pao id="RFN_L3_FOCUS_410FL" abstract="true" inherits="RFN_L2_CENTRON_AND_FOCUS, RFN_L3_FOCUS_4x0FL_2VOLTAGES" />
+
+    <pao id="RFN_L3_FOCUS_4x0FL_2VOLTAGES" abstract="true">
         <points>
             <point type="Analog" offset="5">
                 <init>true</init>
@@ -7047,6 +7049,15 @@
             </point>
         </points>
         <attributes>
+            <attribute name="CURRENT_PHASE_A">
+                <basicLookup point="Amps Phase A"/>
+            </attribute>
+            <attribute name="CURRENT_PHASE_B">
+                <basicLookup point="Amps Phase B"/>
+            </attribute>
+            <attribute name="CURRENT_PHASE_C">
+                <basicLookup point="Amps Phase C"/>
+            </attribute>
             <attribute name="VOLTAGE_PHASE_A">
                 <basicLookup point="Volts Phase A" />
             </attribute>
@@ -7606,16 +7617,22 @@
         <displayName>RFN-430KV</displayName></pao>
 
     <!-- ELO RFN METERS -->
+<!-- 
     <pao id="RFN440_2131T" inherits="RFN440_BASE, RFN440_SINGLE_PHASE_VOLTAGE">
         <displayName>RFN-440-2131T</displayName></pao>
+ -->
     <pao id="RFN440_2131TD" inherits="RFN440_BASE, RFN440_SINGLE_PHASE_VOLTAGE, RFN_DISCONNECT">
         <displayName>RFN-440-2131TD</displayName></pao>
+<!-- 
     <pao id="RFN440_2132T" inherits="RFN440_BASE, RFN440_TWO_PHASE_VOLTAGE">
         <displayName>RFN-440-2132T</displayName></pao>
+ -->
     <pao id="RFN440_2132TD" inherits="RFN440_BASE, RFN440_TWO_PHASE_VOLTAGE, RFN_DISCONNECT">
         <displayName>RFN-440-2132TD</displayName></pao>
+<!-- 
     <pao id="RFN440_2133T" inherits="RFN440_BASE, RFN440_THREE_PHASE_VOLTAGE">
         <displayName>RFN-440-2133T</displayName></pao>
+ -->
     <pao id="RFN440_2133TD" inherits="RFN440_BASE, RFN440_THREE_PHASE_VOLTAGE, RFN_DISCONNECT">
         <displayName>RFN-440-2133TD</displayName></pao>
 
@@ -7640,7 +7657,7 @@
             <point type="Analog" offset="10">
                 <init>true</init>
                 <name>Last Interval kW</name>
-                <multiplier value="0.01"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="4"/>
             </point>
@@ -7679,7 +7696,7 @@
                 <unitofmeasure value="Counts"/>
                 <decimalplaces value="0"/>
             </point>
-            
+
             <point type="Analog" offset="25">
                 <init>true</init>
                 <name>Rate A kWh</name>
@@ -7688,85 +7705,57 @@
                 <decimalplaces value="4"/>
             </point>
             <point type="Analog" offset="27">
+                <init>true</init>
                 <name>Rate B kWh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="4"/>
             </point>
             <point type="Analog" offset="29">
+                <init>true</init>
                 <name>Rate C kWh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="4"/>
             </point>
             <point type="Analog" offset="31">
+                <init>true</init>
                 <name>Rate D kWh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="4"/>
             </point>
-            
-            <point type="Analog" offset="45">
-                <init>false</init>
-                <name>Current Phase A</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Amps"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="46">
-                <init>false</init>
-                <name>Current Phase B</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Amps"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="47">
-                <init>false</init>
-                <name>Current Phase C</name>
+
+            <point type="Analog" offset="73">
+                <init>true</init>
+                <name>Amps Phase A</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="70">
                 <init>true</init>
-                <name>Voltage Phase A</name>
+                <name>Volts Phase A</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="1"/>
             </point>
-            <point type="Analog" offset="71">
+            <point type="Analog" offset="105">
                 <init>true</init>
-                <name>Voltage Phase B</name>
+                <name>Peak kW</name>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="1"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="72">
-                <init>true</init>
-                <name>Voltage Phase C</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="1"/>
-            </point>
+<!-- 
             <point type="Analog" offset="130">
-                <name>Power Factor Phase A</name>
+                <init>true</init>
+                <name>Phase A Power Factor</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="PF"/>
                 <decimalplaces value="4"/>
             </point>
-            <point type="Analog" offset="131">
-                <name>Power Factor Phase B</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="PF"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="132">
-                <name>Power Factor Phase C</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="PF"/>
-                <decimalplaces value="4"/>
-            </point>
-            
+ -->
             <point type="Analog" offset="182">
                 <init>true</init>
                 <name>Delivered kWh per Interval</name>
@@ -7775,6 +7764,7 @@
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="183">
+                <init>true</init>
                 <name>Received kWh per Interval</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
@@ -7783,46 +7773,54 @@
             <point type="Analog" offset="220">
                 <init>true</init>
                 <name>Forward Inductive kVARh</name>
-                <multiplier value="0.0001"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="221">
                 <init>true</init>
                 <name>Reverse Inductive kVARh</name>
-                <multiplier value="0.0001"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="222">
                 <init>true</init>
                 <name>Forward Inductive kVARh per Interval</name>
-                <multiplier value="0.0001"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="223">
                 <init>true</init>
                 <name>Forward Capacitive kVARh per Interval</name>
-                <multiplier value="0.0001"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="224">
                 <init>true</init>
                 <name>Reverse Inductive kVARh per Interval</name>
-                <multiplier value="0.0001"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="225">
                 <init>true</init>
                 <name>Reverse Capacitive kVARh per Interval</name>
-                <multiplier value="0.0001"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
-            
+
+            <point type="Analog" offset="226">
+                <init>true</init>
+                <name>Current Angle Phase A</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Degrees"/>
+                <decimalplaces value="1"/>
+            </point>
+
             <point type="CalcAnalog" offset="0">
                 <init>true</init>
                 <name>Total Outage Count</name>
@@ -7870,7 +7868,7 @@
             <attribute name="OUTAGE_LOG">
                 <basicLookup point="Outage Log" />
             </attribute>
-            
+
             <attribute name="TOU_RATE_A_USAGE">
                 <basicLookup point="Rate A kWh" />
             </attribute>
@@ -7883,7 +7881,10 @@
             <attribute name="TOU_RATE_D_USAGE">
                 <basicLookup point="Rate D kWh" />
             </attribute>
-            
+            <attribute name="PEAK_DEMAND">
+                <basicLookup point="Peak kW" />
+            </attribute>
+
             <attribute name="USAGE_PER_INTERVAL">
                 <basicLookup point="Delivered kWh per Interval" />
             </attribute>
@@ -7908,6 +7909,18 @@
             <attribute name="REVERSE_CAPACITIVE_KVARH_PER_INTERVAL">
                 <basicLookup point="Reverse Capacitive kVARh per Interval" />
             </attribute>
+
+            <attribute name="CURRENT_PHASE_A">
+                <basicLookup point="Amps Phase A"/>
+            </attribute>
+            <attribute name="CURRENT_ANGLE_PHASE_A">
+                <basicLookup point="Current Angle Phase A"/>
+            </attribute>
+<!-- 
+            <attribute name="POWER_FACTOR_PHASE_A">
+                <basicLookup point="Power Factor Phase A"/>
+            </attribute>
+ -->
         </attributes>
         <tags>
             <tag name="DEVICE_ICON_TYPE">
@@ -7918,72 +7931,116 @@
             <tag name="USES_METER_NUMBER_FOR_MSP"/>
         </tags>
     </pao>
-    
+
     <pao id="RFN440_SINGLE_PHASE_VOLTAGE" abstract="true">
         <attributes>
             <attribute name="VOLTAGE">
-                <basicLookup point="Voltage Phase A"/>
+                <basicLookup point="Volts Phase A"/>
             </attribute>
-            <attribute name="CURRENT_PHASE_A">
-                <basicLookup point="Current Phase A"/>
+        </attributes>
+    </pao>
+
+    <pao id="RFN440_TWO_PHASE_VOLTAGE" abstract="true" inherits="THREE_PHASE_VOLTAGE">
+        <points>
+            <point type="Analog" offset="74">
+                <init>true</init>
+                <name>Amps Phase B</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="227">
+                <init>true</init>
+                <name>Current Angle Phase B</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Degrees"/>
+                <decimalplaces value="1"/>
+            </point>
+<!-- 
+            <point type="Analog" offset="131">
+                <init>true</init>
+                <name>Phase B Power Factor</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="PF"/>
+                <decimalplaces value="4"/>
+            </point>
+ -->
+            <point type="Analog" offset="71">
+                <init>true</init>
+                <name>Volts Phase B</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="1"/>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="CURRENT_PHASE_B">
+                <basicLookup point="Amps Phase B"/>
             </attribute>
-            <attribute name="POWER_FACTOR_PHASE_A">
-                <basicLookup point="Power Factor Phase A"/>
+            <attribute name="CURRENT_ANGLE_PHASE_B">
+                <basicLookup point="Current Angle Phase B"/>
+            </attribute>
+<!-- 
+            <attribute name="POWER_FACTOR_PHASE_B">
+                <basicLookup point="Power Factor Phase B"/>
+            </attribute>
+ -->
+            <attribute name="VOLTAGE_PHASE_A">
+                <basicLookup point="Volts Phase A" />
+            </attribute>
+            <attribute name="VOLTAGE_PHASE_B">
+                <basicLookup point="Volts Phase B" />
             </attribute>
         </attributes>
     </pao>
     
-    <pao id="RFN440_TWO_PHASE_VOLTAGE" abstract="true">
+    <pao id="RFN440_THREE_PHASE_VOLTAGE" abstract="true" inherits="RFN440_TWO_PHASE_VOLTAGE, THREE_PHASE_VOLTAGE">
+        <points>
+            <point type="Analog" offset="75">
+                <init>true</init>
+                <name>Amps Phase C</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="228">
+                <init>true</init>
+                <name>Current Angle Phase C</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Degrees"/>
+                <decimalplaces value="1"/>
+            </point>
+<!-- 
+            <point type="Analog" offset="132">
+                <init>true</init>
+                <name>Phase C Power Factor</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="PF"/>
+                <decimalplaces value="4"/>
+            </point>
+ -->
+            <point type="Analog" offset="72">
+                <init>true</init>
+                <name>Volts Phase C</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="1"/>
+            </point>
+        </points>
         <attributes>
-            <attribute name="VOLTAGE_PHASE_A">
-                <basicLookup point="Voltage Phase A" />
-            </attribute>
-            <attribute name="CURRENT_PHASE_A">
-                <basicLookup point="Current Phase A"/>
-            </attribute>
-            <attribute name="POWER_FACTOR_PHASE_A">
-                <basicLookup point="Power Factor Phase A"/>
-            </attribute>
-            <attribute name="VOLTAGE_PHASE_B">
-                <basicLookup point="Voltage Phase B" />
-            </attribute>
-            <attribute name="CURRENT_PHASE_B">
-                <basicLookup point="Current Phase B"/>
-            </attribute>
-            <attribute name="POWER_FACTOR_PHASE_B">
-                <basicLookup point="Power Factor Phase B"/>
-            </attribute>
-        </attributes>
-    </pao>
-    
-    <pao id="RFN440_THREE_PHASE_VOLTAGE" abstract="true" inherits="THREE_PHASE_VOLTAGE">
-        <attributes>
-            <attribute name="VOLTAGE_PHASE_A">
-                <basicLookup point="Voltage Phase A" />
-            </attribute>
-            <attribute name="CURRENT_PHASE_A">
-                <basicLookup point="Current Phase A"/>
-            </attribute>
-            <attribute name="POWER_FACTOR_PHASE_A">
-                <basicLookup point="Power Factor Phase A"/>
-            </attribute>
-            <attribute name="VOLTAGE_PHASE_B">
-                <basicLookup point="Voltage Phase B" />
-            </attribute>
-            <attribute name="CURRENT_PHASE_B">
-                <basicLookup point="Current Phase B"/>
-            </attribute>
-            <attribute name="POWER_FACTOR_PHASE_B">
-                <basicLookup point="Power Factor Phase B"/>
-            </attribute>
-            <attribute name="VOLTAGE_PHASE_C">
-                <basicLookup point="Voltage Phase C" />
-            </attribute>
             <attribute name="CURRENT_PHASE_C">
-                <basicLookup point="Current Phase C"/>
+                <basicLookup point="Amps Phase C"/>
             </attribute>
+            <attribute name="CURRENT_ANGLE_PHASE_C">
+                <basicLookup point="Current Angle Phase C"/>
+            </attribute>
+<!-- 
             <attribute name="POWER_FACTOR_PHASE_C">
                 <basicLookup point="Power Factor Phase C"/>
+            </attribute>
+ -->
+            <attribute name="VOLTAGE_PHASE_C">
+                <basicLookup point="Volts Phase C" />
             </attribute>
         </attributes>
     </pao>

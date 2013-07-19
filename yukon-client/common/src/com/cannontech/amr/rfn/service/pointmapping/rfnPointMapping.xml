@@ -1,6 +1,272 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pointMappings>
 
+<!--    NOTES RE: ELO's RFN 213x models
+    NOTE 1: 213s added here at the top because they are COMPLETELY SEPARATE from the
+        existing RFN device hierarchies during this demo period as points, etc. shake out.
+    NOTE 2: the non-D models are all commented-out since we must assume for now that
+        every 213 is Disconnect-enabled (no info coming from meters).
+    NOTE 3: Power Factors are commented-out because of current bug in the hardware
+    NOTE 4: ALL points are enabled (<init>true) for 213s in this release.
+    NOTE 5: the 213 hierarchy is based only upon them being 1-, 2-, or 3-phase meters.
+-->
+    <pointGroup><!--  213s -->
+<!-- 
+        <paoType value="RFN440_2131T"/>
+        <paoType value="RFN440_2132T"/>
+        <paoType value="RFN440_2133T"/>
+ -->
+        <paoType value="RFN440_2131TD"/>
+        <paoType value="RFN440_2132TD"/>
+        <paoType value="RFN440_2133TD"/>
+
+        <point name="Delivered kWh">
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Received kWh">
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+            </modifiers>
+        </point>
+        <point name="Last Interval kW"><!-- RFN new, exists for MCTs --> 
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Rate A kWh">
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate A</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Rate B kWh">
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate B</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Rate C kWh">
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate C</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Rate D kWh">
+            <uom>Wh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate D</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+
+        <point name="Forward Inductive kVARh"> 
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Reverse Inductive kVARh">
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+            </modifiers>
+        </point>
+        <point name="Peak kW"> 
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+
+        <point name="Outage Count">
+            <uom>Outage Count</uom>
+            <modifiers match="equal"/> 
+        </point>
+        <point name="Outage Restore Count">
+            <uom>Restore Count</uom>
+            <modifiers match="equal"/> 
+        </point>
+        <point name="Blink Count">
+            <uom>Outage Blink Count</uom>
+            <modifiers match="equal"/> 
+        </point>
+        <point name="Blink Restore Count">
+            <uom>Restore Blink Count</uom>
+            <modifiers match="equal"/> 
+        </point>
+        <!-- NEW -->
+        <point name="Outage Log">
+            <uom>Outage Log</uom>
+            <modifiers match="equal"/> 
+        </point>
+    </pointGroup>
+
+    <pointGroup><!--  213s -->
+<!-- 
+        <paoType value="RFN440_2131T"/>
+        <paoType value="RFN440_2132T"/>
+        <paoType value="RFN440_2133T"/>
+ -->
+        <paoType value="RFN440_2131TD"/>
+        <paoType value="RFN440_2132TD"/>
+        <paoType value="RFN440_2133TD"/>
+
+        <point name="Amps Phase A">
+            <uom>A</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase A</modifier>
+            </modifiers>
+        </point>
+        <point name="Current Angle Phase A">
+            <uom>A degree</uom>
+            <multiplier value="0.1"/>   <!-- A degree - Current Phase Angle (tenths of degree) -->
+            <modifiers match="equal">
+                <modifier>Phase A</modifier>
+            </modifiers>
+        </point>
+<!-- 
+        <point name="Phase A Power Factor">
+            <uom>PF</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase A</modifier>
+            </modifiers>
+        </point>
+ -->
+        <point name="Volts Phase A">
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase A</modifier>
+            </modifiers>
+        </point>
+    </pointGroup>
+
+    <pointGroup><!--  213s 2-phases -->
+<!-- 
+        <paoType value="RFN440_2132T"/>
+        <paoType value="RFN440_2133T"/>
+ -->
+        <paoType value="RFN440_2132TD"/>
+        <paoType value="RFN440_2133TD"/>
+
+        <point name="Amps Phase B">
+            <uom>A</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase B</modifier>
+            </modifiers>
+        </point>
+        <point name="Current Angle Phase B">
+            <uom>A degree</uom>
+            <multiplier value="0.1"/>   <!-- A degree - Current Phase Angle (tenths of degree) -->
+            <modifiers match="equal">
+                <modifier>Phase B</modifier>
+            </modifiers>
+        </point>
+<!-- 
+        <point name="Phase B Power Factor">
+            <uom>PF</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase B</modifier>
+            </modifiers>
+        </point>
+ -->
+        <point name="Volts Phase B">
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase B</modifier>
+            </modifiers>
+        </point>
+    </pointGroup>
+
+    <pointGroup><!--  213s 3-phases-->
+<!-- 
+        <paoType value="RFN440_2133T"/>
+ -->
+        <paoType value="RFN440_2133TD"/>
+        <point name="Amps Phase C">
+            <uom>A</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase C</modifier>
+            </modifiers>
+        </point>
+        <point name="Current Angle Phase C">
+            <uom>A degree</uom>
+            <multiplier value="0.1"/>   <!-- A degree - Current Phase Angle (tenths of degree) -->
+            <modifiers match="equal">
+                <modifier>Phase C</modifier>
+            </modifiers>
+        </point>
+<!-- 
+        <point name="Phase C Power Factor">
+            <uom>PF</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase C</modifier>
+            </modifiers>
+        </point>
+ -->
+        <point name="Volts Phase C">
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase C</modifier>
+            </modifiers>
+        </point>
+    </pointGroup>
+
+
+
+
+
     <pointGroup><!--  COMMON MAPPINGS -->
 
         <paoType value="RFN410CL"/>
@@ -1652,19 +1918,6 @@
             <parseSiPrefix/>
             <modifiers match="equal"></modifiers>
         </point>
-    </pointGroup>
-    
-    <pointGroup>
-    <!-- 2013-05-09   
-         RFN440-213xT ELO device family  SEE: YUK-12163 
-         The channel data has not been finalized by the firmware team yet, 
-         these point mappings will be added when data becomes available. --> 
-        <paoType value="RFN440_2131T"/>
-        <paoType value="RFN440_2131TD"/>
-        <paoType value="RFN440_2132T"/>
-        <paoType value="RFN440_2132TD"/>
-        <paoType value="RFN440_2133T"/>
-        <paoType value="RFN440_2133TD"/>
     </pointGroup>
 
     <!-- WATER NODES POINT MAPPING -->

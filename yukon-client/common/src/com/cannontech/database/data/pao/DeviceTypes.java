@@ -204,11 +204,11 @@ public interface DeviceTypes extends TypeBase
     public final static int RFN420FRX = DEVICE_OFFSET + 153;
     public final static int RFN420FRD = DEVICE_OFFSET + 154;
     
-    public final static int RFN440_2131T = DEVICE_OFFSET + 155;
+//    public final static int RFN440_2131T = DEVICE_OFFSET + 155;
     public final static int RFN440_2131TD = DEVICE_OFFSET + 156;
-    public final static int RFN440_2132T = DEVICE_OFFSET + 157;
+//    public final static int RFN440_2132T = DEVICE_OFFSET + 157;
     public final static int RFN440_2132TD = DEVICE_OFFSET + 158;
-    public final static int RFN440_2133T = DEVICE_OFFSET + 159;
+//    public final static int RFN440_2133T = DEVICE_OFFSET + 159;
     public final static int RFN440_2133TD = DEVICE_OFFSET + 160;
 
 	//all the possible text representation of each device type.

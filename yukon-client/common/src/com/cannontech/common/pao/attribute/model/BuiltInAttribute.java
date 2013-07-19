@@ -30,6 +30,9 @@ public enum BuiltInAttribute implements Attribute {
     CURRENT_PHASE_A("Current (Phase A)"),
     CURRENT_PHASE_B("Current (Phase B)"),
     CURRENT_PHASE_C("Current (Phase C)"),
+    CURRENT_ANGLE_PHASE_A("Current Angle (Phase A)"),
+    CURRENT_ANGLE_PHASE_B("Current Angle (Phase B)"),
+    CURRENT_ANGLE_PHASE_C("Current Angle (Phase C)"),
     CURRENT_WITHOUT_VOLTAGE_FLAG("Current Without Voltage"),
     DEMAND("Demand"), 
     DISCONNECT_STATUS("Disconnect Status"),
@@ -353,6 +356,9 @@ public enum BuiltInAttribute implements Attribute {
                 CURRENT_PHASE_A,
                 CURRENT_PHASE_B,
                 CURRENT_PHASE_C,
+                CURRENT_ANGLE_PHASE_A,
+                CURRENT_ANGLE_PHASE_B,
+                CURRENT_ANGLE_PHASE_C,
                 NEUTRAL_CURRENT);
         
         statusAttributes = ImmutableSet.of(
