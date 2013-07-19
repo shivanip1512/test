@@ -40,7 +40,7 @@
 					<tags:nameValueContainer2>
 
 						<%-- name --%>
-						<tags:inputNameValue nameKey=".name" path="name" size="50" maxlength="50" />
+						<tags:inputNameValue nameKey=".name" path="name" size="35" maxlength="50" />
 
 		                <%-- device group --%>
 		                <tags:nameValue2 nameKey=".deviceGroup">
