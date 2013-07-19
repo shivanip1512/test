@@ -20,6 +20,7 @@
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/Buttons/css/buttons.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/Icons/silk/icons.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/lib/jQuery/yukon/jquery-ui-1.9.2.custom.css"/>" >
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/JavaScript/lib/jQuery/plugins/tipsy/stylesheets/tipsy.css"/>" >
         
         <%-- Include functional-overrides.css last so that, you know, they actually override.  cascade! --%>
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/functional-overrides.css"/>" >
@@ -32,9 +33,9 @@
         <cti:includeScript link="JQUERY_FORM" force="true"/>
         <cti:includeScript link="JQUERY_PLACEHOLDER" force="true"/>
         <cti:includeScript link="JQUERY_TRAVERSABLE" force="true"/>
-        <cti:includeScript link="JQUERY_TIP_TIP" force="true"/>
         <cti:includeScript link="PROTOTYPE" force="true"/>
         <cti:includeScript link="YUKON_UI" force="true"/>
+        <cti:includeScript link="JQUERY_TIPSY" force="true"/>
         <script type="text/javascript" src="/JavaScript/yukonGeneral.js"></script>
         <script type="text/javascript" src="/JavaScript/simpleCookies.js"></script>
         <script type="text/javascript" src="/JavaScript/simpleDialog.js"></script>

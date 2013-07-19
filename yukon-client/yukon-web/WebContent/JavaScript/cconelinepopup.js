@@ -326,13 +326,3 @@ function PopupWindow_showPopup (anchorname) {
 function showMoveBankPage(paoId) {
     window.location = '/capcontrol/move/bankMove?bankid=' + paoId + '&oneline=true';
 }
-
-/**
- * Show a flyover popup using the overlib popup 
- * with the supplied html.
- * @param text
- * @return
- */
-function showFlyoverPopup(html) {
-	overlib( html, BGCOLOR, '#FFFFFF', FGCOLOR, '#404040', TEXTCOLOR, '#FFFFFF', LEFT);
-}

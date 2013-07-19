@@ -24,8 +24,7 @@
                 </cti:url>
                 <a class="f-ajaxPage pv_history" 
                     data-selector="#${uid}" 
-                    href="${showHistoricalReadingsUrl}"
-                    title="<cti:msg2 key="yukon.common.historyTooltip"/>">
+                    href="${showHistoricalReadingsUrl}">
                     <cti:pointValue pointId="${pointId}" format="DATE" cssClass="fl"/>
                 </a>
                 <div id="${uid}"></div>

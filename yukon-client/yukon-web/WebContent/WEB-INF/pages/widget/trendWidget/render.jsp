@@ -22,12 +22,12 @@ jQuery(function () {
         <%-- DESCRIPTION POPUP --%>
 		<c:if test="${attributeGraphType.description != null}">
             <div class="pr">
-				<div class="f-has-tooltip detail">
-					<cti:msg2 key=".whatsThis"/>
-				</div>
 				<div class="f-tooltip dn">
 	                <cti:msg2 key="${attributeGraphType.description}"/>
 	            </div>
+				<div class="f-has-tooltip detail">
+					<cti:msg2 key=".whatsThis"/>
+				</div>
             </div>
 		</c:if>
 		

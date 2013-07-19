@@ -1,12 +1,12 @@
-if(typeof(Yukon) === 'undefined'){
-    Yukon = {};
-}
+Yukon = (function (mod) {
+    return mod;
+})(Yukon || {});
 
-if(typeof(Yukon.Util) === 'undefined'){
-    Yukon.Util = {};
-}
+Yukon.Util = (function (mod) {
+    return mod;
+})(Yukon.Util || {});
 
-if(typeof(Yukon.Util.AnalyticsManager) === 'undefined'){
+Yukon.Util.AnalyticsManager = (function() {
     /**
      * Singleton that manages [Google] analytics for Yukon. It is initialized 
      * when the public method "setTrackingIds" is first called. This is also when event listeners 
@@ -16,7 +16,7 @@ if(typeof(Yukon.Util.AnalyticsManager) === 'undefined'){
      * @author <a href="mailto:alex.delegard@cooperindustries.com">Alex Delegard</a>
      * @requires jQuery 1.6+
      */
-	Yukon.Util.AnalyticsManager = {
+    var analyticsMod = {
         _initialized: false,
         _cooper_tracking_id: null,
         _additional_tracking_ids: [],
@@ -86,5 +86,6 @@ if(typeof(Yukon.Util.AnalyticsManager) === 'undefined'){
                 }
             }
         }
-	};
-}
+    };
+    return analyticsMod;
+})();

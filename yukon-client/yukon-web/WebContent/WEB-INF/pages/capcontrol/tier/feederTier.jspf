@@ -66,7 +66,14 @@
                     <c:set var="isPowerFactorControlled" value="${viewfeeder.feeder.powerFactorControlled}"/>
                     <c:choose>
                         <c:when test="${viewfeeder.individualFeederControlled || viewfeeder.ivvcControlled}">
-                            <span class="f-has-tooltip">
+                            <c:set var="hasTooltip" value=""/>
+                            <c:if test="${viewfeeder.showTargetTooltip}">
+                                <c:set var="hasTooltip" value="f-has-tooltip"/>
+                                <div class="f-tooltip dn">
+                                    <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET_MESSAGE"/>    
+                                </div>
+                            </c:if>
+                            <span class="${hasTooltip}">
                                 <c:choose>
                                     <c:when test="${viewfeeder.ivvcControlled}">
                                         <span class="ivvcTargetLabel"><i:inline key=".ivvcUpper"/></span>
@@ -81,11 +88,6 @@
                                     </c:otherwise>
                                 </c:choose>
                             </span>
-                            <c:if test="${viewfeeder.showTargetTooltip}">
-                                <div class="f-tooltip dn">
-                                    <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET_MESSAGE"/>    
-                                </div>
-                            </c:if>
                         </c:when>
                         <c:otherwise>
                            <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET"/>
@@ -97,6 +99,9 @@
                 <td class="wsnw">
                     <c:choose>
                         <c:when test="${viewfeeder.feeder.usePhaseData}">
+                            <div class="f-tooltip dn">
+                                <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD_MESSAGE"/> 
+                            </div>
                             <span class="f-has-tooltip">
                                 <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD"/>
                                 <cti:classUpdater type="FEEDER" identifier="${feederId}/KVAR_LOAD_QUALITY">
@@ -105,9 +110,6 @@
                                 <i:inline key=".statSeparator"/> 
                                 <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD_EST"/>
                             </span>
-                            <div class="f-tooltip dn">
-                                <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD_MESSAGE"/> 
-                            </div>
                           </c:when>
                           <c:otherwise>
                             <span>

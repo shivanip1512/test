@@ -253,7 +253,7 @@ function alignTableColumnsByTable() {
 function flashYellow(element, duration) {
     jQuery(element).flashYellow(duration);
 }
-
+// GET RID OF ME MARK!!
 var YEvent = new Object();
 
 Object.extend(YEvent, {

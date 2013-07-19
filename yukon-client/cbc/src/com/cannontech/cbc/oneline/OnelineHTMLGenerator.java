@@ -28,7 +28,6 @@ public class OnelineHTMLGenerator extends HTMLGenerator {
             "cconelinepopup.js",
             "GreyBox/AmiJS.js",
             "GreyBox/greybox.js",
-            "/JavaScript/ol/overlib_mini.js"
     };
 
     public OnelineHTMLGenerator() {

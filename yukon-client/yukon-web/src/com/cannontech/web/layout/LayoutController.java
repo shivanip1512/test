@@ -85,7 +85,7 @@ public class LayoutController {
         builder.add(JsLibrary.JQUERY_FORM.getPath());
         builder.add(JsLibrary.JQUERY_PLACEHOLDER.getPath());
         builder.add(JsLibrary.JQUERY_TRAVERSABLE.getPath());
-        builder.add(JsLibrary.JQUERY_TIP_TIP.getPath());
+        builder.add(JsLibrary.JQUERY_TIPSY.getPath());
 
         //add the other standard libs
         builder.add(JsLibrary.PROTOTYPE.getPath());

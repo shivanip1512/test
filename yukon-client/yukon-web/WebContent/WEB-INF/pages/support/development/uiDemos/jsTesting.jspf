@@ -2,10 +2,79 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+
+<!-- tipsy tooltip lib -->
+<cti:includeCss link="/JavaScript/lib/jQuery/plugins/tipsy/stylesheets/tipsy.css"/>
+<style type='text/css'>
+/* tipsy overrides */
+.tipsy-inner { background-color: #FFF; color: #000; max-width: 600px; padding: 5px 8px 4px 8px; text-align: center; }
+.tipsy-inner { box-shadow: 0 0 5px #000000; -webkit-box-shadow: 0 0 5px #000000; -moz-box-shadow: 0 0 5px #000000; }
+.tipsy { font-size: 1.2em;
+</style>
+<cti:includeScript link="/JavaScript/lib/jQuery/plugins/tipsy/javascripts/jquery.tipsy.js"/>
+
 <h1>I am the king of the wastelands</h1>
+    <button id='examp1' title="button1" class="f-has-tooltip">
+        <img id="img1" src="https://my.t-mobile.com/assets/styles/decoration/green_check_icon.png"/>
+    </button>
+
+<br>
+
+    <button id='examp2' href='#' title="button dos" class="f-has-tooltip">
+        <img id="img2" src="https://my.t-mobile.com/assets/styles/decoration/green_check_icon.png" />
+    </button>
+
+<div id='ttt' style="display:none;" class="f-tooltip">
+  <table>
+    <tr><td>this is an</td></tr>
+    <tr><td>html table</td></tr>
+  </table>
+</div>
+<br />
+<div style='clear left; clear right;'>
+    <div style='height: 5px; width: 10px; border: 5px dashed #000; border-bottom-color: #000; border-bottom-style: solid; border-top: none; border-left-color: transparent; border-right-color: transparent;'>
+    </div>
+</div>
+
+<!-- code for tooltip -->
+<script type='text/javascript' src='/JavaScript/lib/jQuery/plugins/tipsy/tooltipdemo.js'</script>
 
 <script type="text/javascript">
-jQuery(function() {
+
+</script>
+<script type="text/javascript">
+/* serious, and unsuccessful, hacking
+jQuery(document).tooltip({
+  items: '*',
+  content: function() {
+    var element = jQuery(this), tip, toolTipped;
+    toolTipped = element.closest('.f-has-tooltip');
+    if ( toolTipped.length ) {
+      tip = toolTipped.nextAll('.f-tooltip').first();
+      console.log("returning tip.html()");
+      return tip.html();
+    } else {
+      var title = element.attr('title') || '',
+          closest = jQuery(element.closest('[title]')[0]);
+      if (title === '' && closest.length > 0) {
+        console.log('doing closest: length=' + closest.length + ' title="' + closest.attr('title') + '"');
+        console.dir(closest);
+        title = jQuery(element.closest('[title]')[0]).attr('title');
+      } else {
+        console.log('title="' + title + '" did not do closest');
+        console.dir(element.closest('[title]'));
+      }
+      console.log("returning something else, title: " + title);
+      console.log('"' + jQuery('<a>').text(title).html() + '"');
+        return jQuery('<a>').text(title).html();
+    }
+  }
+});
+*/
+</script>
+
+<script type="text/javascript">
+//jQuery(function() {
 /* prototype for picker object creation. do not enable this until the names have been changed,
 or it will interfere with the real picker
 try {

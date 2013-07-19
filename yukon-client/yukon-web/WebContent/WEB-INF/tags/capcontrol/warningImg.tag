@@ -9,12 +9,12 @@
     <img src="/WebConfig/yukon/da/green.png">
 </span>
 
+<span class="f-tooltip" id="warningPopup_${paoId}" style="display: none;">
+    <cti:capControlValue paoId="${paoId}" type="${type}" format="WARNING_FLAG_MESSAGE"/> 
+</span>
 <span id="warning_${paoId}_alert" style="display: none;" class="f-has-tooltip">
     <img src="/WebConfig/yukon/da/yellow.png">
 </span>
 
 <cti:dataUpdaterCallback function="updateWarningImage('warning_${paoId}')" initialize="true" value="${type}/${paoId}/WARNING_FLAG"/>            
     
-<span class="f-tooltip" id="warningPopup_${paoId}" style="display: none;">
-    <cti:capControlValue paoId="${paoId}" type="${type}" format="WARNING_FLAG_MESSAGE"/> 
-</span>

@@ -21,7 +21,6 @@
 <cti:includeScript link="/JavaScript/da/updaterFunctions.js"/>
 <cti:includeScript link="/JavaScript/cconelinepopup.js"/>
 <cti:includeScript link="/JavaScript/simpleDialog.js"/>
-<cti:includeScript link="/JavaScript/ol/overlib_mini.js"/>
 <cti:includeScript link="/JavaScript/validation.js"/>
 <cti:includeScript link="/JavaScript/GreyBox/AmiJS.js"/>
 <cti:includeScript link="/JavaScript/GreyBox/greybox.js"/>

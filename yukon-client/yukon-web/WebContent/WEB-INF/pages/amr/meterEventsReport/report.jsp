@@ -4,11 +4,11 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
-<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:standardPage page="meterEventsReport.report" module="amr">
 
@@ -27,18 +27,6 @@
 	        	jQuery("#resetForm").submit();
 	        });
 
-	        jQuery(".selectedDevicesLink").hover(function() {
-	        	jQuery(".deviceMagIcon .magnifier").toggleClass("magnifier_hovered");
-	        });
-	        
-	        jQuery(".deviceMagIcon .magnifier").hover(function() {
-	        	jQuery(".selectedDevicesLink.anchorUnderlineHover").toggleClass("anchorUnderlineHover_hovered");
-	        });
-	        
-	        jQuery(".selectedDevicesLink").click(function() {
-	        	jQuery(".f-showSelectedDevices").trigger("click");
-	        });
-	        
 	        jQuery("#scheduleButton").click(openSchedulePopup);
 	        
 	        submitSchedule = function() {
@@ -208,11 +196,11 @@
                                 (<a href="${deviceGroupUrl}"><i:inline key=".filter.viewDeviceGroup"/></a>)
                             </span>
                         </c:if>
-                        <span class="fr deviceMagIcon">
+                        <span class="fr">
                             <tags:selectedDevicesPopup deviceCollection="${backingBean.deviceCollection}"/>
                         </span>
                     </c:if>
-                    <span class="selectedDevicesLink anchorUnderlineHover">
+                    <span>
                         <c:choose>
                             <c:when test="${isDeviceGroup}">
                                 <i:inline key=".filter.deviceGroup" arguments="${backingBean.deviceCollection.collectionParameters['group.name']}"/>
@@ -271,7 +259,7 @@
 						<tags:nameValue2 nameKey=".filter.onlyLatestEvent">
 							<form:checkbox path="onlyLatestEvent" cssClass="fl" id="filter_onlyLatestEvent"/>
 							<span class="focusableFieldHolder">
-                                <a id="latestEventsHelp" title="<i:inline key=".filter.helpText"/>"><i class="icon icon-help"></i></a>
+                                <a id="latestEventsHelp"><i class="icon icon-help"></i></a>
 							</span>
 							<span class="focusedFieldDescription"><i:inline key=".filter.onlyLatestEvents.help.text"/></span>
 						</tags:nameValue2>
@@ -279,7 +267,7 @@
 						<tags:nameValue2 nameKey=".filter.onlyAbnormalEvents">
 							<form:checkbox path="onlyAbnormalEvents" cssClass="fl" id="filter_onlyAbnormalEvents"/>
 							<span class="focusableFieldHolder">
-                                <a id="activeEventsHelp" title="<i:inline key=".filter.helpText"/>"><i class="icon icon-help"></i></a>
+                                <a id="activeEventsHelp"><i class="icon icon-help"></i></a>
 							</span>
 				            <span class="focusedFieldDescription"><i:inline key=".filter.onlyAbnormalEvents.help.text"/></span>
 						</tags:nameValue2>
@@ -337,11 +325,11 @@
 										(<a href="${deviceGroupUrl}"><i:inline key=".filter.viewDeviceGroup"/></a>)
 									</span>
 								</c:if>
-								<span class="fr deviceMagIcon">
+								<span class="fr">
 									<tags:selectedDevicesPopup deviceCollection="${backingBean.deviceCollection}"/>
 								</span>
 							</c:if>
-							<span class="selectedDevicesLink anchorUnderlineHover">
+							<span>
 								<c:choose>
 									<c:when test="${isDeviceGroup}">
 										<i:inline key=".filter.deviceGroup" arguments="${backingBean.deviceCollection.collectionParameters['group.name']}"/>
@@ -406,11 +394,7 @@
             <tfoot></tfoot>
             <tbody>
     			<c:forEach var="event" items="${filterResult.resultList}">
-    		    	<c:set var="trClass" value=""/>
-    				<c:if test="${event.meter.disabled}">
-    					<c:set var="trClass" value="subtle"/>
-    				</c:if>
-    				<tr class="${trClass}">
+    				<tr>
     					<td>
     						<cti:paoDetailUrl  yukonPao="${event.meter}" >
     						    <c:choose>

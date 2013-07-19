@@ -117,9 +117,6 @@ jQuery(function() {
                 
                 <%-- Timestamp --%>
                 <td>
-                    <span class="f-has-tooltip">
-                        <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="DATE_TIME"/> 
-                    </span>
                     <div class="f-tooltip dn">
                         <table class='compactResultsTable'>
                             <tr>
@@ -152,6 +149,9 @@ jQuery(function() {
                             </tr>
                         </table>
                     </div>
+                    <span class="f-has-tooltip">
+                        <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="DATE_TIME"/> 
+                    </span>
                 </td>
                 
                 <%-- Bank Size --%>
@@ -159,17 +159,17 @@ jQuery(function() {
                 
                 <%-- Parent Feeder --%>
                 <td class="wsnw">
-                    <c:if test="${hasCapbankControl}">
-                        <a class="f-has-tooltip parentFeeder" <c:if test="${viewableCapBank.capBankDevice.bankMoved}"> warning</c:if>"  href="javascript:void(0);">
-                    </c:if>
-                        <span class="dn moveBankTitle"><cti:msg2 key=".moveBankTitle" arguments="${viewableCapBank.capBankDevice.ccName}"/></span>
-                        <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PARENT"/>
                      <c:if test="${hasCapbankControl}">
                         </a>
                         <span class="f-tooltip dn">
                             <cti:msg2 key=".moveBank"/>
                         </span>
                      </c:if>
+                    <c:if test="${hasCapbankControl}">
+                        <a class="f-has-tooltip parentFeeder" <c:if test="${viewableCapBank.capBankDevice.bankMoved}"> warning</c:if>" >
+                    </c:if>
+                        <span class="dn moveBankTitle"><cti:msg2 key=".moveBankTitle" arguments="${viewableCapBank.capBankDevice.ccName}"/></span>
+                        <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PARENT"/>
                 </td>
                 
                 <%-- Daily/Max/Total Ops --%>

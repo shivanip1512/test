@@ -23,7 +23,7 @@ function initiateCannonDataUpdate(url, delayMs) {
         jQuery.each (updateElems, function(key, val) {
             var newData,
                 attVal = jQuery(val).attr('data-updater');
-            if ('undefined' === typeof attVal) {
+            if ('undefined' === typeof attVal || 'undefined' === typeof responseStruc.data) {
                 return;
             }
             newData = responseStruc.data[attVal];
@@ -48,7 +48,7 @@ function initiateCannonDataUpdate(url, delayMs) {
             var id = jQuery(val).attr('data-class-updater'),
                 newData,
                 className;
-            if ('undefined' === typeof id) {
+            if ('undefined' === typeof id || 'undefined' === typeof responseStruc.data) {
                 return;
             }
             newData = responseStruc.data[id];
@@ -84,7 +84,7 @@ function initiateCannonDataUpdate(url, delayMs) {
                     compositeRgb = compositeRgb.toLowerCase();
                     return '#' + compositeRgb;
                 };
-            if ('undefined' === typeof id) {
+            if ('undefined' === typeof id || 'undefined' === typeof responseStruc.data) {
                 return;
             }
             newData = responseStruc.data[id];
@@ -114,10 +114,13 @@ function initiateCannonDataUpdate(url, delayMs) {
                 return;
             }
             jQuery.each (idMap, function(key, val) {
-                var newData = responseStruc.data[idMap[key]];
-                if ('undefined' !== typeof newData) {
-                    gotNewData = true;
-                    allIdentifierValues[key] = newData;
+                var newData;
+                if ('undefined' !== typeof responseStruc.data) {
+                    newData = responseStruc.data[idMap[key]];
+                    if ('undefined' !== typeof newData) {
+                        gotNewData = true;
+                        allIdentifierValues[key] = newData;
+                    }
                 }
             });
             if (true === gotNewData) {

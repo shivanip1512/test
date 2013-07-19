@@ -64,9 +64,6 @@
         			<tr>
 	        			
                         <td>
-	        				<a href="${substationUrl}" class="f-has-tooltip">
-	        					<spring:escapeBody htmlEscape="true">${viewableArea.area.ccName}</spring:escapeBody>
-	        				</a>
                             <div class="f-tooltip dn">
                                 <c:forEach var="station" items="${viewableArea.subStations}">
                                         <div class="detail fwb">${station.name}</div>
@@ -76,6 +73,9 @@
                                         </ul>
                                 </c:forEach>
                             </div>
+	        				<a href="${substationUrl}" class="f-has-tooltip">
+	        					<spring:escapeBody htmlEscape="true">${viewableArea.area.ccName}</spring:escapeBody>
+	        				</a>
 	        			</td>
                         
                         <td>
@@ -110,5 +110,5 @@
         </table>
 
 	</tags:boxContainer2>
-	
+
 </cti:standardPage>

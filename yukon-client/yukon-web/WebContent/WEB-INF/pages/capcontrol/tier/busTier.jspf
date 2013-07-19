@@ -91,7 +91,14 @@
                     <c:set var="isPowerFactorControlled" value="${viewableSubBus.subBus.powerFactorControlled}"/>
                     <c:choose>
                         <c:when test="${viewableSubBus.subBus.controlMethod.busControlled}">
-                            <span class="f-has-tooltip">
+                            <c:set var="hasTooltip" value=""/>
+                            <c:if test="${viewableSubBus.showTargetTooltip}">
+                                <c:set var="hasTooltip" value="f-has-tooltip"/>
+                                <div class="f-tooltip dn">
+                                    <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET_MESSAGE"/>
+                                </div>
+                            </c:if>
+                            <span class="${hasTooltip}">
                                 <c:choose>
                                     <c:when test="${viewableSubBus.ivvcControlled}">
                                         <span class="ivvcTargetLabel"><i:inline key=".ivvcUpper"/></span>
@@ -106,11 +113,6 @@
                                     </c:otherwise>
                                 </c:choose>
                             </span>
-                            <c:if test="${viewableSubBus.showTargetTooltip}">
-                                <div class="f-tooltip dn">
-                                    <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET_MESSAGE"/>
-                                </div>
-                            </c:if> 
                         </c:when>
                         <c:otherwise>
                             <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET"/>
@@ -120,7 +122,15 @@
                 
                 <%-- kVAR Load / Est. --%>
                 <td>
-                    <span class="f-has-tooltip">
+                    <c:set var="hasTooltip" value=""/>
+                    <c:if test="${viewableSubBus.subBus.usePhaseData}">
+                        <c:set var="hasTooltip" value="f-has-tooltip"/>
+                        <div class="f-tooltip dn" id="subVarLoadPopup_${subbusId}" > 
+                            <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KVAR_LOAD_MESSAGE"/>
+                        </div>
+                    </c:if>
+
+                    <span class="${hasTooltip}">
                         <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KVAR_LOAD"/>
                         <cti:classUpdater type="SUBBUS" identifier="${subbusId}/KVAR_LOAD_QUALITY">
                             <cti:icon nameKey="questionableQuality" icon="icon-bullet-red"/>
@@ -128,11 +138,6 @@
                         <i:inline key=".statSeparator"/> 
                         <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KVAR_LOAD_EST"/>
                     </span>
-                    <c:if test="${viewableSubBus.subBus.usePhaseData}">
-                        <div class="f-tooltip dn" id="subVarLoadPopup_${subbusId}" > 
-                            <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KVAR_LOAD_MESSAGE"/>
-                        </div>
-                    </c:if>
                 </td>
                 
                 <%-- Date/Time --%>
