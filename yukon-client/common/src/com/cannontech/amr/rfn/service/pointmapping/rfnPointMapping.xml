@@ -49,8 +49,6 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-
-<!-- existed for ALL + requested for all EXCEPT Elster (but exists on A3R checked). NOTE: C*, F* also want Peak's timestamp -->
         <point name="Peak kW"> 
             <uom>W</uom>
             <multiplier value=".001"/>
@@ -61,8 +59,6 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-
-<!-- existed for all EXCEPT CD/CL + requested for ALL -->
         <point name="Net kWh">
             <uom>Wh</uom>
             <multiplier value=".001"/>
@@ -75,8 +71,6 @@
                 <modifier>Net Flow</modifier>
             </modifiers>
         </point>
-
-<!-- existed for all + requested by NONE -->
         <point name="Outage Count">
             <uom>Outage Count</uom>
             <modifiers match="equal"/> 
@@ -94,17 +88,13 @@
             <modifiers match="equal"/> 
         </point>
 
-
     <!-- DEMAND RESET POINT MAPPING -->
-<!--  existed for 420's, 430A3 + requested for NONE  -->
         <point name="RF Demand Reset Status">
             <uom>Demand Reset</uom>
             <parseSiPrefix/>
             <modifiers match="equal"/>
         </point>
     </pointGroup><!--  ************** END COMMON POINT GROUP ************** -->
-
-
 
     <pointGroup><!--  ALL *EXCEPT* A3D MAPPINGS -->
         <paoType value="RFN410CL"/>
@@ -123,7 +113,6 @@
         <paoType value="RFN430A3R"/>
         <paoType value="RFN430KV"/>
 
-<!-- existed for all EXCEPT FL (CD/CL diff def'ns) + requested by all EXCEPT A3D -->
         <point name="Rate A kWh">
             <uom>Wh</uom>
             <multiplier value=".001"/>
@@ -164,8 +153,6 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-
-<!-- existed for all EXCEPT FL + requested by all EXCEPT A3D.  NOTE: C's & F's want timestamp, A's requested date & time separately -->
         <point name="Peak kW (Rate A kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
@@ -210,9 +197,6 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-
-
-<!-- existed for A's, FX, FD + requested ONLY by CD, CL, FX, FD, FL -->
         <point name="Net kWh (Rate A kWh)">
             <uom>Wh</uom>
             <multiplier value=".001"/>
@@ -267,7 +251,6 @@
         </point>
     </pointGroup><!--  ************** END: ALL *EXCEPT* A3D MAPPINGS  ************** -->
 
-
     <pointGroup>
         <paoType value="RFN410FL"/>
         <paoType value="RFN410FX"/>
@@ -280,7 +263,6 @@
         <paoType value="RFN410CL"/>
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
-<!-- existed for ALL + requested for all EXCEPT Elster; NOTE: they also want Peak's timestamp -->
         <point name="Delivered kW"> 
             <uom>W</uom>
             <multiplier value=".001"/>
@@ -290,7 +272,6 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-<!-- existed for A's, FX, FD + requested ONLY by CD, CL, FX, FD, FL -->
         <point name="Received kWh (Rate A kWh)">
             <uom>Wh</uom>
             <multiplier value=".001"/>
@@ -394,7 +375,6 @@
         <paoType value="RFN430A3R"/>
         <paoType value="RFN430KV"/>
 
-<!-- existed for ALL + requested for A's, FX, FD -->
         <point name="Amps Phase A"> 
             <uom>A</uom>
             <parseSiPrefix/>
@@ -416,8 +396,6 @@
                 <modifier>Phase C</modifier>
             </modifiers>
         </point>
-
-<!-- existed for A's, FX, FD + requested for A's, FX, FD -->
         <point name="Volts Phase A">
             <uom>V</uom>
             <parseSiPrefix/>
@@ -439,24 +417,23 @@
                 <modifier>Phase C</modifier>
             </modifiers>
         </point>
-<!-- existed for A's, FX, FD + requested for NONE + exists for A3K? test device -->
         <point name="Power Factor Degrees Phase A">
             <uom>PF degree</uom>
-			<multiplier value="0.1"/>	<!-- PF degree - Power Factor angle (tenths of degree) -->
+			<multiplier value="0.1"/>
             <modifiers match="equal">
                 <modifier>Phase A</modifier>
             </modifiers>
         </point>
         <point name="Power Factor Degrees Phase B">
             <uom>PF degree</uom>
-			<multiplier value="0.1"/>	<!-- PF degree - Power Factor angle (tenths of degree) -->
+			<multiplier value="0.1"/>
             <modifiers match="equal">
                 <modifier>Phase B</modifier>
             </modifiers>
         </point>
         <point name="Power Factor Degrees Phase C">
             <uom>PF degree</uom>
-			<multiplier value="0.1"/>	<!-- PF degree - Power Factor angle (tenths of degree) -->
+			<multiplier value="0.1"/>
             <modifiers match="equal">
                 <modifier>Phase C</modifier>
             </modifiers>
@@ -486,8 +463,6 @@
                 <modifier>Quadrant 4</modifier>
             </baseModifiers>
         </point>
-
-<!-- existed for A's + requested for A's -->
         <point name="Phase A kW">
             <uom>W</uom>
             <multiplier value=".001"/>
@@ -515,13 +490,12 @@
     </pointGroup>
 
 
-    <pointGroup><!-- Added from: Yukon Point Mapping ICD v2 -->
+    <pointGroup>
         <paoType value="RFN430A3T"/>
         <paoType value="RFN430A3K"/>
         <paoType value="RFN430A3R"/>
         <paoType value="RFN430KV"/>
         
-        <!-- MORE KW POINTS -->
         <point name="Rate A Cumulative Peak kW">
             <uom>W</uom>
             <multiplier value=".001"/>
@@ -600,8 +574,6 @@
         </point>
     </pointGroup>
 
-    
-
     <pointGroup>
         <paoType value="RFN430A3K"/>
         <paoType value="RFN430A3R"/>
@@ -667,8 +639,6 @@
                 <modifier>Harmonic</modifier>
             </modifiers>
         </point>
-
-<!-- existed for A3 + requested ONLY for A3K, A3R -->
         <point name="kVAh Delivered">
             <uom>VAh</uom>
             <multiplier value=".001"/>
@@ -711,7 +681,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Coincident Power Factor"><!--  EXISTING but REVISED definition  -->
+        <point name="Coincident Power Factor">
             <uom>PF</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -772,8 +742,6 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-
-<!-- These 5 revise existing definitions -->
 		<point name="Coincident Peak kW">
 			<uom>W</uom>
 			<multiplier value=".001" />
@@ -862,8 +830,7 @@
 				<modifier>TOU Rate D</modifier>
 			</baseModifiers>
 		</point>
-
-        <point name="Rate A Coincident Power Factor">        <!-- Existing, but modified: "Coincident Power Factor Rate A"-->
+        <point name="Rate A Coincident Power Factor">
             <uom>PF</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -882,7 +849,7 @@
                 <modifier>Quadrant 4</modifier>
             </baseModifiers>
         </point>
-        <point name="Rate B Coincident Power Factor">        <!-- Existing, but modified: "Coincident Power Factor Rate B"-->
+        <point name="Rate B Coincident Power Factor">
             <uom>PF</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -901,7 +868,7 @@
                 <modifier>Quadrant 4</modifier>
             </baseModifiers>
         </point>
-        <point name="Rate C Coincident Power Factor">        <!-- Existing, but modified: "Coincident Power Factor Rate C"-->
+        <point name="Rate C Coincident Power Factor">
             <uom>PF</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -920,7 +887,7 @@
                 <modifier>Quadrant 4</modifier>
             </baseModifiers>
         </point>
-        <point name="Rate D Coincident Power Factor">        <!-- Existing, but modified: "Coincident Power Factor Rate D"-->
+        <point name="Rate D Coincident Power Factor">
             <uom>PF</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -939,8 +906,7 @@
                 <modifier>Quadrant 4</modifier>
             </baseModifiers>
         </point>
-        
-		<point name="Coincident kVA"><!-- brought back and updated definition -->
+		<point name="Coincident kVA">
 			<uom>VA</uom>
 			<multiplier value=".001"/>
 			<parseSiPrefix/>
@@ -957,7 +923,7 @@
 				<modifier>Quadrant 4</modifier>
 			</baseModifiers>
 		</point>
-		<point name="Rate A Coincident kVA"><!-- 4 new points at the last minute -->
+		<point name="Rate A Coincident kVA">
 			<uom>VA</uom>
 			<multiplier value=".001"/>
 			<parseSiPrefix/>
@@ -1111,7 +1077,6 @@
     <pointGroup>
         <paoType value="RFN430A3R"/>
         <paoType value="RFN430KV"/>
-<!-- existed for ALL + requested ONLY for A3R + BUT found on device...? -->
         <point name="Delivered kVArh"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
@@ -1130,9 +1095,6 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-
-<!-- existed for A3 + requested for A3R -->
-        <!-- kVAr POINT MAPPING -->
         <point name="Sum kVArh">
             <uom>Varh</uom>
             <multiplier value=".001"/>
@@ -1156,8 +1118,6 @@
                 <modifier>Net Flow</modifier>
             </modifiers>
         </point>
-
-<!-- existed for all + requested by NONE + found on A3R device -->
         <point name="Delivered Rate A kVArh">
             <uom>Varh</uom>
             <multiplier value=".001"/>
@@ -1198,7 +1158,6 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-<!--  These 4 are new per ICD #2 -->
         <point name="Received Rate A kVArh">
             <uom>Varh</uom>
             <multiplier value=".001"/>
@@ -1240,7 +1199,7 @@
             </modifiers>
         </point>
 
-		<point name="Coincident kVAr"><!-- point name="Coincident Peak kVAr" -->
+		<point name="Coincident kVAr">
 			<uom>Var</uom>
 			<multiplier value=".001"/>
 			<parseSiPrefix/>
@@ -1294,7 +1253,7 @@
                 <modifier>Quadrant 2</modifier>
             </modifiers>
         </point>
-        <point name="Rate A Coincident kVAr">			<!--  "Coincident Peak Var Rate A" -->
+        <point name="Rate A Coincident kVAr">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -1342,7 +1301,7 @@
                 <modifier>Quadrant 2</modifier>
             </modifiers>
         </point>
-        <point name="Rate B Coincident kVAr">			<!--  "Coincident Peak Var Rate B" -->
+        <point name="Rate B Coincident kVAr">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -1390,7 +1349,7 @@
                 <modifier>Quadrant 2</modifier>
             </modifiers>
         </point>
-        <point name="Rate C Coincident kVAr">			<!--  "Coincident Peak Var Rate C" -->
+        <point name="Rate C Coincident kVAr">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -1485,7 +1444,6 @@
         <paoType value="RFN420FD"/>
         <paoType value="RFN420FRX"/>
         <paoType value="RFN420FRD"/>
-<!-- existed for all EXCEPT FL + requested by NONE = add to FL + keep the rest -->
         <point name="Peak kW (Rate E kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
@@ -1510,8 +1468,6 @@
                 <modifier>TOU Rate E</modifier>
             </modifiers>
         </point>
-
-<!-- existed for all EXCEPT FL (and CD/CL had diff def'n) + requested by NONE -->
         <point name="Rate E kWh">
             <uom>Wh</uom>
             <multiplier value=".001"/>
@@ -1522,7 +1478,6 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-<!-- existed for A's, FX, FD + requested by NONE -->
         <point name="Received kWh (Rate E kWh)">
             <uom>Wh</uom>
             <multiplier value=".001"/>
@@ -1533,8 +1488,6 @@
                 <modifier>Quadrant 3</modifier>
             </modifiers>
         </point>
-
-<!-- existed for A's, FX, FD + requested ONLY for FX, FD -->
         <point name="Avg Volts Phase A">
             <uom>V</uom>
             <parseSiPrefix/>
@@ -1609,27 +1562,26 @@
         </point>
         <point name="Volt Degrees Phase A">
             <uom>V degree</uom>
-			<multiplier value="0.1"/>	<!-- V degree - Volt angle (tenths of degree) -->
+			<multiplier value="0.1"/>
             <modifiers match="equal">
                 <modifier>Phase A</modifier>
             </modifiers>
         </point>
         <point name="Volt Degrees Phase B">
             <uom>V degree</uom>
-			<multiplier value="0.1"/>	<!-- V degree - Volt angle (tenths of degree) -->
+			<multiplier value="0.1"/>
             <modifiers match="equal">
                 <modifier>Phase B</modifier>
             </modifiers>
         </point>
         <point name="Volt Degrees Phase C">
             <uom>V degree</uom>
-            <multiplier value="0.1"/>	<!-- V degree - Volt angle (tenths of degree) -->
+            <multiplier value="0.1"/>
             <modifiers match="equal">
                 <modifier>Phase C</modifier>
             </modifiers>
         </point>
     </pointGroup><!-- ENDS GROUP: FX, FD -->
-
 
     <pointGroup><!--  Focus RXR* -->
         <paoType value="RFN420FRX"/>
@@ -1655,7 +1607,6 @@
     <pointGroup><!-- TWO POINT VOLTAGE POINT MAPPINGS -->
         <paoType value="RFN410FL"/>
         <paoType value="RFN420FL"/>
-<!-- existed for FL + requested for FL -->
         <point name="Voltage Primary">
             <uom>V</uom>
             <parseSiPrefix/>
@@ -1682,8 +1633,6 @@
         <paoType value="RFN420FRX"/>
         <paoType value="RFN420FRD"/>
 
-<!-- existed for ALL + requested for CD, CL, FL, FX, FD
-     NOTE: THEY WANT THE TIMESTAMP TOO   SEE: YUK-11925, YUK-12049 -->
         <point name="Min Volts">
             <uom>V</uom>
             <parseSiPrefix/>
@@ -1718,8 +1667,6 @@
         <paoType value="RFN440_2133TD"/>
     </pointGroup>
 
-
-<!--  ################################################  START: Non-Standard RFN Mappings  ################################################  -->
     <!-- WATER NODES POINT MAPPING -->
     <pointGroup>
         <paoType value="RFWMETER"/>
