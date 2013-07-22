@@ -556,7 +556,7 @@ public class ArchivedValuesExporterController {
 			List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setError(messages);
             model.addAttribute("exportFormat", archiveValuesExportFormatDao.getByFormatId(formatId));
-	        model.addAttribute("attributes", attributes);
+	        model.addAttribute("attributes", attributeSet);
 	        model.addAttribute("dataRange", dataRange);
 	        model.addAttribute("deviceCollection", deviceCollection);
 	        model.addAttribute("cronExpressionTagState", cronExpressionTagService.parse(scheduleCronString, userContext));
