@@ -55,7 +55,7 @@
     </c:if>
     
     <c:set var="channelScanDiv" value="${widgetParameters.widgetId}_channelScanning"/>
-    <div id="${channelScanDiv}"></div>
+    <div id="${channelScanDiv}" class="stacked"></div>
     <script>
         var refreshCmd = 'refreshChannelScanningInfo';
         var refreshParams = {'deviceId':${deviceId}};
@@ -68,48 +68,31 @@
     <%--PAST PROFILES, don't display if the device does not support --%>
     <cti:checkRolesAndProperties value="METERING">
     <cti:checkRolesAndProperties value="PROFILE_COLLECTION">
-        <br/>
-    	<table class="compactResultsTable">
-    		<tr>
-    			<th colspan="3" align="left"><i:inline key=".requestPastProfile"/></th>
-    		</tr>
-    	
-    		<tr>
-    			<td class="label"><i:inline key=".channel"/></td>
-    			<td colspan="2">
-    				<select name="channel" style="height:20px;">
-    					<c:forEach var="channel" items="${availableChannels}">
-    		   				<option value="${channel.channelNumber}">${channel.channelDescription}</option>
-    		   			</c:forEach>
-    		   		</select>
-    		   	</td>
-    		</tr>
-    		
-    		<tr>
-    			<td class="label"><i:inline key=".startDate"/></td>
-    			<td colspan="2">
-    				<dt:date name="startDateStr" value="${startDate}" />
-    			</td>
-    		</tr>
-    		
-    		<tr>
-    			<td class="label"><i:inline key=".stopDate"/></td>
-    			<td colspan="2">
-    				<dt:date name="stopDateStr" value="${stopDate}" />
-    			</td>
-    		</tr>
-    		
-    		<tr>
-    			<td class="label"><i:inline key=".email"/></td>
-    			<td class="last">
-    				<input id="email" name="email" type="text" value="${email}" size="25" style="height:16px;">
-    			</td>
-    	  	    <td class="last" align="right">
-    	            <tags:widgetActionRefresh method="initiateLoadProfile" nameKey="start"/>
-                </td>
-    		</tr>
-    	</table>
-    
+    	<tags:sectionContainer2 nameKey="requestPastProfile">
+            <tags:nameValueContainer2>
+                <tags:nameValue2 nameKey=".channel">
+                    <select name="channel">
+                        <c:forEach var="channel" items="${availableChannels}">
+                            <option value="${channel.channelNumber}">${channel.channelDescription}</option>
+                        </c:forEach>
+                    </select>
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".startDate">
+                    <dt:date name="startDateStr" value="${startDate}" />
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".stopDate">
+                    <dt:date name="stopDateStr" value="${stopDate}" />
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".email">
+                    <input id="email" name="email" type="text" value="${email}">
+                </tags:nameValue2>
+            
+            </tags:nameValueContainer2>
+            <div class="actionArea">
+	            <tags:widgetActionRefresh method="initiateLoadProfile" nameKey="start"/>
+            </div>
+        </tags:sectionContainer2>
+
         <c:if test="${not empty errorMsgRequest}">
             <cti:msg2 var="errorPastProfile" key=".errorPastProfile"/>
             <tags:hideReveal title="${errorPastProfile}" styleClass="errorMessage" escapeTitle="true" showInitially="true">
@@ -118,7 +101,6 @@
                 </c:forEach>
             </tags:hideReveal>
         </c:if>
-        <br>
     </cti:checkRolesAndProperties>
     </cti:checkRolesAndProperties>
     
@@ -127,30 +109,20 @@
     
     <input type="hidden" name="deviceId" value="${deviceId}">
     
-    <table class="compactResultsTable">
-    	<tr>
-    		<th colspan="5" align="left"><i:inline key=".dailyUsageReport"/></th>
-    	</tr>
-    
-        <tr>
-            <td class="label"><i:inline key=".startDate"/></td>
-            <td>
+    <tags:sectionContainer2 nameKey="dailyUsageReport">
+        <tags:nameValueContainer2>
+            <tags:nameValue2 nameKey=".startDate">
                 <dt:date name="dailyUsageStartDate" value="${dailyUsageStartDate}" />
-            </td>
-            <td class="label"><i:inline key=".stopDate"/></td>
-            <td>
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".stopDate">
                 <dt:date name="dailyUsageStopDate" value="${dailyUsageStopDate}" />
-            </td>
-            <td class="last" align="right">
-                <tags:widgetActionRefresh method="viewDailyUsageReport" nameKey="viewReport"/>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="5">
-            </td>
-        </tr>
-    	
-    </table>
+            </tags:nameValue2>
+        </tags:nameValueContainer2>
+        <div class="actionArea">
+            <tags:widgetActionRefresh method="viewDailyUsageReport" nameKey="viewReport"/>
+        </div>
+    </tags:sectionContainer2>
+    
     <c:if test="${not empty errorMsgDailyUsage}">
         <cti:msg2 var="errorDailyReport" key=".errorDailyReport"/>
         <tags:hideReveal title="${errorDailyReport}" styleClass="errorMessage" escapeTitle="true" showInitially="true">

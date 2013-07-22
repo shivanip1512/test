@@ -15,6 +15,7 @@
 <input type="hidden" name="channelNum" id="channelNum" value="">
 <input type="hidden" name="newToggleVal" id="newToggleVal" value="">
 <table class="compactResultsTable">
+    <thead>
     <tr align="left">
       <th align="left"><i:inline key=".scanning.channel"/></th>
       <th><i:inline key=".scanning.interval"/></th>
@@ -23,6 +24,9 @@
         <th><i:inline key=".scanning.action"/></th>
       </c:if>
     </tr>
+    </thead>
+    <tfoot></tfoot>
+    <tbody>
     
     <c:forEach var="c" items="${availableChannels}">
         <tr align="left" valign="top">
@@ -87,4 +91,5 @@
             </c:if>
         </tr>
     </c:forEach>
+    </tbody>
 </table>
