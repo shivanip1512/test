@@ -346,6 +346,8 @@ WHERE DCI.FieldName = 'configuration'
 
 WHILE (@itemId IS NOT NULL)
 BEGIN
+	SELECT @newItemId = MAX(DeviceConfigurationItemId) + 1 FROM DeviceConfigurationItem;
+	
     INSERT INTO DeviceConfigurationItem VALUES (@newItemId,
                                                 (SELECT DeviceConfigurationId 
                                                  FROM DeviceConfigurationItem 
@@ -371,8 +373,6 @@ BEGIN
     JOIN DeviceConfiguration DC ON DC.DeviceConfigurationId = DCI.DeviceConfigurationId
     WHERE DCI.FieldName = 'configuration'
       AND DC.Type = 'MCT470';
-
-    SELECT @newItemId = MAX(DeviceConfigurationItemId) + 1 FROM DeviceConfigurationItem;
 END
 
 SELECT @itemId = MIN(DCI.DeviceConfigurationItemId) 
