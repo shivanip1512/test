@@ -4,21 +4,17 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.service.PaoLoadingService;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.common.pao.service.YukonPointHelper;
-import com.cannontech.web.updater.point.PointDataRegistrationService;
+import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
+import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 
 @Controller
-@RequestMapping("/device/*")
-public class PaoPointsController extends PointsControllerBase {
+@RequestMapping("/operator/*")
+public class OperatorPointsController extends PointsControllerBase {
     
     /**
      * Get the list of all points for the device specified and order them as requested.
@@ -28,11 +24,13 @@ public class PaoPointsController extends PointsControllerBase {
      * @param descending - whether or not the sorting is in descending order
      */
     @RequestMapping
-    public String points(ModelMap model, int deviceId, String orderBy, Boolean descending) {
-        
-        model.addAttribute("module", "amr");
-        model.addAttribute("page", "meterPoints");
-        
+    public String points(ModelMap model, int deviceId, String orderBy, Boolean descending,
+        AccountInfoFragment fragment) {
+
+        model.addAttribute("module", "operator");
+        model.addAttribute("page", "hardware.points");
+        AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
+
         return super.points(model, deviceId, orderBy, descending);
     }
     

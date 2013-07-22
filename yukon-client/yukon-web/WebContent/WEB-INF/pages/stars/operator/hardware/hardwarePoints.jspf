@@ -9,8 +9,6 @@ jQuery(function() {
     jQuery(document).on('click', '#rfReadNow', function(event) {
         var url = '<cti:url value="/stars/operator/hardware/rf/readNow"/>';
         
-        Yukon.ui.block(event);
-        
         jQuery.ajax({
             url: url,
             method: 'get',
@@ -23,10 +21,12 @@ jQuery(function() {
                 } else {
                     jQuery('#rfCommandStatus').removeClass('successMessage').addClass('errorMessage');
                 }
-                Yukon.ui.unblock(event.currentTarget);
+                jQuery('#rfReadNow').removeAttr('disabled');
+                jQuery('#rfReadNow i').hide();
             },
             error: function() {
-                Yukon.ui.unblock(event.currentTarget);
+                jQuery('#rfReadNow').removeAttr('disabled');
+                jQuery('#rfReadNow i').hide();
             }
         });
     });
@@ -41,20 +41,25 @@ jQuery(function() {
                 <table class="compactResultsTable">
                     <c:forEach var="point" items="${entry.value}">
                         <tr>
-                            <td class="wsnw"><spring:escapeBody htmlEscape="true">${point.pointName}</spring:escapeBody></td>
-                            <td class="last"><cti:pointValue pointId="${point.liteID}" cssClass="wsnw" colorForStatus="true"/></td>
+                            <td>${fn:escapeXml(point.pointName)}</td>
+                            <td class="last"><cti:pointValue pointId="${point.liteID}" colorForStatus="true"/></td>
                         </tr>
                     </c:forEach>
                 </table>
             </div>
         </c:if>
     </c:forEach>
-    <c:if test="${hardware.hardwareType.rf}">
-        <div  class="f-block_this">
+        <c:if test="${hardware.hardwareType.rf}">
             <div id="rfCommandStatus" class="dn errorMessage rfCommandMsg"></div>
-            <div class="actionArea">
-                <cti:button id="rfReadNow" nameKey="readNow"/>
-            </div>
-        </div>
-    </c:if>
+        </c:if>
+    <div class="actionArea">
+        <cti:url var="pointsUrl" value="/common/operator/points">
+            <cti:param name="deviceId" value="${hardware.deviceId}"/>
+            <cti:param name="accountId" value="${accountId}"/>
+        </cti:url>
+        <a href="${pointsUrl}"><i:inline key="yukon.web.defaults.showAll"/></a>
+        <c:if test="${hardware.hardwareType.rf}">
+            <cti:button id="rfReadNow" nameKey="readNow" busy="true" classes="f-disableAfterClick"/>
+        </c:if>
+    </div>
 </tags:boxContainer2>

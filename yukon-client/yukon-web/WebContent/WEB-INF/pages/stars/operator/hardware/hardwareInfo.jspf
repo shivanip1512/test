@@ -74,7 +74,7 @@ jQuery(function() { updateServiceCompanyInfo();});
             <tags:nameValueContainer2>
             
                 <tags:nameValue2 nameKey="${displayTypeKey}">
-                    <spring:escapeBody htmlEscape="true">${hardware.displayType}</spring:escapeBody>
+                    ${fn:escapeXml(hardware.displayType)}
                 </tags:nameValue2>
                 
                 <%-- For switchs and tstat's, show serial number. If is also a device, show device name--%>
@@ -89,7 +89,7 @@ jQuery(function() { updateServiceCompanyInfo();});
                             <c:otherwise>
                                 <tags:nameValue2 nameKey=".serialNumber">
                                     <form:hidden path="serialNumber"/>
-                                    <spring:escapeBody htmlEscape="true">${hardware.serialNumber}</spring:escapeBody>
+                                    ${fn:escapeXml(hardware.serialNumber)}
                                 </tags:nameValue2>
                             </c:otherwise>
                             
@@ -98,7 +98,7 @@ jQuery(function() { updateServiceCompanyInfo();});
                     <c:otherwise>
                         <tags:nameValue2 nameKey=".meterNumber">
                             <form:hidden path="meterNumber"/>
-                            <spring:escapeBody htmlEscape="true">${hardware.meterNumber}</spring:escapeBody>
+                            ${fn:escapeXml(hardware.meterNumber)}
                         </tags:nameValue2>
                     </c:otherwise>
                 </c:choose>
@@ -205,7 +205,6 @@ jQuery(function() { updateServiceCompanyInfo();});
                     </tags:nameValue2>
                 
                 </c:if>
-                    
             </tags:nameValueContainer2>
         
         </tags:formElementContainer>

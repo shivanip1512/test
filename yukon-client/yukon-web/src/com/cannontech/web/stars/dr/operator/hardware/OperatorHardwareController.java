@@ -794,7 +794,6 @@ public class OperatorHardwareController {
         /*  Add Pao Specifics */
         Integer deviceId = hardware.getDeviceId();
         if (deviceId != null && deviceId > 0 && !type.isZigbee()) {  // points for ZigBee device have their own special box
-            if (type.isRf()) { // Only showing points list for rf devices for now
                 List<LitePoint> points = pointDao.getLitePointsByPaObjectId(deviceId);
                 if (!points.isEmpty()) {
                     ListMultimap<PointType, LitePoint> pointsMap = ArrayListMultimap.create();
@@ -812,7 +811,6 @@ public class OperatorHardwareController {
                     model.addAttribute("showPoints", true);
                     model.addAttribute("points", pointsMap.asMap());
                 }
-            }
         }
 
         /* Device Status History */
@@ -854,6 +852,10 @@ public class OperatorHardwareController {
                 if (inventoryChecking) {
                     model.addAttribute("showSwitchChangeoutAction", true);
                 }
+            }
+            if (deviceId != null && deviceId > 0 && !type.isZigbee() && type.isTwoWay()) {
+                model.addAttribute("deviceId", deviceId);
+                model.addAttribute("showPointsLinkAction", true);
             }
             break;
 

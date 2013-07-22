@@ -136,7 +136,8 @@
                   </page>
                   <page name="meterDetailLocateRoute" type="BASIC">
                   </page>
-                  <page name="meterPoints" type="BASIC">
+                  <page name="meterPoints" type="DETAIL_CHILD">
+                      <labelArgument>${deviceName}</labelArgument>
                   </page>
                 </pages>
               </page>
@@ -1123,6 +1124,9 @@
                                                 <labelArgument>${displayName}</labelArgument>
                                             </page>
                                         </pages>
+                                    </page>
+                                    <page name="hardware.points" type="DETAIL_CHILD">
+                                        <labelArgument>${deviceName}</labelArgument>
                                     </page>
                                     <page name="hardwareConfig" type="DETAIL">
                                         <labelArgument>${displayName}</labelArgument>
