@@ -66,15 +66,15 @@ public class TabbedContentSelectorTag extends BodyTagSupport {
 	            throw new UnsupportedOperationException("TabbedContentSelectorTag should be used within a StandardPageTag");
 	        }
 	        
-	        id = ! StringUtils.isEmpty(id) ? id : "tabbedControl_"+ UniqueIdentifierTag.generateIdentifier(pageContext, "tabbedContentSelectorContainer_");
+	        String outputId = ! StringUtils.isEmpty(id) ? id : "tabbedControl_"+ UniqueIdentifierTag.generateIdentifier(pageContext, "tabbedContentSelectorContainer_");
 	        boolean doHeaderOutline = this.mode.equals(Mode.section);
 
 	        pageContext.getOut().println("<script type=\"text/javascript\">");
-            pageContext.getOut().println("jQuery(function(){jQuery(\"#" + id + "\").tabs({selected: "+ getSelectedTabIndex() +"}).show();});");
+            pageContext.getOut().println("jQuery(function(){jQuery(\"#" + outputId + "\").tabs({selected: "+ getSelectedTabIndex() +"}).show();});");
             pageContext.getOut().println("</script>");
             //The tabs are initially hidden on page load to avoid jarring page shrinkage after the js initialization of the tabs.
             String css = this.classes +" tabbedContainer ui-tabs-box" + (doHeaderOutline ? " ui-tabs-header" : "");
-            pageContext.getOut().println("<div id=\"" + id + "\" class=\"dn "+ css +"\">");
+            pageContext.getOut().println("<div id=\"" + outputId + "\" class=\"dn "+ css +"\">");
 	        pageContext.getOut().println("<ul>");
             for(int i=0; i<tabIds.size(); i++){
                 pageContext.getOut().println("<li><a href=\"#" + tabIds.get(i) + "\">" + tabNames.get(i) + "</a></li>");
