@@ -63,7 +63,16 @@
                   </select>
                   </span>
 			              </div>
-			              <cti:button nameKey="update"/>
+                          
+                          <%--
+                          This message scope does not exist, but cti:buttons must be in a message scope.
+                          In normal circumstances, the msgScope would surround the main page, (Metering.jsp),
+                          but that would require refactoring all these contained scriptlets,
+                          since cti:msgScope MUST have a scriptless body.
+                           --%>
+                          <cti:msgScope paths="amr.trending">
+			              <cti:button nameKey="update" type="submit"/>
+                          </cti:msgScope>
 			          </td>
 			      </tr>
 			    </table>
