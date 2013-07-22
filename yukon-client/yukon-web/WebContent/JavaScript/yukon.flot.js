@@ -348,7 +348,7 @@ if(typeof(Yukon.Flot) === 'undefined'){
             Yukon.Flot.charts[chartId].ranges_xaxis_to = ranges.xaxis.to; 
             Yukon.Flot.charts[chartId].methods.plotGraph(chartId, {
                 options: {
-                    xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to, timeZoneOffset: ranges.xaxis.from.getTimezoneOffset() }
+                    xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to}
                 }
             });
         },

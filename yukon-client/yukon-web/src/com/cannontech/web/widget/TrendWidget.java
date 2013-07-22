@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,7 +31,6 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.users.model.PreferenceGraphTimeDurationOption;
 import com.cannontech.core.users.model.PreferenceGraphVisualTypeOption;
-import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -115,7 +115,7 @@ public class TrendWidget extends WidgetControllerBase {
         PreferenceGraphTimeDurationOption prefPeriod = null;
         if (requestedChartPeriod == null) {
             prefPeriod = prefService.getDefaultChartPeriod(user);
-        } else {
+        } else if (requestedChartPeriod != ChartPeriod.NOPERIOD) {
             prefPeriod = prefService.updatePreferenceChartPeriod(requestedChartPeriod, user);
         }
         ChartPeriod chartPeriod = prefPeriod == null ? ChartPeriod.NOPERIOD : prefPeriod.getChartPeriod();
@@ -142,6 +142,20 @@ public class TrendWidget extends WidgetControllerBase {
             cachingWidgetParameterGrabber.removeFromCache("startDateParam");
             cachingWidgetParameterGrabber.removeFromCache("stopDateParam");
         }
+        
+        /*
+         * jquery.flot.js v 0.7 does not support time zones and always displays UTC time
+         * Here we fake it out by adding the server timezone offset to the timestamp
+         * so the times line up between the plot and the data.
+         */
+
+        long startTimeStamp = startDate.getTime();
+        long fakeStartTimeStamp = startTimeStamp + TimeZone.getDefault().getOffset(startTimeStamp);
+        startDate = new Date(fakeStartTimeStamp); //Mon Jul 22 04:18:00 CDT 2013
+        
+        long stopTimeStamp = stopDate.getTime();
+        long fakeStopTimeStamp = stopTimeStamp + TimeZone.getDefault().getOffset(stopTimeStamp);
+        stopDate = new Date(fakeStopTimeStamp); //Mon Jul 22 04:18:00 CDT 2013
 
         ChartInterval chartInterval = chartPeriod.getChartUnit(startDate, stopDate);
 

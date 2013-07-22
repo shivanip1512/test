@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -78,9 +79,18 @@ public class ChartServiceImpl implements ChartService {
             for (PointValueHolder data : pointData) {
 
                 ChartValue<Double> chartValue = new ChartValue<Double>();
+                
+                /*
+                 * jquery.flot.js v 0.7 does not support time zones and always displays UTC time
+                 * Here we fake it out by adding the server timezone offset to the timestamp
+                 * so the times line up between the plot and the data.
+                 */
 
-                chartValue.setId(data.getPointDataTimeStamp().getTime());
-                chartValue.setTime(data.getPointDataTimeStamp().getTime());
+                long timeStamp = data.getPointDataTimeStamp().getTime();
+                long fakeTimeStamp = timeStamp + TimeZone.getDefault().getOffset(timeStamp);
+                
+                chartValue.setId(fakeTimeStamp);
+                chartValue.setTime(fakeTimeStamp);
                 chartValue.setValue(data.getValue());
                 chartValue.setDescription("<div>" + units + "</div><div>" + timeFormat.format(data.getPointDataTimeStamp()) + "</div><div>" + lPoint.getPointName() + "</div>");
                 chartValue.setFormattedValue(pointValueFormat.format(data.getValue()));
