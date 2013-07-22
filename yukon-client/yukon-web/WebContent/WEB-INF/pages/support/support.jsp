@@ -53,11 +53,11 @@ jQuery(function() {
                 <c:forEach var="wrapper" items="${supportPages}">
                     <li>
                     <c:if test="${wrapper.enabled}">
-                        <a href="${wrapper.page.link}"><i:inline key="${wrapper.page.formatKey}"/></a>
+                        <a href="${wrapper.page.link}"><i:inline key="${wrapper.page}"/></a>
                     </c:if>
                     <c:if test="${not wrapper.enabled}">
-                        <cti:msg2 key=".noPermissions" argument="${wrapper.requiredPermissions}" var="perms"/>
-                        <span title="${perms}" class="disabled"><i:inline key="${wrapper.page.formatKey}"/></span>
+                        <cti:msg2 key=".siteMap.noPermissions" argument="${wrapper.requiredPermissions}" var="perms"/>
+                        <span title="${perms}" class="disabled"><i:inline key="${wrapper.page}"/></span>
                     </c:if>
                     </li>
                 </c:forEach>            
