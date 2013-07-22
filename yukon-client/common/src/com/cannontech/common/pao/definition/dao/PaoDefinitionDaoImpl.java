@@ -1031,7 +1031,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         int periodicRate = calculation.getPeriodicRate();
         boolean forceQualityNormal = calculation.isForceQualityNormal();
         UpdateTypeType updateType = calculation.getUpdateType();
-        CalcPointInfo calcPointInfo = new CalcPointInfo(updateType.toString(), periodicRate, forceQualityNormal);
+        CalcPointInfo calcPointInfo = new CalcPointInfo(updateType.value(), periodicRate, forceQualityNormal);
         
         List<CalcPointComponent> calcPointComponents = Lists.newArrayList();
         List<Component> components = calculation.getComponents().getComponent();
