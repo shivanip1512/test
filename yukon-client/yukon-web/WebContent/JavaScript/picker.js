@@ -523,8 +523,8 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         doSearch.call(this, false, false, null, function() {
             var buttons;
             if (!this.containerDiv) {
-                buttons = [{'text' : that.cancelText, 'click' : function() {cancel.call(that);}}, actually that
-                           {'text' : that.okText, 'click' : function() {okPressed.call(that);}, 'class': 'primary action'}]; actually that
+                buttons = [{'text' : that.cancelText, 'click' : function() {cancel.call(that);}},
+                           {'text' : that.okText, 'click' : function() {okPressed.call(that);}, 'class': 'primary action'}];
                 if (!that.inline) {
                     jQuery('#' + that.pickerId).dialog({buttons : buttons, width : 600, height : 'auto'});
                 }
