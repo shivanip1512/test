@@ -56,7 +56,7 @@ private:
     virtual bool Restore();
 
     static std::string getSQLCoreStatement(long id = 0);
-    
+
     void DecodeDatabaseReader(Cti::RowReader& rdr);
 
     LONG getPointID() const;
@@ -87,12 +87,4 @@ private:
     UINT getStaleCount() const;
 
     virtual void dump();
-
-    CtiTablePointDispatch&  applyNewReading(const CtiTime& timestamp,
-                                            UINT millis,
-                                            UINT quality,
-                                            DOUBLE value,
-                                            UINT tags,
-                                            const CtiTime& archivetime,
-                                            UINT num );
 };

@@ -54,7 +54,6 @@ public:
     CtiCCMonitorPoint& setTimeStamp(CtiTime timeStamp);
     CtiCCMonitorPoint& setScanInProgress(bool flag);
 
-    boost::shared_ptr<CtiCCMonitorPoint> replicate() const;
     virtual int compareTo(const RWCollectable* right) const;
 
     bool isDirty() const;

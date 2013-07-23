@@ -468,26 +468,6 @@ void CtiCCMonitorPoint::setDynamicData(Cti::RowReader& rdr)
 
 
 /*---------------------------------------------------------------------------
-    replicate
-
-    Restores self's operation fields.
----------------------------------------------------------------------------*/
-boost::shared_ptr<CtiCCMonitorPoint> CtiCCMonitorPoint::replicate() const
-{
-#ifdef _DEBUG
-    if ( _MONITOR_POINT_DEBUGGING )
-    {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - DEBUG - PointID: " << _pointId << "   DeviceID: " << _deviceId << endl;
-        }
-        autopsy( __FILE__, __LINE__ );
-    }
-#endif
-    return(CtiCCMonitorPointPtr(new CtiCCMonitorPoint(*this)));
-}
-
-/*---------------------------------------------------------------------------
     compareTo
 
     Used for ordering cap banks within a feeder by control order.

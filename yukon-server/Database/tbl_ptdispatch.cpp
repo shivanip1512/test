@@ -353,43 +353,6 @@ CtiTablePointDispatch& CtiTablePointDispatch::setNextArchiveTime(const CtiTime& 
     return *this;
 }
 
-CtiTablePointDispatch& CtiTablePointDispatch::applyNewReading(const CtiTime& timestamp,
-                                                              UINT millis,
-                                                              UINT quality,
-                                                              DOUBLE value,
-                                                              UINT tags,
-                                                              const CtiTime& archivetime,
-                                                              UINT num )
-{
-
-
-    if(timestamp < _timeStamp)    // The setting is backward in time...
-    {
-        setTimeStamp( timestamp );
-        setTimeStampMillis(millis);
-        setQuality( quality );
-        setValue( value );
-
-        setTags( tags );
-        setNextArchiveTime( archivetime );
-
-        setDirty(TRUE);
-    }
-    else if(timestamp >= _timeStamp)
-    {
-        setTimeStamp( timestamp );
-        setTimeStampMillis(millis);
-        setQuality( quality );
-        setValue( value );
-
-        setTags( tags );
-        setNextArchiveTime( archivetime );
-
-        setDirty(TRUE);
-    }
-    return *this;
-}
-
 void CtiTablePointDispatch::dump()
 {
     {
