@@ -125,6 +125,14 @@
     <entry key="yukon.web.modules.operator.hardware.serialNumber.moveToAccount">Would you like to remove it from account {0} and add it to account {1}?</entry>
     <entry key="yukon.web.modules.operator.hardware.serialNumber.inWarehouse">Device found in warehouse.</entry>
     <entry key="yukon.web.modules.operator.hardware.serialNumber.defaultWarehouse">General Inventory</entry>
+
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.label">Asset Availability</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.running">Running</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.notRunning">Not Running</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.unavailable">Unavailable</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.optedOutRunning">Opted Out (Running)</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.optedOutNotRunning">Opted Out (Not Running)</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.optedOutUnavailable">Opted Out (Unavailable)</entry>
     
     <!-- Errors -->
     

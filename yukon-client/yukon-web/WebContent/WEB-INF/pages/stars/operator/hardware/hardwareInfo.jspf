@@ -205,8 +205,50 @@ jQuery(function() { updateServiceCompanyInfo();});
                     </tags:nameValue2>
                 
                 </c:if>
+
+                <c:if test="${isTwoWayDevice && (!empty assetAvailability)}">
+                    <tags:nameValue2 nameKey=".assetAvailability.label">
+                        <c:set var="aaStatus" value="${assetAvailability.status}" />
+                        <c:set var="isOptedOut" value="${assetAvailability.optedOut}" />
+                        <c:choose>
+                            <c:when test="${aaStatus == 'IN_COMMUNICATION_RUNNING'}">
+                                <c:choose>
+                                    <c:when test="${isOptedOut}">
+                                        <span><i:inline key=".assetAvailability.optedOutRunning"/></span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="success"><i:inline key=".assetAvailability.running"/></span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:when>
+                            <c:when test="${aaStatus == 'IN_COMMUNICATION_NOT_RUNNING'}">
+                                <c:choose>
+                                    <c:when test="${isOptedOut}">
+                                        <span><i:inline key=".assetAvailability.optedOutNotRunning"/></span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span><i:inline key=".assetAvailability.notRunning"/></span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:when>
+                            <c:when test="${aaStatus == 'UNAVAILABLE'}">
+                                <c:choose>
+                                    <c:when test="${isOptedOut}">
+                                        <span><i:inline key=".assetAvailability.optedOutUnavailable"/></span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span><i:inline key=".assetAvailability.unavailable"/></span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:when>
+                            <c:otherwise>
+                                <span class="error">Invalid Status: ${aaStatus}</span>
+                            </c:otherwise>
+                        </c:choose>
+                    </tags:nameValue2>
+                </c:if>
+
             </tags:nameValueContainer2>
-        
         </tags:formElementContainer>
         
         <%--SERVICE AND STORAGE --%>

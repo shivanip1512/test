@@ -56,6 +56,9 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.dr.assetavailability.AssetAvailability;
+import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
+import com.cannontech.dr.assetavailability.service.impl.NoInventoryException;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
@@ -143,6 +146,7 @@ public class OperatorHardwareController {
     @Autowired private OperatorAccountService operatorAccountService;
     @Autowired private OperatorThermostatHelper operatorThermostatHelper;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private AssetAvailabilityService assetAvailabilityService;
 
     private static final int THERMOSTAT_DETAIL_NUM_ITEMS = 5;
     
@@ -342,7 +346,7 @@ public class OperatorHardwareController {
                        YukonUserContext context, 
                        AccountInfoFragment fragment,
                        HttpServletRequest request,
-                       int inventoryId) {
+                       int inventoryId) throws NoInventoryException {
                
         hardwareUiService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), fragment.getAccountId());
         
@@ -362,6 +366,12 @@ public class OperatorHardwareController {
                     THERMOSTAT_DETAIL_NUM_ITEMS);
         }
         model.addAttribute("showViewMore", showViewMore);
+        
+        if (hardware.getHardwareType().isTwoWay()) {
+            AssetAvailability assetAvail = assetAvailabilityService.getAssetAvailability(hardware.getDeviceId());
+            model.addAttribute("assetAvailability", assetAvail);
+            model.addAttribute("isTwoWayDevice", true);
+        }
         
         if(hardware.getHardwareType() == HardwareType.NON_YUKON_METER){
             return "redirect:/stars/operator/hardware/mp/view";
