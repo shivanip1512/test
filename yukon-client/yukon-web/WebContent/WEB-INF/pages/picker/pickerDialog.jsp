@@ -8,6 +8,8 @@
 
 <script type="text/javascript">
 Picker.alreadySelectedHoverMessage = '<cti:msg2 key=".alreadySelectedHover"/>';
+${id}.outputColumns = ${cti:jsonString(outputColumns)};
+${id}.idFieldName = '${cti:escapeJavaScript(idFieldName)}';
 </script>
 
 <cti:msg var="dialogTitle" key="${title}"/>

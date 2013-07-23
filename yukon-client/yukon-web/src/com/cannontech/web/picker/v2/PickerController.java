@@ -42,12 +42,8 @@ public class PickerController {
         model.addAttribute("multiSelectMode", multiSelectMode);
         model.addAttribute("immediateSelectMode", immediateSelectMode);
 
-        JSONObject object = new JSONObject();
-        object.put("outputColumns",
-                   makeLocal(picker.getOutputColumns(), userContext));
-        object.put("idFieldName", picker.getIdFieldName());
-
-        response.addHeader("X-JSON", object.toString());
+        model.addAttribute("outputColumns", makeLocal(picker.getOutputColumns(), userContext));
+        model.addAttribute("idFieldName", picker.getIdFieldName());
 
         return "inline".equals(mode) ? "inlinePicker" : "pickerDialog";
     }

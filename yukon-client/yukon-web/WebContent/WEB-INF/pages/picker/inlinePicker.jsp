@@ -8,20 +8,22 @@
 
 <script type="text/javascript">
 Picker.alreadySelectedHoverMessage = '<cti:msg2 key=".alreadySelectedHover"/>';
+${id}.outputColumns = ${cti:jsonString(outputColumns)};
+${id}.idFieldName = '${cti:escapeJavaScript(idFieldName)}';
 </script>
 
 <div id="${id}">
     <div class="column_12_12 clear">
         <div class="column one">
-                    <label>
-                        <i:inline key=".query"/> <input type="text" id="picker_${id}_ss" name="ss" onkeyup="${id}.doKeyUp.call(${id});false;"/>
-                    </label>
-                    <a id="picker_${id}_showAllLink" href="javascript:${id}.showAll.call(${id})">
-                        <i:inline key=".showAll"/>
-                    </a>
+            <label>
+                <i:inline key=".query"/> <input type="text" id="picker_${id}_ss" name="ss" onkeyup="${id}.doKeyUp.call(${id});false;"/>
+            </label>
+            <a id="picker_${id}_showAllLink" href="javascript:${id}.showAll.call(${id})">
+                <i:inline key=".showAll"/>
+            </a>
         </div>
         <div class="column two nogutter pagingArea">
-                    <tags:nextPrevLinks previousUrl="javascript:${id}.previous.call(${id})" nextUrl="javascript:${id}.next.call(${id})" mode="javascript"/>
+            <tags:nextPrevLinks previousUrl="javascript:${id}.previous.call(${id})" nextUrl="javascript:${id}.next.call(${id})" mode="javascript"/>
         </div>
     </div>
 
