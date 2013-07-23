@@ -111,7 +111,6 @@ public class TrendWidget extends WidgetControllerBase {
         // GET PERIOD from parameter and save it, or get the default period.
         String strRequestedChartPeriod = request.getParameter("period");
         ChartPeriod requestedChartPeriod = StringUtils.isBlank(strRequestedChartPeriod) ? null : ChartPeriod.valueOf(strRequestedChartPeriod);
-//        PreferenceGraphTimeDurationOption prefPeriod = prefService.updatePreferenceOrGetDefaultChartPeriod(requestedChartPeriod, user);
         PreferenceGraphTimeDurationOption prefPeriod = null;
         if (requestedChartPeriod == null) {
             prefPeriod = prefService.getDefaultChartPeriod(user);

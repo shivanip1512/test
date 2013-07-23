@@ -38,9 +38,9 @@ public interface UserPreferenceService {
 
     public PreferenceGraphTimeDurationOption getDefaultChartPeriod(LiteYukonUser user);
 
-    public PreferenceGraphVisualTypeOption updatePreferenceGraphType(GraphType requestedValueOrNull, LiteYukonUser user)
+    public PreferenceGraphVisualTypeOption updatePreferenceGraphType(GraphType type, LiteYukonUser user)
             throws IllegalArgumentException;
 
-    public PreferenceGraphTimeDurationOption updatePreferenceChartPeriod(ChartPeriod requestedValueOrNull, LiteYukonUser user)
+    public PreferenceGraphTimeDurationOption updatePreferenceChartPeriod(ChartPeriod period, LiteYukonUser user)
             throws IllegalArgumentException;
 }
