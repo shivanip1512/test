@@ -32,6 +32,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
@@ -67,12 +68,12 @@ import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.definition.model.jaxb.ArchiveDefaults;
 import com.cannontech.common.pao.definition.model.jaxb.AttributesType;
-import com.cannontech.common.pao.definition.model.jaxb.DeviceCategories;
 import com.cannontech.common.pao.definition.model.jaxb.AttributesType.Attribute.BasicLookup;
 import com.cannontech.common.pao.definition.model.jaxb.CommandsType.Command;
 import com.cannontech.common.pao.definition.model.jaxb.CommandsType.Command.Cmd;
 import com.cannontech.common.pao.definition.model.jaxb.CommandsType.Command.PointRef;
 import com.cannontech.common.pao.definition.model.jaxb.ComponentTypeType;
+import com.cannontech.common.pao.definition.model.jaxb.DeviceCategories;
 import com.cannontech.common.pao.definition.model.jaxb.DeviceCategories.Category;
 import com.cannontech.common.pao.definition.model.jaxb.Pao;
 import com.cannontech.common.pao.definition.model.jaxb.PaoDefinitions;
@@ -141,7 +142,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     private Map<PaoTag, BiMap<PaoType, PaoDefinition>> typesBySupportedTag;
     private Set<PaoDefinition> creatablePaoDefinitions = null;
     private List<String> fileIdOrder = null;
-    private Map<Pair<PaoType, PointIdentifier>, BuiltInAttribute> paoAndPointToAttributeMap;
+    private SetMultimap<Pair<PaoType, PointIdentifier>, BuiltInAttribute> paoAndPointToAttributeMap;
     
     private UnitMeasureDao unitMeasureDao;
     private StateDao stateDao;
@@ -270,9 +271,20 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     }
     
     @Override
-    public BuiltInAttribute findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier) {
+    public Set<BuiltInAttribute> findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier) {
         Pair<PaoType, PointIdentifier> paoAndPoint = new Pair<PaoType, PointIdentifier>(paoTypePointIdentifier.getPaoType(), paoTypePointIdentifier.getPointIdentifier());
-        return paoAndPointToAttributeMap.get(paoAndPoint);
+        Set<BuiltInAttribute> builtInAttributes = paoAndPointToAttributeMap.get(paoAndPoint);
+        return Collections.unmodifiableSet(builtInAttributes);        
+    }
+
+    @Override
+    @Deprecated
+    public BuiltInAttribute findOneAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier) {
+        Set<BuiltInAttribute> builtInAttributes = findAttributeForPaoTypeAndPoint(paoTypePointIdentifier);
+        if (CollectionUtils.isNotEmpty(builtInAttributes)) {
+            return builtInAttributes.iterator().next();
+        }
+        return null;
     }
     
     // COMMANDS
@@ -515,7 +527,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
      */
     @PostConstruct
     public void initialize() throws Exception {
-        paoAndPointToAttributeMap = Maps.newHashMap();
+        paoAndPointToAttributeMap = HashMultimap.create();
         paoTypeMap = EnumHashBiMap.create(PaoType.class);
         paoAllPointTemplateMap = HashMultimap.create();
         paoInitPointTemplateMap = HashMultimap.create();

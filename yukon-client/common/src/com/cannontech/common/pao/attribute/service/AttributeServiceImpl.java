@@ -411,10 +411,13 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public BuiltInAttribute findAttributeForPoint(PaoTypePointIdentifier paoTypePointIdentifier, Set<? extends Attribute> possibleMatches) {
         
-        BuiltInAttribute attribute = paoDefinitionDao.findAttributeForPaoTypeAndPoint(paoTypePointIdentifier); 
+        Set<BuiltInAttribute> attributes = paoDefinitionDao.findAttributeForPaoTypeAndPoint(paoTypePointIdentifier); 
         
-        if (attribute != null && possibleMatches.contains(attribute)) return attribute;
-        
+        if (!attributes.isEmpty()) {
+            for (BuiltInAttribute attribute : attributes) {
+                if (possibleMatches.contains(attribute)) return attribute;
+            }
+        }        
         return null;
     }
     

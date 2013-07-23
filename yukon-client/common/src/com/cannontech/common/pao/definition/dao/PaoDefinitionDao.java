@@ -44,7 +44,15 @@ public interface PaoDefinitionDao {
      * @param paoTypePointIdentifier
      * @return BuiltInAttribute
      */
-    public BuiltInAttribute findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier);
+    public Set<BuiltInAttribute> findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier);
+    
+    /**
+     * Helper method to support legacy implementation of one attribute per paoTypeAndPoint. Do Not Use!
+     * @param paoTypePointIdentifier
+     * @return (randomly) returns one builtInAttribute from the multiSet.
+     * @deprecated use findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier)
+     */
+    @Deprecated public BuiltInAttribute findOneAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier);
 
     // DEVICE CONFIGURATION
     //============================================

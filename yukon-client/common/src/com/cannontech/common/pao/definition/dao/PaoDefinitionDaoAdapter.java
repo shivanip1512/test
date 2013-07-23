@@ -180,10 +180,15 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
     }
 
     @Override
-    public BuiltInAttribute findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier) {
+    public Set<BuiltInAttribute> findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier) {
         throw new UnsupportedOperationException("not implemented");
     }
     
+    @Override
+    @Deprecated
+    public BuiltInAttribute findOneAttributeForPaoTypeAndPoint(PaoTypePointIdentifier paoTypePointIdentifier) {
+        throw new UnsupportedOperationException("not implemented");
+    }
     @Override
     public Set<Category> getCategoriesForPaoType(PaoType paoType) {
         throw new UnsupportedOperationException("not implemented");

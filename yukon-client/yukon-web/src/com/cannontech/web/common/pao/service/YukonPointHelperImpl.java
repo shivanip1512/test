@@ -35,7 +35,7 @@ public class YukonPointHelperImpl implements YukonPointHelper {
             public LiteYukonPoint apply(LitePoint lp) {
                 PointIdentifier pointId = new PointIdentifier(lp.getPointTypeEnum(), lp.getPointOffset());
                 PaoType paoType = pao.getPaoIdentifier().getPaoType();
-                BuiltInAttribute attribute = paoDefinitionDao.findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier.of(paoType, pointId));
+                BuiltInAttribute attribute = paoDefinitionDao.findOneAttributeForPaoTypeAndPoint(PaoTypePointIdentifier.of(paoType, pointId));
                 return LiteYukonPoint.of(new PaoPointIdentifier(pao.getPaoIdentifier(), pointId), attribute, lp.getPointName(), lp.getPointID());
             }
         };
