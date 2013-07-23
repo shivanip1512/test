@@ -17,12 +17,12 @@ MODIFY Delimiter VARCHAR2(20) NULL;
 /* End YUK-12218 */
 
 /* Start YUK-12368 */
-UPDATE CALCBASE SET UPDATETYPE = 'On First Change' WHERE UPDATETYPE = 'ON_FIRST_CHANGE';
-UPDATE CALCBASE SET UPDATETYPE = 'On All Change' WHERE UPDATETYPE = 'ON_ALL_CHANGE';
-UPDATE CALCBASE SET UPDATETYPE = 'On Timer' WHERE UPDATETYPE = 'ON_TIMER';
-UPDATE CALCBASE SET UPDATETYPE = 'On Timer And Change' WHERE UPDATETYPE = 'ON_TIMER_CHANGE';
-UPDATE CALCBASE SET UPDATETYPE = 'Constant' WHERE UPDATETYPE = 'CONSTANT';
-UPDATE CALCBASE SET UPDATETYPE = 'Historical' WHERE UPDATETYPE = 'HISTORICAL';
+UPDATE CalcBase SET UpdateType = 'On First Change' WHERE UpdateType = 'ON_FIRST_CHANGE';
+UPDATE CalcBase SET UpdateType = 'On All Change' WHERE UpdateType = 'ON_ALL_CHANGE';
+UPDATE CalcBase SET UpdateType = 'On Timer' WHERE UpdateType = 'ON_TIMER';
+UPDATE CalcBase SET UpdateType = 'On Timer And Change' WHERE UpdateType = 'ON_TIMER_CHANGE';
+UPDATE CalcBase SET UpdateType = 'Constant' WHERE UpdateType = 'CONSTANT';
+UPDATE CalcBase SET UpdateType = 'Historical' WHERE UpdateType = 'HISTORICAL';
 /* End YUK-12368 */
 
 /**************************************************************/
