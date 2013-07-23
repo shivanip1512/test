@@ -407,7 +407,8 @@
     					<td><tags:paoType yukonPao="${event.meter}"/></td>
     					<td><cti:formatDate type="BOTH" value="${event.pointValueHolder.pointDataTimeStamp}"/></td>
     	                <td><spring:escapeBody>${event.pointName}</spring:escapeBody></td>
-    					<td class="eventStatus${event.formattedValue}">${event.formattedValue}</td>
+                        <cti:pointColor pointId="${event.pointValueHolder.id}" rawState="${event.pointValueHolder.value}" var="color"/>
+    					<td class="${color}">${event.formattedValue}</td>
                         <td class="contextual-menu">
                             <cm:singleDeviceMenu deviceId="${event.meter.paoIdentifier.paoId}" containerCssClass="fr"/>
                         </td>

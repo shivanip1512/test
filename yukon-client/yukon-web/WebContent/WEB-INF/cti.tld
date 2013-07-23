@@ -452,6 +452,35 @@
   </tag>
   
   <tag>
+    <name>pointColor</name>
+    <description>
+        Use to retrieve the name of the color this for the point and raw state. 
+    </description>
+    <tag-class>com.cannontech.web.updater.point.PointColorTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>pointId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>rawState</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>scope</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
     <name>pointStatusColor</name>
     <tag-class>com.cannontech.web.taglib.PointStatusColorTag</tag-class>
     <body-content>scriptless</body-content>

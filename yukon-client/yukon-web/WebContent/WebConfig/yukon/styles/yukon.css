@@ -22,7 +22,7 @@
     CATEGORIES AND SETTINGS
     MISC
     DATE/TIME PICKER
-    DROPDOWN MENU
+    DROPDOWN MENUS
     MODAL/BLOCKING GLASS
     CONNECTION WARNING
     JUNK TO FIX
@@ -315,11 +315,11 @@ a.pipe-selector.selected {color: #555; cursor: default;}
 .pipe-selector .pipe + * {margin-left: 5px;}
 
 /* COLOR CODING */
-.error, .errorMessage {color: #D14836 !important}
+.red, .error, .errorMessage {color: #D14836 !important}
 .error[type=checkbox] {outline: 2px solid red;}
 ol.error{list-style-type: none;}
-.success, .successMessage {color: #093;}
-.warn, .warning, .warningMessage {color:#ff8c00 !important}
+.green, .success, .successMessage {color: #093;}
+.orange, .warn, .warning, .warningMessage {color:#ff8c00 !important}
 .disabled, .disabled a {color:#888; cursor:default;}
 .disabled, .disabled a, .disabled:hover, .disabled a:hover {text-decoration: none;}
 .subtle, .setting .detail > span {color:#555;}
@@ -426,7 +426,7 @@ input.timePicker {width: 74px;}
 input.dateTimePicker {margin: 0;}
 .ui-datepicker-trigger:hover {cursor: pointer;}
 
-/* DROPDOWN MENU */
+/* DROPDOWN MENUS */
 .dropdown-container {display: inline-block;}
 .dropdown-container > a > .icon:first-child {margin-right: 0;}
 .dropdown-container > a > .icon:nth-child(2) {margin-left: 0;}
@@ -455,7 +455,7 @@ input.dateTimePicker {margin: 0;}
 .criteria-button .criteria-label {color: #777;}
 .criteria-button .criteria-value {display: inline;}
 .criteria-menu a {padding: 3px 15px;}
-.criteria-menu .criteria-option {display: block;margin: 0;max-width: 230px;overflow: hidden;padding: 0;text-overflow: ellipsis;white-space: nowrap;width: auto;}
+.criteria-menu .criteria-option {cursor: pointer; display: block;margin: 0;max-width: 230px;overflow: hidden;padding: 0;text-overflow: ellipsis;white-space: nowrap;width: auto;}
 .criteria-menu .criteria-option input {margin-right: 10px;}
 
 /* MODAL/BLOCKING GLASS */

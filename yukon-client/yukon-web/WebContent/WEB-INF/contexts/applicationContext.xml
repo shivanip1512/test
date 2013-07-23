@@ -1043,6 +1043,7 @@
     </bean>
 
     <bean id="pointValueTagPrototype" class="com.cannontech.web.updater.point.PointValueTag"/>
+    <bean id="pointColorTagPrototype" class="com.cannontech.web.updater.point.PointColorTag"/>
 
     <bean id="deviceNameTagPrototype" class="com.cannontech.web.amr.taglib.DeviceNameTag">
         <property name="deviceDao" ref="deviceDao"/>
