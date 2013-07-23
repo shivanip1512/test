@@ -72,9 +72,9 @@ DlcCommand::request_ptr Mct420LcdConfigurationCommand::execute(CtiTime now)
     return doCommand();
 }
 
-DlcCommand::request_ptr Mct420LcdConfigurationCommand::decode(const CtiTime now, const unsigned function, const Bytes &payload, std::string &description, std::vector<point_data> &points)
+DlcCommand::request_ptr Mct420LcdConfigurationCommand::decode(const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points)
 {
-    if( ! payload.empty() )
+    if( payload && ! payload->empty() )
     {
         std::ostringstream metric_description;
 
@@ -87,7 +87,7 @@ DlcCommand::request_ptr Mct420LcdConfigurationCommand::decode(const CtiTime now,
 
         unsigned char total_metrics = sizeof(MetricNames) / sizeof(MetricNames[0]);
 
-        for each(unsigned char metric in payload)
+        for each(unsigned char metric in *payload)
         {
             metric_description << "Display metric " << ++display_number << ": ";
 

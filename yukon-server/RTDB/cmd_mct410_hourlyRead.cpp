@@ -221,10 +221,10 @@ DlcCommand::request_ptr Mct410HourlyReadCommand::makeRequest(const CtiTime now)
 
 
 //  throws CommandException
-DlcCommand::request_ptr Mct410HourlyReadCommand::decode(CtiTime now, const unsigned function, const Bytes &payload, string &description, vector<point_data> &points)
+DlcCommand::request_ptr Mct410HourlyReadCommand::decode(CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, string &description, vector<point_data> &points)
 try
 {
-    const unsigned weekday = getValueFromBits(payload, 0, 3);
+    const unsigned weekday = getValueFromBits(*payload, 0, 3);
 
     if( weekday != _request.date.weekDay() )
     {
@@ -247,13 +247,13 @@ try
 
     if( _request.reading_day_end )
     {
-        kwh = extractMidnightKwh(payload);
+        kwh = extractMidnightKwh(*payload);
 
         points.push_back(kwh);
     }
     else
     {
-        point_data blink_count = extractBlinkCount(payload);
+        point_data blink_count = extractBlinkCount(*payload);
 
         blink_count.time = Midnight;
 
@@ -269,7 +269,7 @@ try
 
     if( kwh.quality == NormalQuality )
     {
-        vector<unsigned> deltas = extractDeltas(payload, _request);
+        vector<unsigned> deltas = extractDeltas(*payload, _request);
 
         vector<point_data> hourly_reads = processDeltas(kwh, deltas);
 

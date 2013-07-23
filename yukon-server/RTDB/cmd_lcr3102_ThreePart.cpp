@@ -32,12 +32,12 @@ DlcCommand::request_ptr Lcr3102ThreePartCommand::makeRequest(const CtiTime now)
     }
 }
 
-DlcCommand::request_ptr Lcr3102ThreePartCommand::decode(CtiTime now, const unsigned function, const Bytes &payload, std::string &description, std::vector<point_data> &points)
+DlcCommand::request_ptr Lcr3102ThreePartCommand::decode(CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points)
 {
     if( _state == State_Reading )
     {
         // This was the decode from the true ActOnStoredMessage call.
-        return decodeReading(now, function, payload, description, points);
+        return decodeReading(now, function, *payload, description, points);
     }
     else
     {

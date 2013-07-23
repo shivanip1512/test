@@ -47,7 +47,7 @@ DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::makeRequest(const CtiTime n
     }
 }
 
-DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::decode(CtiTime now, const unsigned function, const Bytes &payload, string &description, vector<point_data> &points)
+DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::decode(CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, string &description, vector<point_data> &points)
 {
     if(_state == State_WriteStartTime)
     {
@@ -57,7 +57,7 @@ DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::decode(CtiTime now, const u
     }
     else if(_state == State_ConfirmStartTime)
     {
-        unsigned int startTime = getValueFromBits(payload, 0, 32);
+        unsigned int startTime = getValueFromBits(*payload, 0, 32);
 
         if(startTime != _utcSeconds)
         {
@@ -73,12 +73,12 @@ DlcCommand::request_ptr Lcr3102HourlyDataLogCommand::decode(CtiTime now, const u
     }
     else
     {
-        const unsigned char flags = getValueFromBits(payload, 0, 8);
+        const unsigned char flags = getValueFromBits(*payload, 0, 8);
 
         validateFlags(flags);
 
         // Grab the hourly data from the payload. There are 12 items of 6-bit packed data.
-        std::vector<unsigned> data = getValueVectorFromBits(payload, 8, 6, 12);
+        std::vector<unsigned> data = getValueVectorFromBits(*payload, 8, 6, 12);
 
         getDescription(data, description);
 

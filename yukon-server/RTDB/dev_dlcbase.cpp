@@ -439,10 +439,16 @@ int DlcBaseDevice::decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list<
         {
             const DSTRUCT &dst = InMessage.Buffer.DSt;
 
-            const DlcCommand::Bytes
-                payload(
-                    dst.Message,
-                    dst.Message + std::min<unsigned short>(dst.Length, DSTRUCT::MessageLength_Max));
+            boost::optional<DlcCommand::Bytes> payload;
+
+            if( InMessage.Return.ProtocolInfo.Emetcon.IO == EmetconProtocol::IO_Function_Read ||
+                InMessage.Return.ProtocolInfo.Emetcon.IO == EmetconProtocol::IO_Read )
+            {
+                payload =
+                    DlcCommand::Bytes(
+                        dst.Message,
+                        dst.Message + std::min<unsigned short>(dst.Length, DSTRUCT::MessageLength_Max));
+            }
 
             std::vector<DlcCommand::point_data> points;
 
@@ -469,7 +475,10 @@ int DlcBaseDevice::decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list<
             }
         }
 
-        ReturnMsg->setResultString(description);
+        if( ! description.empty() )
+        {
+            ReturnMsg->setResultString(getName() + " / " + description);
+        }
 
         if( ptr.get() )
         {
