@@ -188,11 +188,12 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
 
     for( int type = 0; type < 10000; ++type )
     {
-        CtiDeviceBase *dev = createDeviceType(type);
+        std::auto_ptr<CtiDeviceBase> dev(createDeviceType(type));
 
         results.push_back(
-           dev ? typeid(*dev).name()
-               : "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}");
+            dev.get()
+                ? typeid(*dev).name()
+                : "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}");
     }
 
     BOOST_CHECK_EQUAL_COLLECTIONS(
@@ -385,11 +386,12 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
 
     while( reader() )
     {
-        CtiDeviceBase *dev = DeviceFactory(reader);
+        std::auto_ptr<CtiDeviceBase> dev(DeviceFactory(reader));
 
         results.push_back(
-           dev ? typeid(*dev).name()
-               : "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}");
+            dev.get()
+                ? typeid(*dev).name()
+                : "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}");
     }
 
     BOOST_CHECK_EQUAL_COLLECTIONS(

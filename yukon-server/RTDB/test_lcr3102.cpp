@@ -542,9 +542,12 @@ BOOST_FIXTURE_TEST_SUITE(test_execute_getvalue, beginExecuteRequest_helper)
 
         BOOST_CHECK_EQUAL(outList.size(), 3);
 
-        {
-            const OUTMESS *om = outList.front(); outList.pop_front();
+        CtiDeviceSingle::OutMessageList::const_iterator itr = outList.begin();
 
+        {
+            const OUTMESS *om = *itr++;
+
+            BOOST_REQUIRE( om );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,        Cti::Protocols::EmetconProtocol::IO_Function_Read );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function,  0xb0 );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,    13 );
@@ -553,8 +556,9 @@ BOOST_FIXTURE_TEST_SUITE(test_execute_getvalue, beginExecuteRequest_helper)
         }
 
         {
-            const OUTMESS *om = outList.front(); outList.pop_front();
+            const OUTMESS *om = *itr++;
 
+            BOOST_REQUIRE( om );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,        Cti::Protocols::EmetconProtocol::IO_Function_Read );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function,  0xb4 );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,    13 );
@@ -563,8 +567,9 @@ BOOST_FIXTURE_TEST_SUITE(test_execute_getvalue, beginExecuteRequest_helper)
         }
 
         {
-            const OUTMESS *om = outList.front(); outList.pop_front();
+            const OUTMESS *om = *itr++;
 
+            BOOST_REQUIRE( om );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,        Cti::Protocols::EmetconProtocol::IO_Function_Read );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function,  0xb8 );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,    4 );
@@ -593,9 +598,12 @@ BOOST_FIXTURE_TEST_SUITE(test_execute_getvalue, beginExecuteRequest_helper)
 
         BOOST_CHECK_EQUAL(outList.size(), 1);
 
-        {
-            const OUTMESS *om = outList.front(); outList.pop_front();
+        CtiDeviceSingle::OutMessageList::const_iterator itr = outList.begin();
 
+        {
+            const OUTMESS *om = *itr++;
+
+            BOOST_REQUIRE( om );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,        Cti::Protocols::EmetconProtocol::IO_Function_Read );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function,  0xb0 );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,    13 );
@@ -624,9 +632,12 @@ BOOST_FIXTURE_TEST_SUITE(test_execute_getvalue, beginExecuteRequest_helper)
 
         BOOST_CHECK_EQUAL(outList.size(), 2);
 
-        {
-            const OUTMESS *om = outList.front(); outList.pop_front();
+        CtiDeviceSingle::OutMessageList::const_iterator itr = outList.begin();
 
+        {
+            const OUTMESS *om = *itr++;
+
+            BOOST_REQUIRE( om );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,        Cti::Protocols::EmetconProtocol::IO_Function_Read );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function,  0xb0 );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,    13 );
@@ -635,8 +646,9 @@ BOOST_FIXTURE_TEST_SUITE(test_execute_getvalue, beginExecuteRequest_helper)
         }
 
         {
-            const OUTMESS *om = outList.front(); outList.pop_front();
+            const OUTMESS *om = *itr++;
 
+            BOOST_REQUIRE( om );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,        Cti::Protocols::EmetconProtocol::IO_Function_Read );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function,  0xb4 );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,    13 );
@@ -658,7 +670,7 @@ BOOST_FIXTURE_TEST_SUITE(test_execute_getvalue, beginExecuteRequest_helper)
 
         request.setUserMessageId(userMessageId);
         request.setConnectionHandle(connectionHandle);
-        
+
          // This is a retry of the second read. Setup the RequestMessage as such.
         request.setOptionsField(2);
 
@@ -668,9 +680,12 @@ BOOST_FIXTURE_TEST_SUITE(test_execute_getvalue, beginExecuteRequest_helper)
 
         BOOST_CHECK_EQUAL(outList.size(), 1);
 
-        {
-            const OUTMESS *om = outList.front(); outList.pop_front();
+        CtiDeviceSingle::OutMessageList::const_iterator itr = outList.begin();
 
+        {
+            const OUTMESS *om = *itr++;
+
+            BOOST_REQUIRE( om );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,        Cti::Protocols::EmetconProtocol::IO_Function_Read );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function,  0xb4 );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,    13 );
@@ -702,9 +717,12 @@ BOOST_FIXTURE_TEST_SUITE(test_execute_getvalue, beginExecuteRequest_helper)
 
         BOOST_CHECK_EQUAL(outList.size(), 1);
 
-        {
-            const OUTMESS *om = outList.front(); outList.pop_front();
+        CtiDeviceSingle::OutMessageList::const_iterator itr = outList.begin();
 
+        {
+            const OUTMESS *om = *itr++;
+
+            BOOST_REQUIRE( om );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,        Cti::Protocols::EmetconProtocol::IO_Function_Read );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function,  0xb8 );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,    4 );
@@ -733,9 +751,12 @@ BOOST_FIXTURE_TEST_SUITE(test_execute_getvalue, beginExecuteRequest_helper)
 
         BOOST_CHECK_EQUAL(outList.size(), 2);
 
-        {
-            const OUTMESS *om = outList.front(); outList.pop_front();
+        CtiDeviceSingle::OutMessageList::const_iterator itr = outList.begin();
 
+        {
+            const OUTMESS *om = *itr++;
+
+            BOOST_REQUIRE( om );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,        Cti::Protocols::EmetconProtocol::IO_Function_Read );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function,  0xb0 );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,    13 );
@@ -744,8 +765,9 @@ BOOST_FIXTURE_TEST_SUITE(test_execute_getvalue, beginExecuteRequest_helper)
         }
 
         {
-            const OUTMESS *om = outList.front(); outList.pop_front();
+            const OUTMESS *om = *itr++;
 
+            BOOST_REQUIRE( om );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,        Cti::Protocols::EmetconProtocol::IO_Function_Read );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function,  0xb4 );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,    13 );
