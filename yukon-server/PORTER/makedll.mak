@@ -327,7 +327,7 @@ portersu.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		PaoStatistics.h PaoStatisticsRecord.h ThreadStatusKeeper.h \
 		thread_register_data.h thread_monitor.h smartmap.h \
 		readers_writer_lock.h c_port_interface.h rtdb.h mgr_port.h \
-		mgr_device.h slctdev.h msg_commerrorhistory.h
+		mgr_device.h slctdev.h
 portfield.obj:	precompiled.h c_port_interface.h dlldefs.h elogger.h \
 		cti_asmc.h cticalls.h os2_2w32.h types.h dsm2.h cticonnect.h \
 		yukon.h ctidbgmem.h netports.h mutex.h guard.h utility.h \

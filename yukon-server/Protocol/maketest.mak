@@ -142,7 +142,8 @@ test_prot_dnp.obj:	prot_dnp.h dlldefs.h pointtypes.h prot_base.h \
 		boost_time.h boostutil.h xfer.h packet_finder.h \
 		dnp_application.h dnp_objects.h dnp_transport.h \
 		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
-		dnp_object_binaryoutput.h boost_test_helpers.h
+		dnp_object_binaryoutput.h boost_test_helpers.h \
+		millisecond_timer.h
 test_prot_expresscom.obj:	expresscom.h cmdparse.h ctitokenizer.h \
 		dlldefs.h parsevalue.h dllbase.h dsm2.h cticonnect.h yukon.h \
 		types.h ctidbgmem.h netports.h mutex.h guard.h utility.h \
@@ -155,7 +156,8 @@ test_prot_klondike.obj:	prot_klondike.h prot_wrap.h prot_base.h \
 		cticonnect.h netports.h mutex.h guard.h utility.h queues.h \
 		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
-		xfer.h prot_idlc.h critical_section.h boost_test_helpers.h
+		xfer.h prot_idlc.h critical_section.h boost_test_helpers.h \
+		millisecond_timer.h
 test_prot_sa305.obj:	prot_sa305.h cmdparse.h ctitokenizer.h dlldefs.h \
 		parsevalue.h dllbase.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h netports.h mutex.h guard.h utility.h ctitime.h \

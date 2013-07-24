@@ -226,13 +226,6 @@ msg_cmd.obj:	precompiled.h msg_cmd.h message.h ctitime.h dlldefs.h \
 		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		logger.h thread.h CtiPCPtrQueue.h
-msg_commerrorhistory.obj:	precompiled.h collectable.h logger.h \
-		dlldefs.h thread.h mutex.h guard.h utility.h ctitime.h \
-		queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		CtiPCPtrQueue.h msg_commerrorhistory.h message.h ctidbgmem.h \
-		rwutil.h yukon.h database_connection.h dbaccess.h dllbase.h \
-		dsm2.h cticonnect.h netports.h dsm2err.h words.h optional.h \
-		database_reader.h row_reader.h boost_time.h boostutil.h
 msg_dbchg.obj:	precompiled.h collectable.h msg_dbchg.h message.h \
 		ctitime.h dlldefs.h ctidbgmem.h rwutil.h yukon.h types.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h \

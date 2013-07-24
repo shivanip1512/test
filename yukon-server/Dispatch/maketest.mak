@@ -159,16 +159,15 @@ test_vangogh.obj:	ctivangogh.h con_mgr.h connection.h dlldefs.h \
 		msg_cmd.h server_b.h critical_Section.h smartmap.h \
 		readers_writer_lock.h dev_base_lite.h dbmemobject.h \
 		msg_dbchg.h msg_multiwrap.h msg_pcreturn.h \
-		msg_commerrorhistory.h msg_lmcontrolhistory.h msg_tag.h \
-		pendingopthread.h pendable.h pending_info.h msg_signal.h \
-		tbl_lm_controlhist.h pt_numeric.h pt_base.h tbl_pt_base.h \
-		resolvers.h db_entry_defines.h desolvers.h tbl_pt_unit.h \
-		tbl_unitmeasure.h signalmanager.h pt_dyn_dispatch.h \
-		tbl_pt_alarm.h tbl_ptdispatch.h pt_status.h tbl_pt_status.h \
-		tbl_pt_status_control.h tbl_pt_control.h pttrigger.h \
-		mgr_point.h tbl_pt_trigger.h tagmanager.h tbl_dyn_pttag.h \
-		tbl_tag.h tbl_taglog.h tbl_state_grp.h tbl_state.h \
-		tbl_alm_ngroup.h tbl_commerrhist.h tbl_pt_limit.h \
+		msg_lmcontrolhistory.h msg_tag.h pendingopthread.h pendable.h \
+		pending_info.h msg_signal.h tbl_lm_controlhist.h pt_numeric.h \
+		pt_base.h tbl_pt_base.h resolvers.h db_entry_defines.h \
+		desolvers.h tbl_pt_unit.h tbl_unitmeasure.h signalmanager.h \
+		pt_dyn_dispatch.h tbl_pt_alarm.h tbl_ptdispatch.h pt_status.h \
+		tbl_pt_status.h tbl_pt_status_control.h tbl_pt_control.h \
+		pttrigger.h mgr_point.h tbl_pt_trigger.h tagmanager.h \
+		tbl_dyn_pttag.h tbl_tag.h tbl_taglog.h tbl_state_grp.h \
+		tbl_state.h tbl_alm_ngroup.h tbl_pt_limit.h \
 		tbl_rawpthistory.h tbl_signal.h tbl_ci_cust.h \
 		tbl_contact_notification.h rtdb.h hashkey.h hash_functions.h \
 		ctidate.h

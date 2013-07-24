@@ -239,13 +239,6 @@ tbl_ci_cust.obj:	precompiled.h database_connection.h dbaccess.h \
 		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
 		optional.h database_reader.h row_reader.h logger.h thread.h \
 		CtiPCPtrQueue.h tbl_ci_cust.h
-tbl_commerrhist.obj:	precompiled.h tbl_commerrhist.h row_reader.h \
-		ctitime.h dlldefs.h dbmemobject.h dbaccess.h dllbase.h dsm2.h \
-		cticonnect.h yukon.h types.h ctidbgmem.h netports.h mutex.h \
-		guard.h utility.h queues.h cticalls.h os2_2w32.h numstr.h \
-		dsm2err.h words.h optional.h database_connection.h logger.h \
-		thread.h CtiPCPtrQueue.h database_reader.h database_writer.h \
-		row_writer.h
 tbl_contact_notification.obj:	precompiled.h database_connection.h \
 		dbaccess.h dllbase.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h mutex.h guard.h utility.h \
