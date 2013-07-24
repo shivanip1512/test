@@ -21,7 +21,7 @@ ALTER COLUMN Delimiter VARCHAR(20) NULL;
 UPDATE CalcBase SET UpdateType = 'On First Change' WHERE UpdateType = 'ON_FIRST_CHANGE';
 UPDATE CalcBase SET UpdateType = 'On All Change' WHERE UpdateType = 'ON_ALL_CHANGE';
 UPDATE CalcBase SET UpdateType = 'On Timer' WHERE UpdateType = 'ON_TIMER';
-UPDATE CalcBase SET UpdateType = 'On Timer And Change' WHERE UpdateType = 'ON_TIMER_CHANGE';
+UPDATE CalcBase SET UpdateType = 'On Timer+Change' WHERE UpdateType = 'ON_TIMER_CHANGE';
 UPDATE CalcBase SET UpdateType = 'Constant' WHERE UpdateType = 'CONSTANT';
 UPDATE CalcBase SET UpdateType = 'Historical' WHERE UpdateType = 'HISTORICAL';
 /* End YUK-12368 */
