@@ -34,7 +34,6 @@ tbl_alm_ngroup.obj \
 tbl_base.obj \
 tbl_carrier.obj \
 tbl_ci_cust.obj \
-tbl_commerrhist.obj \
 tbl_contact_notification.obj \
 tbl_dialup.obj \
 tbl_direct.obj \

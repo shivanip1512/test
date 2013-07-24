@@ -241,7 +241,6 @@ string CtiMessage::typeString() const
     #define MSG_SIGNAL                        ((MSG_BASE) + 96)
     #define MSG_EMAIL                         ((MSG_BASE) + 97)
     #define MSG_LMCONTROLHISTORY              ((MSG_BASE) + 98)
-    #define MSG_COMMERRORHISTORY              ((MSG_BASE) + 99)
     */
 
     switch(isA())
@@ -325,11 +324,6 @@ string CtiMessage::typeString() const
     case MSG_LMCONTROLHISTORY:
         {
             rstr += ": MSG_LMCONTROLHISTORY";
-            break;
-        }
-    case MSG_COMMERRORHISTORY:
-        {
-            rstr += ": MSG_COMMERRORHISTORY";
             break;
         }
     }

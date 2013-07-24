@@ -35,7 +35,6 @@ CtiExecutor* CtiVanGoghExecutorFactory::getExecutor(CtiMessage* msg)
    case MSG_DBCHANGE:
    case MSG_SIGNAL:
    case MSG_LMCONTROLHISTORY:
-   case MSG_COMMERRORHISTORY:
    case MSG_TAG:
       {
          Ex = CTIDBG_new CtiPointChangeExecutor(msg);

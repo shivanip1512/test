@@ -22,7 +22,6 @@
 #include "ctivangogh.h"
 #include "exe_ptchg.h"
 #include "msg_dbchg.h"
-#include "msg_commerrorhistory.h"
 #include "msg_pcreturn.h"
 
 using namespace std;
@@ -43,7 +42,6 @@ INT CtiPointChangeExecutor::ServerExecute(CtiServer *Svr)
       case MSG_PCRETURN:
       case MSG_TAG:
       case MSG_LMCONTROLHISTORY:
-      case MSG_COMMERRORHISTORY:
       case MSG_POINTREGISTRATION:
       case MSG_DBCHANGE:
          {

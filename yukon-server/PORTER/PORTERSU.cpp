@@ -45,7 +45,6 @@
 #include "port_base.h"
 #include "mgr_port.h"
 #include "mgr_device.h"
-#include "msg_commerrorhistory.h"
 #include "logger.h"
 #include "numstr.h"
 #include "utility.h"
@@ -57,50 +56,6 @@ using Cti::Porter::PorterStatisticsManager;
 extern CtiDeviceManager DeviceManager;
 
 HCTIQUEUE*   QueueHandle(LONG pid);
-
-void AddCommErrorEntry(OUTMESS *OutMessage, INMESS *InMessage, INT ErrorCode)
-{
-    extern CtiConnection VanGoghConnection;
-
-    if( OutMessage != 0 &&
-        ErrorCode != NORMAL &&
-        !( ErrorCode != DEVICEINHIBITED ||  // Do nothing in these cases.  This would just fill a database table with garbage.
-           ErrorCode != PORTINHIBITED) )
-    {
-        INT ErrorType = GetErrorType(ErrorCode);
-
-        string cmd(OutMessage->Request.CommandStr);
-        string omess;
-        string imess;
-
-        traceBuffer(omess, OutMessage->Buffer.OutMessage, OutMessage->OutLength);
-
-        if(InMessage != 0)
-        {
-            traceBuffer(imess, InMessage->Buffer.InMessage, InMessage->InLength);
-        }
-
-        CtiCommErrorHistoryMsg *pCommError = CTIDBG_new CtiCommErrorHistoryMsg((OutMessage->TargetID > 0 ? OutMessage->TargetID : OutMessage->DeviceID),
-                                                                        ErrorType,
-                                                                        ErrorCode,
-                                                                        cmd,
-                                                                        omess,
-                                                                        imess);
-        int vgccnt = VanGoghConnection.outQueueCount();
-        if( vgccnt > 0 &&  !(vgccnt % 100))
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " Dispatch is not accepting  messages.  " << VanGoghConnection.outQueueCount() << " queue entries waiting." << endl;
-            }
-        }
-
-        VanGoghConnection.WriteConnQue(pCommError);
-    }
-
-    return;
-}
 
 /* Routine to send error message back to originating process */
 INT SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
@@ -189,8 +144,6 @@ INT SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
             }
         }
     }
-
-    AddCommErrorEntry( OutMessage, PassedInMessage, ErrorCode );
 
     if(PorterDebugLevel & PORTER_DEBUG_SENDERROR)
     {

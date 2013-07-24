@@ -22,7 +22,6 @@ IM_EX_CTIBASE LONG GetMaxLMControl(long pao);
 
 //  Functions for ID generation
 IM_EX_CTIBASE LONG LMControlHistoryIdGen(bool force = false);
-IM_EX_CTIBASE LONG CommErrorHistoryIdGen(bool force = false);
 IM_EX_CTIBASE LONG VerificationSequenceGen(bool force = false, int force_value = 0);
 IM_EX_CTIBASE int  DynamicPaoStatisticsIdGen();
 IM_EX_CTIBASE __int64 ChangeIdGen(bool force = false);

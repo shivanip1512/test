@@ -103,68 +103,6 @@ LONG LMControlHistoryIdGen(bool force)
     return(tempid);
 }
 
-LONG CommErrorHistoryIdGen(bool force)
-{
-    LONG tempid = -1;
-
-    static RWMutexLock   mux;
-
-    static BOOL init_id = FALSE;
-    static LONG id = 0;
-    static const CHAR sql[] = "SELECT MAX(COMMERRORID) FROM COMMERRORHISTORY";
-
-    {
-        RWMutexLock::TryLockGuard guard(mux);
-
-        int trycnt = 0;
-        while(!guard.isAcquired() && trycnt++ < 20)
-        {
-            Sleep(500);
-            guard.tryAcquire();
-        }
-
-        if(guard.isAcquired())
-        {
-            if(!init_id || force)
-            {
-                DatabaseConnection conn;
-                DatabaseReader rdr(conn, sql);
-                rdr.execute();
-
-                if(rdr())
-                {
-                    rdr >> tempid;
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-
-                if(tempid >= id)
-                {
-                    id = tempid;
-                }
-
-                init_id = TRUE;
-            }   // Temporary results are destroyed to free the connection
-
-            tempid =  ++id;
-        }
-        else
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Unable to acquire mutex for CommErrorHistoryIdGen" << endl;
-            }
-        }
-    }
-
-    return tempid;
-}
-
-
 //  force = true on its own will force a database read,
 //    force = true, force_value > 0 will set the id to force_value
 LONG VerificationSequenceGen(bool force, int force_value)

@@ -25,7 +25,6 @@ using namespace std;
 
 IM_EX_CTIVANGOGH UINT gDispatchDebugLevel = 0x00000000;
 IM_EX_CTIVANGOGH UINT gDispatchReloadRate = 86400;
-IM_EX_CTIVANGOGH INT gCommErrorDays = 7;
 
 
 
@@ -68,12 +67,6 @@ IM_EX_CTIVANGOGH void InitDispatchGlobals(void)
    if( !(str = gConfigParms.getValueAsString(var)).empty() )
    {
        gDispatchReloadRate = std::max((unsigned long)gConfigParms.getValueAsULong(var), (unsigned long)86400);
-   }
-
-   strcpy(var, "DISPATCH_COMMERROR_DAYS");
-   if( !(str = gConfigParms.getValueAsString(var)).empty() )
-   {
-      gCommErrorDays = atoi (str.c_str());
    }
 
    strcpy(var, "DISPATCH_DEBUGLEVEL");

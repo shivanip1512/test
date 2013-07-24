@@ -72,11 +72,10 @@ public void delete() throws java.sql.SQLException
 
 	//ADD TABLES THAT HAVE A REFERENCE TO THE YukonPAObject TABLE AND THAT
 	// NEED TO BE DELETED WHEN A YukonPAObject ROW IS DELETED (CASCADE DELETE)
-	delete( "DynamicPAOStatistics", "PAObjectID", getPAObjectID() );
-	delete( "CommErrorHistory", "PAObjectID", getPAObjectID() );
-	delete( "LMControlHistory", "PAObjectID", getPAObjectID() );
+    delete( "DynamicPAOStatistics", "PAObjectID", getPAObjectID() );
+    delete( "LMControlHistory", "PAObjectID", getPAObjectID() );
     delete ("DynamicLMControlHistory","PAObjectID", getPAObjectID() );
-	delete( "PAOOwner", "ChildID", getPAObjectID() );
+    delete( "PAOOwner", "ChildID", getPAObjectID() );
     // Remove pao permissions
     PaoPermissionService paoPermissionService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
     paoPermissionService.removeAllPaoPermissions(getPAObjectID());
@@ -163,7 +162,7 @@ public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
  */
 public Integer getPAObjectID()
 {
-	return getYukonPAObject().getPaObjectID();
+    return getYukonPAObject().getPaObjectID();
 }
 /**
  * Insert the method's description here.
@@ -171,7 +170,7 @@ public Integer getPAObjectID()
  */
 public String getPAOCategory()
 {
-	return getYukonPAObject().getCategory();
+    return getYukonPAObject().getCategory();
 }
 /**
  * Insert the method's description here.
@@ -179,7 +178,7 @@ public String getPAOCategory()
  */
 public String getPAOClass()
 {
-	return getYukonPAObject().getPaoClass();
+    return getYukonPAObject().getPaoClass();
 }
 /**
  * Insert the method's description here.
@@ -187,7 +186,7 @@ public String getPAOClass()
  */
 public String getPAODescription()
 {
-	return getYukonPAObject().getDescription();
+    return getYukonPAObject().getDescription();
 }
 /**
  * Insert the method's description here.
@@ -195,7 +194,7 @@ public String getPAODescription()
  */
 public Character getPAODisableFlag()
 {
-	return getYukonPAObject().getDisableFlag();
+    return getYukonPAObject().getDisableFlag();
 }
 /**
  * Insert the method's description here.
@@ -203,7 +202,7 @@ public Character getPAODisableFlag()
  */
 public String getPAOName()
 {
-	return getYukonPAObject().getPaoName();
+    return getYukonPAObject().getPaoName();
 }
 /**
  * Insert the method's description here.
@@ -211,7 +210,7 @@ public String getPAOName()
  */
 public String getPAOStatistics()
 {
-	return getYukonPAObject().getPaoStatistics();
+    return getYukonPAObject().getPaoStatistics();
 }
 /**
  * Insert the method's description here.
@@ -219,7 +218,7 @@ public String getPAOStatistics()
  */
 public String getPAOType()
 {
-	return getYukonPAObject().getType();
+    return getYukonPAObject().getType();
 }
 /**
  * Insert the method's description here.
@@ -261,15 +260,15 @@ public void retrieve() throws java.sql.SQLException
  */
 public void setDbConnection(java.sql.Connection conn)
 {
-	super.setDbConnection(conn);
+    super.setDbConnection(conn);
 
-	getYukonPAObject().setDbConnection(conn);
+    getYukonPAObject().setDbConnection(conn);
 
-	for( int i = 0; i < getPAOExclusionVector().size(); i++ )
-		((DBPersistent)getPAOExclusionVector().get(i)).setDbConnection( conn );
+    for( int i = 0; i < getPAOExclusionVector().size(); i++ )
+        ((DBPersistent)getPAOExclusionVector().get(i)).setDbConnection( conn );
 
-	for( int i = 0; i < getSchedules().size(); i++ )
-		((DBPersistent)getSchedules().get(i)).setDbConnection( conn );
+    for( int i = 0; i < getSchedules().size(); i++ )
+        ((DBPersistent)getSchedules().get(i)).setDbConnection( conn );
 }
 
 /**
@@ -289,9 +288,9 @@ protected void setPAObjectID( Integer id )
 
 	for (PAOScheduleAssign paoScheduleAssign : getSchedules()) {
 		//we must null out the PK since there is a new PAObjectID owner
-		paoScheduleAssign.setEventID(null);
-		paoScheduleAssign.setPaoID(id);
-	}
+        paoScheduleAssign.setEventID(null);
+        paoScheduleAssign.setPaoID(id);
+    }
 
 }
 
@@ -301,7 +300,7 @@ protected void setPAObjectID( Integer id )
  */
 public void setPAOCategory( String category )
 {
-	getYukonPAObject().setCategory( category );
+    getYukonPAObject().setCategory( category );
 }
 /**
  * Insert the method's description here.
@@ -309,7 +308,7 @@ public void setPAOCategory( String category )
  */
 public void setPAOClass( String newPAOClass)
 {
-	getYukonPAObject().setPaoClass( newPAOClass );
+    getYukonPAObject().setPaoClass( newPAOClass );
 }
 /**
  * Insert the method's description here.
@@ -317,12 +316,12 @@ public void setPAOClass( String newPAOClass)
  */
 public void setPAOName( String name )
 {
-	getYukonPAObject().setPaoName( name );
+    getYukonPAObject().setPaoName( name );
 }
 
 public void setPAODescription(String description)
 {
-	getYukonPAObject().setDescription(description);
+    getYukonPAObject().setDescription(description);
 }
 /**
  * Insert the method's description here.
@@ -330,16 +329,16 @@ public void setPAODescription(String description)
  */
 public void setPAOStatistics( String newStats )
 {
-	getYukonPAObject().setPaoStatistics( newStats );
+    getYukonPAObject().setPaoStatistics( newStats );
 }
 
 public boolean isDisabled() {
-	return CtiUtilities.isTrue( getYukonPAObject().getDisableFlag() );
+    return CtiUtilities.isTrue( getYukonPAObject().getDisableFlag() );
 }
 
 public void setDisabled( boolean val ) {
-	getYukonPAObject().setDisableFlag(
-		val ? CtiUtilities.trueChar : CtiUtilities.falseChar );
+    getYukonPAObject().setDisableFlag(
+        val ? CtiUtilities.trueChar : CtiUtilities.falseChar );
 }
 
 
@@ -373,14 +372,14 @@ public void update() throws java.sql.SQLException
 	}
 
 	//compeletly remove and add the entire set of PAOScheduleAssignments
-	PAOScheduleAssign.deleteAllPAOScheduleAssignments(getPAObjectID(), getDbConnection());
-	for (PAOScheduleAssign paoScheduleAssign : getSchedules()) {
-		paoScheduleAssign.add();
-	}
+    PAOScheduleAssign.deleteAllPAOScheduleAssignments(getPAObjectID(), getDbConnection());
+    for (PAOScheduleAssign paoScheduleAssign : getSchedules()) {
+        paoScheduleAssign.add();
+    }
 }
 
-	/**
-	 * @return Vector
+    /**
+     * @return Vector
 	 */
 	public Vector<PAOExclusion> getPAOExclusionVector()
 	{

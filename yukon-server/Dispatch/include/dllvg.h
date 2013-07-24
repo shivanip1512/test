@@ -20,7 +20,6 @@
 
 IM_EX_CTIVANGOGH extern UINT gDispatchDebugLevel;
 IM_EX_CTIVANGOGH extern UINT gDispatchReloadRate;
-IM_EX_CTIVANGOGH extern INT gCommErrorDays;
 
 
 IM_EX_CTIVANGOGH void InitDispatchGlobals(void);

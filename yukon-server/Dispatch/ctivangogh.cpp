@@ -19,7 +19,6 @@
 #include "msg_pcrequest.h"
 #include "msg_ptreg.h"
 #include "msg_signal.h"
-#include "msg_commerrorhistory.h"
 #include "msg_notif_alarm.h"
 #include "msg_server_req.h"
 #include "msg_server_resp.h"
@@ -36,7 +35,6 @@
 #include "tbl_dyn_ptalarming.h"
 #include "tbl_signal.h"
 #include "tbl_lm_controlhist.h"
-#include "tbl_commerrhist.h"
 #include "tbl_ptdispatch.h"
 #include "tbl_pt_alarm.h"
 #include "thread_monitor.h"
@@ -320,9 +318,6 @@ void CtiVanGogh::VGMainThread()
 
         _timedOpThread  = rwMakeThreadFunction(*this, &CtiVanGogh::VGTimedOperationThread);
         _timedOpThread.start();
-
-        _dbThread  = rwMakeThreadFunction(*this, &CtiVanGogh::VGDBWriterThread);
-        _dbThread.start();
 
         _dbSigThread  = rwMakeThreadFunction(*this, &CtiVanGogh::VGDBSignalWriterThread);
         _dbSigThread.start();
@@ -1969,38 +1964,6 @@ INT CtiVanGogh::archiveSignalMessage(const CtiSignalMsg& aSig)
 }
 
 
-INT CtiVanGogh::archiveCommErrorHistoryMessage(const CtiCommErrorHistoryMsg& aCEHM)
-{
-    INT status = NORMAL;
-
-    try
-    {
-        if(aCEHM.getPAOId() > 0)
-        {
-            // See if I know about this PAO (Device) ID
-            _commErrorHistoryQueue.putQueue( CTIDBG_new CtiTableCommErrorHistory(aCEHM.getPAOId(),
-                                                                                 aCEHM.getDateTime(),
-                                                                                 aCEHM.getSOE(),
-                                                                                 aCEHM.getErrorType(),
-                                                                                 aCEHM.getErrorNumber(),
-                                                                                 aCEHM.getCommand(),
-                                                                                 aCEHM.getOutMessage(),
-                                                                                 aCEHM.getInMessage()/*,
-                                                                                 aCEHM.getCommErrorId()*/));
-        }
-    }
-    catch( ... )
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-
-    return status;
-}
-
-
 INT CtiVanGogh::processMultiMessage(CtiMultiMsg *pMulti)
 {
     INT status = NORMAL;
@@ -2137,11 +2100,6 @@ INT CtiVanGogh::processMessageData( CtiMessage *pMsg )
                 // Cannot call this here because it alters dynamic point info.  That must be done before any point data messages arrive.
                 // See the checkDataStateQuality call.
                 // processControlMessage((CtiLMControlHistoryMsg*)pMsg);
-                break;
-            }
-        case MSG_COMMERRORHISTORY:
-            {
-                processCommErrorMessage((CtiCommErrorHistoryMsg*)pMsg);
                 break;
             }
         }
@@ -2296,7 +2254,6 @@ INT CtiVanGogh::assembleMultiForConnection(const CtiServer::ptr_type &Conn, CtiM
             break;
         }
     case MSG_LMCONTROLHISTORY:
-    case MSG_COMMERRORHISTORY:
         {
             break;
         }
@@ -2588,44 +2545,6 @@ bool CtiVanGogh::isDuplicatePointData( const CtiPointDataMsg &pd, const CtiDynam
 BOOL CtiVanGogh::isConnectionAttachedToMsgPoint(const CtiServer::ptr_type &Conn, const LONG pID)
 {
     return PointMgr.pointHasConnection(pID, Conn);
-}
-
-int CtiVanGogh::processCommErrorMessage(CtiCommErrorHistoryMsg *pMsg)
-{
-    int status = NORMAL;
-
-    try
-    {
-        switch( pMsg->getErrorNumber() )
-        {
-        case DEVICEINHIBITED:
-        case PORTINHIBITED:
-            {
-                // Do nothing.  No need to fill the DB with garbage.
-                break;
-            }
-        default:
-            {
-                status = archiveCommErrorHistoryMessage(*pMsg);
-                break;
-            }
-        }
-    }
-    catch(const RWxmsg& x)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Exception: " << __FILE__ << " (" << __LINE__ << ") " << x.why() << endl;
-        }
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-
-    return status;
 }
 
 /*
@@ -3169,103 +3088,6 @@ void CtiVanGogh::writeArchiveDataToDB(bool justdoit)
     }
 }
 
-void CtiVanGogh::writeCommErrorHistoryToDB(bool justdoit)
-{
-#define PANIC_CONSTANT 1000
-
-    static UINT  dumpCounter = 0;
-    static INT   daynumber = -1;
-    UINT         panicCounter = 0;      // Make sure we don't write for too long...
-
-    try
-    {
-        CtiTableCommErrorHistory *pTblEntry;
-        size_t comment = _commErrorHistoryQueue.entries();
-
-        /*
-         *  Go look if we need to write out archive points.
-         *  We only do this once every 30 seconds or if there are >= 10 entries to do.
-         */
-        if(!(++dumpCounter % DUMP_RATE)
-           || comment > MAX_ARCHIVER_ENTRIES
-           || justdoit == true )                                 // Only chase the queue once per DUMP_RATE seconds.
-        {
-            if(comment > 0)
-            {
-                bool success = true;
-                Cti::Database::DatabaseConnection   conn;
-
-                if ( ! conn.isValid() )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                    return;
-                }
-
-                {
-
-                    Cti::Database::DatabaseTransaction trans(conn);
-
-                    while( success && ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _commErrorHistoryQueue.getQueue(0)) != NULL)
-                    {
-                        if(pTblEntry)
-                        {
-                            if(isDeviceIdValid(pTblEntry->getPAOID()))
-                            {
-                                panicCounter++;
-                                success = pTblEntry->Insert(conn);
-                            }
-                            delete pTblEntry;
-                            pTblEntry = 0;
-                        }
-                        else
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if( panicCounter > 0 )
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " CommErrorHistory transaction complete. Inserted " << panicCounter << " rows.  " << _commErrorHistoryQueue.entries() << " entries left on queue." << endl;
-                }
-            }
-
-            CtiDate todaysdate;
-
-            if(todaysdate.dayOfMonth() != daynumber)
-            {
-                if(daynumber > 0)
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Comm Error History log is being cleaned up. " << endl;
-                    }
-                    pruneCommErrorHistory();
-                }
-                daynumber = todaysdate.dayOfMonth();    // Ok.  We know whay DAY today is...
-            }
-
-        }
-    }
-    catch(const RWxmsg& x)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Exception: " << __FILE__ << " (" << __LINE__ << ") " << x.why() << endl;
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-}
 
 /*
  *  This method makes sure that AreYouThere messages are being responded to by clients.
@@ -5447,70 +5269,6 @@ void CtiVanGogh::VGRPHWriterThread()
     return;
 }
 
-void CtiVanGogh::VGDBWriterThread()
-{
-    UINT sanity = 0;
-
-    ThreadStatusKeeper threadStatus("DB Writer Thread");
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Dispatch DB Writer Thread starting as TID " << rwThreadId() << " (0x" << hex << rwThreadId() << dec << ")" << endl;
-    }
-
-    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
-
-    try
-    {
-        for(;!bGCtrlC;)
-        {
-            try
-            {
-                if( ShutdownOnThreadTimeout )
-                {
-                    threadStatus.monitorCheck(&CtiVanGogh::sendbGCtrlC);
-                }
-                else
-                {
-                    threadStatus.monitorCheck(CtiThreadRegData::None);
-                }
-
-                rwSleep(1000);
-
-                writeCommErrorHistoryToDB();
-            }
-            catch(...)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
-        }
-
-        _timedOpThread.join();      // _timedOpThread is a producer for us...
-        // Make sure no one snuck in under the wire..
-        writeCommErrorHistoryToDB(true);
-    }
-    catch(RWxmsg& msg )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Error: " << msg.why() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-    catch( ... )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    // And let'em know were A.D.
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Dispatch DB Writer Thread shutting down" << endl;
-    }
-
-    return;
-}
 
 /******************************************************************************
 *   Monitor the applications that are registered in thread_monitor.h and MUST
@@ -5699,19 +5457,6 @@ void CtiVanGogh::reportOnThreads()
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << " Timed Operation Thread is not running " << endl;
-                }
-            }
-
-            aThr = _dbThread;
-
-            if( !(aThr.isValid() &&
-                  aThr.getExecutionState() & RW_THR_ACTIVE  &&
-                  aThr.getCompletionState() == RW_THR_PENDING ) )
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " DBThread is not running " << endl;
                 }
             }
 
@@ -6590,18 +6335,6 @@ void CtiVanGogh::updateDynTagsForSignalMsg( const CtiPointBase &point, CtiSignal
     }
 }
 
-void CtiVanGogh::pruneCommErrorHistory()
-{
-    CtiDate earliestDate = CtiDate() - gCommErrorDays;
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Comm Error History log is being pruned back to " << earliestDate << endl;
-    }
-
-    CtiTableCommErrorHistory::Prune(earliestDate);
-}
-
 void CtiVanGogh::activatePointAlarm(int alarm, CtiMultiWrapper &aWrap, const CtiPointBase &point, CtiDynamicPointDispatch &dpd, bool activate )
 {
     dpd.setConditionActive(alarm, activate);
@@ -7047,7 +6780,6 @@ bool CtiVanGogh::processInputFunction(CHAR Char)
                     #define MSG_SIGNAL                        ((MSG_BASE) + 96)
                     #define MSG_EMAIL                         ((MSG_BASE) + 97)
                     #define MSG_LMCONTROLHISTORY              ((MSG_BASE) + 98)
-                    #define MSG_COMMERRORHISTORY              ((MSG_BASE) + 99)
                 */
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -7068,7 +6800,6 @@ bool CtiVanGogh::processInputFunction(CHAR Char)
                     dout << " MSG_POINTDATA                  " << msgCounts.get(MSG_POINTDATA) << endl;
                     dout << " MSG_SIGNAL                     " << msgCounts.get(MSG_SIGNAL) << endl;
                     dout << " MSG_LMCONTROLHISTORY           " << msgCounts.get(MSG_LMCONTROLHISTORY) << endl;
-                    dout << " MSG_COMMERRORHISTORY           " << msgCounts.get(MSG_COMMERRORHISTORY) << endl;
 
                     for(int i = 1; i <= 15; i++)
                     {
@@ -7315,12 +7046,6 @@ void CtiVanGogh::stopDispatch()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Terminating archive thread " << __FILE__ << " at:" << __LINE__ << endl;
         _archiveThread.terminate();
-    }
-    if(RW_THR_TIMEOUT == _dbThread.join(30000))
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Terminating database thread " << __FILE__ << " at:" << __LINE__ << endl;
-        _dbThread.terminate();
     }
     if(RW_THR_TIMEOUT == _dbSigThread.join(30000))
     {

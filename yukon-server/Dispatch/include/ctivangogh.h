@@ -14,7 +14,6 @@
 #include "msg_dbchg.h"
 #include "msg_multiwrap.h"
 #include "msg_pcreturn.h"
-#include "msg_commerrorhistory.h"
 #include "msg_lmcontrolhistory.h"
 #include "msg_tag.h"
 #include "guard.h"
@@ -29,7 +28,6 @@
 #include "tbl_state_grp.h"
 #include "tbl_alm_ngroup.h"
 #include "tbl_lm_controlhist.h"
-#include "tbl_commerrhist.h"
 #include "tbl_pt_limit.h"
 #include "tbl_rawpthistory.h"
 #include "tbl_signal.h"
@@ -68,7 +66,6 @@ private:
     RWThreadFunction  _rphThread;       // RawPointHistory....
     RWThreadFunction  _archiveThread;
     RWThreadFunction  _timedOpThread;
-    RWThreadFunction  _dbThread;
     RWThreadFunction  _dbSigThread;
     RWThreadFunction  _dbSigEmailThread;
     RWThreadFunction  _appMonitorThread;
@@ -80,7 +77,6 @@ private:
 
     CtiFIFOQueue< CtiSignalMsg > _signalMsgQueue;
     CtiFIFOQueue< CtiTableRawPointHistory > _archiverQueue;
-    CtiFIFOQueue< CtiTableCommErrorHistory > _commErrorHistoryQueue;
 
     // These are the signals which have not been cleared by a client app
     CtiA2DTranslation_t        _alarmToDestInfo[256];  // This holds translations from alarm ID to DestinationID.
@@ -173,7 +169,6 @@ public:
 
     void  archivePointDataMessage(const CtiPointDataMsg &aPD);
     INT   archiveSignalMessage(const CtiSignalMsg& aSig);
-    INT   archiveCommErrorHistoryMessage(const CtiCommErrorHistoryMsg& aCEHM);
 
     CtiMessage* messageToConnectionViaGlobalList(const CtiServer::ptr_type &Conn, CtiMessage *pMsg);
     CtiMessage* messageToConnectionViaPointList(const CtiServer::ptr_type &Conn, CtiMessage *pMsg);
@@ -210,7 +205,6 @@ public:
     void  loadPendingSignals();
     void  purifyClientConnectionList();
     void  updateRuntimeDispatchTable(bool force = false);
-    void  writeCommErrorHistoryToDB(bool justdoit = false);
     void  writeArchiveDataToDB(bool justdoit = false);
     void  writeSignalsToDB(bool justdoit = false);
     void  refreshCParmGlobals(bool force = false);
@@ -260,13 +254,11 @@ public:
     bool writeControlMessageToPIL(LONG deviceid, LONG rawstate, const CtiPointStatus &point, const CtiCommandMsg *Cmd );
     void writeAnalogOutputMessageToPIL(long deviceid, long pointid, long value, const CtiCommandMsg *Cmd);
     int processControlMessage(CtiLMControlHistoryMsg *pMsg);
-    int processCommErrorMessage(CtiCommErrorHistoryMsg *pMsg);
 
     INT updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, std::string user, CtiMultiMsg &sigList);
     INT updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, std::string user, CtiMultiMsg &sigList);
     void adjustDeviceDisableTags(LONG id = 0, bool dbchange = false, std::string user = std::string("System"));
     void loadDeviceLites(LONG id = 0);
-    void pruneCommErrorHistory();
     void activatePointAlarm(int alarm, CtiMultiWrapper &aWrap, const CtiPointBase &point, CtiDynamicPointDispatch &dpd, bool activate);
 
     int processTagMessage(CtiTagMsg &tagMsg);

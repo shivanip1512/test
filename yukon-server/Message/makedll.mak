@@ -42,7 +42,6 @@ connection.obj \
 dll_msg.obj \
 message.obj \
 msg_cmd.obj \
-msg_commerrorhistory.obj \
 msg_dbchg.obj \
 msg_lmcontrolhistory.obj \
 msg_multi.obj \

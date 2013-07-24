@@ -32,7 +32,6 @@
 #define MSG_POINTDATA                     ((MSG_BASE) + 95)
 #define MSG_SIGNAL                        ((MSG_BASE) + 96)
 #define MSG_LMCONTROLHISTORY              ((MSG_BASE) + 98)
-#define MSG_COMMERRORHISTORY              ((MSG_BASE) + 99)
 
 #define CLASS_APPLDEF                     ((MSG_BASE) + 100)
 
