@@ -47,6 +47,7 @@ cmd_mct420_hourlyread.obj \
 cmd_mct420_LcdConfiguration.obj \
 cmd_mct420_MeterParameters.obj \
 cmd_mct420_MeterParametersDisplayDigits.obj \
+cmd_mct440_holidays.obj \
 cmd_lcr3102_ThreePart.obj \
 cmd_lcr3102_tamperRead.obj \
 cmd_lcr3102_DemandResponseSummary.obj \

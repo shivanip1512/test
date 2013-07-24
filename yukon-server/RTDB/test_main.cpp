@@ -57,6 +57,14 @@ bool operator==(const test_MctDevice::value_locator &lhs, const boost::tuples::t
         lhs.key    == rhs.get<2>();
 }
 
+bool operator==(const boost::tuples::tuple<unsigned, unsigned, int> &lhs, const test_MctDevice::value_locator &rhs)
+{
+    return
+        lhs.get<0>() == rhs.offset &&
+        lhs.get<1>() == rhs.length &&
+        lhs.get<2>() == rhs.key;
+}
+
 }
 
 
@@ -65,6 +73,16 @@ namespace test_tools {
 
 //  For test_dev_mct410, 420, 470
 bool operator!=(const test_MctDevice::ReadDescriptor &lhs, const std::vector<boost::tuples::tuple<unsigned, unsigned, int>> &rhs)
+{
+    if( lhs.size() != rhs.size() )
+    {
+        return true;
+    }
+
+    return ! std::equal(lhs.begin(), lhs.end(), rhs.begin());
+}
+
+bool operator!=(const std::vector<boost::tuples::tuple<unsigned, unsigned, int>> &lhs, const test_MctDevice::ReadDescriptor &rhs)
 {
     if( lhs.size() != rhs.size() )
     {

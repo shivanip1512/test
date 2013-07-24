@@ -2277,12 +2277,19 @@ boost::optional<std::string> CtiCommandParser::findStringForKey(const string &ke
 {
     map_itr_type itr = _cmd.find(key.c_str());
 
-    if(itr == _cmd.end())
+    if( itr == _cmd.end() )
     {
         return boost::none;
     }
 
-    return itr->second.getString();
+    const CtiParseValue &pv = itr->second;
+
+    if( ! pv.isStringValid() )
+    {
+        return boost::none;
+    }
+
+    return pv.getString();
 }
 
 void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
@@ -2320,7 +2327,8 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
 
     static const boost::regex  re_freeze_day(CtiString("freeze day ") + str_num);
 
-    static const boost::regex  re_holiday(CtiString("holiday ") + str_num + CtiString("( ") + str_date + CtiString(")+") );
+    static const boost::regex  re_holiday_index(CtiString("holiday ") + str_num + CtiString("( ") + str_date + CtiString(")+") );
+    static const boost::regex  re_holiday(CtiString("holiday( ") + str_date + CtiString(")+") );
     static const boost::regex  re_channel(CtiString("channel ") + str_num + CtiString(" (ied|2-wire|3-wire|none)( input ") + str_num + CtiString(")?( multiplier ") + str_floatnum + CtiString(")?") );
 
     static const CtiString str_phase("[ =][a-c]");
@@ -3003,7 +3011,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
         }
         if(CmdStr.contains(" holiday"))
         {
-            if(!(token = CmdStr.match(re_holiday)).empty())
+            if(!(token = CmdStr.match(re_holiday_index)).empty())
             {
                 CtiTokenizer cmdtok(token);
                 string holiday_str;
@@ -3012,6 +3020,20 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
 
                 //  get the count for the holiday offset
                 _cmd["holiday_offset"] = atoi(cmdtok().data());
+
+                for( int i = 0; !(holiday_str = cmdtok().data()).empty(); i++ )
+                {
+                    string holiday_offset = "holiday_date" + CtiNumStr(i);
+
+                    _cmd[holiday_offset.data()] = CtiParseValue(holiday_str.data());
+                }
+            }
+            else if(!(token = CmdStr.match(re_holiday)).empty())
+            {
+                CtiTokenizer cmdtok(token);
+                string holiday_str;
+
+                cmdtok();  //  move past "holiday"
 
                 for( int i = 0; !(holiday_str = cmdtok().data()).empty(); i++ )
                 {

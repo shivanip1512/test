@@ -48,7 +48,6 @@ public:
     unsigned int year() const;
     unsigned int month() const;
     unsigned int weekDay() const;  //  returns 0-6 (sun-sat)
-    unsigned int firstDayOfMonth() const;
 
     bool isValid() const;
     bool is_special() const;

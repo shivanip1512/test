@@ -1,9 +1,12 @@
 #pragma once
 
+#include "dlldefs.h"
+
+#include <boost/function.hpp>
+
 #include <string>
 #include <ostream>
 #include <time.h>
-#include "dlldefs.h"
 
 
 class CtiDate;
@@ -83,7 +86,6 @@ public:
     CtiTime addDays(const int days, bool DSTflag = true);
 
     static CtiTime now();
-    void resetToNow();
     static CtiTime beginDST(unsigned year);
     static CtiTime endDST(unsigned int builyear);
     static struct tm* gmtime_r(const time_t *tod);
@@ -101,6 +103,13 @@ public:
 
 
     friend IM_EX_CTIBASE std::ostream&  operator<<(std::ostream& s, const CtiTime& t);
-
 };
+
+namespace Cti {
+namespace Time {
+
+    extern IM_EX_CTIBASE boost::function<CtiTime()> MakeNowTime;
+
+}
+}
 

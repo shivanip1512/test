@@ -98,21 +98,6 @@ protected:
         Memory_EventLogBasePos                  = 0x50,
         Memory_EventLogLen                      = 10,
         Memory_EventLogMaxOffset                = 9,
-
-        Memory_Holiday1_6Pos                    = 0xd0,
-        Memory_Holiday1_6Len                    = 12,
-
-        Memory_Holiday7_12Pos                   = 0xd1,
-        Memory_Holiday7_12Len                   = 12,
-
-        Memory_Holiday13_18Pos                  = 0xd2,
-        Memory_Holiday13_18Len                  = 12,
-
-        Memory_Holiday19_24Pos                  = 0xd3,
-        Memory_Holiday19_24Len                  = 12,
-
-        Memory_Holiday25_28Pos                  = 0xd4,
-        Memory_Holiday25_28Len                  = 8,
     };
 
     virtual const FunctionReadValueMappings  *getReadValueMaps() const;
@@ -133,7 +118,6 @@ protected:
     virtual INT decodeGetValueDailyReadRecent      (INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     virtual INT decodeGetConfigTOU                 (INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     virtual int decodeGetConfigModel               (INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
-    virtual int decodeGetConfigHoliday             (INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     virtual INT decodeGetConfigPhaseLossThreshold  (INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     virtual INT decodeGetConfigIntervals           (INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     virtual int decodeGetConfigAlarmMask           (INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);

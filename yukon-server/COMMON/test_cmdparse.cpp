@@ -310,7 +310,7 @@ BOOST_AUTO_TEST_CASE(test_findStringValueForKey)
     {
         CtiCommandParser p("getvalue select deviceid 42");
 
-        boost::optional<std::string> nq = p.findStringForKey("deviceid");
+        boost::optional<std::string> nq = p.findStringForKey("device");
 
         BOOST_CHECK( ! nq );
     }

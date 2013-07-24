@@ -296,9 +296,9 @@ int Mct420Device::executePutConfig( CtiRequestMsg        *pReq,
                     disconnectDisplayDisabled,
                     transformerRatio));
 
-            return tryExecuteCommand(*OutMessage, meterParameterConfiguration, outList)
-                ? NoError
-                : NoMethod;
+            return tryExecuteCommand(*OutMessage, meterParameterConfiguration)
+                       ? NoError
+                       : NoMethod;
         }
         else
         {
@@ -320,9 +320,9 @@ int Mct420Device::executePutConfig( CtiRequestMsg        *pReq,
                     displayDigitsStr,
                     paoInfoValue));
 
-            return tryExecuteCommand(*OutMessage, meterParameterConfiguration, outList)
-                ? NoError
-                : NoMethod;
+            return tryExecuteCommand(*OutMessage, meterParameterConfiguration)
+                       ? NoError
+                       : NoMethod;
         }
     }
     else if( parse.isKeyValid("channel_2_configuration") )
@@ -444,7 +444,9 @@ int Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiCommandParser &
 
     DlcCommandSPtr lcdConfiguration(new Mct420LcdConfigurationCommand(display_metrics, readsOnly));
 
-    return tryExecuteCommand(*OutMessage, lcdConfiguration, outList) ? NoError : NoMethod;
+    return tryExecuteCommand(*OutMessage, lcdConfiguration)
+               ? NoError
+               : NoMethod;
 }
 
 int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
@@ -585,7 +587,7 @@ int Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq,
             new Mct420MeterParametersDisplayDigitsCommand());
     }
 
-    return tryExecuteCommand(*OutMessage, meterParameterCommand, outList)
+    return tryExecuteCommand(*OutMessage, meterParameterCommand)
                ? NoError
                : NoMethod;
 }

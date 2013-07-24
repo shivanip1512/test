@@ -1,4 +1,9 @@
+#include "millisecond_timer.h"
+#include "ctitime.h"
+
+#include "boost/function.hpp"
 #include "boost/bind.hpp"
+
 #include <vector>
 
 namespace Cti {
@@ -28,6 +33,32 @@ struct byte_buffer
 
 namespace Test {
 namespace {  //  hack to get around multiple linkages when included in multiple translation units
+
+class Override_CtiTime_Now
+{
+    boost::function<CtiTime()> _oldMakeNow;
+
+    CtiTime _newNow;
+    Cti::Timing::MillisecondTimer _elapsed;
+
+    CtiTime MakeNow()
+    {
+        return _newNow + _elapsed.elapsed() / 1000;
+    }
+
+public:
+    Override_CtiTime_Now(CtiTime newEpoch) :
+        _newNow(newEpoch),
+        _oldMakeNow(Cti::Time::MakeNowTime)
+    {
+        Cti::Time::MakeNowTime = boost::bind(&Override_CtiTime_Now::MakeNow, this);
+    }
+
+    ~Override_CtiTime_Now()
+    {
+        Cti::Time::MakeNowTime = _oldMakeNow;
+    }
+};
 
 void set_to_central_timezone()
 {

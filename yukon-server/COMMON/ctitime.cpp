@@ -547,15 +547,22 @@ struct tm* CtiTime::localtime_r(const time_t *tod){
 }
 
 
-CtiTime CtiTime::now()
+CtiTime makeNowTime()
 {
     return CtiTime();
 }
 
-void CtiTime::resetToNow()
+namespace Cti {
+namespace Time {
+
+    IM_EX_CTIBASE boost::function<CtiTime()> MakeNowTime = makeNowTime;
+
+}
+}
+
+CtiTime CtiTime::now()
 {
-    CtiTime temp = CtiTime();
-    _seconds = temp.seconds();
+    return Cti::Time::MakeNowTime();
 }
 
 CtiTime CtiTime::beginDST(unsigned year)

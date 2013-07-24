@@ -13,6 +13,9 @@
 #include "portglob.h"
 #include "dllyukon.h"
 #include "eventlog_mct440_213xb.h"
+#include "cmd_mct440_holidays.h"
+
+#include <boost/assign/list_of.hpp>
 
 #include <stack>
 
@@ -152,27 +155,10 @@ Mct440_213xBDevice::FunctionReadValueMappings Mct440_213xBDevice::initReadValueM
         { 0x0d1,  8, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday11                 } },
         { 0x0d1, 10, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday12                 } },
 
-        // 0x0D2 – Holiday 13 - 18
+        // 0x0D2 – Holiday 13 - 15
         { 0x0d2,  0, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday13                 } },
         { 0x0d2,  2, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday14                 } },
         { 0x0d2,  4, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday15                 } },
-        { 0x0d2,  6, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday16                 } },
-        { 0x0d2,  8, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday17                 } },
-        { 0x0d2, 10, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday18                 } },
-
-        // 0x0D3 – Holiday 19 - 24
-        { 0x0d3,  0, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday19                 } },
-        { 0x0d3,  2, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday20                 } },
-        { 0x0d3,  4, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday21                 } },
-        { 0x0d3,  6, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday22                 } },
-        { 0x0d3,  8, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday23                 } },
-        { 0x0d3, 10, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday24                 } },
-
-        // 0x0D4 – Holiday 25 - 28
-        { 0x0d4,  0, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday25                 } },
-        { 0x0d4,  2, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday26                 } },
-        { 0x0d4,  4, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday27                 } },
-        { 0x0d4,  6, { 2, CtiTableDynamicPaoInfo::Key_MCT_Holiday28                 } },
 
         // 0x101 - Config byte
         { 0x101,  1, { 1, CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1           } },
@@ -892,10 +878,6 @@ INT Mct440_213xBDevice::ModelDecode(INMESS          *InMessage,
             status = decodeGetConfigPhaseLossThreshold(InMessage, TimeNow, vgList, retList, outList);
             break;
 
-        case EmetconProtocol::GetConfig_Holiday:
-            status = decodeGetConfigHoliday(InMessage, TimeNow, vgList, retList, outList);
-            break;
-
         case EmetconProtocol::GetConfig_AlarmMask:
             status = decodeGetConfigAlarmMask(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -1026,7 +1008,7 @@ INT Mct440_213xBDevice::decodeGetValueInstantLineData(INMESS          *InMessage
         }
         else
         {
-        	PowerFactor.value       = static_cast<double>(PowerFactorVal) / 100.0;
+            PowerFactor.value       = static_cast<double>(PowerFactorVal) / 100.0;
             PowerFactor.quality     = NormalQuality;
             PowerFactor.freeze_bit  = false;
         }
@@ -1716,33 +1698,12 @@ INT Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
                                                                 /* --------------------- HOLIDAYS --------------------- */
     else if( parse.isKeyValid("holiday") )
     {
-        OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Read;
-        OutMessage->Sequence            = EmetconProtocol::GetConfig_Holiday;
+        DlcCommandSPtr holidayRead(new ::Cti::Devices::Commands::Mct440HolidaysCommand);
 
-        OutMessage->Buffer.BSt.Function = Memory_Holiday1_6Pos;
-        OutMessage->Buffer.BSt.Length   = Memory_Holiday1_6Len;
-        outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-
-        OutMessage->Buffer.BSt.Function = Memory_Holiday7_12Pos;
-        OutMessage->Buffer.BSt.Length   = Memory_Holiday7_12Len;
-        outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-
-        OutMessage->Buffer.BSt.Function = Memory_Holiday13_18Pos;
-        OutMessage->Buffer.BSt.Length   = Memory_Holiday13_18Len;
-        outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-
-        OutMessage->Buffer.BSt.Function = Memory_Holiday19_24Pos;
-        OutMessage->Buffer.BSt.Length   = Memory_Holiday19_24Len;
-        outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-
-        OutMessage->Buffer.BSt.Function = Memory_Holiday25_28Pos;
-        OutMessage->Buffer.BSt.Length   = Memory_Holiday25_28Len;
-        outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-
-        delete OutMessage;  //  we didn't use it, we made our own
-        OutMessage = 0;
-
-        nRet = NoError;
+        if( tryExecuteCommand(*OutMessage, holidayRead) )
+        {
+            nRet = NoError;
+        }
     }
 
                                                                 /* -------------------- ALARM MASK -------------------- */
@@ -2055,7 +2016,7 @@ INT Mct440_213xBDevice::executePutConfig(CtiRequestMsg     *pReq,
     {
         nRet = Mct4xxDevice::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
     }
-    else if( parse.isKeyValid("holiday_offset") )
+    else if( parse.isKeyValid("holiday_date0") )  //  require at least one date
     {
         nRet = executePutConfigHoliday(pReq, parse, OutMessage, vgList, retList, outList);
     }
@@ -2102,83 +2063,47 @@ int Mct440_213xBDevice::executePutConfigHoliday(CtiRequestMsg     *pReq,
                                                 CtiMessageList    &retList,
                                                 OutMessageList    &outList)
 {
-    OutMessage->Sequence = EmetconProtocol::PutConfig_Holiday;
-    if( !getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt) )
-    {
-        return NoMethod;
-    }
+    const std::vector<std::string> parseKeys = boost::assign::list_of
+        ("holiday_date0") ("holiday_date1") ("holiday_date2")
+        ("holiday_date3") ("holiday_date4") ("holiday_date5")
+        ("holiday_date6") ("holiday_date7") ("holiday_date8")
+        ("holiday_date9") ("holiday_date10")("holiday_date11")
+        ("holiday_date12")("holiday_date13")("holiday_date14");
 
-    unsigned long holidays[7];
-    int holiday_count  = 0;
-    int holiday_offset = parse.getiValue("holiday_offset");
+    std::set<CtiDate> holidays;
 
-                                                            /*  grab up to 7 potential dates                        */
-    for( int date_nbr = 0; date_nbr < 7 && parse.isKeyValid("holiday_date" + CtiNumStr(date_nbr)); date_nbr++ )
+    //  grab up to 15 potential dates
+    for each( const std::string holidayKey in parseKeys )
     {
+        boost::optional<std::string> holidayString = parse.findStringForKey(holidayKey);
+
+        if( ! holidayString )
+        {
+            break;
+        }
+
         int month, day, year;
         char sep1, sep2;
 
-        istringstream ss(parse.getsValue("holiday_date" + CtiNumStr(date_nbr)));
+        istringstream ss(*holidayString);
 
         ss >> month >> sep1 >> day >> sep2 >> year;
 
         CtiDate holiday_date(day, month, year);
 
-
-        if( holiday_date.isValid() && holiday_date > CtiDate::now() )
-        {
-                                                            /* get the number of days since Jan 1 2010              */
-            holidays[holiday_count++] = (holiday_date.daysFrom1970() - holidayBaseDate.daysFrom1970());
-        }
-        else
-        {
-            holiday_count = 0;                              /* If the data is less then 2010, break                  */
-            break;
-        }
+        holidays.insert(holiday_date);
     }
 
+    DlcCommandSPtr holidayWrite(new ::Cti::Devices::Commands::Mct440HolidaysCommand(CtiTime::now(), holidays));
 
-    /*
-     * check to make sure that holiday_offset is:
-     * 1, 8, 15, 22
-     */
-
-    if( (holiday_offset % 7) == 1 &&
-         holiday_offset      >= 1 &&
-         holiday_offset      <= 22)
+    //  this call might be able to move out to ExecuteRequest() at some point - maybe we just return
+    //    a DlcCommand object that it can execute out there
+    if( ! tryExecuteCommand(*OutMessage, holidayWrite) )
     {
-        if( holiday_count >  0 ||
-            holiday_count <= 7)
-        {
-            //  change to 0-based offset;  it just makes things easier
-            holiday_offset--;
-
-            OutMessage->Buffer.BSt.Length     = (holiday_count  * 2) + 1;
-            OutMessage->Buffer.BSt.Message[0] =  holiday_offset;
-
-            for( int holiday_nbr = 0; holiday_nbr < holiday_count; holiday_nbr++ )
-            {
-                OutMessage->Buffer.BSt.Message[holiday_nbr*2+1] = holidays[holiday_nbr] >> 8;
-                OutMessage->Buffer.BSt.Message[holiday_nbr*2+2] = holidays[holiday_nbr]  & 0xff;
-            }
-
-            return NoError;
-        }
-        else
-        {
-            returnErrorMessage(BADPARAM, OutMessage, retList,
-                               "Specified dates are invalid");
-
-            return ExecutionComplete;
-        }
+        return NoMethod;
     }
-    else
-    {
-        returnErrorMessage(BADPARAM, OutMessage, retList,
-                           "Invalid holiday offset specified, valid offsets are: 1, 8, 15, 22");
 
-        return ExecutionComplete;
-    }
+    return NoError;
 }
 
 
@@ -3053,76 +2978,6 @@ int Mct440_213xBDevice::decodeGetConfigModel(INMESS         *InMessage,
     retMsgHandler( InMessage->Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList, InMessage->MessageFlags & MessageFlag_ExpectMore );
 
     return NoError;
-}
-
-
-/*
-*********************************************************************************************************
-*                                       decodeGetConfigHoliday()
-*
-* Description :
-*
-* Argument(s) :
-*
-* Return(s)   :
-*
-* Caller(s)   :
-*
-* Note(s)     :
-*********************************************************************************************************
-*/
-int Mct440_213xBDevice::decodeGetConfigHoliday(INMESS          *InMessage,
-                                               CtiTime         &TimeNow,
-                                               CtiMessageList  &vgList,
-                                               CtiMessageList  &retList,
-                                               OutMessageList  &outList)
-{
-    INT status = NORMAL;
-
-    std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
-
-    int holiday_offset;
-    int holiday_cnt;
-
-    switch( InMessage->Return.ProtocolInfo.Emetcon.Function )
-    {
-        case Memory_Holiday1_6Pos  : holiday_offset = 0;  holiday_cnt = 6; break;
-        case Memory_Holiday7_12Pos : holiday_offset = 6;  holiday_cnt = 6; break;
-        case Memory_Holiday13_18Pos: holiday_offset = 12; holiday_cnt = 6; break;
-        case Memory_Holiday19_24Pos: holiday_offset = 18; holiday_cnt = 6; break;
-        case Memory_Holiday25_28Pos: holiday_offset = 24; holiday_cnt = 4; break;
-        default:
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Invalid InMessage.Return.ProtocolInfo.Emetcon.Function " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return TYNF;
-        }
-    }
-
-    DSTRUCT &DSt  = InMessage->Buffer.DSt;
-    string result = getName() + " / Holiday schedule:\n";
-
-    for( int holiday_nbr = 0; holiday_nbr < holiday_cnt; holiday_nbr++ )
-    {
-        CtiDate holiday_date(holidayBaseDate);
-
-        const int days = (DSt.Message[holiday_nbr*2] << 8) | DSt.Message[(holiday_nbr*2)+1];
-
-        holiday_date += days;
-
-        ostringstream ss;
-        ss << (holiday_nbr + holiday_offset + 1);
-
-        result += "Holiday " + ss.str() + ": " + holiday_date.asStringUSFormat() + "\n";
-    }
-
-    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-    ReturnMsg->setResultString(result);
-
-    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
-
-    return NORMAL;
 }
 
 

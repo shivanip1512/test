@@ -216,14 +216,6 @@ unsigned int CtiDate::weekDay() const
     return gregorian_calendar::day_of_week(ymd);
 }
 
-unsigned int CtiDate::firstDayOfMonth() const
-{
-    date_period dp(date(bdate.year(), 1, 1), date(bdate.year(), bdate.month(), 1));
-
-    return dp.length().days() + 1;
-}
-
-
 unsigned int CtiDate::daysInMonthYear(unsigned mm, unsigned yy)
 {
     unsigned int days_in_month = 0;
