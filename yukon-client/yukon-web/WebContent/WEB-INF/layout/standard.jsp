@@ -180,7 +180,7 @@
         <div class="footerNav">
             <ul>
                 <li><a href="/support"><i:inline key=".support"/></a></li>
-                <li><a href="/support/sitemap"><i:inline key=".siteMap"/></a></li>
+                <li><a href="/sitemap"><i:inline key=".siteMap"/></a></li>
                 <cti:checkRolesAndProperties value="JAVA_WEB_START_LAUNCHER_ENABLED">
                     <li><a href="javascript:void(0);" id="appsLauncher"><i:inline key=".applications"/></a></li>
                     <dialog:inline id="yukonApplicationDialog" okEvent="none" nameKey="applications" on="#appsLauncher"
@@ -189,7 +189,7 @@
                     </dialog:inline>
                 </cti:checkRolesAndProperties>
                 <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
-                    <li><a href="/support/development/uiDemos/main">Development</a></li>
+                    <li><a href="/support/development/main">Development</a></li>
                 </cti:checkGlobalRolesAndProperties>
             </ul>
         </div>

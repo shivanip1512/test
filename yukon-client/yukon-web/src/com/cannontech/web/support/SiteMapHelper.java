@@ -403,6 +403,8 @@ public class SiteMapHelper {
                 MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
         UI_DEMO(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.support.uiDemos.pageName", "/support/development/uiDemos/main", 
                 MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
+        DEVELOPMENT(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.support.development.pageName", "/support/development/main", 
+                MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
         SETUP_DATABASE(SiteMapCategory.DEVELOPMENT, "yukon.web.menu.config.support.development.setupDatabase", "/support/development/setupDatabase/main", 
                 MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
         MISC_METHODS(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.support.miscellaneousMethod.pageName", "/support/development/miscellaneousMethod/main", 

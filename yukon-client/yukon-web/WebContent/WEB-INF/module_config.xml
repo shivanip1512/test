@@ -117,8 +117,7 @@
           </page>
           <page name="meterSearchResults" type="BASIC">
             <pages>
-              <page name="meterDetail.electric" type="DETAIL"
-                favorite="true" home="true" actions="true">
+              <page name="meterDetail.electric" type="DETAIL" actions="true">
                 <link>/meter/home?deviceId=${deviceId}</link>
                 <labelArgument>${deviceName}</labelArgument>
                 <pages>
@@ -583,7 +582,6 @@
             </pages>
           </page>
           <page name="databaseInfo" type="BASIC" />
-          <page name="siteMap" type="BASIC" />
           <page name="databaseValidate" type="BASIC" />
           <page name="databaseMigration" type="BASIC">
             <requireRoleProperty value="ADMIN_DATABASE_MIGRATION" />
@@ -591,15 +589,6 @@
           <page name="webServices.eimTest" type="BASIC" />
           <page name="webServices.loadControl" type="BASIC" />
           <page name="webServices.account" type="BASIC" />
-          <page name="pointInjection" type="BASIC">
-            <requireRoleProperty value="DEVELOPMENT_MODE" />
-          </page>
-          <page name="bulkPointInjection" type="BASIC">
-            <requireRoleProperty value="DEVELOPMENT_MODE" />
-          </page>
-          <page name="uiToolkitDemo" type="BASIC">
-            <requireRoleProperty value="DEVELOPMENT_MODE" />
-          </page>
           <page name="setup" type="BASIC">
             <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
           </page>
@@ -608,23 +597,6 @@
           <page name="errorCodes" type="BASIC" />
           <page name="supportBundle" type="BASIC" />
           <page name="localization" type="BASIC" />
-          <page name="uiDemos" type="BASIC">
-            <requireRoleProperty value="DEVELOPMENT_MODE" />
-          </page>
-          <page name="setupDatabase" type="BASIC">
-            <requireRoleProperty value="DEVELOPMENT_MODE" />
-          </page>
-          <page name="miscellaneousMethod" type="BASIC">
-            <requireRoleProperty value="DEVELOPMENT_MODE" />
-          </page>
-          <page name="rfnTest" type="BASIC">
-            <requireRoleProperty value="DEVELOPMENT_MODE" />
-            <pages>
-              <page name="rfnTest.viewMeterReadArchive" type="DETAIL" />
-              <page name="rfnTest.viewEventArchive" type="DETAIL" />
-              <page name="rfnTest.viewAlarmArchive" type="DETAIL" />
-            </pages>
-          </page>
           <page name="fileExportHistory" type="BASIC" />
           <page name="threadDump" type="BASIC" />
           <page name="routeUsage" type="BASIC" />
@@ -636,6 +608,34 @@
           </page>
           <page name="indexes" type="BASIC"/>
         </pages>
+      </page>
+      <page name="development" type="BASIC">
+        <link>/support/development/main</link>
+        <requireRoleProperty value="DEVELOPMENT_MODE" />
+        <pages>
+          <page name="uiDemos" type="BASIC">
+          </page>
+          <page name="pointInjection" type="BASIC">
+          </page>
+          <page name="bulkPointInjection" type="BASIC">
+          </page>
+          <page name="uiToolkitDemo" type="BASIC">
+          </page>
+          <page name="setupDatabase" type="BASIC">
+          </page>
+          <page name="miscellaneousMethod" type="BASIC">
+          </page>
+          <page name="rfnTest" type="BASIC">
+            <pages>
+              <page name="rfnTest.viewMeterReadArchive" type="DETAIL" />
+              <page name="rfnTest.viewEventArchive" type="DETAIL" />
+              <page name="rfnTest.viewAlarmArchive" type="DETAIL" />
+            </pages>
+          </page>
+        </pages>
+      </page>
+      <page name="siteMap" type="BASIC">
+        <link>/sitemap</link>
       </page>
     </pages>
   </module>

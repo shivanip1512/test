@@ -223,6 +223,9 @@
     <entry key="yukon.web.modules.support.i18nDemo.pageName">I18N Demo</entry>
 
     <entry key="yukon.web.modules.support.uiDemos.pageName">UI Demos</entry>
+    
+    <entry key="yukon.web.modules.support.development.pageName">Development Pages</entry>
+    <entry key="yukon.web.modules.support.development.contextualPageName">Development</entry>
 
     <entry key="yukon.web.modules.support.uiDemos.confirmGotoHome.title">Confirm GOTO</entry>
     <entry key="yukon.web.modules.support.uiDemos.confirmGotoHome.message">Are you sure you want to go home?  (Some say you can't go home.)</entry>

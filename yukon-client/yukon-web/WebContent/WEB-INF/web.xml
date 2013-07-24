@@ -889,6 +889,7 @@
 
 	<servlet-mapping>
 		<servlet-name>support</servlet-name>
+		<url-pattern>/sitemap</url-pattern>
 		<url-pattern>/support/*</url-pattern>
 	</servlet-mapping>
 
