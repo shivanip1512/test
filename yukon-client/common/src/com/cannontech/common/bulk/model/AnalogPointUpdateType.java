@@ -9,7 +9,7 @@ public enum AnalogPointUpdateType implements DatabaseRepresentationSource {
     ON_FIRST_CHANGE("On First Change", false),
     ON_ALL_CHANGE("On All Change", false),
     ON_TIMER("On Timer", true),
-    ON_TIMER_AND_CHANGE("On Timer And Change", true),
+    ON_TIMER_AND_CHANGE("On Timer+Change", true),
     CONSTANT("Constant", false),
     HISTORICAL("Historical", false),
     ;
