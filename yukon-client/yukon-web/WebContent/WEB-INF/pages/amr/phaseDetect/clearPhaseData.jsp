@@ -30,7 +30,7 @@
 				                </td>
 				                <td style="padding-left: 10px;">
                                     <cti:msg2 var="clearPhaseData" key=".clearPhaseData"/>
-				                    <input id="clear" type="submit" value="${clearPhaseData}" onclick="startSpinner();" class="formSubmit">
+				                    <input id="clear" type="submit" value="${clearPhaseData}" onclick="startSpinner();" class="button">
 				                    <img style="display: none;" id="spinner" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
 				                </td>
 				            </tr>

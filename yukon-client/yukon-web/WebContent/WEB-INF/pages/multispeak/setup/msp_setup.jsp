@@ -247,9 +247,9 @@
 			<table>
 			  <tr>
 			    <td>
-			      <input type="submit" name="MspSave" value="Save" class="formSubmit">
+			      <input type="submit" name="MspSave" value="Save" class="button">
 			      <c:if test="${isCreateNew }">
-			      	<input type="submit" name="Cancel" value="Cancel" class="formSubmit">
+			      	<input type="submit" name="Cancel" value="Cancel" class="button">
 			      </c:if>
 			    </td>			
 			</form>
@@ -257,13 +257,13 @@
 				<td>
 				  <form name="mspDeleteForm" method="post" action="/multispeak/setup/delete">
 				    <input type="hidden" name="mspVendorId" value="${mspVendor.vendorID}">
-				    <input type="submit" name="Delete" value="Delete" class="formSubmit" onclick="return confirmDelete()">
+				    <input type="submit" name="Delete" value="Delete" class="button" onclick="return confirmDelete()">
 				  </form>
 				</td>
 				</c:if>
 				<td>
 				  <form name="mspCreateForm" method="post" action="/multispeak/setup/home">				      
-				    <input type="submit" name="New" value="New" class="formSubmit">
+				    <input type="submit" name="New" value="New" class="button">
 				  </form>
 				</td>
 			  </tr>

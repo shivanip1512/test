@@ -64,7 +64,7 @@
             <tr>
                 <td align="center" colspan="2">
                     <br>
-                    <input type="submit" value="<cti:msg key='yukon.dr.operator.optout.apply'/>" class="formSubmit">
+                    <input type="submit" value="<cti:msg key='yukon.dr.operator.optout.apply'/>" class="button">
                 </td>
             </tr>
         </table>
@@ -105,12 +105,12 @@
                         <td>
                             <form action="/stars/operator/optout/cancel" method="post">
                                 <input type="hidden" name="eventId" value="${optOut.eventId}">
-                                <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.cancel"/>" class="formSubmit">
+                                <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.cancel"/>" class="button">
                             </form>
                             <c:if test="${optOut.state == 'START_OPT_OUT_SENT'}">
                                 <form action="/stars/operator/optout/repeat" method="post">
                                     <input type="hidden" name="inventoryId" value="${optOut.inventory.inventoryId}">
-                                    <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.repeat"/>" class="formSubmit">
+                                    <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.repeat"/>" class="button">
                                 </form>
                             </c:if>
                         </td>
@@ -152,7 +152,7 @@
                     <td>
                         <form action="/stars/operator/optOut/allowAnother" method="post">
                             <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
-                            <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.allowAnother"/>" class="formSubmit">
+                            <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.allowAnother"/>" class="button">
                         </form>
                     </td>
                 </c:if>
@@ -175,7 +175,7 @@
                            <c:otherwise>
                                 <form action="/stars/operator/optOut/resetToLimit" method="post">
                                     <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
-                                    <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.clear"/>" class="formSubmit">
+                                    <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.clear"/>" class="button">
                                 </form>
                            </c:otherwise>
                        </c:choose>
@@ -231,7 +231,7 @@
                 </c:forEach>
             </tbody>
         </table>
-        <input type="button" name="viewAll" value="<cti:msg key="yukon.dr.operator.optout.viewAll" />" onClick="location='OptOutHistory.jsp'" class="formSubmit">
+        <input type="button" name="viewAll" value="<cti:msg key="yukon.dr.operator.optout.viewAll" />" onClick="location='OptOutHistory.jsp'" class="button">
         <br><br>
     </c:when>
     <c:otherwise>

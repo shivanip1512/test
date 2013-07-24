@@ -57,7 +57,7 @@
 			    				<option value="${type}"><cti:msg key="${type.formatKey}"/></option>
 			    			</c:forEach>
 			    		</select>
-			    		<button id="startButton" class="formSubmit">
+			    		<button id="startButton" class="button">
 			    			<i:inline key=".startButton"/>
 			    		</button>
 			    		</span>

@@ -37,9 +37,9 @@
 		    </select>
     	</td>
     	<td class="vab">
-    		<input type="submit" value="Delete" name="remove" class="formSubmit"/>
+    		<input type="submit" value="Delete" name="remove" class="button"/>
 		    <br><br>
-		    <input type="button" value="Delete All" onclick="removeAllCheck();" class="formSubmit"/>
+		    <input type="button" value="Delete All" onclick="removeAllCheck();" class="button"/>
     	</td>
     </tr>
         
@@ -51,12 +51,12 @@
     		<input type="text" value="" name="name" size="20" style="width:188px;"/>
     	</td>
     	<td class="vab">
-    		<input id="addButton" type="submit" value="Add" name="add" class="formSubmit"/>
+    		<input id="addButton" type="submit" value="Add" name="add" class="button"/>
     		
     		<c:if test="${hasVendorId}"> 
 		    	
 		    	<cti:url var="mspAddUrl" value="/adminSetup/substations/routemapping/multispeak/choose"/>
-		    	<input id="mspAddButton" type="button" value="MSP" onclick="SubstationToRouteMappings_disableInputs(true);openSimpleDialog('mspAddDialog', '${mspAddUrl}', 'Choose Substations');" class="formSubmit">
+		    	<input id="mspAddButton" type="button" value="MSP" onclick="SubstationToRouteMappings_disableInputs(true);openSimpleDialog('mspAddDialog', '${mspAddUrl}', 'Choose Substations');" class="button">
 		    </c:if>
     
     	</td>

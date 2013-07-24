@@ -16,5 +16,5 @@
 	        </c:forEach>
         </tags:nameValueContainer>
         
-        <div class="actionArea"><cti:button type="submit" classes="formSubmit" nameKey="search"/></div>
+        <div class="actionArea"><cti:button type="submit" classes="button" nameKey="search"/></div>
     </form>

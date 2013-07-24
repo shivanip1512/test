@@ -294,59 +294,6 @@ Object.extend(YEvent, {
 
 Event.observe(document, 'click', YEvent._handleClickEvent);
 
-jQuery(function() {
-    $$('.csrfPasswordPrompt').each(function(element) {
-        var passwordField = element.down('input[type=password]');
-        var buttons = element.getElementsBySelector('.formSubmit');
-        Event.observe(passwordField, 'keyup', function() {
-            if ($F(passwordField) != '') {
-                // not using prototype disable/enable because it does not support <button>
-                buttons.each(function(button) {button.disabled = false;});
-            } else {
-                buttons.each(function(button) {button.disabled = true;});
-            }
-        });
-        buttons.each(function(button) {button.disabled = true;});
-    });
-});
-
-function hideUpdateWarning() {
-    jQuery("#updatedWarning").dialog("close");
-}
-
-jQuery(function() {
-    $$('img.hoverableImage, input.hoverableImage').each(function(element) {
-        var basePath = element.src;
-        var extStart = basePath.lastIndexOf(".");
-        var hoverPath = basePath.substring(0, extStart) + "_over" + basePath.substring(extStart);
-        Event.observe(element, "mouseover", function() {
-            element.src = hoverPath;
-        });
-        Event.observe(element, "mouseout", function() {
-            element.src = basePath;
-        });
-    });
-});
-
-jQuery(function() {
-    $$('img.hoverableImage').each(function(element) {
-        var basePath = element.src;
-        var extStart = basePath.lastIndexOf(".");
-        var hoverPath = basePath.substring(0, extStart) + "_over" + basePath.substring(extStart);
-        var hoverTarget = element;
-        var container = element.up(".hoverableImageContainer");
-        if (container) {
-            hoverTarget = container;
-        }
-        Event.observe(hoverTarget, "mouseover", function() {
-            element.src = hoverPath;
-        });
-        Event.observe(hoverTarget, "mouseout", function() {
-            element.src = basePath;
-        });
-    });
-});
-
 /*
  * This allows the picker (and anything else that might need it) to distinguish
  * between a tag being called on a main page (window.loadComplete will be false)
@@ -403,6 +350,7 @@ function getHeaderJSON(xhr) {
     return {};
 }
 
+/** Section containers with show/hide behavior */
 jQuery(function() {
     jQuery(document).on('click', '.toggle-title', function (event) {
         jQuery(event.currentTarget).closest('.titledContainer').each(function(index, elem){
@@ -412,7 +360,7 @@ jQuery(function() {
     });
 });
 
-/**  Button dropdown menu behavior */
+/**  Button dropdown menu behavior (google+) */
 jQuery(function() {
     jQuery(".dropdown .button, .dropdown button").click(function () {
         if (!jQuery(this).find('span.toggle').hasClass('active')) {
@@ -431,11 +379,4 @@ jQuery(document).bind('click', function (e) {
         jQuery('.dropdown-slider').slideUp();
         jQuery('span.toggle').removeClass('active');
     }
-});
-
-/** Popup for swing client launcher */
-jQuery(function() {
-    jQuery(document).on('click', 'f-apps_launcher', function (event) {
-        //TODO client launcher popup
-    });
 });

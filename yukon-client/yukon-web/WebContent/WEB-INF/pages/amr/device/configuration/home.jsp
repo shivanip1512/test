@@ -47,7 +47,7 @@
                     </tags:nameValue>
                 </tags:nameValueContainer>
             </tags:sectionContainer>
-            <input type="submit" name="createConfig" value="Create" class="formSubmit"/>
+            <input type="submit" name="createConfig" value="Create" class="button"/>
         </form>
     </c:if>
 	
@@ -70,10 +70,10 @@
                     <br>
                     <a href="/bulk/deviceSelection">Manage Device Configuration Assignments</a>
                 </tags:sectionContainer>
-                <input type="submit" name="editConfig" value="${editConfig ? 'Edit' : 'View'}" class="formSubmit"/>
+                <input type="submit" name="editConfig" value="${editConfig ? 'Edit' : 'View'}" class="button"/>
                 <c:if test="${editConfig}">
-                    <input type="submit" name="removeConfig" value="Delete" onclick="return deleteConfig()" class="formSubmit"/>
-                    <input type="submit" name="cloneConfig" value="Copy" class="formSubmit"/>
+                    <input type="submit" name="removeConfig" value="Delete" onclick="return deleteConfig()" class="button"/>
+                    <input type="submit" name="cloneConfig" value="Copy" class="button"/>
                 </c:if>
 			</form>
 		</c:when>

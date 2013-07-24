@@ -51,11 +51,11 @@
 		<%-- BACK/CANCEL BUTTONS --%>
 		<form id="backToHomeForm" action="/multispeak/setup/deviceGroupSync/done" method="post">
 		
-			<button name="backToHome" class="formSubmit">
+			<button name="backToHome" class="button">
 				<i:inline key=".backToHomeButton"/>
 			</button>
 			
-			<button name="cancel" class="formSubmit" id="cancelButton">
+			<button name="cancel" class="button" id="cancelButton">
 				<i:inline key=".cancelButton"/>
 			</button>
 			

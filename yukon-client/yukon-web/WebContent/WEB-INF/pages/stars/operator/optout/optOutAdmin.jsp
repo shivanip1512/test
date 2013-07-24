@@ -187,9 +187,9 @@
                                     </div>
                                 </div>
                                 <div class="box fl">
-                                        <cti:button nameKey="disableOptOuts.currentDisabledPrograms.disableOptOutsButton" type="submit" name="disableOptOuts" classes="formSubmit"/>
-                                        <cti:button nameKey="disableOptOuts.currentDisabledPrograms.disableOptOutsAndCommsButton" type="submit" name="disableOptOutsAndComms" classes="formSubmit"/>
-                                        <cti:button nameKey="disableOptOuts.currentDisabledPrograms.enableOptOutsButton" type="submit" name="enableOptOuts" classes="formSubmit"/>
+                                        <cti:button nameKey="disableOptOuts.currentDisabledPrograms.disableOptOutsButton" type="submit" name="disableOptOuts" classes="button"/>
+                                        <cti:button nameKey="disableOptOuts.currentDisabledPrograms.disableOptOutsAndCommsButton" type="submit" name="disableOptOutsAndComms" classes="button"/>
+                                        <cti:button nameKey="disableOptOuts.currentDisabledPrograms.enableOptOutsButton" type="submit" name="enableOptOuts" classes="button"/>
                                 </div>
                             </form>       
                         </tags:boxContainer2>
@@ -309,8 +309,8 @@
                                     </div>
                                 </div>
                                 
-                                <input type="submit" name="count" value="<i:inline key=".countOptOuts.countOptOutsButton" />" class="formSubmit">
-                                <input type="submit" name="dontCount" value="<i:inline key=".countOptOuts.dontCountOptOutsButton" />" class="formSubmit">
+                                <input type="submit" name="count" value="<i:inline key=".countOptOuts.countOptOutsButton" />" class="button">
+                                <input type="submit" name="dontCount" value="<i:inline key=".countOptOuts.dontCountOptOutsButton" />" class="button">
                             </form>       
                         </tags:boxContainer2>
                     </cti:checkRolesAndProperties>

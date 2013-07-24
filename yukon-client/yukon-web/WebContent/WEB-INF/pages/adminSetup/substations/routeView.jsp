@@ -22,20 +22,20 @@
             <td class="vab">
                 <div class="pa T0">
 	                <div style="padding-bottom: 5px">
-	                    <input type="button" value="&#9650" class="formSubmit" name="up"
+	                    <input type="button" value="&#9650" class="button" name="up"
 	                        onclick="javascript:yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, -1)" />
 	                </div>
 	                <div>
-	                    <input type="button" value="&#9660" class="formSubmit" name="down"
+	                    <input type="button" value="&#9660" class="button" name="down"
 	                        onclick="javascript:yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, 1)" />
 	                </div>
                 </div>
                 <div style="padding-top: 55px">
-                    <input type="button" value="Delete" class="formSubmit" name="removeRoute"
+                    <input type="button" value="Delete" class="button" name="removeRoute"
                         onclick="javascript:SubstationToRouteMappings_removeRoute()" />
                 </div>
                 <div style="padding-top: 15px">
-                    <input id="update_button" type="button" class="formSubmit" value="Apply" name="Update"
+                    <input id="update_button" type="button" class="button" value="Apply" name="Update"
                         onclick='javascript:SubstationToRouteMappings_updateRoutes("${updateUrl}")' />
                 </div>
             </td>
@@ -56,7 +56,7 @@
                 </select>
             </td>
             <td class="vab">
-                <input type="button" value="Add" name="add" class="formSubmit"
+                <input type="button" value="Add" name="add" class="button"
                     onclick="javascript:SubstationToRouteMappings_addRoute()" />
             </td>
         </tr>

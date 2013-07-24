@@ -82,7 +82,7 @@
             </tags:nameValue2>
          </tags:nameValueContainer2>
         <br>
-        <input type="submit" value="<cti:msg2 key=".optOut"/>" class="formSubmit">
+        <input type="submit" value="<cti:msg2 key=".optOut"/>" class="button">
     </form:form>
 </tags:boxContainer2>
 

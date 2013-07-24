@@ -105,7 +105,7 @@
                 <cti:url var="hbcRedirectUrl" value="/meter/highBill/view"/>
                 
                 
-                <input type="button" id="getReportButton" value="<cti:msg2 key=".getReport"/>" onclick="getReport('${getReportUrl}', '${hbcRedirectUrl}');" class="formSubmit fl"> 
+                <input type="button" id="getReportButton" value="<cti:msg2 key=".getReport"/>" onclick="getReport('${getReportUrl}', '${hbcRedirectUrl}');" class="button fl"> 
                 <img id="getReportProcessImg" style="display:none;" src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
             </c:if>
             <br/>
@@ -347,7 +347,7 @@
             </cti:url>
             <cti:deviceName var="deviceName" deviceId="${deviceId}"/>
             <i:inline key=".isNotConfigured" arguments="${deviceName}"/> 
-            <input type="button" value="Configure Now" onclick="javascript:createLPPoint('${highBillUrl}')" class="formSubmit">
+            <input type="button" value="Configure Now" onclick="javascript:createLPPoint('${highBillUrl}')" class="button">
         </c:otherwise>
         </c:choose>
     

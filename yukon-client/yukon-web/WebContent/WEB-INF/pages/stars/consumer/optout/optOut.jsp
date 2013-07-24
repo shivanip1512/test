@@ -69,7 +69,7 @@
 		            <tr>
 		                <td align="center" colspan="2">
 		                    <br>
-		                    <input type="submit" value="<cti:msg key='yukon.dr.consumer.optout.apply'/>" class="formSubmit">
+		                    <input type="submit" value="<cti:msg key='yukon.dr.consumer.optout.apply'/>" class="button">
 		                </td>
 		            </tr>
 		        </table>
@@ -117,7 +117,7 @@
                                     <c:if test="${optOut.state == 'SCHEDULED'}">
     			                        <form action="/stars/consumer/optout/confirmCancel" method="post">
     				        				<input type="hidden" name="eventId" value="${optOut.eventId}">
-    				        				<input type="submit" name="submit" value="<cti:msg key="yukon.dr.consumer.optout.cancel"/>" class="formSubmit">
+    				        				<input type="submit" name="submit" value="<cti:msg key="yukon.dr.consumer.optout.cancel"/>" class="button">
     				        			</form>
     			        			</c:if>
     			        		</td>

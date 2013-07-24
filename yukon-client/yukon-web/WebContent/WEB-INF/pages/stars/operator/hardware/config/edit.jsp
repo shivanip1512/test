@@ -145,14 +145,14 @@ jQuery(function() {
                                 <c:if test="${configurable}">
                                     <input type="submit" value="<cti:msg2 key=".config"/>"
                                            title="<cti:msg2 key=".config.description"/>"
-                                           onclick="jQuery('#actionInput').val('config');" class="formSubmit">
+                                           onclick="jQuery('#actionInput').val('config');" class="button">
                                     <input type="submit" value="<cti:msg2 key=".saveToBatch"/>"
                                            title="<cti:msg2 key=".saveToBatch.description"/>"
-                                           onclick="jQuery('#actionInput').val('saveToBatch');" class="formSubmit">
+                                           onclick="jQuery('#actionInput').val('saveToBatch');" class="button">
                                 </c:if>
                                 <input type="submit" value="<cti:msg2 key=".saveConfigOnly"/>"
                                        title="<cti:msg2 key=".saveConfigOnly.description"/>"
-                                       onclick="jQuery('#actionInput').val('saveConfigOnly');" class="formSubmit">
+                                       onclick="jQuery('#actionInput').val('saveConfigOnly');" class="button">
                             </c:if>
                         </cti:checkRolesAndProperties>
                         <cti:url var="cancelUrl" value="/stars/operator/hardware/list">
