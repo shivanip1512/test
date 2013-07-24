@@ -610,8 +610,8 @@
         </pages>
       </page>
       <page name="development" type="BASIC">
-        <link>/support/development/main</link>
         <requireRoleProperty value="DEVELOPMENT_MODE" />
+        <link>/support/development/main</link>
         <pages>
           <page name="uiDemos" type="BASIC">
           </page>
