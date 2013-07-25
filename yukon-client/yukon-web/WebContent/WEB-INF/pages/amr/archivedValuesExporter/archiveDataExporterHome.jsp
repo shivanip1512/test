@@ -162,11 +162,6 @@ jQuery(function() {
         
                 <tags:nameValueContainer2 id="formatContainer" naturalWidth="false">
                     <c:if test="${not empty allFormats}">
-                        <tags:nameValue2 nameKey=".existingFormat">
-                            <form:select path="formatId" cssClass="fl">
-                                <form:options items="${allFormats}" itemValue="formatId" title="formatName" itemLabel="formatName" />
-                            </form:select>
-                        </tags:nameValue2>
                         <tags:nameValue2 nameKey="yukon.web.defaults.devices">
                             <a href="javascript:void(0);" class="selectDevices clearfix fl" title="<cti:msg2 key=".chooseDevices.tooltip"/>">
                                 <c:if test="${empty archivedValuesExporter.deviceCollection.deviceCount}">
@@ -179,6 +174,11 @@ jQuery(function() {
                             <c:if test="${archivedValuesExporter.deviceCollection.deviceCount > 0}">
                                 <tags:selectedDevicesPopup deviceCollection="${deviceCollection}"/>
                             </c:if>
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".existingFormat">
+                            <form:select path="formatId" cssClass="fl">
+                                <form:options items="${allFormats}" itemValue="formatId" title="formatName" itemLabel="formatName" />
+                            </form:select>
                         </tags:nameValue2>
                         <c:if test="${archivedValuesExporter.deviceCollection.deviceCount > 0}">
                             <tags:nameValue2 nameKey="yukon.web.defaults.deviceCount">${archivedValuesExporter.deviceCollection.deviceCount}</tags:nameValue2>
