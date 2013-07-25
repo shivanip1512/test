@@ -586,9 +586,6 @@
           <page name="databaseMigration" type="BASIC">
             <requireRoleProperty value="ADMIN_DATABASE_MIGRATION" />
           </page>
-          <page name="webServices.eimTest" type="BASIC" />
-          <page name="webServices.loadControl" type="BASIC" />
-          <page name="webServices.account" type="BASIC" />
           <page name="setup" type="BASIC">
             <requireRoleProperty value="OPERATOR_ADMINISTRATOR" />
           </page>
@@ -613,18 +610,15 @@
         <requireRoleProperty value="DEVELOPMENT_MODE" />
         <link>/support/development/main</link>
         <pages>
-          <page name="uiDemos" type="BASIC">
-          </page>
-          <page name="pointInjection" type="BASIC">
-          </page>
-          <page name="bulkPointInjection" type="BASIC">
-          </page>
-          <page name="uiToolkitDemo" type="BASIC">
-          </page>
-          <page name="setupDatabase" type="BASIC">
-          </page>
-          <page name="miscellaneousMethod" type="BASIC">
-          </page>
+          <page name="webServices.eimTest" type="BASIC" />
+          <page name="webServices.loadControl" type="BASIC" />
+          <page name="webServices.account" type="BASIC" />
+          <page name="uiDemos" type="BASIC" />
+          <page name="pointInjection" type="BASIC" />
+          <page name="bulkPointInjection" type="BASIC" />
+          <page name="uiToolkitDemo" type="BASIC" />
+          <page name="setupDatabase" type="BASIC" />
+          <page name="miscellaneousMethod" type="BASIC" />
           <page name="rfnTest" type="BASIC">
             <pages>
               <page name="rfnTest.viewMeterReadArchive" type="DETAIL" />
