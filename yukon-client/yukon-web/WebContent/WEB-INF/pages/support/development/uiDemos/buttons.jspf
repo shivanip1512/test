@@ -161,7 +161,7 @@
     <div class="button-example">
         <div class="clearfix">
  
-            <cm:criteria label="Device Type:" value="RFN-420 FX, RFN-420 FD, RFN-420 FL">
+            <cm:criteria label="Device Type:">
                 <cm:criteriaOption value="RFN420FX" checked="true">RFN-420fX</cm:criteriaOption>
                 <cm:criteriaOption value="RFN420FD" checked="true">RFN-420fD</cm:criteriaOption>
                 <cm:criteriaOption value="RFN420FL" checked="true">RFN-420fL</cm:criteriaOption>

@@ -7,16 +7,8 @@ jQuery(function() {
             menu;
         jQuery(".dropdown-container").removeClass("menu-open");
         target = jQuery(this);
-        menu = target.find("ul.dropdown-menu");
         
-        //register menu
-        if (menu[0]) {
-            target.data({'menu': menu});
-            jQuery('body').prepend(menu);
-            menu.data('button', target.find('.criteria-button'));
-        } else {
-            menu = target.data('menu');
-        }
+        menu = target.data('menu');
 
         if (menu.is(":visible")) {
             jQuery("ul.dropdown-menu").hide();
@@ -116,45 +108,51 @@ jQuery(function() {
         
         var option = jQuery(e.target);
         var menu = option.closest('.criteria-menu');
+        
+        updateCriteriaButton(menu);
+        
+        positionDropdownMenu(menu, menu.data('button').closest('.dropdown-container'));
+    });
+    
+    function updateCriteriaButton(menu) {
         var button = menu.data('button');
         var allOptions = menu.find('.criteria-option input');
         var checkedOptions = allOptions.filter(':checked');
-        var text = option.closest('label').text();
         var buttonText = ''; 
-
-        if (option.is(':checked')) {
-            if (allOptions.length === checkedOptions.length) {
-                button.find('.criteria-value').text(button.data('allText'));
-            } else {
-                checkedOptions.each(function (idx, item) {
-                    buttonText += jQuery(item.parentElement).text();
-                    if (idx != checkedOptions.length - 1) {
-                        buttonText += ', '; 
-                    }
-                });
-                button.find('.criteria-value').text(buttonText);
-            }
+        
+        if (allOptions.length === checkedOptions.length) {
+            button.find('.criteria-value').text(button.data('allText'));
+        } else if (checkedOptions.length === 0) {
+            button.find('.criteria-value').text(button.data('noneText'));
         } else {
-            if (checkedOptions.length === 0) {
-                button.find('.criteria-value').text(button.data('noneText'));
-            } else {
-                checkedOptions.each(function (idx, item) {
-                    buttonText += jQuery(item.parentElement).text();
-                    if (idx != checkedOptions.length - 1) {
-                        buttonText += ', '; 
-                    }
-                });
-                button.find('.criteria-value').text(buttonText);
-            }
+            checkedOptions.each(function (idx, item) {
+                buttonText += jQuery(item.parentElement).text();
+                if (idx != checkedOptions.length - 1) {
+                    buttonText += ', '; 
+                }
+            });
+            button.find('.criteria-value').text(buttonText);
         }
-        positionDropdownMenu(menu, button.closest('.dropdown-container'));
-    });
+    }
     
     /* close on escape key */
     jQuery(document).keyup(function(e) {
         if (e.which == 27) { // esc
             jQuery('ul.dropdown-menu').hide();
             jQuery(".dropdown-container").removeClass("menu-open");
+        }
+    });
+    
+    jQuery('.dropdown-container').each(function(idx, container) {
+        container = jQuery(container);
+        var menu = container.find('.dropdown-menu');
+        var button = container.find('button');
+        container.data({'menu': menu});
+        jQuery('body').prepend(menu);
+        menu.data('button', button);
+        
+        if (menu.is('.criteria-menu')) {
+            updateCriteriaButton(menu);
         }
     });
 });
