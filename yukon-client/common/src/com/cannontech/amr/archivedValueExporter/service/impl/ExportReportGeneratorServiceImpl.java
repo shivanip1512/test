@@ -86,9 +86,6 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         Meter previewMeter = getDefaultMeter(userContext);
         addHeader(format, preview);
 
-        TimeZoneFormat tzFormat = format.getDateTimeZoneFormat();
-        DateTimeZone reportTZ = getReportTZ(tzFormat, userContext);
-
         if (format.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE) {
             Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> fieldIdToAttributeData = getFixedPreviewAttributeData(format, previewMeter);
             generateFixedBody(preview, Collections.singletonList(previewMeter), format, fieldIdToAttributeData, userContext);
