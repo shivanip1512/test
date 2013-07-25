@@ -245,6 +245,8 @@
     <entry key="yukon.web.modules.support.uiDemos.inlineDialog5.button2">Button 2</entry>
     <entry key="yukon.web.modules.support.uiDemos.inline5.label">In-line 5, options (custom buttons)</entry>
 
+    <entry key="yukon.web.modules.support.uiToolkitDemo.pageName">UI Toolkit Demos</entry>
+
     <entry key="yukon.web.modules.support.setupDatabase.pageName">Setup Development Database</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.label">Setup Development Database</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.log">* See console log for execution details</entry>
