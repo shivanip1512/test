@@ -188,13 +188,13 @@ public interface AttributeService {
 
     /**
      * Reverse lookup of BuiltInAttribute based on Pao and Point Identifier from set of possible attributes.
-     * Will return null if no attribute in possible set matches the pao point identifier definition.
+     * Will return empty set if no attributes in possible set matches the pao point identifier definition.
      * Used primarily by MultispeakMeterService to retrieve readable attributes.
      * @param paoTypePointIdentifier
      * @param possibleMatches
      * @return BuiltInAttribute
      */
-    public BuiltInAttribute findAttributeForPoint(PaoTypePointIdentifier paoTypePointIdentifier, Set<? extends Attribute> possibleMatches);
+    public Set<BuiltInAttribute> findAttributesForPoint(PaoTypePointIdentifier paoTypePointIdentifier, Set<? extends Attribute> possibleMatches);
 
     /**
      * Creates a map of AttributeGroup to list of BuiltInAttribute.  The resulting map contains only

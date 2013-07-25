@@ -6,7 +6,6 @@ import java.util.Date;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.google.common.base.Function;
@@ -16,18 +15,15 @@ public class MeterPointValue implements YukonPao {
 
     private final Meter meter;
     private final PaoPointIdentifier paoPointIdentifier;
-    private final BuiltInAttribute attribute;
     private final PointValueHolder pointValueHolder;
     private final String pointName;
     private final String formattedValue;
 
     public MeterPointValue(Meter meter, PaoPointIdentifier paoPointIdentifier,
-                           BuiltInAttribute attribute,
                            PointValueHolder pointValueHolder, String pointName,
                            String formattedValue) {
         this.meter = meter;
         this.paoPointIdentifier = paoPointIdentifier;
-        this.attribute = attribute;
         this.pointValueHolder = pointValueHolder;
         this.pointName = pointName;
         this.formattedValue = formattedValue;
@@ -39,10 +35,6 @@ public class MeterPointValue implements YukonPao {
 
     public PaoPointIdentifier getPaoPointIdentifier() {
         return paoPointIdentifier;
-    }
-
-    public BuiltInAttribute getAttribute() {
-        return attribute;
     }
 
     public PointValueHolder getPointValueHolder() {
@@ -66,7 +58,6 @@ public class MeterPointValue implements YukonPao {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((attribute == null) ? 0 : attribute.hashCode());
         result = prime * result + ((formattedValue == null) ? 0 : formattedValue.hashCode());
         result =
             prime * result + ((paoPointIdentifier == null) ? 0 : paoPointIdentifier.hashCode());
@@ -84,8 +75,6 @@ public class MeterPointValue implements YukonPao {
         if (getClass() != obj.getClass())
             return false;
         MeterPointValue other = (MeterPointValue) obj;
-        if (attribute != other.attribute)
-            return false;
         if (formattedValue == null) {
             if (other.formattedValue != null)
                 return false;

@@ -17,7 +17,6 @@ import com.cannontech.amr.paoPointValue.model.MeterPointValue;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
@@ -149,12 +148,10 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
             PointInfo pointInfo = pointIdsToPointInfos.get(pointValueHolder.getId());
             PaoPointIdentifier paoPointIdentifier = pointIdPaoPointIdMap.get(pointValueHolder.getId());
             Meter meter = paoPointIdMeterMap.get(paoPointIdentifier.getPaoIdentifier());
-            BuiltInAttribute attribute = attributeService.findAttributeForPoint(paoPointIdentifier.getPaoTypePointIdentifier(), attributeSet);
 
             MeterPointValue meterPointValue =
                 new MeterPointValue(meter,
                                     paoPointIdentifier,
-                                    attribute,
                                     pointValueHolder,
                                     pointInfo.getName(),
                                     valueString);

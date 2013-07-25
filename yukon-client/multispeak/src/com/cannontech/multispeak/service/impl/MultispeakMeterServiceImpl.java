@@ -305,10 +305,11 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
                 // the following is expensive but unavoidable until PointData is changed
                 PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(value.getId());
-                BuiltInAttribute thisAttribute = attributeService.findAttributeForPoint(paoPointIdentifier.getPaoTypePointIdentifier(), attributes);
-                if (thisAttribute == null) return;
-                if (thisAttribute == BuiltInAttribute.DISCONNECT_STATUS) {
+                Set<BuiltInAttribute> thisAttribute = attributeService.findAttributesForPoint(paoPointIdentifier.getPaoTypePointIdentifier(), attributes);
+                if (thisAttribute.contains(BuiltInAttribute.DISCONNECT_STATUS)) {
                     setLoadActionCode(multispeakFuncs.getLoadActionCode(meter, value));
+                } else {
+                    return;
                 }
             }
             
@@ -493,32 +494,33 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
                 // the following is expensive but unavoidable until PointData is changed
                 PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(value.getId());
-                BuiltInAttribute thisAttribute = attributeService.findAttributeForPoint(paoPointIdentifier.getPaoTypePointIdentifier(), attributes);
+                Set<BuiltInAttribute> thisAttribute = attributeService.findAttributesForPoint(paoPointIdentifier.getPaoTypePointIdentifier(), attributes);
                 
                 if (log.isDebugEnabled()) {
                     log.debug("deviceAttributeReadCallback.receivedValue for meterReadEvent: " + paoPointIdentifier.toString() + 
                               " - " + value.getPointDataTimeStamp() + " - " + value.getValue());
                 }
 
-                if (thisAttribute == null) {
+                if (thisAttribute.isEmpty()) {
                     log.debug("data received but no attribute found for point");
                     return;
-                } else {
-                    log.debug("data received for some attribute: " + thisAttribute);
                 }
-                
-                // Get a new updater object for the current value
-                MeterReadUpdater meterReadUpdater = meterReadProcessingService.buildMeterReadUpdater(thisAttribute, value);
-                // if the map is empty, place the updater into it
-                MeterReadUpdater oldValue = updaterMap.putIfAbsent(pao, meterReadUpdater);
-                while (oldValue != null) {
-                    // looks like the map was not empty, combine the existing updater with the
-                    // new one and then place it back in the map, but we must be careful
-                    // that someone hasn't changed the map out from under us (thus the while loop)
-                    MeterReadUpdaterChain chain = new MeterReadUpdaterChain(oldValue, meterReadUpdater);
-                    boolean success = updaterMap.replace(pao, oldValue, chain);
-                    if (success) break;
-                    oldValue = updaterMap.putIfAbsent(pao, meterReadUpdater);
+                for (BuiltInAttribute attribute : thisAttribute) {
+                    log.debug("data received for some attribute: " + thisAttribute.toString());
+                    
+                    // Get a new updater object for the current value
+                    MeterReadUpdater meterReadUpdater = meterReadProcessingService.buildMeterReadUpdater(attribute, value);
+                    // if the map is empty, place the updater into it
+                    MeterReadUpdater oldValue = updaterMap.putIfAbsent(pao, meterReadUpdater);
+                    while (oldValue != null) {
+                        // looks like the map was not empty, combine the existing updater with the
+                        // new one and then place it back in the map, but we must be careful
+                        // that someone hasn't changed the map out from under us (thus the while loop)
+                        MeterReadUpdaterChain chain = new MeterReadUpdaterChain(oldValue, meterReadUpdater);
+                        boolean success = updaterMap.replace(pao, oldValue, chain);
+                        if (success) break;
+                        oldValue = updaterMap.putIfAbsent(pao, meterReadUpdater);
+                    }
                 }
             }
             
@@ -645,23 +647,25 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
                 // the following is expensive but unavoidable until PointData is changed
                 PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(value.getId());
-                BuiltInAttribute thisAttribute = attributeService.findAttributeForPoint(paoPointIdentifier.getPaoTypePointIdentifier(), attributes);
-                if (thisAttribute == null) return;
+                Set<BuiltInAttribute> thisAttribute = attributeService.findAttributesForPoint(paoPointIdentifier.getPaoTypePointIdentifier(), attributes);
+                if (thisAttribute.isEmpty()) return;
                 
                 // Get a new updater object for the current value
-                FormattedBlockUpdater<Block> formattedBlockUpdater = blockProcessingService.buildFormattedBlockUpdater(thisAttribute, value);
-
-                // if the map is empty, place the updater into it
-                FormattedBlockUpdater<Block> oldValue = updaterMap.putIfAbsent(pao, formattedBlockUpdater);
-
-                while (oldValue != null) {
-                    // looks like the map was not empty, combine the existing updater with the
-                    // new one and then place it back in the map, but we must be careful
-                    // that someone hasn't changed the map out from under us (thus the while loop)
-                    FormattedBlockUpdaterChain<Block> chain = new FormattedBlockUpdaterChain<Block>(oldValue, formattedBlockUpdater);
-                    boolean success = updaterMap.replace(pao, oldValue, chain);
-                    if (success) break;
-                    oldValue = updaterMap.putIfAbsent(pao, formattedBlockUpdater);
+                for (BuiltInAttribute attribute : thisAttribute) {
+                    FormattedBlockUpdater<Block> formattedBlockUpdater = blockProcessingService.buildFormattedBlockUpdater(attribute, value);
+    
+                    // if the map is empty, place the updater into it
+                    FormattedBlockUpdater<Block> oldValue = updaterMap.putIfAbsent(pao, formattedBlockUpdater);
+    
+                    while (oldValue != null) {
+                        // looks like the map was not empty, combine the existing updater with the
+                        // new one and then place it back in the map, but we must be careful
+                        // that someone hasn't changed the map out from under us (thus the while loop)
+                        FormattedBlockUpdaterChain<Block> chain = new FormattedBlockUpdaterChain<Block>(oldValue, formattedBlockUpdater);
+                        boolean success = updaterMap.replace(pao, oldValue, chain);
+                        if (success) break;
+                        oldValue = updaterMap.putIfAbsent(pao, formattedBlockUpdater);
+                    }
                 }
             }
             
