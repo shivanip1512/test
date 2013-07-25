@@ -1,4 +1,6 @@
-//JavaScript for the dropdown.tag && ajaxDropdown.tag
+/**
+ * JavaScript for the dropdown.tag, ajaxDropdown.tag, and criteria.tag
+ */
 jQuery(function() {
     jQuery(document).on("click", ".dropdown-container", function(e) {
         var target,
@@ -11,6 +13,7 @@ jQuery(function() {
         if (menu[0]) {
             target.data({'menu': menu});
             jQuery('body').prepend(menu);
+            menu.data('button', target.find('.criteria-button'));
         } else {
             menu = target.data('menu');
         }
@@ -98,13 +101,56 @@ jQuery(function() {
         return false;
     }
     
-    //close on document click
-    jQuery(document).click(function() {
-        jQuery('ul.dropdown-menu').hide();
-        jQuery(".dropdown-container").removeClass("menu-open");
+    /* close on document click */
+    jQuery(document).click(function(e) {
+        /* click was not inside the dropdown menu, hide it. */
+        if (jQuery(e.target).closest('.dropdown-menu').length === 0) {
+            jQuery('ul.dropdown-menu').hide();
+            jQuery(".dropdown-container").removeClass("menu-open");
+        }
     });
     
-    //close on escape key
+    /* update text for criteria buttons */
+    /* listening on the inner checkbox input since labels cause two click events */
+    jQuery(document).on("click", ".criteria-menu .criteria-option input", function(e) {
+        
+        var option = jQuery(e.target);
+        var menu = option.closest('.criteria-menu');
+        var button = menu.data('button');
+        var allOptions = menu.find('.criteria-option input');
+        var checkedOptions = allOptions.filter(':checked');
+        var text = option.closest('label').text();
+        var buttonText = ''; 
+
+        if (option.is(':checked')) {
+            if (allOptions.length === checkedOptions.length) {
+                button.find('.criteria-value').text(button.data('allText'));
+            } else {
+                checkedOptions.each(function (idx, item) {
+                    buttonText += jQuery(item.parentElement).text();
+                    if (idx != checkedOptions.length - 1) {
+                        buttonText += ', '; 
+                    }
+                });
+                button.find('.criteria-value').text(buttonText);
+            }
+        } else {
+            if (checkedOptions.length === 0) {
+                button.find('.criteria-value').text(button.data('noneText'));
+            } else {
+                checkedOptions.each(function (idx, item) {
+                    buttonText += jQuery(item.parentElement).text();
+                    if (idx != checkedOptions.length - 1) {
+                        buttonText += ', '; 
+                    }
+                });
+                button.find('.criteria-value').text(buttonText);
+            }
+        }
+        positionDropdownMenu(menu, button.closest('.dropdown-container'));
+    });
+    
+    /* close on escape key */
     jQuery(document).keyup(function(e) {
         if (e.which == 27) { // esc
             jQuery('ul.dropdown-menu').hide();

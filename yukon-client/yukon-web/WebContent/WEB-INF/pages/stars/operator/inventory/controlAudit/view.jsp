@@ -43,7 +43,7 @@ jQuery(function() {
                     <tags:nameValue2 nameKey="yukon.common.from">
                         <dt:dateTime path="from" value="${settings.from}"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey="yukon.common.to">
+                    <tags:nameValue2 nameKey="yukon.common.To">
                         <dt:dateTime path="to" value="${settings.to}"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>

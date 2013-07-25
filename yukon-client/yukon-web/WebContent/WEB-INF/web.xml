@@ -125,6 +125,12 @@
 			com.cannontech.esub.web.filter.SVGFilter
 		</filter-class>
 	</filter>
+  
+    <!-- Provides support for Request Methods (PUT, DELETE, PATCH) -->
+    <filter>
+        <filter-name>hiddenHttpMethodFilter</filter-name>
+        <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+    </filter>
 
 	<!-- A MyFaces filter used to find resources in jar files -->
 	<filter>
@@ -137,6 +143,11 @@
     <!--  LoginFilter must be first filter-mapping entry -->
     <filter-mapping>
         <filter-name>loginFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <filter-mapping>
+        <filter-name>hiddenHttpMethodFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
@@ -285,6 +296,12 @@
         <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
    </servlet> 
+
+    <servlet>
+        <servlet-name>tdc</servlet-name>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+   </servlet>
    
 	<servlet>
 		<servlet-name>deviceConfiguration</servlet-name>
@@ -847,6 +864,12 @@
     <servlet-mapping>
         <servlet-name>common</servlet-name>
         <url-pattern>/common/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>tdc</servlet-name>
+        <url-pattern>/tdc</url-pattern>
+        <url-pattern>/tdc/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

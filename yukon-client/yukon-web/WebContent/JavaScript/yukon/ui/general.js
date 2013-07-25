@@ -136,6 +136,8 @@ Yukon.ui = (function () {
                     });
                 });
             });
+            
+            /** TODO: add js to update criteria button when options are clicked */
 
             /* initialize our keyboard table traversal (j/k keys) */
             jQuery(".compactResultsTable.f-traversable").traverse('tr', {
@@ -226,32 +228,9 @@ Yukon.ui = (function () {
                 jQuery(event).closest('.popUpDiv').dialog('close');
             });
 
-            jQuery(document).on('click', '.f-setHomePage', function(event) {
-                var userId = jQuery("#changeHomepage_userId").val(),
-                    send = document.location.href;
-                event.preventDefault ? event.preventDefault() : event.returnValue = false;  // IE8 requires returnValue
-                event.stopPropagation();
-    
-                jQuery.ajax({
-                    type: "POST",
-                    url: "/user/updatePreference.json",
-                    data: {'userId': userId, 'prefName': 'HOME_URL', 'prefValue': send},
-                }).done( function(data) {
-                    if (data.success) {
-                        alert("SAVED");
-                    } else {
-                        alert("INTERNAL ERROR #9471: FAILED SAVING");
-                    }
-                }).fail( function(nada) {
-                    alert("INTERNAL ERROR #9472: FAILED SAVING");
-                });
-                return false;
-            });
-
             jQuery(".f-closeYukonApplicationDialog").click(function() {
                 jQuery("#yukonApplicationDialog").dialog("close");
             });
-
 
             // resize it with the window
             

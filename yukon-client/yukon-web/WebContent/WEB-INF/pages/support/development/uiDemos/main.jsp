@@ -14,7 +14,7 @@ jQuery(function() {
 });
 </script>
 
-<div id="tabs">
+<div id="tabs" class="section">
     <ul>
         <li><a href="#buttonsTab">Buttons</a></li>
         <li><a href="#pickersTab">Pickers</a></li>

@@ -23,7 +23,8 @@
 <entry key="yukon.common.loading">Loading…</entry>
 
 <entry key="yukon.common.from">From</entry>
-<entry key="yukon.common.to">To</entry>
+<entry key="yukon.common.to">to</entry>
+<entry key="yukon.common.To">To</entry>
 
 <entry key="yukon.common.warning">Warning</entry>
 <entry key="yukon.common.warningMessage">Warning: {0}</entry>

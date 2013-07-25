@@ -179,6 +179,20 @@
   <module name="tools">
     <skin name="STANDARD"/>
     <pages>
+      <page name="tdc.home" type="BASIC">
+        <link>/tdc</link>
+        <pages>
+          <page name="tdc.display.CREATE" type="BASIC"/>
+          <page name="tdc.display.VIEW" type="BASIC">
+            <link>/tdc/{displayId}</link>
+            <pages>
+              <page name="tdc.display.EDIT" type="BASIC">
+                <link>/tdc/{displayId}/edit</link>
+              </page>
+            </pages>
+          </page>
+        </pages>
+      </page>
       <page name="deviceGroups" type="BASIC" />
       <page name="deviceGroupsCommander" type="BASIC"/>
       <page name="groupMeterReadHome" type="BASIC"/>

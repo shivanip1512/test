@@ -11,9 +11,12 @@
 <%@ attribute name="value" description="Text representing the criteria currently chosen, ie: 'RFN-420fL, RFN-420fD'" %>
 <%@ attribute name="menuCssClass" description="Class names applied to the menu container element." %>
 
+<cti:msg2 key="yukon.web.defaults.all" var="allText"/>
+<cti:msg2 key="yukon.web.defaults.none" var="noneText"/>
+
 <div class="f-dropdown_outer_container fl ${pageScope.containerCssClass}" <c:if test="${not empty pageScope.id}">id="${id}"</c:if>>
     <div class="dropdown-container usn fl">
-        <button type="button" class="criteria-button">
+        <button type="button" class="criteria-button" data-all-text="${allText}" data-none-text="${noneText}">
             <div class="criteria-wrap">
                 <c:choose>
                     <c:when test="${not empty pageScope.label}">
