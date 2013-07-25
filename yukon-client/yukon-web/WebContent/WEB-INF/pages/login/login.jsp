@@ -30,7 +30,7 @@
                             </div>
                         </c:if>
                         <form name="form1" method="post" action="<cti:url value="/servlet/LoginController"/>">
-                            <div class="clearfix stacked"><input type="text" id="login_email" name="USERNAME" class="fl" placeholder="<cti:msg2 key="yukon.web.login.username"/>"></div>
+                            <div class="clearfix stacked"><input type="text" id="login_email" name="USERNAME" class="fl f-focus" placeholder="<cti:msg2 key="yukon.web.login.username"/>"></div>
                             <div class="clearfix">
                                 <input type="password" id="login_password" name="PASSWORD" autocomplete="off" placeholder="<cti:msg2 key="yukon.web.login.password"/>" class="fl">
                                 <button type="button" id="forgot-btn" class="fl" data-href="/login/forgottenPassword"><span class="label"><cti:msg2 key="yukon.web.login.forgot"/></span></button>
