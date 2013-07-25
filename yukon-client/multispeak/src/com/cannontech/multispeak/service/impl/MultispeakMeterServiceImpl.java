@@ -1949,7 +1949,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         List<com.cannontech.amr.meter.model.Meter> meters = Lists.newArrayList();
         if (exactSearch) {
             com.cannontech.amr.meter.model.Meter meter = meterDao.findForPaoName(filterValue);
-            meters.add(meter);
+            if (meter != null) {
+                meters.add(meter);
+            }
         } else {
             List<FilterBy> searchFilter = new ArrayList<FilterBy>(1);
             FilterBy filterBy = new StandardFilterBy("deviceName", MeterSearchField.PAONAME);
