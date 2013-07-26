@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+    <entry key="yukon.dr.estimatedLoad.formulaType.APPLIANCE_CATEGORY">Appliance Category</entry>
+    <entry key="yukon.dr.estimatedLoad.formulaType.GEAR">Gear</entry>
+
+    <entry key="yukon.dr.estimatedLoad.calculationType.FUNCTION">Function</entry>
+    <entry key="yukon.dr.estimatedLoad.calculationType.LOOKUP">Lookup Table</entry>
+
+    <entry key="yukon.dr.estimatedLoad.inputType.TEMP">Temperature</entry>
+    <entry key="yukon.dr.estimatedLoad.inputType.HUMIDITY">Humidity</entry>
+    <entry key="yukon.dr.estimatedLoad.inputType.TIME">Time</entry>
+    <entry key="yukon.dr.estimatedLoad.inputType.CONTROL_PERCENT">Control %</entry>
+    <entry key="yukon.dr.estimatedLoad.inputType.RAMP_RATE">Ramp Rate</entry>
+    <entry key="yukon.dr.estimatedLoad.inputType.POINT">Point</entry>
+
+</properties>

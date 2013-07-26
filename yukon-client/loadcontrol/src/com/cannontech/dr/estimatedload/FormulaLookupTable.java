@@ -4,10 +4,10 @@ import com.google.common.collect.ImmutableMap;
 
 public final class FormulaLookupTable {
 
-    private int lookupTableId;
-    private int formulaId;
-    private FormulaInput input;
-    private ImmutableMap<String, String> entries;
+    private final int lookupTableId;
+    private final int formulaId;
+    private final FormulaInput input;
+    private final ImmutableMap<String, String> entries;
 
     public FormulaLookupTable(int lookupTableId, int formulaId, FormulaInput input, ImmutableMap<String, String> entries) {
         this.lookupTableId = lookupTableId;
@@ -16,7 +16,7 @@ public final class FormulaLookupTable {
         this.entries = entries;
     }
 
-    public int getId() {
+    public int getLookupTableId() {
         return lookupTableId;
     }
 

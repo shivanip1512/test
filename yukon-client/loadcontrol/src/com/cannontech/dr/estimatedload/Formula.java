@@ -1,16 +1,18 @@
 package com.cannontech.dr.estimatedload;
 
+import com.cannontech.dr.estimatedload.enumeration.FormulaCalculationType;
+import com.cannontech.dr.estimatedload.enumeration.FormulaType;
 import com.google.common.collect.ImmutableList;
 
 public final class Formula {
 
-    private int formulaId;
-    private String name;
-    private FormulaType formulaType;
-    private FormulaCalculationType calculationType;
+    private final int formulaId;
+    private final String name;
+    private final FormulaType formulaType;
+    private final FormulaCalculationType calculationType;
 
-    private ImmutableList<FormulaFunction> functions = null;
-    private ImmutableList<FormulaLookupTable> tables = null;
+    private final ImmutableList<FormulaFunction> functions;
+    private final ImmutableList<FormulaLookupTable> tables;
 
     public Formula(int formulaId, String name, FormulaType formulaType, FormulaCalculationType calculationType,
             ImmutableList<FormulaFunction> functions, ImmutableList<FormulaLookupTable> tables) {
