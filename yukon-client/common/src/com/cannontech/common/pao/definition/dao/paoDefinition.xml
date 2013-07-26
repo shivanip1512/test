@@ -7621,19 +7621,19 @@
     <pao id="RFN440_2131T" inherits="RFN440_BASE, RFN440_SINGLE_PHASE_VOLTAGE">
         <displayName>RFN-440-2131T</displayName></pao>
  -->
-    <pao id="RFN440_2131TD" inherits="RFN440_BASE, RFN440_SINGLE_PHASE_VOLTAGE, RFN_DISCONNECT">
+    <pao id="RFN440_2131TD" inherits="RFN440_BASE, RFN440_SINGLE_PHASE_VOLTAGE, RFN_DISCONNECT" creatable="false">
         <displayName>RFN-440-2131TD</displayName></pao>
 <!-- 
     <pao id="RFN440_2132T" inherits="RFN440_BASE, RFN440_TWO_PHASE_VOLTAGE">
         <displayName>RFN-440-2132T</displayName></pao>
  -->
-    <pao id="RFN440_2132TD" inherits="RFN440_BASE, RFN440_TWO_PHASE_VOLTAGE, RFN_DISCONNECT">
+    <pao id="RFN440_2132TD" inherits="RFN440_BASE, RFN440_TWO_PHASE_VOLTAGE, RFN_DISCONNECT" creatable="false">
         <displayName>RFN-440-2132TD</displayName></pao>
 <!-- 
     <pao id="RFN440_2133T" inherits="RFN440_BASE, RFN440_THREE_PHASE_VOLTAGE">
         <displayName>RFN-440-2133T</displayName></pao>
  -->
-    <pao id="RFN440_2133TD" inherits="RFN440_BASE, RFN440_THREE_PHASE_VOLTAGE, RFN_DISCONNECT">
+    <pao id="RFN440_2133TD" inherits="RFN440_BASE, RFN440_THREE_PHASE_VOLTAGE, RFN_DISCONNECT" creatable="false">
         <displayName>RFN-440-2133TD</displayName></pao>
 
     <pao id="RFN440_BASE" abstract="true" inherits="OUTAGE_STATUS_BASE, RFN_EVENTS, SUPPORTS_OUTAGE_TAG, SUPPORTS_TOU_TAG">
