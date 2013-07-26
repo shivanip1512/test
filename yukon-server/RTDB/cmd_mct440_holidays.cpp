@@ -3,12 +3,22 @@
 #include "cmd_mct440_holidays.h"
 
 #include "ctidate.h"
+#include "std_helper.h"
+
+#include <boost/assign/list_of.hpp>
 
 #include <sstream>
 
 namespace {
 
     const CtiDate HolidayEpoch = CtiDate(1, 1, 2010);
+
+    enum
+    {
+        Holiday_Read1_Function = 0xd0,
+        Holiday_Read2_Function = 0xd1,
+        Holiday_Read3_Function = 0xd2
+    };
 }
 
 namespace Cti {
@@ -57,36 +67,55 @@ DlcCommand::request_ptr Mct440HolidaysCommand::decode(const CtiTime now, const u
 {
     if( payload )
     {
-        std::ostringstream ss;
+        typedef std::pair<unsigned, unsigned> HolidayReadDescriptor;
 
-        ss << "Holiday schedule:\n";
+        const std::map<unsigned, HolidayReadDescriptor> functionDescriptors = boost::assign::map_list_of
+            (Holiday_Read1_Function, std::make_pair( 1u, 6u))
+            (Holiday_Read2_Function, std::make_pair( 7u, 6u))
+            (Holiday_Read3_Function, std::make_pair(13u, 3u));
 
-        unsigned offset = (function - 0xd0) * 6;
-
-        for( unsigned index = 0; index < payload->size() / 2; ++index )
+        if( const boost::optional<HolidayReadDescriptor> rd = mapFind(functionDescriptors, function) )
         {
-            CtiDate holiday_date(HolidayEpoch);
+            const unsigned holidayOffset = rd->first;
+            const unsigned holidayCount  = rd->second;
 
-            unsigned days = 0;
-            days |= (*payload)[index * 2];
-            days <<= 8;
-            days |= (*payload)[index * 2 + 1];
-
-            ss << "Holiday " << (offset + index + 1) << ": ";
-
-            if( days != 0xffff )
+            if( payload->size() < holidayCount * 2 )
             {
-                holiday_date += days;
+                throw CommandException(
+                    ErrorDataMissing,
+                    "Payload too small ("
+                        + CtiNumStr(payload->size())  + " received, "
+                        + CtiNumStr(holidayCount * 2) + " required)");
+            }
 
-                ss << holiday_date.asStringUSFormat() + "\n";
-            }
-            else
+            std::ostringstream ss;
+
+            ss << "Holiday schedule:\n";
+
+            for( unsigned index = 0; index < holidayCount; ++index )
             {
-                ss << "(unused)\n";
+                const unsigned days =
+                    (*payload)[index * 2] << 8 |
+                    (*payload)[index * 2 + 1];
+
+                ss << "Holiday " << (holidayOffset + index) << ": ";
+
+                if( days == 0xffff )
+                {
+                    ss << "(unused)\n";
+                }
+                else
+                {
+                    CtiDate holiday_date(HolidayEpoch);
+
+                    holiday_date += days;
+
+                    ss << holiday_date.asStringUSFormat() + "\n";
+                }
             }
+
+            description += ss.str();
         }
-
-        description += ss.str();
     }
 
     return doCommand();
@@ -153,21 +182,21 @@ DlcCommand::request_ptr Mct440HolidaysCommand::read1()
 {
     _executionState = &Mct440HolidaysCommand::read2;
 
-    return request_ptr(new read_request_t(0xd0, 12));
+    return request_ptr(new read_request_t(Holiday_Read1_Function, 12));
 }
 
 DlcCommand::request_ptr Mct440HolidaysCommand::read2()
 {
     _executionState = &Mct440HolidaysCommand::read3;
 
-    return request_ptr(new read_request_t(0xd1, 12));
+    return request_ptr(new read_request_t(Holiday_Read2_Function, 12));
 }
 
 DlcCommand::request_ptr Mct440HolidaysCommand::read3()
 {
     _executionState = &Mct440HolidaysCommand::done;
 
-    return request_ptr(new read_request_t(0xd2, 6));
+    return request_ptr(new read_request_t(Holiday_Read3_Function, 6));
 }
 
 DlcCommand::request_ptr Mct440HolidaysCommand::done()

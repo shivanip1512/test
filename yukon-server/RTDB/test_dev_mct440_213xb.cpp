@@ -556,7 +556,6 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
                 BOOST_CHECK( outList.empty() );
             }
 
-
             delete_container(vgList);
             delete_container(retList);
             delete_container(outList);
@@ -3306,16 +3305,16 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d0);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO      , 0x01);  //  read
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 12);
-
-            delete_container(outList);
-            outList.clear();
         }
+
+        delete_container(outList);
+        outList.clear();
 
         {
             INMESS  InMessage;
             CtiTime t(CtiDate(1, 1, 2011), 19, 16, 0);
 
-            unsigned char test_data[] = {0x1,0x1,0x1,0x2,0x1,0x3,0x1,0x4,0x1,0x5,0x1,0x6};
+            unsigned char test_data[] = {0x1,0x1,0x1,0x2,0x1,0x3,0x1,0x4,0x1,0x5,0x1,0x6};  //  leave as 12 bytes, as if we're reading queued
 
             memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
             InMessage.Buffer.DSt.Length = sizeof(test_data);
@@ -3356,18 +3355,18 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d1);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO      , 0x01);  //  read
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 12);
-
-            delete_container(outList);
-            delete_container(retList);
-            outList.clear();
-            retList.clear();
         }
+
+        delete_container(outList);
+        delete_container(retList);
+        outList.clear();
+        retList.clear();
 
         {
             INMESS  InMessage;
             CtiTime t(CtiDate(1, 1, 2011), 19, 16, 0);
 
-            unsigned char test_data[] = {0x1,0x1,0x1,0x2,0x1,0x3,0x1,0x4,0x1,0x5,0x1,0x6};
+            unsigned char test_data[] = {0x1,0x1,0x1,0x2,0x1,0x3,0x1,0x4,0x1,0x5,0x1,0x6,0x01};  //  round out to 13 bytes (3 D words)
 
             memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
             InMessage.Buffer.DSt.Length = sizeof(test_data);
@@ -3408,18 +3407,18 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d2);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO      , 0x01);  //  read
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 6);
-
-            delete_container(outList);
-            delete_container(retList);
-            outList.clear();
-            retList.clear();
         }
+
+        delete_container(outList);
+        delete_container(retList);
+        outList.clear();
+        retList.clear();
 
         {
             INMESS  InMessage;
             CtiTime t(CtiDate(1, 1, 2011), 19, 16, 0);
 
-            unsigned char test_data[] = {0x1,0x1,0x1,0x2,0x1,0x3};
+            unsigned char test_data[] = {0x1,0x1,0x1,0x2,0x1,0x3,0x01,0x04};  //  round out to 8 bytes (2 D words)
 
             memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
             InMessage.Buffer.DSt.Length = sizeof(test_data);
@@ -3447,6 +3446,67 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL( retMsg->ResultString(), expected );
 
             BOOST_CHECK( outList.empty() );
+        }
+    }
+
+    BOOST_AUTO_TEST_CASE(test_executeGetConfigHoliday_missing_payload)
+    {
+        test_Mct440_213xB test_dev;
+
+        unsigned commandSequence;
+
+        {
+            CtiCommandParser parse("getconfig holiday");
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+            BOOST_CHECK( retList.empty() );
+            BOOST_CHECK( vgList.empty() );
+            BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+            CtiOutMessage *outmsg = outList.front();
+
+            BOOST_REQUIRE( outmsg );
+
+            commandSequence = outmsg->Sequence;  //  for command tracking - must be copied to inmessage
+
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d0);
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO      , 0x01);  //  read
+            BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 12);
+        }
+
+        delete_container(outList);
+        outList.clear();
+
+        {
+            INMESS  InMessage;
+            CtiTime t(CtiDate(1, 1, 2011), 19, 16, 0);
+
+            unsigned char test_data[] = {0x1,0x1,0x1};  //  3 bytes - we were expecting 12
+
+            memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
+            InMessage.Buffer.DSt.Length = sizeof(test_data);
+
+            InMessage.Return.UserID                        = 0;
+            InMessage.Sequence                             = commandSequence;
+            InMessage.Return.ProtocolInfo.Emetcon.Function = 0xd0;
+            InMessage.Return.ProtocolInfo.Emetcon.IO       = 1;
+
+            BOOST_CHECK_EQUAL(NoError, test_dev.ResultDecode(&InMessage, t, vgList, retList, outList));
+
+            BOOST_CHECK( outList.empty() );
+
+            BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            const std::string expected =
+                "Test MCT-440-213xB / Payload too small (3 received, 12 required)";
+
+            BOOST_CHECK_EQUAL( retMsg->Status(), ErrorDataMissing );
+            BOOST_CHECK_EQUAL( retMsg->ResultString(), expected );
         }
     }
 
@@ -3797,10 +3857,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL_COLLECTIONS(
                     expected.begin(), expected.end(),
                     results_begin, results_end);
-
-            delete_container(outList);
-            outList.clear();
         }
+
+        delete_container(outList);
+        outList.clear();
 
         {
             INMESS  InMessage;
@@ -3827,12 +3887,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d0);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO      , 0x01);  //  read
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 12);
-
-            delete_container(outList);
-            delete_container(retList);
-            outList.clear();
-            retList.clear();
         }
+
+        delete_container(outList);
+        delete_container(retList);
+        outList.clear();
+        retList.clear();
 
         {
             INMESS  InMessage;
@@ -3879,12 +3939,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d1);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO      , 0x01);  //  read
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 12);
-
-            delete_container(outList);
-            delete_container(retList);
-            outList.clear();
-            retList.clear();
         }
+
+        delete_container(outList);
+        delete_container(retList);
+        outList.clear();
+        retList.clear();
 
         {
             INMESS  InMessage;
@@ -3931,12 +3991,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0d2);
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.IO      , 0x01);  //  read
             BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 6);
-
-            delete_container(outList);
-            delete_container(retList);
-            outList.clear();
-            retList.clear();
         }
+
+        delete_container(outList);
+        delete_container(retList);
+        outList.clear();
+        retList.clear();
 
         {
             INMESS  InMessage;

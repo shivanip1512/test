@@ -372,6 +372,8 @@ enum YukonError_t
 
     ErrorNeedsDateRangeReset,
 
+    ErrorDataMissing,
+
     FinalError
 };
 

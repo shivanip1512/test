@@ -221,6 +221,10 @@ ERRSTRUCT CTIErrors[] = {
 
     { ErrorPointLookupFailed,       "Failed to find a point for the given device.",     ERRTYPESYSTEM },
 
+    { ErrorNeedsDateRangeReset,     "The device's date range must be reset to continue.",   ERRTYPESYSTEM },
+
+    { ErrorDataMissing,             "Not enough data received from the device.",    ERRTYPESYSTEM   },
+
     { UnknownError,                 "Unknown Error",                                ERRTYPESYSTEM   },
 
 };

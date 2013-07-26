@@ -211,7 +211,9 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of
     //  280
     ("Failed to resolve an IP for the given DNS name.")
     ("Failed to find a point for the given device.")
-    .repeat(68, "Unknown Error");
+    ("The device's date range must be reset to continue.")
+    ("Not enough data received from the device.")
+    .repeat(66, "Unknown Error");
 
 BOOST_AUTO_TEST_CASE(test_GetError)
 {
