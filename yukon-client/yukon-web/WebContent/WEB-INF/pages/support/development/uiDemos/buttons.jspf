@@ -175,7 +175,7 @@
             <span class="description">a button that chooses criteria</span>
         </div>
         <div class="clearfix">
-            <pre class="code">&lt;cm:criteria label=&quot;Device Type:&quot; value=&quot;RFN-420 FX, RFN-420 FD, RFN-420 FL&quot;&gt;
+            <pre class="code">&lt;cm:criteria label=&quot;Device Type:&quot;&gt;
     &lt;cm:criteriaOption value=&quot;RFN420FX&quot; checked=&quot;true&quot;&gt;RFN-420fX&lt;/cm:criteriaOption&gt;
     &lt;cm:criteriaOption value=&quot;RFN420FD&quot; checked=&quot;true&quot;&gt;RFN-420fD&lt;/cm:criteriaOption&gt;
     &lt;cm:criteriaOption value=&quot;RFN420FL&quot; checked=&quot;true&quot;&gt;RFN-420fL&lt;/cm:criteriaOption&gt;
