@@ -281,12 +281,21 @@ Yukon.ui = (function () {
             /* Focus the designated input element */
             Yukon.ui._autofocus();
             
+            /* Update page actions */
             html = jQuery('#f-page-actions')[0];
         
             if (typeof html !== 'undefined') {
                 jQuery('#f-page-actions').remove();
                 jQuery('#b-page-actions .dropdown-menu').html(html.innerHTML);
                 jQuery('#b-page-actions').show();
+            }
+            
+            /* Update page buttons */
+            html = jQuery('#f-page-buttons')[0];
+            
+            if (typeof html !== 'undefined') {
+                jQuery('#f-page-buttons').remove();
+                jQuery('.page-actions').append(html.innerHTML);
             }
         },
         

@@ -1,5 +1,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
@@ -11,10 +12,21 @@
 <script type="text/javascript">
 jQuery(function() {
     jQuery('#display_tabs').tabs({'class': 'section', 'cookie' : {}});
+    
+    jQuery('#b_mute, #b_unmute').click (function(e) {
+        if (e.currentTarget.id == 'b_mute') {
+            jQuery('#b_mute').hide();
+            jQuery('#b_unmute').show();
+        } else {
+            jQuery('#b_mute').show();
+            jQuery('#b_unmute').hide();
+        }
+    });
 });
 </script>
 
 <style type="text/css">
+.alarm-table tr:hover .f-dropdown_outer_container {visibility: visible;}
 .alarm-text {}
 .display-list li {padding: 2px;}
 .display-list .divider {padding:none; margin:2px; list-style: none;}
@@ -88,32 +100,79 @@ jQuery(function() {
     </div>
     <div class="column two nogutter">
         
-        <tags:sectionContainer title="Active Alarms">
-            <table class="compactResultsTable">
-                <thead>
-                    <tr>
-                        <th style="width:30%">Display</th>
-                        <th style="width:60%">Alarm</th>
-                        <th style="width:10%">Acknowledged</th>
-                    </tr>
-                </thead>
+        <tags:sectionContainer title="Active Alarms (2)">
+            <table class="compactResultsTable alarm-table">
+                <thead></thead>
                 <tfoot></tfoot>
                 <tbody>
                     <tr>
-                        <td><a href="#">88638107 RFN-420 CL</a></td>
-                        <td class="alarm-text">Limit 1 Exceeded High. 140.000 > 130.000</td>
-                        <td><cti:icon icon="icon-accept" classes="fr"/></td>
+                        <td class="alarm-text"><a href="#" title="88638107 RFN-420 CL">Limit 1 Exceeded High. 140.000 > 130.000</a></td>
+                        <td>
+                            <span class="error">Unacknowledged</span>
+                            <cm:dropdown containerCssClass="fr vh">
+                                <li><a class="clearfix"><cti:icon icon="icon-tick"/><span>Acknowledge</span></a></li>
+                                <li class="divider"></li>
+                                <li><a class="clearfix"><cti:icon icon="icon-pencil"/><span>Manual Entry</span></a></li>
+                                <li><a class="clearfix"><cti:icon icon="icon-wrench"/><span>Manual Control</span></a></li>
+                                <li class="divider"></li>
+                                <li><a class="clearfix"><cti:icon icon="icon-tag-blue"/><span>Tags...</span></a></li>
+                                <li><a class="clearfix"><cti:icon icon="icon-accept"/><span>Enable/Disable...</span></a></li>
+                                <li><a class="clearfix"><cti:icon icon="icon-chart-line"/><span>Trend</span></a></li>
+                                <li><a class="clearfix"><cti:icon icon="icon-transmit-blue"/><span>Force Alt Scan</span></a></li>
+                            </cm:dropdown>
+                        </td>
                     </tr>
                     <tr>
-                        <td><a href="#">Sub Alexandria Voltage</a></td>
-                        <td class="alarm-text">Limit 1 Exceeded High. 1540.000 > 1200.000</td>
-                        <td><cti:icon icon="icon-delete" classes="fr"/></td>
+                        <td class="alarm-text"><a href="#" title="Sub Alexandria Voltage">Limit 1 Exceeded High. 1540.000 > 1200.000</a></td>
+                        <td>
+                            <span>Acknowledged</span>
+                            <cm:dropdown containerCssClass="fr vh">
+                                <li><a class="clearfix"><cti:icon icon="icon-pencil"/><span>Manual Entry</span></a></li>
+                                <li><a class="clearfix"><cti:icon icon="icon-wrench"/><span>Manual Control</span></a></li>
+                                <li class="divider"></li>
+                                <li><a class="clearfix"><cti:icon icon="icon-tag-blue"/><span>Tags...</span></a></li>
+                                <li><a class="clearfix"><cti:icon icon="icon-accept"/><span>Enable/Disable...</span></a></li>
+                                <li><a class="clearfix"><cti:icon icon="icon-chart-line"/><span>Trend</span></a></li>
+                                <li><a class="clearfix"><cti:icon icon="icon-transmit-blue"/><span>Force Alt Scan</span></a></li>
+                            </cm:dropdown>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="alarm-text"><a href="#" title="Sub Vila Voltage">Limit 1 Exceeded High. 1540.000 > 1200.000</a></td>
+                        <td>
+                            <span>Acknowledged</span>
+                            <cm:dropdown containerCssClass="fr vh">
+                                <li><a class="clearfix"><cti:icon icon="icon-pencil"/><span>Manual Entry</span></a></li>
+                                <li><a class="clearfix"><cti:icon icon="icon-wrench"/><span>Manual Control</span></a></li>
+                                <li class="divider"></li>
+                                <li><a class="clearfix"><cti:icon icon="icon-tag-blue"/><span>Tags...</span></a></li>
+                                <li><a class="clearfix"><cti:icon icon="icon-accept"/><span>Enable/Disable...</span></a></li>
+                                <li><a class="clearfix"><cti:icon icon="icon-chart-line"/><span>Trend</span></a></li>
+                                <li><a class="clearfix"><cti:icon icon="icon-transmit-blue"/><span>Force Alt Scan</span></a></li>
+                            </cm:dropdown>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="alarm-text"><a href="#" title="Sub Bob Voltage">Limit 1 Exceeded High. 1540.000 > 1200.000</a></td>
+                        <td>
+                            <span>Acknowledged</span>
+                            <cm:dropdown containerCssClass="fr vh">
+                                <li><a class="clearfix"><cti:icon icon="icon-pencil"/><span>Manual Entry</span></a></li>
+                                <li><a class="clearfix"><cti:icon icon="icon-wrench"/><span>Manual Control</span></a></li>
+                                <li class="divider"></li>
+                                <li><a class="clearfix"><cti:icon icon="icon-tag-blue"/><span>Tags...</span></a></li>
+                                <li><a class="clearfix"><cti:icon icon="icon-accept"/><span>Enable/Disable...</span></a></li>
+                                <li><a class="clearfix"><cti:icon icon="icon-chart-line"/><span>Trend</span></a></li>
+                                <li><a class="clearfix"><cti:icon icon="icon-transmit-blue"/><span>Force Alt Scan</span></a></li>
+                            </cm:dropdown>
+                        </td>
                     </tr>
                 </tbody>
             </table>
             <hr>
-            <div class="actionArea">
-                <cti:button nameKey="mute" icon="icon-sound-mute"/>
+            <div id="f-page-buttons" class="dn">
+                <cti:button id="b_mute" nameKey="mute" icon="icon-sound-mute" classes="dn" renderMode="buttonImage"/>
+                <cti:button id="b_unmute" nameKey="unmute" icon="icon-sound" renderMode="buttonImage"/>
             </div>
         </tags:sectionContainer>
         

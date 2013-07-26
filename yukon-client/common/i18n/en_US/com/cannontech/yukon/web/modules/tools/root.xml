@@ -13,7 +13,8 @@
     
     <entry key="yukon.web.modules.tools.tdc.home.pageName">Tabular Data Console</entry>
     <entry key="yukon.web.modules.tools.tdc.home.contextualPageName">TDC</entry>
-    <entry key="yukon.web.modules.tools.tdc.display.VIEW.pageName">{0}</entry>
+    <entry key="yukon.web.modules.tools.tdc.display.VIEW.pageName">Display</entry>
+    <entry key="yukon.web.modules.tools.tdc.display.VIEW.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.tools.tdc.display.EDIT.pageName">Edit</entry>
     <entry key="yukon.web.modules.tools.tdc.display.CREATE.pageName">Create Display</entry>
     
