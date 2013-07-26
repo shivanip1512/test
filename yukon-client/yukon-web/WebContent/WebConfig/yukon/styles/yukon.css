@@ -156,6 +156,13 @@ table.nowrap th, table.nowrap td {white-space: nowrap;}
 .two-column-split th, .two-column-split td {width:50%;}
 .removeColumn button, .removeColumn .button {float:right;}
 
+.sortable-table thead th a {color: #555;}
+.sortable-table thead th a:hover {color: #06C;}
+.sortable-table thead th a i {visibility: hidden;}
+.sortable-table thead th a.sorted i {visibility: visible;}
+.sortable-table thead th a.sorted.asc i {background-position: -208px -48px;}
+.sortable-table thead th a.sorted.desc i {background-position: -176px -48px;}
+
 /* PROGRESS BARS */
 .progressBar .box {margin-right: 5px;}
 .progressBarBorder {height: 12px;width: 102px;border: 1px solid black;background-color: #ECECEC;}
