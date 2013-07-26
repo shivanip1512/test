@@ -22,7 +22,7 @@
                     <c:when test="${not empty pageScope.label}">
                         <span class="criteria-label">${fn:escapeXml(pageScope.label)}</span>
                     </c:when>
-                    <c:otherwise><span class="criteria-label"><cti:msg2 key="${pageScope.key}"/></span></c:otherwise>
+                    <c:otherwise><span class="criteria-label"><cti:msg2 key="${pageScope.key}"/>:&nbsp;</span></c:otherwise>
                 </c:choose>
                 <span class="criteria-value">${fn:escapeXml(pageScope.value)}</span>
             </div>
