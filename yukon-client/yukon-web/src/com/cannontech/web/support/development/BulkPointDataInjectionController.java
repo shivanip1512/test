@@ -3,7 +3,7 @@ package com.cannontech.web.support.development;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorSupport;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -21,7 +21,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.AttributeGroup;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.validator.SimpleValidator;
@@ -45,6 +48,7 @@ public class BulkPointDataInjectionController {
     @Autowired private AttributeService attributeService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private BulkPointDataInjectionService bulkPointDataInjectionSerivce;
+    @Autowired private ObjectFormattingService objectFormattingService;
 
     private BulkFakePointInjectionDto bulkInjection;
     private final static String baseKey = "yukon.web.modules.support.bulkPointInjection";
@@ -65,8 +69,8 @@ public class BulkPointDataInjectionController {
         };
 
     @RequestMapping("main")
-    public void main(ModelMap model) {
-        setupModelMap(model);
+    public void main(ModelMap model, YukonUserContext userContext) {
+        setupModelMap(model, userContext);
     }
 
     @RequestMapping
@@ -79,7 +83,7 @@ public class BulkPointDataInjectionController {
                 YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             this.bulkInjection = bulkInjection;
-            setupModelMap(model);
+            setupModelMap(model, userContext);
             return "development/bulkPointInjection/main.jsp";
         }
 
@@ -92,15 +96,16 @@ public class BulkPointDataInjectionController {
         return "redirect:main";
     }
     
-    private void setupModelMap(ModelMap model) {
+    private void setupModelMap(ModelMap model, YukonUserContext userContext) {
         if (bulkInjection == null) {
             bulkInjection = new BulkFakePointInjectionDto();
         }
         model.addAttribute("bulkInjection", bulkInjection);
 
         // attributes
-        Set<Attribute> allAttributes = attributeService.getReadableAttributes();
-        model.addAttribute("allAttributes", allAttributes);
+        Map<AttributeGroup, List<BuiltInAttribute>> groupedAttributes = 
+                objectFormattingService.sortDisplayableValues(BuiltInAttribute.getAllGroupedAttributes(), userContext);
+        model.addAttribute("groupedAttributes", groupedAttributes);
         model.addAttribute("qualities", PointQuality.values());
     }
 

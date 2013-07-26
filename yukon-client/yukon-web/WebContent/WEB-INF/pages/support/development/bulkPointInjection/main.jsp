@@ -26,11 +26,8 @@ YEvent.observeSelectorClick('.bulkInject', function(event) {
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".attribute">
             <span class="focusableFieldHolder">
-                <form:select path="attribute">
-                    <c:forEach items="${allAttributes}" var="attribute">
-                        <form:option value="${attribute}"><cti:msg2 key="${attribute}"/></form:option>
-                    </c:forEach>
-                </form:select>
+                <tags:selectWithItems path="attribute" items="${groupedAttributes}" itemLabel="message" itemValue="key"
+                    groupItems="true"/>
             </span>
             <span class="focusedFieldDescription">We will go through each device in the
                 device group selected above and find the point for the selected attribute. This
