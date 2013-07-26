@@ -317,7 +317,8 @@
                 </div>
                 <div class="column two nogutter">
                     <tags:widget bean="operatorAccountSearchWidget"/>
-
+					
+					<cti:checkRolesAndProperties value="ADMIN_VIEW_OPT_OUT_EVENTS">
                     <tags:boxContainer2 nameKey="scheduledEvents" hideEnabled="false">
                         <c:choose>
                             <c:when test="${fn:length(scheduledEvents) > 0}">
@@ -348,6 +349,7 @@
                             </c:otherwise>
                         </c:choose>
                     </tags:boxContainer2>
+                    </cti:checkRolesAndProperties>
                 </div>
             </div
     </cti:checkEnergyCompanyOperator>

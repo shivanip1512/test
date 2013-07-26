@@ -77,7 +77,7 @@
                 </cti:checkRolesAndProperties>
 						
                 <cti:checkRolesAndProperties
-                    value="OPERATOR_OPT_OUT_ADMIN_STATUS,OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE,OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT,OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS">
+                    value="OPERATOR_OPT_OUT_ADMIN_STATUS,OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE,OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT,OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS, ADMIN_VIEW_OPT_OUT_EVENTS">
                     <tags:sectionLink enabled="${isEnergyCompanyOperator}" href="/stars/operator/optOut/admin"
                         disabledMessageKey="yukon.web.taglib.CheckEnergyCompanyOperatorTag.userIsNotECOperator"
                         textKey="yukon.web.menu.portal.consumerAccountInformation.optOutAdmin" />

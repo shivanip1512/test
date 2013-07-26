@@ -148,6 +148,7 @@
             <roleProperty name="OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE" />
             <roleProperty name="OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS" />
             <roleProperty name="OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT" />
+            <roleProperty name="ADMIN_VIEW_OPT_OUT_EVENTS" />
           </or>
         </permissions>
         <link>/stars/operator/optOut/admin</link>

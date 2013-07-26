@@ -280,7 +280,7 @@ public class SiteMapHelper {
         ACCOUNTS_AND_INVENTORY(SiteMapCategory.ASSETS, "yukon.web.modules.operator.inventory.home.pageName", "/stars/operator/inventory/home", 
                 MatchStyle.all, YukonRole.INVENTORY),
         OPT_OUT(SiteMapCategory.ASSETS, "yukon.web.modules.dr.optOutAdmin.pageName", "/stars/operator/optOut/admin", 
-                MatchStyle.any, YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_STATUS, YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE, YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS,YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT),
+                MatchStyle.any, YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_STATUS, YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE, YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS,YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT, YukonRoleProperty.ADMIN_VIEW_OPT_OUT_EVENTS),
         WORK_ORDERS(SiteMapCategory.ASSETS, "yukon.web.workOrders", "/operator/WorkOrder/WorkOrder.jsp", 
                 MatchStyle.all, YukonRole.WORK_ORDER),
         PURCHASING(SiteMapCategory.ASSETS, "yukon.web.purchasing", "/operator/Hardware/PurchaseTrack.jsp", 
