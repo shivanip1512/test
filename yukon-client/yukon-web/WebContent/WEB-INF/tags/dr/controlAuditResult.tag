@@ -1,11 +1,12 @@
 <%@ tag body-content="empty" %>
-<%@ attribute name="result" required="true" type="com.cannontech.common.search.SearchResult"%>
-<%@ attribute name="type" required="true" type="java.lang.String"%>
-<%@ attribute name="auditId" required="true" type="java.lang.String"%>
 
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ attribute name="result" required="true" type="com.cannontech.common.search.SearchResult" %>
+<%@ attribute name="type" required="true" %>
+<%@ attribute name="auditId" required="true" %>
+
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
@@ -67,5 +68,5 @@
         <cti:param name="type" value="${type}"/>
         <cti:param name="auditId" value="${auditId}"/>
     </cti:url>
-    <dr:pagingResultsControl prevUrl="${prevUrl}" nextUrl="${nextUrl}" result="${result}"/>
+    <tags:pagingResultsControls prevUrl="${prevUrl}" nextUrl="${nextUrl}" result="${result}"/>
 </c:if>
