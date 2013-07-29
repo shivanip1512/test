@@ -194,8 +194,7 @@ public class StandardMenuRenderer {
 		} else if (type == Permission.roleProperty) {
 			if (rpDao.checkProperty(YukonRoleProperty.valueOf(permission.getAttributeValue("name")), user)) return true;
 		} else if (type == Permission.ecOperator) {
-			if (yecService.isEnergyCompanyOperator(user) ||
-			        rpDao.checkProperty(YukonRoleProperty.ADMIN_SUPER_USER, user)) return true;
+			if (yecService.isEnergyCompanyOperator(user)) return true;
 		} else {
 			/* Not used yet and only supporting booleans, add 'value' to globalSetting element in schema if needed */
 			if (gsDao.getBoolean(GlobalSettingType.valueOf(permission.getAttributeValue("name")))) return true;
