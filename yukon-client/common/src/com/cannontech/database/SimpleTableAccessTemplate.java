@@ -142,11 +142,11 @@ public final class SimpleTableAccessTemplate<T> {
         return result;
     }
 
-    public final void save(T object) {
+    public final int save(T object) {
         if (needsPrimaryKey(object)) {
-            insert(object);
+            return insert(object);
         } else {
-            update(object);
+            return update(object);
         }
     }
     
@@ -158,11 +158,11 @@ public final class SimpleTableAccessTemplate<T> {
         return this.primaryKeyNeeded.needsPrimaryKey(object, baseFieldMapper);
     }
     
-    public final void insert(T object) {
-        insert(object, null);
+    public final int insert(T object) {
+        return insert(object, null);
     }
     
-    private final void insert(T object, Number parentKeyFieldId) {
+    private final int insert(T object, Number parentKeyFieldId) {
         HolderOfParameters holder = getHolderOfParameters(object, parentKeyFieldId);
         final MapSqlParameterSource parameterSource = holder.parameterSource;
         final SqlParameterChildHelper helper = holder.helper;
@@ -214,6 +214,7 @@ public final class SimpleTableAccessTemplate<T> {
                 }
             }
         }
+        return nextId;
     }
     
     private <C> void insertChildPair(ChildPair<C> childPair, Number nextId) {
@@ -223,11 +224,11 @@ public final class SimpleTableAccessTemplate<T> {
         }
     }
 
-    public final void update(T object) {
-        update(object, null);
+    public final int update(T object) {
+        return update(object, null);
     }
     
-    public final void update(T object, Number parentKeyFieldId) {
+    public final int update(T object, Number parentKeyFieldId) {
         HolderOfParameters holder = getHolderOfParameters(object, parentKeyFieldId);
         final MapSqlParameterSource parameterSource = holder.parameterSource;
         final SqlParameterChildHelper helper = holder.helper;
@@ -281,6 +282,7 @@ public final class SimpleTableAccessTemplate<T> {
                 }
             }
         }
+        return primaryKeyId.intValue();
     }
 
     private PreparedStatementSetter createPreparedStatementSetter(final MapSqlParameterSource parameterSource, 
