@@ -26,7 +26,7 @@
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title" 
                                    dialogId="drDialog" 
                                    actionUrl="${startControlAreaUrl}" 
-                                   logoKey="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"/>
+                                   icon="icon-control-play-blue"/>
 
             <cti:msg var="controlAreaInactive"
                      key="yukon.web.modules.dr.controlAreaDetail.inactive"/>
@@ -41,7 +41,7 @@
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title" 
                                    dialogId="drDialog" 
                                    actionUrl="${startControlAreaUrl}" 
-                                   logoKey="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"/>
+                                   icon="icon-control-play-blue"/>
             
             <cti:url var="stopControlAreaUrl" value="/dr/program/stop/multipleDetails">
                 <cti:param name="controlAreaId" value="${paoId}"/>
@@ -49,7 +49,7 @@
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 
                                    dialogId="drDialog" 
                                    actionUrl="${stopControlAreaUrl}" 
-                                   logoKey="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
+                                   icon="icon-control-stop-blue"/>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="fullyActiveEnabled">
             <cti:msg var="controlAreaFullyActive" key="yukon.web.modules.dr.controlAreaDetail.fullyActive"/>
@@ -62,7 +62,7 @@
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 
                                    dialogId="drDialog" 
                                    actionUrl="${stopControlAreaUrl}" 
-                                   logoKey="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
+                                   icon="icon-control-stop-blue"/>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="inactiveDisabled">
             <cti:url var="startControlAreaUrl" value="/dr/program/start/multipleDetails">
@@ -71,7 +71,7 @@
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title" 
                                    dialogId="drDialog" 
                                    actionUrl="${startControlAreaUrl}" 
-                                   logoKey="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"/>
+                                   icon="icon-control-play-blue"/>
 
             <cti:msg var="controlAreaInactive"
                      key="yukon.web.modules.dr.controlAreaDetail.inactive"/>
@@ -86,7 +86,7 @@
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title" 
                                    dialogId="drDialog" 
                                    actionUrl="${startControlAreaUrl}" 
-                                   logoKey="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"/>
+                                   icon="icon-control-play-blue"/>
 
             <cti:url var="stopControlAreaUrl" value="/dr/program/stop/multipleDetails">
                 <cti:param name="controlAreaId" value="${paoId}"/>
@@ -94,7 +94,7 @@
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 
                                    dialogId="drDialog" 
                                    actionUrl="${stopControlAreaUrl}" 
-                                   logoKey="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
+                                   icon="icon-control-stop-blue"/>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="fullyActiveDisabled">
             <cti:url var="stopControlAreaUrl" value="/dr/program/stop/multipleDetails">
@@ -103,7 +103,7 @@
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 
                                    dialogId="drDialog" 
                                    actionUrl="${stopControlAreaUrl}" 
-                                   logoKey="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
+                                   icon="icon-control-stop-blue"/>
         </tags:dynamicChooseOption>
     </tags:dynamicChoose>
 </cti:checkPaoAuthorization>

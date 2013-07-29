@@ -23,7 +23,7 @@
         <div class="column_12_12">
         <div class="column one">
                 <%-- Load Group Info section --%>
-                <tags:boxContainer2 nameKey="heading.info">
+                <tags:sectionContainer2 nameKey="heading.info">
                     <tags:nameValueContainer>
                         <cti:msg var="fieldName" key="yukon.web.modules.dr.loadGroupDetail.info.state"/>
                         <cti:checkRolesAndProperties value="LOAD_GROUP_STATE">
@@ -58,111 +58,119 @@
                         </cti:checkRolesAndProperties>
                         --%>
                     </tags:nameValueContainer>
-                </tags:boxContainer2>
+                </tags:sectionContainer2>
             </div>
+
             <div class="column two nogutter">
+
+                <%-- Display the Asset Availability Info --%>
+                <tags:sectionContainer2 nameKey="heading.assetAvailability">
+                    <dr:assetAvailabilityStatus assetId="${loadGroupId}"/>
+                </tags:sectionContainer2>
+
                 <%--
                     Load Group Actions section each action has a simpleDialogLink that
                     pops open a dialog for the action.  The available actions are based
                     on the dynamically updated SHOW_ACTION value
                 --%>
+                <!-- Page Dropdown Actions -->
+                <div id="f-page-actions" class="dn">
 
-                <tags:boxContainer2 nameKey="heading.actions">
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${loadGroup}">
-
                         <%-- Actions are enabled only if the user has CONTROL_COMMAND for LM objects --%>
 
                         <tags:dynamicChoose updaterString="DR_LOADGROUP/${loadGroupId}/SHOW_ACTION" suffix="${loadGroupId}">
+                            
                             <tags:dynamicChooseOption optionId="unknown">
-
                                 <%-- Actions are disabled when Load Management doesn't know about the Load group --%>
-
                                 <cti:msg var="loadGroupUnknown" key="yukon.web.modules.dr.loadGroupDetail.unknown"/>
-                                <div class="subtle" title="${loadGroupUnknown}">
-                                    <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon.disabled"/>
-                                    <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed"/>
-                                </div>
-                                <div class="subtle" title="${loadGroupUnknown}">
-                                    <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestoreIcon.disabled"/>
-                                    <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore"/>
-                                </div>
-                                <div class="subtle" title="${loadGroupUnknown}">
-                                    <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.disableIcon.disabled"/>
-                                    <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.disable"/>
-                                </div>
+                                <li>
+                                    <a class="clearfix" title="${programUnknown}">
+                                        <cti:icon icon="icon-control-play-blue" classes="disabled"/>
+                                        <span class="fl dib disabled"><cti:msg2 key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed"/></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="clearfix" title="${programUnknown}">
+                                        <cti:icon icon="icon-control-stop-blue" classes="disabled"/>
+                                        <span class="fl dib disabled"><cti:msg2 key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore"/></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="clearfix" title="${programUnknown}">
+                                        <cti:icon icon="icon-delete" classes="disabled"/>
+                                        <span class="fl dib disabled"><cti:msg2 key="yukon.web.modules.dr.loadGroupDetail.actions.disable"/></span>
+                                    </a>
+                                </li>
                             </tags:dynamicChooseOption>
+
                             <tags:dynamicChooseOption optionId="enabled">
-
                                 <%-- Actions shown when the Load Group is enabled --%>
-
                                 <cti:url var="sendShedUrl" value="/dr/loadGroup/sendShedConfirm">
                                     <cti:param name="loadGroupId" value="${loadGroupId}"/>
                                 </cti:url>
-                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.loadGroup.sendShedConfirm.title"
-                                                       dialogId="drDialog"
-                                                       actionUrl="${sendShedUrl}"
-                                                       logoKey="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon"
-                                                       labelKey="yukon.web.modules.dr.loadGroupDetail.actions.sendShed"/>
-                                <br>
-
+                                <li>
+                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.loadGroup.sendShedConfirm.title" 
+                                        dialogId="drDialog" actionUrl="${sendShedUrl}" icon="icon-control-play-blue"
+                                        labelKey="yukon.web.modules.dr.loadGroupDetail.actions.sendShed"/>
+                                </li>
                                 <cti:url var="sendRestoreUrl" value="/dr/loadGroup/sendRestoreConfirm">
                                     <cti:param name="loadGroupId" value="${loadGroupId}"/>
                                 </cti:url>
-                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.title"
-                                                       dialogId="drDialog"
-                                                       actionUrl="${sendRestoreUrl}"
-                                                       logoKey="yukon.web.modules.dr.loadGroupDetail.actions.sendRestoreIcon"
-                                                       labelKey="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore"/>
-                                <br>
-
+                                <li>
+                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.title" 
+                                        dialogId="drDialog" actionUrl="${sendRestoreUrl}" icon="icon-control-stop-blue"
+                                        labelKey="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore"/>
+                                </li>
                                 <cti:url var="sendDisableUrl" value="/dr/loadGroup/sendEnableConfirm">
                                     <cti:param name="loadGroupId" value="${loadGroupId}"/>
                                     <cti:param name="isEnabled" value="false"/>
                                 </cti:url>
-                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.loadGroup.sendDisableConfirm.title"
-                                                       dialogId="drDialog"
-                                                       actionUrl="${sendDisableUrl}"
-                                                       logoKey="yukon.web.modules.dr.loadGroupDetail.actions.disableIcon"
-                                                       labelKey="yukon.web.modules.dr.loadGroupDetail.actions.disable"/>
-                                <br>
+                                <li>
+                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.loadGroup.sendDisableConfirm.title" 
+                                        dialogId="drDialog" actionUrl="${sendDisableUrl}" icon="icon-delete"
+                                        labelKey="yukon.web.modules.dr.loadGroupDetail.actions.disable"/>
+                                </li>
                             </tags:dynamicChooseOption>
+
                             <tags:dynamicChooseOption optionId="disabled">
-
                                 <%-- Actions shown when the Load Group is disabled --%>
-
                                 <cti:url var="sendEnableUrl" value="/dr/loadGroup/sendEnableConfirm">
                                     <cti:param name="loadGroupId" value="${loadGroupId}"/>
                                     <cti:param name="isEnabled" value="true"/>
                                 </cti:url>
-                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.loadGroup.sendEnableConfirm.title"
-                                                       dialogId="drDialog"
-                                                       actionUrl="${sendEnableUrl}"
-                                                       logoKey="yukon.web.modules.dr.loadGroupDetail.actions.enableIcon"
-                                                       labelKey="yukon.web.modules.dr.loadGroupDetail.actions.enable"/>
-                                <br>
+                                <li>
+                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.loadGroup.sendEnableConfirm.title" 
+                                        dialogId="drDialog" actionUrl="${sendEnableUrl}" icon="icon-accept"
+                                        labelKey="yukon.web.modules.dr.loadGroupDetail.actions.enable"/>
+                                </li>
                             </tags:dynamicChooseOption>
                         </tags:dynamicChoose>
                     </cti:checkPaoAuthorization>
+                    
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${loadGroup}" invert="true">
-
                         <%-- Actions are disabled if the user does not have CONTROL_COMMAND for LM objects --%>
-
                         <cti:msg var="noLoadGroupControl" key="yukon.web.modules.dr.loadGroupDetail.noControl"/>
-                        <div class="subtle" title="${noLoadGroupControl}">
-                            <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon.disabled"/>
-                            <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed"/>
-                        </div>
-                        <div class="subtle" title="${noLoadGroupControl}">
-                            <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestoreIcon.disabled"/>
-                            <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore"/>
-                        </div>
-                        <div class="subtle" title="${noLoadGroupControl}">
-                            <cti:logo key="yukon.web.modules.dr.loadGroupDetail.actions.disableIcon.disabled"/>
-                            <cti:msg key="yukon.web.modules.dr.loadGroupDetail.actions.disable"/>
-                        </div>
+                        <li>
+                            <a class="clearfix" title="${noLoadGroupControl}">
+                                <cti:icon icon="icon-control-play-blue" classes="disabled"/>
+                                <span class="fl dib disabled"><cti:msg2 key="yukon.web.modules.dr.loadGroupDetail.actions.sendShed"/></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="clearfix" title="${noLoadGroupControl}">
+                                <cti:icon icon="icon-control-stop-blue" classes="disabled"/>
+                                <span class="fl dib disabled"><cti:msg2 key="yukon.web.modules.dr.loadGroupDetail.actions.sendRestore"/></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="clearfix" title="${noLoadGroupControl}">
+                                <cti:icon icon="icon-delete" classes="disabled"/>
+                                <span class="fl dib disabled"><cti:msg2 key="yukon.web.modules.dr.loadGroupDetail.actions.disable"/></span>
+                            </a>
+                        </li>
                     </cti:checkPaoAuthorization>
-                </tags:boxContainer2>
-            </div>
+                </div>
             </div>
         </c:if>
 

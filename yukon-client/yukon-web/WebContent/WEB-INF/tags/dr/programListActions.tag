@@ -30,7 +30,7 @@
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
                 dialogId="drDialog" actionUrl="${stopProgramUrl}" 
-                logoKey="yukon.web.modules.dr.programDetail.actions.stopIcon"/>
+                icon="icon-control-stop-blue"/>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="scheduledEnabled">
             <cti:url var="startProgramUrl" value="/dr/program/start/details">
@@ -38,13 +38,13 @@
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
                 dialogId="drDialog" actionUrl="${startProgramUrl}" 
-                logoKey="yukon.web.modules.dr.programDetail.actions.startIcon"/>
+                icon="icon-control-play-blue"/>
             <cti:url var="stopProgramUrl" value="/dr/program/stop/details">
                 <cti:param name="programId" value="${paoId}"/>
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
                 dialogId="drDialog" actionUrl="${stopProgramUrl}" 
-                logoKey="yukon.web.modules.dr.programDetail.actions.stopIcon"/>
+                icon="icon-control-stop-blue"/>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="enabled">
             <cti:url var="startProgramUrl" value="/dr/program/start/details">
@@ -52,7 +52,7 @@
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
                 dialogId="drDialog" actionUrl="${startProgramUrl}" 
-                logoKey="yukon.web.modules.dr.programDetail.actions.startIcon"/>
+                icon="icon-control-play-blue"/>
             <span title="${notRunning}">
                 <cti:logo key="yukon.web.modules.dr.programDetail.actions.stopIcon.disabled"/>
             </span>
@@ -66,7 +66,7 @@
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
                 dialogId="drDialog" actionUrl="${stopProgramUrl}" 
-                logoKey="yukon.web.modules.dr.programDetail.actions.stopIcon"/>
+                icon="icon-control-stop-blue"/>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="scheduledDisabled">
             <cti:url var="startProgramUrl" value="/dr/program/start/details">
@@ -74,13 +74,13 @@
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
                 dialogId="drDialog" actionUrl="${startProgramUrl}" 
-                logoKey="yukon.web.modules.dr.programDetail.actions.startIcon"/>
+                icon="icon-control-play-blue"/>
             <cti:url var="stopProgramUrl" value="/dr/program/stop/details">
                 <cti:param name="programId" value="${paoId}"/>
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
                 dialogId="drDialog" actionUrl="${stopProgramUrl}" 
-                logoKey="yukon.web.modules.dr.programDetail.actions.stopIcon"/>
+                icon="icon-control-stop-blue"/>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="disabled">
             <cti:url var="startProgramUrl" value="/dr/program/start/details">
@@ -88,7 +88,7 @@
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
                 dialogId="drDialog" actionUrl="${startProgramUrl}" 
-                logoKey="yukon.web.modules.dr.programDetail.actions.startIcon"/>
+                icon="icon-control-play-blue"/>
             <span title="${notRunning}">
                 <cti:logo key="yukon.web.modules.dr.programDetail.actions.stopIcon.disabled"/>
             </span>

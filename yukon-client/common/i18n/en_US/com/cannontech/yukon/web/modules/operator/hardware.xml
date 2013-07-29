@@ -130,6 +130,7 @@
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.running">Running</entry>
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.notRunning">Not Running</entry>
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.unavailable">Unavailable</entry>
+    <entry key="yukon.web.modules.operator.hardware.assetAvailability.optedOut">Opted Out</entry>
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.optedOutRunning">Opted Out (Running)</entry>
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.optedOutNotRunning">Opted Out (Not Running)</entry>
     <entry key="yukon.web.modules.operator.hardware.assetAvailability.optedOutUnavailable">Opted Out (Unavailable)</entry>

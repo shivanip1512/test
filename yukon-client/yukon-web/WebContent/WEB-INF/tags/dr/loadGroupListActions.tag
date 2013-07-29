@@ -25,7 +25,7 @@
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.loadGroup.sendShedConfirm.title" 
                                    dialogId="drDialog" 
                                    actionUrl="${sendShedUrl}" 
-                                   logoKey="yukon.web.modules.dr.loadGroupDetail.actions.sendShedIcon"/>
+                                   icon="icon-control-play-blue"/>
 
             <cti:url var="sendRestoreUrl" value="/dr/loadGroup/sendRestoreConfirm">
                 <cti:param name="loadGroupId" value="${paoId}"/>
@@ -33,7 +33,7 @@
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.title" 
                                    dialogId="drDialog" 
                                    actionUrl="${sendRestoreUrl}" 
-                                   logoKey="yukon.web.modules.dr.loadGroupDetail.actions.sendRestoreIcon"/>
+                                   icon="icon-control-stop-blue"/>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="disabled">
             <cti:msg var="loadGroupDisabled" key="yukon.web.modules.dr.loadGroupDetail.disabled"/>

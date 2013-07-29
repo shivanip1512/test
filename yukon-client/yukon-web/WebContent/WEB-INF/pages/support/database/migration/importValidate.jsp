@@ -119,7 +119,7 @@
                     <tags:simpleDialogLink titleKey="yukon.web.modules.support.databaseMigration.importValidate.componentsInfoSection.header.objects" 
                                                  dialogId="sharedPopupDialog" 
                                                  actionUrl="${componentName_1_objects_url}" 
-                                                 logoKey="yukon.web.modules.support.databaseMigration.importValidate.mag.img"/>
+                                                 icon="icon-magnifier"/>
                 </tags:nameValue>
                 <tags:nameValue name="${warnings}">
                     <cti:url var="componentName_1_warnings_url" value="/support/database/migration/warningsViewPopup">
@@ -130,7 +130,7 @@
                         <tags:simpleDialogLink titleKey="yukon.web.modules.support.databaseMigration.importValidate.componentsInfoSection.header.warnings" 
                                                dialogId="sharedPopupDialog" 
                                                actionUrl="${componentName_1_warnings_url}" 
-                                               logoKey="yukon.web.modules.support.databaseMigration.importValidate.warning.img"/>
+                                               icon="icon-error"/>
                         
                         <select id="warningProcessing" name="warningProcessing" onchange="setWarningProcessing()" class="warning">
                             <option value="USE_EXISTING">${ignore}</option>
@@ -150,7 +150,7 @@
                         <tags:simpleDialogLink titleKey="yukon.web.modules.support.databaseMigration.importValidate.componentsInfoSection.header.errors" 
                                                dialogId="sharedPopupDialog" 
                                                actionUrl="${componentName_1_errors_url}" 
-                                               logoKey="yukon.web.modules.support.databaseMigration.importValidate.error.img"/>
+                                               icon="icon-exclamation"/>
                     </c:if>
                 </tags:nameValue>
             </tags:nameValueContainer>      

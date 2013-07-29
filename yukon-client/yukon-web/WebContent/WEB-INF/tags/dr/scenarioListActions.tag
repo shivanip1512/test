@@ -30,7 +30,7 @@
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title" 
                                    dialogId="drDialog" 
                                    actionUrl="${startScenarioUrl}" 
-                                   logoKey="yukon.web.modules.dr.scenarioDetail.actions.startIcon"/>
+                                   icon="icon-control-play-blue"/>
         
             <cti:url var="stopScenarioUrl" value="/dr/program/stop/multipleDetails">
                 <cti:param name="scenarioId" value="${paoId}"/>
@@ -38,7 +38,7 @@
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 
                                    dialogId="drDialog" 
                                    actionUrl="${stopScenarioUrl}" 
-                                   logoKey="yukon.web.modules.dr.scenarioDetail.actions.stopIcon"/>
+                                   icon="icon-control-stop-blue"/>
             
         </tags:dynamicChooseOption>
     </tags:dynamicChoose>
