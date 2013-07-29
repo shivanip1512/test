@@ -86,8 +86,8 @@
     <entry key="yukon.web.widgetClasses.TrendWidget.chartStyle">Chart Style:</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.line">Line</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.lineGraph">Line Graph</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.column">Column</entry>
-    <entry key="yukon.web.widgetClasses.TrendWidget.columnGraph">Column Graph</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.bar">Bar</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.barGraph">Bar Graph</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.archivedUsageData">Archived Usage Data</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.tabularUsageData">Tabular Usage Data</entry>
     <entry key="yukon.web.widgetClasses.TrendWidget.normalizedUsageData">Normalized Usage Data:</entry>

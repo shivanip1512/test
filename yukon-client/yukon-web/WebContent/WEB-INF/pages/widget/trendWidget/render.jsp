@@ -125,11 +125,11 @@ jQuery(function () {
     			<td class="last">
                     <cti:msg2 var="lineGraph" key=".lineGraph"/>
                     <cti:msg2 var="line" key=".line"/>
-                    <cti:msg2 var="columnGraph" key=".columnGraph"/>
-                    <cti:msg2 var="column" key=".column"/>
+                    <cti:msg2 var="barGraph" key=".barGraph"/>
+                    <cti:msg2 var="bar" key=".bar"/>
     				<tags:widgetLink method="render" title="${lineGraph}" labelBusy="${line}" selected="${graphType == 'LINE'}" graphType="LINE"><i:inline key=".line"/></tags:widgetLink>
     				|
-    				<tags:widgetLink method="render" title="${columnGraph}" labelBusy="${column}" selected="${graphType == 'COLUMN'}" graphType="COLUMN"><i:inline key=".column"/></tags:widgetLink>
+    				<tags:widgetLink method="render" title="${barGraph}" labelBusy="${bar}" selected="${graphType == 'COLUMN'}" graphType="COLUMN"><i:inline key=".bar"/></tags:widgetLink>
     			</td>
     		</tr>
         
