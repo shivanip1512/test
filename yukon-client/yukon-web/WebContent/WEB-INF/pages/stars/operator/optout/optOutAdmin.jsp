@@ -187,9 +187,11 @@
                                     </div>
                                 </div>
                                 <div class="box fl">
-                                        <cti:button nameKey="disableOptOuts.currentDisabledPrograms.disableOptOutsButton" type="submit" name="disableOptOuts" classes="button"/>
-                                        <cti:button nameKey="disableOptOuts.currentDisabledPrograms.disableOptOutsAndCommsButton" type="submit" name="disableOptOutsAndComms" classes="button"/>
-                                        <cti:button nameKey="disableOptOuts.currentDisabledPrograms.enableOptOutsButton" type="submit" name="enableOptOuts" classes="button"/>
+	                                <ul class="buttonStack">
+	                                    <li><cti:button nameKey="disableOptOuts.currentDisabledPrograms.disableOptOutsButton" type="submit" name="disableOptOuts" classes="button"/></li>
+	                                    <li><cti:button nameKey="disableOptOuts.currentDisabledPrograms.disableOptOutsAndCommsButton" type="submit" name="disableOptOutsAndComms" classes="button"/></li>
+	                                    <li><cti:button nameKey="disableOptOuts.currentDisabledPrograms.enableOptOutsButton" type="submit" name="enableOptOuts" classes="button"/></li>
+	                                </ul>
                                 </div>
                             </form>       
                         </tags:boxContainer2>
