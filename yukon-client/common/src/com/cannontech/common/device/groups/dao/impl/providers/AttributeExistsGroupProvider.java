@@ -19,7 +19,8 @@ public class AttributeExistsGroupProvider extends AttributeGroupProviderBase {
     
     @Override
     protected Set<BuiltInAttribute> getBinsForDevice(YukonDevice device) {
-        Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(device);
+        Set<Attribute> allAvailableAttribute = attributeService.getAvailableAttributes(device);
+        Set<Attribute> allExistingAttributes = attributeService.getExistingAttributes(device, allAvailableAttribute);
         // this is a way of "casting" the above set into a set of BuildInAttributes
         // without actually casting
         SetView<BuiltInAttribute> intersection = 
@@ -27,6 +28,14 @@ public class AttributeExistsGroupProvider extends AttributeGroupProviderBase {
         return intersection;
     }
 
+    @Override
+    protected boolean isDeviceInBin(BuiltInAttribute bin, YukonDevice device) {
+        Set<Attribute> singleton = Sets.newHashSet();
+        singleton.add(bin);
+        Set<Attribute> limitedExistingAttributes = attributeService.getExistingAttributes(device, singleton);
+        return limitedExistingAttributes.contains(bin);
+    }
+    
     @Override
     protected SqlFragmentSource getChildSqlSelectForBin(BuiltInAttribute bin) {
         SqlFragmentSource fragment = attributeService.getAttributeLookupSql(bin);

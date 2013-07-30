@@ -44,6 +44,7 @@ import com.cannontech.web.user.service.UserPreferenceService;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 import com.cannontech.web.widget.support.impl.CachingWidgetParameterGrabber;
+import com.google.common.collect.Sets;
 
 /**
  * Widget used to display point data in a trend
@@ -81,7 +82,7 @@ public class TrendWidget extends WidgetControllerBase {
         BuiltInAttribute attribute = BuiltInAttribute.valueOf(attributeStr);
         
         List<AttributeGraphType> availableAttributeGraphs = new ArrayList<>();
-        Set<Attribute> existingAttributes = attributeService.getAllExistingAttributes(device);
+        Set<Attribute> existingAttributes = attributeService.getExistingAttributes(device, getAttributesFromGraphMap());
         
         AttributeGraphType attributeGraphType = null;
         
@@ -228,6 +229,14 @@ public class TrendWidget extends WidgetControllerBase {
         return mav;
     }
 
+    private Set<Attribute> getAttributesFromGraphMap() {
+        Set<Attribute> graphMapAttributes = Sets.newHashSet(); 
+        for (AttributeGraphType agt : supportedAttributeGraphMap.values()) {
+            graphMapAttributes.add(agt.getAttribute());
+        }
+        return graphMapAttributes;    
+    }
+    
     @Required
     public void setSupportedAttributeGraphSet(List<AttributeGraphType> supportedAttributeGraphSet) {
         supportedAttributeGraphMap = new LinkedHashMap<>();

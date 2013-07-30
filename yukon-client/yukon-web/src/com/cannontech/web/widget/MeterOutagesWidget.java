@@ -61,6 +61,7 @@ public class MeterOutagesWidget extends WidgetControllerBase {
             this.readDate = readDate;
             this.outageData = outageData;
         }
+        @Override
         public Date getReadDate() {
             return readDate;
         }
@@ -106,6 +107,7 @@ public class MeterOutagesWidget extends WidgetControllerBase {
     
     public class PointValueComparator implements Comparator<PointValueHolder>, Serializable
     {
+        @Override
         public int compare(PointValueHolder o1, PointValueHolder o2) {
             Date thisVal = o1.getPointDataTimeStamp();
             Date anotherVal = o2.getPointDataTimeStamp();
@@ -116,6 +118,7 @@ public class MeterOutagesWidget extends WidgetControllerBase {
     
     public PointValueComparator pointValueComparator = new PointValueComparator();
     
+    @Override
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         Meter meter = getMeter(request);
@@ -179,12 +182,7 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         Set<Attribute> attributesToShow = new HashSet<Attribute>();
         attributesToShow.add(BuiltInAttribute.BLINK_COUNT);
         attributesToShow.add(BuiltInAttribute.OUTAGE_LOG);
-        Set<Attribute> allExistingAtributes = attributeService.getAllExistingAttributes(meter);
-        
-        // allExisting is a copy...
-        allExistingAtributes.retainAll(attributesToShow);
-        
-        return allExistingAtributes;        
+        return attributeService.getExistingAttributes(meter, attributesToShow);
     }
 
     private Meter getMeter(HttpServletRequest request) throws ServletRequestBindingException {

@@ -19,7 +19,6 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.WidgetControllerBase;
-import com.google.common.collect.Sets;
 
 public class TouWidget extends WidgetControllerBase {
 
@@ -27,6 +26,7 @@ public class TouWidget extends WidgetControllerBase {
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     @Autowired private AttributeReadingWidgetHelper widgetHelper;
 
+    @Override
     public ModelAndView render(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         
@@ -35,10 +35,7 @@ public class TouWidget extends WidgetControllerBase {
         LiteYukonUser user = ServletUtil.getYukonUser(request);
 
         // Finds the existing attributes for the supplied meter
-        Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(meter);
-        Set<Attribute> existingTouAttributes =
-            Sets.intersection(allExistingAttributes,AttributeHelper.getTouAttributes());
-
+        Set<Attribute> existingTouAttributes = attributeService.getExistingAttributes(meter, AttributeHelper.getTouAttributes());
         boolean readable = deviceAttributeReadService.isReadable(Collections.singleton(meter), existingTouAttributes, user);
 
         // Add objects to mav.
@@ -62,8 +59,8 @@ public class TouWidget extends WidgetControllerBase {
         Meter meter = widgetHelper.getMeter(request);
         
         // Finds the existing attributes for the supplied meter
-        Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(meter);
-        Set<Attribute> existingTouAttributes = Sets.intersection(allExistingAttributes, AttributeHelper.getTouAttributes());
+        Set<Attribute> existingTouAttributes = 
+                attributeService.getExistingAttributes(meter, AttributeHelper.getTouAttributes());
         
         ModelAndView mav = widgetHelper.initiateRead(request, 
                                  meter, 

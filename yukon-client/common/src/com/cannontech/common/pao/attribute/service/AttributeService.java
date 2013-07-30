@@ -92,13 +92,13 @@ public interface AttributeService {
     public Set<Attribute> getAvailableAttributes(PaoType paoType);
 
     /**
-     * Method to get a set of all attributes for which points exist for a given
-     * pao
-     * @param pao - Pao to get points for
-     * @return A set of attributes (returns a new copy each time the method is
-     *         called)
+     * Method to get a set of all attributes from the set of desired attributes for a given pao.
+     * *** This will hit the database for each desiredAttribute. Future may be to optimize this method to only do one db hit.
+     * @param pao
+     * @param attributes  
+     * @return A set of attributes (from desiredAttributes) that exist for a given pao.
      */
-    public Set<Attribute> getAllExistingAttributes(YukonPao pao);
+    public Set<Attribute> getExistingAttributes(YukonPao pao, Set<? extends Attribute> desiredAttributes);
     
     public Attribute resolveAttributeName(String name);
     

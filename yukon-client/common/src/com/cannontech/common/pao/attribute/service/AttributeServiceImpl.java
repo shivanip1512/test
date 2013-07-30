@@ -212,11 +212,10 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public Set<Attribute> getAllExistingAttributes(YukonPao pao) {
+    public Set<Attribute> getExistingAttributes(YukonPao pao, Set<? extends Attribute> desiredAttributes) {
         Set<Attribute> result = Sets.newHashSet();
-        Set<Attribute> availableAttribute = this.getAvailableAttributes(pao);
         
-        for (final Attribute attribute : availableAttribute) {
+        for (final Attribute attribute : desiredAttributes) {
             try {
                 getPointForAttribute(pao, attribute);
                 result.add(attribute);

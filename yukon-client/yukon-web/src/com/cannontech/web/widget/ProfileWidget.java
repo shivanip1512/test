@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +36,6 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.ContactDao;
@@ -142,14 +140,7 @@ public class ProfileWidget extends WidgetControllerBase {
     }
 
     private Set<Attribute> getSupportedProfileAttributes(Meter meter) {
-
-        Set<Attribute> supportedProfileAttributes = new HashSet<Attribute>(attributeService.getAllExistingAttributes(meter));
-        supportedProfileAttributes.retainAll(CtiUtilities.asSet(BuiltInAttribute.LOAD_PROFILE,
-                                                                BuiltInAttribute.PROFILE_CHANNEL_2,
-                                                                BuiltInAttribute.PROFILE_CHANNEL_3,
-                                                                BuiltInAttribute.VOLTAGE_PROFILE));
-
-        return supportedProfileAttributes;
+        return attributeService.getExistingAttributes(meter, ProfileAttributeChannel.getAttributes());
     }
 
     @Override

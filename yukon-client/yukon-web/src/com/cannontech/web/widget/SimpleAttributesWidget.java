@@ -96,9 +96,8 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
         // command
         Meter meter = meterDao.getForId(deviceId);
         
-        Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(meter);
-        allExistingAttributes.retainAll(attributes);
-        
+        Set<Attribute> allExistingAttributes = attributeService.getExistingAttributes(meter, attributes);
+
         ModelAndView mav = widgetHelper.initiateRead(request, 
                                                      meter, 
                                                      allExistingAttributes, 

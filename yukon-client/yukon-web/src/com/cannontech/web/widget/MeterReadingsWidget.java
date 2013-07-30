@@ -28,6 +28,7 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.pao.service.LiteYukonPoint;
 import com.cannontech.web.common.pao.service.YukonPointHelper;
 import com.cannontech.web.widget.support.WidgetControllerBase;
+import com.google.common.collect.Sets;
 
 /**
  * Widget used to display basic device information
@@ -67,7 +68,8 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         Set<Attribute> allSupportedAttributes = attributeService.getAvailableAttributes(meter);
         Map<Attribute, Boolean> supportedAttributes = ServletUtil.convertSetToMap(allSupportedAttributes);
         mav.addObject("supportedAttributes", supportedAttributes);
-        Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(meter);
+        Set<Attribute> allExistingAttributes = 
+                attributeService.getExistingAttributes(meter, Sets.newHashSet(attributesToShow));
         Map<Attribute, Boolean> existingAttributes = ServletUtil.convertSetToMap(allExistingAttributes);
         mav.addObject("existingAttributes", existingAttributes);
         
@@ -84,8 +86,7 @@ public class MeterReadingsWidget extends WidgetControllerBase {
 	        mav.addObject("previousReadings_OptionValue", "VALUE");
         }
         mav.addObject("usageAttributeExists", usageAttributeExists);
-        
-        allExistingAttributes.retainAll(attributesToShow);
+
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         
         boolean readable = deviceAttributeReadService.isReadable(Collections.singleton(meter), allExistingAttributes, user);
@@ -102,10 +103,8 @@ public class MeterReadingsWidget extends WidgetControllerBase {
     throws ServletRequestBindingException {
         
         Meter meter = widgetHelper.getMeter(request);
-        Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(meter);
-        
-        // allExisting is a copy...
-        allExistingAttributes.retainAll(attributesToShow);
+        Set<Attribute> allExistingAttributes = 
+                attributeService.getExistingAttributes(meter, Sets.newHashSet(attributesToShow));
         
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         meteringEventLogService.readNowPushedForReadingsWidget(user, meter.getDeviceId());

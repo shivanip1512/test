@@ -55,7 +55,6 @@ import com.cannontech.web.updater.point.PointUpdateBackingService;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 @CheckRole({YukonRole.METERING,YukonRole.APPLICATION_BILLING,YukonRole.SCHEDULER,YukonRole.DEVICE_ACTIONS})
 public class MeterController extends MultiActionController {
@@ -251,9 +250,8 @@ public class MeterController extends MultiActionController {
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
 
         // Find the existing TOU attributes
-        Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(device);
-        Set<Attribute> existingTouAttributes =
-            Sets.intersection(allExistingAttributes,AttributeHelper.getTouUsageAttributes());
+        Set<Attribute> existingTouAttributes = 
+                attributeService.getExistingAttributes(device, AttributeHelper.getTouUsageAttributes());
          
         // Get the previous values for TOU points and set them to the mav.
         if (existingTouAttributes.size() > 0){
